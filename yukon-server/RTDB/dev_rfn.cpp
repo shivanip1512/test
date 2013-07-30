@@ -39,6 +39,7 @@ int RfnDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, Ct
         typedef std::map<std::string, PutConfigMethod> PutConfigLookup;
 
         const PutConfigLookup putConfigMethods = boost::assign::map_list_of
+            ("display",          &RfnDevice::executePutConfigDisplay)
             ("freezeday",        &RfnDevice::executePutConfigFreezeDay)
             ("voltageaveraging", &RfnDevice::executePutConfigVoltageAveragingInterval)
             ("tou",              &RfnDevice::executePutConfigTou);
@@ -71,6 +72,10 @@ int RfnDevice::executePutConfigTou(CtiRequestMsg *pReq, CtiCommandParser &parse,
     return NoMethod;
 }
 
+int RfnDevice::executePutConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &vgList, CtiMessageList &retList, RfnRequestMessages &rfnRequests)
+{
+    return NoMethod;
+}
 
 int RfnDevice::executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &vgList, CtiMessageList &retList, RfnRequestMessages &rfnRequests)
 {

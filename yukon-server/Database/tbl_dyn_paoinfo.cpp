@@ -381,6 +381,59 @@ const CtiTableDynamicPaoInfo::key_map_t   CtiTableDynamicPaoInfo::_key_map =
             "mct phase loss percent")
         (Key_MCT_PhaseLossSeconds,
             "mct phase loss seconds")
+
+        (Key_DisplayMetric01,
+            "display metric 01")
+        (Key_DisplayMetric02,
+            "display metric 02")
+        (Key_DisplayMetric03,
+            "display metric 03")
+        (Key_DisplayMetric04,
+            "display metric 04")
+        (Key_DisplayMetric05,
+            "display metric 05")
+        (Key_DisplayMetric06,
+            "display metric 06")
+        (Key_DisplayMetric07,
+            "display metric 07")
+        (Key_DisplayMetric08,
+            "display metric 08")
+        (Key_DisplayMetric09,
+            "display metric 09")
+        (Key_DisplayMetric10,
+            "display metric 10")
+        (Key_DisplayMetric11,
+            "display metric 11")
+        (Key_DisplayMetric12,
+            "display metric 12")
+        (Key_DisplayMetric13,
+            "display metric 13")
+        (Key_DisplayMetric14,
+            "display metric 14")
+        (Key_DisplayMetric15,
+            "display metric 15")
+        (Key_DisplayMetric16,
+            "display metric 16")
+        (Key_DisplayMetric17,
+            "display metric 17")
+        (Key_DisplayMetric18,
+            "display metric 18")
+        (Key_DisplayMetric19,
+            "display metric 19")
+        (Key_DisplayMetric20,
+            "display metric 20")
+        (Key_DisplayMetric21,
+            "display metric 21")
+        (Key_DisplayMetric22,
+            "display metric 22")
+        (Key_DisplayMetric23,
+            "display metric 23")
+        (Key_DisplayMetric24,
+            "display metric 24")
+        (Key_DisplayMetric25,
+            "display metric 25")
+        (Key_DisplayMetric26,
+            "display metric 26")
         ;
 
 CtiTableDynamicPaoInfo::CtiTableDynamicPaoInfo() :

@@ -8,12 +8,22 @@ namespace Commands {
 
 class IM_EX_DEVDB RfnCentronLcdConfigurationCommand : public RfnCommand
 {
+public:
+
     typedef std::vector<unsigned char> metric_vector_t;
 
-    //  const parameters that define this request
-    metric_vector_t _display_metrics;
+    struct ResultHandler
+    {
+        virtual void handleResult(const RfnCentronLcdConfigurationCommand &cmd) = 0;
+    };
 
-    bool _read_only;
+    RfnCentronLcdConfigurationCommand(ResultHandler &rh);  //  read
+    RfnCentronLcdConfigurationCommand(ResultHandler &rh, const metric_vector_t &display_metrics);  //  write
+
+    virtual RfnResult decode (const CtiTime now, const RfnResponse &response);
+    virtual RfnResult error  (const CtiTime now, const YukonError_t error_code);
+
+    metric_vector_t getReceivedMetrics() const;
 
 protected:
 
@@ -21,22 +31,13 @@ protected:
     virtual unsigned char getOperation() const;
     virtual Bytes         getData();
 
-public:
+private:
 
-    RfnCentronLcdConfigurationCommand(const metric_vector_t &display_metrics, bool reads_only);
+    ResultHandler &_rh;
 
-    enum
-    {
-        LcdConfiguration_CommandCode_Request  = 0x69,
-        LcdConfiguration_CommandCode_Response = 0x71,
+    const boost::optional<metric_vector_t> _display_metrics_to_send;
 
-        LcdConfiguration_Operation_Write      = 0x00,
-        LcdConfiguration_Operation_Read       = 0x01,
-    };
-
-    virtual RfnResult decode (const CtiTime now, const RfnResponse &response);
-    virtual RfnResult error  (const CtiTime now, const YukonError_t error_code);
-
+    metric_vector_t _display_metrics_received;
 };
 
 }

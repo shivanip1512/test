@@ -39,7 +39,6 @@ INCLPATHS+= \
 
 
 YUKONDEVDLLOBJS=\
-cmd_rfn_CentronLcdConfiguration.obj \
 cmd_device.obj \
 cmd_mct410_hourlyread.obj \
 cmd_mct420.obj \
@@ -53,6 +52,7 @@ cmd_lcr3102_tamperRead.obj \
 cmd_lcr3102_DemandResponseSummary.obj \
 cmd_lcr3102_hourlyDataLog.obj \
 cmd_rfn.obj \
+cmd_rfn_centronLcdConfiguration.obj \
 dev_710.obj \
 dev_a1.obj \
 dev_alpha.obj \
@@ -122,6 +122,7 @@ dev_repeater.obj \
 dev_repeater800.obj \
 dev_repeater850.obj \
 dev_rfn.obj \
+dev_rfn420centron.obj \
 dev_rtc.obj \
 dev_rtm.obj \
 dev_rds.obj \

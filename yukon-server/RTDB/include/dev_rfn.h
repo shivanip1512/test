@@ -1,6 +1,7 @@
 #pragma once
 
 #include <dev_single.h>
+
 #include "msg_rfnrequest.h"
 
 namespace Cti {
@@ -28,7 +29,7 @@ public:
         }
     };
 
-    virtual int runExecuter(RequestExecuter &executer)
+    virtual int invokeRequestExecuter(RequestExecuter &executer)
     {
         return executer.execute(*this);
     }
@@ -39,6 +40,7 @@ protected:
     int executePutConfigFreezeDay               (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &vgList, CtiMessageList &retList, RfnRequestMessages &rfnRequests);
     int executePutConfigVoltageAveragingInterval(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &vgList, CtiMessageList &retList, RfnRequestMessages &rfnRequests);
     int executePutConfigTou                     (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &vgList, CtiMessageList &retList, RfnRequestMessages &rfnRequests);
+    virtual int executePutConfigDisplay         (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &vgList, CtiMessageList &retList, RfnRequestMessages &rfnRequests);
 
     virtual int executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &vgList, CtiMessageList &retList, RfnRequestMessages &rfnRequests);
     virtual int executeGetValue (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &vgList, CtiMessageList &retList, RfnRequestMessages &rfnRequests);

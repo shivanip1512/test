@@ -198,6 +198,33 @@ public:
 
         Key_MCT_PhaseLossPercent,
         Key_MCT_PhaseLossSeconds,
+
+        Key_DisplayMetric01,
+        Key_DisplayMetric02,
+        Key_DisplayMetric03,
+        Key_DisplayMetric04,
+        Key_DisplayMetric05,
+        Key_DisplayMetric06,
+        Key_DisplayMetric07,
+        Key_DisplayMetric08,
+        Key_DisplayMetric09,
+        Key_DisplayMetric10,
+        Key_DisplayMetric11,
+        Key_DisplayMetric12,
+        Key_DisplayMetric13,
+        Key_DisplayMetric14,
+        Key_DisplayMetric15,
+        Key_DisplayMetric16,
+        Key_DisplayMetric17,
+        Key_DisplayMetric18,
+        Key_DisplayMetric19,
+        Key_DisplayMetric20,
+        Key_DisplayMetric21,
+        Key_DisplayMetric22,
+        Key_DisplayMetric23,
+        Key_DisplayMetric24,
+        Key_DisplayMetric25,
+        Key_DisplayMetric26,
     };
 
 protected:

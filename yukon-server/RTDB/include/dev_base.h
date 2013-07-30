@@ -210,7 +210,7 @@ public:
         }
     };
 
-    virtual int runExecuter(RequestExecuter &executer)
+    virtual int invokeRequestExecuter(RequestExecuter &executer)
     {
         return executer.execute(*this);
     }

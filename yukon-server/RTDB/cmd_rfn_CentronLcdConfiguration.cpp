@@ -2,6 +2,10 @@
 
 #include "cmd_rfn_CentronLcdConfiguration.h"
 
+#include "std_helper.h"
+
+#include <boost/assign/list_of.hpp>
+
 #include <sstream>
 
 namespace Cti {
@@ -10,56 +14,66 @@ namespace Commands {
 
 namespace {
 
-const char *MetricNames[] =
-    {
-        "Metric Slot Disabled",                        //  0x00
-        "No Segments",                                 //  0x01
-        "All Segments",                                //  0x02
-        "Tamper",                                      //  0x03
-        "Current Local Time",                          //  0x04
-        "Current Local Date",                          //  0x05
-        "Unidir kWh (Sum of Forward and Reverse)",     //  0x06
-        "Net kWh (Difference of Forward and Reverse)", //  0x07
-        "Delivered kWh",                               //  0x08
-        "Received kWh",                                //  0x09
-        "Last Interval Demand (W)",                    //  0x0A
-        "Peak Demand (W)",                             //  0x0B
-        "Date of Peak Demand (W)",                     //  0x0C
-        "Time of Peak Demand (W)",                     //  0x0D
-        "Last Interval Voltage (V)",                   //  0x0E
-        "Peak Voltage (V)",                            //  0x0F
-        "Date of Peak Voltage",                        //  0x10
-        "Time of Peak Voltage",                        //  0x11
-        "Min Voltage (V)",                             //  0x12
-        "Date of Min Voltage",                         //  0x13
-        "Time of Min Voltage",                         //  0x14
-        "TOU Rate A kWh",                              //  0x15
-        "TOU Rate A Peak Demand (W)",                  //  0x16
-        "TOU Rate A Date of Peak Demand",              //  0x17
-        "TOU Rate A Time of Peak Demand",              //  0x18
-        "TOU Rate B kWh",                              //  0x19
-        "TOU Rate B Peak Demand (W)",                  //  0x1A
-        "TOU Rate B Date of Peak Demand",              //  0x1B
-        "TOU Rate B Time of Peak Demand",              //  0x1C
-        "TOU Rate C kWh",                              //  0x1D
-        "TOU Rate C Peak Demand (W)",                  //  0x1E
-        "TOU Rate C Date of Peak Demand",              //  0x1F
-        "TOU Rate C Time of Peak Demand",              //  0x20
-        "TOU Rate D kWh",                              //  0x21
-        "TOU Rate D Peak Demand (W)",                  //  0x22
-        "TOU Rate D Date of Peak Demand",              //  0x23
-        "TOU Rate D Time of Peak Demand",              //  0x24
-    };
+enum
+{
+    LcdConfiguration_CommandCode_Request  = 0x69,
+    LcdConfiguration_CommandCode_Response = 0x71,
 
-const unsigned int total_metrics = sizeof(MetricNames) / sizeof(MetricNames[0]);
+    LcdConfiguration_Operation_Write      = 0x00,
+    LcdConfiguration_Operation_Read       = 0x01,
+};
+
+std::map<unsigned, std::string> MetricNames = boost::assign::map_list_of
+    ( 0x00, "Metric Slot Disabled"                        )
+    ( 0x01, "No Segments"                                 )
+    ( 0x02, "All Segments"                                )
+    ( 0x03, "Tamper"                                      )
+    ( 0x04, "Current Local Time"                          )
+    ( 0x05, "Current Local Date"                          )
+    ( 0x06, "Unidir kWh (Sum of Forward and Reverse)"     )
+    ( 0x07, "Net kWh (Difference of Forward and Reverse)" )
+    ( 0x08, "Delivered kWh"                               )
+    ( 0x09, "Received kWh"                                )
+    ( 0x0A, "Last Interval Demand (W)"                    )
+    ( 0x0B, "Peak Demand (W)"                             )
+    ( 0x0C, "Date of Peak Demand (W)"                     )
+    ( 0x0D, "Time of Peak Demand (W)"                     )
+    ( 0x0E, "Last Interval Voltage (V)"                   )
+    ( 0x0F, "Peak Voltage (V)"                            )
+    ( 0x10, "Date of Peak Voltage"                        )
+    ( 0x11, "Time of Peak Voltage"                        )
+    ( 0x12, "Min Voltage (V)"                             )
+    ( 0x13, "Date of Min Voltage"                         )
+    ( 0x14, "Time of Min Voltage"                         )
+    ( 0x15, "TOU Rate A kWh"                              )
+    ( 0x16, "TOU Rate A Peak Demand (W)"                  )
+    ( 0x17, "TOU Rate A Date of Peak Demand"              )
+    ( 0x18, "TOU Rate A Time of Peak Demand"              )
+    ( 0x19, "TOU Rate B kWh"                              )
+    ( 0x1A, "TOU Rate B Peak Demand (W)"                  )
+    ( 0x1B, "TOU Rate B Date of Peak Demand"              )
+    ( 0x1C, "TOU Rate B Time of Peak Demand"              )
+    ( 0x1D, "TOU Rate C kWh"                              )
+    ( 0x1E, "TOU Rate C Peak Demand (W)"                  )
+    ( 0x1F, "TOU Rate C Date of Peak Demand"              )
+    ( 0x20, "TOU Rate C Time of Peak Demand"              )
+    ( 0x21, "TOU Rate D kWh"                              )
+    ( 0x22, "TOU Rate D Peak Demand (W)"                  )
+    ( 0x23, "TOU Rate D Date of Peak Demand"              )
+    ( 0x24, "TOU Rate D Time of Peak Demand"              );
 
 } // anonymous namespace
 
 
 //  Class constructor
-RfnCentronLcdConfigurationCommand::RfnCentronLcdConfigurationCommand(const metric_vector_t &display_metrics, bool reads_only) :
-    _display_metrics(display_metrics),
-    _read_only(reads_only)
+RfnCentronLcdConfigurationCommand::RfnCentronLcdConfigurationCommand(ResultHandler &rh, const metric_vector_t &display_metrics) :
+    _rh(rh),
+    _display_metrics_to_send(display_metrics)
+{
+}
+
+RfnCentronLcdConfigurationCommand::RfnCentronLcdConfigurationCommand(ResultHandler &rh) :
+    _rh(rh)
 {
 }
 
@@ -70,56 +84,59 @@ RfnCommand::RfnResult RfnCentronLcdConfigurationCommand::decode(const CtiTime no
 
     if( response.size() < 2 )
     {
-        // "Invalid response"
-        char error_str[80];
-        GetErrorString(ErrorInvalidData, error_str);
-        throw CommandException(ErrorInvalidData, error_str);
+        throw CommandException(
+            ErrorInvalidData,
+            "Response too small - (" + CtiNumStr(response.size()) + ", expecting >=2)");
     }
 
     if( response[0] != LcdConfiguration_CommandCode_Response )
     {
-        // "Invalid command code"
-        char error_str[80];
-        GetErrorString(ErrorInvalidData, error_str);
-        throw CommandException(ErrorInvalidData, error_str);
+        throw CommandException(
+            ErrorInvalidData,
+            "Invalid command code - (" + CtiNumStr(response[0]) + ", expecting LcdConfiguration_CommandCode_Response)");
     }
 
     const int metrics_nbr = response[1];
 
     if( metrics_nbr != response.size() - 2 )
     {
-        // "Invalid number of display metrics"
-        char error_str[80];
-        GetErrorString(ErrorInvalidData, error_str);
-        throw CommandException(ErrorInvalidData, error_str);
+        throw CommandException(
+            ErrorInvalidData,
+            "Invalid number of display metrics - (" + CtiNumStr(metrics_nbr) + ", expecting " + CtiNumStr(response.size() - 2) + ")");
     }
 
-    if( !metrics_nbr )
+    if( ! metrics_nbr )
     {
-        result.description = "No display metric found";
+        result.description = "No display metrics";
+
+        return result;
     }
-    else
+
+    std::ostringstream metric_description;
+
+    _display_metrics_received.assign(
+       response.begin() + 2,
+       response.begin() + 2 + metrics_nbr );
+
+    unsigned metricIndex = 0;
+
+    for each( unsigned char metric in _display_metrics_received )
     {
-        std::ostringstream metric_description;
+        metric_description << "Display metric " << ++metricIndex << ": ";
 
-        std::vector<unsigned char> metrics = std::vector<unsigned char>( response.begin()+2, response.begin()+2+metrics_nbr );
+        boost::optional<std::string> metricName = mapFind(MetricNames, metric);
 
-        for each(unsigned char metric in metrics)
+        if( metricName )
         {
-            metric_description << "Display metric : ";
-
-            if( metric < total_metrics )
-            {
-                metric_description << MetricNames[metric] << "\n";
-            }
-            else
-            {
-                metric_description << "Unsupported metric [" << (int)metric << "]\n";
-            }
+            metric_description << *metricName << "\n";
         }
-
-        result.description += metric_description.str();
+        else
+        {
+            metric_description << "Unsupported metric [" << (unsigned)metric << "]\n";
+        }
     }
+
+    result.description += metric_description.str();
 
     return result;
 }
@@ -142,7 +159,7 @@ unsigned char RfnCentronLcdConfigurationCommand::getCommandCode() const
 //  returns the operation field of a request
 unsigned char RfnCentronLcdConfigurationCommand::getOperation() const
 {
-    return (_read_only) ? LcdConfiguration_Operation_Read : LcdConfiguration_Operation_Write;
+    return _display_metrics_to_send ? LcdConfiguration_Operation_Write : LcdConfiguration_Operation_Read;
 }
 
 //  returns the data portion a request
@@ -150,17 +167,23 @@ RfnCommand::Bytes RfnCentronLcdConfigurationCommand::getData()
 {
     Bytes data;
 
-    if( _read_only )
+    if( _display_metrics_to_send )
     {
-        data.push_back(0); // zero items
+        data.push_back(_display_metrics_to_send->size());
+        data.insert(data.end(), _display_metrics_to_send->begin(), _display_metrics_to_send->end());
     }
     else
     {
-        data.push_back(_display_metrics.size());
-        data.insert(data.end(), _display_metrics.begin(), _display_metrics.end());
+        data.push_back(0); // zero items
     }
 
     return data;
+}
+
+
+RfnCentronLcdConfigurationCommand::metric_vector_t RfnCentronLcdConfigurationCommand::getReceivedMetrics() const
+{
+    return _display_metrics_received;
 }
 
 

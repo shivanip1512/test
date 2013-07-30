@@ -1138,7 +1138,7 @@ int CtiPILServer::executeRequest(const CtiRequestMsg *pReq)
 
                 try
                 {
-                    status = Dev->runExecuter(pilExecuter);
+                    status = Dev->invokeRequestExecuter(pilExecuter);
 
                     reportClientRequests(Dev, _currentParse, pReq->getUser(), pilExecuter.vgList, pilExecuter.retList);
                 }

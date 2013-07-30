@@ -2,6 +2,7 @@
 
 #include "config_data_mct.h"
 #include "config_data_dnp.h"
+#include "config_data_rfn.h"
 
 using std::string;
 
@@ -166,3 +167,31 @@ const string DNPStrings::internalRetries = "internalRetries";
 const string DNPStrings::enableUnsolicited = "enableUnsolicitedMessages";
 const string DNPStrings::enableDnpTimesyncs = "enableDnpTimesyncs";
 const string DNPStrings::useLocalTime = "localTime";
+
+/* RFN */
+const string RfnStrings::displayMetric01 = "displayMetric1";
+const string RfnStrings::displayMetric02 = "displayMetric2";
+const string RfnStrings::displayMetric03 = "displayMetric3";
+const string RfnStrings::displayMetric04 = "displayMetric4";
+const string RfnStrings::displayMetric05 = "displayMetric5";
+const string RfnStrings::displayMetric06 = "displayMetric6";
+const string RfnStrings::displayMetric07 = "displayMetric7";
+const string RfnStrings::displayMetric08 = "displayMetric8";
+const string RfnStrings::displayMetric09 = "displayMetric9";
+const string RfnStrings::displayMetric10 = "displayMetric10";
+const string RfnStrings::displayMetric11 = "displayMetric11";
+const string RfnStrings::displayMetric12 = "displayMetric12";
+const string RfnStrings::displayMetric13 = "displayMetric13";
+const string RfnStrings::displayMetric14 = "displayMetric14";
+const string RfnStrings::displayMetric15 = "displayMetric15";
+const string RfnStrings::displayMetric16 = "displayMetric16";
+const string RfnStrings::displayMetric17 = "displayMetric17";
+const string RfnStrings::displayMetric18 = "displayMetric18";
+const string RfnStrings::displayMetric19 = "displayMetric19";
+const string RfnStrings::displayMetric20 = "displayMetric20";
+const string RfnStrings::displayMetric21 = "displayMetric21";
+const string RfnStrings::displayMetric22 = "displayMetric22";
+const string RfnStrings::displayMetric23 = "displayMetric23";
+const string RfnStrings::displayMetric24 = "displayMetric24";
+const string RfnStrings::displayMetric25 = "displayMetric25";
+const string RfnStrings::displayMetric26 = "displayMetric26";
