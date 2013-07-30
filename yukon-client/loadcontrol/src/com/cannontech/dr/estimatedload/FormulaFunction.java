@@ -1,27 +1,28 @@
 package com.cannontech.dr.estimatedload;
 
-import java.math.BigDecimal;
 
 public final class FormulaFunction {
 
-    private final int functionId;
+    private final Integer functionId;
     private final int formulaId;
+    private final String name;
     private final FormulaInput input;
-    private final BigDecimal quadratic;
-    private final BigDecimal linear;
-    private final BigDecimal constant;
+    private final double quadratic;
+    private final double linear;
+    private final double constant;
 
-    public FormulaFunction(int functionId, int formulaId, FormulaInput input,
-            BigDecimal quadratic, BigDecimal linear, BigDecimal constant) {
+    public FormulaFunction(Integer functionId, int formulaId, String name, FormulaInput input,
+            double quadratic, double linear, double constant) {
         this.functionId = functionId;
         this.formulaId = formulaId;
+        this.name = name;
         this.input = input;
         this.quadratic = quadratic;
         this.linear = linear;
         this.constant = constant;
     }
 
-    public int getFunctionId() {
+    public Integer getFunctionId() {
         return functionId;
     }
 
@@ -29,19 +30,23 @@ public final class FormulaFunction {
         return formulaId;
     }
 
+    public String getName() {
+        return name;
+    }
+
     public FormulaInput getInput() {
         return input;
     }
 
-    public BigDecimal getQuadratic() {
+    public double getQuadratic() {
         return quadratic;
     }
 
-    public BigDecimal getLinear() {
+    public double getLinear() {
         return linear;
     }
 
-    public BigDecimal getConstant() {
+    public double getConstant() {
         return constant;
     }
 
