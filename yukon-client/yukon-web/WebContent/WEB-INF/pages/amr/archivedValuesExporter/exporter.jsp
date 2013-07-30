@@ -258,6 +258,10 @@
         });
         jQuery('.f-initialFocus').focus();
     });
+    
+    function escapePreview(someString) {
+    	return someString;
+    }
 </script>
 
     <cti:includeScript link="/JavaScript/yukonGeneral.js" />
@@ -474,7 +478,7 @@
             <tags:boxContainer2 nameKey="preview">
                <div class="code">
             <!-- Please do not format this code -->
-                <pre><c:forEach var="previewEntry" items="${preview}">${previewEntry}
+                <pre><c:forEach var="previewEntry" items="${preview}">${fn:escapeXml(previewEntry)}
 </c:forEach></pre>
                </div>
             </tags:boxContainer2>

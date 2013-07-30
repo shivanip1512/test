@@ -345,7 +345,7 @@ jQuery(function() {
         <tags:boxContainer2 nameKey="preview" styleClass="stacked clear">
             <div class="code">
             <!-- Please do not format this code -->
-<pre><c:forEach var="previewEntry" items="${preview}">${previewEntry}
+<pre><c:forEach var="previewEntry" items="${preview}">${fn:escapeXml(previewEntry)}
 </c:forEach></pre>
             </div>
         </tags:boxContainer2>
