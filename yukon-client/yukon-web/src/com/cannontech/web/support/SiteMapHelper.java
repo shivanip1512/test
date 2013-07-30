@@ -336,6 +336,8 @@ public class SiteMapHelper {
                 MatchStyle.all, YukonRoleProperty.STATISTICAL_REPORTS_GROUP),
         CCURT_REPORTS(SiteMapCategory.ADMIN, "yukon.web.menu.config.reporting.reports.cni", "/analysis/Reports.jsp?groupType=CCURT", 
                 MatchStyle.all, YukonRoleProperty.CI_CURTAILMENT_REPORTS_GROUP),
+        SETTLEMENT_REPORTS(SiteMapCategory.ADMIN, "yukon.web.menu.config.reporting.reports.settlement", "/analysis/Reports.jsp?groupType=SETTLEMENT", 
+                MatchStyle.all, OtherPermission.HIDEABLE, YukonRoleProperty.SETTLEMENT_REPORTS_GROUP),
         ENCRYPTED_ROUTES(SiteMapCategory.ADMIN, "yukon.web.modules.adminSetup.security.routesBox.title", "/adminSetup/security/view", 
                 MatchStyle.all, YukonRoleProperty.ADMIN_SUPER_USER),
 
