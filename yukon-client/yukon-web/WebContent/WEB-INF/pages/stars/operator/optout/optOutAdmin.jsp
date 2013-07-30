@@ -353,6 +353,6 @@
                     </tags:boxContainer2>
                     </cti:checkRolesAndProperties>
                 </div>
-            </div
+            </div>
     </cti:checkEnergyCompanyOperator>
 </cti:standardPage>

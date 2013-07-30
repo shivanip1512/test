@@ -6,13 +6,12 @@ import java.util.Map;
 import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.user.YukonUserContext;
-import com.google.common.collect.ImmutableList;
 
 public interface ObjectFormattingService {
     /**
      * Convert the given object to a localized string for the given user context.  This method
-     * understands how to correctly localize instances of MessageSourceResolvable, DisplayableEnum
-     * and Displayable.  Other objects are simply converted to a string.
+     * understands how to correctly localize instances of {@link MessageSourceResolvable}, {@link DisplayableEnum}
+     * and {@link Displayable}.  Other objects are simply converted to a string.
      */
     public String formatObjectAsString(Object object, YukonUserContext userContext);
 

@@ -66,8 +66,8 @@ public class ZoneDaoImpl implements ZoneDao {
             capBankPointDelta.setAffectedPointName(rs.getString("AffectedPointName"));
             capBankPointDelta.setPreOpValue(rs.getDouble("PreOpValue"));
             capBankPointDelta.setDelta(rs.getDouble("Delta"));
-            
-            String staticDelta = rs.getString("StaticDelta").trim().intern();
+
+            String staticDelta = rs.getString("StaticDelta").trim();
             capBankPointDelta.setStaticDelta("Y".equals(staticDelta));
             
             return capBankPointDelta;
@@ -120,6 +120,7 @@ public class ZoneDaoImpl implements ZoneDao {
     
     private static YukonRowMapper<PointToZoneMapping> pointToZoneRowMapper = 
     	new YukonRowMapper<PointToZoneMapping>() {
+        @Override
         public PointToZoneMapping mapRow(YukonResultSet rs) throws SQLException {
         	PointToZoneMapping pointToZone = new PointToZoneMapping();
         	pointToZone.setPointId(rs.getInt("PointId"));
@@ -621,18 +622,22 @@ public class ZoneDaoImpl implements ZoneDao {
             p.addValue("ZoneType", zone.getZoneType());
             p.addChildren(regulatorToZoneTemplate, zone.getRegulators());
         }
+        @Override
         public Number getPrimaryKey(Zone zone) {
             return zone.getId();
         }
+        @Override
         public void setPrimaryKey(Zone zone, int value) {
             zone.setId(value);
         }
     };
 
     private FieldMapper<RegulatorToZoneMapping> regulatorToZoneFieldMapper = new FieldMapper<RegulatorToZoneMapping>() {
+        @Override
         public Number getPrimaryKey(RegulatorToZoneMapping regulatorToZone) {
             return regulatorToZone.getRegulatorId();
         }
+        @Override
         public void setPrimaryKey(RegulatorToZoneMapping regulatorToZone, int value) {
             regulatorToZone.setRegulatorId(value);
         }

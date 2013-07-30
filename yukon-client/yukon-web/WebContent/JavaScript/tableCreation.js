@@ -47,7 +47,7 @@ function createHtmlTableFromJson(dataArray, outputCols, rowCallback) {
               var linkFunc = linkFuncGenerate(dataArray[i], link);
               
               if(linkFunc != null) {
-              	  link.setAttribute("href", "javascript:nothing()");
+              	  link.setAttribute("href", "javascript:void(0)");
 	              Event.observe(link,'click',linkFunc);
               }
           }
@@ -69,7 +69,4 @@ function createHtmlTableFromJson(dataArray, outputCols, rowCallback) {
       }
     }
     return resultTable;
-}
-
-function nothing() {
 }

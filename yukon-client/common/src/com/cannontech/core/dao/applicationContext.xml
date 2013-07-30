@@ -17,13 +17,7 @@
   	<property name="pointDao" ref="pointDao"/>
   	<property name="dynamicDataSource" ref="dynamicDataSource"/>
   </bean>  
-  <bean id="authDao" class="com.cannontech.core.dao.impl.AuthDaoImpl" >
-  	<property name="yukonUserDao" ref="yukonUserDao" />
-  	<property name="contactDao" ref="contactDao" />
-  	<property name="databaseCache" ref="databaseCache" />
-  	<property name="authenticationService" ref="authenticationService" />
-  	<property name="systemDateFormattingService" ref="systemDateFormattingService"/>
-  </bean>
+  <bean id="authDao" class="com.cannontech.core.dao.impl.AuthDaoImpl"/>
   <bean id="capControlDao" class="com.cannontech.core.dao.impl.CapControlDaoImpl"/>
   <bean id="macScheduleDao" class="com.cannontech.core.dao.impl.MACScheduleDaoImpl" >
     <property name="jdbcOps" ref="jdbcTemplate"/> 

@@ -47,8 +47,7 @@ public class StaticAuthenticationThrottleImplTest {
             .withRoleProperty(POLICY_RULE_UPPERCASE_CHARACTERS, true)
             .withRoleProperty(POLICY_RULE_LOWERCASE_CHARACTERS, false)
             .withRoleProperty(POLICY_RULE_BASE_10_DIGITS, true)
-            .withRoleProperty(POLICY_RULE_NONALPHANUMERIC_CHARACTERS, true)
-            .withRoleProperty(POLICY_RULE_UNICODE_CHARACTERS, false);
+            .withRoleProperty(POLICY_RULE_NONALPHANUMERIC_CHARACTERS, true);
     
         rolePropertyDaoMock.setupRolesFor(USER_TWO)
             .withRoleProperty(LOCKOUT_DURATION, 120)
@@ -62,8 +61,7 @@ public class StaticAuthenticationThrottleImplTest {
             .withRoleProperty(POLICY_RULE_UPPERCASE_CHARACTERS, false)
             .withRoleProperty(POLICY_RULE_LOWERCASE_CHARACTERS, true)
             .withRoleProperty(POLICY_RULE_BASE_10_DIGITS, false)
-            .withRoleProperty(POLICY_RULE_NONALPHANUMERIC_CHARACTERS, false)
-            .withRoleProperty(POLICY_RULE_UNICODE_CHARACTERS, true);
+            .withRoleProperty(POLICY_RULE_NONALPHANUMERIC_CHARACTERS, false);
         
         rolePropertyDaoMock.setupRolesFor(USER_NO_POLICY)
             .withRoleProperty(LOCKOUT_DURATION, 0)
@@ -77,8 +75,7 @@ public class StaticAuthenticationThrottleImplTest {
             .withRoleProperty(POLICY_RULE_UPPERCASE_CHARACTERS, true)
             .withRoleProperty(POLICY_RULE_LOWERCASE_CHARACTERS, true)
             .withRoleProperty(POLICY_RULE_BASE_10_DIGITS, true)
-            .withRoleProperty(POLICY_RULE_NONALPHANUMERIC_CHARACTERS, true)
-            .withRoleProperty(POLICY_RULE_UNICODE_CHARACTERS, true);
+            .withRoleProperty(POLICY_RULE_NONALPHANUMERIC_CHARACTERS, true);
 
         rolePropertyDaoMock.setupRolesFor(USER_SHORT_LOCKOUT)
             .withRoleProperty(LOCKOUT_DURATION, 1)
@@ -92,8 +89,7 @@ public class StaticAuthenticationThrottleImplTest {
             .withRoleProperty(POLICY_RULE_UPPERCASE_CHARACTERS, true)
             .withRoleProperty(POLICY_RULE_LOWERCASE_CHARACTERS, true)
             .withRoleProperty(POLICY_RULE_BASE_10_DIGITS, true)
-            .withRoleProperty(POLICY_RULE_NONALPHANUMERIC_CHARACTERS, true)
-            .withRoleProperty(POLICY_RULE_UNICODE_CHARACTERS, true);
+            .withRoleProperty(POLICY_RULE_NONALPHANUMERIC_CHARACTERS, true);
 
         
         rolePropertyDaoMock.setupRolesFor(USER_SYSTEM_POLICY)

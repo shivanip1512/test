@@ -19,9 +19,8 @@ import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.InUseException;
 import com.cannontech.core.dao.impl.LiteYukonUserMapper;
-import com.cannontech.core.users.dao.impl.UserGroupDaoImpl;
+import com.cannontech.core.users.dao.UserGroupDao;
 import com.cannontech.core.users.model.LiteUserGroup;
-import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.RowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -85,7 +84,7 @@ public class ECMappingDaoImpl implements ECMappingDao {
         sql.append("FROM ECToRouteMapping");
         sql.append("WHERE EnergyCompanyId").eq(energyCompanyId);
         
-        return yukonJdbcTemplate.query(sql, new IntegerRowMapper());
+        return yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
     }
     
     @Override
@@ -96,7 +95,7 @@ public class ECMappingDaoImpl implements ECMappingDao {
         sql.append("FROM ECToSubstationMapping");
         sql.append("WHERE EnergyCompanyId").eq(energycompanyId);
 
-        return yukonJdbcTemplate.query(sql, new IntegerRowMapper());
+        return yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
     }
 
     @Override
@@ -355,7 +354,7 @@ public class ECMappingDaoImpl implements ECMappingDao {
         sql.append("FROM ECToAccountMapping");
         sql.append("WHERE EnergyCompanyId").eq(ecId);
         
-        return yukonJdbcTemplate.query(sql, new IntegerRowMapper());
+        return yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
     }
     
     @Override
@@ -366,7 +365,7 @@ public class ECMappingDaoImpl implements ECMappingDao {
         sql.append(  "JOIN UserGroup UG ON UG.UserGroupId = ECTGM.UserGroupId");
         sql.append("WHERE ECTGM.EnergyCompanyId").eq(energyCompanyId);
         
-        return yukonJdbcTemplate.query(sql, new UserGroupDaoImpl.LiteUserGroupRowMapper());
+        return yukonJdbcTemplate.query(sql, new UserGroupDao.LiteUserGroupRowMapper());
     }
     
     @Override
@@ -377,7 +376,7 @@ public class ECMappingDaoImpl implements ECMappingDao {
         sql.append(  "JOIN UserGroup UG ON UG.UserGroupId = ECTRM.UserGroupId");
         sql.append("WHERE ECTRM.EnergyCompanyId").eq(energyCompanyId);
         
-        return yukonJdbcTemplate.query(sql, new UserGroupDaoImpl.LiteUserGroupRowMapper());
+        return yukonJdbcTemplate.query(sql, new UserGroupDao.LiteUserGroupRowMapper());
     }
     
     @Override

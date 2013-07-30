@@ -14,7 +14,7 @@ public interface SqlParameterSink {
     public void addValue(String paramName, Object value);
     
     /**
-     * Assosciates the paramName and the value. Value must be a String
+     * Associates the paramName and the value. Value must be a String
      * and will be run through the com.cannontech.database.SqlUtils.convertStringToDbValue(String)
      * method.
      * @param paramName
@@ -23,7 +23,7 @@ public interface SqlParameterSink {
     public void addValueSafe(String paramName, String value);
     
     /**
-     * Associatest the paramName and the value. Value will not be processed, it will simply
+     * Associates the paramName and the value. Value will not be processed, it will simply
      * be added to the argument list and passed directly to the JdbcTemplate.
      * @param paramName
      * @param value

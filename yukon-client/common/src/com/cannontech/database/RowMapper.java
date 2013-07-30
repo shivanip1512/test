@@ -64,7 +64,9 @@ public interface RowMapper {
         @Override
         public Instant mapRow(YukonResultSet rs) throws SQLException {
             Timestamp timestamp = rs.getResultSet().getTimestamp(1);
-            if(timestamp == null) throw new EmptyResultDataAccessException("Null timestamp", 1);
+            if (timestamp == null) {
+                throw new EmptyResultDataAccessException("Null timestamp", 1);
+            }
             return new Instant(timestamp);
         }
     };
@@ -100,11 +102,8 @@ public interface RowMapper {
         @Override
         public PaoIdentifier mapRow(YukonResultSet rs) throws SQLException {
             Integer paoId = rs.getInt("paObjectId");
-            PaoType paoType = PaoType.getForDbString(rs.getString("type"));
+            PaoType paoType = rs.getEnum("type", PaoType.class);
             return new PaoIdentifier(paoId, paoType);
         }
     };
-    
-    
-
 }

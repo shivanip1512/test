@@ -111,7 +111,7 @@ public class EmailMessage {
 		to = string;
 	}
 
-	public void setAttachments(ArrayList<char[]> list) {
+	public void setAttachments(List<char[]> list) {
 		attachments = list;
 	}
 
@@ -127,7 +127,7 @@ public class EmailMessage {
 		return attachmentNames;
 	}
 
-	public void setAttachmentNames(ArrayList<String> list) {
+	public void setAttachmentNames(List<String> list) {
 		attachmentNames = list;
 	}
 

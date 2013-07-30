@@ -25,7 +25,7 @@ public abstract class BaseMeterRowMapper<T> implements SqlProvidingRowMapper<T> 
 
     protected void fillInMeter(ResultSet rs, Meter meter) throws SQLException {
         int paObjectId = rs.getInt("paObjectId");
-        PaoType paoType = PaoType.getForDbString(rs.getString("type").intern());
+        PaoType paoType = PaoType.getForDbString(rs.getString("type"));
         PaoIdentifier paoIdentifier = new PaoIdentifier(paObjectId, paoType);
         meter.setPaoIdentifier(paoIdentifier);
 

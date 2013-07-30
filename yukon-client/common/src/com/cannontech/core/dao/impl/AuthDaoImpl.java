@@ -1,7 +1,5 @@
 package com.cannontech.core.dao.impl;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
@@ -9,67 +7,60 @@ import java.util.TimeZone;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.exception.NotAuthorizedException;
-import com.cannontech.common.exception.PasswordExpiredException;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.authorization.service.PaoPermissionService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.ContactDao;
-import com.cannontech.core.dao.UnknownRolePropertyException;
 import com.cannontech.core.dao.YukonUserDao;
-import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.SystemDateFormattingService;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
-import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.UserUtils;
-import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
 
 
 /**
  * A collection of methods to handle authenticating, authorization, and the retrieval of 
  * role property values.
- * @author alauinger
  */
 public class AuthDaoImpl implements AuthDao {
+    @Autowired private YukonUserDao yukonUserDao;
+    @Autowired private ContactDao contactDao;
+    @Autowired private SystemDateFormattingService systemDateFormattingService;
+    @Autowired private RolePropertyDao rolePropertyDao;
 	
-    private YukonUserDao yukonUserDao;
-    private ContactDao contactDao;
-    private SystemDateFormattingService systemDateFormattingService;
-    private RolePropertyDao rolePropertyDao;
-	
-	public boolean isAdminUser(String username_)
+	@Override
+    public boolean isAdminUser(String username)
 	{
-		LiteYukonUser liteUser = yukonUserDao.findUserByUsername(username_);
+		LiteYukonUser liteUser = yukonUserDao.findUserByUsername(username);
 		return isAdminUser(liteUser);
 	}
 
-	public boolean isAdminUser(LiteYukonUser user)
+	@Override
+    public boolean isAdminUser(LiteYukonUser user)
 	{
 	    if ( user != null && user.getUserID() == UserUtils.USER_ADMIN_ID )
 	        return true;
 	    return false;
 	}
 	
-    public boolean userHasAccessPAO( LiteYukonUser user, int paoID )
+    @Override
+    public boolean userHasAccessPAO( LiteYukonUser user, int paoId )
     {
         PaoPermissionService pService = (PaoPermissionService) YukonSpringHook.getBean("paoPermissionService");
         Set<Integer> permittedPaos = pService.getPaoIdsForUserPermission(user, Permission.LM_VISIBLE);
             
         if( permittedPaos != null && ! permittedPaos.isEmpty()) {
-            if(permittedPaos.contains(new Integer(paoID)))
+            if(permittedPaos.contains(paoId))
                 return true;
             /*the user has permissions found, but the ID was not in the set of
             given IDs, they are not permitted to see this given paoID*/
@@ -79,20 +70,22 @@ public class AuthDaoImpl implements AuthDao {
         return true;
     }
     
-    public boolean hasExlusiveAccess( LiteYukonUser user, int paoID )
+    @Override
+    public boolean hasExlusiveAccess( LiteYukonUser user, int paoId )
     {
         PaoPermissionService pService = (PaoPermissionService) YukonSpringHook.getBean("paoPermissionService");
         Set<Integer> permittedPaos = pService.getPaoIdsForUserPermission(user, Permission.LM_VISIBLE);
             
-        if( permittedPaos != null && permittedPaos.contains(new Integer(paoID))) 
+        if( permittedPaos != null && permittedPaos.contains(paoId)) 
             return true;
             
         return false;
     }    
 
-	public LiteYukonUser voiceLogin(int contactid, String pin) {
+	@Override
+    public LiteYukonUser voiceLogin(int contactId, String pin) {
 			
-		LiteContact lContact = contactDao.getContact( contactid );
+		LiteContact lContact = contactDao.getContact( contactId );
 
 		if( lContact != null )
 		{
@@ -125,13 +118,14 @@ public class AuthDaoImpl implements AuthDao {
 				CTILogger.info("  Failed VOICE login because no YukonUser was found for the Contact: " + lContact.toString());
 		}
 		else
-			CTILogger.info("  Failed VOICE login since no Contact exists with a Contactid = " + contactid);
+			CTILogger.info("  Failed VOICE login since no Contact exists with a Contactid = " + contactId);
 
 
 		return null;  //failure
 	}
 	
-	public String getFirstNotificationPin(LiteContact contact) {
+	@Override
+    public String getFirstNotificationPin(LiteContact contact) {
 	    Validate.notNull(contact);
 
 	    List<String> result = Lists.newArrayListWithExpectedSize(1);
@@ -149,7 +143,8 @@ public class AuthDaoImpl implements AuthDao {
 	    return result.get(0);
 	}
 
-	public boolean hasPAOAccess( LiteYukonUser user ) 
+	@Override
+    public boolean hasPAOAccess( LiteYukonUser user ) 
 	{
         PaoPermissionService pService = (PaoPermissionService) YukonSpringHook.getBean("paoPermissionService");
         Set<Integer> permittedPaos = pService.getPaoIdsForUserPermission(user, Permission.LM_VISIBLE);
@@ -157,6 +152,7 @@ public class AuthDaoImpl implements AuthDao {
         return permittedPaos != null && ! permittedPaos.isEmpty(); 
 	}
     	
+    @Override
     public void verifyAdmin(LiteYukonUser user) throws NotAuthorizedException {
         boolean b = isAdminUser(user);
         if (!b) {
@@ -164,6 +160,7 @@ public class AuthDaoImpl implements AuthDao {
         }
     }
 
+    @Override
     public TimeZone getUserTimeZone(LiteYukonUser user) {
         
         if (user == null)
@@ -183,32 +180,5 @@ public class AuthDaoImpl implements AuthDao {
             timeZone = systemDateFormattingService.getSystemTimeZone();
         }
         return timeZone;
-    }
-    
-    @Required
-    public void setContactDao(ContactDao contactDao) {
-        this.contactDao = contactDao;
-    }
-
-    @Required
-    public void setDatabaseCache(IDatabaseCache databaseCache) {
-    }
-
-    @Required
-    public void setYukonUserDao(YukonUserDao yukonUserDao) {
-        this.yukonUserDao = yukonUserDao;
-    }
-
-    public void setAuthenticationService(AuthenticationService authenticationService) {
-    }
-    
-    @Required
-    public void setSystemDateFormattingService(SystemDateFormattingService systemDateFormattingService) {
-        this.systemDateFormattingService = systemDateFormattingService;
-    }
-    
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
     }
 }

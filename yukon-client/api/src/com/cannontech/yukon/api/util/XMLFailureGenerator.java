@@ -40,6 +40,12 @@ public class XMLFailureGenerator {
         return failureElement;
     }
 
+    /**
+     * This misconceived method makes a simple error without an exception.
+     * @deprecated A proper XML response should be designed for each error. The failures generated
+     *             by this class should be reserved for catastrophic failures.
+     */
+    @Deprecated
     public static Element makeSimple(String errorCode, String errorDescription) {
         Element failureElem = new Element("failure", ns);
         failureElem.addContent(XmlUtils.createStringElement("errorCode", ns, errorCode));

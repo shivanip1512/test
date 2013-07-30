@@ -1,8 +1,11 @@
 package com.cannontech.core.users.dao;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import com.cannontech.core.users.model.LiteUserGroup;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.user.UserGroup;
 
 public interface UserGroupDao {
@@ -82,5 +85,17 @@ public interface UserGroupDao {
      * This method removes the mapping entry between a user group and a yukon group
      */
     public void deleteUserGroupToYukonGroupMappng(int userGroupId, int roleGroupId);
-    
+
+    class LiteUserGroupRowMapper implements YukonRowMapper<LiteUserGroup> {
+        @Override
+        public LiteUserGroup mapRow(YukonResultSet rs) throws SQLException {
+            LiteUserGroup userGroup = new LiteUserGroup();
+            
+            userGroup.setUserGroupId(rs.getInt("UserGroupId"));
+            userGroup.setUserGroupName(rs.getString("Name"));
+            userGroup.setUserGroupDescription(rs.getStringSafe("Description"));
+
+            return userGroup;
+        }
+    }
 }

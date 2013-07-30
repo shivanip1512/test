@@ -74,7 +74,7 @@ public interface ICapControlModel {
 
     public abstract boolean isBankControlPtVisible();
 
-    public abstract void addSchedule();
+    public abstract String addSchedule();
 
     public abstract EditorDataModel getWizData();
 

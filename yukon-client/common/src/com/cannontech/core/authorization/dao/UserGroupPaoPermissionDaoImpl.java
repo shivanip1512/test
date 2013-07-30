@@ -39,19 +39,15 @@ public class UserGroupPaoPermissionDaoImpl implements PaoPermissionDao<LiteUserG
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
 
+    @Override
     public List<PaoPermission> getPermissions(LiteUserGroup userGroup) {
         return this.getPermissionsByUserGroupIds(Collections.singletonList(userGroup.getUserGroupId()));
     }
 
     @Override
     public List<PaoPermission> getPermissions(List<LiteUserGroup> userGroups) {
-        List<Integer> userGroupIds = Lists.transform(userGroups, new Function<LiteUserGroup, Integer>() {
-            @Override
-            public Integer apply(LiteUserGroup userGroup) {
-                return userGroup.getUserGroupId();
-            }
-        });
-        
+        List<Integer> userGroupIds = Lists.transform(userGroups, LiteBase.ID_FUNCTION);
+
         return this.getPermissionsByUserGroupIds(userGroupIds);
     }
 
@@ -227,6 +223,7 @@ public class UserGroupPaoPermissionDaoImpl implements PaoPermissionDao<LiteUserG
         ChunkingSqlTemplate template = new ChunkingSqlTemplate(yukonJdbcTemplate);
         
         template.query(new SqlFragmentGenerator<Integer>() {
+            @Override
             public SqlFragmentSource generate(List<Integer> subList) {
 
                 SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -277,6 +274,7 @@ public class UserGroupPaoPermissionDaoImpl implements PaoPermissionDao<LiteUserG
      */
     private class GroupPaoPermissionMapper implements ParameterizedRowMapper<GroupPaoPermission> {
 
+        @Override
         public GroupPaoPermission mapRow(ResultSet rs, int rowNum) throws SQLException {
 
             GroupPaoPermission gpp = new GroupPaoPermission();

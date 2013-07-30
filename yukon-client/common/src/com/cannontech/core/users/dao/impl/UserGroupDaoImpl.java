@@ -67,18 +67,6 @@ public class UserGroupDaoImpl implements UserGroupDao {
     }
 
     //Row Mappers
-    public static class LiteUserGroupRowMapper implements YukonRowMapper<LiteUserGroup> {
-        @Override
-        public LiteUserGroup mapRow(YukonResultSet rs) throws SQLException {
-            LiteUserGroup userGroup = new LiteUserGroup();
-            
-            userGroup.setUserGroupId(rs.getInt("UserGroupId"));
-            userGroup.setUserGroupName(rs.getString("Name"));
-            userGroup.setUserGroupDescription(rs.getStringSafe("Description"));
-
-            return userGroup;
-        }
-    }
 
     public static class DBUserGroupRowMapper implements YukonRowMapper<com.cannontech.database.db.user.UserGroup> {
         @Override
