@@ -2,6 +2,7 @@ package com.cannontech.web.scheduledFileExport.validator;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.regex.Pattern;
 
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
@@ -21,6 +22,8 @@ public class ScheduledFileExportValidator extends SimpleValidator<ScheduledFileE
 	
 	@Override
 	protected void doValidation(ScheduledFileExportData target, Errors errors) {
+	    YukonValidationUtils.regexCheck(errors, "daysPrevious", target.getDaysPrevious(), Pattern.compile("^[0-9]+$"), "yukon.web.error.isNotPositiveInt"); 
+	    
 		YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "scheduleName", "yukon.web.modules.amr.billing.schedule.validation.invalidName");
 		YukonValidationUtils.checkExceedsMaxLength(errors, "scheduleName", target.getScheduleName(), 100);
 		

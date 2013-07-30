@@ -13,7 +13,8 @@ import com.google.common.collect.Lists;
  * ExportFileGenerationParameters.
  */
 public class ScheduledFileExportData {
-	private String scheduleName;
+    private String daysPrevious;
+    private String scheduleName;
 	private String scheduleCronString;
 	private ExportFileGenerationParameters parameters;
 	private String exportFileName;
@@ -106,11 +107,19 @@ public class ScheduledFileExportData {
 	}
 	
 	public ScheduledExportType getExportType() {
-		return parameters.getExportType();
-	}
+        return parameters.getExportType();
+    }
 
-	public void setScheduleName(String scheduleName) {
-		this.scheduleName = scheduleName;
+    public String getDaysPrevious() {
+        return daysPrevious;
+    }
+
+    public void setDaysPrevious(String daysPrevious) throws NumberFormatException{
+        this.daysPrevious = daysPrevious;
+    }
+
+    public void setScheduleName(String scheduleName) {
+        this.scheduleName = scheduleName;
 	}
 
 	public void setScheduleCronString(String scheduleCronString) {

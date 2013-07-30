@@ -211,9 +211,9 @@
                         </c:choose>
                     </span>
                 </tags:nameValue2>
-                <tags:nameValue2 nameKey=".daysPrevious">
-                    <input type="text" name="daysPrevious" id="daysPrevious" value="${daysPrevious}" size="3">
-                </tags:nameValue2>
+                <tags:inputNameValue nameKey=".daysPrevious"
+                    path="daysPrevious"
+                    size="3"/>
                 <tags:nameValue2 nameKey=".filter.onlyLatestEvent" excludeColon="true">
                     <input type="checkbox" name="onlyLatestEvent" id="onlyLatestEvent">
                 </tags:nameValue2>

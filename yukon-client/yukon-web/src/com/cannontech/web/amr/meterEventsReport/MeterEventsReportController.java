@@ -230,14 +230,22 @@ public class MeterEventsReportController {
     
     @RequestMapping(method = RequestMethod.POST)
     public String schedule(@ModelAttribute("exportData") ScheduledFileExportData exportData, BindingResult bindingResult,
-    		String attrNames, ModelMap model, FlashScope flashScope, HttpServletRequest request, Integer daysPrevious,
+    		String attrNames, ModelMap model, FlashScope flashScope, HttpServletRequest request, String daysPrevious,
     		@RequestParam(defaultValue="false") Boolean onlyLatestEvent, 
     		@RequestParam(defaultValue="false") Boolean onlyAbnormalEvents, 
     		@RequestParam(defaultValue="false") Boolean includeDisabledDevices, 
     		YukonUserContext userContext, Integer jobId) 
     		throws ServletRequestBindingException, DeviceCollectionCreationException, ParseException {
     	
-    	if(daysPrevious == null) daysPrevious = 7;
+        Integer daysPreviousInteger = null;
+        if (daysPrevious != null) {
+            try {
+                daysPreviousInteger = Integer.parseInt(daysPrevious);
+            } catch (NumberFormatException e) {
+                daysPreviousInteger = null;
+            }
+        }
+        
     	DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
     	String scheduleCronString = cronExpressionTagService.build("scheduleCronString", request, userContext);
     	
@@ -252,7 +260,6 @@ public class MeterEventsReportController {
     	exportData.setScheduleCronString(scheduleCronString);
     	
     	scheduledFileExportValidator.validate(exportData, bindingResult);
-    	YukonValidationUtils.checkRange(bindingResult, "daysPrevious", daysPrevious, 0, Integer.MAX_VALUE, true);
     	if(bindingResult.hasErrors()) {
     		//send it back
     		List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult, true);
@@ -267,7 +274,7 @@ public class MeterEventsReportController {
             model.addAttribute("exportData", exportData);
             model.addAttribute("jobId", jobId);
             model.addAttribute("cronExpressionTagState", cronExpressionTagService.parse(exportData.getScheduleCronString(), userContext));
-            model.addAttribute("daysPrevious", daysPrevious);
+            model.addAttribute("daysPrevious", daysPreviousInteger);
             model.addAttribute("scheduleError", true);
             model.addAttribute("fileExtensionChoices", exportHelper.setupFileExtChoices(exportData));
             model.addAttribute("exportPathChoices", exportHelper.setupExportPathChoices(exportData));
@@ -276,7 +283,7 @@ public class MeterEventsReportController {
     		return reportJspPath;
     	}
     	
-    	MeterEventsExportGenerationParameters parameters = new MeterEventsExportGenerationParameters(daysPrevious, 
+    	MeterEventsExportGenerationParameters parameters = new MeterEventsExportGenerationParameters(daysPreviousInteger, 
     			onlyLatestEvent, onlyAbnormalEvents, includeDisabledDevices, deviceCollection, events);
     	exportData.setParameters(parameters);
     	
