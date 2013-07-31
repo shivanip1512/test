@@ -1,18 +1,16 @@
 package com.cannontech.dr.estimatedload;
 
-import java.math.BigDecimal;
-
 import com.cannontech.dr.estimatedload.enumeration.FormulaInputType;
 
 public final class FormulaInput {
 
     private final FormulaInputType inputType;
-    private final BigDecimal min;
-    private final BigDecimal max;
-    private final int pointId;
+    private final double min;
+    private final double max;
+    private final Integer pointId;
     
 
-    public FormulaInput(FormulaInputType inputType, BigDecimal min, BigDecimal max, int pointId) {
+    public FormulaInput(FormulaInputType inputType, double min, double max, Integer pointId) {
         this.inputType = inputType;
         this.min = min;
         this.max = max;
@@ -23,15 +21,15 @@ public final class FormulaInput {
         return inputType;
     }
 
-    public BigDecimal getMin() {
+    public double getMin() {
         return min;
     }
 
-    public BigDecimal getMax() {
+    public double getMax() {
         return max;
     }
 
-    public int getPointId() {
+    public Integer getPointId() {
         return pointId;
     }
 }

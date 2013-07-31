@@ -311,5 +311,11 @@
       <sequence name="UserPreference">
         <table name="UserPreference" identitycolumn="PreferenceId" initsequence="true" />
       </sequence>
+      <sequence name="Formula">
+        <table name="Formula" identitycolumn="FormulaId" initsequence="true" />
+      </sequence>
+      <sequence name="FormulaLookupEntry">
+        <table name="FormulaLookupEntry" identitycolumn="FormulaLookupEntryId" initsequence="true" />
+      </sequence>
   </sequencetable>
 </sequencetables>

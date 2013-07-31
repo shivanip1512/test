@@ -83,4 +83,6 @@
     <bean id="drLoadGroupShowAction" class="com.cannontech.dr.loadgroup.model.LoadGroupShowActionField"/>
 
     <bean class="com.cannontech.dr.assetavailability.service.impl.AssetAvailabilityServiceImpl"/>
+    <bean class="com.cannontech.dr.estimatedload.dao.impl.FormulaDaoImpl"/>
+    <bean class="com.cannontech.dr.estimatedload.service.impl.FormulaServiceImpl"/>
 </beans>

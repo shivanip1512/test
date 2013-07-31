@@ -8,10 +8,10 @@ public final class FormulaLookupTable {
     private final int formulaId;
     private final String name;
     private final FormulaInput input;
-    private final ImmutableMap<String, String> entries;
+    private final ImmutableMap<Double, Double> entries;
 
     public FormulaLookupTable(Integer lookupTableId, int formulaId, String name,
-            FormulaInput input, ImmutableMap<String, String> entries) {
+            FormulaInput input, ImmutableMap<Double, Double> entries) {
         this.lookupTableId = lookupTableId;
         this.formulaId = formulaId;
         this.name = name;
@@ -43,7 +43,7 @@ public final class FormulaLookupTable {
         return input;
     }
 
-    public ImmutableMap<String, String> getEntries() {
+    public ImmutableMap<Double, Double> getEntries() {
         return entries;
     }
 
@@ -53,7 +53,7 @@ public final class FormulaLookupTable {
         private final String name;
         private final FormulaInput input;
 
-        private ImmutableMap<String, String> entries;
+        private ImmutableMap<Double, Double> entries;
 
         public Builder(Integer lookupTableId, int formulaId, String name, FormulaInput input) {
             this.lookupTableId = lookupTableId;
@@ -62,7 +62,7 @@ public final class FormulaLookupTable {
             this.input = input;
         }
 
-        public void setEntries(ImmutableMap<String, String> entries) {
+        public void setEntries(ImmutableMap<Double, Double> entries) {
             this.entries = entries;
         }
 
