@@ -12,6 +12,7 @@
 	<cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css" />
 	<cti:includeScript link="/JavaScript/calendarControl.js" />
 	<cti:includeScript link="/JavaScript/calendarTagFuncs.js" />
+    <cti:includeScript link="/JavaScript/hideReveal.js"/>
 	<dr:favoriteIconSetup />
 
 	<c:set var="baseUrl" value="/dr/scenario/list" />
