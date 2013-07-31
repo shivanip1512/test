@@ -100,7 +100,7 @@ bool LMGroupDigiSEP::sendSEPCycleControl(long controlMinutes, long cyclePercent,
                                                                                  randomizeStart,
                                                                                  randomizeStop));
 
-    gActiveMQConnection.enqueueMessage(ActiveMQConnectionManager::Queue_SmartEnergyProfileControl, msg);
+    ActiveMQConnectionManager::enqueueMessage(ActiveMQConnectionManager::Queue_SmartEnergyProfileControl, msg);
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
@@ -169,7 +169,7 @@ bool LMGroupDigiSEP::sendSEPTempOffsetControl(long controlMinutes, long heatOffs
                                                                                       randomizeStart,
                                                                                       randomizeStop));
 
-    gActiveMQConnection.enqueueMessage(ActiveMQConnectionManager::Queue_SmartEnergyProfileControl, msg);
+    ActiveMQConnectionManager::enqueueMessage(ActiveMQConnectionManager::Queue_SmartEnergyProfileControl, msg);
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
@@ -198,7 +198,7 @@ bool LMGroupDigiSEP::sendStopControl(bool stopImmediately)
     using namespace Cti::Messaging::LoadManagement;
 
     std::auto_ptr<StreamableMessage> msg(new LMSepRestoreMessage(getPAOId(), 0, stopImmediately ? 0 : 1));
-    gActiveMQConnection.enqueueMessage(ActiveMQConnectionManager::Queue_SmartEnergyProfileRestore, msg);
+    ActiveMQConnectionManager::enqueueMessage(ActiveMQConnectionManager::Queue_SmartEnergyProfileRestore, msg);
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
@@ -220,7 +220,7 @@ bool LMGroupDigiSEP::sendShedControl(long controlMinutes)
     using namespace Cti::Messaging::LoadManagement;
 
     std::auto_ptr<StreamableMessage> msg(LMSepControlMessage::createSimpleShedMessage(getPAOId(), 0, controlMinutes));
-    gActiveMQConnection.enqueueMessage(ActiveMQConnectionManager::Queue_SmartEnergyProfileControl, msg);
+    ActiveMQConnectionManager::enqueueMessage(ActiveMQConnectionManager::Queue_SmartEnergyProfileControl, msg);
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {

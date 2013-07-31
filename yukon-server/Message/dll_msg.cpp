@@ -37,7 +37,9 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
 namespace Cti {
 namespace Messaging {
 
-IM_EX_MSG ActiveMQConnectionManager gActiveMQConnection(gConfigParms.getValueAsString("JMS_CLIENT_CONNECTION", "tcp://127.0.0.1:61616"));
+IM_EX_MSG std::auto_ptr<ActiveMQConnectionManager> gActiveMQConnection(
+   new ActiveMQConnectionManager(
+      gConfigParms.getValueAsString("JMS_CLIENT_CONNECTION", "tcp://127.0.0.1:61616")));
 
 }
 }

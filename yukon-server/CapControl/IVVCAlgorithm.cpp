@@ -575,7 +575,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 // Update the point response data with whatever data we got back from the post scan
                 //  --- only if we're not using static deltas
 
-                if ( ! _IVVC_STATIC_DELTA_VOLTAGES )    
+                if ( ! _IVVC_STATIC_DELTA_VOLTAGES )
                 {
                     subbus->updatePointResponseDeltas( state->getReportedControllers() );
                 }
@@ -2258,7 +2258,7 @@ double IVVCAlgorithm::feederPFCorrectionCalculator( const double actualFeederPF,
                                                     const IVVCStrategy * strategy, const bool isPeakTime ) const
 {
     return std::min( strategy->getPowerFactorCorrectionMaxCost(),
-                     std::max( 0.0, 
+                     std::max( 0.0,
                                strategy->getPowerFactorCorrectionCost()
                                 * ( calculatePowerFactorCost( actualFeederPF, strategy, isPeakTime ) / 100.0
                                         - strategy->getPowerFactorCorrectionBandwidth() ) ) );
@@ -2476,7 +2476,7 @@ void IVVCAlgorithm::sendIVVCAnalysisMessage( Cti::Messaging::CapControl::IVVCAna
     using namespace Cti::Messaging;
 
     std::auto_ptr<StreamableMessage> msg( message );
-    gActiveMQConnection.enqueueMessage( ActiveMQConnectionManager::Queue_IvvcAnalysisMessage, msg );
+    ActiveMQConnectionManager::enqueueMessage( ActiveMQConnectionManager::Queue_IvvcAnalysisMessage, msg );
 }
 
 void IVVCAlgorithm::updateCommsState( const long busCommsPointId, const bool isCommsLost ) const
@@ -2492,7 +2492,7 @@ void IVVCAlgorithm::updateCommsState( const long busCommsPointId, const bool isC
 
 
 void IVVCAlgorithm::calculateMultiTapOperation( PointValueMap & voltages,
-                                                CtiCCSubstationBusPtr subbus,                                   
+                                                CtiCCSubstationBusPtr subbus,
                                                 IVVCStrategy * strategy,
                                                 IVVCState::TapOperationZoneMap & solution )
 {
@@ -2786,7 +2786,7 @@ void IVVCAlgorithm::calculateMultiTapOperationHelper( const long zoneID,
 /*
     This guy will run a validation check on the received point data request.
         We are looking for non-stale data and that all of the required BusPower points are present and accounted for.
-                                                                                                                    
+
     Now the validity is on a per zone per phase basis...
 */
 bool IVVCAlgorithm::hasValidData( PointDataRequestPtr& request, CtiTime timeNow, CtiCCSubstationBusPtr subbus, IVVCStrategy* strategy )

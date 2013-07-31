@@ -18,6 +18,8 @@ using boost::scoped_ptr;
 namespace Cti {
 namespace Messaging {
 
+extern IM_EX_MSG std::auto_ptr<ActiveMQConnectionManager> gActiveMQConnection;
+
 ActiveMQConnectionManager::ActiveMQConnectionManager(const string &broker_uri) :
     _broker_uri(broker_uri),
     _initialized(false),
@@ -70,7 +72,7 @@ void ActiveMQConnectionManager::run()
 {
     while( !isSet(SHUTDOWN) )
     {
-        getIncomingMessages();
+        getOutgoingMessages();
 
         sendPendingMessages();
 
@@ -79,19 +81,19 @@ void ActiveMQConnectionManager::run()
 }
 
 
-void Cti::Messaging::ActiveMQConnectionManager::getIncomingMessages()
+void Cti::Messaging::ActiveMQConnectionManager::getOutgoingMessages()
 {
-    CtiLockGuard<CtiCriticalSection> lock(_incoming_message_mux);
+    CtiLockGuard<CtiCriticalSection> lock(_outgoing_message_mux);
 
-    while( !_incoming_messages.empty() )
+    while( !_outgoing_messages.empty() )
     {
         //  guarantee that we will not have null pointers in _pending_messages
-        if( _incoming_messages.front() )
+        if( _outgoing_messages.front() )
         {
-            _pending_messages.push(_incoming_messages.front());
+            _pending_messages.push(_outgoing_messages.front());
         }
 
-        _incoming_messages.pop();
+        _outgoing_messages.pop();
     }
 }
 
@@ -212,6 +214,12 @@ catch( std::runtime_error &e )
 
 void ActiveMQConnectionManager::enqueueMessage(const Queues queueId, auto_ptr<StreamableMessage> message)
 {
+    gActiveMQConnection->enqueueOutgoingMessage(queueId, message);
+}
+
+
+void ActiveMQConnectionManager::enqueueOutgoingMessage(const Queues queueId, auto_ptr<StreamableMessage> message)
+{
     std::string queueName = getQueueName(queueId);
 
     //  ensure the message is not null
@@ -223,9 +231,9 @@ void ActiveMQConnectionManager::enqueueMessage(const Queues queueId, auto_ptr<St
         e->message.reset(message.release());
 
         {
-            CtiLockGuard<CtiCriticalSection> lock(_incoming_message_mux);
+            CtiLockGuard<CtiCriticalSection> lock(_outgoing_message_mux);
 
-            _incoming_messages.push(e);
+            _outgoing_messages.push(e);
         }
 
         if( !isRunning() )

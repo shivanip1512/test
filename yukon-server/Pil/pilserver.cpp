@@ -527,7 +527,7 @@ void CtiPILServer::copyReturnMessageToResponseMonitorQueue(const CtiReturnMsg &r
 
     std::auto_ptr<StreamableMessage> msg(new PorterResponseMessage(returnMsg, connectionHandle));
 
-    gActiveMQConnection.enqueueMessage(ActiveMQConnectionManager::Queue_PorterResponses, msg);
+    ActiveMQConnectionManager::enqueueMessage(ActiveMQConnectionManager::Queue_PorterResponses, msg);
 }
 
 

@@ -33,7 +33,7 @@ private:
 
     void run();
 
-    void getIncomingMessages();
+    void getOutgoingMessages();
 
     void sendPendingMessages();
 
@@ -56,8 +56,8 @@ private:
 
     const std::string _broker_uri;
 
-    std::queue<envelope *> _incoming_messages;
-    CtiCriticalSection     _incoming_message_mux;
+    std::queue<envelope *> _outgoing_messages;
+    CtiCriticalSection     _outgoing_message_mux;
 
     std::queue<envelope *> _pending_messages;
 
@@ -74,13 +74,17 @@ private:
         DefaultTimeToLive = 3600
     };
 
+protected:
+
+    virtual void enqueueOutgoingMessage(const Queues queueId, std::auto_ptr<StreamableMessage> message);
+
 public:
 
     ActiveMQConnectionManager(const std::string &broker_uri);
 
     virtual ~ActiveMQConnectionManager();
 
-    void enqueueMessage(const Queues queueId, std::auto_ptr<StreamableMessage> message);
+    static void enqueueMessage(const Queues queueId, std::auto_ptr<StreamableMessage> message);
 
     enum Queues
     {
@@ -94,7 +98,6 @@ public:
     };
 };
 
-extern IM_EX_MSG ActiveMQConnectionManager gActiveMQConnection;
 
 }
 }
