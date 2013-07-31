@@ -2,6 +2,7 @@
 
 #include "slctdev.h"
 #include "devicetypes.h"
+#include "dev_lcu.h"
 
 #include "test_reader.h"
 
@@ -392,6 +393,41 @@ BOOST_AUTO_TEST_CASE(test_DeviceFactory)
             dev.get()
                 ? typeid(*dev).name()
                 : "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}");
+    }
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(
+       expected.begin(), expected.end(),
+       results.begin(), results.end());
+}
+
+
+BOOST_AUTO_TEST_CASE(test_lcuDeviceTypes)
+{
+    const std::vector<int> lcuTypes = boost::assign::list_of
+        (TYPE_LCU415)
+        (TYPE_LCU415ER)
+        (TYPE_LCU415LG)
+        (TYPE_LCUT3026)
+            ;
+
+    std::vector<CtiDeviceLCU::CtiLCUType_t> expected = boost::assign::list_of
+        (CtiDeviceLCU::LCU_STANDARD)
+        (CtiDeviceLCU::LCU_EASTRIVER)
+        (CtiDeviceLCU::LCU_LANDG)
+        (CtiDeviceLCU::LCU_T3026)
+            ;
+
+    std::vector<CtiDeviceLCU::CtiLCUType_t> results;
+
+    for each( const int type in lcuTypes )
+    {
+        const std::auto_ptr<CtiDeviceBase> dev(createDeviceType(type));
+
+        const CtiDeviceLCU *lcuDev = dynamic_cast<const CtiDeviceLCU *>(dev.get());
+
+        BOOST_REQUIRE(lcuDev);
+
+        results.push_back(lcuDev->getLCUType());
     }
 
     BOOST_CHECK_EQUAL_COLLECTIONS(
