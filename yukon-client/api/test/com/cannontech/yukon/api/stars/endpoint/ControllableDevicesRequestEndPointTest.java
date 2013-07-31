@@ -1,6 +1,6 @@
 package com.cannontech.yukon.api.stars.endpoint;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.List;
 
@@ -11,6 +11,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.w3c.dom.Node;
 
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
@@ -26,8 +27,7 @@ import com.cannontech.stars.util.StarsClientRequestException;
 import com.cannontech.stars.util.StarsInvalidArgumentException;
 import com.cannontech.stars.ws.LmDeviceDto;
 import com.cannontech.stars.ws.StarsControllableDeviceHelper;
-import com.cannontech.yukon.api.loadManagement.mocks.MockAuthDao;
-import com.cannontech.yukon.api.stars.endpoint.ControllableDevicesRequestEndPoint;
+import com.cannontech.yukon.api.loadManagement.mocks.MockRolePropertyDao;
 import com.cannontech.yukon.api.stars.endpoint.ControllableDevicesRequestEndPoint.ErrorCodeMapper;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
 import com.cannontech.yukon.api.utils.TestUtils;
@@ -82,6 +82,7 @@ public class ControllableDevicesRequestEndPointTest {
 
         impl = new ControllableDevicesRequestEndPoint();
         impl.setStarsControllableDeviceHandler(mockHelper);
+        ReflectionTestUtils.setField(impl, "rolePropertyDao", new MockRolePropertyDao());
     }
 
     private class MockControllableDeviceHelper implements
@@ -226,8 +227,8 @@ public class ControllableDevicesRequestEndPointTest {
         TestUtils.validateAgainstSchema(reqElement, reqSchemaResource);
         
         //invoke test with unauthorized user
-        LiteYukonUser user = MockAuthDao.getUnAuthorizedUser();
-        Element respElement = impl.invokeAddDevice(reqElement, user);
+        LiteYukonUser user = MockRolePropertyDao.getUnAuthorizedUser();
+        impl.invokeAddDevice(reqElement, user);
     }
     
     @Test
@@ -320,8 +321,8 @@ public class ControllableDevicesRequestEndPointTest {
         TestUtils.validateAgainstSchema(reqElement, reqSchemaResource);
         
         //invoke test with unauthorized user
-        LiteYukonUser user = MockAuthDao.getUnAuthorizedUser();
-        Element respElement = impl.invokeUpdateDevice(reqElement, user);
+        LiteYukonUser user = MockRolePropertyDao.getUnAuthorizedUser();
+        impl.invokeUpdateDevice(reqElement, user);
     }
 
     @Test
@@ -414,8 +415,8 @@ public class ControllableDevicesRequestEndPointTest {
         TestUtils.validateAgainstSchema(reqElement, reqSchemaResource);
         
         //invoke test with unauthorized user
-        LiteYukonUser user = MockAuthDao.getUnAuthorizedUser();
-        Element respElement = impl.invokeRemoveDevice(reqElement, user);
+        LiteYukonUser user = MockRolePropertyDao.getUnAuthorizedUser();
+        impl.invokeRemoveDevice(reqElement, user);
     }
 
     private static class ControllableDeviceResultMapper implements
