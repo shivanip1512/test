@@ -93,7 +93,10 @@
 #include "precompiled.h"
 #include "row_reader.h"
 
+#include "std_helper.h"
+
 #include <boost/assign/list_of.hpp>
+#include <boost/function.hpp>
 
 using namespace Cti::Devices;
 using std::string;
@@ -129,227 +132,173 @@ DLLEXPORT CtiDeviceBase* DeviceFactory(Cti::RowReader &rdr)
     return NewDevice;
 }
 
-DLLEXPORT CtiDeviceBase *createDeviceType(int type)
+template <class Dev>
+CtiDeviceBase *makeDevice()
 {
-    CtiDeviceBase *NewDevice = NULL;
-
-    switch(type)
-    {
-        case TYPE_WELCORTU:     NewDevice = CTIDBG_new CtiDeviceWelco;      break;
-
-        case TYPE_ILEXRTU:      NewDevice = CTIDBG_new CtiDeviceILEX;       break;
-
-        case TYPE_DARTRTU:
-        case TYPECBCDNP:
-        case TYPE_DNPRTU:       NewDevice = CTIDBG_new DnpDevice;         break;
-
-        case TYPE_SERIESVRTU:   NewDevice = CTIDBG_new CtiDeviceSeriesV;    break;
-
-        case TYPE_SERIESVLMIRTU: NewDevice = CTIDBG_new CtiDeviceLMI;       break;
-
-        case TYPE_ION7330:
-        case TYPE_ION7700:
-        case TYPE_ION8300:      NewDevice = CTIDBG_new CtiDeviceION;        break;
-
-        case TYPE_TCU5000:
-        case TYPE_TCU5500:      NewDevice = CTIDBG_new CtiDeviceTCU;        break;
-
-        case TYPE_CCU711:       NewDevice = CTIDBG_new CtiDeviceCCU;        break;
-
-        case TYPE_CCU721:       NewDevice = CTIDBG_new Ccu721Device;      break;
-
-        case TYPE_CCU710:
-        case TYPE_CCU700:       NewDevice = CTIDBG_new CtiDeviceCCU710;     break;
-
-        case TYPE_DAVIS:        NewDevice = CTIDBG_new CtiDeviceDavis;      break;
-
-        case TYPE_SES92RTU:     NewDevice = CTIDBG_new CtiDeviceRemote;     break;
-
-        case TYPEDCT501:        NewDevice = CTIDBG_new Dct501Device;     break;
-
-        case TYPELMT2:          NewDevice = CTIDBG_new Lmt2Device;   break;
-
-        // S00095C
-        case TYPEMCT210:
-        case TYPEMCT213:        NewDevice = CTIDBG_new Mct210Device;     break;
-
-        // S0074E (sspec indicates a 213 too, but I know nothing)
-        case TYPEMCT212:
-        case TYPEMCT224:
-        case TYPEMCT226:        NewDevice = CTIDBG_new Mct22xDevice;     break;
-
-        // S00121B (240, 242, 248), S00111B (250)
-        case TYPEMCT240:
-        case TYPEMCT242:
-        case TYPEMCT248:
-        case TYPEMCT250:        NewDevice = CTIDBG_new Mct24xDevice;     break;
-
-        case TYPEMCT310:
-        case TYPEMCT310ID:
-        case TYPEMCT310IDL:
-        case TYPEMCT310IL:      NewDevice = CTIDBG_new Mct310Device;     break;
-
-        case TYPEMCT318:
-        case TYPEMCT318L:
-        case TYPEMCT360:
-        case TYPEMCT370:        NewDevice = CTIDBG_new Mct31xDevice;     break;
-
-        case TYPEMCT410CL:
-        case TYPEMCT410FL:
-        case TYPEMCT410GL:
-        case TYPEMCT410IL:      NewDevice = CTIDBG_new Mct410Device;     break;
-
-        case TYPEMCT420CL:
-        case TYPEMCT420CD:
-        case TYPEMCT420FL:
-        case TYPEMCT420FD:      NewDevice = CTIDBG_new Mct420Device;     break;
-
-        case TYPEMCT430A:
-        case TYPEMCT430A3:
-        case TYPEMCT430S4:
-        case TYPEMCT430SL:
-        case TYPEMCT470:        NewDevice = CTIDBG_new Mct470Device;     break;
-
-        case TYPEMCT440_2131B:  NewDevice = CTIDBG_new Mct440_2131BDevice; break;
-        case TYPEMCT440_2132B:  NewDevice = CTIDBG_new Mct440_2132BDevice; break;
-        case TYPEMCT440_2133B:  NewDevice = CTIDBG_new Mct440_2133BDevice; break;
-
-        case TYPE_RFN410FL:
-        case TYPE_RFN410FX:
-        case TYPE_RFN410FD:
-            //
-        case TYPE_RFN420FL:
-        case TYPE_RFN420FX:
-        case TYPE_RFN420FD:
-            //
-        case TYPE_RFN420FRX:
-        case TYPE_RFN420FRD:
-            //
-        case TYPE_RFN410CL:
-        case TYPE_RFN420CL:
-        case TYPE_RFN420CD:
-            //
-        case TYPE_RFN430A3D:
-        case TYPE_RFN430A3T:
-        case TYPE_RFN430A3K:
-        case TYPE_RFN430A3R:
-            //
-        case TYPE_RFN430KV:     NewDevice = new RfnDevice;  break;
-
-        case TYPE_MODBUS:       NewDevice = CTIDBG_new ModbusDevice;      break;
-
-        case TYPE_REPEATER800:  NewDevice = CTIDBG_new Repeater800Device; break;
-
-        case TYPE_REPEATER850:  NewDevice = CTIDBG_new Repeater850Device; break;
-
-        case TYPE_REPEATER900:  NewDevice = CTIDBG_new Repeater900Device; break;
-
-        case TYPE_FULCRUM:      NewDevice = CTIDBG_new CtiDeviceFulcrum;    break;
-
-        case TYPE_QUANTUM:      NewDevice = CTIDBG_new CtiDeviceQuantum;    break;
-
-        case TYPE_VECTRON:      NewDevice = CTIDBG_new CtiDeviceVectron;    break;
-
-        case TYPE_ALPHA_PPLUS:  NewDevice = CTIDBG_new CtiDeviceAlphaPPlus; break;
-
-        case TYPE_TDMARKV:      NewDevice = CTIDBG_new CtiDeviceMarkV;      break;
-
-        case TYPE_ALPHA_A1:     NewDevice = CTIDBG_new CtiDeviceAlphaA1;    break;
-
-        case TYPE_IPC_430S4E:
-        case TYPE_LGS4:         NewDevice = CTIDBG_new CtiDeviceLandisGyrS4; break;
-
-        case TYPE_DR87:         NewDevice = CTIDBG_new CtiDeviceDR87;       break;
-
-        case TYPE_KV2:
-        case TYPE_ALPHA_A3:     NewDevice = CTIDBG_new CtiDeviceKV2;        break;
-
-        case TYPE_IPC_430SL:
-        case TYPE_SENTINEL:     NewDevice = CTIDBG_new CtiDeviceSentinel;   break;
-
-        case TYPE_IPC_410FL:    NewDevice = CTIDBG_new Ipc410ALDevice;      break;
-        case TYPE_IPC_420FD:    NewDevice = CTIDBG_new Ipc420ADDevice;      break;
-        case TYPE_FOCUS:        NewDevice = CTIDBG_new CtiDeviceFocus;      break;
-
-        case TYPE_SIXNET:       NewDevice = CTIDBG_new CtiDeviceSixnet;     break;
-
-        case TYPE_TAPTERM:              NewDevice = CTIDBG_new CtiDeviceTapPagingTerminal;  break;
-
-        case TYPE_SNPP:                 NewDevice = CTIDBG_new CtiDeviceSnppPagingTerminal; break;
-
-        case TYPE_RDS:                  NewDevice = CTIDBG_new RDSTransmitter;              break;
-
-        case TYPE_PAGING_RECEIVER:      NewDevice = CTIDBG_new CtiDevicePagingReceiver;     break;
-
-        case TYPE_TNPP:                 NewDevice = CTIDBG_new CtiDeviceTnppPagingTerminal; break;
-
-        case TYPE_WCTP:                 NewDevice = CTIDBG_new CtiDeviceWctpTerminal;       break;
-
-        case TYPE_LMGROUP_POINT:        NewDevice = CTIDBG_new CtiDeviceGroupPoint;         break;
-
-        case TYPE_LMGROUP_EMETCON:      NewDevice = CTIDBG_new CtiDeviceGroupEmetcon;       break;
-
-        case TYPE_LMGROUP_RIPPLE:       NewDevice = CTIDBG_new CtiDeviceGroupRipple;        break;
-
-        case TYPE_LMGROUP_VERSACOM:     NewDevice = CTIDBG_new CtiDeviceGroupVersacom;      break;
-
-        case TYPE_LMGROUP_EXPRESSCOM:   NewDevice = CTIDBG_new CtiDeviceGroupExpresscom;    break;
-
-        case TYPE_LMGROUP_RFN_EXPRESSCOM:   NewDevice = CTIDBG_new CtiDeviceGroupRfnExpresscom;    break;
-
-        case TYPE_LMGROUP_MCT:          NewDevice = CTIDBG_new CtiDeviceGroupMCT;           break;
-
-        case TYPE_LMGROUP_GOLAY:        NewDevice = CTIDBG_new CtiDeviceGroupGolay;         break;
-
-        case TYPE_LMGROUP_SADIGITAL:    NewDevice = CTIDBG_new CtiDeviceGroupSADigital;     break;
-
-        case TYPE_LMGROUP_SA105:        NewDevice = CTIDBG_new CtiDeviceGroupSA105;         break;
-
-        case TYPE_LMGROUP_SA205:        NewDevice = CTIDBG_new CtiDeviceGroupSA205;         break;
-
-        case TYPE_LMGROUP_SA305:        NewDevice = CTIDBG_new CtiDeviceGroupSA305;         break;
-
-        case TYPE_MACRO:                NewDevice = CTIDBG_new CtiDeviceMacro;      break;
-
-        case TYPE_SYSTEM:               NewDevice = CTIDBG_new CtiDeviceSystem;     break;
-
-        case TYPECBC6510:               NewDevice = CTIDBG_new Cbc6510Device;    break;
-
-        case TYPECBC7020:               NewDevice = CTIDBG_new Cbc7020Device;     break;
-
-        case TYPECBC8020:               NewDevice = CTIDBG_new Cbc8020Device;     break;
-
-        case TYPECBC7010:
-        case TYPEFISHERPCBC:
-        case TYPEVERSACOMCBC:
-        case TYPEEXPRESSCOMCBC:         NewDevice = CTIDBG_new CtiDeviceCBC;        break;
-
-        case TYPE_LCU415:
-        case TYPE_LCU415LG:
-        case TYPE_LCU415ER:
-        case TYPE_LCUT3026:             NewDevice = CTIDBG_new CtiDeviceLCU(type);      break;
-
-        case TYPELCR3102:               NewDevice = CTIDBG_new Lcr3102Device;    break;
-
-        case TYPEMCTBCAST:              NewDevice = CTIDBG_new MctBroadcastDevice;   break;
-
-        case TYPE_RTC:                  NewDevice = CTIDBG_new CtiDeviceRTC;            break;
-        case TYPE_RTM:                  NewDevice = CTIDBG_new CtiDeviceRTM;            break;
-        case TYPE_FMU:                  NewDevice = CTIDBG_new CtiDeviceFMU;            break;
-
-        case TYPE_FCI:                  NewDevice = CTIDBG_new CtiDeviceGridAdvisor;    break;
-        case TYPE_NEUTRAL_MONITOR:      NewDevice = CTIDBG_new CtiDeviceGridAdvisor;    break;
-
-        case TYPE_VIRTUAL_SYSTEM:
-        {
-            //  Nothing in here!  These are created by the porter thread which manages them!
-            break;
-        }
-    }
-
-    return NewDevice;
+    return new Dev;
 }
 
+template <int LcuType>
+CtiDeviceBase *makeLcu()
+{
+    return new CtiDeviceLCU(LcuType);
+}
+
+typedef std::map<int, boost::function<CtiDeviceBase *()>> DeviceLookup;
+
+const DeviceLookup deviceFactory = boost::assign::map_list_of
+    //  RTUs
+    (TYPE_WELCORTU,     makeDevice<CtiDeviceWelco>)
+    (TYPE_ILEXRTU,      makeDevice<CtiDeviceILEX>)
+    (TYPE_DARTRTU,      makeDevice<DnpDevice>)
+    (TYPE_DNPRTU,       makeDevice<DnpDevice>)
+    (TYPE_SERIESVRTU,   makeDevice<CtiDeviceSeriesV>)
+    (TYPE_SERIESVLMIRTU,makeDevice<CtiDeviceLMI>)
+    (TYPE_ION7330,      makeDevice<CtiDeviceION>)
+    (TYPE_ION7700,      makeDevice<CtiDeviceION>)
+    (TYPE_ION8300,      makeDevice<CtiDeviceION>)
+    (TYPE_DAVIS,        makeDevice<CtiDeviceDavis>)
+    (TYPE_SES92RTU,     makeDevice<CtiDeviceRemote>)
+    (TYPE_MODBUS,       makeDevice<ModbusDevice>)
+    (TYPE_RTC,          makeDevice<CtiDeviceRTC>)
+    (TYPE_RTM,          makeDevice<CtiDeviceRTM>)
+    (TYPE_FMU,          makeDevice<CtiDeviceFMU>)
+    (TYPE_PAGING_RECEIVER,  makeDevice<CtiDevicePagingReceiver>)
+    //  Transmitters
+    (TYPE_TCU5000,      makeDevice<CtiDeviceTCU>)
+    (TYPE_TCU5500,      makeDevice<CtiDeviceTCU>)
+    (TYPE_CCU711,       makeDevice<CtiDeviceCCU>)
+    (TYPE_CCU721,       makeDevice<Ccu721Device>)
+    (TYPE_CCU710,       makeDevice<CtiDeviceCCU710>)
+    (TYPE_CCU700,       makeDevice<CtiDeviceCCU710>)
+    (TYPE_REPEATER800,  makeDevice<Repeater800Device>)
+    (TYPE_REPEATER850,  makeDevice<Repeater850Device>)
+    (TYPE_REPEATER900,  makeDevice<Repeater900Device>)
+    (TYPE_TAPTERM,      makeDevice<CtiDeviceTapPagingTerminal>)
+    (TYPE_SNPP,         makeDevice<CtiDeviceSnppPagingTerminal>)
+    (TYPE_RDS,          makeDevice<RDSTransmitter>)
+    (TYPE_TNPP,         makeDevice<CtiDeviceTnppPagingTerminal>)
+    (TYPE_WCTP,         makeDevice<CtiDeviceWctpTerminal>)
+    (TYPE_LCU415,       makeLcu<TYPE_LCU415>)
+    (TYPE_LCU415LG,     makeLcu<TYPE_LCU415LG>)
+    (TYPE_LCU415ER,     makeLcu<TYPE_LCU415ER>)
+    (TYPE_LCUT3026,     makeLcu<TYPE_LCUT3026>)
+    //  PLC meters
+    (TYPEDCT501,        makeDevice<Dct501Device>)
+    (TYPELMT2,          makeDevice<Lmt2Device>)
+    (TYPEMCT210,        makeDevice<Mct210Device>)
+    (TYPEMCT213,        makeDevice<Mct210Device>)
+    (TYPEMCT212,        makeDevice<Mct22xDevice>)
+    (TYPEMCT224,        makeDevice<Mct22xDevice>)
+    (TYPEMCT226,        makeDevice<Mct22xDevice>)
+    (TYPEMCT240,        makeDevice<Mct24xDevice>)
+    (TYPEMCT242,        makeDevice<Mct24xDevice>)
+    (TYPEMCT248,        makeDevice<Mct24xDevice>)
+    (TYPEMCT250,        makeDevice<Mct24xDevice>)
+    (TYPEMCT310,        makeDevice<Mct310Device>)
+    (TYPEMCT310ID,      makeDevice<Mct310Device>)
+    (TYPEMCT310IDL,     makeDevice<Mct310Device>)
+    (TYPEMCT310IL,      makeDevice<Mct310Device>)
+    (TYPEMCT318,        makeDevice<Mct31xDevice>)
+    (TYPEMCT318L,       makeDevice<Mct31xDevice>)
+    (TYPEMCT360,        makeDevice<Mct31xDevice>)
+    (TYPEMCT370,        makeDevice<Mct31xDevice>)
+    (TYPEMCT410CL,      makeDevice<Mct410Device>)
+    (TYPEMCT410FL,      makeDevice<Mct410Device>)
+    (TYPEMCT410GL,      makeDevice<Mct410Device>)
+    (TYPEMCT410IL,      makeDevice<Mct410Device>)
+    (TYPEMCT420CL,      makeDevice<Mct420Device>)
+    (TYPEMCT420CD,      makeDevice<Mct420Device>)
+    (TYPEMCT420FL,      makeDevice<Mct420Device>)
+    (TYPEMCT420FD,      makeDevice<Mct420Device>)
+    (TYPEMCT430A,       makeDevice<Mct470Device>)
+    (TYPEMCT430A3,      makeDevice<Mct470Device>)
+    (TYPEMCT430S4,      makeDevice<Mct470Device>)
+    (TYPEMCT430SL,      makeDevice<Mct470Device>)
+    (TYPEMCT470,        makeDevice<Mct470Device>)
+    (TYPEMCT440_2131B,  makeDevice<Mct440_2131BDevice>)
+    (TYPEMCT440_2132B,  makeDevice<Mct440_2132BDevice>)
+    (TYPEMCT440_2133B,  makeDevice<Mct440_2133BDevice>)
+    //  Other PLC devices
+    (TYPELCR3102,       makeDevice<Lcr3102Device>)
+    (TYPEMCTBCAST,      makeDevice<MctBroadcastDevice>)
+    //  RFN meters
+    (TYPE_RFN410FL,     makeDevice<RfnDevice>)
+    (TYPE_RFN410FX,     makeDevice<RfnDevice>)
+    (TYPE_RFN410FD,     makeDevice<RfnDevice>)
+    (TYPE_RFN420FL,     makeDevice<RfnDevice>)
+    (TYPE_RFN420FX,     makeDevice<RfnDevice>)
+    (TYPE_RFN420FD,     makeDevice<RfnDevice>)
+    (TYPE_RFN420FRX,    makeDevice<RfnDevice>)
+    (TYPE_RFN420FRD,    makeDevice<RfnDevice>)
+    (TYPE_RFN410CL,     makeDevice<RfnDevice>)
+    (TYPE_RFN420CL,     makeDevice<RfnDevice>)
+    (TYPE_RFN420CD,     makeDevice<RfnDevice>)
+    (TYPE_RFN430A3D,    makeDevice<RfnDevice>)
+    (TYPE_RFN430A3T,    makeDevice<RfnDevice>)
+    (TYPE_RFN430A3K,    makeDevice<RfnDevice>)
+    (TYPE_RFN430A3R,    makeDevice<RfnDevice>)
+    (TYPE_RFN430KV,     makeDevice<RfnDevice>)
+    //  Electronic meters
+    (TYPE_FULCRUM,      makeDevice<CtiDeviceFulcrum>)
+    (TYPE_QUANTUM,      makeDevice<CtiDeviceQuantum>)
+    (TYPE_VECTRON,      makeDevice<CtiDeviceVectron>)
+    (TYPE_ALPHA_PPLUS,  makeDevice<CtiDeviceAlphaPPlus>)
+    (TYPE_TDMARKV,      makeDevice<CtiDeviceMarkV>)
+    (TYPE_ALPHA_A1,     makeDevice<CtiDeviceAlphaA1>)
+    (TYPE_IPC_430S4E,   makeDevice<CtiDeviceLandisGyrS4>)
+    (TYPE_LGS4,         makeDevice<CtiDeviceLandisGyrS4>)
+    (TYPE_DR87,         makeDevice<CtiDeviceDR87>)
+    (TYPE_KV2,          makeDevice<CtiDeviceKV2>)
+    (TYPE_ALPHA_A3,     makeDevice<CtiDeviceKV2>)
+    (TYPE_IPC_430SL,    makeDevice<CtiDeviceSentinel>)
+    (TYPE_SENTINEL,     makeDevice<CtiDeviceSentinel>)
+    (TYPE_IPC_410FL,    makeDevice<Ipc410ALDevice>)
+    (TYPE_IPC_420FD,    makeDevice<Ipc420ADDevice>)
+    (TYPE_FOCUS,        makeDevice<CtiDeviceFocus>)
+    (TYPE_SIXNET,       makeDevice<CtiDeviceSixnet>)
+    //  Load Management load groups
+    (TYPE_LMGROUP_POINT,            makeDevice<CtiDeviceGroupPoint>)
+    (TYPE_LMGROUP_EMETCON,          makeDevice<CtiDeviceGroupEmetcon>)
+    (TYPE_LMGROUP_RIPPLE,           makeDevice<CtiDeviceGroupRipple>)
+    (TYPE_LMGROUP_VERSACOM,         makeDevice<CtiDeviceGroupVersacom>)
+    (TYPE_LMGROUP_EXPRESSCOM,       makeDevice<CtiDeviceGroupExpresscom>)
+    (TYPE_LMGROUP_RFN_EXPRESSCOM,   makeDevice<CtiDeviceGroupRfnExpresscom>)
+    (TYPE_LMGROUP_MCT,              makeDevice<CtiDeviceGroupMCT>)
+    (TYPE_LMGROUP_GOLAY,            makeDevice<CtiDeviceGroupGolay>)
+    (TYPE_LMGROUP_SADIGITAL,        makeDevice<CtiDeviceGroupSADigital>)
+    (TYPE_LMGROUP_SA105,            makeDevice<CtiDeviceGroupSA105>)
+    (TYPE_LMGROUP_SA205,            makeDevice<CtiDeviceGroupSA205>)
+    (TYPE_LMGROUP_SA305,            makeDevice<CtiDeviceGroupSA305>)
+    //  Capacitor bank controllers
+    (TYPECBCDNP,        makeDevice<DnpDevice>)
+    (TYPECBC6510,       makeDevice<Cbc6510Device>)
+    (TYPECBC7020,       makeDevice<Cbc7020Device>)
+    (TYPECBC8020,       makeDevice<Cbc8020Device>)
+    (TYPECBC7010,       makeDevice<CtiDeviceCBC>)
+    (TYPEFISHERPCBC,    makeDevice<CtiDeviceCBC>)
+    (TYPEVERSACOMCBC,   makeDevice<CtiDeviceCBC>)
+    (TYPEEXPRESSCOMCBC, makeDevice<CtiDeviceCBC>)
+    //  Smart sensors
+    (TYPE_FCI,          makeDevice<CtiDeviceGridAdvisor>)
+    (TYPE_NEUTRAL_MONITOR,  makeDevice<CtiDeviceGridAdvisor>)
+    //  System devices
+    (TYPE_MACRO,        makeDevice<CtiDeviceMacro>)
+    (TYPE_SYSTEM,       makeDevice<CtiDeviceSystem>)
+    //  (TYPE_VIRTUAL_SYSTEM, ) // These are created by the porter thread which manages them.
+    ;
+
+DLLEXPORT CtiDeviceBase *createDeviceType(int type)
+{
+    boost::optional<DeviceLookup::mapped_type> deviceCreator = Cti::mapFind(deviceFactory, type);
+
+    if( deviceCreator )
+    {
+        return (*deviceCreator)();
+    }
+
+    return NULL;
+}
 
 
 DLLEXPORT CtiRouteBase* RouteFactory(Cti::RowReader &rdr)
