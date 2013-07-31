@@ -139,11 +139,11 @@ public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuil
     @Override
     public byte[] getBroadcastCancelAllTempOutOfServiceCommand(int spid) {
         ByteBuffer outputBuffer = ByteBuffer.allocate(32);
-        outputBuffer.putChar('s');
+        outputBuffer.put((byte)'s');
         outputBuffer.put((byte) 0x80); // Use only SPID level addressing.
         outputBuffer.putShort((short) spid); 
         getTempOutOfServiceInnerBytes(outputBuffer);
-        outputBuffer.putChar('t');
+        outputBuffer.put((byte)'t');
         return outputBuffer.array();
     }
     

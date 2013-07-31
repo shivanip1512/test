@@ -1,5 +1,7 @@
 package com.cannontech.dr.rfn.service;
 
+import java.nio.ByteBuffer;
+
 import junit.framework.Assert;
 
 import org.junit.Before;
@@ -52,5 +54,18 @@ public class RawExpressComCommandBuilderTest {
         spid = LARGEST_VALID_BROADCAST_SPID + 1000;
         Assert.assertFalse(rawExpressComCommandBuilder.isValidBroadcastSpid(spid));
     }
-
+    
+    @Test
+    public void testGetBroadcastCancelAllTempOutOfServiceCommand() {
+        byte[] broadcastCancelAllTempOutOfServiceCommand = rawExpressComCommandBuilder.getBroadcastCancelAllTempOutOfServiceCommand(16);
+        Assert.assertTrue(broadcastCancelAllTempOutOfServiceCommand[0] == (byte)0x73);
+        Assert.assertTrue(broadcastCancelAllTempOutOfServiceCommand[1] == (byte)0x80);
+        Assert.assertTrue(broadcastCancelAllTempOutOfServiceCommand[2] == (byte)0x00);
+        Assert.assertTrue(broadcastCancelAllTempOutOfServiceCommand[3] == (byte)0x10);
+        Assert.assertTrue(broadcastCancelAllTempOutOfServiceCommand[4] == (byte)0x03);
+        Assert.assertTrue(broadcastCancelAllTempOutOfServiceCommand[5] == (byte)0x00);
+        Assert.assertTrue(broadcastCancelAllTempOutOfServiceCommand[6] == (byte)0x16);
+        Assert.assertTrue(broadcastCancelAllTempOutOfServiceCommand[7] == (byte)0x00);
+        Assert.assertTrue(broadcastCancelAllTempOutOfServiceCommand[8] == (byte)0x74);
+    }
 }
