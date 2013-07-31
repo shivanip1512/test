@@ -1,46 +1,30 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:msg var="pageTitle" key="yukon.common.device.groupMeterRead.results.pageTitle"/>
-<cti:msg var="groupMeterReadHomePageTitle" key="yukon.common.device.groupMeterRead.home.pageTitle"/>
-<cti:msg var="recentResultsTitle" key="yukon.common.device.groupMeterRead.resultDetail.recentResultsTitle" />
-<cti:msg var="attributesHeader" key="yukon.common.device.groupMeterRead.results.tableHeader.attributes"/>
-<cti:msg var="devicesHeader" key="yukon.common.device.groupMeterRead.results.tableHeader.devices"/>
-<cti:msg var="successCountHeader" key="yukon.common.device.groupMeterRead.results.tableHeader.successCount"/>
-<cti:msg var="failureCountHeader" key="yukon.common.device.groupMeterRead.results.tableHeader.failureCount"/>
-<cti:msg var="unsupportedCountHeader" key="yukon.common.device.groupMeterRead.results.tableHeader.unsupportedCount"/>
-<cti:msg var="detailHeader" key="yukon.common.device.groupMeterRead.results.tableHeader.detail"/>
-<cti:msg var="statusHeader" key="yukon.common.device.groupMeterRead.results.tableHeader.status"/>
+<cti:msg2 var="recentResultsTitle" key="yukon.common.device.groupMeterRead.resultDetail.recentResultsTitle" />
+<cti:standardPage page="groupMeterRead.results" module="tools">
 
-<cti:standardPage title="${pageTitle}" module="amr">
-
-    <cti:standardMenu menuSelection="devicegroups|groupMeterRead"/>
-    
-       	<cti:breadCrumbs>
-    	    <cti:crumbLink url="/dashboard" title="Operations Home" />
-   	        <cti:crumbLink url="/group/commander/groupProcessing" title="${groupMeterReadHomePageTitle}" />
-            <cti:crumbLink title="${pageTitle}"/>
-    	</cti:breadCrumbs>
-
-        <h2>${pageTitle}</h2>
-        <br>
-        
-        <tags:boxContainer title="${recentResultsTitle}" id="groupMeterReadResultsContainer" hideEnabled="false">
-        
+    <tags:boxContainer title="${recentResultsTitle}" id="groupMeterReadResultsContainer" hideEnabled="false">
+    <c:if test="${empty resultWrappers}">
+        <p><i:inline key="yukon.common.search.noResultsFound"/></p>
+    </c:if>
+    <c:if test="${not empty resultWrappers}">
         <table class="compactResultsTable">
+            <cti:msgScope paths=".tableHeader">
             <tr>
-                <th>${attributesHeader}</th>
-                <th>${devicesHeader}</th>
-                <th style="text-align:right;">${successCountHeader}</th>
-                <th style="text-align:right;">${failureCountHeader}</th>
-                <th style="text-align:right;">${unsupportedCountHeader}</th>
+                <th><i:inline key=".attributes"/></th>
+                <th><i:inline key=".devices"/></th>
+                <th style="text-align:right;"><i:inline key=".successCount"/></th>
+                <th style="text-align:right;"><i:inline key=".failureCount"/></th>
+                <th style="text-align:right;"><i:inline key=".unsupportedCount"/></th>
                 <th></th>
-                <th>${detailHeader}</th>
-                <th>${statusHeader}</th>
+                <th><i:inline key=".detail"/></th>
+                <th><i:inline key=".status"/></th>
             </tr>
-            
+            </cti:msgScope>
             <c:forEach var="resultWrapper" items="${resultWrappers}">
             
             	<c:set var="resultKey" value="${resultWrapper.key.result.key}"/>
@@ -67,7 +51,8 @@
                 </tr>
             </c:forEach>
         </table>
-        
+    </c:if>
+
     </tags:boxContainer>
-    
+
 </cti:standardPage>

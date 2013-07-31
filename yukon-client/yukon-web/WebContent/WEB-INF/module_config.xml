@@ -195,7 +195,13 @@
       </page>
       <page name="deviceGroups" type="BASIC" />
       <page name="deviceGroupsCommander" type="BASIC"/>
-      <page name="groupMeterReadHome" type="BASIC"/>
+      <page name="groupMeterReadHome" type="BASIC">
+        <link>/group/groupMeterRead/homeGroup</link>
+        <pages>
+            <page name="groupMeterRead.results" type="BASIC"/>
+            <page name="groupCommand.results" type="BASIC"/>
+        </pages>
+      </page>
       <page name="deviceGroupUpload" type="BASIC"/>
       <page name="configs" type="BASIC">
         <link>/deviceConfiguration/home</link>

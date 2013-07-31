@@ -1,37 +1,30 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:standardPage title="Group Command Processing Results" module="amr">
+<cti:standardPage page="groupCommand.results" module="tools">
 
-    <cti:standardMenu menuSelection="devicegroups|commander"/>
-    
-       	<cti:breadCrumbs>
-    	    <cti:crumbLink url="/dashboard" title="Operations Home" />
-            
-   	        <cti:crumbLink url="/group/commander/groupProcessing" title="Group Command Processing" />
-            
-            <cti:crumbLink title="Group Command Processing Results"/>
-    	</cti:breadCrumbs>
-
-        <%-- TITLE --%>
-        <h2>Group Command Processing Results</h2>
-        <br>
+    <tags:boxContainer title="Recent Group Command Processing Results" id="commandProcessingContainer" hideEnabled="false">
         
-        <tags:boxContainer title="Recent Group Command Processing Results" id="commandProcessingContainer" hideEnabled="false">
-        
+    <c:if test="${empty resultList}">
+        <p><i:inline key="yukon.common.search.noResultsFound"/></p>
+    </c:if>
+    <c:if test="${not empty resultList}">
         <table class="compactResultsTable">
+            <cti:msgScope paths=".tableHeader">
             <tr>
-                <th>Command</th>
-                <th>Devices</th>
-                <th style="text-align:right;">Success Count</th>
-                <th style="text-align:right;">Failure Count</th>
+                <th><i:inline key=".command"/></th>
+                <th><i:inline key=".devices"/></th>
+                <th style="text-align:right;"><i:inline key=".successCount"/></th>
+                <th style="text-align:right;"><i:inline key=".failureCount"/></th>
                 <th></th>
-                <th>Detail</th>
-                <th>Status</th>
+                <th><i:inline key=".detail"/></th>
+                <th><i:inline key=".status"/></th>
             </tr>
-            
+            </cti:msgScope>
+
             <c:forEach items="${resultList}" var="result">
             
                 <cti:url var="resultDetailUrl" value="/group/commander/resultDetail">
@@ -55,7 +48,8 @@
                 </tr>
             </c:forEach>
         </table>
-        
+    </c:if>
+
     </tags:boxContainer>
     
 </cti:standardPage>
