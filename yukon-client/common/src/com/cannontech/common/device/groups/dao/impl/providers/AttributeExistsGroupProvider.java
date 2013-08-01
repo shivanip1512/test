@@ -11,6 +11,7 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
 
@@ -30,9 +31,7 @@ public class AttributeExistsGroupProvider extends AttributeGroupProviderBase {
 
     @Override
     protected boolean isDeviceInBin(BuiltInAttribute bin, YukonDevice device) {
-        Set<Attribute> singleton = Sets.newHashSet();
-        singleton.add(bin);
-        Set<Attribute> limitedExistingAttributes = attributeService.getExistingAttributes(device, singleton);
+        Set<Attribute> limitedExistingAttributes = attributeService.getExistingAttributes(device, ImmutableSet.of(bin));
         return limitedExistingAttributes.contains(bin);
     }
     
