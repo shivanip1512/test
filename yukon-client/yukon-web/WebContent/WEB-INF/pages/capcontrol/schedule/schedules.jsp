@@ -16,6 +16,9 @@
     </cti:linkTab>
 </cti:linkTabbedContainer>
 
+<jsp:setProperty name="CtiNavObject" property="moduleExitPage" value=""/>
+<%@include file="/capcontrol/capcontrolHeader.jspf" %>
+
 <script type="text/javascript">
 
 jQuery(function () {

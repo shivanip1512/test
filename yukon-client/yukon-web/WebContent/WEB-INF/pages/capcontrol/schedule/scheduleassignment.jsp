@@ -98,24 +98,24 @@ function startMultiScheduleAssignmentPopup(schedule, command) {
     var url = '/capcontrol/schedule/startMultiScheduleAssignmentPopup';
     var title = '<cti:msg2 key=".play.label" javaScriptEscape="true"/>';
     var parameters = {'schedule': schedule, 'command': command};
-    openSimpleDialog('contentPopup', url, title, parameters, 'get');
+    openSimpleDialog('contentPopup', url, title, parameters, 'get', {width: 500});
 }
 
 function stopMultiScheduleAssignmentPopup(schedule, command) {
     var url = '/capcontrol/schedule/stopMultiScheduleAssignmentPopup';
     var title = '<cti:msg2 key=".stop.label" javaScriptEscape="true"/>';
     var parameters = {'schedule': schedule, 'command': command};
-    openSimpleDialog('contentPopup', url, title, parameters, 'get'); 
+    openSimpleDialog('contentPopup', url, title, parameters, 'get', {width: 500}); 
 }
 
 function newScheduleAssignmentPopup(schedule, command) {
     var url = '/capcontrol/schedule/newScheduleAssignmentPopup';
     var title = '<cti:msg2 key=".add.label" javaScriptEscape="true"/>';
     var parameters = {'schedule': schedule, 'command': command};
-    openSimpleDialog('contentPopup', url, title, parameters, 'get'); 
+    openSimpleDialog('contentPopup', url, title, parameters, 'get', {width: 500}); 
 }
 </script>
-    
+
 <!-- Display success or failure message if a command was submitted -->
 <c:if test="${param.success != null}">
     <c:choose>

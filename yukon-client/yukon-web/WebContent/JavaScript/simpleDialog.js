@@ -29,7 +29,7 @@
 function openSimpleDialog(dialogId, url, title, parameters, method, options) {
     
     if (arguments.length > 2 && title) {
-        jQuery("#" + dialogId).dialog("option", "title", title);
+        options = jQuery.extend(options, {title: title});
     }
     
     method = (typeof method == "undefined") ? "post" : method;
@@ -51,10 +51,7 @@ function openSimpleDialog(dialogId, url, title, parameters, method, options) {
             }
         } else {
             dialog.html(data);
-            if (arguments.length > 2 && options) {
-                dialog.dialog("option", options);
-            }
-            dialog.dialog("open");
+            dialog.dialog(options);
         }
     });
 }
