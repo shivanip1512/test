@@ -1,0 +1,184 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+
+<script>
+jQuery(function() {
+    jQuery(".f-addCommentBtn").click(function() {
+        jQuery(this).hide().siblings(".f-commentsShowHide").show(200).focus();
+    });
+    
+    determineDisplayItemAddButtonVisibility();
+    for (var i = 1; i < 5; i++) {
+        determineScheduleAddButtonVisibility(i);
+    }
+    
+    jQuery("#showNextFieldBtn").click(function() {
+        // Show the next hidden display item.
+        var hiddenElems = jQuery("div[id^='displayItem']").filter(function() { return this.style.display == 'none';} );
+        jQuery('#' + hiddenElems[0].id).css('display', 'block');
+        determineDisplayItemAddButtonVisibility();
+    });
+});
+
+function determineDisplayItemAddButtonVisibility() {
+    var visibleElems = jQuery("div[id^='displayItem']").filter(function() { return this.style.display != 'none'; });
+    if (visibleElems.length < 26) {
+        jQuery('#showNextDiv').css('display', 'block');
+    } else {
+        jQuery('#showNextDiv').css('display', 'none');
+    }
+}
+
+function determineScheduleAddButtonVisibility(num) {
+    var regex = '^schedule' + num + '_time\\d+$';
+    var total = jQuery("td").filter(function() { return this.id.match(regex); }).length;
+    var schedule1visibles = jQuery("td").filter(function() { return this.id.match(regex) && this.parentElement.style.display != 'none'; });
+    if (schedule1visibles.length < total) {
+        var btn = jQuery('#showNextDivSchedule' + num);
+        btn.css('display', 'block');
+        jQuery('#' + schedule1visibles[schedule1visibles.length - 1].id).parent().append(btn);
+    } else {
+        jQuery('#showNextDivSchedule' + num).css('display', 'none');
+    }
+}
+
+function guy(num) {
+    var regex = '^schedule' + num + '_time\\d+$';
+    var hiddenElems = jQuery("td").filter(function() { return this.id.match(regex) && this.parentElement.style.display == 'none'; });
+    jQuery('#' + hiddenElems[0].id).parent().css('display', 'table-row');
+    determineScheduleAddButtonVisibility(num);
+}
+</script>
+
+<cti:msgScope paths=",yukon.web.modules.tools.configs.category">
+
+<tags:setFormEditMode mode="${mode}"/>
+
+<tags:sectionContainer2 nameKey="categoryFields">
+    <c:forEach var="field" items="${categoryTemplate.fields}">
+        <%-- The setting box needs to be hidden in certain cases --%>
+        <c:set var="classes" value=""/>
+        
+        <%-- Hide display item fields whose values are "Slot Disabled" --%>
+        <c:if test="${fn:contains(field.fieldName, 'displayItem')}">
+            <c:forEach var="option" items="${field.inputType.optionList}">
+                <c:if test="${option.value == categoryEditBean.categoryInputs[(field.fieldName)] && option.value == 0}">
+                    <c:set var="classes" value="dn"/>
+                </c:if>
+            </c:forEach>
+        </c:if>
+        
+        <div class="setting clearfix ${classes}" id="${field.fieldName}">
+            <div class="box fl" style="width: 25%;">${field.displayName}</div>
+            <div class="box detail fl" style="width: 70%;">
+                <c:choose>
+                    <c:when test="${empty field.inputType}">
+                        <%-- InputType is empty for fields that represent maps --%>
+                        <table>
+                            <c:forEach var="rate" items="${field.inputTypes}" varStatus="loopStatus">
+                                <c:set var="rowStyle" value="display: table-row;"/>
+                                <c:set var="isMidnight" value="${loopStatus.index == 0}"/>
+                                
+                                <%-- Hide TOU entries whose values are midnight (but whose times are not!) --%>
+                                <c:if test="${categoryEditBean.scheduleInputs[(field.fieldName)].rateInputs[(rate.field)].time eq '00:00' && !isMidnight}">
+                                    <c:set var="rowStyle" value="display: none;"/>
+                                </c:if>
+                                
+                                <tr style="${rowStyle}">
+                                    <td id="${field.fieldName}_${rate.field}Label" style="vertical-align: inherit;">
+                                        <i:inline key=".${categoryTemplate.categoryName}.${rate.field}"/>
+                                    </td>
+                                    <td id="${field.fieldName}_${rate.field}" style="vertical-align: inherit;">
+                                        <c:choose>
+                                            <c:when test="${!isMidnight}">
+                                                <cti:displayForPageEditModes modes="VIEW">
+                                                    ${categoryEditBean.scheduleInputs[(field.fieldName)].rateInputs[(rate.field)].time}
+                                                </cti:displayForPageEditModes>
+                                                <cti:displayForPageEditModes modes="CREATE,EDIT">
+                                                    <tags:simpleInputType input="${rate.timeType}" path="scheduleInputs[${field.fieldName}].rateInputs[${rate.field}].time"/>
+                                                </cti:displayForPageEditModes>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <cti:displayForPageEditModes modes="VIEW">
+                                                    <i:inline key=".${categoryTemplate.categoryName}.midnightTime"/>
+                                                </cti:displayForPageEditModes>
+                                                <cti:displayForPageEditModes modes="CREATE,EDIT">
+                                                    <select disabled>
+                                                        <option><i:inline key=".${categoryTemplate.categoryName}.midnightTime"/></option>
+                                                    </select>
+                                                </cti:displayForPageEditModes>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </td>
+                                    <td id="${field.fieldName}_rate${loopStatus.index}Label" style="vertical-align: inherit;">
+                                        <i:inline key="yukon.web.modules.tools.configs.rate"/>
+                                    </td>
+                                    <td id="${field.fieldName}_rate${loopStatus.index}" style="vertical-align: inherit;">
+                                        <cti:displayForPageEditModes modes="VIEW">
+                                            ${categoryEditBean.scheduleInputs[(field.fieldName)].rateInputs[(rate.field)].rate}
+                                        </cti:displayForPageEditModes>
+                                        <cti:displayForPageEditModes modes="CREATE,EDIT">
+                                            <tags:simpleInputType input="${rate.rateType}" path="scheduleInputs[${field.fieldName}].rateInputs[${rate.field}].rate"/>
+                                        </cti:displayForPageEditModes>
+                                    </td>
+                                </tr>
+                            </c:forEach>
+                        </table>
+                    </c:when>
+                    <c:otherwise>
+                        <cti:displayForPageEditModes modes="VIEW">
+                            <c:choose>
+                                <c:when test="${field['enum']}">
+                                    <c:forEach var="option" items="${field.inputType.optionList}">
+                                        <c:if test="${option.value == categoryEditBean.categoryInputs[(field.fieldName)]}">
+                                            <input type="hidden" id="value_${field.fieldName}" value="${option.value}"/>
+                                            <cti:msg2 key="${option}"/>
+                                        </c:if>
+                                    </c:forEach>
+                                </c:when>
+                                <c:otherwise>
+                                    ${categoryEditBean.categoryInputs[(field.fieldName)]}
+                                </c:otherwise>
+                            </c:choose>
+                        </cti:displayForPageEditModes>
+                        <cti:displayForPageEditModes modes="CREATE,EDIT">
+                            <tags:simpleInputType id="categoryInputs[${field.fieldName}]" input="${field.inputType}" path="categoryInputs[${field.fieldName}]"/>
+                        </cti:displayForPageEditModes>
+                    </c:otherwise>
+                </c:choose>
+                <div id="fieldErrors">
+                    <spring:bind path="categoryInputs[${field.fieldName}]">
+                        <c:if test="${status.error}">
+                            <form:errors path="categoryInputs[${field.fieldName}]" cssClass="errorMessage"/>
+                        </c:if>
+                    </spring:bind>
+                </div>
+                <div class="description">
+                    <span class="detail">${field.description}</span>
+                </div>
+            </div>
+        </div>
+    </c:forEach>
+    <cti:displayForPageEditModes modes="EDIT">
+        <c:if test="${fn:contains(categoryTemplate.categoryType, 'displayItems')}">
+            <div class="pageActionArea stacked dn" id="showNextDiv">
+                <cti:msg2 var="addTitle" key=".addDisplayItem"/>
+                <cti:button nameKey="addDisplayItem" icon="icon-add" id="showNextFieldBtn" title="${addTitle}" classes="fr"/>
+            </div>
+        </c:if>
+        <c:if test="${fn:containsIgnoreCase(categoryTemplate.categoryType, 'tou')}">
+            <c:forEach begin="1" end="4" var="status">
+                <div class="stacked dn" id="showNextDivSchedule${status}">
+                    <cti:msg2 var="title" key=".addScheduleItem" argument="${status}"/>
+                    <cti:button nameKey="addSchedule" icon="icon-add" id="showNextSchedule${status}TimeBtn" onclick="guy('${status}')" title="${title}" classes="fr"/>
+                </div>
+            </c:forEach>
+        </c:if>
+    </cti:displayForPageEditModes>
+</tags:sectionContainer2>
+</cti:msgScope>

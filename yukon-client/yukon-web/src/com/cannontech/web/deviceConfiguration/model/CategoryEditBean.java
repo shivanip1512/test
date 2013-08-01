@@ -17,7 +17,9 @@ public class CategoryEditBean {
     private Integer categoryId;
     private String categoryName;
     private String categoryType;
+    private String description;
     private Map<String, String> categoryInputs = new HashMap<>();
+    private List<String> assignments = new ArrayList<>();
     
     // This maps a schedule to its rates. The key for this map will be the schedule.
     private Map<String, RateBackingBean> scheduleInputs =
@@ -77,7 +79,24 @@ public class CategoryEditBean {
         this.categoryType = categoryType;
     }
     
+    public String getDescription() {
+        return description;
+    }
+    
+    public void setDescription(String description) {
+        this.description = description;
+    }
+    
+    public List<String> getAssignments() {
+        return assignments;
+    }
+    
+    public void setAssignments(List<String> assignments) {
+        this.assignments = assignments;
+    }
+    
     public DeviceConfigCategory getModelObject() {
+        // Description can be null.
         if (categoryName == null || categoryType == null || categoryInputs.isEmpty()) {
             throw new RuntimeException();
         }
@@ -101,6 +120,6 @@ public class CategoryEditBean {
             }
         }
         
-        return new DeviceConfigCategory(categoryId, categoryType, categoryName, items);
+        return new DeviceConfigCategory(categoryId, categoryType, categoryName, description, items);
     }
 }

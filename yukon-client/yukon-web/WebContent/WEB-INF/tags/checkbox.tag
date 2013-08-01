@@ -1,8 +1,9 @@
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <%@ tag body-content="empty" %>
 <%@ attribute name="path" required="true" type="java.lang.String"%>
@@ -10,6 +11,7 @@
 <%@ attribute name="id" required="false" type="java.lang.String"%>
 <%@ attribute name="styleClass" required="false" type="java.lang.String"%>
 <%@ attribute name="descriptionNameKey" required="false" type="java.lang.String"%>
+<%@ attribute name="disabled" required="false"%>
 
 <spring:bind path="${path}">
 
@@ -36,23 +38,28 @@
 	
 	<%-- EDIT/CREATE MODE --%>
 	<cti:displayForPageEditModes modes="EDIT,CREATE">
-		<c:choose>
+        <c:set var="disabledVal" value="false"/>
+        <c:if test="${not empty pageScope.disabled && fn:toLowerCase(pageScope.disabled) eq 'true'}">
+            <c:set var="disabledVal" value="true"/>
+        </c:if>
+        
+        <c:choose>
 			<c:when test="${not empty pageScope.onclick && not empty pageScope.id}">
-				<form:checkbox path="${path}" onclick="${pageScope.onclick}" id="${pageScope.id}" cssClass="${styleClass}"/>
+				<form:checkbox disabled="${disabledVal}" path="${path}" onclick="${pageScope.onclick}" id="${pageScope.id}" cssClass="${styleClass}"/>
 			</c:when>
 			<c:when test="${not empty pageScope.onclick && empty pageScope.id}">
-				<form:checkbox path="${path}" onclick="${pageScope.onclick}" cssClass="${styleClass}"/>
+				<form:checkbox disabled="${disabledVal}" path="${path}" onclick="${pageScope.onclick}" cssClass="${styleClass}"/>
 			</c:when>
 			<c:when test="${empty pageScope.onclick && not empty pageScope.id}">
-				<form:checkbox path="${path}" id="${pageScope.id}" cssClass="${styleClass}"/>
+				<form:checkbox disabled="${disabledVal}" path="${path}" id="${pageScope.id}" cssClass="${styleClass}"/>
 			</c:when>
 			<c:when test="${empty pageScope.onclick && empty pageScope.id}">
-				<form:checkbox path="${path}" cssClass="${styleClass}"/>
+				<form:checkbox disabled="${disabledVal}" path="${path}" cssClass="${styleClass}"/>
 			</c:when>
 			<c:otherwise>
 				<%-- BAD STATE!? --%>
 			</c:otherwise>
-		</c:choose>
+        </c:choose>
 	</cti:displayForPageEditModes>
 	
 	<c:if test="${not empty descriptionNameKey}">

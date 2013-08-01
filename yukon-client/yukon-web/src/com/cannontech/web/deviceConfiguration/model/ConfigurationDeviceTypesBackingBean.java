@@ -1,14 +1,22 @@
 package com.cannontech.web.deviceConfiguration.model;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
 
 public class ConfigurationDeviceTypesBackingBean {
-    private Map<PaoType, Boolean> supportedTypes = new HashMap<>();
+    private int configId;
+    private Map<PaoType, Boolean> supportedTypes = new LinkedHashMap<>();
+    private Map<String, Collection<PaoType>> typesByCategory = new HashMap<>();
+    private List<PaoType> availableTypes = new ArrayList<>();
     
     public ConfigurationDeviceTypesBackingBean() {
     }
@@ -61,5 +69,39 @@ public class ConfigurationDeviceTypesBackingBean {
     
     public void setSupportedTypes(Map<PaoType, Boolean> supportedTypes) {
         this.supportedTypes = supportedTypes;
+    }
+    
+    public Map<String, Collection<PaoType>> getTypesByCategory() {
+        return typesByCategory;
+    }
+    
+    public void setTypesByCategory(Map<String, Collection<PaoType>> typesByCategory) {
+        this.typesByCategory = typesByCategory;
+    }
+    
+    public List<PaoType> getAvailableTypes() {
+        return availableTypes;
+    }
+    
+    public void setAvailableTypes(List<PaoType> availableTypes) {
+        this.availableTypes = availableTypes;
+    }
+    
+    public int getConfigId() {
+        return configId;
+    }
+    
+    public void setConfigId(int configId) {
+        this.configId = configId;
+    }
+    
+    public boolean isSupportedTypesEmpty() {
+        for (Entry<PaoType, Boolean> entry : supportedTypes.entrySet()) {
+            if (entry.getValue() != null && entry.getValue() == true) {
+                return false;
+            }
+        }
+        
+        return true;
     }
 }

@@ -4,37 +4,107 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
+<script type="text/javascript">
+jQuery(function() {
+    
+    jQuery(".f-editBtn").click(function() {
+        var catTypeClass = jQuery(this).attr('class').match(/f-devType-\w*/)[0];
+        var splitClass = catTypeClass.split('-');
+        var catType = splitClass[splitClass.length - 1];
+        var categoryId = jQuery('#categoryId_' + catType).val();
+        jQuery('#categoryPopup').load('/deviceConfiguration/category/editInPlace', {categoryId : categoryId, configId: ${configurationCategoriesBackingBean.configId}});
+    });
+    
+    jQuery(".f-createBtn").click(function() {
+        var catTypeClass = jQuery(this).attr('class').match(/f-devType-\w*/)[0];
+        var splitClass = catTypeClass.split('-');
+        var catType = splitClass[splitClass.length - 1];
+        jQuery('#categoryPopup').load('/deviceConfiguration/category/createInPlace', {categoryType : catType, configId: ${configurationCategoriesBackingBean.configId}});
+    });
+
+});
+
+function changeOut(type) {
+    var form = jQuery('#categoryChange_' + type);
+    form.submit(); 
+    return true;
+}
+</script>
+
 <cti:msgScope paths=",yukon.web.modules.tools.configs.category">
-    <tags:sectionContainer2 nameKey="${category.categoryDisplay.categoryType}" styleClass="stacked" >
-        <form:hidden path="categorySelections[${loopStatus.index}].categoryDisplay.categoryType"/>
-        <form:hidden path="categorySelections[${loopStatus.index}].categoryDisplay.existingCategories"/>
-        <div class="stacked">
-            <cti:displayForPageEditModes modes="EDIT,CREATE">
-                <spring:bind path="categorySelections[${loopStatus.index}].categoryId">
-                    <c:if test="${status.error}">
-                        <div class="stacked">
-                            <form:errors path="categorySelections[${loopStatus.index}].categoryId" cssClass="errorMessage"/>
-                        </div>
-                    </c:if>
-                    <div id="${category.categoryDisplay.categoryType}Picker_div" class="${category.categoryDisplay.existingCategories ? 'dib' : 'dn'}">
-                        <tags:pickerDialog
-                            id="categoryPicker_${category.categoryDisplay.categoryType}"
-                            type="categoryPicker"
-                            destinationFieldName="categorySelections[${loopStatus.index}].categoryId"
-                            linkType="selection"
-                            allowEmptySelection="false"
-                            multiSelectMode="false"
-                            immediateSelectMode="true"
-                            selectionProperty="name"
-                            extraArgs="${category.categoryDisplay.categoryType}"
-                            initialId="${deviceConfigurationBackingBean.categorySelections[(loopStatus.index)].categoryId}"/>&nbsp;
+    <div class="clearfix">
+        <c:set var="catType" value="${category.categoryDisplay.categoryType}"/>
+        <c:set var="selection" value="${configurationCategoriesBackingBean.categorySelections[(loopStatus.index)]}"/>
+    
+        <input type="hidden" id="categoryId_${catType}" value="${selection.categoryId}"/>
+    
+        <div class="pr clearfix">
+            <c:set var="style" value="pipe"/>
+            <c:forEach var="deviceType" items="${configurationDeviceTypesBackingBean.typesByCategory[catType]}">
+                <c:set var="style" value="${style} f-devtype-${deviceType}"/>
+            </c:forEach>
+            <span class="${style}" style="margin-bottom: 20px;">&nbsp;</span>
+            
+            <c:if test="${empty selection.categoryId}">
+                <tags:alertBox nameKey=".needsSelection"/>
+            </c:if>
+
+            <tags:nameValueContainer2 naturalWidth="false">
+                <tags:nameValue2 nameKey=".name" nameColumnWidth="15%" nameClass="vat">
+                    <div id="categoryName_${catType}">
+                        ${fn:escapeXml(selection.categoryName)}
                     </div>
-                </spring:bind>
-                <cti:button nameKey="create" href="/deviceConfiguration/category/create?categoryType=${category.categoryDisplay.categoryType}" classes="fn"/>
-            </cti:displayForPageEditModes>
-            <cti:displayForPageEditModes modes="VIEW">
-                ${deviceConfigurationBackingBean.categorySelections[(loopStatus.index)].categoryName}
+                </tags:nameValue2>
+                <tags:nameValue2 nameKey=".type" nameColumnWidth="15%" nameClass="vat">
+                    <i:inline key=".${catType}.title"/>
+                </tags:nameValue2>
+                <c:if test="${not empty selection.categoryId}">
+                    <tags:nameValue2 nameKey=".description" nameColumnWidth="15%" nameClass="vat">
+                        ${fn:escapeXml(selection.description)}
+                    </tags:nameValue2>
+                </c:if>
+            </tags:nameValueContainer2>
+            
+            <cti:displayForPageEditModes modes="VIEW,EDIT">
+                <cti:checkRolesAndProperties value="${editingRoleProperty}">
+                    <form id="categoryChange_${catType}" action="/deviceConfiguration/config/swapCategory">
+                        <input type="hidden" name="configId" value="${configurationCategoriesBackingBean.configId}">
+                        <input type="hidden" name="newCategoryId" id="newCategoryId_${catType}">
+                        <input type="hidden" name="categoryType" value="${catType}">
+                       
+                        <c:set var="pickerLabel" value="changeOut"/>
+                        <c:if test="${empty selection.categoryId}">
+                            <c:set var="pickerLabel" value="select"/>
+                        </c:if>
+                       
+                        <cti:displayForPageEditModes modes="VIEW">
+                            <div class="actionArea">
+                                <tags:pickerDialog
+                                    id="categoryPicker_${catType}"
+                                    type="categoryPicker"
+                                    destinationFieldId="newCategoryId_${catType}"
+                                    linkType="button"
+                                    nameKey="${pickerLabel}"
+                                    allowEmptySelection="false"
+                                    multiSelectMode="false"
+                                    immediateSelectMode="true"
+                                    icon="icon-arrow-swap"
+                                    endAction="function(items) {return changeOut('${catType}');}"
+                                    extraArgs="${catType}"
+                                    />
+                                    
+                                <cti:msg2 var="i18nCatType" key=".${catType}.title"/>
+                                <cti:msg2 var="createBtnTitle" key=".createCategory" argument="${i18nCatType}"/>                            
+                                <cti:button nameKey="create" classes="f-createBtn f-devType-${catType}" icon="icon-plus-green" title="${createBtnTitle}"/>
+                                <c:if test="${not empty selection.categoryId}">
+                                    <cti:msg2 var="editBtnTitle" key=".editAssignedCategory" argument="${selection.categoryName}"/>
+                                    <cti:button nameKey="edit" classes="f-editBtn f-devType-${catType}" icon="icon-pencil" title="${editBtnTitle}"/>
+                                </c:if>
+                            </div>
+                        </cti:displayForPageEditModes>
+                    </form>
+                </cti:checkRolesAndProperties>
             </cti:displayForPageEditModes>
         </div>
-    </tags:sectionContainer2>
+    </div>
 </cti:msgScope>

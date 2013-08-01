@@ -12,9 +12,10 @@ public final class DeviceConfiguration extends LightDeviceConfiguration {
     
     public DeviceConfiguration(Integer configurationId, 
                                String name, 
+                               String description,
                                List<DeviceConfigCategory> categories,
                                Set<PaoType> supportedDeviceTypes) {
-        super(configurationId, name);
+        super(configurationId, name, description);
         this.categories = categories;
         this.supportedDeviceTypes = supportedDeviceTypes;
     }

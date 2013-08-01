@@ -1,5 +1,6 @@
 package com.cannontech.web.deviceConfiguration.model;
 
+import com.google.common.base.Objects;
 
 public class CategoryDisplay {
     private String categoryType;
@@ -27,5 +28,24 @@ public class CategoryDisplay {
     
     public void setExistingCategories(boolean existingCategories) {
         this.existingCategories = existingCategories;
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null ) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        
+        final CategoryDisplay other = (CategoryDisplay) obj;
+        return Objects.equal(this.categoryType, other.categoryType) && 
+               Objects.equal(this.existingCategories, other.existingCategories);
+    }
+    
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(categoryType, existingCategories);
     }
 }

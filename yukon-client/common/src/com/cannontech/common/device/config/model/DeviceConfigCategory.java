@@ -9,15 +9,18 @@ public final class DeviceConfigCategory {
     private final Integer categoryId;
     private final String categoryType;
     private final String categoryName;
+    private final String description;
     private final List<DeviceConfigCategoryItem> deviceConfigurationItems;
     
     public DeviceConfigCategory(Integer categoryId, 
                                 String categoryType, 
                                 String categoryName, 
+                                String description,
                                 List<DeviceConfigCategoryItem> deviceConfigurationItems) {
         this.categoryId = categoryId;
         this.categoryType = categoryType;
         this.categoryName = categoryName;
+        this.description = description;
         this.deviceConfigurationItems = deviceConfigurationItems;
     }
     
@@ -31,6 +34,10 @@ public final class DeviceConfigCategory {
     
     public String getCategoryName() {
         return categoryName;
+    }
+    
+    public String getDescription() {
+        return description;
     }
     
     public List<DeviceConfigCategoryItem> getDeviceConfigurationItems() {

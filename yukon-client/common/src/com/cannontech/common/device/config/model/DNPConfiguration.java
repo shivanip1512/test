@@ -17,8 +17,8 @@ public class DNPConfiguration extends LightDeviceConfiguration implements Serial
     private boolean omitTimeRequest = false;
     private boolean enableUnsolicitedMessages = true;
     
-    public DNPConfiguration(Integer configurationId, String name) {
-        super(configurationId, name);
+    public DNPConfiguration(Integer configurationId, String name, String description) {
+        super(configurationId, name, description);
     }
     
     public int getInternalRetries() {

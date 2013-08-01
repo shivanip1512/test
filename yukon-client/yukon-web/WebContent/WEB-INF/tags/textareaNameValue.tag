@@ -5,7 +5,8 @@
 <%@ attribute name="rows" required="true" type="java.lang.Integer"%>
 <%@ attribute name="cols" required="true" type="java.lang.Integer"%>
 <%@ attribute name="rowClass" required="false"%>
+<%@ attribute name="nameClass" %>
 
-<tags:nameValue2 nameKey="${nameKey}" rowClass="${rowClass}">
+<tags:nameValue2 nameKey="${nameKey}" rowClass="${rowClass}" nameClass="${nameClass}">
 	<tags:textarea path="${path}" rows="${rows}" cols="${cols}"/>
 </tags:nameValue2>

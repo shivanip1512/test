@@ -1,17 +1,21 @@
 package com.cannontech.common.device.config.model;
 
+import java.util.List;
+
+import com.google.common.collect.ImmutableList;
+
 public class DisplayableConfigurationCategory {
     private final int categoryId;
     private final String categoryName;
     private final String categoryType;
-    private final int numConfigurations;
+    private final List<String> configNames;
     
     public DisplayableConfigurationCategory(int categoryId, String categoryName, String categoryType, 
-                                            int numConfigurations) {
+                                            List<String> configNames) {
         this.categoryId = categoryId;
         this.categoryName = categoryName;
         this.categoryType = categoryType;
-        this.numConfigurations = numConfigurations;
+        this.configNames = configNames;
     }
     
     public int getCategoryId() {
@@ -26,7 +30,7 @@ public class DisplayableConfigurationCategory {
         return categoryType;
     }
     
-    public int getNumConfigurations() {
-        return numConfigurations;
+    public List<String> getConfigNames() {
+        return ImmutableList.copyOf(configNames);
     }
 }

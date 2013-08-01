@@ -2,14 +2,7 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
     
-    <!-- format:
-      first page yukon.web.modules.tools.configs
-      child pages: yukon.web.modules.tools.configs.config
-                   yukon.web.modules.tools.configs.category
-                   yukon.web.modules.tools.configs.setup
-     -->
-    
-    <!-- configs.enum.s -->
+    <!-- configs.enum -->
     <entry key="yukon.web.modules.tools.configs.enum.relayTiming.seconds">{0} sec</entry>
     <entry key="yukon.web.modules.tools.configs.enum.relayTiming.millis">{0} ms</entry>
     <entry key="yukon.web.modules.tools.configs.enum.relayTiming.both">{0} sec {1} ms</entry>
@@ -374,22 +367,20 @@
     <entry key="yukon.web.modules.tools.configs.categoryDetails.table.toCreate">To create a new category, click the Create button below.</entry>
     <entry key="yukon.web.modules.tools.configs.categoryDetails.table.categoryName">Category Name</entry>
     <entry key="yukon.web.modules.tools.configs.categoryDetails.table.categoryType">Category Type</entry>
-    <entry key="yukon.web.modules.tools.configs.categoryDetails.table.numConfigs">Configurations</entry>
+    <entry key="yukon.web.modules.tools.configs.categoryDetails.table.numAssignments">Assignments</entry>
     <entry key="yukon.web.modules.tools.configs.existingConfigs">Existing Configurations</entry>
     <entry key="yukon.web.modules.tools.configs.existingCategories">Existing Categories</entry>
     
-    <!-- create.jsp -->
-    <entry key="yukon.web.modules.tools.configs.setup.pageName">Create Device Configuration</entry>
-    <entry key="yukon.web.modules.tools.configs.setup.contextualPageName">Create</entry>
-    <entry key="yukon.web.modules.tools.configs.setup.supportedTypes">Supported Device Types</entry>
-    <entry key="yukon.web.modules.tools.configs.setup.directions">Select the device types which this device configuration will support.</entry>
-    <entry key="yukon.web.modules.tools.configs.setup.meter.title">Meter</entry>
-    <entry key="yukon.web.modules.tools.configs.setup.rtu.title">RTU</entry>
-    <entry key="yukon.web.modules.tools.configs.setup.cbc.title">Cap Bank Controller</entry>
-    
     <!-- general entries -->
     <entry key="yukon.web.modules.tools.configs.errorsExist">Errors exist in the submitted form. Please correct the problem(s) and submit again.</entry>
-    <entry key="yukon.web.modules.tools.configs.noSelectedTypes">At least one device type must be selected.</entry>
+    <entry key="yukon.web.modules.tools.configs.noSelectedTypes">At least one device type must be selected.</entry>    
+    <entry key="yukon.web.modules.tools.configs.name">Name</entry>
+    <entry key="yukon.web.modules.tools.configs.type">Type</entry>
+    <entry key="yukon.web.modules.tools.configs.description">Description</entry>
+    <entry key="yukon.web.modules.tools.configs.deviceGroup">Device Group</entry>
+    <entry key="yukon.web.modules.tools.configs.collectionAction">Collection Actions</entry>
+    <entry key="yukon.web.modules.tools.configs.changeOut.label">Change Out</entry>
+    <entry key="yukon.web.modules.tools.configs.select.label">Select</entry>
 
     <!-- category entries -->
     <entry key="yukon.web.modules.tools.configs.category.VIEW.pageName">Category</entry>
@@ -402,7 +393,11 @@
     <entry key="yukon.web.modules.tools.configs.category.CREATE.pageName">Create Category</entry>
     <entry key="yukon.web.modules.tools.configs.category.CREATE.contextualPageName">Create</entry>
     
-    <entry key="yukon.web.modules.tools.configs.category.categoryFields">Category Fields</entry>
+    <entry key="yukon.web.modules.tools.configs.category.categoryFields.title">Category Fields</entry>
+    <entry key="yukon.web.modules.tools.configs.category.addDisplayItem">Add another display item to the list</entry>
+    <entry key="yukon.web.modules.tools.configs.category.addDisplayItem.label">Add Item</entry>
+    <entry key="yukon.web.modules.tools.configs.category.addScheduleItem">Add another rate change to Schedule {0}.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.addSchedule.label">Add Rate</entry>
     <entry key="yukon.web.modules.tools.configs.category.confirmRemove.message">Are you sure you want to delete this category?</entry>
     <entry key="yukon.web.modules.tools.configs.category.confirmSave.message">
     		Modifying this category will affect all configurations it belongs to. However, this will not affect any
@@ -413,6 +408,9 @@
     <entry key="yukon.web.modules.tools.configs.category.emptyName">Category name must not be empty.</entry>
     <entry key="yukon.web.modules.tools.configs.category.nonNumber">A non-number value was submitted for this field.</entry>
     <entry key="yukon.web.modules.tools.configs.category.emptyValue">No value was supplied for this field.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.assignments.title">Assignments</entry>
+    <entry key="yukon.web.modules.tools.configs.category.noAssignments">This category is not currently assigned to any device configurations.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.nameExists">A configuration category with the specified name already exists. Please enter a different name.</entry>
 
     <!-- configuration entries -->
     <entry key="yukon.web.modules.tools.configs.config.VIEW.pageName">Configuration</entry>
@@ -425,7 +423,18 @@
     <entry key="yukon.web.modules.tools.configs.config.CREATE.pageName">Create Configuration</entry>
     <entry key="yukon.web.modules.tools.configs.config.CREATE.contextualPageName">Create</entry>
     
-    <entry key="yukon.web.modules.tools.configs.config.saveSuccess">Device configuration category was successfully written to the database.</entry>
+    <entry key="yukon.web.modules.tools.configs.config.addType.title">Add Type</entry>
+    <entry key="yukon.web.modules.tools.configs.config.addTypeSuccess">{0} was successfully added as a supported device type for the device configuration.</entry>
+    <entry key="yukon.web.modules.tools.configs.config.addTypeWarning">The supported device types for this configuration were updated to include {0}, but new category types were added to the configuration as a result. Please complete category selection below to allow the configuration to function correctly.</entry>
+    <entry key="yukon.web.modules.tools.configs.config.removeType.title">Remove Type</entry>
+    <entry key="yukon.web.modules.tools.configs.config.removeAllTypes">The list of supported device types for a configuration cannot be empty.</entry>
+    <entry key="yukon.web.modules.tools.configs.config.confirmSupportedTypeRemove">Are you sure you want to remove {0} from the configuration's supported device types?</entry>
+    <entry key="yukon.web.modules.tools.configs.config.removeTypeSuccess">{0} was successfully removed from the supported device types for the device configuration.</entry>
+    <entry key="yukon.web.modules.tools.configs.config.removedCategoryTypes">Removing this device type will remove the following category types from the configuration:</entry>
+    <entry key="yukon.web.modules.tools.configs.config.editCategory.title">Edit Category</entry>    
+    <entry key="yukon.web.modules.tools.configs.config.createCategory.title">Create Category</entry>    
+    <entry key="yukon.web.modules.tools.configs.config.swapSuccess">Device configuration category assignment was successfully updated.</entry>
+    <entry key="yukon.web.modules.tools.configs.config.saveSuccess">Device configuration was successfully written to the database.</entry>
     <entry key="yukon.web.modules.tools.configs.config.deleteSuccess">Device configuration was successfully removed from the database.</entry>
     <entry key="yukon.web.modules.tools.configs.config.emptyName">Configuration name must not be empty.</entry>
     <entry key="yukon.web.modules.tools.configs.config.noCategoryChosen">No category of this type was selected.</entry>
@@ -438,7 +447,19 @@
         Are you sure you want to modify this configuration?
     </entry>
     <entry key="yukon.web.modules.tools.configs.config.configCategories.description">Choose an existing instance of each of the categories below or create new categories to use for this configuration.</entry>
-    <entry key="yukon.web.modules.tools.configs.config.missingCategories">This device configuration is missing selections for the following category types: {0}. Please select a category for each of these types.</entry>
+    <entry key="yukon.web.modules.tools.configs.config.missingCategories">This device configuration is missing selections for the following category types: {0}. Please assign a category for each of these types.</entry>
     <entry key="yukon.web.modules.tools.configs.config.noneSelected">None selected</entry>
-    
+    <entry key="yukon.web.modules.tools.configs.config.needsSelection">Please use the Create or Select buttons below to select a category for this type.</entry>
+    <entry key="yukon.web.modules.tools.configs.config.editAssignedCategory">Edit the {0} category.</entry>
+    <entry key="yukon.web.modules.tools.configs.config.createCategory">Create a new {0} category.</entry>
+    <entry key="yukon.web.modules.tools.configs.config.addTypes.label">Add Types</entry>
+    <entry key="yukon.web.modules.tools.configs.config.addSupportedTypes.title">Add Supported Types</entry>
+    <entry key="yukon.web.modules.tools.configs.config.nameExists">A configuration with the specified name already exists. Please enter a different name.</entry>
+    <entry key="yukon.web.modules.tools.configs.config.errorOccurred">An error occurred while saving the configuration. Please check the form data and submit the form again.</entry>
+    <entry key="yukon.web.modules.tools.configs.config.supportedTypes">Supported Device Types</entry>
+    <entry key="yukon.web.modules.tools.configs.config.noSupportedTypesPage">This device configuration has no supported device types. Please use the add types button below to add device types to this configuration.</entry>
+    <entry key="yukon.web.modules.tools.configs.config.directions">Select the additional device types which this device configuration will support.</entry>
+    <entry key="yukon.web.modules.tools.configs.config.meter.title">Meter</entry>
+    <entry key="yukon.web.modules.tools.configs.config.rtu.title">RTU</entry>
+    <entry key="yukon.web.modules.tools.configs.config.cbc.title">Cap Bank Controller</entry>
 </properties>

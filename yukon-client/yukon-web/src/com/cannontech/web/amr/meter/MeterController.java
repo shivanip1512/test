@@ -225,7 +225,7 @@ public class MeterController extends MultiActionController {
                 && (singlePhaseVoltageSupported || threePhaseVoltageOrCurrentSupported);
         mav.addObject("showVoltageAndTou", showVoltageAndTou);
 
-        boolean configSupported = deviceConfigurationDao.isDeviceConfigurationAvailable(device.getDeviceType());
+        boolean configSupported = !deviceConfigurationDao.getAllConfigurationsByType(device.getDeviceType()).isEmpty();
         mav.addObject("configSupported", configSupported);
         
         if (isRFMesh) {

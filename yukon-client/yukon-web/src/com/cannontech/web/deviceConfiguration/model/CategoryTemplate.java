@@ -22,8 +22,8 @@ public class CategoryTemplate {
         return name;
     }
 
-    public CategoryType getCategoryType() {
-        return categoryType;
+    public String getCategoryType() {
+        return categoryType.value();
     }
     
     // For use in JSP-land

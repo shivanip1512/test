@@ -1,23 +1,24 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
-<%@ attribute name="nameKey" %>
 <%@ attribute name="argument" required="false" type="java.lang.Object" %>
+<%@ attribute name="excludeColon" required="false" %>
 <%@ attribute name="label" required="false" type="java.lang.Object" %>
 <%@ attribute name="labelForId" required="false" %>
-<%@ attribute name="excludeColon" required="false" %>
-<%@ attribute name="rowId" %>
+<%@ attribute name="nameKey" %>
 <%@ attribute name="nameClass" %>
+<%@ attribute name="nameColumnWidth" required="false" %>
 <%@ attribute name="rowClass" %>
+<%@ attribute name="rowId" %>
 <%@ attribute name="valueClass" %>
 
 <c:choose>
 	<c:when test="${nameValueContainter2}">
         <tr <c:if test="${!empty rowId}"> id="${rowId}"</c:if>
             <c:if test="${!empty rowClass}"> class="${rowClass}"</c:if>>
-			<td class="name <c:if test="${!empty nameClass}"> ${nameClass}</c:if>">
-			
+			<td class="name <c:if test="${!empty nameClass}"> ${nameClass}</c:if>" style="white-space:nowrap; <c:if test="${not empty pageScope.nameColumnWidth}">width:${pageScope.nameColumnWidth};</c:if>">
+            
 				<c:set var="colonSuffix" value=":"/>
 				<c:if test="${excludeColon == true}">
 					<c:set var="colonSuffix" value=""/>

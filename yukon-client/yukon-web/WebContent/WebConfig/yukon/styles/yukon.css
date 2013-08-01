@@ -208,7 +208,7 @@ ul.disc li {list-style-type: disc; margin-left: 25px;}
 
 .labeledImageStack li {display:block; padding-bottom: 10px;}
 
-.editable-list li {padding:4px;}
+.editable-list li {padding:4px;cursor: pointer;}
 .editable-list li:hover {background-color: #efefef;}
 .editable-list li .remove-item {visibility: hidden;}
 .editable-list li:hover .remove-item {visibility: visible;}
@@ -256,6 +256,7 @@ ul.disc li {list-style-type: disc; margin-left: 25px;}
 .sectionContainer {border:none;}
 .sectionContainer > .titleBar {background:transparent;font-weight:bold;}
 .liteContainer {border-style:solid none;}
+.liteContainer .setting:first-child {border-top: none;}
 
 .pagedBox .contextArea {margin: 0 20px 0 0; font-weight: normal;} /* TODO: change title span to h3 to avoid this 'undo' font css rule */
 .pagedBox .contextArea .navLink {position: relative;}

@@ -6,6 +6,7 @@ import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -13,6 +14,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.DeviceConfigCategory;
 import com.cannontech.common.device.config.model.DeviceConfigCategoryItem;
@@ -20,16 +22,19 @@ import com.cannontech.common.device.config.model.jaxb.Category;
 import com.cannontech.common.device.config.model.jaxb.CategoryType;
 import com.cannontech.common.device.config.model.jaxb.InputBase;
 import com.cannontech.common.device.config.model.jaxb.InputMap;
+import com.cannontech.common.device.config.service.DeviceConfigurationService;
+import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.deviceConfiguration.model.CategoryEditBean;
+import com.cannontech.web.deviceConfiguration.model.CategoryEditBean.RateBackingBean;
 import com.cannontech.web.deviceConfiguration.model.CategoryTemplate;
 import com.cannontech.web.deviceConfiguration.model.RateInput;
-import com.cannontech.web.deviceConfiguration.model.CategoryEditBean.RateBackingBean;
 import com.cannontech.web.deviceConfiguration.validation.CategoryEditValidator;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
@@ -37,9 +42,12 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 @RequestMapping("/category/*")
 @CheckRoleProperty(YukonRoleProperty.ADMIN_VIEW_CONFIG)
 public class DeviceConfigurationCategoryController {
+    private static final Logger log = YukonLogManager.getLogger(DeviceConfigurationCategoryController.class);
     
-    @Autowired DeviceConfigurationDao deviceConfigurationDao;
-    @Autowired DeviceConfigurationHelper deviceConfigurationHelper;
+    @Autowired private DeviceConfigurationDao deviceConfigurationDao;
+    @Autowired private DeviceConfigurationHelper deviceConfigurationHelper;
+    @Autowired private DeviceConfigurationService deviceConfigurationService;
+    @Autowired private RolePropertyDao rolePropertyDao;
     
     private final static String baseKey = "yukon.web.modules.tools.configs";
     
@@ -73,7 +81,50 @@ public class DeviceConfigurationCategoryController {
     }
     
     @RequestMapping
+    public String createInPlace(ModelMap model, String categoryType, int configId, YukonUserContext context) {
+        Category category = deviceConfigurationDao.getCategoryByType(CategoryType.fromValue(categoryType));
+        
+        CategoryEditBean categoryEditBean = new CategoryEditBean();
+        categoryEditBean.setCategoryType(categoryType);
+
+        for (InputBase inputBase : category.getIntegerOrFloatOrBoolean()) {
+            if (inputBase.getClass() == InputMap.class) {
+                // Create the backing bean to represent the collection of rates.
+                RateBackingBean rateBackingBean = new RateBackingBean();
+                
+                List<InputMap.Entry> entries = ((InputMap)inputBase).getEntry();
+                for (InputMap.Entry entry : entries) {
+                    rateBackingBean.getRateInputs().put(entry.getField(), new RateInput());
+                }
+                
+                categoryEditBean.getScheduleInputs().put(inputBase.getField(), rateBackingBean);
+            }
+            categoryEditBean.getCategoryInputs().put(inputBase.getField(), inputBase.getDefault());
+        }
+        
+        // Passing this through so we can redirect correctly.
+        model.addAttribute("configId", configId);
+        
+        setupModelMap(model, PageEditMode.CREATE, categoryEditBean, context);
+        return "createCategory.jsp";
+    }
+    
+    @RequestMapping
+    public String editInPlace(ModelMap model, int categoryId, int configId, YukonUserContext context) {
+        DeviceConfigCategory category = deviceConfigurationDao.getDeviceConfigCategory(categoryId);
+        
+        CategoryEditBean categoryEditBean = createCategoryEditBean(category);
+
+        setupModelMap(model, PageEditMode.EDIT, categoryEditBean, context);
+        
+        model.addAttribute("configId", configId);
+        
+        return "editCategory.jsp";
+    }
+    
+    @RequestMapping
     public String edit(ModelMap model, int categoryId, YukonUserContext context) {
+        rolePropertyDao.verifyProperty(YukonRoleProperty.ADMIN_EDIT_CONFIG, context.getYukonUser());
         return viewOrEdit(model, categoryId, context, PageEditMode.EDIT);
     }
     
@@ -84,7 +135,7 @@ public class DeviceConfigurationCategoryController {
     
     @RequestMapping
     public String delete(ModelMap model, FlashScope flashScope, int categoryId) {
-        deviceConfigurationDao.deleteCategory(categoryId);
+        deviceConfigurationService.deleteCategory(categoryId);
         
         flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + ".category.deleteSuccess"));
         
@@ -118,11 +169,61 @@ public class DeviceConfigurationCategoryController {
             return "category.jsp";
         }
         
-        int categoryId = deviceConfigurationDao.saveCategory(categoryEditBean.getModelObject());
+        DeviceConfigCategory configCategory = categoryEditBean.getModelObject();
+        try {
+            int categoryId = deviceConfigurationService.saveCategory(configCategory);
+
+            flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + ".category.saveSuccess"));
+            
+            model.clear();
+            return "redirect:view?categoryId=" + categoryId;
+        } catch (DuplicateException de) {
+            log.debug("Creation of a device configuration category with an already existing name was attempted.");
+            
+            flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".category.nameExists"));
+            
+            if (configCategory.getCategoryId() == null) {
+                return "redirect:create?categoryType=" + configCategory.getCategoryType();
+            } else {
+                return "redirect:edit?categoryId=" + configCategory.getCategoryId();
+            }
+        }
+    }
+    
+    @RequestMapping
+    public String saveInPlace(ModelMap model, 
+                              FlashScope flashScope, 
+                              @ModelAttribute CategoryEditBean categoryEditBean,
+                              BindingResult bindingResult, 
+                              int configId,
+                              YukonUserContext context) {
+        CategoryType type = CategoryType.fromValue(categoryEditBean.getCategoryType());
+        
+        CategoryTemplate categoryTemplate = 
+                deviceConfigurationHelper.createTemplate(deviceConfigurationDao.getCategoryByType(type), context);
+
+        CategoryEditValidator validator = new CategoryEditValidator(categoryTemplate);
+        validator.validate(categoryEditBean, bindingResult);
+        
+        if (bindingResult.hasErrors()) {
+            flashScope.setMessage(
+                new YukonMessageSourceResolvable(baseKey + ".errorsExist"), 
+                FlashScopeMessageType.ERROR);
+            
+            // Return to the edit view if the category has an Id, create otherwise.
+            PageEditMode mode = categoryEditBean.getCategoryId() != null ? PageEditMode.EDIT : PageEditMode.CREATE;
+            
+            setupModelMap(model, mode, categoryEditBean, context);
+            return "editCategory.jsp";
+        }
+        
+        int categoryId = deviceConfigurationService.saveCategory(categoryEditBean.getModelObject());
         
         flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + ".category.saveSuccess"));
         
-        return viewOrEdit(model, categoryId, context, PageEditMode.VIEW);
+        viewOrEdit(model, categoryId, context, PageEditMode.VIEW);
+        
+        return "redirect:/deviceConfiguration/config/view?configId=" + configId;
     }
     
     /**
@@ -154,6 +255,10 @@ public class DeviceConfigurationCategoryController {
         categoryEditBean.setCategoryId(category.getCategoryId());
         categoryEditBean.setCategoryName(category.getCategoryName());
         categoryEditBean.setCategoryType(category.getCategoryType());
+        categoryEditBean.setDescription(category.getDescription());
+        
+        List<String> configNames = deviceConfigurationDao.getConfigurationNamesForCategory(category.getCategoryId());
+        categoryEditBean.setAssignments(configNames);
         
         List<DeviceConfigCategoryItem> deviceConfigurationItems = category.getDeviceConfigurationItems();
         
@@ -234,7 +339,7 @@ public class DeviceConfigurationCategoryController {
                               YukonUserContext context) {
         // This category can be deleted if it exists in the database and has no configuration assignments.
         boolean isDeletable = categoryEditBean.getCategoryId() == null ? false : 
-                deviceConfigurationDao.getNumberOfConfigurationsForCategory(categoryEditBean.getCategoryId()) == 0;
+                deviceConfigurationDao.getConfigurationNamesForCategory(categoryEditBean.getCategoryId()).size() == 0;
            
         model.addAttribute("isDeletable", isDeletable);
         

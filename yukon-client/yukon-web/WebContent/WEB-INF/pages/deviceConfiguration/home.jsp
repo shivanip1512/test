@@ -1,9 +1,37 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="tools" page="configs">
+
+<script type="text/javascript">
+
+jQuery(function() {
+    jQuery('.f-deviceGroupBtn').click(function() {
+        var args = jQuery(this).attr("data-function-arguments");
+        eval('args = ' + args);
+        showSelectedDevices(args.id, args.url);
+    });
+});
+
+function showSelectedDevices(divId, url) {
+    jQuery.ajax({
+        url: url,
+        success: function(transport) {
+            jQuery(document.getElementById(divId)).html(transport);
+            jQuery(document.getElementById(divId)).dialog({width: "auto", height: 500});
+        }
+    });
+}
+
+</script>
+
+<cti:msg var="popupTitle" key="yukon.common.device.bulk.selectedDevicesPopup.popupTitle" />
+<cti:msg var="warning" key="yukon.common.device.bulk.selectedDevicesPopup.warning" />
+
     <%-- DEVICE CONFIGURATIONS --%>
     <div class="column_12_12">
         <div class="column one">
@@ -15,7 +43,7 @@
                         <div><i:inline key=".configDetails.table.noConfigs"/></div>
                     </c:when>
                     <c:otherwise>
-                        <table id="configList" class="compactResultsTable rowHighlighting">
+                        <table id="configList" class="compactResultsTable rowHighlighting contextual-menu-list">
                             <thead>
                                 <tr>
                                     <th><i:inline key=".configDetails.table.configName"/></th>
@@ -32,8 +60,39 @@
                                             </cti:url>
                                             <a href="${viewUrl}">${config.name}</a>
                                         </td>
-                                        <td>
-                                            <spring:escapeBody htmlEscape="true">${config.numDevices}</spring:escapeBody>
+                                        <td class="contextual-menu">
+                                            <c:url var="selectedDevicesTableUrl" value="/bulk/selectedDevicesTableForGroupName">
+                                                <c:set var="fullName" value="/System/Device Configs/${config.name}"/>
+                                                <c:param name="groupName" value="${fn:escapeXml(fullName)}"/>
+                                            </c:url>
+                                            <cti:uniqueIdentifier var="id" prefix="selectedDevicesPopup_"/>
+                                            
+                                            <a href="javascript:void(0);" title="${warning}" class="fl f-deviceGroupBtn" data-function-arguments="{'id':'${id}', 'url':'${selectedDevicesTableUrl}'}">${fn:escapeXml(config.numDevices)}</a>
+                                            
+                                            <!-- Device Group popup div -->
+                                            <div title="${popupTitle}" id="${id}" class="dn"></div>
+                                            
+                                            <cm:dropdown icon="icon-cog" menuCssClass="fr">
+                                                <li>
+                                                    <cti:url var="groupUrl" value="/group/editor/home">
+                                                        <cti:param name="groupName" value="/System/Device Configs/${config.name}"/>
+                                                    </cti:url>
+                                                    <a href="${groupUrl}" class="f-cc-create clearfix">
+                                                        <i class="icon icon-folder-magnify"></i>
+                                                        <span class="fl dib"><i:inline key=".deviceGroup"/></span>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <cti:url var="collectionsUrl" value="/bulk/collectionActions">
+                                                        <cti:param name="collectionType" value="group"/>
+                                                        <cti:param name="group.name" value="/System/Device Configs/${config.name}"/>
+                                                    </cti:url>
+                                                    <a href="${collectionsUrl}" class="clearfix">
+                                                        <i class="icon icon-cog"></i>
+                                                        <span class="fl dib"><i:inline key=".collectionAction"/></span>
+                                                    </a>
+                                                </li>
+                                            </cm:dropdown>
                                         </td>
                                     </tr>
                                 </c:forEach>
@@ -43,7 +102,7 @@
                 </c:choose>
                 <cti:checkRolesAndProperties value="${editingRoleProperty}">
                     <div class="actionArea">
-                        <cti:url var="setupUrl" value="config/selectTypes"/>
+                        <cti:url var="setupUrl" value="config/create"/>
                         <cti:button nameKey="create" href="${setupUrl}" icon="icon-plus-green"/>
                     </div>
                 </cti:checkRolesAndProperties>
@@ -65,7 +124,7 @@
                                 <tr>
                                     <th><i:inline key=".categoryDetails.table.categoryName"/></th>
                                     <th><i:inline key=".categoryDetails.table.categoryType"/></th>
-                                    <th><i:inline key=".categoryDetails.table.numConfigs"/></th>
+                                    <th><i:inline key=".categoryDetails.table.numAssignments"/></th>
                                 </tr>
                             </thead>
                             <tfoot></tfoot>
@@ -86,7 +145,14 @@
                                             </spring:escapeBody>
                                         </td>
                                         <td>
-                                            <spring:escapeBody htmlEscape="true">${category.numConfigurations}</spring:escapeBody>
+                                            <div class="f-tooltip dn">
+                                                <c:forEach var="configName" items="${category.configNames}">
+                                                    <div class="detail">${configName}</div>
+                                                </c:forEach>
+                                            </div>
+                                            <div class="f-has-tooltip">
+                                                <spring:escapeBody htmlEscape="true">${fn:length(category.configNames)}</spring:escapeBody>
+                                            </div>
                                         </td>
                                     </tr>
                                 </c:forEach>

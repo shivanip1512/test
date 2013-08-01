@@ -11,5 +11,7 @@
         <property name="inputFile"  value="classpath:com/cannontech/common/device/config/configurationCategoryDefinition.xml"/>
 	    <property name="schemaFile" value="classpath:com/cannontech/common/device/config/configurationCategoryDefinition.xsd"/>
 	</bean>
+    
+    <bean class="com.cannontech.common.device.config.service.impl.DeviceConfigurationServiceImpl"/>
 	
 </beans>
