@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     7/10/2013 5:06:43 PM                         */
+/* Created on:     8/1/2013 2:09:10 PM                          */
 /*==============================================================*/
 
 
@@ -2869,6 +2869,7 @@ create table DeviceConfigCategory (
    DeviceConfigCategoryId numeric              not null,
    CategoryType         varchar(60)          not null,
    Name                 varchar(100)         not null,
+   Description          varchar(1024)        null,
    constraint PK_DeviceConfigCategory primary key (DeviceConfigCategoryId)
 )
 go
@@ -2945,6 +2946,7 @@ go
 create table DeviceConfiguration (
    DeviceConfigurationID numeric              not null,
    Name                 varchar(60)          not null,
+   Description          varchar(1024)        null,
    constraint PK_DeviceConfiguration primary key (DeviceConfigurationID)
 )
 go

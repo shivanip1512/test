@@ -11,6 +11,13 @@ UPDATE CalcBase SET UpdateType = 'Constant' WHERE UpdateType = 'CONSTANT';
 UPDATE CalcBase SET UpdateType = 'Historical' WHERE UpdateType = 'HISTORICAL';
 /* End YUK-12368 */
 
+/* Start YUK-12415 */
+ALTER TABLE DeviceConfiguration 
+ADD Description VARCHAR2(1024);
+
+ALTER TABLE DeviceConfigCategory 
+ADD Description VARCHAR2(1024);
+/* End YUK-12415 */
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

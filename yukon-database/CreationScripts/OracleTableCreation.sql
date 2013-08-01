@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     7/10/2013 5:05:28 PM                         */
+/* Created on:     8/1/2013 2:10:01 PM                          */
 /*==============================================================*/
 
 
@@ -2697,6 +2697,7 @@ create table DeviceConfigCategory  (
    DeviceConfigCategoryId NUMBER                          not null,
    CategoryType         VARCHAR2(60)                    not null,
    Name                 VARCHAR2(100)                   not null,
+   Description          VARCHAR2(1024),
    constraint PK_DeviceConfigCategory primary key (DeviceConfigCategoryId)
 );
 
@@ -2766,6 +2767,7 @@ alter table DeviceConfigDeviceTypes
 create table DeviceConfiguration  (
    DeviceConfigurationID NUMBER                          not null,
    Name                 VARCHAR2(60)                    not null,
+   Description          VARCHAR2(1024),
    constraint PK_DeviceConfiguration primary key (DeviceConfigurationID)
 );
 
