@@ -39,6 +39,8 @@ if(typeof(MeteringBilling) === 'undefined') {
 
             doc.on("submit", "#scheduleForm", this.do_schedule_billing_file_export);
             doc.on("click", "#billing_generation_schedule .f-cancel", this.reset_generation_tab);
+            jQuery("#billing_tab_container").tabs({
+                activate: this.on_tab_change });
 
             doc.on("click", "#tab_schedules a", this.update_schedules_job_list);
             doc.on("click", "#billing_schedules_jobs #jobsTable button", this.do_schedules_job_list_button);
@@ -98,6 +100,18 @@ if(typeof(MeteringBilling) === 'undefined') {
             return MeteringBilling._do_submit_settings_form(event, 'get', MeteringBilling._url_scheduled_billing_form);
         },
 
+        on_tab_change : function(event, ui){
+            var from = ui.oldPanel.children("div").attr('id');
+            if(from !='billing_generation_settings') {
+                return;
+            }
+            var to = ui.newPanel.children("div").attr('id');
+            if(to ==='billing_generation_settings') {
+                return;
+            }
+            MeteringBilling.reset_generation_tab();
+        },
+
         /**
          * We're leaving the file path, date/periodic information, and email address as-is.
          */
@@ -106,11 +120,38 @@ if(typeof(MeteringBilling) === 'undefined') {
                 MeteringBilling._STOP_EVENT(event);
             }
             var settingsPane = jQuery("#billing_generation_settings");
-            var maybeNewPane = jQuery("#billing_generation_schedule");
+            var schedParams = jQuery("#billing_generation_schedule");
+            schedParams.hide();
+            settingsPane.hide();
+            settingsPane.find("[name=fileFormat]").val('4'); // = CTI-CSV
+            settingsPane.find("[name=endDate]").val(jQuery.datepicker.formatDate('mm/dd/yy', new Date()));
+            settingsPane.find("[name=demandDays]").val('30');
+            settingsPane.find("[name=energyDays]").val('7');
+            settingsPane.find("[name=removeMultiplier]").removeAttr('checked');
+            settingsPane.find("input[type=text][data-tree-id=billingTree]").val('Search');
             settingsPane.show();
-            maybeNewPane.hide();
-            maybeNewPane.find("[name=scheduleName], [name=exportFileName]").val('');
-            maybeNewPane.find("[name=appendDateToFileName]").removeAttr('checked');
+
+            schedParams.find("[name=scheduleName], [name=exportFileName], #notificationEmailAddresses").val('');
+            schedParams.find("#sameAsSchedName").attr('checked','checked');
+            schedParams.find("#appendDateToFileName, #overrideFileExtension, #includeExportCopy").removeAttr('checked');
+            schedParams.find("#timestampPatternField").val('_yyyyMMddHHmmss');
+            schedParams.find("#exportFileExtension").val('.csv');
+            schedParams.find("#exportPath :nth-child(1)").attr('selected', 'selected');
+            schedParams.find("[name=scheduleCronString_CRONEXP_FREQ]").val('DAILY');   // Does this show/hide properly?
+            schedParams.find("[name=scheduleCronString_CRONEXP_HOUR]").val('1');
+            schedParams.find("[name=scheduleCronString_CRONEXP_MINUTE]").val('0');
+            schedParams.find("[name=scheduleCronString_CRONEXP_AMPM]").val('AM');
+            schedParams.find("[name=scheduleCronString_CRONEXP_DAILY_OPTION][value=EVERYDAY]").attr('checked','checked');
+
+            var dailyCheckboxes = "[name=scheduleCronString_CRONEXP_WEEKLY_OPTION_EVERY_X_WEEKS_ON_SUN], [name=scheduleCronString_CRONEXP_WEEKLY_OPTION_EVERY_X_WEEKS_ON_MON], [name=scheduleCronString_CRONEXP_WEEKLY_OPTION_EVERY_X_WEEKS_ON_TUES], [name=scheduleCronString_CRONEXP_WEEKLY_OPTION_EVERY_X_WEEKS_ON_WED], [name=scheduleCronString_CRONEXP_WEEKLY_OPTION_EVERY_X_WEEKS_ON_THURS], [name=scheduleCronString_CRONEXP_WEEKLY_OPTION_EVERY_X_WEEKS_ON_FRI], [name=scheduleCronString_CRONEXP_WEEKLY_OPTION_EVERY_X_WEEKS_ON_SAT]";
+            schedParams.find(dailyCheckboxes).removeAttr('checked');
+            schedParams.find("[name=scheduleCronString_CRONEXP_MONTHLY_OPTION]").attr('checked','checked');
+            schedParams.find("[name=scheduleCronString_CRONEXP_MONTHLY_OPTION_ON_DAY_X]").val('1');
+            schedParams.find("[name=scheduleCronString_CRONEXP_CUSTOM_EXPRESSION]").val('0 0 1 1 * ?');
+            
+            // AND we have to reset the hidden form's values too!
+            var hiddenForm2 = schedParams.find("#scheduleForm");
+            hiddenForm2.find("[name=deviceGroups], [name=fileFormat], [name=demandDays], [name=energyDays], [name=removeMultiplier], [name=jobId], [name=_appendDateToFileName], [name=_overrideFileExtension], [name=_includeExportCopy]").val('');
         },
 
 
