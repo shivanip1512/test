@@ -258,10 +258,6 @@
         });
         jQuery('.f-initialFocus').focus();
     });
-    
-    function escapePreview(someString) {
-    	return someString;
-    }
 </script>
 
     <cti:includeScript link="/JavaScript/yukonGeneral.js" />
