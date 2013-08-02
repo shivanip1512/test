@@ -593,7 +593,9 @@ nav,header,footer,section,aside,hgroup,section {
 .column_4_14_6 > .three {
 	width: 23.48178138%;
 }
-
+.column_6_6_12 > .one{width:23.48178138%}
+.column_6_6_12 > .two{width:23.48178138%}
+.column_6_6_12 > .three{width:48.98785425%}
 .column_6_8_10 > .one {
 	width: 23.48178138%;
 }

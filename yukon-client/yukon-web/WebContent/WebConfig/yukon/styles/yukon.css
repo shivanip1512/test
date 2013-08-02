@@ -312,12 +312,12 @@ table.nowrap th,table.nowrap td {
 	margin: 0 10px;
 }
 
-.nameValueTable .name {
+.nameValueTable .name,.property-list .name {
 	color: #666;
 	vertical-align: middle;
 }
 
-.nameValueTable .value {
+.nameValueTable .value,.property-list .value {
 	color: #333;
 }
 
@@ -685,10 +685,6 @@ ul.disc li {
 
 .liteContainer {
 	border-style: solid none;
-}
-
-.liteContainer .setting:first-child {
-	border-top: none;
 }
 
 .pagedBox .contextArea {
@@ -1175,9 +1171,13 @@ body ::-webkit-scrollbar-button {
 }
 
 .setting {
-	border-top: dotted 1px #ccc;
+	border-top: dashed 1px #ccc;
 	margin-top: -1px;
 	padding: 10px 0;
+}
+
+.liteContainer .setting:first-child,.sectionContainer .setting:first-child,.boxContainer .setting:first-child {
+	border-top: none;
 }
 
 .setting > .fl {

@@ -150,8 +150,8 @@ table.nowrap th, table.nowrap td {white-space: nowrap;}
 .compactResultsPaging .pagingArea {float: right; margin: -1px 50px 0 0; border: 1px solid #ccc; border-style: none solid solid solid; padding: 5px 10px;background-color: white;}
 .compactResultsPaging span {line-height: 16px;}
 .compactResultsPaging .pageNumText {margin: 0 10px;}
-.nameValueTable .name {color: #666;vertical-align: middle;}
-.nameValueTable .value {color: #333;}
+.nameValueTable .name, .property-list .name {color: #666;vertical-align: middle;}
+.nameValueTable .value, .property-list .value {color: #333;}
 
 .rowHighlighting tr:hover, .highlighted {background-color:#dedede !important;}
 .aligned_4_actions .first, .aligned_4_actions .middle {width: 30%;}
@@ -261,7 +261,6 @@ ul.disc li {list-style-type: disc; margin-left: 25px;}
 .sectionContainer {border:none;}
 .sectionContainer > .titleBar {background:transparent;font-weight:bold;}
 .liteContainer {border-style:solid none;}
-.liteContainer .setting:first-child {border-top: none;}
 
 .pagedBox .contextArea {margin: 0 20px 0 0; font-weight: normal;} /* TODO: change title span to h3 to avoid this 'undo' font css rule */
 .pagedBox .contextArea .navLink {position: relative;}
@@ -384,7 +383,8 @@ body ::-webkit-scrollbar-button{display:none}
 .dashboard .subcategory li {margin: 0 0 10px;}
 .category .medium-icon {margin: 5px 15px 15px 5px; }
 .category .meta {margin-top: 5px;}
-.setting {border-top: dotted 1px #ccc; margin-top: -1px; padding: 10px 0;}
+.setting {border-top: dashed 1px #ccc; margin-top: -1px; padding: 10px 0;}
+.liteContainer .setting:first-child, .sectionContainer .setting:first-child, .boxContainer .setting:first-child {border-top: none;}
 .setting > .fl {margin-left: 10px;}
 .setting_details {width: 380px;}
 .setting_details_more {width: 520px;}
