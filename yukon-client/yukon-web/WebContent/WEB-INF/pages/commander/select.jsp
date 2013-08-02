@@ -27,22 +27,28 @@
     <p>&nbsp;</p>
 
 <c:set var="isDevicesPage" value='${category == "MCT" || category == "IED" || category == "RTU" || category == "TRANSMITTER"}'/>
-<c:set var="isLoadMngtPage" value='${category == "LMGROUP"}'/>
+<c:set var="isCapCtrlPage" value='${category == "CAP"}'/>
+<c:set var="isLoadMngtPage" value='${not (isDevicesPage or isCapCtrlPage)}'/>
 <cti:linkTabbedContainer mode="section" id="page_header_tab_container">
     <cti:linkTab tabId="deviceTab" selectorKey="yukon.web.menu.config.commanderSelect.devices" 
-                                   initiallySelected="${isDevicesPage}">javascript:void(0);</cti:linkTab>
+                                   initiallySelected="${isDevicesPage}">
+        <c:url value="/commander/select?category=MCT" />
+    </cti:linkTab>
 
     <cti:linkTab tabId="loadMgtTab" selectorKey="yukon.web.menu.config.commanderSelect.lm" 
-                                    initiallySelected="${isLoadMngtPage}">javascript:void(0);</cti:linkTab>
+                                    initiallySelected="${isLoadMngtPage}">
+        <c:url value="/commander/select?category=LMGROUP" />
+    </cti:linkTab>
 
     <cti:linkTab tabId="capControlTab" selectorKey="yukon.web.menu.config.commanderSelect.capcontrol"
-                                       initiallySelected='${category == "CAP"}'>
+                                    initiallySelected="${isCapCtrlPage}">
         <c:url value="/commander/select?category=CAP" />
     </cti:linkTab>
 </cti:linkTabbedContainer>
 
 <%-- START Secondary Menu --%>
-    <div id="menuL2Devices" class="secondary-menu<c:if test="${not isDevicesPage}"> dn</c:if>">
+<c:if test="${isDevicesPage}">
+    <div id="menuL2Devices" class="secondary-menu">
         <c:url var="tab_url" value="/commander/select" />
         <tags:displayOrLink labelKey="yukon.web.menu.config.commanderSelect.devices.mct" showPlainText='${category == "MCT"}' href="${tab_url}" />
         |
@@ -55,17 +61,19 @@
         <c:url var="tab_url" value="/commander/select?category=TRANSMITTER" />
         <tags:displayOrLink labelKey="yukon.web.menu.config.commanderSelect.devices.transmitter" showPlainText='${category == "TRANSMITTER"}' href="${tab_url}" />
     </div>
-
-    <div id="menuL2LoadMgt" class="secondary-menu<c:if test="${not isLoadMngtPage}"> dn</c:if>">
+</c:if>
+<c:if test="${isLoadMngtPage}">
+    <div id="menuL2LoadMgt" class="secondary-menu">
         <c:url var="tab_url" value="/commander/select?category=LMGROUP" />
         <tags:displayOrLink labelKey="yukon.web.menu.config.commanderSelect.lm.group" showPlainText='${category == "LMGROUP"}' href="${tab_url}" />
         |
         <c:url var="tab_url" value="/commander/command/xcom" />
-        <tags:displayOrLink labelKey="yukon.web.menu.config.commanderSelect.lm.xcom.tab.title" showPlainText='${false}' href="${tab_url}" />
+        <tags:displayOrLink labelKey="yukon.web.menu.config.commanderSelect.lm.xcom.tab.title" showPlainText='${serialType == "xcom"}' href="${tab_url}" />
         |
         <c:url var="tab_url" value="/commander/command/vcom" />
-        <tags:displayOrLink labelKey="yukon.web.menu.config.commanderSelect.lm.vcom.tab.title" showPlainText='${false}' href="${tab_url}" />
+        <tags:displayOrLink labelKey="yukon.web.menu.config.commanderSelect.lm.vcom.tab.title" showPlainText='${serialType == "vcom"}' href="${tab_url}" />
     </div>
+</c:if>
 <%-- END Secondary Menu --%>
 
     <script>
@@ -76,21 +84,6 @@
                 </c:forEach>
                 
                 jQuery('#filterForm')[0].submit();
-            });
-            
-            jQuery('#loadMgtTab').click(function(){
-                jQuery('#menuL2Devices').hide();
-                jQuery('#menuL2LoadMgt').show();
-                jQuery('#deviceTab').removeClass('ui-tabs-active ui-state-active');
-                jQuery('#capControlTab').removeClass('ui-tabs-active ui-state-active');
-                jQuery('#loadMgtTab').addClass('ui-tabs-active ui-state-active');
-            });
-            jQuery('#deviceTab').click(function(){
-                jQuery('#menuL2LoadMgt').hide();
-                jQuery('#menuL2Devices').show();
-                jQuery('#loadMgtTab').removeClass('ui-tabs-active ui-state-active');
-                jQuery('#capControlTab').removeClass('ui-tabs-active ui-state-active');
-                jQuery('#deviceTab').addClass('ui-tabs-active ui-state-active');
             });
         });
     </script>
@@ -155,6 +148,7 @@
 		                            <c:when test="${field eq 'NAME'}">
 		                            <cti:url var="commandUrl" value="/commander/command">
 		                                <cti:param name="deviceId" value="${searchResultRow.map['id']}"/>
+		                                <cti:param name="category" value="${category}"/>
 		                            </cti:url>
 		                            <td><a href="${commandUrl}">${value}</a></td>
 		                            </c:when>
