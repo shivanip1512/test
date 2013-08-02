@@ -1,4 +1,4 @@
-<%@ tag trimDirectiveWhitespaces="true" description="Use this tag to create a dropdown menu option inside a dropdown.tag element." %>
+<%@ tag trimDirectiveWhitespaces="true" dynamic-attributes="attrs" description="Use this tag to create a dropdown menu option inside a dropdown.tag element." %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
@@ -11,24 +11,61 @@
 <%@ attribute name="href" description="Href attribute applied to the 'a' element." %>
 <%@ attribute name="key" description="Required when 'label' or 'displayable' attributes are not used." %>
 <%@ attribute name="label" description="Text for the criteria name, ie'RFN-420 FL'" %>
+<%@ attribute name="disabled" %>
 
 <cti:default var="icon" value="icon-blank"/>
 <c:set var="classes" value="clearfix ${pageScope.classes}"/>
 
-<li <c:if test="${not empty pageScope.id}">id="${id}"</c:if>>
+<li <c:if test="${not empty pageScope.id}">id="${id}"</c:if> <c:forEach items="${pageScope.attrs}" var="attr">${attr.key}="${attr.value}"</c:forEach>>
     <a <c:if test="${not empty pageScope.href}">href="${href}"</c:if> class="${classes}">
         <c:choose>
             <c:when test="${pageScrope.displayable}">
-                <cti:icon icon="${icon}"/><span><cti:formatObject value="${displayable}"/></span>
+                <c:choose>
+                    <c:when test="${not empty pageScope.disabled && disabled == 'true'}">
+                        <cti:icon icon="${icon}" classes="disabled"/>
+                    </c:when>
+                    <c:otherwise>
+                        <cti:icon icon="${icon}"/>
+                    </c:otherwise>
+                </c:choose>
+                <span class="fl dib <c:if test="${not empty pageScope.disabled && disabled == 'true'}">disabled</c:if>">
+                    <cti:formatObject value="${displayable}"/>
+                </span>
             </c:when>
             <c:when test="${pageScrope.key}">
-                <cti:icon icon="${icon}"/><span><cti:msg2 key="${key}"/></span>
+                <c:choose>
+                    <c:when test="${not empty pageScope.disabled && disabled == 'true'}">
+                        <cti:icon icon="${icon}" classes="disabled"/>
+                    </c:when>
+                    <c:otherwise>
+                        <cti:icon icon="${icon}"/>
+                    </c:otherwise>
+                </c:choose>
+                <span class="fl dib <c:if test="${not empty pageScope.disabled && disabled == 'true'}">disabled</c:if>">
+                    <cti:msg2 key="${key}"/>
+                </span>
             </c:when>
             <c:when test="${pageScrope.label}">
-                <cti:icon icon="${icon}"/><span>${fn:escapeXml(label)}</span>
+                <c:choose>
+                    <c:when test="${not empty pageScope.disabled && disabled == 'true'}">
+                        <cti:icon icon="${icon}" classes="disabled"/>
+                    </c:when>
+                    <c:otherwise>
+                        <cti:icon icon="${icon}"/>
+                    </c:otherwise>
+                </c:choose>
+                <span class="fl dib <c:if test="${not empty pageScope.disabled && disabled == 'true'}">disabled</c:if>">${fn:escapeXml(label)}</span>
             </c:when>
             <c:otherwise>
-                <cti:icon icon="${icon}"/><span><jsp:doBody/></span>
+                <c:choose>
+                    <c:when test="${not empty pageScope.disabled && disabled == 'true'}">
+                        <cti:icon icon="${icon}" classes="disabled"/>
+                    </c:when>
+                    <c:otherwise>
+                        <cti:icon icon="${icon}"/>
+                    </c:otherwise>
+                </c:choose>
+                <span class="fl dib <c:if test="${not empty pageScope.disabled && disabled == 'true'}">disabled</c:if>"><jsp:doBody/></span>
             </c:otherwise>
         </c:choose>
     </a>

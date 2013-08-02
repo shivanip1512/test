@@ -1,4 +1,4 @@
-<%@ tag trimDirectiveWhitespaces="true" %>
+<%@ tag trimDirectiveWhitespaces="true" dynamic-attributes="attrs" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
