@@ -2874,7 +2874,7 @@ create table DeviceConfigCategory (
 )
 go
 
-INSERT INTO DeviceConfigCategory VALUES (0, 'dnp', 'Default DNP Category');
+INSERT INTO DeviceConfigCategory VALUES (0, 'dnp', 'Default DNP Category', 'The Default DNP Category');
 
 alter table DeviceConfigCategory
    add constraint AK_DeviceConfigCategory_Name unique (Name)
@@ -2951,7 +2951,7 @@ create table DeviceConfiguration (
 )
 go
 
-INSERT INTO DeviceConfiguration VALUES (-1, 'Default DNP Configuration');
+INSERT INTO DeviceConfiguration VALUES (-1, 'Default DNP Configuration', 'The Default DNP Configuration');
 
 /*==============================================================*/
 /* Table: DeviceConfigurationDeviceMap                          */
