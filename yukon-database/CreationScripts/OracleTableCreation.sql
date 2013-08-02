@@ -1419,7 +1419,7 @@ insert into command values(-2, 'getvalue demand', 'Read Current Demand', 'All MC
 insert into command values(-3, 'getconfig model', 'Read Meter Config', 'All MCTs');
 insert into command values(-4, 'putvalue kyz 1 reset', 'Clear kWh Reading', 'All MCTs');
 insert into command values(-5, 'getvalue powerfail', 'Read Powerfail', 'All MCTs');
-insert into command values(-6, 'getstatus internal', 'Read General Info', 'All MCTs'); 
+insert into command values(-6, 'getstatus internal', 'Read General Info', 'All MCTs');
 insert into command values(-7, 'getconfig mult kyz 1', 'Read MPKH ()', 'All MCTs');
 insert into command values(-8, 'putconfig emetcon multiplier kyz1 ?Multiplier(x.xxx)', 'Write MPKH ()', 'All MCTs');
 insert into command values(-9, 'getconfig interval ?LP/LI', 'Read Demand Interval (LP or LI)', 'All MCTs');
@@ -1532,7 +1532,7 @@ INSERT INTO Command VALUES(-94, 'control cycle terminate relay 3', 'Terminate Cy
 
 INSERT INTO Command VALUES(-95, 'putconfig service out', 'Set to Out-of-Service', 'VersacomSerial');
 INSERT INTO Command VALUES(-96, 'putconfig service in', 'Set to In-Service', 'VersacomSerial');
-INSERT INTO Command VALUES(-97, 'putconfig led yyy', 'Configure LEDS (load, test, report)', 'VersacomSerial'); 
+INSERT INTO Command VALUES(-97, 'putconfig led yyy', 'Configure LEDS (load, test, report)', 'VersacomSerial');
 INSERT INTO Command VALUES(-98, 'putconfig emetcon disconnect', 'Upload Disconnect Address', 'MCT-410IL');
 INSERT INTO Command VALUES(-99, 'getconfig disconnect', 'Read Disconnect Address/Status', 'MCT-410IL');
 INSERT INTO Command VALUES(-100, 'scan general', 'General Meter Scan', 'SENTINEL');
@@ -1573,28 +1573,28 @@ INSERT INTO Command VALUES(-133, 'putconfig xcom utility usage ?''Channel'':?''V
 INSERT INTO Command VALUES(-134, 'putconfig xcom data ''?''Text Message'''' port ?''Port (0 is default)'' deletable msgpriority 7 timeout 30 hour clear', 'Thermostat Text Message', 'ExpresscomSerial');
 
 INSERT INTO Command VALUES(-135, 'control xcom backlight cycles 20 duty 30 bperiod 10', 'Thermostat Display Blink', 'ExpresscomSerial');
-INSERT INTO Command VALUES(-136, 'putconfig emetcon timezone ?''Enter Timezone (et|ct|mt|pt OR #offset)''', 'Write Timezone to Meter', 'MCT-430A'); 
+INSERT INTO Command VALUES(-136, 'putconfig emetcon timezone ?''Enter Timezone (et|ct|mt|pt OR #offset)''', 'Write Timezone to Meter', 'MCT-430A');
 INSERT INTO Command VALUES(-137, 'putconfig emetcon outage ?''Enter number of cycles before outage is recorded''', 'Write Threshold (number of cycles before outage recorded) to Meter', 'MCT-410IL');
 INSERT INTO Command VALUES(-138, 'getvalue peak channel 2', 'Read Peak (Channel 2)', 'MCT-410IL');
-INSERT INTO Command VALUES(-139, 'getvalue peak channel 3', 'Read Peak (Channel 3)', 'MCT-410IL'); 
-INSERT INTO Command VALUES(-140, 'getstatus freeze', 'Read the freeze timestamp, counter, and next freeze expected for demand and voltage.', 'MCT-410IL'); 
-INSERT INTO Command VALUES(-141, 'putconfig emetcon freeze day ?''Day of month (0-31)''', 'Set meter to freeze on X day of month (use 0 for disable).', 'MCT-410IL'); 
-INSERT INTO Command VALUES(-142, 'getconfig freeze', 'Read freeze config from meter and enable scheduled freeze processing in Yukon.', 'MCT-410IL'); 
+INSERT INTO Command VALUES(-139, 'getvalue peak channel 3', 'Read Peak (Channel 3)', 'MCT-410IL');
+INSERT INTO Command VALUES(-140, 'getstatus freeze', 'Read the freeze timestamp, counter, and next freeze expected for demand and voltage.', 'MCT-410IL');
+INSERT INTO Command VALUES(-141, 'putconfig emetcon freeze day ?''Day of month (0-31)''', 'Set meter to freeze on X day of month (use 0 for disable).', 'MCT-410IL');
+INSERT INTO Command VALUES(-142, 'getconfig freeze', 'Read freeze config from meter and enable scheduled freeze processing in Yukon.', 'MCT-410IL');
 INSERT INTO Command VALUES(-143, 'putconfig xcom extended tier ?''tier'' rate ?''rate'' cmd ?''cmd'' display 3 timeout 600 delay 5432', 'Thermostat Extended Tier Message', 'ExpresscomSerial');
-INSERT INTO Command VALUES(-144, 'putconfig emetcon channel 1 ied input 1', 'Configure 430 kW LP Collection', 'MCT-430A'); 
+INSERT INTO Command VALUES(-144, 'putconfig emetcon channel 1 ied input 1', 'Configure 430 kW LP Collection', 'MCT-430A');
 
-/* Versacom */ 
-INSERT INTO Command VALUES(-145, 'putconfig vcom lcrmode ?''Enter e|v (for Emetcon or Versacom)''', 'Set LCR3100 Versacom mode', 'VersacomSerial'); 
-INSERT INTO Command VALUES(-146, 'putconfig vcom silver ?''Enter a value 1-60''', 'Set LCR3100 Versacom Silver Addressing', 'VersacomSerial'); 
-INSERT INTO Command VALUES(-147, 'putconfig vcom gold ?''Enter a value 1-4''', 'Set LCR3100 Versacom Gold Addressing', 'VersacomSerial'); 
+/* Versacom */
+INSERT INTO Command VALUES(-145, 'putconfig vcom lcrmode ?''Enter e|v (for Emetcon or Versacom)''', 'Set LCR3100 Versacom mode', 'VersacomSerial');
+INSERT INTO Command VALUES(-146, 'putconfig vcom silver ?''Enter a value 1-60''', 'Set LCR3100 Versacom Silver Addressing', 'VersacomSerial');
+INSERT INTO Command VALUES(-147, 'putconfig vcom gold ?''Enter a value 1-4''', 'Set LCR3100 Versacom Gold Addressing', 'VersacomSerial');
 
-/* ExpressCom */ 
-INSERT INTO Command VALUES(-148, 'putconfig xcom lcrmode ?''Enter Ex|Em|V|G (For example: ExEmVG or ExV)''', 'Set LCR3100 Expresscom mode', 'ExpresscomSerial'); 
-INSERT INTO Command VALUES(-149, 'putconfig xcom silver ?''Enter a value 1-60''', 'Set LCR3100 Expresscom Silver Addressing', 'ExpresscomSerial'); 
-INSERT INTO Command VALUES(-150, 'putconfig xcom gold ?''Enter a value 1-4''', 'Set LCR3100 Expresscom Gold Addressing', 'ExpresscomSerial'); 
-INSERT INTO Command VALUES(-151, 'putconfig xcom lcrmode Ex', 'Set LCR3100 Expresscom mode', 'ExpresscomSerial'); 
-INSERT INTO Command VALUES(-152, 'putconfig xcom lcrmode V', 'Set LCR3100 Versacom mode', 'ExpresscomSerial'); 
-INSERT INTO Command VALUES(-153, 'putconfig xcom lcrmode Em', 'Set LCR3100 Emetcon mode', 'ExpresscomSerial'); 
+/* ExpressCom */
+INSERT INTO Command VALUES(-148, 'putconfig xcom lcrmode ?''Enter Ex|Em|V|G (For example: ExEmVG or ExV)''', 'Set LCR3100 Expresscom mode', 'ExpresscomSerial');
+INSERT INTO Command VALUES(-149, 'putconfig xcom silver ?''Enter a value 1-60''', 'Set LCR3100 Expresscom Silver Addressing', 'ExpresscomSerial');
+INSERT INTO Command VALUES(-150, 'putconfig xcom gold ?''Enter a value 1-4''', 'Set LCR3100 Expresscom Gold Addressing', 'ExpresscomSerial');
+INSERT INTO Command VALUES(-151, 'putconfig xcom lcrmode Ex', 'Set LCR3100 Expresscom mode', 'ExpresscomSerial');
+INSERT INTO Command VALUES(-152, 'putconfig xcom lcrmode V', 'Set LCR3100 Versacom mode', 'ExpresscomSerial');
+INSERT INTO Command VALUES(-153, 'putconfig xcom lcrmode Em', 'Set LCR3100 Emetcon mode', 'ExpresscomSerial');
 
 /* TOU */
 INSERT INTO Command VALUES(-154, 'getvalue tou kwh', 'Read Current TOU kWh for rates A, B, C, D.', 'MCT-410IL');
@@ -1613,27 +1613,27 @@ INSERT INTO Command VALUES(-165, 'getvalue shedtime relay 3 previous ?''12 , 24,
 INSERT INTO Command VALUES(-166, 'getvalue shedtime relay 4 previous ?''12 , 24, or 36''', 'Relay 4 Shed Time', 'All Two Way LCR');
 INSERT INTO Command VALUES(-167, 'getvalue propcount', 'Prop Count', 'All Two Way LCR');
 
-INSERT INTO Command VALUES(-168, 'putvalue emetcon ied reset a3', 'Reset IED Demand.', 'MCT-430A3'); 
+INSERT INTO Command VALUES(-168, 'putvalue emetcon ied reset a3', 'Reset IED Demand.', 'MCT-430A3');
 INSERT INTO Command VALUES(-169, 'getvalue daily read ?''MM/DD/YYYY''', 'Read Daily kWh, Peak kW, and Outages (Channel 1 only, up to 8 days ago)', 'MCT-410IL');
 INSERT INTO Command VALUES(-170, 'getvalue daily read detail channel ?''Channel 2|3'' ?''MM/DD/YYYY''', 'Read Daily kWh, Peak Demand, Outages (Channel 2 or 3).', 'MCT-410IL');
 
 INSERT INTO Command VALUES(-171, 'putvalue ovuv analog 1 0', 'Disable OVUV', 'Twoway CBCs');
 INSERT INTO Command VALUES(-172, 'putvalue ovuv analog 1 1', 'Enable OVUV', 'Twoway CBCs');
-INSERT INTO Command VALUES(-173, 'putvalue analog ?''Enter point offset'' ?''Enter value''', 'Write Value', 'Twoway CBCs'); 
+INSERT INTO Command VALUES(-173, 'putvalue analog ?''Enter point offset'' ?''Enter value''', 'Write Value', 'Twoway CBCs');
 
-INSERT INTO Command VALUES(-174, 'control xcom shed 5m relay 1', 'Shed 5-min Relay 1', 'ExpresscomSerial'); 
-INSERT INTO Command VALUES(-175, 'control xcom shed 5m relay 2', 'Shed 5-min Relay 2', 'ExpresscomSerial'); 
-INSERT INTO Command VALUES(-176, 'control xcom shed 5m relay 3', 'Shed 5-min Relay 3', 'ExpresscomSerial'); 
-INSERT INTO Command VALUES(-177, 'control xcom restore relay 1', 'Restore Relay 1', 'ExpresscomSerial'); 
-INSERT INTO Command VALUES(-178, 'control xcom restore relay 2', 'Restore Relay 2', 'ExpresscomSerial'); 
-INSERT INTO Command VALUES(-179, 'control xcom restore relay 3', 'Restore Relay 3', 'ExpresscomSerial'); 
-INSERT INTO Command VALUES(-180, 'control xcom cycle 50 period 30 relay 1', 'Cycle 50 Period-30 Relay 1', 'ExpresscomSerial'); 
-INSERT INTO Command VALUES(-181, 'control xcom cycle terminate relay 1', 'Terminate Cycle Relay 1', 'ExpresscomSerial'); 
-INSERT INTO Command VALUES(-182, 'control xcom cycle terminate relay 2', 'Terminate Cycle Relay 2', 'ExpresscomSerial'); 
-INSERT INTO Command VALUES(-183, 'control xcom cycle terminate relay 3', 'Terminate Cycle Relay 3', 'ExpresscomSerial'); 
-INSERT INTO Command VALUES(-184, 'putconfig xcom service out', 'Set to Out-of-Service', 'ExpresscomSerial'); 
-INSERT INTO Command VALUES(-185, 'putconfig xcom service in', 'Set to In-Service', 'ExpresscomSerial'); 
-INSERT INTO Command VALUES(-186, 'putconfig xcom led yyy', 'Configure LEDS (load, test, report)', 'ExpresscomSerial'); 
+INSERT INTO Command VALUES(-174, 'control xcom shed 5m relay 1', 'Shed 5-min Relay 1', 'ExpresscomSerial');
+INSERT INTO Command VALUES(-175, 'control xcom shed 5m relay 2', 'Shed 5-min Relay 2', 'ExpresscomSerial');
+INSERT INTO Command VALUES(-176, 'control xcom shed 5m relay 3', 'Shed 5-min Relay 3', 'ExpresscomSerial');
+INSERT INTO Command VALUES(-177, 'control xcom restore relay 1', 'Restore Relay 1', 'ExpresscomSerial');
+INSERT INTO Command VALUES(-178, 'control xcom restore relay 2', 'Restore Relay 2', 'ExpresscomSerial');
+INSERT INTO Command VALUES(-179, 'control xcom restore relay 3', 'Restore Relay 3', 'ExpresscomSerial');
+INSERT INTO Command VALUES(-180, 'control xcom cycle 50 period 30 relay 1', 'Cycle 50 Period-30 Relay 1', 'ExpresscomSerial');
+INSERT INTO Command VALUES(-181, 'control xcom cycle terminate relay 1', 'Terminate Cycle Relay 1', 'ExpresscomSerial');
+INSERT INTO Command VALUES(-182, 'control xcom cycle terminate relay 2', 'Terminate Cycle Relay 2', 'ExpresscomSerial');
+INSERT INTO Command VALUES(-183, 'control xcom cycle terminate relay 3', 'Terminate Cycle Relay 3', 'ExpresscomSerial');
+INSERT INTO Command VALUES(-184, 'putconfig xcom service out', 'Set to Out-of-Service', 'ExpresscomSerial');
+INSERT INTO Command VALUES(-185, 'putconfig xcom service in', 'Set to In-Service', 'ExpresscomSerial');
+INSERT INTO Command VALUES(-186, 'putconfig xcom led yyy', 'Configure LEDS (load, test, report)', 'ExpresscomSerial');
 INSERT INTO Command VALUES(-187, 'getconfig ied dnp address', 'Read DNP address configuration', 'MCT-470');
 INSERT INTO Command VALUES(-188, 'putconfig emetcon ied dnp address master ?''Master address'' outstation ?''Outstation address''', 'Write DNP address configuration', 'MCT-470');
 
@@ -2490,7 +2490,7 @@ INSERT INTO DynamicBillingField VALUES(20, 21, 'rateADemand - timestamp', 10, 'M
 INSERT INTO DynamicBillingField VALUES(21, 21, 'rateBConsumption - reading', 11, '#####', 0, ' ','none','ELECTRIC','HALF_EVEN', 'ONE');
 INSERT INTO DynamicBillingField VALUES(22, 21, 'rateBDemand - reading', 12, '##0.000', 0, ' ','none','ELECTRIC','HALF_EVEN', 'ONE');
 INSERT INTO DynamicBillingField VALUES(23, 21, 'rateBDemand - timestamp', 13, 'HH:mm', 0, ' ','none','ELECTRIC','HALF_EVEN', 'ONE');
-INSERT INTO DynamicBillingField VALUES(24, 21, 'rateBDemand - timestamp', 14, 'MM/dd/yyyy', 0, ' ','none','ELECTRIC','HALF_EVEN', 'ONE'); 
+INSERT INTO DynamicBillingField VALUES(24, 21, 'rateBDemand - timestamp', 14, 'MM/dd/yyyy', 0, ' ','none','ELECTRIC','HALF_EVEN', 'ONE');
 
 /*==============================================================*/
 /* Table: DYNAMICBILLINGFORMAT                                  */
@@ -2504,7 +2504,7 @@ create table DYNAMICBILLINGFORMAT  (
 );
 
 insert into DynamicBillingFormat values( 31, ',' ,'H Meter kWh Time Date Peak PeakT PeakD', ' ');
-insert into DynamicBillingFormat values( 21, ',' ,' ' ,' '); 
+insert into DynamicBillingFormat values( 21, ',' ,' ' ,' ');
 
 /*==============================================================*/
 /* Table: DYNAMICCCAREA                                         */
@@ -2701,7 +2701,7 @@ create table DeviceConfigCategory  (
    constraint PK_DeviceConfigCategory primary key (DeviceConfigCategoryId)
 );
 
-INSERT INTO DeviceConfigCategory VALUES (0, 'dnp', 'Default DNP Category');
+INSERT INTO DeviceConfigCategory VALUES (0, 'dnp', 'Default DNP Category', null);
 
 alter table DeviceConfigCategory
    add constraint AK_DeviceConfigCategory_Name unique (Name);
@@ -2855,14 +2855,14 @@ INSERT INTO DeviceGroup VALUES (10, 'DisconnectedStatus', 8, 'NOEDIT_MOD', 'STAT
 INSERT INTO DeviceGroup VALUES (11, 'UsageMonitoring', 8, 'NOEDIT_MOD', 'STATIC', '01-JAN-2013', 'USAGE_MONITORING');
 INSERT INTO DeviceGroup VALUES (12, 'System', 0, 'NOEDIT_NOMOD', 'STATIC', '01-JAN-2013', 'SYSTEM');
 INSERT INTO DeviceGroup VALUES (13, 'Routes', 12, 'NOEDIT_NOMOD', 'ROUTE', '01-JAN-2013', 'ROUTES');
-INSERT INTO DeviceGroup VALUES (14, 'Device Types', 12, 'NOEDIT_NOMOD', 'DEVICETYPE', '01-JAN-2013', 'DEVICE_TYPES'); 
-INSERT INTO DeviceGroup VALUES (15, 'Meters', 12, 'NOEDIT_NOMOD', 'STATIC', '01-JAN-2013', 'SYSTEM_METERS'); 
-INSERT INTO DeviceGroup VALUES (16, 'Scanning', 15, 'NOEDIT_NOMOD', 'STATIC', '01-JAN-2013', 'SCANNING'); 
-INSERT INTO DeviceGroup VALUES (17, 'Load Profile', 16, 'NOEDIT_NOMOD', 'METERS_SCANNING_LOAD_PROFILE', '01-JAN-2013', 'LOAD_PROFILE'); 
-INSERT INTO DeviceGroup VALUES (18, 'Voltage Profile', 16, 'NOEDIT_NOMOD', 'METERS_SCANNING_VOLTAGE_PROFILE', '01-JAN-2013', 'VOLTAGE_PROFILE'); 
-INSERT INTO DeviceGroup VALUES (19, 'Integrity', 16, 'NOEDIT_NOMOD', 'METERS_SCANNING_INTEGRITY', '01-JAN-2013', 'INTEGRITY'); 
-INSERT INTO DeviceGroup VALUES (20, 'Accumulator', 16, 'NOEDIT_NOMOD', 'METERS_SCANNING_ACCUMULATOR', '01-JAN-2013', 'ACCUMULATOR'); 
-INSERT INTO DeviceGroup VALUES (21, 'Temporary', 12, 'HIDDEN', 'STATIC', '01-JAN-2013', 'TEMPORARY'); 
+INSERT INTO DeviceGroup VALUES (14, 'Device Types', 12, 'NOEDIT_NOMOD', 'DEVICETYPE', '01-JAN-2013', 'DEVICE_TYPES');
+INSERT INTO DeviceGroup VALUES (15, 'Meters', 12, 'NOEDIT_NOMOD', 'STATIC', '01-JAN-2013', 'SYSTEM_METERS');
+INSERT INTO DeviceGroup VALUES (16, 'Scanning', 15, 'NOEDIT_NOMOD', 'STATIC', '01-JAN-2013', 'SCANNING');
+INSERT INTO DeviceGroup VALUES (17, 'Load Profile', 16, 'NOEDIT_NOMOD', 'METERS_SCANNING_LOAD_PROFILE', '01-JAN-2013', 'LOAD_PROFILE');
+INSERT INTO DeviceGroup VALUES (18, 'Voltage Profile', 16, 'NOEDIT_NOMOD', 'METERS_SCANNING_VOLTAGE_PROFILE', '01-JAN-2013', 'VOLTAGE_PROFILE');
+INSERT INTO DeviceGroup VALUES (19, 'Integrity', 16, 'NOEDIT_NOMOD', 'METERS_SCANNING_INTEGRITY', '01-JAN-2013', 'INTEGRITY');
+INSERT INTO DeviceGroup VALUES (20, 'Accumulator', 16, 'NOEDIT_NOMOD', 'METERS_SCANNING_ACCUMULATOR', '01-JAN-2013', 'ACCUMULATOR');
+INSERT INTO DeviceGroup VALUES (21, 'Temporary', 12, 'HIDDEN', 'STATIC', '01-JAN-2013', 'TEMPORARY');
 INSERT INTO DeviceGroup VALUES (22, 'Disabled', 15, 'NOEDIT_NOMOD', 'METERS_DISABLED', '01-JAN-2013', 'DISABLED');
 INSERT INTO DeviceGroup VALUES (23, 'Disconnect', 15, 'NOEDIT_MOD', 'STATIC', '01-JAN-2013', 'DISCONNECT');
 INSERT INTO DeviceGroup VALUES (24, 'Collars', 23, 'NOEDIT_MOD', 'METERS_DISCONNECT_COLLAR', '01-JAN-2013', 'COLLARS');
@@ -3741,13 +3741,13 @@ INSERT INTO DeviceTypeCommand VALUES (-683, -136, 'MCT-430S4', 29, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-684, -111, 'MCT-430SL', 26, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-685, -2, 'MCT-430SL', 27, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-686, -83, 'MCT-430SL', 28, 'Y', -1);
-INSERT INTO DeviceTypeCommand VALUES (-687, -136, 'MCT-430SL', 29, 'Y', -1); 
+INSERT INTO DeviceTypeCommand VALUES (-687, -136, 'MCT-430SL', 29, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-689, -136, 'MCT-410CL', 30, 'N', -1);
 INSERT INTO DeviceTypeCommand VALUES (-690, -136, 'MCT-410FL', 30, 'N', -1);
 
 INSERT INTO DeviceTypeCommand VALUES (-691, -136, 'MCT-410GL', 30, 'N', -1);
 INSERT INTO DeviceTypeCommand VALUES (-692, -136, 'MCT-410IL', 30, 'N', -1);
-INSERT INTO DeviceTypeCommand VALUES (-693, -136, 'MCT-470', 32, 'N', -1); 
+INSERT INTO DeviceTypeCommand VALUES (-693, -136, 'MCT-470', 32, 'N', -1);
 INSERT INTO DeviceTypeCommand VALUES (-694, -137, 'MCT-410CL', 31, 'N', -1);
 INSERT INTO DeviceTypeCommand VALUES (-695, -137, 'MCT-410FL', 31, 'N', -1);
 INSERT INTO DeviceTypeCommand VALUES (-696, -137, 'MCT-410GL', 31, 'N', -1);
@@ -3760,38 +3760,38 @@ INSERT INTO DeviceTypeCommand VALUES (-701, -138, 'MCT-410IL', 32, 'N', -1);
 INSERT INTO DeviceTypeCommand VALUES (-702, -139, 'MCT-410CL', 32, 'N', -1);
 INSERT INTO DeviceTypeCommand VALUES (-703, -139, 'MCT-410FL', 32, 'N', -1);
 INSERT INTO DeviceTypeCommand VALUES (-704, -139, 'MCT-410GL', 32, 'N', -1);
-INSERT INTO DeviceTypeCommand VALUES (-705, -139, 'MCT-410IL', 32, 'N', -1); 
+INSERT INTO DeviceTypeCommand VALUES (-705, -139, 'MCT-410IL', 32, 'N', -1);
 INSERT INTO DeviceTypeCommand VALUES (-706, -52, 'Repeater 902', 1, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-707, -3, 'Repeater 902', 2, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-708, -53, 'Repeater 902', 3, 'Y', -1);
-INSERT INTO DeviceTypeCommand VALUES (-709, -54, 'Repeater 902', 4, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-710, -140, 'MCT-410CL', 33, 'Y', -1); 
+INSERT INTO DeviceTypeCommand VALUES (-709, -54, 'Repeater 902', 4, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-710, -140, 'MCT-410CL', 33, 'Y', -1);
 
-INSERT INTO DeviceTypeCommand VALUES (-711, -140, 'MCT-410FL', 33, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-712, -140, 'MCT-410GL', 33, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-713, -140, 'MCT-410IL', 33, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-714, -141, 'MCT-410CL', 34, 'N', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-715, -141, 'MCT-410FL', 34, 'N', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-716, -141, 'MCT-410GL', 34, 'N', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-717, -141, 'MCT-410IL', 34, 'N', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-718, -142, 'MCT-410CL', 35, 'N', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-719, -142, 'MCT-410FL', 35, 'N', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-720, -142, 'MCT-410GL', 35, 'N', -1); 
+INSERT INTO DeviceTypeCommand VALUES (-711, -140, 'MCT-410FL', 33, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-712, -140, 'MCT-410GL', 33, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-713, -140, 'MCT-410IL', 33, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-714, -141, 'MCT-410CL', 34, 'N', -1);
+INSERT INTO DeviceTypeCommand VALUES (-715, -141, 'MCT-410FL', 34, 'N', -1);
+INSERT INTO DeviceTypeCommand VALUES (-716, -141, 'MCT-410GL', 34, 'N', -1);
+INSERT INTO DeviceTypeCommand VALUES (-717, -141, 'MCT-410IL', 34, 'N', -1);
+INSERT INTO DeviceTypeCommand VALUES (-718, -142, 'MCT-410CL', 35, 'N', -1);
+INSERT INTO DeviceTypeCommand VALUES (-719, -142, 'MCT-410FL', 35, 'N', -1);
+INSERT INTO DeviceTypeCommand VALUES (-720, -142, 'MCT-410GL', 35, 'N', -1);
 
-INSERT INTO DeviceTypeCommand VALUES (-721, -142, 'MCT-410IL', 35, 'N', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-722, -140, 'MCT-470', 33, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-723, -143, 'ExpresscomSerial', 24, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-724, -143, 'Expresscom Group', 24, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-725, -144, 'MCT-430A', 30, 'N', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-726, -144, 'MCT-430S4', 30, 'N', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-727, -144, 'MCT-430SL', 30, 'N', -1); 
+INSERT INTO DeviceTypeCommand VALUES (-721, -142, 'MCT-410IL', 35, 'N', -1);
+INSERT INTO DeviceTypeCommand VALUES (-722, -140, 'MCT-470', 33, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-723, -143, 'ExpresscomSerial', 24, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-724, -143, 'Expresscom Group', 24, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-725, -144, 'MCT-430A', 30, 'N', -1);
+INSERT INTO DeviceTypeCommand VALUES (-726, -144, 'MCT-430S4', 30, 'N', -1);
+INSERT INTO DeviceTypeCommand VALUES (-727, -144, 'MCT-430SL', 30, 'N', -1);
 
-INSERT INTO DeviceTypeCommand VALUES (-728, -148, 'ExpresscomSerial', 25, 'N', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-729, -149, 'ExpresscomSerial', 26, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-730, -150, 'ExpresscomSerial', 27, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-731, -151, 'ExpresscomSerial', 28, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-732, -152, 'ExpresscomSerial', 29, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-733, -153, 'ExpresscomSerial', 30, 'Y', -1); 
+INSERT INTO DeviceTypeCommand VALUES (-728, -148, 'ExpresscomSerial', 25, 'N', -1);
+INSERT INTO DeviceTypeCommand VALUES (-729, -149, 'ExpresscomSerial', 26, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-730, -150, 'ExpresscomSerial', 27, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-731, -151, 'ExpresscomSerial', 28, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-732, -152, 'ExpresscomSerial', 29, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-733, -153, 'ExpresscomSerial', 30, 'Y', -1);
 
 INSERT INTO DeviceTypeCommand VALUES (-734, -145, 'VersacomSerial', 24, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-735, -146, 'VersacomSerial', 25, 'Y', -1);
@@ -3825,38 +3825,38 @@ INSERT INTO DeviceTypeCommand VALUES (-760, -165, 'LCR-3102', 8, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-761, -166, 'LCR-3102', 9, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-762, -167, 'LCR-3102', 10, 'Y', -1);
 
-INSERT INTO DeviceTypeCommand VALUES (-763, -3, 'MCT-430A3', 1, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-764, -20, 'MCT-430A3', 2, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-765, -21, 'MCT-430A3', 3, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-766, -22, 'MCT-430A3', 4, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-767, -115, 'MCT-430A3', 5, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-768, -116, 'MCT-430A3', 6, 'N', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-769, -117, 'MCT-430A3', 7, 'N', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-770, -118, 'MCT-430A3', 8, 'N', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-771, -119, 'MCT-430A3', 9, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-772, -120, 'MCT-430A3', 10, 'N', -1); 
+INSERT INTO DeviceTypeCommand VALUES (-763, -3, 'MCT-430A3', 1, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-764, -20, 'MCT-430A3', 2, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-765, -21, 'MCT-430A3', 3, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-766, -22, 'MCT-430A3', 4, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-767, -115, 'MCT-430A3', 5, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-768, -116, 'MCT-430A3', 6, 'N', -1);
+INSERT INTO DeviceTypeCommand VALUES (-769, -117, 'MCT-430A3', 7, 'N', -1);
+INSERT INTO DeviceTypeCommand VALUES (-770, -118, 'MCT-430A3', 8, 'N', -1);
+INSERT INTO DeviceTypeCommand VALUES (-771, -119, 'MCT-430A3', 9, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-772, -120, 'MCT-430A3', 10, 'N', -1);
 
-INSERT INTO DeviceTypeCommand VALUES (-773, -121, 'MCT-430A3', 11, 'N', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-774, -122, 'MCT-430A3', 12, 'N', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-776, -15, 'MCT-430A3', 14, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-777, -18, 'MCT-430A3', 15, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-778, -19, 'MCT-430A3', 16, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-779, -6, 'MCT-430A3', 17, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-780, -34, 'MCT-430A3', 18, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-781, -105, 'MCT-430A3', 19, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-782, -109, 'MCT-430A3', 20, 'Y', -1); 
+INSERT INTO DeviceTypeCommand VALUES (-773, -121, 'MCT-430A3', 11, 'N', -1);
+INSERT INTO DeviceTypeCommand VALUES (-774, -122, 'MCT-430A3', 12, 'N', -1);
+INSERT INTO DeviceTypeCommand VALUES (-776, -15, 'MCT-430A3', 14, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-777, -18, 'MCT-430A3', 15, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-778, -19, 'MCT-430A3', 16, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-779, -6, 'MCT-430A3', 17, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-780, -34, 'MCT-430A3', 18, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-781, -105, 'MCT-430A3', 19, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-782, -109, 'MCT-430A3', 20, 'Y', -1);
 
-INSERT INTO DeviceTypeCommand VALUES (-783, -112, 'MCT-430A3', 21, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-784, -113, 'MCT-430A3', 22, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-785, -130, 'MCT-430A3', 23, 'N', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-786, -131, 'MCT-430A3', 24, 'N', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-787, -132, 'MCT-430A3', 25, 'N', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-788, -111, 'MCT-430A3', 26, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-789, -2, 'MCT-430A3', 27, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-790, -83, 'MCT-430A3', 28, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-791, -136, 'MCT-430A3', 29, 'Y', -1); 
+INSERT INTO DeviceTypeCommand VALUES (-783, -112, 'MCT-430A3', 21, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-784, -113, 'MCT-430A3', 22, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-785, -130, 'MCT-430A3', 23, 'N', -1);
+INSERT INTO DeviceTypeCommand VALUES (-786, -131, 'MCT-430A3', 24, 'N', -1);
+INSERT INTO DeviceTypeCommand VALUES (-787, -132, 'MCT-430A3', 25, 'N', -1);
+INSERT INTO DeviceTypeCommand VALUES (-788, -111, 'MCT-430A3', 26, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-789, -2, 'MCT-430A3', 27, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-790, -83, 'MCT-430A3', 28, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-791, -136, 'MCT-430A3', 29, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-792, -144, 'MCT-430A3', 30, 'N', -1);
- 
+
 INSERT INTO DeviceTypeCommand VALUES (-793, -168, 'MCT-430A3', 31, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-794, -169, 'MCT-410CL', 40, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-795, -169, 'MCT-410FL', 40, 'Y', -1);
@@ -3865,7 +3865,7 @@ INSERT INTO DeviceTypeCommand VALUES (-797, -169, 'MCT-410IL', 40, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-798, -170, 'MCT-410CL', 41, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-799, -170, 'MCT-410FL', 41, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-800, -170, 'MCT-410GL', 41, 'Y', -1);
-INSERT INTO DeviceTypeCommand VALUES (-801, -170, 'MCT-410IL', 41, 'Y', -1); 
+INSERT INTO DeviceTypeCommand VALUES (-801, -170, 'MCT-410IL', 41, 'Y', -1);
 
 INSERT INTO DeviceTypeCommand VALUES (-802, -173, 'CBC 7020', 5, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-803, -173, 'CBC 7022', 5, 'Y', -1);
@@ -3882,145 +3882,145 @@ INSERT INTO DeviceTypeCommand VALUES (-813, -54, 'Repeater 850', 4, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-814, -187, 'MCT-470', 34, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-815, -188, 'MCT-470', 35, 'Y', -1);
 
-INSERT INTO DeviceTypeCommand VALUES (-820, -1, 'MCT-420CD', 1, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-821, -81, 'MCT-420CD', 2, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-822, -3, 'MCT-420CD', 3, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-823, -6, 'MCT-420CD', 4, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-824, -34, 'MCT-420CD', 5, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-825, -82, 'MCT-420CD', 6, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-826, -18, 'MCT-420CD', 7, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-827, -19, 'MCT-420CD', 8, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-828, -83, 'MCT-420CD', 9, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-829, -84, 'MCT-420CD', 10, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-830, -11, 'MCT-420CD', 11, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-831, -12, 'MCT-420CD', 12, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-832, -13, 'MCT-420CD', 13, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-833, -106, 'MCT-420CD', 14, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-834, -107, 'MCT-420CD', 15, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-835, -108, 'MCT-420CD', 16, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-836, -111, 'MCT-420CD', 17, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-837, -114, 'MCT-420CD', 18, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-838, -15, 'MCT-420CD', 19, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-839, -130, 'MCT-420CD', 20, 'N', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-840, -131, 'MCT-420CD', 21, 'N', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-841, -132, 'MCT-420CD', 22, 'N', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-842, -136, 'MCT-420CD', 23, 'N', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-843, -137, 'MCT-420CD', 24, 'N', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-844, -138, 'MCT-420CD', 25, 'N', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-845, -139, 'MCT-420CD', 26, 'N', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-846, -140, 'MCT-420CD', 27, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-847, -141, 'MCT-420CD', 28, 'N', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-848, -142, 'MCT-420CD', 29, 'N', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-849, -154, 'MCT-420CD', 30, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-850, -155, 'MCT-420CD', 31, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-851, -156, 'MCT-420CD', 32, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-852, -157, 'MCT-420CD', 33, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-853, -169, 'MCT-420CD', 34, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-854, -170, 'MCT-420CD', 35, 'Y', -1); 
+INSERT INTO DeviceTypeCommand VALUES (-820, -1, 'MCT-420CD', 1, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-821, -81, 'MCT-420CD', 2, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-822, -3, 'MCT-420CD', 3, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-823, -6, 'MCT-420CD', 4, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-824, -34, 'MCT-420CD', 5, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-825, -82, 'MCT-420CD', 6, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-826, -18, 'MCT-420CD', 7, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-827, -19, 'MCT-420CD', 8, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-828, -83, 'MCT-420CD', 9, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-829, -84, 'MCT-420CD', 10, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-830, -11, 'MCT-420CD', 11, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-831, -12, 'MCT-420CD', 12, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-832, -13, 'MCT-420CD', 13, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-833, -106, 'MCT-420CD', 14, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-834, -107, 'MCT-420CD', 15, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-835, -108, 'MCT-420CD', 16, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-836, -111, 'MCT-420CD', 17, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-837, -114, 'MCT-420CD', 18, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-838, -15, 'MCT-420CD', 19, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-839, -130, 'MCT-420CD', 20, 'N', -1);
+INSERT INTO DeviceTypeCommand VALUES (-840, -131, 'MCT-420CD', 21, 'N', -1);
+INSERT INTO DeviceTypeCommand VALUES (-841, -132, 'MCT-420CD', 22, 'N', -1);
+INSERT INTO DeviceTypeCommand VALUES (-842, -136, 'MCT-420CD', 23, 'N', -1);
+INSERT INTO DeviceTypeCommand VALUES (-843, -137, 'MCT-420CD', 24, 'N', -1);
+INSERT INTO DeviceTypeCommand VALUES (-844, -138, 'MCT-420CD', 25, 'N', -1);
+INSERT INTO DeviceTypeCommand VALUES (-845, -139, 'MCT-420CD', 26, 'N', -1);
+INSERT INTO DeviceTypeCommand VALUES (-846, -140, 'MCT-420CD', 27, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-847, -141, 'MCT-420CD', 28, 'N', -1);
+INSERT INTO DeviceTypeCommand VALUES (-848, -142, 'MCT-420CD', 29, 'N', -1);
+INSERT INTO DeviceTypeCommand VALUES (-849, -154, 'MCT-420CD', 30, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-850, -155, 'MCT-420CD', 31, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-851, -156, 'MCT-420CD', 32, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-852, -157, 'MCT-420CD', 33, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-853, -169, 'MCT-420CD', 34, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-854, -170, 'MCT-420CD', 35, 'Y', -1);
 
-INSERT INTO DeviceTypeCommand VALUES (-860, -1, 'MCT-420CL', 1, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-861, -81, 'MCT-420CL', 2, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-862, -3, 'MCT-420CL', 3, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-863, -6, 'MCT-420CL', 4, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-864, -34, 'MCT-420CL', 5, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-865, -82, 'MCT-420CL', 6, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-866, -18, 'MCT-420CL', 7, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-867, -19, 'MCT-420CL', 8, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-868, -83, 'MCT-420CL', 9, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-869, -84, 'MCT-420CL', 10, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-870, -106, 'MCT-420CL', 11, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-871, -107, 'MCT-420CL', 12, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-872, -108, 'MCT-420CL', 13, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-873, -111, 'MCT-420CL', 14, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-874, -114, 'MCT-420CL', 15, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-875, -15, 'MCT-420CL', 16, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-876, -130, 'MCT-420CL', 17, 'N', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-877, -131, 'MCT-420CL', 18, 'N', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-878, -132, 'MCT-420CL', 19, 'N', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-879, -136, 'MCT-420CL', 20, 'N', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-880, -137, 'MCT-420CL', 21, 'N', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-881, -138, 'MCT-420CL', 22, 'N', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-882, -139, 'MCT-420CL', 23, 'N', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-883, -140, 'MCT-420CL', 24, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-884, -141, 'MCT-420CL', 25, 'N', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-885, -142, 'MCT-420CL', 26, 'N', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-886, -154, 'MCT-420CL', 27, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-887, -155, 'MCT-420CL', 28, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-888, -156, 'MCT-420CL', 29, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-889, -157, 'MCT-420CL', 30, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-890, -169, 'MCT-420CL', 31, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-891, -170, 'MCT-420CL', 32, 'Y', -1); 
+INSERT INTO DeviceTypeCommand VALUES (-860, -1, 'MCT-420CL', 1, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-861, -81, 'MCT-420CL', 2, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-862, -3, 'MCT-420CL', 3, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-863, -6, 'MCT-420CL', 4, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-864, -34, 'MCT-420CL', 5, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-865, -82, 'MCT-420CL', 6, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-866, -18, 'MCT-420CL', 7, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-867, -19, 'MCT-420CL', 8, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-868, -83, 'MCT-420CL', 9, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-869, -84, 'MCT-420CL', 10, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-870, -106, 'MCT-420CL', 11, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-871, -107, 'MCT-420CL', 12, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-872, -108, 'MCT-420CL', 13, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-873, -111, 'MCT-420CL', 14, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-874, -114, 'MCT-420CL', 15, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-875, -15, 'MCT-420CL', 16, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-876, -130, 'MCT-420CL', 17, 'N', -1);
+INSERT INTO DeviceTypeCommand VALUES (-877, -131, 'MCT-420CL', 18, 'N', -1);
+INSERT INTO DeviceTypeCommand VALUES (-878, -132, 'MCT-420CL', 19, 'N', -1);
+INSERT INTO DeviceTypeCommand VALUES (-879, -136, 'MCT-420CL', 20, 'N', -1);
+INSERT INTO DeviceTypeCommand VALUES (-880, -137, 'MCT-420CL', 21, 'N', -1);
+INSERT INTO DeviceTypeCommand VALUES (-881, -138, 'MCT-420CL', 22, 'N', -1);
+INSERT INTO DeviceTypeCommand VALUES (-882, -139, 'MCT-420CL', 23, 'N', -1);
+INSERT INTO DeviceTypeCommand VALUES (-883, -140, 'MCT-420CL', 24, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-884, -141, 'MCT-420CL', 25, 'N', -1);
+INSERT INTO DeviceTypeCommand VALUES (-885, -142, 'MCT-420CL', 26, 'N', -1);
+INSERT INTO DeviceTypeCommand VALUES (-886, -154, 'MCT-420CL', 27, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-887, -155, 'MCT-420CL', 28, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-888, -156, 'MCT-420CL', 29, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-889, -157, 'MCT-420CL', 30, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-890, -169, 'MCT-420CL', 31, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-891, -170, 'MCT-420CL', 32, 'Y', -1);
 
-INSERT INTO DeviceTypeCommand VALUES (-900, -1, 'MCT-420FD', 1, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-901, -81, 'MCT-420FD', 2, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-902, -3, 'MCT-420FD', 3, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-903, -6, 'MCT-420FD', 4, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-904, -34, 'MCT-420FD', 5, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-905, -82, 'MCT-420FD', 6, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-906, -18, 'MCT-420FD', 7, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-907, -19, 'MCT-420FD', 8, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-908, -83, 'MCT-420FD', 9, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-909, -84, 'MCT-420FD', 10, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-910, -11, 'MCT-420FD', 11, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-911, -12, 'MCT-420FD', 12, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-912, -13, 'MCT-420FD', 13, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-913, -106, 'MCT-420FD', 14, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-914, -107, 'MCT-420FD', 15, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-915, -108, 'MCT-420FD', 16, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-916, -111, 'MCT-420FD', 17, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-917, -114, 'MCT-420FD', 18, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-918, -15, 'MCT-420FD', 19, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-919, -130, 'MCT-420FD', 20, 'N', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-920, -131, 'MCT-420FD', 21, 'N', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-921, -132, 'MCT-420FD', 22, 'N', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-922, -136, 'MCT-420FD', 23, 'N', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-923, -137, 'MCT-420FD', 24, 'N', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-924, -138, 'MCT-420FD', 25, 'N', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-925, -139, 'MCT-420FD', 26, 'N', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-926, -140, 'MCT-420FD', 27, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-927, -141, 'MCT-420FD', 28, 'N', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-928, -142, 'MCT-420FD', 29, 'N', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-929, -154, 'MCT-420FD', 30, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-930, -155, 'MCT-420FD', 31, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-931, -156, 'MCT-420FD', 32, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-932, -157, 'MCT-420FD', 33, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-933, -169, 'MCT-420FD', 34, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-934, -170, 'MCT-420FD', 35, 'Y', -1); 
+INSERT INTO DeviceTypeCommand VALUES (-900, -1, 'MCT-420FD', 1, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-901, -81, 'MCT-420FD', 2, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-902, -3, 'MCT-420FD', 3, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-903, -6, 'MCT-420FD', 4, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-904, -34, 'MCT-420FD', 5, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-905, -82, 'MCT-420FD', 6, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-906, -18, 'MCT-420FD', 7, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-907, -19, 'MCT-420FD', 8, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-908, -83, 'MCT-420FD', 9, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-909, -84, 'MCT-420FD', 10, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-910, -11, 'MCT-420FD', 11, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-911, -12, 'MCT-420FD', 12, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-912, -13, 'MCT-420FD', 13, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-913, -106, 'MCT-420FD', 14, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-914, -107, 'MCT-420FD', 15, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-915, -108, 'MCT-420FD', 16, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-916, -111, 'MCT-420FD', 17, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-917, -114, 'MCT-420FD', 18, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-918, -15, 'MCT-420FD', 19, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-919, -130, 'MCT-420FD', 20, 'N', -1);
+INSERT INTO DeviceTypeCommand VALUES (-920, -131, 'MCT-420FD', 21, 'N', -1);
+INSERT INTO DeviceTypeCommand VALUES (-921, -132, 'MCT-420FD', 22, 'N', -1);
+INSERT INTO DeviceTypeCommand VALUES (-922, -136, 'MCT-420FD', 23, 'N', -1);
+INSERT INTO DeviceTypeCommand VALUES (-923, -137, 'MCT-420FD', 24, 'N', -1);
+INSERT INTO DeviceTypeCommand VALUES (-924, -138, 'MCT-420FD', 25, 'N', -1);
+INSERT INTO DeviceTypeCommand VALUES (-925, -139, 'MCT-420FD', 26, 'N', -1);
+INSERT INTO DeviceTypeCommand VALUES (-926, -140, 'MCT-420FD', 27, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-927, -141, 'MCT-420FD', 28, 'N', -1);
+INSERT INTO DeviceTypeCommand VALUES (-928, -142, 'MCT-420FD', 29, 'N', -1);
+INSERT INTO DeviceTypeCommand VALUES (-929, -154, 'MCT-420FD', 30, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-930, -155, 'MCT-420FD', 31, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-931, -156, 'MCT-420FD', 32, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-932, -157, 'MCT-420FD', 33, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-933, -169, 'MCT-420FD', 34, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-934, -170, 'MCT-420FD', 35, 'Y', -1);
 
-INSERT INTO DeviceTypeCommand VALUES (-940, -1, 'MCT-420FL', 1, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-941, -81, 'MCT-420FL', 2, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-942, -3, 'MCT-420FL', 3, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-943, -6, 'MCT-420FL', 4, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-944, -34, 'MCT-420FL', 5, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-945, -82, 'MCT-420FL', 6, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-946, -18, 'MCT-420FL', 7, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-947, -19, 'MCT-420FL', 8, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-948, -83, 'MCT-420FL', 9, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-949, -84, 'MCT-420FL', 10, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-950, -11, 'MCT-420FL', 11, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-951, -12, 'MCT-420FL', 12, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-952, -13, 'MCT-420FL', 13, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-953, -106, 'MCT-420FL', 14, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-954, -107, 'MCT-420FL', 15, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-955, -108, 'MCT-420FL', 16, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-956, -111, 'MCT-420FL', 17, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-957, -114, 'MCT-420FL', 18, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-958, -15, 'MCT-420FL', 19, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-959, -130, 'MCT-420FL', 20, 'N', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-960, -131, 'MCT-420FL', 21, 'N', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-961, -132, 'MCT-420FL', 22, 'N', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-962, -136, 'MCT-420FL', 23, 'N', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-963, -137, 'MCT-420FL', 24, 'N', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-964, -138, 'MCT-420FL', 25, 'N', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-965, -139, 'MCT-420FL', 26, 'N', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-966, -140, 'MCT-420FL', 27, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-967, -141, 'MCT-420FL', 28, 'N', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-968, -142, 'MCT-420FL', 29, 'N', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-969, -154, 'MCT-420FL', 30, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-970, -155, 'MCT-420FL', 31, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-971, -156, 'MCT-420FL', 32, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-972, -157, 'MCT-420FL', 33, 'Y', -1); 
-INSERT INTO DeviceTypeCommand VALUES (-973, -169, 'MCT-420FL', 34, 'Y', -1); 
+INSERT INTO DeviceTypeCommand VALUES (-940, -1, 'MCT-420FL', 1, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-941, -81, 'MCT-420FL', 2, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-942, -3, 'MCT-420FL', 3, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-943, -6, 'MCT-420FL', 4, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-944, -34, 'MCT-420FL', 5, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-945, -82, 'MCT-420FL', 6, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-946, -18, 'MCT-420FL', 7, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-947, -19, 'MCT-420FL', 8, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-948, -83, 'MCT-420FL', 9, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-949, -84, 'MCT-420FL', 10, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-950, -11, 'MCT-420FL', 11, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-951, -12, 'MCT-420FL', 12, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-952, -13, 'MCT-420FL', 13, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-953, -106, 'MCT-420FL', 14, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-954, -107, 'MCT-420FL', 15, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-955, -108, 'MCT-420FL', 16, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-956, -111, 'MCT-420FL', 17, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-957, -114, 'MCT-420FL', 18, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-958, -15, 'MCT-420FL', 19, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-959, -130, 'MCT-420FL', 20, 'N', -1);
+INSERT INTO DeviceTypeCommand VALUES (-960, -131, 'MCT-420FL', 21, 'N', -1);
+INSERT INTO DeviceTypeCommand VALUES (-961, -132, 'MCT-420FL', 22, 'N', -1);
+INSERT INTO DeviceTypeCommand VALUES (-962, -136, 'MCT-420FL', 23, 'N', -1);
+INSERT INTO DeviceTypeCommand VALUES (-963, -137, 'MCT-420FL', 24, 'N', -1);
+INSERT INTO DeviceTypeCommand VALUES (-964, -138, 'MCT-420FL', 25, 'N', -1);
+INSERT INTO DeviceTypeCommand VALUES (-965, -139, 'MCT-420FL', 26, 'N', -1);
+INSERT INTO DeviceTypeCommand VALUES (-966, -140, 'MCT-420FL', 27, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-967, -141, 'MCT-420FL', 28, 'N', -1);
+INSERT INTO DeviceTypeCommand VALUES (-968, -142, 'MCT-420FL', 29, 'N', -1);
+INSERT INTO DeviceTypeCommand VALUES (-969, -154, 'MCT-420FL', 30, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-970, -155, 'MCT-420FL', 31, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-971, -156, 'MCT-420FL', 32, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-972, -157, 'MCT-420FL', 33, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-973, -169, 'MCT-420FL', 34, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-974, -170, 'MCT-420FL', 35, 'Y', -1);
 
 INSERT INTO DeviceTypeCommand VALUES (-975, -27, 'RFN EXPRESSCOM GROUP', 1, 'Y', -1);
@@ -4832,7 +4832,7 @@ INSERT INTO FDRInterface VALUES (23, 'ACSMULTI', 'Send,Send for control,Receive,
 INSERT INTO FDRInterface VALUES (24, 'WABASH', 'Send', 'f' );
 INSERT INTO FDRInterface VALUES (25, 'TRISTATESUB', 'Receive,Send', 'f' );
 INSERT INTO FDRInterface VALUES (26, 'OPC', 'Receive,Send', 'f');
-INSERT INTO FDRInterface VALUES (27, 'MULTISPEAK_LM', 'Receive', 'f'); 
+INSERT INTO FDRInterface VALUES (27, 'MULTISPEAK_LM', 'Receive', 'f');
 INSERT INTO FDRInterface VALUES (28, 'DNPSLAVE', 'Send', 't');
 INSERT INTO FDRInterface VALUES (29, 'VALMETMULTI', 'Send,Send for control,Receive,Receive for control,Receive for Analog Output', 't' );
 
@@ -4896,8 +4896,8 @@ INSERT INTO FDRInterfaceOption VALUES(24, 'SchedName', 1, 'Text', '(none)' );
 INSERT INTO FDRInterfaceOption VALUES(24, 'Path', 2, 'Text', 'c:\yukon\server\export\' );
 INSERT INTO FDRInterfaceOption VALUES(24, 'Filename', 3, 'Text', 'control.txt' );
 INSERT INTO FDRInterfaceOption VALUES(25, 'Point', 1, 'Combo', 'Nucla 115/69 Xfmr.,Happy Canyon 661Idarado,Cascade 115/69 (T2),Ames Generation,Dallas Creek MW,Dallas Creek MV' );
-INSERT INTO FDRInterfaceOption VALUES(26, 'Server Name', 1, 'Text', '(none)'); 
-INSERT INTO FDRInterfaceOption VALUES(26, 'OPC Group', 2, 'Text', '(none)'); 
+INSERT INTO FDRInterfaceOption VALUES(26, 'Server Name', 1, 'Text', '(none)');
+INSERT INTO FDRInterfaceOption VALUES(26, 'OPC Group', 2, 'Text', '(none)');
 INSERT INTO FDRInterfaceOption VALUES(26, 'OPC Item', 3, 'Text', '(none)');
 INSERT INTO FDRInterfaceOption VALUES(27, 'ObjectId', 1, 'Text', '(none)');
 INSERT INTO FDRInterfaceOption VALUES(28, 'MasterId', 1, 'Text', '(none)');
@@ -6913,7 +6913,7 @@ create table PointAlarming  (
 );
 
 INSERT INTO PointAlarming(PointId, AlarmStates, ExcludeNotifyStates, NotifyOnAcknowledge, NotificationGroupId)
-SELECT PointId, '', 'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN', 'N', 1 
+SELECT PointId, '', 'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN', 'N', 1
 FROM Point;
 
 /*==============================================================*/
@@ -6996,16 +6996,16 @@ create table PorterResponseMonitorErrorCode  (
    constraint PK_PortRespMonErrorCodeId primary key (ErrorCodeId)
 );
 
-INSERT INTO PorterResponseMonitorErrorCode VALUES (1, 2, 93); 
-INSERT INTO PorterResponseMonitorErrorCode VALUES (2, 2, 261); 
-INSERT INTO PorterResponseMonitorErrorCode VALUES (3, 2, 262); 
-INSERT INTO PorterResponseMonitorErrorCode VALUES (4, 2, 263); 
-INSERT INTO PorterResponseMonitorErrorCode VALUES (5, 2, 264); 
-INSERT INTO PorterResponseMonitorErrorCode VALUES (6, 2, 265); 
-INSERT INTO PorterResponseMonitorErrorCode VALUES (7, 2, 267); 
-INSERT INTO PorterResponseMonitorErrorCode VALUES (8, 2, 268); 
-INSERT INTO PorterResponseMonitorErrorCode VALUES (9, 2, 269); 
-INSERT INTO PorterResponseMonitorErrorCode VALUES (10, 2, 270); 
+INSERT INTO PorterResponseMonitorErrorCode VALUES (1, 2, 93);
+INSERT INTO PorterResponseMonitorErrorCode VALUES (2, 2, 261);
+INSERT INTO PorterResponseMonitorErrorCode VALUES (3, 2, 262);
+INSERT INTO PorterResponseMonitorErrorCode VALUES (4, 2, 263);
+INSERT INTO PorterResponseMonitorErrorCode VALUES (5, 2, 264);
+INSERT INTO PorterResponseMonitorErrorCode VALUES (6, 2, 265);
+INSERT INTO PorterResponseMonitorErrorCode VALUES (7, 2, 267);
+INSERT INTO PorterResponseMonitorErrorCode VALUES (8, 2, 268);
+INSERT INTO PorterResponseMonitorErrorCode VALUES (9, 2, 269);
+INSERT INTO PorterResponseMonitorErrorCode VALUES (10, 2, 270);
 
 /*==============================================================*/
 /* Index: Indx_PortRespMonErr_RI_EC_UNQ                         */
@@ -7028,9 +7028,9 @@ create table PorterResponseMonitorRule  (
    constraint PK_PortRespMonRuleId primary key (RuleId)
 );
 
-INSERT INTO PorterResponseMonitorRule VALUES (1, 1, 1, 'Y', 'any', 0); 
-INSERT INTO PorterResponseMonitorRule VALUES (2, 2, 1, 'N', 'any', 0); 
-INSERT INTO PorterResponseMonitorRule VALUES (3, 3, 1, 'N', 'any', 1); 
+INSERT INTO PorterResponseMonitorRule VALUES (1, 1, 1, 'Y', 'any', 0);
+INSERT INTO PorterResponseMonitorRule VALUES (2, 2, 1, 'N', 'any', 0);
+INSERT INTO PorterResponseMonitorRule VALUES (3, 3, 1, 'N', 'any', 1);
 
 /*==============================================================*/
 /* Index: Indx_PortRespMonRule_RO_MI_UNQ                        */
@@ -7439,14 +7439,14 @@ INSERT INTO State VALUES(-17, 15, 'Time', 1, 6, 0);
 INSERT INTO State VALUES(-17, 16, 'N/A', 2, 6, 0);
 INSERT INTO State VALUES(-16, 0, 'Cleared', 0, 6, 0);
 INSERT INTO State VALUES(-16, 1, 'Active', 1, 6, 0);
-INSERT INTO State VALUES(-15, 0, 'No Signal', 0, 6, 0); 
-INSERT INTO State VALUES(-15, 1, 'Very Poor', 1, 6, 0); 
-INSERT INTO State VALUES(-15, 2, 'Ok', 10, 6, 0); 
-INSERT INTO State VALUES(-15, 3, 'Good', 3, 6, 0); 
+INSERT INTO State VALUES(-15, 0, 'No Signal', 0, 6, 0);
+INSERT INTO State VALUES(-15, 1, 'Very Poor', 1, 6, 0);
+INSERT INTO State VALUES(-15, 2, 'Ok', 10, 6, 0);
+INSERT INTO State VALUES(-15, 3, 'Good', 3, 6, 0);
 INSERT INTO State VALUES(-15, 4, 'Best', 4, 6, 0);
-INSERT INTO State VALUES(-14, 0, 'Good', 0, 6, 0); 
-INSERT INTO State VALUES(-14, 1, 'Questionable', 3, 6, 0); 
-INSERT INTO State VALUES(-14, 2, 'Bad', 1, 6, 0); 
+INSERT INTO State VALUES(-14, 0, 'Good', 0, 6, 0);
+INSERT INTO State VALUES(-14, 1, 'Questionable', 3, 6, 0);
+INSERT INTO State VALUES(-14, 2, 'Bad', 1, 6, 0);
 INSERT INTO State VALUES(-13, 0, 'Connected', 0, 6, 0);
 INSERT INTO State VALUES(-13, 1, 'Decommissioned', 7, 6, 0);
 INSERT INTO State VALUES(-13, 2, 'Disconnected', 1, 6, 0);
@@ -7548,11 +7548,11 @@ INSERT INTO StateGroup VALUES(-19, 'RF Demand Reset', 'Status');
 INSERT INTO StateGroup VALUES(-18, 'LCR Service Status', 'Status');
 INSERT INTO StateGroup VALUES(-17, 'Last Control', 'Status');
 INSERT INTO StateGroup VALUES(-16, 'Event Status', 'Status');
-INSERT INTO StateGroup VALUES(-15, 'Signal Strength', 'Status'); 
-INSERT INTO StateGroup VALUES(-14, 'Outage Status','Status'); 
-INSERT INTO StateGroup VALUES(-13, 'Commissioned State','Status'); 
-INSERT INTO StateGroup VALUES(-12, 'RFN Disconnect Status', 'Status'); 
-INSERT INTO StateGroup VALUES(-11, 'Comm Status State', 'Status'); 
+INSERT INTO StateGroup VALUES(-15, 'Signal Strength', 'Status');
+INSERT INTO StateGroup VALUES(-14, 'Outage Status','Status');
+INSERT INTO StateGroup VALUES(-13, 'Commissioned State','Status');
+INSERT INTO StateGroup VALUES(-12, 'RFN Disconnect Status', 'Status');
+INSERT INTO StateGroup VALUES(-11, 'Comm Status State', 'Status');
 INSERT INTO StateGroup VALUES(-10, 'PhaseStatus', 'Status');
 INSERT INTO StateGroup VALUES(-9, 'ThreeStateStatus', 'Status');
 INSERT INTO StateGroup VALUES(-8, 'TwoStateActive', 'Status');
@@ -7859,7 +7859,7 @@ insert into tags values(-1, 'Out Of Service', 1, 'Y', 1, 0);
 insert into tags values(-2, 'Info', 1, 'N', 6, 0);
 insert into tags values (-3, 'Cap Bank Operational State', 1, 'N', 0, 0);
 insert into tags values (-4, 'Enablement State', 1, 'N', 0, 0);
-insert into tags values (-5, 'OVUV Enablement State', 1, 'N', 0, 0); 
+insert into tags values (-5, 'OVUV Enablement State', 1, 'N', 0, 0);
 
 /*==============================================================*/
 /* Table: TamperFlagMonitor                                     */
@@ -8194,15 +8194,15 @@ insert into YukonGroupRole values (-1097,-2, -108, -10808, ' ');
 /* Give admin super user access to system administrator group */
 insert into YukonGroupRole values (-2000, -2, -200, -20019, 'true');
 
-/* Device Actions role */ 
-INSERT INTO YukonGroupRole VALUES (-2500, -2, -213, -21300, ' '); 
-INSERT INTO YukonGroupRole VALUES (-2501, -2, -213, -21301, ' '); 
-INSERT INTO YukonGroupRole VALUES (-2502, -2, -213, -21302, ' '); 
-INSERT INTO YukonGroupRole VALUES (-2503, -2, -213, -21303, ' '); 
-INSERT INTO YukonGroupRole VALUES (-2504, -2, -213, -21304, ' '); 
-INSERT INTO YukonGroupRole VALUES (-2505, -2, -213, -21305, ' '); 
-INSERT INTO YukonGroupRole VALUES (-2506, -2, -213, -21306, ' '); 
-INSERT INTO YukonGroupRole VALUES (-2507, -2, -213, -21307, ' '); 
+/* Device Actions role */
+INSERT INTO YukonGroupRole VALUES (-2500, -2, -213, -21300, ' ');
+INSERT INTO YukonGroupRole VALUES (-2501, -2, -213, -21301, ' ');
+INSERT INTO YukonGroupRole VALUES (-2502, -2, -213, -21302, ' ');
+INSERT INTO YukonGroupRole VALUES (-2503, -2, -213, -21303, ' ');
+INSERT INTO YukonGroupRole VALUES (-2504, -2, -213, -21304, ' ');
+INSERT INTO YukonGroupRole VALUES (-2505, -2, -213, -21305, ' ');
+INSERT INTO YukonGroupRole VALUES (-2506, -2, -213, -21306, ' ');
+INSERT INTO YukonGroupRole VALUES (-2507, -2, -213, -21307, ' ');
 
 /* Add IVR role to system administrator group */
 insert into YukonGroupRole values (-3000, -2, -801, -80100, ' ');
@@ -8278,8 +8278,8 @@ insert into YukonListEntry values (130, 100, 0, 'Absolute Value', 0);
 insert into YukonListEntry values (131, 100, 0, 'kW from kVA/kVAr', 0);
 insert into YukonListEntry values (132, 100, 0, 'Modulo Divide', 0);
 insert into YukonListEntry values (133, 100, 0, 'State Timer', 0);
-insert into YukonListEntry values (134, 100, 0, 'True,False,Condition', 0); 
-insert into YukonListEntry values (135, 100, 0, 'Regression', 0); 
+insert into YukonListEntry values (134, 100, 0, 'True,False,Condition', 0);
+insert into YukonListEntry values (135, 100, 0, 'Regression', 0);
 insert into YukonListEntry values (136, 100, 0, 'Binary Encode', 0);
 insert into yukonlistentry values (137, 100, 0, 'Mid Level Latch', 0);
 insert into yukonlistentry values (138, 100, 0, 'Float From 16bit', 0);
@@ -8387,7 +8387,7 @@ insert into YukonListEntry values (1216,1018,0,'Emergency Heat',2406);
 insert into YukonListEntry values (1221,1019,0,'(Default)',2501);
 insert into YukonListEntry values (1222,1019,0,'Auto',2502);
 insert into YukonListEntry values (1223,1019,0,'On',2503);
-INSERT INTO YukonListEntry VALUES (1224,1019,0,'Circulate',2504); 
+INSERT INTO YukonListEntry VALUES (1224,1019,0,'Circulate',2504);
 
 insert into YukonListEntry values (1301,1051,0,'Serial #',2701);
 insert into YukonListEntry values (1302,1051,0,'Acct #',2702);
@@ -8664,9 +8664,9 @@ insert into YukonListEntry values (1933,1071,0, 'Municipal', 0);
 
 INSERT INTO YukonListEntry VALUES (2000, 1005, 0, 'LCR-6200(RFN)', 1324);
 INSERT INTO YukonListEntry VALUES (2001, 1005, 0, 'LCR-6600(RFN)', 1325);
-INSERT INTO YukonListEntry VALUES (2002, 1005, 0, 'LCR-6200(ZIGBEE)', 1320); 
-INSERT INTO YukonListEntry VALUES (2003, 1005, 0, 'LCR-6200(EXPRESSCOM)', 1321); 
-INSERT INTO YukonListEntry VALUES (2004, 1005, 0, 'LCR-6600(ZIGBEE)', 1322); 
+INSERT INTO YukonListEntry VALUES (2002, 1005, 0, 'LCR-6200(ZIGBEE)', 1320);
+INSERT INTO YukonListEntry VALUES (2003, 1005, 0, 'LCR-6200(EXPRESSCOM)', 1321);
+INSERT INTO YukonListEntry VALUES (2004, 1005, 0, 'LCR-6600(ZIGBEE)', 1322);
 INSERT INTO YukonListEntry VALUES (2005, 1005, 0, 'LCR-6600(EXPRESSCOM)', 1323);
 INSERT INTO YukonListEntry VALUES (2006, 1005, 0, 'LCR-5000(EXPRESSCOM)', 1302);
 INSERT INTO YukonListEntry VALUES (2007, 1005, 0, 'LCR-4000', 1305);
@@ -8687,8 +8687,8 @@ INSERT INTO YukonListEntry VALUES (2020, 1005, 0, 'LCR-3102', 1315);
 INSERT INTO YukonListEntry VALUES (2021, 1005, 0, 'UtilityPRO ZigBee', 1316);
 
 INSERT INTO YukonListEntry VALUES (2022, 1005, 0, 'Digi Gateway', 1317);
-INSERT INTO YukonListEntry VALUES (2023, 1005, 0, 'UtilityPRO G2', 1318); 
-INSERT INTO YukonListEntry VALUES (2024, 1005, 0, 'UtilityPRO G3', 1319); 
+INSERT INTO YukonListEntry VALUES (2023, 1005, 0, 'UtilityPRO G2', 1318);
+INSERT INTO YukonListEntry VALUES (2024, 1005, 0, 'UtilityPRO G3', 1319);
 
 insert into yukonlistentry values (10101, 1067, 0, 'CustomerAccount', 0);
 insert into yukonlistentry values (10102, 1067, 0, 'Inventory', 0);
@@ -8745,7 +8745,7 @@ create table YukonPAObject  (
    constraint PK_YUKONPAOBJECT primary key (PAObjectID)
 );
 
-INSERT into YukonPAObject values (0, 'DEVICE', 'SYSTEM', 'System Device', 'SYSTEM', 'Reserved System Device', 'N', '-----'); 
+INSERT into YukonPAObject values (0, 'DEVICE', 'SYSTEM', 'System Device', 'SYSTEM', 'Reserved System Device', 'N', '-----');
 
 /*==============================================================*/
 /* Index: Indx_PAO                                              */
@@ -8803,19 +8803,19 @@ INSERT INTO YukonRole VALUES(-209,'Inventory','Operator','Operator Access to har
 INSERT INTO YukonRole VALUES(-210,'Work Order','Operator','Operator Access to work order management');
 
 /* ISOC */
-INSERT INTO YukonRole VALUES(-211,'CI Curtailment','Operator','Operator access to C&I Curtailment'); 
+INSERT INTO YukonRole VALUES(-211,'CI Curtailment','Operator','Operator access to C&I Curtailment');
 
 /* Scheduler Role */
-INSERT INTO YukonRole VALUES(-212,'Scheduler','Operator','Operator access to Scheduler'); 
+INSERT INTO YukonRole VALUES(-212,'Scheduler','Operator','Operator access to Scheduler');
 
 /* Device Actions Role */
-INSERT INTO YukonRole VALUES(-213,'Device Actions','Operator','Operator access to device actions'); 
+INSERT INTO YukonRole VALUES(-213,'Device Actions','Operator','Operator access to device actions');
 
 /* Consumer roles */
 INSERT INTO YukonRole VALUES(-400,'Residential Customer','Consumer','Access to residential customer information');
 
 /* Capacitor Control roles */
-INSERT INTO YukonRole VALUES(-700,'Cap Control Settings','Capacitor Control','Allows a user to change overall settings of the Cap Control system .'); 
+INSERT INTO YukonRole VALUES(-700,'Cap Control Settings','Capacitor Control','Allows a user to change overall settings of the Cap Control system .');
 
 /* IVR roles */
 INSERT INTO YukonRole VALUES(-800,'IVR','Notifications','Settings for Interactive Voice Response module');
@@ -8875,7 +8875,7 @@ insert into yukonroleproperty values(-10203, -102, 'Scan Now Enabled', 'false', 
 insert into yukonroleproperty values(-10205, -102, 'Minimum Scan Frequency', '15', 'Minimum duration (in minutes) between get data now events.');
 insert into yukonroleproperty values(-10206, -102, 'Maximum Daily Scans', '2', 'Maximum number of get data now scans available daily.');
 
-/* Commander Role Properties */ 
+/* Commander Role Properties */
 INSERT INTO YukonRoleProperty VALUES(-10300,-103,'msg_priority','14','Tells commander what the outbound priority of messages are (low)1 - 14(high)');
 INSERT INTO YukonRoleProperty VALUES(-10301,-103,'Versacom Serial','true','Show a Versacom Serial Number SortBy display');
 INSERT INTO YukonRoleProperty VALUES(-10302,-103,'Expresscom Serial','true','Show an Expresscom Serial Number SortBy display');
@@ -8894,10 +8894,10 @@ INSERT INTO YukonRoleProperty VALUES(-10315,-103,'Control Cap Control device', '
 INSERT INTO YukonRoleProperty VALUES(-10316,-103,'Execute Unknown Command', 'true', 'Allow the ability to execute commands which do not fall under another role property.');
 INSERT INTO YukonRoleProperty VALUES(-10317,-103,'Execute Manual Command', 'true', 'Allow the ability to execute manual commands');
 INSERT INTO YukonRoleProperty VALUES(-10318,-103,'Enable Web Commander', 'true', 'Controls access to web commander applications');
-INSERT INTO YukonRoleProperty VALUES(-10319,-103,'Enable Client Commander', 'true', 'Controls access to client commander application'); 
+INSERT INTO YukonRoleProperty VALUES(-10319,-103,'Enable Client Commander', 'true', 'Controls access to client commander application');
 
 /* Dynamic Billing File Setup */
-INSERT INTO YukonRoleProperty VALUES(-10600,-106,'Dynamic Billing File Setup','true','Controls access to create, edit, and delete dynamic billing files.'); 
+INSERT INTO YukonRoleProperty VALUES(-10600,-106,'Dynamic Billing File Setup','true','Controls access to create, edit, and delete dynamic billing files.');
 
 /* Esubstation Editor Role Properties */
 INSERT INTO YukonRoleProperty VALUES(-10700,-107,'default','false','The default esub editor property');
@@ -8929,7 +8929,7 @@ INSERT INTO YukonRoleProperty VALUES(-10906,-109,'Load Management Reports Group'
 INSERT INTO YukonRoleProperty VALUES(-10907,-109,'Cap Control Reports Group','false','Access to Cap Control group reports.');
 INSERT INTO YukonRoleProperty VALUES(-10908,-109,'Database Reports Group','true','Access to Database group reports.');
 INSERT INTO YukonRoleProperty VALUES(-10909,-109,'Stars Reports Group','true','Access to Stars group reports.');
-/* YUK-6642 INSERT INTO YukonRoleProperty VALUES(-10911,-109,'Settlement Reports Group','false','Access to Settlement group reports.'); */ 
+/* YUK-6642 INSERT INTO YukonRoleProperty VALUES(-10911,-109,'Settlement Reports Group','false','Access to Settlement group reports.'); */
 INSERT INTO YukonRoleProperty VALUES(-10923,-109,'C&I Curtailment Reports Group','false','Access to C&I Curtailment group reports');
 
 INSERT INTO YukonRoleProperty VALUES(-11001,-110,'Password History','5','The number of different passwords retained before a user can reuse a password.');
@@ -8958,11 +8958,11 @@ INSERT INTO YukonRoleProperty VALUES(-20111,-201,'Hardware','true','Controls whe
 INSERT INTO YukonRoleProperty VALUES(-20112,-201,'Hardware Create','true','Controls whether to enable the hardware creation feature');
 INSERT INTO YukonRoleProperty VALUES(-20113,-201,'Hardware Thermostat','true','Controls whether to enable the thermostat programming feature');
 INSERT INTO YukonRoleProperty VALUES(-20114,-201,'Work Orders','false','Controls whether to enable the service request feature');
-INSERT INTO YukonRoleProperty VALUES(-20115,-201,'Admin Change Login Username','true','Controls access to change a customer login username'); 
+INSERT INTO YukonRoleProperty VALUES(-20115,-201,'Admin Change Login Username','true','Controls access to change a customer login username');
 INSERT INTO YukonRoleProperty VALUES(-20116,-201,'Admin FAQ','false','Controls whether to show customer FAQs');
 INSERT INTO YukonRoleProperty VALUES(-20117,-201,'Thermostats All','false','Controls whether to allow programming multiple thermostats at one time');
 INSERT INTO YukonRoleProperty VALUES(-20118,-201,'Create Trend','false','Controls whether to allow new trends to assigned to the customer');
-INSERT INTO YukonRoleProperty VALUES(-20119,-201,'Admin Change Login Password','true','Controls access to change a customer login password'); 
+INSERT INTO YukonRoleProperty VALUES(-20119,-201,'Admin Change Login Password','true','Controls access to change a customer login password');
 INSERT INTO YukonRoleProperty VALUES(-20120,-201,'Web Service LM Data Access','true','Controls access to web services that retrieve LM data.');
 INSERT INTO YukonRoleProperty VALUES(-20121,-201,'Web Service LM Control Access','true','Controls access to web services that perform LM control.');
 
@@ -8980,7 +8980,7 @@ INSERT INTO YukonRoleProperty VALUES(-20163,-201,'Allow Account Editing','true',
 INSERT INTO YukonRoleProperty VALUES(-20164,-201,'Enroll Multiple Programs per Category','false','Enables you to enroll in multiple programs within an appliance category.');
 INSERT INTO YukonRoleProperty VALUES(-20165,-201,'Account Search','true','Enables you to use account searching.');
 INSERT INTO YukonRoleProperty VALUES(-20166,-201,'Survey Edit','false','Enables editing of surveys.');
-INSERT INTO YukonRoleProperty VALUES(-20167,-201,'Opt Out Survey Edit','false','Enables editing of opt out surveys.'); 
+INSERT INTO YukonRoleProperty VALUES(-20167,-201,'Opt Out Survey Edit','false','Enables editing of opt out surveys.');
 
 /* Operator Administrator Role Properties */
 INSERT INTO YukonRoleProperty VALUES(-20000,-200,'Edit Energy Company','false','Controls access to edit the user''s energy company settings.');
@@ -8991,24 +8991,24 @@ INSERT INTO YukonRoleProperty VALUES(-20005,-200,'View Opt Out Events','false','
 INSERT INTO YukonRoleProperty VALUES(-20006,-200,'Member Login Cntrl','false','Ignored if not a member company -- Controls whether operator logins are shown on the EC administration page.');
 INSERT INTO YukonRoleProperty VALUES(-20007,-200,'Member Route Select','false','Ignored if not a member company -- Controls whether routes are visible through the EC administration page.');
 INSERT INTO YukonRoleProperty VALUES(-20009,-200,'Multiple Warehouses','false','Allows for multiple user-created warehouses instead of a single generic warehouse.');
-INSERT INTO YukonRoleProperty VALUES(-20010,-200,'Auto Process Batch Configs','false','Automatically process batch configs using the DailyTimerTask.'); 
+INSERT INTO YukonRoleProperty VALUES(-20010,-200,'Auto Process Batch Configs','false','Automatically process batch configs using the DailyTimerTask.');
 INSERT INTO YukonRoleProperty VALUES(-20011,-200,'MultiSpeak Setup','false','Controls access to configure the MultiSpeak Interfaces.');
 INSERT INTO YukonRoleProperty VALUES(-20012,-200,'LM User Assignment','false','Controls visibility of LM objects for 3-tier and direct control, based off assignment of users.');
 INSERT INTO YukonRoleProperty VALUES(-20013,-200,'Edit Device Config','false','Controls the ability to edit and create device configurations');
 INSERT INTO YukonRoleProperty VALUES(-20014,-200,'View Device Config','true','Controls the ability to view existing device configurations');
-INSERT INTO YukonRoleProperty VALUES(-20015,-200,'Manage Indexes','true','Controls access to manually build Lucene indexes.'); 
+INSERT INTO YukonRoleProperty VALUES(-20015,-200,'Manage Indexes','true','Controls access to manually build Lucene indexes.');
 INSERT INTO YukonRoleProperty VALUES(-20016,-200,'View Logs','true','Controls access to view or download log files.');
 INSERT INTO YukonRoleProperty VALUES(-20017,-200,'Database Migration','false','Controls access to database migration tool.');
 INSERT INTO YukonRoleProperty VALUES(-20018,-200,'Event Logs','false','Controls access to event logs feature.');
-INSERT INTO YukonRoleProperty VALUES(-20019,-200,'Admin Super User','false','Allows full control of all energy companies and other administrator features.'); 
+INSERT INTO YukonRoleProperty VALUES(-20019,-200,'Admin Super User','false','Allows full control of all energy companies and other administrator features.');
 
 /* Operator Metering Role Properties*/
 INSERT INTO YukonRoleProperty VALUES(-20203,-202,'Enable Bulk Importer','true','Allows access to the Bulk Importer');
 INSERT INTO YukonRoleProperty VALUES(-20206,-202,'Profile Collection','true','Controls access to submit a (past) profile collection request');
 INSERT INTO YukonRoleProperty VALUES(-20207,-202,'Move In/Move Out Auto Archiving','true','Enables automatic archiving of move in/move out transactions');
 INSERT INTO YukonRoleProperty VALUES(-20208,-202,'Move In/Move Out','true','Controls access to process a move in/move out');
-INSERT INTO YukonRoleProperty VALUES(-20209,-202,'Profile Collection Scanning','true','Controls access to start/stop scanning of profile data'); 
-INSERT INTO YukonRoleProperty VALUES(-20210,-202,'High Bill Complaint','true','Controls access to process a high bill complaint'); 
+INSERT INTO YukonRoleProperty VALUES(-20209,-202,'Profile Collection Scanning','true','Controls access to start/stop scanning of profile data');
+INSERT INTO YukonRoleProperty VALUES(-20210,-202,'High Bill Complaint','true','Controls access to process a high bill complaint');
 INSERT INTO YukonRoleProperty VALUES(-20211,-202,'CIS Info Widget Enabled','true','Controls access to view the CIS Information widget.');
 INSERT INTO YukonRoleProperty VALUES(-20212,-202,'CIS Info Type','NONE','Defines the type of CIS Information widget to display. Available placeholders: NONE, MULTISPEAK, CAYENTA');
 INSERT INTO YukonRoleProperty VALUES(-20213,-202,'Outage Processing','true','Controls access to Outage Processing');
@@ -9039,7 +9039,7 @@ INSERT INTO YukonRoleProperty VALUES(-20894,-201,'Opt Out Today Only','false','P
 INSERT INTO YukonRoleProperty VALUES(-20895,-201,'Opt Out Admin Status','true','Determines whether an operator can see current opt out status on the Opt Out Admin page.');
 INSERT INTO YukonRoleProperty VALUES(-20896,-201,'Opt Out Admin Change Enabled','true','Determines whether an operator can enable or disable Opt Outs for the rest of the day.');
 INSERT INTO YukonRoleProperty VALUES(-20897,-201,'Opt Out Admin Cancel Current','true','Determines whether an operator can cancel (reenable) ALL currently Opted Out devices.');
-INSERT INTO YukonRoleProperty VALUES(-20898,-201,'Opt Out Admin Change Counts','true','Determines whether an operator can change from Opt Outs count against limits today to Opt Outs do not count.'); 
+INSERT INTO YukonRoleProperty VALUES(-20898,-201,'Opt Out Admin Change Counts','true','Determines whether an operator can change from Opt Outs count against limits today to Opt Outs do not count.');
 
 /* Operator Hardware Inventory Role Properties */
 INSERT INTO YukonRoleProperty VALUES(-20900,-209,'Show All Inventory','true','Controls whether to allow showing all inventory');
@@ -9050,9 +9050,9 @@ INSERT INTO YukonRoleProperty VALUES(-20904,-209,'Delete SN Range','true','Contr
 INSERT INTO YukonRoleProperty VALUES(-20905,-209,'Create Hardware','true','Controls whether to allow creating new hardware');
 INSERT INTO YukonRoleProperty VALUES(-20906,-209,'Expresscom Restore First','false','Controls whether an opt out command should also contain a restore');
 INSERT INTO YukonRoleProperty VALUES(-20908,-209,'Multiple Warehouses','false','Allows for inventory to be assigned to multiple user-created warehouses instead of a single generic warehouse.');
-INSERT INTO YukonRoleProperty VALUES(-20909,-209,'Purchasing Access','false','Activates the purchasing section of the inventory module.'); 
+INSERT INTO YukonRoleProperty VALUES(-20909,-209,'Purchasing Access','false','Activates the purchasing section of the inventory module.');
 INSERT INTO YukonRoleProperty VALUES(-20910,-209,'Inventory Configuration','false','Controls access to Inventory Configuration Tool');
-INSERT INTO YukonRoleProperty VALUES(-20911,-209,'Inventory Search','true','Enables you to use inventory searching.'); 
+INSERT INTO YukonRoleProperty VALUES(-20911,-209,'Inventory Search','true','Enables you to use inventory searching.');
 
 /* operator work order management role properties */
 insert into YukonRoleProperty values(-21000,-210,'Show All Work Orders','true','Controls whether to allow showing all work orders');
@@ -9060,21 +9060,21 @@ insert into YukonRoleProperty values(-21001,-210,'Create Work Order','true','Con
 insert into YukonRoleProperty values(-21002,-210,'Work Order Report','true','Controls whether to allow reporting on work orders');
 insert into YukonRoleProperty values(-21003,-210,'Addtl Order Number Label','Addtl Order Number','Customizable label for the additional order number field.');
 
-insert into YukonRoleProperty values(-21100,-211,'CI Curtailment Label','CI Curtailment','The operator specific name for C&I Curtailment'); 
+insert into YukonRoleProperty values(-21100,-211,'CI Curtailment Label','CI Curtailment','The operator specific name for C&I Curtailment');
 
 /* Scheduler Role Properties */
-INSERT INTO YukonRoleProperty VALUES (-21200,-212,'Enable/Disable Scripts','true','Controls access to enable or disable a script.'); 
+INSERT INTO YukonRoleProperty VALUES (-21200,-212,'Enable/Disable Scripts','true','Controls access to enable or disable a script.');
 INSERT INTO YukonRoleProperty VALUES (-21201,-212,'Manage Schedules','true','Controls access to create, delete, or update scheduled reads. If false, access is view only.');
 
 /* Device Actions Role Properties */
-INSERT INTO YukonRoleProperty VALUES (-21300,-213,'Bulk Import Operation','true','Controls access to bulk import operations'); 
-INSERT INTO YukonRoleProperty VALUES (-21301,-213,'Bulk Update Operation','true','Controls access to bulk update operations'); 
-INSERT INTO YukonRoleProperty VALUES (-21302,-213,'Device Group Edit','true','Controls editing of Device Groups (Add/Remove Group, update name, etc.)'); 
-INSERT INTO YukonRoleProperty VALUES (-21303,-213,'Device Group Modify','true','Controls modifying contents of a Device Group (Add to/Remove from group, etc.)'); 
-INSERT INTO YukonRoleProperty VALUES (-21304,-213,'Group Commander','true','Controls access to group command actions'); 
-INSERT INTO YukonRoleProperty VALUES (-21305,-213,'Mass Change','true','Controls access to mass change collection actions. Includes all Mass Change actions.'); 
-INSERT INTO YukonRoleProperty VALUES (-21306,-213,'Locate Route','true','Controls access to locate route action'); 
-INSERT INTO YukonRoleProperty VALUES (-21307,-213,'Mass Delete','false','Controls access to mass delete devices action'); 
+INSERT INTO YukonRoleProperty VALUES (-21300,-213,'Bulk Import Operation','true','Controls access to bulk import operations');
+INSERT INTO YukonRoleProperty VALUES (-21301,-213,'Bulk Update Operation','true','Controls access to bulk update operations');
+INSERT INTO YukonRoleProperty VALUES (-21302,-213,'Device Group Edit','true','Controls editing of Device Groups (Add/Remove Group, update name, etc.)');
+INSERT INTO YukonRoleProperty VALUES (-21303,-213,'Device Group Modify','true','Controls modifying contents of a Device Group (Add to/Remove from group, etc.)');
+INSERT INTO YukonRoleProperty VALUES (-21304,-213,'Group Commander','true','Controls access to group command actions');
+INSERT INTO YukonRoleProperty VALUES (-21305,-213,'Mass Change','true','Controls access to mass change collection actions. Includes all Mass Change actions.');
+INSERT INTO YukonRoleProperty VALUES (-21306,-213,'Locate Route','true','Controls access to locate route action');
+INSERT INTO YukonRoleProperty VALUES (-21307,-213,'Mass Delete','false','Controls access to mass delete devices action');
 INSERT INTO YukonRoleProperty VALUES (-21308,-213,'Add/Update/Remove Points','false','Controls access to Add, Update and Remove Points collection actions.');
 INSERT INTO YukonRoleProperty VALUES (-21309,-213,'Send/Read Configs','false','Controls access to Send Config and Read Config collection actions.');
 INSERT INTO YukonRoleProperty VALUES (-21310,-213,'Assign Configs','false','Controls access to Assign Config collection action.');
@@ -9090,9 +9090,9 @@ INSERT INTO YukonRoleProperty VALUES(-40005,-400,'Programs Opt Out','true','Cont
 INSERT INTO YukonRoleProperty VALUES(-40006,-400,'Hardware Thermostat','true','Controls whether to enable the thermostat programming feature');
 INSERT INTO YukonRoleProperty VALUES(-40007,-400,'Questions Utility','true','Controls whether to show the contact information of the energy company');
 INSERT INTO YukonRoleProperty VALUES(-40008,-400,'Questions FAQ','true','Controls whether to show customer FAQs');
-INSERT INTO YukonRoleProperty VALUES(-40009,-400,'Change Login Username','true','Controls access for customers to change their own login username'); 
+INSERT INTO YukonRoleProperty VALUES(-40009,-400,'Change Login Username','true','Controls access for customers to change their own login username');
 INSERT INTO YukonRoleProperty VALUES(-40010,-400,'Thermostats All','false','Controls whether to allow programming multiple thermostats at one time');
-INSERT INTO YukonRoleProperty VALUES(-40011,-400,'Change Login Password','true','Controls access for customers to change their own login password'); 
+INSERT INTO YukonRoleProperty VALUES(-40011,-400,'Change Login Password','true','Controls access for customers to change their own login password');
 INSERT INTO YukonRoleProperty VALUES(-40012,-400,'Grouped Control History Display', 'true', 'Controls whether to enable grouped control history display');
 INSERT INTO YukonRoleProperty VALUES(-40051,-400,'Hide Opt Out Box','false','Controls whether to show the opt out box on the programs opt out page');
 INSERT INTO YukonRoleProperty VALUES(-40055,-400,'Opt Out Period',' ','The duration, in days, for the customer Opt Out period. (Use commas to separate multiple values: Ex. 1,3,4,5)');
@@ -9102,10 +9102,10 @@ INSERT INTO YukonRoleProperty VALUES(-40102,-400,'Link Thermostat Instructions',
 
 INSERT INTO YukonRoleProperty VALUES(-40197,-400,'Contacts Access','false','Turns residential side contact access on or off.');
 INSERT INTO YukonRoleProperty VALUES(-40198,-400,'Opt Out Today Only','false','Prevents residential side opt outs from being available for scheduling beyond the current day.');
-INSERT INTO YukonRoleProperty VALUES(-40199,-400,'Sign Out Enabled','true','Allows end-users to see a sign-out link when accessing their account pages.'); 
-INSERT INTO YukonRoleProperty VALUES(-40200,-400,'Create Login For Account','false','Allows a new login to be automatically created for each contact on a customer account.'); 
-INSERT INTO YukonRoleProperty VALUES(-40201,-400,'Opt Out Force All Devices','false','Controls access to select individual devices or forces all device selection when opting out. When true, individual device selection is unavailable and all devices are forced to opt out.'); 
-INSERT INTO YukonRoleProperty VALUES(-40202,-400,'Enroll Multiple Programs per Category','false','Enables you to enroll in multiple programs within an appliance category.'); 
+INSERT INTO YukonRoleProperty VALUES(-40199,-400,'Sign Out Enabled','true','Allows end-users to see a sign-out link when accessing their account pages.');
+INSERT INTO YukonRoleProperty VALUES(-40200,-400,'Create Login For Account','false','Allows a new login to be automatically created for each contact on a customer account.');
+INSERT INTO YukonRoleProperty VALUES(-40201,-400,'Opt Out Force All Devices','false','Controls access to select individual devices or forces all device selection when opting out. When true, individual device selection is unavailable and all devices are forced to opt out.');
+INSERT INTO YukonRoleProperty VALUES(-40202,-400,'Enroll Multiple Programs per Category','false','Enables you to enroll in multiple programs within an appliance category.');
 INSERT INTO YukonRoleProperty VALUES(-40203,-400,'Enrollment per Device','false','Displays a second web page that allows for enrollment by individual device per program.');
 INSERT INTO YukonRoleProperty VALUES(-40300,-400,'Auto Thermostat Mode Enabled','false','Enables auto mode functionality for the account.enrollment by individual device per program.');
 
@@ -9117,7 +9117,7 @@ insert into YukonRoleProperty values(-70004,-700,'Hide One-Lines','false','Sets 
 insert into YukonRoleProperty values(-70005,-700,'cap_control_interface','amfm','Optional interface to the AMFM mapping system');
 insert into YukonRoleProperty values(-70006,-700,'cbc_creation_name','CBC <PAOName>','What text will be added onto CBC names when they are created');
 insert into YukonRoleProperty values(-70007,-700,'pfactor_decimal_places','1','How many decimal places to show for real values for PowerFactor');
-insert into YukonRoleProperty values(-70008,-700,'Allow OV/UV','false','Allows users to toggle OV/UV usage for capbanks, substations, subs, and feeders.'); 
+insert into YukonRoleProperty values(-70008,-700,'Allow OV/UV','false','Allows users to toggle OV/UV usage for capbanks, substations, subs, and feeders.');
 insert into YukonRoleProperty values(-70010,-700,'Database Editing','false','Allows the user to view/modify the database set up for all CapControl items');
 insert into YukonRoleProperty values(-70011,-700,'Show flip command', 'false', 'Show flip command for Cap Banks with 7010 type controller');
 insert into YukonRoleProperty values(-70012,-700,'Show Cap Bank Add Info','false','Show Cap Bank Addititional Info tab');
@@ -9128,19 +9128,19 @@ insert into YukonRoleProperty values(-70016,-700,'Definition Closed','Switched:C
 insert into yukonroleproperty values(-70017,-700,'Add Comments', 'false', 'Allows the user to Add comments to Cap Bank objects.');
 insert into yukonroleproperty values(-70018,-700,'Modify Comments', 'false', 'Allows the user to Modify comments on Cap Bank objects.');
 insert into yukonroleproperty values(-70019,-700,'System Wide Controls', 'false', 'Allow system wide controls');
-INSERT INTO YukonRoleProperty VALUES(-70020,-700,'Force Default Comment', 'false', 'If the user does not provide a comment, a default comment will be stored.'); 
-INSERT INTO YukonRoleProperty VALUES(-70021,-700,'Allow Area Control','true','Enables or disables field and local Area controls for the given user'); 
-INSERT INTO YukonRoleProperty VALUES(-70022,-700,'Allow Substation Control','true','Enables or disables field and local Substation controls for the given user'); 
-INSERT INTO YukonRoleProperty VALUES(-70023,-700,'Allow SubBus Control','true','Enables or disables field and local Substation Bus controls for the given user'); 
-INSERT INTO YukonRoleProperty VALUES(-70024,-700,'Allow Feeder Control','true','Enables or disables field and local Feeder controls for the given user'); 
-INSERT INTO YukonRoleProperty VALUES(-70025,-700,'Allow Capbank/CBC Control','true','Enables or disables field and local Capbank/CBC controls for the given user'); 
+INSERT INTO YukonRoleProperty VALUES(-70020,-700,'Force Default Comment', 'false', 'If the user does not provide a comment, a default comment will be stored.');
+INSERT INTO YukonRoleProperty VALUES(-70021,-700,'Allow Area Control','true','Enables or disables field and local Area controls for the given user');
+INSERT INTO YukonRoleProperty VALUES(-70022,-700,'Allow Substation Control','true','Enables or disables field and local Substation controls for the given user');
+INSERT INTO YukonRoleProperty VALUES(-70023,-700,'Allow SubBus Control','true','Enables or disables field and local Substation Bus controls for the given user');
+INSERT INTO YukonRoleProperty VALUES(-70024,-700,'Allow Feeder Control','true','Enables or disables field and local Feeder controls for the given user');
+INSERT INTO YukonRoleProperty VALUES(-70025,-700,'Allow Capbank/CBC Control','true','Enables or disables field and local Capbank/CBC controls for the given user');
 INSERT INTO YukonRoleProperty VALUES(-70026,-700,'Warn on control send.','true','If true the user will be asked if they are sure they want to send that command.');
 INSERT INTO YukonRoleProperty VALUES(-70027,-700,'Enable Importer','false','Allows access to the Cap Control importers');
 
 /* Notification / IVR Role properties */
 INSERT INTO YukonRoleProperty VALUES(-80001,-800,'Number of Channels','1','The number of outgoing channels assigned to the specified voice application.');
-INSERT INTO YukonRoleProperty VALUES(-80004,-800,'IVR URL Dialer Template','http://127.0.0.1:9998/VoiceXML.start?tokenid=yukon-{MESSAGE_TYPE}&numbertodial={PHONE_NUMBER}','The URL used to initiate a call, see documentation for allowed variables'); 
-INSERT INTO YukonRoleProperty VALUES(-80005,-800,'IVR URL Dialer Success Matcher','success','A Java Regular Expression that will be matched against the output of the URL to determine if the call was successful'); 
+INSERT INTO YukonRoleProperty VALUES(-80004,-800,'IVR URL Dialer Template','http://127.0.0.1:9998/VoiceXML.start?tokenid=yukon-{MESSAGE_TYPE}&numbertodial={PHONE_NUMBER}','The URL used to initiate a call, see documentation for allowed variables');
+INSERT INTO YukonRoleProperty VALUES(-80005,-800,'IVR URL Dialer Success Matcher','success','A Java Regular Expression that will be matched against the output of the URL to determine if the call was successful');
 
 /* Notification / Configuration role properties */
 insert into YukonRoleProperty values(-80100,-801,'Template Root','Server/web/webapps/ROOT/WebConfig/custom/notif_templates/','Either a URL base where the notification templates will be stored (file: or http:) or a directory relative to YUKON_BASE.');
@@ -9153,7 +9153,7 @@ INSERT INTO YukonRoleProperty VALUES (-90004,-900,'Constraint Check','true','All
 INSERT INTO YukonRoleProperty VALUES (-90005,-900,'Constraint Observe','true','Allow load management program constraints to be OBSERVED before starting');
 INSERT INTO YukonRoleProperty VALUES (-90006,-900,'Constraint Override','true','Allow load management program constraints to be OVERRIDDEN before starting');
 INSERT INTO YukonRoleProperty VALUES (-90007,-900,'Constraint Default','Check','The default program constraint selection prior to starting a program');
-INSERT INTO YukonRoleProperty VALUES (-90008,-900,'Allow Gear Change for Stop','false','Activates the ability to change gears as part of manually stopping a load program'); 
+INSERT INTO YukonRoleProperty VALUES (-90008,-900,'Allow Gear Change for Stop','false','Activates the ability to change gears as part of manually stopping a load program');
 INSERT INTO YukonRoleProperty VALUES (-90009,-900,'Ignore LM Pao Permissions','false','Allow access to all load management objects. Set to false to force the use of per pao permissions.');
 INSERT INTO YukonRoleProperty VALUES (-90010,-900,'Control Areas','true','Controls access to view Control Areas');
 INSERT INTO YukonRoleProperty VALUES (-90011,-900,'Scenarios','true','Controls access to view Scenarios');
@@ -9178,7 +9178,7 @@ INSERT INTO YukonRoleProperty VALUES (-90034,-900,'Load Group State','true', 'Co
 INSERT INTO YukonRoleProperty VALUES (-90035,-900,'Load Group Last Action','true', 'Controls access to view Load Group Last Action');
 INSERT INTO YukonRoleProperty VALUES (-90036,-900,'Load Group Control Statistics','true', 'Controls access to view Load Group Control Statistics');
 INSERT INTO YukonRoleProperty VALUES (-90037,-900,'Load Group Reduction','true', 'Controls access to view Load Group Reduction');
-INSERT INTO YukonRoleProperty VALUES (-90038,-900,'Load Group Load Capacity','true', 'Controls access to view Load Group Load Capacity'); 
+INSERT INTO YukonRoleProperty VALUES (-90038,-900,'Load Group Load Capacity','true', 'Controls access to view Load Group Load Capacity');
 INSERT INTO YukonRoleProperty VALUES (-90039,-900,'Start Now Checked By Default','true', 'Controls whether the start now checkbox is checked by default in demand response.');
 INSERT INTO YukonRoleProperty VALUES (-90040,-900,'Control Duration Default','240', 'Specifies the default duration for a control event in minutes for demand response');
 INSERT INTO YukonRoleProperty VALUES (-90041,-900,'Schedule Stop Checked By Default', 'true', 'Controls whether the schedule stop check box is checked by default in demand response.');
@@ -9202,7 +9202,7 @@ insert into YukonRoleProperty values(-100104, -1001, 'Volts', 'false', 'display 
 insert into YukonRoleProperty values(-100105, -1001, 'Target', 'true', 'is target stat displayed');
 
 insert into yukonroleproperty values(-100107, -1001, 'Watt/Volt', 'true', 'display Watts/Volts');
-insert into yukonroleproperty values(-100108, -1001, 'Three Phase', 'false', 'display 3-phase data for feeder'); 
+insert into yukonroleproperty values(-100108, -1001, 'Three Phase', 'false', 'display 3-phase data for feeder');
 
 insert into YukonRoleProperty values(-100201, -1002, 'Bank Size', 'true', 'display Bank Size');
 insert into YukonRoleProperty values(-100202, -1002, 'CBC Name', 'true', 'display CBC Name');
@@ -9330,9 +9330,9 @@ INSERT INTO YukonServices VALUES (9, 'Monitors', 'classpath:com/cannontech/servi
 INSERT INTO YukonServices VALUES (10, 'OptOut', 'classpath:com/cannontech/services/optout/optOutContext.xml', 'ServiceManager');
 INSERT INTO YukonServices VALUES (11, 'RawPointHistoryValidation', 'classpath:com/cannontech/services/validation/validationServerContext.xml', 'ServiceManager');
 INSERT INTO YukonServices VALUES (13, 'Eka', 'classpath:com/cannontech/services/rfn/rfnMeteringContext.xml', 'ServiceManager');
-INSERT INTO yukonServices VALUES (14, 'Inventory Management', 'classpath:com/cannontech/services/dr/inventoryContext.xml', 'ServiceManager'); 
+INSERT INTO yukonServices VALUES (14, 'Inventory Management', 'classpath:com/cannontech/services/dr/inventoryContext.xml', 'ServiceManager');
 INSERT INTO YukonServices VALUES (15, 'PorterResponseMonitor', 'classpath:com/cannontech/services/porterResponseMonitor/porterResponseMonitorContext.xml', 'ServiceManager');
-INSERT INTO YukonServices VALUES (16, 'SepMessageListener', 'classpath:com/cannontech/services/sepMessageListener/sepMessageListenerContext.xml', 'ServiceManager'); 
+INSERT INTO YukonServices VALUES (16, 'SepMessageListener', 'classpath:com/cannontech/services/sepMessageListener/sepMessageListenerContext.xml', 'ServiceManager');
 INSERT INTO YukonServices VALUES (17, 'DigiPollingService', 'classpath:com/cannontech/services/digiPollingService/digiPollingService.xml', 'ServiceManager');
 INSERT INTO YukonServices VALUES (18, 'CymDISTMessageListener', 'classpath:com/cannontech/services/cymDISTService/cymDISTServiceContext.xml', 'ServiceManager');
 INSERT INTO YukonServices VALUES (20, 'OpcService','classpath:com/cannontech/services/opc/opcService.xml','ServiceManager');
@@ -9453,7 +9453,7 @@ create table Zone  (
 /* View: CBCConfiguration2_View                                 */
 /*==============================================================*/
 create or replace view CBCConfiguration2_View as
-SELECT YP.PAOName AS CBCName, D.* 
+SELECT YP.PAOName AS CBCName, D.*
 FROM DynamicCCTwoWayCBC D, YukonPAObject YP
 WHERE YP.PAObjectId = D.DeviceId;
 
@@ -9461,7 +9461,7 @@ WHERE YP.PAObjectId = D.DeviceId;
 /* View: CBCConfiguration_View                                  */
 /*==============================================================*/
 create or replace view CBCConfiguration_View as
-SELECT YP.PAOName AS CBCName, YP.PAObjectId AS CBCId, P.PointName AS PointName, P.PointId AS PointId, 
+SELECT YP.PAOName AS CBCName, YP.PAObjectId AS CBCId, P.PointName AS PointName, P.PointId AS PointId,
        PD.Value AS PointValue, PD.Timestamp, UOM.UOMName AS UnitOfMeasure
 FROM Point P
 JOIN YukonPAObject YP ON YP.PAObjectId = P.PAObjectId AND YP.Type like 'CBC 702%'
@@ -9473,144 +9473,144 @@ LEFT OUTER JOIN UnitMeasure UOM ON UOM.UOMId = PU.UOMId;
 /* View: CCCBCCVMSState_View                                    */
 /*==============================================================*/
 create or replace view CCCBCCVMSState_View as
-SELECT YP5.PAOName AS Region, YP4.PAOName AS Substation, CB.MapLocationId AS OpCenter, 
-       YP3.PAOName AS SubName, YP2.PAOName AS FeederName, YP1.PAOName AS CapBankName, 
-       YP.PAOName AS CBCName, S.Text AS CapBankStatus, S1.Text AS CBCStatus, 
-       CASE WHEN S.Text = S1.Text THEN 'No' ELSE 'Yes' END AS IsMisMatch, 
+SELECT YP5.PAOName AS Region, YP4.PAOName AS Substation, CB.MapLocationId AS OpCenter,
+       YP3.PAOName AS SubName, YP2.PAOName AS FeederName, YP1.PAOName AS CapBankName,
+       YP.PAOName AS CBCName, S.Text AS CapBankStatus, S1.Text AS CBCStatus,
+       CASE WHEN S.Text = S1.Text THEN 'No' ELSE 'Yes' END AS IsMisMatch,
        DCB.LastStatusChangeTime AS CapBankChangeTime, DCB.TwoWayCBCStateTime AS CBCChangeTime
 FROM (SELECT PAObjectId, Category, PAOClass, PAOName, Type, Description, DisableFlag, PAOStatistics
       FROM YukonPAObject
-      WHERE  (Type LIKE 'CBC 702%')) YP 
-LEFT OUTER JOIN CapBank CB ON CB.ControlDeviceId = YP.PAObjectId AND CB.ControlDeviceId > 0 
+      WHERE  (Type LIKE 'CBC 702%')) YP
+LEFT OUTER JOIN CapBank CB ON CB.ControlDeviceId = YP.PAObjectId AND CB.ControlDeviceId > 0
 INNER JOIN (SELECT PAObjectId, Category, PAOClass, PAOName, Type, Description, DisableFlag, PAOStatistics
             FROM YukonPAObject YukonPAObject_3
-            WHERE (Type LIKE 'CAP BANK')) YP1 ON YP1.PAObjectId = cb.DeviceId 
-LEFT OUTER JOIN CCFeederBankList FB ON FB.DeviceId = CB.DeviceId 
+            WHERE (Type LIKE 'CAP BANK')) YP1 ON YP1.PAObjectId = cb.DeviceId
+LEFT OUTER JOIN CCFeederBankList FB ON FB.DeviceId = CB.DeviceId
 LEFT OUTER JOIN (SELECT PAObjectId, Category, PAOClass, PAOName, Type, Description, DisableFlag, PAOStatistics
                  FROM YukonPAObject YukonPAObject_2
-                 WHERE (Type LIKE 'CCFEEDER')) YP2 ON YP2.PAObjectId = FB.FeederId 
-LEFT OUTER JOIN CCFeederSubAssignment SF ON FB.FeederId = SF.FeederId 
+                 WHERE (Type LIKE 'CCFEEDER')) YP2 ON YP2.PAObjectId = FB.FeederId
+LEFT OUTER JOIN CCFeederSubAssignment SF ON FB.FeederId = SF.FeederId
 LEFT OUTER JOIN (SELECT PAObjectId, Category, PAOClass, PAOName, Type, Description, DisableFlag, PAOStatistics
                  FROM YukonPAObject YukonPAObject_1
-                 WHERE (Type LIKE 'CCSUBBUS')) YP3 ON YP3.PAObjectId = SF.SubStationBusId 
-LEFT OUTER JOIN CCSubstationSubbusList SS ON SS.SubstationBusId = SF.SubStationBusId 
+                 WHERE (Type LIKE 'CCSUBBUS')) YP3 ON YP3.PAObjectId = SF.SubStationBusId
+LEFT OUTER JOIN CCSubstationSubbusList SS ON SS.SubstationBusId = SF.SubStationBusId
 LEFT OUTER JOIN (SELECT PAObjectId, Category, PAOClass, PAOName, Type, Description, DisableFlag, PAOStatistics
                  FROM YukonPAObject YukonPAObject_1
-                 WHERE (Type LIKE 'CCSUBSTATION')) YP4 ON YP4.PAObjectId = SS.SubStationId 
-LEFT OUTER JOIN CCSubAreaAssignment SA ON SA.SubstationBusId = SS.SubStationId 
+                 WHERE (Type LIKE 'CCSUBSTATION')) YP4 ON YP4.PAObjectId = SS.SubStationId
+LEFT OUTER JOIN CCSubAreaAssignment SA ON SA.SubstationBusId = SS.SubStationId
 LEFT OUTER JOIN (SELECT PAObjectId, Category, PAOClass, PAOName, Type, Description, DisableFlag, PAOStatistics
                  FROM YukonPAObject YukonPAObject_1
-                 WHERE (Type LIKE 'CCAREA')) YP5 ON YP5.PAObjectId = SA.AreaId 
-INNER JOIN DynamicCCCapBank DCB ON DCB.CapBankId = CB.DeviceId 
-INNER JOIN State S ON S.StateGroupId = 3 AND DCB.ControlStatus = S.RawState 
+                 WHERE (Type LIKE 'CCAREA')) YP5 ON YP5.PAObjectId = SA.AreaId
+INNER JOIN DynamicCCCapBank DCB ON DCB.CapBankId = CB.DeviceId
+INNER JOIN State S ON S.StateGroupId = 3 AND DCB.ControlStatus = S.RawState
 LEFT OUTER JOIN State S1 ON S1.StateGroupId = 3 AND DCB.TwoWayCBCState = S1.RawState;
 
 /*==============================================================*/
 /* View: CCCBCInventory_View                                    */
 /*==============================================================*/
 create or replace view CCCBCInventory_View(CBCNAME, IPADDRESS, SLAVEADDRESS, CONTROLLERTYPE, OPCENTER, REGION, SUBSTATIONNAME, SUBBUSNAME, FEEDERNAME, CAPBANKNAME, BANKSIZE, OPERATIONMETHOD, LAT, LON, DRIVEDIRECTION, CAPBANKADDRESS, TA, CAPBANKCONFIG, COMMMEDIUM, COMMSTRENGTH, EXTERNALANTENNA, OPERATIONSCOUNTERRESETDATE, OPSCOUNTERSINCELASTRESET, OPERATIONSCOUNTERTODAY, UVOPERATIONSCOUNTER, OVOPERATIONSCOUNTER, UVOVCOUNTERRESETDATE, LASTOVUVDATETIME) as
-SELECT YP.PAOName AS CBCName, DPI.Value AS IPAddress, DA.SlaveAddress, CB.ControllerType, 
-       CB.MapLocationId AS OpCenter, YP5.PAOName AS Region, YP4.PAOName AS SubstationName, 
-       YP3.PAOName AS SubBusName, YP2.PAOName AS FeederName, YP1.PAOName AS CapBankName, 
-       CB.BankSize, CB.OperationalState AS OperationMethod, CAPA.Latitude AS Lat, 
-       CAPA.Longitude AS Lon, CAPA.DriveDirections AS DriveDirection, 
+SELECT YP.PAOName AS CBCName, DPI.Value AS IPAddress, DA.SlaveAddress, CB.ControllerType,
+       CB.MapLocationId AS OpCenter, YP5.PAOName AS Region, YP4.PAOName AS SubstationName,
+       YP3.PAOName AS SubBusName, YP2.PAOName AS FeederName, YP1.PAOName AS CapBankName,
+       CB.BankSize, CB.OperationalState AS OperationMethod, CAPA.Latitude AS Lat,
+       CAPA.Longitude AS Lon, CAPA.DriveDirections AS DriveDirection,
        YP1.Description AS CapBankAddress, CAPA.MaintenanceAreaId AS TA, CAPA.CapBankConfig,
-       CAPA.CommMedium, CAPA.CommStrength, CAPA.ExtAntenna AS ExternalAntenna, 
-       CAPA.OpCountResetDate AS OperationsCounterResetDate, 
-       DTWC.TotalOpCount AS OpsCounterSinceLastReset, 
-       DTWC.TotalOpCount AS OperationsCounterToday, DTWC.UvOpCount AS UvOperationsCounter, 
-       DTWC.OvOpCount AS OvOperationsCounter, DTWC.OvUvCountResetDate AS UvOvCounterResetDate, 
+       CAPA.CommMedium, CAPA.CommStrength, CAPA.ExtAntenna AS ExternalAntenna,
+       CAPA.OpCountResetDate AS OperationsCounterResetDate,
+       DTWC.TotalOpCount AS OpsCounterSinceLastReset,
+       DTWC.TotalOpCount AS OperationsCounterToday, DTWC.UvOpCount AS UvOperationsCounter,
+       DTWC.OvOpCount AS OvOperationsCounter, DTWC.OvUvCountResetDate AS UvOvCounterResetDate,
        DTWC.LastOvUvDateTime
-FROM (SELECT PAObjectId, PAOName 
-      FROM YukonPAObject 
-      WHERE (Type LIKE '%CBC%')) YP 
-LEFT OUTER JOIN CapBank CB ON CB.ControlDeviceId = YP.PAObjectId 
-LEFT OUTER JOIN YukonPAObject YP1 ON CB.DeviceId = YP1.PAObjectId 
-LEFT OUTER JOIN CCFeederBankList FB ON FB.DeviceId = CB.DeviceId 
-LEFT OUTER JOIN YukonPAObject YP2 ON YP2.PAObjectId = FB.FeederId 
-LEFT OUTER JOIN CCFeederSubAssignment SF ON FB.FeederId = SF.FeederId 
-LEFT OUTER JOIN YukonPAObject YP3 ON YP3.PAObjectId = SF.SubStationBusId 
-LEFT OUTER JOIN CCSubstationSubbusList SSL ON SSL.SubstationBusId = YP3.PAObjectId 
-LEFT OUTER JOIN YukonPAObject YP4 ON YP4.PAObjectId = SSL.SubstationId 
-LEFT OUTER JOIN CCSubAreaAssignment SA ON SA.SubstationBusId = SSL.SubstationId 
-LEFT OUTER JOIN YukonPAObject YP5 ON YP5.PAObjectId = SA.AreaId 
-LEFT OUTER JOIN DeviceAddress DA ON DA.DeviceId = CB.ControlDeviceId 
+FROM (SELECT PAObjectId, PAOName
+      FROM YukonPAObject
+      WHERE (Type LIKE '%CBC%')) YP
+LEFT OUTER JOIN CapBank CB ON CB.ControlDeviceId = YP.PAObjectId
+LEFT OUTER JOIN YukonPAObject YP1 ON CB.DeviceId = YP1.PAObjectId
+LEFT OUTER JOIN CCFeederBankList FB ON FB.DeviceId = CB.DeviceId
+LEFT OUTER JOIN YukonPAObject YP2 ON YP2.PAObjectId = FB.FeederId
+LEFT OUTER JOIN CCFeederSubAssignment SF ON FB.FeederId = SF.FeederId
+LEFT OUTER JOIN YukonPAObject YP3 ON YP3.PAObjectId = SF.SubStationBusId
+LEFT OUTER JOIN CCSubstationSubbusList SSL ON SSL.SubstationBusId = YP3.PAObjectId
+LEFT OUTER JOIN YukonPAObject YP4 ON YP4.PAObjectId = SSL.SubstationId
+LEFT OUTER JOIN CCSubAreaAssignment SA ON SA.SubstationBusId = SSL.SubstationId
+LEFT OUTER JOIN YukonPAObject YP5 ON YP5.PAObjectId = SA.AreaId
+LEFT OUTER JOIN DeviceAddress DA ON DA.DeviceId = CB.ControlDeviceId
 LEFT OUTER JOIN (SELECT EntryId, PAObjectId, Owner, InfoKey, Value, UpdateTime
-                 FROM DynamicPAOInfo 
+                 FROM DynamicPAOInfo
                  WHERE (InfoKey LIKE '%udp ip%')) DPI ON DPI.PAObjectId = YP.PAObjectId
-LEFT OUTER JOIN CapBankAdditional CAPA ON CAPA.DeviceId = CB.DeviceId 
+LEFT OUTER JOIN CapBankAdditional CAPA ON CAPA.DeviceId = CB.DeviceId
 LEFT OUTER JOIN DynamicCCTwoWayCBC DTWC ON CB.ControlDeviceId = DTWC.DeviceId;
 
 /*==============================================================*/
 /* View: CCCapInventory_View                                    */
 /*==============================================================*/
 create or replace view CCCapInventory_View as
-SELECT YP4.PAOName AS Region, CB.MapLocationId AS OpCenter, YP5.PAOName AS SubstationName, 
-       YP3.PAOName AS SubbusName, YP2.PAOName AS FeederName, YP1.PAOName AS CapBankName, 
-       CB.BankSize, CAPA.Latitude AS Lat, CAPA.Longitude AS LON, 
-       CAPA.DriveDirections AS DriveDirection, CB.OperationalState AS OperationMethod, 
-       CB.SwitchManufacture AS SWMfgr, CB.TypeOfSwitch AS SWType, YP.PAOName AS CBCName, 
-       DPI.Value AS IPAddress, DA.SlaveAddress, CAPA.MaintenanceAreaId AS TA, 
+SELECT YP4.PAOName AS Region, CB.MapLocationId AS OpCenter, YP5.PAOName AS SubstationName,
+       YP3.PAOName AS SubbusName, YP2.PAOName AS FeederName, YP1.PAOName AS CapBankName,
+       CB.BankSize, CAPA.Latitude AS Lat, CAPA.Longitude AS LON,
+       CAPA.DriveDirections AS DriveDirection, CB.OperationalState AS OperationMethod,
+       CB.SwitchManufacture AS SWMfgr, CB.TypeOfSwitch AS SWType, YP.PAOName AS CBCName,
+       DPI.Value AS IPAddress, DA.SlaveAddress, CAPA.MaintenanceAreaId AS TA,
        CAPA.CapBankConfig, CAPA.CommMedium, CAPA.CommStrength
-FROM CapBank CB 
-INNER JOIN YukonPAObject YP1 ON YP1.PAObjectId = CB.DeviceId 
-LEFT OUTER JOIN YukonPAObject YP ON CB.ControlDeviceId = YP.PAObjectId AND CB.ControlDeviceId > 0 
-LEFT OUTER JOIN CCFeederBankList FB ON FB.DeviceId = CB.DeviceId 
-LEFT OUTER JOIN YukonPAObject YP2 ON YP2.PAObjectId = FB.FeederId 
-LEFT OUTER JOIN CCFeederSubAssignment SF ON FB.FeederId = SF.FeederId 
-LEFT OUTER JOIN YukonPAObject YP3 ON YP3.PAObjectId = SF.SubStationBusId 
+FROM CapBank CB
+INNER JOIN YukonPAObject YP1 ON YP1.PAObjectId = CB.DeviceId
+LEFT OUTER JOIN YukonPAObject YP ON CB.ControlDeviceId = YP.PAObjectId AND CB.ControlDeviceId > 0
+LEFT OUTER JOIN CCFeederBankList FB ON FB.DeviceId = CB.DeviceId
+LEFT OUTER JOIN YukonPAObject YP2 ON YP2.PAObjectId = FB.FeederId
+LEFT OUTER JOIN CCFeederSubAssignment SF ON FB.FeederId = SF.FeederId
+LEFT OUTER JOIN YukonPAObject YP3 ON YP3.PAObjectId = SF.SubStationBusId
 LEFT OUTER JOIN CCSubStationSubbusList SS ON SS.SubstationBusId = YP3.PAObjectId
-LEFT OUTER JOIN YukonPAObject YP5 ON YP5.PAObjectId = SS.SubStationId 
+LEFT OUTER JOIN YukonPAObject YP5 ON YP5.PAObjectId = SS.SubStationId
 LEFT OUTER JOIN CCSubAreaAssignment SA ON SS.SubstationId = SA.SubstationBusId
 LEFT OUTER JOIN YukonPAObject YP4 ON YP4.PAObjectId = SA.AreaId
-LEFT OUTER JOIN DeviceAddress DA ON DA.DeviceId = CB.ControlDeviceId 
-LEFT OUTER JOIN (SELECT EntryId, PAObjectId, Owner, InfoKey, Value, UpdateTime 
-                 FROM DynamicPAOInfo 
-                 WHERE (InfoKey LIKE '%udp ip%')) DPI ON DPI.PAObjectId = YP.PAObjectId 
+LEFT OUTER JOIN DeviceAddress DA ON DA.DeviceId = CB.ControlDeviceId
+LEFT OUTER JOIN (SELECT EntryId, PAObjectId, Owner, InfoKey, Value, UpdateTime
+                 FROM DynamicPAOInfo
+                 WHERE (InfoKey LIKE '%udp ip%')) DPI ON DPI.PAObjectId = YP.PAObjectId
 LEFT OUTER JOIN CapBankAdditional CAPA ON CAPA.DeviceId = CB.DeviceId;
 
 /*==============================================================*/
 /* View: CCInventory_View                                       */
 /*==============================================================*/
 create or replace view CCInventory_View(REGION, SUBSTATIONNAME, SUBBUSNAME, FEEDERNAME, AREAID, SUBID, SUBBUSID, FDRID, CBCNAME, CBCID, CAPBANKNAME, BANKID, CAPBANKSIZE, DISPLAYORDER, CONTROLSTATUS, CONTROLSTATUSNAME, SWMFGR, SWTYPE, OPERATIONMETHOD, CONTROLLERTYPE, IPADDRESS, SLAVEADDRESS, LAT, LON, DRIVEDIRECTION, OPCENTER, TA, CLOSESEQUENCE, OPENSEQUENCE, LASTOPERATIONTIME, LASTINSPECTIONDATE, LASTMAINTENANCEDATE, MAINTENANCEREQPEND, CAPDISABLED, POTENTIALTRANSFORMER, OTHERCOMMENTS, OPTEAMCOMMENTS, POLENUMBER, OPSCOUNTERSINCELASTRESET, OPERATIONSCOUNTERTODAY, UVOPERATIONSCOUNTER, OVOPERATIONSCOUNTER, UVOVCOUNTERRESETDATE, LASTOVUVDATETIME) as
-SELECT YP4.PAOName AS Region, YP5.PAOName AS SubstationName, YP3.PAOName AS SubBusName, 
-       YP2.PAOName AS FeederName, YP4.PAObjectId AS AreaId, YP5.PAObjectId AS SubId, 
-       YP3.PAObjectId AS SubBusId, YP2.PAObjectId AS FdrId, YP.PAOName AS CBCName, 
-       YP.PAObjectId AS CBCId, YP1.PAOName AS CapBankName, YP1.PAObjectId AS BankId, 
-       CB.BankSize AS CapBankSize, FB.ControlOrder AS DisplayOrder, DCB.ControlStatus, 
+SELECT YP4.PAOName AS Region, YP5.PAOName AS SubstationName, YP3.PAOName AS SubBusName,
+       YP2.PAOName AS FeederName, YP4.PAObjectId AS AreaId, YP5.PAObjectId AS SubId,
+       YP3.PAObjectId AS SubBusId, YP2.PAObjectId AS FdrId, YP.PAOName AS CBCName,
+       YP.PAObjectId AS CBCId, YP1.PAOName AS CapBankName, YP1.PAObjectId AS BankId,
+       CB.BankSize AS CapBankSize, FB.ControlOrder AS DisplayOrder, DCB.ControlStatus,
        S.Text AS ControlStatusName, CB.SwitchManufacture AS SWMfgr, CB.TypeOfSwitch AS SWType,
-       CB.OperationalState AS OperationMethod, CB.ControllerType, DPI.Value AS IPAddress, 
-       DA.SlaveAddress, CAPA.Latitude AS Lat, CAPA.Longitude AS Lon, CAPA.DriveDirections AS DriveDirection, 
-       CB.MapLocationId AS OpCenter, CAPA.MaintenanceAreaId AS TA, FB.CloseOrder AS CloseSequence, 
-       FB.TripOrder AS OpenSequence, DCB.LastStatusChangeTime AS LastOperationTime, 
-       CAPA.LastInspVisit AS LastInspectionDate, CAPA.LastMaintVisit AS LastMaintenanceDate, 
-       CAPA.MaintenanceReqPend, YP1.DisableFlag AS CapDisabled, CAPA.PotentialTransformer, 
-       CAPA.OtherComments, CAPA.OpTeamComments, CAPA.PoleNumber, 
-       DTWC.TotalOpCount AS OpsCounterSinceLastReset, DTWC.TotalOpCount AS OperationsCounterToday, 
-       DTWC.UvOpCount AS UvOperationsCounter, DTWC.OvOpCount AS OvOperationsCounter, 
+       CB.OperationalState AS OperationMethod, CB.ControllerType, DPI.Value AS IPAddress,
+       DA.SlaveAddress, CAPA.Latitude AS Lat, CAPA.Longitude AS Lon, CAPA.DriveDirections AS DriveDirection,
+       CB.MapLocationId AS OpCenter, CAPA.MaintenanceAreaId AS TA, FB.CloseOrder AS CloseSequence,
+       FB.TripOrder AS OpenSequence, DCB.LastStatusChangeTime AS LastOperationTime,
+       CAPA.LastInspVisit AS LastInspectionDate, CAPA.LastMaintVisit AS LastMaintenanceDate,
+       CAPA.MaintenanceReqPend, YP1.DisableFlag AS CapDisabled, CAPA.PotentialTransformer,
+       CAPA.OtherComments, CAPA.OpTeamComments, CAPA.PoleNumber,
+       DTWC.TotalOpCount AS OpsCounterSinceLastReset, DTWC.TotalOpCount AS OperationsCounterToday,
+       DTWC.UvOpCount AS UvOperationsCounter, DTWC.OvOpCount AS OvOperationsCounter,
        DTWC.OvUvCountResetDate AS UvOvCounterResetDate, DTWC.LastOvUvDateTime
-FROM (SELECT  PAObjectId, PAOName 
-      FROM YukonPAObject 
-      WHERE (Type LIKE '%CBC%')) YP 
-LEFT OUTER JOIN CapBank CB ON YP.PAObjectId = CB.ControlDeviceId 
-LEFT OUTER JOIN YukonPAObject YP1 ON YP1.PAObjectId = CB.DeviceId 
-LEFT OUTER JOIN DynamicCCCapBank DCB ON DCB.CapBankId = YP1.PAObjectId 
-LEFT OUTER JOIN State S ON S.StateGroupId = 3 AND DCB.ControlStatus = S.RawState 
+FROM (SELECT  PAObjectId, PAOName
+      FROM YukonPAObject
+      WHERE (Type LIKE '%CBC%')) YP
+LEFT OUTER JOIN CapBank CB ON YP.PAObjectId = CB.ControlDeviceId
+LEFT OUTER JOIN YukonPAObject YP1 ON YP1.PAObjectId = CB.DeviceId
+LEFT OUTER JOIN DynamicCCCapBank DCB ON DCB.CapBankId = YP1.PAObjectId
+LEFT OUTER JOIN State S ON S.StateGroupId = 3 AND DCB.ControlStatus = S.RawState
 LEFT OUTER JOIN State SL ON SL.StateGroupId = 3 AND DCB.TwoWayCBCState = SL.RawState
-LEFT OUTER JOIN CCFeederBankList FB ON FB.DeviceId = CB.DeviceId 
-LEFT OUTER JOIN YukonPAObject YP2 ON YP2.PAObjectId = FB.FeederId 
-LEFT OUTER JOIN CCFeederSubAssignment SF ON FB.FeederId = SF.FeederId 
-LEFT OUTER JOIN YukonPAObject YP3 ON YP3.PAObjectId = SF.SubStationBusId 
-LEFT OUTER JOIN CCSubstationSubbusList SSL ON SSL.SubstationBusId = YP3.PAObjectId 
-LEFT OUTER JOIN YukonPAObject YP5 ON YP5.PAObjectId = SSL.SubstationId 
-LEFT OUTER JOIN CCSubAreaAssignment SA ON SA.SubstationBusId = SSL.SubstationId 
-LEFT OUTER JOIN YukonPAObject YP4 ON YP4.PAObjectId = SA.AreaId 
-LEFT OUTER JOIN DeviceDirectCommSettings DDCS ON DDCS.DeviceId = CB.ControlDeviceId 
-LEFT OUTER JOIN DeviceAddress DA ON DA.DeviceId = YP.PAObjectId 
+LEFT OUTER JOIN CCFeederBankList FB ON FB.DeviceId = CB.DeviceId
+LEFT OUTER JOIN YukonPAObject YP2 ON YP2.PAObjectId = FB.FeederId
+LEFT OUTER JOIN CCFeederSubAssignment SF ON FB.FeederId = SF.FeederId
+LEFT OUTER JOIN YukonPAObject YP3 ON YP3.PAObjectId = SF.SubStationBusId
+LEFT OUTER JOIN CCSubstationSubbusList SSL ON SSL.SubstationBusId = YP3.PAObjectId
+LEFT OUTER JOIN YukonPAObject YP5 ON YP5.PAObjectId = SSL.SubstationId
+LEFT OUTER JOIN CCSubAreaAssignment SA ON SA.SubstationBusId = SSL.SubstationId
+LEFT OUTER JOIN YukonPAObject YP4 ON YP4.PAObjectId = SA.AreaId
+LEFT OUTER JOIN DeviceDirectCommSettings DDCS ON DDCS.DeviceId = CB.ControlDeviceId
+LEFT OUTER JOIN DeviceAddress DA ON DA.DeviceId = YP.PAObjectId
 LEFT OUTER JOIN (SELECT EntryId, PAObjectId, Owner, InfoKey, Value, UpdateTime
-                 FROM DynamicPAOInfo 
-                 WHERE (InfoKey LIKE '%udp ip%')) DPI ON DPI.PAObjectId = YP.PAObjectId 
-LEFT OUTER JOIN DeviceCBC CBC ON CBC.DeviceId = CB.ControlDeviceId 
+                 FROM DynamicPAOInfo
+                 WHERE (InfoKey LIKE '%udp ip%')) DPI ON DPI.PAObjectId = YP.PAObjectId
+LEFT OUTER JOIN DeviceCBC CBC ON CBC.DeviceId = CB.ControlDeviceId
 LEFT OUTER JOIN CapBankAdditional CAPA ON CAPA.DeviceId = CB.DeviceId
 LEFT OUTER JOIN DynamicCCTwoWayCBC DTWC ON CB.ControlDeviceId = DTWC.DeviceId;
 
@@ -9636,13 +9636,13 @@ AND ActionId > -1;
 /* View: CCOperationsCOrphanedConf_View                         */
 /*==============================================================*/
 create or replace view CCOperationsCOrphanedConf_View as
-SELECT EL.LogId AS OpId, MIN(el2.LogID) AS ConfId 
-FROM CCOperationsASent_View EL 
-JOIN CCOperationsBConfirmed_view EL2 ON EL2.PointId = EL.PointId AND EL.LogId < EL2.LogId 
-LEFT JOIN (SELECT A.LogId AS AId, MIN(b.LogID) AS NextAId 
-           FROM CCOperationsASent_View A 
-           JOIN CCOperationsASent_View B ON A.PointId = B.PointId AND A.LogId < B.LogId 
-           GROUP BY A.LogId) EL3 ON EL3.AId = EL.LogId 
+SELECT EL.LogId AS OpId, MIN(el2.LogID) AS ConfId
+FROM CCOperationsASent_View EL
+JOIN CCOperationsBConfirmed_view EL2 ON EL2.PointId = EL.PointId AND EL.LogId < EL2.LogId
+LEFT JOIN (SELECT A.LogId AS AId, MIN(b.LogID) AS NextAId
+           FROM CCOperationsASent_View A
+           JOIN CCOperationsASent_View B ON A.PointId = B.PointId AND A.LogId < B.LogId
+           GROUP BY A.LogId) EL3 ON EL3.AId = EL.LogId
 WHERE EL3.NextAId IS NULL
 GROUP BY EL.LogId;
 
@@ -9650,13 +9650,13 @@ GROUP BY EL.LogId;
 /* View: CCOperationsDSentAndValid_View                         */
 /*==============================================================*/
 create or replace view CCOperationsDSentAndValid_View as
-SELECT EL.LogId AS OpId, MIN(el2.LogID) AS ConfId 
-FROM CCOperationsASent_View EL 
-JOIN CCOperationsBConfirmed_view EL2 ON EL2.PointId = EL.PointId AND EL.LogId < EL2.LogId 
-LEFT JOIN (SELECT A.LogId AS AId, MIN(b.LogID) AS NextAId 
-           FROM CCOperationsASent_View A 
-           JOIN CCOperationsASent_View B ON A.PointId = B.PointId AND A.LogId < B.LogId 
-           GROUP BY A.LogId) EL3 ON EL3.AId = EL.LogId 
+SELECT EL.LogId AS OpId, MIN(el2.LogID) AS ConfId
+FROM CCOperationsASent_View EL
+JOIN CCOperationsBConfirmed_view EL2 ON EL2.PointId = EL.PointId AND EL.LogId < EL2.LogId
+LEFT JOIN (SELECT A.LogId AS AId, MIN(b.LogID) AS NextAId
+           FROM CCOperationsASent_View A
+           JOIN CCOperationsASent_View B ON A.PointId = B.PointId AND A.LogId < B.LogId
+           GROUP BY A.LogId) EL3 ON EL3.AId = EL.LogId
 WHERE EL2.LogId < EL3.NextAId OR EL3.NextAId IS NULL
 GROUP BY EL.LogId;
 
@@ -9664,62 +9664,62 @@ GROUP BY EL.LogId;
 /* View: CCOperationsESentAndAll_View                           */
 /*==============================================================*/
 create or replace view CCOperationsESentAndAll_View as
-SELECT OP.LogId AS OId, MIN(aaa.confid) AS CId 
+SELECT OP.LogId AS OId, MIN(aaa.confid) AS CId
 FROM CCOperationsASent_View OP
 LEFT JOIN CCOperationsDSentAndValid_view AAA ON OP.LogId = AAA.OpId
 GROUP BY OP.LogId;
 
 INSERT INTO CCOperationLogCache
-SELECT OpId, ConfId 
+SELECT OpId, ConfId
 FROM CCOperationsDSentAndValid_view
-WHERE OpId NOT IN (SELECT OperationLogId 
+WHERE OpId NOT IN (SELECT OperationLogId
                    FROM CCOperationLogCache);
 
 /*==============================================================*/
 /* View: CCOperations_View                                      */
 /*==============================================================*/
 create or replace view CCOperations_View as
-SELECT YP3.PAObjectId AS CBCId, YP3.PAOName AS CBCName, YP.PAObjectId AS CapBankId, YP.PAOName AS CapBankName, 
-       CCOAS.PointId, CCOAS.LogId AS OpLogId, CCOAS.ActionId, CCOAS.DateTime AS OpTime, CCOAS.Text AS Operation, 
-       CCOBC.LogId AS ConfLogId, CCOBC.ActionId AS ActionId2, CCOBC.DateTime AS ConfTime, CCOBC.Text AS ConfStatus, 
-       YP1.PAOName AS FeederName, YP1.PAObjectId AS FeederId, YP2.PAOName AS SubBusName, YP2.PAObjectId AS SubBusId, 
+SELECT YP3.PAObjectId AS CBCId, YP3.PAOName AS CBCName, YP.PAObjectId AS CapBankId, YP.PAOName AS CapBankName,
+       CCOAS.PointId, CCOAS.LogId AS OpLogId, CCOAS.ActionId, CCOAS.DateTime AS OpTime, CCOAS.Text AS Operation,
+       CCOBC.LogId AS ConfLogId, CCOBC.ActionId AS ActionId2, CCOBC.DateTime AS ConfTime, CCOBC.Text AS ConfStatus,
+       YP1.PAOName AS FeederName, YP1.PAObjectId AS FeederId, YP2.PAOName AS SubBusName, YP2.PAObjectId AS SubBusId,
        YP5.PAOName AS SubstationName, YP5.PAObjectId AS SubstationId, YP4.PAOName AS Region, YP4.PAObjectId AS AreaId,
-       CB.BankSize, CB.ControllerType, CCOAS.AdditionalInfo AS IPAddress, CBC.SerialNumber AS SerialNum, DA.SlaveAddress, 
+       CB.BankSize, CB.ControllerType, CCOAS.AdditionalInfo AS IPAddress, CBC.SerialNumber AS SerialNum, DA.SlaveAddress,
        CCOBC.KvarAfter, CCOBC.KvarChange, CCOBC.KvarBefore
 FROM CCOperationsASent_View CCOAS
-JOIN CCOperationsBConfirmed_view CCOBC ON CCOBC.ActionId = CCOAS.ActionId 
-AND CCOBC.PointId = CCOAS.PointId 
+JOIN CCOperationsBConfirmed_view CCOBC ON CCOBC.ActionId = CCOAS.ActionId
+AND CCOBC.PointId = CCOAS.PointId
 AND CCOAS.ActionId >= 0
 AND CCOBC.ActionId >= 0
-JOIN Point ON Point.PointId = CCOAS.PointId        
-JOIN DynamicCCCapBank ON DynamicCCCapBank.CapBankId = Point.PAObjectId        
-JOIN YukonPAObject YP ON YP.PAObjectId = DynamicCCCapBank.CapBankId        
-JOIN YukonPAObject YP1 ON YP1.PAObjectId = CCOAS.FeederId        
-JOIN YukonPAObject YP2 ON YP2.PAObjectId = CCOAS.SubId        
-JOIN CapBank CB ON CB.DeviceId = DynamicCCCapBank.CapBankId        
-LEFT JOIN DeviceDirectCommSettings DDCS ON DDCS.DeviceId = CB.ControlDeviceId        
-LEFT JOIN DeviceAddress DA ON DA.DeviceId = CB.ControlDeviceId        
-JOIN YukonPAObject YP3 ON YP3.PAObjectId = CB.ControlDeviceId        
-LEFT JOIN DeviceCBC CBC ON CBC.DeviceId = CB.ControlDeviceId        
-LEFT JOIN (SELECT EntryId, PAObjectId, Owner, InfoKey, Value, UpdateTime                        
-           FROM DynamicPAOInfo                         
-           WHERE (InfoKey LIKE '%udp ip%')) P ON P.PAObjectId = CB.ControlDeviceId        
-LEFT JOIN CCSubstationSubbusList SSL ON SSL.SubstationBusId = CCOAS.SubId         
-LEFT JOIN YukonPAObject YP5 ON YP5.PAObjectId =  SSL.SubstationBusId        
-LEFT JOIN CCSubAreaAssignment CSA ON CSA.SubstationBusId = SSL.SubstationId        
+JOIN Point ON Point.PointId = CCOAS.PointId
+JOIN DynamicCCCapBank ON DynamicCCCapBank.CapBankId = Point.PAObjectId
+JOIN YukonPAObject YP ON YP.PAObjectId = DynamicCCCapBank.CapBankId
+JOIN YukonPAObject YP1 ON YP1.PAObjectId = CCOAS.FeederId
+JOIN YukonPAObject YP2 ON YP2.PAObjectId = CCOAS.SubId
+JOIN CapBank CB ON CB.DeviceId = DynamicCCCapBank.CapBankId
+LEFT JOIN DeviceDirectCommSettings DDCS ON DDCS.DeviceId = CB.ControlDeviceId
+LEFT JOIN DeviceAddress DA ON DA.DeviceId = CB.ControlDeviceId
+JOIN YukonPAObject YP3 ON YP3.PAObjectId = CB.ControlDeviceId
+LEFT JOIN DeviceCBC CBC ON CBC.DeviceId = CB.ControlDeviceId
+LEFT JOIN (SELECT EntryId, PAObjectId, Owner, InfoKey, Value, UpdateTime
+           FROM DynamicPAOInfo
+           WHERE (InfoKey LIKE '%udp ip%')) P ON P.PAObjectId = CB.ControlDeviceId
+LEFT JOIN CCSubstationSubbusList SSL ON SSL.SubstationBusId = CCOAS.SubId
+LEFT JOIN YukonPAObject YP5 ON YP5.PAObjectId =  SSL.SubstationBusId
+LEFT JOIN CCSubAreaAssignment CSA ON CSA.SubstationBusId = SSL.SubstationId
 LEFT JOIN YukonPAObject YP4 ON YP4.PAObjectId = CSA.AreaId;
 
 /*==============================================================*/
 /* View: DISPLAY2WAYDATA_VIEW                                   */
 /*==============================================================*/
 create or replace view DISPLAY2WAYDATA_VIEW as
-SELECT P.POINTID AS PointID, P.POINTNAME AS PointName, P.POINTTYPE AS PointType, 
-       P.SERVICEFLAG AS PointState, PAO.PAOName AS DeviceName, PAO.Type AS DeviceType, 
-       PAO.Description AS DeviceCurrentState, PAO.PAObjectID AS DeviceID, '**DYNAMIC**' AS PointValue, 
-       '**DYNAMIC**' AS PointQuality, '**DYNAMIC**' AS PointTimeStamp, 
-       (SELECT uomname 
-        FROM PointUnit PU, UnitMeasure UM 
-        WHERE PU.pointId = P.pointId 
+SELECT P.POINTID AS PointID, P.POINTNAME AS PointName, P.POINTTYPE AS PointType,
+       P.SERVICEFLAG AS PointState, PAO.PAOName AS DeviceName, PAO.Type AS DeviceType,
+       PAO.Description AS DeviceCurrentState, PAO.PAObjectID AS DeviceID, '**DYNAMIC**' AS PointValue,
+       '**DYNAMIC**' AS PointQuality, '**DYNAMIC**' AS PointTimeStamp,
+       (SELECT uomname
+        FROM PointUnit PU, UnitMeasure UM
+        WHERE PU.pointId = P.pointId
         AND PU.uomId = UM.uomId) AS UofM, '**DYNAMIC**' AS Tags
 FROM YukonPAObject PAO, POINT P
 WHERE PAO.PAObjectID = P.PAObjectID;
@@ -9728,28 +9728,28 @@ WHERE PAO.PAObjectID = P.PAObjectID;
 /* View: ExpressComAddress_View                                 */
 /*==============================================================*/
 create or replace view ExpressComAddress_View as
-SELECT X.LMGroupId, X.RouteId, X.SerialNumber, S.Address AS ServiceAddress, G.Address AS GeoAddress, 
-       B.Address AS SubstationAddress, F.Address AS FeederAddress, Z.Address AS ZipCodeAddress, 
-       US.Address AS UDAddress, P.Address AS ProgramAddress, SP.Address AS SplinterAddress, 
+SELECT X.LMGroupId, X.RouteId, X.SerialNumber, S.Address AS ServiceAddress, G.Address AS GeoAddress,
+       B.Address AS SubstationAddress, F.Address AS FeederAddress, Z.Address AS ZipCodeAddress,
+       US.Address AS UDAddress, P.Address AS ProgramAddress, SP.Address AS SplinterAddress,
        X.AddressUsage, X.RelayUsage, X.ProtocolPriority
-FROM LMGroupExpressCom X, LMGroupExpressComAddress S, LMGroupExpressComAddress G, 
+FROM LMGroupExpressCom X, LMGroupExpressComAddress S, LMGroupExpressComAddress G,
      LMGroupExpressComAddress B, LMGroupExpressComAddress F, LMGroupExpressComAddress P,
      LMGroupExpressComAddress SP, LMGroupExpressComAddress US, LMGroupExpressComAddress Z
-WHERE (X.ServiceProviderId = S.AddressId AND 
-      (S.AddressType = 'SERVICE' OR S.AddressId = 0)) AND 
-      (X.FeederId = F.AddressId AND 
-      (F.AddressType = 'FEEDER' OR F.AddressId = 0)) AND 
-      (X.GeoId = G.AddressId AND 
-      (G.AddressType = 'GEO' OR G.AddressId = 0 )) AND 
-      (X.ProgramId = P.AddressId AND 
-      (P.AddressType = 'PROGRAM' OR P.AddressId = 0)) AND 
-      (X.SubstationId = B.AddressId AND 
-      (B.AddressType = 'SUBSTATION' OR B.AddressId = 0)) AND 
-      (X.SplinterId = SP.AddressId AND 
-      (SP.AddressType = 'SPLINTER' OR SP.AddressId = 0)) AND 
-      (X.UserId = US.AddressId AND 
-      (US.AddressType = 'USER' OR US.AddressId = 0)) AND 
-      (X.ZipId = Z.AddressId AND 
+WHERE (X.ServiceProviderId = S.AddressId AND
+      (S.AddressType = 'SERVICE' OR S.AddressId = 0)) AND
+      (X.FeederId = F.AddressId AND
+      (F.AddressType = 'FEEDER' OR F.AddressId = 0)) AND
+      (X.GeoId = G.AddressId AND
+      (G.AddressType = 'GEO' OR G.AddressId = 0 )) AND
+      (X.ProgramId = P.AddressId AND
+      (P.AddressType = 'PROGRAM' OR P.AddressId = 0)) AND
+      (X.SubstationId = B.AddressId AND
+      (B.AddressType = 'SUBSTATION' OR B.AddressId = 0)) AND
+      (X.SplinterId = SP.AddressId AND
+      (SP.AddressType = 'SPLINTER' OR SP.AddressId = 0)) AND
+      (X.UserId = US.AddressId AND
+      (US.AddressType = 'USER' OR US.AddressId = 0)) AND
+      (X.ZipId = Z.AddressId AND
       (Z.AddressType = 'ZIP' OR Z.AddressId = 0));
 
 /*==============================================================*/
@@ -9853,15 +9853,15 @@ where ( x.SubstationID = a.AddressID and ( a.AddressType = 'SUBSTATION' or a.Add
 /* View: TempMovedCapBanks_View                                 */
 /*==============================================================*/
 create or replace view TempMovedCapBanks_View as
-SELECT YPF.PAOName TempFeederName, YPF.PAObjectId TempFeederId, YPC.PAOName CapBankName, 
-       YPC.PAObjectId CapBankId, FB.ControlOrder, FB.CloseOrder, FB.TripOrder, 
-       YPOF.PAOName OriginalFeederName, YPOF.PAObjectId OriginalFeederId 
-FROM CCFeederBankList FB, YukonPAObject YPF, YukonPAObject YPC, 
+SELECT YPF.PAOName TempFeederName, YPF.PAObjectId TempFeederId, YPC.PAOName CapBankName,
+       YPC.PAObjectId CapBankId, FB.ControlOrder, FB.CloseOrder, FB.TripOrder,
+       YPOF.PAOName OriginalFeederName, YPOF.PAObjectId OriginalFeederId
+FROM CCFeederBankList FB, YukonPAObject YPF, YukonPAObject YPC,
      YukonPAObject YPOF, DynamicCCOriginalParent DCCOP
 WHERE FB.DeviceId = YPC.PAObjectId
 AND YPC.PAObjectID = DCCOP.PAObjectId
-AND FB.FeederId = YPF.PAObjectId 
-AND YPOF.PAObjectId = DCCOP.OriginalParentId 
+AND FB.FeederId = YPF.PAObjectId
+AND YPOF.PAObjectId = DCCOP.OriginalParentId
 AND DCCOP.OriginalParentId <> 0;
 
 alter table AccountSite
