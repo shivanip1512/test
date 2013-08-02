@@ -26,8 +26,6 @@ jQuery(function() {
 </script>
 
 <style type="text/css">
-.alarm-table tr:hover .f-dropdown_outer_container {visibility: visible;}
-.alarm-text {}
 .display-list li {padding: 2px;}
 .display-list .divider {padding:none; margin:2px; list-style: none;}
 </style>
@@ -101,7 +99,7 @@ jQuery(function() {
     <div class="column two nogutter">
         
         <tags:sectionContainer title="Active Alarms (2)">
-            <table class="compactResultsTable alarm-table">
+            <table class="compactResultsTable alarm-table has-actions">
                 <thead></thead>
                 <tfoot></tfoot>
                 <tbody>
@@ -109,7 +107,7 @@ jQuery(function() {
                         <td class="alarm-text"><a href="#" title="88638107 RFN-420 CL">Limit 1 Exceeded High. 140.000 > 130.000</a></td>
                         <td>
                             <span class="error">Unacknowledged</span>
-                            <cm:dropdown containerCssClass="fr vh">
+                            <cm:dropdown containerCssClass="fr">
                                 <li><a class="clearfix"><cti:icon icon="icon-tick"/><span>Acknowledge</span></a></li>
                                 <li class="divider"></li>
                                 <li><a class="clearfix"><cti:icon icon="icon-pencil"/><span>Manual Entry</span></a></li>
@@ -126,7 +124,7 @@ jQuery(function() {
                         <td class="alarm-text"><a href="#" title="Sub Alexandria Voltage">Limit 1 Exceeded High. 1540.000 > 1200.000</a></td>
                         <td>
                             <span>Acknowledged</span>
-                            <cm:dropdown containerCssClass="fr vh">
+                            <cm:dropdown containerCssClass="fr">
                                 <li><a class="clearfix"><cti:icon icon="icon-pencil"/><span>Manual Entry</span></a></li>
                                 <li><a class="clearfix"><cti:icon icon="icon-wrench"/><span>Manual Control</span></a></li>
                                 <li class="divider"></li>
@@ -141,7 +139,7 @@ jQuery(function() {
                         <td class="alarm-text"><a href="#" title="Sub Vila Voltage">Limit 1 Exceeded High. 1540.000 > 1200.000</a></td>
                         <td>
                             <span>Acknowledged</span>
-                            <cm:dropdown containerCssClass="fr vh">
+                            <cm:dropdown containerCssClass="fr">
                                 <li><a class="clearfix"><cti:icon icon="icon-pencil"/><span>Manual Entry</span></a></li>
                                 <li><a class="clearfix"><cti:icon icon="icon-wrench"/><span>Manual Control</span></a></li>
                                 <li class="divider"></li>
@@ -156,7 +154,7 @@ jQuery(function() {
                         <td class="alarm-text"><a href="#" title="Sub Bob Voltage">Limit 1 Exceeded High. 1540.000 > 1200.000</a></td>
                         <td>
                             <span>Acknowledged</span>
-                            <cm:dropdown containerCssClass="fr vh">
+                            <cm:dropdown containerCssClass="fr">
                                 <li><a class="clearfix"><cti:icon icon="icon-pencil"/><span>Manual Entry</span></a></li>
                                 <li><a class="clearfix"><cti:icon icon="icon-wrench"/><span>Manual Control</span></a></li>
                                 <li class="divider"></li>

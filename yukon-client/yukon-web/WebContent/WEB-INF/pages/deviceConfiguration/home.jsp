@@ -43,7 +43,7 @@ function showSelectedDevices(divId, url) {
                         <div><i:inline key=".configDetails.table.noConfigs"/></div>
                     </c:when>
                     <c:otherwise>
-                        <table id="configList" class="compactResultsTable rowHighlighting contextual-menu-list">
+                        <table id="configList" class="compactResultsTable rowHighlighting has-actions">
                             <thead>
                                 <tr>
                                     <th><i:inline key=".configDetails.table.configName"/></th>

@@ -281,7 +281,7 @@ button
 		    <div class="column_12_12 clearfix">
 		            <div class="column one">
                         <div class="columnHeader"><h2>Inside A Table</h2></div><br/>
-                        <table class="compactResultsTable rowHighlighting contextual-menu-list">
+                        <table class="compactResultsTable rowHighlighting has-actions">
                             <thead>
                                 <tr>
                                     <th>Some Column 1</th>
@@ -311,11 +311,11 @@ button
                        <div class="column two nogutter">
                            <div class="columnHeader"><h2>Relavent Markup</h2></div><br/>
 							The only real "required" markup for this to work correctly is to
-							have a class of <strong>contextual-menu-list</strong> on the table, a class of
+							have a class of <strong>has-actions</strong> on the table, a class of
 							<strong>contextual-menu</strong> on the td that will contain the menu, and the
 							<strong>&lt;cm:dropdown</strong> tag within that td
 							<pre class="code">
-&lt;table class="compactResultsTable rowHighlighting contextual-menu-list"&gt;
+&lt;table class="compactResultsTable rowHighlighting has-actions"&gt;
     &lt;thead&gt;
         &lt;tr&gt;
             &lt;th&gt;Some Column 1&lt;/th&gt;

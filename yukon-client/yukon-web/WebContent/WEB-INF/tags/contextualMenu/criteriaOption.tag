@@ -1,4 +1,4 @@
-<%@ tag trimDirectiveWhitespaces="true" description="Use this tag to create a criteria mneu option inside a criteria.tag element." %>
+<%@ tag trimDirectiveWhitespaces="true" description="Use this tag to create a criteria menu option inside a criteria.tag element." %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>

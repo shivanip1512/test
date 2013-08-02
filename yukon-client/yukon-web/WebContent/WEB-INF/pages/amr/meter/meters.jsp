@@ -70,7 +70,7 @@
     <cti:msg2 var="meterSearchTitle" key=".meterSearchResultsTitle" />
     <tags:pagedBox title="${meterSearchTitle}" searchResult="${meterSearchResults}" baseUrl="${baseUrl}"
         pageByHundereds="true" titleLinkHtml="${linkHeaderHtml}">
-        <table class="compactResultsTable f-traversable rowHighlighting contextual-menu-list">
+        <table class="compactResultsTable f-traversable rowHighlighting has-actions">
             <c:if test="${meterSearchResults.hitCount > 0}">
                 <thead>
                     <tr>

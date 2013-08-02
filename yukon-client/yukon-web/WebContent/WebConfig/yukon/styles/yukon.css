@@ -1441,16 +1441,11 @@ input.dateTimePicker {
 	visibility: visible;
 }
 
-.contextual-menu-list .dropdown-container {
+.has-actions .dropdown-container {
 	visibility: hidden;
-	margin-top: 0px;
 }
 
-.contextual-menu-list tr.focused .dropdown-container {
-	visibility: visible;
-}
-
-.contextual-menu-list tr:hover td.contextual-menu .dropdown-container {
+.has-actions tr:hover .dropdown-container,.has-actions li:hover .dropdown-container {
 	visibility: visible;
 }
 
@@ -1517,7 +1512,7 @@ input.dateTimePicker {
 	background-color: #ffffff;
 	border: 1px solid #ccc;
 	border: 1px solid rgba(0, 0, 0, 0.2);
-	border-radius: 5px;
+	border-radius: 2px;
 
 	-webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
 	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
