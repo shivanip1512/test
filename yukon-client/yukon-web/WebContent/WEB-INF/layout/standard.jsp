@@ -94,9 +94,7 @@
             <nav role="navigation">
                 <ul>
                     <li class="logo">
-                        <a href="/home">
-                            <img src="<cti:url value="/WebConfig/yukon/layout/eaton_logo.png"/>" alt="Home">
-                        </a>
+                        <a href="/home"></a>
                     </li>
                     <cti:outputContent writable="${menuRenderer}"/>
                 </ul>
@@ -177,7 +175,7 @@
 
 <footer id="yukon-footer" class="yukon-footer">
     <div class="utility">
-        <div class="footerNav">
+        <nav>
             <ul>
                 <li><a href="/support"><i:inline key=".support"/></a></li>
                 <li><a href="/sitemap"><i:inline key=".siteMap"/></a></li>
@@ -192,11 +190,11 @@
                     <li><a href="/support/development/main">Development</a></li>
                 </cti:checkGlobalRolesAndProperties>
             </ul>
-        </div>
+        </nav>
     </div>
     <div class="footer">
-        <div class="footerNav clearfix">
-            <div class="wrapper">
+        <div class="content clearfix">
+            <div class="left">
                 <div class="legal">
                     <p class="copyright"><cti:msg2 key=".copyright"/></p>
                     <ul>
@@ -217,6 +215,9 @@
                         </ul>
                     </cti:checkGlobalRolesAndProperties>
                 </div>
+            </div>
+            <div class="right">
+                <div class="branding"><a class="footer-logo" href="/home"></a></div>
             </div>
         </div>
     </div>
