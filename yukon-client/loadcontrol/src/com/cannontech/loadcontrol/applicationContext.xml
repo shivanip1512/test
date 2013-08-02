@@ -85,4 +85,5 @@
     <bean class="com.cannontech.dr.assetavailability.service.impl.AssetAvailabilityServiceImpl"/>
     <bean class="com.cannontech.dr.estimatedload.dao.impl.FormulaDaoImpl"/>
     <bean class="com.cannontech.dr.estimatedload.service.impl.FormulaServiceImpl"/>
+    <bean class="com.cannontech.dr.assetavailability.dao.impl.DRGroupDeviceMappingDaoImpl"/>
 </beans>

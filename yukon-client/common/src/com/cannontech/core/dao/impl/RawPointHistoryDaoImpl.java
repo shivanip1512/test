@@ -64,6 +64,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.SetMultimap;
+import com.google.common.collect.Sets;
 
 /**
  * Implementation of RawPointHistoryDao
@@ -337,11 +338,18 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         }
         return limitedAttributeDatas;
     }
-
+    
+    @Override
+    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getAttributeData(
+             Iterable<? extends YukonPao> paos, Attribute attribute, ReadableRange<Instant> dateRange,
+             ReadableRange<Long> changeIdRange, boolean excludeDisabledPaos, Order order) {
+        return getAttributeData(paos, attribute, dateRange, changeIdRange, excludeDisabledPaos, order, null);
+    }
+    
     @Override
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getAttributeData(
             Iterable<? extends YukonPao> paos, Attribute attribute, final ReadableRange<Instant> dateRange,
-            final ReadableRange<Long> changeIdRange, final boolean excludeDisabledPaos, final Order order) {
+            final ReadableRange<Long> changeIdRange, final boolean excludeDisabledPaos, final Order order, final Double minimumValue) {
         SqlFragmentGeneratorFactory factory = new SqlFragmentGeneratorFactory() {
             @Override
             public SqlFragmentGenerator<Integer> create(final PointIdentifier pointIdentifier) {
@@ -356,6 +364,9 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
                         sql.append(  "JOIN YukonPaobject yp ON p.paobjectid = yp.paobjectid");
                         sql.append("WHERE p.PointOffset").eq_k(pointIdentifier.getOffset());
                         sql.append(  "AND p.PointType").eq_k(pointIdentifier.getPointType());
+                        if(minimumValue != null) {
+                            sql.append(  "AND rph.value").gt(minimumValue);
+                        }
                         appendChangeIdClause(sql, changeIdRange);
                         appendTimeStampClause(sql, dateRange);
                         sql.append(  "AND yp.PAObjectID").in(subList);
@@ -997,22 +1008,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         sql.append("JOIN Point ON rph.PointId = point.PointId");
         sql.append("JOIN YukonPAObject ypo ON point.PAObjectId = ypo.PAObjectId");
         sql.append("WHERE ypo.PAObjectId").eq(paoIdentifier.getPaoId());
-        
-        if(dateRange.getMin() == null) {
-            //no minimum clause
-        } else if(dateRange.isIncludesMinValue()) {
-            sql.append("AND rph.Timestamp").gte(dateRange.getMin());
-        } else {
-            sql.append("AND rph.Timestamp").gt(dateRange.getMin());
-        }
-
-        if(dateRange.getMax() == null) {
-            //no maximum clause
-        } else if(dateRange.isIncludesMaxValue()) {
-            sql.append("AND rph.Timestamp").lte(dateRange.getMax());
-        } else {
-            sql.append("AND rph.Timestamp").lt(dateRange.getMax());
-        }
+        appendTimeStampClause(sql, dateRange);
         
         Instant lastCommunicationDate = null;
         try {
@@ -1023,5 +1019,20 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         
         return lastCommunicationDate;
     }
+    
+    @Override
+    public Set<Integer> getCommunicatingInventoryByLoadGroups(Collection<Integer> loadGroupIds, ReadableRange<Instant> dateRange) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DISTINCT ib.InventoryId");
+        sql.append("FROM LmHardwareControlGroup lmhc");
+        sql.append("JOIN InventoryBase ib ON ib.InventoryId = lmhc.InventoryId");
+        sql.append("JOIN Point p ON p.PaObjectId = ib.DeviceId");
+        sql.append("JOIN RawPointHistory rph ON rph.PointId = p.PointId");
+        sql.append("WHERE LmGroupId").in(loadGroupIds);
+        sql.append("AND ib.DeviceId").gt(0);
+        appendTimeStampClause(sql, dateRange);
+        
+        List<Integer> inventoryIds = yukonTemplate.query(sql, RowMapper.INTEGER);
+        return Sets.newHashSet(inventoryIds);
+    }
 }
-

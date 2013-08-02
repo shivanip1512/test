@@ -3,6 +3,7 @@ package com.cannontech.stars.dr.hardware.dao.impl;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -11,6 +12,9 @@ import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.util.Pair;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dao.NotFoundException;
@@ -30,6 +34,8 @@ import com.cannontech.stars.dr.hardware.dao.LMHardwareConfigurationDao;
 import com.cannontech.stars.dr.hardware.dao.StaticLoadGroupMappingDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareConfiguration;
 import com.cannontech.stars.dr.hardware.model.StarsStaticLoadGroupMapping;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 
 public class LMHardwareConfigurationDaoImpl implements LMHardwareConfigurationDao {
     
@@ -183,5 +189,30 @@ public class LMHardwareConfigurationDaoImpl implements LMHardwareConfigurationDa
             throw new NotFoundException("No LMHardwareConfiguration found for inventory with id: " + inventoryId);
         }
     }
-
+    
+    public Multimap<Integer, PaoIdentifier> getRelayToDeviceMapByLoadGroups(Collection<Integer> loadGroupIds) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DISTINCT  DeviceId, ypo.Type, lmhc.LoadNumber AS Relay");
+        sql.append("FROM LMHardwareConfiguration lmhc");
+        sql.append("JOIN LMHardwareControlGroup lmhcg ON lmhcg.InventoryID = lmhc.InventoryId");
+        sql.append("JOIN InventoryBase ib ON ib.InventoryId = lmhc.InventoryId");
+        sql.append("JOIN YukonPaObject ypo ON ypo.PaObjectId = ib.DeviceId");
+        sql.append("WHERE LmGroupId").in(loadGroupIds);
+        
+        List<Pair<Integer, PaoIdentifier>> resultsList = yukonJdbcTemplate.query(sql, new YukonRowMapper<Pair<Integer, PaoIdentifier>>() {
+            public Pair<Integer, PaoIdentifier> mapRow(YukonResultSet rs) throws SQLException {
+                int relay = rs.getInt("Relay");
+                int paoId = rs.getInt("DeviceId");
+                PaoType paoType = rs.getEnum("Type", PaoType.class);
+                PaoIdentifier paoIdentifier = new PaoIdentifier(paoId, paoType);
+                return new Pair<Integer, PaoIdentifier>(relay, paoIdentifier);
+            }
+        });
+        
+        Multimap<Integer, PaoIdentifier> resultMultiMap = ArrayListMultimap.create();
+        for(Pair<Integer, PaoIdentifier> pair : resultsList) {
+            resultMultiMap.put(pair.getFirst(), pair.getSecond());
+        }
+        return resultMultiMap;
+    }
 }

@@ -1,7 +1,9 @@
 package com.cannontech.yukon.api.loadManagement.adapters;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import org.joda.time.Instant;
 import org.joda.time.ReadableInstant;
@@ -158,6 +160,11 @@ public class OptOutEventDaoAdapter implements OptOutEventDao {
 
     @Override
     public OptOutEvent getOverdueScheduledOptOut(Integer inventoryId, int customerAccountId) {
+        throw new UnsupportedOperationException("not implemented");
+    }
+
+    @Override
+    public Set<Integer> getOptedOutInventoryByLoadGroups(Collection<Integer> loadGroupIds) {
         throw new UnsupportedOperationException("not implemented");
     }
 

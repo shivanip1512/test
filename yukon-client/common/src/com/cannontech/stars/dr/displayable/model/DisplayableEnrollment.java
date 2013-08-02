@@ -54,7 +54,7 @@ public final class DisplayableEnrollment {
     }
 
     public String getApplianceLogo() {
-        return applianceCategory.getWebConfiguration().getLogoLocation();
+        return applianceCategory.getIcon();
     }
 
     public Set<DisplayableEnrollmentProgram> getEnrollmentPrograms() {

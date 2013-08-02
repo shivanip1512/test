@@ -233,11 +233,11 @@ public enum PaoType implements DatabaseRepresentationSource {
     private final static ImmutableMap<String, PaoType> lookupByDbString;
     private final static ImmutableSet<PaoType> meterTypes;
     private final static ImmutableSet<PaoType> cbcTypes;
-    
     private final static ImmutableSet<PaoType> mctTypes;
     private final static ImmutableSet<PaoType> iedTypes;
     private final static ImmutableSet<PaoType> rtuTypes;
     private final static ImmutableSet<PaoType> portTypes;
+    private final static ImmutableSet<PaoType> lmProgramTypes;
     
     public final static int INVALID = -1;
 
@@ -255,6 +255,13 @@ public enum PaoType implements DatabaseRepresentationSource {
             log.warn("Caught exception while building lookup maps, look for a duplicate name or db string.", e);
             throw e;
         }
+        
+        lmProgramTypes = ImmutableSet.of(
+            LM_CURTAIL_PROGRAM,
+            LM_DIRECT_PROGRAM,
+            LM_ENERGY_EXCHANGE_PROGRAM,
+            LM_SEP_PROGRAM                                 
+        );
         
         cbcTypes = ImmutableSet.of(
                 CAPBANKCONTROLLER,
@@ -457,6 +464,10 @@ public enum PaoType implements DatabaseRepresentationSource {
         return deviceType;
     }
     
+    public boolean isLmProgram() {
+        return lmProgramTypes.contains(this);
+    }
+    
     public boolean isCbc() {
         return cbcTypes.contains(this);
     }
@@ -544,7 +555,11 @@ public enum PaoType implements DatabaseRepresentationSource {
     public boolean isWaterMeter() {
         return this == PaoType.RFWMETER;
     }
-
+    
+    public boolean isLoadGroup() {
+        return this.paoCategory == PaoCategory.DEVICE && this.paoClass == PaoClass.GROUP;
+    }
+    
     private PaoType(int deviceTypeId, String dbString, PaoCategory paoCategory,
             PaoClass paoClass) {
         this.deviceTypeId = deviceTypeId;

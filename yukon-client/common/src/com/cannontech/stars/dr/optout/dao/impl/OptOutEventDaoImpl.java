@@ -4,10 +4,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.joda.time.Instant;
 import org.joda.time.ReadableInstant;
@@ -26,6 +28,7 @@ import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.IntegerRowMapper;
+import com.cannontech.database.RowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
@@ -53,6 +56,7 @@ import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
 
 /**
  * Implementation class for OptOutEventDao
@@ -754,7 +758,23 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 		    yukonJdbcTemplate.query(sql, new OptOutEventRowMapper());
 		return scheduledOptOuts;
 	}
-
+	
+	@Override
+	public Set<Integer> getOptedOutInventoryByLoadGroups(Collection<Integer> loadGroupIds) {
+	    SqlStatementBuilder sql = new SqlStatementBuilder();
+	    sql.append("SELECT DISTINCT ib.InventoryId");
+	    sql.append("FROM LmHardwareControlGroup lmhc");
+	    sql.append("JOIN InventoryBase ib ON ib.InventoryID = lmhc.InventoryId");
+	    sql.append("JOIN OptOutEvent ooe on ooe.InventoryId = ib.InventoryId");
+	    sql.append("WHERE lmhc.LMGroupID").in(loadGroupIds);
+	    sql.append("AND ooe.StartDate").lte(Instant.now());
+	    sql.append("AND ooe.StopDate").gt(Instant.now());
+	    sql.append("AND ooe.EventState").eq_k(OptOutEventState.START_OPT_OUT_SENT);
+	    
+	    List<Integer> optedOutInventoryIds = yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
+	    return Sets.newHashSet(optedOutInventoryIds);
+	}
+	
     private int getFirstEventUser(int optOutEventId) {
 
 	    SqlStatementBuilder sql = new SqlStatementBuilder();

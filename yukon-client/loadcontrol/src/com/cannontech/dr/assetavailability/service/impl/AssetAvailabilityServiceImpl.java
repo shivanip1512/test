@@ -12,17 +12,23 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.inventory.InventoryIdentifier;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.util.Range;
+import com.cannontech.common.util.ReadableRange;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
+import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.dr.assetavailability.ApplianceRuntime;
 import com.cannontech.dr.assetavailability.ApplianceWithRuntime;
 import com.cannontech.dr.assetavailability.AssetAvailability;
 import com.cannontech.dr.assetavailability.AssetAvailabilityStatus;
+import com.cannontech.dr.assetavailability.SimpleAssetAvailabilitySummary;
+import com.cannontech.dr.assetavailability.dao.DRGroupDeviceMappingDao;
 import com.cannontech.dr.assetavailability.service.AssetAvailabilityService;
+import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.appliance.dao.ApplianceDao;
@@ -31,8 +37,9 @@ import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareConfigurationDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareConfiguration;
 import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
 public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
@@ -43,16 +50,62 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
     @Autowired private LMHardwareConfigurationDao lmHardwareConfigurationDao;
     @Autowired private ApplianceDao applianceDao;
     @Autowired private InventoryDao inventoryDao;
+    @Autowired private LoadGroupDao loadGroupDao;
+    @Autowired private DRGroupDeviceMappingDao drGroupDeviceMappingDao;
     
     private static final int LAST_COMMUNICATION_HOURS = 60;
     private static final int LAST_RUNTIME_HOURS = 168;
-    private static final Map<Integer, Attribute> RELAY_ATTRIBUTES = Maps.newHashMap();
+    private static final ImmutableMap<Integer, ? extends Attribute> RELAY_ATTRIBUTES =
+            ImmutableMap.of(1, BuiltInAttribute.RELAY_1_RUN_TIME_DATA_LOG,
+                2, BuiltInAttribute.RELAY_2_RUN_TIME_DATA_LOG,
+                3, BuiltInAttribute.RELAY_3_RUN_TIME_DATA_LOG,
+                4, BuiltInAttribute.RELAY_4_RUN_TIME_DATA_LOG);
     
-    static {
-        RELAY_ATTRIBUTES.put(1, BuiltInAttribute.RELAY_1_RUN_TIME_DATA_LOG);
-        RELAY_ATTRIBUTES.put(2, BuiltInAttribute.RELAY_2_RUN_TIME_DATA_LOG);
-        RELAY_ATTRIBUTES.put(3, BuiltInAttribute.RELAY_3_RUN_TIME_DATA_LOG);
-        RELAY_ATTRIBUTES.put(4, BuiltInAttribute.RELAY_4_RUN_TIME_DATA_LOG);
+    @Override
+    public SimpleAssetAvailabilitySummary getAssetAvailabilityFromDrGroup(PaoIdentifier drPaoIdentifier) {
+        Set<Integer> loadGroupIds = drGroupDeviceMappingDao.getLoadGroupIdsForDrGroup(drPaoIdentifier);
+        return getAssetAvailabilityFromLoadGroups(loadGroupIds);
+    }
+    
+    @Override
+    public SimpleAssetAvailabilitySummary getAssetAvailabilityFromLoadGroups(Collection<Integer> loadGroupIds) {
+        //Get all inventory & associated paos
+        Map<Integer, Integer> devicesAndInventory = drGroupDeviceMappingDao.getDeviceAndInventoryIdsForLoadGroups(loadGroupIds);
+        Set<Integer> inventoryIds = Sets.newHashSet(devicesAndInventory.values());
+        SimpleAssetAvailabilitySummary aaSummary = new SimpleAssetAvailabilitySummary(inventoryIds);
+        
+        //Get opted out
+        Set<Integer> optedOutInventory = optOutEventDao.getOptedOutInventoryByLoadGroups(loadGroupIds);
+        aaSummary.addOptedOut(optedOutInventory);
+        
+        //Get communicating
+        Instant communicatingWindowEnd = Instant.now().minus(Duration.standardHours(LAST_COMMUNICATION_HOURS));
+        Range<Instant> communicatingWindow = Range.inclusive(communicatingWindowEnd, Instant.now());
+        Set<Integer> communicatedInventory = rawPointHistoryDao.getCommunicatingInventoryByLoadGroups(loadGroupIds, communicatingWindow);
+        aaSummary.addCommunicating(communicatedInventory);
+        
+        //Get running
+        Multimap<Integer, PaoIdentifier> relayToDeviceIdMultiMap = lmHardwareConfigurationDao.getRelayToDeviceMapByLoadGroups(loadGroupIds);
+        Set<PaoIdentifier> allPaosWithRuntime = Sets.newHashSet();
+        for(int i = 1; i <= 4; i++) {
+            Set<PaoIdentifier> relayPaoIdentifiers = Sets.newHashSet(relayToDeviceIdMultiMap.get(i));
+            //remove any that we already found runtime for
+            relayPaoIdentifiers = Sets.difference(relayPaoIdentifiers, allPaosWithRuntime);
+            
+            Instant runtimeWindowEnd = Instant.now().minus(Duration.standardHours(LAST_RUNTIME_HOURS));
+            ReadableRange<Instant> runtimeRange = Range.inclusive(runtimeWindowEnd, Instant.now());
+            ReadableRange<Long> changeIdRange = Range.unbounded();
+            
+            //modify this method to add a "value must be higher than this parameter"
+            Multimap<PaoIdentifier, PointValueQualityHolder> relayAttributeData = rawPointHistoryDao.getAttributeData(relayPaoIdentifiers, RELAY_ATTRIBUTES.get(i), runtimeRange, changeIdRange, false, Order.FORWARD, 0.0);
+            
+            Set<PaoIdentifier> paosWithRuntime = relayAttributeData.keys().elementSet();
+            allPaosWithRuntime.addAll(paosWithRuntime);
+            Set<Integer> inventoryWithRuntime = getInventoryIdsFromPaoIdentifiers(devicesAndInventory, paosWithRuntime);
+            aaSummary.addRunning(inventoryWithRuntime);    
+        }
+        
+        return aaSummary;
     }
     
     @Override
@@ -89,7 +142,7 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
             
             ApplianceRuntime runtime;
             if(pvqh != null) {
-                runtime = new ApplianceRuntime(pvqh.getPointDataTimeStamp(), pvqh.getValue());
+                runtime = new ApplianceRuntime(new Instant(pvqh.getPointDataTimeStamp()), pvqh.getValue());
             } else {
                 runtime = ApplianceRuntime.NONE;
             }
@@ -100,7 +153,7 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
         
         return new AssetAvailability(deviceId, assetAvailability, isOptedOut, lastCommunicationTime, appliancesWithRuntime);
     }
-
+    
     @Override
     public Set<AssetAvailability> getAssetAvailability(Collection<Integer> deviceIds) {
         Set<AssetAvailability> assetAvailabilities = Sets.newHashSet();
@@ -139,5 +192,13 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
         }
         
         return AssetAvailabilityStatus.UNAVAILABLE;
+    }
+    
+    private Set<Integer> getInventoryIdsFromPaoIdentifiers(Map<Integer, Integer> devicesAndInventory, Set<PaoIdentifier> paoIds) {
+        Set<Integer> inventory = Sets.newHashSet();
+        for(PaoIdentifier paoId : paoIds) {
+            inventory.add(devicesAndInventory.get(paoId));
+        }
+        return inventory;
     }
 }

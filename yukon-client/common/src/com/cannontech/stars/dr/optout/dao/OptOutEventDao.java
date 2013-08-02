@@ -1,7 +1,9 @@
 package com.cannontech.stars.dr.optout.dao;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import org.joda.time.Instant;
 import org.joda.time.ReadableInstant;
@@ -227,4 +229,9 @@ public interface OptOutEventDao {
 	 * @return Event if there is one
 	 */
 	public OptOutEvent getOverdueScheduledOptOut(Integer inventoryId, int customerAccountId);
+	
+	/**
+	 * @return A set of ids for all currently opted out inventory in the specified load groups.
+	 */
+	public Set<Integer> getOptedOutInventoryByLoadGroups(Collection<Integer> loadGroupIds);
 }

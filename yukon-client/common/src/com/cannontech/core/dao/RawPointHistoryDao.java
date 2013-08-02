@@ -1,5 +1,6 @@
 package com.cannontech.core.dao;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -155,9 +156,18 @@ public interface RawPointHistoryDao {
      * as a ListMultimap such that the RPH values for each PAO will be accessible (and ordered) on their own.
      */
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getAttributeData(Iterable<? extends YukonPao> paos,
-        Attribute attribute, ReadableRange<Instant> dateRange, ReadableRange<Long> changeIdRange, boolean excludeDisabledPaos,
-        Order order);
-
+        Attribute attribute, ReadableRange<Instant> dateRange, ReadableRange<Long> changeIdRange, 
+        boolean excludeDisabledPaos, Order order);
+    
+    /**
+     * This method returns RawPointHistory data for a list of PAOs and a given Attribute. This data will be returned
+     * as a ListMultimap such that the RPH values for each PAO will be accessible (and ordered) on their own.
+     * Only returns data with a value greater than the specified minimum value.
+     */
+    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getAttributeData(Iterable<? extends YukonPao> paos,
+        Attribute attribute, ReadableRange<Instant> dateRange, ReadableRange<Long> changeIdRange, 
+        boolean excludeDisabledPaos, Order order, Double minimumValue);
+    
     /**
      * This method returns RawPointHistory data for a list of PAOs and a given Attribute. This data will be returned
      * as a ListMultimap such that the RPH values for each PAO will be accessible (and ordered) on their own.
@@ -357,8 +367,23 @@ public interface RawPointHistoryDao {
     * if no value exists for that point in time
     */
    public PointValueQualityHolder getSpecificValue(int pointId, long timestamp) throws NotFoundException;
-
+   
+   /**
+    * @return The most recent time (within the specified range) when a value was archived for any point
+    * on the specified pao, or null if there are no values for that pao within the range.
+    */
    public Instant getLastDataDateInRange(PaoIdentifier paoIdentifier, ReadableRange<Instant> dateRange);
    
+   /**
+    * Gets The most recent non-zero value for the specified attribute on the specified pao.
+    * @return The most recent non-zero value for the specified attribute on the specified pao, or 
+    * null if there are no archived values for that attribute, or if all values are zero.
+    */
    public PointValueQualityHolder getLastNonZeroAttributeData(YukonPao pao, Attribute attribute);
+   
+   /**
+    * @return A set of ids for all 2-way inventory in the specified load groups that has communicated
+    * in the specified date range.
+    */
+   public Set<Integer> getCommunicatingInventoryByLoadGroups(Collection<Integer> loadGroupIds, ReadableRange<Instant> dateRange);
 }
