@@ -89,6 +89,36 @@ public:
 };
 
 
+////
+
+
+class IM_EX_DEVDB RfnImmediateDemandFreezeCommand : public RfnDemandFreezeCommand
+{
+public:
+
+    RfnImmediateDemandFreezeCommand();
+
+    virtual RfnResult decode( const CtiTime now,
+                              const RfnResponse & response );
+
+};
+
+
+////
+
+
+class IM_EX_DEVDB RfnGetDemandFreezeInfoCommand : public RfnDemandFreezeCommand
+{
+public:
+
+    RfnGetDemandFreezeInfoCommand();
+
+    virtual RfnResult decode( const CtiTime now,
+                              const RfnResponse & response );
+
+};
+
+
 }
 }
 }

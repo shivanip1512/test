@@ -169,6 +169,48 @@ RfnCommand::RfnResult RfnDemandFreezeConfigurationCommand::decode( const CtiTime
 }
 
 
+////
+
+
+RfnImmediateDemandFreezeCommand::RfnImmediateDemandFreezeCommand()
+    :   RfnDemandFreezeCommand( Operation_ImmediateDemandFreeze )
+{
+
+}
+
+
+RfnCommand::RfnResult RfnImmediateDemandFreezeCommand::decode( const CtiTime now,
+                                                               const RfnCommand::RfnResponse & response )
+{
+    RfnCommand::RfnResult  result;
+
+    // anything??
+
+    return result;
+}
+
+
+////
+
+
+RfnGetDemandFreezeInfoCommand::RfnGetDemandFreezeInfoCommand()
+    :   RfnDemandFreezeCommand( Operation_GetDemandFreezeInfo )
+{
+
+}
+
+
+RfnCommand::RfnResult RfnGetDemandFreezeInfoCommand::decode( const CtiTime now,
+                                                             const RfnCommand::RfnResponse & response )
+{
+    RfnCommand::RfnResult  result = decodeResponseHeader( now, response );
+
+    // plus the freeze info
+
+    return result;
+}
+
+
 }
 }
 }
