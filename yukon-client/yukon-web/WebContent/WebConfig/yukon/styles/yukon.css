@@ -1169,16 +1169,14 @@ body ::-webkit-scrollbar-button {
 .setting:first-child {
   border-top: none;
 }
-.setting .updated {
-  float: right;
-  margin-bottom: 5px;
-}
 .setting .comments textArea {
   resize: none;
   width: 100%;
 }
-.setting .comments .button {
+.setting .comments .button,
+.setting .updated {
   float: right;
+  margin-bottom: 5px;
 }
 .setting .default-indicator {
   display: inline-block;
@@ -1194,12 +1192,6 @@ body ::-webkit-scrollbar-button {
 }
 .setting .value-description .default {
   font-weight: bold;
-}
-.categoryTitle {
-  padding: 12px;
-  padding-top: 16px;
-  font-weight: bold;
-  border-bottom: solid 1px #CCC;
 }
 /* MISC */
 .clearfix:before,
