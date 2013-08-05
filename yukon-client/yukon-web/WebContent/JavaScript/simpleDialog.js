@@ -52,6 +52,7 @@ function openSimpleDialog(dialogId, url, title, parameters, method, options) {
         } else {
             dialog.html(data);
             dialog.dialog(options);
+            dialog.dialog('open');
         }
     });
 }
