@@ -153,7 +153,7 @@ section {
 }
 .yukon-header .nav ul .logo a {
   display: inline-block;
-  min-height: 72px;
+  min-height: 68px;
   background: url("/WebConfig/yukon/layout/eaton_logo.png") 0px 17px no-repeat;
   width: 163px;
 }
