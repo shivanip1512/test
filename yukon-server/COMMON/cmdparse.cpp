@@ -8,6 +8,8 @@
 #include "utility.h"
 #include "ctistring.h"
 
+#include "std_helper.h"
+
 #include "boost/regex.hpp"
 
 using namespace std;
@@ -2275,21 +2277,14 @@ string CtiCommandParser::getsValue(const string &key) const
 
 boost::optional<std::string> CtiCommandParser::findStringForKey(const string &key) const
 {
-    map_itr_type itr = _cmd.find(key.c_str());
+    boost::optional<CtiParseValue> pv = Cti::mapFind(_cmd, key);
 
-    if( itr == _cmd.end() )
+    if( ! pv || ! pv->isStringValid() )
     {
         return boost::none;
     }
 
-    const CtiParseValue &pv = itr->second;
-
-    if( ! pv.isStringValid() )
-    {
-        return boost::none;
-    }
-
-    return pv.getString();
+    return pv->getString();
 }
 
 void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
