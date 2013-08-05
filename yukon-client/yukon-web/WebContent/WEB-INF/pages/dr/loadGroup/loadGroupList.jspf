@@ -11,27 +11,27 @@
 
 <cti:url var="submitUrl" value="${baseUrl}" />
 <cti:url var="clearFilterUrl" value="${baseUrl}">
-	<c:if test="${!empty param.itemsPerPage}">
-		<cti:param name="itemsPerPage" value="${param.itemsPerPage}" />
-	</c:if>
-	<c:if test="${!empty param.sort}">
-		<cti:param name="sort" value="${param.sort}" />
-	</c:if>
-	<c:if test="${!empty param.descending}">
-		<cti:param name="descending" value="${param.descending}" />
-	</c:if>
-	<c:if test="${!empty param.programId}">
-		<cti:param name="programId" value="${param.programId}" />
-	</c:if>
-	<c:if test="${!empty param.loadGroupId}">
-		<cti:param name="loadGroupId" value="${param.loadGroupId}" />
-	</c:if>
+    <c:if test="${!empty param.itemsPerPage}">
+        <cti:param name="itemsPerPage" value="${param.itemsPerPage}" />
+    </c:if>
+    <c:if test="${!empty param.sort}">
+        <cti:param name="sort" value="${param.sort}" />
+    </c:if>
+    <c:if test="${!empty param.descending}">
+        <cti:param name="descending" value="${param.descending}" />
+    </c:if>
+    <c:if test="${!empty param.programId}">
+        <cti:param name="programId" value="${param.programId}" />
+    </c:if>
+    <c:if test="${!empty param.loadGroupId}">
+        <cti:param name="loadGroupId" value="${param.loadGroupId}" />
+    </c:if>
 </cti:url>
 
 <script type="text/javascript">
-		    function clearFilter() {
-		        window.location = '${clearFilterUrl}';
-		    }
+    function clearFilter() {
+        window.location = '${clearFilterUrl}';
+    }
 </script>
 
 <%-- Load Group filtering popup section --%>
@@ -40,21 +40,21 @@
 <tags:simplePopup id="filterPopup" title="${filterLabel}">
     <cti:flashScopeMessages/>
 
-	<form:form action="${submitUrl}" commandName="backingBean" method="get">
-		<c:if test="${!empty param.programId}">
-			<input type="hidden" name="programId" value="${param.programId}"/>
-		</c:if>
+    <form:form action="${submitUrl}" commandName="backingBean" method="get">
+        <c:if test="${!empty param.programId}">
+            <input type="hidden" name="programId" value="${param.programId}"/>
+        </c:if>
         <c:if test="${!empty param.loadGroupId}">
             <input type="hidden" name="loadGroupId" value="${param.loadGroupId}"/>
         </c:if>
-		<tags:sortFields backingBean="${backingBean}" />
-		<cti:msg var="minStr"
-			key="yukon.web.modules.dr.loadGroupList.filter.min" />
-		<cti:msg var="maxStr"
-			key="yukon.web.modules.dr.loadGroupList.filter.max" />
-		<cti:msg var="toStr"
-			key="yukon.web.modules.dr.loadGroupList.filter.to" />
-		<tags:nameValueContainer>
+        <tags:sortFields backingBean="${backingBean}" />
+        <cti:msg var="minStr"
+            key="yukon.web.modules.dr.loadGroupList.filter.min" />
+        <cti:msg var="maxStr"
+            key="yukon.web.modules.dr.loadGroupList.filter.max" />
+        <cti:msg var="toStr"
+            key="yukon.web.modules.dr.loadGroupList.filter.to" />
+        <tags:nameValueContainer>
             <cti:msg var="fieldName" key="yukon.web.modules.dr.loadGroupList.filter.name" />
             <tags:nameValue name="${fieldName}">
                 <form:input path="name" size="40" />
@@ -76,111 +76,118 @@
                 </tags:nameValue>
             </cti:checkRolesAndProperties>
 
-			<cti:checkRolesAndProperties value="LOAD_GROUP_LAST_ACTION,LOAD_GROUP_LOAD_CAPACITY">
-        		<cti:checkRolesAndProperties value="LOAD_GROUP_LAST_ACTION">
-					<cti:msg var="fieldName" key="yukon.web.modules.dr.loadGroupList.filter.lastAction" />
-					<tags:nameValue name="${fieldName}">
+            <cti:checkRolesAndProperties value="LOAD_GROUP_LAST_ACTION,LOAD_GROUP_LOAD_CAPACITY">
+                <cti:checkRolesAndProperties value="LOAD_GROUP_LAST_ACTION">
+                    <cti:msg var="fieldName" key="yukon.web.modules.dr.loadGroupList.filter.lastAction" />
+                    <tags:nameValue name="${fieldName}">
                            <dt:dateRange startPath="lastAction.min" endPath="lastAction.max"><span class="fl" style="margin-right: 5px;">${toStr}</span></dt:dateRange>
-					</tags:nameValue>
-				</cti:checkRolesAndProperties>
-    		</cti:checkRolesAndProperties>
-		</tags:nameValueContainer>
+                    </tags:nameValue>
+                </cti:checkRolesAndProperties>
+            </cti:checkRolesAndProperties>
+        </tags:nameValueContainer>
 
-		<div class="actionArea">
+        <div class="actionArea">
             <cti:button nameKey="filter" classes="primary action" type="submit"/>
             <cti:button nameKey="showAll" onclick="javascript:clearFilter()"/>
         </div>
-	</form:form>
+    </form:form>
 </tags:simplePopup>
 
 <%-- Main Load Group list table section --%>
 
 <cti:msg var="loadGroupTitle"
-	key="yukon.web.modules.dr.loadGroupList.loadGroups" />
+    key="yukon.web.modules.dr.loadGroupList.loadGroups" />
 <tags:pagedBox title="${loadGroupTitle}" searchResult="${searchResult}"
-	filterDialog="filterPopup" baseUrl="${baseUrl}"
-	isFiltered="${isFiltered}" showAllUrl="${clearFilterUrl}">
-	<c:choose>
-		<c:when test="${searchResult.hitCount == 0}">
-			<cti:msg key="yukon.web.modules.dr.loadGroupList.noResults" />
-		</c:when>
-		<c:otherwise>
-			<table id="loadGroupList" class="compactResultsTable rowHighlighting">
+    filterDialog="filterPopup" baseUrl="${baseUrl}"
+    isFiltered="${isFiltered}" showAllUrl="${clearFilterUrl}">
+    <c:choose>
+        <c:when test="${searchResult.hitCount == 0}">
+            <cti:msg key="yukon.web.modules.dr.loadGroupList.noResults" />
+        </c:when>
+        <c:otherwise>
+            <table id="loadGroupList" class="compactResultsTable rowHighlighting">
                 <thead>
-    				<tr>
-    					<th class="favoritesColumn"></th>
-    					<c:set var="numColumns" value="1" />
-    					<th><tags:sortLink nameKey="heading.name"
-    						baseUrl="${baseUrl}" fieldName="NAME"/></th>
-    					<cti:checkRolesAndProperties value="LOAD_GROUP_STATE">
-    						<c:set var="numColumns" value="${numColumns + 1}" />
-    						<th><tags:sortLink nameKey="heading.state"
-    							baseUrl="${baseUrl}" fieldName="STATE"/></th>
-    					</cti:checkRolesAndProperties>
-    					<c:set var="numColumns" value="${numColumns + 1}" />
-    					<th><cti:msg
-    						key="yukon.web.modules.dr.loadGroupList.heading.action" /></th>
-    					<cti:checkRolesAndProperties value="LOAD_GROUP_LAST_ACTION">
-    						<c:set var="numColumns" value="${numColumns + 1}" />
-    						<th><tags:sortLink nameKey="heading.lastAction"
-    							baseUrl="${baseUrl}" fieldName="LAST_ACTION"/></th>
-    					</cti:checkRolesAndProperties>
-    					<cti:checkRolesAndProperties value="LOAD_GROUP_CONTROL_STATISTICS">
-    						<c:set var="numColumns" value="${numColumns + 1}" />
-    						<th><tags:sortLink nameKey="heading.controlStatistics"
-    							baseUrl="${baseUrl}" fieldName="CONTROL_STATISTICS"/></th>
-    					</cti:checkRolesAndProperties>
-    					<cti:checkRolesAndProperties value="LOAD_GROUP_REDUCTION">
-    						<c:set var="numColumns" value="${numColumns + 1}" />
-    						<th><tags:sortLink nameKey="heading.reduction"
-    							baseUrl="${baseUrl}" fieldName="REDUCTION"/></th>
-    					</cti:checkRolesAndProperties>
-    				</tr>
+                    <tr>
+                        <th class="favoritesColumn"></th>
+
+                        <c:set var="numColumns" value="1" />
+                        <th><tags:sortLink nameKey="heading.name"
+                            baseUrl="${baseUrl}" fieldName="NAME"/></th>
+
+                        <cti:checkRolesAndProperties value="LOAD_GROUP_STATE">
+                            <c:set var="numColumns" value="${numColumns + 1}" />
+                            <th><tags:sortLink nameKey="heading.state"
+                                baseUrl="${baseUrl}" fieldName="STATE"/></th>
+                        </cti:checkRolesAndProperties>
+
+                        <c:set var="numColumns" value="${numColumns + 1}" />
+                        <th><cti:msg
+                            key="yukon.web.modules.dr.loadGroupList.heading.action" /></th>
+
+                        <cti:checkRolesAndProperties value="LOAD_GROUP_LAST_ACTION">
+                            <c:set var="numColumns" value="${numColumns + 1}" />
+                            <th><tags:sortLink nameKey="heading.lastAction"
+                                baseUrl="${baseUrl}" fieldName="LAST_ACTION"/></th>
+                        </cti:checkRolesAndProperties>
+
+                        <cti:checkRolesAndProperties value="LOAD_GROUP_CONTROL_STATISTICS">
+                            <c:set var="numColumns" value="${numColumns + 1}" />
+                            <th><tags:sortLink nameKey="heading.controlStatistics"
+                                baseUrl="${baseUrl}" fieldName="CONTROL_STATISTICS"/></th>
+                        </cti:checkRolesAndProperties>
+
+                        <cti:checkRolesAndProperties value="LOAD_GROUP_REDUCTION">
+                            <c:set var="numColumns" value="${numColumns + 1}" />
+                            <th><tags:sortLink nameKey="heading.reduction"
+                                baseUrl="${baseUrl}" fieldName="REDUCTION"/></th>
+                        </cti:checkRolesAndProperties>
+                    </tr>
                 </thead>
                 <tfoot></tfoot>
                 <tbody>
-    				<c:forEach var="loadGroup" items="${loadGroups}">
-    					<c:set var="loadGroupId" value="${loadGroup.paoIdentifier.paoId}" />
-    					<c:url var="loadGroupURL" value="/dr/loadGroup/detail">
-    						<c:param name="loadGroupId" value="${loadGroupId}" />
-    					</c:url>
-    					<tr id="loadGroupRow${loadGroupId}">
-    						<td><dr:favoriteIcon paoId="${loadGroupId}"
-    							isFavorite="${favoritesByPaoId[loadGroupId]}" /></td>
-    						<td><a href="${loadGroupURL}"><spring:escapeBody
-    							htmlEscape="true">${loadGroup.name}</spring:escapeBody></a></td>
-    						<cti:checkRolesAndProperties value="LOAD_GROUP_STATE">
-    							<%-- TODO:  in phase 3, update cti:classUpdater to be able to
-    		                     update the class of the row instead --%>
-    							<td class="nonwrapping"><dr:loadGroupState
-    								loadGroupId="${loadGroupId}" /></td>
-    						</cti:checkRolesAndProperties>
-    						<td class="nonwrapping"><dr:loadGroupListActions
-    							pao="${loadGroup}" /></td>
-    						<cti:checkRolesAndProperties value="LOAD_GROUP_LAST_ACTION">
-    							<td class="nonwrapping"><cti:dataUpdaterValue
-    								type="DR_LOADGROUP" identifier="${loadGroupId}/LAST_ACTION" /></td>
-    						</cti:checkRolesAndProperties>
-    						<cti:checkRolesAndProperties value="LOAD_GROUP_CONTROL_STATISTICS">
-    							<td class="nonwrapping"><cti:dataUpdaterValue
-    								type="DR_LOADGROUP"
-    								identifier="${loadGroupId}/CONTROL_STATISTICS" /></td>
-    						</cti:checkRolesAndProperties>
-    						<cti:checkRolesAndProperties value="LOAD_GROUP_REDUCTION">
-    							<td class="nonwrapping"><cti:dataUpdaterValue
-    								type="DR_LOADGROUP" identifier="${loadGroupId}/REDUCTION" /></td>
-    						</cti:checkRolesAndProperties>
-    						<%--
-    		                <cti:checkRolesAndProperties value="LOAD_GROUP_LOAD_CAPACITY">
-    		                    <td class="nonwrapping"><cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/LOAD_CAPACITY"/></td>
-    		                </cti:checkRolesAndProperties>
-    		                --%>
-    					</tr>
-    				</c:forEach>
+                    <c:forEach var="loadGroup" items="${loadGroups}">
+                        <c:set var="loadGroupId" value="${loadGroup.paoIdentifier.paoId}" />
+                        <c:url var="loadGroupURL" value="/dr/loadGroup/detail">
+                            <c:param name="loadGroupId" value="${loadGroupId}" />
+                        </c:url>
+                        <tr id="loadGroupRow${loadGroupId}">
+                            <td><dr:favoriteIcon paoId="${loadGroupId}"
+                                isFavorite="${favoritesByPaoId[loadGroupId]}" /></td>
+
+                            <td><a href="${loadGroupURL}"><spring:escapeBody
+                                htmlEscape="true">${loadGroup.name}</spring:escapeBody></a></td>
+
+                            <cti:checkRolesAndProperties value="LOAD_GROUP_STATE">
+                                <%-- TODO:  in phase 3, update cti:classUpdater to be able to
+                                 update the class of the row instead --%>
+                                <td class="nonwrapping"><dr:loadGroupState
+                                    loadGroupId="${loadGroupId}" /></td>
+                            </cti:checkRolesAndProperties>
+
+                            <td class="nonwrapping"><dr:loadGroupListActions
+                                pao="${loadGroup}" /></td>
+
+                            <cti:checkRolesAndProperties value="LOAD_GROUP_LAST_ACTION">
+                                <td class="nonwrapping"><cti:dataUpdaterValue
+                                    type="DR_LOADGROUP" identifier="${loadGroupId}/LAST_ACTION" /></td>
+                            </cti:checkRolesAndProperties>
+
+                            <cti:checkRolesAndProperties value="LOAD_GROUP_CONTROL_STATISTICS">
+                                <td class="nonwrapping"><cti:dataUpdaterValue
+                                    type="DR_LOADGROUP"
+                                    identifier="${loadGroupId}/CONTROL_STATISTICS" /></td>
+                            </cti:checkRolesAndProperties>
+
+                            <cti:checkRolesAndProperties value="LOAD_GROUP_REDUCTION">
+                                <td class="nonwrapping"><cti:dataUpdaterValue
+                                    type="DR_LOADGROUP" identifier="${loadGroupId}/REDUCTION" /></td>
+                            </cti:checkRolesAndProperties>
+                        </tr>
+                    </c:forEach>
                 </tbody>
-			</table>
-		</c:otherwise>
-	</c:choose>
+            </table>
+        </c:otherwise>
+    </c:choose>
 </tags:pagedBox>
 <c:if test="${hasFilterErrors}">
     <script type="text/javascript">
