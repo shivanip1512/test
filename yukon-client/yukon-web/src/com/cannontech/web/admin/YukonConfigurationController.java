@@ -149,7 +149,10 @@ public class YukonConfigurationController {
     
     @RequestMapping
     public String edit(ModelMap model, YukonUserContext context, GlobalSettingSubCategory category) throws ExecutionException {
+        MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
+        
         model.addAttribute("category", category);
+        model.addAttribute("categoryName", accessor.getMessage(category));
         
         Map<GlobalSettingType, Pair<Object, String>> settings = globalSettingEditorDao.getValuesAndCommentsForCategory(category);
         

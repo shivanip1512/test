@@ -9,51 +9,6 @@
 
 <cti:standardPage module="adminSetup" page="config.category">
 <cti:includeScript link="JQUERY_STICKY_PANEL" />
-<%--Following script and style are for showing the save/cancel actions when the user has changed something
-       without making them scroll all the way down the page. Ran into and issue when the page wasn't tall 
-       enough to scroll.  We can revisit this idea when we have time.
-<script>
-jQuery(function(){
-    jQuery("#settingsForm :input").each(function(idx, elem){
-                //'Remember' the unmodified value
-                jQuery(elem).data({original_value: jQuery(elem).val()});
-    });
-    jQuery("#settingsForm :input").blur(function(event){
-                //check to see if *any* value changed - this is not very efficient, but short of tracking some global var there really isn't a good way to determine if the form has been modified.
-                var inputs = jQuery("#settingsForm :input");
-                for(i=0; i<inputs.length; i++){
-                    var oldValue = jQuery(inputs[i]).data('original_value');
-                    if(typeof(oldValue) != "undefined" && (jQuery(inputs[i]).val() != oldValue)){
-                        jQuery("#settingsForm .pageActionArea > div button").enable();
-                        return;
-                    } else {
-                        jQuery("#settingsForm .pageActionArea > div button").disable();
-                        return;
-                    }
-                }
-                jQuery("#settingsForm .pageActionArea > div").removeClass("fixed");
-    });
-    
-});
-</script>
-
-<style>
-.pageActionArea .fixed {
-    background: white;
-    position:fixed;
-    bottom: 0px;
-    padding: 10px;
-    border: solid 1px #ccc;
-    border-style: solid solid none;
-    -moz-border-radius: 2px 2px 0, 0;
-    -webkit-border-radius: 2px 2px 0, 0;
-    border-radius: 2px 2px 0, 0;
-    -moz-box-shadow: 0 -5px 10px rgba(0,0,0,0.3);
-    -webkit-box-shadow: 0 -5px 10px rgba(0,0,0,0.3);
-    box-shadow: 0 -5px 10px rgba(0,0,0,0.3);
-}
-</style>
---%>
 
 <script>
 jQuery(function() {
@@ -67,9 +22,8 @@ jQuery(function() {
     <form:form action="/adminSetup/config/update" id="settingsForm" method="post">
         <form:hidden path="category"/>
         
-        
-        <div class="clear oh">
-	        <div class="category">
+        <div class="clearfix box">
+	        <div class="category fl">
 	            <cti:url value="edit" var="category_url"><cti:param name="category" value="${category}"/></cti:url>
 	            <a href="${category_url}" class="icon medium-icon fl ${category_icon}"></a>
 	            <div class="box fl meta">
@@ -79,67 +33,65 @@ jQuery(function() {
 	            </div>
 	        </div>
 	        
-	        <div class="highlight fr clear"><i:inline key=".legend"/></div>
+	        <div class="legend"><cti:icon icon="icon-asterisk-orange"/><i:inline key=".legend"/></div>
         </div>
         
         <div class="box liteContainer">
         
             <c:forEach items="${mappedPropertiesHelper.mappableProperties}" var="setting" varStatus="loopStatus">
                 
-                <c:choose>
-                    <c:when test="${loopStatus.first and not loopStatus.last}"><c:set var="rowClass" value="first"/></c:when>
-                    <c:when test="${loopStatus.last}"><c:set var="rowClass" value="last"/></c:when>
-                    <c:otherwise><c:set var="rowClass" value="middle"/></c:otherwise>
-                </c:choose>
-                
-                <div class="setting box ${rowClass}">
-                    <div class="setting_name box fl"><i:inline key="${setting.extra.type}"/></div>
-                    <div class="setting_default_indicator fl">
-                        <span class="highlight">
-                            <c:if test="${setting.extra.nonDefault}">
-                                <i:inline key=".nonDefault"/>
-                         </c:if>
-                        </span>
-                    </div>
-                    <div class="setting_details_more box detail fl">
-                        <div>
-                            <tags:simpleInputType id="${setting.extra.type}" input="${setting.valueType}" path="${setting.path}"/>
-                            <span class="detail updated fr">
-                                <span>
-                                    <c:if test="${not empty setting.extra.lastChanged}">
-                                        <i:inline key=".updated"/>&nbsp;<cti:formatDate type="DATEHM" value="${setting.extra.lastChanged}"/>
+                <div class="setting box">
+                    <div class="column_6_12_6 clearfix">
+                        <div class="column one">
+                            <i:inline key="${setting.extra.type}"/>
+                        </div>
+                        <div class="column two">
+                            <div class="default-indicator">
+                                <span class="highlight">
+                                    <c:if test="${setting.extra.nonDefault}">
+                                        <cti:icon icon="icon-asterisk-orange"/>
                                     </c:if>
                                 </span>
-                            </span>
+                            </div>
+                            <div class="value-description">
+                                <div class="value">
+                                    <tags:simpleInputType id="${setting.extra.type}" input="${setting.valueType}" path="${setting.path}"/>
+                                    <span class="detail updated">
+                                        <c:if test="${not empty setting.extra.lastChanged}">
+                                            <i:inline key=".updated"/>&nbsp;<cti:formatDate type="DATEHM" value="${setting.extra.lastChanged}"/>
+                                        </c:if>
+                                    </span>
+                                </div>
+                                <div class="description detail">
+                                    <p>
+                                        <i:inline key="yukon.common.setting.${setting.extra.type}.description"/>
+                                        <c:if test="${setting.extra.nonDefault}">
+                                            <span class="default"><i:inline key=".default"/>(${fn:escapeXml(setting.extra.type.defaultValue)})</span>
+                                        </c:if>
+                                        <form:errors path="${setting.path}" cssClass="errorMessage" element="div"/>
+                                    </p>
+                                </div>
+                            </div>
                         </div>
-                        <div class="description">
-                            <span class="detail"><i:inline key="yukon.common.setting.${setting.extra.type}.description"/></span>
-                            <span class="detail">
-                                <c:if test="${setting.extra.nonDefault}">
-                                    <span class="default"><i:inline key=".default"/>(${fn:escapeXml(setting.extra.type.defaultValue)})</span>
-                                </c:if>
-                                <form:errors path="${setting.path}" cssClass="errorMessage" element="div"/>
-                            </span>
+                        <div class="column three nogutter comments">
+                            <c:set var="inputClass" value="${status.error ? 'error' : ''}"/>
+                            <c:set var="style" value="${empty setting.extra.comments ? 'display:none' : ''}"/>
+                            <c:if test="${empty setting.extra.comments}">
+                                <cti:button classes="f-addCommentBtn" nameKey="energyCompanySettings.addComment" type="button" name="add" value="${setting.extra}" renderMode="labeledImage" icon="icon-pencil"/>
+                            </c:if>
+                            <form:textarea rows="3" 
+                                    placeholder="comments"
+                                    id="${setting.extra.type}_comments"
+                                    path="comments[${setting.extra.type}]"
+                                    style="${style}"
+                                    class="f-commentsShowHide ${inputClass}"/>
+                            <form:errors path="comments[${setting.extra.type}]" cssClass="errorMessage" element="div"/>
                         </div>
-                    </div>
-                    <div class="setting_comments box">
-                        <c:set var="inputClass" value="${status.error ? 'error' : ''}"/>
-                        <c:set var="style" value="${empty setting.extra.comments ? 'display:none' : ''}"/>
-                        <c:if test="${empty setting.extra.comments}">
-                            <cti:button classes="f-addCommentBtn" nameKey="energyCompanySettings.addComment" type="button" name="add" value="${setting.extra}" renderMode="labeledImage" icon="icon-pencil"/>
-                        </c:if>
-                        <form:textarea rows="3" cols="27" 
-                                placeholder="comments"
-                                id="${setting.extra.type}_comments"
-                                path="comments[${setting.extra.type}]"
-                                style="${style}"
-                                class="f-commentsShowHide ${inputClass}"/>
-                        <form:errors path="comments[${setting.extra.type}]" cssClass="errorMessage" element="div"/>
                     </div>
                 </div>
             </c:forEach>
         </div>
-        <div class="pageActionArea stickyPanel" style="min-height: 24px;">
+        <div class="pageActionArea">
             <cti:button nameKey="save" name="save" type="submit" classes="primary action"/>
             <cti:button nameKey="cancel" name="cancel" href="view"/>
         </div>

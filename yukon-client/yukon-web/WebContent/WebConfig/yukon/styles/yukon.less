@@ -259,7 +259,9 @@ ul.disc li {list-style-type: disc; margin-left: 25px;}
 .triangleContainer h3.toggle-title{color: @primary-font-color;}
 
 .sectionContainer {border:none;}
-.sectionContainer > .titleBar {background:transparent;font-weight:bold;}
+.sectionContainer > .titleBar {background:transparent;}
+.sectionContainer .controls {display: inline-block;float: right}
+
 .liteContainer {border-style:solid none;}
 
 .pagedBox .contextArea {margin: 0 20px 0 0; font-weight: normal;} /* TODO: change title span to h3 to avoid this 'undo' font css rule */
@@ -381,17 +383,17 @@ body ::-webkit-scrollbar-button{display:none}
 .dashboard .category > img {float:left; margin: 0 10px 20px; border-radius: 5px; padding: 5px; border:solid 1px #ccc; box-shadow: 0 5px 10px rgba(0,0,0,0.2)}
 .dashboard .subcategory {overflow:hidden; float:left; margin: 0 10px;}
 .dashboard .subcategory li {margin: 0 0 10px;}
-.category .medium-icon {margin: 5px 15px 15px 5px; }
+.dashboard .legend {float: right;position: absolute;bottom: 5px;right: 0;}
+.category .medium-icon {margin: 5px 15px 15px 5px;}
 .category .meta {margin-top: 5px;}
 .setting {border-top: dashed 1px #ccc; margin-top: -1px; padding: 10px 0;}
-.liteContainer .setting:first-child, .sectionContainer .setting:first-child, .boxContainer .setting:first-child {border-top: none;}
-.setting > .fl {margin-left: 10px;}
-.setting_details {width: 380px;}
-.setting_details_more {width: 520px;}
-.setting_default_indicator {width:10px; min-height:1px;}
-.setting_comments {width:200px; text-align: center; float:right;}
-.setting_comments >  textArea {resize:vertical;}
-.setting_name {width:192px;}
+.setting:first-child {border-top: none;}
+.setting .updated {float: right;margin-bottom: 5px;}
+.setting .comments textArea {resize:none;width: 100%;}
+.setting .comments .button {float:right;}
+.setting .default-indicator {display: inline-block;float:left;min-height:1px;min-width:30px;width: 8%;}
+.setting .value-description {display: inline-block;float:left;width: 92%;}
+.setting .value-description .default {font-weight: bold;}
 .categoryTitle {padding: 12px; padding-top: 16px; font-weight: bold; border-bottom:solid 1px #CCC;}
 
 /* MISC */

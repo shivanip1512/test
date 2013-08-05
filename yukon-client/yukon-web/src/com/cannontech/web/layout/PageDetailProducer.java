@@ -228,7 +228,8 @@ public class PageDetailProducer {
         resultBuilder.put("pageName", pageName);
         
         String contextualPageNameKey = pagePrefix + "contextualPageName";
-        String contextualPageName = messageSourceAccessor.getMessageWithDefault(contextualPageNameKey, pageName);
+        String contextualPageName = messageSourceAccessor.getMessageWithDefault(contextualPageNameKey, pageName,
+                                                                                pageContext.labelArguments.toArray());
         resultBuilder.put("contextualPageName", contextualPageName);
         
         String pageDescriptionKey = pagePrefix + "pageDescription";

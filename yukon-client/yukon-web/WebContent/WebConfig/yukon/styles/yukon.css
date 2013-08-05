@@ -696,7 +696,10 @@ ul.disc li {
 }
 .sectionContainer > .titleBar {
   background: transparent;
-  font-weight: bold;
+}
+.sectionContainer .controls {
+  display: inline-block;
+  float: right;
 }
 .liteContainer {
   border-style: solid none;
@@ -1146,6 +1149,12 @@ body ::-webkit-scrollbar-button {
 .dashboard .subcategory li {
   margin: 0 0 10px;
 }
+.dashboard .legend {
+  float: right;
+  position: absolute;
+  bottom: 5px;
+  right: 0;
+}
 .category .medium-icon {
   margin: 5px 15px 15px 5px;
 }
@@ -1157,34 +1166,34 @@ body ::-webkit-scrollbar-button {
   margin-top: -1px;
   padding: 10px 0;
 }
-.liteContainer .setting:first-child,
-.sectionContainer .setting:first-child,
-.boxContainer .setting:first-child {
+.setting:first-child {
   border-top: none;
 }
-.setting > .fl {
-  margin-left: 10px;
+.setting .updated {
+  float: right;
+  margin-bottom: 5px;
 }
-.setting_details {
-  width: 380px;
+.setting .comments textArea {
+  resize: none;
+  width: 100%;
 }
-.setting_details_more {
-  width: 520px;
-}
-.setting_default_indicator {
-  width: 10px;
-  min-height: 1px;
-}
-.setting_comments {
-  width: 200px;
-  text-align: center;
+.setting .comments .button {
   float: right;
 }
-.setting_comments > textArea {
-  resize: vertical;
+.setting .default-indicator {
+  display: inline-block;
+  float: left;
+  min-height: 1px;
+  min-width: 30px;
+  width: 8%;
 }
-.setting_name {
-  width: 192px;
+.setting .value-description {
+  display: inline-block;
+  float: left;
+  width: 92%;
+}
+.setting .value-description .default {
+  font-weight: bold;
 }
 .categoryTitle {
   padding: 12px;

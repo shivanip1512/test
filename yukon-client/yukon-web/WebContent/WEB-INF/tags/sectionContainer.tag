@@ -5,13 +5,14 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags" %>
 
-<%@ attribute name="title" required="false" type="java.lang.String"%>
-<%@ attribute name="id" required="false" type="java.lang.String"%>
-<%@ attribute name="styleClass" required="false" type="java.lang.String"%>
-<%@ attribute name="helpText" required="false" type="java.lang.String"%>
-<%@ attribute name="escapeTitle" required="false" type="java.lang.Boolean" %>
-<%@ attribute name="hideEnabled" required="false" type="java.lang.Boolean" %>
-<%@ attribute name="hideInitially" required="false" type="java.lang.Boolean" %>
+<%@ attribute name="title"%>
+<%@ attribute name="id"%>
+<%@ attribute name="styleClass"%>
+<%@ attribute name="helpText"%>
+<%@ attribute name="escapeTitle" type="java.lang.Boolean" %>
+<%@ attribute name="hideEnabled" type="java.lang.Boolean" %>
+<%@ attribute name="hideInitially" type="java.lang.Boolean" %>
+<%@ attribute name="controls" %>
 
 <c:if test="${hideEnabled}">
     <c:set var="h3Class" value="toggle-title"/>
@@ -40,7 +41,7 @@
             <c:if test="${not empty pageScope.helpText}">
                 <cti:icon icon="icon-help" id="help_icon_${thisId}"/>
         	</c:if>
-        	
+        	<div class="controls">${controls}</div>
         </div>
     </div>
     
