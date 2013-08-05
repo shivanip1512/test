@@ -99,6 +99,9 @@ section {
   float: right;
   margin-top: 8px;
 }
+.yukon-header .inner .toolbar .b-user-menu {
+  min-width: 112px;
+}
 .yukon-header .inner .toolbar button.action:hover,
 .button.action:hover {
   -moz-box-shadow: none !important;
