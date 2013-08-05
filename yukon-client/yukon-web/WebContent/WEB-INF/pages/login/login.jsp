@@ -8,7 +8,6 @@
         <div class="login-content">
             <div class="column_12_12">
                 <div class="one column">
-                    <div class="faded-round-box" style="visibility: hidden;"></div>
                     <div><h1 class="tagline">Optimizing Energy Delivery</h1></div>
                 </div>
                 <div class="two column nogutter">
