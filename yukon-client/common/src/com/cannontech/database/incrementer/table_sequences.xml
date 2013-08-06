@@ -311,11 +311,20 @@
       <sequence name="UserPreference">
         <table name="UserPreference" identitycolumn="PreferenceId" initsequence="true" />
       </sequence>
-      <sequence name="Formula">
-        <table name="Formula" identitycolumn="FormulaId" initsequence="true" />
+      <sequence name="EstimatedLoadFormula">
+        <table name="EstimatedLoadFormula" identitycolumn="EstimatedLoadFormulaId" initsequence="true" />
       </sequence>
-      <sequence name="FormulaLookupEntry">
-        <table name="FormulaLookupEntry" identitycolumn="FormulaLookupEntryId" initsequence="true" />
+      <sequence name="EstimatedLoadFunction">
+        <table name="EstimatedLoadFunction" identitycolumn="EstimatedLoadFunctionId" initsequence="true" />
+      </sequence>
+      <sequence name="EstimatedLoadLookupTable">
+        <table name="EstimatedLoadLookupTable" identitycolumn="EstimatedLoadLookupTableId" initsequence="true" />
+      </sequence>
+      <sequence name="EstimatedLoadTableEntry">
+        <table name="EstimatedLoadTableEntry" identitycolumn="EstimatedLoadTableEntryId" initsequence="true" />
+      </sequence>
+      <sequence name="EstimatedLoadFormulaAssignment">
+        <table name="EstimatedLoadFormulaAssignment" identitycolumn="FormulaAssignmentId" initsequence="true" />
       </sequence>
   </sequencetable>
 </sequencetables>

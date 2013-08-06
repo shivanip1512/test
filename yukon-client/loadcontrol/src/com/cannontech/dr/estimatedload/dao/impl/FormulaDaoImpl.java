@@ -1,7 +1,9 @@
 package com.cannontech.dr.estimatedload.dao.impl;
 
+import java.beans.PropertyEditor;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -12,9 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.util.SqlFragment;
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.FieldMapper;
-import com.cannontech.database.RowMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -24,15 +27,13 @@ import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.dr.estimatedload.Formula;
 import com.cannontech.dr.estimatedload.FormulaFunction;
 import com.cannontech.dr.estimatedload.FormulaInput;
+import com.cannontech.dr.estimatedload.FormulaInput.InputType;
 import com.cannontech.dr.estimatedload.FormulaLookupTable;
 import com.cannontech.dr.estimatedload.dao.FormulaDao;
-import com.cannontech.dr.estimatedload.enumeration.FormulaCalculationType;
-import com.cannontech.dr.estimatedload.enumeration.FormulaInputType;
-import com.cannontech.dr.estimatedload.enumeration.FormulaType;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSortedMap;
-import com.google.common.collect.Ordering;
+import com.google.common.collect.Multimap;
 
 public class FormulaDaoImpl implements FormulaDao {
     private final Logger log = YukonLogManager.getLogger(FormulaDaoImpl.class);
@@ -41,56 +42,49 @@ public class FormulaDaoImpl implements FormulaDao {
 
     private static SimpleTableAccessTemplate<Formula> formulaInsertTemplate;
     private static SimpleTableAccessTemplate<FormulaFunction> functionInsertTemplate;
-    private static SimpleTableAccessTemplate<FormulaLookupTable> lookupTableInsertTemplate;
-    
+    private static SimpleTableAccessTemplate<FormulaLookupTable<Object>> lookupTableInsertTemplate;
+
     private static FieldMapper<Formula> baseFormulaFieldMapper;
     private static FieldMapper<FormulaFunction> functionFieldMapper;
-    private static FieldMapper<FormulaLookupTable> lookupTableFieldMapper;
-    
-    private static YukonRowMapper<Formula.Builder> baseFormulaRowMapper;
-    private static YukonRowMapper<FormulaFunction> functionRowMapper;
-    private static YukonRowMapper<FormulaLookupTable.Builder> baseLookupTableRowMapper;
-//    private static YukonRowMapper<Formula> assignmentMapper;
+    private static FieldMapper<FormulaLookupTable<Object>> lookupTableFieldMapper;
 
-    private static final String formulaTableName = "Formula";
-    private static final String functionTableName = "FormulaFunction";
-    private static final String lookupTableName = "FormulaLookupTable";
-    private static final String tableEntryTableName = "FormulaLookupEntry";
-    //private static final String assignmentTableName = "FormulaAssignmentMap";
+    private static final String formulaTableName = "EstimatedLoadFormula";
+    private static final String functionTableName = "EstimatedLoadFunction";
+    private static final String lookupTableName = "EstimatedLoadLookupTable";
+    private static final String tableEntryTableName = "EstimatedLoadTableEntry";
+    //private static final String assignmentTableName = "EstimatedLoadFormulaAssignment";
 
     @Override
     public List<Formula> getAllFormulas() {
-        List<Formula> formulas = new ArrayList<>();
+        Map<Integer, ImmutableList<FormulaLookupTable<Object>>> lookupTables = getLookupTables(null);
+        Map<Integer, ImmutableList<FormulaFunction>> functions = getFunctions(null);
+        SqlStatementBuilder sql = getFormulaQuery(null);
 
-        SqlStatementBuilder sql = getFormulaQueryBase();
-        List<Formula.Builder> formulaBuilders = yukonJdbcTemplate.query(sql, baseFormulaRowMapper);
+        FormulaRowMapper formulaRowMapper = new FormulaRowMapper(lookupTables, functions);
 
-        for (Formula.Builder formulaBuilder : formulaBuilders) {
-            formulaBuilder.setFunctions(getFunctions(formulaBuilder.getFormulaId()));
-            formulaBuilder.setTables(getLookupTables(formulaBuilder.getFormulaId()));
-            formulas.add(formulaBuilder.build());
-        }
-
-        return ImmutableList.copyOf(formulas);
+        return yukonJdbcTemplate.query(sql, formulaRowMapper);
     }
 
     // First-level CRUD operations (Formula objects)
     @Override
     public Formula getFormulaById(int formulaId) {
-        SqlStatementBuilder sql = getFormulaQueryBase();
-        sql.append("WHERE FormulaId").eq(formulaId);
-        
-        Formula.Builder formulaBuilder = yukonJdbcTemplate.queryForObject(sql, baseFormulaRowMapper);
-        formulaBuilder.setFunctions(getFunctions(formulaId));
-        formulaBuilder.setTables(getLookupTables(formulaId));
-        
-        return formulaBuilder.build();
+        SqlFragment whereClause = new SqlFragment("WHERE EstimatedLoadFormulaId = ?", formulaId);
+
+        SqlStatementBuilder sql = getFormulaQuery(whereClause);
+        Map<Integer, ImmutableList<FormulaLookupTable<Object>>> lookupTables = getLookupTables(whereClause);
+        Map<Integer, ImmutableList<FormulaFunction>> functions = getFunctions(whereClause);
+
+        FormulaRowMapper formulaRowMapper = new FormulaRowMapper(lookupTables, functions);
+        return yukonJdbcTemplate.queryForLimitedResults(sql, formulaRowMapper, 1).get(0);
     }
-    
-    private SqlStatementBuilder getFormulaQueryBase() {
+
+    private SqlStatementBuilder getFormulaQuery(SqlFragmentSource whereClause) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT FormulaId, Name, FormulaType, CalculationType, FunctionIntercept FROM");
+        sql.append("SELECT EstimatedLoadFormulaId, Name, FormulaType, CalculationType, FunctionIntercept FROM");
         sql.append(formulaTableName);
+        if (whereClause != null) {
+            sql.append(whereClause);
+        }
         return sql;
     }
 
@@ -101,9 +95,9 @@ public class FormulaDaoImpl implements FormulaDao {
         for (FormulaFunction function : formula.getFunctions()) {
             functionInsertTemplate.save(function);
         }
-        for (FormulaLookupTable table : formula.getTables()) {
-            int tableId = lookupTableInsertTemplate.save(table);
-            saveTableEntries(tableId, table.getEntries());
+        for (FormulaLookupTable<Object> table : formula.getTables()) {
+            lookupTableInsertTemplate.save(table);
+            saveTableEntries(table);
         }
         if(log.isDebugEnabled()) {
             log.debug("Saved estimated load reduction formula id: " + formulaId);
@@ -112,149 +106,122 @@ public class FormulaDaoImpl implements FormulaDao {
         return formulaId;
     }
 
-
     @Override
     public void deleteFormulaById(int formulaId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM").append(formulaTableName);
-        sql.append("WHERE FormulaId").eq(formulaId);
-        
+        sql.append("WHERE EstimatedLoadFormulaId").eq(formulaId);
+
         yukonJdbcTemplate.update(sql);
         if(log.isDebugEnabled()) {
             log.debug("Deleted estimated load reduction formula id: " + formulaId);
         }
     }
 
-    @Override
-    public void deleteFormula(Formula formula) {
-        deleteFormulaById(formula.getFormulaId());
-    }
-
     // Second-level CRUD operations (FormulaFunction and FormulaLookupTable objects).
-    private ImmutableList<FormulaFunction> getFunctions(int formulaId) {
+    private Map<Integer, ImmutableList<FormulaFunction>> getFunctions(SqlFragmentSource whereClause) {
+        Map<Integer, ImmutableList<FormulaFunction>> functionsByFormulaId = new HashMap<>();
+        
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT FormulaFunctionId, FormulaId, Name, InputType,");
+        sql.append("SELECT EstimatedLoadFunctionId, EstimatedLoadFormulaId, Name, InputType,");
         sql.append(       "InputMin, InputMax, InputPointId, Quadratic, Linear");
         sql.append("FROM").append(functionTableName);
-        sql.append("WHERE FormulaId").eq(formulaId);
-        
-        return ImmutableList.copyOf(yukonJdbcTemplate.query(sql, functionRowMapper));
-    }
-
-    private ImmutableList<FormulaLookupTable> getLookupTables(int formulaId) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT FormulaLookupTableId");
-        sql.append("FROM").append(lookupTableName);
-        sql.append("WHERE FormulaId").eq(formulaId);
-        List<Integer> tableIds = yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
-        
-        List<FormulaLookupTable> tables = new ArrayList<>();
-        for (Integer tableId : tableIds) {
-            tables.add(getLookupTable(formulaId, tableId));
+        if (whereClause != null) {
+            sql.append(whereClause);
         }
-        
-        return ImmutableList.copyOf(tables);
+
+        FunctionRowHandler functionRowMapper = new FunctionRowHandler();
+        yukonJdbcTemplate.query(sql, functionRowMapper);
+
+        for (Integer formulaId : functionRowMapper.functionsByFormulaId.keySet()) {
+            Collection<FormulaFunction> functions = functionRowMapper.functionsByFormulaId.get(formulaId);
+            functionsByFormulaId.put(formulaId, ImmutableList.copyOf(functions));
+        }
+
+        return functionsByFormulaId;
     }
 
-    private FormulaLookupTable getLookupTable(int formulaId, int lookupTableId) {
+    /** Returns a Map of FormulaId to a List of its lookup tables. */
+    private Map<Integer, ImmutableList<FormulaLookupTable<Object>>> getLookupTables(SqlFragmentSource whereClause) {
+        SqlFragment entriesWhereClause;
+        if (whereClause != null) {
+             entriesWhereClause = new SqlFragment("WHERE EstimatedLoadLookupTableId IN "
+                    + "(SELECT EstimatedLoadLookupTableId FROM EstimatedLoadLookupTable " + whereClause + ")", 
+                    whereClause.getArguments());
+        } else {
+            entriesWhereClause = null;
+        }
+        Map<Integer, Map<String, Double>> tableEntries = getTableEntries(entriesWhereClause);
+
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT FormulaLookupTableId, FormulaId, Name, InputType, InputMin, InputMax, InputPointId");
+        sql.append("SELECT EstimatedLoadLookupTableId, EstimatedLoadFormulaId,");
+        sql.append(       "Name, InputType, InputMin, InputMax, InputPointId");
         sql.append("FROM").append(lookupTableName);
-        sql.append("WHERE FormulaId").eq(formulaId);
-        sql.append("AND FormulaLookupTableId").eq(lookupTableId);
-        
-        FormulaLookupTable.Builder builder = yukonJdbcTemplate.queryForObject(sql, baseLookupTableRowMapper);
-        builder.setEntries(getTableEntries(lookupTableId));
-        
-        return builder.build();
+        if (whereClause != null) {
+            sql.append(whereClause);
+        }
+
+        LookupTableRowHandler lookupTableRowMapper = new LookupTableRowHandler(tableEntries);
+        yukonJdbcTemplate.query(sql, lookupTableRowMapper);
+
+        Map<Integer, ImmutableList<FormulaLookupTable<Object>>> tablesByFormulaId = new HashMap<>();
+        for (Integer formulaId : lookupTableRowMapper.lookupTablesByFormulaId.keySet()) {
+            Collection<FormulaLookupTable<Object>> tables = lookupTableRowMapper.lookupTablesByFormulaId.get(formulaId);
+            tablesByFormulaId.put(formulaId, ImmutableList.copyOf(tables));
+        }
+
+        return tablesByFormulaId;
     }
 
     // Third-level CRUD operations (FormulaLookupTable entries).
-    private void saveTableEntries(int lookupTableId, Map<Double, Double> entries) {
-        deleteTableEntries(lookupTableId);
-        insertTableEntries(lookupTableId, entries);
+    private void saveTableEntries(FormulaLookupTable<Object> table) {
+        Integer tableId = table.getLookupTableId();
+        deleteTableEntries(tableId);
+        insertTableEntries(tableId, table.getInput(), table.getEntries());
     }
 
     private void deleteTableEntries(int lookupTableId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM").append(tableEntryTableName);
         sql.append("WHERE FormulaLookupTableId").eq(lookupTableId);
-        
+
         yukonJdbcTemplate.update(sql);
     }
 
-    private void insertTableEntries(int lookupTableId, Map<Double, Double> entries) {
-        for (Map.Entry<Double, Double> entry : entries.entrySet()) {
-            insertTableEntry(lookupTableId, entry);
+    private void insertTableEntries(int lookupTableId, FormulaInput<Object> formulaInput, Map<Object, Double> entries) {
+        for (Map.Entry<Object, Double> entry : entries.entrySet()) {
+            insertTableEntry(lookupTableId, formulaInput, entry);
         }
     }
 
-    private void insertTableEntry(int lookupTableId, Map.Entry<Double, Double> entry) {
+    private void insertTableEntry(int lookupTableId, FormulaInput<Object> formulaInput, Map.Entry<Object, Double> entry) {
+        PropertyEditor typeConverter = formulaInput.getInputType().makeTypeConverter();
         SqlStatementBuilder sql = new SqlStatementBuilder();
         int entryId = nextValueHelper.getNextValue("FormulaLookupEntry"); 
         sql.append("INSERT INTO").append(tableEntryTableName);
-        sql.append("(FormulaLookupEntryId, FormulaLookupTableId, Key, Value)");
-        sql.values(entryId, lookupTableId, entry.getKey(), entry.getValue());
+        sql.append("(EstimatedLoadTableEntryId, EstimatedLoadLookupTableId, EntryKey, EntryValue)");
+        typeConverter.setValue(entry.getKey());
+        sql.values(entryId, lookupTableId, typeConverter.getAsText(), entry.getValue());
         
         yukonJdbcTemplate.update(sql);
     }
 
-    private ImmutableMap<Double, Double> getTableEntries(int lookupTableId) {
+    private Map<Integer, Map<String, Double>> getTableEntries(SqlFragmentSource whereClause) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT FormulaLookupEntryId, FormulaLookupTableId, Key, Value FROM");
-        sql.append(tableEntryTableName);
-        sql.append("WHERE FormulaLookupTableId").eq(lookupTableId);
-        sql.append("ORDER BY Key ASC");
-        
-        LookupTableEntryMapper entryMapper = new LookupTableEntryMapper();
+        sql.append("SELECT FormulaLookupTableId, EntryKey, EntryValue");
+        sql.append("FROM").append(tableEntryTableName);
+        if (whereClause != null) {
+            sql.append(whereClause);
+        }
+        LookupTableEntryRowHandler entryMapper = new LookupTableEntryRowHandler();
         yukonJdbcTemplate.query(sql, entryMapper);
         
-        return entryMapper.entries.build();
+        return entryMapper.entriesByTableId;
     }
 
 
+    // Setting up field mappers for use with SimpleTableAccessTemplate.
     static {
-        // Setting up row mappers.
-        baseFormulaRowMapper = new YukonRowMapper<Formula.Builder>() {
-            @Override
-            public Formula.Builder mapRow(YukonResultSet rs) throws SQLException {
-                Formula.Builder formulaBuilder = new Formula.Builder(
-                        rs.getInt("FormulaId"),
-                        rs.getString("Name"),
-                        FormulaType.valueOf(rs.getString("FormulaType")),
-                        FormulaCalculationType.valueOf(rs.getString("CalculationType")),
-                        rs.getDouble("FunctionIntercept"));
-                return formulaBuilder;
-            }
-        };
-
-        baseLookupTableRowMapper = new YukonRowMapper<FormulaLookupTable.Builder>() {
-            @Override
-            public FormulaLookupTable.Builder mapRow(YukonResultSet rs) throws SQLException {
-                FormulaInput formulaInput = mapFormulaInput(rs);
-
-                FormulaLookupTable.Builder tableBuilder = new FormulaLookupTable.Builder(
-                        rs.getInt("FormulaLookukpTableId"),
-                        rs.getInt("FormulaId"),
-                        rs.getString("Name"),
-                        formulaInput);
-                return tableBuilder;
-            }
-
-
-        };
-
-        functionRowMapper = new YukonRowMapper<FormulaFunction>() {
-            @Override
-            public FormulaFunction mapRow(YukonResultSet rs) throws SQLException {
-                FormulaInput formulaInput = mapFormulaInput(rs);
-                
-                return new FormulaFunction(rs.getInt("FormulaFunctionId"), rs.getInt("FormulaId"), rs.getString("Name"),
-                        formulaInput, rs.getDouble("Quadratic"), rs.getDouble("Linear"));
-            }
-        };
-
-        // Setting up field mappers for use with SimpleTableAccessTemplate.
         baseFormulaFieldMapper = new FieldMapper<Formula>() {
             @Override
             public Number getPrimaryKey(Formula formula) {
@@ -269,6 +236,7 @@ public class FormulaDaoImpl implements FormulaDao {
                 parameterHolder.addValue("Name", formula.getName());
                 parameterHolder.addValue("FormulaType", formula.getFormulaType());
                 parameterHolder.addValue("CalculationType", formula.getCalculationType());
+                parameterHolder.addValue("FunctionIntercept", formula.getFunctionIntercept());
             }
         };
 
@@ -283,50 +251,145 @@ public class FormulaDaoImpl implements FormulaDao {
             }
             @Override
             public void extractValues(MapSqlParameterSource parameterHolder, FormulaFunction function) {
-                parameterHolder.addValue("FormulaId", function.getFormulaId());
+                PropertyEditor typeConverter = function.getInput().getInputType().makeTypeConverter();
+                parameterHolder.addValue("EstimatedLoadFormulaId", function.getFormulaId());
                 parameterHolder.addValue("Name", function.getName());
                 parameterHolder.addValue("InputType", function.getInput().getInputType());
                 parameterHolder.addValue("InputPointId", function.getInput().getPointId());
-                parameterHolder.addValue("InputMin", function.getInput().getMin());
-                parameterHolder.addValue("InputMax", function.getInput().getMax());
+                typeConverter.setValue(function.getInput().getMin());
+                parameterHolder.addValue("InputMin", typeConverter.getAsText());
+                typeConverter.setValue(function.getInput().getMax());
+                parameterHolder.addValue("InputMax", typeConverter.getAsText());
                 parameterHolder.addValue("Quadratic", function.getQuadratic());
                 parameterHolder.addValue("Linear", function.getLinear());
             }
             
         };
 
-        lookupTableFieldMapper = new FieldMapper<FormulaLookupTable>() {
+        lookupTableFieldMapper = new FieldMapper<FormulaLookupTable<Object>>() {
             @Override
-            public Number getPrimaryKey(FormulaLookupTable lookupTable) {
+            public Number getPrimaryKey(FormulaLookupTable<Object> lookupTable) {
                 return lookupTable.getLookupTableId();
             }
             @Override
-            public void setPrimaryKey(FormulaLookupTable lookupTable, int value) {
+            public void setPrimaryKey(FormulaLookupTable<Object> lookupTable, int value) {
                 // Do nothing because FormulaLookupTable is immutable.
             }
             @Override
-            public void extractValues(MapSqlParameterSource parameterHolder, FormulaLookupTable lookupTable) {
-                parameterHolder.addValue("FormulaId", lookupTable.getFormulaId());
+            public void extractValues(MapSqlParameterSource parameterHolder, FormulaLookupTable<Object> lookupTable) {
+                PropertyEditor typeConverter = lookupTable.getInput().getInputType().makeTypeConverter();
+                parameterHolder.addValue("EstimatedLoadFormulaId", lookupTable.getFormulaId());
                 parameterHolder.addValue("Name", lookupTable.getName());
                 parameterHolder.addValue("InputType", lookupTable.getInput().getInputType());
+                typeConverter.setValue(lookupTable.getInput().getMin());
+                parameterHolder.addValue("InputMin", typeConverter.getAsText());
+                typeConverter.setValue(lookupTable.getInput().getMax());
+                parameterHolder.addValue("InputMax", typeConverter.getAsText());
                 parameterHolder.addValue("InputPointId", lookupTable.getInput().getPointId());
             }
         };
     }
 
-    private static FormulaInput mapFormulaInput(YukonResultSet rs) throws SQLException {
-        FormulaInput input = new FormulaInput(FormulaInputType.valueOf(rs.getString("InputType")),
-                rs.getDouble("InputMin"), rs.getDouble("InputMax"), rs.getInt("InputPointId"));
-        return input;
+    // Setting up row mappers and callback handlers.
+    private static class FormulaRowMapper implements YukonRowMapper<Formula> {
+        //Inputs
+        Map<Integer, ImmutableList<FormulaLookupTable<Object>>> lookupTablesByFormulaId;
+        Map<Integer, ImmutableList<FormulaFunction>> functionsByFormulaId;
+        
+        public FormulaRowMapper(
+                Map<Integer, ImmutableList<FormulaLookupTable<Object>>> lookupTablesByFormulaId,
+                Map<Integer, ImmutableList<FormulaFunction>> functionsByFormulaId) {
+            this.lookupTablesByFormulaId = lookupTablesByFormulaId;
+            this.functionsByFormulaId = functionsByFormulaId;
+        }
+        
+        @Override
+        public Formula mapRow(YukonResultSet rs) throws SQLException {
+            Integer formulaId = rs.getInt("EstimatedLoadFormulaId");
+            return new Formula(
+                    formulaId,
+                    rs.getString("Name"),
+                    rs.getEnum("FormulaType", Formula.Type.class),
+                    rs.getEnum("CalculationType", Formula.CalculationType.class),
+                    rs.getDouble("FunctionIntercept"),
+                    functionsByFormulaId.get(formulaId),
+                    lookupTablesByFormulaId.get(formulaId));
+        }
     }
 
-    private class LookupTableEntryMapper implements YukonRowCallbackHandler {
-        ImmutableSortedMap.Builder<Double, Double> entries = new ImmutableSortedMap.Builder<Double, Double>(Ordering.natural());
+    private static class FunctionRowHandler implements YukonRowCallbackHandler {
+        Multimap<Integer, FormulaFunction> functionsByFormulaId = HashMultimap.create();
+        @Override
+        public void processRow(YukonResultSet rs) throws SQLException {
+            FormulaInput<Object> formulaInput = mapFormulaInput(rs);
+            
+            Integer formulaId = rs.getInt("EstimatedLoadFormulaId");
+            functionsByFormulaId.put(formulaId, new FormulaFunction(
+                    rs.getInt("EstimatedLoadFunctionId"), 
+                    formulaId, 
+                    rs.getString("Name"),
+                    formulaInput, 
+                    rs.getDouble("Quadratic"), 
+                    rs.getDouble("Linear")));
+        }
+    };
+
+    private static class LookupTableRowHandler implements YukonRowCallbackHandler {
+        Multimap<Integer, FormulaLookupTable<Object>> lookupTablesByFormulaId = HashMultimap.create();
+        Map<Integer, Map<String, Double>> entriesByTableId;
+
+        public LookupTableRowHandler(Map<Integer, Map<String, Double>> entriesByTableId) {
+            this.entriesByTableId = entriesByTableId;
+        }
+
+        @Override
+        public void processRow(YukonResultSet rs) throws SQLException {
+            FormulaInput<Object> formulaInput = mapFormulaInput(rs);
+            PropertyEditor typeConverter = formulaInput.getInputType().makeTypeConverter();
+
+            Integer tableId = rs.getInt("EstimatedLoadLookupTableId");
+            ImmutableMap.Builder<Object, Double> entries = ImmutableMap.builder();
+            for (Map.Entry<String, Double> entry : entriesByTableId.get(tableId).entrySet()) {
+                typeConverter.setAsText(entry.getKey());
+                entries.put(typeConverter.getValue(), entry.getValue());
+            }
+
+            Integer formulaId = rs.getInt("EstimatedLoadFormulaId");
+            FormulaLookupTable<Object> table = new FormulaLookupTable<Object>(
+                    tableId,
+                    formulaId,
+                    rs.getString("Name"),
+                    formulaInput,
+                    entries.build());
+
+            lookupTablesByFormulaId.put(formulaId, table);
+        }
+    }
+
+    private static class LookupTableEntryRowHandler implements YukonRowCallbackHandler {
+        Map<Integer, Map<String, Double>> entriesByTableId = new HashMap<>();
         
         @Override
         public void processRow(YukonResultSet rs) throws SQLException {
-            entries.put(rs.getDouble("Key"), rs.getDouble("Value"));
+            Integer lookupTableId = rs.getInt("EstimatedLoadLookupTableId");
+            Map<String, Double> entries = entriesByTableId.get(lookupTableId);
+            if (entries == null) {
+                entries = new HashMap<>();
+                entriesByTableId.put(lookupTableId, entries);
+            }
+            entries.put(rs.getString("EntryKey"), rs.getDouble("EntryValue"));
         }
+    }
+
+    private static FormulaInput<Object> mapFormulaInput(YukonResultSet rs) throws SQLException {
+        InputType inputType = rs.getEnum("InputType", FormulaInput.InputType.class);
+        PropertyEditor typeConverter = inputType.makeTypeConverter();
+        typeConverter.setAsText(rs.getString("InputMin"));
+        Object inputMin = typeConverter.getValue();
+        typeConverter.setAsText(rs.getString("InputMax"));
+        Object inputMax = typeConverter.getValue();
+        
+        return new FormulaInput<Object>(inputType, inputMin, inputMax, rs.getNullableInt("InputPointId"));
     }
 
     // Setting up SimpleTableAccessTemplate objects.
@@ -335,17 +398,17 @@ public class FormulaDaoImpl implements FormulaDao {
         formulaInsertTemplate = new SimpleTableAccessTemplate<Formula>(yukonJdbcTemplate, nextValueHelper)
                 .setTableName(formulaTableName)
                 .setFieldMapper(baseFormulaFieldMapper)
-                .setPrimaryKeyField("FormulaId")
+                .setPrimaryKeyField("EstimatedLoadFormulaId")
                 .setPrimaryKeyValidOver(0);
         functionInsertTemplate = new SimpleTableAccessTemplate<FormulaFunction>(yukonJdbcTemplate, nextValueHelper)
                 .setTableName(functionTableName)
                 .setFieldMapper(functionFieldMapper)
-                .setPrimaryKeyField("FormulaFunctionId")
+                .setPrimaryKeyField("EstimatedLoadFunctionId")
                 .setPrimaryKeyValidOver(0);
-        lookupTableInsertTemplate = new SimpleTableAccessTemplate<FormulaLookupTable>(yukonJdbcTemplate, nextValueHelper)
+        lookupTableInsertTemplate = new SimpleTableAccessTemplate<FormulaLookupTable<Object>>(yukonJdbcTemplate, nextValueHelper)
                 .setTableName(lookupTableName)
                 .setFieldMapper(lookupTableFieldMapper)
-                .setPrimaryKeyField("FormulaLookupTableId")
+                .setPrimaryKeyField("EstimatedLoadLookupTableId")
                 .setPrimaryKeyValidOver(0);
     }
 }

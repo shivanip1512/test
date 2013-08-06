@@ -6,11 +6,11 @@ public final class FormulaFunction {
     private final Integer functionId;
     private final int formulaId;
     private final String name;
-    private final FormulaInput input;
+    private final FormulaInput<Object> input;
     private final double quadratic;
     private final double linear;
 
-    public FormulaFunction(Integer functionId, int formulaId, String name, FormulaInput input,
+    public FormulaFunction(Integer functionId, int formulaId, String name, FormulaInput<Object> input,
             double quadratic, double linear) {
         this.functionId = functionId;
         this.formulaId = formulaId;
@@ -32,7 +32,7 @@ public final class FormulaFunction {
         return name;
     }
 
-    public FormulaInput getInput() {
+    public FormulaInput<Object> getInput() {
         return input;
     }
 

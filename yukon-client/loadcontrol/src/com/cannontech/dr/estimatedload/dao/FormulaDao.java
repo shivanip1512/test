@@ -14,6 +14,4 @@ public interface FormulaDao {
 
     public void deleteFormulaById(int formulaId);
 
-    public void deleteFormula(Formula formula);
-
 }
