@@ -20,6 +20,69 @@ ADD Description VARCHAR(1024);
 GO
 /* End YUK-12415 */
 
+/* Start YUK-12437 */
+CREATE TABLE EstimatedLoadFormula (
+    EstimatedLoadFormulaId NUMERIC NOT NULL,
+    Name VARCHAR(100) NOT NULL,
+    FormulaType VARCHAR(32) NOT NULL,
+    CalculationType VARCHAR(32) NOT NULL,
+    FunctionIntercept NUMERIC NOT NULL,
+    PRIMARY KEY (EstimatedLoadFormulaId)
+);
+
+CREATE TABLE EstimatedLoadFunction (
+    EstimatedLoadFunctionId NUMERIC NOT NULL,
+    EstimatedLoadFormulaId NUMERIC NOT NULL,
+    Name VARCHAR(100) NOT NULL,
+    InputType VARCHAR(32) NOT NULL,
+    InputMin VARCHAR(100) NOT NULL,
+    InputMax VARCHAR(100) NOT NULL,
+    InputPointId NUMERIC NOT NULL,
+    Quadratic NUMERIC NOT NULL,
+    Linear NUMERIC NOT NULL,
+    PRIMARY KEY (EstimatedLoadFunctionId)
+);
+ALTER TABLE EstimatedLoadFunction
+   ADD CONSTRAINT FK_EstLoadFunction_LoadFormula FOREIGN KEY (EstimatedLoadFormulaId)
+      REFERENCES EstimatedLoadFormula (EstimatedLoadFormulaId)
+         ON DELETE CASCADE;
+
+CREATE TABLE EstimatedLoadLookupTable (
+    EstimatedLoadLookupTableId NUMERIC NOT NULL,
+    EstimatedLoadFormulaId NUMERIC NOT NULL,
+    Name VARCHAR(100) NOT NULL,
+    InputType VARCHAR(32) NOT NULL,
+    InputMin VARCHAR(100) NOT NULL,
+    InputMax VARCHAR(100) NOT NULL,
+    InputPointId NUMERIC NOT NULL,
+    PRIMARY KEY (EstimatedLoadLookupTableId)
+);
+ALTER TABLE EstimatedLoadLookupTable
+   ADD CONSTRAINT FK_EstLoadLookup_LoadFormula FOREIGN KEY (EstimatedLoadFormulaId)
+      REFERENCES EstimatedLoadFormula (EstimatedLoadFormulaId)
+         ON DELETE CASCADE;
+
+CREATE TABLE EstimatedLoadTableEntry (
+    EstimatedLoadTableEntryId NUMERIC NOT NULL,
+    EstimatedLoadLookupTableId NUMERIC NOT NULL,
+    EntryKey VARCHAR(100) NOT NULL,
+    EntryValue NUMERIC NOT NULL,
+    PRIMARY KEY (EstimatedLoadTableEntryId)
+);
+ALTER TABLE EstimatedLoadTableEntry
+   ADD CONSTRAINT FK_TableEntry_LookupTable FOREIGN KEY (EstimatedLoadLookupTableId)
+      REFERENCES EstimatedLoadLookupTable (EstimatedLoadLookupTableId)
+         ON DELETE CASCADE;
+
+CREATE TABLE EstimatedLoadFormulaAssignment (
+    FormulaAssignmentId NUMERIC NOT NULL,
+    FormulaId NUMERIC NOT NULL,
+    GearId NUMERIC,
+    ApplianceCategoryId NUMERIC,
+    PRIMARY KEY (FormulaAssignmentId)
+);
+/* End YUK-12437 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
