@@ -411,7 +411,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
                                             DbChangeType.DELETE);
         }
         
-        LiteYukonGroup liteGroup = yukonGroupDao.getLiteYukonGroupByName(energyCompany.getName() + " "+ StarsAdminUtil.ROLE_GROUP_EXTENSION);
+        LiteYukonGroup liteGroup = yukonGroupDao.findLiteYukonGroupByName(energyCompany.getName() + " "+ StarsAdminUtil.ROLE_GROUP_EXTENSION);
         // Delete role group
         if (liteGroup != null) {
             YukonGroup dftGroup = new YukonGroup();
