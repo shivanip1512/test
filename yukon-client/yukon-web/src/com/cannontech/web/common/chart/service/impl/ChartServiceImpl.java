@@ -200,8 +200,6 @@ public class ChartServiceImpl implements ChartService {
         // Don't forget the last one
         maxChartValues.add(currentMax);
 
-        System.out.println(maxChartValues.size());
-        
         return maxChartValues;
     }
 }
