@@ -6,7 +6,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
@@ -38,10 +37,10 @@ import com.cannontech.web.common.chart.service.ChartService;
  */
 public class ChartServiceImpl implements ChartService {
 
-	@Autowired private RawPointHistoryDao rphDao = null;
-	@Autowired private PointDao pointDao = null;
-	@Autowired private UnitMeasureDao unitMeasureDao = null;
-	@Autowired private DateFormattingService dateFormattingService = null;
+	@Autowired private RawPointHistoryDao rphDao;
+	@Autowired private PointDao pointDao;
+	@Autowired private UnitMeasureDao unitMeasureDao;
+	@Autowired private DateFormattingService dateFormattingService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     
     private SimpleDateFormat timeFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss.SSS a");
@@ -62,14 +61,14 @@ public class ChartServiceImpl implements ChartService {
             // Get the point data for the time period
             List<PointValueHolder> pointData = rphDao.getPointData(pointId, startDate, stopDate);
             LitePoint lPoint = pointDao.getLitePoint(pointId);
-            
+
             // Set up the formatting based on the point unit
             LitePointUnit pointUnit = pointDao.getPointUnit(pointId);
             NumberFormat pointValueFormat = new DecimalFormat();
             pointValueFormat.setMaximumFractionDigits(pointUnit.getDecimalPlaces());
             pointValueFormat.setMinimumFractionDigits(pointUnit.getDecimalPlaces());
             pointValueFormat.setGroupingUsed(false);
-            
+
             LiteUnitMeasure unitMeasure = unitMeasureDao.getLiteUnitMeasure(pointUnit.getUomID());
             String chartIntervalString = messageSourceAccessor.getMessage(interval.getIntervalString());
             String units = messageSourceAccessor.getMessage(converterType.getFormattedUnits(unitMeasure, chartIntervalString));
@@ -78,28 +77,27 @@ public class ChartServiceImpl implements ChartService {
             List<ChartValue<Double>> chartData = new ArrayList<>();
             for (PointValueHolder data : pointData) {
 
-                ChartValue<Double> chartValue = new ChartValue<Double>();
-                
+                ChartValue<Double> chartValue = new ChartValue<>();
+
                 /*
                  * jquery.flot.js v 0.7 does not support time zones and always displays UTC time
                  * Here we fake it out by adding the server timezone offset to the timestamp
                  * so the times line up between the plot and the data.
                  */
-
                 long timeStamp = data.getPointDataTimeStamp().getTime();
-                long fakeTimeStamp = timeStamp + TimeZone.getDefault().getOffset(timeStamp);
+                long adjustedTimeStamp = timeStamp + TimeZone.getDefault().getOffset(timeStamp);
                 
-                chartValue.setId(fakeTimeStamp);
-                chartValue.setTime(fakeTimeStamp);
+                chartValue.setId(adjustedTimeStamp);
+                chartValue.setTime(adjustedTimeStamp);
                 chartValue.setValue(data.getValue());
                 chartValue.setDescription("<div>" + units + "</div><div>" + timeFormat.format(data.getPointDataTimeStamp()) + "</div><div>" + lPoint.getPointName() + "</div>");
                 chartValue.setFormattedValue(pointValueFormat.format(data.getValue()));
 
                 chartData.add(chartValue);
             }
-            
+
             // Assign each chart value to an x-axis spot
-            List<ChartValue<Double>> axisChartData = this.setXAxisIds(interval, startDate, chartData);
+            List<ChartValue<Double>> axisChartData = getXAxisMaxValues(interval, startDate, chartData);
 
             // Convert data to specified graph type
             ChartDataConverter converter = converterType.getDataConverter();
@@ -134,11 +132,11 @@ public class ChartServiceImpl implements ChartService {
         Calendar currCal = Calendar.getInstance();
         currCal.setTime(currDate);
         
-        List<ChartValue<Date>> xAxisData = new ArrayList<ChartValue<Date>>();
+        List<ChartValue<Date>> xAxisData = new ArrayList<>();
         DateFormatEnum format = interval.getFormat();
         while (stopDate.compareTo(currCal.getTime()) >= 0) {
 
-            ChartValue<Date> chartValue = new ChartValue<Date>();
+            ChartValue<Date> chartValue = new ChartValue<>();
             chartValue.setId(currCal.getTimeInMillis());
             chartValue.setValue(currCal.getTime());
             chartValue.setFormattedValue(dateFormattingService.format(currCal.getTime(), format, userContext));
@@ -174,75 +172,36 @@ public class ChartServiceImpl implements ChartService {
      * @param chartData - List of chart data values
      * @return The original chart data list with x-axis ids set
      */
-    private List<ChartValue<Double>> setXAxisIds(ChartInterval interval, Date startDate,
+    private List<ChartValue<Double>> getXAxisMaxValues(ChartInterval interval, Date startDate, 
             List<ChartValue<Double>> chartData) {
 
-        List<ChartValue<Double>> valuesForAxis = new ArrayList<ChartValue<Double>>();
+        List<ChartValue<Double>> maxChartValues = new ArrayList<>();
+        if (chartData.isEmpty()) {
+            return maxChartValues;
+        }
 
-        // Round the start date down to the nearest interval
-        Date currDate = interval.roundDownToIntervalUnit(startDate);
+        long currentInterval = interval.roundDownToIntervalUnit(new Date(chartData.get(0).getId())).getTime();
+        ChartValue<Double> currentMax = chartData.get(0);
+
+        for (ChartValue<Double> thisValue : chartData) {
+            long thisInterval = interval.roundDownToIntervalUnit(new Date(thisValue.getId())).getTime();
+
+            if (thisInterval != currentInterval) {
+                // New interval, add last intervals max
+                maxChartValues.add(currentMax);
+                currentMax = thisValue;
+                currentInterval = thisInterval;
+            } else if (thisValue.getValue() > currentMax.getValue() ||
+                    (currentMax.getValue() == thisValue.getValue()
+                    &&  thisValue.getTime() > currentMax.getTime())) {
+                currentMax = thisValue;
+            }
+        }
+        // Don't forget the last one
+        maxChartValues.add(currentMax);
+
+        System.out.println(maxChartValues.size());
         
-        // create calendar to make increment more efficient
-        Calendar nextCal = Calendar.getInstance();
-        nextCal.setTime(currDate);
-        interval.increment(nextCal);
-        //Date nextDate = interval.increment(currDate);
-
-        // Iterate through each of the chart values
-        for (int position = 0; position < chartData.size();) {
-
-            ChartValue<Double> currValue = chartData.get(position);
-
-            // Move forward to correct time interval for the current value
-            while (!(currValue.getId() >= currDate.getTime() && currValue.getId() < nextCal.getTimeInMillis())) {
-                currDate = nextCal.getTime();
-                interval.increment(nextCal);
-            }
-
-            // Find all of the values in the current time interval
-            Set<ChartValue<Double>> intervalValues = new HashSet<ChartValue<Double>>();
-            while (currValue.getId() < nextCal.getTimeInMillis()) {
-                intervalValues.add(currValue);
-
-                if (++position < chartData.size()) {
-                    currValue = chartData.get(position);
-                } else {
-                    break;
-                }
-            }
-
-            // Get the max value in the current time interval, set it's axis id
-            // and add it to the chart values
-            ChartValue<Double> maxValue = getMaxValue(intervalValues);
-            maxValue.setId(currDate.getTime());
-            valuesForAxis.add(maxValue);
-
-        }
-
-        return valuesForAxis;
-
-    }
-
-    /**
-     * Helper method to get the chart value with the maximum value from a list
-     * @param intervalValues - List to get max from
-     * @return - The chart value with the max value
-     */
-    private ChartValue<Double> getMaxValue(Set<ChartValue<Double>> intervalValues) {
-
-        ChartValue<Double> maxValue = null;
-
-        for (ChartValue<Double> currValue : intervalValues) {
-        	
-        	// record maxValue when currentValue is greater than previous maxValue.
-        	// if currentValue and maxValue are the same, record maxValue for the one with greater time
-            if (maxValue == null || 
-            		(currValue.getValue() > maxValue.getValue()) ||
-            		(currValue.getValue() == maxValue.getValue() && currValue.getTime() > maxValue.getTime())) {
-                maxValue = currValue;
-            }
-        }
-
-        return maxValue;
+        return maxChartValues;
     }
 }

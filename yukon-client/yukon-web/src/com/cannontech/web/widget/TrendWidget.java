@@ -142,20 +142,25 @@ public class TrendWidget extends WidgetControllerBase {
             cachingWidgetParameterGrabber.removeFromCache("startDateParam");
             cachingWidgetParameterGrabber.removeFromCache("stopDateParam");
         }
-        
-        /*
-         * jquery.flot.js v 0.7 does not support time zones and always displays UTC time
-         * Here we fake it out by adding the server timezone offset to the timestamp
-         * so the times line up between the plot and the data.
-         */
 
-        long startTimeStamp = startDate.getTime();
-        long fakeStartTimeStamp = startTimeStamp + TimeZone.getDefault().getOffset(startTimeStamp);
-        startDate = new Date(fakeStartTimeStamp); //Mon Jul 22 04:18:00 CDT 2013
-        
-        long stopTimeStamp = stopDate.getTime();
-        long fakeStopTimeStamp = stopTimeStamp + TimeZone.getDefault().getOffset(stopTimeStamp);
-        stopDate = new Date(fakeStopTimeStamp); //Mon Jul 22 04:18:00 CDT 2013
+        // We only want to do this for ChartPeriod.DAY
+        // This causes the custom time pickers to show the wrong values if the offset
+        // pushes the value into a different day. Also only day has resolution down to the hour:minute, so it seems to
+        // only make sense for ChartPeriod.DAY
+        if (chartPeriod == ChartPeriod.DAY) {
+            /*
+             * jquery.flot.js v 0.7 does not support time zones and always displays UTC time
+             * Here we fake it out by adding the server timezone offset to the timestamp
+             * so the times line up between the plot and the data.
+             */
+            long startTimeStamp = startDate.getTime();
+            long fakeStartTimeStamp = startTimeStamp + TimeZone.getDefault().getOffset(startTimeStamp);
+            startDate = new Date(fakeStartTimeStamp); //Mon Jul 22 04:18:00 CDT 2013
+
+            long stopTimeStamp = stopDate.getTime();
+            long fakeStopTimeStamp = stopTimeStamp + TimeZone.getDefault().getOffset(stopTimeStamp);
+            stopDate = new Date(fakeStopTimeStamp); //Mon Jul 22 04:18:00 CDT 2013
+        }
 
         ChartInterval chartInterval = chartPeriod.getChartUnit(startDate, stopDate);
 
