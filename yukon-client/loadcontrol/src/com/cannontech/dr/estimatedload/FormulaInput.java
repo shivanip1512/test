@@ -1,31 +1,77 @@
 package com.cannontech.dr.estimatedload;
 
-import com.cannontech.dr.estimatedload.enumeration.FormulaInputType;
+import java.beans.PropertyEditor;
+import java.beans.PropertyEditorSupport;
 
-public final class FormulaInput {
+import org.joda.time.LocalTime;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
+import org.springframework.beans.propertyeditors.CustomNumberEditor;
 
-    private final FormulaInputType inputType;
-    private final double min;
-    private final double max;
+import com.cannontech.common.i18n.DisplayableEnum;
+
+public final class FormulaInput<T> {
+
+    public enum InputType implements DisplayableEnum {
+        TEMP,
+        HUMIDITY,
+        TIME {
+            // Use a ReadableInstant property editor when converting Time values
+            @Override
+            public PropertyEditorSupport makeTypeConverter() {
+                return new LocalTimePropertyEditor();
+            };
+        },
+        CONTROL_PERCENT,
+        RAMP_RATE,
+        POINT;
+
+        @Override
+        public String getFormatKey() {
+            return "yukon.dr.estimatedLoad.inputType." + name();
+        }
+        
+        public PropertyEditor makeTypeConverter() {
+            return new CustomNumberEditor(Double.class, false);
+        }
+        
+        private static class LocalTimePropertyEditor extends PropertyEditorSupport {
+            private final static DateTimeFormatter dtFormatter = ISODateTimeFormat.hourMinute();
+
+            @Override
+            public String getAsText() {
+                return ((LocalTime) getValue()).toString(dtFormatter);
+            }
+            @Override
+            public void setAsText(String text) {
+                LocalTime t = LocalTime.parse(text, dtFormatter);
+                setValue(t);
+            }
+        };
+    }
+
+    private final InputType inputType;
+    private final T min;
+    private final T max;
     private final Integer pointId;
     
 
-    public FormulaInput(FormulaInputType inputType, double min, double max, Integer pointId) {
+    public FormulaInput(InputType inputType, T min, T max, Integer pointId) {
         this.inputType = inputType;
         this.min = min;
         this.max = max;
         this.pointId = pointId;
     }
 
-    public FormulaInputType getInputType() {
+    public InputType getInputType() {
         return inputType;
     }
 
-    public double getMin() {
+    public T getMin() {
         return min;
     }
 
-    public double getMax() {
+    public T getMax() {
         return max;
     }
 
