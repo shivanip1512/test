@@ -183,7 +183,7 @@ public class FormulaDaoImpl implements FormulaDao {
     private void deleteTableEntries(int lookupTableId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM").append(tableEntryTableName);
-        sql.append("WHERE FormulaLookupTableId").eq(lookupTableId);
+        sql.append("WHERE EstimatedLoadLookupTableId").eq(lookupTableId);
 
         yukonJdbcTemplate.update(sql);
     }
@@ -208,7 +208,7 @@ public class FormulaDaoImpl implements FormulaDao {
 
     private Map<Integer, Map<String, Double>> getTableEntries(SqlFragmentSource whereClause) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT FormulaLookupTableId, EntryKey, EntryValue");
+        sql.append("SELECT EstimatedLoadLookupTableId, EntryKey, EntryValue");
         sql.append("FROM").append(tableEntryTableName);
         if (whereClause != null) {
             sql.append(whereClause);
