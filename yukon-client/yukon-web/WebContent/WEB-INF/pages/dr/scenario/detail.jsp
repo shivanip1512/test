@@ -1,6 +1,6 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 
@@ -26,8 +26,9 @@
         <div class="fr column two nogutter">
 
             <%-- Display the Asset Availability Info --%>
-            <tags:sectionContainer2 nameKey="heading.assetAvailability">
-                <dr:assetAvailabilityStatus assetId="${scenarioId}"/>
+            <c:set var="moduleName" value="scenario"/>
+            <tags:sectionContainer2 nameKey="assetAvailability">
+                <dr:assetAvailabilityStatus assetId="${scenarioId}" moduleName="${moduleName}"/>
             </tags:sectionContainer2>
             
                 <%--
@@ -43,18 +44,17 @@
                         <tags:dynamicChoose updaterString="DR_SCENARIO/${scenarioId}/SHOW_ACTION" suffix="${scenarioId}">
                             
                             <tags:dynamicChooseOption optionId="hasNoPrograms">
-                                <cti:msg var="scenarioHasNoAssignedPrograms"
-                                       key="yukon.web.modules.dr.scenarioDetail.noAssignedPrograms"/>
+                                <cti:msg2 var="scenarioHasNoAssignedPrograms" key=".noAssignedPrograms"/>
                                 <li>
                                     <a class="clearfix" title="${scenarioHasNoAssignedPrograms}">
                                         <cti:icon icon="icon-control-start-blue" classes="disabled"/>
-                                        <span class="fl dib disabled"><cti:msg2 key="yukon.web.modules.dr.scenarioDetail.actions.start"/></span>
+                                        <span class="fl dib disabled"><cti:msg2 key=".actions.start"/></span>
                                     </a>
                                 </li>
                                 <li>
                                     <a class="clearfix" title="${scenarioHasNoAssignedPrograms}">
                                         <cti:icon icon="icon-control-stop-blue" classes="disabled"/>
-                                        <span class="fl dib disabled"><cti:msg2 key="yukon.web.modules.dr.scenarioDetail.actions.stop"/></span>
+                                        <span class="fl dib disabled"><cti:msg2 key=".actions.stop"/></span>
                                     </a>
                                 </li>
                             </tags:dynamicChooseOption>
@@ -66,7 +66,7 @@
                                 <li>
                                     <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.startMultiplePrograms.title" 
                                         dialogId="drDialog" actionUrl="${startScenarioUrl}" icon="icon-control-play-blue"
-                                        labelKey="yukon.web.modules.dr.scenarioDetail.actions.start"/>
+                                        labelKey=".actions.start"/>
                                 </li>
                                 <cti:url var="stopScenarioUrl" value="/dr/program/stop/multipleDetails">
                                     <cti:param name="scenarioId" value="${scenarioId}"/>
@@ -74,7 +74,7 @@
                                 <li>
                                     <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopMultiplePrograms.title" 
                                         dialogId="drDialog" actionUrl="${stopScenarioUrl}" icon="icon-control-stop-blue"
-                                        labelKey="yukon.web.modules.dr.scenarioDetail.actions.stop"/>
+                                        labelKey=".actions.stop"/>
                                 </li>
                                 <li class="divider"></li>
                                 <cti:url var="changeScenarioGearsUrl" value="/dr/program/changeGearMultiplePopup">
@@ -92,7 +92,7 @@
                                 <li>
                                     <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.sendEnableProgramsConfirm.title" 
                                         dialogId="drDialog" actionUrl="${sendEnableProgramsUrl}" icon="icon-accept"
-                                        labelKey="yukon.web.modules.dr.scenarioDetail.actions.enablePrograms"/>
+                                        labelKey=".actions.enablePrograms"/>
                                 </li>
                                 <cti:url var="sendDisableProgramsUrl" value="/dr/program/sendEnableDisableProgramsConfirm">
                                     <cti:param name="scenarioId" value="${scenarioId}"/>
@@ -101,19 +101,19 @@
                                 <li>
                                     <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.sendDisableProgramsConfirm.title" 
                                         dialogId="drDialog" actionUrl="${sendDisableProgramsUrl}" icon="icon-delete"
-                                        labelKey="yukon.web.modules.dr.scenarioDetail.actions.disablePrograms"/>
+                                        labelKey=".actions.disablePrograms"/>
                                 </li>
                             </tags:dynamicChooseOption>
                         </tags:dynamicChoose>
                     </cti:checkPaoAuthorization>
 
                     <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${scenario}" invert="true">
-                        <cti:msg var="noScenarioControl" key="yukon.web.modules.dr.scenarioDetail.noControl"/>
+                        <cti:msg2 var="noScenarioControl" key=".noControl"/>
                         <li>
                             <a class="clearfix" title="${noScenarioControl}"> 
                                 <cti:icon icon="icon-control-play-blue" classes="disabled" /> 
                                 <span class="fl dib disabled">
-                                    <cti:msg2 key="yukon.web.modules.dr.scenarioDetail.actions.start" />
+                                    <cti:msg2 key=".actions.start" />
                                 </span>
                             </a>
                         </li>
@@ -121,7 +121,7 @@
                             <a class="clearfix" title="${noScenarioControl}"> 
                                 <cti:icon icon="icon-control-stop-blue" classes="disabled" /> 
                                 <span class="fl dib disabled">
-                                    <cti:msg2 key="yukon.web.modules.dr.scenarioDetail.actions.stop" />
+                                    <cti:msg2 key=".actions.stop" />
                                 </span>
                             </a>
                         </li>

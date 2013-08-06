@@ -32,6 +32,7 @@ import com.cannontech.common.bulk.filter.service.UiFilterList;
 import com.cannontech.common.events.loggers.DemandResponseEventLogService;
 import com.cannontech.common.favorites.dao.FavoritesDao;
 import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.IntegerRange;
 import com.cannontech.common.util.MutableRange;
@@ -44,6 +45,8 @@ import com.cannontech.core.service.DurationFormattingService;
 import com.cannontech.core.service.durationFormatter.DurationFormat;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.DemandResponseBackingField;
+import com.cannontech.dr.assetavailability.SimpleAssetAvailabilitySummary;
+import com.cannontech.dr.assetavailability.service.AssetAvailabilityService;
 import com.cannontech.dr.controlarea.filter.PriorityFilter;
 import com.cannontech.dr.controlarea.filter.StateFilter;
 import com.cannontech.dr.controlarea.model.ControlAreaNameField;
@@ -58,10 +61,13 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMControlAreaTrigger;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.common.chart.model.FlotPieDatas;
+import com.cannontech.web.common.chart.service.FlotChartService;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.ListBackingBean;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Ordering;
 
 @Controller
@@ -76,6 +82,9 @@ public class ControlAreaController {
     @Autowired private TriggerFieldService triggerFieldService;
     @Autowired private FavoritesDao favoritesDao;
     @Autowired private ControlAreaNameField controlAreaNameField;
+    @Autowired private FlotChartService flotChartService;
+    @Autowired private AssetAvailabilityService assetAvailabilityService;
+    
 
     public static class ControlAreaListBackingBean extends ListBackingBean {
         private String state;
@@ -211,11 +220,11 @@ public class ControlAreaController {
             YukonUserContext userContext,
             @ModelAttribute("backingBean") ProgramControllerHelper.ProgramListBackingBean backingBean,
             BindingResult bindingResult, FlashScope flashScope) {
+        
         DisplayablePao controlArea = controlAreaService.getControlArea(controlAreaId);
         paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(),
                                                      controlArea,
                                                      Permission.LM_VISIBLE);
-
         favoritesDao.detailPageViewed(controlAreaId);
         model.addAttribute("controlArea", controlArea);
         boolean isFavorite =
@@ -227,10 +236,32 @@ public class ControlAreaController {
                                                bindingResult, detailFilter);
 
         addFilterErrorsToFlashScopeIfNecessary(model, bindingResult, flashScope);
+            
+        SimpleAssetAvailabilitySummary aaSummary = 
+                assetAvailabilityService.getAssetAvailabilityFromDrGroup(controlArea.getPaoIdentifier());
+        model.addAttribute("assetAvailabilitySummary", aaSummary);
 
         return "dr/controlArea/detail.jsp";
     }
 
+    
+    @RequestMapping("/controlArea/chart")
+    public @ResponseBody JSONObject chart(String assetId) {
+
+        PaoIdentifier paoId = controlAreaService.getControlArea(Integer.parseInt(assetId)).getPaoIdentifier();
+        SimpleAssetAvailabilitySummary aaSummary = 
+                assetAvailabilityService.getAssetAvailabilityFromDrGroup(paoId);
+        Map<String, FlotPieDatas> labelDataColorMap = Maps.newHashMapWithExpectedSize(4);
+        labelDataColorMap.put("Running", new FlotPieDatas(aaSummary.getCommunicatingRunningSize(), "#093")); // .success
+        labelDataColorMap.put("Not Running", new FlotPieDatas(aaSummary.getCommunicatingNotRunningSize(), "#ffac00")); // .warning
+        labelDataColorMap.put("Opted Out", new FlotPieDatas(aaSummary.getOptedOutSize(), "#888")); // .disabled
+        labelDataColorMap.put("Unavailable", new FlotPieDatas(aaSummary.getUnavailableSize(), "#d14836")); // .error
+
+        JSONObject pieJSONData = flotChartService.getPieGraphDataWithColor(labelDataColorMap);
+        return pieJSONData;
+    }
+    
+    
     @RequestMapping("/controlArea/sendEnableConfirm")
     public String sendEnableConfirm(ModelMap modelMap, int controlAreaId, boolean isEnabled,
             YukonUserContext userContext) {

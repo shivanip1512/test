@@ -6,6 +6,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.json.JSONObject;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -16,28 +18,35 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
 import com.cannontech.common.favorites.dao.FavoritesDao;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.DisplayablePaoComparator;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.dr.assetavailability.SimpleAssetAvailabilitySummary;
+import com.cannontech.dr.assetavailability.service.AssetAvailabilityService;
 import com.cannontech.dr.filter.AuthorizedFilter;
 import com.cannontech.dr.filter.NameFilter;
 import com.cannontech.dr.program.filter.ForScenarioFilter;
 import com.cannontech.dr.scenario.dao.ScenarioDao;
 import com.cannontech.dr.scenario.service.ScenarioService;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.common.chart.model.FlotPieDatas;
+import com.cannontech.web.common.chart.service.FlotChartService;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.dr.ProgramControllerHelper.ProgramListBackingBean;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.ListBackingBean;
+import com.google.common.collect.Maps;
 
 @Controller
 @CheckRoleProperty(value={YukonRoleProperty.SHOW_SCENARIOS,YukonRoleProperty.DEMAND_RESPONSE}, requireAll=true)
@@ -48,6 +57,8 @@ public class ScenarioController {
     @Autowired private PaoAuthorizationService paoAuthorizationService;
     @Autowired private ProgramControllerHelper programControllerHelper;
     @Autowired private FavoritesDao favoritesDao;
+    @Autowired private FlotChartService flotChartService;
+    @Autowired private AssetAvailabilityService assetAvailabilityService;
 
     @RequestMapping("/scenario/list")
     public String list(ModelMap model,
@@ -95,11 +106,11 @@ public class ScenarioController {
             @ModelAttribute("backingBean") ProgramListBackingBean backingBean,
             BindingResult bindingResult, YukonUserContext userContext,
             FlashScope flashScope) {
-    	DisplayablePao scenario = scenarioDao.getScenario(scenarioId);
+        
+        DisplayablePao scenario = scenarioDao.getScenario(scenarioId);
         paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
                                                      scenario, 
                                                      Permission.LM_VISIBLE);
-
         favoritesDao.detailPageViewed(scenarioId);
         model.addAttribute("scenario", scenario);
         boolean isFavorite =
@@ -112,8 +123,31 @@ public class ScenarioController {
 
         addFilterErrorsToFlashScopeIfNecessary(model, bindingResult, flashScope);
 
+        SimpleAssetAvailabilitySummary aaSummary = 
+                assetAvailabilityService.getAssetAvailabilityFromDrGroup(scenario.getPaoIdentifier());
+        model.addAttribute("assetAvailabilitySummary", aaSummary);
+        
         return "dr/scenario/detail.jsp";
     }
+    
+
+    @RequestMapping("/scenario/chart")
+    public @ResponseBody JSONObject chart(String assetId) {
+
+        PaoIdentifier paoId = scenarioService.getScenario(Integer.parseInt(assetId)).getPaoIdentifier();
+        SimpleAssetAvailabilitySummary aaSummary = 
+                assetAvailabilityService.getAssetAvailabilityFromDrGroup(paoId);
+        Map<String, FlotPieDatas> labelDataColorMap = Maps.newHashMapWithExpectedSize(4);
+        labelDataColorMap.put("Running", new FlotPieDatas(aaSummary.getCommunicatingRunningSize(), "#093")); // .success
+        labelDataColorMap.put("Not Running", new FlotPieDatas(aaSummary.getCommunicatingNotRunningSize(), "#ffac00")); // .warning
+        labelDataColorMap.put("Opted Out", new FlotPieDatas(aaSummary.getOptedOutSize(), "#888")); // .disabled
+        labelDataColorMap.put("Unavailable", new FlotPieDatas(aaSummary.getUnavailableSize(), "#d14836")); // .error
+
+        JSONObject pieJSONData = flotChartService.getPieGraphDataWithColor(labelDataColorMap);
+        return pieJSONData;
+    }
+    
+    
     
     private void addFilterErrorsToFlashScopeIfNecessary(ModelMap model,
             BindingResult bindingResult, FlashScope flashScope) {

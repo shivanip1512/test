@@ -1,10 +1,9 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="dr" page="loadGroupDetail">
 
@@ -49,14 +48,6 @@
                                 <cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/REDUCTION"/>
                             </tags:nameValue>
                         </cti:checkRolesAndProperties>
-                        <%--
-                        <cti:checkRolesAndProperties value="LOAD_GROUP_LOAD_CAPACITY">
-                            <cti:msg var="fieldName" key="yukon.web.modules.dr.loadGroupDetail.info.loadCapacity"/>
-                            <tags:nameValue name="${fieldName}">
-                                <cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/LOAD_CAPACITY"/>
-                            </tags:nameValue>
-                        </cti:checkRolesAndProperties>
-                        --%>
                     </tags:nameValueContainer>
                 </tags:sectionContainer2>
             </div>
@@ -64,8 +55,9 @@
             <div class="column two nogutter">
 
                 <%-- Display the Asset Availability Info --%>
-                <tags:sectionContainer2 nameKey="heading.assetAvailability">
-                    <dr:assetAvailabilityStatus assetId="${loadGroupId}"/>
+                <c:set var="moduleName" value="loadGroup"/>
+                <tags:sectionContainer2 nameKey="assetAvailability">
+                    <dr:assetAvailabilityStatus assetId="${loadGroupId}" moduleName="${moduleName}"/>
                 </tags:sectionContainer2>
 
                 <%--
@@ -87,19 +79,19 @@
                                 <li>
                                     <a class="clearfix" title="${programUnknown}">
                                         <cti:icon icon="icon-control-play-blue" classes="disabled"/>
-                                        <span class="fl dib disabled"><cti:msg2 key="yukon.web.modules.dr.loadGroupDetail.actions.sendShed"/></span>
+                                        <span class="fl dib disabled"><cti:msg2 key=".actions.sendShed"/></span>
                                     </a>
                                 </li>
                                 <li>
                                     <a class="clearfix" title="${programUnknown}">
                                         <cti:icon icon="icon-control-stop-blue" classes="disabled"/>
-                                        <span class="fl dib disabled"><cti:msg2 key="yukon.web.modules.dr.loadGroupDetail.actions.sendRestore"/></span>
+                                        <span class="fl dib disabled"><cti:msg2 key=".actions.sendRestore"/></span>
                                     </a>
                                 </li>
                                 <li>
                                     <a class="clearfix" title="${programUnknown}">
                                         <cti:icon icon="icon-delete" classes="disabled"/>
-                                        <span class="fl dib disabled"><cti:msg2 key="yukon.web.modules.dr.loadGroupDetail.actions.disable"/></span>
+                                        <span class="fl dib disabled"><cti:msg2 key=".actions.disable"/></span>
                                     </a>
                                 </li>
                             </tags:dynamicChooseOption>
@@ -154,19 +146,19 @@
                         <li>
                             <a class="clearfix" title="${noLoadGroupControl}">
                                 <cti:icon icon="icon-control-play-blue" classes="disabled"/>
-                                <span class="fl dib disabled"><cti:msg2 key="yukon.web.modules.dr.loadGroupDetail.actions.sendShed"/></span>
+                                <span class="fl dib disabled"><cti:msg2 key=".actions.sendShed"/></span>
                             </a>
                         </li>
                         <li>
                             <a class="clearfix" title="${noLoadGroupControl}">
                                 <cti:icon icon="icon-control-stop-blue" classes="disabled"/>
-                                <span class="fl dib disabled"><cti:msg2 key="yukon.web.modules.dr.loadGroupDetail.actions.sendRestore"/></span>
+                                <span class="fl dib disabled"><cti:msg2 key=".actions.sendRestore"/></span>
                             </a>
                         </li>
                         <li>
                             <a class="clearfix" title="${noLoadGroupControl}">
                                 <cti:icon icon="icon-delete" classes="disabled"/>
-                                <span class="fl dib disabled"><cti:msg2 key="yukon.web.modules.dr.loadGroupDetail.actions.disable"/></span>
+                                <span class="fl dib disabled"><cti:msg2 key=".actions.disable"/></span>
                             </a>
                         </li>
                     </cti:checkPaoAuthorization>
@@ -196,12 +188,12 @@
                                     <c:url var="programURL" value="/dr/program/detail">
                                         <c:param name="programId" value="${parentProgram.paoIdentifier.paoId}"/>
                                     </c:url>
-                                    <a href="${programURL}"><spring:escapeBody htmlEscape="true">${parentProgram.name}</spring:escapeBody></a><br>
+                                    <a href="${programURL}">${fn:escapeXml(parentProgram.name)}</a><br>
                                 </cti:checkPaoAuthorization>
                                 <cti:checkPaoAuthorization permission="LM_VISIBLE" pao="${parentProgram}" invert="true">
                                     <cti:msg var="noParentPermission" key="yukon.web.modules.dr.loadGroupDetail.parents.noPermission"/>
                                     <span title="${noParentPermission}">
-                                        <spring:escapeBody htmlEscape="true">${parentProgram.name}</spring:escapeBody>
+                                        ${fn:escapeXml(parentProgram.name)}
                                     </span>
                                 </cti:checkPaoAuthorization>
                             </c:forEach>
@@ -219,12 +211,12 @@
                                     <c:url var="loadGroupURL" value="/dr/loadGroup/detail">
                                         <c:param name="loadGroupId" value="${parentLoadGroup.paoIdentifier.paoId}"/>
                                     </c:url>
-                                    <a href="${loadGroupURL}"><spring:escapeBody htmlEscape="true">${parentLoadGroup.name}</spring:escapeBody></a><br>
+                                    <a href="${loadGroupURL}">${fn:escapeXml(parentLoadGroup.name)}</a><br>
                                 </cti:checkPaoAuthorization>
                                 <cti:checkPaoAuthorization permission="LM_VISIBLE" pao="${parentLoadGroup}" invert="true">
                                     <cti:msg var="noParentPermission" key="yukon.web.modules.dr.loadGroupDetail.parents.noPermission"/>
                                     <span title="${noParentPermission}">
-                                        <spring:escapeBody htmlEscape="true">${parentLoadGroup.name}</spring:escapeBody>
+                                        ${fn:escapeXml(parentLoadGroup.name)}
                                     </span>
                                 </cti:checkPaoAuthorization>
                             </c:forEach>

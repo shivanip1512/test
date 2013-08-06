@@ -12,6 +12,7 @@ import com.cannontech.common.chart.model.ConverterType;
 import com.cannontech.common.chart.model.GraphType;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.capcontrol.ivvc.models.VfGraph;
+import com.cannontech.web.common.chart.model.FlotPieDatas;
 
 public interface FlotChartService {
     
@@ -134,4 +135,30 @@ public interface FlotChartService {
      * @return JSONObject
      */
     JSONObject getPieGraphData(Map<String, Integer> labelValueMap);
+
+    /**
+     * This method returns a JSONObject to be consumed by yukon.flot.js (our implementation of FlotCharts.js)
+     * The format of this object is as follows:
+     * 
+     * (if the format of this is changed, please update this comment)
+     * 
+     * {
+     *      "datas": [{
+     *          "label": "unique label",
+     *          "data": some numeric value,
+     *          "tooltip": "tooltip html",
+     *          "color": "hex or rgb color"
+     *      },
+     *      {
+     *          "label": "unique label",
+     *          "data": some numeric value,
+     *          "tooltip": "tooltip html",
+     *          "color": "hex or rgb color"
+     *      }],
+     *      "type": "pie"
+     *  }
+     * 
+     * @return JSONObject
+     */
+    JSONObject getPieGraphDataWithColor(Map<String, FlotPieDatas> labelValueMap);
 }

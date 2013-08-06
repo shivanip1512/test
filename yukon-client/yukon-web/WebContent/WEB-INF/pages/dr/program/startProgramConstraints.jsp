@@ -56,6 +56,9 @@
     <br>
 
     <div class="actionArea">
+        <c:if test="${empty violations.constraintContainers || overrideAllowed}">
+            <cti:button nameKey="ok" id="okButton" classes="primary action" type="submit"/>
+        </c:if>
         <cti:url var="backUrl" value="/dr/program/start/details">
             <cti:param name="fromBack" value="true"/>
         </cti:url>
@@ -64,9 +67,6 @@
         </c:if>
         <cti:button nameKey="back" onclick="submitFormViaAjax('drDialog', 'startProgramForm', '${backUrl}')"/>
         <cti:button nameKey="cancel" onclick="jQuery('#drDialog').dialog('close');"/>
-        <c:if test="${empty violations.constraintContainers || overrideAllowed}">
-            <cti:button nameKey="ok" id="okButton" classes="primary action" type="submit"/>
-        </c:if>
     </div>
 </form:form>
 </cti:msgScope>

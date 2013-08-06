@@ -26,12 +26,15 @@ import com.cannontech.common.favorites.dao.FavoritesDao;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.DisplayablePaoComparator;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.DatedObject;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.assetavailability.SimpleAssetAvailabilitySummary;
+import com.cannontech.dr.assetavailability.service.AssetAvailabilityService;
 import com.cannontech.dr.loadgroup.filter.LoadGroupsForProgramFilter;
 import com.cannontech.dr.program.filter.ForControlAreaFilter;
 import com.cannontech.dr.program.filter.ForScenarioFilter;
@@ -45,12 +48,15 @@ import com.cannontech.loadcontrol.data.IGearProgram;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.data.LMProgramDirectGear;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.common.chart.model.FlotPieDatas;
+import com.cannontech.web.common.chart.service.FlotChartService;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.dr.LoadGroupControllerHelper.LoadGroupListBackingBean;
 import com.cannontech.web.dr.ProgramControllerHelper.ProgramListBackingBean;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 @Controller
 @CheckRoleProperty(YukonRoleProperty.DEMAND_RESPONSE)
@@ -60,6 +66,8 @@ public class ProgramController extends ProgramControllerBase {
     @Autowired private ScenarioService scenarioService;
     @Autowired private LoadGroupControllerHelper loadGroupControllerHelper;
     @Autowired private FavoritesDao favoritesDao;
+    @Autowired private FlotChartService flotChartService;
+    @Autowired private AssetAvailabilityService assetAvailabilityService;
 
     @RequestMapping
     public String list(ModelMap model, YukonUserContext userContext,
@@ -78,11 +86,11 @@ public class ProgramController extends ProgramControllerBase {
             @ModelAttribute("backingBean") LoadGroupListBackingBean backingBean,
             BindingResult bindingResult, YukonUserContext userContext,
             FlashScope flashScope) {
+        
         DisplayablePao program = programService.getProgram(programId);
         paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
                                                      program, 
                                                      Permission.LM_VISIBLE);
-
         favoritesDao.detailPageViewed(programId);
         model.addAttribute("program", program);
         boolean isFavorite =
@@ -99,9 +107,30 @@ public class ProgramController extends ProgramControllerBase {
         List<Scenario> parentScenarios = scenarioDao.findScenariosForProgram(programId);
         model.addAttribute("parentScenarios", parentScenarios);
 
+        SimpleAssetAvailabilitySummary aaSummary = 
+                assetAvailabilityService.getAssetAvailabilityFromDrGroup(program.getPaoIdentifier());
+        model.addAttribute("assetAvailabilitySummary", aaSummary);
+        
         return "dr/program/detail.jsp";
     }
 
+    @RequestMapping("/program/chart")
+    public @ResponseBody JSONObject chart(String assetId) {
+
+        PaoIdentifier paoId = programService.getProgram(Integer.parseInt(assetId)).getPaoIdentifier();
+        SimpleAssetAvailabilitySummary aaSummary = 
+                assetAvailabilityService.getAssetAvailabilityFromDrGroup(paoId);
+        Map<String, FlotPieDatas> labelDataColorMap = Maps.newHashMapWithExpectedSize(4);
+        labelDataColorMap.put("Running", new FlotPieDatas(aaSummary.getCommunicatingRunningSize(), "#093")); // .success
+        labelDataColorMap.put("Not Running", new FlotPieDatas(aaSummary.getCommunicatingNotRunningSize(), "#ffac00")); // .warning
+        labelDataColorMap.put("Opted Out", new FlotPieDatas(aaSummary.getOptedOutSize(), "#888")); // .disabled
+        labelDataColorMap.put("Unavailable", new FlotPieDatas(aaSummary.getUnavailableSize(), "#d14836")); // .error
+
+        JSONObject pieJSONData = flotChartService.getPieGraphDataWithColor(labelDataColorMap);
+        return pieJSONData;
+    }
+
+    
     @RequestMapping
     public String getChangeGearValue(ModelMap modelMap, int programId, YukonUserContext userContext) {
         

@@ -57,6 +57,7 @@
                 <tags:nameValue name="${fieldName}">
                     <form:input path="name" size="40" />
                 </tags:nameValue>
+ 
                 <cti:checkRolesAndProperties value="PROGRAM_STATE">
                     <cti:msg var="fieldName" key="yukon.web.modules.dr.programList.filter.state" />
                     <tags:nameValue name="${fieldName}">
@@ -78,6 +79,7 @@
                         </form:select>
                     </tags:nameValue>
                 </cti:checkRolesAndProperties>
+ 
                 <cti:checkRolesAndProperties value="PROGRAM_START,PROGRAM_PRIORITY">
                     <cti:checkRolesAndProperties value="PROGRAM_START">
                         <cti:msg var="fieldName" key="yukon.web.modules.dr.programList.filter.start" />
@@ -127,45 +129,45 @@
                 <cti:msg key="yukon.web.modules.dr.programList.noResults" />
             </c:when>
             <c:otherwise>
-                <table id="programList" class="compactResultsTable rowHighlighting">
+                <table id="programList" class="compactResultsTable rowHighlighting has-actions">
+
                     <thead>
                         <tr>
                             <th class="favoritesColumn"></th>
                             <c:set var="numColumns" value="1" />
-                            <th><tags:sortLink nameKey="heading.name" baseUrl="${baseUrl}"
-                                    fieldName="NAME" /></th>
+                            <th><tags:sortLink nameKey="heading.name" baseUrl="${baseUrl}" fieldName="NAME" /></th>
+
                             <cti:checkRolesAndProperties value="PROGRAM_STATE">
                                 <c:set var="numColumns" value="${numColumns + 1}" />
-                                <th><tags:sortLink nameKey="heading.state" baseUrl="${baseUrl}"
-                                        fieldName="STATE" /></th>
+                                <th><tags:sortLink nameKey="heading.state" baseUrl="${baseUrl}" fieldName="STATE" /></th>
                             </cti:checkRolesAndProperties>
-                            <c:set var="numColumns" value="${numColumns + 1}" />
-                            <th><cti:msg key="yukon.web.modules.dr.programList.heading.actions" /></th>
+
                             <cti:checkRolesAndProperties value="PROGRAM_START">
                                 <c:set var="numColumns" value="${numColumns + 1}" />
-                                <th><tags:sortLink nameKey="heading.start" baseUrl="${baseUrl}"
-                                        fieldName="START" /></th>
+                                <th><tags:sortLink nameKey="heading.start" baseUrl="${baseUrl}" fieldName="START" /></th>
                             </cti:checkRolesAndProperties>
+
                             <cti:checkRolesAndProperties value="PROGRAM_STOP">
                                 <c:set var="numColumns" value="${numColumns + 1}" />
-                                <th><tags:sortLink nameKey="heading.stop" baseUrl="${baseUrl}"
-                                        fieldName="STOP" /></th>
+                                <th><tags:sortLink nameKey="heading.stop" baseUrl="${baseUrl}" fieldName="STOP" /></th>
                             </cti:checkRolesAndProperties>
+
                             <cti:checkRolesAndProperties value="PROGRAM_CURRENT_GEAR">
                                 <c:set var="numColumns" value="${numColumns + 1}" />
-                                <th><tags:sortLink nameKey="heading.currentGear"
-                                        baseUrl="${baseUrl}" fieldName="CURRENT_GEAR" /></th>
+                                <th><tags:sortLink nameKey="heading.currentGear" baseUrl="${baseUrl}" fieldName="CURRENT_GEAR" /></th>
                             </cti:checkRolesAndProperties>
+
                             <cti:checkRolesAndProperties value="PROGRAM_PRIORITY">
                                 <c:set var="numColumns" value="${numColumns + 1}" />
-                                <th><tags:sortLink nameKey="heading.priority"
-                                        baseUrl="${baseUrl}" fieldName="PRIORITY" /></th>
+                                <th><tags:sortLink nameKey="heading.priority" baseUrl="${baseUrl}" fieldName="PRIORITY" /></th>
                             </cti:checkRolesAndProperties>
+
                             <cti:checkRolesAndProperties value="PROGRAM_REDUCTION">
                                 <c:set var="numColumns" value="${numColumns + 1}" />
-                                <th><tags:sortLink nameKey="heading.reduction"
-                                        baseUrl="${baseUrl}" fieldName="REDUCTION" /></th>
+                                <th><tags:sortLink nameKey="heading.reduction" baseUrl="${baseUrl}" fieldName="REDUCTION" /></th>
                             </cti:checkRolesAndProperties>
+                            <c:set var="numColumns" value="${numColumns + 1}" />
+                            <th style="width: 56px;"></th>
                         </tr>
                     </thead>
                     <tfoot></tfoot>
@@ -176,38 +178,30 @@
                                 <c:param name="programId" value="${programId}" />
                             </c:url>
                             <tr id="programRow${programId}">
-                                <td><dr:favoriteIcon paoId="${programId}"
-                                        isFavorite="${favoritesByPaoId[programId]}" /></td>
+                                <td><dr:favoriteIcon paoId="${programId}" isFavorite="${favoritesByPaoId[programId]}" /></td>
                                 <td>
-                                    <%-- TODO:  in phase 3, update cti:classUpdater to be able to
-    		                     update the class of the row instead --%> <a href="${programURL}"><spring:escapeBody
-                                            htmlEscape="true">${program.name}</spring:escapeBody></a>
+                                    <%-- TODO:  in phase 3, update cti:classUpdater to be able to update the class of the row instead --%> 
+                                    <a href="${programURL}">${fn:escapeXml(program.name)}</a>
                                 </td>
                                 <cti:checkRolesAndProperties value="PROGRAM_STATE">
                                     <td><dr:programState programId="${programId}" /></td>
                                 </cti:checkRolesAndProperties>
-                                <td style="white-space: nowrap;"><dr:programListActions
-                                        pao="${program}" /></td>
                                 <cti:checkRolesAndProperties value="PROGRAM_START">
-                                    <td><cti:dataUpdaterValue identifier="${programId}/START"
-                                            type="DR_PROGRAM" /></td>
+                                    <td><cti:dataUpdaterValue identifier="${programId}/START" type="DR_PROGRAM" /></td>
                                 </cti:checkRolesAndProperties>
                                 <cti:checkRolesAndProperties value="PROGRAM_STOP">
-                                    <td><cti:dataUpdaterValue identifier="${programId}/STOP"
-                                            type="DR_PROGRAM" /></td>
+                                    <td><cti:dataUpdaterValue identifier="${programId}/STOP" type="DR_PROGRAM" /></td>
                                 </cti:checkRolesAndProperties>
                                 <cti:checkRolesAndProperties value="PROGRAM_CURRENT_GEAR">
-                                    <td><cti:dataUpdaterValue
-                                            identifier="${programId}/CURRENT_GEAR" type="DR_PROGRAM" /></td>
+                                    <td><cti:dataUpdaterValue identifier="${programId}/CURRENT_GEAR" type="DR_PROGRAM" /></td>
                                 </cti:checkRolesAndProperties>
                                 <cti:checkRolesAndProperties value="PROGRAM_PRIORITY">
-                                    <td><cti:dataUpdaterValue
-                                            identifier="${programId}/PRIORITY" type="DR_PROGRAM" /></td>
+                                    <td><cti:dataUpdaterValue identifier="${programId}/PRIORITY" type="DR_PROGRAM" /></td>
                                 </cti:checkRolesAndProperties>
                                 <cti:checkRolesAndProperties value="PROGRAM_REDUCTION">
-                                    <td><cti:dataUpdaterValue
-                                            identifier="${programId}/REDUCTION" type="DR_PROGRAM" /></td>
+                                    <td><cti:dataUpdaterValue identifier="${programId}/REDUCTION" type="DR_PROGRAM" /></td>
                                 </cti:checkRolesAndProperties>
+                                <td><dr:programListActions pao="${program}" /></td>
                             </tr>
                         </c:forEach>
                     </tbody>
@@ -217,7 +211,7 @@
     </tags:pagedBox>
     <c:if test="${hasFilterErrors}">
         <script type="text/javascript">
-        $('filterPopup').show();
-    </script>
+            $('filterPopup').show();
+        </script>
     </c:if>
 </cti:msgScope>

@@ -27,6 +27,10 @@
 <entry key="yukon.web.modules.dr.optOutScheduledEvents.pageDescription">Scheduled Opt Outs</entry>
 
 <!-- General Demand Response -->
+<entry key="yukon.web.modules.dr.pingDevices.label">Ping Devices</entry>
+<entry key="yukon.web.modules.dr.pingDevices.labelBusy">Pinging</entry>
+<entry key="yukon.web.modules.dr.assetAvailability.title">Asset Availability</entry>
+
 <entry key="yukon.web.modules.dr.fieldNotInLoadManagement">-</entry>
 <entry key="yukon.web.modules.dr.blankField">N/A</entry>
 
@@ -432,7 +436,6 @@
 <entry key="yukon.web.modules.dr.scenarioDetail.scenario">Scenario {0}</entry>
 <entry key="yukon.web.modules.dr.scenarioDetail.heading.info">Info</entry>
 <entry key="yukon.web.modules.dr.scenarioDetail.heading.actions">Actions</entry>
-<entry key="yukon.web.modules.dr.scenarioDetail.heading.assetAvailability.title">Asset Availability</entry>
 <entry key="yukon.web.modules.dr.scenarioDetail.noControl">You do not have permission to control this scenario</entry>
 <entry key="yukon.web.modules.dr.scenarioDetail.noAssignedPrograms">There are currently no programs assigned to this scenario.</entry>
 <entry key="yukon.web.modules.dr.scenarioDetail.actions.start">Start Scenario</entry>
@@ -489,7 +492,6 @@
 <entry key="yukon.web.modules.dr.controlAreaDetail.pageTitle">Control Area {0}</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.controlArea">Control Area {0}</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.heading.info.title">Info</entry>
-<entry key="yukon.web.modules.dr.controlAreaDetail.heading.assetAvailability.title">Asset Availability</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.info.state">State</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.info.valueThreshold">Value/Threshold</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.info.peakProjection">Peak/Projection</entry>
@@ -594,7 +596,6 @@
 <entry key="yukon.web.modules.dr.programDetail.pageTitle">Program {0}</entry>
 <entry key="yukon.web.modules.dr.programDetail.program">Program {0}</entry>
 <entry key="yukon.web.modules.dr.programDetail.heading.info.title">Info</entry>
-<entry key="yukon.web.modules.dr.programDetail.heading.assetAvailability.title">Asset Availability</entry>
 <entry key="yukon.web.modules.dr.programDetail.info.state">State</entry>
 <entry key="yukon.web.modules.dr.programDetail.info.start">Start</entry>
 <entry key="yukon.web.modules.dr.programDetail.info.stop">Stop</entry>
@@ -676,7 +677,6 @@
 <!-- Load Group Detail -->
 <entry key="yukon.web.modules.dr.loadGroupDetail.pageTitle">Load Group {0}</entry>
 <entry key="yukon.web.modules.dr.loadGroupDetail.heading.info.title">Info</entry>
-<entry key="yukon.web.modules.dr.loadGroupDetail.heading.assetAvailability.title">Asset Availability</entry>
 <entry key="yukon.web.modules.dr.loadGroupDetail.info.state">State</entry>
 <entry key="yukon.web.modules.dr.loadGroupDetail.info.lastAction">Last Action</entry>
 <entry key="yukon.web.modules.dr.loadGroupDetail.info.controlStatistics">Day/Month/Season/Year Hrs</entry>

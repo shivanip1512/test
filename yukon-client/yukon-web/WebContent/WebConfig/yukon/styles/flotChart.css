@@ -1,4 +1,5 @@
 .flotchart {display: inline-block; width: 95%; height: 200px; position: relative; margin: 0 auto;}
+
 .flottip {font-size: 11px; line-height: 12px; font-weight: bold; position: absolute; display: none; border: 1px solid #fdd; border-radius: 5px; padding: 2px; background-color: #EED600; color: #111; opacity: 0.80;}
 .flottip .divider {border-bottom: 1px solid #555555; margin: 5px 0;}
 .axis_label {font-size: 12px;}
@@ -11,3 +12,8 @@
 .graph_phases input {position: relative; top: 1px; outline-style: solid; outline-width: 1px; text-decoration: none;}
 .graph_phases input:focus {border: 0px; box-shadow: none;}
 /* IVVC phase check boxes - END */
+
+/* AssetAvailability */
+.flotchart_container.small-pie .flotchart {height: 100px;}
+.flotchart_container.small-pie .axis_label {margin: 0;}
+/* AssetAvailability END */

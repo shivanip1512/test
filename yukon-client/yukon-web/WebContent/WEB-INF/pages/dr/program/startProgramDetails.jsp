@@ -165,12 +165,12 @@ updateSubmitButtons = function() {
     <br>
 
     <div class="actionArea">
-        <cti:button nameKey="cancel" onclick="jQuery('#drDialog').dialog('close');"/>
         <c:if test="${autoObserveConstraintsAllowed || checkConstraintsAllowed}">
             <cti:button id="nextButton" nameKey="next" classes="primary action" type="submit"/>
             <cti:button id="okButton" nameKey="ok" classes="primary action" type="submit"/>
             <script type="text/javascript">updateSubmitButtons();</script>
         </c:if>
+        <cti:button nameKey="cancel" onclick="jQuery('#drDialog').dialog('close');"/>
     </div>
 </form:form>
 </cti:msgScope>

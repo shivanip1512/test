@@ -24,18 +24,24 @@ import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.events.loggers.DemandResponseEventLogService;
 import com.cannontech.common.favorites.dao.FavoritesDao;
 import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.validator.YukonMessageCodeResolver;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.assetavailability.SimpleAssetAvailabilitySummary;
+import com.cannontech.dr.assetavailability.service.AssetAvailabilityService;
 import com.cannontech.dr.loadgroup.filter.LoadGroupsForMacroLoadGroupFilter;
 import com.cannontech.dr.loadgroup.service.LoadGroupService;
 import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.common.chart.model.FlotPieDatas;
+import com.cannontech.web.common.chart.service.FlotChartService;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.google.common.collect.Maps;
 
 @Controller
 @CheckRoleProperty(YukonRoleProperty.DEMAND_RESPONSE)
@@ -47,7 +53,12 @@ public class LoadGroupController {
     @Autowired private LoadGroupControllerHelper loadGroupControllerHelper;
     @Autowired private DemandResponseEventLogService demandResponseEventLogService;
     @Autowired private FavoritesDao favoritesDao;
+    @Autowired private FlotChartService flotChartService;
+    @Autowired private AssetAvailabilityService assetAvailabilityService;
 
+    // FIXME -- used for dummy data
+    //private AssetAvailabilitySummary aaSummary;
+    
     private final static Map<Integer, String> shedTimeOptions;
     static {
         // TODO:  make this immutable...can we update google collections so
@@ -88,7 +99,6 @@ public class LoadGroupController {
         paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
                                                      loadGroup, 
                                                      Permission.LM_VISIBLE);
-
         favoritesDao.detailPageViewed(loadGroupId);
         model.addAttribute("loadGroup", loadGroup);
         boolean isFavorite =
@@ -104,9 +114,32 @@ public class LoadGroupController {
         loadGroupControllerHelper.filterGroups(model, userContext, backingBean,
                                                bindingResult, detailFilter, flashScope);
 
+        SimpleAssetAvailabilitySummary aaSummary = 
+                assetAvailabilityService.getAssetAvailabilityFromDrGroup(loadGroup.getPaoIdentifier());
+        model.addAttribute("assetAvailabilitySummary", aaSummary);
+
         return "dr/loadGroup/detail.jsp";
     }
 
+
+    @RequestMapping("/loadGroup/chart")
+    public @ResponseBody JSONObject chart(String assetId) {
+
+        PaoIdentifier paoId = loadGroupService.getLoadGroup(Integer.parseInt(assetId)).getPaoIdentifier();
+        SimpleAssetAvailabilitySummary aaSummary = 
+                assetAvailabilityService.getAssetAvailabilityFromDrGroup(paoId);
+        Map<String, FlotPieDatas> labelDataColorMap = Maps.newHashMapWithExpectedSize(4);
+        labelDataColorMap.put("Running", new FlotPieDatas(aaSummary.getCommunicatingRunningSize(), "#093")); // .success
+        labelDataColorMap.put("Not Running", new FlotPieDatas(aaSummary.getCommunicatingNotRunningSize(), "#ffac00")); // .warning
+        labelDataColorMap.put("Opted Out", new FlotPieDatas(aaSummary.getOptedOutSize(), "#888")); // .disabled
+        labelDataColorMap.put("Unavailable", new FlotPieDatas(aaSummary.getUnavailableSize(), "#d14836")); // .error
+
+        JSONObject pieJSONData = flotChartService.getPieGraphDataWithColor(labelDataColorMap);
+        return pieJSONData;
+    }
+
+    
+    
     @RequestMapping("/loadGroup/sendShedConfirm")
     public String sendShedConfirm(ModelMap modelMap, int loadGroupId,
             YukonUserContext userContext) {

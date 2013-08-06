@@ -31,8 +31,8 @@
         </p>
         
         <div class="actionArea">
-            <cti:button nameKey="cancel" onclick="jQuery('#drDialog').dialog('close');"/>
             <cti:button nameKey="ok" classes="primary action" type="submit"/>
+            <cti:button nameKey="cancel" onclick="jQuery('#drDialog').dialog('close');"/>
         </div>
     </form:form>
 </cti:msgScope>

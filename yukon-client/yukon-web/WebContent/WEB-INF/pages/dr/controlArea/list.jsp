@@ -1,10 +1,9 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
-<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
-<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <cti:standardPage module="dr" page="controlAreaList">
 
@@ -94,17 +93,6 @@
                               </table>
                             </td>
 						</cti:checkRolesAndProperties>
-
-						<%--
-		                    <cti:checkRolesAndProperties value="CONTROL_AREA_LOAD_CAPACITY">
-		                        <cti:msg var="fieldName" key="yukon.web.modules.dr.controlAreaList.filter.loadCapacity"/>
-		                        <td>${fieldName}:</td>
-		                        <td>
-		                            <form:input path="loadCapacity.min"/>${minStr}
-		                            <form:input path="loadCapacity.max"/>${maxStr}
-		                        </td>
-		                    </cti:checkRolesAndProperties>
-		                    --%>
 					</tr>
 				</cti:checkRolesAndProperties>
 			</table>
@@ -129,48 +117,38 @@
 				<cti:msg key="yukon.web.modules.dr.controlAreaList.noResults" />
 			</c:when>
 			<c:otherwise>
-				<table id="controlAreaList" class="compactResultsTable rowHighlighting">
+				<table id="controlAreaList" class="compactResultsTable rowHighlighting has-actions">
                     <thead>
     					<tr>
     						<%-- Table headers - columns are hidden/shown based on role props --%>
-    
     						<th class="favoritesColumn"></th>
-    						<c:set var="numColumns" value="1" />
     						<th><tags:sortLink nameKey="heading.name"
                                 baseUrl="${baseUrl}" fieldName="CA_NAME" isDefault="true"/></th>
     						<cti:checkRolesAndProperties value="CONTROL_AREA_STATE">
-    							<c:set var="numColumns" value="${numColumns + 1}" />
     							<th><tags:sortLink nameKey="heading.state"
     								baseUrl="${baseUrl}" fieldName="CA_STATE" /></th>
     						</cti:checkRolesAndProperties>
-    						<c:set var="numColumns" value="${numColumns + 1}" />
-    						<th><cti:msg
-    							key="yukon.web.modules.dr.controlAreaList.heading.actions" /></th>
     						<cti:checkRolesAndProperties value="CONTROL_AREA_VALUE_THRESHOLD">
-    							<c:set var="numColumns" value="${numColumns + 1}" />
     							<th><tags:sortLink nameKey="heading.valueThreshold"
     								baseUrl="${baseUrl}" fieldName="TR_VALUE_THRESHOLD"/></th>
     						</cti:checkRolesAndProperties>
     						<cti:checkRolesAndProperties value="CONTROL_AREA_PEAK_PROJECTION">
-    							<c:set var="numColumns" value="${numColumns + 1}" />
     							<th><tags:sortLink nameKey="heading.peakProjection"
     								baseUrl="${baseUrl}" fieldName="TR_PEAK_PROJECTION"/></th>
     						</cti:checkRolesAndProperties>
     						<cti:checkRolesAndProperties value="CONTROL_AREA_ATKU">
-    							<c:set var="numColumns" value="${numColumns + 1}" />
     							<th><tags:sortLink nameKey="heading.atku"
     								baseUrl="${baseUrl}" fieldName="TR_ATKU"/></th>
     						</cti:checkRolesAndProperties>
     						<cti:checkRolesAndProperties value="CONTROL_AREA_PRIORITY">
-    							<c:set var="numColumns" value="${numColumns + 1}" />
     							<th><tags:sortLink nameKey="heading.priority"
     								baseUrl="${baseUrl}" fieldName="CA_PRIORITY"/></th>
     						</cti:checkRolesAndProperties>
     						<cti:checkRolesAndProperties value="CONTROL_AREA_TIME_WINDOW">
-    							<c:set var="numColumns" value="${numColumns + 1}" />
     							<th><tags:sortLink nameKey="heading.timeWindow"
     								baseUrl="${baseUrl}" fieldName="CA_START"/></th>
     						</cti:checkRolesAndProperties>
+                            <th style="width: 56px;"></th>
     					</tr>
                     </thead>
                     <tfoot></tfoot>
@@ -187,14 +165,11 @@
     						<tr>
     							<td><dr:favoriteIcon paoId="${controlAreaId}"
     								isFavorite="${favoritesByPaoId[controlAreaId]}" /></td>
-    							<td><a href="${controlAreaUrl}"><spring:escapeBody
-    								htmlEscape="true">${controlArea.name}</spring:escapeBody></a></td>
+    							<td><a href="${controlAreaUrl}">${fn:escapeXml(controlArea.name)}</a></td>
     							<cti:checkRolesAndProperties value="CONTROL_AREA_STATE">
     								<td><dr:controlAreaState controlAreaId="${controlAreaId}" />
     								</td>
     							</cti:checkRolesAndProperties>
-    							<td style="white-space: nowrap;"><dr:controlAreaListActions
-    								pao="${controlArea}" /></td>
     							<cti:checkRolesAndProperties value="CONTROL_AREA_VALUE_THRESHOLD">
     								<td><c:if test="${empty controlArea.triggers}">
     									<cti:msg
@@ -236,13 +211,7 @@
     								<cti:dataUpdaterValue type="DR_CONTROLAREA"
     									identifier="${controlAreaId}/STOP" /></td>
     							</cti:checkRolesAndProperties>
-    							<%--
-    		                    <cti:checkRolesAndProperties value="CONTROL_AREA_LOAD_CAPACITY">
-    		                        <td>
-    		                            <cti:dataUpdaterValue type="DR_CONTROLAREA" identifier="${controlAreaId}/LOAD_CAPACITY"/>
-    		                        </td>
-    		                    </cti:checkRolesAndProperties>
-    		                    --%>
+                                <td><dr:controlAreaListActions pao="${controlArea}"/></td>
     						</tr>
     					</c:forEach>
                     </tbody>

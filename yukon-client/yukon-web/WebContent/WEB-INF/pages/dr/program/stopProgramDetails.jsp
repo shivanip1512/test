@@ -101,12 +101,12 @@ updateComponentAvailability = function() {
 
 
     <div class="actionArea">
+        <cti:button nameKey="ok" classes="primary action" type="submit"/>
         <c:if test="${stopGearAllowed}">
             <cti:button id="nextButton" nameKey="next" classes="primary action" type="submit"/>
             <script type="text/javascript">updateComponentAvailability();</script>
         </c:if>
         <cti:button nameKey="cancel" onclick="jQuery('#drDialog').dialog('close');"/>
-        <cti:button nameKey="ok" classes="primary action" type="submit"/>
     </div>
 </form:form>
 

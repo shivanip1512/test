@@ -59,10 +59,6 @@ overrideConstraintsChecked = function() {
     <br>
 
     <div class="actionArea">
-        <cti:button nameKey="cancel" onclick="jQuery('#drDialog').dialog('close');"/>
-        <cti:url var="backUrl" value="/dr/program/stop/details"/>
-        <cti:button nameKey="back" onclick="submitFormViaAjax('drDialog', 'stopProgramForm', '${backUrl}')"/>
-        
         <c:if test="${empty violations.constraintContainers || overrideAllowed}">
             <cti:button nameKey="ok" id="okButton" classes="primary action" type="submit"/>
             <c:if test="${!empty violations.constraintContainers}">
@@ -70,6 +66,9 @@ overrideConstraintsChecked = function() {
                 <!-- TODO:  need to disable submit via text field too -->
             </c:if>
         </c:if>
+        <cti:url var="backUrl" value="/dr/program/stop/details"/>
+        <cti:button nameKey="back" onclick="submitFormViaAjax('drDialog', 'stopProgramForm', '${backUrl}')"/>
+        <cti:button nameKey="cancel" onclick="jQuery('#drDialog').dialog('close');"/>
     </div>
 </form:form>
 </cti:msgScope>

@@ -8,6 +8,7 @@ import java.util.Set;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -21,6 +22,7 @@ import com.cannontech.web.capcontrol.ivvc.models.VfGraph;
 import com.cannontech.web.capcontrol.ivvc.models.VfLine;
 import com.cannontech.web.capcontrol.ivvc.models.VfPoint;
 import com.cannontech.web.common.chart.model.FlotOptionKey;
+import com.cannontech.web.common.chart.model.FlotPieDatas;
 import com.cannontech.web.common.chart.service.ChartService;
 import com.cannontech.web.common.chart.service.FlotChartService;
 
@@ -117,6 +119,48 @@ public class FlotChartServiceImpl implements FlotChartService {
         
         dataAndOptions.put("datas", jsonDataContainer);
         dataAndOptions.put("type", GraphType.PIE.getFlotType());
+        return dataAndOptions;
+    }
+
+    @Override
+    public JSONObject getPieGraphDataWithColor(Map<String, FlotPieDatas> labelValueMap) {
+        JSONObject dataAndOptions = new JSONObject();
+        JSONArray jsonDataContainer = new JSONArray();
+        for (Entry<String, FlotPieDatas> labelValue : labelValueMap.entrySet()) {
+            JSONObject dataObj = new JSONObject();
+            dataObj.put("label", labelValue.getKey());
+            dataObj.put("data", labelValue.getValue().getData());
+            dataObj.put("tooltip", labelValue.getKey() + ": " + labelValue.getValue().getData());
+            String color = labelValue.getValue().getColor();
+            if (!StringUtils.isEmpty(color)) {
+                // if not specified, flot chooses its own color
+                dataObj.put("color", color);
+            }
+            jsonDataContainer.add(dataObj);
+        }
+        
+        dataAndOptions.put("datas", jsonDataContainer);
+        dataAndOptions.put("type", GraphType.PIE.getFlotType());
+        
+        /* Hide the labels and legend, and set the radius to 90% */
+        JSONObject pie = new JSONObject();
+        pie.put("radius", 0.9);
+        JSONObject label = new JSONObject();
+        label.put("show", false);
+        pie.put("label", label);
+        
+        JSONObject series = new JSONObject();
+        series.put("pie", pie);
+        
+        JSONObject legend = new JSONObject();
+        legend.put("show", false);
+        
+        JSONObject options = new JSONObject();
+        options.put("series", series);
+        options.put("legend", legend);
+        
+        dataAndOptions.put("options", options);
+        
         return dataAndOptions;
     }
 

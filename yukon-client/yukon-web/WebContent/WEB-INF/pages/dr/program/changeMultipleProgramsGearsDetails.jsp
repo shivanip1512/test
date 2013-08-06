@@ -100,8 +100,8 @@ jQuery(function() {
     </tags:boxContainer>
 
     <div class="actionArea">
-        <cti:button nameKey="cancel" onclick="jQuery('#drDialog').dialog('close');"/>
         <cti:button id="okButton" nameKey="ok" classes="primary action" type="submit"/>
+        <cti:button nameKey="cancel" onclick="jQuery('#drDialog').dialog('close');"/>
     </div>
 </form:form>
 </cti:msgScope>
