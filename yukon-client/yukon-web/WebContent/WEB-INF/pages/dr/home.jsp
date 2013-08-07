@@ -91,7 +91,7 @@
                     <span class="empty-list"><i:inline key=".noRecents" /></span>
                 </c:if>
                 <c:if test="${!empty recents}">
-                    <table class="compactResultsTable rowHighlighting">
+                    <table class="compactResultsTable rowHighlighting has-actions">
                         <thead>
                         <tr>
                             <th></th>
