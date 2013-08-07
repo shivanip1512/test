@@ -684,8 +684,8 @@
                         <link>/adminSetup/config/view</link>
                         <pages>
                             <page name="config.category" type="BLANK">
-                                <labelArgument>${categoryName}</labelArgument>
                                 <link>/adminSetup/config/category</link>
+                                <labelArgument>${categoryName}</labelArgument>
                             </page>
                         </pages>
                     </page>
