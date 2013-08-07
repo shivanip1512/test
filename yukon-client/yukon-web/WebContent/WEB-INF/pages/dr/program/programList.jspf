@@ -134,39 +134,31 @@
                     <thead>
                         <tr>
                             <th class="favoritesColumn"></th>
-                            <c:set var="numColumns" value="1" />
                             <th><tags:sortLink nameKey="heading.name" baseUrl="${baseUrl}" fieldName="NAME" /></th>
 
                             <cti:checkRolesAndProperties value="PROGRAM_STATE">
-                                <c:set var="numColumns" value="${numColumns + 1}" />
                                 <th><tags:sortLink nameKey="heading.state" baseUrl="${baseUrl}" fieldName="STATE" /></th>
                             </cti:checkRolesAndProperties>
 
                             <cti:checkRolesAndProperties value="PROGRAM_START">
-                                <c:set var="numColumns" value="${numColumns + 1}" />
                                 <th><tags:sortLink nameKey="heading.start" baseUrl="${baseUrl}" fieldName="START" /></th>
                             </cti:checkRolesAndProperties>
 
                             <cti:checkRolesAndProperties value="PROGRAM_STOP">
-                                <c:set var="numColumns" value="${numColumns + 1}" />
                                 <th><tags:sortLink nameKey="heading.stop" baseUrl="${baseUrl}" fieldName="STOP" /></th>
                             </cti:checkRolesAndProperties>
 
                             <cti:checkRolesAndProperties value="PROGRAM_CURRENT_GEAR">
-                                <c:set var="numColumns" value="${numColumns + 1}" />
                                 <th><tags:sortLink nameKey="heading.currentGear" baseUrl="${baseUrl}" fieldName="CURRENT_GEAR" /></th>
                             </cti:checkRolesAndProperties>
 
                             <cti:checkRolesAndProperties value="PROGRAM_PRIORITY">
-                                <c:set var="numColumns" value="${numColumns + 1}" />
                                 <th><tags:sortLink nameKey="heading.priority" baseUrl="${baseUrl}" fieldName="PRIORITY" /></th>
                             </cti:checkRolesAndProperties>
 
                             <cti:checkRolesAndProperties value="PROGRAM_REDUCTION">
-                                <c:set var="numColumns" value="${numColumns + 1}" />
                                 <th><tags:sortLink nameKey="heading.reduction" baseUrl="${baseUrl}" fieldName="REDUCTION" /></th>
                             </cti:checkRolesAndProperties>
-                            <c:set var="numColumns" value="${numColumns + 1}" />
                             <th style="width: 56px;"></th>
                         </tr>
                     </thead>
