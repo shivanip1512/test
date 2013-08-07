@@ -18,14 +18,12 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
 import com.cannontech.common.favorites.dao.FavoritesDao;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.DisplayablePaoComparator;
-import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
@@ -126,17 +124,12 @@ public class ScenarioController {
         SimpleAssetAvailabilitySummary aaSummary = 
                 assetAvailabilityService.getAssetAvailabilityFromDrGroup(scenario.getPaoIdentifier());
         model.addAttribute("assetAvailabilitySummary", aaSummary);
+        model.addAttribute("pieJSONData", getPieJSONData(aaSummary));
         
         return "dr/scenario/detail.jsp";
     }
     
-
-    @RequestMapping("/scenario/chart")
-    public @ResponseBody JSONObject chart(String assetId) {
-
-        PaoIdentifier paoId = scenarioService.getScenario(Integer.parseInt(assetId)).getPaoIdentifier();
-        SimpleAssetAvailabilitySummary aaSummary = 
-                assetAvailabilityService.getAssetAvailabilityFromDrGroup(paoId);
+    private JSONObject getPieJSONData(SimpleAssetAvailabilitySummary aaSummary) {
         Map<String, FlotPieDatas> labelDataColorMap = Maps.newHashMapWithExpectedSize(4);
         labelDataColorMap.put("Running", new FlotPieDatas(aaSummary.getCommunicatingRunningSize(), "#093")); // .success
         labelDataColorMap.put("Not Running", new FlotPieDatas(aaSummary.getCommunicatingNotRunningSize(), "#ffac00")); // .warning
@@ -146,9 +139,7 @@ public class ScenarioController {
         JSONObject pieJSONData = flotChartService.getPieGraphDataWithColor(labelDataColorMap);
         return pieJSONData;
     }
-    
-    
-    
+
     private void addFilterErrorsToFlashScopeIfNecessary(ModelMap model,
             BindingResult bindingResult, FlashScope flashScope) {
         if (bindingResult.hasErrors()) {

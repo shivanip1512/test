@@ -55,9 +55,9 @@
             <div class="column two nogutter">
 
                 <%-- Display the Asset Availability Info --%>
-                <c:set var="moduleName" value="loadGroup"/>
                 <tags:sectionContainer2 nameKey="assetAvailability">
-                    <dr:assetAvailabilityStatus assetId="${loadGroupId}" moduleName="${moduleName}"/>
+                    <dr:assetAvailabilityStatus assetId="${loadGroupId}"
+                        assetAvailabilitySummary="${assetAvailabilitySummary}" pieJSONData="${pieJSONData}"/>
                 </tags:sectionContainer2>
 
                 <%--

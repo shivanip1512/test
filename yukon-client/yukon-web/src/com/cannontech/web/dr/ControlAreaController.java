@@ -32,7 +32,6 @@ import com.cannontech.common.bulk.filter.service.UiFilterList;
 import com.cannontech.common.events.loggers.DemandResponseEventLogService;
 import com.cannontech.common.favorites.dao.FavoritesDao;
 import com.cannontech.common.pao.DisplayablePao;
-import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.IntegerRange;
 import com.cannontech.common.util.MutableRange;
@@ -240,17 +239,12 @@ public class ControlAreaController {
         SimpleAssetAvailabilitySummary aaSummary = 
                 assetAvailabilityService.getAssetAvailabilityFromDrGroup(controlArea.getPaoIdentifier());
         model.addAttribute("assetAvailabilitySummary", aaSummary);
+        model.addAttribute("pieJSONData", getPieJSONData(aaSummary));
 
         return "dr/controlArea/detail.jsp";
     }
 
-    
-    @RequestMapping("/controlArea/chart")
-    public @ResponseBody JSONObject chart(String assetId) {
-
-        PaoIdentifier paoId = controlAreaService.getControlArea(Integer.parseInt(assetId)).getPaoIdentifier();
-        SimpleAssetAvailabilitySummary aaSummary = 
-                assetAvailabilityService.getAssetAvailabilityFromDrGroup(paoId);
+    private JSONObject getPieJSONData(SimpleAssetAvailabilitySummary aaSummary) {
         Map<String, FlotPieDatas> labelDataColorMap = Maps.newHashMapWithExpectedSize(4);
         labelDataColorMap.put("Running", new FlotPieDatas(aaSummary.getCommunicatingRunningSize(), "#093")); // .success
         labelDataColorMap.put("Not Running", new FlotPieDatas(aaSummary.getCommunicatingNotRunningSize(), "#ffac00")); // .warning
@@ -260,8 +254,7 @@ public class ControlAreaController {
         JSONObject pieJSONData = flotChartService.getPieGraphDataWithColor(labelDataColorMap);
         return pieJSONData;
     }
-    
-    
+
     @RequestMapping("/controlArea/sendEnableConfirm")
     public String sendEnableConfirm(ModelMap modelMap, int controlAreaId, boolean isEnabled,
             YukonUserContext userContext) {

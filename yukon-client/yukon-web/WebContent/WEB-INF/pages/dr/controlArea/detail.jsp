@@ -77,9 +77,9 @@
 
         <div class="column two nogutter">
             <%-- Display the Asset Availability Info --%>
-            <c:set var="moduleName" value="controlArea"/>
             <tags:sectionContainer2 nameKey="assetAvailability">
-                <dr:assetAvailabilityStatus assetId="${controlAreaId}" moduleName="${moduleName}"/>
+                <dr:assetAvailabilityStatus assetId="${controlAreaId}"
+                    assetAvailabilitySummary="${assetAvailabilitySummary}" pieJSONData="${pieJSONData}"/>
             </tags:sectionContainer2>
             
                 <%--

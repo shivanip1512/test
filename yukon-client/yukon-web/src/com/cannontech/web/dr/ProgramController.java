@@ -26,7 +26,6 @@ import com.cannontech.common.favorites.dao.FavoritesDao;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.DisplayablePaoComparator;
-import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.DatedObject;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -110,16 +109,12 @@ public class ProgramController extends ProgramControllerBase {
         SimpleAssetAvailabilitySummary aaSummary = 
                 assetAvailabilityService.getAssetAvailabilityFromDrGroup(program.getPaoIdentifier());
         model.addAttribute("assetAvailabilitySummary", aaSummary);
+        model.addAttribute("pieJSONData", getPieJSONData(aaSummary));
         
         return "dr/program/detail.jsp";
     }
 
-    @RequestMapping("/program/chart")
-    public @ResponseBody JSONObject chart(String assetId) {
-
-        PaoIdentifier paoId = programService.getProgram(Integer.parseInt(assetId)).getPaoIdentifier();
-        SimpleAssetAvailabilitySummary aaSummary = 
-                assetAvailabilityService.getAssetAvailabilityFromDrGroup(paoId);
+    private JSONObject getPieJSONData(SimpleAssetAvailabilitySummary aaSummary) {
         Map<String, FlotPieDatas> labelDataColorMap = Maps.newHashMapWithExpectedSize(4);
         labelDataColorMap.put("Running", new FlotPieDatas(aaSummary.getCommunicatingRunningSize(), "#093")); // .success
         labelDataColorMap.put("Not Running", new FlotPieDatas(aaSummary.getCommunicatingNotRunningSize(), "#ffac00")); // .warning
@@ -130,7 +125,6 @@ public class ProgramController extends ProgramControllerBase {
         return pieJSONData;
     }
 
-    
     @RequestMapping
     public String getChangeGearValue(ModelMap modelMap, int programId, YukonUserContext userContext) {
         

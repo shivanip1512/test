@@ -1,6 +1,6 @@
 <%@ attribute name="assetId" required="true" type="java.lang.Integer" %>
-<%@ attribute name="moduleName" required="true" type="java.lang.String" %>
-<%@ attribute name="assetAvailabilitySummary" required="false" type="com.cannontech.dr.assetavailability.SimpleAssetAvailabilitySummary" %>
+<%@ attribute name="assetAvailabilitySummary" required="true" type="com.cannontech.dr.assetavailability.SimpleAssetAvailabilitySummary" %>
+<%@ attribute name="pieJSONData" required="true" type="net.sf.json.JSONObject" %>
 <%@ tag body-content="empty" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
@@ -82,13 +82,9 @@ jQuery(function() {
     <div class="column two nogutter">
 
             <!-- Pie Chart -->
-            <c:url var="flotChartUrl" scope="page" value="/dr/${moduleName}/chart">
-                <c:param name="assetId" value="${assetId}"/>
-            </c:url>
             <div style="max-height: 100px;">
-                <flot:ajaxChart url="${flotChartUrl}" classes="small-pie"/>
+                <flot:jsonPieChart data="${pieJSONData}" classes="small-pie"/>
             </div>
-
     </div>
 </div>
 </cti:msgScope>

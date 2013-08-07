@@ -24,7 +24,6 @@ import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.events.loggers.DemandResponseEventLogService;
 import com.cannontech.common.favorites.dao.FavoritesDao;
 import com.cannontech.common.pao.DisplayablePao;
-import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.validator.YukonMessageCodeResolver;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
@@ -114,17 +113,12 @@ public class LoadGroupController {
         SimpleAssetAvailabilitySummary aaSummary = 
                 assetAvailabilityService.getAssetAvailabilityFromDrGroup(loadGroup.getPaoIdentifier());
         model.addAttribute("assetAvailabilitySummary", aaSummary);
+        model.addAttribute("pieJSONData", getPieJSONData(aaSummary));
 
         return "dr/loadGroup/detail.jsp";
     }
 
-
-    @RequestMapping("/loadGroup/chart")
-    public @ResponseBody JSONObject chart(String assetId) {
-
-        PaoIdentifier paoId = loadGroupService.getLoadGroup(Integer.parseInt(assetId)).getPaoIdentifier();
-        SimpleAssetAvailabilitySummary aaSummary = 
-                assetAvailabilityService.getAssetAvailabilityFromDrGroup(paoId);
+    private JSONObject getPieJSONData(SimpleAssetAvailabilitySummary aaSummary) {
         Map<String, FlotPieDatas> labelDataColorMap = Maps.newHashMapWithExpectedSize(4);
         labelDataColorMap.put("Running", new FlotPieDatas(aaSummary.getCommunicatingRunningSize(), "#093")); // .success
         labelDataColorMap.put("Not Running", new FlotPieDatas(aaSummary.getCommunicatingNotRunningSize(), "#ffac00")); // .warning
@@ -135,8 +129,6 @@ public class LoadGroupController {
         return pieJSONData;
     }
 
-    
-    
     @RequestMapping("/loadGroup/sendShedConfirm")
     public String sendShedConfirm(ModelMap modelMap, int loadGroupId,
             YukonUserContext userContext) {

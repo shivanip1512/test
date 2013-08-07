@@ -20,15 +20,15 @@
 
     <div class="column_12_12">
         <div class="column one">
-<!--             Not Used -->
+        <!-- Not Used -->
         </div>
         
         <div class="fr column two nogutter">
 
             <%-- Display the Asset Availability Info --%>
-            <c:set var="moduleName" value="scenario"/>
             <tags:sectionContainer2 nameKey="assetAvailability">
-                <dr:assetAvailabilityStatus assetId="${scenarioId}" moduleName="${moduleName}"/>
+                <dr:assetAvailabilityStatus assetId="${scenarioId}"
+                    assetAvailabilitySummary="${assetAvailabilitySummary}" pieJSONData="${pieJSONData}"/>
             </tags:sectionContainer2>
             
                 <%--
