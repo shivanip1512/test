@@ -56,9 +56,6 @@ public class LoadGroupController {
     @Autowired private FlotChartService flotChartService;
     @Autowired private AssetAvailabilityService assetAvailabilityService;
 
-    // FIXME -- used for dummy data
-    //private AssetAvailabilitySummary aaSummary;
-    
     private final static Map<Integer, String> shedTimeOptions;
     static {
         // TODO:  make this immutable...can we update google collections so
