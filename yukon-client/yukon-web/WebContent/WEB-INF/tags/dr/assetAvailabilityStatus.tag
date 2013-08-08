@@ -6,6 +6,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="flot" tagdir="/WEB-INF/tags/flotChart" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <script type="text/javascript">
@@ -22,8 +23,6 @@ jQuery(function() {
 </script>
 
 <cti:msgScope paths="modules.operator.hardware.assetAvailability">
-<cti:msg2 var="device" key=".device"/>
-<cti:msg2 var="devices" key=".devices"/>
 <c:set var="runningSize" value="${assetAvailabilitySummary.communicatingRunningSize}"/>
 <c:set var="notRunningSize" value="${assetAvailabilitySummary.communicatingNotRunningSize}"/>
 <c:set var="optedOutSize" value="${assetAvailabilitySummary.optedOutSize}"/>
@@ -34,47 +33,23 @@ jQuery(function() {
 
         <tags:nameValueContainer2>
             <tags:nameValue2 nameKey=".running">
-                <c:choose>
-                    <c:when test="${runningSize == '1'}">
-                        <span class="success">${runningSize} ${device}</span>
-                    </c:when>
-                    <c:otherwise>
-                        <span class="success">${runningSize} ${devices}</span>
-                    </c:otherwise>
-                </c:choose>
+                <cti:msg2 var="numberOfDevices" key=".numberOfDevices" argument="${runningSize}"/>
+                <span class="success">${runningSize} ${numberOfDevices}</span>
             </tags:nameValue2>
             
             <tags:nameValue2 nameKey=".notRunning">
-                <c:choose>
-                    <c:when test="${notRunningSize == '1'}">
-                        <span class="warning">${notRunningSize} ${device}</span>
-                    </c:when>
-                    <c:otherwise>
-                        <span class="warning">${notRunningSize} ${devices}</span>
-                    </c:otherwise>
-                </c:choose>
+                <cti:msg2 var="numberOfDevices" key=".numberOfDevices" argument="${notRunningSize}"/>
+                <span class="warning">${notRunningSize} ${numberOfDevices}</span>
             </tags:nameValue2>
             
             <tags:nameValue2 nameKey=".optedOut">
-                <c:choose>
-                    <c:when test="${optedOutSize == '1'}">
-                        <span class="disabled">${optedOutSize} ${device}</span>
-                    </c:when>
-                    <c:otherwise>
-                        <span class="disabled">${optedOutSize} ${devices}</span>
-                    </c:otherwise>
-                </c:choose>
+                <cti:msg2 var="numberOfDevices" key=".numberOfDevices" argument="${optedOutSize}"/>
+                <span class="disabled">${optedOutSize} ${numberOfDevices}</span>
             </tags:nameValue2>
             
             <tags:nameValue2 nameKey=".unavailable">
-                <c:choose>
-                    <c:when test="${unavailableSize == '1'}">
-                        <span class="error">${unavailableSize} ${device}</span>
-                    </c:when>
-                    <c:otherwise>
-                        <span class="error">${unavailableSize} ${devices}</span>
-                    </c:otherwise>
-                </c:choose>
+                <cti:msg2 var="numberOfDevices" key=".numberOfDevices" argument="${unavailableSize}"/>
+                <span class="error">${unavailableSize} ${numberOfDevices}</span>
             </tags:nameValue2>
         </tags:nameValueContainer2>
 
