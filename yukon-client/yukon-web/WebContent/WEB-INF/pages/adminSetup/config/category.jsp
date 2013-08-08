@@ -25,7 +25,7 @@ jQuery(function() {
         <div class="clearfix box">
 	        <div class="category fl">
 	            <cti:url value="edit" var="category_url"><cti:param name="category" value="${category}"/></cti:url>
-	            <a href="${category_url}" class="icon medium-icon fl ${category_icon}"></a>
+	            <a href="${category_url}" class="icon icon-32 fl ${category_icon}"></a>
 	            <div class="box fl meta">
 	                <a class="title" href="javascript:void(0);"><i:inline key="yukon.common.setting.subcategory.${category}"/></a>
 	                <br/>

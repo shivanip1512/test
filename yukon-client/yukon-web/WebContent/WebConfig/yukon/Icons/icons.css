@@ -1,5 +1,5 @@
 .icon {
-    background-image: url(/WebConfig/yukon/Icons/silk/icons.png);
+    background-image: url(/WebConfig/yukon/Icons/icons.png);
     background-repeat: no-repeat;
     
     display: inline-block;
@@ -14,21 +14,16 @@
     overflow: hidden;
     text-indent: -9999px;
 }
-.icon.disabled, .icon[disabled] {background-image: url(/WebConfig/yukon/Icons/silk/icons-disabled.png);}
-.medium-icon {
-	background-image: url(/WebConfig/yukon/Icons/sprite-32.png);
-	line-height: 32px;
-    height: 32px;
-    width: 32px;
-    max-width: 32px;
-}
-.large-icon {
-	background-image: url(/WebConfig/yukon/Icons/sprite-64.png);
-	line-height: 64px;
-    height: 64px;
-    width: 64px;
-    max-width: 64px;
-}
+.icon.disabled, .icon[disabled] {background-image: url(/WebConfig/yukon/Icons/icons-disabled.png);}
+
+.icon-18 {background-image: url(/WebConfig/yukon/Icons/icons-18.png);line-height: 18px;height: 18px;width: 18px;max-width: 18px;}
+.icon-18.disabled, .icon-18[disabled] {background-image: url(/WebConfig/yukon/Icons/icons-18-disabled.png);}
+
+.icon-32 {background-image: url(/WebConfig/yukon/Icons/sprite-32.png);line-height: 32px;height: 32px;width: 32px;max-width: 32px;}
+.icon-32.disabled, .icon-32[disabled] {background-image: url(/WebConfig/yukon/Icons/icons-32-disabled.png);}
+
+.icon-64 {background-image: url(/WebConfig/yukon/Icons/sprite-64.png);line-height: 64px;height: 64px;width: 64px;max-width: 64px;}
+.icon-64.disabled, .icon-64[disabled] {background-image: url(/WebConfig/yukon/Icons/icons-64-disabled.png);}
 
 /*
 Name:       famfamfam Silk Icons Sprite
@@ -43,9 +38,8 @@ Version: 1.0
 License: http://creativecommons.org/licenses/by/3.0/
 */
 
-/* 16 pixel icons */
+/* 16 pixel icons (famfamfam) */
 .icon-blank{background-position: 16px 16px}
-
 .icon-accept{background-position: -0px -0px}
 .icon-add{background-position: -16px -0px}
 .icon-anchor{background-position: -32px -0px}
@@ -1048,7 +1042,7 @@ License: http://creativecommons.org/licenses/by/3.0/
 .icon-zoom-in{background-position: -608px -384px}
 .icon-zoom-out{background-position: -624px -384px}
 
-/* custom - alphabetize these later */
+/* 16px custom - alphabetize these later */
 .icon-enabled{background-position: -0px -400px}
 .icon-disabled{background-position: -16px -400px}
 .icon-electric-meter{background-position: -32px -400px}
@@ -1082,6 +1076,211 @@ License: http://creativecommons.org/licenses/by/3.0/
 .icon-plus-blue{background-position: -480px -400px}
 .icon-add-blue{background-position: -496px -400px}
 .icon-home{background-position: -512px -400px}
+
+/* 18 pixel icons, icon blocks are 20px by 20px since the stupid sprite builder would 
+not accept 0px as a valid offset */
+.icon-18-blank{background-position: 20px 20px}
+.icon-18-abacus{ background-position: 0 0;  } 
+.icon-18-access_point{ background-position: -20px 0;  } 
+.icon-18-add{ background-position: -40px 0;  } 
+.icon-18-administrator{ background-position: -60px 0;  } 
+.icon-18-alarm{ background-position: -80px 0;  } 
+.icon-18-arrow_bidirectional{ background-position: -100px 0;  } 
+.icon-18-arrow_down2{ background-position: -120px 0;  } 
+.icon-18-arrow_left2{ background-position: -140px 0;  } 
+.icon-18-arrow_right2{ background-position: -160px 0;  } 
+.icon-18-arrow_up2{ background-position: -180px 0;  } 
+.icon-18-attachment{ background-position: -200px 0;  } 
+.icon-18-audio_knob{ background-position: -220px 0;  } 
+.icon-18-barcode{ background-position: -240px 0;  } 
+.icon-18-battery_empty{ background-position: -260px 0;  } 
+.icon-18-battery_full{ background-position: -280px 0;  } 
+.icon-18-battery_half{ background-position: -300px 0;  } 
+.icon-18-bell{ background-position: -320px 0;  } 
+.icon-18-bill{ background-position: -340px 0;  } 
+.icon-18-binoculars{ background-position: -360px 0;  } 
+.icon-18-bold{ background-position: -380px 0;  } 
+.icon-18-book{ background-position: -400px 0;  } 
+.icon-18-bookmark{ background-position: -420px 0;  } 
+.icon-18-briefcase{ background-position: -440px 0;  } 
+.icon-18-brightness{ background-position: -460px 0;  } 
+.icon-18-broken_link{ background-position: -480px 0;  } 
+.icon-18-brush{ background-position: -500px 0;  } 
+.icon-18-burn_blu-ray{ background-position: -520px 0;  } 
+.icon-18-burn_blu-ray2{ background-position: -540px 0;  } 
+.icon-18-burn_dvd{ background-position: -560px 0;  } 
+.icon-18-burn_dvd2{ background-position: -580px 0;  } 
+.icon-18-cabinet{ background-position: -600px 0;  } 
+.icon-18-calculator{ background-position: -620px 0;  } 
+.icon-18-calendar{ background-position: -640px 0;  } 
+.icon-18-camera{ background-position: -660px 0;  } 
+.icon-18-cancel{ background-position: -680px 0;  } 
+.icon-18-card_clubs{ background-position: -700px 0;  } 
+.icon-18-card_diamonds{ background-position: -720px 0;  } 
+.icon-18-card_hearts{ background-position: -740px 0;  } 
+.icon-18-card_spades{ background-position: -760px 0;  } 
+.icon-18-certificate-2{ background-position: -780px 0;  } 
+.icon-18-certificate{ background-position: -800px 0;  } 
+.icon-18-chat-exclamation{ background-position: -820px 0;  } 
+.icon-18-checkmark{ background-position: -840px 0;  } 
+.icon-18-checkmark2{ background-position: -860px 0;  } 
+.icon-18-clip{ background-position: -880px 0;  } 
+.icon-18-clipboard{ background-position: -900px 0;  } 
+.icon-18-clock{ background-position: -920px 0;  } 
+.icon-18-close{ background-position: -940px 0;  } 
+.icon-18-cloud{ background-position: -960px 0;  } 
+.icon-18-cloud2{ background-position: -980px 0;  } 
+.icon-18-coin{ background-position: -1000px 0;  } 
+.icon-18-compress{ background-position: -1020px 0;  } 
+.icon-18-connect{ background-position: -1040px 0;  } 
+.icon-18-contrast{ background-position: -1060px 0;  } 
+.icon-18-copy{ background-position: -1080px 0;  } 
+.icon-18-cross{ background-position: -1100px 0;  } 
+.icon-18-cutter{ background-position: -1120px 0;  } 
+.icon-18-delete{ background-position: -1140px 0;  } 
+.icon-18-dial{ background-position: -1160px 0;  } 
+.icon-18-diary{ background-position: -1180px 0;  } 
+.icon-18-dimensions{ background-position: -1200px 0;  } 
+.icon-18-directional_down{ background-position: -1220px 0;  } 
+.icon-18-directional_left{ background-position: -1240px 0;  } 
+.icon-18-directional_right{ background-position: -1260px 0;  } 
+.icon-18-directional_up{ background-position: -1280px 0;  } 
+.icon-18-disconnect{ background-position: -1300px 0;  } 
+.icon-18-diskette{ background-position: -1320px 0;  } 
+.icon-18-document{ background-position: -1340px 0;  } 
+.icon-18-door{ background-position: -1360px 0;  } 
+.icon-18-download2{ background-position: -1380px 0;  } 
+.icon-18-dropper{ background-position: -1400px 0;  } 
+.icon-18-earphones{ background-position: -1420px 0;  } 
+.icon-18-effects{ background-position: -1440px 0;  } 
+.icon-18-eject{ background-position: -1460px 0;  } 
+.icon-18-emoticon_angry{ background-position: -1480px 0;  } 
+.icon-18-emoticon_confused{ background-position: -1500px 0;  } 
+.icon-18-emoticon_grin{ background-position: -1520px 0;  } 
+.icon-18-emoticon_in_love{ background-position: -1540px 0;  } 
+.icon-18-emoticon_sad{ background-position: -1560px 0;  } 
+.icon-18-emoticon_sleeping{ background-position: -1580px 0;  } 
+.icon-18-emoticon_smile{ background-position: -1600px 0;  } 
+.icon-18-encrypt{ background-position: -1620px 0;  } 
+.icon-18-eraser{ background-position: -1640px 0;  } 
+.icon-18-eye{ background-position: -1660px 0;  } 
+.icon-18-eye_closed{ background-position: -1680px 0;  } 
+.icon-18-fast_forward{ background-position: -1700px 0;  } 
+.icon-18-file{ background-position: -1720px 0;  } 
+.icon-18-fill{ background-position: -1740px 0;  } 
+.icon-18-fingerprint{ background-position: -1760px 0;  } 
+.icon-18-firewall{ background-position: -1780px 0;  } 
+.icon-18-first{ background-position: -1800px 0;  } 
+.icon-18-folder{ background-position: -1820px 0;  } 
+.icon-18-font{ background-position: -1840px 0;  } 
+.icon-18-font_size{ background-position: -1860px 0;  } 
+.icon-18-game_control{ background-position: -1880px 0;  } 
+.icon-18-gear{ background-position: -1900px 0;  } 
+.icon-18-group{ background-position: -1920px 0;  } 
+.icon-18-hammer{ background-position: -1940px 0;  } 
+.icon-18-hand_point{ background-position: -1960px 0;  } 
+.icon-18-hand_thumbsdown{ background-position: -1980px 0;  } 
+.icon-18-hand_thumbsup{ background-position: 0 -20px;  } 
+.icon-18-hard_disk{ background-position: -20px -20px;  } 
+.icon-18-headset{ background-position: -40px -20px;  } 
+.icon-18-heart{ background-position: -60px -20px;  } 
+.icon-18-help{ background-position: -80px -20px;  } 
+.icon-18-help2{ background-position: -100px -20px;  } 
+.icon-18-history{ background-position: -120px -20px;  } 
+.icon-18-home{ background-position: -140px -20px;  } 
+.icon-18-hourglass{ background-position: -160px -20px;  } 
+.icon-18-hourglass2{ background-position: -180px -20px;  } 
+.icon-18-id{ background-position: -200px -20px;  } 
+.icon-18-info{ background-position: -220px -20px;  } 
+.icon-18-info2{ background-position: -240px -20px;  } 
+.icon-18-italic{ background-position: -260px -20px;  } 
+.icon-18-item{ background-position: -280px -20px;  } 
+.icon-18-key{ background-position: -300px -20px;  } 
+.icon-18-last{ background-position: -320px -20px;  } 
+.icon-18-lightbulb{ background-position: -340px -20px;  } 
+.icon-18-link{ background-position: -360px -20px;  } 
+.icon-18-list{ background-position: -380px -20px;  } 
+.icon-18-location{ background-position: -400px -20px;  } 
+.icon-18-lock{ background-position: -420px -20px;  } 
+.icon-18-lock_open{ background-position: -440px -20px;  } 
+.icon-18-login{ background-position: -460px -20px;  } 
+.icon-18-mail{ background-position: -480px -20px;  } 
+.icon-18-mail_open{ background-position: -500px -20px;  } 
+.icon-18-messenger{ background-position: -520px -20px;  } 
+.icon-18-microhpone{ background-position: -540px -20px;  } 
+.icon-18-microphone{ background-position: -560px -20px;  } 
+.icon-18-money_bag{ background-position: -580px -20px;  } 
+.icon-18-monitor{ background-position: -600px -20px;  } 
+.icon-18-moon{ background-position: -620px -20px;  } 
+.icon-18-music{ background-position: -640px -20px;  } 
+.icon-18-music_folder{ background-position: -660px -20px;  } 
+.icon-18-music_library{ background-position: -680px -20px;  } 
+.icon-18-next{ background-position: -700px -20px;  } 
+.icon-18-notepad{ background-position: -720px -20px;  } 
+.icon-18-paragraph_align_left{ background-position: -740px -20px;  } 
+.icon-18-paragraph_align_right{ background-position: -760px -20px;  } 
+.icon-18-paragraph_justify{ background-position: -780px -20px;  } 
+.icon-18-password{ background-position: -800px -20px;  } 
+.icon-18-paste{ background-position: -820px -20px;  } 
+.icon-18-pause{ background-position: -840px -20px;  } 
+.icon-18-pen{ background-position: -860px -20px;  } 
+.icon-18-pencil{ background-position: -880px -20px;  } 
+.icon-18-phone{ background-position: -900px -20px;  } 
+.icon-18-photo_album{ background-position: -920px -20px;  } 
+.icon-18-pictures_folder{ background-position: -940px -20px;  } 
+.icon-18-play{ background-position: -960px -20px;  } 
+.icon-18-point{ background-position: -980px -20px;  } 
+.icon-18-power{ background-position: -1000px -20px;  } 
+.icon-18-previous{ background-position: -1020px -20px;  } 
+.icon-18-print{ background-position: -1040px -20px;  } 
+.icon-18-pyramid{ background-position: -1060px -20px;  } 
+.icon-18-random{ background-position: -1080px -20px;  } 
+.icon-18-record{ background-position: -1100px -20px;  } 
+.icon-18-redo{ background-position: -1120px -20px;  } 
+.icon-18-reload{ background-position: -1140px -20px;  } 
+.icon-18-repeat{ background-position: -1160px -20px;  } 
+.icon-18-resize2{ background-position: -1180px -20px;  } 
+.icon-18-rewind{ background-position: -1200px -20px;  } 
+.icon-18-rotate{ background-position: -1220px -20px;  } 
+.icon-18-round{ background-position: -1240px -20px;  } 
+.icon-18-ruler_square{ background-position: -1260px -20px;  } 
+.icon-18-satellite{ background-position: -1280px -20px;  } 
+.icon-18-scissors{ background-position: -1300px -20px;  } 
+.icon-18-screwdriver{ background-position: -1320px -20px;  } 
+.icon-18-security{ background-position: -1340px -20px;  } 
+.icon-18-shopping_basket{ background-position: -1360px -20px;  } 
+.icon-18-software24{ background-position: -1380px -20px;  } 
+.icon-18-spam{ background-position: -1400px -20px;  } 
+.icon-18-speaker{ background-position: -1420px -20px;  } 
+.icon-18-speaker2{ background-position: -1440px -20px;  } 
+.icon-18-sphere{ background-position: -1460px -20px;  } 
+.icon-18-spreadsheet{ background-position: -1480px -20px;  } 
+.icon-18-square{ background-position: -1500px -20px;  } 
+.icon-18-star{ background-position: -1520px -20px;  } 
+.icon-18-stats_bars{ background-position: -1540px -20px;  } 
+.icon-18-stats_lines{ background-position: -1560px -20px;  } 
+.icon-18-stats_pie{ background-position: -1580px -20px;  } 
+.icon-18-stop{ background-position: -1600px -20px;  } 
+.icon-18-strike_through{ background-position: -1620px -20px;  } 
+.icon-18-sun{ background-position: -1640px -20px;  } 
+.icon-18-target{ background-position: -1660px -20px;  } 
+.icon-18-thunder{ background-position: -1680px -20px;  } 
+.icon-18-trash_can{ background-position: -1700px -20px;  } 
+.icon-18-underlined{ background-position: -1720px -20px;  } 
+.icon-18-undo{ background-position: -1740px -20px;  } 
+.icon-18-upload2{ background-position: -1760px -20px;  } 
+.icon-18-usb{ background-position: -1780px -20px;  } 
+.icon-18-user{ background-position: -1800px -20px;  } 
+.icon-18-user_woman{ background-position: -1820px -20px;  } 
+.icon-18-volume_control{ background-position: -1840px -20px;  } 
+.icon-18-webcam{ background-position: -1860px -20px;  } 
+.icon-18-window{ background-position: -1880px -20px;  } 
+.icon-18-wizard{ background-position: -1900px -20px;  } 
+.icon-18-world{ background-position: -1920px -20px;  } 
+.icon-18-zoom{ background-position: -1940px -20px;  } 
+.icon-18-zoom_in{ background-position: -1960px -20px;  } 
+.icon-18-zoom_out{ background-position: -1980px -20px;  } 
+
 
 /* 32 pixel icons, should probably switch to a sprite */
 .icon-32-access-point {background-image: url(/WebConfig/yukon/Icons/32/access_point.png);}

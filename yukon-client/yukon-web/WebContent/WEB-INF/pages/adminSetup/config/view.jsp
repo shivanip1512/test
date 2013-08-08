@@ -16,7 +16,7 @@
                 <c:forEach items="${category.second}" begin="0" step="2" end="${fn:length(category.second)}" var="subcategory" varStatus="status">
                     <div class="category">
                         <cti:url value="edit" var="category_url"><cti:param name="category" value="${subcategory.first}"/></cti:url>
-                        <a href="${category_url}" class="icon medium-icon fl ${subcategory.second}"></a>
+                        <a href="${category_url}" class="icon icon-32 fl ${subcategory.second}"></a>
                         <div class="box fl meta">
                             <a class="title" href="${category_url}"><i:inline key="yukon.common.setting.subcategory.${subcategory.first}"/></a>
                             <br/>
@@ -29,7 +29,7 @@
                 <c:forEach items="${category.second}" begin="1" step="2" end="${fn:length(category.second)}" var="subcategory" varStatus="status">
                     <div class="category">
                         <cti:url value="edit" var="category_url"><cti:param name="category" value="${subcategory.first}"/></cti:url>
-                        <a href="${category_url}" class="icon medium-icon fl ${subcategory.second}"></a>
+                        <a href="${category_url}" class="icon icon-32 fl ${subcategory.second}"></a>
                         <div class="box fl meta">
                             <a class="title" href="${category_url}"><i:inline key="yukon.common.setting.subcategory.${subcategory.first}"/></a>
                             <br/>

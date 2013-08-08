@@ -19,7 +19,7 @@
 <cti:checkRolesAndProperties value="DATABASE_EDITOR">
     <div class="stacked f-closeYukonApplicationDialog clearfix">
         <a href="<cti:url value="/jws/dbeditor.jnlp"/>">
-            <i class="icon medium-icon icon-32-database-editor"></i>Database Editor
+            <i class="icon icon-32 icon-32-database-editor"></i>Database Editor
         </a>
     </div>
 </cti:checkRolesAndProperties>
@@ -27,7 +27,7 @@
 <cti:checkRolesAndProperties value="TABULAR_DISPLAY_CONSOLE">
     <div class="stacked f-closeYukonApplicationDialog clearfix">
         <a href="<cti:url value="/jws/tdc.jnlp"/>" target-title="Tabular TDC">
-            <i class="icon medium-icon icon-32-tdc"></i>Tabular Data Console
+            <i class="icon icon-32 icon-32-tdc"></i>Tabular Data Console
         </a>
     </div>
 </cti:checkRolesAndProperties>
@@ -35,7 +35,7 @@
 <cti:checkRolesAndProperties value="TRENDING">
     <div class="stacked f-closeYukonApplicationDialog clearfix">
         <a href="<cti:url value="/jws/trending.jnlp"/>">
-            <i class="icon medium-icon icon-32-trending"></i>Trending
+            <i class="icon icon-32 icon-32-trending"></i>Trending
         </a>
     </div>
 </cti:checkRolesAndProperties>
@@ -45,7 +45,7 @@
 <cti:checkRolesAndProperties value="APPLICATION_ESUBSTATION_EDITOR">
     <div class="stacked f-closeYukonApplicationDialog clearfix">
         <a href="<cti:url value="/jws/esub.jnlp"/>">
-            <i class="icon medium-icon icon-32-esub"></i>eSubstation Editor
+            <i class="icon icon-32 icon-32-esub"></i>eSubstation Editor
         </a>
     </div>
 </cti:checkRolesAndProperties>
@@ -53,7 +53,7 @@
 <cti:checkRolesAndProperties value="ENABLE_CLIENT_COMMANDER">
     <div class="stacked f-closeYukonApplicationDialog clearfix">
         <a href="<cti:url value="/jws/commander.jnlp"/>">
-            <i class="icon medium-icon icon-32-commander"></i>Commander
+            <i class="icon icon-32 icon-32-commander"></i>Commander
         </a>
     </div>
 </cti:checkRolesAndProperties>
