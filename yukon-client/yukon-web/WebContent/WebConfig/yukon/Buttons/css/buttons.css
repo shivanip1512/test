@@ -70,7 +70,7 @@ button[disabled] .ui-button-text,
 }
 button[disabled] .icon,
 .button[disabled] .icon {
-  background-image: url(/WebConfig/yukon/Icons/silk/icons-disabled.png);
+  background-image: url(/WebConfig/yukon/Icons/icons-disabled.png);
 }
 button.action[disabled],
 .button.action[disabled] {
