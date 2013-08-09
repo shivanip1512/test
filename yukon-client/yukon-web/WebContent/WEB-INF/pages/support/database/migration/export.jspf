@@ -9,10 +9,6 @@
 <cti:msg var="exportText" key="yukon.web.modules.support.databaseMigration.export.exportText"/>
 <cti:msg var="exportTablesPopupTitle" key="yukon.web.modules.support.databaseMigration.export.exportedTablesPopupTitle"/>
 
-<c:set var="dbPickerIcon" value="/WebConfig/yukon/Icons/database_add.png"/>
-<c:set var="bookOpenIcon" value="/WebConfig/yukon/Icons/book_open.gif"/>
-<c:set var="dbPickerIconDisabled" value="/WebConfig/yukon/Icons/database_disabled_gray.gif"/>
-
 <script type="text/javascript">
     function exportItems(formId) {
         return function() {
@@ -39,7 +35,7 @@
 					<span style="font-weight: bold;"><cti:msg key="${exportType.typeKey}" /></span>
                     <tags:helpInfoPopup title="${exportTablesPopupTitle}">
             			<c:forEach var="exportTable" items="${displayableExportType.tableNameSet}">
-            			   <img src="${dbPickerIconDisabled}"><c:out value="${exportTable}" /><br>
+            			   <cti:icon icon="icon-database"/><c:out value="${exportTable}" /><br>
             		    </c:forEach>
                     </tags:helpInfoPopup>
 

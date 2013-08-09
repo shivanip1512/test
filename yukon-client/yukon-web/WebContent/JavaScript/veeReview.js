@@ -48,22 +48,22 @@ function checkUncheckAll(action) {
 function resetDeleteAccept(action, deleteImgEl, acceptImgEl) {
 
 	if (action == 'DELETE') {
-		deleteImgEl.setAttribute('src', '/WebConfig/yukon/Icons/delete_disabled_gray.gif');
+	    jQuery(deleteImgEl).attr('disabled', 'disabled');
 	}
 	if (action == 'ACCEPT') {
-		acceptImgEl.setAttribute('src', '/WebConfig/yukon/Icons/tick_disabled_gray.gif');
+	    jQuery(acceptImgEl).attr('disabled', 'disabled');
 	}
 }
 
 function toggleDeleteAccept(action, deleteImgEl, acceptImgEl) {
 	
 	if (action == 'DELETE') {
-		deleteImgEl.setAttribute('src', '/WebConfig/yukon/Icons/delete.png');
-		acceptImgEl.setAttribute('src', '/WebConfig/yukon/Icons/tick_disabled_gray.gif');
+	    jQuery(deleteImgEl).removeAttr('disabled');
+	    jQuery(acceptImgEl).attr('disabled', 'disabled');
 	}
 	if (action == 'ACCEPT') {
-		deleteImgEl.setAttribute('src', '/WebConfig/yukon/Icons/delete_disabled_gray.gif');
-		acceptImgEl.setAttribute('src', '/WebConfig/yukon/Icons/tick.png');
+	    jQuery(acceptImgEl).removeAttr('disabled');
+        jQuery(deleteImgEl).attr('disabled', 'disabled');
 	}
 }
 

@@ -7,9 +7,6 @@
 
 <cti:standardPage module="amr" page="validationEditor.${mode}" >
 
-<c:url var="help" value="/WebConfig/yukon/Icons/help.gif"/>
-<c:url var="helpOver" value="/WebConfig/yukon/Icons/help_over.gif"/>
-    
     <script type="text/javascript">
         function deleteValidationMonitor() {
             jQuery("button[data-disable-group=actionButtons]").each( function(){

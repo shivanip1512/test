@@ -31,9 +31,6 @@
 <cti:msg var="nonQueuedRetryCountText" key="yukon.common.device.scheduledGroupRequestExecution.home.retry.nonQueuedRetryCount"/>
 <cti:msg var="maxTotalRunTimeHoursText" key="yukon.common.device.scheduledGroupRequestExecution.home.retry.maxTotalRunTimeHours"/>
     
-<c:url var="help" value="/WebConfig/yukon/Icons/help.gif"/>
-<c:url var="helpOver" value="/WebConfig/yukon/Icons/help_over.gif"/>
-
 <cti:standardPage page="scheduledGroupRequestDetail" module="amr">
     
     <cti:includeScript link="/JavaScript/bulkDataUpdaterCallbacks.js"/>

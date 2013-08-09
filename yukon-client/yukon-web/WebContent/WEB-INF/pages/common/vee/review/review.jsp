@@ -19,11 +19,6 @@
 <cti:msg var="reloading" key="yukon.web.modules.common.vee.review.home.reloading"/>
 <cti:msg var="instructionsHeader" key="yukon.web.modules.common.vee.review.home.instructions.header"/>
 
-<cti:url var="deleteImg" value="/WebConfig/yukon/Icons/delete.png"/>
-<cti:url var="acceptImg" value="/WebConfig/yukon/Icons/tick.png"/>
-<cti:url var="deleteDisabledImg" value="/WebConfig/yukon/Icons/delete_disabled_gray.gif"/>
-<cti:url var="acceptDisabledImg" value="/WebConfig/yukon/Icons/tick_disabled_gray.gif"/>
-	
 <cti:standardPage title="${pageTitle}" module="monitors">
 	<cti:standardMenu menuSelection="validation|review"/>
 
@@ -154,11 +149,11 @@
 	    		<th>${next}</th>
 	    		<th align="center" class="nonwrapping">
 	    			${delete}
-	    			<img src="${deleteImg}" title="Check/Uncheck All" onclick="checkUncheckAll('DELETE');" class="pointer">
+                    <cti:icon icon="icon-cross" title="Check/Uncheck All" onclick="checkUncheckAll('DELETE');" classes="pointer"/>
 	    		</th>
 	    		<th align="center"  class="nonwrapping">
 	    			${accept}
-	    			<img src="${acceptImg}" title="Check/Uncheck All" onclick="checkUncheckAll('ACCEPT');" class="pointer">
+                    <cti:icon icon="icon-tick" title="Check/Uncheck All" onclick="checkUncheckAll('ACCEPT');" classes="pointer"/>
 	    		</th>
 	    	</tr>
 	    	
@@ -203,11 +198,11 @@
 			    		<td class="nonwrapping"><cti:pointValueFormatter value="${p.nextPointValue}" format="FULL"/></td>
 			    		
 			    		<td align="center" class="ACTION_TD pointer nonwrapping">
-			    			<img id="ACTION_DELETE_IMG_${changeId}" src="${deleteDisabledImg}">
+                            <cti:icon icon="icon-cross" disabled="disabled" id="ACTION_DELETE_IMG_${changeId}"/>
 			    		</td>
 			    		
 			    		<td align="center" class="ACTION_TD pointer nonwrapping">
-			    			<img id="ACTION_ACCEPT_IMG_${changeId}" src="${acceptDisabledImg}">
+                            <cti:icon icon="icon-tick" disabled="disabled" id="ACTION_ACCEPT_IMG_${changeId}"/>
 			    			<input id="ACTION_${changeId}" name="ACTION_${changeId}" type="hidden" value="">
 			    		</td>
 			    	</tr>

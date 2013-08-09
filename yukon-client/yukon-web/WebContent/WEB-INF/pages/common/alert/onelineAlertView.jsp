@@ -32,9 +32,7 @@
                 <td><cti:formatDate type="BOTH" value="${alert.date}"/></td>
                 <td>
                     <input type="hidden" name="alertId" value="${alert.id}">
-                    <img style="cursor: pointer;" title="Click to clear the alert"
-                         src="<cti:url value="/WebConfig/yukon/Icons/accept.png"/>"
-                         onclick="javascript:alert_clearAlert(${alert.id});">
+                    <cti:icon icon="icon-accept" title="Click to clear the alert" onclick="javascript:alert_clearAlert(${alert.id});"/>
                 </td>
             </tr>
         </c:forEach>

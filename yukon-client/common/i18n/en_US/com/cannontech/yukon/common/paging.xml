@@ -3,15 +3,9 @@
 <properties>
 
 <entry key="yukon.common.paging.previous">Prev</entry>
-<entry key="yukon.common.paging.previousIcon">/WebConfig/yukon/Icons/resultset_previous.gif</entry>
-<entry key="yukon.common.paging.previousIcon.hover">/WebConfig/yukon/Icons/resultset_previous.gif</entry>
-<entry key="yukon.common.paging.previousIcon.disabled">/WebConfig/yukon/Icons/resultset_previous_disabled.gif</entry>
 <entry key="yukon.common.paging.previousIcon.alt">Previous Page</entry>
 
 <entry key="yukon.common.paging.next">Next</entry>
-<entry key="yukon.common.paging.nextIcon">/WebConfig/yukon/Icons/resultset_next.gif</entry>
-<entry key="yukon.common.paging.nextIcon.hover">/WebConfig/yukon/Icons/resultset_next.gif</entry>
-<entry key="yukon.common.paging.nextIcon.disabled">/WebConfig/yukon/Icons/resultset_next_disabled.gif</entry>
 <entry key="yukon.common.paging.nextIcon.alt">Next Page</entry>
 
 <entry key="yukon.common.paging.viewing">{0} - {1} of {2}</entry>

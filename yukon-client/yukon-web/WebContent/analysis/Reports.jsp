@@ -597,7 +597,7 @@ function makeFirstSelectedFilterValueVisible() {
 				                                 	styleClass="simpleLink"
 				                                 	endAction="setPickerSelectedPaoNamesFunction('selectedProgramNamesSpan');">
 				             	
-				             	<img src="/WebConfig/yukon/Icons/add.png">
+                                <cti:icon icon="icon-add"/>
 				             	<cti:msg key="yukon.web.choosePrograms" />
 	                            </tags:pickerDialog>
 	                    			
@@ -614,7 +614,7 @@ function makeFirstSelectedFilterValueVisible() {
 			                                 		endAction="setPickerSelectedPaoNamesFunction('selectedProgramNamesSpan');"
 			                                 		immediateSelectMode="true">
 			                                 		
-				             	<img src="/WebConfig/yukon/Icons/add.png">
+				             	<cti:icon icon="icon-add"/>
 								<cti:msg key="yukon.web.chooseProgram" />
 	                            </tags:pickerDialog>
 	                    			
@@ -641,7 +641,7 @@ function makeFirstSelectedFilterValueVisible() {
 				                                 	styleClass="simpleLink"
 				                                 	endAction="setPickerSelectedPaoNamesFunction('selectedGroupNamesSpan');">
 				             	
-				             	<img src="/WebConfig/yukon/Icons/add.png">
+				             	<cti:icon icon="icon-add"/>
 								<cti:msg key="yukon.web.chooseGroups" />
 	                             </tags:pickerDialog>
 	                            <br>
@@ -663,7 +663,7 @@ function makeFirstSelectedFilterValueVisible() {
 				                                 	styleClass="simpleLink"
 				                                 	endAction="setPickerSelectedPaoNamesFunction('selectedControlAreaNamesSpan');">
 				             	
-				             	<img src="/WebConfig/yukon/Icons/add.png">
+				             	<cti:icon icon="icon-add"/>
 								<cti:msg key="yukon.web.chooseControlAreas" />
 	                            </tags:pickerDialog>
 	                             
@@ -686,7 +686,7 @@ function makeFirstSelectedFilterValueVisible() {
 				                                 	styleClass="simpleLink"
 				                                 	endAction="setPickerSelectedPaoNamesFunction('selectedScenarioNamesSpan');">
 				             	
-				             	<img src="/WebConfig/yukon/Icons/add.png">
+				             	<cti:icon icon="icon-add"/>
 								<cti:msg key="yukon.web.chooseScenarios" />
 	                            </tags:pickerDialog>
 	                             
@@ -710,7 +710,7 @@ function makeFirstSelectedFilterValueVisible() {
                                                     styleClass="simpleLink"
                                                     endAction="setPickerSelectedAccountNumberNamesFunction('selectedAccountNumberNamesSpan');">
                                 
-                                <img src="/WebConfig/yukon/Icons/add.png">
+                                <cti:icon icon="icon-add"/>
 								<cti:msg key="yukon.web.chooseAccountNumbers" />
                                 </tags:pickerDialog>
                                  
@@ -735,7 +735,7 @@ function makeFirstSelectedFilterValueVisible() {
                                                     styleClass="simpleLink"
                                                     endAction="setPickerSelectedSerialNumberNamesFunction('selectedSerialNumberNamesSpan');">
                                 
-                                <img src="/WebConfig/yukon/Icons/add.png">
+                                <cti:icon icon="icon-add"/>
 								<cti:msg key="yukon.web.chooseSerialNumbers" />
                                 </tags:pickerDialog>
                                  
@@ -760,7 +760,7 @@ function makeFirstSelectedFilterValueVisible() {
                                                     styleClass="simpleLink"
                                                     endAction="setPickerSelectedUserNamesFunction('selectedUserNamesSpan');">
                                 
-                                <img src="/WebConfig/yukon/Icons/add.png">
+                                <cti:icon icon="icon-add"/>
 								<cti:msg key="yukon.web.chooseUsers" />
                                 </tags:pickerDialog>
                                  

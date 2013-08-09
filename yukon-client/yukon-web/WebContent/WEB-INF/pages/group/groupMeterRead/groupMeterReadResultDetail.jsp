@@ -4,9 +4,6 @@
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<c:url var="script" value="/WebConfig/yukon/Icons/script.gif"/>
-<c:url var="scriptOver" value="/WebConfig/yukon/Icons/script_over.gif"/>
-
 <cti:msg var="resultListPageTitle" key="yukon.common.device.groupMeterRead.results.pageTitle" />
 <cti:msg var="pageTitle" key="yukon.common.device.groupMeterRead.resultDetail.pageTitle" />
 <cti:msg var="recentResultsTitle" key="yukon.common.device.groupMeterRead.resultDetail.recentResultsTitle" />

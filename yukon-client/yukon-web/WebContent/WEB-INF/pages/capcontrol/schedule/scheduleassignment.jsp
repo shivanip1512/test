@@ -215,9 +215,9 @@ function newScheduleAssignmentPopup(schedule, command) {
                                             </c:if>
                                         </c:when>
                                         <c:otherwise>
-                                            <img src="/WebConfig/yukon/Icons/control_play_blue_disabled.png" class="tierImage" title="${notAuthorizedText}">
+                                            <cti:icon icon="icon-control-play-blue" disabled="disabled" title="${notAuthorizedText}"/>
                                             <c:if test="${(item.commandName != confirmCommand)&&(item.commandName != sendTimeSyncsCommand)}">
-                                                <img src="/WebConfig/yukon/Icons/control_stop_blue_disabled.png" class="tierImage" title="${notAuthorizedText}">
+                                                <cti:icon icon="icon-control-stop-blue" disabled="disabled" title="${notAuthorizedText}"/>
                                             </c:if>
                                         </c:otherwise>
                                     </c:choose>

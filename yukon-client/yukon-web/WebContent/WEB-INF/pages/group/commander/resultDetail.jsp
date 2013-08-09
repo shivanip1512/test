@@ -4,9 +4,6 @@
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<c:url var="script" value="/WebConfig/yukon/Icons/script.gif"/>
-<c:url var="scriptOver" value="/WebConfig/yukon/Icons/script_over.gif"/>
-
 <cti:standardPage title="Group Command Processing Result Detail" module="amr">
 
     <cti:standardMenu menuSelection="devicegroups|commander"/>

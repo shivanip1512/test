@@ -131,6 +131,8 @@
     <entry key="yukon.common.setting.subcategory.WEB_SERVER.description">Banner logo</entry>
     <entry key="yukon.common.setting.subcategory.MISC">Miscellaneous</entry>
     <entry key="yukon.common.setting.subcategory.MISC.description">Everything else</entry>
+    <entry key="yukon.common.setting.subcategory.THEMES">Themes</entry>
+    <entry key="yukon.common.setting.subcategory.THEMES.description">Change the way Yukon looks</entry>
     
     <!-- YukonSettingCategory -->
     <entry key="yukon.common.setting.category.APPLICATION">Application</entry>

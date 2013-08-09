@@ -18,7 +18,7 @@
 		<div title="${fn:escapeXml(hierarchy.group.fullName)}" style="padding-left: ${pageScope.indentLevel * 12}px">
 			<div style="float: left;">
 				<c:if test="${not empty hierarchy.group.name}">
-					<img src="<c:url value="/WebConfig/yukon/Icons/arrow_down_right.gif"/>">
+                    <cti:icon icon="icon-arrow-right"/>
 				</c:if>
 			</div>
 			<div style="float: left;margin-left: 5px;">

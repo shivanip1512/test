@@ -19,8 +19,6 @@
 		<c:otherwise>
 		
             <!-- Help Info Popup -->
-			<c:url var="help" value="/WebConfig/yukon/Icons/help.gif"/>
-			<c:url var="helpOver" value="/WebConfig/yukon/Icons/help_over.gif"/>
 			<cti:uniqueIdentifier var="uniqueId" prefix="helpInfoPopup_"/>
 			<c:if test="${showControlHistorySummary}">
 				<i18n:simplePopup id="${uniqueId}" titleKey=".helpInfoTitle">

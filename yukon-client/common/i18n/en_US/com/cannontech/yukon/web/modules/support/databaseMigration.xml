@@ -23,13 +23,9 @@
     <entry key="yukon.web.modules.support.databaseMigration.selectObjects.selectButton">Select {0}</entry>
 
 	<!-- Export export.jspf -->
-    <entry key="yukon.web.modules.support.databaseMigration.export.book.img">/WebConfig/yukon/Icons/book_open.gif</entry>
-    <entry key="yukon.web.modules.support.databaseMigration.export.book.img.hover">/WebConfig/yukon/Icons/book_open_over.gif</entry>
     
 	<entry key="yukon.web.modules.support.databaseMigration.export.componentToBeExport">Component To Be Exported</entry>
 	<entry key="yukon.web.modules.support.databaseMigration.export.exportText">Export...</entry>
-    <entry key="yukon.web.modules.support.databaseMigration.export.mag.img">/WebConfig/yukon/Icons/magnifier.gif</entry>
-    <entry key="yukon.web.modules.support.databaseMigration.export.mag.img.hover">/WebConfig/yukon/Icons/magnifier_over.gif</entry>
     <entry key="yukon.web.modules.support.databaseMigration.export.componentsInfoSection.header.objects">Objects</entry>
     <entry key="yukon.web.modules.support.databaseMigration.export.exportedTablesPopupTitle">Exported Tables</entry>
 	
@@ -56,12 +52,8 @@
 	
 	<!-- Import Validation importValidate.jsp -->
     <entry key="yukon.web.modules.support.databaseMigration.importValidate.mag.img">/WebConfig/yukon/Icons/magnifier.gif</entry>
-    <entry key="yukon.web.modules.support.databaseMigration.importValidate.mag.img.hover">/WebConfig/yukon/Icons/magnifier_over.gif</entry>
     <entry key="yukon.web.modules.support.databaseMigration.importValidate.warning.img">/WebConfig/yukon/Icons/warning.gif</entry>
-    <entry key="yukon.web.modules.support.databaseMigration.importValidate.warning.img.hover">/WebConfig/yukon/Icons/warning_over.gif</entry>
     <entry key="yukon.web.modules.support.databaseMigration.importValidate.error.img">/WebConfig/yukon/Icons/error.gif</entry>
-    <entry key="yukon.web.modules.support.databaseMigration.importValidate.error.img.hover">/WebConfig/yukon/Icons/error_over.gif</entry>
-    <entry key="yukon.web.modules.support.databaseMigration.importValidate.placeholder.img">/WebConfig/yukon/Icons/placeholder.gif</entry>
     
 	<entry key="yukon.web.modules.support.databaseMigration.importValidate.pageTitle">Import Validation</entry>
 	<entry key="yukon.web.modules.support.databaseMigration.importValidate.boxTitle">Validate File</entry>

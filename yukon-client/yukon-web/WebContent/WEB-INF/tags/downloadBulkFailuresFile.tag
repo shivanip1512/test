@@ -13,15 +13,13 @@
 
 <c:set var="formName" value="processingExceptionDownloadForm${resultsId}"/>
 <cti:msg var="titleText" key="yukon.common.device.bulk.bulkHome.recentBulkOperations.downloadErrorFileTitle" />
-<c:url var="downloadImg" value="/WebConfig/yukon/Icons/download_file.gif" />
-<c:url var="downloadImgOver" value="/WebConfig/yukon/Icons/download_file_over.gif" />
 
 <c:if test="${showText}">
     <a href="javascript:submitForm('${formName}');" class="small" title="${titleText}">${titleText}</a> 
 </c:if>
 
 <a href="javascript:submitForm('${formName}');" class="small" title="${titleText}">
-    <img src="${downloadImg}" onmouseover="this.src='${downloadImgOver}'" onmouseout="this.src='${downloadImg}'">
+    <cti:icon icon="icon-page-white-excel"/>
 </a> 
 
 <form id="${formName}" method="post" action="/bulk/processingExceptionFileDownload">

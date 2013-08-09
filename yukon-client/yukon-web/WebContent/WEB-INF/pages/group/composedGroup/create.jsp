@@ -15,11 +15,6 @@
 <cti:msg var="ruleSentenceDeviceGroupPrefix" key="yukon.web.deviceGroups.composedGroup.ruleSentence.deviceGroup.prefix"/>
 <cti:msg var="ruleSentenceDeviceGroupSuffix" key="yukon.web.deviceGroups.composedGroup.ruleSentence.deviceGroup.suffix"/>
 
-<cti:url var="add" value="/WebConfig/yukon/Icons/add.png"/>
-<cti:url var="addOver" value="/WebConfig/yukon/Icons/add_over.png"/>
-<cti:url var="delete" value="/WebConfig/yukon/Icons/delete.png"/>
-<cti:url var="deleteOver" value="/WebConfig/yukon/Icons/delete_over.png"/>
-
 <cti:standardPage title="${pageTitle}" module="amr">
     <cti:msgScope paths="yukon.web.deviceGroups.composedGroup">
     <cti:standardMenu menuSelection="" />

@@ -5,9 +5,6 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
 
-<c:url var="help" value="/WebConfig/yukon/Icons/help.gif"/>
-<c:url var="helpOver" value="/WebConfig/yukon/Icons/help_over.gif"/>
-
 <cti:standardPage module="amr" page="outageMonitorConfig.${mode}">
     
     <script type="text/javascript">

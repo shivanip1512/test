@@ -2,9 +2,6 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<c:url var="delete" value="/WebConfig/yukon/Icons/stop.gif"/>
-<c:url var="deleteOver" value="/WebConfig/yukon/Icons/stop_over.gif"/>
-
 <%-- THE LIST OF ONGOING/PENDING PROFILE REQUESTS --%>
 <div id="${divId}">
 <c:choose>

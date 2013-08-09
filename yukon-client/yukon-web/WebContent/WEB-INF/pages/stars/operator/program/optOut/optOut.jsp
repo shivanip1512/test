@@ -12,8 +12,6 @@
 <cti:standardPage module="operator" page="optOut.main">
 
 <!-- Helper Popup -->
-<c:url var="help" value="/WebConfig/yukon/Icons/help.gif"/>
-<c:url var="helpOver" value="/WebConfig/yukon/Icons/help_over.gif"/>
 <cti:uniqueIdentifier var="uniqueId" prefix="helpInfoPopup_"/>
 <i:simplePopup id="${uniqueId}" titleKey=".helpInfoTitle" on="#helpIcon">
     <table class="optOutActions">

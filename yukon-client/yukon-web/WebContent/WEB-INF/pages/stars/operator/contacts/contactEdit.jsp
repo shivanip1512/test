@@ -30,11 +30,6 @@
         
     </script>
     
-    <cti:url var="add" value="/WebConfig/yukon/Icons/add.png"/>
-    <cti:url var="addOver" value="/WebConfig/yukon/Icons/add_over.png"/>
-    <cti:url var="delete" value="/WebConfig/yukon/Icons/delete.png"/>
-    <cti:url var="deleteOver" value="/WebConfig/yukon/Icons/delete_over.png"/>
-    
     <form:form id="contactsUpdateForm" commandName="contactDto" action="/stars/operator/contacts/contactUpdate" method="post">
     
         <input type="hidden" name="contactId" value="${contactDto.contactId}">
