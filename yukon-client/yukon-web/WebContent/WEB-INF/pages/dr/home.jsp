@@ -107,9 +107,7 @@
                                 <tags:sortLink nameKey="stateHeader" baseUrl="${baseUrl}" fieldName="STATE"
                                     sortParam="rvSort" descendingParam="rvDescending"/>
                             </th>
-                            <th>
-                                <i:inline key=".actionsHeader" />
-                            </th>
+                            <th style="width: 56px;"></th>
                         </tr>
                         </thead>
                         <tfoot></tfoot>
