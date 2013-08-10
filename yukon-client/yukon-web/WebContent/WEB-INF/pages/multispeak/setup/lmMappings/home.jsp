@@ -62,7 +62,7 @@
                                     linkType="none"/> 
 					    		<input type="button" id="searchButton" value="Search" onclick="doLmMappingNameSearch();" class="button">
 					    		<input type="button" id="addButton" value="Set New Mapping" onclick="validateAndShow();" class="button">
-					    		<img src="<cti:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" style="display:none;" id="waitImg">
+					    		<img src="<cti:url value="/WebConfig/yukon/Icons/spinner.gif"/>" style="display:none;" id="waitImg">
 	                        
 					    	</tags:nameValue>
 					    	

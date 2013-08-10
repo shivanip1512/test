@@ -59,7 +59,7 @@
                 <button id="removeAllDevicesButton" onclick="removeAllDevices('${confirmRemoveText}')" value="${removeAllDevicesFromGroupLabel}" title="${removeAllDevicesFromGroupDescription}">
                     <i class="icon icon-cross"></i><span class="label">${removeAllDevicesFromGroupLabel}</span>
                 </button>
-                <img id="removeAllDevicesWaitImg" src="<cti:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" style="display:none;">
+                <img id="removeAllDevicesWaitImg" src="<cti:url value="/WebConfig/yukon/Icons/spinner.gif"/>" style="display:none;">
             </div>       
         </c:if>
 	</c:when>

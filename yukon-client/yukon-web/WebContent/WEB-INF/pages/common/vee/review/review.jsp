@@ -109,7 +109,7 @@
 							</c:forEach>
 							
 							<cti:dataGridCell>
-								<input id="reloadButton" type="button" onclick="reloadForm();" value="${reload}"> <img id="reloadSpinner" style="display:none;" src="/WebConfig/yukon/Icons/indicator_arrows.gif">
+								<input id="reloadButton" type="button" onclick="reloadForm();" value="${reload}"> <img id="reloadSpinner" style="display:none;" src="/WebConfig/yukon/Icons/spinner.gif">
 							</cti:dataGridCell>
 						
 						</cti:dataGrid>

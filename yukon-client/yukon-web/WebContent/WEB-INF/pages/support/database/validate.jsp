@@ -21,7 +21,7 @@
 				<i:inline key=".oracleWarning"/>
 			</c:if>
 			<br>
-			<i:inline key=".loading"/> <img id="slowInputProcessImg${uniqueId}" src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" alt="waiting" >
+			<i:inline key=".loading"/> <img id="slowInputProcessImg${uniqueId}" src="<c:url value="/WebConfig/yukon/Icons/spinner.gif"/>" alt="waiting" >
 		</div>
 
 	</c:otherwise>

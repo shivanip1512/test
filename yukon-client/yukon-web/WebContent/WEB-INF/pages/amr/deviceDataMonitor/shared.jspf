@@ -40,7 +40,7 @@
     <input type="hidden" class="f-violations_loading"/>
 </c:if>
 <c:set var="supportedDevicesInner">
-    <span class="f-loading"><cti:icon icon="icon-loading"/><i:inline key=".calculating"/></span>
+    <span class="f-loading"><cti:icon icon="icon-spinner"/><i:inline key=".calculating"/></span>
     <span class="f-supported_counts"></span>
     <div class="f-details dn" title="${missing_i18n_text}">
         <div class="f-missing_list"></div>
@@ -110,7 +110,7 @@
 	<c:choose>
 		<c:when test="${areViolationsBeingCalculated}">
 			<span>
-                <i class="icon icon-loading f-violations_loading">&nbsp;</i><i:inline key=".calculating"/>
+                <i class="icon icon-spinner f-violations_loading">&nbsp;</i><i:inline key=".calculating"/>
 			</span>
 		</c:when>
 		<c:when test="${not empty violationsCount && violationsCount > 0}">

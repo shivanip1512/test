@@ -85,7 +85,7 @@
 
             <%-- EXECUTE BUTTON --%>
             <cti:msg var="noGroupSelectedAlertText" key="yukon.common.device.bulk.deviceSelection.selectDevicesByGroupTree.noGroupSelectedAlertText" />
-            <cti:url var="waitImgUrl" value="/WebConfig/yukon/Icons/indicator_arrows.gif" />
+            <cti:url var="waitImgUrl" value="/WebConfig/yukon/Icons/spinner.gif" />
             
             <cti:msg2 var="executeButtonLabel" key="yukon.web.deviceGroups.commander.executeButton"/>
             <input type="button" id="submitGroupCommanderButton" value="${executeButtonLabel}" onclick="return validateGroupIsSelected(this, '${cti:escapeJavaScript(noGroupSelectedAlertText)}');">

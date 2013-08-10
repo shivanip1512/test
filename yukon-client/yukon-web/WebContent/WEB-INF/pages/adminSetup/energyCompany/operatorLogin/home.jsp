@@ -15,7 +15,7 @@
             var anchor = jQuery(event.currentTarget);
             var icon = anchor.find('.icon');
             var originalClasses = icon.attr('class');
-            icon.addClass("icon-loading");
+            icon.addClass("icon-spinner");
             jQuery.ajax({
                 type: "POST",
                 url: anchor.attr("href"),
@@ -23,12 +23,12 @@
                 success: function(jsonResponse) {
                     icon.removeClass("icon-accept");
                     icon.removeClass("icon-delete");
-                    icon.removeClass("icon-loading");
+                    icon.removeClass("icon-spinner");
                     icon.addClass(jsonResponse.icon);
                     icon.attr("title",jsonResponse.loginStatus);
                 },
                 error: function() {
-                    icon.removeClass("icon-loading");
+                    icon.removeClass("icon-spinner");
                     icon.attr("class", originalClasses);
                 }
             });

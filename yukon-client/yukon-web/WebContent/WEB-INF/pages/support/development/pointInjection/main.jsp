@@ -126,7 +126,7 @@ YEvent.observeSelectorClick('.dateTimeClear', function(event) {
 
 <table style="display:none">
 <tr id="dummyRow">
-<td colspan="9" style="text-align: center"><img src="/WebConfig/yukon/Icons/indicator_arrows.gif"></td>
+<td colspan="9" style="text-align: center"><img src="/WebConfig/yukon/Icons/spinner.gif"></td>
 </tr>
 </table>
 

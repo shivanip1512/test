@@ -311,7 +311,7 @@ if(typeof(UserPreferences) === 'undefined') {
             input.attr("disabled", "disabled");
             jquery_btn_save.attr("disabled", "disabled");
             var btn_icon = jquery_btn_save.find('i');
-            btn_icon.removeClass("icon-disk").addClass("icon-loading");
+            btn_icon.removeClass("icon-disk").addClass("icon-spinner");
 
             jQuery.ajax({
                 type: "POST",
@@ -329,7 +329,7 @@ if(typeof(UserPreferences) === 'undefined') {
                 // reinstate the pref's controls + revert save icon to normal.
                 input.removeAttr('disabled');
                 jquery_btn_save.removeAttr('disabled');
-                btn_icon.removeClass("icon-loading").addClass("icon-disk");
+                btn_icon.removeClass("icon-spinner").addClass("icon-disk");
             });
             return false;
         },

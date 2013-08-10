@@ -274,7 +274,7 @@ Object.extend(YEvent, {
     
     markBusy: function(element) {
         var disabledElement = element.cloneNode(true);
-        disabledElement.addClassName('ajaxBusy icon icon-loading');
+        disabledElement.addClassName('ajaxBusy icon icon-spinner');
         try {
             disabledElement.disable();
             element.blur();

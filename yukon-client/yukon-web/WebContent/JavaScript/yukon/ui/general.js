@@ -186,8 +186,8 @@ Yukon.ui = (function () {
                         // if this button has an icon hide it
                         button.children(".icon").hide();
                         // only one of the spinner icons should be there
-                        button.children(".icon-action-spinner").show();
-                        button.children(".icon-loading").show();
+                        button.children(".icon-spinner-white").show();
+                        button.children(".icon-spinner").show();
                         
                         label = button.children(".label");
                         busyText = button.attr("data-busy");

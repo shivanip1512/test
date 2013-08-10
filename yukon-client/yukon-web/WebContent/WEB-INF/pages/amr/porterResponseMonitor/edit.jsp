@@ -121,7 +121,7 @@ YEvent.observeSelectorClick('.addRuleTableRow', function(event) {
 		<table style="display: none">
 			<tr id="defaultRuleRow">
 				<td colspan="6" style="text-align: center">
-					<img src="/WebConfig/yukon/Icons/indicator_arrows.gif">
+					<img src="/WebConfig/yukon/Icons/spinner.gif">
 				</td>
 			</tr>
 		</table>

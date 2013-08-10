@@ -307,7 +307,7 @@ if(typeof(DeviceDataMonitor) === 'undefined'){
                     }
                     output += "<td><a class='fl error f-showProblem' href='javascript:void(0);' data-url='" 
                         + the_list_url + "' target-id='"+ popupListId +"' target-title='"+ listTitle +"'><i class='icon icon-magnifier'></i>" 
-                        + countText + "</a><span class='fl f-loading dn'><i class='icon icon-loading'></i><span class='label'>"+ countText +"</span></span>"
+                        + countText + "</a><span class='fl f-loading dn'><i class='icon icon-spinner'></i><span class='label'>"+ countText +"</span></span>"
                         + postHref +"<div class='f-problems_container problem_device_list dn' id='"+ popupListId +"'/></td>";
                     output += "<td>"+ missingText +"</td><td>"+ itemName +"</td>\n";
                     if(DeviceDataMonitor._check_row_type_is_point(itemType)) {

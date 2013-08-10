@@ -218,7 +218,7 @@ public class ButtonTag extends YukonTagSupport implements DynamicAttributes {
             }
             
             if (busy && !imageOnRight) {
-                out.write("<i class=\"icon icon-loading\"></i>");
+                out.write("<i class=\"icon icon-spinner\"></i>");
             }
 
             if (mode != RenderMode.IMAGE 
@@ -234,7 +234,7 @@ public class ButtonTag extends YukonTagSupport implements DynamicAttributes {
             }
             
             if (busy && imageOnRight) {
-                out.write("<i class=\"icon icon-loading\"></i>");
+                out.write("<i class=\"icon icon-spinner\"></i>");
             }
 
             out.write("</button>");

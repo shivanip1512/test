@@ -227,7 +227,7 @@
                     <input type="button" id="readButton" <c:if test="${testStep != 'read'}">style="display: none;"</c:if> value="${read}" onclick="sendRead();">
                     <input type="button" id="clearButton" <c:if test="${testStep != 'clear' && testStep != 'results'}">style="display: none;"</c:if> value="${clearPhaseData}" onclick="sendClearCommand();">
                     <input type="button" id="resetButton" style="display: none;" value="${reset}" onclick="reset();">
-                    <img style="display: none;" id="spinner" src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>">
+                    <img style="display: none;" id="spinner" src="<c:url value="/WebConfig/yukon/Icons/spinner.gif"/>">
                 </div>
                 <div id="actionResultDiv"  style="float: left;">
                     <c:if test="${showReadProgress}">

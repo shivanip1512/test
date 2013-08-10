@@ -19,7 +19,7 @@
         var retrievingReport = '<cti:msg2 key=".retrievingReport" javaScriptEscape="true"/>';
         var getReportEscaped = '<cti:msg2  key=".getReport" javaScriptEscape="true"/>';
         // prettynessifier
-        $('getReportProcessImg').src = '/WebConfig/yukon/Icons/indicator_arrows.gif';
+        $('getReportProcessImg').src = '/WebConfig/yukon/Icons/spinner.gif';
         $('getReportProcessImg').show();
         $('getReportButton').value = retrievingReport;
         $('getReportButton').disable();
@@ -106,7 +106,7 @@
                 
                 
                 <input type="button" id="getReportButton" value="<cti:msg2 key=".getReport"/>" onclick="getReport('${getReportUrl}', '${hbcRedirectUrl}');" class="button fl"> 
-                <img id="getReportProcessImg" style="display:none;" src="<cti:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>">
+                <img id="getReportProcessImg" style="display:none;" src="<cti:url value="/WebConfig/yukon/Icons/spinner.gif"/>">
             </c:if>
             <br/>
             <%-- PROFILE PEAK REPORT(S) --%>

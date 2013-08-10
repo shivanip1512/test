@@ -7,7 +7,7 @@
 
 <cti:uniqueIdentifier var="ccid" prefix="_ccid"/>
 
-<c:url var="waitImgUrl" value="/WebConfig/yukon/Icons/indicator_arrows.gif" />
+<c:url var="waitImgUrl" value="/WebConfig/yukon/Icons/spinner.gif" />
 <cti:msg var="cancelingText" key="yukon.common.device.commander.results.cancelingCommands" />
 <cti:msg var="finishedText" key="yukon.common.device.commander.results.finishedCancelingCommands" />
 

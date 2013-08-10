@@ -54,7 +54,7 @@
         <div id="widgetContainer_${widgetParameters.widgetId}" style="height: ${widgetParameters.height};">
             <c:choose>
             <c:when test="${beanInst.lazyLoad}">
-                <img src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>">
+                <img src="<c:url value="/WebConfig/yukon/Icons/spinner.gif"/>">
             </c:when>
             <c:otherwise>
                 <jsp:include flush="false" page="/widget/${beanInst.shortName}/render"/>

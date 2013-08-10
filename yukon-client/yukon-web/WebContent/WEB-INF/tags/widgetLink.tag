@@ -31,6 +31,6 @@
 		</c:choose>
 	</span>
 <span class="widgetAction_waiting" style="display:none">
-<img src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" alt="waiting" >
+<img src="<c:url value="/WebConfig/yukon/Icons/spinner.gif"/>" alt="waiting" >
 </span>
 </span>

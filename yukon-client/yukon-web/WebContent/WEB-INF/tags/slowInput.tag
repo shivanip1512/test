@@ -34,7 +34,7 @@
     	   onclick="updateButton('slowInputSpan${uniqueId}', '${labelBusy}...', '${myFormId}','slowInputProcessImg${uniqueId}', ${disableOtherButtons});">
     	   
     <span id="slowInputWaitingSpan${uniqueId}" class="slowInput_waiting" style="display:none;"> 
-        <img id="slowInputProcessImg${uniqueId}" src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" alt="waiting"> 
+        <img id="slowInputProcessImg${uniqueId}" src="<c:url value="/WebConfig/yukon/Icons/spinner.gif"/>" alt="waiting"> 
         <c:if test="${not empty pageScope.description}">
 	        <br>
 	        <span class="internalSectionHeader${uniqueId}">${pageScope.description}</span>

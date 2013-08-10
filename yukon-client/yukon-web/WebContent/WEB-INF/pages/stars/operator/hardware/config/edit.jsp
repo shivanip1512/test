@@ -29,7 +29,7 @@ jQuery(function() {
     jQuery(document).on('click', '#rfReadNow', function(event) {
         var url = '<cti:url value="/stars/operator/hardware/${readPath}/readNow"/>';
         
-        jQuery("<a class=\"fl icon icon-loading\"/>").insertBefore(jQuery("#rfReadNow span"));
+        jQuery("<a class=\"fl icon icon-spinner\"/>").insertBefore(jQuery("#rfReadNow span"));
         jQuery("#rfReadNow span").html('${reading}');
         jQuery("#rfReadNow span").addClass("buttonBusy");
         

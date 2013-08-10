@@ -33,7 +33,7 @@
 <input type="checkbox" <c:if test="${checked}">checked</c:if> onclick="this.style.display='none'; widgetActionRefreshCheckbox_${uniqueId}();" title="${title}">
 
 <span class="widgetAction_waiting" style="display:none">
-<img src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" alt="waiting" >
+<img src="<c:url value="/WebConfig/yukon/Icons/spinner.gif"/>" alt="waiting" >
 </span>
 </span>
 

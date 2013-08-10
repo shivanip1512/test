@@ -12,8 +12,8 @@
             var totalGroupCountSpan = $('totalGroupCount');
             var supportedDevicesMsgSpan = $('supportedDevicesMsg');
 
-            totalGroupCountSpan.addClassName('icon icon-loading');
-            supportedDevicesMsgSpan.addClassName('icon icon-loading');
+            totalGroupCountSpan.addClassName('icon icon-spinner');
+            supportedDevicesMsgSpan.addClassName('icon icon-spinner');
             $('supportedDevicesHelpIcon').hide();
     
             new Ajax.Request("getCounts",{
@@ -36,8 +36,8 @@
                         }
                     }
 
-                    totalGroupCountSpan.removeClassName('icon icon-loading');
-                    supportedDevicesMsgSpan.removeClassName('icon icon-loading');
+                    totalGroupCountSpan.removeClassName('icon icon-spinner');
+                    supportedDevicesMsgSpan.removeClassName('icon icon-spinner');
                     $('supportedDevicesHelpIcon').show();
                 }
             });

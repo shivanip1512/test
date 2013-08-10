@@ -80,7 +80,7 @@ ${pageScope.addPao} = function() {
                 </span>
                 <span id="${pageScope.addPaoSpanId}">
                     <span class="widgetAction_waiting" style="display:none">
-                        <img src="<cti:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" alt="waiting" >
+                        <img src="<cti:url value="/WebConfig/yukon/Icons/spinner.gif"/>" alt="waiting" >
                     </span>
                 </span>
         </div>

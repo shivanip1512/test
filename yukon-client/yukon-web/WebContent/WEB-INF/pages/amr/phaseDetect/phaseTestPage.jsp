@@ -188,7 +188,7 @@
                     <input type="button" id="sendDetectButton" <c:if test="${testStep != 'send'}">style="display: none;"</c:if> value="${send}" onclick="sendDetect();">
                     <input type="button" id="readButton" <c:if test="${testStep != 'read'}">style="display: none;"</c:if> value="${read}" onclick="sendRead();">
                     <input type="button" id="resetButton" style="display: none;" value="${reset}" onclick="reset();">
-                    <img style="display: none;" id="spinner" src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>">
+                    <img style="display: none;" id="spinner" src="<c:url value="/WebConfig/yukon/Icons/spinner.gif"/>">
                 </div>
                 <div id="actionResultDiv"  style="float: left;">
                     <c:if test="${showReadProgress}">

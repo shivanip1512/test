@@ -23,5 +23,5 @@ function updateButton(actionButton, waitingLabel, myForm, imgId, disableOtherBut
     	input.disable();
     }
     
-    formSubmit(myForm, imgId, '/WebConfig/yukon/Icons/indicator_arrows.gif');
+    formSubmit(myForm, imgId, '/WebConfig/yukon/Icons/spinner.gif');
 }
