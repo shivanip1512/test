@@ -36,7 +36,7 @@
 			<td><spring:escapeBody htmlEscape="true">${mapping.substationName}</spring:escapeBody></td>
 			<td><spring:escapeBody htmlEscape="true">${paoName}</spring:escapeBody></td>
 			<td style="text-align:center;">
-				<img class="cssicon" src="<cti:url value="/WebConfig/yukon/Icons/clearbits/close.gif"/>" onclick="removeLmMapping(${mapping.mspLMInterfaceMappingId});">
+                <cti:icon icon="icon-cross" onclick="removeLmMapping(${mapping.mspLMInterfaceMappingId});"/>
 			</td>
 		</tr>
 	</c:forEach>

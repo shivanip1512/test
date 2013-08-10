@@ -4,8 +4,6 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 
-<cti:url var="check" value="/WebConfig/yukon/Icons/check.gif"/>
-
 <cti:standardPage module="tools" page="bulk.importUpload">
 
 <script>

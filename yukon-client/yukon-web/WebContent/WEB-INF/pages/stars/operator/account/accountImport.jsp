@@ -9,8 +9,6 @@
     <cti:checkEnergyCompanyOperator showError="true" >
         <cti:checkRolesAndProperties value="OPERATOR_IMPORT_CUSTOMER_ACCOUNT" />
         
-        <cti:url var="importImg" value="/WebConfig/yukon/Icons/import_by_DEVICE_TYPE.gif"/>
-        
         <tags:boxContainer2 nameKey="fileUploadContainer">
         	<div class="column_12_12">
         		<div class="column one">
@@ -59,7 +57,7 @@
             <div class="column_12_12">    
                 <div class="column one">
                     <div class="box" style="background-color:#CDCDCD;padding:10px;">
-                        <div class="fl"><img src="${importImg}"></div>
+                        <div class="fl"><cti:icon icon="icon-shape-handles"/></div>
                         <div class="fl" style="margin-left:20px;">
                             <h2><i:inline key=".importAccountTableHeader"/></h2>
                             <span class="detail"><i:inline key=".importAccountTableDescription"/></span>
@@ -103,7 +101,7 @@
                 
                 <div class="column two nogutter">
                     <div class="box" style="background-color:#CDCDCD;padding:10px;">
-                        <div class="fl"><img src="${importImg}"></div>
+                        <div class="fl"><cti:icon icon="icon-shape-handles"/></div>
                         <div class="fl" style="margin-left:20px;">
                             <h2><i:inline key=".importHardwareTableHeader"/></h2>
                             <span class="detail"><i:inline key=".importHardwareTableDescription"/></span>

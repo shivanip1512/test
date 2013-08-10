@@ -37,7 +37,7 @@
 	    <tags:pickerDialog type="userPicker" id="userPicker"
 	        destinationFieldId="userIdSelected" endAction="forwardToUserEdit"
 	        immediateSelectMode="true">
-            <img class="cssicon" src="/WebConfig/yukon/Icons/clearbits/search.gif">
+            <cti:icon icon="icon-magnifier"/>
 	    </tags:pickerDialog>
 		<span style="display:none" id="userSelectedName"></span> 
 	</div>
@@ -51,7 +51,7 @@
 	    <tags:pickerDialog type="loginGroupPicker" id="loginGroupPicker"
 	        destinationFieldId="loginGroupIdSelected" endAction="forwardToGroupEdit"
 	        immediateSelectMode="true">
-            <img class="cssicon" src="/WebConfig/yukon/Icons/clearbits/search.gif">
+            <cti:icon icon="icon-magnifier"/>
 	    </tags:pickerDialog>
 	    <input id="loginGroupIdSelected" type="hidden" value=""> 
 		<span style="display:none" id="groupSelectedName"></span> 

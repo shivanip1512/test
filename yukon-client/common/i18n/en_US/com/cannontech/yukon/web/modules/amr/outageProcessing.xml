@@ -137,7 +137,7 @@
 	<entry key="yukon.web.modules.amr.outageProcessing.readOutagesLog.completionAlert"><![CDATA[
 	Outage Logs read has completed for Outage Monitor "{outageMonitorName}" with {percentSuccess|#0.0#}% success 
 	  <a href="/group/groupMeterRead/resultDetail?resultKey={resultKey}" title="Click to see complete details">
-	    <img src="/WebConfig/yukon/Icons/magnifier_zoom_in.gif" alt="detail" style="border-style: none; vertical-align:middle">
+	    <i class="icon icon-magnifier-zoom-in fn"></i>
 	  </a>
 	]]></entry>
 

@@ -424,7 +424,7 @@ function confirmRemoveAllDevices(confirmText) {
 	                                                                </c:when>
 	                                                                <c:otherwise>
 	                                                                    <cti:msg2 var="cannotDeleteGroupLinkTitle" key="yukon.web.deviceGroups.editor.membersContainer.cannotDeleteGroupLinkTitle"/>
-	                                                                    <img class="graycssicon" title="${cannotDeleteGroupLinkTitle}" src="<cti:url value="/WebConfig/yukon/Icons/clearbits/close.gif"/>" >
+                                                                        <cti:icon icon="icon-cross" disabled="disabled" title="${cannotDeleteGroupLinkTitle}"/>
 	                                                                </c:otherwise>
 	                                                            </c:choose>
 	                                                        </td>

@@ -51,7 +51,7 @@
   <t:column width="20">
     <t:commandLink actionListener="#{sCustomerDetail.deleteProgram}">
       <t:updateActionListener property="#{sCustomerDetail.selectedProgram}" value="#{thisProgram}"/>
-      <h:graphicImage value="/WebConfig/yukon/Icons/clearbits/subtract.gif" styleClass="cssicon" />
+      <h:graphicImage value="/WebConfig/yukon/Icons/delete.png"/>
     </t:commandLink>
   </t:column>
   <t:column><t:outputText value="#{thisProgram.paoName}"/></t:column>
@@ -67,7 +67,7 @@
   <t:column width="20">
     <t:commandLink actionListener="#{sCustomerDetail.addProgram}">
       <t:updateActionListener property="#{sCustomerDetail.selectedProgram}" value="#{thisProgram}"/>
-      <h:graphicImage value="/WebConfig/yukon/Icons/clearbits/add.gif" styleClass="cssicon" />
+      <h:graphicImage value="/WebConfig/yukon/Icons/add.png"/>
     </t:commandLink>
   </t:column>
   <t:column><t:outputText value="#{thisProgram.paoName}"/></t:column>

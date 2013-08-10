@@ -50,7 +50,7 @@
   </t:column>
   <t:column width="25">
     <t:commandLink actionListener="#{sGroupDetail.deleteNotif}">
-      <h:graphicImage value="/WebConfig/yukon/Icons/clearbits/subtract.gif" styleClass="cssicon" />
+      <h:graphicImage value="/WebConfig/yukon/Icons/delete.png"/>
     </t:commandLink>
   </t:column>
 </t:dataTable>
@@ -69,7 +69,7 @@
   </t:column>
   <t:column width="25">
     <t:commandLink actionListener="#{sGroupDetail.addNotif}">
-      <h:graphicImage value="/WebConfig/yukon/Icons/clearbits/add.gif" styleClass="cssicon" />
+      <h:graphicImage value="/WebConfig/yukon/Icons/add.png"/>
     </t:commandLink>
   </t:column>
 </t:dataTable>

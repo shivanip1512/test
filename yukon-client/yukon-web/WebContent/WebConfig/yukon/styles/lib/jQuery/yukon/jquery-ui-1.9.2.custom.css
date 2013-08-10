@@ -247,9 +247,6 @@ button.ui-button::-moz-focus-inner { border: 0; padding: 0; } /* reset extra pad
     background-color: #F7F7F7;
     border: 1px solid #BBBBBB;
     border-style: none none solid none;
-    background-image: url(../../../../Icons/boxContainerBg26px.gif);
-    background-position: left bottom;
-    background-repeat:repeat-x;
     text-align: left;
 }
 .ui-dialog .ui-dialog-title {
@@ -532,8 +529,8 @@ body .ui-tooltip { border-width: 2px; }
 .ui-icon-close { background-position: -80px -128px; }
 .ui-icon-closethick { background-position: -96px -128px; }
 .ui-dialog .ui-dialog-titlebar .ui-icon-closethick {
-    background-position: 0px 0px;
-    background-image: url(../../../../Icons/close_x.gif);
+    background-position: -352px -400px;
+    background-image: url(/WebConfig/yukon/Icons/icons.png);
 }
 .ui-icon-key { background-position: -112px -128px; }
 .ui-icon-lightbulb { background-position: -128px -128px; }

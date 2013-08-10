@@ -22,13 +22,12 @@
                                         </c:forEach>
                                     </select>
                                 </tags:nameValue2>
-                                <cti:url var="folderImg" value="/WebConfig/yukon/Icons/folder_edit.gif"/>
                                 <tags:nameValue2 nameKey=".calculationUploadLabel" rowId="calculationFile">
-                                    <img src="${folderImg}">
+                                    <cti:icon icon="icon-folder-edit"/
                                     <input type="file" name="calculationFile">
                                 </tags:nameValue2>
                                 <tags:nameValue2 nameKey=".pointUploadLabel">
-                                    <img src="${folderImg}">
+                                    <cti:icon icon="icon-folder-edit"/
                                     <input type="file" name="dataFile">
                                 </tags:nameValue2>
                                 <tags:nameValue2 nameKey=".empty" excludeColon="true">

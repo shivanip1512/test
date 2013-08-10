@@ -343,7 +343,7 @@
                                                 <c:choose>
                                                     <c:when test="${point.pointId > 0}">
                                                         <span class="redBullet_${point.pointId}">
-                                                            <img src="/WebConfig/yukon/Icons/bullet_red.gif" class="tierImg" title="Questionable Quality">
+                                                            <cti:icon icon="icon-bullet-red" title="Questionable Quality"/>
                                                         </span>
                                                         <cti:pointValue pointId="${point.pointId}" format="VALUE"/>
                                                     </c:when>

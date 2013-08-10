@@ -156,15 +156,15 @@ public class DetailEconomicBean implements BaseDetailBean {
         NotificationStatus status = strategy.getNotificationSuccessStatus(participant);
         switch (status) {
         case MIXED:
-            return "/WebConfig/yukon/Icons/icon_alert.gif";
+            return "/WebConfig/yukon/Icons/warning.gif";
         case NO_FAILURES:
             return "/WebConfig/yukon/Icons/accept.png";
         case NO_SUCCESS:
-            return "/WebConfig/yukon/Icons/stop.gif";
+            return "/WebConfig/yukon/Icons/error.gif";
         case PENDING:
-            return "/WebConfig/yukon/Icons/icon_clock.gif";
+            return "/WebConfig/yukon/Icons/time.gif";
         }
-        return "/WebConfig/yukon/Icons/icon_info.gif";
+        return "/WebConfig/yukon/Icons/information.gif";
     }
     
     public String switchRevision() {

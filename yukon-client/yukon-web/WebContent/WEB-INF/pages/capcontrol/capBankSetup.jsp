@@ -419,7 +419,7 @@
 
                 <div class="titleBar boxContainer_titleBar">
                     <div class="controls" onclick="closeOrphanedCBCPopup()">
-                        <img class="minMax" alt="close" src="/WebConfig/yukon/Icons/collapse.gif">
+                        <cti:icon icon="icon-collapse" class="minMax"/>
                     </div>
                     <h3 class="title boxContainer_title">Orphaned CBC's</h3>
                 </div>

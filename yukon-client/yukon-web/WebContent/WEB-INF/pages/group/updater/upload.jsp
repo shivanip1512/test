@@ -72,7 +72,6 @@
     </div>
 </div>
 
-       <cti:url var="check" value="/WebConfig/yukon/Icons/check.gif"/>
        <table class="resultsTable">
            <thead>
                <tr>

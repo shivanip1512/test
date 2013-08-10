@@ -41,7 +41,7 @@
         <div>
             <form id="importForm" method="post" action="/capcontrol/import/cbcFile" enctype="multipart/form-data">
                 <div>
-                    <img src="/WebConfig/yukon/Icons/folder_edit.gif">
+                    <cti:icon icon="icon-folder-edit"/
                     <input type="file" name="dataFile">
                 </div>
                 <div>
@@ -81,7 +81,7 @@
                             <cti:msg2 var="displayImportType" key="${importType}" />
                             <div class="fwb"> ${displayImportType} File Format</div>
                             <a href="<cti:url value="/WebConfig/custom/sample_capcontrol_files/Sample ${displayImportType} Import.csv"/>">
-                                <img src="/WebConfig/yukon/Icons/download_file.gif">
+                                <cti:icon icon="icon-page-white-excel"/>
                                 <i:inline key="yukon.web.modules.capcontrol.import.sampleFile" />
                             </a>
                         </td>

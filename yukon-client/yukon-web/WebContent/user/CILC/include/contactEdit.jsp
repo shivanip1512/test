@@ -26,8 +26,7 @@
     </t:column>
     <t:column>
       <t:commandButton action="#{sCustomerProfile.deleteNotification}" 
-        image="/WebConfig/yukon/Icons/clearbits/close.gif"
-        styleClass="cssicon">
+        image="/WebConfig/yukon/Icons/delete.png">
         <t:updateActionListener value="#{thisNotif}" property="#{sCustomerProfile.selectedNotification}"/>
         <t:updateActionListener value="#{thisContact}" property="#{sCustomerProfile.selectedContact}"/>
       </t:commandButton>

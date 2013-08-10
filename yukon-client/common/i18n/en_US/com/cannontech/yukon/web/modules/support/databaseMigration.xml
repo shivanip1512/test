@@ -51,10 +51,6 @@
     <entry key="yukon.web.modules.support.databaseMigration.loadImport.loadFile.error.noServerFile">No valid server file selected.</entry>
 	
 	<!-- Import Validation importValidate.jsp -->
-    <entry key="yukon.web.modules.support.databaseMigration.importValidate.mag.img">/WebConfig/yukon/Icons/magnifier.gif</entry>
-    <entry key="yukon.web.modules.support.databaseMigration.importValidate.warning.img">/WebConfig/yukon/Icons/warning.gif</entry>
-    <entry key="yukon.web.modules.support.databaseMigration.importValidate.error.img">/WebConfig/yukon/Icons/error.gif</entry>
-    
 	<entry key="yukon.web.modules.support.databaseMigration.importValidate.pageTitle">Import Validation</entry>
 	<entry key="yukon.web.modules.support.databaseMigration.importValidate.boxTitle">Validate File</entry>
 	<entry key="yukon.web.modules.support.databaseMigration.importValidate.noteLabel">Note:</entry>

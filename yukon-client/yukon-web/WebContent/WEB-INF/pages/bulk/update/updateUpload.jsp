@@ -3,8 +3,6 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<cti:url var="check" value="/WebConfig/yukon/Icons/check.gif"/>
-
 <cti:standardPage module="tools" page="bulk.updateUpload">
 
     <cti:msg var="headerTitle" key="yukon.common.device.bulk.updateUpload.header"/>

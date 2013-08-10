@@ -62,7 +62,7 @@
              forceIdIndexFormula="#{group.id}">
   <t:column width="20">
     <t:commandLink actionListener="#{sProgramDetail.deleteGroup}">
-      <h:graphicImage value="/WebConfig/yukon/Icons/clearbits/subtract.gif" styleClass="cssicon" />
+      <h:graphicImage value="/WebConfig/yukon/Icons/delete.png" />
     </t:commandLink>
   </t:column>
   <t:column><t:outputText value="#{group.name}"/></t:column>
@@ -78,7 +78,7 @@
              forceIdIndexFormula="#{group.id}">
   <t:column width="20">
     <t:commandLink actionListener="#{sProgramDetail.addGroup}">
-      <h:graphicImage value="/WebConfig/yukon/Icons/clearbits/add.gif" styleClass="cssicon" />
+      <h:graphicImage value="/WebConfig/yukon/Icons/add.png" />
     </t:commandLink>
   </t:column>
   <t:column><t:outputText value="#{group.name}"/></t:column>
@@ -98,7 +98,7 @@
   <t:column width="20">
     <t:commandLink actionListener="#{sProgramDetail.deleteNotificationGroup}">
       <t:updateActionListener property="#{sProgramDetail.selectedNotificationGroup}" value="#{notifGroup}"/>
-      <h:graphicImage value="/WebConfig/yukon/Icons/clearbits/subtract.gif" styleClass="cssicon" />
+      <h:graphicImage value="/WebConfig/yukon/Icons/delete.png" />
     </t:commandLink>
   </t:column>
   <t:column><t:outputText value="#{notifGroup.notificationGroupName}"/></t:column>
@@ -114,7 +114,7 @@
   <t:column width="20">
     <t:commandLink actionListener="#{sProgramDetail.addNotificationGroup}">
       <t:updateActionListener property="#{sProgramDetail.selectedNotificationGroup}" value="#{notifGroup}"/>
-      <h:graphicImage value="/WebConfig/yukon/Icons/clearbits/add.gif" styleClass="cssicon" />
+      <h:graphicImage value="/WebConfig/yukon/Icons/add.png" />
     </t:commandLink>
   </t:column>
   <t:column><t:outputText value="#{notifGroup.notificationGroupName}"/></t:column>

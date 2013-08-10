@@ -53,8 +53,7 @@
             <div class="stacked clearfix">
                 <%-- This form submitted through ajax --%>
                 <form id="importForm" method="post" action="/bulk/fdrTranslationManager/submitImport" enctype="multipart/form-data">
-                    <cti:url var="folderImg" value="/WebConfig/yukon/Icons/folder_edit.gif"/>
-                    <img src="${folderImg}">&nbsp;<input type="file" name="importFile"><br>
+                    <cti:icon icon="icon-folder-edit"/>&nbsp;<input type="file" name="importFile"><br>
                     <input type="checkbox" name="ignoreInvalidColumns">&nbsp;<i:inline key="yukon.web.modules.tools.bulk.fdrTranslationManagement.ignoreInvalidText"/>
                     <div class="actionArea">
                         <cti:button type="submit" nameKey="import" classes="primary action"/>
