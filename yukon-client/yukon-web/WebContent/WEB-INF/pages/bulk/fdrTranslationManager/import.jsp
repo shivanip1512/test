@@ -11,7 +11,7 @@
 
   <cti:includeScript link="/JavaScript/importLogger.js" />
 
-  <cti:icon icon="icon-folder-edit"/&nbsp;<span style="color: gray">${fileName}</span>
+  <cti:icon icon="icon-folder-edit"/>&nbsp;<span style="color: gray">${fileName}</span>
   <br>
   <c:if test="${ignoreInvalidColumns}">
     <i:inline key="yukon.web.modules.tools.bulk.fdrTranslationManagement.import.ignoringInvalidColumns" />

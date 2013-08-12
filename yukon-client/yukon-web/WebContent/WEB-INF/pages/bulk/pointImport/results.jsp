@@ -17,7 +17,7 @@
     
     <tags:sectionContainer2 nameKey="mainBox">
         <div class="stacked">
-            <cti:icon icon="icon-folder-edit"/&nbsp;<span style="color: gray">${fileName}</span><br>
+            <cti:icon icon="icon-folder-edit"/>&nbsp;<span style="color: gray">${fileName}</span><br>
             <c:if test="${ignoreInvalidColumns}">
                 <cti:msg2 key=".ignoringInvalidColumns"/>
             </c:if>

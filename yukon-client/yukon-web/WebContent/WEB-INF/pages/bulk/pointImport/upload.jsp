@@ -23,11 +23,11 @@
                                     </select>
                                 </tags:nameValue2>
                                 <tags:nameValue2 nameKey=".calculationUploadLabel" rowId="calculationFile">
-                                    <cti:icon icon="icon-folder-edit"/
+                                    <cti:icon icon="icon-folder-edit"/>
                                     <input type="file" name="calculationFile">
                                 </tags:nameValue2>
                                 <tags:nameValue2 nameKey=".pointUploadLabel">
-                                    <cti:icon icon="icon-folder-edit"/
+                                    <cti:icon icon="icon-folder-edit"/>
                                     <input type="file" name="dataFile">
                                 </tags:nameValue2>
                                 <tags:nameValue2 nameKey=".empty" excludeColon="true">
