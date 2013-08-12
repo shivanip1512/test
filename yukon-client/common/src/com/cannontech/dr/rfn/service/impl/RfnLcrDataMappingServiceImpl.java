@@ -99,14 +99,13 @@ public class RfnLcrDataMappingServiceImpl implements RfnLcrDataMappingService {
         /** This may be useful some day */
         boolean readNow = (data.evaluateAsInt("/DRReport/Info/Flags") & 0x01) == 1;
         
-        intervalData = mapIntervalData(request, data, device);
+        intervalData = mapIntervalData(data, device);
         messagesToSend.addAll(intervalData);
         
         return messagesToSend;
     }
 
-    private List<PointData> mapIntervalData(RfnLcrReadingArchiveRequest request, 
-            SimpleXPathTemplate data, RfnDevice device) {
+    private List<PointData> mapIntervalData(SimpleXPathTemplate data, RfnDevice device) {
         
         int intervalLengthMinutes = evaluateArchiveReadValue(data, RfnLcrPointDataMap.RECORDING_INTERVAL).intValue();
         
@@ -132,10 +131,14 @@ public class RfnLcrDataMappingServiceImpl implements RfnLcrDataMappingService {
             LitePoint shedTimePoint = attributeService.getPointForAttribute(device, relay.getShedTimeAttribute());
 
             Long intervalStartTime = data.evaluateAsLong("/DRReport/Relays/Relay" + relay.getRelayIdXPathString() + "/IntervalData/@startTime");
+            if (intervalStartTime == null) continue;
+            
             Instant firstIntervalTimestamp = new Instant(intervalStartTime * 1000);
             
             int minutes = new Duration(firstIntervalTimestamp, timeOfReading).toStandardMinutes().getMinutes();
             int recordedIntervals = (minutes / intervalLengthMinutes);
+            if (recordedIntervals <= 0) continue;
+            
             int minutesToAdd = recordedIntervals * intervalLengthMinutes;
             
             Instant currentIntervalTimestamp = new Instant(firstIntervalTimestamp).plus(Duration.standardMinutes(minutesToAdd));
