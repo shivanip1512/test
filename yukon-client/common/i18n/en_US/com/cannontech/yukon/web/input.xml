@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
-<entry key="typeMismatch.java.lang.Integer">{0} must be a valid integer value.</entry>
+<entry key="typeMismatch.java.lang.Integer">Must be a valid integer value.</entry>
 <entry key="typeMismatch.java.lang.Long">{0} must be a valid integer value.</entry>
 <entry key="typeMismatch.java.util.Date">{0} must be a valid date.</entry>
 <entry key="typeMismatch">not a valid value</entry>

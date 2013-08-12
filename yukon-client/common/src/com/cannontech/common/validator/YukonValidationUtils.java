@@ -52,6 +52,13 @@ public class YukonValidationUtils extends ValidationUtils {
         }
     }
 
+   public static void checkIsPositive(Errors errors, String field, Integer fieldValue) {
+       
+       if (fieldValue == null || (Integer.compare(0, fieldValue) > 0)) {
+           errors.rejectValue(field, "yukon.web.error.isNotPositiveInt");
+       }
+   }
+   
     /**
      * Check to ensure that the given value is between the given min and max value. While this will
      * work with

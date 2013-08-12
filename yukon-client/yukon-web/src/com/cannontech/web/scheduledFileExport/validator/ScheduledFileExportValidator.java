@@ -2,7 +2,6 @@ package com.cannontech.web.scheduledFileExport.validator;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
-import java.util.regex.Pattern;
 
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
@@ -23,9 +22,8 @@ public class ScheduledFileExportValidator extends SimpleValidator<ScheduledFileE
 	@Override
 	protected void doValidation(ScheduledFileExportData target, Errors errors) {
 	    
-	    //FIXME Schnaser: where should this sort of validation be performed? Broken validation on Billing page as well.
 	    if (target.getDaysPrevious() != null) {
-	        YukonValidationUtils.regexCheck(errors, "daysPrevious", target.getDaysPrevious(), Pattern.compile("^[0-9]*$"), "yukon.web.error.isNotPositiveInt");
+	        YukonValidationUtils.checkIsPositive(errors, "daysPrevious", target.getDaysPrevious());
 	    }
 	    
 		YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "scheduleName", "yukon.web.modules.amr.billing.schedule.validation.invalidName");
