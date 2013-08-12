@@ -37,10 +37,10 @@
                 <c:when test="${pageScope.escapeTitle}">${fn:escapeXml(pageScope.title)}</c:when>
                 <c:otherwise>${pageScope.title}</c:otherwise>
             </c:choose>
-            <c:if test="${not empty pageScope.helpText}">
-                <cti:icon icon="icon-help" id="help_icon_${thisId}" classes="cp fn"/>
-            </c:if>
         </h3>
+        <c:if test="${not empty pageScope.helpText}">
+            <cti:icon icon="icon-help" id="help_icon_${thisId}" classes="cp"/>
+        </c:if>
     </div>
     
     <div id="${thisId}_content" class="content boxContainer_content">

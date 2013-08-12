@@ -1,17 +1,33 @@
 <%@ tag body-content="empty" %>
 
 <%@ attribute name="result" required="true" type="com.cannontech.common.search.SearchResult" %>
-<%@ attribute name="prevUrl" required="true" %>
-<%@ attribute name="nextUrl" required="true" %>
+<%@ attribute name="baseUrl" required="true" %>
+<%@ attribute name="adjustPageCount" description="When 'true', the items per page options appear. Default: false." %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+
+<cti:default var="adjustPageCount" value="false"/>
 
 <div class="compactResultsPaging">
     <div class="pagingArea">
+        <c:if test="${adjustPageCount == 'true'}">
+            <span class="fl perPageArea">
+                <i:inline key="yukon.common.paging.itemsPerPage"/>&nbsp;
+                <tags:ajaxItemsPerPageLink result="${result}" itemsPerPage="10" baseUrl="${baseUrl}"/>&nbsp;
+                <tags:ajaxItemsPerPageLink result="${result}" itemsPerPage="25" baseUrl="${baseUrl}"/>&nbsp;
+                <tags:ajaxItemsPerPageLink result="${result}" itemsPerPage="50" baseUrl="${baseUrl}"/>&nbsp;
+            </span>
+        </c:if>
         <span class="fl previousLink">
             <c:choose>
                 <c:when test="${result.previousNeeded}">
+                    <cti:url value="${baseUrl}" var="prevUrl">
+                        <cti:param name="page" value="${result.currentPage - 1}"/>
+                        <cti:param name="itemsPerPage" value="${result.count}"/>
+                    </cti:url>
                     <button class="naked f-ajaxPaging" data-url="${prevUrl}">
                         <i class="icon icon-resultset-previous"></i>
                         <span class="label"><i:inline key="yukon.common.paging.previous"/></span>
@@ -29,6 +45,10 @@
         <span class="fl nextLink">
             <c:choose>
                 <c:when test="${result.nextNeeded}">
+                    <cti:url value="${baseUrl}" var="nextUrl">
+                        <cti:param name="page" value="${result.currentPage + 1}"/>
+                        <cti:param name="itemsPerPage" value="${result.count}"/>
+                    </cti:url>
                     <button class="naked f-ajaxPaging" data-url="${nextUrl}">
                         <span class="label"><i:inline key="yukon.common.paging.next"/></span>
                         <i class="icon icon-resultset-next"></i>

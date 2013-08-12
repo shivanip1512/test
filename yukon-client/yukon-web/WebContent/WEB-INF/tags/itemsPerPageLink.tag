@@ -1,11 +1,11 @@
-<%@ tag body-content="empty" trimDirectiveWhitespaces="true"%>
+<%@ tag body-content="empty" trimDirectiveWhitespaces="true" %>
+
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 
 <%@ attribute name="searchResult" required="true" type="com.cannontech.common.search.SearchResult" %>
 <%@ attribute name="baseUrl" required="true" type="java.lang.String" %>
 <%@ attribute name="itemsPerPage" required="true" type="java.lang.Integer" %>
-
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 
 <c:if test="${itemsPerPage == searchResult.count}">
     <span class="selectedItem">${itemsPerPage}</span>

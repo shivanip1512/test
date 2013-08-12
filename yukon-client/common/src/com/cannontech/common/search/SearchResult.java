@@ -70,6 +70,11 @@ public class SearchResult<T> {
     public void setHitCount(int resultCount) {
         this.hitCount = resultCount;
     }
+    
+    public int getCurrentPage() {
+        int currentPage = (startIndex + count) / count;
+        return currentPage;
+    }
 
     /**
      * @return the total number of "hits" that the query would have generated if

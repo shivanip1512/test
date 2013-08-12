@@ -75,6 +75,7 @@
     <div class="outer">
         <div class="inner">
             <div class="toolbar">
+                <cti:outputContent writable="${searchRenderer}"/>
                 <button id="yukon_alert_button" class="action red"><span class="label"></span></button>
                 <div class="dropdown">
                     <a href="#" class="button b-user-menu"><i class="icon icon-user"></i><span class="label">${fn:escapeXml(displayName)}</span><span class="toggle"></span></a>
@@ -119,7 +120,6 @@
 			</c:if>
             <div class="page-actions">
                 <cm:dropdown id="b-page-actions" type="button" containerCssClass="fr dn"/>
-                <cti:outputContent writable="${searchRenderer}" />
                 <cti:button id="b-search-results" classes="fr dn left" nameKey="searchResults" renderMode="buttonImage" icon="icon-resultset-first-grey"/>
             </div>
 		</div>

@@ -25,6 +25,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
@@ -248,14 +249,11 @@ public class ControlAuditController {
     }
 
     @RequestMapping
-    public String page(ModelMap model, ResultType type, int index, Direction direction, String auditId) {
-        
-        int page = (index / 10) + 1;
-        if (direction == Direction.PREV) {
-            page--;
-        } else {
-            page++;
-        }
+    public String page(ModelMap model, 
+                       ResultType type,
+                       String auditId,
+                       @RequestParam(defaultValue="10") int itemsPerPage, 
+                       @RequestParam(defaultValue="1") int page) {
         
         ControlAuditResult result = resultsCache.getResult(auditId);
         List<AuditRow> inventory = null;
@@ -274,7 +272,7 @@ public class ControlAuditController {
             break;
         }
         
-        SearchResult<AuditRow> pagedRows = SearchResult.pageBasedForWholeList(page, 10, inventory);
+        SearchResult<AuditRow> pagedRows = SearchResult.pageBasedForWholeList(page, itemsPerPage, inventory);
         model.addAttribute("result", pagedRows);
         model.addAttribute("type", type);
         model.addAttribute("auditId", auditId);

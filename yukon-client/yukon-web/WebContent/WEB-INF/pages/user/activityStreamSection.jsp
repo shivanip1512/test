@@ -29,7 +29,7 @@
             </table>
         </c:if>
     </div>
-    <cti:url value="/user/activityStream/${userEvents.endIndex}.html" var="nextUrl" />
-    <cti:url value="/user/activityStream/${userEvents.previousStartIndex}.html" var="prevUrl"/>
-    <tags:pagingResultsControls prevUrl="${prevUrl}" nextUrl="${nextUrl}" result="${userEvents}"/>
+<%--     <cti:url value="/user/activityStream/${userEvents.endIndex}.html" var="nextUrl" /> --%>
+<%--     <cti:url value="/user/activityStream/${userEvents.previousStartIndex}.html" var="prevUrl"/> --%>
+<%--     <tags:pagingResultsControls prevUrl="${prevUrl}" nextUrl="${nextUrl}" result="${userEvents}"/> --%>
 </cti:msgScope>

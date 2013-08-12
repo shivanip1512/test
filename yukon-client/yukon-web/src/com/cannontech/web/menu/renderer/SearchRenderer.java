@@ -41,7 +41,7 @@ public class SearchRenderer {
             attrs.put("method", formData.getFormMethod());
             attrs.put("action", formData.getFormAction());
             Element form = new Element(Tag.valueOf("form"), "", attrs);
-            form.addClass("yukon-search-form fr");
+            form.addClass("yukon-search-form");
             // search types?
             if (formData.getTypeOptions() != null) {
                 attrs = new Attributes();

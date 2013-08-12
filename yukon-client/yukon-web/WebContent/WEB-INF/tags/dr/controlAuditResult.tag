@@ -56,17 +56,9 @@
     </table>
 </div>
 <c:if test="${pageMe}">
-    <cti:url value="page" var="nextUrl">
-        <cti:param name="direction" value="NEXT"/>
-        <cti:param name="index" value="${result.startIndex + 1}"/>
+    <cti:url value="page" var="baseUrl">
         <cti:param name="type" value="${type}"/>
         <cti:param name="auditId" value="${auditId}"/>
     </cti:url>
-    <cti:url value="page" var="prevUrl">
-        <cti:param name="direction" value="PREV"/>
-        <cti:param name="index" value="${result.startIndex + 1}"/>
-        <cti:param name="type" value="${type}"/>
-        <cti:param name="auditId" value="${auditId}"/>
-    </cti:url>
-    <tags:pagingResultsControls prevUrl="${prevUrl}" nextUrl="${nextUrl}" result="${result}"/>
+    <tags:pagingResultsControls baseUrl="${baseUrl}" result="${result}"/>
 </c:if>
