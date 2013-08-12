@@ -39,6 +39,7 @@ import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
+import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DurationFormattingService;
 import com.cannontech.core.service.durationFormatter.DurationFormat;
@@ -235,12 +236,16 @@ public class ControlAreaController {
                                                bindingResult, detailFilter);
 
         addFilterErrorsToFlashScopeIfNecessary(model, bindingResult, flashScope);
-            
-        SimpleAssetAvailabilitySummary aaSummary = 
-                assetAvailabilityService.getAssetAvailabilityFromDrGroup(controlArea.getPaoIdentifier());
-        model.addAttribute("assetAvailabilitySummary", aaSummary);
-        model.addAttribute("pieJSONData", getPieJSONData(aaSummary));
-
+        
+        try {
+            SimpleAssetAvailabilitySummary aaSummary = 
+                    assetAvailabilityService.getAssetAvailabilityFromDrGroup(controlArea.getPaoIdentifier());
+            model.addAttribute("assetAvailabilitySummary", aaSummary);
+            model.addAttribute("pieJSONData", getPieJSONData(aaSummary));
+        } catch(DynamicDataAccessException e) {
+            model.addAttribute("dispatchDisconnected", true);
+        }
+        
         return "dr/controlArea/detail.jsp";
     }
 

@@ -650,6 +650,27 @@ public class InventoryDaoImpl implements InventoryDao {
     }
     
     @Override
+    public Map<Integer, Integer> getDeviceIds(Collection<Integer> inventoryIds) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT InventoryId, DeviceId");
+        sql.append("FROM InventoryBase");
+        sql.append("WHERE InventoryId").in(inventoryIds);
+        
+        List<Pair<Integer, Integer>> idsList = yukonJdbcTemplate.query(sql, new YukonRowMapper<Pair<Integer, Integer>>() {
+            public Pair<Integer, Integer> mapRow(YukonResultSet rs) throws SQLException {
+                int deviceId = rs.getInt("DeviceId");
+                int inventoryId = rs.getInt("InventoryId");
+                return new Pair<Integer, Integer>(inventoryId, deviceId);
+            }
+        });
+        Map<Integer, Integer> idsMap = Maps.newHashMap();
+        for(Pair<Integer, Integer> pair : idsList) {
+            idsMap.put(pair.getFirst(), pair.getSecond());
+        }
+        return idsMap;
+    }
+    
+    @Override
     public int getAccountIdForInventory(int inventoryId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT AccountId");

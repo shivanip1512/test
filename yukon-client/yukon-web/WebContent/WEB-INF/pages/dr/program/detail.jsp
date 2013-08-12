@@ -67,8 +67,18 @@
 
             <%-- Display the Asset Availability Info --%>
             <tags:sectionContainer2 nameKey="assetAvailability">
-                <dr:assetAvailabilityStatus assetId="${programId}" 
-                    assetAvailabilitySummary="${assetAvailabilitySummary}" pieJSONData="${pieJSONData}"/>
+                <c:choose>
+                    <c:when test="${dispatchDisconnected}">
+                        <span class="error">
+                            <i:inline key="yukon.web.modules.operator.hardware.assetAvailability.dispatchDisconnected"/>
+                        </span>
+                    </c:when>
+                    <c:otherwise>
+                        <dr:assetAvailabilityStatus assetId="${programId}" 
+                            assetAvailabilitySummary="${assetAvailabilitySummary}" 
+                            pieJSONData="${pieJSONData}"/>
+                    </c:otherwise>
+                </c:choose>
             </tags:sectionContainer2>
 
 

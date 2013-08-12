@@ -7,15 +7,15 @@ import java.util.Set;
 import com.cannontech.common.pao.PaoIdentifier;
 
 /**
- * Retrieves a set of all devices "in" a load group, program, scenario or area. To be "in" a load 
- * group, devices must have associated inventory enrolled in that group.
+ * Dao for determining hierarchy of dr control areas, scenarios, programs and load groups, and
+ * enrolled inventory/devices.
  */
 public interface DRGroupDeviceMappingDao {
 
     /**
      * @return The device ids / inventory ids associated with the specified load groups.
      */
-    public Map<Integer, Integer> getDeviceAndInventoryIdsForLoadGroups(Collection<Integer> loadGroupIds);
+    public Map<Integer, Integer> getInventoryAndDeviceIdsForLoadGroups(Collection<Integer> loadGroupIds);
     
     /**
      * @return The set of device ids associated with the specified load group, program, scenario or

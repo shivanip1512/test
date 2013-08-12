@@ -1,6 +1,7 @@
 package com.cannontech.common.mock;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +10,7 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.capcontrol.CapBank;
@@ -241,6 +243,17 @@ public class MockPointDao implements PointDao {
 
     @Override
     public Map<LitePoint, PaoPointIdentifier> getLitePointsForPaoPointIdentifiers(Iterable<PaoPointIdentifier> paoPointIdentifiers) {
+        return null;
+    }
+
+    @Override
+    public Map<Integer, Integer> getPointIdsForPaos(Collection<Integer> paoIds) {
+        return null;
+    }
+
+    @Override
+    public Map<Integer, Integer> getPointIdsForPaosAndAttribute(SqlFragmentSource attributeLookupSql,
+                                                                Collection<Integer> paoIds) {
         return null;
     }
 }

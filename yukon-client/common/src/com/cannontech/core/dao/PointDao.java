@@ -1,5 +1,6 @@
 package com.cannontech.core.dao;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +9,7 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LitePointLimit;
@@ -32,7 +34,18 @@ public interface PointDao {
     public Map<LitePoint, PaoPointIdentifier> getLitePointsForPaoPointIdentifiers(Iterable<PaoPointIdentifier> paoPointIdentifiers);
     
     public List<PointBase> getPointsForPao(int paoId);
-
+    
+    /**
+     * Retrieves point ids for every point attached to the specified paos.
+     */
+    public Map<Integer, Integer> getPointIdsForPaos(Collection<Integer> paoIds);
+    
+    /**
+     * Retrieves point ids for the points matching the attribute lookup sql on the specified paos. 
+     */
+    public Map<Integer, Integer> getPointIdsForPaosAndAttribute(SqlFragmentSource attributeLookupSql, 
+                                                                Collection<Integer> paoIds);
+    
     /**
      * Returns the next available point id.
      */

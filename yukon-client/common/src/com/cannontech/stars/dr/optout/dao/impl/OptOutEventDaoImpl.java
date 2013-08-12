@@ -760,6 +760,21 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 	}
 	
 	@Override
+	public Set<Integer> getOptedOutInventory(Collection<Integer> inventoryIds) {
+	    SqlStatementBuilder sql = new SqlStatementBuilder();
+	    sql.append("SELECT DISTINCT ib.InventoryId");
+	    sql.append("FROM InventoryBase ib");
+        sql.append("JOIN OptOutEvent ooe on ooe.InventoryId = ib.InventoryId");
+        sql.append("WHERE ib.InventoryId").in(inventoryIds);
+        sql.append("AND ooe.StartDate").lte(Instant.now());
+        sql.append("AND ooe.StopDate").gt(Instant.now());
+        sql.append("AND ooe.EventState").eq_k(OptOutEventState.START_OPT_OUT_SENT);
+        
+        List<Integer> optedOutInventoryIds = yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
+        return Sets.newHashSet(optedOutInventoryIds);
+	}
+	
+	@Override
 	public Set<Integer> getOptedOutInventoryByLoadGroups(Collection<Integer> loadGroupIds) {
 	    SqlStatementBuilder sql = new SqlStatementBuilder();
 	    sql.append("SELECT DISTINCT ib.InventoryId");

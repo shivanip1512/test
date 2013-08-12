@@ -31,23 +31,23 @@ public class DRGroupDeviceMappingDaoImpl implements DRGroupDeviceMappingDao {
     @Override
     public Set<Integer> getDeviceIdsForGrouping(PaoIdentifier paoIdentifier) {
         Collection<Integer> loadGroupIds = getLoadGroupIdsForDrGroup(paoIdentifier);
-        return getDeviceAndInventoryIdsForLoadGroups(loadGroupIds).keySet();
+        Set<Integer> deviceIds = Sets.newHashSet(getInventoryAndDeviceIdsForLoadGroups(loadGroupIds).values());
+        return deviceIds;
     }
     
     @Override
-    public Map<Integer, Integer> getDeviceAndInventoryIdsForLoadGroups(Collection<Integer> loadGroupIds) {
+    public Map<Integer, Integer> getInventoryAndDeviceIdsForLoadGroups(Collection<Integer> loadGroupIds) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT ib.DeviceId, ib.InventoryId");
         sql.append("FROM LMHardwareConfiguration lmhc");
         sql.append("JOIN InventoryBase ib ON ib.InventoryId = lmhc.InventoryId");
         sql.append("WHERE lmhc.AddressingGroupId").in(loadGroupIds);
-        sql.append("AND ib.DeviceId").gt(0);
         
         List<Pair<Integer, Integer>> idsList = yukonJdbcTemplate.query(sql, new YukonRowMapper<Pair<Integer, Integer>>() {
             public Pair<Integer, Integer> mapRow(YukonResultSet rs) throws SQLException {
                 int deviceId = rs.getInt("DeviceId");
                 int inventoryId = rs.getInt("InventoryId");
-                return new Pair<Integer, Integer>(deviceId, inventoryId);
+                return new Pair<Integer, Integer>(inventoryId, deviceId);
             }
         });
         Map<Integer, Integer> idsMap = Maps.newHashMap();

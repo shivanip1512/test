@@ -30,6 +30,7 @@ import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.DatedObject;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authorization.support.Permission;
+import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.assetavailability.SimpleAssetAvailabilitySummary;
@@ -105,11 +106,15 @@ public class ProgramController extends ProgramControllerBase {
         model.addAttribute("parentControlArea", parentControlArea);
         List<Scenario> parentScenarios = scenarioDao.findScenariosForProgram(programId);
         model.addAttribute("parentScenarios", parentScenarios);
-
-        SimpleAssetAvailabilitySummary aaSummary = 
-                assetAvailabilityService.getAssetAvailabilityFromDrGroup(program.getPaoIdentifier());
-        model.addAttribute("assetAvailabilitySummary", aaSummary);
-        model.addAttribute("pieJSONData", getPieJSONData(aaSummary));
+        
+        try {
+            SimpleAssetAvailabilitySummary aaSummary = 
+                    assetAvailabilityService.getAssetAvailabilityFromDrGroup(program.getPaoIdentifier());
+            model.addAttribute("assetAvailabilitySummary", aaSummary);
+            model.addAttribute("pieJSONData", getPieJSONData(aaSummary));
+        } catch(DynamicDataAccessException e) {
+            model.addAttribute("dispatchDisconnected", true);
+        }
         
         return "dr/program/detail.jsp";
     }

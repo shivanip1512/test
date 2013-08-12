@@ -1,12 +1,12 @@
 package com.cannontech.dr.assetavailability.service;
 
 import java.util.Collection;
-import java.util.Set;
+import java.util.Map;
 
 import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.dr.assetavailability.AssetAvailability;
+import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
+import com.cannontech.dr.assetavailability.SimpleAssetAvailability;
 import com.cannontech.dr.assetavailability.SimpleAssetAvailabilitySummary;
-import com.cannontech.dr.assetavailability.service.impl.NoInventoryException;
 
 /**
  * Service for calculating the asset availability of DR devices and aggregate groups (load groups,
@@ -28,25 +28,26 @@ public interface AssetAvailabilityService {
     /**
      * Gets a simple asset availability summary of all inventory in all load groups in the specified
      * dr grouping.
+     * @throws DynamicDataAccessException if the connection to dispatch is invalid
      */
-    public SimpleAssetAvailabilitySummary getAssetAvailabilityFromDrGroup(PaoIdentifier drPaoIdentifier);
+    public SimpleAssetAvailabilitySummary getAssetAvailabilityFromDrGroup(PaoIdentifier drPaoIdentifier) throws DynamicDataAccessException;
     
     /**
      * Gets a simple asset availability summary of all inventory in all specified load groups.
+     * @throws DynamicDataAccessException if the connection to dispatch is invalid
      */
-    public SimpleAssetAvailabilitySummary getAssetAvailabilityFromLoadGroups(Collection<Integer> loadGroupIds);
+    public SimpleAssetAvailabilitySummary getAssetAvailabilityFromLoadGroups(Collection<Integer> loadGroupIds) throws DynamicDataAccessException;
     
     /**
-     * @return The AssetAvailability for the specified device.
-     * @throws NoInventoryException If the device has no associated inventory.
+     * @return The AssetAvailability for the specified inventory.
+     * @throws DynamicDataAccessException if the connection to dispatch is invalid
      */
-    public AssetAvailability getAssetAvailability(int deviceId) throws NoInventoryException;
+    public SimpleAssetAvailability getAssetAvailability(int inventoryIds) throws DynamicDataAccessException;
     
     /**
-     * @return The AssetAvailability for the specified devices. An AssetAvailability is returned for
-     * each deviceId. However, if the asset availability cannot be retrieved (e.g. no associated
-     * inventory), the object will only contain the deviceId and null values.
+     * @return A map of inventoryId to AssetAvailability for the specified inventory.
+     * @throws DynamicDataAccessException if the connection to dispatch is invalid
      */
-    public Set<AssetAvailability> getAssetAvailability(Collection<Integer> deviceIds);
+    public Map<Integer, SimpleAssetAvailability> getAssetAvailability(Collection<Integer> inventoryIds) throws DynamicDataAccessException;
 
 }

@@ -3,7 +3,6 @@ package com.cannontech.stars.dr.hardware.dao.impl;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -25,6 +24,8 @@ import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteCustomer;
+import com.cannontech.dr.assetavailability.DeviceRelayApplianceCategories;
+import com.cannontech.dr.assetavailability.DeviceRelayApplianceCategory;
 import com.cannontech.stars.core.dao.StarsApplianceDao;
 import com.cannontech.stars.database.data.lite.LiteStarsAppliance;
 import com.cannontech.stars.database.data.lite.LiteAccountInfo;
@@ -190,9 +191,58 @@ public class LMHardwareConfigurationDaoImpl implements LMHardwareConfigurationDa
         }
     }
     
+    @Override
+    public DeviceRelayApplianceCategories getDeviceRelayApplianceCategoryId(Collection<Integer> inventoryIds) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT ib.DeviceId, ab.ApplianceCategoryID, lmhc.LoadNumber AS Relay");
+        sql.append("FROM LmHardwareConfiguration lmhc");
+        sql.append("JOIN ApplianceBase ab ON ab.ApplianceId = lmhc.ApplianceId");
+        sql.append("JOIN InventoryBase ib ON ib.InventoryId = lmhc.InventoryId");
+        sql.append("WHERE ib.DeviceId").gt(0);
+        sql.append("AND ib.InventoryId").in(inventoryIds);
+        
+        List<DeviceRelayApplianceCategory> results = yukonJdbcTemplate.query(sql, new YukonRowMapper<DeviceRelayApplianceCategory>() {
+            public DeviceRelayApplianceCategory mapRow(YukonResultSet rs) throws SQLException {
+                return new DeviceRelayApplianceCategory(rs.getInt("DeviceId"), 
+                                                        rs.getInt("Relay"), 
+                                                        rs.getInt("ApplianceCategoryId"));
+            }
+        });
+        
+        return new DeviceRelayApplianceCategories(results);
+    }
+    
+    @Override
+    public Multimap<Integer, PaoIdentifier> getRelayToDeviceMapByDeviceIds(Collection<Integer> deviceIds) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DISTINCT DeviceId, ypo.Type, lmhc.LoadNumber AS Relay");
+        sql.append("FROM LMHardwareConfiguration lmhc");
+        sql.append("JOIN LMHardwareControlGroup lmhcg ON lmhcg.InventoryID = lmhc.InventoryId");
+        sql.append("JOIN InventoryBase ib ON ib.InventoryId = lmhc.InventoryId");
+        sql.append("JOIN YukonPaObject ypo ON ypo.PaObjectId = ib.DeviceId");
+        sql.append("WHERE DeviceId").in(deviceIds);
+        
+        List<Pair<Integer, PaoIdentifier>> resultsList = yukonJdbcTemplate.query(sql, new YukonRowMapper<Pair<Integer, PaoIdentifier>>() {
+            public Pair<Integer, PaoIdentifier> mapRow(YukonResultSet rs) throws SQLException {
+                int relay = rs.getInt("Relay");
+                int paoId = rs.getInt("DeviceId");
+                PaoType paoType = rs.getEnum("Type", PaoType.class);
+                PaoIdentifier paoIdentifier = new PaoIdentifier(paoId, paoType);
+                return new Pair<Integer, PaoIdentifier>(relay, paoIdentifier);
+            }
+        });
+        
+        Multimap<Integer, PaoIdentifier> resultMultiMap = ArrayListMultimap.create();
+        for(Pair<Integer, PaoIdentifier> pair : resultsList) {
+            resultMultiMap.put(pair.getFirst(), pair.getSecond());
+        }
+        return resultMultiMap;
+    }
+    
+    @Override
     public Multimap<Integer, PaoIdentifier> getRelayToDeviceMapByLoadGroups(Collection<Integer> loadGroupIds) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT DISTINCT  DeviceId, ypo.Type, lmhc.LoadNumber AS Relay");
+        sql.append("SELECT DISTINCT DeviceId, ypo.Type, lmhc.LoadNumber AS Relay");
         sql.append("FROM LMHardwareConfiguration lmhc");
         sql.append("JOIN LMHardwareControlGroup lmhcg ON lmhcg.InventoryID = lmhc.InventoryId");
         sql.append("JOIN InventoryBase ib ON ib.InventoryId = lmhc.InventoryId");

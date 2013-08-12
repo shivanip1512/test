@@ -28,6 +28,7 @@ import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
+import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.dr.assetavailability.SimpleAssetAvailabilitySummary;
 import com.cannontech.dr.assetavailability.service.AssetAvailabilityService;
@@ -120,11 +121,15 @@ public class ScenarioController {
                                                bindingResult, detailFilter);
 
         addFilterErrorsToFlashScopeIfNecessary(model, bindingResult, flashScope);
-
-        SimpleAssetAvailabilitySummary aaSummary = 
-                assetAvailabilityService.getAssetAvailabilityFromDrGroup(scenario.getPaoIdentifier());
-        model.addAttribute("assetAvailabilitySummary", aaSummary);
-        model.addAttribute("pieJSONData", getPieJSONData(aaSummary));
+        
+        try {
+            SimpleAssetAvailabilitySummary aaSummary = 
+                    assetAvailabilityService.getAssetAvailabilityFromDrGroup(scenario.getPaoIdentifier());
+            model.addAttribute("assetAvailabilitySummary", aaSummary);
+            model.addAttribute("pieJSONData", getPieJSONData(aaSummary));
+        } catch(DynamicDataAccessException e) {
+            model.addAttribute("dispatchDisconnected", true);
+        }
         
         return "dr/scenario/detail.jsp";
     }

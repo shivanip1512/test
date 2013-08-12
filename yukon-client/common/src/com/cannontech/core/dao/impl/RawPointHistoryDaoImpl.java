@@ -990,6 +990,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         sql.append("JOIN Point p ON rph.PointId = p.PointId");
         sql.append("WHERE p.PointOffset").eq_k(identifier.getOffset());
         sql.append("AND p.PointType").eq_k(identifier.getPointType());
+        sql.append("AND p.PaObjectId").eq(pao.getPaoIdentifier().getPaoId());
         sql.append("AND rph.Value").gt(0);
         
         final LiteRPHQualityRowMapper liteRPHQualityRowMapper = new LiteRPHQualityRowMapper();

@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -29,6 +30,7 @@ import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.Pair;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -603,7 +605,49 @@ public class PointDaoImpl implements PointDao {
 	        throw new NotFoundException("unable to find pointId for " + paoPointIdentifier, e);
 	    }
 	}
-
+    
+    @Override
+    public Map<Integer, Integer> getPointIdsForPaosAndAttribute(SqlFragmentSource attributeLookupSql, 
+                                                                Collection<Integer> paoIds) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.appendFragment(attributeLookupSql);
+        sql.append("AND YPO.paObjectId").in(paoIds);
+        
+        List<Pair<Integer, Integer>> pointPaoPairs = yukonJdbcTemplate.query(sql, new YukonRowMapper<Pair<Integer, Integer>>() {
+            public Pair<Integer, Integer> mapRow(YukonResultSet rs) throws SQLException {
+                int paObjectId = rs.getInt("PaObjectId");
+                int pointId = rs.getInt("PointId");
+                return new Pair<Integer, Integer>(pointId, paObjectId);
+            }
+        });
+        Map<Integer, Integer> pointsToPao = Maps.newHashMap();
+        for(Pair<Integer, Integer> pair : pointPaoPairs) {
+            pointsToPao.put(pair.getFirst(), pair.getSecond());
+        }
+        return pointsToPao;
+    }
+    
+    @Override
+    public Map<Integer, Integer> getPointIdsForPaos(Collection<Integer> paoIds) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT PaObjectId, PointId");
+        sql.append("FROM Point");
+        sql.append("WHERE PaObjectId").in(paoIds);
+        
+        List<Pair<Integer, Integer>> pointPaoPairs = yukonJdbcTemplate.query(sql, new YukonRowMapper<Pair<Integer, Integer>>() {
+            public Pair<Integer, Integer> mapRow(YukonResultSet rs) throws SQLException {
+                int paObjectId = rs.getInt("PaObjectId");
+                int pointId = rs.getInt("PointId");
+                return new Pair<Integer, Integer>(pointId, paObjectId);
+            }
+        });
+        Map<Integer, Integer> pointsToPao = Maps.newHashMap();
+        for(Pair<Integer, Integer> pair : pointPaoPairs) {
+            pointsToPao.put(pair.getFirst(), pair.getSecond());
+        }
+        return pointsToPao;
+    }
+    
     @Override
     public List<PointBase> getPointsForPao(int paoId) {
         

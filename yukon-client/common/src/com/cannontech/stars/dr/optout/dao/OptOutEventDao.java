@@ -234,4 +234,9 @@ public interface OptOutEventDao {
 	 * @return A set of ids for all currently opted out inventory in the specified load groups.
 	 */
 	public Set<Integer> getOptedOutInventoryByLoadGroups(Collection<Integer> loadGroupIds);
+	
+	/**
+	 * @return A set of ids for all currently opted out inventory in the specified list.
+	 */
+	public Set<Integer> getOptedOutInventory(Collection<Integer> inventoryIds);
 }

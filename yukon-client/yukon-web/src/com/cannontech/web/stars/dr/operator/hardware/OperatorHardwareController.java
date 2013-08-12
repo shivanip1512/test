@@ -47,6 +47,8 @@ import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.ServiceCompanyDao;
 import com.cannontech.core.dao.YukonListDao;
+import com.cannontech.core.dynamic.exception.DispatchNotConnectedException;
+import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -57,6 +59,7 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.dr.assetavailability.AssetAvailability;
+import com.cannontech.dr.assetavailability.SimpleAssetAvailability;
 import com.cannontech.dr.assetavailability.service.AssetAvailabilityService;
 import com.cannontech.dr.assetavailability.service.impl.NoInventoryException;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -368,8 +371,12 @@ public class OperatorHardwareController {
         model.addAttribute("showViewMore", showViewMore);
         
         if (hardware.getHardwareType().isTwoWay()) {
-            AssetAvailability assetAvail = assetAvailabilityService.getAssetAvailability(hardware.getDeviceId());
-            model.addAttribute("assetAvailability", assetAvail);
+            try {
+                SimpleAssetAvailability assetAvail = assetAvailabilityService.getAssetAvailability(hardware.getInventoryId());
+                model.addAttribute("assetAvailability", assetAvail);
+            } catch(DynamicDataAccessException ee) {
+                model.addAttribute("dispatchDisconnected", true);
+            }
             model.addAttribute("isTwoWayDevice", true);
         }
         

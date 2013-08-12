@@ -27,6 +27,7 @@ import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.validator.YukonMessageCodeResolver;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
+import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.assetavailability.SimpleAssetAvailabilitySummary;
@@ -109,11 +110,15 @@ public class LoadGroupController {
             new LoadGroupsForMacroLoadGroupFilter(loadGroupId);
         loadGroupControllerHelper.filterGroups(model, userContext, backingBean,
                                                bindingResult, detailFilter, flashScope);
-
-        SimpleAssetAvailabilitySummary aaSummary = 
-                assetAvailabilityService.getAssetAvailabilityFromDrGroup(loadGroup.getPaoIdentifier());
-        model.addAttribute("assetAvailabilitySummary", aaSummary);
-        model.addAttribute("pieJSONData", getPieJSONData(aaSummary));
+        
+        try {
+            SimpleAssetAvailabilitySummary aaSummary = 
+                    assetAvailabilityService.getAssetAvailabilityFromDrGroup(loadGroup.getPaoIdentifier());
+            model.addAttribute("assetAvailabilitySummary", aaSummary);
+            model.addAttribute("pieJSONData", getPieJSONData(aaSummary));
+        } catch(DynamicDataAccessException e) {
+            model.addAttribute("dispatchDisconnected", true);
+        }
 
         return "dr/loadGroup/detail.jsp";
     }

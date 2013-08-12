@@ -135,6 +135,7 @@
     <entry key="yukon.web.modules.operator.hardware.assetAvailability.optedOutNotRunning">Opted Out (Not Running)</entry>
     <entry key="yukon.web.modules.operator.hardware.assetAvailability.optedOutUnavailable">Opted Out (Unavailable)</entry>
     <entry key="yukon.web.modules.operator.hardware.assetAvailability.numberOfDevices">{0, choice, 0#Devices|1#Device|1&lt;Devices}</entry>
+    <entry key="yukon.web.modules.operator.hardware.assetAvailability.dispatchDisconnected">Error: not connected to Dispatch</entry>
     
     <!-- Errors -->
     

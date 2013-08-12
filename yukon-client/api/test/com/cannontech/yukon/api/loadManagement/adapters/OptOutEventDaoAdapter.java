@@ -168,4 +168,9 @@ public class OptOutEventDaoAdapter implements OptOutEventDao {
         throw new UnsupportedOperationException("not implemented");
     }
 
+    @Override
+    public Set<Integer> getOptedOutInventory(Collection<Integer> inventoryIds) {
+        throw new UnsupportedOperationException("not implemented");
+    }
+
 }
