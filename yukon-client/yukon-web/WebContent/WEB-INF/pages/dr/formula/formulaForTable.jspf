@@ -70,7 +70,7 @@
                                     <c:if test="${formulaBean.tables[tableLoop.index].inputType != 'TIME'}">
                                         <tags:nameValueStacked nameKey=".inputRange">
 		                                    ${formulaBean.tables[tableLoop.index].inputMin}
-		                                    <i:inline key="yukon.common.to"/>&nbsp;
+		                                    <i:inline key="yukon.common.to"/>
 		                                    ${formulaBean.tables[tableLoop.index].inputMax}
 	                                    </tags:nameValueStacked>
                                     </c:if>

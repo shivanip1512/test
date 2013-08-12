@@ -119,10 +119,10 @@ public class LookupTableBean {
     }
 
     public double getInputMin() {
-        if (timeEntries == null || timeEntries.isEmpty()) {
+        if (entries == null || entries.isEmpty()) {
             return 0;
         }
-        return 0;//Collections.min(TableEntryBean.toLookupTableMap(entries).keySet());
+        return Collections.min(entries).getKey();
     }
 
     public List<TableEntryBean> getEntries() {
@@ -146,7 +146,7 @@ public class LookupTableBean {
         if (timeEntries == null || timeEntries.isEmpty()) {
             return null;
         }
-        return null;//Collections.min(TimeTableEntryBean.toLookupTableMap(timeEntries).keySet());
+        return Collections.min(timeEntries).getKey();
     }
 
     public List<TimeTableEntryBean> getTimeEntries() {
