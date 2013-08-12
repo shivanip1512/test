@@ -186,6 +186,14 @@ public interface DeviceConfigurationDao {
     public LightDeviceConfiguration findConfigurationForDevice(YukonDevice device);
     
     /**
+     * Get the configuration for a device
+     * @param device the device whose configuration information is being queried.
+     * @return a populated {@link LightDeviceConfiguration} object containing the device's basic config information.
+     * @throws NotFoundException if no configuration exists for the device.
+     */
+    public LightDeviceConfiguration getConfigurationForDevice(YukonDevice device) throws NotFoundException;
+    
+    /**
      * Check if a configuration supports a given pao type.
      * @param configuration the configuration being checked.
      * @param paoType the pao type being checked.
@@ -234,8 +242,9 @@ public interface DeviceConfigurationDao {
     /**
      * Returns the value of the device config item for the given config id and field name.
      * @param configId the identifier of the configuration containing the item value being queried.
+     * @param categoryType the type of category the field belongs to.
      * @param fieldName the name of the field whose item value is being queried.
      * @return the string representation of the value for the specified item.
      */
-    public String getValueForItemName(int configId, String fieldName);
+    public String getValueForItemName(int configId, CategoryType categoryType, String itemName);
 }

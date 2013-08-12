@@ -26,6 +26,7 @@ import javax.xml.validation.SchemaFactory;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 import org.xml.sax.ErrorHandler;
@@ -815,6 +816,16 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     
     @Override
     public LightDeviceConfiguration findConfigurationForDevice(YukonDevice device) {
+        try {
+            LightDeviceConfiguration config = getConfigurationForDevice(device);
+            return config;
+        } catch (NotFoundException nfe) {
+            return null;
+        }
+    }
+    
+    @Override
+    public LightDeviceConfiguration getConfigurationForDevice(YukonDevice device) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DC.DeviceConfigurationId, DC.Name, DC.Description");
         sql.append("FROM DeviceConfiguration DC");
@@ -825,7 +836,8 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         try {
             return jdbcTemplate.queryForObject(sql, new LightConfigurationRowMapper());
         } catch(IncorrectResultSizeDataAccessException e) {
-            return null;
+            throw new NotFoundException("No configuration exists for device with id " + 
+                                        device.getPaoIdentifier().getPaoId());
         }
     }
     
@@ -939,13 +951,22 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     }
 
     @Override
-    public String getValueForItemName(int configId, String itemName) {
+    public String getValueForItemName(int configId, CategoryType categoryType, String itemName) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT ItemValue");
-        sql.append("FROM DeviceConfigCategoryItem");
-        sql.append("WHERE DeviceConfigurationID").eq(configId).append("AND ItemName").eq(itemName);
+        sql.append("SELECT DCI.ItemValue");
+        sql.append("FROM DeviceConfigCategoryItem DCI");
+        sql.append("    JOIN DeviceConfigCategoryMap DCM ON DCM.DeviceConfigCategoryId = DCI.DeviceConfigCategoryId");
+        sql.append("    JOIN DeviceConfiguration DC ON DC.DeviceConfigurationId = DCM.DeviceConfigurationId");
+        sql.append("    JOIN DeviceConfigCategory DCC ON DCM.DeviceConfigCategoryId = DCC.DeviceConfigCategoryId");
+        sql.append("WHERE DC.DeviceConfigurationId").eq(configId).append("AND DCI.ItemName").eq(itemName);
+        sql.append("    AND DCC.CategoryType").eq(categoryType.value());
         
-        return jdbcTemplate.queryForString(sql);
+        try {
+            return jdbcTemplate.queryForString(sql);
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException("No item with name " + itemName + " exists for category type " + 
+                                        categoryType.value() + " on config with id " + configId);
+        }
     }
 
     @Override
