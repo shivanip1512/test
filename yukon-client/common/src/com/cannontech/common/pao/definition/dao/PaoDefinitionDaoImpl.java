@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -148,6 +149,12 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     private StateDao stateDao;
     private PointDao pointDao;
     @Autowired private ConfigResourceLoader configResourceLoader;
+    
+    private enum Creatable {
+        YES,
+        NO,
+        DONT_CARE;
+    }
     
     @Autowired
     public void setUnitMeasureDao(UnitMeasureDao unitMeasureDao) {
@@ -323,8 +330,22 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         return supportedTagsByType.get(paoType);
     }
     
-    private BiMap<PaoType, PaoDefinition> getPaoDefinitionsThatSupportTag(PaoTag tag) {
-        return typesBySupportedTag.get(tag);
+    private BiMap<PaoType, PaoDefinition> getPaoDefinitionsThatSupportTag(PaoTag tag, Creatable creatability) {
+        BiMap<PaoType, PaoDefinition> biMap = typesBySupportedTag.get(tag);
+        
+        if (creatability != Creatable.DONT_CARE) {
+            // We have criteria to match.
+            for (Entry<PaoType, PaoDefinition> entry : biMap.entrySet()) {
+                boolean isCreatable = entry.getValue().isCreatable();
+                
+                if ((!isCreatable && creatability == Creatable.YES) || (isCreatable && creatability == Creatable.NO)) {
+                    // This entry doesn't match our criteria.
+                    biMap.remove(entry.getKey());
+                }
+            }
+        }
+        
+        return biMap;
     }
     
     @Override
@@ -339,36 +360,54 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     	return getSupportedTagsForPaoType(paoDefiniton.getType()).keySet();
     }
     
-    @Override
-    public Set<PaoDefinition> getPaosThatSupportTag(PaoTag firstTag, PaoTag... otherTags) {
-
+    private Set<PaoDefinition> getPaosThatSupportTag(Creatable creatability, PaoTag firstTag, PaoTag... otherTags) {
         // handle common single tag case to prevent new object instantiation
         if (otherTags.length == 0) {
-            return Collections.unmodifiableSet(getPaoDefinitionsThatSupportTag(firstTag).values());
+            return Collections.unmodifiableSet(getPaoDefinitionsThatSupportTag(firstTag, creatability).values());
         }
         
         ImmutableSet.Builder<PaoDefinition> definitions = ImmutableSet.builder();
         for (PaoTag tag : Lists.asList(firstTag, otherTags)) {
-            Set<PaoDefinition> definitionsForTag = getPaoDefinitionsThatSupportTag(tag).values();
+            Set<PaoDefinition> definitionsForTag = getPaoDefinitionsThatSupportTag(tag, creatability).values();
             definitions.addAll(definitionsForTag);
         }
-    	return definitions.build();
+        
+        return definitions.build();
     }
     
     @Override
-    public Set<PaoType> getPaoTypesThatSupportTag(PaoTag firstTag, PaoTag... otherTags) {
-        
+    public Set<PaoDefinition> getPaosThatSupportTag(PaoTag firstTag, PaoTag... otherTags) {
+        return getPaosThatSupportTag(Creatable.DONT_CARE, firstTag, otherTags);
+    }
+    
+    @Override
+    public Set<PaoDefinition> getCreatablePaosThatSupportTag(PaoTag firstTag, PaoTag... otherTags) {
+        return getPaosThatSupportTag(Creatable.YES, firstTag, otherTags);
+    }
+    
+    private Set<PaoType> getPaoTypesThatSupportTag(Creatable creatability, PaoTag firstTag, PaoTag... otherTags) {
         // handle common single tag case to prevent new object instantiation
         if (otherTags.length == 0) {
-            return Collections.unmodifiableSet(getPaoDefinitionsThatSupportTag(firstTag).keySet());
+            return Collections.unmodifiableSet(getPaoDefinitionsThatSupportTag(firstTag, Creatable.DONT_CARE).keySet());
         }
 
         Set<PaoType> paoTypes = EnumSet.noneOf(PaoType.class);
         for (PaoTag tag : Lists.asList(firstTag, otherTags)) {
-            Set<PaoType> types = getPaoDefinitionsThatSupportTag(tag).keySet();
+            Set<PaoType> types = getPaoDefinitionsThatSupportTag(tag, Creatable.DONT_CARE).keySet();
             paoTypes.addAll(types);
         }
+        
         return Collections.unmodifiableSet(paoTypes);
+    }
+    
+    @Override
+    public Set<PaoType> getPaoTypesThatSupportTag(PaoTag firstTag, PaoTag... otherTags) {
+        return getPaoTypesThatSupportTag(Creatable.DONT_CARE, firstTag, otherTags);
+    }
+    
+    @Override
+    public Set<PaoType> getCreatablePaoTypesThatSupportTag(PaoTag firstTag, PaoTag... otherTags) {
+        return getPaoTypesThatSupportTag(Creatable.YES, firstTag, otherTags);
     }
 
     @Override

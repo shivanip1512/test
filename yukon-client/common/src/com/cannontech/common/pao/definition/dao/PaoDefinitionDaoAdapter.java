@@ -203,4 +203,14 @@ public class PaoDefinitionDaoAdapter implements PaoDefinitionDao {
     public boolean isDnpConfigurationType(PaoType paoType) {
         throw new UnsupportedOperationException("not implemented");
     }
+    
+    @Override
+    public Set<PaoDefinition> getCreatablePaosThatSupportTag(PaoTag firstTag, PaoTag... otherTags) {
+        throw new UnsupportedOperationException("not implemented");
+    }
+    
+    @Override
+    public Set<PaoType> getCreatablePaoTypesThatSupportTag(PaoTag firstTag, PaoTag... otherTags) {
+        throw new UnsupportedOperationException("not implemented");
+    }
 }

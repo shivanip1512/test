@@ -132,26 +132,23 @@ function showSelectedDevices(divId, url) {
                                 <c:forEach var="category" items="${categories}">
                                     <tr>
                                         <td>
-                                            <spring:escapeBody htmlEscape="true">
-                                                <cti:url value="category/view" var="viewUrl">
-                                                    <cti:param name="categoryId" value="${category.categoryId}"/>
-                                                </cti:url>
-                                                <a href="${viewUrl}">${category.categoryName}</a>
-                                            </spring:escapeBody>
+                                            <cti:url value="category/view" var="viewUrl">
+                                                <cti:param name="categoryId" value="${category.categoryId}"/>
+                                            </cti:url>
+                                            <a href="${viewUrl}">${fn:escapeXml(category.categoryName)}</a>
                                         </td>
                                         <td>
-                                            <spring:escapeBody htmlEscape="true">
-                                                <i:inline key=".category.${category.categoryType}.title"/>
-                                            </spring:escapeBody>
+                                            <cti:msg2 var="catType" key=".category.${category.categoryType}.title"/>
+                                            ${fn:escapeXml(catType)}
                                         </td>
                                         <td>
                                             <div class="f-tooltip dn">
                                                 <c:forEach var="configName" items="${category.configNames}">
-                                                    <div class="detail">${configName}</div>
+                                                    <div class="detail">${fn:escapeXml(configName)}</div>
                                                 </c:forEach>
                                             </div>
                                             <div class="f-has-tooltip">
-                                                <spring:escapeBody htmlEscape="true">${fn:length(category.configNames)}</spring:escapeBody>
+                                                ${fn:length(category.configNames)}
                                             </div>
                                         </td>
                                     </tr>

@@ -4,6 +4,8 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
+<cti:includeScript link="/JavaScript/configurationCategory.js"/>
+
 <dialog:ajaxPage nameKey="createCategory" module="tools" page="configs.config" okEvent="yukonDialogSubmit" 
     id="categoryPopup"
     options="{ 'height' : '600', 'width' : '988' }">

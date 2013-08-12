@@ -79,6 +79,14 @@ public interface DeviceConfigurationDao {
     public DeviceConfigCategory getDeviceConfigCategory(int categoryId);
     
     /**
+     * Retrieve a category from the database
+     * @param configId the identifier of the config whose category we're retrieving
+     * @param categoryType the type of category being retrieved
+     * @return the populated category object identified by the parameters.
+     */
+    public DeviceConfigCategory getDeviceConfigCategory(int configId, CategoryType categoryType);
+    
+    /**
      * Get the pao types supported by a configuration.
      * @param deviceConfigurationId the configuration id of the device configuration
      * @return a set containing the supported pao types (if any exist) for the specified configuration. Returns an 
@@ -162,6 +170,14 @@ public interface DeviceConfigurationDao {
      * @return true if any categories in the database have the given category type, false otherwise.
      */
     public boolean categoriesExistForType(String categoryType);
+    
+    /**
+     * Check if any other categories exist of the same type as the category specified.
+     * @param categoryId the identifier of the category being checked.
+     * @return true if categories with the same category type other than the one specified exist in the database,
+     *      false otherwise.
+     */
+    public boolean otherCategoriesExistForType(int categoryId);
     
     /**
      * Get the number of devices a configuration is assigned to.

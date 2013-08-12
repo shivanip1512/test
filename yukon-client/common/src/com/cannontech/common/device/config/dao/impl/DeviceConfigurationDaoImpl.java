@@ -354,6 +354,25 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     }
     
     @Override
+    public DeviceConfigCategory getDeviceConfigCategory(int configId, CategoryType categoryType) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DCC.DeviceConfigCategoryId");
+        sql.append("FROM DeviceConfigCategory DCC");
+        sql.append("    JOIN DeviceConfigCategoryMap DCM ON DCC.DeviceConfigCategoryId = DCM.DeviceConfigCategoryId");
+        sql.append("WHERE DCM.DeviceConfigurationId").eq(configId);
+        sql.append("    AND DCC.CategoryType").eq(categoryType.value());
+        
+        try {
+            int categoryId = jdbcTemplate.queryForInt(sql);
+            
+            return getDeviceConfigCategory(categoryId);
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException("No category of type " + categoryType.value() + " exists for config with id " +
+                                        configId);
+        }
+    }
+    
+    @Override
     public DeviceConfiguration getDeviceConfiguration(int configId) throws NotFoundException {
         // Find the items for the configuration.
         ItemByCategoryRowMapper itemByCategoryRowMapper = getItemsForConfiguration(configId);
@@ -388,7 +407,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT COUNT(*)");
         sql.append("FROM DeviceConfiguration");
-        sql.append("WHERE LOWER(Name) = LOWER('" + name + "')");
+        sql.append("WHERE LOWER(Name) = LOWER(").appendArgument(name).append(")");
         
         if (deviceConfigurationId != null) {
             sql.append(" AND DeviceConfigurationId").neq(deviceConfigurationId);
@@ -657,6 +676,21 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     }
     
     @Override
+    public boolean otherCategoriesExistForType(int categoryId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT COUNT(*)");
+        sql.append("FROM DeviceConfigCategory");
+        sql.append("WHERE CategoryType = (SELECT CategoryType");
+        sql.append("                      FROM DeviceConfigCategory");
+        sql.append("                      WHERE DeviceConfigCategoryId").eq(categoryId).append(")");
+        sql.append("   AND DeviceConfigCategoryId").neq(categoryId);
+        
+        int numCategories = jdbcTemplate.queryForInt(sql);
+        
+        return numCategories > 0;
+    }
+    
+    @Override
     public int getNumberOfDevicesForConfiguration(int configId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT COUNT(*)");
@@ -726,7 +760,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT COUNT(*)");
         sql.append("FROM DeviceConfigCategory");
-        sql.append("WHERE LOWER(Name) = LOWER('" + category.getCategoryName() + "')");
+        sql.append("WHERE LOWER(Name) = LOWER(").appendArgument(category.getCategoryName()).append(")");
         
         if (categoryId != null) {
             sql.append("   AND DeviceConfigCategoryId").neq(categoryId);
@@ -803,7 +837,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     @Override
     public List<LightDeviceConfiguration> getAllConfigurationsByType(PaoType paoType) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT DC.DeviceConfigurationId, DC.Name");
+        sql.append("SELECT DC.DeviceConfigurationId, DC.Name, DC.Description");
         sql.append("FROM DeviceConfiguration DC");
         sql.append("   JOIN DeviceConfigDeviceTypes DCDT");
         sql.append("      ON DC.DeviceConfigurationId = DCDT.DeviceConfigurationId");

@@ -15,40 +15,34 @@
         <tags:nameValueContainer2 tableClass="stacked">
             <tags:inputNameValue nameKey=".categoryName" path="categoryName" size="50" maxlength="60" nameClass="vat"/>
             <tags:nameValue2 nameKey=".type"><i:inline key=".${categoryTemplate.categoryType}.title"/></tags:nameValue2>
-            <tags:textareaNameValue nameKey=".description" rows="4" cols="50" path="description" nameClass="vat"/>
+            <tags:textareaNameValue nameKey=".description" rows="2" cols="50" path="description" nameClass="vat"/>
         </tags:nameValueContainer2>
         
-        <cti:displayForPageEditModes modes="VIEW">
-            <div class="column_6_18 clearfix">
-                <div class="column one">
-                    <tags:sectionContainer2 nameKey="assignments">
-                        <c:choose>
-                            <c:when test="${empty categoryEditBean.assignments}">
-                                <div class="empty-list">
-                                    <i:inline key=".noAssignments"/>
-                                </div>
-                            </c:when>
-                            <c:otherwise>
-                                <ul class="simple-list">
-                                    <c:forEach var="assignment" items="${categoryEditBean.assignments}">
-                                        <li>
-                                            ${assignment}
-                                        </li>
-                                    </c:forEach>
-                                </ul>
-                            </c:otherwise>
-                        </c:choose>
-                    </tags:sectionContainer2>
-                </div>
-                <div class="column two nogutter">
-                    <%@ include file="category.jspf" %>
-                </div>
-            </div>
-        </cti:displayForPageEditModes>
-        <cti:displayForPageEditModes modes="CREATE,EDIT">
-            <%@ include file="category.jspf" %>
+        <cti:displayForPageEditModes modes="VIEW,EDIT">
+            <tags:sectionContainer2 nameKey="warning"><i:inline key=".changeWarning"/></tags:sectionContainer2>
         </cti:displayForPageEditModes>
         
+        <div class="column_6_18 clearfix">
+            <div class="column one">
+                <tags:sectionContainer2 nameKey="assignments">
+                    <c:choose>
+                        <c:when test="${empty categoryEditBean.assignments}">
+                            <div class="empty-list"><i:inline key=".noAssignments"/></div>
+                        </c:when>
+                        <c:otherwise>
+                            <ul class="simple-list">
+                                <c:forEach var="assignment" items="${categoryEditBean.assignments}">
+                                    <li>${assignment}</li>
+                                </c:forEach>
+                            </ul>
+                        </c:otherwise>
+                    </c:choose>
+                </tags:sectionContainer2>
+            </div>
+            <div class="column two nogutter">
+                <%@ include file="category.jspf" %>
+            </div>
+        </div>
         
         <cti:displayForPageEditModes modes="VIEW">
             <div class="pageActionArea clear">
@@ -76,7 +70,6 @@
                         </cti:url>
                         <cti:button nameKey="remove" id="remove" href="${deleteUrl}" disabled="${disabled}"/>
                     </c:if>
-                    <dialog:confirm on="#save" nameKey="confirmSave"/>
                 </div>
             </cti:checkRolesAndProperties>
         </cti:displayForPageEditModes>
@@ -89,5 +82,4 @@
             </cti:checkRolesAndProperties>
         </cti:displayForPageEditModes>
     </form:form>
-
 </cti:standardPage>

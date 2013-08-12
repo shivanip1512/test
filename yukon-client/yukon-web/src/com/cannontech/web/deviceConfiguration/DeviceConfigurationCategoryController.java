@@ -217,12 +217,16 @@ public class DeviceConfigurationCategoryController {
             return "editCategory.jsp";
         }
         
-        int categoryId = deviceConfigurationService.saveCategory(categoryEditBean.getModelObject());
+        try {
+            deviceConfigurationService.saveCategory(categoryEditBean.getModelObject());
+
+            flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + ".category.saveSuccess"));
+        } catch (DuplicateException de) {
+            log.debug("An attempt to save a category with a duplicate name has occurred.");
+            flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".category.nameExists"));
+        }
         
-        flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + ".category.saveSuccess"));
-        
-        viewOrEdit(model, categoryId, context, PageEditMode.VIEW);
-        
+        model.clear();
         return "redirect:/deviceConfiguration/config/view?configId=" + configId;
     }
     

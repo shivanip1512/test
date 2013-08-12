@@ -331,12 +331,16 @@ public class DeviceConfigurationConfigController {
                     category.getCategoryType(), 
                     deviceConfigurationDao.categoriesExistForType(category.getCategoryType()));
 
+            Boolean othersExist = category.getCategoryId() != null ? 
+                    deviceConfigurationDao.otherCategoriesExistForType(category.getCategoryId()) : null;
+            
             selections.add(
                 new CategorySelection(
                     categoryDisplay, 
                     category.getCategoryName(), 
                     category.getCategoryId(), 
-                    category.getDescription()));
+                    category.getDescription(),
+                    othersExist));
         }
         
         List<CategorySelection> orderedSelections = 
@@ -383,7 +387,9 @@ public class DeviceConfigurationConfigController {
     }
 
     private Set<PaoType> getAllConfigurationPaoTypes() {
-        Set<PaoDefinition> configurablePaos = paoDefinitionDao.getPaosThatSupportTag(PaoTag.DEVICE_CONFIGURATION);
+        Set<PaoDefinition> configurablePaos = 
+            paoDefinitionDao.getCreatablePaosThatSupportTag(PaoTag.DEVICE_CONFIGURATION);
+        
         Set<PaoType> allTypes = new HashSet<>();
         for (PaoDefinition def : configurablePaos) {
             allTypes.add(def.getType());
@@ -470,13 +476,14 @@ public class DeviceConfigurationConfigController {
                         deviceConfigurationDao.categoriesExistForType(categoryType.value()));
 
                 configurationCategoriesBackingBean.getCategorySelections().add(
-                    new CategorySelection(categoryDisplay, noneSelected, null, null));
+                    new CategorySelection(categoryDisplay, noneSelected));
             }
         }
     }
         
     private void setupModelMapForSetup(ModelMap model, FlashScope flashScope, Integer configId) {
-        Set<PaoDefinition> configDefinitions = paoDefinitionDao.getPaosThatSupportTag(PaoTag.DEVICE_CONFIGURATION);
+        Set<PaoDefinition> configDefinitions = 
+            paoDefinitionDao.getCreatablePaosThatSupportTag(PaoTag.DEVICE_CONFIGURATION);
         
         ConfigurationDeviceTypesBackingBean backingBean;
         if (configId != null) {

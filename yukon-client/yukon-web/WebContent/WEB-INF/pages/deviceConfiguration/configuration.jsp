@@ -10,42 +10,40 @@
 <cti:standardPage module="tools" page="configs.config.${mode}">
 
 <cti:includeScript link="/JavaScript/ajaxDialog.js"/>
+<cti:includeScript link="/JavaScript/configurationCategory.js"/>
 
 <script type="text/javascript">
-
 jQuery(function() {
-    jQuery(".f-addCommentBtn").click(function() {
-        jQuery(this).hide().siblings(".f-commentsShowHide").show(200).focus();
-    });
-
-    jQuery(".f-categories").click(function() {
-        jQuery(".pipe").css('visibility', 'hidden');
-        var devTypeClass = jQuery(this).attr('class').match(/f-devtype-\w*/)[0];
-        jQuery('.' + devTypeClass + '.pipe').css('visibility', 'visible');
-    });
-    
     jQuery("#addTypeBtn").click(function() {
-        jQuery('#supportedTypePopup').load('processAddTypes', {configId : ${deviceConfigurationBackingBean.configId}});
+        jQuery('#supportedTypePopup').load('processAddTypes', {configId : '${deviceConfigurationBackingBean.configId}'});
     });
 
     jQuery(".f-removeTypeBtn").click(function() {
         var typeClass = jQuery(this).attr('class').match(/f-deviceType-(\w*)/)[0];
         var splitClass = typeClass.split('-');
         var devType = splitClass[splitClass.length - 1];
-        jQuery('#supportedTypePopup').load('removeSupportedTypeConfirm', {paoType : devType, configId : ${deviceConfigurationBackingBean.configId}});
+        jQuery('#supportedTypePopup').load('removeSupportedTypeConfirm', {paoType : devType, configId : '${deviceConfigurationBackingBean.configId}'});
     });
-
-    // Find the first type and select his categores
-    var pipe = jQuery(".pipe").get(0);
-    if (pipe) {
-        var devTypeClass = jQuery(pipe).attr('class').match(/f-devtype-\w*/)[0];
-        jQuery('.' + devTypeClass + '.pipe').css('visibility', 'visible');
-        jQuery(pipe).css('visibility', 'visible');
+    
+    if (${configurationDeviceTypesBackingBean.supportedTypesEmpty} && '${mode}' == 'VIEW') {
+        jQuery('#supportedTypePopup').load('processAddTypes', {configId : '${deviceConfigurationBackingBean.configId}'});
     }
     
-    if (${configurationDeviceTypesBackingBean.supportedTypesEmpty}) {
-        jQuery('#supportedTypePopup').load('processAddTypes', {configId : ${deviceConfigurationBackingBean.configId}});
-    }
+    jQuery(".f-editBtn").click(function() {
+        var catTypeClass = jQuery(this).attr('class').match(/f-devType-\w*/)[0].split('-');
+        var params = {'categoryId' : jQuery('#categoryId_' + catTypeClass[catTypeClass.length - 1]).val(),
+                      'configId' : ${configurationCategoriesBackingBean.configId} };
+        
+        makeAjaxCall('editInPlace', params, jQuery(this));
+    });
+    
+    jQuery(".f-createBtn").click(function() {
+        var catTypeClass = jQuery(this).attr('class').match(/f-devType-\w*/)[0].split('-');
+        var params = {'categoryType' : catTypeClass[catTypeClass.length - 1], 
+                      'configId' : ${configurationCategoriesBackingBean.configId} };
+
+        makeAjaxCall('createInPlace', params, jQuery(this));        
+    });
 });
 
 </script>
@@ -89,7 +87,6 @@ jQuery(function() {
                         </cti:url>
                         <cti:button nameKey="remove" id="remove" href="${deleteUrl}" disabled="${disabled}"/>
                     </c:if>
-                    <dialog:confirm on="#save" nameKey="confirmSave"/>
                     <cti:button nameKey="save" id="save" type="submit" classes="primary action"/>
                 </cti:checkRolesAndProperties>
             </cti:displayForPageEditModes>
@@ -103,6 +100,8 @@ jQuery(function() {
     </form:form>
     
     <cti:displayForPageEditModes modes="VIEW,EDIT">
+        <tags:sectionContainer2 nameKey="warning"><i:inline key=".changeWarning"/></tags:sectionContainer2>
+        
         <div class="column_6_18">
             <!-- CATEGORIES -->
             <div class="column one">
@@ -132,7 +131,7 @@ jQuery(function() {
                             </c:forEach>
                         </ul>
                     </tags:sectionContainer>
-                    <cti:displayForPageEditModes modes="VIEW,EDIT">
+                    <cti:displayForPageEditModes modes="VIEW">
                         <cti:checkRolesAndProperties value="${editingRoleProperty}">
                             <c:if test="${! empty configurationDeviceTypesBackingBean.availableTypes}">
                                 <div class="actionArea">

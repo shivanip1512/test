@@ -128,6 +128,9 @@ public interface PaoDefinitionDao {
     public Set<PaoDefinition> getPaosThatSupportTag(PaoTag firstTag, PaoTag... otherTags);
     public Set<PaoType> getPaoTypesThatSupportTag(PaoTag firstTag, PaoTag... otherTags);
     
+    public Set<PaoDefinition> getCreatablePaosThatSupportTag(PaoTag firstTag, PaoTag... otherTags);
+    public Set<PaoType> getCreatablePaoTypesThatSupportTag(PaoTag firstTag, PaoTag... otherTags);
+    
     public boolean isTagSupported(PaoType paoType, PaoTag feature);
     public boolean isTagSupported(PaoDefinition paoDefiniton, PaoTag feature);
     

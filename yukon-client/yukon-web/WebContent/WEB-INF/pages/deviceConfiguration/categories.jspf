@@ -4,33 +4,6 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
-<script type="text/javascript">
-jQuery(function() {
-    
-    jQuery(".f-editBtn").click(function() {
-        var catTypeClass = jQuery(this).attr('class').match(/f-devType-\w*/)[0];
-        var splitClass = catTypeClass.split('-');
-        var catType = splitClass[splitClass.length - 1];
-        var categoryId = jQuery('#categoryId_' + catType).val();
-        jQuery('#categoryPopup').load('/deviceConfiguration/category/editInPlace', {categoryId : categoryId, configId: ${configurationCategoriesBackingBean.configId}});
-    });
-    
-    jQuery(".f-createBtn").click(function() {
-        var catTypeClass = jQuery(this).attr('class').match(/f-devType-\w*/)[0];
-        var splitClass = catTypeClass.split('-');
-        var catType = splitClass[splitClass.length - 1];
-        jQuery('#categoryPopup').load('/deviceConfiguration/category/createInPlace', {categoryType : catType, configId: ${configurationCategoriesBackingBean.configId}});
-    });
-
-});
-
-function changeOut(type) {
-    var form = jQuery('#categoryChange_' + type);
-    form.submit(); 
-    return true;
-}
-</script>
-
 <cti:msgScope paths=",yukon.web.modules.tools.configs.category">
     <div class="clearfix">
         <c:set var="catType" value="${category.categoryDisplay.categoryType}"/>
@@ -79,26 +52,29 @@ function changeOut(type) {
                        
                         <cti:displayForPageEditModes modes="VIEW">
                             <div class="actionArea">
-                                <tags:pickerDialog
-                                    id="categoryPicker_${catType}"
-                                    type="categoryPicker"
-                                    destinationFieldId="newCategoryId_${catType}"
-                                    linkType="button"
-                                    nameKey="${pickerLabel}"
-                                    allowEmptySelection="false"
-                                    multiSelectMode="false"
-                                    immediateSelectMode="true"
-                                    icon="icon-arrow-swap"
-                                    endAction="function(items) {return changeOut('${catType}');}"
-                                    extraArgs="${catType}"
-                                    />
+                                <c:if test="${(not empty selection.otherCategoriesExist && selection.otherCategoriesExist) || 
+                                              empty selection.categoryId}">
+                                    <tags:pickerDialog
+                                        id="categoryPicker_${catType}"
+                                        type="categoryPicker"
+                                        destinationFieldId="newCategoryId_${catType}"
+                                        linkType="button"
+                                        nameKey="${pickerLabel}"
+                                        allowEmptySelection="false"
+                                        multiSelectMode="false"
+                                        immediateSelectMode="true"
+                                        icon="icon-arrow-swap"
+                                        endAction="function(items) {return changeOut('${catType}');}"
+                                        extraArgs="${catType}"
+                                        />
+                                </c:if>
                                     
                                 <cti:msg2 var="i18nCatType" key=".${catType}.title"/>
                                 <cti:msg2 var="createBtnTitle" key=".createCategory" argument="${i18nCatType}"/>                            
-                                <cti:button nameKey="create" classes="f-createBtn f-devType-${catType}" icon="icon-plus-green" title="${createBtnTitle}"/>
+                                <cti:button nameKey="create" classes="f-createBtn f-devType-${catType} f-disableAfterClick" busy="true" icon="icon-plus-green" title="${createBtnTitle}"/>
                                 <c:if test="${not empty selection.categoryId}">
                                     <cti:msg2 var="editBtnTitle" key=".editAssignedCategory" argument="${selection.categoryName}"/>
-                                    <cti:button nameKey="edit" classes="f-editBtn f-devType-${catType}" icon="icon-pencil" title="${editBtnTitle}"/>
+                                    <cti:button nameKey="edit" classes="f-editBtn f-devType-${catType} f-disableAfterClick" busy="true" icon="icon-pencil" title="${editBtnTitle}"/>
                                 </c:if>
                             </div>
                         </cti:displayForPageEditModes>

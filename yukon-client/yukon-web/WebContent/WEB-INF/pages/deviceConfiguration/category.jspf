@@ -6,71 +6,23 @@
 <%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
-<script>
-jQuery(function() {
-    jQuery(".f-addCommentBtn").click(function() {
-        jQuery(this).hide().siblings(".f-commentsShowHide").show(200).focus();
-    });
-    
-    determineDisplayItemAddButtonVisibility();
-    for (var i = 1; i < 5; i++) {
-        determineScheduleAddButtonVisibility(i);
-    }
-    
-    jQuery("#showNextFieldBtn").click(function() {
-        // Show the next hidden display item.
-        var hiddenElems = jQuery("div[id^='displayItem']").filter(function() { return this.style.display == 'none';} );
-        jQuery('#' + hiddenElems[0].id).css('display', 'block');
-        determineDisplayItemAddButtonVisibility();
-    });
-});
-
-function determineDisplayItemAddButtonVisibility() {
-    var visibleElems = jQuery("div[id^='displayItem']").filter(function() { return this.style.display != 'none'; });
-    if (visibleElems.length < 26) {
-        jQuery('#showNextDiv').css('display', 'block');
-    } else {
-        jQuery('#showNextDiv').css('display', 'none');
-    }
-}
-
-function determineScheduleAddButtonVisibility(num) {
-    var regex = '^schedule' + num + '_time\\d+$';
-    var total = jQuery("td").filter(function() { return this.id.match(regex); }).length;
-    var schedule1visibles = jQuery("td").filter(function() { return this.id.match(regex) && this.parentElement.style.display != 'none'; });
-    if (schedule1visibles.length < total) {
-        var btn = jQuery('#showNextDivSchedule' + num);
-        btn.css('display', 'block');
-        jQuery('#' + schedule1visibles[schedule1visibles.length - 1].id).parent().append(btn);
-    } else {
-        jQuery('#showNextDivSchedule' + num).css('display', 'none');
-    }
-}
-
-function guy(num) {
-    var regex = '^schedule' + num + '_time\\d+$';
-    var hiddenElems = jQuery("td").filter(function() { return this.id.match(regex) && this.parentElement.style.display == 'none'; });
-    jQuery('#' + hiddenElems[0].id).parent().css('display', 'table-row');
-    determineScheduleAddButtonVisibility(num);
-}
-</script>
-
 <cti:msgScope paths=",yukon.web.modules.tools.configs.category">
 
 <tags:setFormEditMode mode="${mode}"/>
 
 <tags:sectionContainer2 nameKey="categoryFields">
+
+    <cti:includeScript link="/JavaScript/configurationCategory.js"/>
+    
     <c:forEach var="field" items="${categoryTemplate.fields}">
         <%-- The setting box needs to be hidden in certain cases --%>
         <c:set var="classes" value=""/>
         
         <%-- Hide display item fields whose values are "Slot Disabled" --%>
-        <c:if test="${fn:contains(field.fieldName, 'displayItem')}">
-            <c:forEach var="option" items="${field.inputType.optionList}">
-                <c:if test="${option.value == categoryEditBean.categoryInputs[(field.fieldName)] && option.value == 0}">
-                    <c:set var="classes" value="dn"/>
-                </c:if>
-            </c:forEach>
+        <c:if test="${fn:contains(field.fieldName, 'displayItem') && 
+                      fn:toLowerCase(field.fieldName) != fn:toLowerCase('displayItem1') &&
+                      categoryEditBean.categoryInputs[(field.fieldName)] == 0}">
+            <c:set var="classes" value="dn"/>
         </c:if>
         
         <div class="setting clearfix ${classes}" id="${field.fieldName}">
@@ -101,6 +53,11 @@ function guy(num) {
                                                 </cti:displayForPageEditModes>
                                                 <cti:displayForPageEditModes modes="CREATE,EDIT">
                                                     <tags:simpleInputType input="${rate.timeType}" path="scheduleInputs[${field.fieldName}].rateInputs[${rate.field}].time"/>
+                                                    <spring:bind path="scheduleInputs[${field.fieldName}].rateInputs[${rate.field}].time">
+                                                        <c:if test="${status.error}">
+                                                            <form:errors path="scheduleInputs[${field.fieldName}].rateInputs[${rate.field}].time" cssClass="errorMessage"/>
+                                                        </c:if>
+                                                    </spring:bind>
                                                 </cti:displayForPageEditModes>
                                             </c:when>
                                             <c:otherwise>
@@ -164,7 +121,7 @@ function guy(num) {
             </div>
         </div>
     </c:forEach>
-    <cti:displayForPageEditModes modes="EDIT">
+    <cti:displayForPageEditModes modes="CREATE,EDIT">
         <c:if test="${fn:contains(categoryTemplate.categoryType, 'displayItems')}">
             <div class="pageActionArea stacked dn" id="showNextDiv">
                 <cti:msg2 var="addTitle" key=".addDisplayItem"/>
@@ -175,7 +132,7 @@ function guy(num) {
             <c:forEach begin="1" end="4" var="status">
                 <div class="stacked dn" id="showNextDivSchedule${status}">
                     <cti:msg2 var="title" key=".addScheduleItem" argument="${status}"/>
-                    <cti:button nameKey="addSchedule" icon="icon-add" id="showNextSchedule${status}TimeBtn" onclick="guy('${status}')" title="${title}" classes="fr"/>
+                    <cti:button nameKey="addSchedule" icon="icon-add" id="showNextSchedule${status}TimeBtn" onclick="showNextSchedule('${status}')" title="${title}" classes="fr"/>
                 </div>
             </c:forEach>
         </c:if>

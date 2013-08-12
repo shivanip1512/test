@@ -18,21 +18,27 @@ public class ConfigurationCategoriesBackingBean {
         private String categoryName;
         private Integer categoryId;
         private String description;
+        private Boolean otherCategoriesExist;
         
         public CategorySelection() {
             categoryDisplay = new CategoryDisplay();
         }
         
         public CategorySelection(CategoryDisplay categoryDisplay) {
-            this(categoryDisplay, null, null, null);
+            this(categoryDisplay, null, null, null, null);
+        }
+        
+        public CategorySelection(CategoryDisplay categoryDisplay, String categoryName) {
+            this(categoryDisplay, categoryName, null, null, null);
         }
         
         public CategorySelection(CategoryDisplay categoryDisplay, String categoryName, Integer categoryId, 
-                                 String description) {
+                                 String description, Boolean otherCategoriesExist) {
             this.categoryDisplay = categoryDisplay;
             this.categoryName = categoryName;
             this.categoryId = categoryId;
             this.description = description;
+            this.otherCategoriesExist = otherCategoriesExist;
         }
         
         public void setCategoryId(Integer categoryId) {
@@ -67,6 +73,14 @@ public class ConfigurationCategoriesBackingBean {
             this.description = description;
         }
         
+        public void setOtherCategoriesExist(Boolean otherCategoriesExist) {
+            this.otherCategoriesExist = otherCategoriesExist;
+        }
+        
+        public Boolean getOtherCategoriesExist() {
+            return otherCategoriesExist;
+        }
+        
         @Override
         public String getFormatKey() {
             return "yukon.web.modules.tools.configs.category." + categoryDisplay.getCategoryType() + ".title";
@@ -85,12 +99,13 @@ public class ConfigurationCategoriesBackingBean {
             return Objects.equal(this.categoryDisplay, other.categoryDisplay) &&
                    Objects.equal(this.categoryName, other.categoryName) &&
                    Objects.equal(this.categoryId, other.categoryId) &&
-                   Objects.equal(this.description, other.description);
+                   Objects.equal(this.description, other.description) &&
+                   Objects.equal(this.otherCategoriesExist, other.otherCategoriesExist);
         }
         
         @Override
         public int hashCode() {
-            return Objects.hashCode(categoryDisplay, categoryName, categoryId, description);
+            return Objects.hashCode(categoryDisplay, categoryName, categoryId, description, otherCategoriesExist);
         }
     }
     
