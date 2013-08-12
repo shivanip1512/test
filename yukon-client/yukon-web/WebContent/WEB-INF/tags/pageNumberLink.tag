@@ -44,13 +44,13 @@ will be used.
 <c:if test="${pageScope.direction == 'next'}">
     <c:if test="${pageScope.enabled}">
         <a href="${pageUrl}" class="nextLink enabledAction">
-            <span class="label"><cti:msg2 key="yukon.common.paging.next"/></span>
+            <span class="fl"><cti:msg2 key="yukon.common.paging.next"/></span>
             <i class="icon icon-resultset-next"></i>
         </a>
     </c:if>
     <c:if test="${!pageScope.enabled}">
         <span class="nextLink disabledAction" disabled="disabled">
-            <span class="label"><cti:msg2 key="yukon.common.paging.next"/></span>
+            <span class="fl"><cti:msg2 key="yukon.common.paging.next"/></span>
             <i class="icon icon-resultset-next" disabled="disabled"></i>
         </span>
     </c:if>
@@ -59,13 +59,13 @@ will be used.
     <c:if test="${pageScope.enabled}">
         <a href="${pageUrl}" class="previousLink enabledAction">
             <i class="icon icon-resultset-previous"></i>
-            <span class="label"><cti:msg2 key="yukon.common.paging.previous"/></span>
+            <span class="fl"><cti:msg2 key="yukon.common.paging.previous"/></span>
         </a>
     </c:if>
     <c:if test="${!pageScope.enabled}">
         <span class="previousLink disabledAction">
             <i class="icon icon-resultset-previous" disabled="disabled"></i>
-            <span class="label"><cti:msg2 key="yukon.common.paging.previous"/></span>
+            <span class="fl"><cti:msg2 key="yukon.common.paging.previous"/></span>
         </span>
     </c:if>
 </c:if>
