@@ -5,12 +5,12 @@ import com.google.common.collect.ImmutableMap;
 public final class FormulaLookupTable<T> {
 
     private final Integer lookupTableId;
-    private final int formulaId;
+    private final Integer formulaId;
     private final String name;
     private final FormulaInput<T> input;
     private final ImmutableMap<T, Double> entries;
 
-    public FormulaLookupTable(Integer lookupTableId, int formulaId, String name,
+    public FormulaLookupTable(Integer lookupTableId, Integer formulaId, String name,
             FormulaInput<T> input, ImmutableMap<T, Double> entries) {
         this.lookupTableId = lookupTableId;
         this.formulaId = formulaId;
@@ -23,7 +23,7 @@ public final class FormulaLookupTable<T> {
         return lookupTableId;
     }
 
-    public int getFormulaId() {
+    public Integer getFormulaId() {
         return formulaId;
     }
 
@@ -37,5 +37,9 @@ public final class FormulaLookupTable<T> {
 
     public ImmutableMap<T, Double> getEntries() {
         return entries;
+    }
+    
+    public FormulaLookupTable<T> withFormulaId(Integer formulaId) {
+        return new FormulaLookupTable<>(lookupTableId, formulaId, name, input, entries);
     }
 }

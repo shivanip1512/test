@@ -4,13 +4,13 @@ package com.cannontech.dr.estimatedload;
 public final class FormulaFunction {
 
     private final Integer functionId;
-    private final int formulaId;
+    private final Integer formulaId;
     private final String name;
-    private final FormulaInput<Object> input;
+    private final FormulaInput<Double> input;
     private final double quadratic;
     private final double linear;
 
-    public FormulaFunction(Integer functionId, int formulaId, String name, FormulaInput<Object> input,
+    public FormulaFunction(Integer functionId, Integer formulaId, String name, FormulaInput<Double> input,
             double quadratic, double linear) {
         this.functionId = functionId;
         this.formulaId = formulaId;
@@ -24,7 +24,7 @@ public final class FormulaFunction {
         return functionId;
     }
 
-    public int getFormulaId() {
+    public Integer getFormulaId() {
         return formulaId;
     }
 
@@ -32,7 +32,7 @@ public final class FormulaFunction {
         return name;
     }
 
-    public FormulaInput<Object> getInput() {
+    public FormulaInput<Double> getInput() {
         return input;
     }
 
@@ -43,5 +43,8 @@ public final class FormulaFunction {
     public double getLinear() {
         return linear;
     }
-
+    
+    public FormulaFunction withFormulaId(Integer formulaId) {
+        return new FormulaFunction(functionId, formulaId, name, (FormulaInput<Double>) input, quadratic, linear);
+    }
 }

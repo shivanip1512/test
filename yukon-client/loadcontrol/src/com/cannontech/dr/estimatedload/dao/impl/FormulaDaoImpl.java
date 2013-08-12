@@ -92,12 +92,19 @@ public class FormulaDaoImpl implements FormulaDao {
     public int saveFormula(Formula formula) {
         int formulaId = formulaInsertTemplate.save(formula);
 
-        for (FormulaFunction function : formula.getFunctions()) {
-            functionInsertTemplate.save(function);
+        deleteFunctionsByFormulaId(formulaId);
+        deleteLookupTablesByFormulaId(formulaId);
+
+        if (formula.getFunctions() != null) {
+            for (FormulaFunction function : formula.getFunctions()) {
+                functionInsertTemplate.insert(function.withFormulaId(formulaId));
+            }
         }
-        for (FormulaLookupTable<Object> table : formula.getTables()) {
-            lookupTableInsertTemplate.save(table);
-            saveTableEntries(table);
+        if (formula.getTables() != null) {
+            for (FormulaLookupTable<Object> table : formula.getTables()) {
+                int tableId = lookupTableInsertTemplate.insert(table.withFormulaId(formulaId));
+                saveTableEntries(tableId, table.getInput(), table.getEntries());
+            }
         }
         if(log.isDebugEnabled()) {
             log.debug("Saved estimated load reduction formula id: " + formulaId);
@@ -140,13 +147,21 @@ public class FormulaDaoImpl implements FormulaDao {
 
         return functionsByFormulaId;
     }
+    
+    private void deleteFunctionsByFormulaId(int formulaId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM").append(functionTableName);
+        sql.append("WHERE EstimatedLoadFormulaId ").eq(formulaId);
+
+        yukonJdbcTemplate.update(sql);
+    }
 
     /** Returns a Map of FormulaId to a List of its lookup tables. */
     private Map<Integer, ImmutableList<FormulaLookupTable<Object>>> getLookupTables(SqlFragmentSource whereClause) {
         SqlFragment entriesWhereClause;
         if (whereClause != null) {
              entriesWhereClause = new SqlFragment("WHERE EstimatedLoadLookupTableId IN "
-                    + "(SELECT EstimatedLoadLookupTableId FROM EstimatedLoadLookupTable " + whereClause + ")", 
+                    + "(SELECT EstimatedLoadLookupTableId FROM EstimatedLoadLookupTable " + whereClause.getSql() + ")", 
                     whereClause.getArguments());
         } else {
             entriesWhereClause = null;
@@ -173,11 +188,18 @@ public class FormulaDaoImpl implements FormulaDao {
         return tablesByFormulaId;
     }
 
+    private void deleteLookupTablesByFormulaId(int formulaId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM").append(lookupTableName);
+        sql.append("WHERE EstimatedLoadFormulaId ").eq(formulaId);
+
+        yukonJdbcTemplate.update(sql);
+    }
+
     // Third-level CRUD operations (FormulaLookupTable entries).
-    private void saveTableEntries(FormulaLookupTable<Object> table) {
-        Integer tableId = table.getLookupTableId();
+    private void saveTableEntries(Integer tableId, FormulaInput<Object> formulaInput, Map<Object, Double> entries) {
         deleteTableEntries(tableId);
-        insertTableEntries(tableId, table.getInput(), table.getEntries());
+        insertTableEntries(tableId, formulaInput, entries);
     }
 
     private void deleteTableEntries(int lookupTableId) {
@@ -197,7 +219,7 @@ public class FormulaDaoImpl implements FormulaDao {
     private void insertTableEntry(int lookupTableId, FormulaInput<Object> formulaInput, Map.Entry<Object, Double> entry) {
         PropertyEditor typeConverter = formulaInput.getInputType().makeTypeConverter();
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        int entryId = nextValueHelper.getNextValue("FormulaLookupEntry"); 
+        int entryId = nextValueHelper.getNextValue("EstimatedLoadTableEntry"); 
         sql.append("INSERT INTO").append(tableEntryTableName);
         sql.append("(EstimatedLoadTableEntryId, EstimatedLoadLookupTableId, EntryKey, EntryValue)");
         typeConverter.setValue(entry.getKey());
@@ -321,7 +343,7 @@ public class FormulaDaoImpl implements FormulaDao {
         Multimap<Integer, FormulaFunction> functionsByFormulaId = HashMultimap.create();
         @Override
         public void processRow(YukonResultSet rs) throws SQLException {
-            FormulaInput<Object> formulaInput = mapFormulaInput(rs);
+            FormulaInput<Double> formulaInput = mapFormulaInput(rs).castAsDouble();
             
             Integer formulaId = rs.getInt("EstimatedLoadFormulaId");
             functionsByFormulaId.put(formulaId, new FormulaFunction(
@@ -388,7 +410,7 @@ public class FormulaDaoImpl implements FormulaDao {
         Object inputMin = typeConverter.getValue();
         typeConverter.setAsText(rs.getString("InputMax"));
         Object inputMax = typeConverter.getValue();
-        
+
         return new FormulaInput<Object>(inputType, inputMin, inputMax, rs.getNullableInt("InputPointId"));
     }
 

@@ -78,4 +78,12 @@ public final class FormulaInput<T> {
     public Integer getPointId() {
         return pointId;
     }
+    
+    public FormulaInput<Double> castAsDouble() {
+        return new FormulaInput<Double>(inputType, (Double) min, (Double) max, pointId);
+    }
+    
+    public FormulaInput<LocalTime> castAsLocalTime() {
+        return new FormulaInput<LocalTime>(inputType, (LocalTime) min, (LocalTime) max, pointId);
+    }
 }
