@@ -44,6 +44,7 @@ public class PeakReportServiceImpl implements PeakReportService {
     private PeakReportDao peakReportDao = null;
     
     
+    @Override
     public PeakReportResult requestPeakReport(int deviceId, PeakReportPeakType peakType, PeakReportRunType runType, int channel, Date startDate, Date stopDate, boolean persist, YukonUserContext userContext) {
         
         // interval
@@ -129,6 +130,7 @@ public class PeakReportServiceImpl implements PeakReportService {
     }
     
     
+    @Override
     public PeakReportResult retrieveArchivedPeakReport(int deviceId, PeakReportRunType runType, YukonUserContext userContext){
         
         PeakReportResult peakResult = peakReportDao.getResult(deviceId, runType);
@@ -151,6 +153,7 @@ public class PeakReportServiceImpl implements PeakReportService {
         return peakResult;
     }
     
+    @Override
     public void deleteArchivedPeakReport(int deviceId, PeakReportRunType runType) {
         
         peakReportDao.deleteReport(deviceId, runType);
@@ -159,7 +162,8 @@ public class PeakReportServiceImpl implements PeakReportService {
     private void setupPeakReportResultFromResultString(PeakReportResult peakResult, String resultString, YukonUserContext userContext, int deviceId, int interval){
         
         DateFormat dateTimeFormater = systemDateFormattingService.getSystemDateFormat(SystemDateFormattingService.DateFormatEnum.PeakReport_DateTime);
-
+        DateFormat dateFormater = systemDateFormattingService.getSystemDateFormat(SystemDateFormattingService.DateFormatEnum.PeakReport_DateOnly);
+        
         try{
             
             String[] strings = resultString.split("\n");
@@ -173,14 +177,12 @@ public class PeakReportServiceImpl implements PeakReportService {
                     String rangeStartDateStr = rangeDateParts[0];
                     String rangeStopDateStr = rangeDateParts[1];
                     
-                    peakResult.setRangeStartDate(dateTimeFormater.parse(rangeStartDateStr));
-                    peakResult.setRangeStopDate(dateTimeFormater.parse(rangeStopDateStr));
+                    peakResult.setRangeStartDate(dateFormater.parse(rangeStartDateStr));
+                    peakResult.setRangeStopDate(dateFormater.parse(rangeStopDateStr));
                 }
                 
                 // peakStartDate, peakStopDate, peakValue
                 else if(s.startsWith("Peak day: ")) {
-                    
-                    DateFormat dateFormater = systemDateFormattingService.getSystemDateFormat(SystemDateFormattingService.DateFormatEnum.PeakReport_DateOnly);
                     
                     String peakRangeEndStr = s.replaceFirst("Peak day: ", "");
                     Date peakRangeEnd = dateFormater.parse(peakRangeEndStr);
@@ -295,6 +297,7 @@ public class PeakReportServiceImpl implements PeakReportService {
         return peakValueStr;
     }
     
+    @Override
     public int getChannelIntervalForDevice(int deviceId, int channel){
         
         // interval
