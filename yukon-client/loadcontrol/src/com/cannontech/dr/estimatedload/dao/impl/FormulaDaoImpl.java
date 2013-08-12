@@ -256,7 +256,7 @@ public class FormulaDaoImpl implements FormulaDao {
             @Override
             public void extractValues(MapSqlParameterSource parameterHolder, Formula formula) {
                 parameterHolder.addValue("Name", formula.getName());
-                parameterHolder.addValue("FormulaType", formula.getFormulaType());
+                parameterHolder.addValue("FormulaType", formula.getType());
                 parameterHolder.addValue("CalculationType", formula.getCalculationType());
                 parameterHolder.addValue("FunctionIntercept", formula.getFunctionIntercept());
             }

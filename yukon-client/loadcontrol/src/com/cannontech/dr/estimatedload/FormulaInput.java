@@ -2,6 +2,8 @@ package com.cannontech.dr.estimatedload;
 
 import java.beans.PropertyEditor;
 import java.beans.PropertyEditorSupport;
+import java.util.EnumSet;
+import java.util.Set;
 
 import org.joda.time.LocalTime;
 import org.joda.time.format.DateTimeFormatter;
@@ -20,7 +22,7 @@ public final class FormulaInput<T> {
             @Override
             public PropertyEditorSupport makeTypeConverter() {
                 return new LocalTimePropertyEditor();
-            };
+            }
         },
         CONTROL_PERCENT,
         RAMP_RATE,
@@ -30,11 +32,23 @@ public final class FormulaInput<T> {
         public String getFormatKey() {
             return "yukon.dr.estimatedLoad.inputType." + name();
         }
-        
+
+        public static Set<InputType> getApplianceCategoryFunctionInputs() {
+            return EnumSet.of(TEMP, HUMIDITY, POINT);
+        }
+
+        public static Set<InputType> getApplianceCategoryTableInputs() {
+            return EnumSet.of(TEMP, HUMIDITY, TIME, POINT);
+        }
+
+        public static Set<InputType> getGearInputs() {
+            return EnumSet.of(CONTROL_PERCENT, RAMP_RATE);
+        }
+
         public PropertyEditor makeTypeConverter() {
             return new CustomNumberEditor(Double.class, false);
         }
-        
+
         private static class LocalTimePropertyEditor extends PropertyEditorSupport {
             private final static DateTimeFormatter dtFormatter = ISODateTimeFormat.hourMinute();
 
@@ -47,14 +61,13 @@ public final class FormulaInput<T> {
                 LocalTime t = LocalTime.parse(text, dtFormatter);
                 setValue(t);
             }
-        };
+        }
     }
 
     private final InputType inputType;
     private final T min;
     private final T max;
     private final Integer pointId;
-    
 
     public FormulaInput(InputType inputType, T min, T max, Integer pointId) {
         this.inputType = inputType;
@@ -80,10 +93,10 @@ public final class FormulaInput<T> {
     }
     
     public FormulaInput<Double> castAsDouble() {
-        return new FormulaInput<Double>(inputType, (Double) min, (Double) max, pointId);
+        return new FormulaInput<>(inputType, (Double) min, (Double) max, pointId);
     }
     
     public FormulaInput<LocalTime> castAsLocalTime() {
-        return new FormulaInput<LocalTime>(inputType, (LocalTime) min, (LocalTime) max, pointId);
+        return new FormulaInput<>(inputType, (LocalTime) min, (LocalTime) max, pointId);
     }
 }

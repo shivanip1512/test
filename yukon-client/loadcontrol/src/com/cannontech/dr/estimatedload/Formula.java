@@ -27,18 +27,18 @@ public final class Formula {
     
     private final Integer formulaId;
     private final String name;
-    private final Type formulaType;
+    private final Type type;
     private final CalculationType calculationType;
     private final Double functionIntercept;
 
     private final ImmutableList<FormulaFunction> functions;
     private final ImmutableList<FormulaLookupTable<Object>> tables;
 
-    public Formula(Integer formulaId, String name, Type formulaType, CalculationType calculationType, Double functionIntercept,
+    public Formula(Integer formulaId, String name, Type type, CalculationType calculationType, Double functionIntercept,
             ImmutableList<FormulaFunction> functions, ImmutableList<FormulaLookupTable<Object>> tables) {
         this.formulaId = formulaId;
         this.name = name;
-        this.formulaType = formulaType;
+        this.type = type;
         this.calculationType = calculationType;
         this.functionIntercept = functionIntercept;
         this.functions = functions;
@@ -53,8 +53,8 @@ public final class Formula {
         return name;
     }
 
-    public Type getFormulaType() {
-        return formulaType;
+    public Type getType() {
+        return type;
     }
 
     public CalculationType getCalculationType() {

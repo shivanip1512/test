@@ -25,6 +25,8 @@
 <entry key="yukon.web.modules.dr.optOutAdmin.pageDescription">Opt Out Status</entry>    
 <entry key="yukon.web.modules.dr.optOutScheduledEvents.pageName">Scheduled Opt Outs</entry>
 <entry key="yukon.web.modules.dr.optOutScheduledEvents.pageDescription">Scheduled Opt Outs</entry>
+<entry key="yukon.web.modules.dr.formulaList.pageName">Estimated Load Formulas</entry>
+<entry key="yukon.web.modules.dr.formulaList.pageDescription">Estimated Load Formulas</entry>
 
 <!-- General Demand Response -->
 <entry key="yukon.web.modules.dr.pingDevices.label">Ping Devices</entry>
@@ -470,6 +472,60 @@
 <entry key="yukon.web.modules.dr.controlAreaList.heading.priority.linkText">Priority</entry>
 <entry key="yukon.web.modules.dr.controlAreaList.heading.timeWindow.linkText">Time Window</entry>
 
+<!-- Formula List -->
+
+<entry key="yukon.web.modules.dr.formulaList.pageName">Estimated Load</entry>
+<entry key="yukon.web.modules.dr.formulaList.formulas">Formulas</entry>
+<entry key="yukon.web.modules.dr.formulaList.formulas.title">Formulas</entry>
+<entry key="yukon.web.modules.dr.formulaList.name">Name</entry>
+<entry key="yukon.web.modules.dr.formulaList.formulaType">Formula Type</entry>
+<entry key="yukon.web.modules.dr.formulaList.calculationType">Calculation Type</entry>
+<entry key="yukon.web.modules.dr.formulaList.assignments">Assignments</entry>
+<entry key="yukon.web.modules.dr.formulaList.actions">Actions</entry>
+<entry key="yukon.web.modules.dr.formulaList.newFormula.label">New Formula</entry>
+<entry key="yukon.web.modules.dr.formulaList.noFormulas">No formulas</entry>
+
+<entry key="yukon.web.modules.dr.formula.tableEntries.title">Table Entries</entry>
+
+<entry key="yukon.web.modules.dr.formula.CREATE.pageName">Create Formula</entry>
+<entry key="yukon.web.modules.dr.formula.EDIT.pageName">Edit</entry>
+<entry key="yukon.web.modules.dr.formula.VIEW.pageName">Formula</entry>
+<entry key="yukon.web.modules.dr.formula.VIEW.pageDescription">{0}</entry>
+<entry key="yukon.web.modules.dr.formula.name">Name</entry>
+<entry key="yukon.web.modules.dr.formula.calculationType">Calculation Type</entry>
+<entry key="yukon.web.modules.dr.formula.formulaType">Formula Type</entry>
+<entry key="yukon.web.modules.dr.formula.formulaSettings.title">Formula Settings</entry>
+<entry key="yukon.web.modules.dr.formula.components.title">Components</entry>
+<entry key="yukon.web.modules.dr.formula.functions.title">Functions</entry>
+<entry key="yukon.web.modules.dr.formula.lookupTables.title">Lookup Tables</entry>
+<entry key="yukon.web.modules.dr.formula.tableEntries.title">Table Entries</entry>
+<entry key="yukon.web.modules.dr.formula.input">Input</entry>
+<entry key="yukon.web.modules.dr.formula.inputMin">Input Min</entry>
+<entry key="yukon.web.modules.dr.formula.inputMax">Input Max</entry>
+<entry key="yukon.web.modules.dr.formula.timeMax">Last Valid Time</entry>
+<entry key="yukon.web.modules.dr.formula.inputRange">Input Range</entry>
+<entry key="yukon.web.modules.dr.formula.timeRange">Time Range</entry>
+<entry key="yukon.web.modules.dr.formula.entries">Entries</entry>
+<entry key="yukon.web.modules.dr.formula.noEntries">No lookup table entries</entry>
+<entry key="yukon.web.modules.dr.formula.quadratic">Quadratic</entry>
+<entry key="yukon.web.modules.dr.formula.linear">Linear</entry>
+<entry key="yukon.web.modules.dr.formula.functionIntercept">Function Intercept</entry>
+<entry key="yukon.web.modules.dr.formula.actions">Actions</entry>
+<entry key="yukon.web.modules.dr.formula.newFunction.label">Add Function</entry>
+<entry key="yukon.web.modules.dr.formula.newTable.label">Add Lookup Table</entry>
+<entry key="yukon.web.modules.dr.formula.newEntry.label">Add Entry</entry>
+<entry key="yukon.web.modules.dr.formula.key">Key</entry>
+<entry key="yukon.web.modules.dr.formula.value">Value</entry>
+
+<entry key="yukon.web.modules.dr.formula.error.inputMaxUnderMin">Input Max must be greater than Input Min.</entry>
+<entry key="yukon.web.modules.dr.formula.error.inputMinOverMax">Input Min must be lower than Input Max.</entry>
+<entry key="yukon.web.modules.dr.formula.error.inputMaxTooLow">Input max cannot be lower than entries in the table.</entry>
+<entry key="yukon.web.modules.dr.formula.error.timeMaxTooSoon">Last Valid Time cannot be sooner than entries in the table.</entry>
+<entry key="yukon.web.modules.dr.formula.error.duplicateKey">Duplicate Key</entry>
+<entry key="yukon.web.modules.dr.formula.success.updated">Formula {0} updated successfully.</entry>
+<entry key="yukon.web.modules.dr.formula.success.created">Formula {0} created successfully.</entry>
+<entry key="yukon.web.modules.dr.formula.noFunctions">No functions</entry>
+<entry key="yukon.web.modules.dr.formula.noTables">No lookup tables</entry>
 
 <!-- Control Area Detail -->
 <entry key="yukon.web.modules.dr.controlAreaDetail.pageTitle">Control Area {0}</entry>

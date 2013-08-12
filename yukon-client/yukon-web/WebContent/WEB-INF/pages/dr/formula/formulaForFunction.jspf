@@ -1,0 +1,123 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog"%>
+
+<input id="formulaRowIndex" type="hidden" value="${fn:length(formulaBean.functions)}"/>
+
+<form:form id="formulaForm" commandName="formulaBean" action="../edit/${formulaBean.formulaId}">
+    <div class="column_12_12 clearfix">
+        <div class="column one">
+            <tags:formElementContainer nameKey="formulaSettings">
+                <tags:nameValueContainer2>
+                    <tags:hidden path="formulaId"/>
+                    <tags:hidden path="formulaType"/>
+                    <tags:hidden path="calculationType"/>
+                    <tags:inputNameValue nameKey=".name" path="name" size="40"/>
+                    <tags:nameValue2 nameKey=".formulaType">
+                        <i:inline key="${formulaBean.formulaType}"/>
+                    </tags:nameValue2>
+                    <tags:nameValue2 nameKey=".calculationType">
+                        <i:inline key="${formulaBean.calculationType}"/>
+                    </tags:nameValue2>
+                </tags:nameValueContainer2>
+            </tags:formElementContainer>
+        </div><div class="column two nogutter"></div>
+    </div>
+    <tags:sectionContainer2 nameKey="functions">
+        <div class="setting">
+            <tags:nameValueStacked nameKey=".functionIntercept">
+                <tags:input path="functionIntercept"/>
+            </tags:nameValueStacked>
+        </div>
+        <div id="formulaFunctions">
+            <c:forEach var="func" items="${formulaBean.functions}" varStatus="loop">
+            <div class="setting f-removeable f-function">
+                <input type="hidden" name="functions[${loop.index}].formulaId" value="${formulaBean.formulaId}"/>
+                <div class="column_8_8_8 clearfix">
+                    <div class="column one">
+                        <tags:nameValueStacked nameKey=".name">
+                            <tags:input path="functions[${loop.index}].name" size="20"/>
+                        </tags:nameValueStacked>
+                        <tags:nameValueStacked nameKey=".input">
+                            <tags:selectWithItems items="${formulaInputs}" path="functions[${loop.index}].inputType"/>
+                        </tags:nameValueStacked>
+                    </div>
+                    <div class="column two">
+                        <tags:nameValueStacked nameKey=".quadratic">
+                            <tags:input path="functions[${loop.index}].quadratic"/>
+                        </tags:nameValueStacked>
+                        <tags:nameValueStacked nameKey=".inputMin">
+                            <tags:input path="functions[${loop.index}].inputMin"/>
+                        </tags:nameValueStacked>
+                    </div>
+                    <div class="column three nogutter">
+                        <cti:displayForPageEditModes modes="EDIT">
+                            <cti:button nameKey="remove" icon="icon-cross" classes="fr f-remove"/>
+                        </cti:displayForPageEditModes>
+                        <tags:nameValueStacked nameKey=".linear">
+                            <tags:input path="functions[${loop.index}].linear"/>
+                        </tags:nameValueStacked>
+                        <tags:nameValueStacked nameKey=".inputMax">
+                            <tags:input path="functions[${loop.index}].inputMax"/>
+                        </tags:nameValueStacked>
+                    </div>
+                </div>
+            </div>
+            </c:forEach>
+        </div>
+        <cti:displayForPageEditModes modes="EDIT">
+            <div class="actionArea"><cti:button id="newFunctionBtn" icon="icon-plus-green" nameKey="newFunction"/></div>
+        </cti:displayForPageEditModes>
+    </tags:sectionContainer2>
+    <div class="pageActionArea">
+        <cti:displayForPageEditModes modes="VIEW">
+            <cti:button nameKey="edit" icon="icon-pencil" href="/dr/formula/edit/${formulaBean.formulaId}"/>
+        </cti:displayForPageEditModes>
+        <cti:displayForPageEditModes modes="EDIT">
+            <cti:button nameKey="save" type="submit" classes="primary action"/>
+            <cti:button nameKey="delete" id="deleteBtn" href="/dr/formula/delete?formulaId=${formulaBean.formulaId}"/>
+            <cti:button nameKey="cancel" href="/dr/formula/view/${formulaBean.formulaId}"/>
+            <dialog:confirm nameKey="confirmDelete" on="#deleteBtn" argument="${formulaBean.name}"/>
+        </cti:displayForPageEditModes>
+    </div>
+</form:form>
+
+<cti:displayForPageEditModes modes="EDIT">
+    <div id="dummyFunction" class="setting f-removeable f-function" style="display:none">
+        <input type="hidden" name="formulaId" value="${formulaBean.formulaId}"/>
+        <input type="hidden" name="dummyFunctionBean.functionId" value=""/>
+        <div class="column_8_8_8 clearfix">
+            <div class="column one">
+                <tags:nameValueStacked nameKey=".name">
+                    <tags:input path="dummyFunctionBean.name" size="20"/>
+                </tags:nameValueStacked>
+                <tags:nameValueStacked nameKey=".input">
+                    <tags:selectWithItems items="${formulaInputs}" path="dummyFunctionBean.inputType"/>
+                </tags:nameValueStacked>
+            </div>
+            <div class="column two">
+                <tags:nameValueStacked nameKey=".quadratic">
+                    <tags:input path="dummyFunctionBean.quadratic"/>
+                </tags:nameValueStacked>
+                <tags:nameValueStacked nameKey=".inputMin">
+                    <tags:input path="dummyFunctionBean.inputMin"/>
+                </tags:nameValueStacked>
+            </div>
+            <div class="column three nogutter">
+                <cti:button nameKey="remove" icon="icon-cross" classes="fr f-remove"/>
+                <tags:nameValueStacked nameKey=".linear">
+                    <tags:input path="dummyFunctionBean.linear"/>
+                </tags:nameValueStacked>
+                <tags:nameValueStacked nameKey=".inputMax">
+                    <tags:input path="dummyFunctionBean.inputMax"/>
+                </tags:nameValueStacked>
+            </div>
+        </div>
+    </div>
+</cti:displayForPageEditModes>

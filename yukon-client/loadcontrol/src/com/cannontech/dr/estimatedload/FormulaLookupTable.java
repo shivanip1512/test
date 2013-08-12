@@ -39,7 +39,7 @@ public final class FormulaLookupTable<T> {
         return entries;
     }
     
-    public FormulaLookupTable<T> withFormulaId(Integer formulaId) {
-        return new FormulaLookupTable<>(lookupTableId, formulaId, name, input, entries);
+    public FormulaLookupTable<T> withFormulaId(Integer newFormulaId) {
+        return new FormulaLookupTable<>(lookupTableId, newFormulaId, name, input, entries);
     }
 }

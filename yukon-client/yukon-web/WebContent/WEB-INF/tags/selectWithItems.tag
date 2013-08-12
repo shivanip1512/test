@@ -7,6 +7,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <%@ tag body-content="empty" %>
+<%@ attribute name="id" required="false" type="java.lang.String"%>
 <%@ attribute name="path" required="true" type="java.lang.String"%>
 <%@ attribute name="items" required="true" type="java.lang.Object"%>
 <%@ attribute name="itemValue" required="false" type="java.lang.String"%>
@@ -16,6 +17,7 @@
 <%@ attribute name="defaultItemLabel" required="false" type="java.lang.String"%>
 <%@ attribute name="emptyValueKey" required="false" type="java.lang.String"%>
 <%@ attribute name="onchange" required="false" type="java.lang.String"%>
+<%@ attribute name="disabled" required="false" type="java.lang.String"%>
 <%@ attribute name="inputClass" required="false" type="java.lang.String"%>
 
 <%-- VIEW MODE --%>
@@ -42,7 +44,7 @@
 	<c:set var="theInputClass" value="${pageScope.inputClass} error"/>
 </c:if>
 
-<form:select path="${path}" cssClass="${theInputClass}" onchange="${pageScope.onchange}">
+<form:select id="${id}" disabled="${disabled}" path="${path}" cssClass="${theInputClass}" onchange="${pageScope.onchange}">
     <c:if test="${not empty pageScope.defaultItemLabel}">
         <form:option value="${pageScope.defaultItemValue}">${pageScope.defaultItemLabel}</form:option>
     </c:if>

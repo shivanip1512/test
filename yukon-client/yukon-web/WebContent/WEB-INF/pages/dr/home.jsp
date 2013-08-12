@@ -71,20 +71,27 @@
         </div>
         <div class="column two nogutter">
             <tags:boxContainer2 nameKey="quickSearches">
-                <cti:checkRolesAndProperties value="SHOW_CONTROL_AREAS">
-                    <cti:url var="quickLinkUrl" value="/dr/controlArea/list">
-                        <cti:param name="state" value="active"/>
-                    </cti:url>
-                    <a href="${quickLinkUrl}"><i:inline key=".activeControlAreasQuickSearch"/></a><br>
-                </cti:checkRolesAndProperties>
-                <cti:url var="quickLinkUrl" value="/dr/program/list">
-                    <cti:param name="state" value="ACTIVE"/>
-                </cti:url>
-                <a href="${quickLinkUrl}"><i:inline key=".activeProgramsQuickSearch"/></a><br>
-                <cti:url var="quickLinkUrl" value="/dr/loadGroup/list">
-                    <cti:param name="state" value="active"/>
-                </cti:url>
-                <a href="${quickLinkUrl}"><i:inline key=".activeLoadGroupsQuickSearch"/></a><br>
+                <div class="column_12_12">
+                    <div class="column one">
+                        <cti:checkRolesAndProperties value="SHOW_CONTROL_AREAS">
+                            <cti:url var="quickLinkUrl" value="/dr/controlArea/list">
+                                <cti:param name="state" value="active"/>
+                            </cti:url>
+                            <a href="${quickLinkUrl}"><i:inline key=".activeControlAreasQuickSearch"/></a><br>
+                        </cti:checkRolesAndProperties>
+                        <cti:url var="quickLinkUrl" value="/dr/program/list">
+                            <cti:param name="state" value="ACTIVE"/>
+                        </cti:url>
+                        <a href="${quickLinkUrl}"><i:inline key=".activeProgramsQuickSearch"/></a><br>
+                        <cti:url var="quickLinkUrl" value="/dr/loadGroup/list">
+                            <cti:param name="state" value="active"/>
+                        </cti:url>
+                        <a href="${quickLinkUrl}"><i:inline key=".activeLoadGroupsQuickSearch"/></a><br>
+                    </div>
+                    <div class="column two nogutter">
+                        <a href="/dr/formula/list" class="clearfix dib"><span class="fl">Load Formulas</span></a>
+                    </div>
+                </div>
             </tags:boxContainer2>
             <tags:boxContainer2 nameKey="recents">
                 <c:if test="${empty recents}">

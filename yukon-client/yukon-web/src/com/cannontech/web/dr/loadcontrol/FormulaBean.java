@@ -1,0 +1,117 @@
+package com.cannontech.web.dr.loadcontrol;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.cannontech.common.util.LazyList;
+import com.cannontech.dr.estimatedload.Formula;
+import com.cannontech.dr.estimatedload.Formula.CalculationType;
+
+public class FormulaBean {
+
+    private Integer formulaId;
+    private String name;
+    private Formula.CalculationType calculationType = Formula.CalculationType.FUNCTION;
+    private Formula.Type formulaType = Formula.Type.APPLIANCE_CATEGORY;
+    private String assignments = "TODO";
+    private Double functionIntercept = 0.0;
+    private List<FunctionBean> functions = LazyList.ofInstance(FunctionBean.class);
+    private List<LookupTableBean> tables = LazyList.ofInstance(LookupTableBean.class);
+
+    public FormulaBean() {}
+    public FormulaBean(Formula formula) {
+        this.formulaId = formula.getFormulaId();
+        this.name = formula.getName();
+        this.calculationType = formula.getCalculationType();
+        this.formulaType = formula.getType();
+        this.functionIntercept = formula.getFunctionIntercept();
+        this.functions = FunctionBean.toBeanMap(formula.getFunctions());
+        this.tables = LookupTableBean.toBeanMap(formula.getTables());
+    }
+
+    public Formula getFormula() {
+        return new Formula(formulaId, name, formulaType, calculationType,
+                           functionIntercept, 
+                           FunctionBean.toFormulaFunctions(functions),
+                           LookupTableBean.toLookupTables(tables));
+    }
+
+    public static List<FormulaBean> toBeans(List<Formula> formulas) {
+        List<FormulaBean> beans = new ArrayList<>();
+        for (Formula formula : formulas) {
+            beans.add(new FormulaBean(formula));
+        }
+        return beans;
+    }
+
+    public int getNumberOfEntries() {
+        if (calculationType == CalculationType.FUNCTION) {
+            return functions.size();
+        }
+        return tables.size();
+    }
+    
+    public Integer getFormulaId() {
+       return formulaId;
+    }
+
+    public void setFormulaId(Integer formulaId) {
+        this.formulaId = formulaId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Formula.CalculationType getCalculationType() {
+        return calculationType;
+    }
+
+    public void setCalculationType(Formula.CalculationType calculationType) {
+        this.calculationType = calculationType;
+    }
+
+    public Formula.Type getFormulaType() {
+        return formulaType;
+    }
+
+    public void setFormulaType(Formula.Type formulaType) {
+        this.formulaType = formulaType;
+    }
+
+    public String getAssignments() {
+        return assignments;
+    }
+
+    public void setAssignments(String assignments) {
+        this.assignments = assignments;
+    }
+
+    public List<FunctionBean> getFunctions() {
+        return functions;
+    }
+
+    public void setFunctions(List<FunctionBean> functions) {
+        this.functions = functions;
+    }
+
+    public List<LookupTableBean> getTables() {
+        return tables;
+    }
+
+    public void setTables(List<LookupTableBean> tables) {
+        this.tables = tables;
+    }
+
+    public Double getFunctionIntercept() {
+        return functionIntercept;
+    }
+
+    public void setFunctionIntercept(Double functionIntercept) {
+        this.functionIntercept = functionIntercept;
+    }
+}

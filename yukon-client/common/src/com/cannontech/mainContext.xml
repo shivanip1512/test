@@ -187,6 +187,7 @@
                 <value>classpath:com/cannontech/yukon/dr/appliance</value>
                 <value>classpath:com/cannontech/yukon/dr/consumer</value>
                 <value>classpath:com/cannontech/yukon/dr/program</value>
+                <value>classpath:com/cannontech/yukon/dr/estimatedLoad</value>
                 <value>classpath:com/cannontech/yukon/web/modules/adminSetup/root</value>
                 <value>classpath:com/cannontech/yukon/web/modules/adminSetup/energyCompany</value>
                 <value>classpath:com/cannontech/yukon/web/modules/adminSetup/multispeak</value>

@@ -427,6 +427,23 @@
                         </page>
                     </pages>
                 </page>
+                <page name="formulaList" type="BASIC">
+                    <link>/dr/formula/list</link>
+                    <pages>
+	                    <page name="formula.CREATE" type="BASIC">
+	                        <labelArgument>${formulaBean.name}</labelArgument>
+	                    </page>
+	                    <page name="formula.VIEW" type="DETAIL">
+                            <link>/dr/formula/view/${formulaBean.formulaId}</link>
+                            <labelArgument>${formulaBean.name}</labelArgument>
+                            <pages>
+                              <page name="formula.EDIT" type="DETAIL_CHILD">
+		                        <labelArgument>${formulaBean.name}</labelArgument>
+		                      </page>
+                            </pages>
+                        </page>
+                    </pages>
+                </page>
                 <page name="searchResults" type="BASIC" hideSearch="true">
                     <link>/dr/search</link>
                 </page>
