@@ -419,7 +419,7 @@
 
                 <div class="titleBar boxContainer_titleBar">
                     <div class="controls" onclick="closeOrphanedCBCPopup()">
-                        <cti:icon icon="icon-collapse" class="minMax"/>
+                        <i class="icon icon-collapse minMax"></i>
                     </div>
                     <h3 class="title boxContainer_title">Orphaned CBC's</h3>
                 </div>
