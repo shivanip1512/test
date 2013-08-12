@@ -54,6 +54,12 @@ public class TimeTableEntryBean implements Comparable<TimeTableEntryBean>{
 
     @Override
     public int compareTo(TimeTableEntryBean otherBean) {
+        if (key == null) {
+            if (otherBean.getKey() == null) {
+                return 0;
+            }
+            return -1;
+        }
         return key.compareTo(otherBean.getKey());
     }
 }

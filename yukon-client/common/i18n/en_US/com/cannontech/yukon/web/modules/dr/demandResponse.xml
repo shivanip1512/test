@@ -522,6 +522,8 @@
 <entry key="yukon.web.modules.dr.formula.error.inputMaxTooLow">Input max cannot be lower than entries in the table.</entry>
 <entry key="yukon.web.modules.dr.formula.error.timeMaxTooSoon">Last Valid Time cannot be sooner than entries in the table.</entry>
 <entry key="yukon.web.modules.dr.formula.error.duplicateKey">Duplicate Key</entry>
+<entry key="yukon.web.modules.dr.formula.error.notValidNumber">Not a valid number</entry>
+<entry key="yukon.web.modules.dr.formula.error.noEntries">A table was found without entries. All tables must have at least one entry.</entry>
 <entry key="yukon.web.modules.dr.formula.success.updated">Formula {0} updated successfully.</entry>
 <entry key="yukon.web.modules.dr.formula.success.created">Formula {0} created successfully.</entry>
 <entry key="yukon.web.modules.dr.formula.noFunctions">No functions</entry>

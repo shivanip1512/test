@@ -1,5 +1,6 @@
 package com.cannontech.web.dr.loadcontrol;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -33,13 +34,13 @@ public class FormulaBeanValidator extends SimpleValidator<FormulaBean> {
             if (table.getInputType() == InputType.TIME) {
                 List<TimeTableEntryBean> timeEntries = table.getTimeEntries();
                 if (timeEntries.isEmpty()) {
-                    flashScope.setError(YukonMessageSourceResolvable.createDefaultWithoutCode("Table found without entries. All tables must have one or more entries."));
+                    flashScope.setError(new YukonMessageSourceResolvable(baseKey + "noEntries"));
                     hasErrors = true;
                 }
             } else {
                 List<TableEntryBean> entries = table.getEntries();
                 if (entries.isEmpty()) {
-                    flashScope.setError(YukonMessageSourceResolvable.createDefaultWithoutCode("Table found without entries. All tables must have one or more entries."));
+                    flashScope.setError(new YukonMessageSourceResolvable(baseKey + "noEntries"));
                     hasErrors = true;
                 }
             }
@@ -60,13 +61,27 @@ public class FormulaBeanValidator extends SimpleValidator<FormulaBean> {
         }
 
         if (bean.getCalculationType() == Formula.CalculationType.FUNCTION) {
+            if (Double.isNaN(bean.getFunctionIntercept()) || Double.isInfinite(bean.getFunctionIntercept())) {
+                errors.rejectValue("functionIntercept", baseKey + "notValidNumber", null,"");
+            }
             List<FunctionBean> functions = bean.getFunctions();
             for (int i=0; i<functions.size();i++) {
                 FunctionBean function = functions.get(i);
                 if(StringUtils.isEmpty(function.getName())) {
                     errors.rejectValue("functions["+ i +"].name", "yukon.web.error.isBlank", null,"");
                 }
-                // User specified a max which is lower than the min ... tisk tisk
+                if (Double.isNaN(function.getInputMax()) || Double.isInfinite(function.getInputMax())) {
+                    errors.rejectValue("functions["+i+"].inputMax", baseKey + "notValidNumber", null,"");
+                }
+                if (Double.isNaN(function.getInputMin()) || Double.isInfinite(function.getInputMin())) {
+                    errors.rejectValue("functions["+i+"].inputMin", baseKey + "notValidNumber", null,"");
+                }
+                if (Double.isNaN(function.getQuadratic()) || Double.isInfinite(function.getQuadratic())) {
+                    errors.rejectValue("functions["+i+"].quadratic", baseKey + "notValidNumber", null,"");
+                }
+                if (Double.isNaN(function.getLinear()) || Double.isInfinite(function.getLinear())) {
+                    errors.rejectValue("functions["+i+"].linear", baseKey + "notValidNumber", null,"");
+                }
                 if (function.getInputMin() >= function.getInputMax()) {
                     errors.rejectValue("functions["+i+"].inputMax", baseKey + "inputMaxUnderMin", null, "");
                     errors.rejectValue("functions["+i+"].inputMin", baseKey + "inputMinOverMax", null, "");
@@ -83,17 +98,21 @@ public class FormulaBeanValidator extends SimpleValidator<FormulaBean> {
                 }
                 if (table.getInputType() == InputType.TIME) {
                     if(!table.getTimeEntries().isEmpty()) {
-//                        LocalTime tableMax = Collections.max(TimeTableEntryBean.toLookupTableMap(table.getTimeEntries()).keySet());
-//                        if (tableMax.isAfter(table.getTimeInputMax())) {
-//                            errors.rejectValue("tables["+i+"].timeInputMax", baseKey + "timeMaxTooSoon", null,"");
-//                        }
+                        LocalTime tableMax = Collections.max(table.getTimeEntries()).getKey();
+                        if (table.getTimeInputMax() == null) {
+                            errors.rejectValue("tables["+i+"].timeInputMax", "yukon.web.error.isBlank", null,"");
+                        } else if (tableMax.isAfter(table.getTimeInputMax())) {
+                            errors.rejectValue("tables["+i+"].timeInputMax", baseKey + "timeMaxTooSoon", null,"");
+                        }
 
                         // LOOP OVER LOOKING FOR DUPLICATES
                         Set<LocalTime> keySet = new HashSet<>();
                         LocalTime key;
                         for (int entryIndex=0; entryIndex < timeEntries.size();entryIndex++) {
                             key = timeEntries.get(entryIndex).getKey();
-                            if (keySet.contains(key)) {
+                            if (key == null) {
+                                errors.rejectValue("tables["+i+"].timeEntries["+entryIndex+"].key", "yukon.web.error.isBlank", null,"");
+                            } else if (keySet.contains(key)) {
                                 errors.rejectValue("tables["+i+"].timeEntries["+entryIndex+"].key", baseKey + "duplicateKey", null,"");
                             }
                             keySet.add(key);
@@ -101,11 +120,11 @@ public class FormulaBeanValidator extends SimpleValidator<FormulaBean> {
                     }
                 } else {
                     if(!entries.isEmpty()) {
-//                        Double tableMax = Collections.max(TableEntryBean.toLookupTableMap(entries).keySet());
-                        // User specified a max which is lower than a value in the table... tisk tisk
-//                        if (tableMax > table.getInputMax()) {
-//                            errors.rejectValue("tables["+i+"].inputMax", baseKey + "inputMaxTooLow", null,"");
-//                        }
+                        Double tableMax = Collections.max(entries).getKey();
+
+                        if (tableMax > table.getInputMax()) {
+                            errors.rejectValue("tables["+i+"].inputMax", baseKey + "inputMaxTooLow", null,"");
+                        }
 
                         // LOOP OVER LOOKING FOR DUPLICATES
                         Set<Double> keySet = new HashSet<>();
@@ -116,12 +135,13 @@ public class FormulaBeanValidator extends SimpleValidator<FormulaBean> {
                                 errors.rejectValue("tables["+i+"].entries["+entryIndex+"].key", baseKey + "duplicateKey", null,"");
                             }
                             keySet.add(key);
+                            if (Double.isNaN(key) || Double.isInfinite(key)) {
+                                errors.rejectValue("tables["+i+"].entries["+entryIndex+"].key", baseKey + "notValidNumber", null,"");
+                            }
                         }
                     }
                 }
-
             }
         }
     }
-
 }
