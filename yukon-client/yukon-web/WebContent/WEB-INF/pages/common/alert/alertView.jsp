@@ -20,7 +20,8 @@
                 <td><cti:formatDate type="BOTH" value="${alert.date}"/></td>
                 <td>
                     <input type="hidden" name="alertId" value="${alert.id}">
-                    <cti:icon icon="icon-accept" title="<cti:msg key="yukon.web.alerts.table.clear.tooltip"/>" onclick="javascript:Yukon.Alerts.clearAlert(${alert.id});"/>
+                    <cti:msg key="yukon.web.alerts.table.clear.tooltip" var="tt"/>
+                    <cti:icon icon="icon-accept" title="${tt}" onclick="javascript:Yukon.Alerts.clearAlert(${alert.id});"/>
                 </td>
             </tr>
         </c:forEach>
