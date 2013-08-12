@@ -41,7 +41,7 @@
         <div>
             <form id="importForm" method="post" action="/capcontrol/import/cbcFile" enctype="multipart/form-data">
                 <div>
-                    <cti:icon icon="icon-folder-edit"/
+                    <cti:icon icon="icon-folder-edit"/>
                     <input type="file" name="dataFile">
                 </div>
                 <div>
