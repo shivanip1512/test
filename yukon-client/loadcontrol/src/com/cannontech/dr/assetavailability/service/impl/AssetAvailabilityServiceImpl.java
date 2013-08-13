@@ -343,7 +343,7 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
         return inventory;
     }
     
-    private class PaoRelayRuntimes {
+    private static class PaoRelayRuntimes {
         Map<Integer, Map<Integer, Instant>> map = Maps.newHashMap();
         
         public void put(int paoId, int relay, Instant runtime) {

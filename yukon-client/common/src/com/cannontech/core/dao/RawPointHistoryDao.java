@@ -375,7 +375,6 @@ public interface RawPointHistoryDao {
    public Instant getLastDataDateInRange(PaoIdentifier paoIdentifier, ReadableRange<Instant> dateRange);
    
    /**
-    * Gets The most recent non-zero value for the specified attribute on the specified pao.
     * @return The most recent non-zero value for the specified attribute on the specified pao, or 
     * null if there are no archived values for that attribute, or if all values are zero.
     */
