@@ -21,25 +21,25 @@ ADD Description VARCHAR2(1024);
 
 /* Start YUK-12437 */
 CREATE TABLE EstimatedLoadFormula (
-    EstimatedLoadFormulaId NUMERIC NOT NULL,
-    Name VARCHAR(100) NOT NULL,
-    FormulaType VARCHAR(32) NOT NULL,
-    CalculationType VARCHAR(32) NOT NULL,
-    FunctionIntercept NUMERIC NOT NULL,
-    PRIMARY KEY (EstimatedLoadFormulaId)
+    EstimatedLoadFormulaId NUMBER NOT NULL,
+    Name VARCHAR2(32) NOT NULL,
+    FormulaType VARCHAR2(32) NOT NULL,
+    CalculationType VARCHAR2(32) NOT NULL,
+    FunctionIntercept FLOAT NOT NULL
+    CONSTRAINT PK_EstimatedLoadFormula PRIMARY KEY (EstimatedLoadFormulaId)
 );
 
 CREATE TABLE EstimatedLoadFunction (
-    EstimatedLoadFunctionId NUMERIC NOT NULL,
-    EstimatedLoadFormulaId NUMERIC NOT NULL,
-    Name VARCHAR(100) NOT NULL,
-    InputType VARCHAR(32) NOT NULL,
-    InputMin VARCHAR(100) NOT NULL,
-    InputMax VARCHAR(100) NOT NULL,
-    InputPointId NUMERIC NOT NULL,
-    Quadratic NUMERIC NOT NULL,
-    Linear NUMERIC NOT NULL,
-    PRIMARY KEY (EstimatedLoadFunctionId)
+    EstimatedLoadFunctionId NUMBER NOT NULL,
+    EstimatedLoadFormulaId NUMBER NOT NULL,
+    Name VARCHAR2(32) NOT NULL,
+    InputType VARCHAR2(32) NOT NULL,
+    InputMin VARCHAR2(32) NOT NULL,
+    InputMax VARCHAR2(32) NOT NULL,
+    InputPointId NUMBER,
+    Quadratic FLOAT NOT NULL,
+    Linear FLOAT NOT NULL,
+    CONSTRAINT PK_EstimatedLoadFunction PRIMARY KEY (EstimatedLoadFunctionId)
 );
 ALTER TABLE EstimatedLoadFunction
    ADD CONSTRAINT FK_EstLoadFunction_LoadFormula FOREIGN KEY (EstimatedLoadFormulaId)
@@ -47,14 +47,14 @@ ALTER TABLE EstimatedLoadFunction
          ON DELETE CASCADE;
 
 CREATE TABLE EstimatedLoadLookupTable (
-    EstimatedLoadLookupTableId NUMERIC NOT NULL,
-    EstimatedLoadFormulaId NUMERIC NOT NULL,
-    Name VARCHAR(100) NOT NULL,
-    InputType VARCHAR(32) NOT NULL,
-    InputMin VARCHAR(100) NOT NULL,
-    InputMax VARCHAR(100) NOT NULL,
-    InputPointId NUMERIC NOT NULL,
-    PRIMARY KEY (EstimatedLoadLookupTableId)
+    EstimatedLoadLookupTableId NUMBER NOT NULL,
+    EstimatedLoadFormulaId NUMBER NOT NULL,
+    Name VARCHAR2(32) NOT NULL,
+    InputType VARCHAR2(32) NOT NULL,
+    InputMin VARCHAR2(32)NOT NULL,
+    InputMax VARCHAR2(32)NOT NULL,
+    InputPointId NUMBER
+    CONSTRAINT PK_EstimatedLoadLookupTable PRIMARY KEY (EstimatedLoadLookupTableId)
 );
 ALTER TABLE EstimatedLoadLookupTable
    ADD CONSTRAINT FK_EstLoadLookup_LoadFormula FOREIGN KEY (EstimatedLoadFormulaId)
@@ -62,11 +62,11 @@ ALTER TABLE EstimatedLoadLookupTable
          ON DELETE CASCADE;
 
 CREATE TABLE EstimatedLoadTableEntry (
-    EstimatedLoadTableEntryId NUMERIC NOT NULL,
-    EstimatedLoadLookupTableId NUMERIC NOT NULL,
-    EntryKey VARCHAR(100) NOT NULL,
-    EntryValue NUMERIC NOT NULL,
-    PRIMARY KEY (EstimatedLoadTableEntryId)
+    EstimatedLoadTableEntryId NUMBER NOT NULL,
+    EstimatedLoadLookupTableId NUMBER NOT NULL,
+    EntryKey VARCHAR2(32) NOT NULL,
+    EntryValue FLOAT NOT NULL
+    CONSTRAINT PK_EstimatedLoadTableEntry PRIMARY KEY (EstimatedLoadTableEntryId)
 );
 ALTER TABLE EstimatedLoadTableEntry
    ADD CONSTRAINT FK_TableEntry_LookupTable FOREIGN KEY (EstimatedLoadLookupTableId)
@@ -74,12 +74,27 @@ ALTER TABLE EstimatedLoadTableEntry
          ON DELETE CASCADE;
 
 CREATE TABLE EstimatedLoadFormulaAssignment (
-    FormulaAssignmentId NUMERIC NOT NULL,
-    FormulaId NUMERIC NOT NULL,
-    GearId NUMERIC,
-    ApplianceCategoryId NUMERIC,
-    PRIMARY KEY (FormulaAssignmentId)
+    FormulaAssignmentId NUMBER NOT NULL,
+    FormulaId NUMBER NOT NULL,
+    GearId NUMBER,
+    ApplianceCategoryId NUMBER
+    CONSTRAINT PK_EstimatedLoadFormulaAssignm PRIMARY KEY (FormulaAssignmentId)
 );
+
+ALTER TABLE EstimatedLoadFormulaAssignment 
+   ADD CONSTRAINT FK_FormulaAssign_LoadFormula FOREIGN KEY (EstimatedLoadFormulaId)
+      REFERENCES EstimatedLoadFormula (EstimatedLoadFormulaId)
+         ON DELETE CASCADE;
+
+ALTER TABLE EstimatedLoadFormulaAssignment 
+   ADD CONSTRAINT FK_FormulaAssign_LmProgramGear FOREIGN KEY (GearId)
+      REFERENCES LMProgramDirectGear (GearId)
+         ON DELETE CASCADE;
+
+ALTER TABLE EstimatedLoadFormulaAssignment 
+   ADD CONSTRAINT FK_FormulaAssign_ApplianceCat FOREIGN KEY (ApplianceCategoryId)
+      REFERENCES ApplianceCategory (ApplianceCategoryId)
+         ON DELETE CASCADE;
 /* End YUK-12437 */
 
 /**************************************************************/

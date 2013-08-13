@@ -23,24 +23,24 @@ GO
 /* Start YUK-12437 */
 CREATE TABLE EstimatedLoadFormula (
     EstimatedLoadFormulaId NUMERIC NOT NULL,
-    Name VARCHAR(100) NOT NULL,
+    Name VARCHAR(32) NOT NULL,
     FormulaType VARCHAR(32) NOT NULL,
     CalculationType VARCHAR(32) NOT NULL,
-    FunctionIntercept NUMERIC NOT NULL,
-    PRIMARY KEY (EstimatedLoadFormulaId)
+    FunctionIntercept FLOAT NOT NULL
+    CONSTRAINT PK_EstimatedLoadFormula PRIMARY KEY (EstimatedLoadFormulaId)
 );
 
 CREATE TABLE EstimatedLoadFunction (
     EstimatedLoadFunctionId NUMERIC NOT NULL,
     EstimatedLoadFormulaId NUMERIC NOT NULL,
-    Name VARCHAR(100) NOT NULL,
+    Name VARCHAR(32) NOT NULL,
     InputType VARCHAR(32) NOT NULL,
-    InputMin VARCHAR(100) NOT NULL,
-    InputMax VARCHAR(100) NOT NULL,
-    InputPointId NUMERIC NOT NULL,
-    Quadratic NUMERIC NOT NULL,
-    Linear NUMERIC NOT NULL,
-    PRIMARY KEY (EstimatedLoadFunctionId)
+    InputMin VARCHAR(32) NOT NULL,
+    InputMax VARCHAR(32) NOT NULL,
+    InputPointId NUMERIC,
+    Quadratic FLOAT NOT NULL,
+    Linear FLOAT NOT NULL,
+    CONSTRAINT PK_EstimatedLoadFunction PRIMARY KEY (EstimatedLoadFunctionId)
 );
 ALTER TABLE EstimatedLoadFunction
    ADD CONSTRAINT FK_EstLoadFunction_LoadFormula FOREIGN KEY (EstimatedLoadFormulaId)
@@ -50,12 +50,12 @@ ALTER TABLE EstimatedLoadFunction
 CREATE TABLE EstimatedLoadLookupTable (
     EstimatedLoadLookupTableId NUMERIC NOT NULL,
     EstimatedLoadFormulaId NUMERIC NOT NULL,
-    Name VARCHAR(100) NOT NULL,
+    Name VARCHAR(32) NOT NULL,
     InputType VARCHAR(32) NOT NULL,
-    InputMin VARCHAR(100) NOT NULL,
-    InputMax VARCHAR(100) NOT NULL,
-    InputPointId NUMERIC NOT NULL,
-    PRIMARY KEY (EstimatedLoadLookupTableId)
+    InputMin VARCHAR(32)NOT NULL,
+    InputMax VARCHAR(32)NOT NULL,
+    InputPointId NUMERIC
+    CONSTRAINT PK_EstimatedLoadLookupTable PRIMARY KEY (EstimatedLoadLookupTableId)
 );
 ALTER TABLE EstimatedLoadLookupTable
    ADD CONSTRAINT FK_EstLoadLookup_LoadFormula FOREIGN KEY (EstimatedLoadFormulaId)
@@ -65,22 +65,37 @@ ALTER TABLE EstimatedLoadLookupTable
 CREATE TABLE EstimatedLoadTableEntry (
     EstimatedLoadTableEntryId NUMERIC NOT NULL,
     EstimatedLoadLookupTableId NUMERIC NOT NULL,
-    EntryKey VARCHAR(100) NOT NULL,
-    EntryValue NUMERIC NOT NULL,
-    PRIMARY KEY (EstimatedLoadTableEntryId)
+    EntryKey VARCHAR(32) NOT NULL,
+    EntryValue FLOAT NOT NULL
+    CONSTRAINT PK_EstimatedLoadTableEntry PRIMARY KEY (EstimatedLoadTableEntryId)
 );
 ALTER TABLE EstimatedLoadTableEntry
-   ADD CONSTRAINT FK_TableEntry_LookupTable FOREIGN KEY (EstimatedLoadLookupTableId)
+   ADD CONSTRAINT FK_EstLoadTableEntry_LookupTab FOREIGN KEY (EstimatedLoadLookupTableId)
       REFERENCES EstimatedLoadLookupTable (EstimatedLoadLookupTableId)
          ON DELETE CASCADE;
 
 CREATE TABLE EstimatedLoadFormulaAssignment (
     FormulaAssignmentId NUMERIC NOT NULL,
-    FormulaId NUMERIC NOT NULL,
+    EstimatedLoadFormulaId NUMERIC NOT NULL,
     GearId NUMERIC,
-    ApplianceCategoryId NUMERIC,
-    PRIMARY KEY (FormulaAssignmentId)
+    ApplianceCategoryId NUMERIC
+    CONSTRAINT PK_EstimatedLoadFormulaAssignm PRIMARY KEY (FormulaAssignmentId)
 );
+
+ALTER TABLE EstimatedLoadFormulaAssignment 
+   ADD CONSTRAINT FK_FormulaAssign_LoadFormula FOREIGN KEY (EstimatedLoadFormulaId)
+      REFERENCES EstimatedLoadFormula (EstimatedLoadFormulaId)
+         ON DELETE CASCADE;
+
+ALTER TABLE EstimatedLoadFormulaAssignment 
+   ADD CONSTRAINT FK_FormulaAssign_LmProgramGear FOREIGN KEY (GearId)
+      REFERENCES LMProgramDirectGear (GearId)
+         ON DELETE CASCADE;
+
+ALTER TABLE EstimatedLoadFormulaAssignment 
+   ADD CONSTRAINT FK_FormulaAssign_ApplianceCat FOREIGN KEY (ApplianceCategoryId)
+      REFERENCES ApplianceCategory (ApplianceCategoryId)
+         ON DELETE CASCADE;
 /* End YUK-12437 */
 
 /**************************************************************/

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     8/5/2013 1:22:44 PM                          */
+/* Created on:     8/13/2013 12:58:54 PM                        */
 /*==============================================================*/
 
 
@@ -4941,6 +4941,75 @@ go
 
 alter table EnergyCompanySetting
    add constraint AK_ECSetting_ECId_Name unique (EnergyCompanyId, Name)
+go
+
+/*==============================================================*/
+/* Table: EstimatedLoadFormula                                  */
+/*==============================================================*/
+create table EstimatedLoadFormula (
+   EstimatedLoadFormulaId numeric              not null,
+   Name                 varchar(32)          not null,
+   FormulaType          varchar(32)          not null,
+   CalculationType      varchar(32)          not null,
+   FunctionIntercept    float                not null,
+   constraint PK_EstimatedLoadFormula primary key (EstimatedLoadFormulaId)
+)
+go
+
+/*==============================================================*/
+/* Table: EstimatedLoadFormulaAssignment                        */
+/*==============================================================*/
+create table EstimatedLoadFormulaAssignment (
+   FormulaAssignmentId  numeric              not null,
+   EstimatedLoadFormulaId numeric              not null,
+   GearId               numeric              null,
+   ApplianceCategoryId  numeric              null,
+   constraint PK_EstimatedLoadFormulaAssignm primary key (FormulaAssignmentId)
+)
+go
+
+/*==============================================================*/
+/* Table: EstimatedLoadFunction                                 */
+/*==============================================================*/
+create table EstimatedLoadFunction (
+   EstimatedLoadFunctionId numeric              not null,
+   EstimatedLoadFormulaId numeric              not null,
+   Name                 varchar(32)          not null,
+   InputType            varchar(32)          not null,
+   InputMin             varchar(32)          not null,
+   InputMax             varchar(32)          not null,
+   InputPointId         numeric              null,
+   Quadratic            float                not null,
+   Linear               float                not null,
+   constraint PK_EstimatedLoadFunction primary key (EstimatedLoadFunctionId)
+)
+go
+
+/*==============================================================*/
+/* Table: EstimatedLoadLookupTable                              */
+/*==============================================================*/
+create table EstimatedLoadLookupTable (
+   EstimatedLoadLookupTableId numeric              not null,
+   EstimatedLoadFormulaId numeric              not null,
+   Name                 varchar(32)          not null,
+   InputType            varchar(32)          not null,
+   InputMin             varchar(32)          not null,
+   InputMax             varchar(32)          not null,
+   InputPointId         numeric              null,
+   constraint PK_EstimatedLoadLookupTable primary key (EstimatedLoadLookupTableId)
+)
+go
+
+/*==============================================================*/
+/* Table: EstimatedLoadTableEntry                               */
+/*==============================================================*/
+create table EstimatedLoadTableEntry (
+   EstimatedLoadTableEntryId numeric              not null,
+   EstimatedLoadLookupTableId numeric              not null,
+   EntryKey             varchar(32)          not null,
+   EntryValue           float                not null,
+   constraint PK_EstimatedLoadTableEntry primary key (EstimatedLoadTableEntryId)
+)
 go
 
 /*==============================================================*/
@@ -11904,6 +11973,42 @@ go
 alter table EnergyCompanySetting
    add constraint FK_EC_EnergyCompanySetting foreign key (EnergyCompanyId)
       references EnergyCompany (EnergyCompanyID)
+         on delete cascade
+go
+
+alter table EstimatedLoadFormulaAssignment
+   add constraint FK_FormulaAssign_ApplianceCat foreign key (ApplianceCategoryId)
+      references ApplianceCategory (ApplianceCategoryID)
+         on delete cascade
+go
+
+alter table EstimatedLoadFormulaAssignment
+   add constraint FK_FormulaAssign_LmProgramGear foreign key (GearId)
+      references LMProgramDirectGear (GearID)
+         on delete cascade
+go
+
+alter table EstimatedLoadFormulaAssignment
+   add constraint FK_FormulaAssign_LoadFormula foreign key (EstimatedLoadFormulaId)
+      references EstimatedLoadFormula (EstimatedLoadFormulaId)
+         on delete cascade
+go
+
+alter table EstimatedLoadFunction
+   add constraint FK_EstLoadFunction_LoadFormula foreign key (EstimatedLoadFormulaId)
+      references EstimatedLoadFormula (EstimatedLoadFormulaId)
+         on delete cascade
+go
+
+alter table EstimatedLoadLookupTable
+   add constraint FK_EstLoadLookup_LoadFormula foreign key (EstimatedLoadFormulaId)
+      references EstimatedLoadFormula (EstimatedLoadFormulaId)
+         on delete cascade
+go
+
+alter table EstimatedLoadTableEntry
+   add constraint FK_EstLoadTableEntry_LookupTab foreign key (EstimatedLoadLookupTableId)
+      references EstimatedLoadLookupTable (EstimatedLoadLookupTableId)
          on delete cascade
 go
 
