@@ -1,0 +1,192 @@
+                                ** Point Name **        <<<<models>>>>
+
+                                    Amps Phase A                                                                  21D     22D     23D
+                                    Amps Phase B                                                                          22D     23D
+                                    Amps Phase C                                                                                  23D
+
+                                Avg Power Factor   A3R KV A3K                                                                        
+                               Avg Volts Phase A                                  FX2 FD2     FX1 FD1 FRX FRD                        
+                               Avg Volts Phase B                                  FX2 FD2     FX1 FD1 FRX FRD                        
+
+                               Avg Volts Phase C                                  FX2 FD2     FX1 FD1 FRX FRD                        
+                                     Blink Count                                                                  21D     22D     23D
+                             Blink Restore Count                                                                  21D     22D     23D
+
+                 Coincident Cumulative Peak kVAr   A3R KV                                                                            
+   Coincident Cumulative Peak kVAr (Rate A kVAr)   A3R KV                                                                            
+   Coincident Cumulative Peak kVAr (Rate B kVAr)   A3R KV                                                                            
+
+   Coincident Cumulative Peak kVAr (Rate C kVAr)   A3R KV                                                                            
+   Coincident Cumulative Peak kVAr (Rate D kVAr)   A3R KV                                                                            
+                              Coincident Peak kW   A3R KV A3K                                                                        
+
+                         Coincident Power Factor   A3R KV A3K                                                                        
+                                  Coincident kVA   A3R KV A3K                                                                        
+                                 Coincident kVAr   A3R KV                                                                            
+
+                           Current Angle Phase A                                                                  21D     22D     23D
+                           Current Angle Phase B                                                                          22D     23D
+                           Current Angle Phase C                                                                                  23D
+
+                          Delivered Rate A kVArh   A3R KV                                                                            
+                          Delivered Rate B kVArh   A3R KV                                                                            
+                          Delivered Rate C kVArh   A3R KV                                                                            
+
+                          Delivered Rate D kVArh   A3R KV                                                                            
+                                 Delivered kVArh   A3R KV                                                                            
+                                    Delivered kW                      CL2 CD2 FL2 FX2 FD2 FL1 FX1 FD1 FRX FRD                        
+
+                                   Delivered kWh                                                                  21D     22D     23D
+                         Forward Inductive kVARh                                                                  21D     22D     23D
+                                Last Interval kW                                                                  21D     22D     23D
+
+                                       Max Volts                      CL2 CD2 FL2 FX2 FD2             FRX FRD                        
+                               Max Volts Phase A                                  FX2 FD2     FX1 FD1 FRX FRD                        
+                               Max Volts Phase B                                  FX2 FD2     FX1 FD1 FRX FRD                        
+
+                               Max Volts Phase C                                  FX2 FD2     FX1 FD1 FRX FRD                        
+                                       Min Volts                      CL2 CD2 FL2 FX2 FD2             FRX FRD                        
+                               Min Volts Phase A                                  FX2 FD2     FX1 FD1 FRX FRD                        
+
+                               Min Volts Phase B                                  FX2 FD2     FX1 FD1 FRX FRD                        
+                               Min Volts Phase C                                  FX2 FD2     FX1 FD1 FRX FRD                        
+                                       Net kVArh   A3R KV                                                                            
+
+                                         Net kWh   A3R KV A3K A3T A3D CL2 CD2 FL2 FX2 FD2 FL1 FX1 FD1 FRX FRD                        
+                            Net kWh (Rate A kWh)   A3R KV A3K A3T     CL2 CD2 FL2 FX2 FD2 FL1 FX1 FD1 FRX FRD                        
+                            Net kWh (Rate B kWh)   A3R KV A3K A3T     CL2 CD2 FL2 FX2 FD2 FL1 FX1 FD1 FRX FRD                        
+
+                            Net kWh (Rate C kWh)   A3R KV A3K A3T     CL2 CD2 FL2 FX2 FD2 FL1 FX1 FD1 FRX FRD                        
+                            Net kWh (Rate D kWh)   A3R KV A3K A3T     CL2 CD2 FL2 FX2 FD2 FL1 FX1 FD1 FRX FRD                        
+                            Net kWh (Rate E kWh)                                  FX2 FD2     FX1 FD1 FRX FRD                        
+
+                                    Outage Count                                                                  21D     22D     23D
+                                      Outage Log                                                                  21D     22D     23D
+                            Outage Restore Count                                                                  21D     22D     23D
+
+                                        Peak kVA   A3R KV A3K                                                                        
+                                       Peak kVAr   A3R KV                                                                            
+                                         Peak kW                                                                  21D     22D     23D
+
+                             Peak kW (Rate A kW)   A3R KV A3K A3T     CL2 CD2 FL2 FX2 FD2 FL1 FX1 FD1 FRX FRD                        
+                             Peak kW (Rate B kW)   A3R KV A3K A3T     CL2 CD2 FL2 FX2 FD2 FL1 FX1 FD1 FRX FRD                        
+                             Peak kW (Rate C kW)   A3R KV A3K A3T     CL2 CD2 FL2 FX2 FD2 FL1 FX1 FD1 FRX FRD                        
+
+                             Peak kW (Rate D kW)   A3R KV A3K A3T     CL2 CD2 FL2 FX2 FD2 FL1 FX1 FD1 FRX FRD                        
+                             Peak kW (Rate E kW)                                  FX2 FD2     FX1 FD1 FRX FRD                        
+                            Phase A Power Factor   A3R KV A3K                                                                        
+
+                                     Phase A kVA   A3R KV A3K                                                                        
+                                    Phase A kVAr   A3R KV A3K                                                                        
+                                      Phase A kW   A3R KV A3K A3T A3D                                                                
+
+                            Phase B Power Factor   A3R KV A3K                                                                        
+                                     Phase B kVA   A3R KV A3K                                                                        
+                                    Phase B kVAr   A3R KV A3K                                                                        
+
+                                      Phase B kW   A3R KV A3K A3T A3D                                                                
+                            Phase C Power Factor   A3R KV A3K                                                                        
+                                     Phase C kVA   A3R KV A3K                                                                        
+
+                                    Phase C kVAr   A3R KV A3K                                                                        
+                                      Phase C kW   A3R KV A3K A3T A3D                                                                
+                    Power Factor Degrees Phase A   A3R KV A3K A3T A3D             FX2 FD2     FX1 FD1 FRX FRD                        
+
+                    Power Factor Degrees Phase B   A3R KV A3K A3T A3D             FX2 FD2     FX1 FD1 FRX FRD                        
+                    Power Factor Degrees Phase C   A3R KV A3K A3T A3D             FX2 FD2     FX1 FD1 FRX FRD                        
+                          RF Demand Reset Status   A3R KV A3K A3T A3D CL2 CD2 FL2 FX2 FD2 FL1 FX1 FD1 FRX FRD                        
+
+                         Rate A Avg Power Factor   A3R KV A3K                                                                        
+                       Rate A Coincident Peak kW   A3R KV A3K                                                                        
+                  Rate A Coincident Power Factor   A3R KV A3K                                                                        
+
+                           Rate A Coincident kVA   A3R KV A3K                                                                        
+                          Rate A Coincident kVAr   A3R KV                                                                            
+                       Rate A Cumulative Peak kW   A3R KV A3K A3T                                                                    
+
+                                 Rate A Peak kVA   A3R KV A3K                                                                        
+                                Rate A Peak kVAr   A3R KV                                                                            
+                                      Rate A kWh                                                                  21D     22D     23D
+
+                         Rate B Avg Power Factor   A3R KV A3K                                                                        
+                       Rate B Coincident Peak kW   A3R KV A3K                                                                        
+                  Rate B Coincident Power Factor   A3R KV A3K                                                                        
+
+                           Rate B Coincident kVA   A3R KV A3K                                                                        
+                          Rate B Coincident kVAr   A3R KV                                                                            
+                       Rate B Cumulative Peak kW   A3R KV A3K A3T                                                                    
+
+                                 Rate B Peak kVA   A3R KV A3K                                                                        
+                                Rate B Peak kVAr   A3R KV                                                                            
+                                      Rate B kWh                                                                  21D     22D     23D
+
+                         Rate C Avg Power Factor   A3R KV A3K                                                                        
+                       Rate C Coincident Peak kW   A3R KV A3K                                                                        
+                  Rate C Coincident Power Factor   A3R KV A3K                                                                        
+
+                           Rate C Coincident kVA   A3R KV A3K                                                                        
+                          Rate C Coincident kVAr   A3R KV                                                                            
+                       Rate C Cumulative Peak kW   A3R KV A3K A3T                                                                    
+
+                                 Rate C Peak kVA   A3R KV A3K                                                                        
+                                Rate C Peak kVAr   A3R KV                                                                            
+                                      Rate C kWh                                                                  21D     22D     23D
+
+                         Rate D Avg Power Factor   A3R KV A3K                                                                        
+                       Rate D Coincident Peak kW   A3R KV A3K                                                                        
+                  Rate D Coincident Power Factor   A3R KV A3K                                                                        
+
+                           Rate D Coincident kVA   A3R KV A3K                                                                        
+                          Rate D Coincident kVAr   A3R KV                                                                            
+                       Rate D Cumulative Peak kW   A3R KV A3K A3T                                                                    
+
+                                 Rate D Peak kVA   A3R KV A3K                                                                        
+                                Rate D Peak kVAr   A3R KV                                                                            
+                                      Rate D kWh                                                                  21D     22D     23D
+
+                                      Rate E kWh                                  FX2 FD2     FX1 FD1 FRX FRD                        
+                           Received Rate A kVArh   A3R KV                                                                            
+                           Received Rate B kVArh   A3R KV                                                                            
+
+                           Received Rate C kVArh   A3R KV                                                                            
+                           Received Rate D kVArh   A3R KV                                                                            
+                                  Received kVArh   A3R KV                                                                            
+
+                                    Received kWh                                                                  21D     22D     23D
+                       Received kWh (Rate A kWh)                      CL2 CD2 FL2 FX2 FD2 FL1 FX1 FD1 FRX FRD                        
+                       Received kWh (Rate B kWh)                      CL2 CD2 FL2 FX2 FD2 FL1 FX1 FD1 FRX FRD                        
+
+                       Received kWh (Rate C kWh)                      CL2 CD2 FL2 FX2 FD2 FL1 FX1 FD1 FRX FRD                        
+                       Received kWh (Rate D kWh)                      CL2 CD2 FL2 FX2 FD2 FL1 FX1 FD1 FRX FRD                        
+                       Received kWh (Rate E kWh)                                  FX2 FD2     FX1 FD1 FRX FRD                        
+
+                         Reverse Inductive kVARh                                                                  21D     22D     23D
+                                       Sum kVArh   A3R KV                                                                            
+                                         Sum kWh   A3R KV A3K A3T A3D CL2 CD2 FL2 FX2 FD2 FL1 FX1 FD1 FRX FRD                        
+
+                            Sum kWh (Rate A kWh)                      CL2 CD2 FL2 FX2 FD2 FL1 FX1 FD1 FRX FRD                        
+                            Sum kWh (Rate B kWh)                      CL2 CD2 FL2 FX2 FD2 FL1 FX1 FD1 FRX FRD                        
+                            Sum kWh (Rate C kWh)                      CL2 CD2 FL2 FX2 FD2 FL1 FX1 FD1 FRX FRD                        
+
+                            Sum kWh (Rate D kWh)                      CL2 CD2 FL2 FX2 FD2 FL1 FX1 FD1 FRX FRD                        
+                        Total Cumulative Peak kW   A3R KV A3K A3T A3D                                                                
+                                     Total kVArh                                                      FRX FRD                        
+
+                            Volt Degrees Phase A                                  FX2 FD2     FX1 FD1 FRX FRD                        
+                            Volt Degrees Phase B                                  FX2 FD2     FX1 FD1 FRX FRD                        
+                            Volt Degrees Phase C                                  FX2 FD2     FX1 FD1 FRX FRD                        
+
+                                         Voltage                      CL2 CD2 FL2 FX2 FD2             FRX FRD                        
+                                 Voltage Primary                              FL2         FL1                                        
+                               Voltage Secondary                              FL2         FL1                                        
+
+                                   Volts Phase A                                                                  21D     22D     23D
+                                   Volts Phase B                                                                          22D     23D
+                                   Volts Phase C                                                                                  23D
+
+                                     Water Usage                                                                                     
+                                  kVAh Delivered   A3R KV A3K                                                                        
+                                   kVAh Received   A3R KV A3K                                                                        
+
+                                        kVAh Sum   A3R KV A3K                                                                        
+                                ** Point Name **        <<<<models>>>>
