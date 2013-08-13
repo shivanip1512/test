@@ -38,7 +38,7 @@ const std::map< std::pair<unsigned char, unsigned char>, std::string>  ascAscqRe
     ( std::make_pair( 0x00, 0x07 ), "REJECTED, SERVICE DISCONNECT BUTTON PRESSED BUT METER NOT ARMED" )
     ( std::make_pair( 0x00, 0x08 ), "REJECTED, SERVICE DISCONNECT NOT ENABLED" )
     ( std::make_pair( 0x00, 0x09 ), "REJECTED, SERVICE DISCONNECT IS CURRENTLY CHARGING" )
-    ( std::make_pair( 0x00, 0x0a ), "REJECTED, SERVICE DISCONNECT IS OPERATION" )
+    ( std::make_pair( 0x00, 0x0a ), "REJECTED, SERVICE DISCONNECT IN OPERATION" )
     ( std::make_pair( 0x01, 0x00 ), "ACCESS DENIED, INSUFFICIENT SECURITY CLEARANCE" )
     ( std::make_pair( 0x01, 0x01 ), "ACCESS DENIED, DATA LOCKED" )
     ( std::make_pair( 0x01, 0x02 ), "ACCESS DENIED, INVALID SERVICE SEQUENCE STATE" )
@@ -119,7 +119,7 @@ RfnCommand::RfnResult RfnDemandFreezeCommand::decodeResponseHeader( const CtiTim
 
     // if not found in map, then status == Reserved
 
-    result.description += "Status: " + ( status ? *status : "Reserved" ) + " (" + CtiNumStr(response[2]).xhex(2) + ")";
+    result.description += "Status: " + ( status ? *status : "Reserved" ) + " (" + CtiNumStr(response[1]).xhex(2) + ")";
 
     // validate additional status
 
@@ -130,6 +130,11 @@ RfnCommand::RfnResult RfnDemandFreezeCommand::decodeResponseHeader( const CtiTim
 
     result.description += "\nAdditional Status: " + *additionalStatus  + " (ASC: " + CtiNumStr(response[2]).xhex(2) + ", ASCQ: " +  CtiNumStr(response[3]).xhex(2) + ")";
 
+    // check for errors ( status or additional status != 0 )
+
+    validateCondition( response[1] == 0x00 && response[2] == 0x00 && response[3] == 0x00,
+                       ErrorInvalidData, result.description );
+
     return result;
 }
 
@@ -137,12 +142,15 @@ RfnCommand::RfnResult RfnDemandFreezeCommand::decodeResponseHeader( const CtiTim
 ////
 
 
-RfnDemandFreezeConfigurationCommand::RfnDemandFreezeConfigurationCommand( const unsigned day_of_freeze )
+RfnDemandFreezeConfigurationCommand::RfnDemandFreezeConfigurationCommand( const unsigned char day_of_freeze )
     :   RfnDemandFreezeCommand( Operation_SetDayOfDemandFreeze ),
         _freezeDay( 0x00 )
 {
-    validateCondition( day_of_freeze <= 32,
-                       BADPARAM, "Invalid Freeze Day Provided" );
+    /*
+        0       : freeze disabled
+        1 - 31  : day number of freeze
+        32 +    : last day of month
+    */
 
     _freezeDay = day_of_freeze;
 }
@@ -161,9 +169,13 @@ RfnCommand::Bytes RfnDemandFreezeConfigurationCommand::getData()
 RfnCommand::RfnResult RfnDemandFreezeConfigurationCommand::decode( const CtiTime now,
                                                                    const RfnCommand::RfnResponse & response )
 {
-    RfnCommand::RfnResult  result;
+    RfnCommand::RfnResult  result = decodeResponseHeader( now, response );
 
-    // anything??
+    validateCondition( response.size() == 5,
+                       ErrorInvalidData, "Invalid Response length (" + CtiNumStr(response.size()) + ")" );
+
+    validateCondition( response[4] == 0,
+                       ErrorInvalidData, "Invalid TLV count (" + CtiNumStr(response[4]) + ")" );
 
     return result;
 }

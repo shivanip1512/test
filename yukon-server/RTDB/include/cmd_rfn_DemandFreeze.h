@@ -81,7 +81,7 @@ protected:
 
 public:
 
-    RfnDemandFreezeConfigurationCommand( const unsigned day_of_freeze );
+    RfnDemandFreezeConfigurationCommand( const unsigned char day_of_freeze );
 
     virtual RfnResult decode( const CtiTime now,
                               const RfnResponse & response );
