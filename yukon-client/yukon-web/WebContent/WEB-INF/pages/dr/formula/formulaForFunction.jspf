@@ -30,7 +30,7 @@
         </div><div class="column two nogutter"></div>
     </div>
     <tags:sectionContainer2 nameKey="functions">
-        <div class="setting" style="display:none">
+        <div class="setting">
             <tags:nameValueStacked nameKey=".functionIntercept">
                 <tags:input path="functionIntercept"/>
             </tags:nameValueStacked>
