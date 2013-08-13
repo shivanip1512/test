@@ -992,6 +992,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         sql.append("AND p.PointType").eq_k(identifier.getPointType());
         sql.append("AND p.PaObjectId").eq(pao.getPaoIdentifier().getPaoId());
         sql.append("AND rph.Value").gt(0);
+        sql.append("AND rph.Quality").eq(PointQuality.Normal.getQuality());
         
         final LiteRPHQualityRowMapper liteRPHQualityRowMapper = new LiteRPHQualityRowMapper();
         List<PointValueQualityHolder> results = yukonTemplate.queryForLimitedResults(sql, liteRPHQualityRowMapper, 1);
@@ -1009,6 +1010,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         sql.append("JOIN Point ON rph.PointId = point.PointId");
         sql.append("JOIN YukonPAObject ypo ON point.PAObjectId = ypo.PAObjectId");
         sql.append("WHERE ypo.PAObjectId").eq(paoIdentifier.getPaoId());
+        sql.append("AND rph.Quality").eq(PointQuality.Normal.getQuality());
         appendTimeStampClause(sql, dateRange);
         
         Instant lastCommunicationDate = null;
@@ -1031,6 +1033,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         sql.append("JOIN RawPointHistory rph ON rph.PointId = p.PointId");
         sql.append("WHERE LmGroupId").in(loadGroupIds);
         sql.append("AND ib.DeviceId").gt(0);
+        sql.append("AND rph.Quality").eq(PointQuality.Normal.getQuality());
         appendTimeStampClause(sql, dateRange);
         
         List<Integer> inventoryIds = yukonTemplate.query(sql, RowMapper.INTEGER);

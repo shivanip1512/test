@@ -13,6 +13,7 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.ReadableRange;
 import com.cannontech.common.util.SqlFragmentSource;
@@ -321,6 +322,7 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
         Set<? extends PointValueQualityHolder> pointValues = dynamicDataSource.getPointValue(pointIds);
         //pick out most recent for each pao
         for(PointValueQualityHolder pointValue : pointValues) {
+            if(pointValue.getPointQuality() != PointQuality.Normal) continue;
             int paoId = pointsToPaos.get(pointValue.getId());
             Instant newTimestamp = new Instant(pointValue.getPointDataTimeStamp());
             Instant oldTimestamp = paoCommunicationTimes.get(paoId);
