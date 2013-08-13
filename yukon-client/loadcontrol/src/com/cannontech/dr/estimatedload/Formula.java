@@ -1,5 +1,7 @@
 package com.cannontech.dr.estimatedload;
 
+import org.joda.time.LocalTime;
+
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.google.common.collect.ImmutableList;
 
@@ -32,10 +34,14 @@ public final class Formula {
     private final Double functionIntercept;
 
     private final ImmutableList<FormulaFunction> functions;
-    private final ImmutableList<FormulaLookupTable<Object>> tables;
+    private final ImmutableList<FormulaLookupTable<Double>> tables;
+    private final ImmutableList<FormulaLookupTable<LocalTime>> timeTables;
 
     public Formula(Integer formulaId, String name, Type type, CalculationType calculationType, Double functionIntercept,
-            ImmutableList<FormulaFunction> functions, ImmutableList<FormulaLookupTable<Object>> tables) {
+            ImmutableList<FormulaFunction> functions, 
+            ImmutableList<FormulaLookupTable<Double>> tables, 
+            ImmutableList<FormulaLookupTable<LocalTime>> timeTables) {
+
         this.formulaId = formulaId;
         this.name = name;
         this.type = type;
@@ -43,6 +49,7 @@ public final class Formula {
         this.functionIntercept = functionIntercept;
         this.functions = functions;
         this.tables = tables;
+        this.timeTables = timeTables;
     }
 
     public Integer getFormulaId() {
@@ -69,7 +76,11 @@ public final class Formula {
         return functions;
     }
 
-    public ImmutableList<FormulaLookupTable<Object>> getTables() {
+    public ImmutableList<FormulaLookupTable<Double>> getTables() {
         return tables;
+    }
+
+    public ImmutableList<FormulaLookupTable<LocalTime>> getTimeTables() {
+        return timeTables;
     }
 }
