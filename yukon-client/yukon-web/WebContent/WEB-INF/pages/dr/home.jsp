@@ -89,7 +89,7 @@
                         <a href="${quickLinkUrl}"><i:inline key=".activeLoadGroupsQuickSearch"/></a><br>
                     </div>
                     <div class="column two nogutter">
-                        <a href="/dr/formula/list" class="clearfix dib"><span class="fl">Load Formulas</span></a>
+                        <a href="/dr/formula/list" class="clearfix dib"><span class="fl"><i:inline key=".loadFormulas"/></span></a>
                     </div>
                 </div>
             </tags:boxContainer2>
