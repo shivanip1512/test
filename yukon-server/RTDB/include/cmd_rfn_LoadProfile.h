@@ -67,23 +67,40 @@ public:
 
 class IM_EX_DEVDB RfnVoltageProfileConfigurationCommand : public RfnLoadProfileCommand
 {
-    unsigned char _demandInterval,
-                  _loadProfileInterval;
-
 protected:
 
     virtual void populateTlvs( std::vector< TypeLengthValue > & tlvs );
 
+    enum
+    {
+        SecondsPerInterval = 15
+    };
+
 public:
 
-    RfnVoltageProfileConfigurationCommand();
+    struct ResultHandler
+    {
+        virtual void handleResult( const RfnVoltageProfileConfigurationCommand & cmd ) = 0;
+    };
 
-    RfnVoltageProfileConfigurationCommand( const unsigned demand_interval_seconds,
+    RfnVoltageProfileConfigurationCommand( ResultHandler & rh );
+
+    RfnVoltageProfileConfigurationCommand( ResultHandler & rh,
+                                           const unsigned demand_interval_seconds,
                                            const unsigned load_profile_interval_minutes );
 
     virtual RfnResult decode( const CtiTime now,
                               const RfnResponse & response );
 
+    unsigned getDemandIntervalSeconds() const;
+    unsigned getLoadProfileIntervalMinutes() const;
+
+private:
+
+    ResultHandler & _rh;
+
+    unsigned char _demandInterval,
+                  _loadProfileInterval;
 };
 
 
@@ -95,12 +112,31 @@ class IM_EX_DEVDB RfnLoadProfileRecordingCommand : public RfnLoadProfileCommand
 
 public:
 
-    RfnLoadProfileRecordingCommand();
+    enum RecordingOption
+    {
+        DisableRecording,
+        EnableRecording
+    };
 
-    RfnLoadProfileRecordingCommand( const bool enable );
+    struct ResultHandler
+    {
+        virtual void handleResult( const RfnLoadProfileRecordingCommand & cmd ) = 0;
+    };
+
+    RfnLoadProfileRecordingCommand( ResultHandler & rh );
+
+    RfnLoadProfileRecordingCommand( ResultHandler & rh, const RecordingOption option );
 
     virtual RfnResult decode( const CtiTime now,
                               const RfnResponse & response );
+
+    RecordingOption getRecordingOption() const;
+
+private:
+
+    ResultHandler & _rh;
+
+    RecordingOption _option;
 };
 
 

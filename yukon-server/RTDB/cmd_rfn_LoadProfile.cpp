@@ -120,8 +120,9 @@ RfnCommand::RfnResult RfnLoadProfileCommand::decodeResponseHeader( const CtiTime
 ////
 
 
-RfnVoltageProfileConfigurationCommand::RfnVoltageProfileConfigurationCommand()
+RfnVoltageProfileConfigurationCommand::RfnVoltageProfileConfigurationCommand( ResultHandler & rh )
     :   RfnLoadProfileCommand( Operation_GetConfiguration ),
+        _rh( rh ),
         _demandInterval( 0x00 ),
         _loadProfileInterval( 0x00 )
 {
@@ -129,13 +130,15 @@ RfnVoltageProfileConfigurationCommand::RfnVoltageProfileConfigurationCommand()
 }
 
 
-RfnVoltageProfileConfigurationCommand::RfnVoltageProfileConfigurationCommand( const unsigned demand_interval_seconds,
+RfnVoltageProfileConfigurationCommand::RfnVoltageProfileConfigurationCommand( ResultHandler & rh,
+                                                                              const unsigned demand_interval_seconds,
                                                                               const unsigned load_profile_interval_minutes )
     :   RfnLoadProfileCommand( Operation_SetConfiguration ),
+        _rh( rh ),
         _demandInterval( 0x00 ),
         _loadProfileInterval( 0x00 )
 {
-    validateCondition( demand_interval_seconds > 0 && demand_interval_seconds <= (255 * 15) && ! (demand_interval_seconds % 15),
+    validateCondition( demand_interval_seconds > 0 && demand_interval_seconds <= (255 * SecondsPerInterval) && ! (demand_interval_seconds % SecondsPerInterval),
                        BADPARAM, "Invalid Voltage Demand Interval" );
 
     validateCondition( load_profile_interval_minutes > 0 && load_profile_interval_minutes <= 255,
@@ -167,56 +170,78 @@ RfnCommand::RfnResult RfnVoltageProfileConfigurationCommand::decode( const CtiTi
 {
     RfnCommand::RfnResult  result = decodeResponseHeader( now, response );
 
-    if ( _operation == Operation_SetConfiguration )
+    switch ( _operation )
     {
-        validateCondition( response.size() == 4,
-                           ErrorInvalidData, "Invalid Response length (" + CtiNumStr(response.size()) + ")" );
+        case Operation_SetConfiguration:
+        {
+            validateCondition( response.size() == 4,
+                               ErrorInvalidData, "Invalid Response length (" + CtiNumStr(response.size()) + ")" );
 
-        validateCondition( response[3] == 0,
-                           ErrorInvalidData, "Invalid TLV count (" + CtiNumStr(response[3]) + ")" );
-    }
-    else    // if ( _operation == Operation_GetConfiguration )
-    {
-        validateCondition( response.size() == 8,
-                           ErrorInvalidData, "Invalid Response length (" + CtiNumStr(response.size()) + ")" );
+            validateCondition( response[3] == 0,
+                               ErrorInvalidData, "Invalid TLV count (" + CtiNumStr(response[3]) + ")" );
+            break;
+        }
+        case Operation_GetConfiguration:
+        {
+            validateCondition( response.size() == 8,
+                               ErrorInvalidData, "Invalid Response length (" + CtiNumStr(response.size()) + ")" );
 
-        validateCondition( response[3] == 1,
-                           ErrorInvalidData, "Invalid TLV count (" + CtiNumStr(response[3]) + ")" );
+            validateCondition( response[3] == 1,
+                               ErrorInvalidData, "Invalid TLV count (" + CtiNumStr(response[3]) + ")" );
 
-        validateCondition( response[4] == 0x01,
-                           ErrorInvalidData, "Invalid TLV type (" + CtiNumStr(response[4]) + ")" );
+            validateCondition( response[4] == 0x01,
+                               ErrorInvalidData, "Invalid TLV type (" + CtiNumStr(response[4]) + ")" );
 
-        validateCondition( response[5] == 2,
-                           ErrorInvalidData, "Invalid TLV length (" + CtiNumStr(response[5]) + ")" );
+            validateCondition( response[5] == 2,
+                               ErrorInvalidData, "Invalid TLV length (" + CtiNumStr(response[5]) + ")" );
 
-        const unsigned demand_interval_seconds          = response[6] * 15;
-        const unsigned load_profile_interval_minutes    = response[7];
+            _demandInterval      = response[6];
+            _loadProfileInterval = response[7];
 
-        result.description += "\nVoltage Demand interval: " + CtiNumStr(demand_interval_seconds) + " seconds";
-        result.description += "\nLoad Profile Demand interval: " + CtiNumStr(load_profile_interval_minutes) + " minutes";
+            result.description += "\nVoltage Demand interval: " + CtiNumStr(getDemandIntervalSeconds()) + " seconds";
+            result.description += "\nLoad Profile Demand interval: " + CtiNumStr(getLoadProfileIntervalMinutes()) + " minutes";
 
-        // now -- how to get these values back to the device...
-
+            break;
+        }
+        default:
+        {
+            throw RfnCommand::CommandException( ErrorInvalidData,
+                                                "Missing decode for Operation (" + CtiNumStr(_operation).xhex(2) + ")" );
+        }
     }
 
     return result;
 }
 
 
+unsigned RfnVoltageProfileConfigurationCommand::getDemandIntervalSeconds() const
+{
+    return SecondsPerInterval * _demandInterval;
+}
+
+
+unsigned RfnVoltageProfileConfigurationCommand::getLoadProfileIntervalMinutes() const
+{
+    return _loadProfileInterval;
+}
+
+
 ////
 
 
-RfnLoadProfileRecordingCommand::RfnLoadProfileRecordingCommand()
-    :   RfnLoadProfileCommand( Operation_GetLoadProfileRecordingState )
+RfnLoadProfileRecordingCommand::RfnLoadProfileRecordingCommand( ResultHandler & rh )
+    :   RfnLoadProfileCommand( Operation_GetLoadProfileRecordingState ),
+        _rh( rh )
 {
 
 }
 
 
-RfnLoadProfileRecordingCommand::RfnLoadProfileRecordingCommand( const bool enable )
-    :   RfnLoadProfileCommand( enable
+RfnLoadProfileRecordingCommand::RfnLoadProfileRecordingCommand( ResultHandler & rh, const RecordingOption option )
+    :   RfnLoadProfileCommand( option == EnableRecording
                                ? Operation_EnableLoadProfileRecording
-                               : Operation_DisableLoadProfileRecording )
+                               : Operation_DisableLoadProfileRecording ),
+        _rh( rh )
 {
 
 }
@@ -227,42 +252,57 @@ RfnCommand::RfnResult RfnLoadProfileRecordingCommand::decode( const CtiTime now,
 {
     RfnCommand::RfnResult  result = decodeResponseHeader( now, response );
 
-    if ( _operation == Operation_GetLoadProfileRecordingState )
+    switch ( _operation )
     {
-        validateCondition( response.size() == 7,
-                           ErrorInvalidData, "Invalid Response length (" + CtiNumStr(response.size()) + ")" );
+        case Operation_EnableLoadProfileRecording:
+        case Operation_DisableLoadProfileRecording:
+        {
+            validateCondition( response.size() == 4,
+                               ErrorInvalidData, "Invalid Response length (" + CtiNumStr(response.size()) + ")" );
 
-        validateCondition( response[3] == 1,
-                           ErrorInvalidData, "Invalid TLV count (" + CtiNumStr(response[3]) + ")" );
+            validateCondition( response[3] == 0,
+                               ErrorInvalidData, "Invalid TLV count (" + CtiNumStr(response[3]) + ")" );
+            break;
+        }
+        case Operation_GetLoadProfileRecordingState:
+        {
+            validateCondition( response.size() == 7,
+                               ErrorInvalidData, "Invalid Response length (" + CtiNumStr(response.size()) + ")" );
 
-        validateCondition( response[4] == 0x02,
-                           ErrorInvalidData, "Invalid TLV type (" + CtiNumStr(response[4]) + ")" );
+            validateCondition( response[3] == 1,
+                               ErrorInvalidData, "Invalid TLV count (" + CtiNumStr(response[3]) + ")" );
 
-        validateCondition( response[5] == 1,
-                           ErrorInvalidData, "Invalid TLV length (" + CtiNumStr(response[5]) + ")" );
+            validateCondition( response[4] == 0x02,
+                               ErrorInvalidData, "Invalid TLV type (" + CtiNumStr(response[4]) + ")" );
 
-        boost::optional<std::string> state = Cti::mapFind( stateResolver, response[6] );
+            validateCondition( response[5] == 1,
+                               ErrorInvalidData, "Invalid TLV length (" + CtiNumStr(response[5]) + ")" );
 
-        validateCondition( state,
-                           ErrorInvalidData, "Invalid State (" + CtiNumStr(response[6]) + ")" );
+            boost::optional<std::string> state = Cti::mapFind( stateResolver, response[6] );
 
-        result.description += "\nCurrent State: " + *state + " (" + CtiNumStr(response[6]) + ")";
+            validateCondition( state,
+                               ErrorInvalidData, "Invalid State (" + CtiNumStr(response[6]) + ")" );
 
-        const unsigned char enable = response[6];
+            _option = response[6] ? EnableRecording : DisableRecording;
 
-        // now -- how to get this value back to the device...
+            result.description += "\nCurrent State: " + *state + " (" + CtiNumStr(response[6]) + ")";
 
-    }
-    else    // if ( _operation == Operation_EnableLoadProfileRecording || _operation == Operation_DisableLoadProfileRecording )
-    {
-        validateCondition( response.size() == 4,
-                           ErrorInvalidData, "Invalid Response length (" + CtiNumStr(response.size()) + ")" );
-
-        validateCondition( response[3] == 0,
-                           ErrorInvalidData, "Invalid TLV count (" + CtiNumStr(response[3]) + ")" );
+            break;
+        }
+        default:
+        {
+            throw RfnCommand::CommandException( ErrorInvalidData,
+                                                "Missing decode for Operation (" + CtiNumStr(_operation).xhex(2) + ")" );
+        }
     }
 
     return result;
+}
+
+
+RfnLoadProfileRecordingCommand::RecordingOption RfnLoadProfileRecordingCommand::getRecordingOption() const
+{
+    return _option;
 }
 
 

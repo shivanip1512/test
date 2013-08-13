@@ -20,9 +20,31 @@ BOOST_AUTO_TEST_SUITE( test_cmd_rfn_LoadProfile )
 const CtiTime execute_time( CtiDate( 29, 7, 2013 ) , 11 );
 
 
+struct test_ConfigResultHandler : RfnVoltageProfileConfigurationCommand::ResultHandler
+{
+    void handleResult(const RfnVoltageProfileConfigurationCommand &cmd)
+    {
+        //  This is temporarily marked BOOST_FAIL - the unit test should eventually exercise this.
+        BOOST_FAIL("Should not reach this code!");
+    }
+};
+
+
+struct test_RecordingResultHandler : RfnLoadProfileRecordingCommand::ResultHandler
+{
+    void handleResult(const RfnLoadProfileRecordingCommand &cmd)
+    {
+        //  This is temporarily marked BOOST_FAIL - the unit test should eventually exercise this.
+        BOOST_FAIL("Should not reach this code!");
+    }
+};
+
+
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_SetConfiguration )
 {
-    RfnVoltageProfileConfigurationCommand  command( 255, 34 );
+    test_ConfigResultHandler rh;
+
+    RfnVoltageProfileConfigurationCommand  command( rh, 255, 34 );
 
     // execute
     {
@@ -87,7 +109,9 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_SetConfiguration_constructor_exce
     {
         try
         {
-            RfnVoltageProfileConfigurationCommand  command( inputs[i].first, inputs[i].second );
+            test_ConfigResultHandler rh;
+
+            RfnVoltageProfileConfigurationCommand  command( rh, inputs[i].first, inputs[i].second );
         }
         catch ( const RfnCommand::CommandException & ex )
         {
@@ -120,7 +144,9 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_SetConfiguration_decoding_excepti
 
     BOOST_REQUIRE( responses.size() == exceptions.size() );
 
-    RfnVoltageProfileConfigurationCommand  command( 300, 15 );
+    test_ConfigResultHandler rh;
+
+    RfnVoltageProfileConfigurationCommand  command( rh, 300, 15 );
 
     for ( int i = 0; i < responses.size(); i++ )
     {
@@ -141,7 +167,9 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_SetConfiguration_decoding_excepti
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetConfiguration )
 {
-    RfnVoltageProfileConfigurationCommand  command;
+    test_ConfigResultHandler rh;
+
+    RfnVoltageProfileConfigurationCommand  command( rh );
 
     // execute
     {
@@ -159,12 +187,18 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetConfiguration )
         const std::vector< unsigned char > response = boost::assign::list_of
             ( 0x69 )( 0x01 )( 0x00 )( 0x01 )( 0x01 )( 0x02 )( 0x04 )( 0x06 );
 
+        BOOST_REQUIRE_EQUAL( 0, command.getDemandIntervalSeconds() );
+        BOOST_REQUIRE_EQUAL( 0, command.getLoadProfileIntervalMinutes() );
+
         RfnCommand::RfnResult rcv = command.decode( execute_time, response );
 
         BOOST_REQUIRE_EQUAL( rcv.description,
                                  "Status: Success (0)"
                                  "\nVoltage Demand interval: 60 seconds"
                                  "\nLoad Profile Demand interval: 6 minutes" );
+
+        BOOST_REQUIRE_EQUAL( 60, command.getDemandIntervalSeconds() );
+        BOOST_REQUIRE_EQUAL(  6, command.getLoadProfileIntervalMinutes() );
     }
 
     // decode -- failure response
@@ -205,7 +239,9 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetConfiguration_decoding_excepti
 
     BOOST_REQUIRE( responses.size() == exceptions.size() );
 
-    RfnVoltageProfileConfigurationCommand  command;
+    test_ConfigResultHandler rh;
+
+    RfnVoltageProfileConfigurationCommand  command( rh );
 
     for ( int i = 0; i < responses.size(); i++ )
     {
@@ -226,7 +262,9 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetConfiguration_decoding_excepti
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_DisableLoadProfileRecording )
 {
-    RfnLoadProfileRecordingCommand  command( false );
+    test_RecordingResultHandler rh;
+
+    RfnLoadProfileRecordingCommand  command( rh, RfnLoadProfileRecordingCommand::DisableRecording );
 
     // execute
     {
@@ -283,7 +321,9 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_DisableLoadProfileRecording_decod
 
     BOOST_REQUIRE( responses.size() == exceptions.size() );
 
-    RfnLoadProfileRecordingCommand  command( false );
+    test_RecordingResultHandler rh;
+
+    RfnLoadProfileRecordingCommand  command( rh, RfnLoadProfileRecordingCommand::DisableRecording );
 
     for ( int i = 0; i < responses.size(); i++ )
     {
@@ -304,7 +344,9 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_DisableLoadProfileRecording_decod
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_EnableLoadProfileRecording )
 {
-    RfnLoadProfileRecordingCommand  command( true );
+    test_RecordingResultHandler rh;
+
+    RfnLoadProfileRecordingCommand  command( rh, RfnLoadProfileRecordingCommand::EnableRecording );
 
     // execute
     {
@@ -361,7 +403,9 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_EnableLoadProfileRecording_decodi
 
     BOOST_REQUIRE( responses.size() == exceptions.size() );
 
-    RfnLoadProfileRecordingCommand  command( true );
+    test_RecordingResultHandler rh;
+
+    RfnLoadProfileRecordingCommand  command( rh, RfnLoadProfileRecordingCommand::EnableRecording );
 
     for ( int i = 0; i < responses.size(); i++ )
     {
@@ -382,7 +426,9 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_EnableLoadProfileRecording_decodi
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfileRecording )
 {
-    RfnLoadProfileRecordingCommand  command;
+    test_RecordingResultHandler rh;
+
+    RfnLoadProfileRecordingCommand  command( rh );
 
     // execute
     {
@@ -404,6 +450,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfileRecording )
 
         BOOST_REQUIRE_EQUAL( rcv.description, "Status: Success (0)" 
                                               "\nCurrent State: Disabled (0)" );
+
+        BOOST_REQUIRE_EQUAL( RfnLoadProfileRecordingCommand::DisableRecording, command.getRecordingOption() );
     }
 
     // decode -- success response -- enabled
@@ -415,6 +463,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfileRecording )
 
         BOOST_REQUIRE_EQUAL( rcv.description, "Status: Success (0)" 
                                               "\nCurrent State: Enabled (1)" );
+
+        BOOST_REQUIRE_EQUAL( RfnLoadProfileRecordingCommand::EnableRecording, command.getRecordingOption() );
     }
 
     // decode -- failure response
@@ -457,7 +507,9 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfileRecording_decoding_
 
     BOOST_REQUIRE( responses.size() == exceptions.size() );
 
-    RfnLoadProfileRecordingCommand  command;
+    test_RecordingResultHandler rh;
+
+    RfnLoadProfileRecordingCommand  command( rh );
 
     for ( int i = 0; i < responses.size(); i++ )
     {
