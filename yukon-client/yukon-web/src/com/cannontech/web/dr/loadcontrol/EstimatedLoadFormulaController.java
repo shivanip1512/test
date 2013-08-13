@@ -1,9 +1,15 @@
 package com.cannontech.web.dr.loadcontrol;
 
 import java.beans.PropertyEditor;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -13,7 +19,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.dr.estimatedload.Formula;
 import com.cannontech.dr.estimatedload.FormulaInput;
 import com.cannontech.dr.estimatedload.dao.FormulaDao;
@@ -21,6 +30,7 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 
@@ -28,8 +38,8 @@ import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 @RequestMapping("/formula/*")
 public class EstimatedLoadFormulaController {
 
-
     @Autowired private FormulaDao formulaDao;
+    @Autowired private PointDao pointDao;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
 
     private String baseKey = "yukon.web.modules.dr.formula.";
@@ -50,7 +60,9 @@ public class EstimatedLoadFormulaController {
 
         Formula formula = formulaDao.getFormulaById(formulaId);
         
-        model.addAttribute("formulaBean", new FormulaBean(formula));
+        FormulaBean formulaBean = new FormulaBean(formula);
+        model.addAttribute("formulaBean", formulaBean);
+        model.addAttribute("pointNames", getPointNames(formulaBean));
 
         setupCommonModel(model, formula.getType() ,formula.getCalculationType());
 
@@ -73,16 +85,17 @@ public class EstimatedLoadFormulaController {
     @RequestMapping(value="create", method=RequestMethod.POST)
     public String doCreate(ModelMap model, FormulaBean formulaBean, BindingResult bindingResult, FlashScope flashScope) {
 
-        boolean errors = formulaBeanValidator.doBeanValidation(formulaBean, bindingResult, flashScope);
-        if (errors) {
+        formulaBeanValidator.validate(formulaBean, bindingResult);
+        if (bindingResult.hasErrors()) {
             model.addAttribute("mode", PageEditMode.CREATE);
+            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
+            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
             setupCommonModel(model, formulaBean.getFormulaType(), formulaBean.getCalculationType());
             return "dr/formula/formula.jsp";
         }
 
         int newId = formulaDao.saveFormula(formulaBean.getFormula());
 
-        
         flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + "success.created", formulaBean.getName()));
 
         return "redirect:/dr/formula/edit/" + newId;
@@ -96,7 +109,9 @@ public class EstimatedLoadFormulaController {
 
         setupCommonModel(model, formula.getType(), formula.getCalculationType());
 
-        model.addAttribute("formulaBean", new FormulaBean(formula));
+        FormulaBean formulaBean = new FormulaBean(formula);
+        model.addAttribute("formulaBean", formulaBean);
+        model.addAttribute("pointNames", getPointNames(formulaBean));
         model.addAttribute("tableEntryBean", new TableEntryBean());
 
         return "dr/formula/formula.jsp";
@@ -105,9 +120,12 @@ public class EstimatedLoadFormulaController {
     @RequestMapping(value="edit/*", method=RequestMethod.POST)
     public String doEdit(ModelMap model, FormulaBean formulaBean, BindingResult bindingResult, FlashScope flashScope) {
 
-        boolean errors = formulaBeanValidator.doBeanValidation(formulaBean, bindingResult, flashScope);
-        if (errors) {
+        formulaBeanValidator.validate(formulaBean, bindingResult);
+        if (bindingResult.hasErrors()) {
+            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
+            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
             setupCommonModel(model, formulaBean.getFormulaType() ,formulaBean.getCalculationType());
+            model.addAttribute("pointNames", getPointNames(formulaBean));
             return "dr/formula/formula.jsp";
         }
 
@@ -115,6 +133,7 @@ public class EstimatedLoadFormulaController {
 
         flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + "success.updated", formulaBean.getName()));
 
+        model.addAttribute("pointNames", getPointNames(formulaBean));
         return "redirect:/dr/formula/view/" + formulaBean.getFormulaId();
     }
 
@@ -124,6 +143,33 @@ public class EstimatedLoadFormulaController {
         flashScope.setConfirm(YukonMessageSourceResolvable.createDefaultWithoutCode("Formula " + formulaId + " Deleted Successfully"));
 
         return "redirect:list";
+    }
+
+    /**
+     * Gets point names for use on the jsp. Used to display point name rather than just id.
+     */
+    private Map<Integer, String> getPointNames(FormulaBean formula) {
+        Set<Integer> pointIds = new HashSet<>();
+        if(formula.getFunctions() != null) {
+            for (FunctionBean f : formula.getFunctions()) {
+                if (f.getInputType() == FormulaInput.InputType.POINT) {
+                    pointIds.add(f.getInputPointId());
+                }
+            }
+        }
+        if(formula.getTables() != null) {
+            for (LookupTableBean t : formula.getTables()) {
+                if (t.getInputType() == FormulaInput.InputType.POINT) {
+                    pointIds.add(t.getInputPointId());
+                }
+            }
+        }
+        List<LitePoint> points = pointDao.getLitePoints(pointIds);
+        Map<Integer, String> pointNames = new HashMap<>(points.size());
+        for (LitePoint point : points) {
+            pointNames.put(point.getPointID(), point.getPointName());
+        }
+        return pointNames;
     }
 
     private void setupCommonModel(ModelMap model, Formula.Type type, Formula.CalculationType inputType) {

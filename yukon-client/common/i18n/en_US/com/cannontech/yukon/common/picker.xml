@@ -65,6 +65,7 @@
 <entry key="yukon.web.picker.twoStatePointPicker.dialogTitle">Select Point</entry>
 <entry key="yukon.web.picker.filterablePointPicker.dialogTitle">Select Point</entry>
 <entry key="yukon.web.picker.statusPointPicker.dialogTitle">Select Point</entry>
+<entry key="yukon.web.picker.analogPointPicker.dialogTitle">Select Point</entry>
 
 <!-- User Picker -->
 <entry key="yukon.web.picker.user.name">Username</entry>

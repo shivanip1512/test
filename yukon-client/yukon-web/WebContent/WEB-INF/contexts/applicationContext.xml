@@ -1699,6 +1699,12 @@
             <bean class="com.cannontech.common.search.criteria.CCTwoStatePointCriteria"/>
         </property>
     </bean>
+    <bean name="analogPointPicker" parent="abstractPointPicker"
+        class="com.cannontech.web.picker.v2.PointPicker">
+        <property name="criteria">
+            <bean class="com.cannontech.common.search.criteria.AnalogPointCriteria"/>
+        </property>
+    </bean> 
     <bean name="statusPointPicker" parent="abstractPointPicker"
         class="com.cannontech.web.picker.v2.PointPicker">
         <property name="criteria">

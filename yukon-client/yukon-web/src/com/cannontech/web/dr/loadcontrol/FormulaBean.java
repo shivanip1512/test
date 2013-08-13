@@ -13,7 +13,7 @@ public class FormulaBean {
     private String name;
     private Formula.CalculationType calculationType = Formula.CalculationType.FUNCTION;
     private Formula.Type formulaType = Formula.Type.APPLIANCE_CATEGORY;
-    private String assignments = "TODO";
+    private String assignments;
     private Double functionIntercept = 0.0;
     private List<FunctionBean> functions = LazyList.ofInstance(FunctionBean.class);
     private List<LookupTableBean> tables = LazyList.ofInstance(LookupTableBean.class);

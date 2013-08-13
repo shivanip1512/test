@@ -34,6 +34,9 @@
             <div class="setting f-removeable f-table">
                 <input class="f-formulaId" type="hidden" name="tables[${tableLoop.index}].formulaId" value="${formulaBean.formulaId}"/>
                 <input type="hidden" name="tables[${tableLoop.index}].functionId"/>
+                <c:set var="pointId" value="${formulaBean.tables[tableLoop.index].inputPointId}"/>
+                <input type='hidden' id="inputPointId_${tableLoop.index}" name="tables[${tableLoop.index}].inputPointId"
+                    value="${formulaBean.tables[tableLoop.index].inputType eq 'POINT' ? pointId : ''}"/>
                 <div class="column_6_6_12 clearfix">
                     <div class="column one">
                         <tags:nameValueStacked nameKey=".name">
@@ -45,9 +48,27 @@
                             <cti:displayForPageEditModes modes="EDIT">
                                 <tags:selectWithItems id="formulaInputSelect_${tableLoop.index}" disabled="${formulaBean.tables[tableLoop.index].numberOfEntries > 0}"
                                     inputClass="f-formulaInputSelect" items="${formulaInputs}" path="tables[${tableLoop.index}].inputType"/>
+
+                                    <div id="formulaPointPicker_${tableLoop.index}" style="${formulaBean.tables[tableLoop.index].inputType ne 'POINT' ? 'display:none' : ''}">
+	                                    <button id="formulaPointPickerBtn_${tableLoop.index}" role="button" type="button" class="button naked f-pointPicker">
+	                                        <span id="formulaPointPickerLbl_${tableLoop.index}" class="label">
+	                                           <c:if test="${formulaBean.tables[tableLoop.index].inputType eq 'POINT'}">
+	                                               ${pointNames[formulaBean.tables[tableLoop.index].inputPointId]}
+	                                           </c:if>
+	                                           <c:if test="${formulaBean.tables[tableLoop.index].inputType ne 'POINT'}">
+	                                               <i:inline key=".noPointSelected"/>
+	                                           </c:if>
+	                                        </span>
+	                                        <i class="icon icon-database-add"></i>
+	                                    </button>
+                                    </div>
+                                    
                             </cti:displayForPageEditModes>
                             <cti:displayForPageEditModes modes="VIEW">
                                 <i:inline key="${formulaBean.tables[tableLoop.index].inputType}"/>
+                                <c:if test="${formulaBean.tables[tableLoop.index].inputType eq 'POINT'}">
+                                    / ${pointNames[formulaBean.tables[tableLoop.index].inputPointId]}
+                                </c:if>
                             </cti:displayForPageEditModes>
                         </tags:nameValueStacked>
                     </div>
@@ -95,7 +116,8 @@
                                 <div class="scrollingContainer_medium">
                                     <div id="tableEntries_${tableLoop.index}" class="column_12_12 clearfix content f-tableEntries">
                                         <span id="noEntriesMessage_${tableLoop.index}" style="${formulaBean.tables[tableLoop.index].numberOfEntries > 0 ? 'display:none' : ''}">
-                                          <i:inline key=".noEntries"/>
+                                            <i:inline key=".noEntries"/>
+                                            <form:errors path="tables[${tableLoop.index}]" cssClass="errorMessage"/>
                                         </span>
 
                                         <c:if test="${formulaBean.tables[tableLoop.index].inputType == 'TIME'}">
@@ -164,8 +186,16 @@
     </div>
 </form:form>
 
+<div style="display:none"><tags:pickerDialog
+    id="pointPicker"
+    type="analogPointPicker"
+    linkType="selection"
+    selectionProperty="pointName" endAction="pickerClose" /></div>
+
 <div id="dummyTable" class="setting f-removeable f-table" style="display:none">
     <input type="hidden" name="lookupTableId" value=""/>
+    <input type='hidden' id="inputPointId_" name="inputPointId" class="f-appendTableId"/>
+
     <div class="column_6_6_12 clearfix">
         <div class="column one">
             <tags:nameValueStacked nameKey=".name">
@@ -177,6 +207,12 @@
 	            <tags:selectWithItems id="formulaInputSelect_" inputClass="f-formulaInputSelect f-appendTableId"
 	               items="${formulaInputs}"
 	               path="dummyLookupTableBean.inputType"/>
+	               <div id="formulaPointPicker_" style="display:none" class="f-appendTableId">
+                        <button id="formulaPointPickerBtn_" role="button" type="button" class="button naked  f-pointPicker f-appendTableId">
+                            <span id="formulaPointPickerLbl_" class="label f-appendTableId"><i:inline key=".noPointSelected"/></span>
+                            <i class="icon icon-database-add"></i>
+                        </button>
+                    </div>
 	        </tags:nameValueStacked>
         </div>
         <div class="column three nogutter">
@@ -227,10 +263,10 @@
 </div>
 
 <div id="dummyEntry" style="display:none">
-    <div id="tableEntryKey_" class="column one stacked f-tableEntryKey_">
+    <div id="tableEntryKey_" class="column one stacked f-tableEntryKey_ f-appendTableId">
        <tags:input path="dummyTableEntryBean.key"/>
     </div>
-    <div id="tableEntryValue_" class="column two nogutter">
+    <div id="tableEntryValue_" class="column two nogutter f-appendTableId">
        <tags:input path="dummyTableEntryBean.value"/>
        <cti:button nameKey="remove" icon="icon-cross" renderMode="image" classes="f-removeEntry fr"
             data-table-id=""

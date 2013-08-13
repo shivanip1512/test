@@ -15,7 +15,7 @@ public class FunctionBean {
     private double linear;
     private double inputMin;
     private double inputMax;
-    private int inputPointId;
+    private Integer inputPointId;
 
     public FunctionBean() {}
     public FunctionBean(FormulaFunction function) {
@@ -96,11 +96,11 @@ public class FunctionBean {
         this.inputMax = inputMax;
     }
 
-    public int getInputPointId() {
+    public Integer getInputPointId() {
         return inputPointId;
     }
 
-    public void setInputPointId(int inputPointId) {
+    public void setInputPointId(Integer inputPointId) {
         this.inputPointId = inputPointId;
     }
 

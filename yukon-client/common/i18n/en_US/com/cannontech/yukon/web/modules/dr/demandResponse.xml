@@ -516,6 +516,7 @@
 <entry key="yukon.web.modules.dr.formula.newEntry.label">Add Entry</entry>
 <entry key="yukon.web.modules.dr.formula.key">Key</entry>
 <entry key="yukon.web.modules.dr.formula.value">Value</entry>
+<entry key="yukon.web.modules.dr.formula.noPointSelected">No point selected</entry>
 
 <entry key="yukon.web.modules.dr.formula.error.inputMaxUnderMin">Input Max must be greater than Input Min.</entry>
 <entry key="yukon.web.modules.dr.formula.error.inputMinOverMax">Input Min must be lower than Input Max.</entry>
@@ -523,7 +524,8 @@
 <entry key="yukon.web.modules.dr.formula.error.timeMaxTooSoon">Last Valid Time cannot be sooner than entries in the table.</entry>
 <entry key="yukon.web.modules.dr.formula.error.duplicateKey">Duplicate Key</entry>
 <entry key="yukon.web.modules.dr.formula.error.notValidNumber">Not a valid number</entry>
-<entry key="yukon.web.modules.dr.formula.error.noEntries">A table was found without entries. All tables must have at least one entry.</entry>
+<entry key="yukon.web.modules.dr.formula.error.noEntries">Cannot have 0 entries.</entry>
+<entry key="yukon.web.modules.dr.formula.error.invalidPoint">Invalid Point</entry>
 <entry key="yukon.web.modules.dr.formula.success.updated">Formula {0} updated successfully.</entry>
 <entry key="yukon.web.modules.dr.formula.success.created">Formula {0} created successfully.</entry>
 <entry key="yukon.web.modules.dr.formula.noFunctions">No functions</entry>

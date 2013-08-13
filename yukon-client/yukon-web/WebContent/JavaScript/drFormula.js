@@ -1,3 +1,9 @@
+pickerClose = function (selectedItems, picker) {
+    var tableId = jQuery("#picker_pointPicker_label").data("table-id");
+    jQuery("#inputPointId_"+tableId).val(selectedItems[0].pointId);
+    jQuery("#formulaPointPickerLbl_"+tableId).html(selectedItems[0].pointName);
+};
+
 jQuery(function () {
     var rowIndex = jQuery("#formulaRowIndex").val();
 
@@ -10,8 +16,27 @@ jQuery(function () {
         $newRow.find("input, select").each(function() {
             jQuery(this).attr("name", "functions[" + rowIndex + "]." + jQuery(this).attr("name"));
         });
+        $newRow.find(".f-appendTableId").each(function () {
+            this.id = this.id + rowIndex;
+        });
+
         $newRow.appendTo('#formulaFunctions').slideDown(150);
         rowIndex++;
+    });
+
+    jQuery("#formulaFunctions, #formulaTables").on("change", ".f-formulaInputSelect", function() {
+        var inputVal = jQuery(this).val();
+        var tableId = this.id.split("_").pop();
+
+        if (inputVal === 'POINT') {
+            jQuery("#formulaPointPicker_"+tableId).slideDown(150);
+        } else {
+            jQuery("#formulaPointPicker_"+tableId).slideUp(150);
+        }
+    })
+    .on("click", ".f-pointPicker", function() {
+        var tableId = this.id.split("_").pop();
+        jQuery("#picker_pointPicker_label").data("table-id", tableId).click();
     });
 
     jQuery("#formulaFunctions, #formulaTables").on("click", ".f-remove", function() {
@@ -28,8 +53,6 @@ jQuery(function () {
         $newRow.find(":input[name], select").each(function() {
             var $this = jQuery(this);
             $this.attr("name", "tables[]." + $this.attr("name"));
-            console.log($this.attr("name"));
-
         });
 
         $newRow.find(".tableIndex").val(rowIndex);
@@ -62,20 +85,15 @@ jQuery(function () {
     .on("change", ".f-formulaInputSelect", function() {
         var inputVal = jQuery(this).val();
         var tableId = this.id.split("_").pop();
-        //console.log("tableId: " + tableId);
         if (inputVal === 'TIME') {
             jQuery("#inputMax_" + tableId).hide();
             jQuery("#timeInputMax_" + tableId).show();
         } else {
-            if (inputVal === 'POINT') {
-                // TODO: show point picker
-            }
             jQuery("#timeInputMax_" + tableId).hide();
             jQuery("#inputMax_" + tableId).show();
         }
     })
     .on("click", ".f-newEntryButton", function () {
-        //   hack jQuery(".f-clickMeOnLoad").siblings("img").click();
         var tableId = jQuery(this).data("table-id");
         var entryId = jQuery(this).data("entry-id-next");
         var isTimeInput = jQuery("#formulaInputSelect_" + tableId).val() === 'TIME';
@@ -88,6 +106,9 @@ jQuery(function () {
             $newRow = jQuery('#dummyEntry').clone();
         }
 
+        $newRow.find(".f-appendTableId").each(function () {
+            this.id = this.id + tableId + "_" + entryId;
+        });
         $newRow.children(".f-tableEntryKey_")
             .removeClass("f-tableEntryKey_")
             .addClass("f-tableEntryKey_" + tableId);
@@ -140,24 +161,18 @@ jQuery(function () {
             var $inputs = jQuery(this).find(":input[name]");
             $inputs.each(function() {
                 var $self = jQuery(this);
-                var name2 = $self.attr("name");
                 var name = $self.attr("name").replace(/\[.*?\]/, "["+index+"]");
                 $self.attr("name", name);
-                //console.log(name + "   ===>   " +  name2);
             });
             jQuery(this).find(".f-tableEntries").each(function (index2) {
                 var inputs = jQuery(this).find(":input[name]");
                 inputs.each(function(entryLoopIndex) {
                     var $self = jQuery(this);
-
                     var name = $self.attr("name");
-                    //var oldName = name;
-                   // var oldValue = $self.val();
                     var entryIndex = Math.floor(entryLoopIndex/2); // key/value needs to match (every other one)
                     name = name.replace(/entries\[.*?\]/, "entries["+entryIndex+"]");
                     name = name.replace(/timeEntries\[.*?\]/, "timeEntries["+entryIndex+"]");
                     $self.attr("name", name);
-                    //console.log(oldName + " val:" + oldValue + "   ===>   " +  $self.attr("name") + " val: " + $self.val());
                 });
             });
         });
