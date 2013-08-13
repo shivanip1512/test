@@ -7,9 +7,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedSet;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.SortedSet;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -72,7 +72,6 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.model.YukonJob;
 import com.cannontech.jobs.service.JobManager;
-import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.meterEventsReport.model.MeterEventsReportFilterBackingBean;
@@ -332,6 +331,7 @@ public class MeterEventsReportController {
     public String reset(HttpServletRequest request, ModelMap model, YukonUserContext userContext)
             throws ServletRequestBindingException, DeviceCollectionCreationException {
         setupModelMap(new MeterEventsReportFilterBackingBean(userContext), request, model, null, null, userContext, null);
+        model.addAttribute("exportData", new ScheduledFileExportData());
         return reportJspPath;
     }
     
