@@ -61,6 +61,10 @@ h6 {
 	font-size: .8em;
 }
 
+h1,h2,h3,h4,h5,h6 {
+	margin: .3em;
+}
+
 /* LINKS */
 a,.vertical_menu a:hover {
 	text-decoration: none;
@@ -351,13 +355,15 @@ table.nowrap th,table.nowrap td {
 
 .sortable-table thead th a:hover {
 	color: #0066cc;
+	cursor: pointer;
 }
 
 .sortable-table thead th a i {
 	visibility: hidden;
+	margin: 0;
 }
 
-.sortable-table thead th a.sorted i {
+.sortable-table thead th a.sorted i,.sortable-table thead th a:hover i {
 	visibility: visible;
 }
 
@@ -927,15 +933,15 @@ ol.error {
 }
 
 .green,.success,.successMessage {
-	color: #093;
+	color: #093 !important;
 }
 
 .orange,.warn,.warning,.warningMessage {
 	color: #ff8c00 !important;
 }
 
-.disabled,.disabled a {
-	color: #888;
+.grey,.disabled,.disabled a {
+	color: #888 !important;
 	cursor: default;
 }
 
@@ -1264,7 +1270,7 @@ body ::-webkit-scrollbar-button {
 }
 
 .stacked {
-	margin-bottom: 10px;
+	margin-bottom: 20px;
 }
 
 /*  Soley for spacing vertically stacked elements */

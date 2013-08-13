@@ -41,6 +41,7 @@ h3{font-size: 1.0em;}
 h4{font-size: .95em;}
 h5{font-size: .9em;}
 h6{font-size: .8em;}
+h1, h2, h3, h4, h5, h6 {margin: .3em;}
 
 /* LINKS */
 a, .vertical_menu a:hover {text-decoration:none;}
@@ -162,9 +163,9 @@ table.nowrap th, table.nowrap td {white-space: nowrap;}
 .removeColumn button, .removeColumn .button {float:right;}
 
 .sortable-table thead th a {color: @primary-font-color;}
-.sortable-table thead th a:hover {color: @primary-color;}
-.sortable-table thead th a i {visibility: hidden;}
-.sortable-table thead th a.sorted i {visibility: visible;}
+.sortable-table thead th a:hover {color: @primary-color;cursor: pointer;}
+.sortable-table thead th a i {visibility: hidden;margin: 0;}
+.sortable-table thead th a.sorted i, .sortable-table thead th a:hover i {visibility: visible;}
 .sortable-table thead th a.sorted.asc i {background-position: -208px -48px;}
 .sortable-table thead th a.sorted.desc i {background-position: -176px -48px;}
 
@@ -332,9 +333,9 @@ a.pipe-selector.selected {color: @primary-font-color; cursor: default;}
 .red, .error, .errorMessage {color: #D14836 !important}
 .error[type=checkbox] {outline: 2px solid red;}
 ol.error{list-style-type: none;}
-.green, .success, .successMessage {color: #093;}
-.orange, .warn, .warning, .warningMessage {color:#ff8c00 !important}
-.disabled, .disabled a {color:#888; cursor:default;}
+.green, .success, .successMessage {color: #093 !important;}
+.orange, .warn, .warning, .warningMessage {color:#ff8c00 !important;}
+.grey, .disabled, .disabled a {color:#888 !important; cursor:default; }
 .disabled, .disabled a, .disabled:hover, .disabled a:hover {text-decoration: none;}
 .subtle, .setting .detail > span {color:@primary-font-color;}
 /* used on consumer pages, delete during consumer overhaul */
@@ -403,7 +404,7 @@ body ::-webkit-scrollbar-button{display:none}
 .no_margin {margin:0;}
 .full_width {width: 100%}
 .half_width {width: 50%}
-.stacked {margin-bottom: 10px;} /*  Soley for spacing vertically stacked elements */
+.stacked {margin-bottom: 20px;} /*  Soley for spacing vertically stacked elements */
 .wall_of_text .value {max-width: 300px;}
 .title-bar-tool {float:right !important;margin-right: 10px;}
 .dialog-no-buttons {margin-bottom: 20px;} /* buffer to get content (like scroll bar) from running into drag handle in dialogs with no button bar */
