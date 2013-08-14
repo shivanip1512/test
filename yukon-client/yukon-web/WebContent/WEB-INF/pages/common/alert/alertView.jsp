@@ -1,6 +1,7 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+
 <div id="alertView" >
     <table id="alertTable" class="compactResultsTable">
       <thead>
@@ -21,7 +22,7 @@
                 <td>
                     <input type="hidden" name="alertId" value="${alert.id}">
                     <cti:msg key="yukon.web.alerts.table.clear.tooltip" var="tt"/>
-                    <cti:icon icon="icon-accept" title="${tt}" onclick="javascript:Yukon.Alerts.clearAlert(${alert.id});"/>
+                    <cti:icon icon="icon-accept" title="${tt}" onclick="Yukon.Alerts.clearAlert(${alert.id});" classes="cp"/>
                 </td>
             </tr>
         </c:forEach>

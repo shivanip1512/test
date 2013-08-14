@@ -15,7 +15,7 @@
     <br>
     <div style="width: 400px;">
         <form id="startform" method="post" action="${submitUrl}/action">
-        <tags:abstractContainer type="box" title="Schedule Name:  ${schedule.scheduleName}" >
+        <tags:boxContainer title="Schedule Name: ${schedule.scheduleName}">
         	<c:if test="${errorMsg != null}">
             	<div class="error">${errorMsg}</div>
             </c:if>
@@ -75,7 +75,7 @@
                     </td>
                 </tr>
             </table>
-        </tags:abstractContainer>
+        </tags:boxContainer>
             
         <input type="submit" name="buttonAction" value="Apply" />
         <input type="submit" name="buttonAction" value="Back" />

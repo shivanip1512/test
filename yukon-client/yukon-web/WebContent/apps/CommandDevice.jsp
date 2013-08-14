@@ -106,15 +106,13 @@
 			<div class="commanderHeader">&nbsp;</div>
             
             <div class="titledContainer boxContainer">
-            <div class="titleBar boxContainer_titleBar">
-                <h3 class="title boxContainer_title">
-                    <cti:msg key="yukon.web.apps.commandDevice.navigation"/>
-                </h3>
-            </div>
+                <div class="title-bar">
+                    <h3 class="title"><cti:msg key="yukon.web.apps.commandDevice.navigation"/></h3>
+                </div>
             
-			<div id="commandDevice_content" class="content boxContainer_content">
+                <div id="commandDevice_content" class="content boxContainer_content">
 
-			<div class="header"><cti:msg key="yukon.web.apps.commandDevice.goTo"/></div>
+                    <div class="header"><cti:msg key="yukon.web.apps.commandDevice.goTo"/></div>
 			
 			<!-- Manual side menu section -->
 			<div class="sideMenuLink selected"><cti:msg key="yukon.web.apps.commandDevice.goTo.manual"/></div>
@@ -128,7 +126,7 @@
 			</c:if>
             </cti:checkRolesAndProperties>
       
-			<div class="horizontalRule" ></div>
+			<hr class="divider">
 		
 			<!-- Devices side menu section -->
 			<div class="header"><cti:msg key="yukon.web.apps.commandDevice.devices"/></div>

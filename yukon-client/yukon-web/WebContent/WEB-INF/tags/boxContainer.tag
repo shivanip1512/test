@@ -24,15 +24,9 @@
 
 <div class="titledContainer boxContainer ${pageScope.styleClass}" <c:if test="${!empty pageScope.id}">id="${pageScope.id}"</c:if>>
 
-    <div class="titleBar boxContainer_titleBar">
-        <c:if test="${(pageScope.hideEnabled == null) || pageScope.hideEnabled}">
-            <div class="controls" id="${thisId}_control">
-                <cti:icon icon="icon-collapse" id="${thisId}_minusImg" classes="minMax"/> 
-                <cti:icon icon="icon-expand" id="${thisId}_plusImg" classes="minMax"/> 
-              </div>
-        </c:if>
+    <div class="title-bar">
         <c:if test="${!empty pageScope.titleLinkHtml}">${pageScope.titleLinkHtml}</c:if>
-        <h3 class="title boxContainer_title">
+        <h3 class="title">
             <c:choose>
                 <c:when test="${pageScope.escapeTitle}">${fn:escapeXml(pageScope.title)}</c:when>
                 <c:otherwise>${pageScope.title}</c:otherwise>
@@ -41,9 +35,15 @@
         <c:if test="${not empty pageScope.helpText}">
             <cti:icon icon="icon-help" id="help_icon_${thisId}" classes="cp"/>
         </c:if>
+        <c:if test="${(pageScope.hideEnabled == null) || pageScope.hideEnabled}">
+            <div class="controls" id="${thisId}_control">
+                <cti:icon icon="icon-collapse" id="${thisId}_minusImg" classes="minMax"/> 
+                <cti:icon icon="icon-expand" id="${thisId}_plusImg" classes="minMax"/> 
+              </div>
+        </c:if>
     </div>
     
-    <div id="${thisId}_content" class="content boxContainer_content">
+    <div id="${thisId}_content" class="content">
         <jsp:doBody/>
     </div>    
                 

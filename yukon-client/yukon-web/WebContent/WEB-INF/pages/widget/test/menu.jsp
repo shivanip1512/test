@@ -9,7 +9,7 @@
 <c:forEach items="${widgets}" var="widget">
 <form action="create" method="get">
 <div style="margin-bottom: 8px">
-<ct:abstractContainer type="triangle" title="${widget.title}">
+<ct:boxContainer title="${widget.title}">
 <div style="margin-left: 15px; margin-bottom: 15px">
 
   <table>
@@ -24,7 +24,7 @@
   <input type="hidden" name="type" value="${widget.shortName}">
   <input type="submit" name="create" value="Show Widget">
   </div>
-</ct:abstractContainer>
+</ct:boxContainer>
 </div>
 </form>
 </c:forEach>

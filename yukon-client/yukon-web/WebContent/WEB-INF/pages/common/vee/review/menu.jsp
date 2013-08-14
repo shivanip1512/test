@@ -33,7 +33,7 @@ Please restart the Yukon Service Manager to resume processing.
 	
 <div class="column_12_12">
     <div class="column one">
-            <tags:abstractContainer type="box" title="Accept All" styleClass="widgetContainer">
+            <tags:boxContainer title="Accept All" styleClass="widgetContainer">
                 <p class="warningMessage">
                 This will insert the OK tag for the any RawPointHistory value that has the identical
                 set of tags as are checked. This has the same effect as the Accept selection
@@ -50,8 +50,8 @@ Please restart the Yukon Service Manager to resume processing.
                             
                     <input type="submit" value="Accept">
                 </form>
-            </tags:abstractContainer>	
-            <tags:abstractContainer type="box" title="Delete All" styleClass="widgetContainer">
+            </tags:boxContainer>	
+            <tags:boxContainer title="Delete All" styleClass="widgetContainer">
                 <p class="warningMessage">
                 This will delete any RawPointHistory value that has the identical set of tags
                 as are selected tags (but has not already been marked as Accepted). This has the same effect as the Delete selection
@@ -69,10 +69,10 @@ Please restart the Yukon Service Manager to resume processing.
                             
                     <input type="submit" value="Delete">
                 </form>
-            </tags:abstractContainer>	
+            </tags:boxContainer>	
     </div>
     <div class="column two nogutter">
-            <tags:abstractContainer type="box" title="Recalculate Tags" styleClass="widgetContainer">
+            <tags:boxContainer title="Recalculate Tags" styleClass="widgetContainer">
                 <p class="warningMessage">
                 The following options will reset the validation engine so that it reprocesses
                 all of the RawPointHistory rows from the beginning or from 12 months ago.
@@ -87,7 +87,7 @@ Please restart the Yukon Service Manager to resume processing.
                 <form method="post" action="resetValidationEngine">
                     Delete all tags: <input type="submit" value="Reset">
                 </form>
-            </tags:abstractContainer>	
+            </tags:boxContainer>	
     </div>
 </div>
 </cti:standardPage>

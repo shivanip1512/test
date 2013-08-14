@@ -7,22 +7,19 @@
 <%@ attribute name="styleClass" required="false" type="java.lang.String"%>
 <%@ attribute name="showInitially" required="false" type="java.lang.Boolean"%>
 <%@ attribute name="escapeTitle" required="false" type="java.lang.Boolean" %>
-<%@ attribute name="slide" required="false" type="java.lang.Boolean" %>
 
 <cti:uniqueIdentifier prefix="hideReveal_" var="thisId"/>
 
-<div class="titledContainer triangleContainer ${pageScope.styleClass}" <c:if test="${!empty pageScope.id}" >id="${pageScope.id}"</c:if>>
-    <div class="titleBar triangleContainer_titleBar">
-        <div class="title triangleContainer_title">
-            <c:choose>
-                <c:when test="${pageScope.escapeTitle}"><h3 class="toggle-title">${fn:escapeXml(pageScope.title)}</h3></c:when>
-                <c:otherwise><h3 id="${thisId}_title" class="toggle-title">${pageScope.title}</h3></c:otherwise>
-            </c:choose>
-        </div>
-    </div>
-    <div id="${thisId}_content" class="content triangleContainer_content"><jsp:doBody/></div>
-</div>
-
 <c:if test="${!empty pageScope.showInitially and !pageScope.showInitially}">
-    <script type="text/javascript">jQuery(function() {jQuery('#${thisId}_title').trigger('click');});</script>
+    <c:set var="collapsed" value="collapsed"/>
 </c:if>
+
+<div class="titledContainer triangleContainer ${pageScope.styleClass} ${pageScope.collapsed}" <c:if test="${!empty pageScope.id}" >id="${pageScope.id}"</c:if>>
+    <div class="title-bar">
+        <c:choose>
+            <c:when test="${pageScope.escapeTitle}"><h3 class="title toggle-title">${fn:escapeXml(pageScope.title)}</h3></c:when>
+            <c:otherwise><h3 id="${thisId}_title" class="title toggle-title">${pageScope.title}</h3></c:otherwise>
+        </c:choose>
+    </div>
+    <div id="${thisId}_content" class="content"><jsp:doBody/></div>
+</div>

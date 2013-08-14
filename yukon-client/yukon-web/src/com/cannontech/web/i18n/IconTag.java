@@ -51,36 +51,37 @@ public class IconTag extends YukonTagSupport implements DynamicAttributes {
     public void doTag() throws JspException, IOException, NoSuchMessageException {
         MessageScope messageScope = MessageScopeHelper.forRequest(getRequest());
 
-        try {
-            MessageScopeHelper.forRequest(getRequest()).pushScope("." + nameKey, "components.image." + nameKey);
+        JspWriter out = getJspContext().getOut();
 
-            JspWriter out = getJspContext().getOut();
+        if (StringUtils.isNotBlank(href)) out.write("<a href=\"" + href + "\">");
 
-            if (StringUtils.isNotBlank(href)) out.write("<a href=\"" + href + "\">");
+        out.write("<i class=\"icon " + icon + " " + classes + "\"" );
 
-            out.write("<i class=\"icon " + icon + " " + classes + "\"" );
-
-            id = StringUtils.isBlank(id) ? UniqueIdentifierTag.generateIdentifier(getJspContext(), "icon_") : id;
-            out.write(" id=\"" + id + '"');
-
-            String hoverText = getLocalMessage(messageScope, ".hoverText");
-            if (hoverText != null) {
-                out.write(" title=\"");
-                out.write(hoverText);
-                out.write("\"");
+        id = StringUtils.isBlank(id) ? UniqueIdentifierTag.generateIdentifier(getJspContext(), "icon_") : id;
+        out.write(" id=\"" + id + '"');
+        
+        if (StringUtils.isNotBlank(nameKey)) {
+            try {
+                MessageScopeHelper.forRequest(getRequest()).pushScope("." + nameKey, "components.image." + nameKey);
+                String hoverText = getLocalMessage(messageScope, ".hoverText");
+                if (hoverText != null) {
+                    out.write(" title=\"");
+                    out.write(hoverText);
+                    out.write("\"");
+                }
+            } finally {
+                MessageScopeHelper.forRequest(getRequest()).popScope();
             }
+        }
 
-            for (String attributeName : dynamicAttributes.keySet()) {
-                out.write(" " + attributeName + "=\"" + dynamicAttributes.get(attributeName) + "\"");
-            }
+        for (String attributeName : dynamicAttributes.keySet()) {
+            out.write(" " + attributeName + "=\"" + dynamicAttributes.get(attributeName) + "\"");
+        }
 
-            out.write("></i>");
+        out.write("></i>");
 
-            if (StringUtils.isNotBlank(href)) {
-                out.write("</a>");
-            }
-        } finally {
-            MessageScopeHelper.forRequest(getRequest()).popScope();
+        if (StringUtils.isNotBlank(href)) {
+            out.write("</a>");
         }
     }
 

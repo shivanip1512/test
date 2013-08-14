@@ -318,7 +318,6 @@ table.nowrap th,table.nowrap td {
 
 .nameValueTable .name,.property-list .name {
 	color: #666;
-	vertical-align: middle;
 }
 
 .nameValueTable .value,.property-list .value {

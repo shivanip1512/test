@@ -16,7 +16,7 @@
     <br>
     <div style="width: 400px;">
         <form id="stopform" method="post" action="${submitUrl}/action" style="margin: 0px; padding: 0px;">
-        <tags:abstractContainer type="box" title="Schedule Name:  ${schedule.scheduleName}" >
+        <tags:boxContainer title="Schedule Name: ${schedule.scheduleName}">
             <h4>Stop</h4>
             <table>
                 <tr>
@@ -47,7 +47,7 @@
                     </td>
                 </tr>
             </table>
-        </tags:abstractContainer>
+        </tags:boxContainer>
                 
         <input type="submit" name="buttonAction" value="Apply" />
         <input type="submit" name="buttonAction" value="Back" />

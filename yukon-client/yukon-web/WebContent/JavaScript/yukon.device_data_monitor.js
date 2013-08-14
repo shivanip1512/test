@@ -100,8 +100,8 @@ if(typeof(DeviceDataMonitor) === 'undefined'){
             }
 
             // add our help icons next to the two column titles (Settings and Processors)
-            jQuery('.f-settings_section .titleBar h3').append('<i class="icon icon-help f-open_settings_help"></i>');
-            jQuery('.f-processors_section .titleBar h3').append('<i class="icon icon-help f-open_processors_help"></i>');
+            jQuery('.f-settings_section .title-bar').append('<i class="icon icon-help f-open_settings_help"></i>');
+            jQuery('.f-processors_section .title-bar').append('<i class="icon icon-help f-open_processors_help"></i>');
 
             this._initialized = true;
         },

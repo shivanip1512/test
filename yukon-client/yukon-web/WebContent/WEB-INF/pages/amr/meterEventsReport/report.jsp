@@ -22,7 +22,10 @@
 	    	open_schedulePopup();
 	    };    
     
-    	jQuery(document).ready(function() {
+    	jQuery(function() {
+    	    jQuery(document).on('click', '#b-export', function (e) {
+    	        document.getElementById('export-form').submit();
+    	    });
 	        jQuery("#resetButton").click(function () {
 	        	jQuery("#resetForm").submit();
 	        });
@@ -155,11 +158,21 @@
         	for (var i = 0; i < titlesToIgnore.length; i++) {
         		if (title === titlesToIgnore[i]) {
         			return true;
-        		}
+        		};
         	}
         	return false;
         }
     </script>
+
+    <form:form id="export-form" action="csv" commandName="backingBean" method="get">
+        <cti:deviceCollection deviceCollection="${backingBean.deviceCollection}" />
+        <tags:sortFields backingBean="${backingBean}" />
+        <form:hidden path="toInstant" id="toInstant_csv"/>
+        <form:hidden path="fromInstant" id="fromInstant_csv"/>
+        <form:hidden path="onlyAbnormalEvents" id="onlyAbnormalEvents_csv"/>
+        <form:hidden path="onlyLatestEvent" id="onlyLatestEvent_csv"/>
+        <form:hidden path="includeDisabledPaos" id="includeDisabledPaos_csv"/>
+    </form:form>
 	
 	<c:set var="popupTitleArgs" value=""/>
 	<c:if test="${not empty exportData.scheduleName}">
@@ -241,7 +254,7 @@
         </form:form>
     </dialog:inline>
     
-	<form:form id="eventsFilterForm" action="report" method="get" commandName="backingBean" cssClass="eventForm">
+	<form:form id="eventsFilterForm" action="report" method="get" commandName="backingBean" cssClass="eventForm stacked">
         <div class="column_12_12 clearfix">
             
             <%-- LEFT SIDE COLUMN --%>
@@ -305,6 +318,9 @@
 					<cti:button nameKey="update" type="submit" classes="primary action"/>
 					<cti:button nameKey="reset" id="resetButton"/>
 					<cti:button nameKey="schedule" id="scheduleButton" icon="icon-calendar-view-day"/>
+                    <c:if test="${filterResult.hitCount > 0}">
+                        <cti:button nameKey="csv" icon="icon-page-white-excel" id="b-export"/>
+                    </c:if>
 				</div>
 			</div>
 
@@ -349,25 +365,10 @@
             </div>
         </div>
 	</form:form>
-	<br>
 	
 	<form:form id="resetForm" action="reset" method="get">
 	   <cti:deviceCollection deviceCollection="${backingBean.deviceCollection}" />
 	</form:form>
-
-    <c:if test="${filterResult.hitCount > 0}">
-		<form:form action="csv" method="post" commandName="backingBean" cssClass="fr eventForm">
-			<cti:deviceCollection deviceCollection="${backingBean.deviceCollection}" />
-			<tags:sortFields backingBean="${backingBean}" />
-			<form:hidden path="toInstant" id="toInstant_csv"/>
-			<form:hidden path="fromInstant" id="fromInstant_csv"/>
-			<form:hidden path="onlyAbnormalEvents" id="onlyAbnormalEvents_csv"/>
-			<form:hidden path="onlyLatestEvent" id="onlyLatestEvent_csv"/>
-			<form:hidden path="includeDisabledPaos" id="includeDisabledPaos_csv"/>
-			<cti:button nameKey="csv" renderMode="labeledImage" type="submit" icon="icon-csv"/>
-		</form:form>
-		<div class="cr"></div>
-	</c:if>
 
     <c:if test="${collectionFromReportResults != null && filterResult.hitCount > 0}">
         <c:set var="linkHeaderHtml">

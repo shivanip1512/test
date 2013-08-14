@@ -50,7 +50,7 @@
     <c:if test="${not empty pageScope.title}">
         <c:set var="containerTitle" value="${pageScope.title}"/>
     </c:if>
-    <ct:abstractContainer type="box" title="${containerTitle}" id="widgetTitledContainer_${widgetParameters.widgetId}" styleClass="widgetContainer" showInitially="true" hideEnabled="${empty pageScope.hideEnabled ? true : pageScope.hideEnabled}" helpText="${pageScope.helpText}">
+    <ct:boxContainer title="${containerTitle}" id="widgetTitledContainer_${widgetParameters.widgetId}" styleClass="widgetContainer" showInitially="true" hideEnabled="${empty pageScope.hideEnabled ? true : pageScope.hideEnabled}" helpText="${pageScope.helpText}">
         <div id="widgetContainer_${widgetParameters.widgetId}" style="height: ${widgetParameters.height};">
             <c:choose>
             <c:when test="${beanInst.lazyLoad}">
@@ -61,6 +61,6 @@
             </c:otherwise>
             </c:choose>
         </div>
-    </ct:abstractContainer>
+    </ct:boxContainer>
 </div>
 </cti:checkUserChecker>

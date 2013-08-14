@@ -16,6 +16,7 @@ jQuery(function() {
 
 <div id="tabs" class="section">
     <ul>
+        <li><a href="#containerTab">Containers</a></li>
         <li><a href="#buttonsTab">Buttons</a></li>
         <li><a href="#pickersTab">Pickers</a></li>
         <li><a href="#i18nTab">I18N</a></li>
@@ -24,6 +25,10 @@ jQuery(function() {
         <li><a href="#jsTestingTab">JS Testing</a></li>
         <li><a href="#moreTab">More</a></li>
     </ul>
+
+    <div id="containerTab" class="clearfix">
+        <%@ include file="containers.jspf" %>
+    </div>
 
     <div id="buttonsTab" class="clearfix">
         <%@ include file="buttons.jspf" %>

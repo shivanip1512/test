@@ -18,9 +18,9 @@
 
 <cti:includeScript link="/JavaScript/simpleCookies.js" />
 
-<div class="pagedBox <c:if test="${!empty pageScope.styleClass}">${pageScope.styleClass}</c:if>" <c:if test="${!empty pageScope.id}">id="${pageScope.id}"</c:if>>
-    <div class="title">
-        <h3 class="titleArea">${pageScope.title}</h3>
+<div class="titledContainer pagedBox <c:if test="${!empty pageScope.styleClass}">${pageScope.styleClass}</c:if>" <c:if test="${!empty pageScope.id}">id="${pageScope.id}"</c:if>>
+    <div class="title-bar">
+        <h3 class="title">${pageScope.title}</h3>
         <tags:nextPrevLinks searchResult="${pageScope.searchResult}" baseUrl="${pageScope.baseUrl}" mode="jsp"/>
         <span class="contextArea fr">
             <span class="filterArea">

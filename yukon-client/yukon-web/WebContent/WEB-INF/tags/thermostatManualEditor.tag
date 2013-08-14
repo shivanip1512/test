@@ -16,9 +16,9 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <div class="titledContainer boxContainer manualThermostat box fl">
-    <div class="titleBar boxContainer_titleBar">
-        <h3 class="title boxContainer_title">
-        <c:set var="multipleThermostatsSelected" value="${fn:length(fn:split(thermostatIds, ',')) > 1}"></c:set>
+    <div class="title-bar">
+        <h3 class="title">
+            <c:set var="multipleThermostatsSelected" value="${fn:length(fn:split(thermostatIds, ',')) > 1}"></c:set>
             <c:choose>
                 <c:when test="${not multipleThermostatsSelected and canEditLabel}">
                     <form:form action="/stars/consumer/thermostat/saveLabel" commandName="thermostat" method="post">
@@ -51,7 +51,7 @@
             </c:choose>
         </h3>
     </div>
-    <div class="content boxContainer_content">
+    <div class="content">
         <div class="box clear" style="padding-bottom: .5em; font-size: .75em;">
             <cti:msg2 var="runProgramText" key="yukon.web.modules.operator.thermostatManual.runProgram" />
             <cti:msg2 var="manualSettingsText" key="yukon.web.modules.operator.thermostatManual.manualSettings" />

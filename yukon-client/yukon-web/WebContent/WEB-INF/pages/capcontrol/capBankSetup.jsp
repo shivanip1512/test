@@ -417,14 +417,14 @@
             <!--[if lte IE 6.5]><iframe></iframe><![endif]-->
             <div class="titledContainer boxContainer">
 
-                <div class="titleBar boxContainer_titleBar">
+                <div class="title-bar">
+                    <h3 class="title">Orphaned CBC's</h3>
                     <div class="controls" onclick="closeOrphanedCBCPopup()">
                         <i class="icon icon-collapse minMax"></i>
                     </div>
-                    <h3 class="title boxContainer_title">Orphaned CBC's</h3>
                 </div>
 
-                <div class="content boxContainer_content">
+                <div class="content">
                     <div id="orphanedCBCBody"></div>
                 </div>
 

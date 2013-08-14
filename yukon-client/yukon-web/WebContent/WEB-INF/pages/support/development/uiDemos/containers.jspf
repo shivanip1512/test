@@ -1,0 +1,41 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+
+<style type="text/css">
+.example {border-bottom: 1px dashed #777;margin-bottom: 10px;}
+.description {line-height: 26px;margin-left:20px;}
+</style>
+
+<tags:sectionContainer title="Box Containers">
+    <div class="example">
+        <div class="clearfix">
+            <tags:boxContainer title="This is a Box Container">:D</tags:boxContainer>
+            <span class="description">a normal box container</span>
+        </div>
+        <pre class="code">&lt;tags:boxContainer title=&quot;This is a Box Container&quot;&gt;:D&lt;/tags:boxContainer&gt;</pre>
+    </div>
+</tags:sectionContainer>
+
+<tags:sectionContainer title="Section Containers">
+    <div class="example">
+        <div class="clearfix">
+            <tags:sectionContainer title="This is a Section Container">:D</tags:sectionContainer>
+            <span class="description">a normal section container</span>
+        </div>
+        <pre class="code">&lt;tags:sectionContainer title=&quot;This is a Section Container&quot;&gt;:D&lt;/tags:sectionContainer&gt;</pre>
+    </div>
+</tags:sectionContainer>
+
+<tags:sectionContainer title="Paged Containers">
+    <div class="example">
+        <div class="clearfix">
+<%--             <tags:pagedBox searchResult="" baseUrl="" title="This is a Paged Box Container"></tags:pagedBox> --%>
+            <span class="description">a paged box container</span>
+        </div>
+        <pre class="code">&lt;tags:pagedBox searchResult=&quot;&quot; baseUrl=&quot;&quot; title=&quot;This is a Paged Box Container&quot;&gt;:D&lt;/tags:sectionContainer&gt;</pre>
+    </div>
+</tags:sectionContainer>

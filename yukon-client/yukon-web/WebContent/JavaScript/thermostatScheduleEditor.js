@@ -105,7 +105,7 @@ Yukon.ThermostatScheduleEditor = {
             jQuery("button.f-delete", form).hide();
             
             //change title
-            jQuery('.titleBar .title', form).html(jQuery('input[name=copyTitle]', form).val());
+            jQuery('.title-bar .title', form).html(jQuery('input[name=copyTitle]', form).val());
         });
         
         jQuery(".f-edit").click(function(e){
@@ -120,7 +120,7 @@ Yukon.ThermostatScheduleEditor = {
             Yukon.ThermostatScheduleEditor.clearErrors(form);
             
             //change title
-            jQuery('.titleBar .title', form).html(jQuery('input[name=editTitle]', form).val());
+            jQuery('.title-bar .title', form).html(jQuery('input[name=editTitle]', form).val());
         });
         
         //This is a very specific editing mode for default schedules on energy companies.

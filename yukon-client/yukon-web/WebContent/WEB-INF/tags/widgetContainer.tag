@@ -1,11 +1,6 @@
-<%@ tag  dynamic-attributes="widgetAttributes" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib prefix="ct" tagdir="/WEB-INF/tags" %>
+<%@ tag dynamic-attributes="widgetAttributes" trimDirectiveWhitespaces="true" %>
+
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <c:set var="widgetContainerParams" value="${pageScope.widgetAttributes}" scope="request"/>
-
-
-
 <jsp:doBody/>
-

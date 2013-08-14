@@ -13,7 +13,7 @@
                 <h1><i:inline key=".pageName"/></h1>
             </div>
             <cti:msg2 var="boxTitle" key=".boxTitle" />
-            <cti:titledContainer title="${boxTitle}">
+            <tags:boxContainer title="${boxTitle}">
                 <div class="loginIntroText stacked">
                     <i:inline key=".intro" />
                 </div>
@@ -58,7 +58,7 @@
                         </div>
                     </c:if>
                 </form>
-            </cti:titledContainer>
+            </tags:boxContainer>
         </div>
     </div>
     </section>

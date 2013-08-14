@@ -72,7 +72,7 @@ singleOverrideChecked = function(boxChecked) {
     <dr:programStartInfo page="startMultiplePrograms"/>
 
     <cti:msg2 var="boxTitle" key=".programs"/>
-    <tags:abstractContainer type="box" title="${boxTitle}">
+    <tags:boxContainer title="${boxTitle}">
     <div class="dialogScrollArea">
     <table class="compactResultsTable" id="startMultipleProgramsOverridePrograms">
         <thead>
@@ -129,7 +129,7 @@ singleOverrideChecked = function(boxChecked) {
         </tbody>
     </table>
     </div>
-    </tags:abstractContainer>
+    </tags:boxContainer>
 
     <c:forEach var="programStartInfo" varStatus="status" items="${backingBean.programStartInfo}">
         <form:hidden path="programStartInfo[${status.index}].programId"/>

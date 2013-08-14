@@ -97,6 +97,7 @@ import com.google.common.collect.Sets;
 @Controller
 @RequestMapping("/meterEventsReport/*")
 public class MeterEventsReportController {
+    
 	@Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
 	@Autowired private PaoPointValueService paoPointValueService;
 	@Autowired private PointFormattingService pointFormattingService;
@@ -336,13 +337,15 @@ public class MeterEventsReportController {
     }
     
     @RequestMapping
-    public String csv(@ModelAttribute("meterEventsReportFilterBackingBean") MeterEventsReportFilterBackingBean backingBean,
-                      ModelMap model, HttpServletRequest request, HttpServletResponse response,
-                      YukonUserContext userContext, String attrNames) throws IOException,
-                          ServletRequestBindingException, DeviceCollectionCreationException {
+    public void csv(@ModelAttribute("backingBean") MeterEventsReportFilterBackingBean backingBean,
+                      ModelMap model, 
+                      HttpServletRequest request, 
+                      HttpServletResponse response,
+                      YukonUserContext context, String attrNames) 
+    throws IOException, ServletRequestBindingException, DeviceCollectionCreationException {
 
-        setupBackingBean(backingBean, request, attrNames, userContext);
-        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        setupBackingBean(backingBean, request, attrNames, context);
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(context);
         
         //header row
         String[] headerRow = new String[5];
@@ -353,29 +356,27 @@ public class MeterEventsReportController {
         headerRow[4] = messageSourceAccessor.getMessage("yukon.web.modules.amr.meterEventsReport.report.tableHeader.value.linkText");
         
         //data rows
-        List<MeterPointValue> events = getSortedMeterEvents(backingBean, userContext);
-        
+        List<MeterPointValue> events = getSortedMeterEvents(backingBean, context);
         List<String[]> dataRows = Lists.newArrayList();
+        
         for(MeterPointValue event : events) {
             String[] dataRow = new String[5];
             dataRow[0] = event.getMeter().getName();
             dataRow[1] = event.getMeter().getMeterNumber();
             
-            DateTime timeStamp = new DateTime(event.getPointValueHolder().getPointDataTimeStamp(), userContext.getJodaTimeZone());
+            DateTime timeStamp = new DateTime(event.getPointValueHolder().getPointDataTimeStamp(), context.getJodaTimeZone());
             String dateTimeString = timeStamp.toString(DateTimeFormat.mediumDateTime());
             dataRow[2] = dateTimeString;
             
             dataRow[3] = event.getPointName();
             
-            String valueString = pointFormattingService.getValueString(event.getPointValueHolder(), Format.VALUE, userContext);
+            String valueString = pointFormattingService.getValueString(event.getPointValueHolder(), Format.VALUE, context);
             dataRow[4] = valueString;
             dataRows.add(dataRow);
         }
         
-        String dateStr = dateFormattingService.format(new LocalDate(userContext.getJodaTimeZone()), DateFormatEnum.DATE, userContext);
+        String dateStr = dateFormattingService.format(new LocalDate(context.getJodaTimeZone()), DateFormatEnum.DATE, context);
         WebFileUtils.writeToCSV(response, headerRow, dataRows, "MeterEvents_" + dateStr + ".csv");
-        
-        return null;
     }
     
     private void setupBackingBean(MeterEventsReportFilterBackingBean backingBean,

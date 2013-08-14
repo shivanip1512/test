@@ -290,7 +290,7 @@ function makeFirstSelectedFilterValueVisible() {
 	  <input type="hidden" name="ecID" value="<%=REPORT_BEAN.getEnergyCompanyID() %>">
 	  <input type="hidden" name="ACTION" value="DownloadReport">
 	  <cti:msg key="yukon.web.reportSelection" var="reportSelectionTitle"/>
-      <cti:titledContainer title="${reportSelectionTitle}">
+      <tags:boxContainer title="${reportSelectionTitle}">
             <table style="width:100%;">
               <tr>
 				<td class="columnHeader"><cti:msg key="yukon.web.reports"/></td>
@@ -441,21 +441,21 @@ function makeFirstSelectedFilterValueVisible() {
                 <td colspan="7">&nbsp;</td>
               </tr>
             </table>
-         </cti:titledContainer>
+         </tags:boxContainer>
          
 	  <br>	  
 	  
 	  <cti:msg key="yukon.web.options" var="optionsTitle"/>
-      <cti:titledContainer title="${optionsTitle}">
+      <tags:boxContainer title="${optionsTitle}">
             <%=REPORT_BEAN.buildOptionsHTML()%>
-      </cti:titledContainer>
+      </tags:boxContainer>
       
 	  <%if (REPORT_BEAN.hasFilter())
 	  {%>
 		  <br>	  
 		  
 		  <cti:msg key="yukon.web.options" var="filterTitle"/>
-          <cti:titledContainer title="${filterTitle}">
+          <tags:boxContainer title="${filterTitle}">
 			<SCRIPT>
 
         function changeFilter(filterBy) {
@@ -850,7 +850,7 @@ function makeFirstSelectedFilterValueVisible() {
         		</td>
         	</tr>
         </table>
-        </cti:titledContainer>
+        </tags:boxContainer>
 		<%}%>	  	  	  
       </form>
 </cti:standardPage>

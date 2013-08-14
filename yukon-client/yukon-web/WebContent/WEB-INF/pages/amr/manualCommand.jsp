@@ -5,64 +5,55 @@
     
 <cti:standardPage module="amr" page="manualCommand">
 
-<style type="text/css">
-	div.scroll { font-size: 12px; 
-				 height: 350px;  
-				 overflow: scroll; 
-				 border: 1px solid #CCCCCC; 
-				 text-align:left; 
-				 padding: 8px;
-				}
-</style>
-
 <script language="JavaScript">
-    function disableButton(x) {
-        x.disabled = true;
-        document.commandForm.submit();
-    }
     function loadCommand() {
         document.commandForm.command.value = document.commandForm.commonCommand.value;
     }
 </script>
 
-    <tags:widgetContainer deviceId="${deviceId}" identify="false">
-                    <tags:widgetContainer deviceId="${deviceId}">
-                       <tags:widget bean="meterInformationWidget" />
-                    </tags:widgetContainer>
-                    <tags:boxContainer2 nameKey="executeCommand" hideEnabled="false" styleClass="widgetContainer">
-                        <form name="commandForm" method="POST" action="/servlet/CommanderServlet">
-                
-                            <input type="hidden" name="deviceID" value="${device.yukonID}">
-                            <input type="hidden" name="timeOut" value="8000">
-                            <input id="redirect" type="hidden" name="REDIRECT" value="/amr/manualCommand/home?deviceId=${deviceId}">
-                            <input id="referrer" type="hidden" name="REFERRER" value="/amr/manualCommand/home?deviceId=${deviceId}">
-                
-                            <tags:nameValueContainer2> <!--  altRowOn="true"> -->
-                                <tags:nameValue2 nameKey=".commonCommands">
-                                    <tags:commanderPrompter/>
-                                    <select name="commonCommand" class="f-loadCommanderCommand" data-cmdfield="command">
-                                        <option value=""><i:inline key=".selectCommand"/></option>                
-                                        
-                                        <c:forEach var="command" items="${commandList}">
-                                            <option value="${command.command}" >${command.label}</option>
-                                        </c:forEach>
-                                    </select>
-                                </tags:nameValue2>
-                                <tags:nameValue2 nameKey=".executeCommand">
-                                    <input type="text" id="command" name="command" <cti:isPropertyFalse property="EXECUTE_MANUAL_COMMAND">readonly</cti:isPropertyFalse> size="60" value="${YC_BEAN.commandString}">
-                                    <cti:button nameKey="execute" name="execute" onclick="disableButton(this)" type="submit" />
-                                </tags:nameValue2>
-                            </tags:nameValueContainer2>  
-							<br>
-                            <div class="scroll">
-                                <c:out value="${YC_BEAN.resultText}" escapeXml="false"/>
-                            </div>
-                            <div>
-                                <cti:button nameKey="clearResults" name="clearText" type="submit"/>
-                                <cti:button nameKey="refresh" name="refresh" onclick="window.location.reload()"/>
-                            </div>
-                        </form>
-                    </tags:boxContainer2>
+    <tags:widgetContainer deviceId="${deviceId}">
+        <div class="column_12_12 clearfix">
+            <div class="one column">
+                <tags:widget bean="meterInformationWidget" />
+            </div>
+            <div class="two column nogutter">
+                <tags:widget bean="csrTrendWidget" tabularDataViewer="archivedDataReport" />
+            </div>
+        </div>
     </tags:widgetContainer>
+    <tags:boxContainer2 nameKey="executeCommand" hideEnabled="false" styleClass="clear">
+        <form name="commandForm" method="POST" action="/servlet/CommanderServlet">
+
+            <input type="hidden" name="deviceID" value="${device.yukonID}">
+            <input type="hidden" name="timeOut" value="8000">
+            <input id="redirect" type="hidden" name="REDIRECT" value="/amr/manualCommand/home?deviceId=${deviceId}">
+            <input id="referrer" type="hidden" name="REFERRER" value="/amr/manualCommand/home?deviceId=${deviceId}">
+
+            <tags:nameValueContainer2>
+                <tags:nameValue2 nameKey=".commonCommands">
+                    <tags:commanderPrompter/>
+                    <select name="commonCommand" class="f-loadCommanderCommand" data-cmdfield="command">
+                        <option value=""><i:inline key=".selectCommand"/></option>                
+                        
+                        <c:forEach var="command" items="${commandList}">
+                            <option value="${command.command}" >${command.label}</option>
+                        </c:forEach>
+                    </select>
+                </tags:nameValue2>
+                <tags:nameValue2 nameKey=".executeCommand">
+                    <input type="text" id="command" name="command" <cti:isPropertyFalse property="EXECUTE_MANUAL_COMMAND">readonly</cti:isPropertyFalse> size="60" value="${YC_BEAN.commandString}">
+                </tags:nameValue2>
+            </tags:nameValueContainer2>  
+            <div class="pageActionArea">
+                <cti:button nameKey="execute" name="execute" onclick="disableButton(this)" type="submit" classes="primary action f-disableAfterClick"/>
+                <cti:button nameKey="clear" name="clearText" type="submit"/>
+                <cti:button nameKey="refresh" name="refresh" onclick="window.location.reload()"/>
+            </div>
+            <div id="command_results" class="liteContainer stacked code scrollingContainer_large" style="min-height: 200px;">
+                <div class="console"><h4><i:inline key="yukon.common.console"/></h4></div>
+                <c:out value="${YC_BEAN.resultText}" escapeXml="false"/>
+            </div>
+        </form>
+    </tags:boxContainer2>
     
-</cti:standardPage>		
+</cti:standardPage>
