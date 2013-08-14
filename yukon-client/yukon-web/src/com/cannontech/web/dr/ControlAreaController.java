@@ -61,13 +61,11 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMControlAreaTrigger;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.common.chart.model.FlotPieDatas;
-import com.cannontech.web.common.chart.service.FlotChartService;
+import com.cannontech.web.common.chart.service.AssetAvailabilityChartService;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.ListBackingBean;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Ordering;
 
 @Controller
@@ -82,8 +80,8 @@ public class ControlAreaController {
     @Autowired private TriggerFieldService triggerFieldService;
     @Autowired private FavoritesDao favoritesDao;
     @Autowired private ControlAreaNameField controlAreaNameField;
-    @Autowired private FlotChartService flotChartService;
     @Autowired private AssetAvailabilityService assetAvailabilityService;
+    @Autowired private AssetAvailabilityChartService assetAvailabilityChartService;
     
 
     public static class ControlAreaListBackingBean extends ListBackingBean {
@@ -241,23 +239,12 @@ public class ControlAreaController {
             SimpleAssetAvailabilitySummary aaSummary = 
                     assetAvailabilityService.getAssetAvailabilityFromDrGroup(controlArea.getPaoIdentifier());
             model.addAttribute("assetAvailabilitySummary", aaSummary);
-            model.addAttribute("pieJSONData", getPieJSONData(aaSummary));
+            model.addAttribute("pieJSONData", assetAvailabilityChartService.getJSONPieData(aaSummary, userContext));
         } catch(DynamicDataAccessException e) {
             model.addAttribute("dispatchDisconnected", true);
         }
         
         return "dr/controlArea/detail.jsp";
-    }
-
-    private JSONObject getPieJSONData(SimpleAssetAvailabilitySummary aaSummary) {
-        Map<String, FlotPieDatas> labelDataColorMap = Maps.newHashMapWithExpectedSize(4);
-        labelDataColorMap.put("Running", new FlotPieDatas(aaSummary.getCommunicatingRunningSize(), "#093")); // .success
-        labelDataColorMap.put("Not Running", new FlotPieDatas(aaSummary.getCommunicatingNotRunningSize(), "#ffac00")); // .warning
-        labelDataColorMap.put("Opted Out", new FlotPieDatas(aaSummary.getOptedOutSize(), "#888")); // .disabled
-        labelDataColorMap.put("Unavailable", new FlotPieDatas(aaSummary.getUnavailableSize(), "#d14836")); // .error
-
-        JSONObject pieJSONData = flotChartService.getPieGraphDataWithColor(labelDataColorMap);
-        return pieJSONData;
     }
 
     @RequestMapping("/controlArea/sendEnableConfirm")

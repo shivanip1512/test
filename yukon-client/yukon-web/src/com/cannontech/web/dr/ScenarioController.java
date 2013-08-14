@@ -6,8 +6,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.json.JSONObject;
-
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -38,14 +36,12 @@ import com.cannontech.dr.program.filter.ForScenarioFilter;
 import com.cannontech.dr.scenario.dao.ScenarioDao;
 import com.cannontech.dr.scenario.service.ScenarioService;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.common.chart.model.FlotPieDatas;
-import com.cannontech.web.common.chart.service.FlotChartService;
+import com.cannontech.web.common.chart.service.AssetAvailabilityChartService;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.dr.ProgramControllerHelper.ProgramListBackingBean;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.ListBackingBean;
-import com.google.common.collect.Maps;
 
 @Controller
 @CheckRoleProperty(value={YukonRoleProperty.SHOW_SCENARIOS,YukonRoleProperty.DEMAND_RESPONSE}, requireAll=true)
@@ -56,8 +52,8 @@ public class ScenarioController {
     @Autowired private PaoAuthorizationService paoAuthorizationService;
     @Autowired private ProgramControllerHelper programControllerHelper;
     @Autowired private FavoritesDao favoritesDao;
-    @Autowired private FlotChartService flotChartService;
     @Autowired private AssetAvailabilityService assetAvailabilityService;
+    @Autowired private AssetAvailabilityChartService assetAvailabilityChartService;
 
     @RequestMapping("/scenario/list")
     public String list(ModelMap model,
@@ -126,23 +122,12 @@ public class ScenarioController {
             SimpleAssetAvailabilitySummary aaSummary = 
                     assetAvailabilityService.getAssetAvailabilityFromDrGroup(scenario.getPaoIdentifier());
             model.addAttribute("assetAvailabilitySummary", aaSummary);
-            model.addAttribute("pieJSONData", getPieJSONData(aaSummary));
+            model.addAttribute("pieJSONData", assetAvailabilityChartService.getJSONPieData(aaSummary, userContext));
         } catch(DynamicDataAccessException e) {
             model.addAttribute("dispatchDisconnected", true);
         }
         
         return "dr/scenario/detail.jsp";
-    }
-    
-    private JSONObject getPieJSONData(SimpleAssetAvailabilitySummary aaSummary) {
-        Map<String, FlotPieDatas> labelDataColorMap = Maps.newHashMapWithExpectedSize(4);
-        labelDataColorMap.put("Running", new FlotPieDatas(aaSummary.getCommunicatingRunningSize(), "#093")); // .success
-        labelDataColorMap.put("Not Running", new FlotPieDatas(aaSummary.getCommunicatingNotRunningSize(), "#ffac00")); // .warning
-        labelDataColorMap.put("Opted Out", new FlotPieDatas(aaSummary.getOptedOutSize(), "#888")); // .disabled
-        labelDataColorMap.put("Unavailable", new FlotPieDatas(aaSummary.getUnavailableSize(), "#d14836")); // .error
-
-        JSONObject pieJSONData = flotChartService.getPieGraphDataWithColor(labelDataColorMap);
-        return pieJSONData;
     }
 
     private void addFilterErrorsToFlashScopeIfNecessary(ModelMap model,
