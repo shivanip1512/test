@@ -26,14 +26,15 @@ public class FormulaBean {
         this.formulaType = formula.getType();
         this.functionIntercept = formula.getFunctionIntercept();
         this.functions = FunctionBean.toBeanMap(formula.getFunctions());
-        this.tables = LookupTableBean.toBeanMap(formula.getTables());
+        this.tables = LookupTableBean.toBeanMap(formula.getTables(), formula.getTimeTables());
     }
 
     public Formula getFormula() {
         return new Formula(formulaId, name, formulaType, calculationType,
                            functionIntercept, 
                            FunctionBean.toFormulaFunctions(functions),
-                           LookupTableBean.toLookupTables(tables));
+                           LookupTableBean.toLookupTables(tables),
+                           LookupTableBean.toTimeLookupTables(tables));
     }
 
     public static List<FormulaBean> toBeans(List<Formula> formulas) {

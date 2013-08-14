@@ -44,8 +44,8 @@ public class TableEntryBean implements Comparable<TableEntryBean> {
         return beans;
     }
 
-    public static ImmutableMap<Object, Double> toLookupTableMap(List<TableEntryBean> beans) {
-        Map<Object, Double> lookupMap = new HashMap<>();
+    public static ImmutableMap<Double, Double> toLookupTableMap(List<TableEntryBean> beans) {
+        Map<Double, Double> lookupMap = new HashMap<>();
         for (TableEntryBean bean : beans) {
             lookupMap.put(bean.getKey(), bean.getValue());
         }

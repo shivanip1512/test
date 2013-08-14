@@ -48,36 +48,52 @@ public class LookupTableBean {
         return entries.size();
     }
 
-    public static List<LookupTableBean> toBeanMap(ImmutableList<FormulaLookupTable<Object>> tables) {
+    public static List<LookupTableBean> toBeanMap(ImmutableList<FormulaLookupTable<Double>> tables, ImmutableList<FormulaLookupTable<LocalTime>> timeTables) {
         List<LookupTableBean> beans = new ArrayList<>();
         if (tables == null) {
             return beans;
         }
-        for (FormulaLookupTable<?> table : tables) {
+        for (FormulaLookupTable<Double> table : tables) {
+            beans.add(new LookupTableBean(table));
+        }
+        for (FormulaLookupTable<LocalTime> table : timeTables) {
             beans.add(new LookupTableBean(table));
         }
         return beans;
     }
 
-    public static ImmutableList<FormulaLookupTable<Object>> toLookupTables(List<LookupTableBean> beans) {
-        List<FormulaLookupTable<Object>> tables = new ArrayList<>();
+    public static ImmutableList<FormulaLookupTable<Double>> toLookupTables(List<LookupTableBean> beans) {
+        List<FormulaLookupTable<Double>> tables = new ArrayList<>();
         for (LookupTableBean bean : beans) {
-            tables.add(bean.toFormulaLookupTable());
+            if (bean.inputType != InputType.TIME) {
+                tables.add(bean.toFormulaLookupTable());
+            }
         }
         return ImmutableList.copyOf(tables);
     }
 
-    public FormulaLookupTable<Object> toFormulaLookupTable() {
-        if (inputType == InputType.TIME) {
-            return new FormulaLookupTable<>(lookupTableId, null, name,
-                    new FormulaInput<Object>(inputType, getTimeInputMin(), timeInputMax, inputPointId),
-                    TimeTableEntryBean.toLookupTableMap(timeEntries));
+    public static ImmutableList<FormulaLookupTable<LocalTime>> toTimeLookupTables(List<LookupTableBean> beans) {
+        List<FormulaLookupTable<LocalTime>> tables = new ArrayList<>();
+        for (LookupTableBean bean : beans) {
+            if (bean.inputType == InputType.TIME) {
+                tables.add(bean.toFormulaTimeLookupTable());
+            }
         }
+        return ImmutableList.copyOf(tables);
+    }
+
+    public FormulaLookupTable<Double> toFormulaLookupTable() {
         return new FormulaLookupTable<>(lookupTableId, null, name,
-                      new FormulaInput<Object>(inputType, getInputMin(), inputMax, inputPointId),
+                      new FormulaInput<>(inputType, getInputMin(), inputMax, inputPointId),
                       TableEntryBean.toLookupTableMap(entries));
     }
 
+    public FormulaLookupTable<LocalTime> toFormulaTimeLookupTable() {
+            return new FormulaLookupTable<>(lookupTableId, null, name,
+                    new FormulaInput<>(inputType, getTimeInputMin(), timeInputMax, inputPointId),
+                    TimeTableEntryBean.toLookupTableMap(timeEntries));
+    }
+    
     public Integer getLookupTableId() {
         return lookupTableId;
     }

@@ -44,8 +44,8 @@ public class TimeTableEntryBean implements Comparable<TimeTableEntryBean>{
         return beans;
     }
 
-    public static ImmutableMap<Object, Double> toLookupTableMap(List<TimeTableEntryBean> beans) {
-        Map<Object, Double> lookupMap = new HashMap<>();
+    public static ImmutableMap<LocalTime, Double> toLookupTableMap(List<TimeTableEntryBean> beans) {
+        Map<LocalTime, Double> lookupMap = new HashMap<>();
         for (TimeTableEntryBean bean : beans) {
             lookupMap.put(bean.getKey(), bean.getValue());
         }
