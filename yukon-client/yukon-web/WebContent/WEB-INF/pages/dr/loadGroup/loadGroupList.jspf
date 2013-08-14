@@ -51,15 +51,13 @@
         <cti:msg2 var="minStr" key=".filter.min" />
         <cti:msg2 var="maxStr" key=".filter.max" />
         <cti:msg2 var="toStr" key=".filter.to" />
-        <tags:nameValueContainer>
-            <cti:msg2 var="fieldName" key=".filter.name" />
-            <tags:nameValue name="${fieldName}">
+        <tags:nameValueContainer2>
+            <tags:nameValue2 nameKey=".filter.name">
                 <form:input path="name" size="40" />
-            </tags:nameValue>
+            </tags:nameValue2>
 
             <cti:checkRolesAndProperties value="LOAD_GROUP_STATE">
-                <cti:msg2 var="fieldName" key=".filter.state"/>
-                <tags:nameValue name="${fieldName}">
+                <tags:nameValue2 nameKey=".filter.state">
                     <form:select path="state">
                         <form:option value="all">
                             <cti:msg2 key=".filter.state.all" />
@@ -71,18 +69,17 @@
                             <cti:msg2 key=".filter.state.inactive" />
                         </form:option>
                     </form:select>
-                </tags:nameValue>
+                </tags:nameValue2>
             </cti:checkRolesAndProperties>
 
             <cti:checkRolesAndProperties value="LOAD_GROUP_LAST_ACTION,LOAD_GROUP_LOAD_CAPACITY">
                 <cti:checkRolesAndProperties value="LOAD_GROUP_LAST_ACTION">
-                    <cti:msg2 var="fieldName" key=".filter.lastAction" />
-                    <tags:nameValue name="${fieldName}">
+                    <tags:nameValue2 nameKey=".filter.lastAction">
                            <dt:dateRange startPath="lastAction.min" endPath="lastAction.max"><span class="fl" style="margin-right: 5px;">${toStr}</span></dt:dateRange>
-                    </tags:nameValue>
+                    </tags:nameValue2>
                 </cti:checkRolesAndProperties>
             </cti:checkRolesAndProperties>
-        </tags:nameValueContainer>
+        </tags:nameValueContainer2>
 
         <div class="actionArea">
             <cti:button nameKey="filter" classes="primary action" type="submit"/>
