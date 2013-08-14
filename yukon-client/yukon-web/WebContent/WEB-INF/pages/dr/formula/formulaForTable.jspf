@@ -48,7 +48,6 @@
                             <cti:displayForPageEditModes modes="EDIT">
                                 <tags:selectWithItems id="formulaInputSelect_${tableLoop.index}" disabled="${formulaBean.tables[tableLoop.index].numberOfEntries > 0}"
                                     inputClass="f-formulaInputSelect" items="${formulaInputs}" path="tables[${tableLoop.index}].inputType"/>
-
                                     <div id="formulaPointPicker_${tableLoop.index}" style="${formulaBean.tables[tableLoop.index].inputType ne 'POINT' ? 'display:none' : ''}">
 	                                    <button id="formulaPointPickerBtn_${tableLoop.index}" role="button" type="button" class="button naked f-pointPicker">
 	                                        <span id="formulaPointPickerLbl_${tableLoop.index}" class="label">
@@ -62,7 +61,6 @@
 	                                        <i class="icon icon-database-add"></i>
 	                                    </button>
                                     </div>
-                                    
                             </cti:displayForPageEditModes>
                             <cti:displayForPageEditModes modes="VIEW">
                                 <i:inline key="${formulaBean.tables[tableLoop.index].inputType}"/>
@@ -114,38 +112,40 @@
                             </div>
                             <div class="liteContainer">
                                 <div class="scrollingContainer_medium">
-                                    <div id="tableEntries_${tableLoop.index}" class="column_12_12 clearfix content f-tableEntries">
-                                        <span id="noEntriesMessage_${tableLoop.index}" style="${formulaBean.tables[tableLoop.index].numberOfEntries > 0 ? 'display:none' : ''}">
-                                            <i:inline key=".noEntries"/>
-                                            <form:errors path="tables[${tableLoop.index}]" cssClass="errorMessage"/>
-                                        </span>
-
+                                    <span id="noEntriesMessage_${tableLoop.index}" style="${formulaBean.tables[tableLoop.index].numberOfEntries > 0 ? 'display:none' : ''}">
+                                        <i:inline key=".noEntries"/>
+                                        <form:errors path="tables[${tableLoop.index}]" cssClass="errorMessage"/>
+                                    </span>
+                                    <div id="tableEntries_${tableLoop.index}" class="clearfix separated-sections no-lines f-tableEntries">
                                         <c:if test="${formulaBean.tables[tableLoop.index].inputType == 'TIME'}">
 	                                        <c:forEach items="${formulaBean.tables[tableLoop.index].timeEntries}" varStatus="tableEntriesLoop">
-	                                            <div id="tableEntryKey_${tableLoop.index}_${tableEntriesLoop.index}" class="column one stacked f-tableEntryKey_${tableLoop.index}">
-	                                                <tags:input path="tables[${tableLoop.index}].timeEntries[${tableEntriesLoop.index}].key"/>
-	                                            </div>
-	                                            <div id="tableEntryValue_${tableLoop.index}_${tableEntriesLoop.index}" class="column two nogutter">
-	                                                <tags:input path="tables[${tableLoop.index}].timeEntries[${tableEntriesLoop.index}].value"/>
-	                                                <cti:button nameKey="remove" icon="icon-cross" renderMode="image" classes="f-removeEntry fr"
-	                                                    data-table-id="${tableLoop.index}" data-entry-id="${tableEntriesLoop.index}"/>
+                                                <div id="tableEntry_${tableLoop.index}_${tableEntriesLoop.index}" class="column_12_12 section clearfix">
+		                                            <div id="tableEntryKey_${tableLoop.index}_${tableEntriesLoop.index}" class="column one f-tableEntryKey_${tableLoop.index}">
+		                                                <tags:input path="tables[${tableLoop.index}].timeEntries[${tableEntriesLoop.index}].key"/>
+		                                            </div>
+		                                            <div id="tableEntryValue_${tableLoop.index}_${tableEntriesLoop.index}" class="column two nogutter">
+		                                                <tags:input path="tables[${tableLoop.index}].timeEntries[${tableEntriesLoop.index}].value"/>
+		                                                <cti:button nameKey="remove" icon="icon-cross" renderMode="buttonImage" classes="f-removeEntry fr"
+		                                                    data-table-id="${tableLoop.index}" data-entry-id="${tableEntriesLoop.index}"/>
+		                                            </div>
 	                                            </div>
 	                                        </c:forEach>
                                         </c:if>
 
                                         <c:if test="${formulaBean.tables[tableLoop.index].inputType != 'TIME'}">
 	                                        <c:forEach items="${formulaBean.tables[tableLoop.index].entries}" varStatus="tableEntriesLoop">
-	                                            <div id="tableEntryKey_${tableLoop.index}_${tableEntriesLoop.index}" class="column one stacked f-tableEntryKey_${tableLoop.index}">
-	                                                <tags:input path="tables[${tableLoop.index}].entries[${tableEntriesLoop.index}].key"/>
-	                                            </div>
-	                                            <div id="tableEntryValue_${tableLoop.index}_${tableEntriesLoop.index}" class="column two nogutter ">
-	                                                <tags:input path="tables[${tableLoop.index}].entries[${tableEntriesLoop.index}].value"/>
-	                                                <cti:button nameKey="remove" icon="icon-cross" renderMode="image" classes="f-removeEntry fr"
-	                                                    data-table-id="${tableLoop.index}" data-entry-id="${tableEntriesLoop.index}"/>
+                                                <div id="tableEntry_${tableLoop.index}_${tableEntriesLoop.index}" class="column_12_12 section clearfix">
+		                                            <div id="tableEntryKey_${tableLoop.index}_${tableEntriesLoop.index}" class="column one f-tableEntryKey_${tableLoop.index}">
+		                                                <tags:input path="tables[${tableLoop.index}].entries[${tableEntriesLoop.index}].key"/>
+		                                            </div>
+		                                            <div id="tableEntryValue_${tableLoop.index}_${tableEntriesLoop.index}" class="column two nogutter ">
+		                                                <tags:input path="tables[${tableLoop.index}].entries[${tableEntriesLoop.index}].value"/>
+		                                                <cti:button nameKey="remove" icon="icon-cross" renderMode="buttonImage" classes="f-removeEntry fr"
+		                                                    data-table-id="${tableLoop.index}" data-entry-id="${tableEntriesLoop.index}"/>
+		                                            </div>
 	                                            </div>
 	                                        </c:forEach>
                                         </c:if>
-
                                     </div>
                                 </div>
                             </div>
@@ -169,6 +169,7 @@
         </c:forEach>
     </tags:sectionContainer2>
     <cti:displayForPageEditModes modes="EDIT">
+        <hr>
         <div class="actionArea">
             <cti:button id="newTableBtn" icon="icon-plus-green" nameKey="newTable"/>
         </div>
@@ -227,10 +228,10 @@
             </div>
             <div class="liteContainer">
                 <div class="scrollingContainer_medium">
-                    <div id="tableEntries_" class="column_12_12 clearfix content f-appendTableId f-tableEntries">
-                        <span class="f-appendTableId" id="noEntriesMessage_">
-                          <i:inline key=".noEntries"/>
-                        </span>
+                    <span class="f-appendTableId" id="noEntriesMessage_">
+                        <i:inline key=".noEntries"/>
+                    </span>
+                    <div id="tableEntries_" class="clearfix separated-sections no-lines f-tableEntries f-appendTableId">
                     </div>
                 </div>
             </div>
@@ -250,26 +251,37 @@
     </div>
 </div>
 
-<div id="dummyTimeEntry" style="display:none">
-    <div id="tableEntryKey_" class="column one stacked f-tableEntryKey_">
-        <tags:input path="dummyTimeTableEntryBean.key"/>
+<div id="dummyTimeEntry" style="display:none" class="column_12_12 section clearfix">
+   <div id="tableEntryKey_" class="column one stacked f-tableEntryKey_ f-appendTableId">
+       <tags:input path="dummyTimeTableEntryBean.key"/>
+   </div>
+   <div id="tableEntryValue_" class="column two nogutter f-appendTableId">
+      <tags:input path="dummyTimeTableEntryBean.value"/>
+      <cti:button nameKey="remove" icon="icon-cross" renderMode="buttonImage" classes="f-removeEntry fr"
+            data-table-id="" 
+            data-entry-id="0"/> 
     </div>
-    <div id="tableEntryValue_" class="column two nogutter">
-       <tags:input path="dummyTimeTableEntryBean.value"/>
-       <cti:button nameKey="remove" icon="icon-cross" renderMode="image" classes="f-removeEntry fr"
-             data-table-id="" 
-             data-entry-id="0"/> 
-     </div>
 </div>
 
-<div id="dummyEntry" style="display:none">
-    <div id="tableEntryKey_" class="column one stacked f-tableEntryKey_ f-appendTableId">
-       <tags:input path="dummyTableEntryBean.key"/>
-    </div>
-    <div id="tableEntryValue_" class="column two nogutter f-appendTableId">
-       <tags:input path="dummyTableEntryBean.value"/>
-       <cti:button nameKey="remove" icon="icon-cross" renderMode="image" classes="f-removeEntry fr"
-            data-table-id=""
-            data-entry-id="0"/>
-     </div>
+<!-- <div id="dummyTimeEntry" style="display:none" class="column_12_12 section clearfix"> -->
+<!-- 	<div id="tableEntryKey_" class="column one f-tableEntryKey_"> -->
+<%-- 		<tags:input path="dummyTimeTableEntryBean.key"/> --%>
+<!-- 	</div> -->
+<!-- 	<div id="tableEntryValue_" class="column two nogutter "> -->
+<%-- 		<tags:input path="dummyTimeTableEntryBean.value"/> --%>
+<%-- 		<cti:button nameKey="remove" icon="icon-cross" renderMode="buttonImage" classes="f-removeEntry fr" --%>
+<%-- 		data-table-id="" data-entry-id="0"/> --%>
+<!-- 	</div> -->
+<!-- </div> -->
+
+<div id="dummyEntry" style="display:none" class="column_12_12 section clearfix">
+	<div id="tableEntryKey_" class="column one f-tableEntryKey_ f-appendTableId">
+	    <tags:input path="dummyTableEntryBean.key"/>
+	</div>
+	<div id="tableEntryValue_" class="column two nogutter f-appendTableId">
+		<tags:input path="dummyTableEntryBean.value"/>
+		<cti:button nameKey="remove" icon="icon-cross" renderMode="buttonImage" classes="f-removeEntry fr"
+		  data-table-id="" data-entry-id="0"/>
+	</div>
 </div>
+

@@ -72,9 +72,8 @@ jQuery(function () {
         var entryId = jQuery(this).data("entry-id");
         var tableId = jQuery(this).data("table-id");
 
-        jQuery("#tableEntryValue_" + tableId + "_" + entryId + " , #tableEntryKey_" + tableId + "_" + entryId)
-            .slideUp(150)
-            .promise().done(function() {
+        jQuery("#tableEntry_" + tableId + "_" + entryId)
+            .slideUp(150, function() {
             this.remove();
             if (jQuery(".f-tableEntryKey_" + tableId).size() < 1) {
                 jQuery("#noEntriesMessage_" + tableId).show(150);
@@ -97,6 +96,7 @@ jQuery(function () {
         var tableId = jQuery(this).data("table-id");
         var entryId = jQuery(this).data("entry-id-next");
         var isTimeInput = jQuery("#formulaInputSelect_" + tableId).val() === 'TIME';
+
         jQuery("#noEntriesMessage_" + tableId).hide();
 
         var $newRow;
@@ -106,17 +106,16 @@ jQuery(function () {
             $newRow = jQuery('#dummyEntry').clone();
         }
 
+        $newRow.attr("id","tableEntry_"+ tableId + "_" + entryId);
+
         $newRow.find(".f-appendTableId").each(function () {
             this.id = this.id + tableId + "_" + entryId;
         });
-        $newRow.children(".f-tableEntryKey_")
+        $newRow.find(".f-tableEntryKey_")
             .removeClass("f-tableEntryKey_")
             .addClass("f-tableEntryKey_" + tableId);
 
-        // remove the div id=dummyEntry and grab the key/value divs
-        $newRow = $newRow.children().unwrap().hide();
-
-        $newRow.each(function() {
+        $newRow.children().each(function() {
             var $this = jQuery(this);
             $this.id = $this.id + tableId + "_" + entryId;
 
@@ -136,8 +135,9 @@ jQuery(function () {
             // Setup the remove button
             $this.find(".f-removeEntry").data("table-id", tableId).data("entry-id", entryId);
 
-        })
-        .appendTo("#tableEntries_" + tableId)
+        });
+
+        $newRow.appendTo("#tableEntries_" + tableId)
         .slideDown(150).promise().done(function() {
             // Forces scroll down to focused input field
             jQuery("#tableEntries_"+tableId).parent().scrollTop(jQuery("#tableEntries_"+tableId).parent().height() + 20);

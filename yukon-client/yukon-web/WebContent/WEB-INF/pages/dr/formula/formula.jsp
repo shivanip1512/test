@@ -9,13 +9,6 @@
 <%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog"%>
 
 <cti:standardPage module="dr" page="formula.${mode}">
-    <style>
-        h4 {margin: .4em 0;}
-        .functions tr .f-show-on-hover {visibility: hidden;}
-        .functions tr:hover .f-show-on-hover {visibility: visible;}
-        .f-hover-target .f-show-on-hover {visibility: hidden;}
-        .f-hover-target:hover .f-show-on-hover {visibility: visible;}
-    </style>
 
     <tags:setFormEditMode mode="${mode}"/>
 

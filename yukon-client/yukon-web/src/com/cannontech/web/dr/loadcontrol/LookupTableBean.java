@@ -50,14 +50,15 @@ public class LookupTableBean {
 
     public static List<LookupTableBean> toBeanMap(ImmutableList<FormulaLookupTable<Double>> tables, ImmutableList<FormulaLookupTable<LocalTime>> timeTables) {
         List<LookupTableBean> beans = new ArrayList<>();
-        if (tables == null) {
-            return beans;
+        if (tables != null) {
+            for (FormulaLookupTable<Double> table : tables) {
+                beans.add(new LookupTableBean(table));
+            }
         }
-        for (FormulaLookupTable<Double> table : tables) {
-            beans.add(new LookupTableBean(table));
-        }
-        for (FormulaLookupTable<LocalTime> table : timeTables) {
-            beans.add(new LookupTableBean(table));
+        if (timeTables != null) {
+            for (FormulaLookupTable<LocalTime> table : timeTables) {
+                beans.add(new LookupTableBean(table));
+            }
         }
         return beans;
     }

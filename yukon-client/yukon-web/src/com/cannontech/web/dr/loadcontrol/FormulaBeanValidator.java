@@ -10,6 +10,7 @@ import org.joda.time.LocalTime;
 import org.springframework.validation.Errors;
 
 import com.cannontech.common.validator.SimpleValidator;
+import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.dr.estimatedload.Formula;
 import com.cannontech.dr.estimatedload.FormulaInput.InputType;
 
@@ -46,6 +47,8 @@ public class FormulaBeanValidator extends SimpleValidator<FormulaBean> {
                 }
                 if(StringUtils.isEmpty(function.getName())) {
                     errors.rejectValue("functions["+ i +"].name", "yukon.web.error.isBlank", null,"");
+                } else {
+                    YukonValidationUtils.checkExceedsMaxLength(errors, "functions["+ i +"].name", function.getName(), 32);
                 }
                 if (Double.isNaN(function.getInputMax()) || Double.isInfinite(function.getInputMax())) {
                     errors.rejectValue("functions["+i+"].inputMax", baseKey + "notValidNumber", null,"");
@@ -72,6 +75,8 @@ public class FormulaBeanValidator extends SimpleValidator<FormulaBean> {
                 List<TimeTableEntryBean> timeEntries = table.getTimeEntries();
                 if(StringUtils.isEmpty(table.getName())) {
                     errors.rejectValue("tables["+i+"].name", "yukon.web.error.isBlank", null,"");
+                } else {
+                    YukonValidationUtils.checkExceedsMaxLength(errors, "functions["+ i +"].name", table.getName(), 32);
                 }
                 if (table.getInputType() == InputType.TIME) {
                     if(!table.getTimeEntries().isEmpty()) {
