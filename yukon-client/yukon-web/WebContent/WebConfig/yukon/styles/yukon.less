@@ -41,7 +41,7 @@ h3{font-size: 1.0em;}
 h4{font-size: .95em;}
 h5{font-size: .9em;}
 h6{font-size: .8em;}
-h1, h2, h3, h4, h5, h6 {margin: .3em;}
+h1, h2, h3, h4, h5, h6 {margin: .3em 0;}
 
 /* LINKS */
 a, .vertical_menu a:hover {text-decoration:none;}
@@ -222,21 +222,22 @@ ul.disc li {list-style-type: disc; margin-left: 25px;}
 /* CONTAINERS */
 .toggle-title {cursor: pointer; background: white url(../Icons/icon_blockexpanded.png) no-repeat scroll 0 8px; padding-left: 14px; display: inline;}
 .collapsed .toggle-title {background: url("../Icons/icon_blockcollapsed.png") no-repeat scroll 3px 5px #FFFFFF;}
-.titleBar h3, .pagedBox .title h3 {margin: 0;float: left;}
-.controls .icon {margin:1px 0 0 0;}
+.collapsed .content {display: none;}
+.title-bar .title {margin: 0;float: left;}
+.controls .icon {margin: 0;}
+.titledContainer .content {overflow: hidden;padding: 10px;} 
 
 .boxContainer, .boxContainerFooter, .pagedBox, .tabbedContainer {margin-bottom: 20px;}
 .pagedBox, .sectionContainer, .boxContainer, .inlineTree, .resultsTable, .liteContainer {border:solid 1px #ccc; border-radius:2px;}
 .pagedBox > .title, .inlineTree > .tree_helper_controls, .resultsTable th {border-radius:2px 2px 0 0;}
 .resultsTable th {border-bottom: solid 1px #ccc;}
-.content, .titledContainer > .titleBar, .pagedBox > .title, .pagedBox > .content, .pagedBox > .footer, .boxContainerFooter {padding: 5px 10px; overflow:hidden;}
-.content, .pagedBox > .content {padding-bottom: 10px;}
-.pagedBox > .title, .pagedBox > .footer, .boxContainer_titleBar, .resultsTable th, .boxContainerFooter {background-color:whiteSmoke;}
+.titledContainer > .title-bar, .pagedBox > .footer, .boxContainerFooter {overflow: hidden;padding: 5px 10px;}
+.pagedBox > .title-bar, .pagedBox > .footer, .boxContainer > .title-bar, .boxContainerFooter, .resultsTable th {background-color:whiteSmoke;}
 .titledContainer > .content, .pagedBox > .content, .pagedBox > .footer, .sectionContainer > .content, .sectionContainer > .footer {border-top: solid 1px #ccc;}
-.titledContainer > .titleBar, .pagedBox > .title, .pagedBox > .footer, .ui-dialog .ui-dialog-title {text-shadow:1px 1px 0 white;}
-.titledContainer > .titleBar, .pagedBox > .title, .ui-dialog .ui-dialog-title {border-radius: 2px 2px 0 0;}
+.titledContainer > .title-bar, .pagedBox > .title, .pagedBox > .footer, .ui-dialog .ui-dialog-title {text-shadow:1px 1px 0 white;}
+.titledContainer > .title-bar, .pagedBox > .title, .ui-dialog .ui-dialog-title {border-radius: 2px 2px 0 0;}
 .pagedBox > .footer, .sectionContainer > .footer {border-radius: 0 0 2px 2px;}
-.titledContainer > .titleBar h3, .pagedBox > .title h3, .pagedBox > .footer h3, .ui-dialog .ui-dialog-title h3 {display: inline-block;}
+.titledContainer > .titleBar .title, .ui-dialog .ui-dialog-title h3 {display: inline-block;}
 
 .actionArea {margin-top: 20px;}
 .actionArea:before, .actionArea:after {content: " ";display: table;}
@@ -406,7 +407,7 @@ body ::-webkit-scrollbar-button{display:none}
 .no_margin {margin:0;}
 .full_width {width: 100%}
 .half_width {width: 50%}
-.stacked {margin-bottom: 20px;} /*  Soley for spacing vertically stacked elements */
+.stacked {margin-bottom: 10px;} /*  Soley for spacing vertically stacked elements */
 .wall_of_text .value {max-width: 300px;}
 .title-bar-tool {float:right !important;margin-right: 10px;}
 .dialog-no-buttons {margin-bottom: 20px;} /* buffer to get content (like scroll bar) from running into drag handle in dialogs with no button bar */
@@ -449,6 +450,7 @@ input.dateTimePicker {margin: 0;}
 
 .has-actions .dropdown-container {visibility: hidden;}
 .has-actions tr:hover .dropdown-container, .has-actions li:hover .dropdown-container, .has-actions .dropdown-container.menu-open {visibility: visible;}
+.has-actions .action-column {width:56px;} /* only use when you need the action icon to have it's own column, ie: you don't know which column would be the last column */
 
 .ui-datepicker::before,
 .dropdown-menu::before {position: absolute; top: -7px; display: inline-block; border-right: 7px solid transparent; border-bottom: 7px solid #ccc; border-left: 7px solid transparent; border-bottom-color: rgba(0, 0, 0, 0.2); content: '';}

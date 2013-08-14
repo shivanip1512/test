@@ -62,7 +62,7 @@ h6 {
 }
 
 h1,h2,h3,h4,h5,h6 {
-	margin: .3em;
+	margin: .3em 0;
 }
 
 /* LINKS */
@@ -543,13 +543,22 @@ ul.disc li {
 	background: url("../Icons/icon_blockcollapsed.png") no-repeat scroll 3px 5px #ffffff;
 }
 
-.titleBar h3,.pagedBox .title h3 {
+.collapsed .content {
+	display: none;
+}
+
+.title-bar .title {
 	margin: 0;
 	float: left;
 }
 
 .controls .icon {
-	margin: 1px 0 0 0;
+	margin: 0;
+}
+
+.titledContainer .content {
+	overflow: hidden;
+	padding: 10px;
 }
 
 .boxContainer,.boxContainerFooter,.pagedBox,.tabbedContainer {
@@ -569,16 +578,12 @@ ul.disc li {
 	border-bottom: solid 1px #ccc;
 }
 
-.content,.titledContainer > .titleBar,.pagedBox > .title,.pagedBox > .content,.pagedBox > .footer,.boxContainerFooter {
-	padding: 5px 10px;
+.titledContainer > .title-bar,.pagedBox > .footer,.boxContainerFooter {
 	overflow: hidden;
+	padding: 5px 10px;
 }
 
-.content,.pagedBox > .content {
-	padding-bottom: 10px;
-}
-
-.pagedBox > .title,.pagedBox > .footer,.boxContainer_titleBar,.resultsTable th,.boxContainerFooter {
+.pagedBox > .title-bar,.pagedBox > .footer,.boxContainer > .title-bar,.boxContainerFooter,.resultsTable th {
 	background-color: whiteSmoke;
 }
 
@@ -586,11 +591,11 @@ ul.disc li {
 	border-top: solid 1px #ccc;
 }
 
-.titledContainer > .titleBar,.pagedBox > .title,.pagedBox > .footer,.ui-dialog .ui-dialog-title {
+.titledContainer > .title-bar,.pagedBox > .title,.pagedBox > .footer,.ui-dialog .ui-dialog-title {
 	text-shadow: 1px 1px 0 white;
 }
 
-.titledContainer > .titleBar,.pagedBox > .title,.ui-dialog .ui-dialog-title {
+.titledContainer > .title-bar,.pagedBox > .title,.ui-dialog .ui-dialog-title {
 	border-radius: 2px 2px 0 0;
 }
 
@@ -598,7 +603,7 @@ ul.disc li {
 	border-radius: 0 0 2px 2px;
 }
 
-.titledContainer > .titleBar h3,.pagedBox > .title h3,.pagedBox > .footer h3,.ui-dialog .ui-dialog-title h3 {
+.titledContainer > .titleBar .title,.ui-dialog .ui-dialog-title h3 {
 	display: inline-block;
 }
 
@@ -1280,7 +1285,7 @@ body ::-webkit-scrollbar-button {
 }
 
 .stacked {
-	margin-bottom: 20px;
+	margin-bottom: 10px;
 }
 
 /*  Soley for spacing vertically stacked elements */
@@ -1462,6 +1467,11 @@ input.dateTimePicker {
 	visibility: visible;
 }
 
+.has-actions .action-column {
+	width: 56px;
+}
+
+/* only use when you need the action icon to have it's own column, ie:  you don't know which column would be the last column */
 .ui-datepicker::before,.dropdown-menu::before {
 	position: absolute;
 	top: -7px;
