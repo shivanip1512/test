@@ -19,7 +19,7 @@ jQuery(function() {
     jQuery(document).on('click', '.f-ajaxPaging', function(event) {
         
         event.stopPropagation();
-        var url = jQuery(event.currentTarget).attr('data-url');
+        var url = jQuery(event.currentTarget).data('url');
         jQuery.ajax({
             url: url,
             method: 'get',

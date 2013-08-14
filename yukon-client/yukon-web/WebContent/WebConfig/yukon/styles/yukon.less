@@ -305,8 +305,10 @@ ul.disc li {list-style-type: disc; margin-left: 25px;}
 
 .tiles .column.one {clear:left;}
 
-.separated-sections .section {border-bottom: 1px dotted #bbb; padding-bottom:10px;}
-.separated-sections .section:last-child {border-bottom: none; padding-bottom:10px;}
+.separated-sections .section {border-bottom: 1px dashed #bbb; padding-bottom:10px;margin-bottom: 10px;}
+.separated-sections .section:first-child {padding-top:10px;}
+.separated-sections .section:last-child {border-bottom: none; padding-bottom:10px;margin-bottom: 0;}
+.separated-sections.no-lines .section {border: none;} 
 
 /* FLASH SCOPES */
 .page_help,.page_warning,.page_error {line-height: 1.3em; font-size: 12px; padding: 5px 10px 5px 25px; border-radius: 2px; border-width: 1px; border-style: solid; margin-bottom: 10px;}

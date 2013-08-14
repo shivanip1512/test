@@ -824,13 +824,23 @@ background-image: -webkit-linear-gradient(top, #dddddd, #efefef);
 }
 
 .separated-sections .section {
-	border-bottom: 1px dotted #bbb;
+	border-bottom: 1px dashed #bbb;
 	padding-bottom: 10px;
+	margin-bottom: 10px;
+}
+
+.separated-sections .section:first-child {
+	padding-top: 10px;
 }
 
 .separated-sections .section:last-child {
 	border-bottom: none;
 	padding-bottom: 10px;
+	margin-bottom: 0;
+}
+
+.separated-sections.no-lines .section {
+	border: none;
 }
 
 /* FLASH SCOPES */
