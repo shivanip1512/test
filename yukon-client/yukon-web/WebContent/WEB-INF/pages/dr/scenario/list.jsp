@@ -66,7 +66,7 @@ function clearFilter() {
                             <th class="favoritesColumn"></th>
                             <th><tags:sortLink nameKey="heading.name"
                                 baseUrl="${baseUrl}" fieldName="NAME"/></th>
-                            <th style="width: 56px;"></th>
+                            <th class="action-column"></th>
                         </tr>
                     </thead>
                     <tfoot></tfoot>

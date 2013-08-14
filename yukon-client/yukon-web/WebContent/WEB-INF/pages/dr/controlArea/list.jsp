@@ -148,7 +148,7 @@
                                 <th><tags:sortLink nameKey="heading.timeWindow"
                                     baseUrl="${baseUrl}" fieldName="CA_START"/></th>
                             </cti:checkRolesAndProperties>
-                            <th style="width: 56px;"></th>
+                            <th class="action-column"></th>
                         </tr>
                     </thead>
                     <tfoot></tfoot>

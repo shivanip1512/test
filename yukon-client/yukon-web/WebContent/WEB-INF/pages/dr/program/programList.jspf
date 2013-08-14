@@ -159,7 +159,7 @@
                             <cti:checkRolesAndProperties value="PROGRAM_REDUCTION">
                                 <th><tags:sortLink nameKey="heading.reduction" baseUrl="${baseUrl}" fieldName="REDUCTION" /></th>
                             </cti:checkRolesAndProperties>
-                            <th style="width: 56px;"></th>
+                            <th class="action-column"></th>
                         </tr>
                     </thead>
                     <tfoot></tfoot>
