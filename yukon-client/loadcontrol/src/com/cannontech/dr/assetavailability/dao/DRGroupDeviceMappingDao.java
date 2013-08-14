@@ -13,7 +13,7 @@ import com.cannontech.common.pao.PaoIdentifier;
 public interface DRGroupDeviceMappingDao {
 
     /**
-     * @return The device ids / inventory ids associated with the specified load groups.
+     * @return The inventory ids / device ids associated with the specified load groups.
      */
     public Map<Integer, Integer> getInventoryAndDeviceIdsForLoadGroups(Collection<Integer> loadGroupIds);
     

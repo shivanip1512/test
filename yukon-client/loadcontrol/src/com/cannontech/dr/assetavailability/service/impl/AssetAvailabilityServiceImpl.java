@@ -188,6 +188,13 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
         return assetAvailabilityMap;
     }
     
+    @Override
+    public Map<Integer, SimpleAssetAvailability> getAssetAvailability(PaoIdentifier paoIdentifier) {
+        Set<Integer> loadGroupIds = drGroupDeviceMappingDao.getLoadGroupIdsForDrGroup(paoIdentifier);
+        Set<Integer> inventoryIds = drGroupDeviceMappingDao.getInventoryAndDeviceIdsForLoadGroups(loadGroupIds).keySet();
+        return getAssetAvailability(inventoryIds);
+    }
+    
     private void updatePaoRuntimeTimesFromDatabase(PaoRelayRuntimes paoRelayRuntimes, Multimap<PaoIdentifier, 
                                                 PointValueQualityHolder> relayAttributeData, int relay) {
         for(Map.Entry<PaoIdentifier, PointValueQualityHolder> entry : relayAttributeData.entries()) {

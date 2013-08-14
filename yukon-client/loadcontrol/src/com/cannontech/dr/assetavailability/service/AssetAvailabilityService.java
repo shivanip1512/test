@@ -27,27 +27,36 @@ public interface AssetAvailabilityService {
     
     /**
      * Gets a simple asset availability summary of all inventory in all load groups in the specified
-     * dr grouping.
-     * @throws DynamicDataAccessException if the connection to dispatch is invalid
+     * DR grouping.
+     * @throws DynamicDataAccessException if the connection to dispatch is invalid.
+     * @throws IllegalArgumentException if the specified paoIdentifier is not a DR grouping.
      */
     public SimpleAssetAvailabilitySummary getAssetAvailabilityFromDrGroup(PaoIdentifier drPaoIdentifier) throws DynamicDataAccessException;
     
     /**
      * Gets a simple asset availability summary of all inventory in all specified load groups.
-     * @throws DynamicDataAccessException if the connection to dispatch is invalid
+     * @throws DynamicDataAccessException if the connection to dispatch is invalid.
      */
     public SimpleAssetAvailabilitySummary getAssetAvailabilityFromLoadGroups(Collection<Integer> loadGroupIds) throws DynamicDataAccessException;
     
     /**
      * @return The AssetAvailability for the specified inventory.
-     * @throws DynamicDataAccessException if the connection to dispatch is invalid
+     * @throws DynamicDataAccessException if the connection to dispatch is invalid.
      */
     public SimpleAssetAvailability getAssetAvailability(int inventoryIds) throws DynamicDataAccessException;
     
     /**
      * @return A map of inventoryId to AssetAvailability for the specified inventory.
-     * @throws DynamicDataAccessException if the connection to dispatch is invalid
+     * @throws DynamicDataAccessException if the connection to dispatch is invalid.
      */
     public Map<Integer, SimpleAssetAvailability> getAssetAvailability(Collection<Integer> inventoryIds) throws DynamicDataAccessException;
+    
+    /**
+     * @return A map of inventoryId to AssetAvailability for all inventory in the specified DR
+     * grouping.
+     * @throws DynamicDataAccessException if the connection to dispatch is invalid.
+     * @throws IllegalArgumentException if the specified paoIdentifier is not a DR grouping.
+     */
+    public Map<Integer, SimpleAssetAvailability> getAssetAvailability(PaoIdentifier paoIdentifier) throws DynamicDataAccessException;
 
 }
