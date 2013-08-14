@@ -194,9 +194,13 @@ RfnImmediateDemandFreezeCommand::RfnImmediateDemandFreezeCommand()
 RfnCommand::RfnResult RfnImmediateDemandFreezeCommand::decode( const CtiTime now,
                                                                const RfnCommand::RfnResponse & response )
 {
-    RfnCommand::RfnResult  result;
+    RfnCommand::RfnResult  result = decodeResponseHeader( now, response );
 
-    // anything??
+    validateCondition( response.size() == 5,
+                       ErrorInvalidData, "Invalid Response length (" + CtiNumStr(response.size()) + ")" );
+
+    validateCondition( response[4] == 0,
+                       ErrorInvalidData, "Invalid TLV count (" + CtiNumStr(response[4]) + ")" );
 
     return result;
 }
@@ -205,10 +209,17 @@ RfnCommand::RfnResult RfnImmediateDemandFreezeCommand::decode( const CtiTime now
 ////
 
 
-RfnGetDemandFreezeInfoCommand::RfnGetDemandFreezeInfoCommand()
-    :   RfnDemandFreezeCommand( Operation_GetDemandFreezeInfo )
+RfnGetDemandFreezeInfoCommand::RfnGetDemandFreezeInfoCommand( ResultHandler & rh )
+    :   RfnDemandFreezeCommand( Operation_GetDemandFreezeInfo ),
+        _rh( rh )
 {
 
+}
+
+
+RfnGetDemandFreezeInfoCommand::DemandFreezeData RfnGetDemandFreezeInfoCommand::getDemandFreezeData() const
+{
+    return _freezeData;
 }
 
 

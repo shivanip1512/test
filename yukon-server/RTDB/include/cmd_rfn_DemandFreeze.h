@@ -111,11 +111,47 @@ class IM_EX_DEVDB RfnGetDemandFreezeInfoCommand : public RfnDemandFreezeCommand
 {
 public:
 
-    RfnGetDemandFreezeInfoCommand();
+    struct DemandFreezeData
+    {
+        enum DemandRates
+        {
+            DemandRates_Base,
+            DemandRates_Rate_A,
+            DemandRates_Rate_B,
+            DemandRates_Rate_C,
+            DemandRates_Rate_D,
+            DemandRates_Rate_E,
+            Rate_Count
+        };
+
+        struct RateInfo
+        {
+            unsigned int    rate;
+            unsigned int    timestamp;          // CtiTime??
+        };
+
+        unsigned char   dayOfFreeze;
+        unsigned int    lastFreezeTime;         // CtiTime??
+        RateInfo        rates[ Rate_Count ];
+    };
+
+    struct ResultHandler
+    {
+        virtual void handleResult( const RfnGetDemandFreezeInfoCommand & cmd ) = 0;
+    };
+
+    RfnGetDemandFreezeInfoCommand( ResultHandler & rh );
 
     virtual RfnResult decode( const CtiTime now,
                               const RfnResponse & response );
 
+    DemandFreezeData getDemandFreezeData() const;
+
+private:
+
+    ResultHandler & _rh;
+
+    DemandFreezeData _freezeData;
 };
 
 

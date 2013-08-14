@@ -21,6 +21,16 @@ BOOST_AUTO_TEST_SUITE( test_cmd_rfn_DemandFreeze )
 const CtiTime execute_time( CtiDate( 29, 7, 2013 ) , 11 );
 
 
+struct test_ResultHandler : RfnGetDemandFreezeInfoCommand::ResultHandler
+{
+    void handleResult(const RfnGetDemandFreezeInfoCommand &cmd)
+    {
+        //  This is temporarily marked BOOST_FAIL - the unit test should eventually exercise this.
+        BOOST_FAIL("Should not reach this code!");
+    }
+};
+
+
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandFreeze_SetFreezeDay )
 {
     RfnDemandFreezeConfigurationCommand command( 10 );
@@ -178,15 +188,24 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandFreeze_ImmediateFreeze )
                                        exp.begin() , exp.end() );
     }
 
-    // decode -- TBD
+    // decode -- success response
+    {
+        const std::vector< unsigned char > response = boost::assign::list_of
+            ( 0x56 )( 0x00 )( 0x00 )( 0x00 )( 0x00 );
 
+        RfnCommand::RfnResult rcv = command.decode( execute_time, response );
 
+        BOOST_REQUIRE_EQUAL( rcv.description, "Status: Success (0x00)"
+                                              "\nAdditional Status: NO ADDITIONAL STATUS (ASC: 0x00, ASCQ: 0x00)" );
+    }
 }
 
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandFreeze_GetFreezeInfo )
 {
-    RfnGetDemandFreezeInfoCommand   command;
+    test_ResultHandler  rh;
+
+    RfnGetDemandFreezeInfoCommand   command( rh );
 
     // execute
     {
