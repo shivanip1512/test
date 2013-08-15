@@ -52,7 +52,7 @@ ostream& operator<<( ostream& out, const test_MctDevice::ReadDescriptor &rd)
 }
 
 // for test_cmd_rfn_*
-std::ostream & operator<<( std::ostream & os, const RfnCommand::CommandException & ex )
+ostream & operator<<( ostream & os, const RfnCommand::CommandException & ex )
 {
     return os << "{(" << ex.error_code << "):" << ex.error_description << "}";
 }

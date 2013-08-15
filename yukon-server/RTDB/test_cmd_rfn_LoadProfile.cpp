@@ -21,7 +21,7 @@ namespace test_tools    {
 }
 
 namespace std   {
-    std::ostream & operator<<( std::ostream & os, const RfnCommand::CommandException & ex );
+    ostream & operator<<( ostream & os, const RfnCommand::CommandException & ex );
 }
 // ---
 
@@ -118,15 +118,13 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_SetConfiguration_constructor_exce
 
     std::vector< RfnCommand::CommandException > actual;
 
-    BOOST_REQUIRE( inputs.size() == expected.size() );
-
-    for ( int i = 0; i < inputs.size(); i++ )
+    for each ( const std::pair< unsigned, unsigned > & input in inputs )
     {
         try
         {
             test_ConfigResultHandler rh;
 
-            RfnVoltageProfileConfigurationCommand  command( rh, inputs[i].first, inputs[i].second );
+            RfnVoltageProfileConfigurationCommand  command( rh, input.first, input.second );
         }
         catch ( const RfnCommand::CommandException & ex )
         {
@@ -159,21 +157,19 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_SetConfiguration_decoding_excepti
         ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response length (5)" ) )
         ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response length (8)" ) );
 
-    BOOST_REQUIRE( responses.size() == expected.size() );
-
     std::vector< RfnCommand::CommandException > actual;
 
     test_ConfigResultHandler rh;
 
     RfnVoltageProfileConfigurationCommand  command( rh, 300, 15 );
 
-    for ( int i = 0; i < responses.size(); i++ )
+    for each ( const RfnCommand::RfnResponse & response in responses )
     {
-        BOOST_CHECK_THROW( command.decode( execute_time, responses[i] ), RfnCommand::CommandException );
+        BOOST_CHECK_THROW( command.decode( execute_time, response ), RfnCommand::CommandException );
 
         try
         {
-            RfnCommand::RfnResult rcv = command.decode( execute_time, responses[i] );
+            RfnCommand::RfnResult rcv = command.decode( execute_time, response );
         }
         catch ( const RfnCommand::CommandException & ex )
         {
@@ -258,21 +254,19 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetConfiguration_decoding_excepti
         ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response length (7)" ) )
         ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response length (9)" ) );
 
-    BOOST_REQUIRE( responses.size() == expected.size() );
-
     std::vector< RfnCommand::CommandException > actual;
 
     test_ConfigResultHandler rh;
 
     RfnVoltageProfileConfigurationCommand  command( rh );
 
-    for ( int i = 0; i < responses.size(); i++ )
+    for each ( const RfnCommand::RfnResponse & response in responses )
     {
-        BOOST_CHECK_THROW( command.decode( execute_time, responses[i] ), RfnCommand::CommandException );
+        BOOST_CHECK_THROW( command.decode( execute_time, response ), RfnCommand::CommandException );
 
         try
         {
-            RfnCommand::RfnResult rcv = command.decode( execute_time, responses[i] );
+            RfnCommand::RfnResult rcv = command.decode( execute_time, response );
         }
         catch ( const RfnCommand::CommandException & ex )
         {
@@ -344,21 +338,19 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_DisableLoadProfileRecording_decod
         ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response length (3)" ) )
         ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response length (5)" ) );
 
-    BOOST_REQUIRE( responses.size() == expected.size() );
-
     std::vector< RfnCommand::CommandException > actual;
 
     test_RecordingResultHandler rh;
 
     RfnLoadProfileRecordingCommand  command( rh, RfnLoadProfileRecordingCommand::DisableRecording );
 
-    for ( int i = 0; i < responses.size(); i++ )
+    for each ( const RfnCommand::RfnResponse & response in responses )
     {
-        BOOST_CHECK_THROW( command.decode( execute_time, responses[i] ), RfnCommand::CommandException );
+        BOOST_CHECK_THROW( command.decode( execute_time, response ), RfnCommand::CommandException );
 
         try
         {
-            RfnCommand::RfnResult rcv = command.decode( execute_time, responses[i] );
+            RfnCommand::RfnResult rcv = command.decode( execute_time, response );
         }
         catch ( const RfnCommand::CommandException & ex )
         {
@@ -430,21 +422,19 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_EnableLoadProfileRecording_decodi
         ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response length (3)" ) )
         ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response length (5)" ) );
 
-    BOOST_REQUIRE( responses.size() == expected.size() );
-
     std::vector< RfnCommand::CommandException > actual;
 
     test_RecordingResultHandler rh;
 
     RfnLoadProfileRecordingCommand  command( rh, RfnLoadProfileRecordingCommand::EnableRecording );
 
-    for ( int i = 0; i < responses.size(); i++ )
+    for each ( const RfnCommand::RfnResponse & response in responses )
     {
-        BOOST_CHECK_THROW( command.decode( execute_time, responses[i] ), RfnCommand::CommandException );
+        BOOST_CHECK_THROW( command.decode( execute_time, response ), RfnCommand::CommandException );
 
         try
         {
-            RfnCommand::RfnResult rcv = command.decode( execute_time, responses[i] );
+            RfnCommand::RfnResult rcv = command.decode( execute_time, response );
         }
         catch ( const RfnCommand::CommandException & ex )
         {
@@ -538,21 +528,19 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfileRecording_decoding_
         ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response length (6)" ) )
         ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response length (8)" ) );
 
-    BOOST_REQUIRE( responses.size() == expected.size() );
-
     std::vector< RfnCommand::CommandException > actual;
 
     test_RecordingResultHandler rh;
 
     RfnLoadProfileRecordingCommand  command( rh );
 
-    for ( int i = 0; i < responses.size(); i++ )
+    for each ( const RfnCommand::RfnResponse & response in responses )
     {
-        BOOST_CHECK_THROW( command.decode( execute_time, responses[i] ), RfnCommand::CommandException );
+        BOOST_CHECK_THROW( command.decode( execute_time, response ), RfnCommand::CommandException );
 
         try
         {
-            RfnCommand::RfnResult rcv = command.decode( execute_time, responses[i] );
+            RfnCommand::RfnResult rcv = command.decode( execute_time, response );
         }
         catch ( const RfnCommand::CommandException & ex )
         {
