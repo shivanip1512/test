@@ -289,8 +289,12 @@ function makeFirstSelectedFilterValueVisible() {
 	  <input type="hidden" name="REFERRER" value="<%= fromURI %>">
 	  <input type="hidden" name="ecID" value="<%=REPORT_BEAN.getEnergyCompanyID() %>">
 	  <input type="hidden" name="ACTION" value="DownloadReport">
-	  <cti:msg key="yukon.web.reportSelection" var="reportSelectionTitle"/>
-      <tags:boxContainer title="${reportSelectionTitle}">
+	  
+      <cti:msg key="yukon.web.reportSelection" var="reportSelectionTitle"/>
+    <div class="titledContainer boxContainer">
+
+        <div class="title-bar"><h3 class="title">${reportSelectionTitle}</h3></div>
+        <div class="content">
             <table style="width:100%;">
               <tr>
 				<td class="columnHeader"><cti:msg key="yukon.web.reports"/></td>
@@ -441,21 +445,27 @@ function makeFirstSelectedFilterValueVisible() {
                 <td colspan="7">&nbsp;</td>
               </tr>
             </table>
-         </tags:boxContainer>
+         </div>
+         </div>
          
 	  <br>	  
 	  
-	  <cti:msg key="yukon.web.options" var="optionsTitle"/>
-      <tags:boxContainer title="${optionsTitle}">
-            <%=REPORT_BEAN.buildOptionsHTML()%>
-      </tags:boxContainer>
+        <cti:msg key="yukon.web.options" var="optionsTitle"/>
+        <div class="titledContainer boxContainer">
+            <div class="title-bar"><h3 class="title">${optionsTitle}</h3></div>
+            <div class="content">
+                <%=REPORT_BEAN.buildOptionsHTML()%>
+            </div>
+        </div>
       
 	  <%if (REPORT_BEAN.hasFilter())
 	  {%>
 		  <br>	  
 		  
 		  <cti:msg key="yukon.web.options" var="filterTitle"/>
-          <tags:boxContainer title="${filterTitle}">
+          <div class="titledContainer boxContainer">
+            <div class="title-bar"><h3 class="title">${filterTitle}</h3></div>
+            <div class="content">
 			<SCRIPT>
 
         function changeFilter(filterBy) {
@@ -850,7 +860,8 @@ function makeFirstSelectedFilterValueVisible() {
         		</td>
         	</tr>
         </table>
-        </tags:boxContainer>
+        </div>
+        </div>
 		<%}%>	  	  	  
       </form>
 </cti:standardPage>
