@@ -1,6 +1,7 @@
 package com.cannontech.web.dr.loadcontrol;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,11 +37,11 @@ public class TableEntryBean implements Comparable<TableEntryBean> {
     }
 
     public static List<TableEntryBean> toBeanMap(ImmutableMap<?, Double> entries) {
-
         List<TableEntryBean> beans = new ArrayList<>();
         for (Entry<?, Double> k : entries.entrySet()) {
             beans.add(new TableEntryBean((Double)k.getKey(), k.getValue()));
         }
+        Collections.sort(beans);
         return beans;
     }
 

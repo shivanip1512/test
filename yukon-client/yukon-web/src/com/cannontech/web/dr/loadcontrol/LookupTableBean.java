@@ -147,7 +147,6 @@ public class LookupTableBean {
     }
 
     public void setEntries(List<TableEntryBean> entries) {
-        Collections.sort(entries);
         this.entries = entries;
     }
 
@@ -171,7 +170,6 @@ public class LookupTableBean {
     }
 
     public void setTimeEntries(List<TimeTableEntryBean> timeEntries) {
-        Collections.sort(timeEntries);
         this.timeEntries = timeEntries;
     }
 }

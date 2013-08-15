@@ -1,6 +1,7 @@
 package com.cannontech.web.dr.loadcontrol;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +42,7 @@ public class TimeTableEntryBean implements Comparable<TimeTableEntryBean>{
         for (Entry<?, Double> k : entries.entrySet()) {
             beans.add(new TimeTableEntryBean((LocalTime)k.getKey(), k.getValue()));
         }
+        Collections.sort(beans);
         return beans;
     }
 
@@ -54,12 +56,9 @@ public class TimeTableEntryBean implements Comparable<TimeTableEntryBean>{
 
     @Override
     public int compareTo(TimeTableEntryBean otherBean) {
-        if (key == null) {
-            if (otherBean.getKey() == null) {
-                return 0;
-            }
-            return -1;
-        }
-        return key.compareTo(otherBean.getKey());
+        return key == otherBean.getKey() ? 0 
+                : key == null ? -1
+                : otherBean.getKey() == null ? 1
+                : key.compareTo(otherBean.getKey());
     }
 }
