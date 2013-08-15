@@ -21,8 +21,8 @@
             var FIND_ZIP_MSG = "<cti:msg key="yukon.web.modules.adminSetup.serviceCompany.findZipCode" javaScriptEscape="true" />";
             
             function removeDesignationCode(event, elem) {
-                event.stop();
-                $(event.target).up(1).remove();
+                event.stopPropagation();
+                jQuery(event.target).parent.get(0).remove();
             }
             
             function addDesignationCode() {
@@ -137,7 +137,7 @@
                 
                 Event.observe('findDesignationCode', 'keydown', preventSubmit);
                 
-                YEvent.observeSelectorClick('a.f-remove', removeDesignationCode);
+                jQuery(document).on('click', 'a.f-remove', removeDesignationCode);
             });
         </script>
 

@@ -77,7 +77,7 @@ jQuery(function() {
             Yukon.ui.unblockPage();
         
             jQuery(".f-block_this").each(function() {
-                Yukon.uiUtils.elementGlass.hide(jQuery(this));
+                Yukon.ui.elementGlass.hide(jQuery(this));
             });
         }
     });
@@ -85,7 +85,7 @@ jQuery(function() {
     jQuery("button.blockElement").click(function(e){
 		var elem = jQuery(e.target).closest(".f-block_this");
 		if(elem) {
-		    Yukon.uiUtils.elementGlass.show(elem);
+		    Yukon.ui.elementGlass.show(elem);
 		}
     });
 });
@@ -383,13 +383,13 @@ $("myCloseButton").observe('click', function(){
 jQuery("button.blockElement").click( function() {
     ...
     var elem = jQuery(this).closest('.f-block_this');
-    Yukon.uiUtils.elementGlass.show(elem);
+    Yukon.ui.elementGlass.show(elem);
     ...
 });
         </pre> <br /> Similarly, we need to tell the library to unblock the element: <pre class="code">
 ...
     var elem = jQuery('.f-block_this');
-    Yukon.uiUtils.elementGlass.hide(elem);
+    Yukon.ui.elementGlass.hide(elem);
 ...
         </pre>
                     </td>

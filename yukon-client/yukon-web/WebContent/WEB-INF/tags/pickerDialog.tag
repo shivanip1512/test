@@ -49,43 +49,50 @@
     // Only create picker if not already created.  This tag gets called more than
     // once if it's used inside a widget and the widget is updated.  Since the user
     // isn't navigating off the page, we want to keep the same picker.
-    if (window.${id} == undefined) {
-        ${id} = new Picker('${okText}', '${cancelText}', '${type}', '${pageScope.destinationFieldName}', '${id}', '${pageScope.extraDestinationFields}', ${containerDivArg});
-
-        <c:if test="${pageScope.multiSelectMode}">
-            ${id}.multiSelectMode = true;
-        </c:if>
-        <c:if test="${pageScope.immediateSelectMode}">
-            ${id}.immediateSelectMode = true;
-        </c:if>
-        <c:if test="${!empty pageScope.endAction}">
-            ${id}.endAction = ${pageScope.endAction};
-        </c:if>
-        <c:if test="${!empty pageScope.cancelAction}">
-            ${id}.cancelAction = ${pageScope.cancelAction};
-        </c:if>
-        <c:if test="${!empty pageScope.destinationFieldId}">
-            ${id}.destinationFieldId = '${pageScope.destinationFieldId}';
-        </c:if>
-        <c:if test="${!empty pageScope.memoryGroup}">
-            ${id}.memoryGroup = '${pageScope.memoryGroup}';
-        </c:if>
-        <c:if test="${!empty pageScope.extraArgs}">
-            ${id}.extraArgs = '<spring:escapeBody javaScriptEscape="true">${pageScope.extraArgs}</spring:escapeBody>';
-        </c:if>
-        <c:if test="${!empty pageScope.selectionProperty && pageScope.linkType == 'selection'}">
-            ${id}.selectionProperty = '${pageScope.selectionProperty}';
-        </c:if>
-        <c:if test="${!empty pageScope.allowEmptySelection}">
-            ${id}.allowEmptySelection = ${pageScope.allowEmptySelection};
-        </c:if>
-        <c:if test="${pageScope.linkType == 'selection'}">
-            ${id}.selectedAndMsg = '<cti:msg2 javaScriptEscape="true" key="yukon.web.picker.selectedAnd"/>';
-            ${id}.selectedMoreMsg = '<cti:msg2 javaScriptEscape="true" key="yukon.web.picker.selectedMore"/>';
-        </c:if>
-        <c:if test="${pageScope.useInitialIdsIfEmpty}">
-            ${id}.useInitialIdsIfEmpty = true;
-        </c:if>
+    if (typeof window.${id} === 'undefined') {
+        try {
+            try {
+                ${id} = new Picker('${okText}', '${cancelText}', '${type}', '${pageScope.destinationFieldName}', '${id}', '${pageScope.extraDestinationFields}', ${containerDivArg});
+            } catch(pickerException) {
+                console.log('pickerDialog.tag: new Picker failed: ' + pickerException);
+            }
+            <c:if test="${pageScope.multiSelectMode}">
+                ${id}.multiSelectMode = true;
+            </c:if>
+            <c:if test="${pageScope.immediateSelectMode}">
+                ${id}.immediateSelectMode = true;
+            </c:if>
+            <c:if test="${!empty pageScope.endAction}">
+                ${id}.endAction = ${pageScope.endAction};
+            </c:if>
+            <c:if test="${!empty pageScope.cancelAction}">
+                ${id}.cancelAction = ${pageScope.cancelAction};
+            </c:if>
+            <c:if test="${!empty pageScope.destinationFieldId}">
+                ${id}.destinationFieldId = '${pageScope.destinationFieldId}';
+            </c:if>
+            <c:if test="${!empty pageScope.memoryGroup}">
+                ${id}.memoryGroup = '${pageScope.memoryGroup}';
+            </c:if>
+            <c:if test="${!empty pageScope.extraArgs}">
+                ${id}.extraArgs = '<spring:escapeBody javaScriptEscape="true">${pageScope.extraArgs}</spring:escapeBody>';
+            </c:if>
+            <c:if test="${!empty pageScope.selectionProperty && pageScope.linkType == 'selection'}">
+                ${id}.selectionProperty = '${pageScope.selectionProperty}';
+            </c:if>
+            <c:if test="${!empty pageScope.allowEmptySelection}">
+                ${id}.allowEmptySelection = ${pageScope.allowEmptySelection};
+            </c:if>
+            <c:if test="${pageScope.linkType == 'selection'}">
+                ${id}.selectedAndMsg = '<cti:msg2 javaScriptEscape="true" key="yukon.web.picker.selectedAnd"/>';
+                ${id}.selectedMoreMsg = '<cti:msg2 javaScriptEscape="true" key="yukon.web.picker.selectedMore"/>';
+            </c:if>
+            <c:if test="${pageScope.useInitialIdsIfEmpty}">
+                ${id}.useInitialIdsIfEmpty = true;
+            </c:if>
+        } catch (pickerEx) {
+            alert("Could not create Picker: " + pickerEx);
+        }
     }
 </script>
 
@@ -159,7 +166,9 @@
 </c:if>
 
 <script type="text/javascript">
-callAfterMainWindowLoad(${id}.init.bind(${id}, ${viewMode}));
+try {
+    callAfterMainWindowLoad(${id}.init.bind(${id}, ${viewMode}));
+} catch (callAfterLoadex) { console.log("exception: " + callAfterLoadex); }
 
 if (${!empty excludeIds}) {
     ${id}.excludeIds = ${cti:jsonString(excludeIds)};

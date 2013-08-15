@@ -213,7 +213,7 @@ function saveButton(){
     }
     else{
 //        document.billingFormatForm.submit();
-//        MeteringBilling.do_save_format();
+//        Yukon.MeteringBilling.do_save_format();
         form.submit();
     }
     return false;

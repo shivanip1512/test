@@ -15,7 +15,7 @@
     <input type="button" 
                value="${cancelButtonText}"
                id="cancelButton${ccid}" 
-               onclick="cancelCommands('${resultId}','${cancelUrl}','${ccid}','${cancelButtonText}','${finishedText}');">
+               onclick="Yukon.ui.aux.cancelCommands('${resultId}','${cancelUrl}','${ccid}','${cancelButtonText}','${finishedText}');">
     <img id="waitImg${ccid}" src="${waitImgUrl}" style="display:none;">
 </span>
            

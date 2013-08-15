@@ -10,7 +10,6 @@
 <%@ attribute name="disabled" type="java.lang.Boolean" description="Default: false. Determines if the input is disabled." %>
 <%@ attribute name="cssClass" type="java.lang.String" description="Class added to the input of the widget" %>
 <%@ attribute name="cssDialogClass" type="java.lang.String" description="Class added to the outer dialog div" %>
-<%@ attribute name="forceIncludes" type="java.lang.Boolean" description="Force includes of the JS assets, needed when ajaxed in." %>
 
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 
@@ -21,8 +20,7 @@
 			 disabled="${pageScope.disabled}"
 			 cssClass="${pageScope.cssClass} f-dateStart"
 			 cssDialogClass="${pageScope.cssDialogClass}"
-			 maxDate="${pageScope.endValue}"
-			 forceIncludes="${pageScope.forceIncludes}" />
+			 maxDate="${pageScope.endValue}"/>
 	<jsp:doBody/>
 <!-- Only force includes on the first input -->
 	<dt:date path="${pageScope.endPath}"

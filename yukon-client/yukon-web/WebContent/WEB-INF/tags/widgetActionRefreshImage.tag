@@ -34,7 +34,8 @@
 		if (confirmText != null && confirmText.strip() != '') {
 			var confirmed = confirm(confirmText);
 		}
-
+		// generate mouseleave event so tipsy tooltip lib knows to close tooltip
+	    jQuery('#' + 'linkImg_' + '${uniqueId}').trigger('mouseleave');
 		if (confirmed) {
 			${widgetParameters.jsWidget}.doActionRefresh({
 			    command:     '${method}', 

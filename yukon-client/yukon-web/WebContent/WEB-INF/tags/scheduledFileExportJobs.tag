@@ -51,7 +51,7 @@
 						<cti:url var="finalDeleteUrl" value="${deleteUrl}">
 							<cti:param name="jobId" value="${job.id}"/>
 						</cti:url>
-						<c:set var="ajaxDeleteUrl" value="javascript:MeteringBilling.delete_schedule_job(${job.id});" />
+						<c:set var="ajaxDeleteUrl" value="javascript:Yukon.MeteringBilling.delete_schedule_job(${job.id});" />
 						<cti:button id="deleteItem_${job.id}" nameKey="delete" renderMode="image" href='${ajaxEnableUrls ? ajaxDeleteUrl : finalDeleteUrl}' icon="icon-cross"/>
                         <dialog:confirm on="#deleteItem_${job.id}" nameKey="confirmDelete" argument="${job.name}"/>
 					</td>

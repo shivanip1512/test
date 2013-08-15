@@ -8,7 +8,7 @@
 <cti:includeScript link="/JavaScript/yukon/ui/fieldHelper.js"/>
 
 <script type="text/javascript">
-YEvent.observeSelectorClick('.bulkInject', function(event) {
+jQuery(document).on('click', '.bulkInject', function(event) {
     combineDateAndTimeFields('start');
     combineDateAndTimeFields('stop');
     $('populateDbForm').submit();

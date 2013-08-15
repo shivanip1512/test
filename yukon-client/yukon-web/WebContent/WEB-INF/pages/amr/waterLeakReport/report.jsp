@@ -31,12 +31,12 @@
 	
 	<dialog:inline id="leakFilterDialog" okEvent="none" nameKey="leakFilterDialog" on=".f-open_filter_dialog"
 		options="{width: 550, 'buttons': [{text: '${cancelButton}', click: function() { jQuery(this).dialog('close'); }, title: '${cancelButtonTitle}', 'class': 'leakFilterCancelButton' },
-                                          {text: '${resetButton}', click: function() { WaterLeakReport.reset_filter_submit(); }, title: '${resetButtonTitle}' },
-                                          {text: '${filterButton}', click: function() { WaterLeakReport.filter_submit(); }, title: '${filterButtonTitle}', 'class': 'leakFilterSubmitButton primary action'}]}">
+                                          {text: '${resetButton}', click: function() { Yukon.WaterLeakReport.reset_filter_submit(); }, title: '${resetButtonTitle}' },
+                                          {text: '${filterButton}', click: function() { Yukon.WaterLeakReport.filter_submit(); }, title: '${filterButtonTitle}', 'class': 'leakFilterSubmitButton primary action'}]}">
 		<form:form id="filterForm" action="report" method="get" commandName="backingBean">
 			<tags:sortFields backingBean="${backingBean}"/>
 			<tags:selectDevicesTabbed deviceCollection="${backingBean.deviceCollection}" tabClass="waterLeakFilterTab" individualPickerType="waterMeterPicker"
-				groupSelectedCallback="WaterLeakReport.filter_group_selected_callback();" individualSelectedCallback="WaterLeakReport.filter_individual_selected_callback"
+				groupSelectedCallback="Yukon.WaterLeakReport.filter_group_selected_callback();" individualSelectedCallback="Yukon.WaterLeakReport.filter_individual_selected_callback"
 				uniqueId="filterSelector"/>
 			<div class="under_tabs">
 				<tags:nameValueContainer2>
@@ -73,12 +73,12 @@
 		<c:set var="popupTitleArgs" value="\"${fn:escapeXml(fileExportData.scheduleName)}\""/>
 	</c:if>
 	<dialog:inline id="leakScheduleDialog" okEvent="none" nameKey="leakScheduleDialog" arguments="${popupTitleArgs}" on=".f-open_schedule_dialog"
-		options="{width: 650, 'buttons': [{text: '${empty jobId ? scheduleButton : updateButton}', click: function() {WaterLeakReport.schedule_submit();}, title: '${empty jobId ? scheduleButtonTitle : updateButtonTitle}', 'class': 'leakScheduleSubmitButton'},
+		options="{width: 650, 'buttons': [{text: '${empty jobId ? scheduleButton : updateButton}', click: function() {Yukon.WaterLeakReport.schedule_submit();}, title: '${empty jobId ? scheduleButtonTitle : updateButtonTitle}', 'class': 'leakScheduleSubmitButton'},
 										  {text: '${cancelButton}', click: function() {jQuery(this).dialog('close');}, title: '${cancelButtonTitle}', 'class': 'leakScheduleCancelButton'}]}">
 		
 		<form:form id="scheduleForm" action="schedule" method="get" commandName="fileExportData">
 			<tags:selectDevicesTabbed deviceCollection="${backingBean.deviceCollection}" tabClass="waterLeakFilterTab" individualPickerType="waterMeterPicker"
-				groupSelectedCallback="WaterLeakReport.schedule_group_selected_callback();" individualSelectedCallback="WaterLeakReport.schedule_individual_selected_callback"
+				groupSelectedCallback="Yukon.WaterLeakReport.schedule_group_selected_callback();" individualSelectedCallback="Yukon.WaterLeakReport.schedule_individual_selected_callback"
 				uniqueId="scheduleSelector"/>
 			<div class="under_tabs">
 				<tags:nameValueContainer2>

@@ -1,3 +1,5 @@
+<%@ tag body-content="empty" trimDirectiveWhitespaces="true" %>
+
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
@@ -6,19 +8,20 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<%@ tag body-content="empty" %>
-<%@ attribute name="id" required="false" type="java.lang.String"%>
-<%@ attribute name="path" required="true" type="java.lang.String"%>
-<%@ attribute name="items" required="true" type="java.lang.Object"%>
-<%@ attribute name="itemValue" required="false" type="java.lang.String"%>
-<%@ attribute name="itemLabel" required="false" type="java.lang.String"%>
-<%@ attribute name="groupItems" required="false" type="java.lang.Boolean"%>
-<%@ attribute name="defaultItemValue" required="false" type="java.lang.String"%>
-<%@ attribute name="defaultItemLabel" required="false" type="java.lang.String"%>
-<%@ attribute name="emptyValueKey" required="false" type="java.lang.String"%>
-<%@ attribute name="onchange" required="false" type="java.lang.String"%>
-<%@ attribute name="disabled" required="false" type="java.lang.String"%>
-<%@ attribute name="inputClass" required="false" type="java.lang.String"%>
+<%@ attribute name="defaultItemValue" %>
+<%@ attribute name="defaultItemLabel" %>
+<%@ attribute name="disabled" %>
+<%@ attribute name="emptyValueKey" %>
+<%@ attribute name="groupItems" type="java.lang.Boolean" %>
+<%@ attribute name="id" %>
+<%@ attribute name="inputClass" %>
+<%@ attribute name="itemLabel" %>
+<%@ attribute name="items" required="true" type="java.lang.Object" %>
+<%@ attribute name="itemValue" %>
+<%@ attribute name="onchange" %>
+<%@ attribute name="path" required="true" %>
+
+<cti:default var="disabled" value="false"/>
 
 <%-- VIEW MODE --%>
 <cti:displayForPageEditModes modes="VIEW">

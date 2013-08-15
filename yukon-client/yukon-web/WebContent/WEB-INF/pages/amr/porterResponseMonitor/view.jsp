@@ -43,7 +43,7 @@
             });
         });
 
-        YEvent.observeSelectorClick('#supportedDevicesHelpIcon', function(event) {
+        jQuery(document).on('click', '#supportedDevicesHelpIcon', function(event) {
             $('supportedDevicesHelpPopup').toggle();
         });
     </script>

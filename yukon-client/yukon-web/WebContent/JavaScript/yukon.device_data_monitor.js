@@ -1,4 +1,6 @@
-if(typeof(DeviceDataMonitor) === 'undefined'){
+Yukon.namespace('Yukon.DeviceDataMonitor');
+
+Yukon.DeviceDataMonitor = (function () {
     /**
      * Singleton that manages the javascript in the Device Data Monitor
      * 
@@ -6,121 +8,89 @@ if(typeof(DeviceDataMonitor) === 'undefined'){
      * @author <a href="mailto:alex.delegard@cooperindustries.com">Alex Delegard</a>
      * @requires jQuery 1.6+
      */
-    DeviceDataMonitor = {
-        _initialized: false,
-        _waiting_to_finish_N_before_doing_counts: 0,
-        
-        _DEFAULT_NO_STATE_VALUE:            "null",
-        _DEFAULT_NO_STATE_GROUP_VALUE:      "null",
-        
-        _deviceViolationEnum_point:         "POINT",
-        
-        _monitor_update_btn:                ".f-update_monitor",
-        _monitor_btns_to_disable:           ".pageActionArea button, .ui-dialog-buttonset button",
-        _monitor_delete_form:               ".f-delete_form",
-        _monitor_delete_btn:                "button.f-delete_btn",
-        _undo_row_links:                    ".undoRemoveBtn, .removeBtn",
-        _supported_count_details:           ".f-details",
-        _device_group_count:                ".f-device_group_count",
-        _supported_count:                   ".f-supported_counts",
-        _supported_count_details_list:      ".f-missing_list",
-        _monitor_toggle_form:               ".f-toggle_enabled_form",
-        _monitor_toggle_btn:                ".f-toggle_enabled",
-        _processors_table_selector:         ".f-processors_table",
-        _processors_table_body:             ".f-processors_table tbody",
-        _processors_table_new_row_model:    ".f-processors_table .f-new_row_model",
-        _monitor_form:                      "#monitor",
-        _name_selector:                     "#name",
-        _attribute_selector:	            ".f-attribute",
-        _attribute_and_state_group:         ".f-attribute, .f-state_group",
-        _device_group_selector:             "#groupName",
-        _state_group_selector:              ".f-state_group",
-        _processor_add_btn_selector:        ".f-add_processor",
-        _violations_loading_selector:       ".f-violations_loading",
-        _violations_links_selector:         ".f-violation_report_links",
-        _new_row_model_class:               "f-new_row_model",
-        _supported_details_trigger_class:   "f-details_trigger",
-        _processor_class:                   "processor",
-        _processor_selector:                ".processor",
-        _add_point_selector:                ".add",
-        _refresh_violations_selector:       "#refreshViolationsAfterAddingPoint",
+    var _initialized = false,
+        _waiting_to_finish_N_before_doing_counts = 0,
 
-        _missing_field_selector:            ".f-showProblem",
-        _missing_field_help_selector:       ".f-showViolationHelp",
+        _DEFAULT_NO_STATE_VALUE =            "null",
+        _DEFAULT_NO_STATE_GROUP_VALUE =      "null",
 
-        _btn_create_update:                 ".pageActionArea button.f-update_monitor",
+        _deviceViolationEnum_point =         "POINT",
+
+        _monitor_update_btn =                ".f-update_monitor",
+        _monitor_btns_to_disable =           ".pageActionArea button, .ui-dialog-buttonset button",
+        _monitor_delete_form =               ".f-delete_form",
+        _monitor_delete_btn =                "button.f-delete_btn",
+        _undo_row_links =                    ".undoRemoveBtn, .removeBtn",
+        _supported_count_details =           ".f-details",
+        _device_group_count =                ".f-device_group_count",
+        _supported_count =                   ".f-supported_counts",
+        _supported_count_details_list =      ".f-missing_list",
+        _monitor_toggle_form =               ".f-toggle_enabled_form",
+        _monitor_toggle_btn =                ".f-toggle_enabled",
+        _processors_table_selector =         ".f-processors_table",
+        _processors_table_body =             ".f-processors_table tbody",
+        _processors_table_new_row_model =    ".f-processors_table .f-new_row_model",
+        _monitor_form =                      "#monitor",
+        _name_selector =                     "#name",
+        _attribute_selector =                ".f-attribute",
+        _attribute_and_state_group =         ".f-attribute, .f-state_group",
+        _device_group_selector =             "#groupName",
+        _state_group_selector =              ".f-state_group",
+        _processor_add_btn_selector =        ".f-add_processor",
+        _violations_loading_selector =       ".f-violations_loading",
+        _violations_links_selector =         ".f-violation_report_links",
+        _new_row_model_class =               "f-new_row_model",
+        _supported_details_trigger_class =   "f-details_trigger",
+        _processor_class =                   "processor",
+        _processor_selector =                ".processor",
+        _add_point_selector =                ".add",
+        _refresh_violations_selector =       "#refreshViolationsAfterAddingPoint",
+
+        _missing_field_selector =            ".f-showProblem",
+        _missing_field_help_selector =       ".f-showViolationHelp",
+
+        _btn_create_update =                 ".pageActionArea button.f-update_monitor",
 
         // supported count "missing" text
-        _missing_or_no_group_text:       ".f-missing_or_no_stategroup_text",
-        _are_missing_points_text:        ".f-are_missing_points_text",
-        _view_details_text:              ".f-view_details_text",
-        _add_points_text:                ".f-add_points_text",
+        _missing_or_no_group_text =       ".f-missing_or_no_stategroup_text",
+        _are_missing_points_text =        ".f-are_missing_points_text",
+        _view_details_text =              ".f-view_details_text",
+        _add_points_text =                ".f-add_points_text",
 
         // "are you sure" update dialog
-        _update_dialog_ids:              "#update_loading_dialog, #update_missing_dialog",
-        _update_or_create_event:         "e_ddm_update_or_create",
-        _count_status:                   "data-count-status",
-        _count_status_loading:           "loading",
-        _count_status_missing:           "missing",
-        _count_status_none_missing:      "none_missing",
-        
+        _update_dialog_ids =              "#update_loading_dialog, #update_missing_dialog",
+        _update_or_create_event =         "e_ddm_update_or_create",
+        _count_status =                   "data-count-status",
+        _count_status_loading =           "loading",
+        _count_status_missing =           "missing",
+        _count_status_none_missing =      "none_missing",
+
         // ajax urls
-        _url_device_group_count:             "getDeviceGroupCount",
-        _url_supported_counts_by_id:         "getSupportedCountsById",
-        _url_supported_counts_by_monitor:    "getSupportedCountsByMonitor",
-        _url_state_groups:                   "getStateGroupsForAttribute",
-        _url_states:                         "getStatesForGroup",
-        _url_to_display_devices_in_violation:"getDeviceListInViolation",
-        _url_to_add_points_to_display_devices:"forwardToAddPoints",
+        _url_device_group_count =             "getDeviceGroupCount",
+        _url_supported_counts_by_id =         "getSupportedCountsById",
+        _url_supported_counts_by_monitor =    "getSupportedCountsByMonitor",
+        _url_state_groups =                   "getStateGroupsForAttribute",
+        _url_states =                         "getStatesForGroup",
+        _url_to_display_devices_in_violation= "getDeviceListInViolation",
+        _url_to_add_points_to_display_devices="forwardToAddPoints",
 
-        init: function(){
-            if(this._initialized) return;
+        _supported_counts_xhr =                null,
 
-            jQuery(this._monitor_form).on("change", this._device_group_selector, this._update_state_groups);
-            jQuery(this._monitor_form).on("click", this._missing_field_selector, this._display_violation_device_list);
-            jQuery(document).on("click", this._missing_field_help_selector, this._display_local_help);
-            jQuery(document).on("click", '.f-showTooManyDevicesForPointHelp', this._display_local_help);
-            jQuery(this._monitor_form).on("click", this._add_point_selector, this._display_violation_refresh);
-            jQuery(this._monitor_form).on("click", this._refresh_violations_selector, this._do_violation_refresh);
-
-            jQuery(this._processors_table_selector).on("change", this._attribute_selector, this._attribute_changed);
-            jQuery(this._processors_table_selector).on("change", this._state_group_selector, this._state_group_changed);
-            jQuery(this._processor_add_btn_selector).on("click", this._processor_add);
-            jQuery(this._monitor_update_btn).on("click", this._show_update_dialog);
-            jQuery(this._monitor_toggle_btn).on("click", this._monitor_toggle_enabled);
-            jQuery(document).on("yukonDialogConfirmOk", this._monitor_delete);
-            jQuery(document).on(this._update_or_create_event, this._monitor_update_or_create);
-            jQuery(document).on("click", "." + this._supported_details_trigger_class, this._supported_details_toggle);
-            jQuery(document).on("click", this._undo_row_links, this._get_supported_counts);
-
-            this._get_supported_counts({initial_load: true});
-
-            if (jQuery(this._violations_loading_selector).length > 0) {
-                this._get_violations_count();
-            }
-
-            // add our help icons next to the two column titles (Settings and Processors)
-            jQuery('.f-settings_section .title-bar').append('<i class="icon icon-help f-open_settings_help"></i>');
-            jQuery('.f-processors_section .title-bar').append('<i class="icon icon-help f-open_processors_help"></i>');
-
-            this._initialized = true;
-        },
-
-        _get_violations_count: function() {
+        _get_violations_count = function () {
             jQuery.ajax({
                 url: 'getViolationsCount',
                 data: {'monitorId': jQuery('#monitorId').val()},
                 dataType: 'json',
-                success: function(data) {
-                    clearInterval(DeviceDataMonitor._violations_interval_id);
+                success: function (data) {
+                    clearInterval(_violations_interval_id);
                     if (data.status === 'working') {
-                        DeviceDataMonitor._violations_interval_id = setInterval(DeviceDataMonitor._get_violations_count, 3000);
+                        _violations_interval_id = setInterval(_get_violations_count, 3000);
                     } else {
-                        var violations_container = jQuery(DeviceDataMonitor._violations_loading_selector).closest('span');
+                        var violations_container = jQuery(_violations_loading_selector).closest('span');
                         violations_container.html(data.count);
                         
                         if (data.count === 0) return;
-                        var report_links = jQuery(DeviceDataMonitor._violations_links_selector).clone();
+                        var report_links = jQuery(_violations_links_selector).clone();
                         report_links.removeClass("dn");
                         violations_container.append(report_links);
                         return;
@@ -129,63 +99,28 @@ if(typeof(DeviceDataMonitor) === 'undefined'){
             });
         },
 
-        _show_update_dialog: function() {
-            var count_status = jQuery(DeviceDataMonitor._supported_count).attr(DeviceDataMonitor._count_status);
-            jQuery(DeviceDataMonitor._update_dialog_ids).find(".userMessage").remove();
-            if (count_status === DeviceDataMonitor._count_status_loading) {
+        _show_update_dialog = function () {
+            var count_status = jQuery(_supported_count).attr(_count_status);
+            jQuery(_update_dialog_ids).find(".userMessage").remove();
+            if (count_status === _count_status_loading) {
                 open_update_loading_dialog();
-            } else if (count_status === DeviceDataMonitor._count_status_missing) {
+            } else if (count_status === _count_status_missing) {
                 open_update_missing_dialog();
-            } else if (count_status === DeviceDataMonitor._count_status_none_missing) {
+            } else if (count_status === _count_status_none_missing) {
                 // sweet, let's just update this thing
-                DeviceDataMonitor._monitor_update_or_create();
+                _monitor_update_or_create();
             }
         },
 
-        _supported_details_toggle: function(e) {
+        _supported_details_toggle = function (e) {
             var opts = {width: 500, height: "auto"};
-            jQuery(DeviceDataMonitor._supported_count_details).dialog(opts);
+            jQuery(_supported_count_details).dialog(opts);
         },
 
-        _device_group_changed: function() {
-            DeviceDataMonitor._waiting_to_finish_N_before_doing_counts = 0;
-            // show the loading element and hide the count
-            jQuery(DeviceDataMonitor._device_group_count).prev().show();
-            jQuery(DeviceDataMonitor._device_group_count).hide();
-            var groupName = jQuery('#groupName').val();
-
-            // check to see if we have a pending request that we need to cancel
-            if (DeviceDataMonitor._group_count_xhr && DeviceDataMonitor._group_count_xhr !== 'undefined') {
-                DeviceDataMonitor._group_count_xhr.abort();
-            }
-            DeviceDataMonitor._group_count_xhr = jQuery.ajax({
-                url: DeviceDataMonitor._url_device_group_count,
-                data: {'groupName': groupName},
-                success: function(data) {
-                    jQuery(DeviceDataMonitor._device_group_count).text(data.count);
-                    jQuery(DeviceDataMonitor._device_group_count).prev().hide();
-                    jQuery(DeviceDataMonitor._device_group_count).show();
-                    if( data.count > 0 )
-                    	jQuery('#monitor .f-add_processor').removeAttr("disabled");
-                    else
-                    	jQuery('#monitor .f-add_processor').attr("disabled", "disabled");
-                }
-            });
-            
-            var procs = jQuery('tr.processor .f-attribute');
-            if(procs.length == 0)                       // if no processors:
-                DeviceDataMonitor._get_supported_counts();
-            else {										// else: refresh ALL state groups
-                DeviceDataMonitor._waiting_to_finish_N_before_doing_counts = procs.length;
-                for( var pp=0; pp < procs.length; pp++)
-                    procs[pp].trigger('change');
-            }
-        },
-        
-        _get_supported_counts: function(params) {
-            if(--DeviceDataMonitor._waiting_to_finish_N_before_doing_counts > 0)
+        _get_supported_counts = function (params) {
+            if(--_waiting_to_finish_N_before_doing_counts > 0)
                 return;
-            DeviceDataMonitor._hide_counts_and_show_loading();
+            _hide_counts_and_show_loading();
 
             if (typeof params === 'undefined' || typeof params.initial_load === 'undefined' || !params.initial_load) {
                 jQuery('.f-supported_devices_count').closest('td').flashColor({
@@ -194,53 +129,53 @@ if(typeof(DeviceDataMonitor) === 'undefined'){
                 });
             }
 
-            jQuery(DeviceDataMonitor._supported_count).attr(DeviceDataMonitor._count_status, DeviceDataMonitor._count_status_loading);
+            jQuery(_supported_count).attr(_count_status, _count_status_loading);
 
             // check to see if we have a pending request that we need to cancel
-            if (DeviceDataMonitor._supported_counts_xhr && DeviceDataMonitor._supported_counts_xhr !== 'undefined') {
-                DeviceDataMonitor._supported_counts_xhr.abort();
+            if (_supported_counts_xhr && _supported_counts_xhr !== 'undefined') {
+                _supported_counts_xhr.abort();
             }
 
             var data;
             var url;
             var doValidate = false;
-            if (jQuery(DeviceDataMonitor._monitor_form).length === 0) {
+            if (jQuery(_monitor_form).length === 0) {
                 // view.jsp
-                url = DeviceDataMonitor._url_supported_counts_by_id;
+                url = _url_supported_counts_by_id;
                 data = {'monitorId': jQuery('#monitorId').val()};
             } else {
                 // edit.jsp
-                url = DeviceDataMonitor._url_supported_counts_by_monitor;
-                data = jQuery(DeviceDataMonitor._monitor_form).serialize();
+                url = _url_supported_counts_by_monitor;
+                data = jQuery(_monitor_form).serialize();
                 doValidate = true;
             }
-            DeviceDataMonitor._supported_counts_xhr = jQuery.ajax({
+            _supported_counts_xhr = jQuery.ajax({
                 url: url,
                 data: data,
-                success: function(data) {
-                    DeviceDataMonitor._get_supported_counts_success(data, '.f-supported_devices_count');
+                success: function (data) {
+                    _get_supported_counts_success(data, '.f-supported_devices_count');
                     if(doValidate)
-                    	DeviceDataMonitor._validate_processors();
+                    	_validate_processors();
                 }})
             ;
         },
 
-        _str_equal: function( str1, str2 ) {
+        _str_equal = function ( str1, str2 ) {
             if( str1 == undefined && str2 == undefined)		return true;
             if( str1 == undefined || str2 == undefined)		return false;
             return str1.valueOf() == str2.valueOf();
         },
-        _check_row_type_is_point: function(itemType) {
-            return DeviceDataMonitor._str_equal(itemType,DeviceDataMonitor._deviceViolationEnum_point);
+        _check_row_type_is_point = function (itemType) {
+            return _str_equal(itemType,_deviceViolationEnum_point);
         },
 
-        _get_supported_counts_success: function(data, counts_selector) {
+        _get_supported_counts_success = function (data, counts_selector) {
             // clear out our data
-            var countSel = counts_selector + ' ' + DeviceDataMonitor._supported_count;
+            var countSel = counts_selector + ' ' + _supported_count;
             jQuery(countSel).empty().show();
             jQuery(counts_selector + ' '
-                    + DeviceDataMonitor._supported_count_details + ' '
-                    + DeviceDataMonitor._supported_count_details_list).empty();
+                    + _supported_count_details + ' '
+                    + _supported_count_details_list).empty();
             jQuery('.f-loading').hide();
 
             var addStyle = data.totalMissingCount === 0 ? '': 'border-bottom: 1px dotted #ccc;';
@@ -250,12 +185,12 @@ if(typeof(DeviceDataMonitor) === 'undefined'){
                     +"<div class='dn' id='"+ helpDivId +"'>"+ data.totalSupportedCountHelp +"</div></div>" );
 
             if (data.totalMissingCount === 0) {
-                jQuery(DeviceDataMonitor._supported_count).attr(DeviceDataMonitor._count_status, DeviceDataMonitor._count_status_none_missing);
-                DeviceDataMonitor._hide_loading_and_show_counts();
+                jQuery(_supported_count).attr(_count_status, _count_status_none_missing);
+                _hide_loading_and_show_counts();
                 return;
             }
 
-            var ctrl_refresh = jQuery(DeviceDataMonitor._refresh_violations_selector);
+            var ctrl_refresh = jQuery(_refresh_violations_selector);
             var refresh_key = null;
             if(ctrl_refresh.length > 0) {
                 var add_key = ctrl_refresh.attr('data-add-key');
@@ -287,12 +222,12 @@ if(typeof(DeviceDataMonitor) === 'undefined'){
                     var ctrl_attr   = jQuery('[name="processors['+ rowId +'].attribute"]');
                     var attr_id     = ctrl_attr.find(':selected').val();
                     var row         = ctrl_attr.closest('tr');
-                    var sg_id       = DeviceDataMonitor._get_state_group_value(row);
+                    var sg_id       = _get_state_group_value(row);
 
                     var url_params    = 'violationType='+ encodeURIComponent(itemType) +'&groupName='+  encodeURIComponent(jQuery('#groupName').val())
                                     +'&attribute='+ encodeURIComponent(attr_id)  +'&stateGroup='+ encodeURIComponent(sg_id);
 
-                    var the_list_url = DeviceDataMonitor._url_to_display_devices_in_violation +'?'+ url_params;
+                    var the_list_url = _url_to_display_devices_in_violation +'?'+ url_params;
                     var trId        = "violationRow"+ itemType + rowId;
                     var output      = "<tr style='"+ style +"padding: 3px 0;' id='"+ trId +"'>";
                     var popupListId = "violationListPopup"+ itemType + rowId;
@@ -300,7 +235,7 @@ if(typeof(DeviceDataMonitor) === 'undefined'){
                     var countText   = ""+ counts;
                     var postHref    = '';
                     // If the device list is too large, show a warning instead of inaccurate numbers:
-                    if(usedLimitQry && DeviceDataMonitor._str_equal(""+ usedLimitQry, "true")) {
+                    if(usedLimitQry && _str_equal(""+ usedLimitQry, "true")) {
                         countText = '';
                         var pt_help_title = jQuery("#pointUnknownNumberHelp").attr('target-title');
                         postHref = '<a class="f-showTooManyDevicesForPointHelp" href="javascript:void(0);" target-id="pointUnknownNumberHelp" target-title="'+ pt_help_title +'"><i class="icon icon-warning">&nbsp;</i></span>';
@@ -310,11 +245,11 @@ if(typeof(DeviceDataMonitor) === 'undefined'){
                         + countText + "</a><span class='fl f-loading dn'><i class='icon icon-spinner'></i><span class='label'>"+ countText +"</span></span>"
                         + postHref +"<div class='f-problems_container problem_device_list dn' id='"+ popupListId +"'/></td>";
                     output += "<td>"+ missingText +"</td><td>"+ itemName +"</td>\n";
-                    if(DeviceDataMonitor._check_row_type_is_point(itemType)) {
-                        var add_points_url = DeviceDataMonitor._url_to_add_points_to_display_devices +'?'+ url_params;
+                    if(_check_row_type_is_point(itemType)) {
+                        var add_points_url = _url_to_add_points_to_display_devices +'?'+ url_params;
                         output += "<td class='fr' style='white-space:nowrap;padding-left:0.5em;'><a href='"
                             + add_points_url +"' style='margin-top: 2px;' target='_blank' data-add-key='"+ encodeURIComponent(attr_id) +"'><i class='icon icon-add'></i><span class='label'>"+ addPointsTxt +"</span></a></td>";
-                        if( refresh_key != null && DeviceDataMonitor._str_equal(attr_id, refresh_key))
+                        if( refresh_key != null && _str_equal(attr_id, refresh_key))
                             same_point_violation_exists = true;
                     } else
                         output += "<td>&nbsp;</td>\n";
@@ -330,28 +265,28 @@ if(typeof(DeviceDataMonitor) === 'undefined'){
                 ctrl_refresh.hide();
             }
 
-            jQuery(DeviceDataMonitor._supported_count).attr(DeviceDataMonitor._count_status, DeviceDataMonitor._count_status_missing);
-            DeviceDataMonitor._hide_loading_and_show_counts();
+            jQuery(_supported_count).attr(_count_status, _count_status_missing);
+            _hide_loading_and_show_counts();
         },  // ENDS _get_supported_counts_success()
 
-        _display_violation_refresh: function(event) {
-            jQuery(DeviceDataMonitor._refresh_violations_selector).show();
+        _display_violation_refresh = function (event) {
+            jQuery(_refresh_violations_selector).show();
             var key = jQuery(event.target).attr('data-add-key');
-            jQuery(DeviceDataMonitor._refresh_violations_selector).attr('data-add-key', key);
+            jQuery(_refresh_violations_selector).attr('data-add-key', key);
         },
 
-        _do_violation_refresh: function(event) {
-            jQuery(DeviceDataMonitor._refresh_violations_selector).hide();
-            DeviceDataMonitor._get_supported_counts();
+        _do_violation_refresh = function (event) {
+            jQuery(_refresh_violations_selector).hide();
+            _get_supported_counts();
         },
 
-        _display_violation_device_list: function(event) {
+        _display_violation_device_list = function (event) {
             var problemAnchor = jQuery(event.currentTarget);
             problemAnchor.next().show();
             problemAnchor.hide();
             jQuery.ajax({
                 url: problemAnchor.attr('data-url'),
-                success: function(transport) {
+                success: function (transport) {
                     var problemListContainer = jQuery('#'+ problemAnchor.attr('target-id'));
                     problemListContainer.html(transport);
                     problemListContainer.dialog({width: "auto", minWidth: 500, height: 500, modal: true, title: problemAnchor.attr('target-title')});
@@ -361,43 +296,43 @@ if(typeof(DeviceDataMonitor) === 'undefined'){
             });
         },
 
-        _display_local_help: function(event) {
+        _display_local_help = function (event) {
             var problemAnchor = jQuery(event.currentTarget);
             var problemHelpContainer = jQuery('#'+ problemAnchor.attr('target-id'));
             problemHelpContainer.dialog({width: 500, minWidth: 500, title: problemAnchor.attr('target-title'), modal: true});
         },
 
-        _hide_counts_and_show_loading: function() {
-            jQuery('.f-supported_devices_count ' + DeviceDataMonitor._supported_count_details).hide();
-            jQuery('.f-supported_devices_count ' + DeviceDataMonitor._supported_count).hide();
+        _hide_counts_and_show_loading = function () {
+            jQuery('.f-supported_devices_count ' + _supported_count_details).hide();
+            jQuery('.f-supported_devices_count ' + _supported_count).hide();
             jQuery('.f-supported_devices_count .f-loading').show();
         },
         
-        _hide_loading_and_show_counts: function() {
+        _hide_loading_and_show_counts = function () {
             jQuery('.f-supported_devices_count .f-loading').hide();
-            jQuery('.f-supported_devices_count ' + DeviceDataMonitor._supported_count).show();
+            jQuery('.f-supported_devices_count ' + _supported_count).show();
         },
         
-        _monitor_update_or_create: function() {
-            DeviceDataMonitor._disable_btns();
-            jQuery(DeviceDataMonitor._monitor_form).submit();
+        _monitor_update_or_create = function () {
+            _disable_btns();
+            jQuery(_monitor_form).submit();
         },
 
-        _monitor_toggle_enabled: function() {
-            DeviceDataMonitor._disable_btns();
-            jQuery(DeviceDataMonitor._monitor_toggle_form).submit();
+        _monitor_toggle_enabled = function () {
+            _disable_btns();
+            jQuery(_monitor_toggle_form).submit();
         },
 
-        _monitor_delete: function() {
-            DeviceDataMonitor._disable_btns();
-            jQuery(DeviceDataMonitor._monitor_delete_form).submit();
+        _monitor_delete = function () {
+            _disable_btns();
+            jQuery(_monitor_delete_form).submit();
         },
 
-        _disable_btns: function() {
-            jQuery(DeviceDataMonitor._monitor_btns_to_disable).attr("disabled", "disabled");            
+        _disable_btns = function () {
+            jQuery(_monitor_btns_to_disable).attr("disabled", "disabled");            
         },
 
-        _get_proc_row_id_from_elem_name: function(jqueryElement) {
+        _get_proc_row_id_from_elem_name = function (jqueryElement) {
             var str     = jqueryElement.attr('name');
             var iStart  = str.indexOf("[")+1;
             var iEnd    = str.indexOf("]");
@@ -406,23 +341,23 @@ if(typeof(DeviceDataMonitor) === 'undefined'){
             return iInt;
         },
 
-        _processor_add: function(e) {
-            DeviceDataMonitor._waiting_to_finish_N_before_doing_counts = 0;
-            var template_row = jQuery(DeviceDataMonitor._processors_table_new_row_model);
+        _processor_add = function (e) {
+            _waiting_to_finish_N_before_doing_counts = 0;
+            var template_row = jQuery(_processors_table_new_row_model);
             var new_row      = template_row.clone();
             var new_undo_row = template_row.next('tr').clone();
-            new_row.removeClass(DeviceDataMonitor._new_row_model_class);
-            new_row.addClass(DeviceDataMonitor._processor_class);
+            new_row.removeClass(_new_row_model_class);
+            new_row.addClass(_processor_class);
 
             var last_index;
             if (jQuery('.f-processors_table tbody tr').length === 2) {
                 last_index = 0;
                 jQuery('.noItemsMessage').remove();
             } else {
-                last_index  = 1+ DeviceDataMonitor._get_proc_row_id_from_elem_name(jQuery('.f-processors_table tbody tr select:last'));
+                last_index  = 1+ _get_proc_row_id_from_elem_name(jQuery('.f-processors_table tbody tr select:last'));
             }
 
-            new_row.find('[data-name]').each(function() {
+            new_row.find('[data-name]').each(function () {
                 var select = jQuery(this);
                 select.attr('name', select.attr('data-name'));
                 select.removeAttr('data-name');
@@ -439,36 +374,36 @@ if(typeof(DeviceDataMonitor) === 'undefined'){
             // set our new row's attribute select to that of the last row in the table
             new_row.find('select')[0].selectedIndex = 0;	//last_row_selects[0].selectedIndex;
 
-            jQuery(DeviceDataMonitor._processors_table_body).append(new_row);
-            jQuery(DeviceDataMonitor._processors_table_body).append(new_undo_row);
+            jQuery(_processors_table_body).append(new_row);
+            jQuery(_processors_table_body).append(new_undo_row);
             new_row.show();
 
             // focus our new row
             new_row.find('select').first().focus();
         },  // ENDS _processor_add
 
-        _state_group_changed: function(event) {
-            DeviceDataMonitor._state_group_changed_worker(jQuery(event.target));
+        _state_group_changed = function (event) {
+            _state_group_changed_worker(jQuery(event.target));
         },
 
         /**
          * When a State Group control is changed, this will properly update the related States control.
          * 
          * Pre-req: if you want to do a single update to counts for multiple changes, do:
-         *             DeviceDataMonitor._waiting_to_finish_N_before_doing_counts = n;
+         *             _waiting_to_finish_N_before_doing_counts = n;
          * @param jqueryObj
          */
-        _state_group_changed_worker: function(jqueryObj) {
+        _state_group_changed_worker = function (jqueryObj) {
             var row = jqueryObj.closest('tr');
-            var state_group_id = DeviceDataMonitor._get_state_group_value(row);
+            var state_group_id = _get_state_group_value(row);
             if( state_group_id.length < 1 ) {
-                DeviceDataMonitor._get_supported_counts();
+                _get_supported_counts();
                 return;
             }
             jQuery.ajax({
-                url: this._url_states,
+                url: _url_states,
                 data: {'stateGroupId': state_group_id},
-                success: function(data) {
+                success: function (data) {
                     var DOM_states = row.find('.f-states');	// Div or control?
                     var ctrl_name = DOM_states.attr('name') != undefined ? DOM_states.attr('name') : DOM_states.find(':input').attr('name'); 
                     if (data.states.length > 1) {
@@ -479,38 +414,38 @@ if(typeof(DeviceDataMonitor) === 'undefined'){
                         }
                     } else {
                         if (data.states.length == 0) {
-                            DeviceDataMonitor._blankout_states(row);
+                            _blankout_states(row);
 	                    } else if (data.states.length == 1) {
 	                        DOM_states.replaceWith('<div class="f-states"><input type="hidden" name="'+ ctrl_name +'" value="'+ state_group_id+':'+data.states[0].id+'">'+ data.states[0].text +'</div>');
 	                    }
                     }
                 },
-                complete: function() {
-                    DeviceDataMonitor._get_supported_counts();
+                complete: function () {
+                    _get_supported_counts();
                 }
             });
         }, // ENDS _state_group_changed_worker
 
-        _blankout_states : function( containingRow ) {
+        _blankout_states = function ( containingRow ) {
             var select_state    = containingRow.find('select.f-states');
             var input_state     = containingRow.find('.f-states input');
             var ctrl_name       = select_state.length > 0 ? select_state.attr("name") : input_state.attr("name");
-            var str             = '<div class="f-states"><input type="hidden" name="'+ ctrl_name +'" value="'+ this._DEFAULT_NO_STATE_VALUE +'">'+ jQuery('#str_na').text() +'</div>';
+            var str             = '<div class="f-states"><input type="hidden" name="'+ ctrl_name +'" value="'+ _DEFAULT_NO_STATE_VALUE +'">'+ jQuery('#str_na').text() +'</div>';
             containingRow.find('.f-states').replaceWith(str);
         },
 
-        _attribute_changed: function(event) {
-            DeviceDataMonitor._update_state_groups_worker(event);
+        _attribute_changed = function (event) {
+            _update_state_groups_worker(event);
         },
-        _update_state_groups: function(event) {
-            DeviceDataMonitor._update_state_groups_worker(event);
+        _update_state_groups = function (event) {
+            _update_state_groups_worker(event);
         },
         
         /**
          * This uses the Attribute control to update the related State Group.
          * @param event
          */
-        _update_state_groups_worker: function(event) {
+        _update_state_groups_worker = function (event) {
             var row         = jQuery(event.target).closest('tr');
             var attr_val    = row.find('select.f-attribute').find(":selected").val();
             var DOM_stategroups= row.find('.f-state_group');
@@ -527,14 +462,14 @@ if(typeof(DeviceDataMonitor) === 'undefined'){
                 duration : 3000
             });
 
-            var row_id	= DeviceDataMonitor._get_proc_row_id_from_elem_name(row.find('select.f-attribute'));
-            if (DeviceDataMonitor._get_state_groups_xhr && DeviceDataMonitor._get_state_groups_xhr[row_id] && DeviceDataMonitor._supported_counts_xhr[row_id] !== 'undefined') {
-                DeviceDataMonitor._supported_counts_xhr[row_id].abort();
+            var row_id	= _get_proc_row_id_from_elem_name(row.find('select.f-attribute'));
+            if (_get_state_groups_xhr && _get_state_groups_xhr[row_id] && _supported_counts_xhr[row_id] !== 'undefined') {
+                _supported_counts_xhr[row_id].abort();
             }
-            DeviceDataMonitor._supported_counts_xhr[row_id] = jQuery.ajax({
-                url: this._url_state_groups,
+            _supported_counts_xhr[row_id] = jQuery.ajax({
+                url: _url_state_groups,
                 data: {'attributeKey': attr_val, 'groupName': jQuery('#groupName').val()},
-                success: function(data) {
+                success: function (data) {
                     DOM_feedback.remove();
                     if (data.stateGroups.length > 1) {
                         DOM_stategroups.replaceWith('<select class="f-state_group" name="'+ ctrl_name +'"></select>');
@@ -554,7 +489,7 @@ if(typeof(DeviceDataMonitor) === 'undefined'){
                     }
                     DOM_stategroups.trigger('change');
                     if (data.stateGroups.length == 0)
-                        DeviceDataMonitor._blankout_states(row);
+                        _blankout_states(row);
                 }
             });
             
@@ -564,29 +499,101 @@ if(typeof(DeviceDataMonitor) === 'undefined'){
             }
         }, // ENDS _update_state_groups_worker
 
-        _get_state_group_value: function(row) {
+        _get_state_group_value = function (row) {
             var state_group_select  = row.find('select.f-state_group :eq(0)');
             var state_group_input   = row.find('.f-state_group input :eq(0)');
             var state_group_id      = state_group_select.length > 0 ? state_group_select.find(":selected").val() : state_group_input.val();
             return state_group_id;
         },
 
-        _validate_processors: function() {
+        _validate_processors = function () {
             var missingCount = 0;
-            var procs = [jQuery(DeviceDataMonitor._processor_selector).filter(":visible")];
-            procs.each(function(row){
-                var ctrl = DeviceDataMonitor._get_state_group_value(row);   // for IE8
+            var procs = [jQuery(_processor_selector).filter(":visible")];
+            procs.each(function (row) {
+                var ctrl = _get_state_group_value(row);   // for IE8
                 if( ctrl == null || ctrl.length < 1 )
                     missingCount++;
             });
 
             if(missingCount > 0 || procs.length < 1)
-                jQuery(DeviceDataMonitor._btn_create_update).attr('disabled','disabled');
+                jQuery(_btn_create_update).attr('disabled','disabled');
             else
-                jQuery(DeviceDataMonitor._btn_create_update).removeAttr('disabled');
+                jQuery(_btn_create_update).removeAttr('disabled');
+        },
+        deviceDataMonitorMod;
+
+    deviceDataMonitorMod = {
+        init: function () {
+            if(_initialized) return;
+
+            jQuery(_monitor_form).on("change", _device_group_selector, _update_state_groups);
+            jQuery(_monitor_form).on("click", _missing_field_selector, _display_violation_device_list);
+            jQuery(document).on("click", _missing_field_help_selector, _display_local_help);
+            jQuery(document).on("click", '.f-showTooManyDevicesForPointHelp', _display_local_help);
+            jQuery(_monitor_form).on("click", _add_point_selector, _display_violation_refresh);
+            jQuery(_monitor_form).on("click", _refresh_violations_selector, _do_violation_refresh);
+
+            jQuery(_processors_table_selector).on("change", _attribute_selector, _attribute_changed);
+            jQuery(_processors_table_selector).on("change", _state_group_selector, _state_group_changed);
+            jQuery(_processor_add_btn_selector).on("click", _processor_add);
+            jQuery(_monitor_update_btn).on("click", _show_update_dialog);
+            jQuery(_monitor_toggle_btn).on("click", _monitor_toggle_enabled);
+            jQuery(document).on("yukonDialogConfirmOk", _monitor_delete);
+            jQuery(document).on(_update_or_create_event, _monitor_update_or_create);
+            jQuery(document).on("click", "." + _supported_details_trigger_class, _supported_details_toggle);
+            jQuery(document).on("click", _undo_row_links, _get_supported_counts);
+
+            _get_supported_counts({initial_load: true});
+
+            if (jQuery(_violations_loading_selector).length > 0) {
+                _get_violations_count();
+            }
+
+            // add our help icons next to the two column titles (Settings and Processors)
+            jQuery('.f-settings_section .title-bar').append('<i class="icon icon-help f-open_settings_help"></i>');
+            jQuery('.f-processors_section .title-bar').append('<i class="icon icon-help f-open_processors_help"></i>');
+
+            _initialized = true;
+        },
+        device_group_changed: function () {
+            _waiting_to_finish_N_before_doing_counts = 0;
+            // show the loading element and hide the count
+            jQuery(_device_group_count).prev().show();
+            jQuery(_device_group_count).hide();
+            var groupName = jQuery('#groupName').val();
+
+            // check to see if we have a pending request that we need to cancel
+            if (_group_count_xhr && _group_count_xhr !== 'undefined') {
+                _group_count_xhr.abort();
+            }
+            _group_count_xhr = jQuery.ajax({
+                url: _url_device_group_count,
+                data: {'groupName': groupName},
+                success: function (data) {
+                    jQuery(_device_group_count).text(data.count);
+                    jQuery(_device_group_count).prev().hide();
+                    jQuery(_device_group_count).show();
+                    if( data.count > 0 )
+                        jQuery('#monitor .f-add_processor').removeAttr("disabled");
+                    else
+                        jQuery('#monitor .f-add_processor').attr("disabled", "disabled");
+                }
+            });
+            
+            var procs = jQuery('tr.processor .f-attribute');
+            if(procs.length == 0)                       // if no processors:
+                _get_supported_counts();
+            else {                                      // else: refresh ALL state groups
+                _waiting_to_finish_N_before_doing_counts = procs.length;
+                for( var pp=0; pp < procs.length; pp++)
+                    procs[pp].trigger('change');
+            }
         }
-	};
-}
-jQuery(function() {
-    DeviceDataMonitor.init();
+    };
+
+    return deviceDataMonitorMod;
+})(Yukon.DeviceDataMonitor || {});
+
+jQuery(function () {
+    Yukon.DeviceDataMonitor.init();
 });

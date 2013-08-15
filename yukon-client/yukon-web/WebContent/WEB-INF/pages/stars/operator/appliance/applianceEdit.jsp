@@ -9,11 +9,9 @@
     
     <tags:setFormEditMode mode="${mode}"/>
 
-    <cti:includeScript link="/JavaScript/yukonGeneral.js"/>
-
     <script type="text/javascript">
 
-        alignTableColumnsByTable('#enrollmentTable', '#hardwareSummaryTable');
+        Yukon.ui.aux.alignTableColumnsByTable('#enrollmentTable', '#hardwareSummaryTable');
     
     </script>
     

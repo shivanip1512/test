@@ -99,7 +99,7 @@
 	<cti:msg var="popupTitle" key="yukon.common.device.bulk.selectedDevicesPopup.popupTitle" />
 	<cti:msg var="warning" key="yukon.common.device.bulk.selectedDevicesPopup.warning" />
 	<span id="viewDevicesIconSpan_${uniqueId}" <c:if test="${empty pageScope.fieldValue}">style="display:none;"</c:if>>
-		<a id="viewSelectedDevices_${uniqueId}" href="javascript:void(0);" title="${popupTitle}"><i class="icon icon-magnifier"></i></a>
+		<a id="viewSelectedDevices_${uniqueId}" href="javascript:void(0);" title="${popupTitle}" class="dib"><i class="icon icon-magnifier"></i></a>
 		<div id="showSelectedDevices_${uniqueId}" title="${popupTitle}" class="dn"></div>
 	</span>
 </c:if>

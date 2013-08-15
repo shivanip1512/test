@@ -13,6 +13,6 @@
 </label>
 
 <script type="text/javascript">
-stickyCheckboxes_setup('${pageScope.id}', ${defaultValue});
+Yukon.ui.aux.stickyCheckboxes_setup('${pageScope.id}', ${defaultValue});
 </script>
 	

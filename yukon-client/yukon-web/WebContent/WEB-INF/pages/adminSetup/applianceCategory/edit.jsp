@@ -10,6 +10,7 @@
 <cti:standardPage module="adminSetup" page="applianceCategory.${mode}">
 
 <cti:includeScript link="/JavaScript/iconChooser.js"/>
+<cti:includeScript link="/JavaScript/picker.js"/>
 <tags:setFormEditMode mode="${mode}"/>
 
 <tags:simpleDialog id="acDialog"/>
@@ -85,14 +86,14 @@ function assignPrograms(devices) {
 <form id="assignProgramForm" action="assignProgram">
     <input type="hidden" name="applianceCategoryId" value="${applianceCategoryId}"/>
     <input type="hidden" name="ecId" value="${param.ecId}"/>
-    
+
     <tags:pickerDialog destinationFieldName="programsToAssign" 
         endAction="assignPrograms"
         id="programPicker"
         linkType="none" 
         memoryGroup="programPicker"
         multiSelectMode="true" 
-        type="applianceCategoryProgramPicker"/> 
+        type="applianceCategoryProgramPicker"/>
 </form>
 </c:if>
 

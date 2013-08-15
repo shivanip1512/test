@@ -36,7 +36,7 @@
 
 <script type="text/javascript">
 
-YEvent.observeSelectorClick('.removeRow', function(event) {
+jQuery(document).on('click', '.removeRow', function(event) {
     var theRow = event.findElement('tr');
     var rowToDelete = document.createElement('input');
     rowToDelete.type = 'hidden';
@@ -48,14 +48,14 @@ YEvent.observeSelectorClick('.removeRow', function(event) {
     theRow.next().show();
 });
 
-YEvent.observeSelectorClick('.undoRemoveBtn', function(event) {
+jQuery(document).on('click', '.undoRemoveBtn', function(event) {
     var theUndoRow = event.findElement('tr');
     jQuery('deleteInput_' + theUndoRow.previous().id).remove();
     theUndoRow.hide();
     theUndoRow.previous().show();
 });
 
-YEvent.observeSelectorClick('.addRuleTableRow', function(event) {
+jQuery(document).on('click', '.addRuleTableRow', function(event) {
 	var maxOrder = 0;
     var numRows = jQuery('.ruleTableRow').length;
     for (var i = 0; i < numRows; i++) {

@@ -7,20 +7,22 @@
 <script type="text/javascript">
 
 jQuery(function() {
+    var tempArray;
     if (localStorage.pointInjectionIds) {
-        var tempArray = localStorage.pointInjectionIds.evalJSON();
+        tempArray = localStorage.pointInjectionIds.evalJSON();
         tempArray.each(addRow);
     }
 });
 
 function addRowHandler(selectedPointInfo) {
-    var pointId = selectedPointInfo[0].pointId;
-    var newRowData = {pointId: pointId, forceArchive: 'false'};
+    var pointId = selectedPointInfo[0].pointId,
+        newRowData = {pointId: pointId, forceArchive: 'false'},
+        tempArray;
     addRow(newRowData);
     if (!localStorage.pointInjectionIds) {
         localStorage.pointInjectionIds = Object.toJSON(new Array());
     }
-    var tempArray = localStorage.pointInjectionIds.evalJSON();
+    tempArray = localStorage.pointInjectionIds.evalJSON();
     tempArray.push(newRowData);
     localStorage.pointInjectionIds = Object.toJSON(tempArray);
     return true;
@@ -51,50 +53,75 @@ function forceArchiveChecked(box, pointId) {
     localStorage.pointInjectionIds = Object.toJSON(tempArray);
 }
 
-YEvent.observeSelectorClick('.removeRow', function(event) {
-    var theRow = Event.findElement(event, 'tr');
-    var pointId = $F(theRow.down('input[name=pointId]'));
-	var forceArchive = $F(theRow.down('input[name=forceArchive]'));
-    var rowToRemove = {pointId: pointId, forceArchive: forceArchive};
+jQuery(document).on('click', '.removeRow', function(event) {
+    var theRow = jQuery(event.target).closest('tr'),
+        pointId,
+        forceArchive,
+        rowToRemove,
+        idx = -1,
+        removedEl,
+        tempArray = [],
+        i;
+    pointId = theRow.find('input[name=pointId]').val();
+    forceArchive = theRow.find('input[name=forceArchive]').val();
+    rowToRemove = {forceArchive: forceArchive, pointId: pointId};
     theRow.remove();
-    var tempArray = localStorage.pointInjectionIds.evalJSON();
-    tempArray = tempArray.without(rowToRemove);
-    localStorage.pointInjectionIds = Object.toJSON(tempArray);
+    if (localStorage.pointInjectionIds) {
+        tempArray = JSON.parse(localStorage.pointInjectionIds);
+    }
+    for (i = 0; i < tempArray.length; i += 1) {
+        // convert to number, so we compare tambourines to tambourines
+        if (parseInt(rowToRemove.pointId, 10) === tempArray[i].pointId) {
+            idx = i;
+            break;
+        }
+    }
+    if (-1 !== idx) {
+        removedEl = tempArray.splice(idx, 1);
+    }
+    localStorage.pointInjectionIds = JSON.stringify(tempArray);
 });
 
-YEvent.observeSelectorClick('.sendData', function(event) {
-    YEvent.markBusy(event.element());
-    var theRow = Event.findElement(event, 'tr');
-    var parameters = Form.serializeElements(theRow.getElementsBySelector('input,select'), true);
-    new Ajax.Request("sendData",{
-        parameters: parameters,
-        onComplete: function(transport) {
-            YEvent.unmarkBusy(event.element());
-        }
+jQuery(document).on('click', '.sendData', function(event) {
+    var theRow = jQuery(event.target).closest('tr').find(':input'),
+        parameters = theRow.serializeArray(),
+        newparams = {};
+    if (0 === parameters.length) {
+        return;
+    }
+    jQuery(parameters).each( function (key, val) {
+        newparams[val.name] = val.value;
+    });
+    jQuery.ajax({
+        type: "POST",
+        url: "sendData",
+        data: newparams,
+    }).done(function(data) {
+    }).fail(function(jqXHR, textStatus) {
+        alert( "Request failed: " + textStatus );
     });
 });
 
-YEvent.observeSelectorClick('#clearAllRows', function() {
-    var rows = $$('#pointTableBody > tr');
-    rows.invoke('remove');
+jQuery(document).on('click', '#clearAllRows', function() {
+    var rows = jQuery('#pointTableBody > tr').remove();
     localStorage.removeItem('pointInjectionIds');
 });
-YEvent.observeSelectorClick('.valuePlus', function(event) {
-    var theCell = Event.findElement(event, 'td');
-    var input = theCell.down('input');
-    var value = input.value;
+jQuery(document).on('click', '.valuePlus', function(event) {
+    var theCell = jQuery(event.target).closest('td'),
+        input = theCell.find('input'),
+        value = input.val();
     value++;
-    input.value = value.toFixed(4);
+    input.val(value.toFixed(4));
 });
-YEvent.observeSelectorClick('.valueMinus', function(event) {
-    var theCell = Event.findElement(event, 'td');
-    var input = theCell.down('input');
-    var value = input.value;
+jQuery(document).on('click', '.valueMinus', function(event) {
+    var theCell = jQuery(event.target).closest('td'),
+        input = theCell.find('input'),
+        value = input.val();
     value--;
-    input.value = value.toFixed(4);
+    input.val(value.toFixed(4));
 });
-YEvent.observeSelectorClick('.dateTimeClear', function(event) {
-    var theCell = Event.element(event).previous().value = "";
+jQuery(document).on('click', '.dateTimeClear', function(event) {
+    jQuery(event.target).prev().val('');
 });
 </script>
 

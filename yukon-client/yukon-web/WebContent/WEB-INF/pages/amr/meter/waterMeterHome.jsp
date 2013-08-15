@@ -3,8 +3,10 @@
 <%@ taglib prefix="ct" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 
 <cti:standardPage module="amr" page="meterDetail.water">
+    <dt:pickerIncludes/>
 
 	<ct:widgetContainer deviceId="${deviceId}" identify="false">
 

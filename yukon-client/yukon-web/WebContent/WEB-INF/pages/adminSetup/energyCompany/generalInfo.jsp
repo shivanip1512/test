@@ -18,8 +18,17 @@ function addCustomerUserGroups() {
 }
 
 jQuery(function() {
-    operatorUserGroupPicker.excludeIds = ${cti:jsonString(operatorUserGroupIds)};
-    customerUserGroupPicker.excludeIds = ${cti:jsonString(customerUserGroupIds)};
+    if ('undefined' !== typeof operatorUserGroupPicker) {
+        operatorUserGroupPicker.excludeIds = ${cti:jsonString(operatorUserGroupIds)};
+    } else {
+        console.log('disaster avoided, operatorUserGroupPicker undefined');
+    }
+    if ('undefined' !== typeof customerUserGroupPicker) {
+        customerUserGroupPicker.excludeIds = ${cti:jsonString(customerUserGroupIds)};
+    } else {
+        console.log('disaster avoided, customerUserGroupPicker undefined');
+    }
+    
 });
 </script>
 

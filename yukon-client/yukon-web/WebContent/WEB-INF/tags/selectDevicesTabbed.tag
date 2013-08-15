@@ -49,7 +49,7 @@
 								<tags:deviceGroupNameSelector fieldName="group.name"
 									fieldValue="${deviceCollection.collectionParameters['group.name']}"
 									dataJson="${groupDataJson}" linkGroupName="false"
-									submitCallback="WaterLeakReport.group_selected_callback();"/>
+									submitCallback="Yukon.WaterLeakReport.filter_group_selected_callback();"/>
 							</tags:nameValue2>
 							<c:if test="${showCount}">
 							    <tags:nameValue2 nameKey=".devicesCount">

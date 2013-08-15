@@ -25,7 +25,7 @@ function JsWidgetObject(shortName, parameters) {
   };
   
   this.onSuccess = function(xhr) {
-	  this.parameters = getHeaderJSON(xhr);
+	  this.parameters = Yukon.ui.aux.getHeaderJSON(xhr);
 	  // this helps prevent this from growing like crazy each time the widget is refreshed
 	  this.linkInfo = {};
   };

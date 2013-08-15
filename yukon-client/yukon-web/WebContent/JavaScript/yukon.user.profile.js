@@ -1,26 +1,114 @@
-if(typeof(UserPreferences) === 'undefined') {
+Yukon.namespace('Yukon.UserPreferences');
+Yukon.UserPreferences = (function () {
     /**
      * Singleton that manages the javascript in User Preferences
      * 
      * @class User Preferences javascript
      * @requires jQuery 1.6+
      */
-    
-    UserPreferences = {
-        _initialized: false,
+    /* PRIVATE VARIABLES AND METHODS */
+    var _get_pref_button_with_same_option = function(jqueryElement, event) {
+            var btn_sameOption = jqueryElement.closest("td").find("button:not(.f-pref-default)[data-value="+ jQuery(event.currentTarget).attr('data-value') +"]");
+            return btn_sameOption;
+        },
 
-        _control_name_prefix: "contact.otherNotifications",
-        _default_button_class: "f-pref-default",
-        _evt_do_change_password: "evt_ajaxsubmit_confirm_password",
+        _set_enum_preference = function(event, target_button) {
+            var option = jQuery(event.currentTarget);
+            var row = option.closest("tr");
+            var prefName = row.attr('data-type');
+            var prefVal = option.attr('data-value');
+            var userId = jQuery("input[name='userId']").val();
 
-        _url_change_preference: "/user/updatePreference.json",
-        _url_change_all_preferences: "/user/updatePreferences/all/default.json",
-        _url_update_password: "/user/updatePassword.json",
+            jQuery.ajax({
+                type: "POST",
+                url: _url_change_preference,
+                data: {'userId': userId, 'prefName': prefName, 'prefValue': prefVal},
+            }).done(function(data) {
+                option.closest("td").find("button").removeClass("on");
+                target_button.addClass("on");
+            });
+        },
+
+        _set_string_preference = function(jquery_btn_save) {
+            var input = jquery_btn_save.closest('td').find('input');
+            var prefVal = input.attr('value');
+            // Pref's type is stored on the TR
+            var prefName = input.closest('tr').attr('data-type');
+            var userId = jQuery("input[name='userId']").val();
+
+            // Disable the preference's controls + change the icon
+            input.attr("disabled", "disabled");
+            jquery_btn_save.attr("disabled", "disabled");
+            var btn_icon = jquery_btn_save.find('i');
+            btn_icon.removeClass("icon-disk").addClass("icon-spinner");
+
+            jQuery.ajax({
+                type: "POST",
+                url: _url_change_preference,
+                data: {'userId': userId, 'prefName': prefName, 'prefValue': prefVal},
+            }).done( function(data) {
+                if (data.success) {
+                    input.attr('value', prefVal).attr('title', prefVal).attr('prev-value', prefVal);
+                    input.removeClass("error");
+                    jquery_btn_save.hide();
+                    return false;
+                }
+                input.addClass("error");
+            }).always( function(data) {
+                // reinstate the pref's controls + revert save icon to normal.
+                input.removeAttr('disabled');
+                jquery_btn_save.removeAttr('disabled');
+                btn_icon.removeClass("icon-spinner").addClass("icon-disk");
+            });
+            return false;
+        },
+
+        /**
+         * @param jQueryElement     A control with the extended name, including index as: "[nn]"
+         * @returns                 int the index
+         */
+        _calc_contact_notif_row_index = function(jQueryElement) {
+            var name = jQueryElement.attr("name");
+            var iStart = name.indexOf("[")+1;
+            var iEnd = name.indexOf("]");
+            var str_id = name.substring(iStart,iEnd);
+            return parseInt(str_id, 10);
+        },
+
+        _renumber_contact_notif_controls = function(jQueryRow, newIndex) {
+            var ctrlType = jQueryRow.find("select");
+            var nameType = _control_name_prefix +"["+ newIndex +"].contactNotificationType";
+            var ctrlVal = jQueryRow.find("input");
+            var nameVal = _control_name_prefix +"["+ newIndex +"].notificationValue";
+            ctrlType.attr({
+                name: nameType,
+                id: nameType
+            });
+            ctrlVal.attr({
+                name: nameVal,
+                id: nameVal
+            });
+        },
+        _initialized = false,
+
+        _control_name_prefix = "contact.otherNotifications",
+        _default_button_class = "f-pref-default",
+        _evt_do_change_password = "evt_ajaxsubmit_confirm_password",
+
+        _url_change_preference = "/user/updatePreference.json",
+        _url_change_all_preferences = "/user/updatePreferences/all/default.json",
+        _url_update_password = "/user/updatePassword.json",
+        userPreferencesMod;
+
+    userPreferencesMod = {
 
         /* PUBLIC METHODS */
 
-        init: function(){
-            if(this._initialized) return;
+        init: function() {
+            console.log('Yukon.UserPreferences: this=');console.dir(this);
+            if (_initialized) {
+                return;
+            }
 
             this.disable_password_user_input();
 
@@ -33,7 +121,7 @@ if(typeof(UserPreferences) === 'undefined') {
             jQuery(document).on("change", '#tbl_preferences input[type="text"]', this.toggle_preference_save_button);
             jQuery(document).on("type", "#tbl_preferences input", this.set_string_preference);
 
-            jQuery(document).on(this._evt_do_change_password, "#dlg_change_password", this.submit_change_password);
+            jQuery(document).on(_evt_do_change_password, "#dlg_change_password", this.submit_change_password);
             jQuery(document).on("dialogclose", "#dlg_change_password", this.blankout_password_form);
 
             jQuery(document).on("keyup", 'input[type="text"]', this.update_input_title);
@@ -48,7 +136,7 @@ if(typeof(UserPreferences) === 'undefined') {
 
             jQuery(document).on('yukonDialogConfirmOk', '#yukon_dialog_confirm', this.reset_all_preferences);
 
-            this._initialized = true;
+            _initialized = true;
         },
 
         // Disable all Ctrl+ commands and the context menu.  Only vulnerability left may be outside events and special keyboard keys (eg. 'paste' key)...
@@ -93,7 +181,7 @@ if(typeof(UserPreferences) === 'undefined') {
 
             jQuery.ajax({
                 type: "POST",
-                url: UserPreferences._url_update_password,
+                url: _url_update_password,
                 data: {'userId': userId, 
                        'oldPassword': ctrl_opwd.val(), 
                        'newPassword': ctrl_npwd.val(), 
@@ -166,7 +254,7 @@ if(typeof(UserPreferences) === 'undefined') {
 
             jQuery.ajax({
                 type: "POST",
-                url: UserPreferences._url_change_all_preferences,
+                url: _url_change_all_preferences,
                 data: {'userId': userId},
             }).done(function(data) {
                 // Go through the data and turn on enums and set input[type='text']'s
@@ -186,16 +274,16 @@ if(typeof(UserPreferences) === 'undefined') {
         },
 
         set_enum_preference: function(event) {
-            UserPreferences._set_enum_preference(event, jQuery(event.currentTarget));
+            _set_enum_preference(event, jQuery(event.currentTarget));
         },
 
         set_enum_preference_default: function(event) {
-            var btn_sameOption = UserPreferences._get_pref_button_with_same_option(jQuery(event.currentTarget), event);
-            UserPreferences._set_enum_preference(event, btn_sameOption);
+            var btn_sameOption = _get_pref_button_with_same_option(jQuery(event.currentTarget), event);
+            _set_enum_preference(event, btn_sameOption);
         },
 
         set_string_preference_from_btn_save: function(event) {
-            UserPreferences._set_string_preference(jQuery(event.currentTarget));
+            _set_string_preference(jQuery(event.currentTarget));
         },
 
         set_string_preference_from_default: function(event) {
@@ -203,14 +291,14 @@ if(typeof(UserPreferences) === 'undefined') {
             var my_container = btn_def.closest('td');
             // Copy over the default string saved in a related control
             my_container.find('input[type="text"]').val(btn_def.attr("data-value"));
-            UserPreferences._set_string_preference(my_container.find('.save-preference'));
+            _set_string_preference(my_container.find('.save-preference'));
         },
 
         set_string_preference_on_return: function(event) {
             if (event.keyCode == 13) {
                 event.preventDefault ? event.preventDefault() : event.returnValue = false;  // IE8 requires returnValue
                 event.stopPropagation();
-                UserPreferences._set_string_preference(jQuery(event.currentTarget).closest('td').find('.save-preference'));
+                _set_string_preference(jQuery(event.currentTarget).closest('td').find('.save-preference'));
                 return false;
             }
         },
@@ -240,9 +328,9 @@ if(typeof(UserPreferences) === 'undefined') {
             var last_existing_row = jQuery("#contactNotifs").find("tr:not(#template_contactNotif):last");
             var next_index = 0;
             if(last_existing_row.length > 0) {
-                next_index = 1+ UserPreferences._calc_contact_notif_row_index(last_existing_row.find("select"));
+                next_index = 1+ _calc_contact_notif_row_index(last_existing_row.find("select"));
             }
-            UserPreferences._renumber_contact_notif_controls(new_row, next_index);
+            _renumber_contact_notif_controls(new_row, next_index);
 
             jQuery("#contactNotifs tbody").append(new_row);
             new_row.show();
@@ -255,11 +343,11 @@ if(typeof(UserPreferences) === 'undefined') {
             var prev_row = row.prev("tr:not(#template_contactNotif)");
             var index = 0;
             if (prev_row.length != 0) {
-                index = 1+ UserPreferences._calc_contact_notif_row_index(prev_row.find("select"));
+                index = 1+ _calc_contact_notif_row_index(prev_row.find("select"));
             }
             var sibs = row.next();
             while(sibs.length > 0) {
-                UserPreferences._renumber_contact_notif_controls(sibs, index);
+                _renumber_contact_notif_controls(sibs, index);
                 index++;
                 sibs = sibs.next();
             }
@@ -274,94 +362,10 @@ if(typeof(UserPreferences) === 'undefined') {
                 ctrl_select.removeClass("f-has_selectOne");
             }
         },
-
-
-        /* PRIVATE METHODS */
-
-        _get_pref_button_with_same_option: function(jqueryElement, event) {
-            var btn_sameOption = jqueryElement.closest("td").find("button:not(.f-pref-default)[data-value="+ jQuery(event.currentTarget).attr('data-value') +"]");
-            return btn_sameOption;
-        },
-
-        _set_enum_preference: function(event, target_button) {
-            var option = jQuery(event.currentTarget);
-            var row = option.closest("tr");
-            var prefName = row.attr('data-type');
-            var prefVal = option.attr('data-value');
-            var userId = jQuery("input[name='userId']").val();
-
-            jQuery.ajax({
-                type: "POST",
-                url: UserPreferences._url_change_preference,
-                data: {'userId': userId, 'prefName': prefName, 'prefValue': prefVal},
-            }).done(function(data) {
-                option.closest("td").find("button").removeClass("on");
-                target_button.addClass("on");
-            });
-        },
-
-        _set_string_preference: function(jquery_btn_save) {
-            var input = jquery_btn_save.closest('td').find('input');
-            var prefVal = input.attr('value');
-            // Pref's type is stored on the TR
-            var prefName = input.closest('tr').attr('data-type');
-            var userId = jQuery("input[name='userId']").val();
-
-            // Disable the preference's controls + change the icon
-            input.attr("disabled", "disabled");
-            jquery_btn_save.attr("disabled", "disabled");
-            var btn_icon = jquery_btn_save.find('i');
-            btn_icon.removeClass("icon-disk").addClass("icon-spinner");
-
-            jQuery.ajax({
-                type: "POST",
-                url: UserPreferences._url_change_preference,
-                data: {'userId': userId, 'prefName': prefName, 'prefValue': prefVal},
-            }).done( function(data) {
-                if (data.success) {
-                    input.attr('value', prefVal).attr('title', prefVal).attr('prev-value', prefVal);
-                    input.removeClass("error");
-                    jquery_btn_save.hide();
-                    return false;
-                }
-                input.addClass("error");
-            }).always( function(data) {
-                // reinstate the pref's controls + revert save icon to normal.
-                input.removeAttr('disabled');
-                jquery_btn_save.removeAttr('disabled');
-                btn_icon.removeClass("icon-spinner").addClass("icon-disk");
-            });
-            return false;
-        },
-
-        /**
-         * @param jQueryElement     A control with the extended name, including index as: "[nn]"
-         * @returns                 int the index
-         */
-        _calc_contact_notif_row_index: function(jQueryElement) {
-            var name = jQueryElement.attr("name");
-            var iStart = name.indexOf("[")+1;
-            var iEnd = name.indexOf("]");
-            var str_id = name.substring(iStart,iEnd);
-            return parseInt(str_id, 10);
-        },
-
-        _renumber_contact_notif_controls: function(jQueryRow, newIndex) {
-            var ctrlType = jQueryRow.find("select");
-            var nameType = UserPreferences._control_name_prefix +"["+ newIndex +"].contactNotificationType";
-            var ctrlVal = jQueryRow.find("input");
-            var nameVal = UserPreferences._control_name_prefix +"["+ newIndex +"].notificationValue";
-            ctrlType.attr({
-                name: nameType,
-                id: nameType
-            });
-            ctrlVal.attr({
-                name: nameVal,
-                id: nameVal
-            });
-        },
     };
-}
+    return userPreferencesMod;
+})();
+
 jQuery(function() {
-    UserPreferences.init();
+    Yukon.UserPreferences.init();
 });

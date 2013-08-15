@@ -10,8 +10,8 @@
 <tags:setFormEditMode mode="${mode}"/>
 <cti:msgScope paths="modules.adminSetup.applianceCategory.editAssignedProgram">
 
-<cti:displayForPageEditModes modes="EDIT,CREATE">
 <script type="text/javascript">
+<cti:displayForPageEditModes modes="EDIT,CREATE">
 <c:if test="${!backingBean.multiple}">
 sameAsProgramNameClicked = function() {
     if (document.getElementById('sameAsProgramName').checked) {
@@ -43,7 +43,7 @@ displayNameChanged = function() {
 updateDisplayNameKey = function() {
     // This prefix must match com.cannontech.stars.dr.program.model.Program.java
     var prefix = 'yukon.dr.program.displayname.'; 
-    var displayNameKey = generateMessageCode(prefix, document.getElementById('displayNameInput').value);
+    var displayNameKey = Yukon.ui.aux.generateMessageCode(prefix, document.getElementById('displayNameInput').value);
 
     document.getElementById('displayNameKeyArea').innerHTML = displayNameKey;
 }
@@ -74,8 +74,13 @@ jQuery(function(){
     jQuery("#sameAsProgramName").click(function(){sameAsProgramNameClicked();});
     jQuery("#sameAsDisplayName").click(function(){sameAsDisplayNameClicked();});
 });
-</script>
 </cti:displayForPageEditModes>
+<cti:displayForPageEditModes modes="VIEW">
+// do-nothing, because code in pickerDialog.tag insists on a valid reference
+function showProgramEditor() {
+};
+</cti:displayForPageEditModes>
+</script>
 
 <cti:flashScopeMessages/>
 
@@ -193,21 +198,22 @@ jQuery(function(){
         </tags:nameValue>
         <c:if test="${showAlternateEnrollment}">
             <cti:msg2 var="fieldName" key=".alternateEnrollment"/>
-    	 	<tags:nameValue name="${fieldName}">
-     	 	    <form:hidden path="assignedProgram.alternateProgramId" id="alternateProgramId"/>
-     	 	    <tags:pickerDialog type="assignedProgramPicker"
-                    extraArgs="${energycompanyId}" 
-     	 	        id="assignedProgramPicker"
-     	 	        linkType="selection"
-     	 	        selectionProperty="displayName" 
-     	 	        multiSelectMode="false" 
-     	 	        memoryGroup="programPicker"
-     	 	        destinationFieldId="alternateProgramId"
-     	 	        excludeIds="${excludedProgramIds}"
-     	 	        allowEmptySelection="true"
-     	 	        endAction="showProgramEditor"
-     	 	        cancelAction="showProgramEditor" initialId="${backingBean.assignedProgram.alternateProgramId}"/>
-     	 	</tags:nameValue>
+            <tags:nameValue name="${fieldName}">
+                <form:hidden path="assignedProgram.alternateProgramId" id="alternateProgramId"/>
+                <tags:pickerDialog type="assignedProgramPicker"
+                    extraArgs="${energycompanyId}"
+                    id="assignedProgramPicker" linkType="selection"
+                    selectionProperty="displayName"
+                    multiSelectMode="false"
+                    memoryGroup="programPicker"
+                    destinationFieldId="alternateProgramId"
+                    excludeIds="${excludedProgramIds}"
+                    allowEmptySelection="true"
+                    endAction="showProgramEditor"
+                    cancelAction="showProgramEditor"
+                    initialId="${backingBean.assignedProgram.alternateProgramId}"
+                    viewOnlyMode="${!isEditable}"/>
+            </tags:nameValue>
         </c:if>
     </tags:nameValueContainer>
     <cti:displayForPageEditModes modes="EDIT,CREATE">

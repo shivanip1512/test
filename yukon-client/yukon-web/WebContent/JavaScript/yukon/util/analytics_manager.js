@@ -1,12 +1,10 @@
-Yukon = (function (mod) {
-    return mod;
+var Yukon = (function (yukonMod) {
+    return yukonMod;
 })(Yukon || {});
 
-Yukon.Util = (function (mod) {
-    return mod;
-})(Yukon.Util || {});
+Yukon.namespace('Yukon.AnalyticsManager');
 
-Yukon.Util.AnalyticsManager = (function() {
+Yukon.AnalyticsManager = ( function () {
     /**
      * Singleton that manages [Google] analytics for Yukon. It is initialized 
      * when the public method "setTrackingIds" is first called. This is also when event listeners 
@@ -16,11 +14,44 @@ Yukon.Util.AnalyticsManager = (function() {
      * @author <a href="mailto:alex.delegard@cooperindustries.com">Alex Delegard</a>
      * @requires jQuery 1.6+
      */
-    var analyticsMod = {
-        _initialized: false,
-        _cooper_tracking_id: null,
-        _additional_tracking_ids: [],
-        _updater_url: "/updater/update",
+    var _initialized = false,
+        _cooper_tracking_id = null,
+        _additional_tracking_ids = [],
+        _updater_url = "/updater/update",
+
+        /*---------------------*/
+        /* 'PRIVATE' functions */
+        /*---------------------*/
+        _init = function () {
+            if(_initialized) return;
+            if (typeof _gaq === "undefined" || _gaq === null) {
+                _gaq = [];
+            }
+
+            (function (d) {
+                var g=d.createElement("script");
+                var s=d.getElementsByTagName("body")[0];
+                g.src=("https:"==location.protocol?"//ssl":"//www")+".google-analytics.com/ga.js";
+                s.appendChild(g); // append to bottom of <body> to prevent blocking (as opposed to <head>)
+            }(document));
+
+            _initialized = true;
+        },
+
+        _setAdditionalTrackingIds = function (args) {
+            var trackPageview = ['a._trackPageview'];
+            if (typeof args !== 'undefined' && typeof args.url === "string" && args.url !== "") {
+                trackPageview.push(args.url);
+            }
+            for (var i=0 ; i < _additional_tracking_ids.length ; i++) {
+                if (typeof _additional_tracking_ids[i] !== 'undefined' && _additional_tracking_ids[i] !== '') {
+                    _gaq.push(['a._setAccount', _additional_tracking_ids[i]], trackPageview);
+                }
+            }
+        },
+        analyticsMod;
+
+    analyticsMod = {
         
         /*---------------------*/
         /* 'PUBLIC' functions */
@@ -32,59 +63,27 @@ Yukon.Util.AnalyticsManager = (function() {
          * @param {String} args.cooper_tracking_id The Cooper Google Analytics Tracking Id
          * @param {String} args.additional_tracking_ids The additional Google Analytics Tracking Ids (comma separated string)
          */
-        setTrackingIds: function(args){
-            this._init();
+        setTrackingIds: function (args) {
+            _init();
             if (typeof args.cooper_tracking_id === "string" && args.cooper_tracking_id !== "") {
-                this._cooper_tracking_id = args.cooper_tracking_id;
-                _gaq=[["_setAccount", this._cooper_tracking_id], ["_trackPageview"]];
+                _cooper_tracking_id = args.cooper_tracking_id;
+                _gaq=[["_setAccount", _cooper_tracking_id], ["_trackPageview"]];
             }
             if (typeof args.additional_tracking_ids === "string" && args.additional_tracking_ids !== "") {
-                this._additional_tracking_ids = args.additional_tracking_ids.replace(/\s/g,'').split(","); //remove all whitespace then split it into our array
-                this._setAdditionalTrackingIds();
+                _additional_tracking_ids = args.additional_tracking_ids.replace(/\s/g,'').split(","); //remove all whitespace then split it into our array
+                _setAdditionalTrackingIds();
             }
 
-            var _self = this;
             // Log all jQuery AJAX requests to Google Analytics
-            jQuery(document).ajaxSend(function(event, xhr, settings) {
-                if (settings.url !== _self._updater_url && 
+            jQuery(document).ajaxSend(function (event, xhr, settings) {
+                if (settings.url !== _updater_url && 
                         typeof _gaq !== "undefined" && _gaq !== null) {
-                    _gaq.push(["_setAccount", this._cooper_tracking_id], ['_trackPageview', settings.url]);
-                    if (_self._additional_tracking_ids.length > 0) {
-                        _self._setAdditionalTrackingIds({url: settings.url});
+                    _gaq.push(["_setAccount", _cooper_tracking_id], ['_trackPageview', settings.url]);
+                    if (_additional_tracking_ids.length > 0) {
+                        _setAdditionalTrackingIds({url: settings.url});
                     }
                 }
             });
-        },
-        
-        /*---------------------*/
-        /* 'PRIVATE' functions */
-        /*---------------------*/
-        _init: function(){
-            if(this._initialized) return;
-            if (typeof _gaq === "undefined" || _gaq === null) {
-                _gaq = [];
-            }
-
-            (function(d){
-                var g=d.createElement("script");
-                var s=d.getElementsByTagName("body")[0];
-                g.src=("https:"==location.protocol?"//ssl":"//www")+".google-analytics.com/ga.js";
-                s.appendChild(g); // append to bottom of <body> to prevent blocking (as opposed to <head>)
-            }(document));
-
-            this._initialized = true;
-        },
-
-        _setAdditionalTrackingIds: function(args){
-            var trackPageview = ['a._trackPageview'];
-            if (typeof args !== 'undefined' && typeof args.url === "string" && args.url !== "") {
-                trackPageview.push(args.url);
-            }
-            for (var i=0 ; i < this._additional_tracking_ids.length ; i++) {
-                if (typeof this._additional_tracking_ids[i] !== 'undefined' && this._additional_tracking_ids[i] !== '') {
-                    _gaq.push(['a._setAccount', this._additional_tracking_ids[i]], trackPageview);
-                }
-            }
         }
     };
     return analyticsMod;

@@ -14,7 +14,6 @@
 <cti:standardPage module="amr" page="billing">
 
 <cti:includeScript link="/JavaScript/cronExpressionData.js" />
-<cti:includeScript link="/JavaScript/yukonGeneral.js"/>
 <cti:includeScript link="/JavaScript/dynamicBillingFileGenerator.js"/>
 <cti:includeScript link="/JavaScript/calendarControl.js"/>
 <cti:includeScript link="/JavaScript/yukon.metering.billing.js"/>

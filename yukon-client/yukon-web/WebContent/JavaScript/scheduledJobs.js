@@ -5,7 +5,7 @@ jQuery(function() {
     jQuery(document).on('yukonDialogConfirmOk', function(event) {
         event.preventDefault();
         //close the dialog
-        Yukon.Dialog.ConfirmationManager.cancel();
+        Yukon.DialogConfirmationManager.cancel();
         //submit job cancellation request
         jQuery.ajax({
              url: "/group/scheduledGroupRequestExecutionResults/cancelJob",

@@ -253,14 +253,12 @@
         });
         jQuery(document).on('yukonDialogConfirmOk', '#yukon_dialog_confirm', function(event) {
             event.preventDefault();
-            Yukon.Dialog.ConfirmationManager.cancel();
+            Yukon.DialogConfirmationManager.cancel();
             submitForm(-1, 'deleteFormat');
         });
         jQuery('.f-initialFocus').focus();
     });
 </script>
-
-    <cti:includeScript link="/JavaScript/yukonGeneral.js" />
 
     <div class="dn">
         <div id="attributeDialog">

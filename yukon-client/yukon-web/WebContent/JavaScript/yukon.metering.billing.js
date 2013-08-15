@@ -1,103 +1,293 @@
-if(typeof(MeteringBilling) === 'undefined') {
+Yukon.namespace('Yukon.MeteringBilling');
+
+Yukon.MeteringBilling = (function() {
     /**
      * Singleton that manages the javascript in User Preferences
      * 
      * @class User Preferences javascript
      * @requires jQuery 1.6+
      */
+    /* PRIVATE VARIABLES METHODS */
+
+    var _STOP_EVENT = function(event) {
+            event.preventDefault ? event.preventDefault() : event.returnValue = false;  // IE8 requires returnValue
+        },
+
+        _is_valid_billing_group = function() {
+            var formatId = jQuery("#MForm [name=fileFormat] :selected").val();
+            var itronTypeId = jQuery("#in_formatType_itronEvent").val();
+            var bgVal = jQuery("#billGroup").val();
+            var anyBillingGroup = bgVal != null && bgVal != undefined && bgVal.length > 0;
     
-    MeteringBilling = {
-        _initialized: false,
+            var hasError = !anyBillingGroup && formatId != itronTypeId;
+            var err = jQuery("#txt_selectGroup");
+            if (hasError) {
+                err.remove();
+                jQuery("#row_billing_group td[class=name]").append(err);
+                err.show();
+                jQuery("#internalTreeContainer_billingTree").addClass("error");
+                return false;
+            }
+            jQuery("#internalTreeContainer_billingTree").removeClass("error");
+            err.hide();
+            return true;
+        },
 
-        _url_generate_billing_file: "/servlet/BillingServlet",
-        _url_scheduled_billing_form: "/scheduledBilling/showForm",
-        _url_schedule_export: "/scheduledBilling/scheduleExport.json",
+        _do_submit_settings_form = function(event, method, url) {
+            _STOP_EVENT(event);
+            if (!_is_valid_billing_group()) {
+                return false;
+            }
+    
+            jQuery.ajax({
+                url: url,
+                type: method,
+                data: jQuery("#MForm").serialize(),
+            }).done( function(html) {
+                _populate_generation_schedule_form(html);
+            });
+            return false;
+        },
 
-        _url_list_schedule_jobs: "/billing/_jobs.html",   // "/amr/scheduledBilling/_jobs.html",
-        _url_delete_scheduled_job: "/scheduledBilling/delete.json",
+        _populate_generation_schedule_form = function(new_html) {
+            var settingsPane = jQuery("#billing_generation_settings");
+            var maybeNewPane = jQuery("#billing_generation_schedule");
+            if (settingsPane.length < 1) {
+                alert("PROGRAMMING PROBLEM: missing div#billing_generation_settings");
+            }
+            if (maybeNewPane.length > 0) { // Exists
+                maybeNewPane.html(new_html);
+            } else { // Must create it
+                maybeNewPane = jQuery('<div id="billing_generation_schedule" class="dn">\n'+ new_html +'\n</div>');
+                maybeNewPane.insertAfter(settingsPane);
+            }
+            settingsPane.hide();
+            maybeNewPane.show();
+        },
 
-        _url_format_setup: "/dynamicBilling/_overview.html",
-        _url_format_copy: "/dynamicBilling/_copy.html",
-        _url_format_create: "/dynamicBilling/_create.html",
-        _url_format_delete: "/dynamicBilling/delete.json",
-        _url_format_edit: "/dynamicBilling/_edit.html",
-        _url_format_save: "/dynamicBilling/save.json",
-        _url_base_setup: "/dynamicBilling/",
+        _do_refresh_schedules_jobs_list = function(send_data, after_function) {
+            jQuery.ajax({
+                url: _url_list_schedule_jobs,
+                type: 'get',
+                data: send_data
+            }).done( function(html) {
+    //            jQuery("#tab_schedules").click();
+                jQuery("#billing_tab_container").tabs("option","active",2); // THIRD tab
+                jQuery("#billing_schedules_jobs").html(html);
+                if (after_function != null && after_function != undefined) {
+                    after_function();
+                }
+            });
+        },
+
+        _get_pagination_state = function(jQueryContainer) {
+            var countPerPage = jQueryContainer.find(".perPageArea .selectedItem").text();
+            var currPage = jQueryContainer.find(".pagingArea .f-current_page_index_from_1").val();
+            //return "page="+ currPage +"&itemsPerPage="+ countPerPage;
+            return {"page": currPage, "itemsPerPage": countPerPage};
+        },
+
+        _delete_schedule_job = function(jQueryBtn, params) {
+            jQuery.ajax({
+                url: _url_delete_scheduled_job,
+                type: "post",
+                data: params
+            }).done( function(results) {
+                if (results.success) {
+                    _do_refresh_schedules_jobs_list(
+                        _get_pagination_state(jQuery("#billing_schedules_jobs")), function() {
+    //                    alert(results.message);
+                    });
+                } else { // ?
+                    alert("An error prevented deleting this job: \n\t"+ results.error);
+                }
+            });
+        },
+
+        _show_edit_schedule_job = function(jQueryBtn, params) {
+            jQuery.ajax({
+                url: _url_scheduled_billing_form,
+                type: "get",
+                data: params
+            }).done( function(html) {
+                _populate_generation_schedule_form(html);
+                jQuery("#billing_tab_container").tabs("option","active",0); // FIRST tab
+            });
+        },
 
 
+        // TAB #2
+        _get_format_ajax_page = function(event, url) {
+            _STOP_EVENT(event);
+            var currFormat = jQuery("#availableFormat :selected");
+            var currFormatId = currFormat.val();
+    
+            jQuery.ajax({
+                url: url,
+                type: 'get',
+                data: {'availableFormat': currFormatId}
+            }).done( function(html) {
+                _populate_setup_form(html);
+                jQuery("#billing_setup_content").html(html);
+            }).fail( function(msg) {
+                alert("FAILED: "+ msg);
+            });
+            return false;
+        },
 
-        /* PUBLIC METHODS */
+        _do_format_ajax_op = function(event, action, url) {
+            _STOP_EVENT(event);
+            var the_data = {};
+            if (action == 'delete') {
+                var currFormat = jQuery("#availableFormat :selected");
+                var currFormatId = currFormat.val();
+                the_data = {'availableFormat': currFormatId};
+            } else if (action == 'save') {
+                the_data = jQuery("#billingFormatForm").serialize();
+            } else {
+                alert("Unknown action: \""+ event +"\"");
+                return false;
+            }
 
-        init: function(){
-            if(this._initialized) return;
-            
+            jQuery.ajax({
+    //            url: _url_format_base + currFormatId +"/_"+ opName +".html",
+                url: url,
+                type: 'post',
+                data: the_data
+            }).done( function(data) {
+                if (data.success) {
+                    _do_refresh_billing_setup_list(null, null); // ? Show success message?
+                } else {
+                    alert("FAILED "+ opName +"\n"+ data.errors);
+                }
+            }).fail( function(error) { // Not the simple (msg, code, etc.) JQuery says...?
+                alert("FAILED: "+ error.statusText +"\nError Code: "+ error.status +"\n"+ error.responseText);
+            });
+            return false;
+        },
+
+        _do_refresh_billing_setup_list = function(send_data, after_function) {
+            jQuery.ajax({
+                url: _url_format_setup,
+                type: 'get',
+                data: send_data
+            }).done( function(html) {
+                var overviewPane = jQuery("#billing_setup_overview");
+                overviewPane.html(html);
+                meteringBillingMod.reset_setup_tab();
+                if (after_function != null && after_function != undefined) {
+                    after_function();
+                }
+            });
+        },
+
+        _populate_setup_form = function(new_html) {
+            var overviewPane = jQuery("#billing_setup_overview");
+            var formPane = jQuery("#billing_setup_form");
+            if (overviewPane.length < 1) {
+                alert("PROGRAMMING PROBLEM = missing div#billing_setup_overview");
+            }
+            if (formPane.length > 0) { // Exists
+                formPane.html(new_html);
+            } else { // Must create it
+                formPane = jQuery('<div id="billing_setup_form" class="dn">\n'+ new_html +'\n</div>');
+                formPane.insertAfter(overviewPane);
+            }
+            overviewPane.hide();
+            formPane.show();
+        },
+        _initialized = false,
+
+        _url_generate_billing_file = "/servlet/BillingServlet",
+        _url_scheduled_billing_form = "/scheduledBilling/showForm",
+        _url_schedule_export = "/scheduledBilling/scheduleExport.json",
+
+        _url_list_schedule_jobs = "/billing/_jobs.html",   // "/amr/scheduledBilling/_jobs.html",
+        _url_delete_scheduled_job = "/scheduledBilling/delete.json",
+
+        _url_format_setup = "/dynamicBilling/_overview.html",
+        _url_format_copy = "/dynamicBilling/_copy.html",
+        _url_format_create = "/dynamicBilling/_create.html",
+        _url_format_delete = "/dynamicBilling/delete.json",
+        _url_format_edit = "/dynamicBilling/_edit.html",
+        _url_format_save = "/dynamicBilling/save.json",
+        _url_base_setup = "/dynamicBilling/",
+        meteringBillingMod;
+
+    /* PUBLIC METHODS */
+    meteringBillingMod = {
+        init: function() {
+            if (_initialized) {
+                return;
+            }
+
             var doc = jQuery(document);
 
             doc.on("click", "#MForm [name=generate]", function(){ jQuery("#MForm").submit();});
-            doc.on("submit", "#MForm", this.do_generate_billing_file);
-            doc.on("click", "#MForm [name=schedule]", this.show_scheduled_billing_form);
+            doc.on("submit", "#MForm", meteringBillingMod.do_generate_billing_file);
+            doc.on("click", "#MForm [name=schedule]", meteringBillingMod.show_scheduled_billing_form);
 
-            doc.on("submit", "#scheduleForm", this.do_schedule_billing_file_export);
-            doc.on("click", "#billing_generation_schedule .f-cancel", this.reset_generation_tab);
+            doc.on("submit", "#scheduleForm", meteringBillingMod.do_schedule_billing_file_export);
+            doc.on("click", "#billing_generation_schedule .f-cancel", meteringBillingMod.reset_generation_tab);
             jQuery("#billing_tab_container").tabs({
-                activate: this.on_tab_change });
+                activate: meteringBillingMod.on_tab_change });
 
-            doc.on("click", "#tab_schedules a", this.update_schedules_job_list);
-            doc.on("click", "#billing_schedules_jobs #jobsTable button", this.do_schedules_job_list_button);
+            doc.on("click", "#tab_schedules a", meteringBillingMod.update_schedules_job_list);
+            doc.on("click", "#billing_schedules_jobs #jobsTable button", meteringBillingMod.do_schedules_job_list_button);
 
             // 2nd tab
-            doc.on("click change", "#formatForm #availableFormat", this.unfreeze_billing_setup);
-//            doc.on("click", "#formatForm [name=copy], #formatForm [name=create], #formatForm [name=edit]", this.show_billing_setup_form);
-            doc.on("click", "#formatForm [name=delete]", this.delete_billing_format);
-            doc.on("click", "#btnCreateFormat", this.show_create_form);
-            doc.on("click", "#btnEditFormat", this.show_edit_form);
-            doc.on("click", "#btnCopyFormat", this.show_copy_form);
+            doc.on("click change", "#formatForm #availableFormat", meteringBillingMod.unfreeze_billing_setup);
+//            doc.on("click", "#formatForm [name=copy], #formatForm [name=create], #formatForm [name=edit]", show_billing_setup_form);
+            doc.on("click", "#formatForm [name=delete]", meteringBillingMod.delete_billing_format);
+            doc.on("click", "#btnCreateFormat", meteringBillingMod.show_create_form);
+            doc.on("click", "#btnEditFormat", meteringBillingMod.show_edit_form);
+            doc.on("click", "#btnCopyFormat", meteringBillingMod.show_copy_form);
             // @ formatDetail.jsp for Setup tab (2nd tab) after [Create]
-            doc.on("click", "#btnCancelSetup", this.reset_setup_tab);
-            doc.on("submit", "#billingFormatForm", this.do_save_format);
-            doc.on("click", "#btnDeleteFormat", this.do_delete_format);
+            doc.on("click", "#btnCancelSetup", meteringBillingMod.reset_setup_tab);
+            doc.on("submit", "#billingFormatForm", meteringBillingMod.do_save_format);
+            doc.on("click", "#btnDeleteFormat", meteringBillingMod.do_delete_format);
 
-            this._initialized = true;
+            _initialized = true;
         },
 
         // Used by _jobs.jsp, ASSUMED TO EXIST BY scheduledFileExportJobs.tag
         delete_schedule_job : function(jobId) {
-            MeteringBilling._delete_schedule_job(null, {'jobId': jobId});
+            _delete_schedule_job(null, {'jobId': jobId});
         },
 
         show_setup_home: function(event) {
-            return MeteringBilling._get_format_ajax_page(event, MeteringBilling._url_format_setup);
+            return _get_format_ajax_page(event, _url_format_setup);
         },
 
         show_create_form: function(event) {
-            return MeteringBilling._get_format_ajax_page(event, MeteringBilling._url_format_create);
+            return _get_format_ajax_page(event, _url_format_create);
         },
 
         show_edit_form: function(event) {
-            return MeteringBilling._get_format_ajax_page(event, MeteringBilling._url_format_edit);
+            return _get_format_ajax_page(event, _url_format_edit);
         },
 
         show_copy_form: function(event) {
-            return MeteringBilling._get_format_ajax_page(event, MeteringBilling._url_format_copy);
+            return _get_format_ajax_page(event, _url_format_copy);
         },
 
         do_delete_format: function(event) {
-            return MeteringBilling._do_format_ajax_op(event, 'delete', MeteringBilling._url_format_delete);
+            return _do_format_ajax_op(event, 'delete', _url_format_delete);
         },
 
         do_save_format: function(event) {
-            return MeteringBilling._do_format_ajax_op(event, 'save', MeteringBilling._url_format_save);
+            return _do_format_ajax_op(event, 'save', _url_format_save);
         },
 
         do_generate_billing_file: function(event) {
-            if (!MeteringBilling._is_valid_billing_group()) {
-                MeteringBilling._STOP_EVENT(event);
+            if (!_is_valid_billing_group()) {
+                _STOP_EVENT(event);
                 return false;
             }
         },
 
         show_scheduled_billing_form: function(event) {
-            return MeteringBilling._do_submit_settings_form(event, 'get', MeteringBilling._url_scheduled_billing_form);
+            return _do_submit_settings_form(event, 'get', _url_scheduled_billing_form);
         },
 
         on_tab_change : function(event, ui){
@@ -109,7 +299,7 @@ if(typeof(MeteringBilling) === 'undefined') {
             if(to ==='billing_generation_settings') {
                 return;
             }
-            MeteringBilling.reset_generation_tab();
+            meteringBillingMod.reset_generation_tab();
         },
 
         /**
@@ -117,7 +307,7 @@ if(typeof(MeteringBilling) === 'undefined') {
          */
         reset_generation_tab: function(event) {
             if (event != null && event != undefined) {
-                MeteringBilling._STOP_EVENT(event);
+                _STOP_EVENT(event);
             }
             var settingsPane = jQuery("#billing_generation_settings");
             var schedParams = jQuery("#billing_generation_schedule");
@@ -148,7 +338,7 @@ if(typeof(MeteringBilling) === 'undefined') {
             schedParams.find("[name=scheduleCronString_CRONEXP_MONTHLY_OPTION]").attr('checked','checked');
             schedParams.find("[name=scheduleCronString_CRONEXP_MONTHLY_OPTION_ON_DAY_X]").val('1');
             schedParams.find("[name=scheduleCronString_CRONEXP_CUSTOM_EXPRESSION]").val('0 0 1 1 * ?');
-            
+        
             // AND we have to reset the hidden form's values too!
             var hiddenForm2 = schedParams.find("#scheduleForm");
             hiddenForm2.find("[name=deviceGroups], [name=fileFormat], [name=demandDays], [name=energyDays], [name=removeMultiplier], [name=jobId], [name=_appendDateToFileName], [name=_overrideFileExtension], [name=_includeExportCopy]").val('');
@@ -158,7 +348,7 @@ if(typeof(MeteringBilling) === 'undefined') {
         /** Setup tab **/
         reset_setup_tab: function(event) {
             if (event != null && event != undefined) {
-                MeteringBilling._STOP_EVENT(event);
+                _STOP_EVENT(event);
             }
             var overviewPane = jQuery("#billing_setup_overview");
             var formPane = jQuery("#billing_setup_form");
@@ -170,11 +360,11 @@ if(typeof(MeteringBilling) === 'undefined') {
         },
 
         do_schedule_billing_file_export: function(event) {
-            MeteringBilling._STOP_EVENT(event);
+            _STOP_EVENT(event);
             var form = jQuery("#scheduleForm");
 
             jQuery.ajax({
-                url: MeteringBilling._url_schedule_export,
+                url: _url_schedule_export,
                 type: 'post',
                 data: form.serialize(),
             }).done( function(data) {
@@ -183,9 +373,9 @@ if(typeof(MeteringBilling) === 'undefined') {
                 // anything else?
 
                 if (data.success) {
-                    MeteringBilling._do_refresh_schedules_jobs_list(null, function() {
+                    _do_refresh_schedules_jobs_list(null, function() {
 //                        alert(data.message); // What to do instead of an alert box? Or do we inform the users that it worked?
-                        MeteringBilling.reset_generation_tab();
+                        reset_generation_tab();
                     });
                     return false;
                 }
@@ -218,10 +408,10 @@ if(typeof(MeteringBilling) === 'undefined') {
         },
 
         update_schedules_job_list: function(event) {
-            MeteringBilling._STOP_EVENT(event);
+            _STOP_EVENT(event);
             var href = jQuery(event.currentTarget).attr('href');
             var at = href.indexOf("?") + 1;
-            MeteringBilling._do_refresh_schedules_jobs_list(href.substr(at), null);
+            _do_refresh_schedules_jobs_list(href.substr(at), null);
         },
 
         // no-op for Remove button: SEE scheduledFileExportJob.tag
@@ -234,12 +424,12 @@ if(typeof(MeteringBilling) === 'undefined') {
             var action = href.substr(0, href.indexOf("?"));
             var params = href.substr(href.indexOf("?")+1);
             if (action == "delete") {
-                MeteringBilling._STOP_EVENT(event);
-//                MeteringBilling._delete_schedule_job(btn, params);
+                _STOP_EVENT(event);
+//                _delete_schedule_job(btn, params);
                 return false;
             } else if (action == "showForm") {
-                MeteringBilling._STOP_EVENT(event);
-                MeteringBilling._show_edit_schedule_job(btn, params);
+                _STOP_EVENT(event);
+                _show_edit_schedule_job(btn, params);
                 return false;
             }
             return true; // This should never be hit.
@@ -269,37 +459,37 @@ if(typeof(MeteringBilling) === 'undefined') {
 
         // @ #billing_setup_overview
         show_billing_setup_form : function(event) {
-            MeteringBilling._STOP_EVENT(event);
+            _STOP_EVENT(event);
             var btn = jQuery(event.currentTarget);
             var action = btn.attr('name');
             var formatId = jQuery('#formatForm availableFormat :selected').val();
 
             jQuery.ajax({
-                url: MeteringBilling._url_base_setup+"_"+ action +".html",
+                url: _url_base_setup+"_"+ action +".html",
                 type: 'get',
                 data: {'availableFormat': formatId}
             }).done( function(html) {
-                MeteringBilling._populate_setup_form(html);
+                _populate_setup_form(html);
             });
             return false;
         },
 
         // @ #billing_setup_overview
         delete_billing_format : function(event) {
-            MeteringBilling._STOP_EVENT(event);
+            _STOP_EVENT(event);
             var formatId = jQuery('#formatForm availableFormat :selected').val();
             if (formatId == null || formatId == undefined) { // skip it
-                MeteringBilling._do_refresh_billing_setup_list(null, null);
+                _do_refresh_billing_setup_list(null, null);
                 return false;
             }
 
             jQuery.ajax({
-                url: MeteringBilling._url_format_delete,
+                url: _url_format_delete,
                 type: 'post',
                 data: {'availableFormat': formatId}
             }).done( function(data) {
                 if (data.success) {
-                    MeteringBilling._do_refresh_billing_setup_list(null, function() {
+                    _do_refresh_billing_setup_list(null, function() {
                         alert(data.message);
                     });
                 } else {
@@ -307,200 +497,11 @@ if(typeof(MeteringBilling) === 'undefined') {
                 }
             });
             return false;
-        },
-
-
-/* PRIVATE METHODS */
-
-        _STOP_EVENT: function(event) {
-            event.preventDefault ? event.preventDefault() : event.returnValue = false;  // IE8 requires returnValue
-        },
-
-        _is_valid_billing_group: function() {
-            var formatId = jQuery("#MForm [name=fileFormat] :selected").val();
-            var itronTypeId = jQuery("#in_formatType_itronEvent").val();
-            var bgVal = jQuery("#billGroup").val();
-            var anyBillingGroup = bgVal != null && bgVal != undefined && bgVal.length > 0;
-
-            var hasError = !anyBillingGroup && formatId != itronTypeId;
-            var err = jQuery("#txt_selectGroup");
-            if (hasError) {
-                err.remove();
-                jQuery("#row_billing_group td[class=name]").append(err);
-                err.show();
-                jQuery("#internalTreeContainer_billingTree").addClass("error");
-                return false;
-            }
-            jQuery("#internalTreeContainer_billingTree").removeClass("error");
-            err.hide();
-            return true;
-        },
-
-        _do_submit_settings_form: function(event, method, url) {
-            MeteringBilling._STOP_EVENT(event);
-            if (!MeteringBilling._is_valid_billing_group()) {
-                return false;
-            }
-
-            jQuery.ajax({
-                url: url,
-                type: method,
-                data: jQuery("#MForm").serialize(),
-            }).done( function(html) {
-                MeteringBilling._populate_generation_schedule_form(html);
-            });
-            return false;
-        },
-
-        _populate_generation_schedule_form: function(new_html) {
-            var settingsPane = jQuery("#billing_generation_settings");
-            var maybeNewPane = jQuery("#billing_generation_schedule");
-            if (settingsPane.length < 1) {
-                alert("PROGRAMMING PROBLEM: missing div#billing_generation_settings");
-            }
-            if (maybeNewPane.length > 0) { // Exists
-                maybeNewPane.html(new_html);
-            } else { // Must create it
-                maybeNewPane = jQuery('<div id="billing_generation_schedule" class="dn">\n'+ new_html +'\n</div>');
-                maybeNewPane.insertAfter(settingsPane);
-            }
-            settingsPane.hide();
-            maybeNewPane.show();
-        },
-
-        _do_refresh_schedules_jobs_list: function(send_data, after_function) {
-            jQuery.ajax({
-                url: MeteringBilling._url_list_schedule_jobs,
-                type: 'get',
-                data: send_data
-            }).done( function(html) {
-//                jQuery("#tab_schedules").click();
-                jQuery("#billing_tab_container").tabs("option","active",2); // THIRD tab
-                jQuery("#billing_schedules_jobs").html(html);
-                if (after_function != null && after_function != undefined) {
-                    after_function();
-                }
-            });
-        },
-
-        _get_pagination_state : function(jQueryContainer) {
-            var countPerPage = jQueryContainer.find(".perPageArea .selectedItem").text();
-            var currPage = jQueryContainer.find(".pagingArea .f-current_page_index_from_1").val();
-//            return "page="+ currPage +"&itemsPerPage="+ countPerPage;
-            return {"page": currPage, "itemsPerPage": countPerPage};
-        },
-
-        _delete_schedule_job : function(jQueryBtn, params) {
-            jQuery.ajax({
-                url: MeteringBilling._url_delete_scheduled_job,
-                type: "post",
-                data: params
-            }).done( function(results) {
-                if (results.success) {
-                    MeteringBilling._do_refresh_schedules_jobs_list(
-                        MeteringBilling._get_pagination_state(jQuery("#billing_schedules_jobs")), function() {
-//                        alert(results.message);
-                    });
-                } else { // ?
-                    alert("An error prevented deleting this job: \n\t"+ results.error);
-                }
-            });
-        },
-
-        _show_edit_schedule_job : function(jQueryBtn, params) {
-            jQuery.ajax({
-                url: MeteringBilling._url_scheduled_billing_form,
-                type: "get",
-                data: params
-            }).done( function(html) {
-                MeteringBilling._populate_generation_schedule_form(html);
-                jQuery("#billing_tab_container").tabs("option","active",0); // FIRST tab
-            });
-        },
-
-
-        // TAB #2
-        _get_format_ajax_page: function(event, url) {
-            MeteringBilling._STOP_EVENT(event);
-            var currFormat = jQuery("#availableFormat :selected");
-            var currFormatId = currFormat.val();
-
-            jQuery.ajax({
-                url: url,
-                type: 'get',
-                data: {'availableFormat': currFormatId}
-            }).done( function(html) {
-                MeteringBilling._populate_setup_form(html);
-                jQuery("#billing_setup_content").html(html);
-            }).fail( function(msg) {
-                alert("FAILED: "+ msg);
-            });
-            return false;
-        },
-
-        _do_format_ajax_op: function(event, action, url) {
-            MeteringBilling._STOP_EVENT(event);
-            var the_data = {};
-            if (action == 'delete') {
-                var currFormat = jQuery("#availableFormat :selected");
-                var currFormatId = currFormat.val();
-                the_data = {'availableFormat': currFormatId};
-            } else if (action == 'save') {
-                the_data = jQuery("#billingFormatForm").serialize();
-            } else {
-                alert("Unknown action: \""+ event +"\"");
-                return false;
-            }
-
-            jQuery.ajax({
-//                url: MeteringBilling._url_format_base + currFormatId +"/_"+ opName +".html",
-                url: url,
-                type: 'post',
-                data: the_data
-            }).done( function(data) {
-                if (data.success) {
-                    MeteringBilling._do_refresh_billing_setup_list(null, null); // ? Show success message?
-                } else {
-                    alert("FAILED "+ opName +"\n"+ data.errors);
-                }
-            }).fail( function(error) { // Not the simple (msg, code, etc.) JQuery says...?
-                alert("FAILED: "+ error.statusText +"\nError Code: "+ error.status +"\n"+ error.responseText);
-            });
-            return false;
-        },
-
-        _do_refresh_billing_setup_list: function(send_data, after_function) {
-            jQuery.ajax({
-                url: MeteringBilling._url_format_setup,
-                type: 'get',
-                data: send_data
-            }).done( function(html) {
-                var overviewPane = jQuery("#billing_setup_overview");
-                overviewPane.html(html);
-                MeteringBilling.reset_setup_tab();
-                if (after_function != null && after_function != undefined) {
-                    after_function();
-                }
-            });
-        },
-
-        _populate_setup_form: function(new_html) {
-            var overviewPane = jQuery("#billing_setup_overview");
-            var formPane = jQuery("#billing_setup_form");
-            if (overviewPane.length < 1) {
-                alert("PROGRAMMING PROBLEM: missing div#billing_setup_overview");
-            }
-            if (formPane.length > 0) { // Exists
-                formPane.html(new_html);
-            } else { // Must create it
-                formPane = jQuery('<div id="billing_setup_form" class="dn">\n'+ new_html +'\n</div>');
-                formPane.insertAfter(overviewPane);
-            }
-            overviewPane.hide();
-            formPane.show();
-        },
+        }
     };
-}
+    return meteringBillingMod;
+})();
+
 jQuery(function() {
-    MeteringBilling.init();
+    Yukon.MeteringBilling.init();
 });

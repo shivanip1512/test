@@ -103,7 +103,7 @@
             });
         }
         
-        YEvent.observeSelectorClick('button.commandButton', function(event) {
+        jQuery(document).on('click', 'button.commandButton', function(event) {
             var button = event.findElement('button');
             var cmdId = button.next('input.cmdId').value;
             var paoId = button.next('input.paoId').value;

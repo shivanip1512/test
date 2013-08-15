@@ -7,8 +7,6 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
-<script language="JavaScript" type="text/javascript"  src="/JavaScript/yukonGeneral.js"></script>
-
 <cti:standardPage module="adminSetup" page="schedules.${mode}">
 
     <cti:includeCss link="/WebConfig/yukon/styles/shared/thermostat.css"/>

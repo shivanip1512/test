@@ -15,8 +15,6 @@
     <cti:checkEnergyCompanyOperator showError="true" >
         <tags:setFormEditMode mode="${mode}"/>
         
-        <cti:includeScript link="/JavaScript/yukonGeneral.js"/>
-    
         <form id="deleteAccountForm" action="/stars/operator/account/deleteAccount" method="get">
           <input type="hidden" name="accountId" value="${accountId}">
         </form>
@@ -33,8 +31,8 @@
         <script type="text/javascript">
     
             //YukonGeneral.js
-            alignTableColumnsByTable('#customerContactTable', '#serviceInformationTable');
-            alignTableColumnsByTable('#serviceAddressTable', '#billingAddressTable');
+            Yukon.ui.aux.alignTableColumnsByTable('#customerContactTable', '#serviceInformationTable');
+            Yukon.ui.aux.alignTableColumnsByTable('#serviceAddressTable', '#billingAddressTable');
             //END YukonGeneral.js
         
             jQuery(function() {
@@ -218,7 +216,7 @@
                                 <c:if test="${mode == 'EDIT' || mode == 'CREATE' || accountGeneral.accountDto.isCommercial}">
                                     <tags:checkboxNameValue nameKey=".commercialLabel" path="accountDto.isCommercial" onclick="toggleCommercialInputs(this.checked);" id="isCommercialCheckbox"/>
                                     <tags:inputNameValue nameKey=".companyLabel" path="accountDto.companyName"/>
-                                    <tags:yukonListEntrySelectNameValue nameKey=".commercialTypeLabel" path="accountDto.commercialTypeEntryId" energyCompanyId="${energyCompanyId}" listName="CI_CUST_TYPE"/>
+                                    <tags:yukonListEntrySelectNameValue id="accountDto.commercialTypeEntryId" nameKey=".commercialTypeLabel" path="accountDto.commercialTypeEntryId" energyCompanyId="${energyCompanyId}" listName="CI_CUST_TYPE"/>
                                 </c:if>
                                 
                                 <tags:inputNameValue nameKey=".customerNumberLabel" path="accountDto.customerNumber"/>

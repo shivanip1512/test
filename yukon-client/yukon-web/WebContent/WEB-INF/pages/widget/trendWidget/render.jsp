@@ -7,11 +7,13 @@
 
 <script type="text/javascript"> 
 jQuery(function () {
-  jQuery(".trend-settings-anchor").click(function(e) {
-      jQuery(".trend-settings").toggle();
-      e.stopPropagation();
-      return true;
-  });
+    jQuery(".trend-settings-anchor").click(function(e) {
+        jQuery(".trend-settings").toggle();
+        e.stopPropagation();
+        return true;
+    });
+    // init for a specific DOM element and its children
+    Yukon.ui.dateTimePickers.ancestorInit('#optionalDateFields');
 });
 </script>
 
@@ -101,7 +103,7 @@ jQuery(function () {
         				<td>&nbsp;</td>
         				<td>
 							<div class="fl">
-								<dt:dateRange startName="startDateParam" startValue="${startDate}" endName="stopDateParam" endValue="${stopDate}" forceIncludes="true" />
+								<dt:dateRange startName="startDateParam" startValue="${startDate}" endName="stopDateParam" endValue="${stopDate}"/>
 							</div>
                             <tags:widgetActionRefreshImage nameKey="reloadUsingCustomDates" method="render" icon="icon-arrow-refresh"/>
         				</td>

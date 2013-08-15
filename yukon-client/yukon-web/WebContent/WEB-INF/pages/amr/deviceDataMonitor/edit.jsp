@@ -47,7 +47,7 @@
 		                    <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="groupDataJson" />
 		                    <tags:deviceGroupNameSelector fieldName="groupName"
 		                        fieldValue="${monitor.groupName}" dataJson="${groupDataJson}"
-		                        linkGroupName="true" submitCallback="DeviceDataMonitor._device_group_changed();"/>
+		                        linkGroupName="true" submitCallback="Yukon.DeviceDataMonitor.device_group_changed();"/>
 		                </tags:nameValue2>
 
 						<tags:nameValue2 nameKey=".deviceGroupCount">
@@ -198,7 +198,7 @@
 
 	<cti:msg2 var="updateCreateTitleVerb" key=".${mode}.areYouSureTitleVerb"/>
 	<cti:msg2 var="updateCreateMsgVerb" key=".${mode}.areYouSureMsgVerb"/>
-    <!-- This okEvent value should be kept equal to DeviceDataMonitor._update_or_create_event in yukon.device_data_monitor.js -->
+    <!-- This okEvent value should be kept equal to Yukon.DeviceDataMonitor._update_or_create_event in yukon.device_data_monitor.js -->
     <c:set var="okEvent" value="e_ddm_update_or_create"/>
     <c:set var="nameKey" value="areYouSureUpdateOrCreateDialog"/>
     <c:set var="options" value="{width: 550}"/>

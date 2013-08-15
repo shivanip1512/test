@@ -1,11 +1,6 @@
-Yukon = Yukon ? Yukon : {};
-
-//support for inheritance: inherit superType's prototype
-Yukon.inheritPrototype = function (subType, superType) {
-    var prototype = Object.create(superType.prototype);
-    prototype.constructor = subType;
-    subType.prototype = prototype;
-};
+var Yukon = (function(yukonMod) {
+    return yukonMod;
+})(Yukon || {});
 
 // prototype for Picker, from which all Picker instances are derived
 Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldName, pickerId, extraDestinationFields, containerDiv) {
@@ -84,11 +79,11 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
     },
 
     block = function() {
-        Yukon.uiUtils.elementGlass.show(jQuery('#' + this.pickerId + ' .f-block_this'));
+        Yukon.ui.elementGlass.show(jQuery('#' + this.pickerId + ' .f-block_this'));
     },
 
     unblock = function() {
-        Yukon.uiUtils.elementGlass.hide(jQuery('#' + this.pickerId + ' .f-block_this'));
+        Yukon.ui.elementGlass.hide(jQuery('#' + this.pickerId + ' .f-block_this'));
     },
 
     updateSelectAllCheckbox = function() {

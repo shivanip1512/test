@@ -19,7 +19,7 @@
         window.location = url;
     }
     
-    YEvent.observeSelectorClick('#deleteButton', function(event){
+    jQuery(document).on('click', '#deleteButton', function(event){
         var analysisId = event.findElement('tr').down('input[type=hidden]');
         deleteConfirmAnalysisId = analysisId.value;
         $('deleteConfirmationPopup').show();

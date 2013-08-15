@@ -11,15 +11,15 @@
 <%@ attribute name="minDate" type="java.lang.Object" description="Set a minimum selectable date via a Date object or as a string in the current dateFormat, or a number of days from today (e.g. +7) or a string of values and periods ('y' for years, 'm' for months, 'w' for weeks, 'd' for days, e.g. '+1m +1w'), or null for no limit." %>
 <%@ attribute name="stepHour" type="java.lang.String" description="Steps when incrementing/decrementing hours" %>
 <%@ attribute name="stepMinute" type="java.lang.String" description="Steps when incrementing/decrementing minutes" %>
-<%@ attribute name="forceIncludes" type="java.lang.Boolean" description="Force includes of the JS assets, needed when ajaxed in." %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 
-<%@ include file="pickerIncludes.jspf" %>
+<dt:pickerIncludes/>
 
 <c:if test="${empty id}">
 	<c:if test="${empty pageScope.path}">
