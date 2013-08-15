@@ -131,6 +131,7 @@ input[type=email],input[type=number],input[type=password],input[type=tel],input[
 	-ms-transition: border 0.1s ease-in-out, background-color 0.1s ease-in-out;
 	transition: border 0.1s ease-in-out, background-color 0.1s ease-in-out;
 }
+input[disabled], select[disabled] {border: 1px solid #e5e5e5;background: #f1f1f1 !important;}
 
 input[type=email],input[type=number],input[type=password],input[type=tel],input[type=text],input[type=url],select:not([multiple]):not([size]) {
 	height: 26px;
