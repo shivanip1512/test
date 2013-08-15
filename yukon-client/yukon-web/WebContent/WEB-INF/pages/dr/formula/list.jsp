@@ -19,21 +19,22 @@
                 </thead>
                 <tfoot></tfoot>
                 <tbody>
-                <c:forEach var="formula" items="${formulas}">
-                    <tr>
-                        <td><a href="view/${formula.formulaId}">${formula.name}</a></td>
-                        <td><i:inline key="${formula.calculationType}"/></td>
-                        <td><i:inline key="${formula.formulaType}"/></td>
-                        <td>
-                            <c:choose>
-                                <c:when test="${formula.formulaType == 'GEAR'}">${formula.assignments}</c:when>
-                                <c:otherwise>
-                                    <a href="#">${formula.assignments}</a>
-                                </c:otherwise>
-                            </c:choose>
-                        </td>
-                    </tr>
-                </c:forEach>
+	                <c:forEach var="formula" items="${formulas}">
+	                    <tr>
+	                        <td><a href="view/${formula.formulaId}">${formula.name}</a></td>
+	                        <td><i:inline key="${formula.calculationType}"/></td>
+	                        <td><i:inline key="${formula.formulaType}"/></td>
+	                        <td>
+	                            <c:choose>
+	                                <c:when test="${formula.formulaType == 'GEAR'}">${formula.assignments}</c:when>
+	                                <c:otherwise>
+	                                    <a href="#">${formula.assignments}</a>
+	                                </c:otherwise>
+	                            </c:choose>
+	                        </td>
+	                    </tr>
+	                </c:forEach>
+                </tbody>
             </table>
             </c:if>
         <c:if test="${empty formulas}">
