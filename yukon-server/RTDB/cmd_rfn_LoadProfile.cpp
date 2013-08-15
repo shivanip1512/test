@@ -138,13 +138,27 @@ RfnVoltageProfileConfigurationCommand::RfnVoltageProfileConfigurationCommand( Re
         _demandInterval( 0x00 ),
         _loadProfileInterval( 0x00 )
 {
-    validateCondition( demand_interval_seconds > 0 && demand_interval_seconds <= (255 * SecondsPerInterval) && ! (demand_interval_seconds % SecondsPerInterval),
-                       BADPARAM, "Invalid Voltage Demand Interval" );
+    validateCondition( demand_interval_seconds >= (1 * SecondsPerInterval),
+                       BADPARAM, "Invalid Voltage Demand Interval: (" + CtiNumStr(demand_interval_seconds) +
+                                    ") underflow (minimum: " + CtiNumStr(1 * SecondsPerInterval) + ")" );
 
-    validateCondition( load_profile_interval_minutes > 0 && load_profile_interval_minutes <= 255,
-                       BADPARAM, "Invalid Load Profile Demand Interval" );
+    validateCondition( demand_interval_seconds <= (255 * SecondsPerInterval),
+                       BADPARAM, "Invalid Voltage Demand Interval: (" + CtiNumStr(demand_interval_seconds) +
+                                    ") overflow (maximum: " + CtiNumStr(255 * SecondsPerInterval) + ")" );
 
-    _demandInterval      = demand_interval_seconds / 15;
+    validateCondition( ! (demand_interval_seconds % SecondsPerInterval),
+                       BADPARAM, "Invalid Voltage Demand Interval: (" + CtiNumStr(demand_interval_seconds) +
+                                    ") not divisible by " + CtiNumStr(SecondsPerInterval) );
+
+    validateCondition( load_profile_interval_minutes > 0,
+                       BADPARAM, "Invalid Load Profile Demand Interval: (" + CtiNumStr(load_profile_interval_minutes) +
+                                    ") underflow (minimum: 1)" );
+
+    validateCondition( load_profile_interval_minutes <= 255,
+                       BADPARAM, "Invalid Load Profile Demand Interval: (" + CtiNumStr(load_profile_interval_minutes) +
+                                    ") overflow (maximum: 255)" );
+
+    _demandInterval      = demand_interval_seconds / SecondsPerInterval;
     _loadProfileInterval = load_profile_interval_minutes;
 }
 

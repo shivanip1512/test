@@ -13,6 +13,19 @@ using boost::assign::list_of;
 using boost::assign::pair_list_of;
 
 
+// --- defined in RTDB\test_main.cpp -- so BOOST_CHECK_EQUAL_COLLECTIONS() works for RfnCommand::CommandException
+namespace boost         {
+namespace test_tools    {
+    bool operator!=( const RfnCommand::CommandException & lhs, const RfnCommand::CommandException & rhs );
+}
+}
+
+namespace std   {
+    std::ostream & operator<<( std::ostream & os, const RfnCommand::CommandException & ex );
+}
+// ---
+
+
 
 BOOST_AUTO_TEST_SUITE( test_cmd_rfn_LoadProfile )
 
@@ -64,7 +77,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_SetConfiguration )
 
         RfnCommand::RfnResult rcv = command.decode( execute_time, response );
 
-        BOOST_REQUIRE_EQUAL( rcv.description, "Status: Success (0)" );
+        BOOST_CHECK_EQUAL( rcv.description, "Status: Success (0)" );
     }
 
     // decode -- failure response
@@ -80,8 +93,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_SetConfiguration )
         }
         catch ( const RfnCommand::CommandException & ex )
         {
-            BOOST_REQUIRE_EQUAL( ex.error_code, ErrorInvalidData );
-            BOOST_REQUIRE_EQUAL( ex.what(),     "Status: Failure (1)" );
+            BOOST_CHECK_EQUAL( ex.error_code, ErrorInvalidData );
+            BOOST_CHECK_EQUAL( ex.what(),     "Status: Failure (1)" );
         }
     }
 }
@@ -96,14 +109,16 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_SetConfiguration_constructor_exce
         (  300,   0 )       // load profile interval of 0 minutes
         (  300, 300 );      // load profile interval > 255
 
-    const std::vector< std::pair< int, std::string > >  exceptions = pair_list_of
-        ( BADPARAM, "Invalid Voltage Demand Interval" )
-        ( BADPARAM, "Invalid Voltage Demand Interval" )
-        ( BADPARAM, "Invalid Voltage Demand Interval" )
-        ( BADPARAM, "Invalid Load Profile Demand Interval" )
-        ( BADPARAM, "Invalid Load Profile Demand Interval" );
+    const std::vector< RfnCommand::CommandException >   expected = list_of
+        ( RfnCommand::CommandException( BADPARAM, "Invalid Voltage Demand Interval: (0) underflow (minimum: 15)" ) )
+        ( RfnCommand::CommandException( BADPARAM, "Invalid Voltage Demand Interval: (3900) overflow (maximum: 3825)" ) )
+        ( RfnCommand::CommandException( BADPARAM, "Invalid Voltage Demand Interval: (301) not divisible by 15" ) )
+        ( RfnCommand::CommandException( BADPARAM, "Invalid Load Profile Demand Interval: (0) underflow (minimum: 1)" ) )
+        ( RfnCommand::CommandException( BADPARAM, "Invalid Load Profile Demand Interval: (300) overflow (maximum: 255)" ) );
 
-    BOOST_REQUIRE( inputs.size() == exceptions.size() );
+    std::vector< RfnCommand::CommandException > actual;
+
+    BOOST_REQUIRE( inputs.size() == expected.size() );
 
     for ( int i = 0; i < inputs.size(); i++ )
     {
@@ -115,10 +130,12 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_SetConfiguration_constructor_exce
         }
         catch ( const RfnCommand::CommandException & ex )
         {
-            BOOST_REQUIRE_EQUAL( ex.error_code, exceptions[i].first );
-            BOOST_REQUIRE_EQUAL( ex.what(),     exceptions[i].second );
+            actual.push_back( ex );
         }
     }
+
+    BOOST_CHECK_EQUAL_COLLECTIONS( actual.begin(),   actual.end(),
+                                   expected.begin(), expected.end() );
 }
 
 
@@ -133,16 +150,18 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_SetConfiguration_decoding_excepti
         ( list_of( 0x69 )( 0x00 )( 0x00 )( 0x00 )( 0x00 ) )
         ( list_of( 0x69 )( 0x00 )( 0x00 )( 0x00 )( 0x00 )( 0x00 )( 0x00 )( 0x00 ) );
 
-    const std::vector< std::pair< int, std::string > >  exceptions = pair_list_of
-        ( ErrorInvalidData, "Invalid Response Command Code (0x6f)" )
-        ( ErrorInvalidData, "Invalid Operation Code (0x01)" )
-        ( ErrorInvalidData, "Invalid Status (2)" )
-        ( ErrorInvalidData, "Invalid TLV count (1)" )
-        ( ErrorInvalidData, "Invalid Response length (3)" )
-        ( ErrorInvalidData, "Invalid Response length (5)" )
-        ( ErrorInvalidData, "Invalid Response length (8)" );
+    const std::vector< RfnCommand::CommandException >   expected = list_of
+        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response Command Code (0x6f)" ) )
+        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Operation Code (0x01)" ) )
+        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Status (2)" ) )
+        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV count (1)" ) )
+        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response length (3)" ) )
+        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response length (5)" ) )
+        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response length (8)" ) );
 
-    BOOST_REQUIRE( responses.size() == exceptions.size() );
+    BOOST_REQUIRE( responses.size() == expected.size() );
+
+    std::vector< RfnCommand::CommandException > actual;
 
     test_ConfigResultHandler rh;
 
@@ -158,10 +177,12 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_SetConfiguration_decoding_excepti
         }
         catch ( const RfnCommand::CommandException & ex )
         {
-            BOOST_REQUIRE_EQUAL( ex.error_code, exceptions[i].first );
-            BOOST_REQUIRE_EQUAL( ex.what(),     exceptions[i].second );
+            actual.push_back( ex );
         }
     }
+
+    BOOST_CHECK_EQUAL_COLLECTIONS( actual.begin(),   actual.end(),
+                                   expected.begin(), expected.end() );
 }
 
 
@@ -187,18 +208,18 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetConfiguration )
         const std::vector< unsigned char > response = boost::assign::list_of
             ( 0x69 )( 0x01 )( 0x00 )( 0x01 )( 0x01 )( 0x02 )( 0x04 )( 0x06 );
 
-        BOOST_REQUIRE_EQUAL( 0, command.getDemandIntervalSeconds() );
-        BOOST_REQUIRE_EQUAL( 0, command.getLoadProfileIntervalMinutes() );
+        BOOST_CHECK_EQUAL( 0, command.getDemandIntervalSeconds() );
+        BOOST_CHECK_EQUAL( 0, command.getLoadProfileIntervalMinutes() );
 
         RfnCommand::RfnResult rcv = command.decode( execute_time, response );
 
-        BOOST_REQUIRE_EQUAL( rcv.description,
+        BOOST_CHECK_EQUAL( rcv.description,
                                  "Status: Success (0)"
                                  "\nVoltage Demand interval: 60 seconds"
                                  "\nLoad Profile Demand interval: 6 minutes" );
 
-        BOOST_REQUIRE_EQUAL( 60, command.getDemandIntervalSeconds() );
-        BOOST_REQUIRE_EQUAL(  6, command.getLoadProfileIntervalMinutes() );
+        BOOST_CHECK_EQUAL( 60, command.getDemandIntervalSeconds() );
+        BOOST_CHECK_EQUAL(  6, command.getLoadProfileIntervalMinutes() );
     }
 
     // decode -- failure response
@@ -214,8 +235,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetConfiguration )
         }
         catch ( const RfnCommand::CommandException & ex )
         {
-            BOOST_REQUIRE_EQUAL( ex.error_code, ErrorInvalidData );
-            BOOST_REQUIRE_EQUAL( ex.what(),     "Status: Failure (1)" );
+            BOOST_CHECK_EQUAL( ex.error_code, ErrorInvalidData );
+            BOOST_CHECK_EQUAL( ex.what(),     "Status: Failure (1)" );
         }
     }
 }
@@ -230,14 +251,16 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetConfiguration_decoding_excepti
         ( list_of( 0x69 )( 0x01 )( 0x00 )( 0x01 )( 0x01 )( 0x02 )( 0x04 ) )
         ( list_of( 0x69 )( 0x01 )( 0x00 )( 0x01 )( 0x01 )( 0x02 )( 0x04 )( 0x06 )( 0x00 ) );
 
-    const std::vector< std::pair< int, std::string > >  exceptions = pair_list_of
-        ( ErrorInvalidData, "Invalid TLV count (2)" )
-        ( ErrorInvalidData, "Invalid TLV type (2)" )
-        ( ErrorInvalidData, "Invalid TLV length (1)" )
-        ( ErrorInvalidData, "Invalid Response length (7)" )
-        ( ErrorInvalidData, "Invalid Response length (9)" );
+    const std::vector< RfnCommand::CommandException >   expected = list_of
+        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV count (2)" ) )
+        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV type (2)" ) )
+        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV length (1)" ) )
+        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response length (7)" ) )
+        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response length (9)" ) );
 
-    BOOST_REQUIRE( responses.size() == exceptions.size() );
+    BOOST_REQUIRE( responses.size() == expected.size() );
+
+    std::vector< RfnCommand::CommandException > actual;
 
     test_ConfigResultHandler rh;
 
@@ -253,10 +276,12 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetConfiguration_decoding_excepti
         }
         catch ( const RfnCommand::CommandException & ex )
         {
-            BOOST_REQUIRE_EQUAL( ex.error_code, exceptions[i].first );
-            BOOST_REQUIRE_EQUAL( ex.what(),     exceptions[i].second );
+            actual.push_back( ex );
         }
     }
+
+    BOOST_CHECK_EQUAL_COLLECTIONS( actual.begin(),   actual.end(),
+                                   expected.begin(), expected.end() );
 }
 
 
@@ -284,7 +309,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_DisableLoadProfileRecording )
 
         RfnCommand::RfnResult rcv = command.decode( execute_time, response );
 
-        BOOST_REQUIRE_EQUAL( rcv.description, "Status: Success (0)" );
+        BOOST_CHECK_EQUAL( rcv.description, "Status: Success (0)" );
     }
 
     // decode -- failure response
@@ -300,8 +325,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_DisableLoadProfileRecording )
         }
         catch ( const RfnCommand::CommandException & ex )
         {
-            BOOST_REQUIRE_EQUAL( ex.error_code, ErrorInvalidData );
-            BOOST_REQUIRE_EQUAL( ex.what(),     "Status: Failure (1)" );
+            BOOST_CHECK_EQUAL( ex.error_code, ErrorInvalidData );
+            BOOST_CHECK_EQUAL( ex.what(),     "Status: Failure (1)" );
         }
     }
 }
@@ -314,12 +339,14 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_DisableLoadProfileRecording_decod
         ( list_of( 0x69 )( 0x02 )( 0x00 ) )
         ( list_of( 0x69 )( 0x02 )( 0x00 )( 0x01 )( 0x00 ) );
 
-    const std::vector< std::pair< int, std::string > >  exceptions = pair_list_of
-        ( ErrorInvalidData, "Invalid TLV count (1)" )
-        ( ErrorInvalidData, "Invalid Response length (3)" )
-        ( ErrorInvalidData, "Invalid Response length (5)" );
+    const std::vector< RfnCommand::CommandException >   expected = list_of
+        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV count (1)" ) )
+        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response length (3)" ) )
+        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response length (5)" ) );
 
-    BOOST_REQUIRE( responses.size() == exceptions.size() );
+    BOOST_REQUIRE( responses.size() == expected.size() );
+
+    std::vector< RfnCommand::CommandException > actual;
 
     test_RecordingResultHandler rh;
 
@@ -335,10 +362,12 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_DisableLoadProfileRecording_decod
         }
         catch ( const RfnCommand::CommandException & ex )
         {
-            BOOST_REQUIRE_EQUAL( ex.error_code, exceptions[i].first );
-            BOOST_REQUIRE_EQUAL( ex.what(),     exceptions[i].second );
+            actual.push_back( ex );
         }
     }
+
+    BOOST_CHECK_EQUAL_COLLECTIONS( actual.begin(),   actual.end(),
+                                   expected.begin(), expected.end() );
 }
 
 
@@ -366,7 +395,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_EnableLoadProfileRecording )
 
         RfnCommand::RfnResult rcv = command.decode( execute_time, response );
 
-        BOOST_REQUIRE_EQUAL( rcv.description, "Status: Success (0)" );
+        BOOST_CHECK_EQUAL( rcv.description, "Status: Success (0)" );
     }
 
     // decode -- failure response
@@ -382,8 +411,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_EnableLoadProfileRecording )
         }
         catch ( const RfnCommand::CommandException & ex )
         {
-            BOOST_REQUIRE_EQUAL( ex.error_code, ErrorInvalidData );
-            BOOST_REQUIRE_EQUAL( ex.what(),     "Status: Failure (1)" );
+            BOOST_CHECK_EQUAL( ex.error_code, ErrorInvalidData );
+            BOOST_CHECK_EQUAL( ex.what(),     "Status: Failure (1)" );
         }
     }
 }
@@ -396,12 +425,14 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_EnableLoadProfileRecording_decodi
         ( list_of( 0x69 )( 0x03 )( 0x00 ) )
         ( list_of( 0x69 )( 0x03 )( 0x00 )( 0x01 )( 0x00 ) );
 
-    const std::vector< std::pair< int, std::string > >  exceptions = pair_list_of
-        ( ErrorInvalidData, "Invalid TLV count (1)" )
-        ( ErrorInvalidData, "Invalid Response length (3)" )
-        ( ErrorInvalidData, "Invalid Response length (5)" );
+    const std::vector< RfnCommand::CommandException >   expected = list_of
+        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV count (1)" ) )
+        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response length (3)" ) )
+        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response length (5)" ) );
 
-    BOOST_REQUIRE( responses.size() == exceptions.size() );
+    BOOST_REQUIRE( responses.size() == expected.size() );
+
+    std::vector< RfnCommand::CommandException > actual;
 
     test_RecordingResultHandler rh;
 
@@ -417,10 +448,12 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_EnableLoadProfileRecording_decodi
         }
         catch ( const RfnCommand::CommandException & ex )
         {
-            BOOST_REQUIRE_EQUAL( ex.error_code, exceptions[i].first );
-            BOOST_REQUIRE_EQUAL( ex.what(),     exceptions[i].second );
+            actual.push_back( ex );
         }
     }
+
+    BOOST_CHECK_EQUAL_COLLECTIONS( actual.begin(),   actual.end(),
+                                   expected.begin(), expected.end() );
 }
 
 
@@ -448,10 +481,10 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfileRecording )
 
         RfnCommand::RfnResult rcv = command.decode( execute_time, response );
 
-        BOOST_REQUIRE_EQUAL( rcv.description, "Status: Success (0)" 
+        BOOST_CHECK_EQUAL( rcv.description, "Status: Success (0)" 
                                               "\nCurrent State: Disabled (0)" );
 
-        BOOST_REQUIRE_EQUAL( RfnLoadProfileRecordingCommand::DisableRecording, command.getRecordingOption() );
+        BOOST_CHECK_EQUAL( RfnLoadProfileRecordingCommand::DisableRecording, command.getRecordingOption() );
     }
 
     // decode -- success response -- enabled
@@ -461,10 +494,10 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfileRecording )
 
         RfnCommand::RfnResult rcv = command.decode( execute_time, response );
 
-        BOOST_REQUIRE_EQUAL( rcv.description, "Status: Success (0)" 
+        BOOST_CHECK_EQUAL( rcv.description, "Status: Success (0)" 
                                               "\nCurrent State: Enabled (1)" );
 
-        BOOST_REQUIRE_EQUAL( RfnLoadProfileRecordingCommand::EnableRecording, command.getRecordingOption() );
+        BOOST_CHECK_EQUAL( RfnLoadProfileRecordingCommand::EnableRecording, command.getRecordingOption() );
     }
 
     // decode -- failure response
@@ -480,8 +513,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfileRecording )
         }
         catch ( const RfnCommand::CommandException & ex )
         {
-            BOOST_REQUIRE_EQUAL( ex.error_code, ErrorInvalidData );
-            BOOST_REQUIRE_EQUAL( ex.what(),     "Status: Failure (1)" );
+            BOOST_CHECK_EQUAL( ex.error_code, ErrorInvalidData );
+            BOOST_CHECK_EQUAL( ex.what(),     "Status: Failure (1)" );
         }
     }
 }
@@ -497,15 +530,17 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfileRecording_decoding_
         ( list_of( 0x69 )( 0x04 )( 0x00 )( 0x01 )( 0x02 )( 0x01 ) )
         ( list_of( 0x69 )( 0x04 )( 0x00 )( 0x01 )( 0x02 )( 0x01 )( 0x00 )( 0x00 ) );
 
-    const std::vector< std::pair< int, std::string > >  exceptions = pair_list_of
-        ( ErrorInvalidData, "Invalid TLV count (2)" )
-        ( ErrorInvalidData, "Invalid TLV type (1)" )
-        ( ErrorInvalidData, "Invalid TLV length (2)" )
-        ( ErrorInvalidData, "Invalid State (3)" )
-        ( ErrorInvalidData, "Invalid Response length (6)" )
-        ( ErrorInvalidData, "Invalid Response length (8)" );
+    const std::vector< RfnCommand::CommandException >   expected = list_of
+        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV count (2)" ) )
+        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV type (1)" ) )
+        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV length (2)" ) )
+        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid State (3)" ) )
+        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response length (6)" ) )
+        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response length (8)" ) );
 
-    BOOST_REQUIRE( responses.size() == exceptions.size() );
+    BOOST_REQUIRE( responses.size() == expected.size() );
+
+    std::vector< RfnCommand::CommandException > actual;
 
     test_RecordingResultHandler rh;
 
@@ -521,10 +556,12 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfileRecording_decoding_
         }
         catch ( const RfnCommand::CommandException & ex )
         {
-            BOOST_REQUIRE_EQUAL( ex.error_code, exceptions[i].first );
-            BOOST_REQUIRE_EQUAL( ex.what(),     exceptions[i].second );
+            actual.push_back( ex );
         }
     }
+
+    BOOST_CHECK_EQUAL_COLLECTIONS( actual.begin(),   actual.end(),
+                                   expected.begin(), expected.end() );
 }
 
 

@@ -1,10 +1,13 @@
 #define BOOST_TEST_MAIN
 
 #include "dev_mct.h"
+#include "cmd_rfn.h"
 
 #include <boost/tuple/tuple.hpp>
 
 #include <boost/test/unit_test.hpp>
+
+using Cti::Devices::Commands::RfnCommand;
 
 struct test_MctDevice : Cti::Devices::MctDevice
 {
@@ -46,6 +49,12 @@ ostream& operator<<( ostream& out, const test_MctDevice::ReadDescriptor &rd)
     out << "}";
     //out << ")";
     return out;
+}
+
+// for test_cmd_rfn_*
+std::ostream & operator<<( std::ostream & os, const RfnCommand::CommandException & ex )
+{
+    return os << "{(" << ex.error_code << "):" << ex.error_description << "}";
 }
 
 //  For test_dev_mct410, 420, 470
@@ -90,6 +99,12 @@ bool operator!=(const std::vector<boost::tuples::tuple<unsigned, unsigned, int>>
     }
 
     return ! std::equal(lhs.begin(), lhs.end(), rhs.begin());
+}
+
+// for test_cmd_rfn_*
+bool operator!=( const RfnCommand::CommandException & lhs, const RfnCommand::CommandException & rhs )
+{
+    return lhs.error_code != rhs.error_code || lhs.error_description != rhs.error_description;
 }
 
 }
