@@ -33,7 +33,7 @@ public class PageDetailProducer {
     public PageDetail render(PageInfo pageInfo, HttpServletRequest request, MessageSourceAccessor messageSourceAccessor) {
         PageDetail pageDetail = new PageDetail();
 
-        PageContext pageContext = createPageContext(pageInfo, request, messageSourceAccessor, null);
+        PageContext pageContext = createPageContext(pageInfo, request, messageSourceAccessor);
         
         String pageTitle = getPagePart("pageTitle", pageContext, messageSourceAccessor);
         pageDetail.setPageTitle(pageTitle);
@@ -77,7 +77,7 @@ public class PageDetailProducer {
         for (PageInfo pageInfo : pageInfosForMenu) {
             // apply security checks
             if (pageInfo.getUserChecker().check(yukonUser)) {
-                pageContextsForMenu.add(createPageContext(pageInfo, request, messageSourceAccessor, null));
+                pageContextsForMenu.add(createPageContext(pageInfo, request, messageSourceAccessor));
             }
         }
         
@@ -199,16 +199,12 @@ public class PageDetailProducer {
         return "<a href=\"" + safeLink + "\">" + safeLabel + "</a>";
     }
     
-    private PageContext createPageContext(PageInfo pageInfo, HttpServletRequest request, MessageSourceAccessor messageSourceAccessor, PageContext parent) {
+    private PageContext createPageContext(PageInfo pageInfo, HttpServletRequest request, MessageSourceAccessor messageSourceAccessor) {
         if (pageInfo == null) return null;
         
         PageContext result = new PageContext();
         result.pageInfo = pageInfo;
-        if (parent != null) {
-            result.parent = parent;
-        } else {
-            result.parent = createPageContext(pageInfo.getParent(), request, messageSourceAccessor, null);
-        }
+        result.parent = createPageContext(pageInfo.getParent(), request, messageSourceAccessor);
         
         result.labelArguments = expressionLanguageResolver.resolveElExpressions(pageInfo.getLabelArgumentExpressions(), request);
         fillInPageLabels(result, messageSourceAccessor);

@@ -38,7 +38,7 @@
 		<c:when test="${deviceCollection != null}">
 			<c:set var="isDeviceGroup" value="${deviceCollection.collectionParameters['collectionType'] == 'group'}" />
 			<c:set var="isIdList" value="${deviceCollection.collectionParameters['collectionType'] == 'idList'}" />
-			<cti:tabbedContentSelector>
+			<cti:tabbedContentSelector mode="section">
 				<c:if test="${hideGroup == null || !hideGroup}">
 					<!-- GROUP -->
 					<cti:tabbedContentSelectorContent selectorName="${groupTabTitle}" cssClass="${tabClass}"
@@ -87,7 +87,7 @@
 			</cti:tabbedContentSelector>
 		</c:when>
 		<c:otherwise>
-			<div class="errorMessage">deviceCollection must be initialized</div>
+			<div class="error">deviceCollection must be initialized</div>
 		</c:otherwise>
 	</c:choose>
 </cti:msgScope>

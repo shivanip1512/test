@@ -1989,7 +1989,7 @@
         <name>mode</name>
         <required>false</required>
         <rtexprvalue>true</rtexprvalue>
-        <description>'rounded' is default, the new mode is 'box', 'header' is like box but only has a line across the top.</description>
+        <description>Values: 'section' - looks like a section container, or 'box' (default) - looks like a box container.</description>
     </attribute>
     <attribute>
         <name>id</name>

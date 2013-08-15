@@ -268,31 +268,10 @@ ul.disc li {list-style-type: disc; margin-left: 25px;}
 
 .liteContainer {border-style:solid none;}
 
-.pagedBox .contextArea {margin: 0 20px 0 0; font-weight: normal;} /* TODO: change title span to h3 to avoid this 'undo' font css rule */
+.pagedBox .contextArea {margin: 0 20px 0 0;}
 .pagedBox .contextArea .navLink {position: relative;}
 .pagingArea {min-width: 250px; white-space: nowrap; display: inline-block; float: right;}
 .pagingArea .pageNumText, .pagingArea .nextLink, .pagingArea .previousLink {padding-left: 10px; line-height: 16px;display: inline-block;float: left;}
-
-.pagedBox .contextArea button.fancy {position: relative;font-size: 13px!important; border: solid 1px #777; background-color: #efefef; /* Old browsers */
-    background-image: -webkit-linear-gradient(top, #efefef, #ddd); /* Chrome10+, Safari5.1+ */
-    background-image:    -moz-linear-gradient(top, #efefef, #ddd); /* FF3.6+ */
-    background-image:     -ms-linear-gradient(top, #efefef, #ddd); /* IE10+ */
-    background-image:      -o-linear-gradient(top, #efefef, #ddd); /* Opera 11.10+ */
-    background-image:         linear-gradient(top, #efefef, #ddd); /* W3C */
-    color: @primary-font-color; border-radius: 2px; padding: 4px 8px 4px 8px !important; margin: 0 7px 0 0; text-shadow: 0 1px 0 #EFEFEF;
-}
-.pagedBox .contextArea button.fancy:hover {background-color: #ddd; color: #333; border-color: #666 !important; cursor: pointer;}
-.pagedBox .contextArea button.fancy:active {background-color: #ddd; /* Old browsers */
-    background-image: -webkit-linear-gradient(top, #ddd, #efefef); /* Chrome10+, Safari5.1+ */
-    background-image:    -moz-linear-gradient(top, #ddd, #efefef); /* FF3.6+ */
-    background-image:     -ms-linear-gradient(top, #ddd, #efefef); /* IE10+ */
-    background-image:      -o-linear-gradient(top, #ddd, #efefef); /* Opera 11.10+ */
-    background-image:         linear-gradient(top, #ddd, #efefef); /* W3C */
-    user-select:none !important;outline: none !important;
-}
-.pagedBox .contextArea button.fancy:disabled,
-.pagedBox .contextArea button.fancy:disabled:hover {background: #efefef !important;color: #999 !important;border: solid 1px #ccc !important;cursor: default;}
-.pagedBox .contextArea button.fancy:focus {outline: none !important;}
 
 .boxContainer.with_footer {border-radius: 2px 2px 0 0;margin-bottom: 0;}
 .boxContainerFooter {border:1px solid #ccc;border-radius: 0 0 2px 2px;border-top: none;}
@@ -302,7 +281,7 @@ ul.disc li {list-style-type: disc; margin-left: 25px;}
 .i18nInline .i18nInlineDebug {display: none;}
 .i18nInline:hover .i18nInlineDebug {display: inline;position: absolute;background: white;border: thin #eee solid;padding: 4px;}
 
-.button-container button {margin-right: 4px;} /* may not need now */
+.button-container button, .button-container .button {margin-right: 4px;} /* may not need now */
 
 .ui-tabs-active > .ui-tabs-anchor {font-weight: bold !important;}
 
@@ -422,10 +401,12 @@ strong, .smallBoldLabel, .groupedList .group {font-weight: bold;}
 .inlineTree {overflow:hidden;}
 .short-width {max-width: 200px;} /* :( */
 hr, .divider {border-top: 1px solid #ccc;border-style: solid none none none;clear: both;}
+hr.dashed, .divider.dashed {border-style: dashed none none none;}
 .empty-list {font-style: italic; color: #676767;}
 .hint {font-style: italic;}
 .editable:hover {background-color: LemonChiffon; cursor: text;}
 .stateBox {width: 14px;height: 14px;border: 1px solid #888;display: inline-block !important;margin: 1px 0 0 0;}
+.front {z-index: 9999;}
 
  /* DATE/TIME PICKERS */
 .datetimeEntry_wrap {display: inline-block; overflow: hidden; background: #ccc; -webkit-border-radius: 2px; -moz-border-radius: 2px; border-radius: 2px; float: left; margin-right: 5px;border: 1px solid #aaa;height: 22px;}

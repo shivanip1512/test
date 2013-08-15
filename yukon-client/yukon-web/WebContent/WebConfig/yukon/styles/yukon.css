@@ -131,7 +131,11 @@ input[type=email],input[type=number],input[type=password],input[type=tel],input[
 	-ms-transition: border 0.1s ease-in-out, background-color 0.1s ease-in-out;
 	transition: border 0.1s ease-in-out, background-color 0.1s ease-in-out;
 }
-input[disabled], select[disabled] {border: 1px solid #e5e5e5;background: #f1f1f1 !important;}
+
+input[disabled],select[disabled] {
+	border: 1px solid #e5e5e5;
+	background: #f1f1f1 !important;
+}
 
 input[type=email],input[type=number],input[type=password],input[type=tel],input[type=text],input[type=url],select:not([multiple]):not([size]) {
 	height: 26px;
@@ -705,10 +709,8 @@ ul.disc li {
 
 .pagedBox .contextArea {
 	margin: 0 20px 0 0;
-	font-weight: normal;
 }
 
-/* TODO:  change title span to h3 to avoid this 'undo' font css rule */
 .pagedBox .contextArea .navLink {
 	position: relative;
 }
@@ -725,58 +727,6 @@ ul.disc li {
 	line-height: 16px;
 	display: inline-block;
 	float: left;
-}
-
-.pagedBox .contextArea button.fancy {
-	position: relative;
-	font-size: 13px !important;
-	border: solid 1px #777;
-	background-color: #efefef; /* Old browsers */
-background-image: -webkit-linear-gradient(top, #efefef, #dddddd);
-
-	background-image: -moz-linear-gradient(top, #efefef, #dddddd);
-	background-image: -o-linear-gradient(top, #efefef, #dddddd);
-	background-image: -ms-linear-gradient(top, #efefef, #dddddd);
-	background-image: linear-gradient(top, #efefef, #dddddd); /* W3C */
-color: #555555;
-	border-radius: 2px;
-	padding: 4px 8px 4px 8px !important;
-	margin: 0 7px 0 0;
-	text-shadow: 0 1px 0 #EFEFEF;
-}
-
-.pagedBox .contextArea button.fancy:hover {
-	background-color: #ddd;
-	color: #333;
-	border-color: #666 !important;
-	cursor: pointer;
-}
-
-.pagedBox .contextArea button.fancy:active {
-	background-color: #ddd; /* Old browsers */
-background-image: -webkit-linear-gradient(top, #dddddd, #efefef);
-
-	background-image: -moz-linear-gradient(top, #dddddd, #efefef);
-	background-image: -o-linear-gradient(top, #dddddd, #efefef);
-	background-image: -ms-linear-gradient(top, #dddddd, #efefef);
-	background-image: linear-gradient(top, #dddddd, #efefef); /* W3C */
-
--image  -webkit-user-select: none !important;
-	-moz-user-select: none !important;
-	-ms-user-select: none !important;
-	user-select: none !important;
-	outline: none !important;
-}
-
-.pagedBox .contextArea button.fancy:disabled,.pagedBox .contextArea button.fancy:disabled:hover {
-	background: #efefef !important;
-	color: #999 !important;
-	border: solid 1px #ccc !important;
-	cursor: default;
-}
-
-.pagedBox .contextArea button.fancy:focus {
-	outline: none !important;
 }
 
 .boxContainer.with_footer {
@@ -815,7 +765,7 @@ background-image: -webkit-linear-gradient(top, #dddddd, #efefef);
 	padding: 4px;
 }
 
-.button-container button {
+.button-container button,.button-container .button {
 	margin-right: 4px;
 }
 
@@ -1344,6 +1294,10 @@ hr,.divider {
 	clear: both;
 }
 
+hr.dashed,.divider.dashed {
+	border-style: dashed none none none;
+}
+
 .empty-list {
 	font-style: italic;
 	color: #676767;
@@ -1364,6 +1318,10 @@ hr,.divider {
 	border: 1px solid #888;
 	display: inline-block !important;
 	margin: 1px 0 0 0;
+}
+
+.front {
+	z-index: 9999;
 }
 
 /* DATE/TIME PICKERS */

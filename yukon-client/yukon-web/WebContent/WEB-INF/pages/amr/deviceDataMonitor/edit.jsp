@@ -10,6 +10,10 @@
 
 <cti:standardPage module="amr" page="deviceDataMonitor.${mode}">
 
+<style type="text/css">
+.device_data_processors select {width: 140px;}
+</style>
+
     <%@ include file="shared.jspf"%>
 
     <form action="toggleEnabled" method="post" class="f-toggle_enabled_form">

@@ -38,6 +38,7 @@
 			<tags:selectDevicesTabbed deviceCollection="${backingBean.deviceCollection}" tabClass="waterLeakFilterTab" individualPickerType="waterMeterPicker"
 				groupSelectedCallback="Yukon.WaterLeakReport.filter_group_selected_callback();" individualSelectedCallback="Yukon.WaterLeakReport.filter_individual_selected_callback"
 				uniqueId="filterSelector"/>
+            <hr>
 			<div class="under_tabs">
 				<tags:nameValueContainer2>
 					<tags:nameValue2 nameKey=".filter.fromDate">
@@ -209,7 +210,7 @@
         <c:if test="${collectionFromReportResults != null && filterResult.hitCount > 0}">
             <form:form id="intervalDataForm" action="intervalData" method="get" commandName="backingBean" cssClass="dib">
                 <%@ include file="reportFilterFormValues.jspf"%>
-                <button class="fancy" type="submit" title="<cti:msg2 key=".viewIntervalDataTitle"/>"><cti:msg2 key=".viewIntervalData"/></button>
+                <button type="submit" title="<cti:msg2 key=".viewIntervalDataTitle"/>"><cti:msg2 key=".viewIntervalData"/></button>
             </form:form>
         </c:if>
     </c:set>
