@@ -86,7 +86,6 @@ Yukon.modules.FieldHelper = function (mod) {
         _timeoutArgs = event;
         clearTimeout(_timeout);
         _timeout = setTimeout( function () {
-            console.log('timeout fired!');
             mod.showPointingPopup(_timeoutArgs);
         }, 400);
     };

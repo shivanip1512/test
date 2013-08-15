@@ -8,6 +8,9 @@
 
 <cti:standardPage module="adminSetup" page="generalInfo.${mode}">
 
+<tags:setFormEditMode mode="${mode}"/>
+
+<cti:displayForPageEditModes modes="VIEW">
 <script type="text/javascript">
 function addOperatorUserGroups() {
     document.getElementById('operatorUserGroupsForm').submit();
@@ -18,21 +21,11 @@ function addCustomerUserGroups() {
 }
 
 jQuery(function() {
-    if ('undefined' !== typeof operatorUserGroupPicker) {
-        operatorUserGroupPicker.excludeIds = ${cti:jsonString(operatorUserGroupIds)};
-    } else {
-        console.log('disaster avoided, operatorUserGroupPicker undefined');
-    }
-    if ('undefined' !== typeof customerUserGroupPicker) {
-        customerUserGroupPicker.excludeIds = ${cti:jsonString(customerUserGroupIds)};
-    } else {
-        console.log('disaster avoided, customerUserGroupPicker undefined');
-    }
-    
+    operatorUserGroupPicker.excludeIds = ${cti:jsonString(operatorUserGroupIds)};
+    customerUserGroupPicker.excludeIds = ${cti:jsonString(customerUserGroupIds)};
 });
 </script>
-
-    <tags:setFormEditMode mode="${mode}"/>
+</cti:displayForPageEditModes>
     
         <div class="column_10_14">
         

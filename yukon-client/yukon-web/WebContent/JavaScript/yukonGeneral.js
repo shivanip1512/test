@@ -2,15 +2,6 @@ Yukon.namespace('Yukon.ui.aux');
 Yukon.ui.aux = (function () {
     var uiAux;
     uiAux = {
-        yukonGeneral_setSelectToValue : function (selectId, selectedValue) {
-            var i;
-            for (i = 0; i < $(selectId).options.length; i++) {
-                if ($(selectId).options[i].value == selectedValue) { 
-                    $(selectId).selectedIndex = i;
-                    break;
-                }
-            }
-        },
         yukonGeneral_moveOptionPositionInSelect : function (selectElement, direction) {
             //this contains all the selected indexes
             var index = [],

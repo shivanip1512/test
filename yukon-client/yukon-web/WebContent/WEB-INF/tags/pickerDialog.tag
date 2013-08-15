@@ -54,7 +54,7 @@
             try {
                 ${id} = new Picker('${okText}', '${cancelText}', '${type}', '${pageScope.destinationFieldName}', '${id}', '${pageScope.extraDestinationFields}', ${containerDivArg});
             } catch(pickerException) {
-                console.log('pickerDialog.tag: new Picker failed: ' + pickerException);
+                alert('pickerDialog.tag: new Picker failed: ' + pickerException);
             }
             <c:if test="${pageScope.multiSelectMode}">
                 ${id}.multiSelectMode = true;
@@ -168,7 +168,7 @@
 <script type="text/javascript">
 try {
     callAfterMainWindowLoad(${id}.init.bind(${id}, ${viewMode}));
-} catch (callAfterLoadex) { console.log("exception: " + callAfterLoadex); }
+} catch (callAfterLoadex) { alert("pickerDialog.tag: callAfterMainWindowLoad exception: " + callAfterLoadex); }
 
 if (${!empty excludeIds}) {
     ${id}.excludeIds = ${cti:jsonString(excludeIds)};

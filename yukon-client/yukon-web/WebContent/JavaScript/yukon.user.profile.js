@@ -105,7 +105,6 @@ Yukon.UserPreferences = (function () {
         /* PUBLIC METHODS */
 
         init: function() {
-            console.log('Yukon.UserPreferences: this=');console.dir(this);
             if (_initialized) {
                 return;
             }
