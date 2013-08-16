@@ -40,40 +40,11 @@ public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuil
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
 
     @Override
-    public byte[] getCommand(LmHardwareCommand lmHardwareCommand) {
-        ByteBuffer cmd = ByteBuffer.allocate(1024);
-
-        Charset charset = Charset.forName("US-ASCII");
-        // Commands begin with the 's' character.
-        cmd.put(charset.encode("s"));
-        
-        // Get inner ExpressCom payload and add it to the byte array.
-        ByteBuffer innerPayload = getInnerPayload(lmHardwareCommand);
-        cmd.put(innerPayload.array(), 0, innerPayload.position());
-        
-        // Commands terminate with 't' character.
-        cmd.put(charset.encode("t"));
-        
-        byte[] output = new byte[cmd.position()];
-        cmd.rewind();
-        cmd.get(output);
-        
-        return output;
-    }
-
-    @Override
     public byte[] getCommandAsHexStringByteArray(LmHardwareCommand lmHardwareCommand) {
-        StringWriter sw = new StringWriter();
-        // Commands begin with the 's' character.
-        sw.write('s');
-        
         // Write inner ExpressCom payload.
         ByteBuffer innerPayload = getInnerPayload(lmHardwareCommand);
-        sw.write(toHexString(innerPayload.array()));
 
-        // Commands terminate with 't' character.
-        sw.write('t');
-        return(sw.toString().getBytes()); 
+        return wrapAndConvertToAscii(innerPayload); 
     }
 
     /**
@@ -139,12 +110,14 @@ public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuil
     @Override
     public byte[] getBroadcastCancelAllTempOutOfServiceCommand(int spid) {
         ByteBuffer outputBuffer = ByteBuffer.allocate(32);
-        outputBuffer.put((byte)'s');
         outputBuffer.put((byte) 0x80); // Use only SPID level addressing.
         outputBuffer.putShort((short) spid); 
         getTempOutOfServiceInnerBytes(outputBuffer);
-        outputBuffer.put((byte)'t');
-        return outputBuffer.array();
+        
+        ByteBuffer trimmedOutput = ByteBuffer.allocate(outputBuffer.position());
+        trimmedOutput.put(outputBuffer.array(), 0, outputBuffer.position());
+        
+        return wrapAndConvertToAscii(trimmedOutput);
     }
     
     private void getTempOutOfServiceInnerBytes(ByteBuffer outputBuffer) {
@@ -153,6 +126,16 @@ public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuil
         
         outputBuffer.put((byte) 0x16); // Temporary Service Change
         outputBuffer.put((byte) 0x00); // Cancel a previous temporary out of service command
+    }
+    
+    private byte[] wrapAndConvertToAscii(ByteBuffer xcomPayload) {
+        StringWriter sw = new StringWriter();
+        // Commands begin with the 's' character.
+        sw.write('s');
+        sw.write(toHexString(xcomPayload.array()));
+        // Commands terminate with 't' character.
+        sw.write('t');
+        return(sw.toString().getBytes());
     }
 
     private ByteBuffer getExpressComForConfigCommand(LmHardwareCommand parameters) {

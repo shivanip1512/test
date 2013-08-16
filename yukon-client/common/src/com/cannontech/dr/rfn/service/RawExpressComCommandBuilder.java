@@ -5,11 +5,6 @@ import com.cannontech.stars.dr.hardware.model.LmHardwareCommand;
 public interface RawExpressComCommandBuilder {
     
     /**
-     * Builds byte[] representing a 'read now' request to an RF ExpressCom device.
-     */
-    public byte[] getCommand(LmHardwareCommand command);
-
-    /**
      * Builds byte[] representing a 'read now' request to an RF ExpressCom device
      * similar to getCommand(), except that the inner ExpressCom payload is written
      * as a byte array of ASCII characters that represent the hexadecimal bytes.
