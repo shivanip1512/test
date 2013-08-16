@@ -95,6 +95,7 @@
 
    <!-- meterOutagesWidget/render.jsp -->
     <entry key="yukon.web.widgets.meterOutagesWidget.blinkCountNotConfigured">Blink Count Accumulator Point is not configured.</entry>
+    <entry key="yukon.web.widgets.meterOutagesWidget.noOutages">No Outages</entry>
     <entry key="yukon.web.widgets.meterOutagesWidget.read.label">Read Now</entry>
     <entry key="yukon.web.widgets.meterOutagesWidget.read.labelBusy">Reading</entry>
     <entry key="yukon.web.widgets.meterOutagesWidget.outagesLastRetrieved">Outages Last Retrieved</entry>

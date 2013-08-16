@@ -120,7 +120,7 @@
 			</c:if>
             <div class="page-actions">
                 <cm:dropdown id="b-page-actions" type="button" containerCssClass="fr dn"/>
-                <cti:button id="b-search-results" classes="fr dn left" nameKey="searchResults" renderMode="buttonImage" icon="icon-resultset-first-grey"/>
+                <cti:button id="b-search-results" classes="fr dn" nameKey="searchResults" renderMode="buttonImage" icon="icon-resultset-first-grey"/>
             </div>
 		</div>
     </div>

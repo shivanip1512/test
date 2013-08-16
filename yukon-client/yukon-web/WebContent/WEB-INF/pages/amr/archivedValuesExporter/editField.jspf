@@ -20,9 +20,11 @@
         <form:hidden path="exportField.attribute.dataSelection" />
         <form:hidden path="exportField.attribute.daysPrevious" />
         <form:hidden path="pageNameKey"/>
-        <div class="smallBoldLabel notesSection">
+        
+        <div class="notes stacked">
             <i:inline key=".note" />
         </div>
+        
         <tags:sectionContainer2 nameKey="selectField">
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".field">

@@ -1,21 +1,45 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <cti:standardPage module="amr" page="porterResponseMonitor.${mode}">
 
     <script type="text/javascript">
-        Event.observe(window, "load", function() {
-            var totalGroupCountSpan = $('totalGroupCount');
-            var supportedDevicesMsgSpan = $('supportedDevicesMsg');
+        jQuery(function () {
+            var totalGroupCountSpan = jQuery('#totalGroupCount');
+            var supportedDevicesMsgSpan = jQuery('#supportedDevicesMsg');
 
-            totalGroupCountSpan.addClassName('icon icon-spinner');
-            supportedDevicesMsgSpan.addClassName('icon icon-spinner');
-            $('supportedDevicesHelpIcon').hide();
+            totalGroupCountSpan.addClass('icon icon-spinner');
+            supportedDevicesMsgSpan.addClass('icon icon-spinner');
+            jQuery('#supportedDevicesHelpIcon').hide();
     
+            jQuery.get(
+                'counts', 
+                {'monitorId': '${monitorDto.monitorId}'}
+            ).done(function (json) {
+                var totalGroupCount = json.totalGroupCount;
+                var supportedDevicesMsg = json.supportedDevicesMessage;
+                var missingPointCount = json.missingPointCount;
+                
+                totalGroupCountSpan.html(totalGroupCount);
+                supportedDevicesMsgSpan.html(supportedDevicesMsg);
+                
+                if (missingPointCount > 0) {
+                  supportedDevicesMsgSpan.show();
+                
+                  if (${showAddRemovePoints}) {
+                      $('addPointsSpan').show();
+                  }
+                }
+                
+                totalGroupCountSpan.removeClass('icon icon-spinner');
+                supportedDevicesMsgSpan.removeClass('icon icon-spinner');
+                jQuery('#supportedDevicesHelpIcon').show();
+            });
+            
             new Ajax.Request("getCounts",{
                 parameters: {'monitorId': ${monitorDto.monitorId}},
                 onComplete: function(transport) {
@@ -43,35 +67,35 @@
             });
         });
 
-        jQuery(document).on('click', '#supportedDevicesHelpIcon', function(event) {
-            $('supportedDevicesHelpPopup').toggle();
-        });
     </script>
 
-    <cti:url var="fullErrorCodesURL" value="/support/errorCodes/view" />
-
-    <i:simplePopup titleKey=".supportedDevicesHelpPopup" id="supportedDevicesHelpPopup">
-        <spring:escapeBody htmlEscape="true">${supportedDevicesHelpText}</spring:escapeBody>
+    <i:simplePopup titleKey=".supportedDevicesHelpPopup" id="supportedDevicesHelpPopup" on="#supportedDevicesHelpIcon" options="{width:600}">
+        <p>${fn:escapeXml(supportedDevicesHelpText)}</p>
     </i:simplePopup>
 
     <i:simplePopup titleKey=".errorCodesPopup" id="errorCodesHelpPopup" on="#errorHelp">
         <div class="scrollingContainer_large">
-        <table id="errorCodes" class="resultsTable">
-            <tr>
-                <th><i:inline key=".errorCodesPopup.header.code" /></th>
-                <th><i:inline key=".errorCodesPopup.header.porter" /></th>
-            </tr>
-            <c:forEach items="${allErrors}" var="error">
-                <tr>
-                    <td nowrap="nowrap">${error.errorCode}</td>
-                    <td>${error.description}</td>
-                </tr>
-            </c:forEach>
-        </table><br>
-        <span class="footerLink">
-            <i:inline key=".errorCodesVerboseMsg"/>
-            <a href="${fullErrorCodesURL}"><i:inline key=".errorCodesSupportLink"/></a>
-        </span>
+            <table id="errorCodes" class="compactResultsTable stacked">
+                <thead>
+                    <tr>
+                        <th><i:inline key=".errorCodesPopup.header.code" /></th>
+                        <th><i:inline key=".errorCodesPopup.header.porter" /></th>
+                    </tr>
+                </thead>
+                <tfoot></tfoot>
+                <tbody>
+                    <c:forEach items="${allErrors}" var="error">
+                        <tr>
+                            <td>${error.errorCode}</td>
+                            <td>${error.description}</td>
+                        </tr>
+                    </c:forEach>
+                </tbody>
+            </table>
+            <span class="footerLink">
+                <i:inline key=".errorCodesVerboseMsg"/>
+                <a href="<cti:url value="/support/errorCodes/view"/>"><i:inline key=".errorCodesSupportLink"/></a>
+            </span>
         </div>
     </i:simplePopup>
 
@@ -80,9 +104,7 @@
 		<tags:nameValueContainer2>
 
 			<%-- monitor name --%>
-			<tags:nameValue2 nameKey=".name">
-				<spring:escapeBody htmlEscape="true">${monitorDto.name}</spring:escapeBody>
-			</tags:nameValue2>
+			<tags:nameValue2 nameKey=".name">${fn:escapeXml(monitorDto.name)}</tags:nameValue2>
 
             <tags:nameValue2 nameKey=".deviceGroup">
                 <cti:url var="deviceGroupUrl" value="/group/editor/home">
@@ -93,7 +115,7 @@
 
             <%-- Device Count --%>
             <tags:nameValue2 nameKey=".deviceCount">
-                <span id="totalGroupCount"></span>&nbsp
+                <span id="totalGroupCount"></span>
             </tags:nameValue2>
 
             <%-- Supported Devices --%>
@@ -108,47 +130,51 @@
                     <a href="${addPointsLink}"><i:inline key=".addPoints"/></a>
                 </c:if>
                 </span>
-                <cti:icon id="supportedDevicesHelpIcon" nameKey="help" icon="icon-help"/>
+                <cti:icon id="supportedDevicesHelpIcon" nameKey="help" icon="icon-help" classes="fn cp"/>
             </tags:nameValue2>
 
 			<%-- enable/disable monitoring --%>
 			<tags:nameValue2 nameKey=".monitoring">
-				<i:inline key="${monitorDto.evaluatorStatus}" />
+				<i:inline key="${monitorDto.evaluatorStatus}"/>
 			</tags:nameValue2>
         </tags:nameValueContainer2>
     </tags:formElementContainer>
 	<c:choose>
 		<c:when test="${not empty monitorDto.rules}">
-			<tags:boxContainer2 nameKey="rulesTable" id="rulesTable" styleClass="prmFixedViewTable">
+			<tags:boxContainer2 nameKey="rulesTable" id="rulesTable">
 				<table class="compactResultsTable">
-					<tr>
-						<th><i:inline key=".rulesTable.header.ruleOrder" /></th>
-						<th><i:inline key=".rulesTable.header.outcome" /></th>
-						<th><i:inline key=".rulesTable.header.errors" />
-                            <cti:icon id="errorHelp" nameKey="help" icon="icon-help"/>
-                        </th>
-						<th><i:inline key=".rulesTable.header.matchStyle" /></th>
-						<th><i:inline key=".rulesTable.header.state" /></th>
-					</tr>
-
-					<c:forEach items="${monitorDto.rules}" var="rule">
-						<tr>
-							<td nowrap="nowrap">${rule.value.ruleOrder}</td>
-							<td nowrap="nowrap">
-                                <c:choose>
-                                    <c:when test="${rule.value.success}">
-                                        <span class="successMessage"><i:inline key=".rule.success"/></span>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <span class="errorMessage"><i:inline key=".rule.failure"/></span>
-                                    </c:otherwise>
-                                </c:choose>
-                            </td>
-							<td nowrap="nowrap">${rule.value.errorCodes}</td>
-							<td nowrap="nowrap"><i:inline key="${rule.value.matchStyle.formatKey}"/></td>
-							<td nowrap="nowrap">${states[rule.value.state].stateText}</td>
-						</tr>
-					</c:forEach>
+                    <thead>
+    					<tr>
+    						<th><i:inline key=".rulesTable.header.ruleOrder" /></th>
+    						<th><i:inline key=".rulesTable.header.outcome" /></th>
+    						<th><i:inline key=".rulesTable.header.errors" />
+                                <cti:icon id="errorHelp" nameKey="help" icon="icon-help" classes="fn cp"/>
+                            </th>
+    						<th><i:inline key=".rulesTable.header.matchStyle" /></th>
+    						<th><i:inline key=".rulesTable.header.state" /></th>
+    					</tr>
+                    </thead>
+                    <tfoot></tfoot>
+                    <tbody>
+    					<c:forEach items="${monitorDto.rules}" var="rule">
+    						<tr>
+    							<td nowrap="nowrap">${rule.value.ruleOrder}</td>
+    							<td nowrap="nowrap">
+                                    <c:choose>
+                                        <c:when test="${rule.value.success}">
+                                            <span class="successMessage"><i:inline key=".rule.success"/></span>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <span class="errorMessage"><i:inline key=".rule.failure"/></span>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </td>
+    							<td nowrap="nowrap">${rule.value.errorCodes}</td>
+    							<td nowrap="nowrap"><i:inline key="${rule.value.matchStyle.formatKey}"/></td>
+    							<td nowrap="nowrap">${states[rule.value.state].stateText}</td>
+    						</tr>
+    					</c:forEach>
+                    </tbody>
 				</table>
 			</tags:boxContainer2>
 		</c:when>

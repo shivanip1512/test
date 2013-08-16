@@ -1,3 +1,5 @@
+<%@ tag trimDirectiveWhitespaces="true" body-content="empty" %>
+
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
@@ -10,8 +12,8 @@
 
 <cti:uniqueIdentifier var="id" prefix="selectedDevicesPopup_"/>
 
-<cti:msg var="popupTitle" key="yukon.common.device.bulk.selectedDevicesPopup.popupTitle" />
-<cti:msg var="warning" key="yukon.common.device.bulk.selectedDevicesPopup.warning" />
+<cti:msg2 var="popupTitle" key="yukon.common.device.bulk.selectedDevicesPopup.popupTitle" />
+<cti:msg2 var="warning" key="yukon.common.device.bulk.selectedDevicesPopup.warning" />
 
 <%-- CREATE URL --%>
 <c:choose>

@@ -114,9 +114,9 @@ a,.primary_color,.vertical_menu li.selected a,.vertical_menu a:hover,.ui-widget-
 
 /* FORM FIELDS */
 input[type=email],input[type=number],input[type=password],input[type=tel],input[type=text],input[type=url],select {
+	appearance: none;
 	-webkit-appearance: none;
 	-moz-appearance: none;
-	appearance: none;
 	background: #fff;
 	border: 1px solid #d9d9d9;
 	border-top: 1px solid #c0c0c0;
@@ -133,8 +133,8 @@ input[type=email],input[type=number],input[type=password],input[type=tel],input[
 }
 
 input[disabled],select[disabled] {
-	border: 1px solid #e5e5e5;
 	background: #f1f1f1 !important;
+	border: 1px solid #e5e5e5;
 }
 
 input[type=email],input[type=number],input[type=password],input[type=tel],input[type=text],input[type=url],select:not([multiple]):not([size]) {
@@ -150,30 +150,22 @@ input[type=email]:hover,input[type=number]:hover,input[type=password]:hover,inpu
 }
 
 input[type=email]:focus,input[type=number]:focus,input[type=password]:focus,input[type=tel]:focus,input[type=text]:focus,input[type=url]:focus,select:not([multiple]):focus {
-	outline: none;
 	border: 1px solid #0066cc;
 
 	-webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3);
 	box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3);
+	outline: none;
 }
 
 input[type=email].left,input[type=number].left,input[type=password].left,input[type=tel].left,input[type=text].left,input[type=url].left,select.left,input[type=email].middle,input[type=number].middle,input[type=password].middle,input[type=tel].middle,input[type=text].middle,input[type=url].middle,select.middle {
-	border-top-right-radius: 0;
-	-moz-border-top-right-radius: 0;
-	-webkit-border-top-right-radius: 0;
 	border-bottom-right-radius: 0;
-	-moz-border-bottom-right-radius: 0;
-	-webkit-border-bottom-right-radius: 0;
+	border-top-right-radius: 0;
 }
 
 input[type=email].right,input[type=number].right,input[type=password].right,input[type=tel].right,input[type=text].right,input[type=url].right,select.right,input[type=email].middle,input[type=number].middle,input[type=password].middle,input[type=tel].middle,input[type=text].middle,input[type=url].middle,select.middle {
 	border-left: 0;
-	border-top-left-radius: 0;
-	-moz-border-top-left-radius: 0;
-	-webkit-border-top-left-radius: 0;
 	border-bottom-left-radius: 0;
-	-moz-border-bottom-left-radius: 0;
-	-webkit-border-bottom-left-radius: 0;
+	border-top-left-radius: 0;
 }
 
 input[type=checkbox],input[type=radio] {
@@ -322,7 +314,7 @@ table.nowrap th,table.nowrap td {
 }
 
 .nameValueTable .name,.property-list .name {
-	color: #666;
+	color: #777;
 }
 
 .nameValueTable .value,.property-list .value {
@@ -1271,7 +1263,7 @@ strong,.smallBoldLabel,.groupedList .group {
 }
 
 .notes,.smallBoldLabel {
-	font-size: 11px;
+	font-size: 12px;
 }
 
 .monospace,.code {
@@ -1620,12 +1612,11 @@ input.dateTimePicker {
 
 	-webkit-box-shadow: 0 0 100px #666;
 	box-shadow: 0 0 100px #666;
-	border-radius: 8px; /* yea! IE9 support requires all corners be specified */
--ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
 	filter: alpha(opacity=100);
 	opacity: 1;
-	z-index: 100001; /*hahah*/
-position: relative;
+	z-index: 100001;
+	position: relative;
 	font-size: 16px;
 	color: #666;
 }

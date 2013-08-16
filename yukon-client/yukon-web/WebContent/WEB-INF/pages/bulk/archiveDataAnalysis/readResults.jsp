@@ -6,7 +6,7 @@
     
     <tags:sectionContainer2 nameKey="yukon.web.modules.tools.bulk.analysis.readResults">
         
-        <div class="smallBoldLabel notesSection">
+        <div class="notes stacked">
             <tags:selectedDevices id="deviceColletion" deviceCollection="${deviceCollection}" />
         </div>
         

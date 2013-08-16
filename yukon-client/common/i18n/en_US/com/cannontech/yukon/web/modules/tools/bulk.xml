@@ -133,7 +133,7 @@
     <entry key="yukon.common.device.bulk.collectionActions.deviceCollectionReportDescription">View a report detailing devices.</entry>
     <entry key="yukon.common.device.bulk.collectionActions.dataAnalysisLabel">Data Analysis</entry>
     <entry key="yukon.common.device.bulk.collectionActions.dataAnalysisDiscription">View a report detailing archived reads.</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.archivedValueDataExporterLabel">Archived Data Export</entry> 
+    <entry key="yukon.common.device.bulk.collectionActions.archivedValueDataExporterLabel">Data Export</entry> 
     <entry key="yukon.common.device.bulk.collectionActions.archivedValueDataExporterDescription">Export archived point data.</entry>
 
     <entry key="yukon.common.device.bulk.collectionActions.header.editing">Editing</entry>

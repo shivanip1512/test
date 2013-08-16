@@ -48,7 +48,7 @@ function prepareDateTimeFields() {
                 </tags:nameValueContainer2>
             </div>
             
-            <cti:button type="submit" nameKey="submitButton"/>
+            <cti:button type="submit" nameKey="submitButton" classes="primary action"/>
         </form:form>
     </tags:bulkActionContainer>
 </cti:standardPage>

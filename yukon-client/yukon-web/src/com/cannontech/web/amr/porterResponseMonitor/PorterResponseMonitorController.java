@@ -2,7 +2,6 @@ package com.cannontech.web.amr.porterResponseMonitor;
 
 import java.beans.PropertyEditorSupport;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -10,9 +9,8 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
-import net.sf.jsonOLD.JSONObject;
+import net.sf.json.JSONObject;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +26,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.amr.MonitorEvaluatorStatus;
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
@@ -78,19 +77,19 @@ import com.google.common.collect.Lists;
 @CheckRoleProperty(YukonRoleProperty.PORTER_RESPONSE_MONITORING)
 public class PorterResponseMonitorController {
 
-	private PorterResponseMonitorDao porterResponseMonitorDao;
-	private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
-	private RolePropertyDao rolePropertyDao;
-	private PorterResponseMonitorService porterResponseMonitorService;
-	private OutageEventLogService outageEventLogService;
-	private AttributeService attributeService;
-	private DeviceGroupService deviceGroupService;
-	private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
-	private PointService pointService;
-	private StateDao stateDao;
-    protected YukonUserContextMessageSourceResolver messageSourceResolver;
-	private final static String baseKey = "yukon.web.modules.amr.porterResponseMonitor";
-
+	@Autowired private PorterResponseMonitorDao porterResponseMonitorDao;
+	@Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
+	@Autowired private RolePropertyDao rolePropertyDao;
+	@Autowired private PorterResponseMonitorService porterResponseMonitorService;
+	@Autowired private OutageEventLogService outageEventLogService;
+	@Autowired private AttributeService attributeService;
+	@Autowired private DeviceGroupService deviceGroupService;
+	@Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
+	@Autowired private PointService pointService;
+	@Autowired private StateDao stateDao;
+    @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
+	
+    private final static String baseKey = "yukon.web.modules.amr.porterResponseMonitor";
 	private final Logger log = YukonLogManager.getLogger(PorterResponseMonitorController.class);
 	
 	private Validator nameValidator = new SimpleValidator<PorterResponseMonitor>(PorterResponseMonitor.class) {
@@ -331,17 +330,16 @@ public class PorterResponseMonitorController {
 	}
 
     @RequestMapping
-    public void getCounts(HttpServletRequest request, HttpServletResponse response,
-                              int monitorId, YukonUserContext userContext) throws IOException {
-        try {
+    public @ResponseBody JSONObject counts(int monitorId, YukonUserContext userContext) throws IOException {
+        
+    	try { // really?
             Thread.sleep(2000);
-        } catch (InterruptedException e) {
-        }
+        } catch (InterruptedException e) {}
 
-        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         
         // Default values in case group does not exist.
-        String supportedDevicesMessage = messageSourceAccessor.getMessage("yukon.web.defaults.na");
+        String supportedDevicesMessage = accessor.getMessage("yukon.web.defaults.na");
         int totalGroupCount = 0;
         int missingPointCount = 0;
         
@@ -357,8 +355,10 @@ public class PorterResponseMonitorController {
 	        
 	        
 	        if (missingPointCount > 0) {
-	            String attributeString = messageSourceAccessor.getMessage("yukon.web.modules.amr.porterResponseMonitor." + monitor.getAttribute().getKey());
-	            supportedDevicesMessage = messageSourceAccessor.getMessage("yukon.web.modules.amr.porterResponseMonitor.supportedDevicesMessage", supportedDevices.size(), missingPointCount, attributeString);
+	            String attributeString = accessor.getMessage("yukon.web.modules.amr.porterResponseMonitor." 
+	            		+ monitor.getAttribute().getKey());
+	            supportedDevicesMessage = accessor.getMessage("yukon.web.modules.amr.porterResponseMonitor.supportedDevicesMessage", 
+	            		supportedDevices.size(), missingPointCount, attributeString);
 	        } else {
 	            supportedDevicesMessage = String.valueOf(supportedDevices.size());
 	        }
@@ -371,11 +371,8 @@ public class PorterResponseMonitorController {
         object.put("totalGroupCount", totalGroupCount);
         object.put("supportedDevicesMessage", supportedDevicesMessage);
         object.put("missingPointCount", missingPointCount);
-
-        response.setContentType("application/json");
-        PrintWriter out = response.getWriter();
-        out.print(object.toString());
-        out.close();
+        
+        return object;
     }
 
 	private void setupCreatePageModelMap(ModelMap model, YukonUserContext userContext) {
@@ -477,58 +474,4 @@ public class PorterResponseMonitorController {
         });
     }
 
-    @Autowired
-    public void setStateDao(StateDao stateDao) {
-        this.stateDao = stateDao;
-    }
-
-    @Autowired
-    public void setPointService(PointService pointService) {
-        this.pointService = pointService;
-    }
-
-	@Autowired
-	public void setPorterResponseMonitorDao(PorterResponseMonitorDao porterResponseMonitorDao) {
-		this.porterResponseMonitorDao = porterResponseMonitorDao;
-	}
-	
-	@Autowired
-	public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
-        this.deviceGroupService = deviceGroupService;
-    }
-
-	@Autowired
-	public void setDeviceErrorTranslatorDao(DeviceErrorTranslatorDao deviceErrorTranslatorDao) {
-        this.deviceErrorTranslatorDao = deviceErrorTranslatorDao;
-    }
-
-	@Autowired
-	public void setPorterResponseMonitorService(PorterResponseMonitorService porterResponseMonitorService) {
-		this.porterResponseMonitorService = porterResponseMonitorService;
-	}
-
-	@Autowired
-	public void setOutageEventLogService(OutageEventLogService outageEventLogService) {
-		this.outageEventLogService = outageEventLogService;
-	}
-
-	@Autowired
-	public void setAttributeService(AttributeService attributeService) {
-        this.attributeService = attributeService;
-    }
-
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
-    }
-    
-    @Autowired
-    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
-        this.messageSourceResolver = messageSourceResolver;
-    }
-    
-    @Autowired
-    public void setDeviceGroupCollectionHelper(DeviceGroupCollectionHelper deviceGroupCollectionHelper) {
-        this.deviceGroupCollectionHelper = deviceGroupCollectionHelper;
-    }
 }

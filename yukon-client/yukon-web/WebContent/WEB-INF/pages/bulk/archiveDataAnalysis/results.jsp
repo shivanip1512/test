@@ -7,7 +7,7 @@
 
 <cti:standardPage module="tools" page="bulk.analysis.results">
 
-    <div class="smallBoldLabel notesSection">
+    <div class="notes stacked">
         <tags:selectedDevices id="deviceColletion" deviceCollection="${deviceCollection}" />
     </div>
     

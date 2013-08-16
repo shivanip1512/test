@@ -9,7 +9,7 @@
 
     <tags:sectionContainer2 nameKey="yukon.web.modules.tools.bulk.analysis.progress">
         
-        <div class="smallBoldLabel notesSection">
+        <div class="stacked notes">
             <tags:selectedDevices id="deviceColletion" deviceCollection="${deviceCollection}" />
         </div>
         

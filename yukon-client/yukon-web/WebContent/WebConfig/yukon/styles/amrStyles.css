@@ -1,14 +1,3 @@
-
-
-#rulesTable.prmFixedViewTable {
-    max-width: 600px;
-    width: 100%;
-}
-
-.notesSection {
-    padding-bottom: 10px;
-}
-
 div.resultBar {
     height: 14px;
     border: 1px solid grey;
