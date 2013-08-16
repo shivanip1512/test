@@ -306,7 +306,7 @@ DynamicTable.prototype = {
         }
 
         var index = 0;
-        while (!rows[index].hasClassName('undoRow')) {
+        while (!rows[index].hasClassName('undo-row')) {
             index++;
         }
         for (; index < rows.length; index += 2) {

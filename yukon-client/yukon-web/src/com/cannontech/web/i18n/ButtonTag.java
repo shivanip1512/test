@@ -23,6 +23,7 @@ public class ButtonTag extends YukonTagSupport implements DynamicAttributes {
     protected String id = null;
     protected String title = null;
     protected String nameKey = null;
+    protected String label = null;
     protected String arguments = null;
     protected String href = null;
     protected String onclick = null;
@@ -35,7 +36,6 @@ public class ButtonTag extends YukonTagSupport implements DynamicAttributes {
 
     protected String name = null;
     protected String value = null;
-    protected boolean imageOnRight = false;
     protected boolean disabled = false;
     protected boolean busy = false;
 
@@ -57,6 +57,10 @@ public class ButtonTag extends YukonTagSupport implements DynamicAttributes {
         this.title = title;
     }
 
+    public void setLabel(String label) {
+		this.label = label;
+	}
+    
     public void setNameKey(String nameKey) {
         this.nameKey = nameKey;
     }
@@ -91,10 +95,6 @@ public class ButtonTag extends YukonTagSupport implements DynamicAttributes {
 
     public void setValue(String value) {
         this.value = value;
-    }
-
-    public void setImageOnRight(Boolean imageOnRight) {
-        this.imageOnRight = imageOnRight;
     }
 
     public void setDisabled(Boolean disabled) {
@@ -141,9 +141,12 @@ public class ButtonTag extends YukonTagSupport implements DynamicAttributes {
                 override = true;
             }
 
-            if (StringUtils.isBlank(labelText) && (mode == RenderMode.BUTTON || mode == RenderMode.LABELED_IMAGE)) {
-                throw new RuntimeException(".label is required for " + nameKey);
+            if (StringUtils.isBlank(label) && StringUtils.isBlank(labelText) && (mode == RenderMode.BUTTON || mode == RenderMode.LABELED_IMAGE)) {
+                throw new RuntimeException("the label attribute or nameKey (<nameKey>.label) is required for renderMode: " + renderMode);
             }
+            
+            /* Always use label when provide */
+            if (StringUtils.isNotBlank(label)) labelText = label;
 
             if (dialogButton && !override) {
                 String ellipsis = getMessageSource().getMessage("yukon.web.defaults.moreInfoSuffix");
@@ -177,12 +180,8 @@ public class ButtonTag extends YukonTagSupport implements DynamicAttributes {
 
             /* Class */
             StringBuilder classes = new StringBuilder().append("button");
-            if (mode == RenderMode.LABELED_IMAGE || mode == RenderMode.IMAGE) {
-                classes.append(" naked"); // draws a button with no border and transparent background
-            }
-            if (StringUtils.isNotBlank(this.classes)) {
-            	classes.append(" " + this.classes);
-            }
+            if (mode == RenderMode.LABELED_IMAGE || mode == RenderMode.IMAGE) classes.append(" naked");
+            if (StringUtils.isNotBlank(this.classes)) classes.append(" " + this.classes);
             
             id = StringUtils.isBlank(id) ? UniqueIdentifierTag.generateIdentifier(getJspContext(), "button") : id;
 
@@ -213,13 +212,9 @@ public class ButtonTag extends YukonTagSupport implements DynamicAttributes {
 
             boolean hasImage = StringUtils.isNotBlank(icon);
             
-            if (hasImage && !imageOnRight) {
-            	out.write("<i class=\"icon " + icon + "\"></i>");
-            }
-            
-            if (busy && !imageOnRight) {
-                out.write("<i class=\"icon icon-spinner\"></i>");
-            }
+            /* icon order matters here */
+            if (busy) out.write("<i class=\"icon busy\"></i>");
+            if (hasImage) out.write("<i class=\"icon " + icon + "\"></i>");
 
             if (mode != RenderMode.IMAGE 
                     && mode != RenderMode.BUTTON_IMAGE
@@ -227,14 +222,6 @@ public class ButtonTag extends YukonTagSupport implements DynamicAttributes {
                 out.write("<span class=\"label\">");
                 out.write(labelText);
                 out.write("</span>");
-            }
-
-            if (hasImage && imageOnRight) {
-            	out.write("<i class=\"icon " + icon + "\"></i>");
-            }
-            
-            if (busy && imageOnRight) {
-                out.write("<i class=\"icon icon-spinner\"></i>");
             }
 
             out.write("</button>");

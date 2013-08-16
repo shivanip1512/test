@@ -1508,11 +1508,20 @@
         </description>
         <attribute>
             <name>nameKey</name>
-            <required>true</required>
+            <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <description>
+                Not used when label attribute is used.
                 Base i18n key.  Use with ".label" for label, with ".hoverText" for optional hover text.
                 "nameKey" is require when renderMode is 'button' (the default) or 'labeledImage'.
+            </description>
+        </attribute>
+        <attribute>
+            <name>label</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                Button text. Overrides nameKey.
             </description>
         </attribute>
         <attribute>
@@ -1578,14 +1587,6 @@
             <rtexprvalue>true</rtexprvalue>
             <description>
                 Value attribute of the button element.
-            </description>
-        </attribute>
-        <attribute>
-            <name>imageOnRight</name>
-            <required>false</required>
-            <rtexprvalue>true</rtexprvalue>
-            <description>
-                'true' if image should show to the right of the text, has no effect if there is no image or no text.
             </description>
         </attribute>
         <attribute>

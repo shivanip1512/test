@@ -17,7 +17,7 @@
     <cti:msg2 var="undoMsg" key=".undo"/>
 </cti:msgScope>
 
-<tr class="undoRow" style="display: none;">
+<tr class="undo-row" style="display: none;">
     <td colspan="${columnSpan - 1}">${willBeRemovedMsg}</td>
     <td class="actions"><a href="javascript:void(0);" class="undoRemoveBtn">${undoMsg}</a></td>
 </tr>

@@ -8,21 +8,21 @@ DROPDOWN MENU
  */
 /* VARIABLES */
 /* BUTTON */
-button,input[type=submit],input[type=button],.button {
-	font: bold 12px Helvetica, Arial, sans-serif;
-	-webkit-font-smoothing: antialiased;
-	text-decoration: none;
-	text-shadow: 0 1px 0 #fff;
-	color: #444;
-	line-height: 16px;
-	height: 26px;
-	display: inline-block;
-	float: left;
-	margin: 0 5px;
-	padding: 4px 8px;
+button,.button,input[type=submit],input[type=button],input[type=reset] {
 	background: #F3F3F3;
 	border: solid 1px #bbb;
 	border-radius: 2px;
+	color: #444;
+	display: inline-block;
+	float: left;
+	font: bold 12px Helvetica, Arial, sans-serif;
+	font-smoothing: antialiased;
+	height: 26px;
+	line-height: 16px;
+	margin: 0 5px;
+	padding: 4px 8px;
+	text-decoration: none;
+	text-shadow: 0 1px 0 #fff;
 
 	-webkit-transition: border-color 0.2s;
 	-moz-transition: border-color 0.2s;
@@ -37,14 +37,15 @@ button,input[type=submit],input[type=button] {
 }
 
 button.naked,.button.naked {
-	margin: 0;
-	padding: 0;
-	border: none;
 	background-color: transparent;
-	height: 16px !important;
+	border: none;
 
 	-webkit-box-shadow: none;
 	box-shadow: none;
+	height: 16px !important;
+	margin-top: 0;
+	margin-bottom: 0;
+	padding: 0;
 }
 
 button.naked .label,.button.naked .label {
@@ -78,12 +79,7 @@ button.action[disabled],.button.action[disabled] {
 button.left,.button.left,input.left,select.left {
 	margin: 0 0 0 5px;
 	border-top-right-radius: 0;
-	-webkit-border-top-right-radius: 0;
-
-	border-radius-topright: 0;
 	border-bottom-right-radius: 0;
-	-webkit-border-bottom-right-radius: 0;
-	border-radius-bottomright: 0;
 }
 
 button.middle,.button.middle,input.middle,select.middle {
@@ -93,24 +89,19 @@ button.middle,.button.middle,input.middle,select.middle {
 }
 
 button.right,.button.right,input.right,select.right {
-	margin: 0 5px 0 0;
 	border-left: 0;
 	border-top-left-radius: 0;
-	-webkit-border-top-left-radius: 0;
-
-	border-radius-topleft: 0;
 	border-bottom-left-radius: 0;
-	-webkit-border-bottom-left-radius: 0;
-	border-radius-bottomleft: 0;
+	margin: 0 5px 0 0;
 }
 
 button:not([disabled]):not(.naked):not(.action):hover,.button:not([disabled]):not(.naked):not(.action):hover {
 	background: #F4F4F4;
 	border-color: #aaa;
-	color: #333;
 
 	-webkit-box-shadow: 0 0 10px #D4D4D4;
 	box-shadow: 0 0 10px #D4D4D4;
+	color: #333;
 }
 
 button:not([disabled]):active,.button:not([disabled]):active {
@@ -128,14 +119,8 @@ button.on,button.on:hover,.button.on,.button.on:hover {
 }
 
 button.action,.button.action {
-	border: 1px solid #D8D8D8 !important;
 	background: #F2F2F2;
-
-	background: -webkit-linear-gradient(top, #f5f5f5, #f1f1f1);
-	background: -moz-linear-gradient(top, #f5f5f5, #f1f1f1);
-	background: -o-linear-gradient(top, #f5f5f5, #f1f1f1);
-	background: -ms-linear-gradient(top, #f5f5f5, #f1f1f1);
-	background: linear-gradient(top, #f5f5f5, #f1f1f1);
+	border: 1px solid #D8D8D8 !important;
 
 	-webkit-transition: border .20s;
 	-moz-transition: border .20s;
@@ -145,25 +130,13 @@ button.action,.button.action {
 }
 
 button.action:hover,.button.action:hover {
-	border: 1px solid #C6C6C6 !important;
 	background: #F3F3F3;
-
-	background: -webkit-linear-gradient(top, #f8f8f8, #f1f1f1);
-	background: -moz-linear-gradient(top, #f8f8f8, #f1f1f1);
-	background: -o-linear-gradient(top, #f8f8f8, #f1f1f1);
-	background: -ms-linear-gradient(top, #f8f8f8, #f1f1f1);
-	background: linear-gradient(top, #f8f8f8, #f1f1f1);
+	border: 1px solid #C6C6C6 !important;
 }
 
 button.blue,.button.blue {
-	border: 1px solid #3079ED !important;
 	background: #4B8DF8;
-
-	background: -webkit-linear-gradient(top, #4c8ffd, #4787ed);
-	background: -moz-linear-gradient(top, #4c8ffd, #4787ed);
-	background: -o-linear-gradient(top, #4c8ffd, #4787ed);
-	background: -ms-linear-gradient(top, #4c8ffd, #4787ed);
-	background: linear-gradient(top, #4c8ffd, #4787ed);
+	border: 1px solid #3079ED !important;
 
 	-webkit-transition: border .20s;
 	-moz-transition: border .20s;
@@ -173,25 +146,13 @@ button.blue,.button.blue {
 }
 
 button.blue:hover,.button.blue:hover {
-	border: 1px solid #2F5BB7 !important;
 	background: #3F83F1;
-
-	background: -webkit-linear-gradient(top, #4d90fe, #357ae8);
-	background: -moz-linear-gradient(top, #4d90fe, #357ae8);
-	background: -o-linear-gradient(top, #4d90fe, #357ae8);
-	background: -ms-linear-gradient(top, #4d90fe, #357ae8);
-	background: linear-gradient(top, #4d90fe, #357ae8);
+	border: 1px solid #2F5BB7 !important;
 }
 
 button.green,.button.green {
-	border: 1px solid #29691D !important;
 	background: #3A8E00;
-
-	background: -webkit-linear-gradient(top, #3c9300, #398a00);
-	background: -moz-linear-gradient(top, #3c9300, #398a00);
-	background: -o-linear-gradient(top, #3c9300, #398a00);
-	background: -ms-linear-gradient(top, #3c9300, #398a00);
-	background: linear-gradient(top, #3c9300, #398a00);
+	border: 1px solid #29691D !important;
 
 	-webkit-transition: border .20s;
 	-moz-transition: border .20s;
@@ -201,25 +162,13 @@ button.green,.button.green {
 }
 
 button.green:hover,.button.green:hover {
-	border: 1px solid #2D6200 !important;
 	background: #3F83F1;
-
-	background: -webkit-linear-gradient(top, #3c9300, #368200);
-	background: -moz-linear-gradient(top, #3c9300, #368200);
-	background: -o-linear-gradient(top, #3c9300, #368200);
-	background: -ms-linear-gradient(top, #3c9300, #368200);
-	background: linear-gradient(top, #3c9300, #368200);
+	border: 1px solid #2D6200 !important;
 }
 
 button.red,.button.red {
-	border: 1px solid #D14836 !important;
 	background: #D64937;
-
-	background: -webkit-linear-gradient(top, #dc4a38, #d14836);
-	background: -moz-linear-gradient(top, #dc4a38, #d14836);
-	background: -o-linear-gradient(top, #dc4a38, #d14836);
-	background: -ms-linear-gradient(top, #dc4a38, #d14836);
-	background: linear-gradient(top, #dc4a38, #d14836);
+	border: 1px solid #D14836 !important;
 
 	-webkit-transition: border .20s;
 	-moz-transition: border .20s;
@@ -229,25 +178,13 @@ button.red,.button.red {
 }
 
 button.red:hover,.button.red:hover {
-	border: 1px solid #B0281A !important;
 	background: #D14130;
-
-	background: -webkit-linear-gradient(top, #dc4a38, #c53727);
-	background: -moz-linear-gradient(top, #dc4a38, #c53727);
-	background: -o-linear-gradient(top, #dc4a38, #c53727);
-	background: -ms-linear-gradient(top, #dc4a38, #c53727);
-	background: linear-gradient(top, #dc4a38, #c53727);
+	border: 1px solid #B0281A !important;
 }
 
 button.orange,.button.orange {
-	border: 1px solid #EF8900 !important;
 	background: #FF9900;
-
-	background: -webkit-linear-gradient(top, #ff9900, #ff9900);
-	background: -moz-linear-gradient(top, #ff9900, #ff9900);
-	background: -o-linear-gradient(top, #ff9900, #ff9900);
-	background: -ms-linear-gradient(top, #ff9900, #ff9900);
-	background: linear-gradient(top, #ff9900, #ff9900);
+	border: 1px solid #EF8900 !important;
 
 	-webkit-transition: border .20s;
 	-moz-transition: border .20s;
@@ -257,25 +194,13 @@ button.orange,.button.orange {
 }
 
 button.orange:hover,.button.orange:hover {
-	border: 1px solid #EF8900 !important;
 	background: #FF9900;
-
-	background: -webkit-linear-gradient(top, #ff9900, #ff9900);
-	background: -moz-linear-gradient(top, #ff9900, #ff9900);
-	background: -o-linear-gradient(top, #ff9900, #ff9900);
-	background: -ms-linear-gradient(top, #ff9900, #ff9900);
-	background: linear-gradient(top, #ff9900, #ff9900);
+	border: 1px solid #EF8900 !important;
 }
 
 button.grey,.button.grey {
-	border: 1px solid #666 !important;
 	background: #777;
-
-	background: -webkit-linear-gradient(top, #777777, #777777);
-	background: -moz-linear-gradient(top, #777777, #777777);
-	background: -o-linear-gradient(top, #777777, #777777);
-	background: -ms-linear-gradient(top, #777777, #777777);
-	background: linear-gradient(top, #777777, #777777);
+	border: 1px solid #666 !important;
 
 	-webkit-transition: border .20s;
 	-moz-transition: border .20s;
@@ -285,14 +210,8 @@ button.grey,.button.grey {
 }
 
 button.grey:hover,.button.grey:hover {
-	border: 1px solid #666 !important;
 	background: #777;
-
-	background: -webkit-linear-gradient(top, #777777, #777777);
-	background: -moz-linear-gradient(top, #777777, #777777);
-	background: -o-linear-gradient(top, #777777, #777777);
-	background: -ms-linear-gradient(top, #777777, #777777);
-	background: linear-gradient(top, #777777, #777777);
+	border: 1px solid #666 !important;
 }
 
 button.action:hover,.button.action:hover {
@@ -328,13 +247,13 @@ button.grey:active,.button.grey:active {
 
 /* BUTTON LABEL */
 .label,.ui-button-text {
+	color: #444;
 	display: inline-block;
 	float: left;
-	line-height: 16px;
 	height: 16px;
-	padding: 0 1px;
+	line-height: 16px;
 	overflow: hidden;
-	color: #444;
+	padding: 0 1px;
 
 	-webkit-transition: color .20s;
 	-moz-transition: color .20s;
@@ -388,10 +307,6 @@ button.grey .label,.button.grey .label,button.grey .ui-button-text,.button.grey 
 	text-shadow: 0 1px 0 #777 !important;
 }
 
-button.action .label,.button.action .label,button.action .ui-button-text,.button.action .ui-button-text {
-	padding: 0 17px !important;
-}
-
 button.action:active .label,.button.action:active .label,button.action:active .ui-button-text,.button.action:active .ui-button-text {
 	color: #333 !important;
 }
@@ -407,28 +322,28 @@ div.dropdown {
 }
 
 div.dropdown span.toggle {
-	width: 27px;
+	background: url(../images/toggle.png) top right no-repeat;
+	border-left: 1px solid #D9D9D9;
+	float: right;
 	height: 16px;
 	margin-left: 7px;
 	margin-top: 1px;
 	margin-right: 2px;
 	padding-left: 8px;
-	float: right;
-	background: url(../images/toggle.png) top right no-repeat;
-	border-left: 1px solid #D9D9D9;
 
 	-webkit-transition: border-color 0.2s;
 	-moz-transition: border-color 0.2s;
 	-o-transition: border-color 0.2s;
 	-ms-transition: border-color 0.2s;
 	transition: border-color 0.2s;
+	width: 27px;
 }
 
 div.dropdown span.toggle.active {
 	background: url(../images/toggle.png) bottom right no-repeat;
 }
 
-div.dropdownbutton:hover span.toggle,.button:hover span.toggle {
+div.dropdown button:hover span.toggle,.button:hover span.toggle {
 	border-color: #bbb;
 }
 
@@ -443,11 +358,6 @@ div.dropdown-slider {
 	border-right: solid 1px #D9D9D9;
 	border-bottom: solid 1px #D9D9D9;
 	border-left: solid 1px #D9D9D9;
-	-webkit-border-bottom-right-radius: 2px;
-	-webkit-border-bottom-left-radius: 2px;
-
-	border-radius-bottomright: 2px;
-	border-radius-bottomleft: 2px;
 	border-bottom-right-radius: 2px;
 	border-bottom-left-radius: 2px;
 
@@ -508,15 +418,7 @@ div.dropdown-slider .ddm:last-child {
 	border-bottom: none;
 }
 
-button .icon,.button .icon {
-	margin: 0;
-}
-
-button:not(.action) .label + .icon,button:not(.action) .icon + .label,.button:not(.action) .label + .icon,.button:not(.action) .icon + .label {
-	margin: 0 0 0 7px;
-}
-
-/* primary button (default:  #777) */
+/* primary button */
 button.primary,.button.primary {
 	background: #777777;
 	border: 1px solid #666666 !important;
@@ -532,8 +434,8 @@ button.primary:hover,.button.primary:hover,button.primary:active,.button.primary
 	background: #888888 !important;
 	border: 1px solid #666666 !important;
 
-	-webkit-box-shadow: 0 0 10px #D4D4D4;
-	box-shadow: 0 0 10px #D4D4D4;
+	-webkit-box-shadow: 0 0 10px #bbb;
+	box-shadow: 0 0 10px #bbb;
 }
 
 button.primary .label,.button.primary .label,button.primary .ui-button-text,.button.primary .ui-button-text {
@@ -541,16 +443,28 @@ button.primary .label,.button.primary .label,button.primary .ui-button-text,.but
 	text-shadow: 0 1px 0 #777777 !important;
 }
 
-button[data-busy] .icon-spinner,.button[data-busy] .icon-spinner,button[data-busy] .icon-spinner-white,.button[data-busy] .icon-spinner-white {
+/* delete button */
+button.delete .label,.button.delete .label {
+	color: #DB4A37;
+}
+
+button .icon,.button .icon {
+	margin: 0;
+}
+
+button .icon:not(.busy) + .label,.button .icon:not(.busy) + .label,button.busy .label,.button.busy .label {
+	margin-left: 5px;
+}
+
+button .busy,.button .busy {
+	background-image: url(/WebConfig/yukon/Icons/spinner.gif) !important;
 	display: none;
 }
 
-button[data-busy][disabled] .icon-spinner,.button[data-busy][disabled] .icon-spinner {
-	display: inline-block;
-	background-image: url(/WebConfig/yukon/Icons/spinner.gif) !important;
+button.action .busy,.button.action .busy {
+	background-image: url(/WebConfig/yukon/Icons/spinner-white.gif) !important;
 }
 
-button.action[data-busy][disabled] .icon-spinner,.button.action[data-busy][disabled] .icon-spinner {
+button.busy .busy,.button.busy .busy {
 	display: inline-block;
-	background-image: url(/WebConfig/yukon/Icons/spinner-white.gif) !important;
 }

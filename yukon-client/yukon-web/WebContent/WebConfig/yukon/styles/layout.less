@@ -24,9 +24,9 @@
 
 html {overflow-y:auto;display:block;background-color:@page-background;}
 head {display:none;}
-body {margin: 0;padding:0;color: @primary-font-color;font: 14px/1.3 Helvetica,sans-serif;-webkit-font-smoothing:antialiased;font-smoothing:antialiased;display:block;}
+body {margin: 0;padding:0;color: @primary-font-color;font: 14px/1.3 Helvetica,sans-serif;font-smoothing:antialiased;font-smoothing:antialiased;display:block;}
 
-* {box-sizing: border-box;-moz-box-sizing:border-box;}
+* {box-sizing: border-box;}
 
 nav, header, footer, section, aside, hgroup, section {display:block;}
 
@@ -48,13 +48,13 @@ nav, header, footer, section, aside, hgroup, section {display:block;}
 .yukon-header .outer {height: 44px;background-color:@page-background;}
 .yukon-header .inner {overflow: visible;margin:0 auto;width: @page-width;}
 .yukon-header .inner .toolbar {float: right;margin-top: 8px;}
+.yukon-header .inner .toolbar .button:hover {box-shadow: none !important;}
 .yukon-header .inner .toolbar .yukon-search-form {float: left;margin-right:6px;}
 .yukon-header .inner .toolbar .yukon-search-form .search-field{min-width:240px}
 .yukon-header .inner .toolbar .b-user-menu {min-width:112px;}
-.yukon-header .inner .toolbar button.action:hover, .button.action:hover {-moz-box-shadow: none !important; -webkit-box-shadow: none !important; box-shadow: none !important;}
 #yukon_alert_button .label {padding: 0 !important; font-size:14px;}
 
-.yukon-header .nav {height: 72px;border-bottom: 1px solid @nav-border;background-color: @nav-background;color: @primary-font-color;font-weight: bold;-moz-box-shadow: 0 -5px 5px @nav-shadow;-webkit-box-shadow: 0 -5px 5px @nav-shadow;box-shadow: 0 -5px 5px @nav-shadow;}
+.yukon-header .nav {height: 72px;border-bottom: 1px solid @nav-border;background-color: @nav-background;color: @primary-font-color;font-weight: bold;box-shadow: 0 -5px 5px @nav-shadow;}
 .yukon-header .nav .navOut {overflow: visible;margin:0 auto;width: @page-width;}
 
 .yukon-header .nav ul {margin:0;padding:0;z-index: 400;}
@@ -66,9 +66,19 @@ nav, header, footer, section, aside, hgroup, section {display:block;}
 .yukon-header .nav ul .logo a {display: inline-block;min-height: 68px;background: url(@logo-url) @logo-left @logo-top no-repeat;width: @logo-width;}
 
 .yukon-header .nav ul li a, .yukon-header .nav ul li span {display: block;padding: 0 24px 0 22px;background-position: right 0;color: @primary-color;line-height: 72px;text-shadow: 0 1px 1px white;font-size: 1.077em;}
-.yukon-header .nav ul ul {position: absolute;z-index: -1;top: 66px;left: -9999px;margin-top: -17px;padding: 5px 0;min-width: 100%;border: 1px solid #D6D6D6;background: white;white-space: nowrap;
-    -webkit-border-radius: 0 5px 5px 5px;-moz-border-radius: 0 5px 5px 5px;border-radius: 0 5px 5px 5px;
-    -moz-box-shadow: 0 1px 2px #ccc;-webkit-box-shadow: 0 1px 2px #CCC;box-shadow: 0 1px 2px #CCC;
+.yukon-header .nav ul ul {
+  background: white;
+  border: 1px solid #D6D6D6;
+  border-radius: 0 5px 5px 5px;
+  box-shadow: 0 1px 2px #CCC;
+  left: -9999px;
+  margin-top: -17px;
+  min-width: 100%;
+  padding: 5px 0;
+  position: absolute;
+  top: 66px;
+  white-space: nowrap;
+  z-index: -1;
 }
 .yukon-header .nav ul li.dropdown a, .yukon-header .nav ul li.dropdown span {padding: 0 44px 0 22px;}
 .yukon-header .nav ul li.dropdown li {float: none;position: relative;margin: 0;padding: 0;line-height: 28px;font-weight: normal;background: 0;}
@@ -85,10 +95,8 @@ nav, header, footer, section, aside, hgroup, section {display:block;}
 
 .login-content {background: url(/WebConfig/yukon/layout/bg_mountain_1920_420_fade2.jpg) no-repeat scroll center top #e0e0f5;min-height: 420px;position: relative;}
 
-.contentParagraph, .pageSubHeadline, .pageHeadline h1, #content h1, #content h2, #content h3, #consumer .ui-dialog h1, #consumer .ui-dialog h2, #consumer .ui-dialog h3 {text-shadow: 0 1px 0 white;}
-
 .yukon-footer {margin: 0 auto;background-color: @page-background;}
-.yukon-footer .utility {background-color: @nav-background;-moz-box-shadow: 0 6px 4px @nav-shadow;-webkit-box-shadow: 0 6px 4px @nav-shadow;box-shadow: 0 6px 4px @nav-shadow;}
+.yukon-footer .utility {background-color: @nav-background;box-shadow: 0 6px 4px @nav-shadow;}
 .yukon-footer .utility nav {margin: 0 auto;width: @page-width;overflow: auto;}
 .yukon-footer .utility nav ul li {margin-right: 25px;float:right;}
 .yukon-footer .utility nav ul a {display: inline-block;padding: 0;font-size: .923em;color: @primary-color;font-weight: bold;text-shadow: 1px 1px white;line-height: 4.16em;}
@@ -122,7 +130,9 @@ nav, header, footer, section, aside, hgroup, section {display:block;}
 .column{float:left;margin-right:2.0242914979757085020242914979757%;vertical-align:top}
 .column>h1:first-child,.column>h2:first-child,.column>h3:first-child,.column>h4:first-child,.column>p:first-child{margin-top:0;padding-top:0}
 .column.nogutter,.nogutter{margin-right:0}
-.column_24,.column_4_20,.column_6_18,.column_8_16,.column_10_14,.column_12_12,.column_14_10,.column_16_8,.column_18_6,.column_21_3,.column_3_18_3,.column_4_8_12,.column_4_10_10,.column_4_12_8,.column_4_14_6,.column_6_8_10,.column_6_10_8,.column_6_12_6,.column_6_15_3,.column_8_8_8,.column_8_10_6,.column_8_13_3,.column_10_8_6,.column_10_11_3,.column_12_9_3,.column_6_6_6_6{margin:0 auto;max-width: @page-width}
+.column_24,.column_4_20,.column_6_18,.column_8_16,.column_10_14,.column_12_12,.column_14_10,.column_16_8,.column_18_6,.column_21_3,.column_3_18_3,.column_4_8_12,.column_4_10_10,.column_4_12_8,.column_4_14_6,.column_6_8_10,.column_6_10_8,.column_6_12_6,.column_6_15_3,.column_8_8_8,.column_8_10_6,.column_8_13_3,.column_10_8_6,.column_10_11_3,.column_12_9_3,.column_6_6_6_6{
+  margin:0 auto;max-width: @page-width
+}
 .column_24 > .one{width:100%}
 .column_4_20 > .one{width:14.97975709%}
 .column_4_20 > .two{width:82.99595142%}

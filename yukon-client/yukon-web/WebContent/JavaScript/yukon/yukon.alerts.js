@@ -28,8 +28,10 @@ Yukon.Alerts = (function () {
             var button = jQuery("#yukon_alert_button");
             button.children(".label").html(count);
             if (count > 0) {
+                button.addClass('red');
                 button.show();
             } else {
+                button.removeClass('red');  
                 button.hide();
             }
         },

@@ -148,7 +148,7 @@
                         <c:set var="nameKey" value="selectionPicker"/>
                     </c:if>
                     <cti:button id="picker_${id}_label"  nameKey="${pageScope.nameKey}" classes="noSelectionPickerLabel" renderMode="labeledImage" icon="icon-database-add"
-                        onclick="${id}.show.call(${id})" imageOnRight="true"/>
+                        onclick="${id}.show.call(${id})" />
                     <c:if test="${pageScope.multiSelectMode}">
                         <cti:icon id="picker_${id}_showSelectedImg" href="javascript:${id}.showSelected.call(${id})" nameKey="zoom" icon="icon-magnifier"/>
                     </c:if>

@@ -76,7 +76,7 @@
         <div class="inner">
             <div class="toolbar">
                 <cti:outputContent writable="${searchRenderer}"/>
-                <button id="yukon_alert_button" class="action red"><span class="label"></span></button>
+                <cti:button id="yukon_alert_button" classes="action dn" label="0"/>
                 <div class="dropdown">
                     <a href="#" class="button b-user-menu"><i class="icon icon-user"></i><span class="label">${fn:escapeXml(displayName)}</span><span class="toggle"></span></a>
                     <div class="dropdown-slider">

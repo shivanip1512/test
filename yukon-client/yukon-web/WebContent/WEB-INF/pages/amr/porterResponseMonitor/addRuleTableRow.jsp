@@ -1,19 +1,25 @@
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <tags:standardPageFragment module="amr"	pageName="porterResponseMonitor" fragmentName="addRule">
 
 	<table class="compactResultsTable">
 		<tr id="rule_${newMapKey}" class="ruleTableRow">
-			<td><input name="rules[${newMapKey}].ruleOrder" type="text" value="${nextOrder}" class="ruleOrder" size="1" /></td>
-            <td class="checkBox outcomeColumn">
-                <input name="rules[${newMapKey}].success" type="checkbox"/>
-                <span><i:inline key=".rule.success"/></span>
+			<td class="orderColumn">
+                <input name="rules[${newMapKey}].ruleOrder" type="text" value="${nextOrder}" class="ruleOrder" maxlength="2" size="2"/>
             </td>
-			<td><input name="rules[${newMapKey}].errorCodes" type="text" size="8" /></td>
+            <td class="checkBox outcomeColumn">
+                <label>
+                    <input name="rules[${newMapKey}].success" type="checkbox"/>
+                    <i:inline key=".rule.success"/>
+                </label>
+            </td>
+			<td class="errorsColumn">
+                <input name="rules[${newMapKey}].errorCodes" type="text" maxlength="4" size="4"/>
+            </td>
 			<td class="matchColumn">
                 <select name="rules[${newMapKey}].matchStyle">
 				    <c:forEach items="${matchStyleChoices}" var="style">
@@ -24,23 +30,16 @@
 			<td class="stateColumn">
                 <select name="rules[${newMapKey}].state">
                     <c:forEach items="${statesList}" var="state">
-                        <option value="${state.liteID}" title="${state.stateText}">
-                            <spring:escapeBody htmlEscape="true">
-                                ${state.stateText}
-                            </spring:escapeBody>
-                        </option>
+                        <option value="${state.liteID}" title="${state.stateText}">${fn:escapeXml(state.stateText)}</option>
                     </c:forEach>
                 </select>
+                <cti:button classes="f-remove fr" icon="icon-cross" renderMode="buttonImage"/>
             </td>
-			<td class="removeColumn"><cti:icon nameKey="delete" classes="removeRow pointer" icon="icon-cross"/></td>
 		</tr>
-        <tr id="rule_${newMapKey}_undo" class="undoRow" style="display: none">
-            <td colspan="1">
-                <cti:icon nameKey="delete" icon="icon-cross"/>
-            </td>
-            <td colspan="4" class="removed"><i:inline key=".rulesTable.removedRow"/></td>
-            <td colspan="1" class="removed">
-                <span class="undoRemoveBtn"><i:inline key=".rulesTable.undoLink"/></span>
+        <tr style="display: none" id="rule_${newMapKey}_undo" class="undo-row">
+            <td colspan="5">
+                <i:inline key=".rulesTable.removedRow"/>
+                <a href="javascript:void(0)" class="undo"><i:inline key=".rulesTable.undoLink"/></a>
             </td>
         </tr>
     </table>

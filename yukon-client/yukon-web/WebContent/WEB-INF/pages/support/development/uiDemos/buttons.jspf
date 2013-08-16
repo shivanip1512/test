@@ -41,35 +41,21 @@
     </div>
     <div class="button-example">
         <div class="clearfix">
-            <cti:button nameKey="edit" icon="icon-pencil" imageOnRight="true"/>
-            <span class="description">button with icon on the right</span>
-        </div>
-        <pre class="code">&lt;cti:button nameKey=&quot;edit&quot; icon=&quot;icon-pencil&quot; imageOnRight=&quot;true&quot;/&gt;</pre>
-    </div>
-    <div class="button-example">
-        <div class="clearfix">
-            <cti:button nameKey="edit" icon="icon-pencil" imageOnRight="true" disabled="true"/>
-            <span class="description">disabled button with icon on the right</span>
-        </div>
-        <pre class="code">&lt;cti:button nameKey=&quot;edit&quot; icon=&quot;icon-pencil&quot; imageOnRight=&quot;true&quot; disabled=&quot;true&quot;/&gt;</pre>
-    </div>
-    <div class="button-example">
-        <div class="clearfix">
-<cm:dropdown type="button" key="yukon.web.defaults.actions" containerCssClass="fl">
-    <li>
-        <a href="javascript:void(0);" class="clearfix"><cti:icon icon="icon-pencil"/><span class="fl dib">Edit</span></a>
-    </li>
-    <li>
-        <a href="javascript:void(0);" class="clearfix"><cti:icon icon="icon-page-copy"/><span class="fl dib">Copy</span></a>
-    </li>
-    <li>
-        <a href="javascript:void(0);" class="clearfix"><cti:icon icon="icon-cross"/><span class="fl dib">Delete</span></a>
-    </li>
-    <li class="divider"></li>
-    <li>
-        <a href="javascript:void(0);" class="clearfix"><cti:icon icon="icon-plus-green"/><span class="fl dib">Create</span></a>
-    </li>
-</cm:dropdown>
+            <cm:dropdown type="button" key="yukon.web.defaults.actions" containerCssClass="fl">
+                <li>
+                    <a href="javascript:void(0);" class="clearfix"><cti:icon icon="icon-pencil"/><span class="fl dib">Edit</span></a>
+                </li>
+                <li>
+                    <a href="javascript:void(0);" class="clearfix"><cti:icon icon="icon-page-copy"/><span class="fl dib">Copy</span></a>
+                </li>
+                <li>
+                    <a href="javascript:void(0);" class="clearfix"><cti:icon icon="icon-cross"/><span class="fl dib">Delete</span></a>
+                </li>
+                <li class="divider"></li>
+                <li>
+                    <a href="javascript:void(0);" class="clearfix"><cti:icon icon="icon-plus-green"/><span class="fl dib">Create</span></a>
+                </li>
+            </cm:dropdown>
             <span class="description">dropdown menu button</span>
         </div>
         <pre class="code">&lt;cm:dropdown type=&quot;button&quot; key=&quot;yukon.web.defaults.actions&quot; containerCssClass=&quot;fl&quot;&gt;
@@ -132,13 +118,6 @@
     </div>
     <div class="button-example">
         <div class="clearfix">
-            <cti:button nameKey="readNow" classes="f-disableAfterClick" busy="true" icon="icon-bullet-go" imageOnRight="true"/>
-            <span class="description">button with image on the right that will disable after clicking with busy text and busy icon</span>
-        </div>
-        <pre class="code">&lt;cti:button nameKey=&quot;readNow&quot; classes=&quot;f-disableAfterClick&quot; busy=&quot;true&quot; icon=&quot;icon-bullet-go&quot; imageOnRight=&quot;true&quot;/&gt;</pre>
-    </div>
-    <div class="button-example">
-        <div class="clearfix">
             <cti:button nameKey="delete" classes="f-disableAfterClick" busy="true" icon="icon-cross" renderMode="buttonImage"/>
             <span class="description">button with no text that will disable after clicking with busy icon</span>
         </div>
@@ -146,13 +125,13 @@
     </div>
     <div class="button-example">
         <div class="clearfix">
-            <cti:button nameKey="ok" classes="f-disableAfterClick action primary" data-disable-group="them-buttons"/>
-            <cti:button nameKey="delete" icon="icon-cross" classes="f-disableAfterClick" data-disable-group="them-buttons"/>
-            <cti:button nameKey="update" classes="f-disableAfterClick" data-disable-group="them-buttons"/>
+            <cti:button nameKey="update" classes="f-disableAfterClick action primary" data-disable-group="them-buttons"/>
+            <cti:button nameKey="delete" classes="f-disableAfterClick delete" data-disable-group="them-buttons"/>
+            <cti:button nameKey="cancel" classes="f-disableAfterClick" data-disable-group="them-buttons"/>
             <span class="description">a group of buttons that will all disable after clicking any one of them</span>
         </div>
         <div class="clearfix">
-            <pre class="code">&lt;cti:button nameKey=&quot;ok&quot; classes=&quot;f-disableAfterClick action primary&quot; data-disable-group=&quot;them-buttons&quot;/&gt;<br/>&lt;cti:button nameKey=&quot;delete&quot; icon=&quot;icon-cross&quot; classes=&quot;f-disableAfterClick&quot; data-disable-group=&quot;them-buttons&quot;/&gt;<br/>&lt;cti:button nameKey=&quot;update&quot; classes=&quot;f-disableAfterClick&quot; data-disable-group=&quot;them-buttons&quot;/&gt;</pre>
+            <pre class="code">&lt;cti:button nameKey=&quot;update&quot; classes=&quot;f-disableAfterClick action primary&quot; data-disable-group=&quot;them-buttons&quot;/&gt;<br/>&lt;cti:button nameKey=&quot;delete&quot; classes=&quot;f-disableAfterClick delete&quot; data-disable-group=&quot;them-buttons&quot;/&gt;<br/>&lt;cti:button nameKey=&quot;cancel&quot; classes=&quot;f-disableAfterClick&quot; data-disable-group=&quot;them-buttons&quot;/&gt;</pre>
         </div>
     </div>
 </tags:sectionContainer>

@@ -284,7 +284,7 @@ table.nowrap th,table.nowrap td {
 	font-size: 0.9em;
 }
 
-.compactResultsTable tr:nth-child(even),.resultsTable tr:nth-child(even),.striped-list > div:nth-child(even),.striped tr:nth-child(even) {
+.compactResultsTable tr:nth-child(even),.resultsTable tr:nth-child(even),.striped-list > div:nth-child(even),.striped tr:nth-child(even),.undo-row {
 	background-color: #f6f6f6;
 }
 
@@ -331,6 +331,14 @@ table.nowrap th,table.nowrap td {
 
 .rowHighlighting tr:hover,.highlighted {
 	background-color: #dedede !important;
+}
+
+.undo-row {
+	text-align: center;
+}
+
+.undo-row .undo {
+	float: right;
 }
 
 .aligned_4_actions .first,.aligned_4_actions .middle {

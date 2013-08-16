@@ -266,11 +266,10 @@ Yukon.modules.ui = function (mod) {
               
                 // if this is a busy button, add the spinner icon and use the busy text
                 if (button.is("[data-busy]")) {
+                    button.addClass('busy');
                     // if this button has an icon hide it
                     button.children(".icon").hide();
-                    // only one of the spinner icons should be there
-                    button.children(".icon-spinner-white").show();
-                    button.children(".icon-spinner").show();
+                    button.children(".icon.busy").show();
                     
                     label = button.children(".label");
                     busyText = button.attr("data-busy");
