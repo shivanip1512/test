@@ -161,6 +161,51 @@ Yukon.modules.ui = function (mod) {
         item.siblings().removeClass('selected');
         item.addClass('selected');
     };
+    
+    mod.busy = function(item) {
+        var btn = jQuery(item),
+          label,
+          busyText,
+          originalText;
+        
+        if (btn.is("[data-busy]")) {
+            btn.attr('disabled', 'disabled');
+            btn.addClass('busy');
+            // if this button has an icon hide it
+            btn.children(".icon").hide();
+            btn.children(".icon.busy").show();
+            
+            label = btn.children(".label");
+            busyText = btn.attr("data-busy");
+            if (label.length > 0 && busyText.length > 0) {
+                originalText = label.html(); 
+                label.html(busyText);
+                btn.data("data-original-text", originalText);
+            }
+        }
+        return btn;
+    };
+    
+    mod.unBusy = function(item) {
+        var btn = jQuery(item),
+        label,
+        originalText;
+    
+        if (btn.is("[data-busy]")) {
+            btn.removeAttr('disabled');
+            btn.removeClass('busy');
+            // if this button has an icon show it
+            btn.children(".icon").show();
+            btn.children(".icon.busy").hide();
+            
+            label = btn.children(".label");
+            originalText = btn.data("data-original-text");
+            if (label.length > 0 && originalText.length > 0) {
+                label.html(originalText);
+            }
+        }
+        return btn;
+    };
 
     mod.autoWire = function() {
         var html;
@@ -251,9 +296,6 @@ Yukon.modules.ui = function (mod) {
         jQuery(document).on('click', '.f-disableAfterClick', function() {
             var button = jQuery(this),
                 group,
-                label,
-                busyText,
-                originalText,
                 form;
             if (button.is(":input")) {
                 this.disabled = true;
@@ -266,18 +308,7 @@ Yukon.modules.ui = function (mod) {
               
                 // if this is a busy button, add the spinner icon and use the busy text
                 if (button.is("[data-busy]")) {
-                    button.addClass('busy');
-                    // if this button has an icon hide it
-                    button.children(".icon").hide();
-                    button.children(".icon.busy").show();
-                    
-                    label = button.children(".label");
-                    busyText = button.attr("data-busy");
-                    if (label.length > 0 && busyText.length > 0) {
-                        originalText = label.html(); 
-                        label.html(busyText);
-                        button.attr("data-busy", originalText); // just incase we need to put it back
-                    }
+                    mod.busy(button);
                 }
                 
                 //if this is a submit button, trigger the submit event on the form
