@@ -136,7 +136,7 @@ jQuery(document).on('click', '.f-add-rule', function(event) {
                         <th class="outcomeColumn"><i:inline key=".rulesTable.header.outcome" /></th>
                         <th class="errorsColumn">
                             <i:inline key=".rulesTable.header.errors" />
-                            <cti:icon id="errorHelp" nameKey="help" icon="icon-help" classes="fn"/>
+                            <cti:icon id="errorHelp" nameKey="help" icon="icon-help cp" classes="fn"/>
                         </th>
                         <th class="matchColumn"><i:inline key=".rulesTable.header.matchStyle" /></th>
                         <th class="stateColumn"><i:inline key=".rulesTable.header.state" /></th>
@@ -200,10 +200,10 @@ jQuery(document).on('click', '.f-add-rule', function(event) {
             <c:if test="${monitorDto.evaluatorStatus eq 'ENABLED'}">
                 <c:set var="monitoringKey" value="disable"/>
             </c:if>
+            <cti:button id="deleteButton" nameKey="delete" name="delete" type="submit" busy="true" data-disable-group="actionButtons" classes="delete"/>
+            <d:confirm on="#deleteButton" nameKey="confirmDelete" argument="${monitorDto.name}"/>
             <cti:button nameKey="${monitoringKey}" type="submit" name="toggleEnabled" busy="true" classes="f-disableAfterClick" data-disable-group="actionButtons"/>
 
-            <cti:button id="deleteButton" nameKey="delete" name="delete" type="submit" busy="true" data-disable-group="actionButtons"/>
-            <d:confirm on="#deleteButton" nameKey="confirmDelete" argument="${monitorDto.name}"/>
             <cti:url value="/amr/porterResponseMonitor/viewPage" var="viewUrl">
                 <cti:param name="monitorId" value="${monitorDto.monitorId}"/>
             </cti:url>
