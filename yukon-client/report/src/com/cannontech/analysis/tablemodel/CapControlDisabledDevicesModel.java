@@ -10,6 +10,7 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.IterableUtils;
 import com.cannontech.common.util.SqlFragmentGenerator;
@@ -67,10 +68,12 @@ public class CapControlDisabledDevicesModel extends BareReportModelBase<CapContr
         return ModelRow.class;
     }
     
+    @Override
     public String getTitle() {
         return "Cap Control Disabled Devices Report";
     }
 
+    @Override
     public int getRowCount() {
         return data.size();
     }
@@ -115,11 +118,11 @@ public class CapControlDisabledDevicesModel extends BareReportModelBase<CapContr
     	
     	baseSql.append("select yp.paoname devicename, yp.type deviceType, pInfo.area area, '---' substation, '---' subbus, '---' feeder,");
 		baseSql.append("'---' capbank, c.capcomment, c.commenttime, yu.username");
-		baseSql.append("from (select * from yukonpaobject where type = 'CCSUBSTATION' and disableflag = 'Y') yp");
+		baseSql.append("from (select * from yukonpaobject where type").eq_k(PaoType.CAP_CONTROL_SUBSTATION).append("and disableflag = 'Y') yp");
 		baseSql.append("join (select ypa.paoname area, ypa.paobjectid areaId, yps.paobjectid");
   		baseSql.append("from yukonpaobject ypa, yukonpaobject yps, ccsubareaassignment sa, ccsubstationsubbuslist ss");
   		baseSql.append("where yps.paobjectid = ss.substationid and sa.substationbusid = ss.substationid and");
-  		baseSql.append("sa.areaid = ypa.paobjectid and yps.type like 'CCSUBSTATION') pInfo");
+  		baseSql.append("sa.areaid = ypa.paobjectid and yps.type").eq_k(PaoType.CAP_CONTROL_SUBSTATION).append(") pInfo");
   		baseSql.append("on yp.paobjectid = pInfo.paobjectid");
   		baseSql.append("left outer join (select paoid, max(commenttime) as commenttime from capcontrolcomment group by paoid) ccc on ccc.PaoID = yp.paobjectid");
   		baseSql.append("left outer join CAPCONTROLCOMMENT c on c.paoId = yp.paobjectid and c.commenttime = ccc.commenttime and c.action = 'DISABLED'");
@@ -163,7 +166,7 @@ public class CapControlDisabledDevicesModel extends BareReportModelBase<CapContr
 		baseSql.append("join (select ypa.paoname area, ypa.paobjectid areaId, yps.paoname substation, yps.paobjectId substationId, ypsb.paobjectid");
 		baseSql.append("from yukonpaobject ypa, yukonpaobject yps, yukonpaobject ypsb, ccsubareaassignment sa, ccsubstationsubbuslist ss");
 		baseSql.append("where ypsb.paobjectid = ss.substationbusid and yps.paobjectid = ss.substationid and sa.substationbusid = ss.substationid and");
-		baseSql.append("sa.areaid = ypa.paobjectid and ypsb.type like 'CCSUBBUS') pInfo on yp.paobjectid = pInfo.paobjectid");
+		baseSql.append("sa.areaid = ypa.paobjectid and ypsb.type").eq_k(PaoType.CAP_CONTROL_SUBBUS).append(") pInfo on yp.paobjectid = pInfo.paobjectid");
 		baseSql.append("left outer join (select paoid, max(commenttime) as commenttime from capcontrolcomment group by paoid) ccc on ccc.PaoID = yp.paobjectid");
 		baseSql.append("left outer join CAPCONTROLCOMMENT c on c.paoId = yp.paobjectid and c.commenttime = ccc.commenttime and c.action = 'DISABLED'");
 		baseSql.append("left outer join yukonuser yu on yu.userid = c.userid");
@@ -268,7 +271,7 @@ public class CapControlDisabledDevicesModel extends BareReportModelBase<CapContr
 		baseSql.append("ccsubstationsubbuslist ss, ccfeedersubassignment fs, ccfeederbanklist fb, capbank c");
 		baseSql.append("where ypc.paobjectid = c.deviceid and fb.deviceid = c.deviceid and fb.feederid = fs.feederid and ypf.paobjectid = fb.feederid and");
 		baseSql.append("ypsb.paobjectid = fs.substationbusid and yps.paobjectid = ss.substationid and fs.substationbusid = ss.substationbusid and");
-		baseSql.append("sa.substationbusid = ss.substationid and sa.areaid = ypa.paobjectid and ypc.type like 'CAP BANK') pInfo");
+		baseSql.append("sa.substationbusid = ss.substationid and sa.areaid = ypa.paobjectid and ypc.type").eq_k(PaoType.CAPBANK).append(") pInfo");
 		baseSql.append("on pInfo.paobjectid = yp.paobjectid");
 		baseSql.append("left outer join (select paoid, max(commenttime) as commenttime from capcontrolcomment group by paoid) ccc on ccc.PaoID = yp.paobjectid");
 		baseSql.append("left outer join CAPCONTROLCOMMENT c on c.paoId = yp.paobjectid and c.commenttime = ccc.commenttime and c.action = 'DISABLED'");
@@ -318,10 +321,12 @@ public class CapControlDisabledDevicesModel extends BareReportModelBase<CapContr
     private List<CapControlDisabledDevicesModel.ModelRow> doLoadCbcData() {
     	final SqlStatementBuilder baseSql = new SqlStatementBuilder();
     	
+    	final Set<PaoType> cbcTypes = PaoType.getCbcTypes();
+    	
     	baseSql.append("select yp.paoname devicename, yp.type deviceType, pInfo.area area, pInfo.substation substation,");
 		baseSql.append("pInfo.subbus subbus, pInfo.feeder feeder, pInfo.capbank capbank, c.capcomment,");
 		baseSql.append("c.commenttime, yu.username");
-		baseSql.append("from (select * from yukonpaobject where type like 'CBC%' and disableflag = 'Y') yp");
+		baseSql.append("from (select * from yukonpaobject where type").in(cbcTypes).append("and disableflag = 'Y') yp");
 		baseSql.append("join (select ypa.paoname area, ypa.PAObjectID areaId, yps.paoname substation,");
 		baseSql.append("yps.PAObjectID substationId, ypsb.paobjectid subbusId, ypf.paobjectid feederId,");
 		baseSql.append("ypc.paobjectid capbankId, ypsb.paoname subbus, ypf.paoname feeder, ypc.paoname capbank,");
@@ -333,7 +338,7 @@ public class CapControlDisabledDevicesModel extends BareReportModelBase<CapContr
 		baseSql.append("fb.deviceid = c.deviceid and fb.feederid = fs.feederid and ypf.paobjectid = fb.feederid");
 		baseSql.append("and ypsb.paobjectid = fs.substationbusid and yps.paobjectid = ss.substationid");
 		baseSql.append("and fs.substationbusid = ss.substationbusid and sa.substationbusid = ss.substationid");
-		baseSql.append("and sa.areaid = ypa.paobjectid and yp.type like 'CBC%') pInfo");
+		baseSql.append("and sa.areaid = ypa.paobjectid and yp.type").in(cbcTypes).append(") pInfo");
 		baseSql.append("on yp.paobjectid = pInfo.paobjectid");
 	    baseSql.append("left outer join (select paoid, max(commenttime) as commenttime from capcontrolcomment group by paoid) ccc on ccc.PaoID = yp.paobjectid");
 	  	baseSql.append("left outer join CAPCONTROLCOMMENT c on c.paoId = yp.paobjectid and c.commenttime = ccc.commenttime and c.action = 'DISABLED'");
@@ -380,6 +385,7 @@ public class CapControlDisabledDevicesModel extends BareReportModelBase<CapContr
         }
     }
     
+    @Override
     public void doLoadData() {
         List<String> deviceTypeList = Arrays.asList(deviceTypes);
         for(String type: deviceTypeList) {

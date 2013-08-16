@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowCallbackHandler;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.JdbcTemplateHelper;
 
@@ -50,20 +51,24 @@ public class CBCInventoryModel extends BareReportModelBase<CBCInventoryModel.Mod
         return ModelRow.class;
     }
     
+    @Override
     public String getTitle() {
         return "CBC Inventory Report";
     }
 
+    @Override
     public int getRowCount() {
         return data.size();
     }
 
+    @Override
     public void doLoadData() {
 
-        StringBuffer sql = buildSQLStatement();
+        SqlStatementBuilder sql = buildSQLStatement();
         CTILogger.info(sql.toString()); 
 
-        jdbcOps.query(sql.toString(), new RowCallbackHandler() {
+        jdbcOps.query(sql.getSql(), sql.getArguments(), new RowCallbackHandler() {
+            @Override
             public void processRow(ResultSet rs) throws SQLException {
                 CBCInventoryModel.ModelRow row = new CBCInventoryModel.ModelRow();
 
@@ -86,12 +91,14 @@ public class CBCInventoryModel extends BareReportModelBase<CBCInventoryModel.Mod
         CTILogger.info("Report Records Collected from Database: " + data.size());
     }
     
-    public StringBuffer buildSQLStatement()
+    public SqlStatementBuilder buildSQLStatement()
     {
-        StringBuffer sql = new StringBuffer ("select yp.paoname cbcName, p.value ipAddress, da.slaveaddress slaveAddress, cb.controllertype protocol, ");
+        final Set<PaoType> cbcTypes = PaoType.getCbcTypes();
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select yp.paoname cbcName, p.value ipAddress, da.slaveaddress slaveAddress, cb.controllertype protocol, ");
         sql.append("ca.paoname region, yp3.paoName subName, yp2.paoName feederName, yp1.paoName capbankName, cb.bankSize bankSize, ");
         sql.append("cb.operationalstate controlType,  yp1.description driveDirections ");
-        sql.append("from (select paobjectid, paoname from yukonpaobject where type like '%CBC%') yp ");
+        sql.append("from (select paobjectid, paoname from yukonpaobject where type").in(cbcTypes).append(") yp ");
         sql.append("left outer join capbank cb on cb.controldeviceid = yp.paobjectid ");
         sql.append("left outer join yukonpaobject yp1 on cb.deviceid = yp1.paobjectid ");
         sql.append("left outer join ccfeederbanklist fb on fb.deviceid = cb.deviceid ");
@@ -104,7 +111,7 @@ public class CBCInventoryModel extends BareReportModelBase<CBCInventoryModel.Mod
         sql.append("left outer join (select * from dynamicpaoinfo where infokey like '%udp ip%') p on p.paobjectid = yp.paobjectid ");
         sql.append("left outer join ccsubstationsubbuslist ssb on ssb.substationbusid = sf.substationbusid ");
  	 	sql.append("left outer join ccsubareaassignment saa on saa.substationbusid = ssb.substationid ");
- 	 	sql.append("left outer join (select paobjectid, paoname from yukonpaobject where type ='ccarea' ) ca on ca.paobjectid = saa.areaid ");
+ 	 	sql.append("left outer join (select paobjectid, paoname from yukonpaobject where type").eq_k(PaoType.CAP_CONTROL_AREA).append(") ca on ca.paobjectid = saa.areaid ");
         
         String result = null;
         
