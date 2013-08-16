@@ -1,5 +1,8 @@
 package com.cannontech.dr.rfn.service;
 
+import static com.cannontech.dr.rfn.model.RfnLcrPointDataMap.RELAY_1_LOAD_SIZE;
+import static com.cannontech.dr.rfn.model.RfnLcrPointDataMap.RELAY_1_REMAINING_CONTROL;
+
 import java.util.List;
 
 import junit.framework.Assert;
@@ -26,6 +29,26 @@ public class RfnLcrDataMappingServiceTest {
 
     }
     
+    private static final String realReading = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><DRReport utc=\"1375219337\" " +// This is important
+                "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
+                "<UniqueID>1077</UniqueID><HostDeviceID revision=\"1280\">1077</HostDeviceID><OtherDeviceIDS/>" +
+                "<ExtendedAddresssing><SPID>2000</SPID><Geo>1</Geo><Feeder>1</Feeder><Zip>1</Zip><UDA>65000</UDA><Required>128</Required></ExtendedAddresssing>" +
+                "<Info><Flags>0</Flags><ReportingInterval>0</ReportingInterval><RecordingInterval>60</RecordingInterval><TotalLUFEvents>0</TotalLUFEvents>" +
+                "<TotalLUVEvents>0</TotalLUVEvents><BlinkCount>4</BlinkCount></Info>" +
+                "<Relays><Relay id=\"0\"><Flags>0</Flags><Program>11</Program><Splinter>1</Splinter><RemainingControlTime>12965</RemainingControlTime><KwRating>132</KwRating><AmpType>65</AmpType>" +
+                "<IntervalData startTime=\"1375218000\">" + // This is important
+                "<Interval>7740</Interval><Interval>19516</Interval><Interval>19457</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19461</Interval><Interval>19516</Interval><Interval>19516</Interval><Interval>19516</Interval><Interval>19516</Interval></IntervalData></Relay></Relays><ControlEvents><ControlEvent><Flags>0</Flags><ID>828367597</ID><Type>0</Type><RandomDelayTime>0</RandomDelayTime><Start>0</Start><Stop>14400</Stop></ControlEvent></ControlEvents><LUVEvents/><LUFEvents/></DRReport>";
+    
+    private static final String timeModifiedReading = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><DRReport utc=\"1375219337\" " +
+            "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
+            "<UniqueID>1077</UniqueID><HostDeviceID revision=\"1280\">1077</HostDeviceID><OtherDeviceIDS/>" +
+            "<ExtendedAddresssing><SPID>2000</SPID><Geo>1</Geo><Feeder>1</Feeder><Zip>1</Zip><UDA>65000</UDA><Required>128</Required></ExtendedAddresssing>" +
+            "<Info><Flags>0</Flags><ReportingInterval>0</ReportingInterval><RecordingInterval>60</RecordingInterval><TotalLUFEvents>0</TotalLUFEvents>" +
+            "<TotalLUVEvents>0</TotalLUVEvents><BlinkCount>4</BlinkCount></Info>" +
+            "<Relays><Relay id=\"0\"><Flags>0</Flags><Program>11</Program><Splinter>1</Splinter><RemainingControlTime>12965</RemainingControlTime><KwRating>132</KwRating><AmpType>65</AmpType>" +
+            "<IntervalData startTime=\"1375215737\">" + // Exactly 1 hour
+            "<Interval>7740</Interval><Interval>19516</Interval><Interval>19457</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19461</Interval><Interval>19516</Interval><Interval>19516</Interval><Interval>19516</Interval><Interval>19516</Interval></IntervalData></Relay></Relays><ControlEvents><ControlEvent><Flags>0</Flags><ID>828367597</ID><Type>0</Type><RandomDelayTime>0</RandomDelayTime><Start>0</Start><Stop>14400</Stop></ControlEvent></ControlEvents><LUVEvents/><LUFEvents/></DRReport>";
+    
     /* This test is to test the fix to YUK-12413. The method being tested should return no data if there is less than
      * one interval of time represented in the message.
      * 
@@ -36,15 +59,7 @@ public class RfnLcrDataMappingServiceTest {
     @Test
     public void testMapPointIntervalData() {
         SimpleXPathTemplate data = new SimpleXPathTemplate();
-        data.setContext("<?xml version=\"1.0\" encoding=\"UTF-8\"?><DRReport utc=\"1375219337\" " +// This is important
-        		"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
-        		"<UniqueID>1077</UniqueID><HostDeviceID revision=\"1280\">1077</HostDeviceID><OtherDeviceIDS/>" +
-        		"<ExtendedAddresssing><SPID>2000</SPID><Geo>1</Geo><Feeder>1</Feeder><Zip>1</Zip><UDA>65000</UDA><Required>128</Required></ExtendedAddresssing>" +
-        		"<Info><Flags>0</Flags><ReportingInterval>0</ReportingInterval><RecordingInterval>60</RecordingInterval><TotalLUFEvents>0</TotalLUFEvents>" +
-        		"<TotalLUVEvents>0</TotalLUVEvents><BlinkCount>4</BlinkCount></Info>" +
-        		"<Relays><Relay id=\"0\"><Flags>0</Flags><Program>11</Program><Splinter>1</Splinter><RemainingControlTime>12965</RemainingControlTime><KwRating>132</KwRating><AmpType>65</AmpType>" +
-        		"<IntervalData startTime=\"1375218000\">" + // This is important
-        		"<Interval>7740</Interval><Interval>19516</Interval><Interval>19457</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19461</Interval><Interval>19516</Interval><Interval>19516</Interval><Interval>19516</Interval><Interval>19516</Interval></IntervalData></Relay></Relays><ControlEvents><ControlEvent><Flags>0</Flags><ID>828367597</ID><Type>0</Type><RandomDelayTime>0</RandomDelayTime><Start>0</Start><Stop>14400</Stop></ControlEvent></ControlEvents><LUVEvents/><LUFEvents/></DRReport>");
+        data.setContext(realReading);
 
         RfnDevice device = new RfnDevice(new PaoIdentifier(1, PaoType.LCR6200_RFN), new RfnIdentifier("serialNumber", "sensorManufacturer", "sensorModel") );
         List<PointData> mapIntervalData = ReflectionTestUtils.invokeMethod(dataMappingServiceImpl, "mapIntervalData", data, device);
@@ -52,21 +67,25 @@ public class RfnLcrDataMappingServiceTest {
         Assert.assertEquals(mapIntervalData.size(), 0);
         
         // Change only the start time so this version has at least 1 valid value. Otherwise identical to above.
-        data.setContext("<?xml version=\"1.0\" encoding=\"UTF-8\"?><DRReport utc=\"1375219337\" " +
-                "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
-                "<UniqueID>1077</UniqueID><HostDeviceID revision=\"1280\">1077</HostDeviceID><OtherDeviceIDS/>" +
-                "<ExtendedAddresssing><SPID>2000</SPID><Geo>1</Geo><Feeder>1</Feeder><Zip>1</Zip><UDA>65000</UDA><Required>128</Required></ExtendedAddresssing>" +
-                "<Info><Flags>0</Flags><ReportingInterval>0</ReportingInterval><RecordingInterval>60</RecordingInterval><TotalLUFEvents>0</TotalLUFEvents>" +
-                "<TotalLUVEvents>0</TotalLUVEvents><BlinkCount>4</BlinkCount></Info>" +
-                "<Relays><Relay id=\"0\"><Flags>0</Flags><Program>11</Program><Splinter>1</Splinter><RemainingControlTime>12965</RemainingControlTime><KwRating>132</KwRating><AmpType>65</AmpType>" +
-                "<IntervalData startTime=\"1375215737\">" + // Exactly 1 hour
-                "<Interval>7740</Interval><Interval>19516</Interval><Interval>19457</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19456</Interval><Interval>19461</Interval><Interval>19516</Interval><Interval>19516</Interval><Interval>19516</Interval><Interval>19516</Interval></IntervalData></Relay></Relays><ControlEvents><ControlEvent><Flags>0</Flags><ID>828367597</ID><Type>0</Type><RandomDelayTime>0</RandomDelayTime><Start>0</Start><Stop>14400</Stop></ControlEvent></ControlEvents><LUVEvents/><LUFEvents/></DRReport>");
+        data.setContext(timeModifiedReading);
 
         try {
             mapIntervalData = ReflectionTestUtils.invokeMethod(dataMappingServiceImpl, "mapIntervalData", data, device);
             Assert.fail();
         } catch(Exception e) { /* This throws as it generates 1 valid value and I did not do the work to handle the point being generated.*/ }
 
+    }
+    
+    @Test
+    public void testMultiplierResult() {
+        SimpleXPathTemplate data = new SimpleXPathTemplate();
+        data.setContext(realReading);
+        
+        // Test that .001 multiplier is working; <KwRating>132</KwRating>
+        Assert.assertEquals((Double)ReflectionTestUtils.invokeMethod(dataMappingServiceImpl,"evaluateArchiveReadValue", data, RELAY_1_LOAD_SIZE), .132, .000001);
+        
+        // Test that having no multiplier is working; <RemainingControlTime>12965</RemainingControlTime>
+        Assert.assertEquals((Double)ReflectionTestUtils.invokeMethod(dataMappingServiceImpl,"evaluateArchiveReadValue", data, RELAY_1_REMAINING_CONTROL), 12965, .000001);
     }
 
 }
