@@ -30,6 +30,9 @@ function SubstationToRouteMappings_removeRoute() {
 }
 function SubstationToRouteMappings_updateRoutes(url) {
     var substationIndex = $("subSelectList").selectedIndex;
+    if (-1 === substationIndex) {
+        return;
+    }
     var substationId = $("subSelectList").options[substationIndex].value;
     var array = $("routeIdSelectList").options;
     var array2 = $A(array).pluck("value");

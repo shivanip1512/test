@@ -49,13 +49,11 @@ Yukon.ui.aux = (function () {
             options = selectElement.options;
             
             //clone the select element - for ie fix 
-            copy = $A(options).clone(); 
-
+            copy = jQuery.makeArray(options);
             //empty the whole select so that ie doesn't complain unable to insert
             while (selectElement.options.length > 0) { 
-                selectElement.options[0] = null;
+                selectElement.remove(0);
             }
-
             //the logic is going down = going up but reversed...
 
             //going down
@@ -105,47 +103,37 @@ Yukon.ui.aux = (function () {
             return true;
         },
         yukonGeneral_addOptionToTopOfSelect : function (selectObj,optValue,optText) {
+            var newOpt,
+                firstOptGroup,
+                firstGroupOptions,
+                topOption;
             // new option
-            var newOpt = document.createElement("option");
+            newOpt = document.createElement("option");
 
             // get first option group - there will always be at least one [prototype function]
-            var firstOptGroup = jQuery(selectObj).find("optgroup")[0];
-            
+            firstOptGroup = jQuery(selectObj).find("optgroup")[0];
+
             // get first option in first group
-            var firstGroupOptions = jQuery(firstOptGroup).find("option");
-            
+            firstGroupOptions = jQuery(firstOptGroup).find("option");
+
             // either stick new opt in before the opt that is currently first in the first option group [DOM function] 
             // or, if there are no current opts, just append it to that first group
-            if(firstGroupOptions.length >0) {
-            
+            if (firstGroupOptions.length > 0) {
+
                 topOption = firstGroupOptions[0];
-            
+
                 // prevent duplicates from getting added to top of dropdown for each run of callback
-                if(topOption.text != optText) {
+                if (topOption.text !== optText) {
                     firstOptGroup.insertBefore(newOpt,topOption);
                 }
             }
             else {
                 firstOptGroup.appendChild(newOpt);
             }
-            
+
             // why set the option value and text now instead of when we made it? IE..
             newOpt.value = optValue;
             newOpt.text = optText;
-        },
-        stickyCheckboxes_setup : function (id, defaultValue) {
-            var state = YukonClientPersistance.getState("stickyCheckboxes", id, defaultValue);
-            YukonClientPersistance.persistState("stickyCheckboxes", id, state);
-            $(id).checked = state;
-            
-            $(id).observe('change', function(event) {
-                var state = Event.element(event).checked;
-                YukonClientPersistance.persistState("stickyCheckboxes", id, state);
-            });
-        },
-        stickyCheckboxes_retrieve : function (id) {
-            var state = YukonClientPersistance.getState("stickyCheckboxes", id);
-            return state;
         },
         activeResultsTable_highLightRow : function (row) {
             row = $(row);
@@ -158,12 +146,12 @@ Yukon.ui.aux = (function () {
         cancelCommands : function (resultId, url, ccid, cancelingText, finishedText) {
             
             // save button text for restore on error
-            var orgCancelButtonText = $F('cancelButton' + ccid);
-            
+            //var orgCancelButtonText = $F('cancelButton' + ccid);
+            var orgCancelButtonText = jQuery('#cancelButton' + ccid).val();
             // swap to wait img, disable button
-            $('waitImg' + ccid).show();
-            $('cancelButton' + ccid).disable();
-            $('cancelButton' + ccid).value = cancelingText;
+            jQuery('#waitImg' + ccid).show();
+            jQuery('#cancelButton' + ccid).prop('disabled', true);
+            jQuery('#cancelButton' + ccid).val(cancelingText);
             
             // setup callbacks
             var onComplete = function(transport, json) {
@@ -174,14 +162,14 @@ Yukon.ui.aux = (function () {
                     return;
                 } else {
                     uiAux.showCancelResult(ccid, finishedText);
-                    $('cancelButton' + ccid).hide();
+                    jQuery('#cancelButton' + ccid).hide();
                 }
             };
             
             var onFailure = function(transport, json) {
                 uiAux.showCancelResult(ccid, transport.responseText);
-                $('cancelButton' + ccid).value = orgCancelButtonText;
-                $('cancelButton' + ccid).enable();
+                jQuery('#cancelButton' + ccid).val(orgCancelButtonText);
+                jQuery('#cancelButton' + ccid).prop('disabled', false);
             };
 
             // run cancel    
@@ -263,11 +251,34 @@ Yukon.ui.aux = (function () {
                 return eval('(' + json + ')');
             }
             return {};
+        },
+        /*
+         * This allows the picker (and anything else that might need it) to distinguish
+         * between a tag being called on a main page (window.loadComplete will be false)
+         * and a tag being used in page loaded as a result of an openSimpleDialog call
+         * (which happens after the window has loaded completely).
+         */
+        loadComplete : false,
+        /**
+         * Use this method to call a function after a page has been completely loaded.  If this method
+         * is called after the window has already been loaded, the method is called immediately.
+         */
+        callAfterMainWindowLoad : function (func) {
+            if (uiAux.loadComplete) {
+                func();
+            } else {
+                jQuery(function() {
+                    func();
+                });
+            }
         }
     };
     return uiAux;
 })();
 
+jQuery(function() {
+    Yukon.ui.aux.loadComplete = true;
+});
 
 /**
  * Flashes the background of an element 'Yukon yellow'
@@ -276,29 +287,6 @@ Yukon.ui.aux = (function () {
  */
 function flashYellow(element, duration) {
     jQuery(element).flashYellow(duration);
-}
-
-/*
- * This allows the picker (and anything else that might need it) to distinguish
- * between a tag being called on a main page (window.loadComplete will be false)
- * and a tag being used in page loaded as a result of an openSimpleDialog call
- * (which happens after the window has loaded completely).
- */
-window.loadComplete = false;
-jQuery(function() {
-    window.loadComplete = true;
-});
-
-/**
- * Use this method to call a function after a page has been completely loaded.  If this method
- * is called after the window has already been loaded, the method is called immediately.
- */
-function callAfterMainWindowLoad(func) {
-    if (window.loadComplete) {
-        func();
-    } else {
-        jQuery(function() { func();});
-    }
 }
 
 /** Section containers with show/hide behavior */

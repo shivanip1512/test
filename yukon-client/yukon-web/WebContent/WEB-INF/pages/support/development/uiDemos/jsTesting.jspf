@@ -192,8 +192,8 @@ jQuery(function() {
             + " horse.multiSelectMode=" + horse.multiSelectMode);
         // This method, init, does secondary initialization which needs to happen after
         // the HTML elements in the tag file have been fully created.
-        callAfterMainWindowLoad(stock.init.bind(stock, true));
-        callAfterMainWindowLoad(horse.init.bind(horse, true));
+        Yukon.ui.aux.callAfterMainWindowLoad(stock.init.bind(stock, true));
+        Yukon.ui.aux.callAfterMainWindowLoad(horse.init.bind(horse, true));
         //console.log("calling stock.resetSearchFields...");
         // should, and does, cause an exception, because the method
         // is not available to Picker, but private to protoPicker
