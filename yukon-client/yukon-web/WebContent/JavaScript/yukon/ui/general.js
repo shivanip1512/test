@@ -186,7 +186,7 @@ Yukon.modules.ui = function (mod) {
         return btn;
     };
     
-    mod.unBusy = function(item) {
+    mod.unbusy = function(item) {
         var btn = jQuery(item),
         label,
         originalText;
