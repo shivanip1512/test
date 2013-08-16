@@ -53,7 +53,7 @@
             <tags:hidden path="userId"/>
             <c:choose>
                 <c:when test="${showOperatorGroupSelect}">
-                    <tags:selectNameValue nameKey=".operatorGroup" items="${assignableGroups}" path="userGroupName"/>
+                    <tags:selectNameValue nameKey=".operatorGroup" items="${assignableGroups}" path="userGroupName" id="userGroupName"/>
                 </c:when>
                 <c:otherwise>
                     <tags:hidden path="userGroupName"/>

@@ -6,12 +6,11 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <style type="text/css">
-.example {border-bottom: 1px dashed #777;margin-bottom: 10px;}
 .description {line-height: 26px;margin-left:20px;}
 </style>
 
-<tags:sectionContainer title="Box Containers">
-    <div class="example">
+<tags:sectionContainer title="Box Containers" styleClass="separated-sections">
+    <div class="example section">
         <div class="clearfix">
             <tags:boxContainer title="This is a Box Container">:D</tags:boxContainer>
             <span class="description">a normal box container</span>
@@ -21,7 +20,7 @@
 </tags:sectionContainer>
 
 <tags:sectionContainer title="Section Containers">
-    <div class="example">
+    <div class="example section">
         <div class="clearfix">
             <tags:sectionContainer title="This is a Section Container">:D</tags:sectionContainer>
             <span class="description">a normal section container</span>
@@ -31,7 +30,7 @@
 </tags:sectionContainer>
 
 <tags:sectionContainer title="Paged Containers">
-    <div class="example">
+    <div class="example section">
         <div class="clearfix">
 <%--             <tags:pagedBox searchResult="" baseUrl="" title="This is a Paged Box Container"></tags:pagedBox> --%>
             <span class="description">a paged box container</span>

@@ -6,40 +6,39 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <style type="text/css">
-.button-example {border-bottom: 1px dotted #777;margin-bottom: 10px;}
 .description {line-height: 26px;margin-left:20px;}
 </style>
 
-<tags:sectionContainer title="normal buttons">
-    <div class="button-example">
+<tags:sectionContainer title="normal buttons" styleClass="separated-sections">
+    <div class="button-example section">
         <div class="clearfix">
             <cti:button nameKey="edit"/>
             <span class="description">normal button</span>
         </div>
         <pre class="code">&lt;cti:button nameKey=&quot;edit&quot;/&gt;</pre>
     </div>
-    <div class="button-example">
+    <div class="button-example section">
         <div class="clearfix">
             <cti:button nameKey="edit" disabled="true"/>
             <span class="description">normal disabled button</span>
         </div>
         <pre class="code">&lt;cti:button nameKey=&quot;edit&quot; disabled=&quot;true&quot;/&gt;</pre>
     </div>
-    <div class="button-example">
+    <div class="button-example section">
         <div class="clearfix">
             <cti:button nameKey="edit" icon="icon-pencil"/>
             <span class="description">button with icon</span>
         </div>
         <pre class="code">&lt;cti:button nameKey=&quot;edit&quot; icon=&quot;icon-pencil&quot;/&gt;</pre>
     </div>
-    <div class="button-example">
+    <div class="button-example section">
         <div class="clearfix">
             <cti:button nameKey="edit" icon="icon-pencil" disabled="true"/>
             <span class="description">disabled button with icon</span>
         </div>
         <pre class="code">&lt;cti:button nameKey=&quot;edit&quot; icon=&quot;icon-pencil&quot; disabled=&quot;true&quot;/&gt;</pre>
     </div>
-    <div class="button-example">
+    <div class="button-example section">
         <div class="clearfix">
             <cm:dropdown type="button" key="yukon.web.defaults.actions" containerCssClass="fl">
                 <li>
@@ -76,15 +75,15 @@
     </div>
 </tags:sectionContainer>
 
-<tags:sectionContainer title="primary buttons">
-    <div class="button-example">
+<tags:sectionContainer title="primary buttons" styleClass="separated-sections">
+    <div class="button-example section">
         <div class="clearfix">
             <cti:button nameKey="save" classes="action primary"/>
             <span class="description">primary action button</span>
         </div>
         <pre class="code">&lt;cti:button nameKey=&quot;save&quot; classes=&quot;action primary&quot;/&gt;</pre>
     </div>
-    <div class="button-example">
+    <div class="button-example section">
         <div class="clearfix">
             <cti:button nameKey="save" classes="action primary" disabled="true"/>
             <span class="description">disabled primary action button</span>
@@ -93,37 +92,37 @@
     </div>
 </tags:sectionContainer>
 
-<tags:sectionContainer title="f-disableAfterClick and busy buttons">
+<tags:sectionContainer title="f-disableAfterClick and busy buttons" styleClass="separated-sections">
     <h4>All of these buttons can be submit buttons and whatever form them maybe inside of will still be submitted on button click</h4>
-    <div class="button-example">
+    <div class="button-example section">
         <div class="clearfix">
             <cti:button nameKey="save" classes="action primary f-disableAfterClick"/>
             <span class="description">primary action button that will disable after clicking</span>
         </div>
         <pre class="code">&lt;cti:button nameKey=&quot;save&quot; classes=&quot;action primary f-disableAfterClick&quot;/&gt;</pre>
     </div>
-    <div class="button-example">
+    <div class="button-example section">
         <div class="clearfix">
             <cti:button nameKey="readNow" classes="action primary f-disableAfterClick" busy="true"/>
             <span class="description">primary action button that will disable after clicking with busy text</span>
         </div>
         <pre class="code">&lt;cti:button nameKey=&quot;readNow&quot; classes=&quot;action primary f-disableAfterClick&quot; busy=&quot;true&quot;/&gt;</pre>
     </div>
-    <div class="button-example">
+    <div class="button-example section">
         <div class="clearfix">
 	        <cti:button nameKey="readNow" classes="f-disableAfterClick" busy="true" icon="icon-bullet-go"/>
             <span class="description">button that will disable after clicking with busy text and busy icon</span>
 	    </div>
         <pre class="code">&lt;cti:button nameKey=&quot;readNow&quot; classes=&quot;f-disableAfterClick&quot; busy=&quot;true&quot; icon=&quot;icon-bullet-go&quot;/&gt;</pre>
     </div>
-    <div class="button-example">
+    <div class="button-example section">
         <div class="clearfix">
             <cti:button nameKey="delete" classes="f-disableAfterClick" busy="true" icon="icon-cross" renderMode="buttonImage"/>
             <span class="description">button with no text that will disable after clicking with busy icon</span>
         </div>
         <pre class="code">&lt;cti:button nameKey=&quot;delete&quot; classes=&quot;f-disableAfterClick&quot; busy=&quot;true&quot; icon=&quot;icon-cross&quot; renderMode=&quot;buttonImage&quot;/&gt;</pre>
     </div>
-    <div class="button-example">
+    <div class="button-example section">
         <div class="clearfix">
             <cti:button nameKey="update" classes="f-disableAfterClick action primary" data-disable-group="them-buttons"/>
             <cti:button nameKey="delete" classes="f-disableAfterClick delete" data-disable-group="them-buttons"/>
@@ -136,8 +135,8 @@
     </div>
 </tags:sectionContainer>
 
-<tags:sectionContainer title="Criteria Buttons">
-    <div class="button-example">
+<tags:sectionContainer title="Criteria Buttons" styleClass="separated-sections">
+    <div class="button-example section">
         <div class="clearfix">
  
             <cm:criteria label="Device Type:">

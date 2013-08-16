@@ -77,16 +77,16 @@
             <div class="toolbar">
                 <cti:outputContent writable="${searchRenderer}"/>
                 <cti:button id="yukon_alert_button" classes="action dn" label="0"/>
-                <div class="dropdown">
-                    <a href="#" class="button b-user-menu"><i class="icon icon-user"></i><span class="label">${fn:escapeXml(displayName)}</span><span class="toggle"></span></a>
-                    <div class="dropdown-slider">
-                        <cti:checkRolesAndProperties value="ADMIN_SUPER_USER">
-                            <a href="<cti:url value="/adminSetup/user/view?userId=${sessionScope.YUKON_USER.userID}"/>" class="ddm"><i class="icon icon-user-edit"></i><span class="label">User Editor</span></a>
-                        </cti:checkRolesAndProperties>
-                        <a href="<cti:url value="/user/profile"/>" class="ddm"><i class="icon icon-user"></i><span class="label"><cti:msg2 key="yukon.web.components.button.profile.label"/></span></a>
-                        <a href="<cti:url value="/servlet/LoginController?ACTION=LOGOUT"/>" class="ddm"><i class="icon icon-door-open"></i><span class="label"><cti:msg2 key="yukon.web.components.button.logout.label"/></span></a>
-                    </div>
-                </div>
+                <cm:dropdown containerCssClass="b-user-menu fl" icon="icon-user" label="${fn:escapeXml(displayName)}" type="button">
+                    <cti:checkRolesAndProperties value="ADMIN_SUPER_USER">
+                        <cti:url value="/adminSetup/user/view?userId=${sessionScope.YUKON_USER.userID}" var="userEditUrl"/>
+                        <cm:dropdownOption icon="icon-user-edit" href="${userEditUrl}">User Editor</cm:dropdownOption>
+                    </cti:checkRolesAndProperties>
+                    <cti:url value="/user/profile" var="userProfileUrl"/>
+                    <cm:dropdownOption icon="icon-user" href="${userProfileUrl}"><cti:msg2 key="yukon.web.components.button.profile.label"/></cm:dropdownOption>
+                    <cti:url value="/servlet/LoginController?ACTION=LOGOUT" var="logoutUrl"/>
+                    <cm:dropdownOption icon="icon-door-open" href="${logoutUrl}"><cti:msg2 key="yukon.web.components.button.logout.label"/></cm:dropdownOption>
+                </cm:dropdown>
             </div>
         </div>
     </div>

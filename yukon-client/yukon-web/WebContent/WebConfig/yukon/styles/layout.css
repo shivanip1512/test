@@ -128,10 +128,6 @@ nav,header,footer,section,aside,hgroup,section {
 	min-width: 240px;
 }
 
-.yukon-header .inner .toolbar .b-user-menu {
-	min-width: 112px;
-}
-
 #yukon_alert_button .label {
 	padding: 0 !important;
 	font-size: 14px;
