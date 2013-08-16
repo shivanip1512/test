@@ -109,7 +109,6 @@ public class MeterEventsReportController {
     @Autowired private AttributeService attributeService;
     @Autowired private ObjectFormattingService objectFormatingService;
     @Autowired private CronExpressionTagService cronExpressionTagService;
-    @Autowired private ScheduledFileExportValidator scheduledFileExportValidator;
     @Autowired private ScheduledFileExportService scheduledFileExportService;
 	@Autowired private ScheduledFileExportJobsTagService scheduledFileExportJobsTagService;
 	@Autowired private JobManager jobManager;
@@ -119,6 +118,7 @@ public class MeterEventsReportController {
 	private final static String reportJspPath = "meterEventsReport/report.jsp";
 	private final static String baseKey = "yukon.web.modules.amr.meterEventsReport.report";
 	private Map<String, Comparator<MeterPointValue>> sorters;
+    private ScheduledFileExportValidator scheduledFileExportValidator;
 
 	private final static Set<String> NON_ABNORMAL_VALUES = Sets.newHashSet(OutageStatus.GOOD.name().toLowerCase(),
 	                                                                       EventStatus.CLEARED.name().toLowerCase());
@@ -250,6 +250,7 @@ public class MeterEventsReportController {
     	
     	exportData.setScheduleCronString(scheduleCronString);
     	
+    	scheduledFileExportValidator = new ScheduledFileExportValidator(true);
     	scheduledFileExportValidator.validate(exportData, bindingResult);
     	if(bindingResult.hasErrors()) {
     		//send it back

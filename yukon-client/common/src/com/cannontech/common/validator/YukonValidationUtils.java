@@ -52,9 +52,8 @@ public class YukonValidationUtils extends ValidationUtils {
         }
     }
 
-   public static void checkIsPositive(Errors errors, String field, Integer fieldValue) {
-       
-       if (fieldValue == null || (Integer.compare(0, fieldValue) > 0)) {
+   public static void checkIsPositiveInt(Errors errors, String field, Integer fieldValue) {
+       if (fieldValue == null || fieldValue < 0) {
            errors.rejectValue(field, "yukon.web.error.isNotPositiveInt");
        }
    }

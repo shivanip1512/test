@@ -130,7 +130,6 @@ public class ArchivedValuesExporterController {
     @Autowired private ScheduledFileExportService scheduledFileExportService;
     @Autowired private JobManager jobManager;
     @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
-    @Autowired private ScheduledFileExportValidator scheduledFileExportValidator;
     @Autowired private ScheduledFileExportJobsTagService scheduledFileExportJobsTagService;
     @Autowired private ScheduledFileExportHelper exportHelper;
     
@@ -138,7 +137,8 @@ public class ArchivedValuesExporterController {
     private static final String DEFAULT_PAGES_STRING = "1";
     private static final Integer DEFAULT_ITEMS_PER_PAGE = 25;
     private static final String DEFAULT_ITEMS_PER_PAGE_STRING = "25";
-    
+    private ScheduledFileExportValidator scheduledFileExportValidator;
+
     @RequestMapping
     public String view(ModelMap model, HttpServletRequest request, YukonUserContext userContext, 
                        @ModelAttribute ArchivedValuesExporter archivedValuesExporter, 
@@ -551,6 +551,7 @@ public class ArchivedValuesExporterController {
     	exportData.setScheduleCronString(scheduleCronString);
     	exportData.setParameters(parameters);
     	
+    	scheduledFileExportValidator = new ScheduledFileExportValidator(false);
     	scheduledFileExportValidator.validate(exportData, bindingResult);
 		if(bindingResult.hasErrors()) {
 			List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);

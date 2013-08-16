@@ -2169,7 +2169,6 @@
     <bean class="com.cannontech.web.common.chart.service.impl.AssetAvailabilityChartServiceImpl"/>
 	
 	<bean class="com.cannontech.web.scheduledFileExport.service.impl.ScheduledFileExportServiceImpl"/>
-	<bean class="com.cannontech.web.scheduledFileExport.validator.ScheduledFileExportValidator" />
 	<bean class="com.cannontech.web.scheduledFileExport.service.impl.ScheduledFileExportJobsTagServiceImpl"/>
     <bean class="com.cannontech.web.scheduledFileExport.ScheduledFileExportHelper"/>
 	

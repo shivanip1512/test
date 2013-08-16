@@ -59,12 +59,12 @@ public class ScheduledBillingFileExportController {
 	@Autowired private JsonHelper jsonHelper;
 	@Autowired private ScheduledFileExportJobsTagService scheduledFileExportJobsTagService;
 	@Autowired private ScheduledFileExportService scheduledFileExportService;
-	@Autowired private ScheduledFileExportValidator scheduledFileExportValidator;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private YukonUserContextMessageSourceResolver resolver;
     @Autowired private ScheduledFileExportHelper exportHelper;
 
 	private static final int MAX_GROUPS_DISPLAYED = 2;
+	private ScheduledFileExportValidator scheduledFileExportValidator;
 
 	@RequestMapping
 	public String showForm(ModelMap model, YukonUserContext userContext, HttpServletRequest request,
@@ -133,6 +133,7 @@ public class ScheduledBillingFileExportController {
 		BillingFileExportGenerationParameters billingParameters = new BillingFileExportGenerationParameters(fileFormat, fullDeviceGroups, demandDays, energyDays, removeMultiplier);
 		exportData.setParameters(billingParameters);
 
+		scheduledFileExportValidator = new ScheduledFileExportValidator(false);
 		scheduledFileExportValidator.validate(exportData, bindingResult);
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(userContext);
 		if(bindingResult.hasErrors()) {

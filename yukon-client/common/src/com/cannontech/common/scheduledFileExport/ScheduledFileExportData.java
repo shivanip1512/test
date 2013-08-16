@@ -33,7 +33,6 @@ public class ScheduledFileExportData {
         this.setTimestampPatternField(DEFAULT_TIMESTAMP_PATTERN);
 	}
 	
-
 	public String getScheduleName() {
 		return scheduleName;
 	}

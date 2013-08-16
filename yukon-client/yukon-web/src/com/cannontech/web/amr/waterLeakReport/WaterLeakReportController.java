@@ -116,12 +116,12 @@ public class WaterLeakReportController {
     @Autowired private MultispeakCustomerInfoService multispeakCustomerInfoService;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private CronExpressionTagService cronExpressionTagService;
-    @Autowired private ScheduledFileExportValidator scheduledFileExportValidator;
     @Autowired private ScheduledFileExportService scheduledFileExportService;
     @Autowired private ScheduledFileExportJobsTagService scheduledFileExportJobsTagService;
     @Autowired private JobManager jobManager;
     @Autowired private ScheduledFileExportHelper exportHelper;
     
+    private ScheduledFileExportValidator scheduledFileExportValidator;
     private final static String baseKey = "yukon.web.modules.amr.waterLeakReport.report";
     private final static Hours water_node_reporting_interval = Hours.hours(24);
     private Map<String, Comparator<WaterMeterLeak>> sorters;
@@ -251,9 +251,10 @@ public class WaterLeakReportController {
         String scheduleCronString = cronExpressionTagService.build("scheduleCronString", request, userContext);
     	scheduledFileExportData.setScheduleCronString(scheduleCronString);
         
+    	scheduledFileExportValidator = new ScheduledFileExportValidator(false);
     	scheduledFileExportValidator.validate(scheduledFileExportData, bindingResult);
     	YukonValidationUtils.checkRange(bindingResult, "threshold", threshold, 0.0, Double.MAX_VALUE, true);
-        YukonValidationUtils.checkRange(bindingResult, "hoursPrevious", hoursPrevious, 1, Integer.MAX_VALUE, true);
+        //YukonValidationUtils.checkRange(bindingResult, "hoursPrevious", hoursPrevious, 1, Integer.MAX_VALUE, true);
         if(bindingResult.hasErrors()) {
 			//send it back
         	List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
