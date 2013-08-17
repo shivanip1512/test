@@ -233,7 +233,7 @@ Yukon.MeteringBilling = (function() {
                 activate: meteringBillingMod.on_tab_change });
 
             doc.on("click", "#tab_schedules a", meteringBillingMod.update_schedules_job_list);
-            doc.on("click", "#billing_schedules_jobs #jobsTable button", meteringBillingMod.do_schedules_job_list_button);
+            doc.on("click", "#billing_schedules_jobs button", meteringBillingMod.do_schedules_job_list_button);
 
             // 2nd tab
             doc.on("click change", "#formatForm #availableFormat", meteringBillingMod.unfreeze_billing_setup);

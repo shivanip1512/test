@@ -33,17 +33,17 @@
             <td>${c.channelDescription}</td>
             <td>${c.channelProfileRate}</td>
             <td>
-                <table cellspacing="0" cellpadding="0">
+                <table>
                     
                     <c:choose>
                     <c:when test="${empty c.jobInfos}">
                         <tr>
                             <c:if test="${c.channelProfilingOn}">
-                                <td><div class="channelOn"><i:inline key="yukon.web.defaults.on"/></div></td>
+                                <td><strong class="success"><i:inline key="yukon.web.defaults.on"/></strong></td>
                                 <td><i:inline key=".scanning.neverStops"/></td>
                             </c:if>
                             <c:if test="${not c.channelProfilingOn}">
-                                <td><div class="channelOff"><i:inline key="yukon.web.defaults.off"/></div></td>
+                                <td><strong class="error"><i:inline key="yukon.web.defaults.off"/></strong></td>
                                 <td><i:inline key=".scanning.neverStarts"/></td>
                             </c:if>                        
                         </tr>
@@ -54,10 +54,10 @@
                                 <c:when test="${status.count == 1}">
                                     <tr>
                                         <c:if test="${c.channelProfilingOn}">
-                                            <td><div class="channelOn"><i:inline key="yukon.web.defaults.on"/></div></td>
+                                            <td><strong class="success"><i:inline key="yukon.web.defaults.on"/></strong></td>
                                         </c:if>
                                         <c:if test="${not c.channelProfilingOn}">
-                                            <td><div class="channelOff"><i:inline key="yukon.web.defaults.off"/></div></td>
+                                            <td><strong class="error"><i:inline key="yukon.web.defaults.off"/></strong></td>
                                         </c:if>        
                                 </c:when>
                                 <c:otherwise>

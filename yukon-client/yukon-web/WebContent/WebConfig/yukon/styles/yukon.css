@@ -432,9 +432,9 @@ background: -webkit-linear-gradient(top, #8c0c10, #8c0c10 10%, #bf0f12, #8c0c10 
 	width: 55px;
 }
 
-.resultBar {
+.result-bar {
 	height: 14px;
-	border: 1px solid grey;
+	border: 1px solid #bbb;
 	overflow: hidden;
 
 	-webkit-box-sizing: content-box;
@@ -443,18 +443,18 @@ background: -webkit-linear-gradient(top, #8c0c10, #8c0c10 10%, #bf0f12, #8c0c10 
 	box-sizing: content-box;
 }
 
-.resultBar > div {
+.result-bar > .result {
 	display: inline-block;
 	position: relative;
 	float: left;
 	height: 100%;
 }
 
-.resultBar .DATA_PRESENT {
+.result-bar .DATA_PRESENT {
 	background-color: #228855;
 }
 
-.resultBar .DATA_MISSING {
+.result-bar .DATA_MISSING {
 	background: white;
 }
 
@@ -1682,4 +1682,16 @@ input.dateTimePicker {
 
 .drDisabled {
 	color: red;
+}
+
+.eventStatusCleared,.eventStatusGood {
+	color: #093;
+}
+
+.eventStatusQuestionable {
+	color: #FF9900;
+}
+
+.eventStatusActive,.eventStatusBad {
+	color: #D14836;
 }

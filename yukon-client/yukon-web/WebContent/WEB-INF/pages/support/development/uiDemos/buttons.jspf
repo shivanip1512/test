@@ -41,36 +41,20 @@
     <div class="button-example section">
         <div class="clearfix">
             <cm:dropdown type="button" key="yukon.web.defaults.actions" containerCssClass="fl">
-                <li>
-                    <a href="javascript:void(0);" class="clearfix"><cti:icon icon="icon-pencil"/><span class="fl dib">Edit</span></a>
-                </li>
-                <li>
-                    <a href="javascript:void(0);" class="clearfix"><cti:icon icon="icon-page-copy"/><span class="fl dib">Copy</span></a>
-                </li>
-                <li>
-                    <a href="javascript:void(0);" class="clearfix"><cti:icon icon="icon-cross"/><span class="fl dib">Delete</span></a>
-                </li>
+                <cm:dropdownOption icon="icon-pencil">Edit</cm:dropdownOption>
+                <cm:dropdownOption icon="icon-page-copy">Copy</cm:dropdownOption>
+                <cm:dropdownOption icon="icon-cross">Delete</cm:dropdownOption>
                 <li class="divider"></li>
-                <li>
-                    <a href="javascript:void(0);" class="clearfix"><cti:icon icon="icon-plus-green"/><span class="fl dib">Create</span></a>
-                </li>
+                <cm:dropdownOption icon="icon-plus-green">Create</cm:dropdownOption>
             </cm:dropdown>
             <span class="description">dropdown menu button</span>
         </div>
         <pre class="code">&lt;cm:dropdown type=&quot;button&quot; key=&quot;yukon.web.defaults.actions&quot; containerCssClass=&quot;fl&quot;&gt;
-    &lt;li&gt;
-        &lt;a href=&quot;javascript:void(0);&quot; class=&quot;clearfix&quot;&gt;&lt;cti:icon icon=&quot;icon-pencil&quot;/&gt;&lt;span class=&quot;fl dib&quot;&gt;Edit&lt;/span&gt;&lt;/a&gt;
-    &lt;/li&gt;
-    &lt;li&gt;
-        &lt;a href=&quot;javascript:void(0);&quot; class=&quot;clearfix&quot;&gt;&lt;cti:icon icon=&quot;icon-page-copy&quot;/&gt;&lt;span class=&quot;fl dib&quot;&gt;Copy&lt;/span&gt;&lt;/a&gt;
-    &lt;/li&gt;
-    &lt;li&gt;
-        &lt;a href=&quot;javascript:void(0);&quot; class=&quot;clearfix&quot;&gt;&lt;cti:icon icon=&quot;icon-cross&quot;/&gt;&lt;span class=&quot;fl dib&quot;&gt;Delete&lt;/span&gt;&lt;/a&gt;
-    &lt;/li&gt;
+    &lt;cm:dropdownOption icon=&quot;icon-pencil&quot;&gt;Edit&lt;/cm:dropdownOption&gt;
+    &lt;cm:dropdownOption icon=&quot;icon-page-copy&quot;&gt;Copy&lt;/cm:dropdownOption&gt;
+    &lt;cm:dropdownOption icon=&quot;icon-cross&quot;&gt;Delete&lt;/cm:dropdownOption&gt;
     &lt;li class=&quot;divider&quot;&gt;&lt;/li&gt;
-    &lt;li&gt;
-        &lt;a href=&quot;javascript:void(0);&quot; class=&quot;clearfix&quot;&gt;&lt;cti:icon icon=&quot;icon-plus-green&quot;/&gt;&lt;span class=&quot;fl dib&quot;&gt;Create&lt;/span&gt;&lt;/a&gt;
-    &lt;/li&gt;
+    &lt;cm:dropdownOption icon=&quot;icon-plus-green&quot;&gt;Create&lt;/cm:dropdownOption&gt;
 &lt;/cm:dropdown&gt;</pre>
     </div>
 </tags:sectionContainer>

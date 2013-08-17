@@ -10,7 +10,7 @@
 
     <tags:sectionContainer2 nameKey="formulas">
         <c:if test="${not empty formulas}">
-            <table id="jobsTable" class="compactResultsTable">
+            <table class="compactResultsTable">
                 <thead>
                     <th><i:inline key=".name"/></th>
                     <th><i:inline key=".calculationType"/></th>

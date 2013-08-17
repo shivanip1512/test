@@ -14,13 +14,13 @@ jQuery(function() {
          });
     });
 
-    jQuery('#jobsTable .stopButton').on('click', function(event) {
+    jQuery('.stopButton').on('click', function(event) {
         var stopButton = event.currentTarget;
         stopJobId = stopButton.id.replace('cancel_', '');
     });
 });
 
-jQuery('table#jobsTable button.toggleEnabled').live('click', function(event) {
+jQuery('button.toggleEnabled').live('click', function(event) {
     var toggleButton = event.currentTarget;
     var jobId = toggleButton.id.substring(7); //omit "toggle_"
     jQuery.ajax({

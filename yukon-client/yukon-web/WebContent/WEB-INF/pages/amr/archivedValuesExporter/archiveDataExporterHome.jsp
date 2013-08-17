@@ -217,10 +217,10 @@ jQuery(function() {
         </tags:sectionContainer2>
     
     <%-- Jobs  --%>
-        <tags:boxContainer2 nameKey="jobsBox">
+        <tags:boxContainer2 nameKey="jobsBox"> 
             <div class="scrollingContainer_small" style="max-height: 249px;">
                 <c:if test="${fn:length(filterResult.resultList) > 0}">
-                    <table id="jobsTable" class="compactResultsTable">
+                    <table class="compactResultsTable">
                         <thead>
                             <th><i:inline key=".nameHeader"/></th>
                             <th><i:inline key=".scheduleHeader"/></th>

@@ -79,7 +79,7 @@
     </i:simplePopup>
     
     <tags:pagedBox2 nameKey="tableTitle" searchResult="${filterResult}" baseUrl="jobs" filterDialog="filterPopup">
-    <table id="jobsTable" class="compactResultsTable">
+    <table class="compactResultsTable">
         <thead>
             <th><tags:sortLink nameKey="executions.tableHeader.scheduleName" baseUrl="jobs" fieldName="NAME" isDefault="false" /></th>
             <th><tags:sortLink nameKey="executions.tableHeader.deviceGroup" baseUrl="jobs" fieldName="DEVICE_GROUP" /></th>

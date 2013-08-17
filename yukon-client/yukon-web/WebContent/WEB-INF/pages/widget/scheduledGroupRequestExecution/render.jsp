@@ -24,7 +24,7 @@
 		</c:otherwise>
 	</c:choose>
 </c:if>
-<table id="jobsTable" class="compactResultsTable">
+<table class="compactResultsTable">
 	<thead>
 		<th style="width:20px;">&nbsp;</th>
 		<th><i:inline key=".tableHeader.scheduleName"/></th>

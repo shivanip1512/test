@@ -176,11 +176,10 @@ table.nowrap th, table.nowrap td {white-space: nowrap;}
 .progressBarPercentComplete, .progressBarCompletedCount {font-size: 11px;}
 .progressBar .scheduledRequestProgressBarBorder {width: 55px;}
 
-.resultBar {height: 14px;border: 1px solid grey;overflow: hidden;box-sizing: content-box;-moz-box-sizing: content-box;}
-.resultBar > div {display: inline-block;position: relative;float: left;height: 100%;}
-.resultBar .DATA_PRESENT {background-color: #228855;}
-.resultBar .DATA_MISSING {background: white;}
-
+.result-bar {height: 14px;border: 1px solid #bbb;overflow: hidden;box-sizing: content-box;-moz-box-sizing: content-box;}
+.result-bar > .result {display: inline-block;position: relative;float: left;height: 100%;}
+.result-bar .DATA_PRESENT {background-color: #228855;}
+.result-bar .DATA_MISSING {background: white;}
 
 /* LISTS */
 ul.disc li {list-style-type: disc; margin-left: 25px;}
@@ -463,3 +462,6 @@ input.dateTimePicker {margin: 0;}
 .PROGRAM_STATE_SCHEDULED, .PROGRAM_STATE_CONTROL_ATTEMPT, .CONTROLAREA_STATE_FULLY_SCHEDULED, .CONTROLAREA_STATE_PARTIALLY_SCHEDULED {color: orange;}
 .PROGRAM_STATE_NOTIFIED, .LOADGROUP_STATE_INACTIVE_PENDING {color: cyan;}
 .drDisabled {color: red;}
+.eventStatusCleared, .eventStatusGood {color:#093;}
+.eventStatusQuestionable {color:#FF9900;}
+.eventStatusActive,.eventStatusBad {color:#D14836;}

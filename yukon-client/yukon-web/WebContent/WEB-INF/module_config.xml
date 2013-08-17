@@ -19,7 +19,6 @@
 
   <module name="amr">
     <skin name="STANDARD"/>
-    <css file="/WebConfig/yukon/styles/amrStyles.css"/>
     <search bean="amrSearchProducer"/>
     <pages>
       <page name="meteringStart" type="BASIC">

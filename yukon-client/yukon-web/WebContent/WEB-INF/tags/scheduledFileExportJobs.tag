@@ -15,7 +15,7 @@
 <cti:msgScope paths="yukon.web.modules.amr.scheduledFileExport.jobs">
 
 <tags:pagedBox2 nameKey="tableTitle.${jobType}" searchResult="${searchResult}" baseUrl="${baseUrl}">
-	<table id="jobsTable" class="compactResultsTable">
+	<table class="compactResultsTable">
 		<thead>
 			<th><i:inline key=".nameHeader"/></th>
 			<th><i:inline key=".scheduleHeader"/></th>
