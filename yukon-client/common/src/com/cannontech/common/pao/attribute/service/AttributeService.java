@@ -154,8 +154,10 @@ public interface AttributeService {
      * Returns the Sql that gives you the paObjectId and pointId based on a
      * passed in Attribute
      * @param attribute
+     * @deprecated Use PointDao to get points by attribute. Talk to someone if you think you need
+     *             this method.  See YUK-12459
      */
-    
+    @Deprecated
     public SqlFragmentSource getAttributeLookupSql(Attribute attribute);
 
     /**
