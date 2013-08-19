@@ -7,6 +7,8 @@
 
 #include <boost/assign/list_of.hpp>
 #include <boost/optional.hpp>
+#include <numeric>
+#include <iterator>
 
 
 namespace Cti        {
@@ -226,9 +228,121 @@ RfnGetDemandFreezeInfoCommand::DemandFreezeData RfnGetDemandFreezeInfoCommand::g
 RfnCommand::RfnResult RfnGetDemandFreezeInfoCommand::decode( const CtiTime now,
                                                              const RfnCommand::RfnResponse & response )
 {
+    struct Accumulator
+    {
+        unsigned int operator()( unsigned int acc, unsigned char val )
+        {
+            return ( acc << 8 ) + val;
+        }
+    };
+
     RfnCommand::RfnResult  result = decodeResponseHeader( now, response );
 
-    // plus the freeze info
+    validateCondition( response.size() >= 5,
+                       ErrorInvalidData, "Invalid Response length (" + CtiNumStr(response.size()) + ")" );
+
+    unsigned tlvCount   = 0;
+    unsigned totalBytes = 5;
+
+    for ( RfnCommand::RfnResponse::const_iterator current = response.begin() + 5;
+          current <= response.end() - 2;
+          ++tlvCount )
+    {
+        unsigned char tlvType   = *current++;
+        unsigned char tlvLength = *current++;
+
+        totalBytes += 2;
+
+        validateCondition( totalBytes + tlvLength <= response.size(),
+                           ErrorInvalidData, "Invalid TLV length (" + CtiNumStr(std::distance(current, response.end())) + ") expected " + CtiNumStr(tlvLength) );
+
+        unsigned int  tlvValue  = std::accumulate( current, current + tlvLength, 0u, Accumulator() );
+
+        std::advance( current, tlvLength );
+        totalBytes += tlvLength;
+
+        switch ( tlvType )
+        {
+            case TlvType_ScheduledDayOfDemandFreeze:
+            {
+                _freezeData.dayOfFreeze = tlvValue;
+                break;
+            }
+            case TlvType_TimeLastDemandFreezeOccured:
+            {
+                _freezeData.lastFreezeTime = tlvValue;
+                break;
+            }
+            case TlvType_FrozenPeakDemandTotal:
+            {
+                 _freezeData.demandInfo[ DemandFreezeData::DemandRates_Base ].rate = tlvValue;
+                break;
+            }
+            case TlvType_FrozenPeakDemandTime:
+            {
+                 _freezeData.demandInfo[ DemandFreezeData::DemandRates_Base ].timestamp = tlvValue;
+                break;
+            }
+            case TlvType_FrozenPeakDemandRateA:
+            {
+                 _freezeData.demandInfo[ DemandFreezeData::DemandRates_Rate_A ].rate = tlvValue;
+                break;
+            }
+            case TlvType_FrozenPeakDemandRateATime:
+            {
+                 _freezeData.demandInfo[ DemandFreezeData::DemandRates_Rate_A ].timestamp = tlvValue;
+                break;
+            }
+            case TlvType_FrozenPeakDemandRateB:
+            {
+                 _freezeData.demandInfo[ DemandFreezeData::DemandRates_Rate_B ].rate = tlvValue;
+                break;
+            }
+            case TlvType_FrozenPeakDemandRateBTime:
+            {
+                 _freezeData.demandInfo[ DemandFreezeData::DemandRates_Rate_B ].timestamp = tlvValue;
+                break;
+            }
+            case TlvType_FrozenPeakDemandRateC:
+            {
+                 _freezeData.demandInfo[ DemandFreezeData::DemandRates_Rate_C ].rate = tlvValue;
+                break;
+            }
+            case TlvType_FrozenPeakDemandRateCTime:
+            {
+                 _freezeData.demandInfo[ DemandFreezeData::DemandRates_Rate_C ].timestamp = tlvValue;
+                break;
+            }
+            case TlvType_FrozenPeakDemandRateD:
+            {
+                 _freezeData.demandInfo[ DemandFreezeData::DemandRates_Rate_D ].rate = tlvValue;
+                break;
+            }
+            case TlvType_FrozenPeakDemandRateDTime:
+            {
+                 _freezeData.demandInfo[ DemandFreezeData::DemandRates_Rate_D ].timestamp = tlvValue;
+                break;
+            }
+            case TlvType_FrozenPeakDemandRateE:
+            {
+                 _freezeData.demandInfo[ DemandFreezeData::DemandRates_Rate_E ].rate = tlvValue;
+                break;
+            }
+            case TlvType_FrozenPeakDemandRateETime:
+            {
+                 _freezeData.demandInfo[ DemandFreezeData::DemandRates_Rate_E ].timestamp = tlvValue;
+                break;
+            }
+            default:
+            {
+                throw RfnCommand::CommandException( ErrorInvalidData,
+                                                    "Missing decode for TLV type (" + CtiNumStr(tlvType).xhex(2) + ")" );
+            }
+        }
+    }
+
+    validateCondition( response[4] == tlvCount,
+                       ErrorInvalidData, "Invalid TLV count (" + CtiNumStr(tlvCount) + ") expected " + CtiNumStr(response[4]) );
 
     return result;
 }

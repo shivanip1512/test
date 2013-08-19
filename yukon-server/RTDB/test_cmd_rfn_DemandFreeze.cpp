@@ -217,7 +217,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandFreeze_ImmediateFreeze )
 }
 
 
-BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandFreeze_GetFreezeInfo )
+BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandFreeze_GetFreezeInfo_full )
 {
     test_ResultHandler  rh;
 
@@ -239,8 +239,21 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandFreeze_GetFreezeInfo )
         const std::vector< unsigned char > response = boost::assign::list_of
             ( 0x56 )
             ( 0x00 )( 0x00 )( 0x00 )
-            // plus a bunch of freeze day info...
-                ;
+            ( 0x0e )
+            ( 0x01 )( 0x01 )( 0x01 ) 
+            ( 0x02 )( 0x04 )( 0x02 )( 0x03 )( 0x04 )( 0x05 )
+            ( 0x03 )( 0x04 )( 0x06 )( 0x07 )( 0x08 )( 0x09 )
+            ( 0x04 )( 0x04 )( 0x0a )( 0x0b )( 0x0c )( 0x0d )
+            ( 0x05 )( 0x04 )( 0x0e )( 0x0f )( 0x10 )( 0x11 )
+            ( 0x06 )( 0x04 )( 0x12 )( 0x13 )( 0x14 )( 0x15 )
+            ( 0x07 )( 0x04 )( 0x16 )( 0x17 )( 0x18 )( 0x19 )
+            ( 0x08 )( 0x04 )( 0x1a )( 0x1b )( 0x1c )( 0x1d )
+            ( 0x09 )( 0x04 )( 0x1e )( 0x1f )( 0x20 )( 0x21 )
+            ( 0x0a )( 0x04 )( 0x22 )( 0x23 )( 0x24 )( 0x25 )
+            ( 0x0b )( 0x04 )( 0x26 )( 0x27 )( 0x28 )( 0x29 )
+            ( 0x0c )( 0x04 )( 0x2a )( 0x2b )( 0x2c )( 0x2d )
+            ( 0x0d )( 0x04 )( 0x2e )( 0x2f )( 0x30 )( 0x31 )
+            ( 0x0e )( 0x04 )( 0x32 )( 0x33 )( 0x34 )( 0x35 );
 
         RfnCommand::RfnResult rcv = command.decode( execute_time, response );
 
@@ -248,7 +261,234 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandFreeze_GetFreezeInfo )
                                             "\nAdditional Status: NO ADDITIONAL STATUS (ASC: 0x00, ASCQ: 0x00)" );
     }
 
+    RfnGetDemandFreezeInfoCommand::DemandFreezeData results = command.getDemandFreezeData();
 
+    BOOST_CHECK_EQUAL(        0x01, *results.dayOfFreeze );
+    BOOST_CHECK_EQUAL(  0x02030405, *results.lastFreezeTime );
+    BOOST_CHECK_EQUAL(  0x06070809, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Base ].rate );
+    BOOST_CHECK_EQUAL(  0x0a0b0c0d, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Base ].timestamp );
+    BOOST_CHECK_EQUAL(  0x0e0f1011, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Rate_A ].rate );
+    BOOST_CHECK_EQUAL(  0x12131415, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Rate_A ].timestamp );
+    BOOST_CHECK_EQUAL(  0x16171819, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Rate_B ].rate );
+    BOOST_CHECK_EQUAL(  0x1a1b1c1d, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Rate_B ].timestamp );
+    BOOST_CHECK_EQUAL(  0x1e1f2021, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Rate_C ].rate );
+    BOOST_CHECK_EQUAL(  0x22232425, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Rate_C ].timestamp );
+    BOOST_CHECK_EQUAL(  0x26272829, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Rate_D ].rate );
+    BOOST_CHECK_EQUAL(  0x2a2b2c2d, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Rate_D ].timestamp );
+    BOOST_CHECK_EQUAL(  0x2e2f3031, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Rate_E ].rate );
+    BOOST_CHECK_EQUAL(  0x32333435, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Rate_E ].timestamp );
+}
+
+
+BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandFreeze_GetFreezeInfo_supplied_case_1 )
+{
+    test_ResultHandler  rh;
+
+    RfnGetDemandFreezeInfoCommand   command( rh );
+
+    // execute
+    {
+        const std::vector< unsigned char > exp = boost::assign::list_of
+            ( 0x55 )( 0x03 );
+
+        RfnCommand::RfnRequest rcv = command.execute( execute_time );
+
+        BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
+                                       exp.begin() , exp.end() );
+    }
+
+    // decode -- success response
+    {
+        const std::vector< unsigned char > response = boost::assign::list_of
+            ( 0x56 )
+            ( 0x00 )( 0x00 )( 0x00 )
+            ( 0x0c )
+            ( 0x01 )( 0x01 )( 0x1c ) 
+            ( 0x02 )( 0x04 )( 0x51 )( 0x54 )( 0x64 )( 0x51 )
+            ( 0x03 )( 0x04 )( 0x00 )( 0x00 )( 0x00 )( 0x9c )
+            ( 0x04 )( 0x04 )( 0x51 )( 0x54 )( 0x5e )( 0x74 )
+            ( 0x05 )( 0x04 )( 0x00 )( 0x00 )( 0x00 )( 0x00 )
+            ( 0x06 )( 0x04 )( 0x00 )( 0x00 )( 0x00 )( 0x00 )
+            ( 0x07 )( 0x04 )( 0x00 )( 0x00 )( 0x00 )( 0x00 )
+            ( 0x08 )( 0x04 )( 0x00 )( 0x00 )( 0x00 )( 0x00 )
+            ( 0x09 )( 0x04 )( 0x00 )( 0x00 )( 0x00 )( 0x9c )
+            ( 0x0a )( 0x04 )( 0x51 )( 0x54 )( 0x5e )( 0x74 )
+            ( 0x0b )( 0x04 )( 0x00 )( 0x00 )( 0x00 )( 0x00 )
+            ( 0x0c )( 0x04 )( 0x00 )( 0x00 )( 0x00 )( 0x00 );
+
+        RfnCommand::RfnResult rcv = command.decode( execute_time, response );
+
+        BOOST_CHECK_EQUAL( rcv.description, "Status: Success (0x00)"
+                                            "\nAdditional Status: NO ADDITIONAL STATUS (ASC: 0x00, ASCQ: 0x00)" );
+    }
+
+    RfnGetDemandFreezeInfoCommand::DemandFreezeData results = command.getDemandFreezeData();
+
+    BOOST_CHECK_EQUAL(        0x1c, *results.dayOfFreeze );
+    BOOST_CHECK_EQUAL(  0x51546451, *results.lastFreezeTime );
+    BOOST_CHECK_EQUAL(  0x0000009c, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Base ].rate );
+    BOOST_CHECK_EQUAL(  0x51545e74, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Base ].timestamp );
+    BOOST_CHECK_EQUAL(  0x00000000, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Rate_A ].rate );
+    BOOST_CHECK_EQUAL(  0x00000000, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Rate_A ].timestamp );
+    BOOST_CHECK_EQUAL(  0x00000000, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Rate_B ].rate );
+    BOOST_CHECK_EQUAL(  0x00000000, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Rate_B ].timestamp );
+    BOOST_CHECK_EQUAL(  0x0000009c, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Rate_C ].rate );
+    BOOST_CHECK_EQUAL(  0x51545e74, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Rate_C ].timestamp );
+    BOOST_CHECK_EQUAL(  0x00000000, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Rate_D ].rate );
+    BOOST_CHECK_EQUAL(  0x00000000, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Rate_D ].timestamp );
+}
+
+
+BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandFreeze_GetFreezeInfo_supplied_case_2 )
+{
+    test_ResultHandler  rh;
+
+    RfnGetDemandFreezeInfoCommand   command( rh );
+
+    // execute
+    {
+        const std::vector< unsigned char > exp = boost::assign::list_of
+            ( 0x55 )( 0x03 );
+
+        RfnCommand::RfnRequest rcv = command.execute( execute_time );
+
+        BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
+                                       exp.begin() , exp.end() );
+    }
+
+    // decode -- success response
+    {
+        const std::vector< unsigned char > response = boost::assign::list_of
+            ( 0x56 )
+            ( 0x00 )( 0x00 )( 0x00 )
+            ( 0x0c )
+            ( 0x01 )( 0x01 )( 0x1c ) 
+            ( 0x02 )( 0x04 )( 0x51 )( 0x54 )( 0x4e )( 0x0c )
+            ( 0x03 )( 0x04 )( 0x00 )( 0x00 )( 0x00 )( 0x48 )
+            ( 0x04 )( 0x04 )( 0x51 )( 0x54 )( 0x4b )( 0xb4 )
+            ( 0x05 )( 0x04 )( 0x00 )( 0x00 )( 0x00 )( 0x00 )
+            ( 0x06 )( 0x04 )( 0x00 )( 0x00 )( 0x00 )( 0x00 )
+            ( 0x07 )( 0x04 )( 0x00 )( 0x00 )( 0x00 )( 0x00 )
+            ( 0x08 )( 0x04 )( 0x00 )( 0x00 )( 0x00 )( 0x00 )
+            ( 0x09 )( 0x04 )( 0x00 )( 0x00 )( 0x00 )( 0x48 )
+            ( 0x0a )( 0x04 )( 0x51 )( 0x54 )( 0x4b )( 0xb4 )
+            ( 0x0b )( 0x04 )( 0x00 )( 0x00 )( 0x00 )( 0x48 )
+            ( 0x0c )( 0x04 )( 0x51 )( 0x53 )( 0xbf )( 0x14 );
+
+        RfnCommand::RfnResult rcv = command.decode( execute_time, response );
+
+        BOOST_CHECK_EQUAL( rcv.description, "Status: Success (0x00)"
+                                            "\nAdditional Status: NO ADDITIONAL STATUS (ASC: 0x00, ASCQ: 0x00)" );
+    }
+
+    RfnGetDemandFreezeInfoCommand::DemandFreezeData results = command.getDemandFreezeData();
+
+    BOOST_CHECK_EQUAL(        0x1c, *results.dayOfFreeze );
+    BOOST_CHECK_EQUAL(  0x51544e0c, *results.lastFreezeTime );
+    BOOST_CHECK_EQUAL(  0x00000048, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Base ].rate );
+    BOOST_CHECK_EQUAL(  0x51544bb4, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Base ].timestamp );
+    BOOST_CHECK_EQUAL(  0x00000000, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Rate_A ].rate );
+    BOOST_CHECK_EQUAL(  0x00000000, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Rate_A ].timestamp );
+    BOOST_CHECK_EQUAL(  0x00000000, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Rate_B ].rate );
+    BOOST_CHECK_EQUAL(  0x00000000, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Rate_B ].timestamp );
+    BOOST_CHECK_EQUAL(  0x00000048, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Rate_C ].rate );
+    BOOST_CHECK_EQUAL(  0x51544bb4, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Rate_C ].timestamp );
+    BOOST_CHECK_EQUAL(  0x00000048, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Rate_D ].rate );
+    BOOST_CHECK_EQUAL(  0x5153bf14, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Rate_D ].timestamp );
+}
+
+
+BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandFreeze_GetFreezeInfo_decode_exceptions )
+{
+    const std::vector< RfnCommand::RfnResponse >   responses = list_of
+        ( list_of ( 0x56 )
+                  ( 0x00 )( 0x00 )( 0x00 )
+                  ( 0x02 )
+                  ( 0x01 )( 0x01 )( 0x1c ) 
+                  ( 0x02 )( 0x04 )( 0x51 )( 0x54 )( 0x4e )( 0x0c )
+                  ( 0x03 )( 0x04 )( 0x00 )( 0x00 )( 0x00 )( 0x48 ) )
+        ( list_of ( 0x56 )
+                  ( 0x00 )( 0x00 )( 0x00 )
+                  ( 0x04 )
+                  ( 0x01 )( 0x01 )( 0x1c ) 
+                  ( 0x02 )( 0x04 )( 0x51 )( 0x54 )( 0x4e )( 0x0c )
+                  ( 0x03 )( 0x04 )( 0x00 )( 0x00 )( 0x00 )( 0x48 ) )
+        ( list_of ( 0x56 )
+                  ( 0x00 )( 0x00 )( 0x00 )
+                  ( 0x04 )
+                  ( 0x01 )( 0x01 )( 0x1c ) 
+                  ( 0x12 )( 0x04 )( 0x51 )( 0x54 )( 0x4e )( 0x0c )
+                  ( 0x03 )( 0x04 )( 0x00 )( 0x00 )( 0x00 )( 0x48 ) )
+        ( list_of ( 0x56 )
+                  ( 0x00 )( 0x00 )( 0x00 )
+                  ( 0x03 )
+                  ( 0x01 )( 0x01 )( 0x1c ) 
+                  ( 0x02 )( 0x04 )( 0x51 )( 0x54 )( 0x4e )/* ( 0x0c ) */
+                  ( 0x03 )( 0x04 )( 0x00 )( 0x00 )( 0x00 )( 0x48 ) )
+        ( list_of ( 0x56 )
+                  ( 0x00 )( 0x00 )( 0x00 )
+                  ( 0x03 )
+                  ( 0x01 )( 0x01 )( 0x1c ) 
+                  ( 0x02 )( 0x04 )( 0x51 )( 0x54 )( 0x4e )( 0x0c )
+                  ( 0x03 ) )
+        ( list_of ( 0x56 )
+                  ( 0x00 )( 0x00 )( 0x00 )
+                  ( 0x03 )
+                  ( 0x01 )( 0x01 )( 0x1c ) 
+                  ( 0x02 )( 0x04 )( 0x51 )( 0x54 )( 0x4e )( 0x0c )
+                  ( 0x03 )( 0x04 ) )
+        ( list_of ( 0x56 )
+                  ( 0x00 )( 0x00 )( 0x00 )
+                  ( 0x03 )
+                  ( 0x01 )( 0x01 )( 0x1c ) 
+                  ( 0x02 )( 0x04 )( 0x51 )( 0x54 )( 0x4e )( 0x0c )
+                  ( 0x03 )( 0x04 )( 0x00 ) )
+        ( list_of ( 0x56 )
+                  ( 0x00 )( 0x00 )( 0x00 )
+                  ( 0x03 )
+                  ( 0x01 )( 0x01 )( 0x1c ) 
+                  ( 0x02 )( 0x04 )( 0x51 )( 0x54 )( 0x4e )( 0x0c )
+                  ( 0x03 )( 0x04 )( 0x00 )( 0x00 ) )
+        ( list_of ( 0x56 )
+                  ( 0x00 )( 0x00 )( 0x00 )
+                  ( 0x03 )
+                  ( 0x01 )( 0x01 )( 0x1c ) 
+                  ( 0x02 )( 0x04 )( 0x51 )( 0x54 )( 0x4e )( 0x0c )
+                  ( 0x03 )( 0x04 )( 0x00 )( 0x00 )( 0x00 ) );
+
+    const std::vector< RfnCommand::CommandException >   expected = list_of
+        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV count (3) expected 2" ) )
+        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV count (3) expected 4" ) )
+        ( RfnCommand::CommandException( ErrorInvalidData, "Missing decode for TLV type (0x12)" ) )
+        ( RfnCommand::CommandException( ErrorInvalidData, "Missing decode for TLV type (0x00)" ) )
+        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV count (2) expected 3" ) )
+        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV length (0) expected 4" ) )
+        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV length (1) expected 4" ) )
+        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV length (2) expected 4" ) )
+        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV length (3) expected 4" ) );
+
+    std::vector< RfnCommand::CommandException > actual;
+
+    test_ResultHandler  rh;
+
+    RfnGetDemandFreezeInfoCommand   command( rh );
+
+    for each ( const RfnCommand::RfnResponse & response in responses )
+    {
+        BOOST_CHECK_THROW( command.decode( execute_time, response ), RfnCommand::CommandException );
+
+        try
+        {
+            RfnCommand::RfnResult rcv = command.decode( execute_time, response );
+        }
+        catch ( const RfnCommand::CommandException & ex )
+        {
+            actual.push_back( ex );
+        }
+    }
+
+    BOOST_CHECK_EQUAL_COLLECTIONS( actual.begin(),   actual.end(),
+                                   expected.begin(), expected.end() );
 }
 
 

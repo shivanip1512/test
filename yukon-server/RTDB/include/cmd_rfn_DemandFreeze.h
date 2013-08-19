@@ -1,7 +1,8 @@
 #pragma once
 
 #include "cmd_rfn.h"
-
+#include <boost/optional.hpp>
+#include <map>
 
 
 namespace Cti        {
@@ -126,13 +127,13 @@ public:
 
         struct RateInfo
         {
-            unsigned int    rate;
-            unsigned int    timestamp;          // CtiTime??
+            boost::optional<unsigned int>   rate;
+            boost::optional<unsigned int>   timestamp;
         };
 
-        unsigned char   dayOfFreeze;
-        unsigned int    lastFreezeTime;         // CtiTime??
-        RateInfo        rates[ Rate_Count ];
+        boost::optional<unsigned char>      dayOfFreeze;
+        boost::optional<unsigned int>       lastFreezeTime;
+        std::map<DemandRates, RateInfo>     demandInfo;
     };
 
     struct ResultHandler
