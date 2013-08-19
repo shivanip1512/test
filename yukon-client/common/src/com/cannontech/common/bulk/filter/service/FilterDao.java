@@ -6,7 +6,7 @@ import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.search.SearchResult;
 
-public interface FilterService {
+public interface FilterDao {
     public <T> SearchResult<T> filter(UiFilter<T> filter, Comparator<? super T> sorter, int startIndex, int count,
         RowMapperWithBaseQuery<T> rowMapper);
 }

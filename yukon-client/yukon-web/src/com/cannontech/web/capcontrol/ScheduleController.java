@@ -30,7 +30,7 @@ import com.cannontech.cbc.commands.CapControlCommandExecutor;
 import com.cannontech.cbc.commands.CommandHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.filter.UiFilter;
-import com.cannontech.common.bulk.filter.service.FilterService;
+import com.cannontech.common.bulk.filter.service.FilterDao;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
@@ -72,7 +72,7 @@ public class ScheduleController {
 
     @Autowired private PaoScheduleDao paoScheduleDao;
     @Autowired private RolePropertyDao rolePropertyDao;
-    @Autowired private FilterService filterService;
+    @Autowired private FilterDao filterService;
     @Autowired private CapControlCommandExecutor executor;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 	@Autowired private DbChangeManager dbChangeManager;

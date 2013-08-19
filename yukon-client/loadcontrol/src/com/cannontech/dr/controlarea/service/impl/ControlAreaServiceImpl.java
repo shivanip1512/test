@@ -14,7 +14,7 @@ import com.cannontech.common.bulk.filter.PostProcessingFilter;
 import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
 import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.bulk.filter.UiFilter;
-import com.cannontech.common.bulk.filter.service.FilterService;
+import com.cannontech.common.bulk.filter.service.FilterDao;
 import com.cannontech.common.events.loggers.DemandResponseEventLogService;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -42,10 +42,10 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class ControlAreaServiceImpl implements ControlAreaService {
-    private ControlAreaDao controlAreaDao;
-    private LoadControlClientConnection loadControlClientConnection;
-    private FilterService filterService;
-    private DemandResponseEventLogService demandResponseEventLogService;
+    @Autowired private ControlAreaDao controlAreaDao;
+    @Autowired private LoadControlClientConnection loadControlClientConnection;
+    @Autowired private FilterDao filterDao;
+    @Autowired private DemandResponseEventLogService demandResponseEventLogService;
 
     private static class TriggerRowMapper implements RowMapperWithBaseQuery<ControlAreaTrigger> {
         Map<Integer, List<ControlAreaTrigger>> triggersByControlAreaId = Maps.newHashMap();
@@ -207,11 +207,11 @@ public class ControlAreaServiceImpl implements ControlAreaService {
         // Also, note that TriggerRowMapper caches all the mapped triggers by controlAreaId; 
         // startIndex, count have little value as the plain returned results are not used
         TriggerRowMapper triggerRowMapper = new TriggerRowMapper();
-        filterService.filter(triggerFilter, null, 0, Integer.MAX_VALUE,
+        filterDao.filter(triggerFilter, null, 0, Integer.MAX_VALUE,
                              triggerRowMapper);
         
         SearchResult<DisplayablePao> searchResult =
-            filterService.filter(filter, sorter, startIndex, count,
+            filterDao.filter(filter, sorter, startIndex, count,
                                  new ControlAreaRowMapper(triggerRowMapper.triggersByControlAreaId));
 
         return searchResult;
@@ -373,27 +373,4 @@ public class ControlAreaServiceImpl implements ControlAreaService {
         
         return commandList;
     }
-
-    @Autowired
-    public void setControlAreaDao(ControlAreaDao controlAreaDao) {
-        this.controlAreaDao = controlAreaDao;
-    }
-
-    @Autowired
-    public void setLoadControlClientConnection(
-            LoadControlClientConnection loadControlClientConnection) {
-        this.loadControlClientConnection = loadControlClientConnection;
-    }
-
-    @Autowired
-    public void setFilterService(FilterService filterService) {
-        this.filterService = filterService;
-    }
-    
-    @Autowired
-    public void setDemandResponseEventLogService(
-                                 DemandResponseEventLogService demandResponseEventLogService) {
-        this.demandResponseEventLogService = demandResponseEventLogService;
-    }
-    
 }

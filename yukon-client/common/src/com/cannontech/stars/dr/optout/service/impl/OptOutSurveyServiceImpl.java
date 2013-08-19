@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
 import com.cannontech.common.bulk.filter.SqlFragmentUiFilter;
 import com.cannontech.common.bulk.filter.UiFilter;
-import com.cannontech.common.bulk.filter.service.FilterService;
+import com.cannontech.common.bulk.filter.service.FilterDao;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.SqlBuilder;
 import com.cannontech.stars.dr.appliance.dao.AssignedProgramDao;
@@ -26,10 +26,10 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
 public class OptOutSurveyServiceImpl implements OptOutSurveyService {
-    private OptOutSurveyDao optOutSurveyDao;
-    private FilterService filterService;
-    private LMHardwareControlGroupDao lmHardwareControlGroupDao;
-    private AssignedProgramDao assignedProgramDao;
+    @Autowired private OptOutSurveyDao optOutSurveyDao;
+    @Autowired private FilterDao filterDao;
+    @Autowired private LMHardwareControlGroupDao lmHardwareControlGroupDao;
+    @Autowired private AssignedProgramDao assignedProgramDao;
 
     private final static RowMapperWithBaseQuery<OptOutSurvey> rowMapper =
         new OptOutSurveyRowMapper();
@@ -83,7 +83,7 @@ public class OptOutSurveyServiceImpl implements OptOutSurveyService {
         };
 
         SearchResult<OptOutSurvey> retVal =
-            filterService.filter(filter, null, startIndex, count, rowMapper);
+            filterDao.filter(filter, null, startIndex, count, rowMapper);
 
         Multimap<OptOutSurvey, Integer> programsByOptOutSurveyId =
             optOutSurveyDao.getProgramsForOptOutSurveys(retVal.getResultList());
@@ -92,26 +92,5 @@ public class OptOutSurveyServiceImpl implements OptOutSurveyService {
         }
 
         return retVal;
-    }
-
-    @Autowired
-    public void setOptOutSurveyDao(OptOutSurveyDao optOutSurveyDao) {
-        this.optOutSurveyDao = optOutSurveyDao;
-    }
-
-    @Autowired
-    public void setFilterService(FilterService filterService) {
-        this.filterService = filterService;
-    }
-
-    @Autowired
-    public void setLmHardwareControlGroupDao(
-            LMHardwareControlGroupDao lmHardwareControlGroupDao) {
-        this.lmHardwareControlGroupDao = lmHardwareControlGroupDao;
-    }
-
-    @Autowired
-    public void setAssignedProgramDao(AssignedProgramDao assignedProgramDao) {
-        this.assignedProgramDao = assignedProgramDao;
     }
 }

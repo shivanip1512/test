@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.bulk.filter.SqlFragmentUiFilter;
 import com.cannontech.common.bulk.filter.UiFilter;
-import com.cannontech.common.bulk.filter.service.FilterService;
+import com.cannontech.common.bulk.filter.service.FilterDao;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
 import com.cannontech.common.events.dao.EventLogDao;
 import com.cannontech.common.events.model.EventCategory;
@@ -26,12 +26,11 @@ import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 
 public class EventLogUIServiceImpl implements EventLogUIService { 
+    @Autowired private DateFormattingService dateFormattingService;
+    @Autowired private EventLogDao eventLogDao;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private FilterDao filterDao;
 
-    private DateFormattingService dateFormattingService;
-    private EventLogDao eventLogDao;
-    private YukonUserContextMessageSourceResolver messageSourceResolver;
-    private FilterService filterService;
-    
     @Override
     public List<List<String>> getDataGridRowByType(SearchResult<EventLog> searchResult, YukonUserContext userContext) {
         
@@ -134,7 +133,7 @@ public class EventLogUIServiceImpl implements EventLogUIService {
         
         // Process search results
         SearchResult<EventLog> searchResult =
-            filterService.filter(filter, null, startIndex, 
+            filterDao.filter(filter, null, startIndex, 
                                  itemsPerPage, eventLogDao.getEventLogRowMapper());
 
         return searchResult;
@@ -172,26 +171,4 @@ public class EventLogUIServiceImpl implements EventLogUIService {
             sql.append("EventTime").lte(stopDate);
         }
     };
-    
-    // Dependency Injection
-    @Autowired
-    public void setDateFormattingService(DateFormattingService dateFormattingService) {
-        this.dateFormattingService = dateFormattingService;
-    }
-    
-    @Autowired
-    public void setEventLogDao(EventLogDao eventLogDao) {
-        this.eventLogDao = eventLogDao;
-    }
-    
-    @Autowired
-    public void setFilterService(FilterService filterService) {
-        this.filterService = filterService;
-    }
-    
-    @Autowired
-    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
-        this.messageSourceResolver = messageSourceResolver;
-    }
-
 }

@@ -477,5 +477,5 @@
         <property name="porterConnection" ref="porterConnection"/>
     </bean>
 
-    <bean id="filterServiceBean" class="com.cannontech.common.bulk.filter.service.impl.FilterServiceImpl"/>
+    <bean id="filterServiceBean" class="com.cannontech.common.bulk.filter.service.impl.FilterDaoImpl"/>
 </beans>

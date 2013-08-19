@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
 import com.cannontech.common.bulk.filter.UiFilter;
-import com.cannontech.common.bulk.filter.service.FilterService;
+import com.cannontech.common.bulk.filter.service.FilterDao;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
 import com.cannontech.common.favorites.dao.FavoritesDao;
 import com.cannontech.common.pao.DisplayablePao;
@@ -53,7 +53,7 @@ import com.google.common.collect.Ordering;
  */
 public class QuickSearchController {
     
-    @Autowired private FilterService filterService;
+    @Autowired private FilterDao filterService;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private FavoritesDao favoritesDao;
     @Autowired private PaoDetailUrlHelper paoDetailUrlHelper;
@@ -89,9 +89,7 @@ public class QuickSearchController {
 
         @Override
         public DisplayablePao mapRow(YukonResultSet rs) throws SQLException {
-            int paoId = rs.getInt("paObjectId");
-            String paoType = rs.getString("type");
-            PaoIdentifier paoIdentifier = new PaoIdentifier(paoId, PaoType.getForDbString(paoType));
+            PaoIdentifier paoIdentifier = rs.getPaoIdentifier("paobjectId", "type");
             DisplayablePaoBase pao = new DisplayablePaoBase(paoIdentifier, rs.getString("paoName"));
             return pao;
         }

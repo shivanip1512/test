@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.common.bulk.filter.AbstractRowMapperWithBaseQuery;
 import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
 import com.cannontech.common.bulk.filter.UiFilter;
-import com.cannontech.common.bulk.filter.service.FilterService;
+import com.cannontech.common.bulk.filter.service.FilterDao;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.DisplayablePaoBase;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -24,8 +24,8 @@ import com.cannontech.dr.scenario.service.ScenarioService;
 import com.cannontech.user.YukonUserContext;
 
 public class ScenarioServiceImpl implements ScenarioService {
-    private ScenarioDao scenarioDao;
-    private FilterService filterService;
+    @Autowired private ScenarioDao scenarioDao;
+    @Autowired private FilterDao filterDao;
 
     private static RowMapperWithBaseQuery<DisplayablePao> rowMapper = new AbstractRowMapperWithBaseQuery<DisplayablePao>() {
 
@@ -55,7 +55,7 @@ public class ScenarioServiceImpl implements ScenarioService {
             Comparator<DisplayablePao> sorter, int startIndex, int count) {
 
         SearchResult<DisplayablePao> searchResult =
-            filterService.filter(filter, sorter, startIndex, count, rowMapper);
+            filterDao.filter(filter, sorter, startIndex, count, rowMapper);
 
         return searchResult;
     }
@@ -68,15 +68,5 @@ public class ScenarioServiceImpl implements ScenarioService {
     @Override
     public List<Scenario> findScenariosForProgram(int programId) {
         return scenarioDao.findScenariosForProgram(programId);
-    }
-
-    @Autowired
-    public void setScenarioDao(ScenarioDao scenarioDao) {
-        this.scenarioDao = scenarioDao;
-    }
-
-    @Autowired
-    public void setFilterService(FilterService filterService) {
-        this.filterService = filterService;
     }
 }

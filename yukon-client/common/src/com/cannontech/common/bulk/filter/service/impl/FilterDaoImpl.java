@@ -14,17 +14,17 @@ import com.cannontech.common.bulk.filter.PostProcessingFilter;
 import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
 import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.bulk.filter.UiFilter;
-import com.cannontech.common.bulk.filter.service.FilterService;
+import com.cannontech.common.bulk.filter.service.FilterDao;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.SqlFragmentCollection;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.YukonJdbcTemplate;
 
-public class FilterServiceImpl implements FilterService {
+public class FilterDaoImpl implements FilterDao {
 	
     private YukonJdbcTemplate yukonJdbcTemplate;
-    private Logger log = YukonLogManager.getLogger(FilterServiceImpl.class);
+    private Logger log = YukonLogManager.getLogger(FilterDaoImpl.class);
 
     @Override
     public <T> SearchResult<T> filter(UiFilter<T> filter,

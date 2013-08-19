@@ -22,7 +22,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.filter.AbstractRowMapperWithBaseQuery;
 import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
 import com.cannontech.common.bulk.filter.UiFilter;
-import com.cannontech.common.bulk.filter.service.FilterService;
+import com.cannontech.common.bulk.filter.service.FilterDao;
 import com.cannontech.common.events.loggers.DemandResponseEventLogService;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.pao.DisplayablePao;
@@ -85,7 +85,7 @@ public class ProgramServiceImpl implements ProgramService {
 
     @Autowired private final ProgramDao programDao = null;
     @Autowired private final LoadControlClientConnection loadControlClientConnection = null;
-    @Autowired private FilterService filterService;
+    @Autowired private FilterDao filterService;
     @Autowired private DemandResponseEventLogService demandResponseEventLogService;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private LoadControlProgramDao loadControlProgramDao;
@@ -114,14 +114,9 @@ public class ProgramServiceImpl implements ProgramService {
             }
 
             @Override
-            public DisplayablePao mapRow(YukonResultSet rs)
-                    throws SQLException {
-            	int paobjectId = rs.getInt("paObjectId");
-            	String paoTypeStr = rs.getString("type");
-            	PaoType paoType = PaoType.getForDbString(paoTypeStr);
-                PaoIdentifier paoId = new PaoIdentifier(paobjectId, paoType);
-                DisplayablePao retVal = new DisplayablePaoBase(paoId,
-                                                               rs.getString("paoName"));
+            public DisplayablePao mapRow(YukonResultSet rs) throws SQLException {
+                PaoIdentifier paoId = rs.getPaoIdentifier("paobjectId", "type");
+                DisplayablePao retVal = new DisplayablePaoBase(paoId, rs.getString("paoName"));
                 return retVal;
             }
         };

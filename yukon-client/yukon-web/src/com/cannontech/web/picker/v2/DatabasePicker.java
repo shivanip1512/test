@@ -8,7 +8,7 @@ import com.cannontech.common.bulk.filter.PostProcessingFilter;
 import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
 import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.bulk.filter.UiFilter;
-import com.cannontech.common.bulk.filter.service.FilterService;
+import com.cannontech.common.bulk.filter.service.FilterDao;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.SqlFragmentCollection;
 import com.cannontech.common.util.SqlFragmentSource;
@@ -27,7 +27,7 @@ public abstract class DatabasePicker<T> extends BasePicker<T> {
     private RowMapperWithBaseQuery<T> rowMapper;
     private String[] searchColumnNames;
 
-    private FilterService filterService;
+    @Autowired private FilterDao filterDao;
 
     protected DatabasePicker(RowMapperWithBaseQuery<T> rowMapper,
             String[] searchColumnNames) {
@@ -114,7 +114,7 @@ public abstract class DatabasePicker<T> extends BasePicker<T> {
 
         // no sorter support
         SearchResult<T> dbResults =
-            filterService.filter(filter, null, start, count, rowMapper);
+            filterDao.filter(filter, null, start, count, rowMapper);
         return dbResults;
     }
 
@@ -144,7 +144,7 @@ public abstract class DatabasePicker<T> extends BasePicker<T> {
         };
 
         SearchResult<T> dbResults =
-            filterService.filter(filter, null, 0, Integer.MAX_VALUE, rowMapper);
+            filterDao.filter(filter, null, 0, Integer.MAX_VALUE, rowMapper);
         return dbResults;
     }
 
@@ -155,9 +155,4 @@ public abstract class DatabasePicker<T> extends BasePicker<T> {
     public void setPostProcessingFilters(List<PostProcessingFilter<T>> postProcessingFilters) {
 		this.postProcessingFilters = postProcessingFilters;
 	}
-
-    @Autowired
-    public void setFilterService(FilterService filterService) {
-        this.filterService = filterService;
-    }
 }

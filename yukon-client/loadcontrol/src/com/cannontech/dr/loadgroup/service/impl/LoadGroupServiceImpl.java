@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.common.bulk.filter.AbstractRowMapperWithBaseQuery;
 import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
 import com.cannontech.common.bulk.filter.UiFilter;
-import com.cannontech.common.bulk.filter.service.FilterService;
+import com.cannontech.common.bulk.filter.service.FilterDao;
 import com.cannontech.common.events.loggers.DemandResponseEventLogService;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.DisplayablePaoBase;
@@ -21,7 +21,6 @@ import com.cannontech.common.util.DatedObject;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.YukonResultSet;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.dr.loadgroup.filter.MacroLoadGroupForLoadGroupFilter;
 import com.cannontech.dr.loadgroup.service.LoadGroupService;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
@@ -33,10 +32,10 @@ import com.cannontech.message.util.Message;
 import com.cannontech.user.YukonUserContext;
 
 public class LoadGroupServiceImpl implements LoadGroupService {
-    private LoadGroupDao loadGroupDao = null;
-    private LoadControlClientConnection loadControlClientConnection = null;
-    private FilterService filterService;
-    private DemandResponseEventLogService demandResponseEventLogService;
+    @Autowired private LoadGroupDao loadGroupDao = null;
+    @Autowired private LoadControlClientConnection loadControlClientConnection = null;
+    @Autowired private FilterDao filterDao;
+    @Autowired private DemandResponseEventLogService demandResponseEventLogService;
     
     @Override
     public LMDirectGroupBase getGroupForPao(YukonPao from) {
@@ -76,7 +75,7 @@ public class LoadGroupServiceImpl implements LoadGroupService {
             int startIndex, int count, YukonUserContext userContext) {
 
         SearchResult<DisplayablePao> searchResult =
-            filterService.filter(filter, sorter, startIndex, count, rowMapper);
+            filterDao.filter(filter, sorter, startIndex, count, rowMapper);
         return searchResult;
     }    
 
@@ -151,26 +150,4 @@ public class LoadGroupServiceImpl implements LoadGroupService {
                 return retVal;
             }
         };
-
-    @Autowired
-    public void setLoadGroupDao(LoadGroupDao loadGroupDao) {
-        this.loadGroupDao = loadGroupDao;
-    }
-
-    @Autowired
-    public void setLoadControlClientConnection(
-            LoadControlClientConnection loadControlClientConnection) {
-        this.loadControlClientConnection = loadControlClientConnection;
-    }
-    
-    @Autowired
-    public void setFilterService(FilterService filterService) {
-        this.filterService = filterService;
-    }
-    
-    @Autowired
-    public void setDemandResponseEventLogService(DemandResponseEventLogService demandResponseEventLogService) {
-        this.demandResponseEventLogService = demandResponseEventLogService;
-    }
-    
 }

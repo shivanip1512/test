@@ -9,7 +9,7 @@ import org.springframework.context.NoSuchMessageException;
 import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
 import com.cannontech.common.bulk.filter.SqlFragmentUiFilter;
 import com.cannontech.common.bulk.filter.UiFilter;
-import com.cannontech.common.bulk.filter.service.FilterService;
+import com.cannontech.common.bulk.filter.service.FilterDao;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.survey.dao.SurveyDao;
@@ -26,9 +26,9 @@ import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 
 public class SurveyServiceImpl implements SurveyService {
-    private FilterService filterService;
-    private SurveyDao surveyDao;
-    private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private FilterDao filterDao;
+    @Autowired private SurveyDao surveyDao;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
     private final static RowMapperWithBaseQuery<Survey> rowMapper =
         new SurveyRowMapper();
@@ -45,7 +45,7 @@ public class SurveyServiceImpl implements SurveyService {
         };
 
         SearchResult<Survey> retVal =
-            filterService.filter(filter, null, startIndex, count, rowMapper);
+            filterDao.filter(filter, null, startIndex, count, rowMapper);
         return retVal;
     }
     
@@ -120,20 +120,5 @@ public class SurveyServiceImpl implements SurveyService {
         }
         
         return retVal; 
-    }
-
-    @Autowired
-    public void setFilterService(FilterService filterService) {
-        this.filterService = filterService;
-    }
-    
-    @Autowired
-    public void setSurveyDao(SurveyDao surveyDao) {
-        this.surveyDao = surveyDao;
-    }
-    
-    @Autowired
-    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
-        this.messageSourceResolver = messageSourceResolver;
     }
 }

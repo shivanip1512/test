@@ -1,6 +1,5 @@
 package com.cannontech.common.favorites.service.impl;
 
-import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -11,7 +10,7 @@ import com.cannontech.common.bulk.filter.PostProcessingFilter;
 import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
 import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.bulk.filter.UiFilter;
-import com.cannontech.common.bulk.filter.service.FilterService;
+import com.cannontech.common.bulk.filter.service.FilterDao;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
 import com.cannontech.common.favorites.service.FavoritesService;
 import com.cannontech.common.pao.DisplayablePao;
@@ -24,14 +23,14 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.google.common.collect.Lists;
 
 public class FavoritesServiceImpl implements FavoritesService {
-    private FilterService filterService;
+    @Autowired private FilterDao filterDao;
 
     @Override
     public List<DisplayablePao> getRecentlyViewed(LiteYukonUser user,
             int count, UiFilter<DisplayablePao> filter) {
         RecentlyViewedRowMapper rowMapper = new RecentlyViewedRowMapper();
         SearchResult<DisplayablePao> searchResult =
-            filterService.filter(filter, null, 0, count, rowMapper);
+            filterDao.filter(filter, null, 0, count, rowMapper);
         List<DisplayablePao> retVal = searchResult.getResultList();
         Collections.sort(retVal, new DisplayablePaoComparator());
         return retVal;
@@ -47,13 +46,8 @@ public class FavoritesServiceImpl implements FavoritesService {
         FavoriteRowMapper rowMapper = new FavoriteRowMapper();
         Comparator<DisplayablePao> sorter = new DisplayablePaoComparator();
         SearchResult<DisplayablePao> searchResult =
-            filterService.filter(filter, sorter, 0, Integer.MAX_VALUE, rowMapper);
+            filterDao.filter(filter, sorter, 0, Integer.MAX_VALUE, rowMapper);
         return searchResult.getResultList();
-    }
-
-    @Autowired
-    public void setFilterService(FilterService filterService) {
-        this.filterService = filterService;
     }
 
     private static class RecentlyViewedRowMapper extends PaoNameDisplayablePaoRowMapper implements

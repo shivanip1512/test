@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
 import com.cannontech.common.bulk.filter.UiFilter;
-import com.cannontech.common.bulk.filter.service.FilterService;
+import com.cannontech.common.bulk.filter.service.FilterDao;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.stars.dr.appliance.dao.AssignedProgramDao;
@@ -26,9 +26,9 @@ import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 
 public class AssignedProgramServiceImpl implements AssignedProgramService {
-    private FilterService filterService;
-    private WebConfigurationDao webConfigurationDao;
-    private AssignedProgramDao assignedProgramDao;
+    @Autowired private FilterDao filterDao;
+    @Autowired private WebConfigurationDao webConfigurationDao;
+    @Autowired private AssignedProgramDao assignedProgramDao;
 
     @Override
     @Transactional(propagation=Propagation.SUPPORTS)
@@ -68,7 +68,7 @@ public class AssignedProgramServiceImpl implements AssignedProgramService {
         RowMapperWithBaseQuery<AssignedProgram> rowMapper =
             new AssignedProgramRowMapper(sortBy, sortDescending, highestProgramOrder, null);
         SearchResult<AssignedProgram> searchResult =
-            filterService.filter(UiFilterList.wrap(filters), null, startIndex, count, rowMapper);
+            filterDao.filter(UiFilterList.wrap(filters), null, startIndex, count, rowMapper);
 
         Function<AssignedProgram, Integer> idFromAssignedProgram = new Function<AssignedProgram, Integer>() {
             @Override
@@ -86,20 +86,5 @@ public class AssignedProgramServiceImpl implements AssignedProgramService {
         }
 
         return searchResult;
-    }
-
-    @Autowired
-    public void setFilterService(FilterService filterService) {
-        this.filterService = filterService;
-    }
-
-    @Autowired
-    public void setWebConfigurationDao(WebConfigurationDao webConfigurationDao) {
-        this.webConfigurationDao = webConfigurationDao;
-    }
-
-    @Autowired
-    public void setAssignedProgramDao(AssignedProgramDao assignedProgramDao) {
-        this.assignedProgramDao = assignedProgramDao;
     }
 }
