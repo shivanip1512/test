@@ -11919,6 +11919,15 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+            <i__foreignKeyName>FK_PTTRIGGERVERIF_PT</i__foreignKeyName>
+            <i__keySequence>1</i__keySequence>
+            <i__columnName>VerificationID</i__columnName>
+            <i__foreignColumnName>POINTID</i__foreignColumnName>
+            <i__foreignTableName>POINT</i__foreignTableName>
+            <i__updateRule>1</i__updateRule>
+            <i__deleteRule>1</i__deleteRule>
+          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
             <i__foreignKeyName>FK_PTTRIGGER_PT</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>PointID</i__columnName>
@@ -11931,15 +11940,6 @@
             <i__foreignKeyName>FK_PTTRIGGERTRIGGERPT_PT</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>TriggerID</i__columnName>
-            <i__foreignColumnName>POINTID</i__foreignColumnName>
-            <i__foreignTableName>POINT</i__foreignTableName>
-            <i__updateRule>1</i__updateRule>
-            <i__deleteRule>1</i__deleteRule>
-          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_PTTRIGGERVERIF_PT</i__foreignKeyName>
-            <i__keySequence>1</i__keySequence>
-            <i__columnName>VerificationID</i__columnName>
             <i__foreignColumnName>POINTID</i__foreignColumnName>
             <i__foreignTableName>POINT</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
@@ -55303,6 +55303,20 @@
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
         </i__foreignKeys>
         <i__indexes>
+          <entry>
+            <string>AK_DeviceConfig_Name</string>
+            <com.cariboulake.db.schemacompare.business.domain.db.Index>
+              <indexSegments>
+                <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+                  <i__tableName>DeviceConfiguration</i__tableName>
+                  <i__ordinalPosition>1</i__ordinalPosition>
+                  <i__columnName>Name</i__columnName>
+                  <i__nonNonUnique>false</i__nonNonUnique>
+                </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+              </indexSegments>
+              <indexName>AK_DeviceConfig_Name</indexName>
+            </com.cariboulake.db.schemacompare.business.domain.db.Index>
+          </entry>
           <entry>
             <string>PK_DeviceConfiguration</string>
             <com.cariboulake.db.schemacompare.business.domain.db.Index>
