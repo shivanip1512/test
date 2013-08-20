@@ -36,14 +36,14 @@
 
 <script>
     jQuery(document).on('click', '#viewSelectedDevices_${uniqueId}', function() {
-        var url = '<cti:url value="/bulk/selectedDevicesTableForGroupName"/>' + '?groupName=' + encodeURIComponent($('${fieldName}').value);
+        var url = '<cti:url value="/bulk/selectedDevicesTableForGroupName"/>' + '?groupName=' + encodeURIComponent(jQuery(document.getElementById("${fieldId}")).val());
         showSelectedDevices('#viewSelectedDevices_${uniqueId}', 'showSelectedDevices_${uniqueId}', url);
     });
     
     jQuery(document).on('click', '.deviceGroupLink_${uniqueId}', function() {
         // ugly? but we can't sumbit a real form since the tag will most likely appear within a form already.
         // this should be safe though, it is the same way that a redirecting ext tree works (ha).
-        var url = '<cti:url value="/group/editor/home"/>' + '?groupName=' + encodeURIComponent($('${fieldName}').value);
+        var url = '<cti:url value="/group/editor/home"/>' + '?groupName=' + encodeURIComponent(jQuery(document.getElementById("${fieldId}")).val());
         window.location.href = url;
     });
     
@@ -52,11 +52,10 @@
     });
     
 	function setSelectedGroupName_${uniqueId}() {
-		
 		<c:if test="${empty pageScope.fieldValue}">
 			jQuery('#noGroupSelectedText_${uniqueId}').hide();
 		</c:if>
-		jQuery('#deviceGroupName_${uniqueId}').html(jQuery(document.getElementById("${fieldName}")).val());
+		jQuery('#deviceGroupName_${uniqueId}').html(jQuery(document.getElementById("${fieldId}")).val());
 
 		if (${pageScope.showSelectedDevicesIcon}) {
 			jQuery('#viewDevicesIconSpan_${uniqueId}').show();
