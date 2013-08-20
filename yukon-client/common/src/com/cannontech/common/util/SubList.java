@@ -5,15 +5,13 @@ import java.util.List;
 import com.google.common.collect.ForwardingList;
 
 /**
- * The SubList class simply extends List with an extra parameter
- * to keep track of the original list size.
+ * The SubList class simply extends List with parameters
+ * to keep track of the original list size and start index.
  * 
  * Example use:
  * 
- * List list = originalList.subList(fromIndex, toIndex);
- * int size = originialList.size();
- * 
- * SubList subList = new SubList(list, size);
+ * List newList = originalList.subList(fromIndex, toIndex);
+ * SubList subList = new SubList(newList, fromIndex, originialList.size());
  */
 public class SubList<T> extends ForwardingList<T> {
 
