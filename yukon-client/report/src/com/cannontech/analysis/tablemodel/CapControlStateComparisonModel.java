@@ -30,6 +30,9 @@ public class CapControlStateComparisonModel extends BareReportModelBase<CapContr
     private Set<Integer> areaIds;
     private boolean useMisMatch = false;
     
+    private final static Set<PaoType> paoTypes = Sets.newHashSet(PaoType.CBC_7020, PaoType.CBC_7022, PaoType.CBC_7023, PaoType.CBC_7024,
+                                            PaoType.CBC_8020, PaoType.CBC_8024, PaoType.CBC_DNP);
+    
     public CapControlStateComparisonModel() {
     }
     
@@ -100,9 +103,6 @@ public class CapControlStateComparisonModel extends BareReportModelBase<CapContr
     }
     
     public SqlStatementBuilder buildSQLStatement() {
-
-        Set<PaoType> paoTypes = Sets.newHashSet(PaoType.CBC_7020, PaoType.CBC_7022, PaoType.CBC_7023, PaoType.CBC_7024,
-                                                PaoType.CBC_8020, PaoType.CBC_8024, PaoType.CBC_DNP);
 
         SqlStatementBuilder sql = new SqlStatementBuilder ("");
         if(!useMisMatch) {
