@@ -800,11 +800,11 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     }
     
     private void insertCategoryItem(DeviceConfigCategoryItem item, int categoryId) {
-        int deviceConfigurationItemId = nextValueHelper.getNextValue("DeviceConfigCategoryItem");
+        int deviceConfiCategoryItemId = nextValueHelper.getNextValue("DeviceConfigCategoryItem");
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
         SqlParameterSink params = sql.insertInto("DeviceConfigCategoryItem");
-        params.addValue("DeviceConfigurationItemId", deviceConfigurationItemId);
+        params.addValue("DeviceConfigCategoryItemId", deviceConfiCategoryItemId);
         params.addValue("DeviceConfigCategoryId", categoryId);
         params.addValue("ItemName", item.getFieldName());
         params.addValue("ItemValue", item.getValue());

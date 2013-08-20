@@ -122,7 +122,7 @@
         <table name="DeviceConfigDeviceTypes" identitycolumn="DeviceConfigDeviceTypeId" initsequence="true"/>
       </sequence>
       <sequence name="DeviceConfigItem">
-        <table name="DeviceConfigCategoryItem" identitycolumn="DeviceConfigurationItemId" initsequence="true"/>
+        <table name="DeviceConfigCategoryItem" identitycolumn="DeviceConfigCategoryItemId" initsequence="true"/>
       </sequence>
       <sequence name="LMControlInfo">
         <table name="LMHardwareControlGroup" identitycolumn="ControlEntryId" initsequence="true"/>
