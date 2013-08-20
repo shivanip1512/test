@@ -277,7 +277,6 @@ create table ApplianceCategory (
    CategoryID           numeric              null,
    WebConfigurationID   numeric              null,
    ConsumerSelectable   char(1)              not null,
-   AverageLoad          varchar(32)          null,
    constraint PK_APPLIANCECATEGORY primary key (ApplianceCategoryID)
 )
 go

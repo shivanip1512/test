@@ -268,7 +268,6 @@ create table ApplianceCategory  (
    CategoryID           NUMBER,
    WebConfigurationID   NUMBER,
    ConsumerSelectable   CHAR(1)                         not null,
-   AverageLoad          VARCHAR2(32),
    constraint PK_APPLIANCECATEGORY primary key (ApplianceCategoryID)
 );
 
