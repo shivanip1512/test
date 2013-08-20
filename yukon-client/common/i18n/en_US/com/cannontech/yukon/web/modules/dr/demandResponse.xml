@@ -116,7 +116,7 @@
 <entry key="yukon.web.modules.dr.controlArea.sendChangeTimeWindowConfirm.timeWindowChanged">Time window changed.</entry>
 
 <!-- getChangeTriggerValues.jsp -->
-<entry key="yukon.web.modules.dr.controlArea.getChangeTriggerValues.title">Send Trigger Change</entry>
+<entry key="yukon.web.modules.dr.getChangeTriggerValues.title">Send Trigger Change</entry>
 <entry key="yukon.web.modules.dr.controlArea.getChangeTriggerValues.instructions">Please enter the new threshold and restore offset for the trigger(s) you would like to change for control area {0}.</entry>
 <entry key="yukon.web.modules.dr.controlArea.getChangeTriggerValues.trigger">Trigger #{0} Settings</entry>
 <entry key="yukon.web.modules.dr.controlArea.getChangeTriggerValues.statusTrigger">This trigger is a status trigger.</entry>

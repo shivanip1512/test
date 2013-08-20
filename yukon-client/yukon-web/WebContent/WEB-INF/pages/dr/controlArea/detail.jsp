@@ -201,7 +201,7 @@
                                                 <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                             </cti:url>
                                             <li>
-                                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.getChangeTriggerValues.title" 
+                                                <tags:simpleDialogLink titleKey=".getChangeTriggerValues.title" 
                                                     dialogId="drDialog" actionUrl="${sendTriggerChangeUrl}" icon="icon-wrench"
                                                     labelKey=".actions.triggersChange"/>
                                             </li>
@@ -427,7 +427,7 @@
                                                 <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                             </cti:url>
                                             <li>
-                                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.getChangeTriggerValues.title" 
+                                                <tags:simpleDialogLink titleKey=".getChangeTriggerValues.title" 
                                                     dialogId="drDialog" actionUrl="${sendTriggerChangeUrl}" icon="icon-wrench"
                                                     labelKey=".actions.triggersChange"/>
                                             </li>
@@ -533,7 +533,7 @@
                                                 <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                             </cti:url>
                                             <li>
-                                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.getChangeTriggerValues.title" 
+                                                <tags:simpleDialogLink titleKey=".getChangeTriggerValues.title" 
                                                     dialogId="drDialog" actionUrl="${sendTriggerChangeUrl}" icon="icon-wrench"
                                                     labelKey=".actions.triggersChange"/>
                                             </li>
@@ -639,7 +639,7 @@
                                                 <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                             </cti:url>
                                             <li>
-                                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.getChangeTriggerValues.title" 
+                                                <tags:simpleDialogLink titleKey=".getChangeTriggerValues.title" 
                                                     dialogId="drDialog" actionUrl="${sendTriggerChangeUrl}" icon="icon-wrench"
                                                     labelKey=".actions.triggersChange"/>
                                             </li>
@@ -745,7 +745,7 @@
                                                 <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                             </cti:url>
                                             <li>
-                                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.getChangeTriggerValues.title" 
+                                                <tags:simpleDialogLink titleKey=".getChangeTriggerValues.title" 
                                                     dialogId="drDialog" actionUrl="${sendTriggerChangeUrl}" icon="icon-wrench"
                                                     labelKey=".actions.triggersChange"/>
                                             </li>
