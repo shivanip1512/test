@@ -111,6 +111,11 @@ RENAME COLUMN DeviceConfigurationItemId TO DeviceConfigCategoryItemId;
 DROP TABLE CommErrorHistory;
 /* End YUK-12387 */
 
+/* Start YUK-12464 */
+ALTER TABLE ApplianceCategory
+ADD AverageLoad VARCHAR2(32);
+/* End YUK-12464 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

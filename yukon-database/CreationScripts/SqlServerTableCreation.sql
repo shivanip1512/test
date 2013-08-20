@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     8/20/2013 5:36:51 PM                         */
+/* Created on:     8/20/2013 6:01:01 PM                         */
 /*==============================================================*/
 
 
@@ -277,6 +277,7 @@ create table ApplianceCategory (
    CategoryID           numeric              null,
    WebConfigurationID   numeric              null,
    ConsumerSelectable   char(1)              not null,
+   AverageLoad          varchar(32)          null,
    constraint PK_APPLIANCECATEGORY primary key (ApplianceCategoryID)
 )
 go

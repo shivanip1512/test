@@ -114,6 +114,12 @@ DROP TABLE CommErrorHistory;
 GO
 /* End YUK-12387 */
 
+/* Start YUK-12464 */
+ALTER TABLE ApplianceCategory
+ADD AverageLoad VARCHAR(32);
+GO
+/* End YUK-12464 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
