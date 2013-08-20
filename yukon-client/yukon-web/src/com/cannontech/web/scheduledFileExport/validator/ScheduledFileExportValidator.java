@@ -15,23 +15,30 @@ import com.cannontech.web.util.WebFileUtils;
 
 public class ScheduledFileExportValidator extends SimpleValidator<ScheduledFileExportData>{
 
-    private boolean daysPreviousRequired;
+    private String source;
     
 	public ScheduledFileExportValidator() {
 		super(ScheduledFileExportData.class);
-		daysPreviousRequired = false;
+		source = null;
 	}
 	
-	public ScheduledFileExportValidator(boolean daysPreviousRequired) {
+	public ScheduledFileExportValidator(Class<?> c) {
         super(ScheduledFileExportData.class);
-        this.daysPreviousRequired = daysPreviousRequired;
+        source = c.getSimpleName();
     }
 	
 	@Override
 	protected void doValidation(ScheduledFileExportData target, Errors errors) {
 	    
-	    if (this.daysPreviousRequired) {
-	        YukonValidationUtils.checkIsPositiveInt(errors, "daysPrevious", target.getDaysPrevious());
+	    switch (this.source) {
+	        case "MeterEventsReportController":
+	            YukonValidationUtils.checkIsPositiveInt(errors, "daysPrevious", target.getDaysPrevious());
+	            break;
+	        case "WaterLeakReportController":
+	            YukonValidationUtils.checkIsPositiveInt(errors, "hoursPrevious", target.getHoursPrevious());
+	            YukonValidationUtils.checkIsPositiveDouble(errors, "threshold", target.getThreshold());
+                YukonValidationUtils.checkRange(errors, "hoursPrevious", target.getHoursPrevious(), 1, Integer.MAX_VALUE, true);
+	            break;
 	    }
 	    
 		YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "scheduleName", "yukon.web.modules.amr.billing.schedule.validation.invalidName");

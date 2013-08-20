@@ -250,7 +250,7 @@ public class MeterEventsReportController {
     	
     	exportData.setScheduleCronString(scheduleCronString);
     	
-    	scheduledFileExportValidator = new ScheduledFileExportValidator(true);
+    	scheduledFileExportValidator = new ScheduledFileExportValidator(this.getClass());
     	scheduledFileExportValidator.validate(exportData, bindingResult);
     	if(bindingResult.hasErrors()) {
     		//send it back

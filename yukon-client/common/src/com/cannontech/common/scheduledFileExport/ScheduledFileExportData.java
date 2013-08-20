@@ -13,7 +13,9 @@ import com.google.common.collect.Lists;
  * ExportFileGenerationParameters.
  */
 public class ScheduledFileExportData {
-    private int daysPrevious;
+    private Integer daysPrevious;
+    private Integer hoursPrevious;
+    private Double threshold;
     private String scheduleName;
 	private String scheduleCronString;
 	private ExportFileGenerationParameters parameters;
@@ -115,6 +117,22 @@ public class ScheduledFileExportData {
 
     public void setDaysPrevious(Integer daysPrevious) {
         this.daysPrevious = daysPrevious;
+    }
+
+    public Integer getHoursPrevious() {
+        return hoursPrevious;
+    }
+
+    public void setHoursPrevious(Integer hoursPrevious) {
+        this.hoursPrevious = hoursPrevious;
+    }
+
+    public Double getThreshold() {
+        return threshold;
+    }
+
+    public void setThreshold(Double threshold) {
+        this.threshold = threshold;
     }
 
     public void setScheduleName(String scheduleName) {

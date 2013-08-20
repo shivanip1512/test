@@ -52,11 +52,17 @@ public class YukonValidationUtils extends ValidationUtils {
         }
     }
 
-   public static void checkIsPositiveInt(Errors errors, String field, Integer fieldValue) {
-       if (fieldValue == null || fieldValue < 0) {
-           errors.rejectValue(field, "yukon.web.error.isNotPositiveInt");
-       }
-   }
+    public static void checkIsPositiveInt(Errors errors, String field, Integer fieldValue) {
+        if (fieldValue == null || fieldValue < 0) {
+            errors.rejectValue(field, "yukon.web.error.isNotPositiveInt");
+        }
+    }
+    
+    public static void checkIsPositiveDouble(Errors errors, String field, Double fieldValue) {
+        if (fieldValue == null || fieldValue < 0) {
+            errors.rejectValue(field, "yukon.web.error.isNotPositive");
+        }
+    }
    
     /**
      * Check to ensure that the given value is between the given min and max value. While this will

@@ -131,7 +131,7 @@ public class ScheduledBillingFileExportController {
 		BillingFileExportGenerationParameters billingParameters = new BillingFileExportGenerationParameters(fileFormat, fullDeviceGroups, demandDays, energyDays, removeMultiplier);
 		exportData.setParameters(billingParameters);
 
-		scheduledFileExportValidator = new ScheduledFileExportValidator(false);
+		scheduledFileExportValidator = new ScheduledFileExportValidator(this.getClass());
 		scheduledFileExportValidator.validate(exportData, bindingResult);
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(userContext);
 		if(bindingResult.hasErrors()) {

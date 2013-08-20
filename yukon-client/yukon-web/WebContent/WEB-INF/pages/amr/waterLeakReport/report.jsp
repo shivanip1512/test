@@ -86,12 +86,8 @@
 					<c:if test="${not empty jobId}">
 						<input type="hidden" name="jobId" value="${jobId}" id="jobId">
 					</c:if>
-					<tags:nameValue2 nameKey=".schedule.hoursPrevious">
-						<input type="text" name="hoursPrevious" value="${not empty hoursPrevious ? hoursPrevious : '25' }" size="3">
-					</tags:nameValue2>
-					<tags:nameValue2 nameKey=".filter.threshold">
-						<input type="text" name="threshold" value="${backingBean.threshold}" size="3">
-					</tags:nameValue2>
+					<tags:inputNameValue nameKey=".schedule.hoursPrevious" path="hoursPrevious" size="3"/>
+					<tags:inputNameValue nameKey=".filter.threshold" path="threshold" size="3"/>
 					<tags:nameValue2 nameKey=".filter.includeDisabledDevices">
 						<input type="checkbox" name="includeDisabledPaos" ${backingBean.includeDisabledPaos ? "checked" : ""}>
 					</tags:nameValue2>

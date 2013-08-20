@@ -551,7 +551,7 @@ public class ArchivedValuesExporterController {
     	exportData.setScheduleCronString(scheduleCronString);
     	exportData.setParameters(parameters);
     	
-    	scheduledFileExportValidator = new ScheduledFileExportValidator(false);
+    	scheduledFileExportValidator = new ScheduledFileExportValidator(this.getClass());
     	scheduledFileExportValidator.validate(exportData, bindingResult);
 		if(bindingResult.hasErrors()) {
 			List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);

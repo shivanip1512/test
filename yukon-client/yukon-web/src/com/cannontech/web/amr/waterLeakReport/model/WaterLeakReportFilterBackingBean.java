@@ -16,8 +16,9 @@ public class WaterLeakReportFilterBackingBean extends ListBackingBean {
     private DeviceCollection deviceCollection;
     private Instant fromInstant;
     private Instant toInstant;
-    private double threshold = 0.0;
+    private Double threshold = 0.0;
     private boolean includeDisabledPaos;
+    
     {
         fromInstant = new Instant().minus(Duration.standardHours(DEFAULT_FROM_HOURS));
         toInstant = new Instant().minus(Duration.standardHours(DEFAULT_TO_HOURS));

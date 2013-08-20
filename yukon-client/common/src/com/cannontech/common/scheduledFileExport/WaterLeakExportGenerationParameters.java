@@ -38,7 +38,7 @@ public class WaterLeakExportGenerationParameters implements ExportFileGeneration
 	
 	@Override
 	public String toString() {
-		return "[DaysPrevious: " + hoursPrevious 
+		return "[HoursPrevious: " + hoursPrevious 
 				+ ", Threshold: " + threshold 
 				+ ", IncludeDisabledPaos: " + includeDisabledPaos 
 				+ ", DeviceCollection: " + deviceCollection.getDescription()

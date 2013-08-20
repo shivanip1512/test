@@ -240,8 +240,6 @@ public class WaterLeakReportController {
     @RequestMapping(method = RequestMethod.GET)
     public String schedule(@ModelAttribute("fileExportData") ScheduledFileExportData scheduledFileExportData,
     		BindingResult bindingResult, 
-    		@RequestParam(defaultValue="25") Integer hoursPrevious, 
-    		@RequestParam(defaultValue="0.0") Double threshold, 
     		@RequestParam(defaultValue="false") Boolean includeDisabledPaos,
     		String collectionType, Integer jobId, YukonUserContext userContext, HttpServletRequest request, 
     		ModelMap model, FlashScope flashScope) throws ServletRequestBindingException, ParseException {
@@ -250,35 +248,32 @@ public class WaterLeakReportController {
         
         String scheduleCronString = cronExpressionTagService.build("scheduleCronString", request, userContext);
     	scheduledFileExportData.setScheduleCronString(scheduleCronString);
-        
-    	scheduledFileExportValidator = new ScheduledFileExportValidator(false);
+
+    	scheduledFileExportValidator = new ScheduledFileExportValidator(this.getClass());
     	scheduledFileExportValidator.validate(scheduledFileExportData, bindingResult);
-    	YukonValidationUtils.checkRange(bindingResult, "threshold", threshold, 0.0, Double.MAX_VALUE, true);
-        //YukonValidationUtils.checkRange(bindingResult, "hoursPrevious", hoursPrevious, 1, Integer.MAX_VALUE, true);
+    	
         if(bindingResult.hasErrors()) {
 			//send it back
         	List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
             model.addAttribute("hasScheduleError", true);
             if(jobId != null) model.addAttribute("jobId", jobId);
-            model.addAttribute("threshold", threshold);
-            model.addAttribute("hoursPrevious", hoursPrevious);
             model.addAttribute("includeDisabledPaos", includeDisabledPaos);
             model.addAttribute("fileExportData", scheduledFileExportData);
             model.addAttribute("cronExpressionTagState", cronExpressionTagService.parse(scheduleCronString, userContext));
             model.addAttribute("fileExtensionChoices", exportHelper.setupFileExtChoices(scheduledFileExportData));
             model.addAttribute("exportPathChoices", exportHelper.setupExportPathChoices(scheduledFileExportData));
             WaterLeakReportFilterBackingBean backingBean = new WaterLeakReportFilterBackingBean();
-            backingBean.setThreshold(threshold);
             backingBean.setIncludeDisabledPaos(includeDisabledPaos);
-            backingBean.setFromInstant(backingBean.getToInstant().minus(Duration.standardHours(hoursPrevious)));
             backingBean.setDeviceCollection(deviceCollection);
             model.addAttribute("backingBean", backingBean);
             setupWaterLeakReportFromFilter(null, backingBean, userContext, model);
             return "waterLeakReport/report.jsp";
 		}
     	
-        WaterLeakExportGenerationParameters parameters = new WaterLeakExportGenerationParameters(deviceCollection, hoursPrevious, threshold, includeDisabledPaos);
+        WaterLeakExportGenerationParameters parameters = 
+                new WaterLeakExportGenerationParameters(deviceCollection, scheduledFileExportData.getHoursPrevious(), 
+                    scheduledFileExportData.getThreshold(), includeDisabledPaos);
         scheduledFileExportData.setParameters(parameters);
         
 		if(jobId == null) {
