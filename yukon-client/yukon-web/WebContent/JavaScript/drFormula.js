@@ -139,7 +139,6 @@ Yukon.DrFormula = (function() {
         $newRow.find(".f-appendTableId").each(function () {
             this.id = this.id + _rowIndex;
         });
-        console.log("rowIndex: " + _rowIndex + "  size: " +  $newRow.find(".f-appendTableIdData").size());
         $newRow.find(".f-appendTableIdData").each(function () {
             jQuery(this).data("table-id", _rowIndex);
         });
@@ -153,7 +152,6 @@ Yukon.DrFormula = (function() {
         var tableId = jQuery(this).data("table-id");
         var entryId = jQuery(this).data("entry-id-next");
         var isTimeInput = jQuery("#formulaInputSelect_" + tableId).val() === 'TIME';
-        console.log("_addTableEntryBtnClick   tableId: " + tableId + "  entryId: " + entryId);
         jQuery("#noEntriesMessage_" + tableId).hide();
 
         var $newRow;
