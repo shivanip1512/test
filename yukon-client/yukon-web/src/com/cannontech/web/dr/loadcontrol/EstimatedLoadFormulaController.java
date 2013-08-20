@@ -44,7 +44,7 @@ public class EstimatedLoadFormulaController {
 
     @Autowired private FormulaDao formulaDao;
     @Autowired private LMGearDaoImpl gearDao;
-    @Autowired ApplianceCategoryDao applianceCategoryDao;
+    @Autowired private ApplianceCategoryDao applianceCategoryDao;
     @Autowired private PointDao pointDao;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
 
