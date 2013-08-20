@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/20/2013 12:40:29 PM                        */
+/* Created on:     8/20/2013 5:38:43 PM                         */
 /*==============================================================*/
 
 
@@ -1367,22 +1367,6 @@ create table CarrierRoute  (
    UserLocked           CHAR(1)                         not null,
    ResetRptSettings     CHAR(1)                         not null,
    constraint PK_CARRIERROUTE primary key (ROUTEID)
-);
-
-/*==============================================================*/
-/* Table: CommErrorHistory                                      */
-/*==============================================================*/
-create table CommErrorHistory  (
-   CommErrorID          NUMBER                          not null,
-   PAObjectID           NUMBER                          not null,
-   DateTime             DATE                            not null,
-   SOE_Tag              NUMBER                          not null,
-   ErrorType            NUMBER                          not null,
-   ErrorNumber          NUMBER                          not null,
-   Command              VARCHAR2(50)                    not null,
-   OutMessage           VARCHAR2(160)                   not null,
-   InMessage            VARCHAR2(160)                   not null,
-   constraint PK_COMMERRORHISTORY primary key (CommErrorID)
 );
 
 /*==============================================================*/
@@ -10491,10 +10475,6 @@ alter table CapControlFeeder
 alter table CarrierRoute
    add constraint SYS_C0013264 foreign key (ROUTEID)
       references Route (RouteID);
-
-alter table CommErrorHistory
-   add constraint FK_ComErrHis_YPAO foreign key (PAObjectID)
-      references YukonPAObject (PAObjectID);
 
 alter table CommPort
    add constraint FK_COMMPORT_REF_COMPO_YUKONPAO foreign key (PORTID)

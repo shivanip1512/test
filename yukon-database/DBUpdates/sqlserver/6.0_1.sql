@@ -109,6 +109,11 @@ sp_rename 'DeviceConfigCategoryItem.DeviceConfigurationItemId', 'DeviceConfigCat
 GO
 /* End YUK-12406 */
 
+/* Start YUK-12387 */
+DROP TABLE CommErrorHistory;
+GO
+/* End YUK-12387 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

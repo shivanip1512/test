@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     8/20/2013 12:42:03 PM                        */
+/* Created on:     8/20/2013 5:36:51 PM                         */
 /*==============================================================*/
 
 
@@ -1470,23 +1470,6 @@ create table CarrierRoute (
    UserLocked           char(1)              not null,
    ResetRptSettings     char(1)              not null,
    constraint PK_CARRIERROUTE primary key (ROUTEID)
-)
-go
-
-/*==============================================================*/
-/* Table: CommErrorHistory                                      */
-/*==============================================================*/
-create table CommErrorHistory (
-   CommErrorID          numeric              not null,
-   PAObjectID           numeric              not null,
-   DateTime             datetime             not null,
-   SOE_Tag              numeric              not null,
-   ErrorType            numeric              not null,
-   ErrorNumber          numeric              not null,
-   Command              varchar(50)          not null,
-   OutMessage           varchar(160)         not null,
-   InMessage            varchar(160)         not null,
-   constraint PK_COMMERRORHISTORY primary key (CommErrorID)
 )
 go
 
@@ -11194,11 +11177,6 @@ go
 alter table CarrierRoute
    add constraint SYS_C0013264 foreign key (ROUTEID)
       references Route (RouteID)
-go
-
-alter table CommErrorHistory
-   add constraint FK_ComErrHis_YPAO foreign key (PAObjectID)
-      references YukonPAObject (PAObjectID)
 go
 
 alter table CommPort
