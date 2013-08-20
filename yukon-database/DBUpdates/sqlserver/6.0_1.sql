@@ -98,6 +98,12 @@ ALTER TABLE EstimatedLoadFormulaAssignment
          ON DELETE CASCADE;
 /* End YUK-12437 */
 
+/* Start YUK-12405 */
+ALTER TABLE DeviceConfiguration 
+    ADD CONSTRAINT AK_DeviceConfig_Name UNIQUE (Name);
+GO
+/* End YUK-12405 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
