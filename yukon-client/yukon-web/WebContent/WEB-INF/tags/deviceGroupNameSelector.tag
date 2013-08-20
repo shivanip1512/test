@@ -1,10 +1,11 @@
-<%@ attribute name="noGroupSelectedText" required="false" type="java.lang.String"%>
-<%@ attribute name="fieldName" required="true" type="java.lang.String"%>
-<%@ attribute name="fieldValue" required="false" type="java.lang.String"%>
-<%@ attribute name="dataJson" required="true" type="java.lang.String"%>
-<%@ attribute name="linkGroupName" required="false" type="java.lang.String"%> <%-- will make the group name a link that when clicked bring you to group editor for group --%>
-<%@ attribute name="showSelectedDevicesIcon" required="false" type="java.lang.String"%> <%-- will make the group name a link that when clicked bring you to group editor for group --%>
-<%@ attribute name="submitCallback" required="false" type="java.lang.String"%> <%-- optional additional function to call when group is picked --%>
+<%@ attribute name="noGroupSelectedText" required="false"%>
+<%@ attribute name="fieldId" required="false" description="If not supplied, the fieldName will be used" %>
+<%@ attribute name="fieldName" required="true"%>
+<%@ attribute name="fieldValue" required="false"%>
+<%@ attribute name="dataJson" required="true"%>
+<%@ attribute name="linkGroupName" required="false" description="will make the group name a link that when clicked bring you to group editor for group"%>
+<%@ attribute name="showSelectedDevicesIcon" required="false" description="will make the group name a link that when clicked bring you to group editor for group"%>
+<%@ attribute name="submitCallback" required="false" description="optional additional function to call when group is picked" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
@@ -30,6 +31,8 @@
 <c:if test="${empty pageScope.showSelectedDevicesIcon}">
 	<c:set var="showSelectedDevicesIcon" value="true"/>
 </c:if>
+
+<cti:default var="fieldId" value="${fieldName}"/>
 
 <script>
     jQuery(document).on('click', '#viewSelectedDevices_${uniqueId}', function() {
@@ -109,7 +112,7 @@
 <cti:msg2 var="cancelButtonText" key="yukon.web.deviceGroups.deviceGroupPicker.cancelButton"/>
 <cti:msg2 var="selectButtonText" key="yukon.web.deviceGroups.deviceGroupPicker.selectButton"/>
 <cti:msg2 var="pickerTitleText" key="yukon.web.deviceGroups.deviceGroupPicker.title"/>
-<jsTree:nodeValueSelectingPopupTree fieldId="${fieldName}"
+<jsTree:nodeValueSelectingPopupTree fieldId="${fieldId}"
                                 fieldName="${fieldName}"
                                 fieldValue="${pageScope.fieldValue}"
                                 nodeValueName="groupName"

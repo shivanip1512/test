@@ -46,7 +46,7 @@
 						<tags:nameValueContainer2>
 							<tags:nameValue2 nameKey=".deviceGroup">
 								<cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="groupDataJson" />
-								<tags:deviceGroupNameSelector fieldName="group.name"
+								<tags:deviceGroupNameSelector fieldName="group.name" fieldId="group.name_${uniqueId}"
 									fieldValue="${deviceCollection.collectionParameters['group.name']}"
 									dataJson="${groupDataJson}" linkGroupName="false"
 									submitCallback="Yukon.WaterLeakReport.filter_group_selected_callback();"/>
