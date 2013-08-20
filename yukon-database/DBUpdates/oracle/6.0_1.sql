@@ -102,6 +102,11 @@ ALTER TABLE DeviceConfiguration
     ADD CONSTRAINT AK_DeviceConfig_Name UNIQUE (Name);
 /* End YUK-12405 */
 
+/* Start YUK-12406 */
+ALTER TABLE DeviceConfigCategoryItem
+RENAME COLUMN DeviceConfigurationItemId TO DeviceConfigCategoryItemId;
+/* End YUK-12406 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

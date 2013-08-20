@@ -104,6 +104,11 @@ ALTER TABLE DeviceConfiguration
 GO
 /* End YUK-12405 */
 
+/* Start YUK-12406 */
+sp_rename 'DeviceConfigCategoryItem.DeviceConfigurationItemId', 'DeviceConfigCategoryItemId', 'COLUMN';
+GO
+/* End YUK-12406 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

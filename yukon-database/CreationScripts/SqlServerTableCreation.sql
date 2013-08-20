@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     8/20/2013 12:03:18 PM                        */
+/* Created on:     8/20/2013 12:42:03 PM                        */
 /*==============================================================*/
 
 
@@ -2884,11 +2884,11 @@ go
 /* Table: DeviceConfigCategoryItem                              */
 /*==============================================================*/
 create table DeviceConfigCategoryItem (
-   DeviceConfigurationItemId numeric              not null,
+   DeviceConfigCategoryItemId numeric              not null,
    DeviceConfigCategoryId numeric              null,
    ItemName             varchar(60)          not null,
    ItemValue            varchar(60)          not null,
-   constraint PK_DeviceConfigCategoryItem primary key (DeviceConfigurationItemId)
+   constraint PK_DeviceConfigCategoryItem primary key (DeviceConfigCategoryItemId)
 )
 go
 

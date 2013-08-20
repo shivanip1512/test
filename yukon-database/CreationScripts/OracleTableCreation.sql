@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/20/2013 12:05:40 PM                        */
+/* Created on:     8/20/2013 12:40:29 PM                        */
 /*==============================================================*/
 
 
@@ -2710,11 +2710,11 @@ alter table DeviceConfigCategory
 /* Table: DeviceConfigCategoryItem                              */
 /*==============================================================*/
 create table DeviceConfigCategoryItem  (
-   DeviceConfigurationItemId NUMBER                          not null,
+   DeviceConfigCategoryItemId NUMBER                          not null,
    DeviceConfigCategoryId NUMBER,
    ItemName             VARCHAR2(60)                    not null,
    ItemValue            VARCHAR2(60)                    not null,
-   constraint PK_DeviceConfigCategoryItem primary key (DeviceConfigurationItemId)
+   constraint PK_DeviceConfigCategoryItem primary key (DeviceConfigCategoryItemId)
 );
 
 INSERT INTO DeviceConfigCategoryItem VALUES (0, 0, 'internalRetries', 2);
