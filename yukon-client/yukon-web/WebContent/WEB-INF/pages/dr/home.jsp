@@ -90,6 +90,7 @@
                     </div>
                     <div class="column two nogutter">
                         <a href="/dr/formula/list" class="clearfix dib"><span class="fl"><i:inline key=".loadFormulas"/></span></a>
+                        <a href="/dr/formula/assignments" class="clearfix dib"><span class="fl"><i:inline key=".assignments"/></span></a>
                     </div>
                 </div>
             </tags:boxContainer2>

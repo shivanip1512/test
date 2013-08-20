@@ -10,6 +10,7 @@
 
 <input id="formulaRowIndex" type="hidden" value="${fn:length(formulaBean.functions)}"/>
 
+<c:set var="formulaId" value="${formulaBean.formulaId}"/>
 <form:form id="formulaForm" commandName="formulaBean" action="../edit/${formulaBean.formulaId}">
     <div class="column_12_12 clearfix">
         <div class="column one">
@@ -27,8 +28,56 @@
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
             </tags:formElementContainer>
-        </div><div class="column two nogutter"></div>
+        </div>
+
+        <div class="column two nogutter">
+            <tags:formElementContainer nameKey="assignments">
+                <div id="assignments" class="scrollingContainer_medium" style="${empty formulaBean.assignments ? 'display:none':''}">
+                    <c:if test="${formulaBean.formulaType eq 'APPLIANCE_CATEGORY'}">
+                        <div class="column_8_8_8">
+                            <div class="column one"><h4><i:inline key=".name"/></h4></div>
+                            <div class="column two"><h4><i:inline key=".appCatId"/></h4></div>
+                            <div class="column three nogutter"><h4><i:inline key=".appCatType"/></h4></div>
+                        </div>
+                        <c:forEach var="rowIndex" items="${formulaBean.assignments}">
+                            <%@ include file="appCategoryAssignmentRow.jspf" %>
+                        </c:forEach>
+                    </c:if>
+                    <c:if test="${formulaBean.formulaType eq 'GEAR'}">
+                        <div class="column_8_8_8">
+                            <div class="column one"><h4><i:inline key=".name"/></h4></div>
+                            <div class="column two"><h4><i:inline key=".gearId"/></h4></div>
+                            <div class="column three nogutter"><h4><i:inline key=".gearControlMethod"/></h4></div>
+                        </div>
+                        <c:forEach var="rowIndex" items="${formulaBean.assignments}">
+                            <%@ include file="gearAssignmentRow.jspf" %>
+                        </c:forEach>
+                    </c:if>
+                </div>
+               <c:if test="${empty formulaBean.assignments}">
+                   <span id="noAssignments" class="empty-list"><i:inline key=".noAssignments"/></span>
+               </c:if>
+               <cti:displayForPageEditModes modes="EDIT">
+                       <div class="actionArea">
+                          <c:if test="${formulaBean.formulaType eq 'APPLIANCE_CATEGORY'}">
+                               <tags:pickerDialog
+                                   id="unassignedApplianceCategoryPicker" type="unassignedApplianceCategoryPicker"
+                                   linkType="button" nameKey="assignAppCat" multiSelectMode="true" icon="icon-plus-green"
+                                   endAction="unassignedAppCatPickerClose"/>
+                           </c:if>
+                          <c:if test="${formulaBean.formulaType eq 'GEAR'}">
+                              <tags:pickerDialog
+                                  id="unassignedGearPicker" type="unassignedGearPicker"
+                                  linkType="button" nameKey="assignGear" multiSelectMode="true" icon="icon-plus-green"
+                                  endAction="unassignedGearPickerClose"/>
+                          </c:if>
+                       </div>
+                </cti:displayForPageEditModes>
+            </tags:formElementContainer>
+        </div>
     </div>
+    
+    
     <tags:sectionContainer2 nameKey="functions">
         <div class="setting">
             <tags:nameValueStacked nameKey=".functionIntercept">
@@ -39,7 +88,7 @@
             <c:forEach var="func" items="${formulaBean.functions}" varStatus="loop">
             <div class="setting f-removeable f-function">
                 <input type="hidden" name="functions[${loop.index}].formulaId" value="${formulaBean.formulaId}"/>
-                <input type='hidden' id="functionsPointId_${loop.index}" name="functions[${loop.index}].inputPointId"
+                <input type='hidden' id="inputPointId_${loop.index}" name="functions[${loop.index}].inputPointId"
                     value="${formulaBean.functions[loop.index].inputPointId}"/>
                 <div class="column_8_8_8 clearfix">
                     <div class="column one">
@@ -49,19 +98,19 @@
                         <tags:nameValueStacked nameKey=".input">
                             <cti:displayForPageEditModes modes="EDIT">
                             <tags:selectWithItems id="formulaInputSelect_${loop.index}" items="${formulaInputs}" path="functions[${loop.index}].inputType" inputClass="f-formulaInputSelect"/>
-	                            <div id="formulaPointPicker_${loop.index}" style="${formulaBean.functions[loop.index].inputType ne 'POINT' ? 'display:none' : ''}">
-	                                <button id="formulaPointPickerBtn_${loop.index}" role="button" type="button" class="button naked f-pointPicker">
-	                                    <span id="formulaPointPickerLbl_${loop.index}" class="label">
-	                                       <c:if test="${formulaBean.functions[loop.index].inputType eq 'POINT'}">
-	                                           ${pointNames[formulaBean.functions[loop.index].inputPointId]}
+                                <div id="formulaPointPicker_${loop.index}" style="${formulaBean.functions[loop.index].inputType ne 'POINT' ? 'display:none' : ''}">
+                                    <button id="formulaPointPickerBtn_${loop.index}" role="button" type="button" class="button naked f-pointPicker">
+                                        <span id="formulaPointPickerLbl_${loop.index}" class="label">
+                                           <c:if test="${formulaBean.functions[loop.index].inputType eq 'POINT'}">
+                                               ${pointNames[formulaBean.functions[loop.index].inputPointId]}
                                            </c:if>
                                            <c:if test="${formulaBean.functions[loop.index].inputType ne 'POINT'}">
                                             <i:inline key=".noPointSelected"/>
                                            </c:if>
-	                                    </span>
-	                                    <i class="icon icon-database-add"></i>
-	                                </button>
-	                            </div>
+                                        </span>
+                                        <i class="icon icon-database-add"></i>
+                                    </button>
+                                </div>
                             </cti:displayForPageEditModes>
                             <cti:displayForPageEditModes modes="VIEW">
                                 <i:inline key="${formulaBean.functions[loop.index].inputType}"/>
@@ -113,6 +162,14 @@
 
 <cti:displayForPageEditModes modes="EDIT">
 
+    <c:set var="rowIndex" value="-1"/>
+    <c:if test="${formulaBean.formulaType eq 'GEAR'}">
+        <%@ include file="gearAssignmentRow.jspf" %>
+    </c:if>
+    <c:if test="${formulaBean.formulaType eq 'APPLIANCE_CATEGORY'}">
+        <%@ include file="appCategoryAssignmentRow.jspf" %>
+    </c:if>
+
     <!-- all 'pickers' on this page use this picker -->
     <div style="display:none"><tags:pickerDialog
           id="pointPicker"
@@ -132,7 +189,7 @@
                 <tags:nameValueStacked nameKey=".input">
                     <tags:selectWithItems items="${formulaInputs}" path="dummyFunctionBean.inputType" inputClass="f-formulaInputSelect f-appendTableId"/>
                     <div id="formulaPointPicker_" style="display:none" class="f-appendTableId">
-                        <button id="formulaPointPickerBtn_" role="button" type="button" class="button naked  f-pointPicker f-appendTableId">
+                        <button id="formulaPointPickerBtn_" role="button" type="button" class="button naked f-pointPicker f-appendTableId">
                             <span id="formulaPointPickerLbl_" class="label f-appendTableId"><i:inline key=".noPointSelected"/></span>
                             <i class="icon icon-database-add"></i>
                         </button>

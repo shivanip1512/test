@@ -19,6 +19,7 @@ import com.cannontech.common.util.SqlFragment;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.FieldMapper;
+import com.cannontech.database.RowMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -53,7 +54,7 @@ public class FormulaDaoImpl implements FormulaDao {
     private static final String functionTableName = "EstimatedLoadFunction";
     private static final String lookupTableName = "EstimatedLoadLookupTable";
     private static final String tableEntryTableName = "EstimatedLoadTableEntry";
-    //private static final String assignmentTableName = "EstimatedLoadFormulaAssignment";
+    private static final String assignmentTableName = "EstimatedLoadFormulaAssignment";
 
     @Override
     public List<Formula> getAllFormulas() {
@@ -410,7 +411,7 @@ public class FormulaDaoImpl implements FormulaDao {
                     rs.getDouble("Quadratic"), 
                     rs.getDouble("Linear")));
         }
-    };
+    }
 
     private static class LookupTableRowHandler implements YukonRowCallbackHandler {
         Multimap<Integer, FormulaLookupTable<Double>> lookupTablesByFormulaId = HashMultimap.create();
@@ -434,7 +435,7 @@ public class FormulaDaoImpl implements FormulaDao {
                     typeConverter.setAsText(entry.getKey());
                     entries.put((LocalTime) typeConverter.getValue(), entry.getValue());
                 }
-                FormulaLookupTable<LocalTime> table = new FormulaLookupTable<LocalTime>(
+                FormulaLookupTable<LocalTime> table = new FormulaLookupTable<>(
                         tableId,
                         formulaId,
                         rs.getString("Name"),
@@ -447,7 +448,7 @@ public class FormulaDaoImpl implements FormulaDao {
                     typeConverter.setAsText(entry.getKey());
                     entries.put((Double) typeConverter.getValue(), entry.getValue());
                 }
-                FormulaLookupTable<Double> table = new FormulaLookupTable<Double>(
+                FormulaLookupTable<Double> table = new FormulaLookupTable<>(
                         tableId,
                         formulaId,
                         rs.getString("Name"),
@@ -481,7 +482,7 @@ public class FormulaDaoImpl implements FormulaDao {
         typeConverter.setAsText(rs.getString("InputMax"));
         Object inputMax = typeConverter.getValue();
 
-        return new FormulaInput<Object>(inputType, inputMin, inputMax, rs.getNullableInt("InputPointId"));
+        return new FormulaInput<>(inputType, inputMin, inputMax, rs.getNullableInt("InputPointId"));
     }
 
     // Setting up SimpleTableAccessTemplate objects.
@@ -502,5 +503,65 @@ public class FormulaDaoImpl implements FormulaDao {
                 .setFieldMapper(lookupTableFieldMapper)
                 .setPrimaryKeyField("EstimatedLoadLookupTableId")
                 .setPrimaryKeyValidOver(0);
+    }
+
+    @Override
+    public void saveAppCategoryAssignmentsForId(int formulaId, List<Integer> appCategoryAssignments) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM EstimatedLoadFormulaAssignment");
+        sql.append("WHERE FormulaId ").eq(formulaId);
+        yukonJdbcTemplate.update(sql);
+
+        for (Integer assignId : appCategoryAssignments) {
+            sql = new SqlStatementBuilder();
+            sql.append("INSERT INTO EstimatedLoadFormulaAssignment");
+            sql.append("(FormulaAssignmentId, FormulaId, ApplianceCategoryId)");
+            sql.values(nextValueHelper.getNextValue("EstimatedLoadFormulaAssignment"),formulaId, assignId);
+
+            yukonJdbcTemplate.update(sql);
+        }
+    }
+
+    @Override
+    public List<Integer> getAppCategoryAssignmentsById(int formulaId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+
+        sql.append("SELECT ApplianceCategoryId FROM").append(assignmentTableName);
+        sql.append("WHERE FormulaId").eq(formulaId);
+        sql.append("AND ApplianceCategoryId IS NOT NULL");
+
+        List<Integer> applianceCategoryIds = yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
+
+        return applianceCategoryIds;
+    }
+
+    @Override
+    public void saveGearAssignmentsForId(int formulaId, List<Integer> gearIds) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM").append(assignmentTableName);
+        sql.append("WHERE FormulaId ").eq(formulaId);
+        yukonJdbcTemplate.update(sql);
+
+        for (Integer assignId : gearIds) {
+            sql = new SqlStatementBuilder();
+            sql.append("INSERT INTO").append(assignmentTableName);
+            sql.append("(FormulaAssignmentId, FormulaId, GearId)");
+            sql.values(nextValueHelper.getNextValue("EstimatedLoadFormulaAssignment"),formulaId, assignId);
+
+            yukonJdbcTemplate.update(sql);
+        }
+    }
+
+    @Override
+    public List<Integer> getGearAssignmentsById(int formulaId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+
+        sql.append("SELECT GearId FROM").append(assignmentTableName);
+        sql.append("WHERE FormulaId").eq(formulaId);
+        sql.append("AND GearId IS NOT NULL");
+
+        List<Integer> gearIds = yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
+
+        return gearIds;
     }
 }

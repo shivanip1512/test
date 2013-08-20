@@ -27,7 +27,52 @@
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
             </tags:formElementContainer>
-        </div><div class="column two nogutter"></div>
+        </div>
+        <div class="column two nogutter">
+            <tags:formElementContainer nameKey="assignments">
+                <div id="assignments" class="scrollingContainer_medium" style="${empty formulaBean.assignments ? 'display:none':''}">
+                    <c:if test="${formulaBean.formulaType eq 'APPLIANCE_CATEGORY'}">
+                        <div class="column_8_8_8">
+                            <div class="column one"><h4><i:inline key=".name"/></h4></div>
+                            <div class="column two"><h4><i:inline key=".appCatId"/></h4></div>
+                            <div class="column three nogutter"><h4><i:inline key=".appCatType"/></h4></div>
+                        </div>
+                        <c:forEach var="rowIndex" items="${formulaBean.assignments}">
+                            <%@ include file="appCategoryAssignmentRow.jspf" %>
+                        </c:forEach>
+                    </c:if>
+                    <c:if test="${formulaBean.formulaType eq 'GEAR'}">
+                        <div class="column_8_8_8">
+                            <div class="column one"><h4><i:inline key=".name"/></h4></div>
+                            <div class="column two"><h4><i:inline key=".gearId"/></h4></div>
+                            <div class="column three nogutter"><h4><i:inline key=".gearControlMethod"/></h4></div>
+                        </div>
+                        <c:forEach var="rowIndex" items="${formulaBean.assignments}">
+                            <%@ include file="gearAssignmentRow.jspf" %>
+                        </c:forEach>
+                    </c:if>
+                </div>
+               <c:if test="${empty formulaBean.assignments}">
+                   <span id="noAssignments" class="empty-list"><i:inline key=".noAssignments"/></span>
+               </c:if>
+               <cti:displayForPageEditModes modes="EDIT">
+                       <div class="actionArea">
+                          <c:if test="${formulaBean.formulaType eq 'APPLIANCE_CATEGORY'}">
+                               <tags:pickerDialog
+                                   id="unassignedApplianceCategoryPicker" type="unassignedApplianceCategoryPicker"
+                                   linkType="button" nameKey="assignAppCat" multiSelectMode="true" icon="icon-plus-green"
+                                   endAction="unassignedAppCatPickerClose"/>
+                           </c:if>
+                          <c:if test="${formulaBean.formulaType eq 'GEAR'}">
+                              <tags:pickerDialog
+                                  id="unassignedGearPicker" type="unassignedGearPicker"
+                                  linkType="button" nameKey="assignGear" multiSelectMode="true" icon="icon-plus-green"
+                                  endAction="unassignedGearPickerClose"/>
+                          </c:if>
+                       </div>
+                </cti:displayForPageEditModes>
+            </tags:formElementContainer>
+        </div>
     </div>
     <tags:sectionContainer2 nameKey="lookupTables" id="formulaTables">
         <c:forEach var="table" items="${formulaBean.tables}" varStatus="tableLoop">
@@ -49,17 +94,17 @@
                                 <tags:selectWithItems id="formulaInputSelect_${tableLoop.index}" disabled="${formulaBean.tables[tableLoop.index].numberOfEntries > 0}"
                                     inputClass="f-formulaInputSelect" items="${formulaInputs}" path="tables[${tableLoop.index}].inputType"/>
                                     <div id="formulaPointPicker_${tableLoop.index}" style="${formulaBean.tables[tableLoop.index].inputType ne 'POINT' ? 'display:none' : ''}">
-	                                    <button id="formulaPointPickerBtn_${tableLoop.index}" role="button" type="button" class="button naked f-pointPicker">
-	                                        <span id="formulaPointPickerLbl_${tableLoop.index}" class="label">
-	                                           <c:if test="${formulaBean.tables[tableLoop.index].inputType eq 'POINT'}">
-	                                               ${pointNames[formulaBean.tables[tableLoop.index].inputPointId]}
-	                                           </c:if>
-	                                           <c:if test="${formulaBean.tables[tableLoop.index].inputType ne 'POINT'}">
-	                                               <i:inline key=".noPointSelected"/>
-	                                           </c:if>
-	                                        </span>
-	                                        <i class="icon icon-database-add"></i>
-	                                    </button>
+                                        <button id="formulaPointPickerBtn_${tableLoop.index}" role="button" type="button" class="button naked f-pointPicker">
+                                            <span id="formulaPointPickerLbl_${tableLoop.index}" class="label">
+                                               <c:if test="${formulaBean.tables[tableLoop.index].inputType eq 'POINT'}">
+                                                   ${pointNames[formulaBean.tables[tableLoop.index].inputPointId]}
+                                               </c:if>
+                                               <c:if test="${formulaBean.tables[tableLoop.index].inputType ne 'POINT'}">
+                                                   <i:inline key=".noPointSelected"/>
+                                               </c:if>
+                                            </span>
+                                            <i class="icon icon-database-add"></i>
+                                        </button>
                                     </div>
                             </cti:displayForPageEditModes>
                             <cti:displayForPageEditModes modes="VIEW">
@@ -81,17 +126,17 @@
                                 <div class="column two nogutter">
                                     <c:if test="${formulaBean.tables[tableLoop.index].inputType == 'TIME'}">
                                         <tags:nameValueStacked nameKey=".timeRange">
-	                                        <cti:formatDate type="TIME" value="${formulaBean.tables[tableLoop.index].timeInputMin}"/>
-	                                        <i:inline key="yukon.common.to"/>
-	                                        <cti:formatDate type="TIME" value="${formulaBean.tables[tableLoop.index].timeInputMax}"/>
+                                            <cti:formatDate type="TIME" value="${formulaBean.tables[tableLoop.index].timeInputMin}"/>
+                                            <i:inline key="yukon.common.to"/>
+                                            <cti:formatDate type="TIME" value="${formulaBean.tables[tableLoop.index].timeInputMax}"/>
                                         </tags:nameValueStacked>
                                     </c:if>
                                     <c:if test="${formulaBean.tables[tableLoop.index].inputType != 'TIME'}">
                                         <tags:nameValueStacked nameKey=".inputRange">
-		                                    ${formulaBean.tables[tableLoop.index].inputMin}
-		                                    <i:inline key="yukon.common.to"/>
-		                                    ${formulaBean.tables[tableLoop.index].inputMax}
-	                                    </tags:nameValueStacked>
+                                            ${formulaBean.tables[tableLoop.index].inputMin}
+                                            <i:inline key="yukon.common.to"/>
+                                            ${formulaBean.tables[tableLoop.index].inputMax}
+                                        </tags:nameValueStacked>
                                     </c:if>
                                 </div>
                             </div>
@@ -118,46 +163,46 @@
                                     </span>
                                     <div id="tableEntries_${tableLoop.index}" class="clearfix separated-sections no-lines f-tableEntries">
                                         <c:if test="${formulaBean.tables[tableLoop.index].inputType == 'TIME'}">
-	                                        <c:forEach items="${formulaBean.tables[tableLoop.index].timeEntries}" varStatus="tableEntriesLoop">
+                                            <c:forEach items="${formulaBean.tables[tableLoop.index].timeEntries}" varStatus="tableEntriesLoop">
                                                 <div id="tableEntry_${tableLoop.index}_${tableEntriesLoop.index}" class="column_12_12 section clearfix">
-		                                            <div id="tableEntryKey_${tableLoop.index}_${tableEntriesLoop.index}" class="column one f-tableEntryKey_${tableLoop.index}">
-		                                                <tags:input path="tables[${tableLoop.index}].timeEntries[${tableEntriesLoop.index}].key"/>
-		                                            </div>
-		                                            <div id="tableEntryValue_${tableLoop.index}_${tableEntriesLoop.index}" class="column two nogutter">
-		                                                <tags:input path="tables[${tableLoop.index}].timeEntries[${tableEntriesLoop.index}].value"/>
-		                                                <cti:button nameKey="remove" icon="icon-cross" renderMode="buttonImage" classes="f-removeEntry fr"
-		                                                    data-table-id="${tableLoop.index}" data-entry-id="${tableEntriesLoop.index}"/>
-		                                            </div>
-	                                            </div>
-	                                        </c:forEach>
+                                                    <div id="tableEntryKey_${tableLoop.index}_${tableEntriesLoop.index}" class="column one f-tableEntryKey_${tableLoop.index}">
+                                                        <tags:input path="tables[${tableLoop.index}].timeEntries[${tableEntriesLoop.index}].key"/>
+                                                    </div>
+                                                    <div id="tableEntryValue_${tableLoop.index}_${tableEntriesLoop.index}" class="column two nogutter">
+                                                        <tags:input path="tables[${tableLoop.index}].timeEntries[${tableEntriesLoop.index}].value"/>
+                                                        <cti:button nameKey="remove" icon="icon-cross" renderMode="buttonImage" classes="f-removeEntry fr"
+                                                            data-table-id="${tableLoop.index}" data-entry-id="${tableEntriesLoop.index}"/>
+                                                    </div>
+                                                </div>
+                                            </c:forEach>
                                         </c:if>
 
                                         <c:if test="${formulaBean.tables[tableLoop.index].inputType != 'TIME'}">
-	                                        <c:forEach items="${formulaBean.tables[tableLoop.index].entries}" varStatus="tableEntriesLoop">
+                                            <c:forEach items="${formulaBean.tables[tableLoop.index].entries}" varStatus="tableEntriesLoop">
                                                 <div id="tableEntry_${tableLoop.index}_${tableEntriesLoop.index}" class="column_12_12 section clearfix">
-		                                            <div id="tableEntryKey_${tableLoop.index}_${tableEntriesLoop.index}" class="column one f-tableEntryKey_${tableLoop.index}">
-		                                                <tags:input path="tables[${tableLoop.index}].entries[${tableEntriesLoop.index}].key"/>
-		                                            </div>
-		                                            <div id="tableEntryValue_${tableLoop.index}_${tableEntriesLoop.index}" class="column two nogutter ">
-		                                                <tags:input path="tables[${tableLoop.index}].entries[${tableEntriesLoop.index}].value"/>
-		                                                <cti:button nameKey="remove" icon="icon-cross" renderMode="buttonImage" classes="f-removeEntry fr"
-		                                                    data-table-id="${tableLoop.index}" data-entry-id="${tableEntriesLoop.index}"/>
-		                                            </div>
-	                                            </div>
-	                                        </c:forEach>
+                                                    <div id="tableEntryKey_${tableLoop.index}_${tableEntriesLoop.index}" class="column one f-tableEntryKey_${tableLoop.index}">
+                                                        <tags:input path="tables[${tableLoop.index}].entries[${tableEntriesLoop.index}].key"/>
+                                                    </div>
+                                                    <div id="tableEntryValue_${tableLoop.index}_${tableEntriesLoop.index}" class="column two nogutter ">
+                                                        <tags:input path="tables[${tableLoop.index}].entries[${tableEntriesLoop.index}].value"/>
+                                                        <cti:button nameKey="remove" icon="icon-cross" renderMode="buttonImage" classes="f-removeEntry fr"
+                                                            data-table-id="${tableLoop.index}" data-entry-id="${tableEntriesLoop.index}"/>
+                                                    </div>
+                                                </div>
+                                            </c:forEach>
                                         </c:if>
                                     </div>
                                 </div>
                             </div>
                             <div class="actionArea stacked">
                                     <div class="fl" id="inputMax_${tableLoop.index}" style="${formulaBean.tables[tableLoop.index].inputType == 'TIME' ? 'display:none' : ''}">
-	                                   <i:inline key=".inputMax"/>:&nbsp
-	                                   <tags:input path="tables[${tableLoop.index}].inputMax"/>
-	                                </div>
-	                                <div class="fl" id="timeInputMax_${tableLoop.index}" style="${formulaBean.tables[tableLoop.index].inputType == 'TIME' ? '' : 'display:none'}">
-	                                   <i:inline key=".timeMax"/>:&nbsp
+                                       <i:inline key=".inputMax"/>:&nbsp
+                                       <tags:input path="tables[${tableLoop.index}].inputMax"/>
+                                    </div>
+                                    <div class="fl" id="timeInputMax_${tableLoop.index}" style="${formulaBean.tables[tableLoop.index].inputType == 'TIME' ? '' : 'display:none'}">
+                                       <i:inline key=".timeMax"/>:&nbsp
                                         <tags:input path="tables[${tableLoop.index}].timeInputMax"/>
-	                                </div>
+                                    </div>
                                 <cti:button classes="f-newEntryButton" icon="icon-plus-green" nameKey="newEntry"
                                     data-table-id="${tableLoop.index}"
                                     data-entry-id-next="${formulaBean.tables[tableLoop.index].numberOfEntries}"/>
@@ -187,6 +232,15 @@
     </div>
 </form:form>
 
+<c:set var="rowIndex" value="-1"/>
+<c:if test="${formulaBean.formulaType eq 'GEAR'}">
+    <%@ include file="gearAssignmentRow.jspf" %>
+</c:if>
+<c:if test="${formulaBean.formulaType eq 'APPLIANCE_CATEGORY'}">
+    <%@ include file="appCategoryAssignmentRow.jspf" %>
+</c:if>
+    
+    <!-- all 'pickers' on this page use this picker -->
 <div style="display:none"><tags:pickerDialog
     id="pointPicker"
     type="analogPointPicker"
@@ -204,17 +258,17 @@
             </tags:nameValueStacked>
         </div>
         <div class="column two">
-	        <tags:nameValueStacked nameKey=".input">
-	            <tags:selectWithItems id="formulaInputSelect_" inputClass="f-formulaInputSelect f-appendTableId"
-	               items="${formulaInputs}"
-	               path="dummyLookupTableBean.inputType"/>
-	               <div id="formulaPointPicker_" style="display:none" class="f-appendTableId">
+            <tags:nameValueStacked nameKey=".input">
+                <tags:selectWithItems id="formulaInputSelect_" inputClass="f-formulaInputSelect f-appendTableId"
+                   items="${formulaInputs}"
+                   path="dummyLookupTableBean.inputType"/>
+                   <div id="formulaPointPicker_" style="display:none" class="f-appendTableId">
                         <button id="formulaPointPickerBtn_" role="button" type="button" class="button naked  f-pointPicker f-appendTableId">
                             <span id="formulaPointPickerLbl_" class="label f-appendTableId"><i:inline key=".noPointSelected"/></span>
                             <i class="icon icon-database-add"></i>
                         </button>
                     </div>
-	        </tags:nameValueStacked>
+            </tags:nameValueStacked>
         </div>
         <div class="column three nogutter">
             <div><h4><i:inline key=".entries"/>
@@ -236,14 +290,14 @@
                 </div>
             </div>
             <div class="actionArea stacked">
-				<div class="fl f-appendTableId" id="inputMax_">
-					<i:inline key=".inputMax"/>:&nbsp
-					<tags:input path="dummyLookupTableBean.inputMax"/>
-				</div>
-				<div class="fl f-appendTableId" id="timeInputMax_" style="display:none">
-					<i:inline key=".timeMax"/>:&nbsp
-					<tags:input path="dummyLookupTableBean.timeInputMax"/>
-				</div>
+                <div class="fl f-appendTableId" id="inputMax_">
+                    <i:inline key=".inputMax"/>:&nbsp
+                    <tags:input path="dummyLookupTableBean.inputMax"/>
+                </div>
+                <div class="fl f-appendTableId" id="timeInputMax_" style="display:none">
+                    <i:inline key=".timeMax"/>:&nbsp
+                    <tags:input path="dummyLookupTableBean.timeInputMax"/>
+                </div>
                 <cti:button classes="f-appendTableIdData f-newEntryButton" icon="icon-plus-green" nameKey="newEntry"
                     data-table-id="" data-entry-id-next="0"/>
             </div>
@@ -263,25 +317,14 @@
     </div>
 </div>
 
-<!-- <div id="dummyTimeEntry" style="display:none" class="column_12_12 section clearfix"> -->
-<!-- 	<div id="tableEntryKey_" class="column one f-tableEntryKey_"> -->
-<%-- 		<tags:input path="dummyTimeTableEntryBean.key"/> --%>
-<!-- 	</div> -->
-<!-- 	<div id="tableEntryValue_" class="column two nogutter "> -->
-<%-- 		<tags:input path="dummyTimeTableEntryBean.value"/> --%>
-<%-- 		<cti:button nameKey="remove" icon="icon-cross" renderMode="buttonImage" classes="f-removeEntry fr" --%>
-<%-- 		data-table-id="" data-entry-id="0"/> --%>
-<!-- 	</div> -->
-<!-- </div> -->
-
 <div id="dummyEntry" style="display:none" class="column_12_12 section clearfix">
-	<div id="tableEntryKey_" class="column one f-tableEntryKey_ f-appendTableId">
-	    <tags:input path="dummyTableEntryBean.key"/>
-	</div>
-	<div id="tableEntryValue_" class="column two nogutter f-appendTableId">
-		<tags:input path="dummyTableEntryBean.value"/>
-		<cti:button nameKey="remove" icon="icon-cross" renderMode="buttonImage" classes="f-removeEntry fr"
-		  data-table-id="" data-entry-id="0"/>
-	</div>
+    <div id="tableEntryKey_" class="column one f-tableEntryKey_ f-appendTableId">
+        <tags:input path="dummyTableEntryBean.key"/>
+    </div>
+    <div id="tableEntryValue_" class="column two nogutter f-appendTableId">
+        <tags:input path="dummyTableEntryBean.value"/>
+        <cti:button nameKey="remove" icon="icon-cross" renderMode="buttonImage" classes="f-removeEntry fr"
+          data-table-id="" data-entry-id="0"/>
+    </div>
 </div>
 

@@ -3,6 +3,8 @@ package com.cannontech.common.search;
 import java.util.Collections;
 import java.util.List;
 
+import com.cannontech.common.util.SubList;
+
 public class SearchResult<T> {
     private int hitCount;           //total count (possibly estimate) of results available
     private int startIndex;         //inclusive, 0-based
@@ -23,7 +25,22 @@ public class SearchResult<T> {
         result.setStartIndex(0);
         return result;
     }
-    
+
+   /**
+    * Returns a SearchResult containing a specific "page" of items, based on the specified parameters.
+    * 
+    * @param size - size of all items (not size of itemList since itemList is only the current page items)
+    * @param itemList - items for current page
+    */
+    public static  <T> SearchResult<T> pageBasedForSubList(int itemsPerPage, SubList<T> itemList) {
+
+        SearchResult<T> result = new SearchResult<>();
+        result.setResultList(itemList);
+        result.setBounds(itemList.getStartIndex(), itemsPerPage, itemList.getOriginalSize());
+
+        return result;
+    }
+
     /**
      * Returns a SearchResult containing a specific "page" of items, based on the specified
      * parameters.
@@ -36,7 +53,7 @@ public class SearchResult<T> {
         if(numberOfResults < toIndex) toIndex = numberOfResults;
         itemList = itemList.subList(startIndex, toIndex);
         
-        SearchResult<T> result = new SearchResult<T>();
+        SearchResult<T> result = new SearchResult<>();
         result.setResultList(itemList);
         result.setBounds(startIndex, itemsPerPage, numberOfResults);
         
@@ -44,7 +61,7 @@ public class SearchResult<T> {
     }
     
     /**
-     * @param start O-based index from which to start
+     * @param startIndex O-based index from which to start
      * @param count number of items the caller wanted back
      */
     public void setBounds(int startIndex, int count, int hitCount) {

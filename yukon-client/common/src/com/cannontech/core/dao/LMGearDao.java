@@ -1,5 +1,8 @@
 package com.cannontech.core.dao;
 
+import java.util.Map;
+
+import com.cannontech.loadcontrol.data.LMProgramDirectGear;
 import com.cannontech.loadcontrol.gear.model.BeatThePeakGearContainer;
 
 public interface LMGearDao {
@@ -26,6 +29,8 @@ public interface LMGearDao {
      * Removes BeatThePeak Gear data to a database (gearID/AlertLevel pair)
      * @param gearId - gear ID of the gear to be deleted
      */
-    public void delete(int gearId);
+    public void deleteBeatThePeakGear(int gearId);
+
+    public Map<Integer, LMProgramDirectGear> getByGearIds(Iterable<Integer> gearIds);
 
 }

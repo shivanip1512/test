@@ -1,0 +1,19 @@
+<input id="assignment_${rowIndex}" type="hidden" name="assignments" value="${rowIndex}"/> 
+<div id="assignmentAdd_${rowIndex}" class="column_8_8_8 f-removeable f-show-on-hover-target">
+    <div class="column one f-name">${assignments[rowIndex].name}</div>
+    <div class="column two f-id">${assignments[rowIndex].applianceCategoryId}</div>
+    <div class="column three nogutter">
+        <span class="f-type"><i:inline key="${assignments[rowIndex].applianceType}"/></span>
+        <cti:displayForPageEditModes modes="EDIT">
+            <div class="f-show-on-hover fr" style="display:none">
+               <cti:button data-assign-id="${rowIndex}" nameKey="remove" renderMode="image" icon="icon-cross" classes="f-remove"/>
+            </div>
+        </cti:displayForPageEditModes>
+    </div>
+</div>
+<div id="assignmentRemove_${rowIndex}" class="column_24" style="display:none">
+    <div class="column one nogutter">
+        <div class="fl undorow"><i:inline key=".appCatWillBeUnassigned"/></div>
+        <div class="fr undorow"><a class="f-undo" data-assign-id="${rowIndex}" href="javascript:void(0)">Undo</a></div>
+    </div>
+</div>

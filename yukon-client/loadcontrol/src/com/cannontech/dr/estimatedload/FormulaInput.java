@@ -42,7 +42,7 @@ public final class FormulaInput<T> {
         }
 
         public static Set<InputType> getGearInputs() {
-            return EnumSet.of(CONTROL_PERCENT, RAMP_RATE);
+            return EnumSet.of(CONTROL_PERCENT, RAMP_RATE, POINT);
         }
 
         public PropertyEditor makeTypeConverter() {

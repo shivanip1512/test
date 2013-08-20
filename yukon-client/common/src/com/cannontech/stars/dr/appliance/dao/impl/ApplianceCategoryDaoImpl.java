@@ -86,7 +86,7 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
 
             return applianceCategory;
         }
-    };
+    }
 
     @Override
     @Transactional(propagation = Propagation.SUPPORTS)
@@ -193,8 +193,7 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
     }
 
     @Override
-    public Map<Integer, ApplianceCategory> getByApplianceCategoryIds(
-            Iterable<Integer> applianceCategoryIds) {
+    public Map<Integer, ApplianceCategory> getByApplianceCategoryIds(Iterable<Integer> applianceCategoryIds) {
         RowMapper rowMapper = new RowMapper();
 
         SqlStatementBuilder sql = new SqlStatementBuilder();

@@ -1,11 +1,109 @@
+
 pickerClose = function (selectedItems, picker) {
     var tableId = jQuery("#picker_pointPicker_label").data("table-id");
     jQuery("#inputPointId_"+tableId).val(selectedItems[0].pointId);
     jQuery("#formulaPointPickerLbl_"+tableId).html(selectedItems[0].pointName);
 };
 
+unassignedAppCatPickerClose = function(selectedApCats, picker) {
+    var choosenIds = [];
+    for (var i = 0; i < selectedApCats.length; i++) {
+        choosenIds.push(selectedApCats[i].applianceCategoryId);
+        if (addedAssignments.indexOf(selectedApCats[i].applianceCategoryId) < 0) {
+            addAppCatAssignment(selectedApCats[i]);
+        }
+    }
+    picker.excludeIds = choosenIds;
+};
+
+unassignedGearPickerClose = function(selectedGears, picker) {
+    
+    var choosenIds = [];
+    for (var i = 0; i < selectedGears.length; i++) {
+        choosenIds.push(selectedGears[i].gearId);
+        if (addedAssignments.indexOf(selectedGears[i].gearId) < 0) {
+            addGearAssignment(selectedGears[i]);
+        }
+    }
+    picker.excludeIds = choosenIds;
+};
+
+addGearAssignment = function (gear) {
+    var id = gear.gearId;
+
+    var $newAssignmentInput = jQuery("#assignment_-1").clone();
+    $newAssignmentInput.attr("id", "assignment_" + id);
+    $newAssignmentInput.val(id);
+    jQuery("#assignments").append($newAssignmentInput);
+
+    // #assignment_-1 is the dummy assignment element 
+    var $newAssignment = jQuery("#assignmentAdd_-1").clone();
+    $newAssignment.attr("id", "assignmentAdd_" + id);
+    $newAssignment.find(".f-id").html(id);
+    $newAssignment.find(".f-name").html(gear.gearName);
+    $newAssignment.find(".f-control-method").html(gear.controlMethod);
+    $newAssignment.find(".f-remove").data("assign-id", id);
+    $newAssignment.show();
+    jQuery("#assignments").append($newAssignment);
+
+    $assignRemoved = jQuery("#assignmentRemove_-1").clone();
+    $assignRemoved.attr("id", "assignmentRemove_" + id);
+    $assignRemoved.find(".f-undo").data("assign-id", id);
+    jQuery("#assignments").append($assignRemoved);
+    
+    addedAssignments.push(id);
+    jQuery("#assignments").show();
+    jQuery("#noAssignments").hide();
+};
+
+addAppCatAssignment = function (appCat) {
+    var id = appCat.applianceCategoryId;
+    
+    var $newAssignmentInput = jQuery("#assignment_-1").clone();
+    $newAssignmentInput.attr("id", "assignment_" + id);
+    $newAssignmentInput.val(id);
+    jQuery("#assignments").append($newAssignmentInput);
+
+    // #assignment_-1 is the dummy assignment element 
+    var $newAssignment = jQuery("#assignmentAdd_-1").clone();
+    $newAssignment.attr("id", "assignmentAdd_" + id);
+    $newAssignment.find(".f-id").html(id);
+    $newAssignment.find(".f-name").html(appCat.name);
+    $newAssignment.find(".f-type").html(appCat.applianceType);
+    $newAssignment.find(".f-remove").data("assign-id", id);
+    $newAssignment.show();
+    jQuery("#assignments").append($newAssignment);
+
+    $assignRemoved = jQuery("#assignmentRemove_-1").clone();
+    $assignRemoved.attr("id", "assignmentRemove_" + id);
+    $assignRemoved.find(".f-undo").data("assign-id", id);
+    jQuery("#assignments").append($assignRemoved);
+    
+    addedAssignments.push(id);
+    jQuery("#assignments").show();
+    jQuery("#noAssignments").hide();
+};
+
+var addedAssignments = [];
+
 jQuery(function () {
     var rowIndex = jQuery("#formulaRowIndex").val();
+
+    jQuery("#assignments").on("click", ".f-remove", function() {
+        var id = jQuery(this).data("assign-id");
+        jQuery("#assignmentAdd_"+id).hide();
+        jQuery("#assignmentRemove_"+id).show();
+        jQuery("#assignment_"+id).prop("disabled", true);
+    }).on("click", ".f-undo", function() {
+        var id = jQuery(this).data("assign-id");
+        jQuery("#assignmentAdd_"+id).show();
+        jQuery("#assignmentRemove_"+id).hide();
+        jQuery("#assignment_"+id).prop("disabled", false);
+    }).on("mouseenter", ".f-show-on-hover-target", function() {
+        jQuery(this).find(".f-show-on-hover").show();
+    }).on("mouseleave", ".f-show-on-hover-target", function() {
+        jQuery(this).find(".f-show-on-hover").hide();
+    });
 
     // *****  Functions  *****
 
@@ -176,6 +274,5 @@ jQuery(function () {
                 });
             });
         });
-
     });
 });

@@ -13,10 +13,10 @@ public class FormulaBean {
     private String name;
     private Formula.CalculationType calculationType = Formula.CalculationType.FUNCTION;
     private Formula.Type formulaType = Formula.Type.APPLIANCE_CATEGORY;
-    private String assignments;
     private Double functionIntercept = 0.0;
     private List<FunctionBean> functions = LazyList.ofInstance(FunctionBean.class);
     private List<LookupTableBean> tables = LazyList.ofInstance(LookupTableBean.class);
+    private List<Integer> assignments = LazyList.ofInstance(Integer.class);
 
     public FormulaBean() {}
     public FormulaBean(Formula formula) {
@@ -84,11 +84,11 @@ public class FormulaBean {
         this.formulaType = formulaType;
     }
 
-    public String getAssignments() {
+    public List<Integer> getAssignments() {
         return assignments;
     }
 
-    public void setAssignments(String assignments) {
+    public void setAssignments(List<Integer> assignments) {
         this.assignments = assignments;
     }
 
