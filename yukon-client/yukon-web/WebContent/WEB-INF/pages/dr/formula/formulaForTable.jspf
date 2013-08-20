@@ -61,13 +61,13 @@
                                <tags:pickerDialog
                                    id="unassignedApplianceCategoryPicker" type="unassignedApplianceCategoryPicker"
                                    linkType="button" nameKey="assignAppCat" multiSelectMode="true" icon="icon-plus-green"
-                                   endAction="unassignedAppCatPickerClose"/>
+                                   endAction="Yukon.DrFormula.unassignedAppCatPickerClose"/>
                            </c:if>
                           <c:if test="${formulaBean.formulaType eq 'GEAR'}">
                               <tags:pickerDialog
                                   id="unassignedGearPicker" type="unassignedGearPicker"
                                   linkType="button" nameKey="assignGear" multiSelectMode="true" icon="icon-plus-green"
-                                  endAction="unassignedGearPickerClose"/>
+                                  endAction="Yukon.DrFormula.unassignedGearPickerClose"/>
                           </c:if>
                        </div>
                 </cti:displayForPageEditModes>
@@ -245,7 +245,7 @@
     id="pointPicker"
     type="analogPointPicker"
     linkType="selection"
-    selectionProperty="pointName" endAction="pickerClose" /></div>
+    selectionProperty="pointName" endAction="Yukon.DrFormula.pickerClose" /></div>
 
 <div id="dummyTable" class="setting f-removeable f-table" style="display:none">
     <input type="hidden" name="lookupTableId" value=""/>

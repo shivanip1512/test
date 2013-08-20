@@ -509,13 +509,13 @@ public class FormulaDaoImpl implements FormulaDao {
     public void saveAppCategoryAssignmentsForId(int formulaId, List<Integer> appCategoryAssignments) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM EstimatedLoadFormulaAssignment");
-        sql.append("WHERE FormulaId ").eq(formulaId);
+        sql.append("WHERE EstimatedLoadFormulaId ").eq(formulaId);
         yukonJdbcTemplate.update(sql);
 
         for (Integer assignId : appCategoryAssignments) {
             sql = new SqlStatementBuilder();
             sql.append("INSERT INTO EstimatedLoadFormulaAssignment");
-            sql.append("(FormulaAssignmentId, FormulaId, ApplianceCategoryId)");
+            sql.append("(FormulaAssignmentId, EstimatedLoadFormulaId, ApplianceCategoryId)");
             sql.values(nextValueHelper.getNextValue("EstimatedLoadFormulaAssignment"),formulaId, assignId);
 
             yukonJdbcTemplate.update(sql);
@@ -527,7 +527,7 @@ public class FormulaDaoImpl implements FormulaDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
 
         sql.append("SELECT ApplianceCategoryId FROM").append(assignmentTableName);
-        sql.append("WHERE FormulaId").eq(formulaId);
+        sql.append("WHERE EstimatedLoadFormulaId").eq(formulaId);
         sql.append("AND ApplianceCategoryId IS NOT NULL");
 
         List<Integer> applianceCategoryIds = yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
@@ -539,13 +539,13 @@ public class FormulaDaoImpl implements FormulaDao {
     public void saveGearAssignmentsForId(int formulaId, List<Integer> gearIds) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM").append(assignmentTableName);
-        sql.append("WHERE FormulaId ").eq(formulaId);
+        sql.append("WHERE EstimatedLoadFormulaId ").eq(formulaId);
         yukonJdbcTemplate.update(sql);
 
         for (Integer assignId : gearIds) {
             sql = new SqlStatementBuilder();
             sql.append("INSERT INTO").append(assignmentTableName);
-            sql.append("(FormulaAssignmentId, FormulaId, GearId)");
+            sql.append("(FormulaAssignmentId, EstimatedLoadFormulaId, GearId)");
             sql.values(nextValueHelper.getNextValue("EstimatedLoadFormulaAssignment"),formulaId, assignId);
 
             yukonJdbcTemplate.update(sql);
@@ -557,7 +557,7 @@ public class FormulaDaoImpl implements FormulaDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
 
         sql.append("SELECT GearId FROM").append(assignmentTableName);
-        sql.append("WHERE FormulaId").eq(formulaId);
+        sql.append("WHERE EstimatedLoadFormulaId").eq(formulaId);
         sql.append("AND GearId IS NOT NULL");
 
         List<Integer> gearIds = yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
