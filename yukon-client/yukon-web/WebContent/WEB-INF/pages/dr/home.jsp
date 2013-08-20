@@ -20,7 +20,7 @@
                     <span class="empty-list"><i:inline key=".noFavorites"/></span>
                 </c:if>
                 <c:if test="${!empty favorites}">
-                    <table class="compactResultsTable rowHighlighting">
+                    <table class="compactResultsTable rowHighlighting has-actions">
                         <thead>
                         <tr>
                             <th></th>
@@ -35,9 +35,6 @@
                             <th>
                                 <tags:sortLink nameKey="stateHeader" baseUrl="${baseUrl}" fieldName="STATE"
                                     sortParam="favSort" descendingParam="favDescending"/>
-                            </th>
-                            <th>
-                                <i:inline key="yukon.web.modules.dr.home.actionsHeader"/>
                             </th>
                         </tr>
                         </thead>
@@ -57,9 +54,7 @@
                                     <i:inline key=".paoType.${pao.paoIdentifier.paoType}"/>
                                 </td>
                                 <td>
-                                    <dr:stateText pao="${pao}"/>
-                                </td>
-                                <td class="nonwrapping">
+                                    <span class="fl"><dr:stateText pao="${pao}"/></span>
                                     <dr:listActions pao="${pao}"/>
                                 </td>
                             </tr>

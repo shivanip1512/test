@@ -1,7 +1,6 @@
 <%@ tag body-content="empty" trimDirectiveWhitespaces="true" dynamic-attributes="attrs" %>
 
 <%@ attribute name="pao" required="true" type="com.cannontech.common.pao.YukonPao" %>
-<%@ tag body-content="empty" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
@@ -17,7 +16,7 @@
 <cti:msg2 var="stopAction" key=".scenarioDetail.actions.stop"/>
 
 <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${pao}">
-    <cm:dropdown>
+    <cm:dropdown containerCssClass="fr">
         <tags:dynamicChoose updaterString="DR_SCENARIO/${paoId}/SHOW_ACTION" suffix="${paoId}">
 
             <tags:dynamicChooseOption optionId="hasNoPrograms">
@@ -53,7 +52,7 @@
 </cti:checkPaoAuthorization>
 
 <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${pao}" invert="true">
-    <cm:dropdown>
+    <cm:dropdown containerCssClass="fr">
         <cm:dropdownOption icon="icon-control-play-blue" disabled="true" title="${noScenarioControl}">
             ${startAction}
         </cm:dropdownOption>

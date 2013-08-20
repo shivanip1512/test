@@ -30,8 +30,12 @@
 */
 
 /* VARIABLES */
-@primary-color: #06C;
+@primary-color: #0066CC;
 @primary-font-color: #555;
+
+@red: #D14836;
+@green: #009933;
+@orange: #FB8521;
 
 /* HEADINGS */
 .page-heading {display: inline-block; float:left; margin: 0;}
@@ -54,7 +58,7 @@ a, .primary_color, .vertical_menu li.selected a, .vertical_menu a:hover, .ui-wid
 .primary_background {background-color:@primary-color; color:white;}
 ::-moz-selection, ::selection {background-color:@primary-color; color:white;} /* IE 9 does not support pseudo element selector '::selection' and will ignore the entire rule, therefore it must be in it's own rule */
 .primary_background a, .primary_background a:visited {color:white}
-.highlight, .primary_background .highlight {color: #FF9900;}
+.highlight, .primary_background .highlight {color: @orange;}
 .alert {background-color: #FFE6E6 !important;}
 
 /* FORM FIELDS */
@@ -281,7 +285,7 @@ ul.disc li {list-style-type: disc; margin-left: 25px;}
 .page_help ul,.page_warning ul,.page_error ul {list-style: disc inside none;}
 .page_help {border-color: @primary-color; background: #EAF1FD url('/WebConfig/yukon/Icons/information.gif') 5px 4px no-repeat;}
 .page_warning {line-height: 1.3em; border-color: #FBB117; background: #FFFFDA url('/WebConfig/yukon/Icons/warning.gif') 5px 4px no-repeat;}
-.page_error {border-color: ##D14836; background: #FFDDDD url('/WebConfig/yukon/Icons/error.gif') 5px 4px no-repeat;}
+.page_error {border-color: @red; background: #FFDDDD url('/WebConfig/yukon/Icons/error.gif') 5px 4px no-repeat;}
 
 /* PIPES */
 ul.pipes {overflow:hidden; display:inline-block;}
@@ -298,21 +302,21 @@ a.pipe-selector.selected {color: @primary-font-color; cursor: default;}
 .pipe-selector .pipe + * {margin-left: 5px;}
 
 /* COLOR CODING */
-.red, .error, .errorMessage {color: #D14836 !important}
-.error[type=checkbox] {outline: 2px solid red;}
+.red, .error, .errorMessage {color: @red !important}
+.error[type=checkbox] {outline: 2px solid @red;}
 ol.error{list-style-type: none;}
-.green, .success, .successMessage {color: #093 !important;}
-.orange, .warn, .warning, .warningMessage {color:#ff8c00 !important;}
+.green, .success, .successMessage {color: @green !important;}
+.orange, .warn, .warning, .warningMessage {color: @orange !important;}
 .grey, .disabled, .disabled a {color:#888 !important; cursor:default; }
 .disabled, .disabled a, .disabled:hover, .disabled a:hover {text-decoration: none;}
-.subtle, .setting .detail > span {color:@primary-font-color;}
+.subtle, .setting .detail > span {color: @primary-font-color;}
 /* used on consumer pages, delete during consumer overhaul */
 div.message, div.userMessage {border-radius:2px; padding: 2px 30px; border-style:solid; border-width:1px; margin-bottom: 10px;}
-.userMessage.error, .userMessage.ERROR {background:pink url(../Icons/error.gif) 5px no-repeat; border-color:#D14836;}
-.userMessage.success, .userMessage.CONFIRM {background:#C3FDB8 url("../Icons/enable.gif") 5px no-repeat; padding-left: 30px; border-color:#093; color:#333;}
-.userMessage.info {background:lightBlue url(../Icons/information.gif) 5px no-repeat; border-color:blue;}
-.userMessage.warn, .userMessage.WARNING {color:#333;background:#FFFFDA url(../Icons/warning.gif) 5px no-repeat; border-color:#FBB117;}
-input.error {background: pink;border-color:#D14836;}
+.userMessage.error, .userMessage.ERROR {background:pink url(../Icons/error.gif) 5px no-repeat; border-color:@red;}
+.userMessage.success, .userMessage.CONFIRM {background:#C3FDB8 url("../Icons/enable.gif") 5px no-repeat;padding-left: 30px;border-color: @green;color: #333;}
+.userMessage.info {background:lightBlue url(../Icons/information.gif) 5px no-repeat;border-color: @primary-color;}
+.userMessage.warn, .userMessage.WARNING {color:#333;background:#FFFFDA url(../Icons/warning.gif) 5px no-repeat; border-color:@orange;}
+input.error {background: pink;border-color: @red;}
 
 /* DIALOGS */
 .popUpDiv, .widgetPopup, .ui-dialog {background:white;position:fixed;box-shadow:0 10px 30px #444; border:solid 1px #bbb; border-radius:2px; z-index: 1000;} 
@@ -452,16 +456,16 @@ input.dateTimePicker {margin: 0;}
 .loading .message {padding: 0 0 0 20px; border: none;}
 
 /* CONNECTION WARNING */
-#dataUpdaterErrorDiv {position: fixed;bottom: 0;left: 0;right: 0;background: #D14836;color: white;font-weight: bold;text-align: center;padding: 3px;}
+#dataUpdaterErrorDiv {position: fixed;bottom: 0;left: 0;right: 0;background: @red;color: white;font-weight: bold;text-align: center;padding: 3px;}
 #dataUpdaterErrorDiv .alert {padding-top: 64px;width: 64px;position: absolute;bottom: 0;left: 10px;}
 
 /* JUNK TO FIX */
-.CONTROLAREA_STATE_ACTIVE, .CONTROLAREA_STATE_PARTIALLY_ACTIVE, .CONTROLAREA_STATE_MANUAL_ACTIVE, .PROGRAM_STATE_ACTIVE, .PROGRAM_STATE_PARTIALLY_ACTIVE, .PROGRAM_STATE_MANUAL_ACTIVE, .PROGRAM_STATE_TIMED_ACTIVE, .LOADGROUP_STATE_ACTIVE {color: green;}
-.CONTROLAREA_STATE_INACTIVE,.PROGRAM_STATE_INACTIVE, .PROGRAM_STATE_NON_CONTROL, .LOADGROUP_STATE_INACTIVE {color: black;}
+.CONTROLAREA_STATE_ACTIVE, .CONTROLAREA_STATE_PARTIALLY_ACTIVE, .CONTROLAREA_STATE_MANUAL_ACTIVE, .PROGRAM_STATE_ACTIVE, .PROGRAM_STATE_PARTIALLY_ACTIVE, .PROGRAM_STATE_MANUAL_ACTIVE, .PROGRAM_STATE_TIMED_ACTIVE, .LOADGROUP_STATE_ACTIVE {color: @green;}
+.CONTROLAREA_STATE_INACTIVE,.PROGRAM_STATE_INACTIVE, .PROGRAM_STATE_NON_CONTROL, .LOADGROUP_STATE_INACTIVE {color: #555;}
 .CONTROLAREA_STATE_CONTROL_ATTEMPT, .PROGRAM_STATE_STOPPING, .LOADGROUP_STATE_ACTIVE_PENDING {color: #993;}
-.PROGRAM_STATE_SCHEDULED, .PROGRAM_STATE_CONTROL_ATTEMPT, .CONTROLAREA_STATE_FULLY_SCHEDULED, .CONTROLAREA_STATE_PARTIALLY_SCHEDULED {color: orange;}
+.PROGRAM_STATE_SCHEDULED, .PROGRAM_STATE_CONTROL_ATTEMPT, .CONTROLAREA_STATE_FULLY_SCHEDULED, .CONTROLAREA_STATE_PARTIALLY_SCHEDULED {color: @orange;}
 .PROGRAM_STATE_NOTIFIED, .LOADGROUP_STATE_INACTIVE_PENDING {color: cyan;}
-.drDisabled {color: red;}
-.eventStatusCleared, .eventStatusGood {color:#093;}
-.eventStatusQuestionable {color:#FF9900;}
-.eventStatusActive,.eventStatusBad {color:#D14836;}
+.drDisabled {color: @red;}
+.eventStatusCleared, .eventStatusGood {color:@green;}
+.eventStatusQuestionable {color:@orange;}
+.eventStatusActive,.eventStatusBad {color:@red;}

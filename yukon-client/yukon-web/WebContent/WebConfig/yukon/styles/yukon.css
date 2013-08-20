@@ -1,4 +1,4 @@
-/* CONTENTS */
+/* VARIABLES */
 /*
 This file defines the basic look and feel of Yukon.
 This file can be included on consumer pages to reuse container styles.
@@ -105,7 +105,7 @@ a,.primary_color,.vertical_menu li.selected a,.vertical_menu a:hover,.ui-widget-
 }
 
 .highlight,.primary_background .highlight {
-	color: #FF9900;
+	color: #fb8521;
 }
 
 .alert {
@@ -825,7 +825,7 @@ ul.disc li {
 }
 
 .page_error {
-	border-color: ##D14836;
+	border-color: #d14836;
 	background: #ffdddd url('/WebConfig/yukon/Icons/error.gif') 5px 4px no-repeat;
 }
 
@@ -890,7 +890,7 @@ a.pipe-selector.selected {
 }
 
 .error[type=checkbox] {
-	outline: 2px solid red;
+	outline: 2px solid #d14836;
 }
 
 ol.error {
@@ -898,11 +898,11 @@ ol.error {
 }
 
 .green,.success,.successMessage {
-	color: #093 !important;
+	color: #009933 !important;
 }
 
 .orange,.warn,.warning,.warningMessage {
-	color: #ff8c00 !important;
+	color: #fb8521 !important;
 }
 
 .grey,.disabled,.disabled a {
@@ -929,30 +929,30 @@ div.message,div.userMessage {
 
 .userMessage.error,.userMessage.ERROR {
 	background: #ffc0cb url(../Icons/error.gif) 5px no-repeat;
-	border-color: #D14836;
+	border-color: #d14836;
 }
 
 .userMessage.success,.userMessage.CONFIRM {
 	background: #c3fdb8 url("../Icons/enable.gif") 5px no-repeat;
 	padding-left: 30px;
-	border-color: #093;
+	border-color: #009933;
 	color: #333;
 }
 
 .userMessage.info {
 	background: lightBlue url(../Icons/information.gif) 5px no-repeat;
-	border-color: blue;
+	border-color: #0066cc;
 }
 
 .userMessage.warn,.userMessage.WARNING {
 	color: #333;
 	background: #ffffda url(../Icons/warning.gif) 5px no-repeat;
-	border-color: #FBB117;
+	border-color: #fb8521;
 }
 
 input.error {
 	background: pink;
-	border-color: #D14836;
+	border-color: #d14836;
 }
 
 /* DIALOGS */
@@ -1644,7 +1644,7 @@ input.dateTimePicker {
 	bottom: 0;
 	left: 0;
 	right: 0;
-	background: #D14836;
+	background: #d14836;
 	color: white;
 	font-weight: bold;
 	text-align: center;
@@ -1661,11 +1661,11 @@ input.dateTimePicker {
 
 /* JUNK TO FIX */
 .CONTROLAREA_STATE_ACTIVE,.CONTROLAREA_STATE_PARTIALLY_ACTIVE,.CONTROLAREA_STATE_MANUAL_ACTIVE,.PROGRAM_STATE_ACTIVE,.PROGRAM_STATE_PARTIALLY_ACTIVE,.PROGRAM_STATE_MANUAL_ACTIVE,.PROGRAM_STATE_TIMED_ACTIVE,.LOADGROUP_STATE_ACTIVE {
-	color: green;
+	color: #009933;
 }
 
 .CONTROLAREA_STATE_INACTIVE,.PROGRAM_STATE_INACTIVE,.PROGRAM_STATE_NON_CONTROL,.LOADGROUP_STATE_INACTIVE {
-	color: black;
+	color: #555;
 }
 
 .CONTROLAREA_STATE_CONTROL_ATTEMPT,.PROGRAM_STATE_STOPPING,.LOADGROUP_STATE_ACTIVE_PENDING {
@@ -1673,7 +1673,7 @@ input.dateTimePicker {
 }
 
 .PROGRAM_STATE_SCHEDULED,.PROGRAM_STATE_CONTROL_ATTEMPT,.CONTROLAREA_STATE_FULLY_SCHEDULED,.CONTROLAREA_STATE_PARTIALLY_SCHEDULED {
-	color: orange;
+	color: #fb8521;
 }
 
 .PROGRAM_STATE_NOTIFIED,.LOADGROUP_STATE_INACTIVE_PENDING {
@@ -1681,17 +1681,17 @@ input.dateTimePicker {
 }
 
 .drDisabled {
-	color: red;
+	color: #d14836;
 }
 
 .eventStatusCleared,.eventStatusGood {
-	color: #093;
+	color: #009933;
 }
 
 .eventStatusQuestionable {
-	color: #FF9900;
+	color: #fb8521;
 }
 
 .eventStatusActive,.eventStatusBad {
-	color: #D14836;
+	color: #d14836;
 }

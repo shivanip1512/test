@@ -72,8 +72,8 @@ singleOverrideChecked = function(boxChecked) {
     <dr:programStartInfo page="startMultiplePrograms"/>
 
     <cti:msg2 var="boxTitle" key=".programs"/>
-    <tags:boxContainer title="${boxTitle}">
-    <div class="dialogScrollArea">
+    <tags:sectionContainer title="${boxTitle}">
+    <div class="scrollingContainer_medium">
     <table class="compactResultsTable" id="startMultipleProgramsOverridePrograms">
         <thead>
 	        <tr>
@@ -129,7 +129,7 @@ singleOverrideChecked = function(boxChecked) {
         </tbody>
     </table>
     </div>
-    </tags:boxContainer>
+    </tags:sectionContainer>
 
     <c:forEach var="programStartInfo" varStatus="status" items="${backingBean.programStartInfo}">
         <form:hidden path="programStartInfo[${status.index}].programId"/>
@@ -156,6 +156,7 @@ singleOverrideChecked = function(boxChecked) {
         <c:if test="${!constraintsViolated || overrideAllowed}">
             <cti:button id="okButton" nameKey="ok" classes="primary action" type="submit"/>
         </c:if>
+        <cti:button nameKey="cancel" onclick="jQuery('#drDialog').dialog('close');"/>
         <cti:url var="backUrl" value="/dr/program/start/multipleDetails">
             <cti:param name="fromBack" value="true"/>
         </cti:url>
@@ -165,7 +166,6 @@ singleOverrideChecked = function(boxChecked) {
             </cti:url>
         </c:if>
         <cti:button nameKey="back" onclick="submitFormViaAjax('drDialog', 'startMultipleProgramsForm', '${backUrl}')"/>
-        <cti:button nameKey="cancel" onclick="jQuery('#drDialog').dialog('close');"/>
     </div>
 </form:form>
 </cti:msgScope>

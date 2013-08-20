@@ -21,8 +21,8 @@
 <cti:default var="showIcon" value="true"/>
 <cti:default var="type" value="icon"/>
 
-<div class="f-dropdown_outer_container ${pageScope.containerCssClass}" <c:if test="${not empty id}">id="${id}"</c:if>>
-    <div class="dropdown-container usn fr">
+<div class="f-dropdown_outer_container usn dib ${pageScope.containerCssClass}" <c:if test="${not empty id}">id="${id}"</c:if>>
+    <div class="dropdown-container">
         <c:choose>
             <c:when test="${type == 'link' && not empty pageScope.key}">
                 <a class="button naked">

@@ -171,8 +171,8 @@ gearChanged = function() {
     </script>
 
     <cti:msg2 var="boxTitle" key=".programs"/>
-    <tags:boxContainer title="${boxTitle}">
-    <div class="dialogScrollArea">
+    <tags:sectionContainer title="${boxTitle}">
+    <div class="scrollingContainer_medium">
     <table class="compactResultsTable">
         <thead>
 	        <tr>
@@ -213,7 +213,7 @@ gearChanged = function() {
 	    </tbody>
     </table>
     </div>
-    </tags:boxContainer>
+    </tags:sectionContainer>
 
     <input type="checkbox" id="allProgramsCheckbox" onclick="allProgramsChecked()"/>
     <script type="text/javascript">updateAllProgramsChecked();</script>
