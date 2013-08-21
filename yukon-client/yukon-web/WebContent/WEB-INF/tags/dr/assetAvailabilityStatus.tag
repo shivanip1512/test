@@ -9,18 +9,6 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<script type="text/javascript">
-jQuery(function() {
-
-    pingUnavailable = function() {
-//     FIXME - waiting for the Ping Service...
-        alert("Do the Ping Thing here...");
-    }
-
-    jQuery("#pingButton").click(pingUnavailable);
-
-})
-</script>
 
 <cti:msgScope paths="modules.operator.hardware.assetAvailability">
 <c:set var="runningSize" value="${assetAvailabilitySummary.communicatingRunningSize}"/>
@@ -64,6 +52,3 @@ jQuery(function() {
 </div>
 </cti:msgScope>
 
-    <div class="actionArea">
-        <cti:button id="pingButton" nameKey="pingDevices" busy="true" classes="f-disableAfterClick"/>
-    </div>

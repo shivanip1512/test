@@ -4,16 +4,21 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.TimeUnit;
 
 import javax.servlet.http.HttpServletResponse;
 
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.StringUtils;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
@@ -25,6 +30,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.common.bulk.filter.UiFilter;
@@ -45,6 +51,9 @@ import com.cannontech.core.service.DurationFormattingService;
 import com.cannontech.core.service.durationFormatter.DurationFormat;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.DemandResponseBackingField;
+import com.cannontech.dr.assetavailability.AssetAvailabilityCombinedStatus;
+import com.cannontech.dr.assetavailability.DisplayableApplianceWithRuntime;
+import com.cannontech.dr.assetavailability.SimpleAssetAvailability;
 import com.cannontech.dr.assetavailability.SimpleAssetAvailabilitySummary;
 import com.cannontech.dr.assetavailability.service.AssetAvailabilityService;
 import com.cannontech.dr.controlarea.filter.PriorityFilter;
@@ -60,13 +69,19 @@ import com.cannontech.dr.program.filter.ForControlAreaFilter;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMControlAreaTrigger;
+import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
+import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
+import com.cannontech.stars.dr.hardware.dao.InventoryDao;
+import com.cannontech.stars.dr.hardware.model.HardwareSummary;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.chart.service.AssetAvailabilityChartService;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.ListBackingBean;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Ordering;
+import com.google.common.collect.Sets;
 
 @Controller
 @CheckRoleProperty(value={YukonRoleProperty.SHOW_CONTROL_AREAS, YukonRoleProperty.DEMAND_RESPONSE},requireAll=true)
@@ -82,8 +97,20 @@ public class ControlAreaController {
     @Autowired private ControlAreaNameField controlAreaNameField;
     @Autowired private AssetAvailabilityService assetAvailabilityService;
     @Autowired private AssetAvailabilityChartService assetAvailabilityChartService;
+    @Autowired private InventoryDao inventoryDao;
+    @Autowired private ApplianceCategoryDao applianceCategoryDao;
     
+    private static Map<AssetAvailabilityCombinedStatus, String> colorMap;
+    static {
+        colorMap = new HashMap<>();
+        colorMap.put(AssetAvailabilityCombinedStatus.RUNNING, "green");
+        colorMap.put(AssetAvailabilityCombinedStatus.NOT_RUNNING, "orange");
+        colorMap.put(AssetAvailabilityCombinedStatus.UNAVAILABLE, "red");
+        colorMap.put(AssetAvailabilityCombinedStatus.OPTED_OUT, "grey");
+    }
+    private static final String ITEMS_PER_PAGE = "10";
 
+    
     public static class ControlAreaListBackingBean extends ListBackingBean {
         private String state;
         private IntegerRange priority = new IntegerRange();
@@ -239,6 +266,7 @@ public class ControlAreaController {
             SimpleAssetAvailabilitySummary aaSummary = 
                     assetAvailabilityService.getAssetAvailabilityFromDrGroup(controlArea.getPaoIdentifier());
             model.addAttribute("assetAvailabilitySummary", aaSummary);
+            model.addAttribute("assetTotal", aaSummary.getAll().size());
             model.addAttribute("pieJSONData", assetAvailabilityChartService.getJSONPieData(aaSummary, userContext));
         } catch(DynamicDataAccessException e) {
             model.addAttribute("dispatchDisconnected", true);
@@ -246,6 +274,159 @@ public class ControlAreaController {
         
         return "dr/controlArea/detail.jsp";
     }
+
+    
+    @RequestMapping("/controlArea/assetDetails")
+    public String assetDetails(@RequestParam(defaultValue=ITEMS_PER_PAGE) int itemsPerPage, 
+                               @RequestParam(defaultValue="1") int page,
+                               int assetId, 
+                               ModelMap model, 
+                               YukonUserContext context) {
+        
+        DisplayablePao controlArea = controlAreaService.getControlArea(assetId);
+
+        List<AssetAvailabilityDetails> resultsList = getResultsList(assetId, context, null);
+        
+        SearchResult<AssetAvailabilityDetails> result = 
+                SearchResult.pageBasedForWholeList(page, itemsPerPage, resultsList);
+
+        try {
+            SimpleAssetAvailabilitySummary aaSummary = 
+                    assetAvailabilityService.getAssetAvailabilityFromDrGroup(controlArea.getPaoIdentifier());
+            model.addAttribute("assetAvailabilitySummary", aaSummary);
+            model.addAttribute("pieJSONData", assetAvailabilityChartService.getJSONPieData(aaSummary, context));
+        } catch(DynamicDataAccessException e) {
+            model.addAttribute("dispatchDisconnected", true);
+        }
+        
+        model.addAttribute("assetId", assetId);
+        model.addAttribute("controlAreaId", assetId);
+        model.addAttribute("controlArea", controlArea);
+        model.addAttribute("type", "controlArea");
+        model.addAttribute("result", result);
+        model.addAttribute("colorMap", colorMap);
+        model.addAttribute("itemsPerPage", itemsPerPage);
+        
+        return "dr/assetDetails.jsp";
+    }
+
+    private List<AssetAvailabilityDetails> getResultsList(int assetId, YukonUserContext context, JSONArray filters) {
+
+        // Create a HashSet for the filtered AssetAvailabilityCombinedStatus values.
+        // Either null or an empty JSONArray will display all data values.
+        Set<AssetAvailabilityCombinedStatus> filterSet = Sets.newHashSet();
+        if (filters == null || filters.isEmpty()) {
+            filterSet.add(AssetAvailabilityCombinedStatus.RUNNING);
+            filterSet.add(AssetAvailabilityCombinedStatus.NOT_RUNNING);
+            filterSet.add(AssetAvailabilityCombinedStatus.OPTED_OUT);
+            filterSet.add(AssetAvailabilityCombinedStatus.UNAVAILABLE);
+        } else {
+            if (filters.contains(AssetAvailabilityCombinedStatus.RUNNING)) {
+                filterSet.add(AssetAvailabilityCombinedStatus.RUNNING);
+            }
+            if (filters.contains(AssetAvailabilityCombinedStatus.NOT_RUNNING)) {
+                filterSet.add(AssetAvailabilityCombinedStatus.NOT_RUNNING);
+            }
+            if (filters.contains(AssetAvailabilityCombinedStatus.OPTED_OUT)) {
+                filterSet.add(AssetAvailabilityCombinedStatus.OPTED_OUT);
+            }
+            if (filters.contains(AssetAvailabilityCombinedStatus.UNAVAILABLE)) {
+                filterSet.add(AssetAvailabilityCombinedStatus.UNAVAILABLE);
+            }
+        }
+        
+        DisplayablePao controlArea = controlAreaService.getControlArea(assetId);
+        paoAuthorizationService.verifyAllPermissions(context.getYukonUser(), controlArea, Permission.LM_VISIBLE);
+        
+        Map<Integer, SimpleAssetAvailability> resultMap = 
+                assetAvailabilityService.getAssetAvailability(controlArea.getPaoIdentifier());
+        List<AssetAvailabilityDetails> resultList = new ArrayList<>(resultMap.size());
+
+        // Create set of applianceCategoryId's (& eliminates duplicates)
+        Set<Integer> applianceCatIds = Sets.newHashSet();
+        for (SimpleAssetAvailability entry : resultMap.values()) {
+            ImmutableSet<DisplayableApplianceWithRuntime> appRuntime = entry.getApplianceRuntimes();
+            for (DisplayableApplianceWithRuntime dispAppRun : appRuntime) {
+                applianceCatIds.add(dispAppRun.getApplianceCategoryId());
+            }
+        }
+        Map<Integer, ApplianceCategory> appCatMap = applianceCategoryDao.getByApplianceCategoryIds(applianceCatIds);
+        
+        for (Map.Entry<Integer, SimpleAssetAvailability> entry : resultMap.entrySet()) {
+            
+            AssetAvailabilityDetails aaDetails = new AssetAvailabilityDetails();
+            HardwareSummary hwSum = inventoryDao.findHardwareSummaryById(entry.getKey());
+
+            // Set the Serial Number and Type columns
+            aaDetails.setSerialNumber(hwSum.getSerialNumber());
+            aaDetails.setType(hwSum.getHardwareType().toString());
+            
+            SimpleAssetAvailability value = entry.getValue();
+            // set the Last Communication column
+            aaDetails.setLastComm(value.getLastCommunicationTime());
+
+            // parse through the appRuntime set to get list of appliances & last runtime.
+            ImmutableSet<DisplayableApplianceWithRuntime> appRuntime = value.getApplianceRuntimes();
+            Iterator<DisplayableApplianceWithRuntime> iter = appRuntime.iterator();
+            String applianceStr = "";
+            Instant lastRun = null;
+            while (iter.hasNext()) {
+                DisplayableApplianceWithRuntime tmp = (DisplayableApplianceWithRuntime) iter.next();
+                ApplianceCategory appCat = appCatMap.get(tmp.getApplianceCategoryId());
+                // The Appliances will be a comma-separated list of the appliances for this device. 
+                // No Internationalization since this comes from YukonSelectionList.
+                applianceStr = (applianceStr == "") ? appCat.getDisplayName() 
+                                                    : applianceStr + ", " + appCat.getDisplayName();
+                Instant lnzrt = tmp.getLastNonZeroRuntime();
+                if (lnzrt != null) {
+                    if (lastRun == null) {
+                        lastRun = lnzrt;  
+                    } else {
+                        lastRun = (lastRun.isAfter(lnzrt)) ? lastRun : lnzrt;
+                    }
+                }
+            }
+            aaDetails.setAppliances(applianceStr);
+            aaDetails.setLastRun(lastRun);
+
+            aaDetails.setAvailability(value.getCombinedStatus());
+            if (filterSet.contains(aaDetails.getAvailability())) {
+                resultList.add(aaDetails);
+            } else {
+                aaDetails = null;
+            }
+        }
+        return resultList;
+    }
+
+    /**
+     * Used for paging and filtering operations.
+     */
+    @RequestMapping("/controlArea/page")
+    public String page(ModelMap model, 
+                       YukonUserContext context,
+                       String type,
+                       String assetId,
+                       @RequestParam(defaultValue=ITEMS_PER_PAGE) int itemsPerPage, 
+                       @RequestParam(defaultValue="1") int page,
+                       String filter) {
+
+        JSONArray filters = (filter == null || filter.length() == 0) ? null : JSONArray.fromObject(filter);
+        List<AssetAvailabilityDetails> resultsList = getResultsList(Integer.parseInt(assetId), context, filters);
+
+        SearchResult<AssetAvailabilityDetails> result = 
+                SearchResult.pageBasedForWholeList(page, itemsPerPage, resultsList);
+        
+        model.addAttribute("result", result);
+        model.addAttribute("type", type);
+        model.addAttribute("assetId", assetId);
+        model.addAttribute("colorMap", colorMap);
+        model.addAttribute("itemsPerPage", itemsPerPage);
+        
+        return "dr/assetTable.jsp";
+    }
+
+
 
     @RequestMapping("/controlArea/sendEnableConfirm")
     public String sendEnableConfirm(ModelMap modelMap, int controlAreaId, boolean isEnabled,
@@ -363,8 +544,8 @@ public class ControlAreaController {
     // TIME WINDOW - validate, confirm
     @RequestMapping("/controlArea/sendChangeTimeWindowConfirm")
     public String sendChangeTimeWindowConfirm(ModelMap modelMap, int controlAreaId,
-								    		  @ModelAttribute("controlAreaTimeWindowDto") ControlAreaTimeWindowDto controlAreaTimeWindowDto, 
-											  BindingResult bindingResult,
+                                              @ModelAttribute("controlAreaTimeWindowDto") ControlAreaTimeWindowDto controlAreaTimeWindowDto, 
+                                              BindingResult bindingResult,
                                               YukonUserContext userContext, FlashScope flashScope) {
 
         DisplayablePao controlArea = controlAreaService.getControlArea(controlAreaId);
@@ -378,8 +559,8 @@ public class ControlAreaController {
         controlAreaTimeWindowDtoValidator.validate(controlAreaTimeWindowDto, bindingResult);
 
         if(bindingResult.hasErrors()) {
-        	List<MessageSourceResolvable> errorsForBindingResult = YukonValidationUtils.errorsForBindingResult(bindingResult);
-        	flashScope.setError(errorsForBindingResult);
+            List<MessageSourceResolvable> errorsForBindingResult = YukonValidationUtils.errorsForBindingResult(bindingResult);
+            flashScope.setError(errorsForBindingResult);
             return "dr/controlArea/getChangeTimeWindowValues.jsp";
         }
         
@@ -434,12 +615,12 @@ public class ControlAreaController {
         
         TriggersDto triggersDto = new TriggersDto();
         for (LMControlAreaTrigger trigger : triggerVector) {
-        	if (trigger.getTriggerNumber().intValue() == 1) {
-        		triggersDto.setTrigger1(trigger);
-        	}
-        	if (trigger.getTriggerNumber().intValue() == 2) {
-        		triggersDto.setTrigger2(trigger);
-        	}
+            if (trigger.getTriggerNumber().intValue() == 1) {
+                triggersDto.setTrigger1(trigger);
+            }
+            if (trigger.getTriggerNumber().intValue() == 2) {
+                triggersDto.setTrigger2(trigger);
+            }
         }
 
         modelMap.addAttribute("triggersDto", triggersDto);
@@ -451,9 +632,9 @@ public class ControlAreaController {
     // TRIGGER VALUES - validate, send
     @RequestMapping("/controlArea/triggerChange")
     public String triggerChange(HttpServletResponse resp, ModelMap modelMap, int controlAreaId, 
-					    		@ModelAttribute("triggersDto") TriggersDto triggersDto, 
-								BindingResult bindingResult, YukonUserContext userContext, 
-								FlashScope flashScope) throws IOException {
+                                @ModelAttribute("triggersDto") TriggersDto triggersDto, 
+                                BindingResult bindingResult, YukonUserContext userContext, 
+                                FlashScope flashScope) throws IOException {
 
         DisplayablePao controlArea = controlAreaService.getControlArea(controlAreaId);
         LiteYukonUser yukonUser = userContext.getYukonUser();
@@ -464,17 +645,17 @@ public class ControlAreaController {
         
         triggersDtoValidator.validate(triggersDto, bindingResult);
         if (bindingResult.hasErrors()) {
-        	
-        	List<MessageSourceResolvable> errorsForBindingResult = YukonValidationUtils.errorsForBindingResult(bindingResult);
-        	flashScope.setError(errorsForBindingResult);
-        	
-        	modelMap.addAttribute("controlArea", controlArea);
-        	return "dr/controlArea/getChangeTriggerValues.jsp";
+            
+            List<MessageSourceResolvable> errorsForBindingResult = YukonValidationUtils.errorsForBindingResult(bindingResult);
+            flashScope.setError(errorsForBindingResult);
+            
+            modelMap.addAttribute("controlArea", controlArea);
+            return "dr/controlArea/getChangeTriggerValues.jsp";
         }
         
         controlAreaService.changeTriggers(controlAreaId,
-						        		  triggersDto.getTrigger1().getThreshold(), triggersDto.getTrigger1().getMinRestoreOffset(),
-						        		  triggersDto.getTrigger2().getThreshold(), triggersDto.getTrigger2().getMinRestoreOffset());
+                                          triggersDto.getTrigger1().getThreshold(), triggersDto.getTrigger1().getMinRestoreOffset(),
+                                          triggersDto.getTrigger2().getThreshold(), triggersDto.getTrigger2().getMinRestoreOffset());
 
         demandResponseEventLogService.threeTierControlAreaTriggersChanged(yukonUser,
                                                                           controlArea.getName(),
@@ -494,37 +675,37 @@ public class ControlAreaController {
     private Validator triggersDtoValidator = new SimpleValidator<TriggersDto>(TriggersDto.class) {
         @Override
         public void doValidation(TriggersDto target, Errors errors) {
-        	
-        	for (LMControlAreaTrigger trigger : target.getTriggers()) {
-        		
-        		if (trigger.getTriggerType() == TriggerType.THRESHOLD || trigger.getTriggerType() == TriggerType.THRESHOLD_POINT) {
-        		
-	        		int triggerNumber = trigger.getTriggerNumber();
-	        		Double threshold = trigger.getThreshold();
-	        		Double minRestoreOffset = trigger.getMinRestoreOffset();
-	        		String thresholdFieldName = "trigger" + triggerNumber + ".threshold";
-	        		String offsetFieldName = "trigger" + triggerNumber + ".minRestoreOffset";
-	        		
-	        		if (trigger.getTriggerType() == TriggerType.THRESHOLD && 
-	        		    threshold == null && errors.getFieldErrorCount(thresholdFieldName) == 0) {
-	        			errors.rejectValue(thresholdFieldName, "getChangeTriggerValues.thresholdBlank");
-	        		}
-	        		
-	        		if (threshold != null && threshold >= 1000000.0) {
-	        			errors.rejectValue(thresholdFieldName, "getChangeTriggerValues.thresholdOverLimit");
-	        		}
-	        		if (threshold != null && threshold <= -1000000.0) {
-	        			errors.rejectValue(thresholdFieldName, "getChangeTriggerValues.thresholdUnderLimit");
-	        		}
-	        		if (minRestoreOffset != null && minRestoreOffset >= 100000.0) {
-	        			errors.rejectValue(offsetFieldName, "getChangeTriggerValues.offsetOverLimit");
-	        		}
-	        		if (minRestoreOffset != null && minRestoreOffset <= -100000.0) {
-	        			errors.rejectValue(offsetFieldName, "getChangeTriggerValues.offsetUnderLimit");
-	        		}
-	        		
-        		}
-        	}
+            
+            for (LMControlAreaTrigger trigger : target.getTriggers()) {
+                
+                if (trigger.getTriggerType() == TriggerType.THRESHOLD || trigger.getTriggerType() == TriggerType.THRESHOLD_POINT) {
+                
+                    int triggerNumber = trigger.getTriggerNumber();
+                    Double threshold = trigger.getThreshold();
+                    Double minRestoreOffset = trigger.getMinRestoreOffset();
+                    String thresholdFieldName = "trigger" + triggerNumber + ".threshold";
+                    String offsetFieldName = "trigger" + triggerNumber + ".minRestoreOffset";
+                    
+                    if (trigger.getTriggerType() == TriggerType.THRESHOLD && 
+                        threshold == null && errors.getFieldErrorCount(thresholdFieldName) == 0) {
+                        errors.rejectValue(thresholdFieldName, "getChangeTriggerValues.thresholdBlank");
+                    }
+                    
+                    if (threshold != null && threshold >= 1000000.0) {
+                        errors.rejectValue(thresholdFieldName, "getChangeTriggerValues.thresholdOverLimit");
+                    }
+                    if (threshold != null && threshold <= -1000000.0) {
+                        errors.rejectValue(thresholdFieldName, "getChangeTriggerValues.thresholdUnderLimit");
+                    }
+                    if (minRestoreOffset != null && minRestoreOffset >= 100000.0) {
+                        errors.rejectValue(offsetFieldName, "getChangeTriggerValues.offsetOverLimit");
+                    }
+                    if (minRestoreOffset != null && minRestoreOffset <= -100000.0) {
+                        errors.rejectValue(offsetFieldName, "getChangeTriggerValues.offsetUnderLimit");
+                    }
+                    
+                }
+            }
         }
     };
 
@@ -557,28 +738,28 @@ public class ControlAreaController {
     private Validator controlAreaTimeWindowDtoValidator = new SimpleValidator<ControlAreaTimeWindowDto>(ControlAreaTimeWindowDto.class) {
         @Override
         public void doValidation(ControlAreaTimeWindowDto target, Errors errors) {
-        	
-        	int startSeconds = 0;
+            
+            int startSeconds = 0;
             int stopSeconds = 0;
 
             try {
                 startSeconds = parseTime(target.getStartTime());
             } catch (NumberFormatException e) {
-            	errors.rejectValue("startTime", "getChangeTimeWindowValues.invalidStartTime");
+                errors.rejectValue("startTime", "getChangeTimeWindowValues.invalidStartTime");
             } catch (IllegalArgumentException e) {
-            	errors.rejectValue("startTime", "getChangeTimeWindowValues.invalidStartTime");
+                errors.rejectValue("startTime", "getChangeTimeWindowValues.invalidStartTime");
             }
             
             try {
                 stopSeconds = parseTime(target.getStopTime());
             } catch (NumberFormatException e) {
-            	errors.rejectValue("stopTime", "getChangeTimeWindowValues.invalidStopTime");
+                errors.rejectValue("stopTime", "getChangeTimeWindowValues.invalidStopTime");
             } catch (IllegalArgumentException e) {
-            	errors.rejectValue("stopTime", "getChangeTimeWindowValues.invalidStopTime");
+                errors.rejectValue("stopTime", "getChangeTimeWindowValues.invalidStopTime");
             }
 
             if (!errors.hasErrors() && startSeconds >= stopSeconds) {
-            	errors.rejectValue("startTime", "getChangeTimeWindowValues.startTimeAfterStopTime");
+                errors.rejectValue("startTime", "getChangeTimeWindowValues.startTimeAfterStopTime");
             }
         }
     };

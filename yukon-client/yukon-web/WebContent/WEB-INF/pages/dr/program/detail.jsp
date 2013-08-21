@@ -7,6 +7,19 @@
 
 <cti:standardPage module="dr" page="programDetail">
 
+<script type="text/javascript">
+jQuery(function() {
+
+    pingUnavailable = function() {
+//     FIXME - waiting for the Ping Service...
+        alert("Do the Ping Thing here...");
+    }
+
+    jQuery("#pingButton").click(pingUnavailable);
+
+})
+</script>
+
     <tags:simpleDialog id="drDialog"/>
     <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
     <cti:includeScript link="/JavaScript/calendarControl.js"/>
@@ -74,9 +87,27 @@
                         </span>
                     </c:when>
                     <c:otherwise>
-                        <dr:assetAvailabilityStatus assetId="${programId}" 
-                            assetAvailabilitySummary="${assetAvailabilitySummary}" 
-                            pieJSONData="${pieJSONData}"/>
+                        <c:choose>
+                            <c:when test="${assetTotal <= 0}">
+                                <span class="empty-list">
+                                    <cti:msg2 key="yukon.web.modules.operator.hardware.assetAvailability.noDevices"/>
+                                </span>
+                            </c:when>
+                            <c:otherwise>
+                                <dr:assetAvailabilityStatus assetId="${programId}" 
+                                    assetAvailabilitySummary="${assetAvailabilitySummary}" 
+                                    pieJSONData="${pieJSONData}"/>
+                                <cti:url var="assetsUrl" value="assetDetails">
+                                    <cti:param name="assetId" value="${programId}"/>
+                                </cti:url>
+                                <div><a href="${assetsUrl}">
+                                    <cti:msg2 key="yukon.web.modules.operator.hardware.assetAvailability.viewDetails"/></a>
+                                </div>
+                                <div class="actionArea">
+                                    <cti:button id="pingButton" nameKey="pingDevices" busy="true" classes="f-disableAfterClick"/>
+                                </div>
+                            </c:otherwise>
+                        </c:choose>
                     </c:otherwise>
                 </c:choose>
             </tags:sectionContainer2>

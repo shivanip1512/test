@@ -387,76 +387,96 @@
     <skin name="STANDARD" />
     <search bean="drSearchProducer" />
     <pages>
-        <page name="home" type="BASIC">
-            <link>/dr/home</link>
+      <page name="home" type="BASIC">
+        <link>/dr/home</link>
+        <pages>
+          <page name="scenarioList" type="BASIC">
+            <link>/dr/scenario/list</link>
             <pages>
-                <page name="scenarioList" type="BASIC">
-                    <link>/dr/scenario/list</link>
-                    <pages>
-                        <page name="scenarioDetail" type="DETAIL">
-                            <link>/dr/scenario/detail</link>
-                            <labelArgument>${scenario.name}</labelArgument>
-                        </page>
-                    </pages>
-                </page>
-                <page name="controlAreaList" type="BASIC">
-                    <link>/dr/controlArea/list</link>
-                    <pages>
-                        <page name="controlAreaDetail" type="DETAIL">
-                            <link>/dr/controlArea/detail</link>
-                            <labelArgument>${controlArea.name}</labelArgument>
-                        </page>
-                    </pages>
-                </page>
-                <page name="programList" type="BASIC">
-                    <link>/dr/program/list</link>
-                    <pages>
-                        <page name="programDetail" type="DETAIL">
-                            <link>/dr/program/detail</link>
-                            <labelArgument>${program.name}</labelArgument>
-                        </page>
-                    </pages>
-                </page>
-                <page name="loadGroupList" type="BASIC">
-                    <link>/dr/loadGroup/list</link>
-                    <pages>
-                        <page name="loadGroupDetail" type="DETAIL">
-                            <link>/dr/loadGroup/detail</link>
-                            <labelArgument>${loadGroup.name}</labelArgument>
-                        </page>
-                    </pages>
-                </page>
-                <page name="formulaList" type="BASIC">
-                    <link>/dr/formula/list</link>
-                    <pages>
-	                    <page name="formula.CREATE" type="BASIC">
-	                        <labelArgument>${formulaBean.name}</labelArgument>
-	                    </page>
-	                    <page name="formula.VIEW" type="DETAIL">
-                            <link>/dr/formula/view/${formulaBean.formulaId}</link>
-                            <labelArgument>${formulaBean.name}</labelArgument>
-                            <pages>
-                              <page name="formula.EDIT" type="DETAIL_CHILD">
-		                        <labelArgument>${formulaBean.name}</labelArgument>
-		                      </page>
-                            </pages>
-                        </page>
-                    </pages>
-                </page>
-                <page name="searchResults" type="BASIC" hideSearch="true">
-                    <link>/dr/search</link>
-                </page>
-                <page name="optOutAdmin" type="BASIC">
-                    <link>/stars/operator/optOut/admin</link>
-                </page>
-                <page name="optOutScheduledEvents" type="BASIC">
-                    <link>/stars/operator/optOut/admin/viewScheduled</link>
-                </page>
-                <page name="surveyList" type="BASIC">
-                    <link>/stars/optOutSurvey/list</link>
-                </page>
+              <page name="scenarioDetail" type="DETAIL">
+                <link>/dr/scenario/detail?scenarioId=${scenarioId}</link>
+                <labelArgument>${scenario.name}</labelArgument>
+                <pages>
+                  <page name="scenario.assetDetails" type="DETAIL_CHILD">
+                    <labelArgument>${scenario.name}</labelArgument>
+                  </page>
+                </pages>
+              </page>
             </pages>
-        </page>
+          </page>
+          <page name="controlAreaList" type="BASIC">
+            <link>/dr/controlArea/list</link>
+            <pages>
+              <page name="controlAreaDetail" type="DETAIL">
+                <link>/dr/controlArea/detail?controlAreaId=${controlAreaId}</link>
+                <labelArgument>${controlArea.name}</labelArgument>
+                <pages>
+                  <page name="controlArea.assetDetails" type="DETAIL_CHILD">
+                    <labelArgument>${controlArea.name}</labelArgument>
+                  </page>
+                </pages>
+              </page>
+            </pages>
+          </page>
+          <page name="programList" type="BASIC">
+            <link>/dr/program/list</link>
+            <pages>
+              <page name="programDetail" type="DETAIL">
+                <link>/dr/program/detail?programId=${programId}</link>
+                <labelArgument>${program.name}</labelArgument>
+                <pages>
+                  <page name="program.assetDetails" type="DETAIL_CHILD">
+                    <labelArgument>${program.name}</labelArgument>
+                  </page>
+                </pages>
+              </page>
+            </pages>
+          </page>
+          <page name="loadGroupList" type="BASIC">
+            <link>/dr/loadGroup/list</link>
+            <pages>
+              <page name="loadGroupDetail" type="DETAIL">
+                <link>/dr/loadGroup/detail?loadGroupId=${loadGroupId}</link>
+                <labelArgument>${loadGroup.name}</labelArgument>
+                <pages>
+                  <page name="loadGroup.assetDetails" type="DETAIL_CHILD">
+                    <labelArgument>${loadGroup.name}</labelArgument>
+                  </page>
+                </pages>
+              </page>
+            </pages>
+          </page>
+          <page name="formulaList" type="BASIC">
+            <link>/dr/formula/list</link>
+            <pages>
+              <page name="formula.CREATE" type="BASIC">
+                <labelArgument>${formulaBean.name}</labelArgument>
+              </page>
+              <page name="formula.VIEW" type="DETAIL">
+                <link>/dr/formula/view/${formulaBean.formulaId}</link>
+                <labelArgument>${formulaBean.name}</labelArgument>
+                <pages>
+                  <page name="formula.EDIT" type="DETAIL_CHILD">
+                    <labelArgument>${formulaBean.name}</labelArgument>
+                  </page>
+                </pages>
+              </page>
+            </pages>
+          </page>
+          <page name="searchResults" type="BASIC" hideSearch="true">
+            <link>/dr/search</link>
+          </page>
+          <page name="optOutAdmin" type="BASIC">
+            <link>/stars/operator/optOut/admin</link>
+          </page>
+          <page name="optOutScheduledEvents" type="BASIC">
+            <link>/stars/operator/optOut/admin/viewScheduled</link>
+          </page>
+          <page name="surveyList" type="BASIC">
+            <link>/stars/optOutSurvey/list</link>
+          </page>
+        </pages>
+      </page>
     </pages>
   </module>
 

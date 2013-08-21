@@ -22,11 +22,10 @@ jQuery(function() {
         var url = jQuery(event.currentTarget).data('url');
         jQuery.ajax({
             url: url,
-            method: 'get',
-            success: function(data) {
-                var parent = jQuery(event.currentTarget).closest(".one");
-                parent.html(data);
-            }
+            method: 'get'
+        }).done(function(data) {
+            var parent = jQuery(event.currentTarget).closest(".one");
+            parent.html(data);
         });
         return false;
     });

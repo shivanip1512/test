@@ -2,33 +2,7 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 
-<!-- Demand Response Module Config -->
-<entry key="yukon.web.modules.dr.controlAreaList.pageName">Control Areas</entry>
-<entry key="yukon.web.modules.dr.controlAreaList.pageDescription">Control Areas</entry>
-<entry key="yukon.web.modules.dr.controlAreaDetail.pageName">{0}</entry>
-<entry key="yukon.web.modules.dr.controlAreaDetail.pageDescription">{0}</entry>
-<entry key="yukon.web.modules.dr.scenarioList.pageName">Scenarios</entry>
-<entry key="yukon.web.modules.dr.scenarioList.pageDescription">Scenarios</entry>
-<entry key="yukon.web.modules.dr.scenarioDetail.pageName">{0}</entry>
-<entry key="yukon.web.modules.dr.scenarioDetail.pageDescription">{0}</entry>
-<entry key="yukon.web.modules.dr.programList.pageName">Programs</entry>
-<entry key="yukon.web.modules.dr.programList.pageDescription">Programs</entry>
-<entry key="yukon.web.modules.dr.programDetail.pageName">{0}</entry>
-<entry key="yukon.web.modules.dr.programDetail.pageDescription">{0}</entry>
-<entry key="yukon.web.modules.dr.loadGroupList.pageName">Load Groups</entry>
-<entry key="yukon.web.modules.dr.loadGroupList.pageDescription">Load Groups</entry>
-<entry key="yukon.web.modules.dr.loadGroupDetail.pageName">{0}</entry>
-<entry key="yukon.web.modules.dr.loadGroupDetail.pageDescription">{0}</entry>
-<entry key="yukon.web.modules.dr.searchResults.pageName">Search</entry>
-<entry key="yukon.web.modules.dr.searchResults.pageDescription">Search</entry>
-<entry key="yukon.web.modules.dr.optOutAdmin.pageName">Opt Out Status</entry>
-<entry key="yukon.web.modules.dr.optOutAdmin.pageDescription">Opt Out Status</entry>    
-<entry key="yukon.web.modules.dr.optOutScheduledEvents.pageName">Scheduled Opt Outs</entry>
-<entry key="yukon.web.modules.dr.optOutScheduledEvents.pageDescription">Scheduled Opt Outs</entry>
-<entry key="yukon.web.modules.dr.formulaList.pageName">Estimated Load Formulas</entry>
-<entry key="yukon.web.modules.dr.formulaList.pageDescription">Estimated Load Formulas</entry>
-
-<!-- General Demand Response -->
+<!-- Module Wide Keys -->
 <entry key="yukon.web.modules.dr.pingDevices.label">Ping Devices</entry>
 <entry key="yukon.web.modules.dr.pingDevices.labelBusy">Pinging</entry>
 <entry key="yukon.web.modules.dr.assetAvailability.title">Asset Availability</entry>
@@ -56,6 +30,59 @@
 <entry key="yukon.web.modules.dr.paoType.LM_GROUP_SADIGITAL">SA Digital Group</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_GROUP_VERSACOM">Versacom Group</entry>
 <entry key="yukon.web.modules.dr.paoType.MACRO_GROUP">Macro Group</entry>
+
+<!-- Asset Availability Details -->
+<entry key="yukon.web.modules.dr.scenario.assetDetails.pageName">Asset Availability</entry>
+<entry key="yukon.web.modules.dr.scenario.assetDetails.pageDescription">{0}</entry>
+<entry key="yukon.web.modules.dr.scenario.assetDetails.contextualPageName">Asset Availability</entry>
+<entry key="yukon.web.modules.dr.controlArea.assetDetails.pageName">Asset Availability</entry>
+<entry key="yukon.web.modules.dr.controlArea.assetDetails.pageDescription">{0}</entry>
+<entry key="yukon.web.modules.dr.controlArea.assetDetails.contextualPageName">Asset Availability</entry>
+<entry key="yukon.web.modules.dr.program.assetDetails.pageName">Asset Availability</entry>
+<entry key="yukon.web.modules.dr.program.assetDetails.pageDescription">{0}</entry>
+<entry key="yukon.web.modules.dr.program.assetDetails.contextualPageName">Asset Availability</entry>
+<entry key="yukon.web.modules.dr.loadGroup.assetDetails.pageName">Asset Availability</entry>
+<entry key="yukon.web.modules.dr.loadGroup.assetDetails.pageDescription">{0}</entry>
+<entry key="yukon.web.modules.dr.loadGroup.assetDetails.contextualPageName">Asset Availability</entry>
+<entry key="yukon.web.modules.dr.controlArea.assetDetails.notRunning.label">Not Running</entry>
+<entry key="yukon.web.modules.dr.controlArea.assetDetails.optedOut.label">Opted Out</entry>
+<entry key="yukon.web.modules.dr.controlArea.assetDetails.running.label">Running</entry>
+<entry key="yukon.web.modules.dr.controlArea.assetDetails.unavailable.label">Unavailable</entry>
+
+<entry key="yukon.web.modules.dr.assetDetails.status.RUNNING">Running</entry>
+<entry key="yukon.web.modules.dr.assetDetails.status.NOT_RUNNING">Not Running</entry>
+<entry key="yukon.web.modules.dr.assetDetails.status.UNAVAILABLE">Unavailable</entry>
+<entry key="yukon.web.modules.dr.assetDetails.status.OPTED_OUT">Opted Out</entry>
+
+<!-- Control Area list-->
+<entry key="yukon.web.modules.dr.controlAreaList.pageName">Control Areas</entry>
+<entry key="yukon.web.modules.dr.controlAreaList.pageDescription">Control Areas</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.pageName">{0}</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.pageDescription">{0}</entry>
+
+<!-- Scenario list-->
+<entry key="yukon.web.modules.dr.scenarioList.pageName">Scenarios</entry>
+<entry key="yukon.web.modules.dr.scenarioList.pageDescription">Scenarios</entry>
+<entry key="yukon.web.modules.dr.scenarioDetail.pageName">{0}</entry>
+<entry key="yukon.web.modules.dr.scenarioDetail.pageDescription">{0}</entry>
+<!-- Program list -->
+<entry key="yukon.web.modules.dr.programList.pageName">Programs</entry>
+<entry key="yukon.web.modules.dr.programList.pageDescription">Programs</entry>
+<entry key="yukon.web.modules.dr.programDetail.pageName">{0}</entry>
+<entry key="yukon.web.modules.dr.programDetail.pageDescription">{0}</entry>
+<!-- Load Group list -->
+<entry key="yukon.web.modules.dr.loadGroupList.pageName">Load Groups</entry>
+<entry key="yukon.web.modules.dr.loadGroupList.pageDescription">Load Groups</entry>
+<entry key="yukon.web.modules.dr.loadGroupDetail.pageName">{0}</entry>
+<entry key="yukon.web.modules.dr.loadGroupDetail.pageDescription">{0}</entry>
+<!-- Search Results -->
+<entry key="yukon.web.modules.dr.searchResults.pageName">Search</entry>
+<entry key="yukon.web.modules.dr.searchResults.pageDescription">Search</entry>
+<!-- opt out -->
+<entry key="yukon.web.modules.dr.optOutAdmin.pageName">Opt Out Status</entry>
+<entry key="yukon.web.modules.dr.optOutAdmin.pageDescription">Opt Out Status</entry>    
+<entry key="yukon.web.modules.dr.optOutScheduledEvents.pageName">Scheduled Opt Outs</entry>
+<entry key="yukon.web.modules.dr.optOutScheduledEvents.pageDescription">Scheduled Opt Outs</entry>
 
 <!--  Control Area Field Values -->
 <entry key="yukon.web.modules.dr.controlArea.value.STATE.ACTIVE">Active</entry>

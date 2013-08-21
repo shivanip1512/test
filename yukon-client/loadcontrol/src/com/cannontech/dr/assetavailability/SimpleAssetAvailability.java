@@ -46,6 +46,10 @@ public final class SimpleAssetAvailability {
         return status;
     }
 
+    public AssetAvailabilityCombinedStatus getCombinedStatus() {
+        return AssetAvailabilityCombinedStatus.valueOf(status, isOptedOut);
+    }
+
     public boolean isOptedOut() {
         return isOptedOut;
     }
