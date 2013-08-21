@@ -15,28 +15,28 @@
             <cti:button nameKey="edit"/>
             <span class="description">normal button</span>
         </div>
-        <pre class="code">&lt;cti:button nameKey=&quot;edit&quot;/&gt;</pre>
+        <pre class="code prettyprint">&lt;cti:button nameKey=&quot;edit&quot;/&gt;</pre>
     </div>
     <div class="button-example section">
         <div class="clearfix">
             <cti:button nameKey="edit" disabled="true"/>
             <span class="description">normal disabled button</span>
         </div>
-        <pre class="code">&lt;cti:button nameKey=&quot;edit&quot; disabled=&quot;true&quot;/&gt;</pre>
+        <pre class="code prettyprint">&lt;cti:button nameKey=&quot;edit&quot; disabled=&quot;true&quot;/&gt;</pre>
     </div>
     <div class="button-example section">
         <div class="clearfix">
             <cti:button nameKey="edit" icon="icon-pencil"/>
             <span class="description">button with icon</span>
         </div>
-        <pre class="code">&lt;cti:button nameKey=&quot;edit&quot; icon=&quot;icon-pencil&quot;/&gt;</pre>
+        <pre class="code prettyprint">&lt;cti:button nameKey=&quot;edit&quot; icon=&quot;icon-pencil&quot;/&gt;</pre>
     </div>
     <div class="button-example section">
         <div class="clearfix">
             <cti:button nameKey="edit" icon="icon-pencil" disabled="true"/>
             <span class="description">disabled button with icon</span>
         </div>
-        <pre class="code">&lt;cti:button nameKey=&quot;edit&quot; icon=&quot;icon-pencil&quot; disabled=&quot;true&quot;/&gt;</pre>
+        <pre class="code prettyprint">&lt;cti:button nameKey=&quot;edit&quot; icon=&quot;icon-pencil&quot; disabled=&quot;true&quot;/&gt;</pre>
     </div>
     <div class="button-example section">
         <div class="clearfix">
@@ -49,7 +49,7 @@
             </cm:dropdown>
             <span class="description">dropdown menu button</span>
         </div>
-        <pre class="code">&lt;cm:dropdown type=&quot;button&quot; key=&quot;yukon.web.defaults.actions&quot; containerCssClass=&quot;fl&quot;&gt;
+        <pre class="code prettyprint">&lt;cm:dropdown type=&quot;button&quot; key=&quot;yukon.web.defaults.actions&quot; containerCssClass=&quot;fl&quot;&gt;
     &lt;cm:dropdownOption icon=&quot;icon-pencil&quot;&gt;Edit&lt;/cm:dropdownOption&gt;
     &lt;cm:dropdownOption icon=&quot;icon-page-copy&quot;&gt;Copy&lt;/cm:dropdownOption&gt;
     &lt;cm:dropdownOption icon=&quot;icon-cross&quot;&gt;Delete&lt;/cm:dropdownOption&gt;
@@ -65,14 +65,14 @@
             <cti:button nameKey="save" classes="action primary"/>
             <span class="description">primary action button</span>
         </div>
-        <pre class="code">&lt;cti:button nameKey=&quot;save&quot; classes=&quot;action primary&quot;/&gt;</pre>
+        <pre class="code prettyprint">&lt;cti:button nameKey=&quot;save&quot; classes=&quot;action primary&quot;/&gt;</pre>
     </div>
     <div class="button-example section">
         <div class="clearfix">
             <cti:button nameKey="save" classes="action primary" disabled="true"/>
             <span class="description">disabled primary action button</span>
         </div>
-        <pre class="code">&lt;cti:button nameKey=&quot;save&quot; classes=&quot;action primary&quot; disabled=&quot;true&quot;/&gt;</pre>
+        <pre class="code prettyprint">&lt;cti:button nameKey=&quot;save&quot; classes=&quot;action primary&quot; disabled=&quot;true&quot;/&gt;</pre>
     </div>
 </tags:sectionContainer>
 
@@ -83,28 +83,28 @@
             <cti:button nameKey="save" classes="action primary f-disableAfterClick"/>
             <span class="description">primary action button that will disable after clicking</span>
         </div>
-        <pre class="code">&lt;cti:button nameKey=&quot;save&quot; classes=&quot;action primary f-disableAfterClick&quot;/&gt;</pre>
+        <pre class="code prettyprint">&lt;cti:button nameKey=&quot;save&quot; classes=&quot;action primary f-disableAfterClick&quot;/&gt;</pre>
     </div>
     <div class="button-example section">
         <div class="clearfix">
             <cti:button nameKey="readNow" classes="action primary f-disableAfterClick" busy="true"/>
             <span class="description">primary action button that will disable after clicking with busy text</span>
         </div>
-        <pre class="code">&lt;cti:button nameKey=&quot;readNow&quot; classes=&quot;action primary f-disableAfterClick&quot; busy=&quot;true&quot;/&gt;</pre>
+        <pre class="code prettyprint">&lt;cti:button nameKey=&quot;readNow&quot; classes=&quot;action primary f-disableAfterClick&quot; busy=&quot;true&quot;/&gt;</pre>
     </div>
     <div class="button-example section">
         <div class="clearfix">
 	        <cti:button nameKey="readNow" classes="f-disableAfterClick" busy="true" icon="icon-bullet-go"/>
             <span class="description">button that will disable after clicking with busy text and busy icon</span>
 	    </div>
-        <pre class="code">&lt;cti:button nameKey=&quot;readNow&quot; classes=&quot;f-disableAfterClick&quot; busy=&quot;true&quot; icon=&quot;icon-bullet-go&quot;/&gt;</pre>
+        <pre class="code prettyprint">&lt;cti:button nameKey=&quot;readNow&quot; classes=&quot;f-disableAfterClick&quot; busy=&quot;true&quot; icon=&quot;icon-bullet-go&quot;/&gt;</pre>
     </div>
     <div class="button-example section">
         <div class="clearfix">
             <cti:button nameKey="delete" classes="f-disableAfterClick" busy="true" icon="icon-cross" renderMode="buttonImage"/>
             <span class="description">button with no text that will disable after clicking with busy icon</span>
         </div>
-        <pre class="code">&lt;cti:button nameKey=&quot;delete&quot; classes=&quot;f-disableAfterClick&quot; busy=&quot;true&quot; icon=&quot;icon-cross&quot; renderMode=&quot;buttonImage&quot;/&gt;</pre>
+        <pre class="code prettyprint">&lt;cti:button nameKey=&quot;delete&quot; classes=&quot;f-disableAfterClick&quot; busy=&quot;true&quot; icon=&quot;icon-cross&quot; renderMode=&quot;buttonImage&quot;/&gt;</pre>
     </div>
     <div class="button-example section">
         <div class="clearfix">
@@ -114,7 +114,7 @@
             <span class="description">a group of buttons that will all disable after clicking any one of them</span>
         </div>
         <div class="clearfix">
-            <pre class="code">&lt;cti:button nameKey=&quot;update&quot; classes=&quot;f-disableAfterClick action primary&quot; data-disable-group=&quot;them-buttons&quot;/&gt;<br/>&lt;cti:button nameKey=&quot;delete&quot; classes=&quot;f-disableAfterClick delete&quot; data-disable-group=&quot;them-buttons&quot;/&gt;<br/>&lt;cti:button nameKey=&quot;cancel&quot; classes=&quot;f-disableAfterClick&quot; data-disable-group=&quot;them-buttons&quot;/&gt;</pre>
+            <pre class="code prettyprint">&lt;cti:button nameKey=&quot;update&quot; classes=&quot;f-disableAfterClick action primary&quot; data-disable-group=&quot;them-buttons&quot;/&gt;<br/>&lt;cti:button nameKey=&quot;delete&quot; classes=&quot;f-disableAfterClick delete&quot; data-disable-group=&quot;them-buttons&quot;/&gt;<br/>&lt;cti:button nameKey=&quot;cancel&quot; classes=&quot;f-disableAfterClick&quot; data-disable-group=&quot;them-buttons&quot;/&gt;</pre>
         </div>
     </div>
 </tags:sectionContainer>
@@ -137,7 +137,7 @@
             <span class="description">a button that chooses criteria</span>
         </div>
         <div class="clearfix">
-            <pre class="code">&lt;cm:criteria label=&quot;Device Type:&quot;&gt;
+            <pre class="code prettyprint">&lt;cm:criteria label=&quot;Device Type:&quot;&gt;
     &lt;cm:criteriaOption value=&quot;RFN420FX&quot; checked=&quot;true&quot;&gt;RFN-420fX&lt;/cm:criteriaOption&gt;
     &lt;cm:criteriaOption value=&quot;RFN420FD&quot; checked=&quot;true&quot;&gt;RFN-420fD&lt;/cm:criteriaOption&gt;
     &lt;cm:criteriaOption value=&quot;RFN420FL&quot; checked=&quot;true&quot;&gt;RFN-420fL&lt;/cm:criteriaOption&gt;

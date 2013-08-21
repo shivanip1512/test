@@ -6,6 +6,7 @@
 
 <cti:standardPage module="support" page="uiDemos">
 
+<script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
 <cti:includeScript link="JQUERY_COOKIE"/>
 
 <script type="text/javascript">
