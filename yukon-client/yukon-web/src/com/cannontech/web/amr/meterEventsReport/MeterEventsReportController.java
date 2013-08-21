@@ -310,6 +310,10 @@ public class MeterEventsReportController {
     @RequestMapping
     public String reportAll(HttpServletRequest request, ModelMap model, YukonUserContext userContext, boolean includeDisabledPaos)
             throws ServletRequestBindingException, DeviceCollectionCreationException {
+        
+        ScheduledFileExportData exportData = new ScheduledFileExportData();
+        model.addAttribute("exportData", exportData);
+        
         MeterEventsReportFilterBackingBean backingBean = new MeterEventsReportFilterBackingBean(userContext);
         backingBean.setFromInstant(backingBean.getFromInstant().minus(Duration.standardDays(30)));
         backingBean.setIncludeDisabledPaos(includeDisabledPaos);
