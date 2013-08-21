@@ -382,6 +382,25 @@ public final class CtiUtilities {
         return getYukonBase() + System.getProperty("file.separator") + EXPORT_ARCHIVE_DIR;
     }
     
+    public static String getArchiveDirPath(boolean create) {
+        String archivePath = getArchiveDirPath();
+        File f = new File(archivePath);
+        if (!f.exists()) {
+            if (create) {
+                boolean createSuccess = f.mkdir();
+                if (createSuccess) {
+                    return archivePath;
+                } else {
+                    return null;
+                }   
+            } else {
+                return null;
+            }
+        } else {
+            return archivePath;
+        }    
+    }
+    
     public final static Character getFalseCharacter() {
         return falseChar;
     }
@@ -1000,4 +1019,5 @@ public final class CtiUtilities {
             return new Instant(input.getTime());
         }
     };
+
 }

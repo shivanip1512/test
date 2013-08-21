@@ -259,7 +259,7 @@ public abstract class ScheduledFileExportTask extends YukonTaskBase {
     protected File createArchiveFile(DateTime now, String defaultFileExtension) {
         String finalName = this.getExportFileName();
         String fileExtension = defaultFileExtension;
-        String filePath = CtiUtilities.getArchiveDirPath();
+        String filePath = CtiUtilities.getArchiveDirPath(true);
         if (appendDateToFileName) {
             SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(timestampPatternField);
             String dateString = DATE_FORMAT.format(now.toDate());
