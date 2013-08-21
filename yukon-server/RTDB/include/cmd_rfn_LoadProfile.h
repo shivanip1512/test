@@ -1,7 +1,7 @@
 #pragma once
 
 #include "cmd_rfn.h"
-
+#include "ctidate.h"
 
 
 namespace Cti        {
@@ -34,7 +34,8 @@ protected:
     {
         TlvType_VoltageProfileConfiguration     = 0x01,
         TlvType_LoadProfileState                = 0x02,
-        TlvType_GetProfilePoints                = 0x03
+        TlvType_GetProfilePointsResponse        = 0x03,
+        TlvType_GetProfilePointsRequest         = 0x04
     };
 
     RfnLoadProfileCommand( const Operation operation );
@@ -43,7 +44,7 @@ protected:
 
     virtual unsigned char getOperation() const;
 
-    virtual Bytes getData();
+    virtual Bytes getCommandData();
 
     virtual void populateTlvs( std::vector< TypeLengthValue > & tlvs );
 
@@ -54,8 +55,8 @@ protected:
 
 public:
 
-    virtual RfnResult decode( const CtiTime now,
-                              const RfnResponse & response ) = 0;
+    virtual RfnResult decodeCommand( const CtiTime now,
+                                     const RfnResponse & response ) = 0;
 
     virtual RfnResult error( const CtiTime now,
                              const YukonError_t error_code );
@@ -89,8 +90,8 @@ public:
                                            const unsigned demand_interval_seconds,
                                            const unsigned load_profile_interval_minutes );
 
-    virtual RfnResult decode( const CtiTime now,
-                              const RfnResponse & response );
+    virtual RfnResult decodeCommand( const CtiTime now,
+                                     const RfnResponse & response );
 
     unsigned getDemandIntervalSeconds() const;
     unsigned getLoadProfileIntervalMinutes() const;
@@ -127,8 +128,8 @@ public:
 
     RfnLoadProfileRecordingCommand( ResultHandler & rh, const RecordingOption option );
 
-    virtual RfnResult decode( const CtiTime now,
-                              const RfnResponse & response );
+    virtual RfnResult decodeCommand( const CtiTime now,
+                                     const RfnResponse & response );
 
     RecordingOption getRecordingOption() const;
 
@@ -137,6 +138,29 @@ private:
     ResultHandler & _rh;
 
     RecordingOption _option;
+};
+
+
+////
+
+
+class IM_EX_DEVDB RfnLoadProfileReadPointsCommand : public RfnLoadProfileCommand
+{
+    const CtiDate _begin;
+    const CtiDate _end;
+
+protected:
+
+    virtual void populateTlvs( std::vector< TypeLengthValue > & tlvs );
+
+public:
+
+    RfnLoadProfileReadPointsCommand( const CtiTime &now,
+                                     const CtiDate begin,
+                                     const CtiDate end );
+
+    virtual RfnResult decodeCommand( const CtiTime now,
+                                     const RfnResponse & response );
 };
 
 

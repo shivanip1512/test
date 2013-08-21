@@ -7,8 +7,6 @@
 #include "exe_ptchg.h"
 #include "executorfactory.h"
 
-class CtiConnectionManager;
-
 class IM_EX_CTIVANGOGH CtiVanGoghExecutorFactory : public CtiExecutorFactory
 {
 private:

@@ -31,7 +31,7 @@ BOOST_AUTO_TEST_CASE(test_no_metrics)
 
     // execute
     {
-        RfnCommand::RfnRequest rcv = lcdConfiguration.execute(execute_time);
+        RfnCommand::RfnRequest rcv = lcdConfiguration.executeCommand(execute_time);
 
         std::vector<unsigned char> exp = boost::assign::list_of
                 (0x69)(0x00)(0x00);
@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_CASE(test_no_metrics)
         std::vector<unsigned char> response = boost::assign::list_of
                 (0x71)(0x00);
 
-        RfnCommand::RfnResult rcv = lcdConfiguration.decode(execute_time, response);
+        RfnCommand::RfnResult rcv = lcdConfiguration.decodeCommand(execute_time, response);
 
         std::string exp = "No display metrics";
 
@@ -65,7 +65,7 @@ BOOST_AUTO_TEST_CASE(test_3_items)
 
     // execute
     {
-        RfnCommand::RfnRequest rcv = lcdConfiguration.execute(execute_time);
+        RfnCommand::RfnRequest rcv = lcdConfiguration.executeCommand(execute_time);
 
         std::vector<unsigned char> exp = boost::assign::list_of
                 (0x69)(0x00)(0x03)(0x00)(0x01)(0x02);
@@ -80,7 +80,7 @@ BOOST_AUTO_TEST_CASE(test_3_items)
         std::vector<unsigned char> response = boost::assign::list_of
                 (0x71)(0x03)(0x00)(0x01)(0x02);
 
-        RfnCommand::RfnResult rcv = lcdConfiguration.decode(execute_time, response);
+        RfnCommand::RfnResult rcv = lcdConfiguration.decodeCommand(execute_time, response);
 
         std::string exp = "Display metric 1: Metric Slot Disabled\n"
                           "Display metric 2: No Segments\n"
@@ -98,7 +98,7 @@ BOOST_AUTO_TEST_CASE(test_3_items_readonly)
 
     // execute
     {
-        RfnCommand::RfnRequest rcv = lcdConfiguration.execute(execute_time);
+        RfnCommand::RfnRequest rcv = lcdConfiguration.executeCommand(execute_time);
 
         std::vector<unsigned char> exp = boost::assign::list_of
                 (0x69)(0x01)(0x00); // read_only -> operation code = 0x01, zero metric items
@@ -113,7 +113,7 @@ BOOST_AUTO_TEST_CASE(test_3_items_readonly)
         std::vector<unsigned char> response = boost::assign::list_of
                 (0x71)(0x03)(0x00)(0x01)(0x02);
 
-        RfnCommand::RfnResult rcv = lcdConfiguration.decode(execute_time, response);
+        RfnCommand::RfnResult rcv = lcdConfiguration.decodeCommand(execute_time, response);
 
         std::string exp = "Display metric 1: Metric Slot Disabled\n"
                           "Display metric 2: No Segments\n"
@@ -137,7 +137,7 @@ BOOST_AUTO_TEST_CASE(test_all_items)
 
     // execute
     {
-        RfnCommand::RfnRequest rcv = lcdConfiguration.execute(execute_time);
+        RfnCommand::RfnRequest rcv = lcdConfiguration.executeCommand(execute_time);
 
         std::vector<unsigned char> exp = boost::assign::list_of
                 (0x69)(0x00)(0x25)(0x00)(0x01)(0x02)(0x03)(0x04)(0x05)(0x06)(0x07)(0x08)
@@ -158,7 +158,7 @@ BOOST_AUTO_TEST_CASE(test_all_items)
                 (0x14)(0x15)(0x16)(0x17)(0x18)(0x19)(0x1A)(0x1B)(0x1C)(0x1D)(0x1E)
                 (0x1F)(0x20)(0x21)(0x22)(0x23)(0x24);
 
-        RfnCommand::RfnResult rcv = lcdConfiguration.decode(execute_time, response);
+        RfnCommand::RfnResult rcv = lcdConfiguration.decodeCommand(execute_time, response);
 
         std::string exp = "Display metric 1: Metric Slot Disabled\n"
                           "Display metric 2: No Segments\n"

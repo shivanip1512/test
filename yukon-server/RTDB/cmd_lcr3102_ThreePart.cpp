@@ -51,7 +51,7 @@ DlcCommand::request_ptr Lcr3102ThreePartCommand::error(const CtiTime now, const 
 {
     if( description.empty() )
     {
-        description = GetError(error_code);
+        description = GetErrorString(error_code);
     }
 
     description += "\n";

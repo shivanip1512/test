@@ -5,7 +5,6 @@ Class-Path:
  common.jar 
  jradius-client.jar 
  billing.jar 
- rwav.jar 
  yukonappserver.jar 
  loadcontrol.jar 
  jcfield401K.jar 

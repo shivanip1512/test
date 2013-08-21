@@ -11,8 +11,8 @@
 class CtiConfigManager;
 
 
-namespace Cti       {
-namespace Config    {
+namespace Cti {
+namespace Config {
 
 class IM_EX_CONFIG DeviceConfig
 {

@@ -1,13 +1,17 @@
 include $(COMPILEBASE)\global.inc
 include $(COMPILEBASE)\rwglobal.inc
 
+
 INCLPATHS+= \
 -I$(COMMON)\include \
 -I$(MSG)\include \
 -I$(BOOST_INCLUDE) \
 -I$(SQLAPI)\include \
 -I$(RW) \
--I$(ACTIVEMQ)\include \
+-I$(ACTIVEMQ_INCLUDE) \
+-I$(APR_INCLUDE) \
+-I$(THRIFT_INCLUDE) \
+-I$(MSG)\Serialization
 
 
 .PATH.H = \
@@ -21,8 +25,7 @@ INCLPATHS+= \
 ;$(PIL)\include \
 ;$(PROTOCOL)\include \
 ;$(DISPATCH)\include \
-;$(MSG)\include \
-
+;$(MSG)\include
 
 
 OBJS=\
@@ -38,7 +41,11 @@ LMSepRestoreMessage.obj \
 RfnBroadcastMessage.obj \
 ControlHistoryAssociationResponse.obj \
 amq_connection.obj \
+amq_util.obj \
 connection.obj \
+connection_client.obj \
+connection_Server.obj \
+connection_listener.obj \
 dll_msg.obj \
 message.obj \
 msg_cmd.obj \
@@ -48,7 +55,6 @@ msg_multi.obj \
 msg_multiwrap.obj \
 msg_notif_alarm.obj \
 msg_notif_email.obj \
-msg_notif_email_attachment.obj \
 msg_notif_lmcontrol.obj \
 msg_pcrequest.obj \
 msg_pcreturn.obj \
@@ -61,12 +67,31 @@ msg_server_req.obj \
 msg_server_resp.obj \
 msg_signal.obj \
 msg_tag.obj \
-msg_trace.obj \
+msg_trace.obj
+
+
+SERIALIZATION_OBJS=\
+message_factory.obj \
+message_serialization.obj
+
+SERIALIZATION_DIR=\
+Serialization
+
+SERIALIZATION_CPP=\
+$(SERIALIZATION_DIR)\$[Separators," $(SERIALIZATION_DIR)\\",$[StrReplace,.obj,.cpp,$(SERIALIZATION_OBJS)]]
+
+
+LIBS = \
+$(COMPILEBASE)\lib\ctibase.lib \
+$(COMPILEBASE)\lib\ctithriftmsg.lib \
+$(RWLIBS) \
+$(BOOST_LIBS) \
+$(ACTIVEMQ_LIB) \
+$(THRIFT_LIB) \
 
 
 MESSAGE_FULLBUILD = $[Filename,$(OBJ),MessageFullBuild,target]
 
-ACTIVEMQLIB=$(ACTIVEMQ)\lib\activemq-cpp.lib
 
 CTIPROGS=\
 ctimsg.dll
@@ -83,15 +108,15 @@ $(MESSAGE_FULLBUILD) :
         @touch $@
         @echo:
         @echo Compiling cpp to obj
-        $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PCHFLAGS) $(PARALLEL) $(INCLPATHS) /D_DLL_MESSAGE -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(OBJS)]
+        $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PCHFLAGS) $(PARALLEL) $(INCLPATHS) /D_DLL_MESSAGE -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(OBJS)] $(SERIALIZATION_CPP)
 
 
-ctimsg.dll:    $(MESSAGE_FULLBUILD) $(OBJS) Makefile $(OBJ)\ctimsg.res
+ctimsg.dll:    $(MESSAGE_FULLBUILD) $(OBJS) $(SERIALIZATION_OBJS) Makefile $(OBJ)\ctimsg.res
                 @build -nologo -f $(_InputFile) id
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
-                $(RWCPPINVOKE) $(INCLPATHS) $(RWLINKFLAGS) $(DLLFLAGS) -Fe..\$@ $(OBJS) id_ctimsg.obj -link $(RWLIBS) $(BOOST_LIBS) $(ACTIVEMQLIB) $(COMPILEBASE)\lib\ctibase.lib $(LINKFLAGS) ctimsg.res
+                $(RWCPPINVOKE) $(INCLPATHS) $(RWLINKFLAGS) $(DLLFLAGS) -Fe..\$@ $(OBJS) $(SERIALIZATION_OBJS) id_ctimsg.obj -link $(LIBS) $(LINKFLAGS) ctimsg.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
@@ -150,7 +175,11 @@ id_ctimsg.obj:    id_ctimsg.cpp include\id_ctimsg.h
 amq_connection.obj:	precompiled.h amq_connection.h thread.h mutex.h \
 		dlldefs.h guard.h utility.h ctitime.h queues.h cticalls.h \
 		os2_2w32.h types.h numstr.h critical_section.h \
-		StreamableMessage.h logger.h CtiPCPtrQueue.h
+		StreamableMessage.h logger.h CtiPCPtrQueue.h amq_util.h \
+		readers_writer_lock.h
+amq_util.obj:	precompiled.h amq_util.h dlldefs.h readers_writer_lock.h \
+		critical_section.h guard.h utility.h ctitime.h queues.h \
+		cticalls.h os2_2w32.h types.h numstr.h
 capcontroloperationmessage.obj:	precompiled.h CtiTime.h dlldefs.h \
 		CapControlOperationMessage.h StreamableMessage.h
 connection.obj:	precompiled.h collectable.h connection.h dlldefs.h \
@@ -161,19 +190,57 @@ connection.obj:	precompiled.h collectable.h connection.h dlldefs.h \
 		message.h rwutil.h database_connection.h dbaccess.h \
 		database_reader.h row_reader.h boost_time.h boostutil.h \
 		msg_multi.h msg_pdata.h pointdefs.h pointtypes.h msg_ptreg.h \
-		msg_reg.h queue.h cparms.h configkey.h configval.h
+		msg_reg.h queue.h cparms.h configkey.h configval.h \
+		readers_writer_lock.h critical_section.h amq_util.h \
+		countdown_timer.h
+connection_client.obj:	precompiled.h connection_client.h connection.h \
+		dlldefs.h exchange.h dllbase.h dsm2.h cticonnect.h yukon.h \
+		types.h ctidbgmem.h netports.h mutex.h guard.h utility.h \
+		ctitime.h queues.h cticalls.h os2_2w32.h numstr.h dsm2err.h \
+		words.h optional.h logger.h thread.h CtiPCPtrQueue.h \
+		string_utility.h message.h collectable.h rwutil.h \
+		database_connection.h dbaccess.h database_reader.h \
+		row_reader.h boost_time.h boostutil.h msg_multi.h msg_pdata.h \
+		pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h queue.h \
+		cparms.h configkey.h configval.h readers_writer_lock.h \
+		critical_section.h amq_constants.h amq_util.h
+connection_listener.obj:	precompiled.h connection_listener.h dlldefs.h \
+		connection.h exchange.h dllbase.h dsm2.h cticonnect.h yukon.h \
+		types.h ctidbgmem.h netports.h mutex.h guard.h utility.h \
+		ctitime.h queues.h cticalls.h os2_2w32.h numstr.h dsm2err.h \
+		words.h optional.h logger.h thread.h CtiPCPtrQueue.h \
+		string_utility.h message.h collectable.h rwutil.h \
+		database_connection.h dbaccess.h database_reader.h \
+		row_reader.h boost_time.h boostutil.h msg_multi.h msg_pdata.h \
+		pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h queue.h \
+		cparms.h configkey.h configval.h readers_writer_lock.h \
+		critical_section.h amq_constants.h amq_util.h
+connection_server.obj:	precompiled.h connection_server.h connection.h \
+		dlldefs.h exchange.h dllbase.h dsm2.h cticonnect.h yukon.h \
+		types.h ctidbgmem.h netports.h mutex.h guard.h utility.h \
+		ctitime.h queues.h cticalls.h os2_2w32.h numstr.h dsm2err.h \
+		words.h optional.h logger.h thread.h CtiPCPtrQueue.h \
+		string_utility.h message.h collectable.h rwutil.h \
+		database_connection.h dbaccess.h database_reader.h \
+		row_reader.h boost_time.h boostutil.h msg_multi.h msg_pdata.h \
+		pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h queue.h \
+		cparms.h configkey.h configval.h readers_writer_lock.h \
+		critical_section.h connection_listener.h amq_constants.h \
+		amq_util.h
 controlhistoryassociationresponse.obj:	precompiled.h \
 		ControlHistoryAssociationResponse.h dlldefs.h
 dispatchconnection.obj:	precompiled.h DispatchConnection.h \
-		connection.h dlldefs.h exchange.h dllbase.h dsm2.h \
-		cticonnect.h yukon.h types.h ctidbgmem.h netports.h mutex.h \
-		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
-		numstr.h dsm2err.h words.h optional.h logger.h thread.h \
-		CtiPCPtrQueue.h string_utility.h message.h collectable.h \
-		rwutil.h database_connection.h dbaccess.h database_reader.h \
-		row_reader.h boost_time.h boostutil.h msg_multi.h msg_pdata.h \
-		pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h queue.h \
-		cparms.h configkey.h configval.h MessageListener.h msg_cmd.h
+		connection_client.h connection.h dlldefs.h exchange.h \
+		dllbase.h dsm2.h cticonnect.h yukon.h types.h ctidbgmem.h \
+		netports.h mutex.h guard.h utility.h ctitime.h queues.h \
+		cticalls.h os2_2w32.h numstr.h dsm2err.h words.h optional.h \
+		logger.h thread.h CtiPCPtrQueue.h string_utility.h message.h \
+		collectable.h rwutil.h database_connection.h dbaccess.h \
+		database_reader.h row_reader.h boost_time.h boostutil.h \
+		msg_multi.h msg_pdata.h pointdefs.h pointtypes.h msg_ptreg.h \
+		msg_reg.h queue.h cparms.h configkey.h configval.h \
+		readers_writer_lock.h critical_section.h MessageListener.h \
+		msg_cmd.h amq_constants.h
 dispatchpointdatarequest.obj:	precompiled.h DispatchPointDataRequest.h \
 		yukon.h types.h ctidbgmem.h MessageListener.h message.h \
 		ctitime.h dlldefs.h collectable.h rwutil.h \
@@ -181,10 +248,11 @@ dispatchpointdatarequest.obj:	precompiled.h DispatchPointDataRequest.h \
 		cticonnect.h netports.h mutex.h guard.h utility.h queues.h \
 		cticalls.h os2_2w32.h numstr.h dsm2err.h words.h optional.h \
 		database_reader.h row_reader.h boost_time.h boostutil.h \
-		DispatchConnection.h connection.h exchange.h logger.h \
-		thread.h CtiPCPtrQueue.h string_utility.h msg_multi.h \
-		msg_pdata.h pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h \
-		queue.h cparms.h configkey.h configval.h PointDataRequest.h \
+		DispatchConnection.h connection_client.h connection.h \
+		exchange.h logger.h thread.h CtiPCPtrQueue.h string_utility.h \
+		msg_multi.h msg_pdata.h pointdefs.h pointtypes.h msg_ptreg.h \
+		msg_reg.h queue.h cparms.h configkey.h configval.h \
+		readers_writer_lock.h critical_section.h PointDataRequest.h \
 		msg_signal.h
 dll_msg.obj:	precompiled.h utility.h ctitime.h dlldefs.h queues.h \
 		cticalls.h os2_2w32.h types.h numstr.h cparms.h rwutil.h \
@@ -270,15 +338,6 @@ msg_notif_email.obj:	precompiled.h utility.h ctitime.h dlldefs.h \
 		guard.h CtiPCPtrQueue.h dllbase.h dsm2.h cticonnect.h yukon.h \
 		ctidbgmem.h netports.h dsm2err.h words.h optional.h message.h \
 		rwutil.h database_connection.h dbaccess.h database_reader.h \
-		row_reader.h boost_time.h boostutil.h \
-		msg_notif_email_attachment.h
-msg_notif_email_attachment.obj:	precompiled.h \
-		msg_notif_email_attachment.h logger.h dlldefs.h thread.h \
-		mutex.h guard.h utility.h ctitime.h queues.h cticalls.h \
-		os2_2w32.h types.h numstr.h CtiPCPtrQueue.h dllbase.h dsm2.h \
-		cticonnect.h yukon.h ctidbgmem.h netports.h dsm2err.h words.h \
-		optional.h message.h collectable.h rwutil.h \
-		database_connection.h dbaccess.h database_reader.h \
 		row_reader.h boost_time.h boostutil.h
 msg_notif_lmcontrol.obj:	precompiled.h msg_notif_lmcontrol.h dlldefs.h \
 		message.h ctitime.h ctidbgmem.h collectable.h rwutil.h \
@@ -383,15 +442,16 @@ pointdatahandler.obj:	precompiled.h PointDataHandler.h yukon.h types.h \
 		MessageListener.h msg_ptreg.h
 pointdatarequestfactory.obj:	precompiled.h PointDataRequestFactory.h \
 		PointDataRequest.h yukon.h types.h ctidbgmem.h ctitime.h \
-		dlldefs.h DispatchConnection.h connection.h exchange.h \
-		dllbase.h dsm2.h cticonnect.h netports.h mutex.h guard.h \
-		utility.h queues.h cticalls.h os2_2w32.h numstr.h dsm2err.h \
-		words.h optional.h logger.h thread.h CtiPCPtrQueue.h \
-		string_utility.h message.h collectable.h rwutil.h \
-		database_connection.h dbaccess.h database_reader.h \
-		row_reader.h boost_time.h boostutil.h msg_multi.h msg_pdata.h \
-		pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h queue.h \
-		cparms.h configkey.h configval.h MessageListener.h \
+		dlldefs.h DispatchConnection.h connection_client.h \
+		connection.h exchange.h dllbase.h dsm2.h cticonnect.h \
+		netports.h mutex.h guard.h utility.h queues.h cticalls.h \
+		os2_2w32.h numstr.h dsm2err.h words.h optional.h logger.h \
+		thread.h CtiPCPtrQueue.h string_utility.h message.h \
+		collectable.h rwutil.h database_connection.h dbaccess.h \
+		database_reader.h row_reader.h boost_time.h boostutil.h \
+		msg_multi.h msg_pdata.h pointdefs.h pointtypes.h msg_ptreg.h \
+		msg_reg.h queue.h cparms.h configkey.h configval.h \
+		readers_writer_lock.h critical_section.h MessageListener.h \
 		DispatchPointDataRequest.h
 porterresponsemessage.obj:	precompiled.h PorterResponseMessage.h \
 		dlldefs.h msg_pcreturn.h msg_multi.h collectable.h \
@@ -409,6 +469,23 @@ rfnbroadcastmessage.obj:	precompiled.h RfnBroadcastMessage.h dlldefs.h \
 		guard.h utility.h queues.h cticalls.h os2_2w32.h numstr.h \
 		dsm2err.h words.h optional.h database_reader.h row_reader.h \
 		boost_time.h boostutil.h
+server_client_serialization_test.obj:	precompiled.h message.h \
+		ctitime.h dlldefs.h ctidbgmem.h collectable.h rwutil.h \
+		yukon.h types.h database_connection.h dbaccess.h dllbase.h \
+		dsm2.h cticonnect.h netports.h mutex.h guard.h utility.h \
+		queues.h cticalls.h os2_2w32.h numstr.h dsm2err.h words.h \
+		optional.h database_reader.h row_reader.h boost_time.h \
+		boostutil.h msg_cmd.h msg_dbchg.h msg_lmcontrolhistory.h \
+		pointdefs.h msg_multi.h msg_pdata.h pointtypes.h \
+		msg_notif_alarm.h msg_notif_email.h logger.h thread.h \
+		CtiPCPtrQueue.h msg_notif_lmcontrol.h msg_pcrequest.h \
+		msg_pcreturn.h msg_ptreg.h msg_queuedata.h Msg_reg.h \
+		msg_requestcancel.h msg_server_req.h msg_server_resp.h \
+		msg_signal.h msg_tag.h msg_trace.h test_serialization.h \
+		test_serialization_helper.h connection_server.h connection.h \
+		exchange.h string_utility.h queue.h cparms.h configkey.h \
+		configval.h readers_writer_lock.h critical_section.h \
+		connection_listener.h
 test_message.obj:	message.h ctitime.h dlldefs.h ctidbgmem.h \
 		collectable.h rwutil.h yukon.h types.h database_connection.h \
 		dbaccess.h dllbase.h dsm2.h cticonnect.h netports.h mutex.h \
@@ -426,16 +503,34 @@ test_multi_msg.obj:	msg_multi.h collectable.h dlldefs.h msg_pdata.h \
 		boost_time.h boostutil.h
 test_pointdatarequest.obj:	PointDataRequestFactory.h \
 		PointDataRequest.h yukon.h types.h ctidbgmem.h ctitime.h \
-		dlldefs.h DispatchConnection.h connection.h exchange.h \
-		dllbase.h dsm2.h cticonnect.h netports.h mutex.h guard.h \
-		utility.h queues.h cticalls.h os2_2w32.h numstr.h dsm2err.h \
-		words.h optional.h logger.h thread.h CtiPCPtrQueue.h \
-		string_utility.h message.h collectable.h rwutil.h \
-		database_connection.h dbaccess.h database_reader.h \
-		row_reader.h boost_time.h boostutil.h msg_multi.h msg_pdata.h \
-		pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h queue.h \
-		cparms.h configkey.h configval.h MessageListener.h \
-		DispatchPointdataRequest.h
+		dlldefs.h DispatchConnection.h connection_client.h \
+		connection.h exchange.h dllbase.h dsm2.h cticonnect.h \
+		netports.h mutex.h guard.h utility.h queues.h cticalls.h \
+		os2_2w32.h numstr.h dsm2err.h words.h optional.h logger.h \
+		thread.h CtiPCPtrQueue.h string_utility.h message.h \
+		collectable.h rwutil.h database_connection.h dbaccess.h \
+		database_reader.h row_reader.h boost_time.h boostutil.h \
+		msg_multi.h msg_pdata.h pointdefs.h pointtypes.h msg_ptreg.h \
+		msg_reg.h queue.h cparms.h configkey.h configval.h \
+		readers_writer_lock.h critical_section.h MessageListener.h \
+		DispatchPointdataRequest.h amq_constants.h
+test_serialization.obj:	message.h ctitime.h dlldefs.h ctidbgmem.h \
+		collectable.h rwutil.h yukon.h types.h database_connection.h \
+		dbaccess.h dllbase.h dsm2.h cticonnect.h netports.h mutex.h \
+		guard.h utility.h queues.h cticalls.h os2_2w32.h numstr.h \
+		dsm2err.h words.h optional.h database_reader.h row_reader.h \
+		boost_time.h boostutil.h msg_cmd.h msg_dbchg.h \
+		msg_lmcontrolhistory.h pointdefs.h msg_multi.h msg_pdata.h \
+		pointtypes.h msg_notif_alarm.h msg_notif_email.h logger.h \
+		thread.h CtiPCPtrQueue.h msg_notif_lmcontrol.h \
+		msg_pcrequest.h msg_pcreturn.h msg_ptreg.h msg_queuedata.h \
+		Msg_reg.h msg_requestcancel.h msg_server_req.h \
+		msg_server_resp.h msg_signal.h msg_tag.h msg_trace.h \
+		test_serialization.h test_serialization_helper.h \
+		connection_server.h connection.h exchange.h string_utility.h \
+		queue.h cparms.h configkey.h configval.h \
+		readers_writer_lock.h critical_section.h \
+		connection_listener.h
 #ENDUPDATE#
 
 include $(COMPILEBASE)\versioninfo.inc

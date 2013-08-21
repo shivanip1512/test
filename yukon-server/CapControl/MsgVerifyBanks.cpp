@@ -3,7 +3,7 @@
 #include "MsgVerifyBanks.h"
 #include "ccid.h"
 
-RWDEFINE_COLLECTABLE( VerifyBanks, CTICCSUBVERIFICATIONMSG_ID )
+DEFINE_COLLECTABLE( VerifyBanks, CTICCSUBVERIFICATIONMSG_ID )
 
 VerifyBanks::VerifyBanks() : Inherited()
 {
@@ -28,7 +28,7 @@ VerifyBanks::~VerifyBanks()
 
 }
 
-bool VerifyBanks::getDisableOvUv()
+bool VerifyBanks::getDisableOvUv() const
 {
     return _disableOvUv;
 }
@@ -36,24 +36,6 @@ bool VerifyBanks::getDisableOvUv()
 void VerifyBanks::setDisableOvUv(bool disableOvUv)
 {
     _disableOvUv = disableOvUv;
-}
-
-void VerifyBanks::restoreGuts(RWvistream& iStream)
-{
-    Inherited::restoreGuts(iStream);
-
-    iStream >> _disableOvUv;
-
-    return;
-}
-
-void VerifyBanks::saveGuts(RWvostream& oStream) const
-{
-    Inherited::saveGuts(oStream);
-
-    oStream << _disableOvUv;
-
-    return;
 }
 
 VerifyBanks& VerifyBanks::operator=(const VerifyBanks& right)

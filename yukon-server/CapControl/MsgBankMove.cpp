@@ -3,7 +3,7 @@
 #include "MsgBankMove.h"
 #include "ccid.h"
 
-RWDEFINE_COLLECTABLE( CtiCCCapBankMoveMsg, CTICCCAPBANKMOVEMSG_ID )
+DEFINE_COLLECTABLE( CtiCCCapBankMoveMsg, CTICCCAPBANKMOVEMSG_ID )
 
 CtiCCCapBankMoveMsg::~CtiCCCapBankMoveMsg()
 {
@@ -38,34 +38,6 @@ float CtiCCCapBankMoveMsg::getCloseOrder() const
 float CtiCCCapBankMoveMsg::getTripOrder() const
 {
     return _tripOrder;
-}
-
-void CtiCCCapBankMoveMsg::restoreGuts(RWvistream& strm)
-{
-    Inherited::restoreGuts(strm);
-
-    strm >> _permanentflag
-         >> _oldfeederid
-         >> _newfeederid
-         >> _capswitchingorder
-         >> _closeOrder
-         >> _tripOrder;
-
-    return;
-}
-
-void CtiCCCapBankMoveMsg::saveGuts(RWvostream& strm) const
-{
-    Inherited::saveGuts(strm);
-
-    strm << _permanentflag
-         << _oldfeederid
-         << _newfeederid
-         << _capswitchingorder
-         << _closeOrder
-         << _tripOrder;
-
-    return;
 }
 
 CtiCCCapBankMoveMsg& CtiCCCapBankMoveMsg::operator=(const CtiCCCapBankMoveMsg& right)

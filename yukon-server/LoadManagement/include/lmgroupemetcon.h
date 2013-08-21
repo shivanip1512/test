@@ -13,7 +13,7 @@ class CtiLMGroupEmetcon : public CtiLMGroupBase
 
 public:
 
-RWDECLARE_COLLECTABLE( CtiLMGroupEmetcon )
+DECLARE_COLLECTABLE( CtiLMGroupEmetcon );
 
     CtiLMGroupEmetcon();
     CtiLMGroupEmetcon(Cti::RowReader &rdr);
@@ -30,10 +30,6 @@ RWDECLARE_COLLECTABLE( CtiLMGroupEmetcon )
     virtual CtiRequestMsg* createMasterCycleRequestMsg(LONG offTime, LONG period, int priority) const;
 
     virtual BOOL doesMasterCycleNeedToBeUpdated(CtiTime currentTime, CtiTime controlEndTime, ULONG offTime);
-
-    //Members inherited from RWCollectable
-    void restoreGuts(RWvistream& );
-    void saveGuts(RWvostream& ) const;
 
     CtiLMGroupEmetcon& operator=(const CtiLMGroupEmetcon& right);
 

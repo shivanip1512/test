@@ -885,7 +885,7 @@ INT CtiRouteCCU::assembleExpresscomRequest(CtiRequestMsg          *pReq,
     else
     {
         status = BADPARAM;
-        resultString = "Bad parameter in Expresscom command: \"" + parse.getCommandStr()+ "\" failed. Error " + CtiNumStr(status) + " - " + FormatError(status);
+        resultString = "Bad parameter in Expresscom command: \"" + parse.getCommandStr()+ "\" failed. Error " + CtiNumStr(status) + " - " + GetErrorString(status);
 
         CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, string(OutMessage->Request.CommandStr), resultString, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
 

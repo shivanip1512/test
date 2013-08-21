@@ -15,7 +15,6 @@ INCLPATHS+= \
 -I$(BOOST_INCLUDE) \
 -I$(SQLAPI)\include \
 -I$(RW) \
--I$(ACTIVEMQ)\include \
 
 
 .PATH.H = \
@@ -48,7 +47,8 @@ exe_pcreq.obj \
 pil_conmgr.obj \
 pil_exefct.obj \
 pilglob.obj \
-pilserver.obj
+pilserver.obj \
+mgr_rfn_request.obj \
 
 
 PIL_FULLBUILD = $[Filename,$(OBJ),PilFullBuild,target]
@@ -101,16 +101,17 @@ deps:
 
 
 #UPDATE#
-applist.obj:	precompiled.h applist.h con_mgr.h connection.h dlldefs.h \
-		exchange.h dllbase.h dsm2.h cticonnect.h yukon.h types.h \
-		ctidbgmem.h netports.h mutex.h guard.h utility.h ctitime.h \
-		queues.h cticalls.h os2_2w32.h numstr.h dsm2err.h words.h \
-		optional.h logger.h thread.h CtiPCPtrQueue.h string_utility.h \
-		message.h collectable.h rwutil.h database_connection.h \
-		dbaccess.h database_reader.h row_reader.h boost_time.h \
-		boostutil.h msg_multi.h msg_pdata.h pointdefs.h pointtypes.h \
-		msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
-		configval.h ctibase.h ctinexus.h
+applist.obj:	precompiled.h applist.h con_mgr.h connection_server.h \
+		connection.h dlldefs.h exchange.h dllbase.h dsm2.h \
+		cticonnect.h yukon.h types.h ctidbgmem.h netports.h mutex.h \
+		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
+		numstr.h dsm2err.h words.h optional.h logger.h thread.h \
+		CtiPCPtrQueue.h string_utility.h message.h collectable.h \
+		rwutil.h database_connection.h dbaccess.h database_reader.h \
+		row_reader.h boost_time.h boostutil.h msg_multi.h msg_pdata.h \
+		pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h queue.h \
+		cparms.h configkey.h configval.h readers_writer_lock.h \
+		critical_section.h connection_listener.h ctibase.h ctinexus.h
 exe_pcreq.obj:	precompiled.h message.h ctitime.h dlldefs.h ctidbgmem.h \
 		collectable.h rwutil.h yukon.h types.h database_connection.h \
 		dbaccess.h dllbase.h dsm2.h cticonnect.h netports.h mutex.h \
@@ -118,19 +119,20 @@ exe_pcreq.obj:	precompiled.h message.h ctitime.h dlldefs.h ctidbgmem.h \
 		dsm2err.h words.h optional.h database_reader.h row_reader.h \
 		boost_time.h boostutil.h pil_conmgr.h exchange.h logger.h \
 		thread.h CtiPCPtrQueue.h string_utility.h con_mgr.h \
-		connection.h msg_multi.h msg_pdata.h pointdefs.h pointtypes.h \
-		msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
-		configval.h ctibase.h ctinexus.h pilserver.h server_b.h \
-		critical_Section.h smartmap.h readers_writer_lock.h \
-		msg_pcrequest.h mgr_device.h rtdb.h hashkey.h \
-		hash_functions.h dev_base.h cmdparse.h ctitokenizer.h \
-		parsevalue.h dev_exclusion.h tbl_paoexclusion.h \
-		config_device.h rte_base.h dbmemobject.h tbl_pao_lite.h \
-		tbl_rtcomm.h resolvers.h db_entry_defines.h desolvers.h \
-		msg_signal.h tbl_static_paoinfo.h encryption.h tbl_base.h \
-		tbl_scanrate.h tbl_dyn_paoinfo.h pt_base.h tbl_pt_base.h \
-		slctdev.h mgr_point.h mgr_route.h repeaterrole.h mgr_config.h \
-		exe_pcreq.h executor.h
+		connection_server.h connection.h msg_multi.h msg_pdata.h \
+		pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h queue.h \
+		cparms.h configkey.h configval.h readers_writer_lock.h \
+		critical_section.h connection_listener.h ctibase.h ctinexus.h \
+		pilserver.h server_b.h smartmap.h msg_pcrequest.h \
+		mgr_device.h rtdb.h hashkey.h hash_functions.h dev_base.h \
+		cmdparse.h ctitokenizer.h parsevalue.h dev_exclusion.h \
+		tbl_paoexclusion.h config_device.h rte_base.h dbmemobject.h \
+		tbl_pao_lite.h tbl_rtcomm.h resolvers.h db_entry_defines.h \
+		desolvers.h msg_signal.h tbl_static_paoinfo.h encryption.h \
+		tbl_base.h tbl_scanrate.h tbl_dyn_paoinfo.h pt_base.h \
+		tbl_pt_base.h slctdev.h mgr_point.h mgr_route.h \
+		repeaterrole.h mgr_config.h amq_constants.h exe_pcreq.h \
+		executor.h
 pilglob.obj:	precompiled.h os2_2w32.h dlldefs.h types.h
 pilserver.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
 		dev_grp_versacom.h dev_base.h dsm2.h cticonnect.h yukon.h \
@@ -154,18 +156,20 @@ pilserver.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
 		tbl_dv_versacom.h vcomdefs.h dev_grp_point.h tbl_lmg_point.h \
 		dev_mct.h dev_carrier.h dev_dlcbase.h dev_single.h \
 		msg_pcreturn.h tbl_dv_scandata.h tbl_dv_wnd.h connection.h \
-		exchange.h msg_ptreg.h msg_reg.h queue.h prot_base.h xfer.h \
+		exchange.h msg_ptreg.h msg_reg.h queue.h \
+		readers_writer_lock.h critical_section.h prot_base.h xfer.h \
 		tbl_route.h tbl_carrier.h prot_emetcon.h cmd_dlc.h \
 		cmd_device.h tbl_metergrp.h tbl_loadprofile.h \
 		da_load_profile.h tbl_dv_mctiedport.h dev_rfn.h \
-		msg_rfnrequest.h CtiLocalConnect.h critical_section.h \
-		porter.h devicetypes.h queent.h pil_conmgr.h con_mgr.h \
-		pil_exefct.h executorfactory.h executor.h exe_cmd.h exe_reg.h \
-		pilserver.h server_b.h smartmap.h readers_writer_lock.h \
-		mgr_device.h rtdb.h slctdev.h mgr_point.h mgr_route.h \
-		repeaterrole.h mgr_config.h msg_cmd.h rte_ccu.h rte_xcu.h \
-		tbl_rtcarrier.h tbl_rtrepeater.h amq_connection.h \
-		PorterResponseMessage.h ctistring.h debug_timer.h
+		CtiLocalConnect.h porter.h devicetypes.h \
+		pil_conmgr.h con_mgr.h connection_server.h \
+		connection_listener.h pil_exefct.h executorfactory.h \
+		executor.h exe_cmd.h exe_reg.h pilserver.h server_b.h \
+		smartmap.h mgr_device.h rtdb.h slctdev.h mgr_point.h \
+		mgr_route.h repeaterrole.h mgr_config.h amq_constants.h \
+		msg_cmd.h rte_ccu.h rte_xcu.h tbl_rtcarrier.h \
+		tbl_rtrepeater.h amq_connection.h PorterResponseMessage.h \
+		ctistring.h debug_timer.h connection_client.h
 pil_conmgr.obj:	precompiled.h collectable.h pil_conmgr.h exchange.h \
 		dlldefs.h dllbase.h dsm2.h cticonnect.h yukon.h types.h \
 		ctidbgmem.h netports.h mutex.h guard.h utility.h ctitime.h \
@@ -173,9 +177,11 @@ pil_conmgr.obj:	precompiled.h collectable.h pil_conmgr.h exchange.h \
 		optional.h logger.h thread.h CtiPCPtrQueue.h string_utility.h \
 		message.h rwutil.h database_connection.h dbaccess.h \
 		database_reader.h row_reader.h boost_time.h boostutil.h \
-		con_mgr.h connection.h msg_multi.h msg_pdata.h pointdefs.h \
-		pointtypes.h msg_ptreg.h msg_reg.h queue.h cparms.h \
-		configkey.h configval.h ctibase.h ctinexus.h pil_exefct.h \
+		con_mgr.h connection_server.h connection.h msg_multi.h \
+		msg_pdata.h pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h \
+		queue.h cparms.h configkey.h configval.h \
+		readers_writer_lock.h critical_section.h \
+		connection_listener.h ctibase.h ctinexus.h pil_exefct.h \
 		executorfactory.h executor.h exe_cmd.h exe_reg.h msg_cmd.h
 pil_exefct.obj:	precompiled.h executorfactory.h collectable.h \
 		message.h ctitime.h dlldefs.h ctidbgmem.h rwutil.h yukon.h \
@@ -187,15 +193,15 @@ pil_exefct.obj:	precompiled.h executorfactory.h collectable.h \
 test_pilserver.obj:	pilserver.h dsm2.h cticonnect.h yukon.h types.h \
 		ctidbgmem.h dlldefs.h netports.h mutex.h guard.h utility.h \
 		ctitime.h queues.h cticalls.h os2_2w32.h numstr.h dsm2err.h \
-		words.h optional.h server_b.h con_mgr.h connection.h \
-		exchange.h dllbase.h logger.h thread.h CtiPCPtrQueue.h \
-		string_utility.h message.h collectable.h rwutil.h \
-		database_connection.h dbaccess.h database_reader.h \
+		words.h optional.h server_b.h con_mgr.h connection_server.h \
+		connection.h exchange.h dllbase.h logger.h thread.h \
+		CtiPCPtrQueue.h string_utility.h message.h collectable.h \
+		rwutil.h database_connection.h dbaccess.h database_reader.h \
 		row_reader.h boost_time.h boostutil.h msg_multi.h msg_pdata.h \
 		pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h queue.h \
-		cparms.h configkey.h configval.h ctibase.h ctinexus.h \
-		critical_Section.h smartmap.h readers_writer_lock.h \
-		msg_pcrequest.h mgr_device.h rtdb.h hashkey.h \
+		cparms.h configkey.h configval.h readers_writer_lock.h \
+		critical_section.h connection_listener.h ctibase.h ctinexus.h \
+		smartmap.h msg_pcrequest.h mgr_device.h rtdb.h hashkey.h \
 		hash_functions.h dev_base.h cmdparse.h ctitokenizer.h \
 		parsevalue.h dev_exclusion.h tbl_paoexclusion.h \
 		config_device.h rte_base.h dbmemobject.h tbl_pao_lite.h \
@@ -203,7 +209,7 @@ test_pilserver.obj:	pilserver.h dsm2.h cticonnect.h yukon.h types.h \
 		msg_signal.h tbl_static_paoinfo.h encryption.h tbl_base.h \
 		tbl_scanrate.h tbl_dyn_paoinfo.h pt_base.h tbl_pt_base.h \
 		slctdev.h mgr_point.h mgr_route.h repeaterrole.h mgr_config.h \
-		msg_pcreturn.h
+		amq_constants.h msg_pcreturn.h
 #ENDUPDATE#
 
 include $(COMPILEBASE)\versioninfo.inc

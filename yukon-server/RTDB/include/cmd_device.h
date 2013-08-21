@@ -68,6 +68,8 @@ protected:
     static std::vector<unsigned> getValueVectorFromBits(const Bytes &data, const unsigned start_offset, const unsigned length, const unsigned count);
 
     static void setBits(Bytes &data, const unsigned start_offset, const unsigned length, const unsigned value);
+
+    static unsigned getValueFromBitsLE(const Bytes &data, const unsigned start_offset, const unsigned length);
 };
 
 }

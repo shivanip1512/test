@@ -16,12 +16,12 @@ namespace Database {
 }
 }
 
-class CtiCCMonitorPoint : public RWCollectable
+class CtiCCMonitorPoint
 {
+public:
+    DECLARE_COLLECTABLE( CtiCCMonitorPoint );
 
 public:
-
-  RWDECLARE_COLLECTABLE( CtiCCMonitorPoint )
     CtiCCMonitorPoint();
     CtiCCMonitorPoint(Cti::RowReader& rdr);
     CtiCCMonitorPoint(const CtiCCMonitorPoint& point);
@@ -54,16 +54,11 @@ public:
     CtiCCMonitorPoint& setTimeStamp(CtiTime timeStamp);
     CtiCCMonitorPoint& setScanInProgress(bool flag);
 
-    virtual int compareTo(const RWCollectable* right) const;
 
     bool isDirty() const;
     void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
 
     void setDynamicData(Cti::RowReader& rdr);
-
-    //Members inherited from RWCollectable
-    void restoreGuts(RWvistream& );
-    void saveGuts(RWvostream& ) const;
 
     CtiCCMonitorPoint& operator=(const CtiCCMonitorPoint& right);
 

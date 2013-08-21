@@ -25,9 +25,7 @@
 #include "AttributeService.h"
 #include "DatabaseDaoFactory.h"
 
-#include "MsgCapControlEventLog.h"
-
-typedef std::set<RWCollectable*> CtiMultiMsg_set;
+#include "EventLogEntry.h"
 
 struct CcDbReloadInfo
 {
@@ -191,7 +189,7 @@ public:
     bool UpdateFeederBankListInDB(CtiCCFeeder* feeder);
     bool UpdateFeederSubAssignmentInDB(CtiCCSubstationBus* bus);
 
-    bool InsertCCEventLogInDB(CtiCCEventLogMsg* msg);
+    static bool InsertCCEventLogInDB(const Cti::CapControl::EventLogEntry &msg);
 
     bool findSpecialAreaByPointID(long point_id, PointIdToSpecialAreaMultiMap::iterator &begin, PointIdToSpecialAreaMultiMap::iterator &end);
     bool findAreaByPointID       (long point_id, PointIdToAreaMultiMap::iterator        &begin, PointIdToAreaMultiMap::iterator        &end);
@@ -447,8 +445,8 @@ public:
                                       PaoIdSet &modifiedStationIdsSet, CtiMultiMsg_vec &capMessages);
     CtiCCSubstationBus_set getAllSubBusesByIds(PaoIdSet modifiedBusIdsSet);
     void addVectorIdsToSet(const Cti::CapControl::PaoIdVector idVector, PaoIdSet &idSet);
-    void updateSubstationObjectSet(long substationId, CtiMultiMsg_set &modifiedStationsSet);
-    void updateAreaObjectSet(long areaId, CtiMultiMsg_set &modifiedAreasSet);
+    void updateSubstationObjectSet(long substationId, CtiCCSubstation_set &modifiedStationsSet);
+    void updateAreaObjectSet(long areaId, CtiCCArea_set &modifiedAreasSet);
     void clearDBReloadList();
     void insertUnsolicitedCapBankList(CtiCCCapBankPtr x);
     void removeCapbankFromUnsolicitedCapBankList(CtiCCCapBankPtr x);

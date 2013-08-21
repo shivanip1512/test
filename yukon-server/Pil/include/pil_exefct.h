@@ -5,8 +5,6 @@
 
 #include "executorfactory.h"
 
-class CtiConnectionManager;
-
 class IM_EX_CTIPIL CtiPILExecutorFactory : public CtiExecutorFactory
 {
 private:

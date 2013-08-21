@@ -3,7 +3,6 @@
 #include "executor.h"
 
 // Forward Declarations
-class CtiConnectionManager;
 class CtiServer;
 
 

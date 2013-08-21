@@ -163,7 +163,7 @@ DlcCommand::request_ptr Lcr3102HourlyDataLogCommand::error(const CtiTime now, co
 {
     if( description.empty() )
     {
-        description = GetError(error_code);
+        description = GetErrorString(error_code);
     }
 
     description += "\n";

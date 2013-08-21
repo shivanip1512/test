@@ -64,13 +64,12 @@ namespace capcontrol
         UNINSTALLED
     };
 }
-class CtiCCCapBank : public RWCollectable, public CapControlPao
+class CtiCCCapBank : public CapControlPao
 {
+public:
+    DECLARE_COLLECTABLE( CtiCCCapBank );
 
 public:
-
-  RWDECLARE_COLLECTABLE( CtiCCCapBank )
-
     CtiCCCapBank();
     CtiCCCapBank(Cti::RowReader& rdr);
     CtiCCCapBank(const CtiCCCapBank& cap);
@@ -249,9 +248,10 @@ public:
     CtiCCOperationStats& getOperationStats();
     CtiCCConfirmationStats& getConfirmationStats();
     CtiCCOriginalParent& getOriginalParent();
+    const CtiCCOriginalParent& getOriginalParent() const;
 
     CtiCCCapBank* replicate() const;
-    virtual int compareTo(const RWCollectable* right) const;
+    virtual int compareTo(const CtiCCCapBank* right) const;
 
     CtiCCTwoWayPointsPtr getTwoWayPoints();
 
@@ -272,9 +272,6 @@ public:
     void dumpDynamicPointResponseData();
 
     void setDynamicData(Cti::RowReader& rdr);
-
-    //Members inherited from RWCollectable
-    void saveGuts(RWvostream& ) const;
 
     CtiCCCapBank& operator=(const CtiCCCapBank& right);
 

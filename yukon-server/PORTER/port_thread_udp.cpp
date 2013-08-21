@@ -21,6 +21,8 @@
 
 #include "portfield.h"
 
+#include "connection_client.h"
+
 // Some Global Manager types to allow us some RTDB stuff.
 
 using namespace std;
@@ -447,7 +449,7 @@ void UdpPortHandler::sendDeviceIpAndPort( const CtiDeviceSingleSPtr &device, u_l
 
     if( !vgMsg->PointData().empty() )
     {
-        extern CtiConnection VanGoghConnection;
+        extern CtiClientConnection VanGoghConnection;
 
         VanGoghConnection.WriteConnQue(vgMsg.release());
     }

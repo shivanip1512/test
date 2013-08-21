@@ -24,7 +24,7 @@ using std::endl;
 
 extern ULONG _LM_DEBUG;
 
-RWDEFINE_COLLECTABLE( CtiLMGroupRipple, CTILMGROUPRIPPLE_ID )
+DEFINE_COLLECTABLE( CtiLMGroupRipple, CTILMGROUPRIPPLE_ID )
 
 /*---------------------------------------------------------------------------
     Constructors
@@ -194,31 +194,6 @@ BOOL CtiLMGroupRipple::doesMasterCycleNeedToBeUpdated(CtiTime currentTime, CtiTi
     }
 
     return returnBOOL;
-}
-
-/*-------------------------------------------------------------------------
-    restoreGuts
-
-    Restore self's state from the given stream
---------------------------------------------------------------------------*/
-void CtiLMGroupRipple::restoreGuts(RWvistream& istrm)
-{
-    CtiLMGroupBase::restoreGuts( istrm );
-
-    istrm >> _shedtime;
-}
-
-/*---------------------------------------------------------------------------
-    saveGuts
-
-    Save self's state onto the given stream
----------------------------------------------------------------------------*/
-void CtiLMGroupRipple::saveGuts(RWvostream& ostrm ) const
-{
-    CtiLMGroupBase::saveGuts( ostrm );
-
-    ostrm << _shedtime;
-    return;
 }
 
 /*---------------------------------------------------------------------------

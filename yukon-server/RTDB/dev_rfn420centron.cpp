@@ -68,7 +68,7 @@ const std::vector<std::string> displayMetricConfigKeys = boost::assign::list_of
     ( Config::RfnStrings::displayMetric26 );
 }
 
-int Rfn420CentronDevice::executePutConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &vgList, CtiMessageList &retList, RfnRequestMessages &rfnRequests)
+int Rfn420CentronDevice::executePutConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests)
 {
     Config::DeviceConfigSPtr deviceConfig = getDeviceConfig();
 
@@ -135,13 +135,14 @@ int Rfn420CentronDevice::executePutConfigDisplay(CtiRequestMsg *pReq, CtiCommand
             return ConfigNotCurrent;
         }
     }
-/*
-    RfnCommandSPtr lcdConfiguration(new Commands::RfnCentronLcdConfigurationCommand(*this, config_display_metrics));
 
-    return tryExecuteCommand(lcdConfiguration)
-               ? NoError
-               : NoMethod;*/
-    return NoMethod;
+    std::auto_ptr<Commands::RfnCommand> displayCommand(
+       new Commands::RfnCentronLcdConfigurationCommand(*this, config_display_metrics));
+
+    rfnRequests.push_back(
+       Commands::RfnCommandSPtr(displayCommand.release()));
+
+    return NoError;
 }
 
 

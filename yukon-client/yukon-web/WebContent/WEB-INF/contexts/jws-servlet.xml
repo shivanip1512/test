@@ -96,7 +96,6 @@
                 <value>lucene-core-3.4.0.jar</value>
                 <value>log4j-1.2.17.jar</value>
                 <value>guava-13.0.1.jar</value>
-                <value>rwav.jar</value>
                 <value>SqlServer.jar</value>
                 <value>jtds-1.3.0.jar</value>
                 <value>ojdbc6.jar</value>
@@ -140,6 +139,7 @@
                 <value>jcommon.jar</value>
                 <value>jloox30.jar</value>
                 <value>nagasena.jar</value>
+                <value>libthrift-0.9.0.jar</value>
             </set>
         </property>
     </bean>

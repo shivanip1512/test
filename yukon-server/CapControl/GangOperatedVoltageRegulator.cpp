@@ -12,7 +12,7 @@
 namespace Cti           {
 namespace CapControl    {
 
-RWDEFINE_COLLECTABLE( GangOperatedVoltageRegulator, CTIVOLTAGEREGULATOR_ID )
+DEFINE_COLLECTABLE( GangOperatedVoltageRegulator, CTIVOLTAGEREGULATOR_ID )
 
 
 const PointAttribute GangOperatedVoltageRegulator::attributes[] =
@@ -69,17 +69,6 @@ GangOperatedVoltageRegulator & GangOperatedVoltageRegulator::operator=(const Gan
     }
 
     return *this;
-}
-
-
-void GangOperatedVoltageRegulator::saveGuts(RWvostream & ostrm) const
-{
-    VoltageRegulator::saveGuts(ostrm);
-
-    ostrm
-        << _recentTapOperation
-        << _lastOperatingMode
-        << _lastCommandedOperatingMode;
 }
 
 

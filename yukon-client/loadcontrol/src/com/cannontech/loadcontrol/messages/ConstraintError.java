@@ -312,7 +312,7 @@ public enum ConstraintError {
 		this.errorCode = errorCode;
 	}
 	
-	private int getErrorCode() {
+	public int getErrorCode() {
 		return errorCode;
 	}
 	

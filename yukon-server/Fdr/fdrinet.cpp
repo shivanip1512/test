@@ -221,7 +221,6 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "msg_ptreg.h"
 #include "msg_pdata.h"
 #include "msg_signal.h"
-#include "connection.h"
 #include "pointtypes.h"
 #include "dllbase.h"
 #include "logger.h"

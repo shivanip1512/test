@@ -7,15 +7,16 @@
 
 #include "observe.h"
 #include "row_reader.h"
-                
+#include "collectable.h"
+
 class SmartGearBase;
                 
-class CtiLMProgramDirectGear : public RWCollectable
+class CtiLMProgramDirectGear
 {
 
 public:
 
-RWDECLARE_COLLECTABLE( CtiLMProgramDirectGear )
+DECLARE_COLLECTABLE( CtiLMProgramDirectGear );
 
     CtiLMProgramDirectGear();
     CtiLMProgramDirectGear(Cti::RowReader &rdr);
@@ -75,10 +76,6 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirectGear )
     CtiLMProgramDirectGear& setKWReduction(DOUBLE kw);
 
     virtual CtiLMProgramDirectGear* replicate() const;
-
-    //Members inherited from RWCollectable
-    void restoreGuts(RWvistream& );
-    void saveGuts(RWvostream& ) const;
 
     int operator==(const CtiLMProgramDirectGear& right) const;
     int operator!=(const CtiLMProgramDirectGear& right) const;

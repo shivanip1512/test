@@ -6,7 +6,6 @@ Class-Path:
  common.jar 
  yukonappserver.jar 
  tools.jar 
- rwav.jar 
  batik.jar 
  junit.jar 
  SqlServer.jar 

@@ -5,7 +5,7 @@
 #include "MsgVerifySelectedBank.h"
 #include "ccid.h"
 
-RWDEFINE_COLLECTABLE( VerifySelectedBank, VERIFY_SELECTED_BANK_MSG_ID )
+DEFINE_COLLECTABLE( VerifySelectedBank, VERIFY_SELECTED_BANK_MSG_ID )
 
 VerifySelectedBank::VerifySelectedBank() :
     Inherited()
@@ -30,7 +30,7 @@ VerifySelectedBank::~VerifySelectedBank()
 
 }
 
-long VerifySelectedBank::getBankId()
+long VerifySelectedBank::getBankId() const
 {
     return _bankId;
 }
@@ -38,24 +38,6 @@ long VerifySelectedBank::getBankId()
 void VerifySelectedBank::setBankId(long bankId)
 {
     _bankId = bankId;
-}
-
-void VerifySelectedBank::restoreGuts(RWvistream& iStream)
-{
-    Inherited::restoreGuts(iStream);
-
-    iStream >> _bankId;
-
-    return;
-}
-
-void VerifySelectedBank::saveGuts(RWvostream& oStream) const
-{
-    Inherited::saveGuts(oStream);
-
-    oStream << _bankId;
-
-    return;
 }
 
 VerifySelectedBank& VerifySelectedBank::operator=(const VerifySelectedBank& right)

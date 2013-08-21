@@ -11,7 +11,8 @@
 
 class DynamicCommand : public CapControlCommand
 {
-    RWDECLARE_COLLECTABLE( DynamicCommand );
+    public:
+        DECLARE_COLLECTABLE( DynamicCommand );
 
     private:
         typedef CapControlCommand Inherited;
@@ -31,19 +32,22 @@ class DynamicCommand : public CapControlCommand
 
        DynamicCommand();
 
-       void restoreGuts(RWvistream& iStream);
-       void saveGuts(RWvostream & oStream);
-
        bool getParameter(Parameter parameter, long& value);
        bool getParameter(Parameter parameter, double& value);
        CommandType getCommandType();
 
-    private:
-       CommandType _commandType;
-
        typedef std::map<int,long> LongParameterMap;
        typedef std::map<int,double> DoubleParameterMap;
 
+    private:
+       CommandType _commandType;
        LongParameterMap _longParameters;
        DoubleParameterMap _doubleParameters;
+
+    public:
+       // added for serialization
+       void setCommandType      ( const CommandType ctype )                { _commandType = ctype; }
+       void setLongParameters   ( const LongParameterMap& longParams )     { _longParameters = longParams; }
+       void setDoubleParameters ( const DoubleParameterMap& doubleParams ) { _doubleParameters = doubleParams; }
+
 };

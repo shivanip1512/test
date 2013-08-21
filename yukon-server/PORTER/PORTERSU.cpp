@@ -27,7 +27,6 @@
 #include <string.h>
 
 #include "color.h"
-#include "connection.h"
 #include "queues.h"
 #include "dsm2.h"
 #include "dsm2err.h"
@@ -149,7 +148,7 @@ INT SendError (OUTMESS *&OutMessage, USHORT ErrorCode, INMESS *PassedInMessage)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " DeviceID / TargetID " << OutMessage->DeviceID << " / " << OutMessage->TargetID << ", Error " << ErrorCode << " " << FormatError(ErrorCode) << endl;
+            dout << CtiTime() << " DeviceID / TargetID " << OutMessage->DeviceID << " / " << OutMessage->TargetID << ", Error " << ErrorCode << " " << GetErrorString(ErrorCode) << endl;
         }
     }
 

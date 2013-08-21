@@ -53,10 +53,6 @@ protected:
     enum
     {
         LPBlockEvacuationTime    = 300,
-
-        // Return value to allow non error returns
-        // where error was handled in code.
-        ExecutionComplete = NoError
     };
 
     enum ArmFlags

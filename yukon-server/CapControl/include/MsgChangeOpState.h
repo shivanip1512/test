@@ -6,7 +6,8 @@
 
 class ChangeOpState : public ItemCommand
 {
-    RWDECLARE_COLLECTABLE( ChangeOpState )
+    public:
+        DECLARE_COLLECTABLE( ChangeOpState );
 
     private:
         typedef ItemCommand Inherited;
@@ -17,11 +18,8 @@ class ChangeOpState : public ItemCommand
         ChangeOpState(const ChangeOpState& msg);
         ~ChangeOpState();
 
-        const std::string& getOpStateName();
+        const std::string& getOpStateName() const;
         void setOpStateName(const std::string& opStateName);
-
-        void restoreGuts(RWvistream& iStream);
-        void saveGuts(RWvostream& oStream) const;
 
         ChangeOpState& operator=(const ChangeOpState& right);
 

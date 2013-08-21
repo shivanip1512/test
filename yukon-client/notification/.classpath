@@ -2,7 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="/common"/>
-	<classpathentry kind="lib" path="/third-party/rwav.jar"/>
 	<classpathentry kind="src" path="/yukonappserver"/>
 	<classpathentry kind="lib" path="/third-party/jdom.jar">
 		<attributes>

@@ -33,10 +33,20 @@ using std::less;
 using std::endl;
 
 /*---------------------------------------------------------------------------
+    Constructor (should not be use)
+---------------------------------------------------------------------------*/
+CtiMCConnection::CtiMCConnection() :
+_valid(false),
+_connection( CtiListenerConnection("") )
+{
+}
+
+/*---------------------------------------------------------------------------
     Constructor
 ---------------------------------------------------------------------------*/
-CtiMCConnection::CtiMCConnection()
-: _valid(true), _closed(false), _in(), _out()//was _in(15) _out(100)   meaning max Capacity 100
+CtiMCConnection::CtiMCConnection( CtiListenerConnection& listenerConn ) :
+_valid(true),
+_connection( listenerConn )
 {
 }
 
@@ -48,33 +58,17 @@ CtiMCConnection::~CtiMCConnection()
     close();
 }
 
-void CtiMCConnection::initialize(RWPortal portal)
+/*---------------------------------------------------------------------------
+    start the connection
+---------------------------------------------------------------------------*/
+void CtiMCConnection::start()
 {
     try
     {
-    _portal = new RWPortal(portal);
-
-        sinbuf  = new RWPortalStreambuf(*_portal);
-        soubuf  = new RWPortalStreambuf(*_portal);
-        oStream = new RWpostream(soubuf);
-        iStream = new RWpistream(sinbuf);
-
-        RWThreadFunction send_thr = rwMakeThreadFunction(*this, &CtiMCConnection::_sendthr);
-        RWThreadFunction recv_thr = rwMakeThreadFunction(*this, &CtiMCConnection::_recvthr);
-
-        _sendrunnable = send_thr;
-        _recvrunnable = recv_thr;
-
-        send_thr.start();
-        recv_thr.start();
-    } catch (RWxmsg& msg)
+        _connection.start();
+    }
+    catch (...)
     {
-        if( gMacsDebugLevel & MC_DEBUG_CONN )
-        {
-            CtiLockGuard< CtiLogger > guard(dout);
-            dout << "CtiMCConnection::CtiMCConnection - " << msg.why() << endl;
-        }
-
         _valid = FALSE;
     }
 }
@@ -86,6 +80,11 @@ void CtiMCConnection::initialize(RWPortal portal)
 ---------------------------------------------------------------------------*/
 BOOL CtiMCConnection::isValid()
 {
+    if( _connection.verifyConnection() != NORMAL )
+    {
+        _valid = FALSE;
+    }
+
     return _valid;
 }
 
@@ -96,302 +95,21 @@ BOOL CtiMCConnection::isValid()
 ---------------------------------------------------------------------------*/
 void CtiMCConnection::close()
 {
-    {
-        CtiLockGuard< CtiMutex > guard(_mux );
-
-        if( _closed )
-            return;
-    }
-        _close();
-
-        {
-            CtiLockGuard< CtiLogger > guard(dout);
-            dout << CtiTime()  << " Connection closed" << endl;
-        }
+    _connection.close();
 }
 
-void CtiMCConnection::write(RWCollectable* msg)
+void CtiMCConnection::write(CtiMessage* msg)
 {
-    try
-    {
-        if( _out.isOpen() )
-            _out.write(msg);
-    }
-    catch( RWTHRClosedException& anError )
-    {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << __FILE__ << " (" << __LINE__ << ") " << anError.why() << endl;
-    }
+    _connection.WriteConnQue( msg );
 }
 
-
-RWCollectable* CtiMCConnection::read()
+CtiMessage* CtiMCConnection::read()
 {
-    try
-    {
-        return ( _in.isOpen() ? _in.read() : NULL );
-    }
-    catch( RWTHRClosedException& msg )
-    {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << __FILE__ << " (" << __LINE__ << ") " << msg.why() << endl;
-    }
-
-    return NULL;
+    return _connection.ReadConnQue();
 }
 
-RWCollectable* CtiMCConnection::read(unsigned long millis)
+CtiMessage* CtiMCConnection::read(unsigned long millis)
 {
-    RWCollectable* msg = NULL;
+    return _connection.ReadConnQue( millis );
 
-    try
-    {
-    //if( !_in.isOpen() )
-    //    return NULL; // <--- catching the exceptoin should obviate theneed for this
-
-        _in.read(msg, millis); //There is a wait status but we don't care
-    }
-    catch( RWTHRClosedException& anError )
-    {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << __FILE__ << " (" << __LINE__ << ") " << anError.why() << endl;
-    }
-
-    return msg;
-}
-
-/*---------------------------------------------------------------------------
-    _sendthr
-
-    Handles putting instances of RWCollectable found in the queue onto the
-    output stream.
----------------------------------------------------------------------------*/
-void CtiMCConnection::_sendthr()
-{
-    RWCollectable* out;
-
-    try
-    {
-        do
-        {
-            rwRunnable().serviceCancellation();
-
-            // grab the next collectable to send out
-            out = _out.read();
-
-            if( out != NULL )
-            {
-                *oStream << out;
-                oStream->vflush();
-                delete out;
-            }
-        }
-        while ( isValid() && oStream->good() );
-    }
-    catch(RWCancellation& )
-    {
-        throw;
-    }
-    catch ( RWxmsg& msg )
-    {
-        if( gMacsDebugLevel & MC_DEBUG_CONN )
-        {
-            CtiLockGuard< CtiLogger > guard(dout);
-            dout << "CtiMCConnection::_sendthr - " << msg.why() << endl;
-        }
-    }
-    catch(...)
-    {
-        if( gMacsDebugLevel & MC_DEBUG_CONN )
-        {
-            CtiLockGuard< CtiLogger > guard(dout);
-            dout << CtiTime() << __FILE__ << " (" << __LINE__ << ")" << "An unknown exception was thrown. " << endl;
-        }
-    }
-
-
-    try
-    {
-       _close();
-    }
-    catch(...)
-    {
-        if( gMacsDebugLevel & MC_DEBUG_CONN )
-        {
-            CtiLockGuard< CtiLogger > guard(dout);
-            dout << CtiTime()
-                 <<  __FILE__ << " (" << __LINE__ << ")"
-                 << " An unkown exception was thrown _sendthr(), was closing the connection"
-                 << endl;
-        }
-    }
-
-    if( gMacsDebugLevel & MC_DEBUG_CONN )
-    {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << CtiTime()  << " Exiting sendthr() " << this << endl;
-    }
-}
-
-
-/*---------------------------------------------------------------------------
-    _recvthr
-
-    Receives RWCollectables which must also be cast to CtiCommandable and
-    executes them.
----------------------------------------------------------------------------*/
-void CtiMCConnection::_recvthr()
-{
-    RWCollectable* in = NULL;
-
-    try
-    {
-        rwRunnable().serviceCancellation();
-
-        do
-        {
-            *iStream >> in;
-
-            if ( in != NULL )
-            {
-                _in.write(in);
-
-                // message received, notify our observers
-                setChanged();
-                notifyObservers();
-            }
-        }
-        while ( isValid()  && iStream->good() );
-    }
-    catch(RWCancellation& )
-    {
-        throw;
-    }
-    catch ( RWxmsg& msg )
-    {
-        if( gMacsDebugLevel & MC_DEBUG_CONN )
-        {
-            CtiLockGuard< CtiLogger > guard(dout);
-            dout << CtiTime() << " An exception was thrown _recthr(): " << msg.why() << endl;
-        }
-    }
-    catch(...)
-    {
-        if( gMacsDebugLevel & MC_DEBUG_CONN )
-        {
-            CtiLockGuard< CtiLogger > guard(dout);
-            dout << CtiTime() << " An unkown exception was thrown _recthr()" << endl;
-        }
-    }
-
-    try
-    {
-        _close();
-    }
-    catch(...)
-    {
-        if( gMacsDebugLevel & MC_DEBUG_CONN )
-        {
-            CtiLockGuard< CtiLogger > guard(dout);
-            dout << CtiTime()
-                 << " An unkown exception was thrown _recvthr(), was closing the connection"
-                 << endl;
-        }
-    }
-
-    if( gMacsDebugLevel & MC_DEBUG_CONN )
-    {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << CtiTime()  << " Exiting recvthr()" <<  this << endl;
-    }
-}
-
-/*----------------------------------------------------------------------------
-  _close
-
-  Will set the connectoin to invalid, closed, and will unblock the in and
-  out threads so they can realize this.
-
-  The connection's mux must be acquired before calling _close so that it only
-  executes once.
-
-----------------------------------------------------------------------------*/
-
-void CtiMCConnection::_close()
-{
-    {
-       CtiLockGuard< CtiMutex > guard(_mux );
-
-        if( _closed )
-            return;
-
-        _valid = false;
-        _closed = true;
-    }
-
-    // Note this is similar to connection.cpp. First we tell the thread to stop
-    // then we delete the stream that should unblock the thread.
-    if( !_recvrunnable.isSelf() )
-        _recvrunnable.requestCancellation(1);
-
-    if( !_sendrunnable.isSelf() )
-        _sendrunnable.requestCancellation(1);
-
-    delete _portal;
-    delete sinbuf;
-    delete soubuf;
-    delete oStream;
-    delete iStream;
-
-    sinbuf = NULL;
-    soubuf = NULL;
-    oStream = NULL;
-    iStream = NULL;
-    _portal = NULL;
-
-    //unblock the in and out thread
-    RWCollectable* unblocker = new RWCollectable();
-    _out.write(unblocker);
-
-    if( !_recvrunnable.isSelf() )
-       _recvrunnable.join(2000);
-
-
-    if( !_sendrunnable.isSelf() )
-        _sendrunnable.join(2000);
-
-
-    try
-    {
-        _in.close();
-
-        RWCollectable* c;
-        while ( _in.canRead() )
-        {
-            c = _in.read();
-            delete c;
-        }
-    }
-    catch(...)
-    {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << CtiTime() << " Exception occured closing connection in buffer" << endl;
-    }
-
-    try
-    {
-        _out.close();
-
-        RWCollectable* c;
-        while ( _out.canRead() )
-        {
-            c = _out.read();
-            delete c;
-        }
-    }
-    catch(...)
-    {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << CtiTime() << " Exception occured closing connection out buffer" << endl;
-    }
 }

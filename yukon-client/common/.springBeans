@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beansProjectDescription>
 	<version>1</version>
-	<pluginVersion><![CDATA[3.1.0.201210040510-RELEASE]]></pluginVersion>
+	<pluginVersion><![CDATA[3.2.0.201303060654-RELEASE]]></pluginVersion>
 	<configSuffixes>
 		<configSuffix><![CDATA[xml]]></configSuffix>
 	</configSuffixes>
@@ -19,6 +19,7 @@
 		<config>src/com/cannontech/jobs/jobContext.xml</config>
 		<config>src/com/cannontech/common/search/searchContext.xml</config>
 		<config>src/com/cannontech/common/device/config/deviceConfigurationContext.xml</config>
+		<config>src/com/cannontech/messaging/thriftConnectionContext.xml</config>		
 	</configs>
 	<configSets>
 		<configSet>

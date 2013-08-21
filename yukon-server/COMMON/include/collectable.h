@@ -40,5 +40,13 @@
 
 
 
+#define DECLARE_COLLECTABLE( classname ) \
+virtual int isA() const; \
+virtual std::string stringID() const;
+
+#define DEFINE_COLLECTABLE( classname , id) \
+int classname::isA() const { return id; } \
+std::string classname::stringID() const { return std::string(#classname); };
+
 
 

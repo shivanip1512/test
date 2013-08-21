@@ -65,9 +65,6 @@ protected:
    CtiConnection::Que_t          DeferredQueue_;    // Deferred queue (Message is the base class) Priority queue)
    CtiFIFOQueue<CtiMessage>      CacheQueue_;       // Cache queue, holds points we need to load.
 
-   RWInetPort                    NetPort;
-   RWInetAddr                    NetAddr;    // This one for this server!
-
 public:
 
    CtiServer();

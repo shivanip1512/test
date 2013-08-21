@@ -4,16 +4,28 @@ import javax.jms.ConnectionFactory;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.broker.BrokerService;
+import org.apache.activemq.broker.region.policy.PolicyEntry;
+import org.apache.activemq.broker.region.policy.PolicyMap;
+import org.apache.activemq.command.ActiveMQTempQueue;
 import org.apache.log4j.Logger;
 import org.springframework.jms.connection.CachingConnectionFactory;
 
 import com.cannontech.clientutils.YukonLogManager;
 
 public class ServerEmbeddedBroker {
-	private Logger log = YukonLogManager.getLogger(ServerEmbeddedBroker.class);
 
+    private static final long DEFAULT_MEMORY_USAGE_LIMIT = 67108864; // 2^26 (64 MB) 
+    private static final long DEFAULT_TEMPQUEUE_MEMORY_USAGE_LIMIT = 8388608; // 2^23 (8 MB) 
+    
+    private Logger log = YukonLogManager.getLogger(ServerEmbeddedBroker.class);
+	
     private final String name;
     private final String listenerString;
+    
+    private long memoryUsageLimit = DEFAULT_MEMORY_USAGE_LIMIT;
+    private long tempQueueMemoryUsageLimit = DEFAULT_TEMPQUEUE_MEMORY_USAGE_LIMIT;
+    
+    
     
     /**
      * @param name name used for the broker, mostly for debug
@@ -49,6 +61,15 @@ public class ServerEmbeddedBroker {
             
             //@todo remove this line, no longer needed as of AMQ 5.4.2
             broker.setSchedulerSupport(false); // https://issues.apache.org/activemq/browse/AMQ-2935
+            
+            broker.getSystemUsage().getMemoryUsage().setLimit(memoryUsageLimit);            
+            PolicyEntry policyEntry= new PolicyEntry(); 
+            policyEntry.setMemoryLimit(tempQueueMemoryUsageLimit);
+            policyEntry.setProducerFlowControl(true);
+            PolicyMap map = new PolicyMap();
+            map.put(new ActiveMQTempQueue("*") , policyEntry);
+            broker.setDestinationPolicy(map);
+            
             broker.start();
         } catch (Exception e) {
         	log.warn("Caught exception starting server broker: " + e.toString());

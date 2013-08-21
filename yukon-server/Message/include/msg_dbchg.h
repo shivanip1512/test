@@ -6,7 +6,10 @@
 
 class IM_EX_MSG CtiDBChangeMsg : public CtiMessage
 {
-protected:
+public:
+    DECLARE_COLLECTABLE( CtiDBChangeMsg )
+
+private:
 
    LONG          _id;                 // ID of the entity affected i.e. pao id, point id, state group id, etc
    INT           _database;           // What area of the database?  i.e. pao, point, state group, etc
@@ -14,17 +17,13 @@ protected:
    std::string     _objecttype;         // Object was what pao/point type?
    INT           _typeofchange;       // What type of change: update, delete, etc?
 
-private:
-
-    CtiDBChangeMsg();
-
 public:
+   CtiDBChangeMsg();
 
    typedef CtiMessage Inherited;
 
-   RWDECLARE_COLLECTABLE( CtiDBChangeMsg );
-
    CtiDBChangeMsg(LONG id,INT database, std::string category, std::string objecttype, INT typeofchange);
+   CtiDBChangeMsg(const CtiMessage& baseMessage, LONG id, INT database, std::string category, std::string objecttype, INT typeofchange);
    CtiDBChangeMsg(const CtiDBChangeMsg& aRef);
    virtual ~CtiDBChangeMsg();
 
@@ -35,8 +34,6 @@ public:
    std::string  getObjectType() const;
    INT          getTypeOfChange() const;
 
-   void saveGuts(RWvostream &aStream) const;
-   void restoreGuts(RWvistream& aStream);
    CtiMessage* replicateMessage() const;
 
    virtual void dump() const;

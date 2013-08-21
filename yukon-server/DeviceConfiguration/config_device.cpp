@@ -49,7 +49,7 @@ bool DeviceConfig::getLongValue( const std::string & key, long & value ) const
 
     if ( ! result || result->length() == 0 )
     {
-        value = std::numeric_limits<long>::min();
+    value = std::numeric_limits<long>::min();
         return false;
     }
 
@@ -63,9 +63,9 @@ std::string DeviceConfig::getValueFromKey( const std::string & key ) const
     boost::optional<std::string>    result = lookup( key );
 
     if ( ! result )
-    {
+        {
         return std::string();
-    }
+        }
 
     return *result;
 }

@@ -12,7 +12,6 @@
 #include "server_b.h"
 
 class CtiPointChange;
-class CtiConnectionManager;
 
 
 class IM_EX_CTIVANGOGH CtiPointConnection
@@ -38,5 +37,5 @@ public:
 
    CollectionType& getManagerList();
    CollectionType  getManagerList() const;
-    
+
 };

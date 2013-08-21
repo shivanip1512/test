@@ -31,7 +31,7 @@ public class LMControlAreaMsg extends LMMessage {
         return lmControlAreaVector.size();
     }
 
-    void setLMControlAreaVector(List<LMControlArea> lmContAreas) {
+    public void setLMControlAreaVector(List<LMControlArea> lmContAreas) {
         lmControlAreaVector = lmContAreas;
     }
 

@@ -3,6 +3,7 @@ include $(COMPILEBASE)\rwglobal.inc
 
 all:
          @build -nologo -f $(PRECOMPILED)\makepch.mak
+         @build -nologo -f makethriftlib.mak
          @build -nologo -f makedll.mak
          @build -nologo -f maketest.mak
 
@@ -22,17 +23,23 @@ $(BIN)\*.lib \
 $(BIN)\*.dll \
 $(BIN)\*.map \
 $(BIN)\*.manifest \
-$(BIN)\*.exe
+$(BIN)\*.exe \
+Serialization\Thrift\*.obj \
+Serialization\Thrift\*.target \
+Serialization\Thrift\*.pdb
+
 
 allclean:   clean all
 
 copy:
         @build -nologo -f $(PRECOMPILED)\makepch.mak $@
+        @build -nologo -f makethriftlib.mak $@
         @build -nologo -f makedll.mak $@
         @build -nologo -f maketest.mak $@
 
 
 deps:
+        @build -nologo -f makethriftlib.mak $@
         @build -nologo -f makedll.mak $@
         @build -nologo -f maketest.mak $@
 

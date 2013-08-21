@@ -5,17 +5,17 @@
 #include "msg_cmd.h"
 #include "mgr_device.h"
 #include "mgr_port.h"
-#include "connection.h"
+#include "connection_client.h"
+#include "amq_constants.h"
 #include "thread_monitor.h"
 #include "portglob.h"
-
 
 #include "unsolicited_handler.h"
 #include "StatisticsManager.h"
 
 using namespace std;
 
-CtiConnection VanGoghConnection;
+CtiClientConnection VanGoghConnection( Cti::Messaging::ActiveMQ::Queue::dispatch );
 
 using namespace Cti;
 using namespace Porter;
@@ -30,7 +30,7 @@ void DispatchMsgHandlerThread(void *Arg)
 {
     extern CtiPortManager PortManager;
     extern CtiDeviceManager DeviceManager;
-    extern CtiPILServer PIL;
+    extern Cti::Pil::PilServer PIL;
 
     BOOL           bServerClosing = FALSE;
 
@@ -48,8 +48,8 @@ void DispatchMsgHandlerThread(void *Arg)
 
     SetThreadName(-1, "DispMsg  ");
 
-    VanGoghConnection.doConnect(VANGOGHNEXUS, VanGoghMachine);
     VanGoghConnection.setName("Porter to Dispatch");
+    VanGoghConnection.start();
     VanGoghConnection.WriteConnQue(CTIDBG_new CtiRegistrationMsg(PORTER_REGISTRATION_NAME, rwThreadId(), FALSE));
 
     LastThreadMonitorTime = LastThreadMonitorTime.now();
@@ -250,5 +250,5 @@ void DispatchMsgHandlerThread(void *Arg)
     } /* End of for */
 
     VanGoghConnection.WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 15));
-    VanGoghConnection.ShutdownConnection();
+    VanGoghConnection.close();
 }

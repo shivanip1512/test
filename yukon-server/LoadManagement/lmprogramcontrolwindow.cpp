@@ -24,7 +24,7 @@
 
 extern ULONG _LM_DEBUG;
 
-RWDEFINE_COLLECTABLE( CtiLMProgramControlWindow, CTILMPROGRAMCONTROLWINDOW_ID )
+DEFINE_COLLECTABLE( CtiLMProgramControlWindow, CTILMPROGRAMCONTROLWINDOW_ID )
 
 /*---------------------------------------------------------------------------
     Constructors
@@ -88,6 +88,11 @@ CtiTime CtiLMProgramControlWindow::getAvailableStartTime(CtiDate &defaultDate) c
     return GetTimeFromOffsetAndDate(_availablestarttime, defaultDate);
 }
 
+LONG CtiLMProgramControlWindow::getAvailableStartTimeDaily() const
+{
+    return _availablestarttime;
+}
+
 /*---------------------------------------------------------------------------
     getAvailableStopTime
 
@@ -97,6 +102,11 @@ CtiTime CtiLMProgramControlWindow::getAvailableStartTime(CtiDate &defaultDate) c
 CtiTime CtiLMProgramControlWindow::getAvailableStopTime(CtiDate &defaultDate) const
 {
     return GetTimeFromOffsetAndDate(_availablestoptime, defaultDate);
+}
+
+LONG CtiLMProgramControlWindow::getAvailableStopTimeDaily() const
+{
+    return _availablestoptime;
 }
 
 /*---------------------------------------------------------------------------
@@ -151,45 +161,6 @@ CtiLMProgramControlWindow& CtiLMProgramControlWindow::setAvailableStopTime(LONG 
     _availablestoptime = availstoptime;
 
     return *this;
-}
-
-/*-------------------------------------------------------------------------
-    restoreGuts
-
-    Restore self's state from the given stream
---------------------------------------------------------------------------*/
-void CtiLMProgramControlWindow::restoreGuts(RWvistream& istrm)
-{
-
-
-
-    RWCollectable::restoreGuts( istrm );
-
-    istrm >> _paoid
-          >> _windownumber
-          >> _availablestarttime
-          >> _availablestoptime;
-
-}
-
-/*---------------------------------------------------------------------------
-    saveGuts
-
-    Save self's state onto the given stream
----------------------------------------------------------------------------*/
-void CtiLMProgramControlWindow::saveGuts(RWvostream& ostrm ) const
-{
-
-
-
-    RWCollectable::saveGuts( ostrm );
-
-    ostrm << _paoid
-          << _windownumber
-          << _availablestarttime
-          << _availablestoptime;
-
-    return;
 }
 
 /*---------------------------------------------------------------------------

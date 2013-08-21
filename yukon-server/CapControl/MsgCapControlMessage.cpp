@@ -22,18 +22,3 @@ CapControlMessage& CapControlMessage::operator=(const CapControlMessage& right)
 
     return *this;
 }
-
-void CapControlMessage::restoreGuts(RWvistream& strm)
-{
-    Inherited::restoreGuts(strm);
-
-    return;
-}
-
-void CapControlMessage::saveGuts(RWvostream& strm) const
-{
-    Inherited::saveGuts(strm);
-
-    return;
-}
-

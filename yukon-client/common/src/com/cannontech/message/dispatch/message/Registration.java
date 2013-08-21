@@ -19,7 +19,7 @@ public Registration() {
 	super();
 } 
 
-protected long getRegID()
+public long getRegID()
 {
    return regID;
 }

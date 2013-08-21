@@ -133,46 +133,6 @@ CtiLMCICustomerBase& CtiLMCICustomerBase::setCustomerOrder(LONG order)
     return *this;
 }
 
-
-
-/*-------------------------------------------------------------------------
-    restoreGuts
-
-    Restore self's state from the given stream
---------------------------------------------------------------------------*/
-void CtiLMCICustomerBase::restoreGuts(RWvistream& istrm)
-{
-    RWCollectable::restoreGuts( istrm );
-
-    istrm >> _customerid
-          >> _companyname
-          >> _customerdemandlevel
-          >> _curtailamount
-          >> _curtailmentagreement
-          >> _time_zone
-          >> _customerorder;
-}
-
-/*---------------------------------------------------------------------------
-    saveGuts
-
-    Save self's state onto the given stream
----------------------------------------------------------------------------*/
-void CtiLMCICustomerBase::saveGuts(RWvostream& ostrm ) const
-{
-    RWCollectable::saveGuts( ostrm );
-
-    ostrm << _customerid
-          << _companyname
-          << _customerdemandlevel
-          << _curtailamount
-          << _curtailmentagreement
-          << _time_zone
-          << _customerorder;
-
-    return;
-}
-
 /*---------------------------------------------------------------------------
     operator=
 ---------------------------------------------------------------------------*/

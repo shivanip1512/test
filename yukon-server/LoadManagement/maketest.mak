@@ -14,7 +14,8 @@ INCLPATHS+= \
 -I$(BOOST_INCLUDE) \
 -I$(RW) \
 -I$(SQLAPI)\include \
-
+-I$(THRIFT_INCLUDE) \
+-I$(MSG)\Serialization \
 
 .PATH.cpp = .;$(R_LOADMANAGEMENT)
 .PATH.H = \
@@ -36,7 +37,9 @@ $(COMPILEBASE)\lib\ctimsg.lib \
 $(COMPILEBASE)\lib\ctibase.lib \
 $(COMPILEBASE)\lib\ctiholidaydb.lib \
 $(COMPILEBASE)\lib\ctiseasondb.lib \
-$(COMPILEBASE)\lib\ctidbsrc.lib
+$(COMPILEBASE)\lib\ctidbsrc.lib \
+$(COMPILEBASE)\lib\ctithriftmsg.lib \
+$(THRIFT_LIB)
 
 LOADMANAGEMENT_TEST_OBJS= \
 test_main.obj \
@@ -87,12 +90,17 @@ lmutility.obj \
 sepcyclegear.obj \
 septempoffsetgear.obj \
 loadmanager.obj \
-lmprogrambeatthepeakgear.obj
+lmprogrambeatthepeakgear.obj \
+lm_message_serialization.obj \
+lm_program_serialization.obj \
+lm_group_serialization.obj
 
 LOADMANAGEMENT_TEST_FULLBUILD = $[Filename,$(OBJ),LoadManagementTestFullBuild,target]
 
 
-ALL:            test_loadmanagement.exe
+ALL:            test_loadmanagement.exe \
+                lm_server_client_serialization_test.exe
+
 
 $(LOADMANAGEMENT_TEST_FULLBUILD) :
 	@touch $@
@@ -107,6 +115,21 @@ test_loadmanagement.exe:    $(LOADMANAGEMENT_TEST_FULLBUILD) $(LOADMANAGEMENT_TE
 	@%cd $(OBJ)
 	$(CC) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS)  /Fe..\$(BIN)\$(_TargetF) \
         $(LOADMANAGEMENT_TEST_OBJS) -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOST_LIBS) $(BOOST_TEST_LIBS) $(LOADMANAGEMENTBASEOBJS) $(RWLIBS) $(LIBS) $(LINKFLAGS)
+	@%cd ..
+
+        -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+	mt.exe -manifest $(BIN)\$(_TargetF).manifest -outputresource:$(BIN)\$(_TargetF);1
+        -copy $(BIN)\$(_TargetF) $(YUKONOUTPUT)
+        @%cd $(CWD)
+        @echo.
+        
+lm_server_client_serialization_test.exe:    $(LOADMANAGEMENT_TEST_FULLBUILD) lm_server_client_serialization_test.obj  Makefile
+        @echo:
+	@echo Creating Executable $(BIN)\$(_TargetF)
+        @echo:
+	@%cd $(OBJ)
+	$(CC) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS)  /Fe..\$(BIN)\$(_TargetF) \
+        lm_server_client_serialization_test.obj -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOST_LIBS) $(BOOST_TEST_LIBS) $(LOADMANAGEMENTBASEOBJS) $(RWLIBS) $(LIBS) $(LINKFLAGS)
 	@%cd ..
 
         -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
@@ -149,13 +172,14 @@ test_lmprogram.obj:	lmprogramdirect.h boostutil.h utility.h ctitime.h \
 		CtiPCPtrQueue.h lmprogramdirectgear.h lmcontrolarea.h \
 		connection.h exchange.h string_utility.h msg_ptreg.h \
 		msg_reg.h queue.h cparms.h configkey.h configval.h \
+		readers_writer_lock.h critical_section.h \
 		tbl_lmprogramhistory.h lmprogramcontrolwindow.h lmutility.h \
 		lmconstraint.h lmmessage.h ConstraintViolation.h executor.h \
 		ctdpcptrq.h msg_server_req.h lmprogramcurtailment.h \
 		lmcurtailcustomer.h lmcicustomerbase.h test_reader.h
 test_lm_constraintviolations.obj:	ConstraintViolation.h ctitime.h \
-		dlldefs.h ctidate.h logger.h thread.h mutex.h guard.h \
-		utility.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
-		CtiPCPtrQueue.h
+		dlldefs.h collectable.h ctidate.h logger.h thread.h mutex.h \
+		guard.h utility.h queues.h cticalls.h os2_2w32.h types.h \
+		numstr.h CtiPCPtrQueue.h
 #ENDUPDATE#
 

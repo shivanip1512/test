@@ -113,7 +113,7 @@ config_strings.obj:	precompiled.h config_data_mct.h yukon.h types.h \
 		ctidbgmem.h dllbase.h dsm2.h cticonnect.h dlldefs.h \
 		netports.h mutex.h guard.h utility.h ctitime.h queues.h \
 		cticalls.h os2_2w32.h numstr.h dsm2err.h words.h optional.h \
-		config_data_dnp.h
+		config_data_dnp.h config_data_rfn.h
 da_lp_deviceconfig.obj:	precompiled.h da_lp_deviceconfig.h yukon.h \
 		types.h ctidbgmem.h da_load_profile.h config_device.h \
 		dllbase.h dsm2.h cticonnect.h dlldefs.h netports.h mutex.h \

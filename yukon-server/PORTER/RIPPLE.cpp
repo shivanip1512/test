@@ -55,7 +55,7 @@
 #include <memory.h>
 #include <string.h>
 
-#include "connection.h"
+#include "connection_client.h"
 #include "cparms.h"
 #include "queues.h"
 #include "dsm2.h"
@@ -1480,7 +1480,7 @@ INT QueueAllForScan( CtiDeviceSPtr splcu, bool mayqueuescans )
 
 void SubmitDataToDispatch  ( list< CtiMessage* >  &vgList )
 {
-    extern CtiConnection VanGoghConnection;
+    extern CtiClientConnection VanGoghConnection;
 
     while( vgList.size() > 0 )
     {

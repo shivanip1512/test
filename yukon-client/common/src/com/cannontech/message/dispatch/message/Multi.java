@@ -2,7 +2,9 @@ package com.cannontech.message.dispatch.message;
 
 import java.util.Vector;
 
-public final class Multi<E> extends com.cannontech.message.util.Message {	
+import com.cannontech.message.util.Message;
+
+public final class Multi<E extends Message> extends Message {	
     private Vector<E> vector;
 
     public Multi() {

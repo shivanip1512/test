@@ -47,7 +47,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
-import com.roguewave.vsj.CollectableStreamer;
 
 public class LoadControlClientConnection extends com.cannontech.message.util.ClientConnection implements MessageListener {
     private final Logger log = YukonLogManager.getLogger(LoadControlClientConnection.class);
@@ -341,15 +340,6 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
         } else if (obj instanceof ServerResponseMsg) {
     	    //log.debug("Received a ServerResponseMsg, ignoring it since I didn't send a request");
     	}
-    }
-    
-    public void registerMappings(CollectableStreamer streamer ) {
-    	super.registerMappings( streamer );
-    
-    	com.roguewave.vsj.DefineCollectable[] mappings = CollectableMappings.getMappings();
-    
-    	for( int i = 0; i < mappings.length; i++ )
-    		streamer.register( mappings[i] );
     }
     
     private void handleLMControlAreaChange(LMControlAreaChanged changedArea) {

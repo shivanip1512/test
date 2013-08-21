@@ -23,7 +23,7 @@ using std::endl;
 
 extern ULONG _LM_DEBUG;
 
-RWDEFINE_COLLECTABLE( CtiLMGroupSADigital, CTILMGROUPSADIGITAL_ID )
+DEFINE_COLLECTABLE( CtiLMGroupSADigital, CTILMGROUPSADIGITAL_ID )
 
 /*---------------------------------------------------------------------------
   Constructors
@@ -151,26 +151,6 @@ CtiLMGroupSADigital& CtiLMGroupSADigital::setNominalTimeout(int nominal_timeout)
 {
     _nominal_timeout = nominal_timeout;
     return *this;
-}
-
-/*-------------------------------------------------------------------------
-  restoreGuts
-
-  Restore self's state from the given stream
-  --------------------------------------------------------------------------*/
-void CtiLMGroupSADigital::restoreGuts(RWvistream& istrm)
-{
-    CtiLMGroupBase::restoreGuts( istrm );
-}
-
-/*---------------------------------------------------------------------------
-  saveGuts
-
-  Save self's state onto the given stream
-  ---------------------------------------------------------------------------*/
-void CtiLMGroupSADigital::saveGuts(RWvostream& ostrm ) const
-{
-    CtiLMGroupBase::saveGuts( ostrm );
 }
 
 /*---------------------------------------------------------------------------

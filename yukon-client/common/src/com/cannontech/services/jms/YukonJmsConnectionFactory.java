@@ -18,7 +18,8 @@ public class YukonJmsConnectionFactory implements FactoryBean<ConnectionFactory>
 
     public enum ConnectionType {
         NORMAL,
-        REMOTE_SERVICES
+        REMOTE_SERVICES,
+        INTERNAL_MESSAGING,
     }
 
     @Autowired private ConfigurationSource configurationSource;
@@ -41,6 +42,17 @@ public class YukonJmsConnectionFactory implements FactoryBean<ConnectionFactory>
             cachingFactory.setTargetConnectionFactory(factory);
             delegate = cachingFactory;
             log.debug("created remote services connectionFactory at " + clientConnection);
+        } else if (connectionType == ConnectionType.INTERNAL_MESSAGING) {
+            String internalMessageConnectionDefault = "failover:(tcp://localhost:61616)"
+                                                      + "?useExponentialBackOff=true"
+                                                      + "&initialReconnectDelay=1000"
+                                                      + "&maxReconnectDelay=30000" 
+                                                      + "&startupMaxReconnectAttempts=120" 
+                                                      + "&maxReconnectAttempts=0";
+            
+            String InternalConnectionString =
+                configurationSource.getString("JMS_INTERNAL_MESSAGING_CONNECTION", internalMessageConnectionDefault);
+            delegate = new ActiveMQConnectionFactory(InternalConnectionString);
         } else {
             final String applicationName = BootstrapUtils.getApplicationName();
 

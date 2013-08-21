@@ -76,6 +76,7 @@
 #include "dev_repeater.h"
 #include "dev_repeater850.h"
 #include "dev_rfn.h"
+#include "dev_rfn420centron.h"
 #include "dev_rtc.h"
 #include "dev_sixnet.h"
 #include "rte_macro.h"
@@ -223,22 +224,22 @@ const DeviceLookup deviceFactory = boost::assign::map_list_of
     (TYPELCR3102,       makeDevice<Lcr3102Device>)
     (TYPEMCTBCAST,      makeDevice<MctBroadcastDevice>)
     //  RFN meters
-    (TYPE_RFN410FL,     makeDevice<RfnDevice>)
-    (TYPE_RFN410FX,     makeDevice<RfnDevice>)
-    (TYPE_RFN410FD,     makeDevice<RfnDevice>)
-    (TYPE_RFN420FL,     makeDevice<RfnDevice>)
-    (TYPE_RFN420FX,     makeDevice<RfnDevice>)
-    (TYPE_RFN420FD,     makeDevice<RfnDevice>)
-    (TYPE_RFN420FRX,    makeDevice<RfnDevice>)
-    (TYPE_RFN420FRD,    makeDevice<RfnDevice>)
-    (TYPE_RFN410CL,     makeDevice<RfnDevice>)
-    (TYPE_RFN420CL,     makeDevice<RfnDevice>)
-    (TYPE_RFN420CD,     makeDevice<RfnDevice>)
-    (TYPE_RFN430A3D,    makeDevice<RfnDevice>)
-    (TYPE_RFN430A3T,    makeDevice<RfnDevice>)
-    (TYPE_RFN430A3K,    makeDevice<RfnDevice>)
-    (TYPE_RFN430A3R,    makeDevice<RfnDevice>)
-    (TYPE_RFN430KV,     makeDevice<RfnDevice>)
+    (TYPE_RFN410FL,     makeDevice<Rfn410Device>)
+    (TYPE_RFN410FX,     makeDevice<Rfn410Device>)
+    (TYPE_RFN410FD,     makeDevice<Rfn410Device>)
+    (TYPE_RFN420FL,     makeDevice<Rfn420FocusDevice>)
+    (TYPE_RFN420FX,     makeDevice<Rfn420FocusDevice>)
+    (TYPE_RFN420FD,     makeDevice<Rfn420FocusDevice>)
+    (TYPE_RFN420FRX,    makeDevice<Rfn420FocusDevice>)
+    (TYPE_RFN420FRD,    makeDevice<Rfn420FocusDevice>)
+    (TYPE_RFN410CL,     makeDevice<Rfn410Device>)
+    (TYPE_RFN420CL,     makeDevice<Rfn420CentronDevice>)
+    (TYPE_RFN420CD,     makeDevice<Rfn420CentronDevice>)
+    (TYPE_RFN430A3D,    makeDevice<Rfn430Device>)
+    (TYPE_RFN430A3T,    makeDevice<Rfn430Device>)
+    (TYPE_RFN430A3K,    makeDevice<Rfn430Device>)
+    (TYPE_RFN430A3R,    makeDevice<Rfn430Device>)
+    (TYPE_RFN430KV,     makeDevice<Rfn430Device>)
     //  Electronic meters
     (TYPE_FULCRUM,      makeDevice<CtiDeviceFulcrum>)
     (TYPE_QUANTUM,      makeDevice<CtiDeviceQuantum>)

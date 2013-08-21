@@ -17,7 +17,7 @@ INT CtiRequestExecutor::ServerExecute(CtiServer *Svr)
 {
    int nRet = NoError;
 
-   CtiPILServer *Server = (CtiPILServer *)Svr;
+   Cti::Pil::PilServer *Server = static_cast<Cti::Pil::PilServer *>(Svr);
 
    switch(getMessage()->isA())
    {

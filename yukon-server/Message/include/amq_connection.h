@@ -2,25 +2,50 @@
 
 #include "thread.h"
 #include "critical_section.h"
-
-#include "activemq/library/activemqcpp.h"
-#include "cms/connection.h"
+#include "StreamableMessage.h"
 
 #include <boost/scoped_ptr.hpp>
 #include <boost/ptr_container/ptr_map.hpp>
 
 #include <queue>
 
+namespace cms {
+class Connection;
+class Session;
+class MessageProducer;
+}
+
 namespace Cti {
 namespace Messaging {
 
-class StreamableMessage;
-
-class IM_EX_MSG ActiveMQConnectionManager : private CtiThread
+class IM_EX_MSG ActiveMQConnectionManager :
+    private CtiThread
 {
 public:
 
-    enum Queues;  //  forward declaration
+    enum Queues
+    {
+        Queue_PorterResponses,
+        Queue_SmartEnergyProfileControl,
+        Queue_SmartEnergyProfileRestore,
+        Queue_HistoryRowAssociationResponse,
+        Queue_IvvcAnalysisMessage,
+        Queue_CapControlOperationMessage,
+        Queue_RfnBroadcast,
+        Queue_NetworkManagerE2eDataRequest
+    };
+
+    ActiveMQConnectionManager(const std::string &broker_uri);
+
+    virtual ~ActiveMQConnectionManager();
+
+    static void enqueueMessage(const Queues queueId, std::auto_ptr<StreamableMessage> message);
+
+    static void enqueueMessage(const Queues queueId, std::vector<unsigned char> payload);
+
+protected:
+
+    virtual void enqueueOutgoingMessage(const Queues queueId, std::auto_ptr<StreamableMessage> message);
 
 private:
 
@@ -47,8 +72,6 @@ private:
 
     std::string getQueueName(Queues queue) const;
 
-    bool _initialized;
-
     unsigned _delay;
 
     boost::scoped_ptr<cms::Connection> _connection;
@@ -72,29 +95,6 @@ private:
     enum
     {
         DefaultTimeToLive = 3600
-    };
-
-protected:
-
-    virtual void enqueueOutgoingMessage(const Queues queueId, std::auto_ptr<StreamableMessage> message);
-
-public:
-
-    ActiveMQConnectionManager(const std::string &broker_uri);
-
-    virtual ~ActiveMQConnectionManager();
-
-    static void enqueueMessage(const Queues queueId, std::auto_ptr<StreamableMessage> message);
-
-    enum Queues
-    {
-        Queue_PorterResponses,
-        Queue_SmartEnergyProfileControl,
-        Queue_SmartEnergyProfileRestore,
-        Queue_HistoryRowAssociationResponse,
-        Queue_IvvcAnalysisMessage,
-        Queue_CapControlOperationMessage,
-        Queue_RfnBroadcast
     };
 };
 

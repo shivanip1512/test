@@ -15,7 +15,7 @@ class CtiLMCurtailCustomer : public CtiLMCICustomerBase
 
 public:
 
-RWDECLARE_COLLECTABLE( CtiLMCurtailCustomer )
+DECLARE_COLLECTABLE( CtiLMCurtailCustomer );
 
     CtiLMCurtailCustomer();
     CtiLMCurtailCustomer(Cti::RowReader &rdr);
@@ -50,10 +50,6 @@ RWDECLARE_COLLECTABLE( CtiLMCurtailCustomer )
     void dumpDynamicData();
     void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
     
-    //Members inherited from RWCollectable
-    void restoreGuts(RWvistream& );
-    void saveGuts(RWvostream& ) const;
-
     CtiLMCurtailCustomer& operator=(const CtiLMCurtailCustomer& right);
 
     // Static Members

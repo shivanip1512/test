@@ -30,7 +30,7 @@ extern CtiPointManager    PorterPointManager;
 extern CtiRouteManager    RouteManager;
 extern CtiConfigManager   ConfigManager;
 
-CtiPILServer PIL(&DeviceManager, &PorterPointManager, &RouteManager, &ConfigManager);
+Cti::Pil::PilServer PIL(&DeviceManager, &PorterPointManager, &RouteManager, &ConfigManager);
 
 void PorterInterfaceThread (void *Arg)
 {

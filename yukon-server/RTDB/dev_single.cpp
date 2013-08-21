@@ -479,7 +479,7 @@ INT CtiDeviceSingle::initiateGeneralScan(list< OUTMESS* > &outList, INT ScanPrio
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << Now << " Error " << FormatError(nRet) << " sending general scan to " << getName() << endl;
+                            dout << Now << " Error " << GetErrorString(nRet) << " sending general scan to " << getName() << endl;
                         }
 
                         // Report the comm error and plug any points!
@@ -677,7 +677,7 @@ int CtiDeviceSingle::decode(CtiXfer &xfer, int status)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - DNP configuration missing for DNP device \"" << getName() 
+            dout << CtiTime() << " **** Checkpoint - DNP configuration missing for DNP device \"" << getName()
                  << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
         retval = MISCONFIG;
@@ -815,7 +815,7 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
                 string msg;
                 CtiReturnMsg *Ret = CTIDBG_new CtiReturnMsg( getID(), CmdStr, string("Macro offset ") + CtiNumStr(InMessage->Return.MacroOffset - 1) + string(" failed. Attempting next offset."), nRet, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.GrpMsgID, InMessage->Return.UserID, InMessage->Return.SOE, CtiMultiMsg_vec());
 
-                msg = Ret->ResultString() + "\nError " + CtiNumStr(nRet) + ": " + FormatError(nRet);
+                msg = Ret->ResultString() + "\nError " + CtiNumStr(nRet) + ": " + GetErrorString(nRet);
 
                 if( nRet == EWORDRCV && InMessage->Buffer.RepeaterError.ESt )
                 {
@@ -837,7 +837,7 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << CtiTime() << "   Status = " << status << ": " << FormatError(status) << endl;
+                    dout << CtiTime() << "   Status = " << status << ": " << GetErrorString(status) << endl;
                 }
             }
 
@@ -877,10 +877,10 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
             if( (InMessage->EventCode & ~DECODED) != ErrPortSimulated)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << TimeNow << " Error (" << (InMessage->EventCode & ~DECODED)  << ") to Remote: " << getName() <<": " << GetError(nRet) << endl;
+                dout << TimeNow << " Error (" << (InMessage->EventCode & ~DECODED)  << ") to Remote: " << getName() <<": " << GetErrorString(nRet) << endl;
             }
 
-            CtiReturnMsg *Ret = CTIDBG_new CtiReturnMsg(  getID(), CmdStr, FormatError(nRet), nRet, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.GrpMsgID, InMessage->Return.UserID, InMessage->Return.SOE, CtiMultiMsg_vec());
+            CtiReturnMsg *Ret = CTIDBG_new CtiReturnMsg(  getID(), CmdStr, GetErrorString(nRet), nRet, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.GrpMsgID, InMessage->Return.UserID, InMessage->Return.SOE, CtiMultiMsg_vec());
 
             if( nRet == EWORDRCV && InMessage->Buffer.RepeaterError.ESt )
             {

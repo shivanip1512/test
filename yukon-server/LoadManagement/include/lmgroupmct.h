@@ -12,7 +12,7 @@ class CtiLMGroupMCT : public CtiLMGroupEmetcon
 
 public:
 
-RWDECLARE_COLLECTABLE( CtiLMGroupMCT )
+DECLARE_COLLECTABLE( CtiLMGroupMCT );
 
     typedef CtiLMGroupEmetcon Inherited;
     
@@ -29,10 +29,6 @@ RWDECLARE_COLLECTABLE( CtiLMGroupMCT )
     virtual CtiRequestMsg* createMasterCycleRequestMsg(LONG offTime, LONG period, int priority) const;
 
     virtual BOOL doesMasterCycleNeedToBeUpdated(CtiTime currentTime, CtiTime controlEndTime, ULONG offTime);*/
-
-    //Members inherited from RWCollectable
-    void restoreGuts(RWvistream& );
-    void saveGuts(RWvostream& ) const;
 
     CtiLMGroupMCT& operator=(const CtiLMGroupMCT& right);
 

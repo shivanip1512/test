@@ -3,7 +3,6 @@ Main-Class: com.cannontech.systray.YukonSysTray
 Class-Path: ./ 
  common.jar 
  jradius-client.jar 
- rwav.jar 
  ojdbc6.jar 
  SqlServer.jar 
  monitor.jar 

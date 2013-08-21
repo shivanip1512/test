@@ -204,7 +204,6 @@ int  CtiServer::commandMsgHandler(CtiCommandMsg *Cmd)
 {
     int status = NORMAL;
 
-    // CtiConnectionManager *pConn = (CtiConnectionManager *)Cmd->getConnectionHandle();
     ptr_type pConn = mConnectionTable.find((long)Cmd->getConnectionHandle());
 
     if(pConn)

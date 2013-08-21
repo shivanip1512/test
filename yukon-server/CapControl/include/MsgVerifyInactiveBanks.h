@@ -4,7 +4,8 @@
 
 class VerifyInactiveBanks : public VerifyBanks
 {
-    RWDECLARE_COLLECTABLE( VerifyInactiveBanks )
+    public:
+        DECLARE_COLLECTABLE( VerifyInactiveBanks );
 
     private:
         typedef VerifyBanks Inherited;
@@ -15,11 +16,8 @@ class VerifyInactiveBanks : public VerifyBanks
         VerifyInactiveBanks(const VerifyInactiveBanks& msg);
         ~VerifyInactiveBanks();
 
-        long getBankInactiveTime();
+        long getBankInactiveTime() const;
         void setBankInactiveTime(long bankInactiveTime);
-
-        void restoreGuts(RWvistream& iStream);
-        void saveGuts(RWvostream& oStream) const;
 
         VerifyInactiveBanks& operator=(const VerifyInactiveBanks& right);
 

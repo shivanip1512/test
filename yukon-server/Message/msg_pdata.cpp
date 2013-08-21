@@ -15,8 +15,8 @@
 
 #include <iostream>
 #include <iomanip>
-using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
 
+using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
 
 #include "message.h"
 #include "logger.h"
@@ -24,8 +24,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "msg_pdata.h"
 #include "collectable.h"
 
-
-RWDEFINE_COLLECTABLE( CtiPointDataMsg, MSG_POINTDATA );
+DEFINE_COLLECTABLE( CtiPointDataMsg, MSG_POINTDATA );
 
 unsigned int CtiPointDataMsg::_instanceCount = 0;
 
@@ -99,51 +98,11 @@ CtiPointDataMsg& CtiPointDataMsg::operator=(const CtiPointDataMsg& aRef)
    return *this;
 }
 
-void CtiPointDataMsg::saveGuts(RWvostream &aStream) const
-{
-    Inherited::saveGuts(aStream);
-    aStream << getId() << getType() << getQuality() << getTags() << getAttributes() << getLimit() << getValue() << isExemptable() << getString() << getTime() << getMillis();
-}
-
-void CtiPointDataMsg::restoreGuts(RWvistream& aStream)
-{
-    Inherited::restoreGuts(aStream);
-
-    long        id;
-    int         type;
-    unsigned    quality;            // Point quality
-    unsigned    tags;               // Point Tags
-    unsigned    limit;              // set iff ExceedsHigh or Low.
-    unsigned    force;              // set iff ExceedsHigh or Low.
-    double      value;
-    string   str;
-    CtiTime      intime;
-    unsigned    millis;
-
-    aStream >> id >> type >> quality >> tags >> _attrib >> limit >> value >> force >> str >> intime >> millis;
-
-    setId(id);
-    setType(resolveType(type));
-    setQuality(quality);
-
-    resetTags();
-    setTags(tags);
-    setLimit(limit);
-    setValue(value);
-
-    // Forced status is no longer used on the C++.
-    setExemptionStatus(force);
-
-    setString(str);
-    setTimeWithMillis(intime, millis);
-
-    //dump();
-}
-
 long  CtiPointDataMsg::getId() const
 {
    return _id;
 }
+
 CtiPointDataMsg& CtiPointDataMsg::setId( const long a_id )
 {
    _id = a_id;

@@ -124,7 +124,7 @@ public class DBChangeMsg extends com.cannontech.message.util.Message
 /**
  * DBChangeMsg constructor comment.
  */
-protected DBChangeMsg()
+public DBChangeMsg()
 {
     super();
 }

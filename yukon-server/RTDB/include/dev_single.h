@@ -16,7 +16,6 @@
 #include "connection.h"
 #include "prot_base.h"
 
-//#include "verification_objects.h"
 class CtiVerificationBase;  //  this is so boost_time.h isn't included via verification_objects.h - for now
 
 /*
@@ -67,6 +66,13 @@ protected:
         ScanPriority_Integrity   = 11,
         ScanPriority_Accumulator = 12,
         ScanPriority_LoadProfile = 6
+    };
+
+    enum
+    {
+        // Return value to allow non error returns
+        // where error was handled in code.
+        ExecutionComplete = NoError
     };
 
     CtiTableDeviceScanRate       *_scanRateTbl[ScanRateInvalid];    // Multiple Scan Rates

@@ -78,7 +78,7 @@ RfnCentronLcdConfigurationCommand::RfnCentronLcdConfigurationCommand(ResultHandl
 }
 
 //  Decode a Lcd configuration response
-RfnCommand::RfnResult RfnCentronLcdConfigurationCommand::decode(const CtiTime now, const RfnResponse &response)
+RfnCommand::RfnResult RfnCentronLcdConfigurationCommand::decodeCommand(const CtiTime now, const RfnResponse &response)
 {
     RfnResult result;
 
@@ -145,9 +145,7 @@ RfnCommand::RfnResult RfnCentronLcdConfigurationCommand::decode(const CtiTime no
 RfnCommand::RfnResult RfnCentronLcdConfigurationCommand::error(const CtiTime now, const YukonError_t error_code)
 {
     //  This should probably be the default for all commands unless specified otherwise.
-    char error_str[80];
-    GetErrorString(error_code, error_str);
-    throw CommandException(error_code, error_str);
+    throw CommandException(error_code, GetErrorString(error_code));
 }
 
 //  returns the command code
@@ -163,7 +161,7 @@ unsigned char RfnCentronLcdConfigurationCommand::getOperation() const
 }
 
 //  returns the data portion a request
-RfnCommand::Bytes RfnCentronLcdConfigurationCommand::getData()
+RfnCommand::Bytes RfnCentronLcdConfigurationCommand::getCommandData()
 {
     Bytes data;
 

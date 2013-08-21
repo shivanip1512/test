@@ -1,13 +1,15 @@
 #pragma once
 
 #include "message.h"
-
 #include "yukon.h"
 
 class CtiPointDataMsg;
 
 class IM_EX_MSG CtiSignalMsg : public CtiMessage
 {
+public:
+    DECLARE_COLLECTABLE( CtiSignalMsg )
+
 protected:
 
    long        _id;                 // System point or point id this message is associated with.
@@ -32,9 +34,8 @@ private:
 
 public:
 
-   RWDECLARE_COLLECTABLE( CtiSignalMsg );
+   typedef  CtiMessage  Inherited;
 
-   typedef CtiMessage Inherited;
 
    CtiSignalMsg(long       pid    = 0,
                 int        soe    = 0,
@@ -81,8 +82,6 @@ public:
    double getPointValue() const;
    CtiSignalMsg& setPointValue(double pval);
 
-   virtual void saveGuts(RWvostream &aStream) const;
-   virtual void restoreGuts(RWvistream& aStream);
    virtual CtiMessage* replicateMessage() const;
 
    virtual void dump() const;

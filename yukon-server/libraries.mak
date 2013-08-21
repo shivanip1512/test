@@ -16,10 +16,10 @@ copy:
 
         -@if not exist $(YUKONOUTPUT)\$(SQLAPI_DLL).dll copy $(SQLAPI)\bin\$(SQLAPI_DLL).dll $(YUKONOUTPUT)
 
-        -@if not exist $(YUKONOUTPUT)\activemq-cpp.dll  copy $(ACTIVEMQ)\bin\activemq-cpp.dll  $(YUKONOUTPUT)
-        -@if not exist $(YUKONOUTPUT)\libapr-1.dll      copy $(ACTIVEMQ)\bin\libapr-1.dll      $(YUKONOUTPUT)
-        -@if not exist $(YUKONOUTPUT)\libaprutil-1.dll  copy $(ACTIVEMQ)\bin\libaprutil-1.dll  $(YUKONOUTPUT)
-        -@if not exist $(YUKONOUTPUT)\libapriconv-1.dll copy $(ACTIVEMQ)\bin\libapriconv-1.dll $(YUKONOUTPUT)
+        -@if not exist $(YUKONOUTPUT)\$(ACTIVEMQ_DLL)   copy $(ACTIVEMQ)\bin\$(ACTIVEMQ_DLL) $(YUKONOUTPUT)
+        -@if not exist $(YUKONOUTPUT)\libapr-1.dll      copy $(APR)\bin\libapr-1.dll $(YUKONOUTPUT)
+        -@if not exist $(YUKONOUTPUT)\libaprutil-1.dll  copy $(APR_UTIL)\bin\libaprutil-1.dll $(YUKONOUTPUT)
+        -@if not exist $(YUKONOUTPUT)\libapriconv-1.dll copy $(APR_ICONV)\bin\libapriconv-1.dll $(YUKONOUTPUT)
 
         -@if not exist $(YUKONOUTPUT)\libeay32.dll copy $(OPENSSL)\bin\libeay32.dll $(YUKONOUTPUT)
         -@if not exist $(YUKONOUTPUT)\ssleay32.dll copy $(OPENSSL)\bin\ssleay32.dll $(YUKONOUTPUT)
@@ -35,7 +35,7 @@ $(YUKONOUTPUT)\ntwdblib.dll \
 $(YUKONOUTPUT)\msvcp90*.dll \
 $(YUKONOUTPUT)\xerces-c*.dll \
 $(YUKONOUTPUT)\Microsoft.VC90.*CRT.manifest \
-$(YUKONOUTPUT)\activemq-cpp.dll \
+$(YUKONOUTPUT)\activemq-cpp*.dll \
 $(YUKONOUTPUT)\libapr-1.dll \
 $(YUKONOUTPUT)\libaprutil-1.dll \
 $(YUKONOUTPUT)\libapriconv-1.dll \

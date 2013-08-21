@@ -5,7 +5,7 @@
 
 using std::endl;
 
-RWDEFINE_COLLECTABLE( CtiLMGroupSADigitalORGolay, CTILMGROUPSADIGITALORGOLAY_ID )
+DEFINE_COLLECTABLE( CtiLMGroupSADigitalORGolay, CTILMGROUPSADIGITALORGOLAY_ID )
 
 /*---------------------------------------------------------------------------
   Constructors
@@ -96,26 +96,6 @@ CtiRequestMsg* CtiLMGroupSADigitalORGolay::createMasterCycleRequestMsg(LONG offT
     dout << CtiTime() << " - createMasterCycleRequestMsg() not implemented for SA Digital or Golay LM Groups " << __FILE__ << " at:" << __LINE__ << endl;
     return NULL;
 
-}
-
-/*-------------------------------------------------------------------------
-  restoreGuts
-    
-  Restore self's state from the given stream
-  --------------------------------------------------------------------------*/
-void CtiLMGroupSADigitalORGolay::restoreGuts(RWvistream& istrm)
-{
-    CtiLMGroupBase::restoreGuts( istrm );
-}
-
-/*---------------------------------------------------------------------------
-  saveGuts
-    
-  Save self's state onto the given stream
-  ---------------------------------------------------------------------------*/
-void CtiLMGroupSADigitalORGolay::saveGuts(RWvostream& ostrm ) const  
-{
-    CtiLMGroupBase::saveGuts( ostrm );
 }
 
 /*---------------------------------------------------------------------------

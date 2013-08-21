@@ -8,13 +8,14 @@
 #include "observe.h"
 #include "ctidate.h"
 #include "row_reader.h"
+#include "collectable.h"
 
-class CtiLMProgramControlWindow : public RWCollectable
+class CtiLMProgramControlWindow
 {
 
 public:
 
-RWDECLARE_COLLECTABLE( CtiLMProgramControlWindow )
+DECLARE_COLLECTABLE( CtiLMProgramControlWindow );
 
     CtiLMProgramControlWindow();
     CtiLMProgramControlWindow(Cti::RowReader &rdr);
@@ -26,6 +27,8 @@ RWDECLARE_COLLECTABLE( CtiLMProgramControlWindow )
     LONG getWindowNumber() const;
     CtiTime getAvailableStartTime(CtiDate &defaultDate = CtiDate::now()) const;
     CtiTime getAvailableStopTime(CtiDate &defaultDate = CtiDate::now()) const;
+    LONG getAvailableStartTimeDaily() const;
+    LONG getAvailableStopTimeDaily() const;
 
     CtiLMProgramControlWindow& setPAOId(LONG paoid);
     CtiLMProgramControlWindow& setWindowNumber(LONG winnum);
@@ -33,10 +36,6 @@ RWDECLARE_COLLECTABLE( CtiLMProgramControlWindow )
     CtiLMProgramControlWindow& setAvailableStopTime(LONG availstoptime);
 
     CtiLMProgramControlWindow* replicate() const;
-
-    //Members inherited from RWCollectable
-    void restoreGuts(RWvistream& );
-    void saveGuts(RWvostream& ) const;
 
     CtiLMProgramControlWindow& operator=(const CtiLMProgramControlWindow& right);
 

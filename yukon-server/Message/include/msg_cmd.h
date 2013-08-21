@@ -4,15 +4,18 @@
 
 class IM_EX_MSG CtiCommandMsg : public CtiMessage
 {
+public:
+    DECLARE_COLLECTABLE( CtiCommandMsg )
+
+public:
     int                 iOperation;
     std::string         iOpString;
     std::vector< int >  iOpArgList;
 
 public:
-    RWDECLARE_COLLECTABLE( CtiCommandMsg );
-
     typedef  CtiMessage           Inherited;
     typedef  std::vector< int >   CtiOpArgList_t;
+
 
     CtiCommandMsg(int Op = NoOp, int Pri = 7);
     CtiCommandMsg(const CtiCommandMsg &aRef, int Pri = 7);
@@ -31,8 +34,6 @@ public:
 
     CtiOpArgList_t&   insert(int i);
 
-    void              saveGuts(RWvostream &aStream) const;
-    void              restoreGuts(RWvistream& aStream);
     CtiMessage*       replicateMessage() const;
 
     virtual void dump() const;

@@ -13,7 +13,9 @@
     <bean id="com.cannontech.context.common"
         class="org.springframework.context.support.ClassPathXmlApplicationContext" lazy-init="true">
         <constructor-arg index="0">
-            <list>
+            <list>            
+                <value>com/cannontech/messaging/thriftConnectionContext.xml</value>
+                <value>com/cannontech/messaging/thriftLoadcontrolConnectionContext.xml</value>
                 <value>com/cannontech/mainContext.xml</value>
                 <value>com/cannontech/yukon/server/cache/cacheContext.xml</value>
                 <value>com/cannontech/common/device/deviceContext.xml</value>

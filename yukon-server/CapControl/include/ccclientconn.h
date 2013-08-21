@@ -12,39 +12,28 @@
 #include "ctdpcptrq.h"
 #include "observe.h"
     
+#include "message.h"
+#include "connection_server.h"
+
 class CtiCCClientConnection
 {
+    bool _valid;
+
+    CtiServerConnection _connection;
+
 public:
-    CtiCCClientConnection(RWPortal portal);
+
+    CtiCCClientConnection( CtiListenerConnection& listenerConn );
+    
     virtual ~CtiCCClientConnection();
 
-    bool isValid() const;
+    bool isValid();
 
     void close();
 
-    void write(RWCollectable* msg);
+    void write(CtiMessage* msg);
 
-    RWSockAddr getConnectionName();
-    RWSockAddr getPeerName();
-
-protected:
-    CtiPCPtrQueue< RWCollectable > _queue;
-
-    void _sendthr();
-    void _recvthr();
-
-private:    
-    bool _valid;
-
-    RWPortal* _portal;
-    RWPortalStreambuf* sinbuf;
-    RWPortalStreambuf* soubuf;
-    RWpostream* oStream;
-    RWpistream* iStream;
-
-  
-    RWThread _recvrunnable;
-    RWThread _sendrunnable;
+    void start();
 };
 
 

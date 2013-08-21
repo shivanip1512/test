@@ -12,7 +12,7 @@ extern unsigned long _IVVC_REGULATOR_AUTO_MODE_MSG_DELAY;
 namespace Cti           {
 namespace CapControl    {
 
-RWDEFINE_COLLECTABLE( PhaseOperatedVoltageRegulator, CTIVOLTAGEREGULATOR_ID )
+DEFINE_COLLECTABLE( PhaseOperatedVoltageRegulator, CTIVOLTAGEREGULATOR_ID )
 
 
 const PointAttribute PhaseOperatedVoltageRegulator::attributes[] =
@@ -73,17 +73,6 @@ PhaseOperatedVoltageRegulator & PhaseOperatedVoltageRegulator::operator=(const P
     }
 
     return *this;
-}
-
-
-void PhaseOperatedVoltageRegulator::saveGuts(RWvostream & ostrm) const
-{
-    VoltageRegulator::saveGuts(ostrm);
-
-    ostrm
-        << _recentTapOperation
-        << _lastOperatingMode
-        << _lastCommandedOperatingMode;
 }
 
 

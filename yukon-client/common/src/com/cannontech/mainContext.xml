@@ -300,9 +300,13 @@
     
     <bean id="yukonUserContextService" class="com.cannontech.i18n.service.impl.YukonUserContextServiceImpl" />
     
-    <bean id="transactionExecutor" class="com.cannontech.common.util.TransactionExecutorImpl" />
+    <bean id="transactionExecutor" class="com.cannontech.common.util.TransactionExecutorImpl" />    
     
     <bean id="connectionFactoryTarget" class="com.cannontech.services.jms.YukonJmsConnectionFactory" lazy-init="true" autowire-candidate="false"/>
+    
+    <bean id="connectionFactoryTarget_InternalMessaging" class="com.cannontech.services.jms.YukonJmsConnectionFactory" lazy-init="true" autowire-candidate="false">
+    	<property name="connectionType" value="INTERNAL_MESSAGING"/>
+    </bean>
     
     <bean id="connectionFactory" class="org.springframework.aop.framework.ProxyFactoryBean">
       <property name="targetSource">
@@ -311,6 +315,17 @@
         </bean>
       </property>
     </bean>
+    
+    <bean class="org.springframework.aop.framework.ProxyFactoryBean">
+      <qualifier value="Internal_Messaging" />
+      <property name="targetSource">      
+        <bean class="org.springframework.aop.target.LazyInitTargetSource">
+          <property name="targetBeanName"><idref local="connectionFactoryTarget_InternalMessaging"/></property>
+        </bean>
+      </property>
+    </bean>
+    
+    
 
     <!-- This is temporary.  This queue is used for services that the EIM server uses that the web server
          provides.  Yes, this is wrong (but functional) and needs to be cleaned up.  See YUK-11769. -->

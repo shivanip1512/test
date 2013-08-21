@@ -35,6 +35,7 @@
 
 #include "portfield.h"
 #include "dev_dlcbase.h"
+#include "connection_client.h"
 
 using namespace std;
 
@@ -1178,7 +1179,7 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
 
     list< CtiMessage* > traceList;
 
-    extern CtiConnection VanGoghConnection;
+    extern CtiClientConnection VanGoghConnection;
 
     try
     {
@@ -3563,7 +3564,7 @@ INT PerformRequestedCmd ( CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, INMESS *aI
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << aIED->getName() << " status = " << status << " " << FormatError( status ) << endl;
+                    dout << CtiTime() << " " << aIED->getName() << " status = " << status << " " << GetErrorString( status ) << endl;
                 }
             }
 

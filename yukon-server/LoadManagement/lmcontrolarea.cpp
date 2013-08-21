@@ -32,7 +32,7 @@ using std::set;
 extern ULONG _LM_DEBUG;
 extern set<long> _CHANGED_CONTROL_AREA_LIST;
 
-RWDEFINE_COLLECTABLE( CtiLMControlArea, CTILMCONTROLAREA_ID )
+DEFINE_COLLECTABLE( CtiLMControlArea, CTILMCONTROLAREA_ID )
 
 /*---------------------------------------------------------------------------
     Constructors
@@ -188,6 +188,28 @@ LONG CtiLMControlArea::getMinResponseTime() const
 }
 
 /*---------------------------------------------------------------------------
+    getCurrentStartSecondsFromDayBegin
+
+    Returns the current daily start time seconds from beginning of day
+    This should not be used for time handling!
+---------------------------------------------------------------------------*/
+LONG CtiLMControlArea::getDefStartSecondsFromDayBegin() const
+{
+    return _defdailystarttime;
+}
+
+/*---------------------------------------------------------------------------
+    getCurrentStopSecondsFromDayBegin
+
+    Returns the current daily start time seconds from beginning of day
+    This should not be used for time handling!
+---------------------------------------------------------------------------*/
+LONG CtiLMControlArea::getDefStopSecondsFromDayBegin() const
+{
+    return _defdailystoptime;
+}
+
+/*---------------------------------------------------------------------------
     getDefDailyStartTime
 
     Returns the default daily start time
@@ -241,6 +263,11 @@ vector<CtiLMControlAreaTrigger*>& CtiLMControlArea::getLMControlAreaTriggers()
     return _lmcontrolareatriggers;
 }
 
+const vector<CtiLMControlAreaTrigger*>& CtiLMControlArea::getLMControlAreaTriggers() const
+{
+    return _lmcontrolareatriggers;
+}
+
 /*-----------------------------------------------------------------------------
   getThresholdTrigger
 
@@ -286,6 +313,16 @@ CtiLMControlAreaTrigger* CtiLMControlArea::getThresholdPointTrigger() const
 vector<CtiLMProgramBaseSPtr>& CtiLMControlArea::getLMPrograms()
 {
     return _lmprograms;
+}
+
+const vector<CtiLMProgramBaseSPtr>& CtiLMControlArea::getLMPrograms() const
+{
+    return _lmprograms;
+}
+
+LONG CtiLMControlArea::getCurrentPriority() const
+{
+    return _currentpriority;
 }
 
 /*---------------------------------------------------------------------------
@@ -2594,79 +2631,6 @@ void CtiLMControlArea::dumpDynamicData(Cti::Database::DatabaseConnection& conn, 
     }
 
     resetDirty(); // setDirty inserts into the changed group list and we do not want to do that here.
-}
-
-/*-------------------------------------------------------------------------
-    restoreGuts
-
-    Restore self's state from the given stream
---------------------------------------------------------------------------*/
-void CtiLMControlArea::restoreGuts(RWvistream& istrm)
-{/*
-    RWCollectable::restoreGuts( istrm );
-
-    CtiTime tempTime;
-    istrm >> _paoid
-    >> _paocategory
-    >> _paoclass
-    >> _paoname
-    >> _paotype
-    >> _paodescription
-    >> _disableflag
-    >> _defoperationalstate
-    >> _controlinterval
-    >> _minresponsetime
-    >> _defdailystarttime
-    >> _defdailystoptime
-    >> _requirealltriggersactiveflag
-    >> tempTime
-    >> _newpointdatareceivedflag
-    >> _updatedflag
-    >> _controlareastatuspointid
-    >> _controlareastate
-    >> _currentpriority
-    >> _currentdailystarttime
-    >> _currentdailystoptime
-    >> _lmcontrolareatriggers
-    >> _lmprograms;
-
-    _nextchecktime = CtiTime(tempTime);
-*/}
-
-/*---------------------------------------------------------------------------
-    saveGuts
-
-    Save self's state onto the given stream
----------------------------------------------------------------------------*/
-void CtiLMControlArea::saveGuts(RWvostream& ostrm ) const
-{
-    RWCollectable::saveGuts( ostrm );
-
-    ostrm << _paoid
-    << _paocategory
-    << _paoclass
-    << _paoname
-    << _paoTypeString
-    << _paodescription
-    << _disableflag
-    << _defoperationalstate
-    << _controlinterval
-    << _minresponsetime
-    << _defdailystarttime
-    << _defdailystoptime
-    << _requirealltriggersactiveflag
-    << _nextchecktime
-    << _newpointdatareceivedflag
-    << _updatedflag
-    << _controlareastatuspointid
-    << _controlareastate
-    << _currentpriority
-    << _currentdailystarttime
-    << _currentdailystoptime
-    << _lmcontrolareatriggers
-    << _lmprograms;
-
-    return;
 }
 
 /*---------------------------------------------------------------------------

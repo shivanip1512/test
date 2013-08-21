@@ -70,6 +70,8 @@
 #include "database_connection.h"
 #include "dev_ccu721.h"
 
+#include "connection_client.h"
+
 using namespace std;
 using Cti::Database::DatabaseConnection;
 using Cti::Database::DatabaseReader;
@@ -315,7 +317,7 @@ static void applyQueuedDevicePortMatchup(const long unusedid, CtiDeviceSPtr Remo
 
 static void applyDeviceInitialization(const long unusedid, CtiDeviceSPtr RemoteDevice, void *unused)
 {
-    extern CtiPILServer PIL;
+    extern Cti::Pil::PilServer PIL;
 
     list< CtiRequestMsg * > request_list;
 
@@ -769,13 +771,6 @@ INT PorterMainFunction (INT argc, CHAR **argv)
 
     /* make it clear who is just about the boss */
     CTISetPriority(PRTYC_TIMECRITICAL, THREAD_PRIORITY_NORMAL);
-
-    /* Open the error message file */
-    if((i = InitError ()) != NORMAL)
-    {
-        PrintError ((USHORT)i);
-        CTIExit (-1, -1);
-    }
 
     bool writeLogMessage = true;
 
@@ -1292,7 +1287,7 @@ void DebugKeyEvent(KEY_EVENT_RECORD *ke)
 
 static void applyRefreshRepeaterRoles(const long device_id, CtiDeviceSPtr device, void *dbchg)
 {
-    extern CtiPILServer PIL;
+    extern Cti::Pil::PilServer PIL;
 
     if( !isRepeater(device->getType()) )
     {
@@ -2205,7 +2200,7 @@ bool addCommResult(long deviceID, bool wasFailure, bool retryGtZero)
 
 void commFail(const CtiDeviceSPtr &Device)
 {
-    extern CtiConnection VanGoghConnection;
+    extern CtiClientConnection VanGoghConnection;
 
     CtiPointSPtr  pPoint;
     char temp[80];
@@ -2282,7 +2277,7 @@ LONG GetCommFailPointID(LONG devid)
 void reportOnWorkObjects()
 {
     CtiPointDataMsg *pData = NULL;
-    extern CtiConnection VanGoghConnection;
+    extern CtiClientConnection VanGoghConnection;
     ULONG workCount = 0;
     PortManager.apply( applyPortWorkReport, &workCount );
 

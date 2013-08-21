@@ -23,7 +23,7 @@ using std::endl;
 
 extern ULONG _LM_DEBUG;
 
-RWDEFINE_COLLECTABLE( CtiLMGroupSA205, CTILMGROUPSA205_ID )
+DEFINE_COLLECTABLE( CtiLMGroupSA205, CTILMGROUPSA205_ID )
 
 /*---------------------------------------------------------------------------
   Constructors
@@ -145,26 +145,6 @@ CtiRequestMsg* CtiLMGroupSA205::createMasterCycleRequestMsg(LONG offTime, LONG p
         dout << CtiTime() << " - Sending master cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
     return CTIDBG_new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
-}
-
-/*-------------------------------------------------------------------------
-  restoreGuts
-
-  Restore self's state from the given stream
-  --------------------------------------------------------------------------*/
-void CtiLMGroupSA205::restoreGuts(RWvistream& istrm)
-{
-    CtiLMGroupBase::restoreGuts( istrm );
-}
-
-/*---------------------------------------------------------------------------
-  saveGuts
-
-  Save self's state onto the given stream
-  ---------------------------------------------------------------------------*/
-void CtiLMGroupSA205::saveGuts(RWvostream& ostrm ) const
-{
-    CtiLMGroupBase::saveGuts( ostrm );
 }
 
 /*---------------------------------------------------------------------------

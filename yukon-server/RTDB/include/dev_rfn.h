@@ -2,7 +2,8 @@
 
 #include <dev_single.h>
 
-#include "msg_rfnrequest.h"
+#include "rfn_identifier.h"
+#include "cmd_rfn.h"
 
 namespace Cti {
 namespace Devices {
@@ -11,13 +12,13 @@ class IM_EX_DEVDB RfnDevice : public CtiDeviceSingle
 {
 public:
 
-    typedef boost::ptr_vector<Messaging::RfnRequestMsg> RfnRequestMessages;
+    typedef std::vector<Commands::RfnCommandSPtr> RfnCommandList;
 
-    virtual int ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &vgList, CtiMessageList &retList, RfnRequestMessages &rfnRequests);
+    virtual int ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
 
     struct RfnRequestExecuter : virtual RequestExecuter
     {
-        RfnRequestMessages rfnRequests;
+        RfnCommandList rfnRequests;
 
         RfnRequestExecuter(CtiRequestMsg *pReq_, CtiCommandParser &parse_) :
             RequestExecuter(pReq_, parse_)
@@ -25,9 +26,12 @@ public:
 
         virtual int execute(RfnDevice &dev)
         {
-            return dev.ExecuteRequest(pReq, parse, vgList, retList, rfnRequests);
+            return dev.ExecuteRequest(pReq, parse, retList, rfnRequests);
         }
     };
+
+    virtual std::string getSQLCoreStatement() const;
+    virtual void DecodeDatabaseReader(RowReader &rdr);
 
     virtual int invokeRequestExecuter(RequestExecuter &executer)
     {
@@ -36,15 +40,24 @@ public:
 
 protected:
 
-    virtual int executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &vgList, CtiMessageList &retList, RfnRequestMessages &rfnRequests);
-    int executePutConfigFreezeDay               (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &vgList, CtiMessageList &retList, RfnRequestMessages &rfnRequests);
-    int executePutConfigVoltageAveragingInterval(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &vgList, CtiMessageList &retList, RfnRequestMessages &rfnRequests);
-    int executePutConfigTou                     (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &vgList, CtiMessageList &retList, RfnRequestMessages &rfnRequests);
-    virtual int executePutConfigDisplay         (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &vgList, CtiMessageList &retList, RfnRequestMessages &rfnRequests);
+    virtual int executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
+    virtual int executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
+    virtual int executeGetValue (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
 
-    virtual int executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &vgList, CtiMessageList &retList, RfnRequestMessages &rfnRequests);
-    virtual int executeGetValue (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &vgList, CtiMessageList &retList, RfnRequestMessages &rfnRequests);
+    int executePutConfigInstall (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
+
+    Commands::RfnCommandSPtr executePutConfigInstallFreezeDay               (CtiRequestMsg *pReq, CtiCommandParser &parse);
+    Commands::RfnCommandSPtr executePutConfigInstallVoltageAveragingInterval(CtiRequestMsg *pReq, CtiCommandParser &parse);
+    Commands::RfnCommandSPtr executePutConfigInstallTou                     (CtiRequestMsg *pReq, CtiCommandParser &parse);
+    virtual Commands::RfnCommandSPtr executePutConfigInstallDisplay         (CtiRequestMsg *pReq, CtiCommandParser &parse);
+
+    RfnIdentifier _rfnId;
 };
+
+typedef RfnDevice Rfn410Device;
+//typedef RfnDevice Rfn420CentronDevice;
+typedef RfnDevice Rfn420FocusDevice;
+typedef RfnDevice Rfn430Device;
 
 }
 }

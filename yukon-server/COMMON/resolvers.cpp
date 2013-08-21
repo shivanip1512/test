@@ -1024,7 +1024,7 @@ INT resolveRelayUsage(const string& _str)
                 nRet |= (0x00000001 << i);
             }
         }
-    }
+        }
 
     return nRet;
 }

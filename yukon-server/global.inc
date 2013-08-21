@@ -57,7 +57,29 @@ BOOST           = $(CPP_LIBRARIES)\boost\1.49.0
 BOOST_INCLUDE   = $(CPP_LIBRARIES)\boost\1.49.0\include\boost-1_49
 
 SQLAPI          = $(CPP_LIBRARIES)\sqlapi\4.0.1
-ACTIVEMQ        = $(CPP_LIBRARIES)\activemq-cpp\3.4.5
+
+ACTIVEMQ        = $(CPP_LIBRARIES)\apache\activemq-cpp\3.7.1
+ACTIVEMQ_INCLUDE= $(ACTIVEMQ)\include
+!IFDEF DEBUG
+ACTIVEMQ_LIB    = $(ACTIVEMQ)\lib\activemq-cppd.lib
+ACTIVEMQ_DLL    = activemq-cppd.dll
+!ELSE
+ACTIVEMQ_LIB    = $(ACTIVEMQ)\lib\activemq-cpp.lib
+ACTIVEMQ_DLL    = activemq-cpp.dll
+!ENDIF
+
+APR             = $(CPP_LIBRARIES)\apache\apr\1.4.6
+APR_INCLUDE     = $(APR)\include
+
+APR_UTIL        = $(CPP_LIBRARIES)\apache\apr-util\1.5.1
+# APR_UTIL_INCLUDE= $(APR_UTIL)\include
+
+APR_ICONV       = $(CPP_LIBRARIES)\apache\apr-iconv\1.2.1
+# APR_ICONV_INCLUDE= $(APR_ICONV)\include
+
+THRIFT          = $(CPP_LIBRARIES)\apache\thrift\0.9.0
+THRIFT_INCLUDE  = $(THRIFT)\include
+THRIFT_LIB      = $(THRIFT)\lib\libthrift.lib
 
 MICROSOFT       = $(CPP_LIBRARIES)\microsoft
 MICROSOFT_VC    = $(MICROSOFT)\vc\9.0

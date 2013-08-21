@@ -18,7 +18,6 @@ Class-Path: ./
  jradius-client.jar 
  junit.jar 
  mail.jar 
- rwav.jar 
  saaj.jar 
  wsdl4j.jar 
  ../export/ 

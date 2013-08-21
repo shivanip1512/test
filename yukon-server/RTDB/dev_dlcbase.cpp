@@ -751,7 +751,7 @@ int DlcBaseDevice::executeOnDLCRoute( CtiRequestMsg              *pReq,
             // Start the control request on its route(s)
             if( (nRet = Route->ExecuteRequest(pReq, parse, pOut, vgList, retList, outList)) )
             {
-                resultString = getName() + ": ERROR " + CtiNumStr(nRet) + " (" + FormatError(nRet) + ") performing command on route " + Route->getName().data();
+                resultString = getName() + ": ERROR " + CtiNumStr(nRet) + " (" + GetErrorString(nRet) + ") performing command on route " + Route->getName().data();
                 pRet->setResultString(resultString);
                 pRet->setStatus( nRet );
             }

@@ -12,7 +12,7 @@ unsigned long CtiCCGeoAreasMsg::AreaDeleted   = 0x00000002;
 unsigned long CtiCCGeoAreasMsg::AreaAdded     = 0x00000004;
 unsigned long CtiCCGeoAreasMsg::AreaModified  = 0x00000008;
 
-RWDEFINE_COLLECTABLE( CtiCCGeoAreasMsg, CTICCGEOAREAS_MSG_ID )
+DEFINE_COLLECTABLE( CtiCCGeoAreasMsg, CTICCGEOAREAS_MSG_ID )
 
 CtiCCGeoAreasMsg::CtiCCGeoAreasMsg(CtiCCArea_vec& ccGeoAreas, unsigned long bitMask) : Inherited(), _ccGeoAreas(NULL), _msgInfoBitMask(bitMask)
 {
@@ -103,24 +103,3 @@ CtiCCGeoAreasMsg& CtiCCGeoAreasMsg::operator=(const CtiCCGeoAreasMsg& right)
 
     return *this;
 }
-
-void CtiCCGeoAreasMsg::restoreGuts(RWvistream& strm)
-{
-    Inherited::restoreGuts(strm);
-
-    strm >> _msgInfoBitMask;
-    strm >> _ccGeoAreas;
-
-    return;
-}
-
-void CtiCCGeoAreasMsg::saveGuts(RWvostream& strm) const
-{
-    Inherited::saveGuts(strm);
-
-    strm << _msgInfoBitMask;
-    strm << _ccGeoAreas;
-
-    return;
-}
-

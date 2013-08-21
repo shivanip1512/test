@@ -17,7 +17,6 @@ Class-Path: ./
  mx4j-rjmx.jar 
  common.jar 
  tools.jar 
- rwav.jar 
  yukonappserver.jar 
  jfreechart.jar 
  jcommon.jar 

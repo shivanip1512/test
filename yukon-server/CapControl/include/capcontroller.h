@@ -1,14 +1,7 @@
 #pragma once
 
-#include <rw/thr/thrfunc.h>
-#include <rw/thr/runfunc.h>
-#include <rw/thr/srvpool.h>
-#include <rw/thr/thrutil.h>
-#include <rw/thr/countptr.h>
-#include <rw/collect.h>
-
 #include "dbaccess.h"
-#include "connection.h"
+#include "connection_client.h"
 #include "DispatchConnection.h"
 #include "CapControlDispatchConnection.h"
 #include "MessageListener.h"
@@ -26,7 +19,6 @@
 #include "logger.h"
 #include "yukon.h"
 #include "ctdpcptrq.h"
-//#include "CtiPCPtrQueue.h"
 
 class CtiCapController : public MessageListener
 {
@@ -45,14 +37,13 @@ class CtiCapController : public MessageListener
 
         virtual void sendMessageToDispatch(CtiMessage* message);
         virtual void manualCapBankControl(CtiRequestMsg* pilRequest, CtiMultiMsg* multiMsg = NULL);
-        virtual void sendEventLogMessage(CtiMessage* message);
+        static void submitEventLogEntry(const Cti::CapControl::EventLogEntry &event);
+        static void submitEventLogEntries(const Cti::CapControl::EventLogEntries &events);
 
         virtual void confirmCapBankControl(CtiMultiMsg* pilMultiMsg, CtiMultiMsg* multiMsg);
-        CtiPCPtrQueue< RWCollectable > &getInClientMsgQueueHandle();
-        CtiPCPtrQueue< RWCollectable > &getOutClientMsgQueueHandle();
-        CtiPCPtrQueue< RWCollectable > &getCCEventMsgQueueHandle();
+        static CtiConnection::Que_t& getInClientMsgQueueHandle();
+        CtiPCPtrQueue< CtiMessage > &getOutClientMsgQueueHandle();
 
-        void loadControlLoopCParms();
         void handleUnsolicitedMessaging(CtiCCCapBank* currentCapBank, CtiCCFeeder* currentFeeder,
                                         CtiCCSubstationBus* currentSubstationBus, CtiCCTwoWayPointsPtr twoWayPts);
         void handleUnexpectedUnsolicitedMessaging(CtiCCCapBank* currentCapBank, CtiCCFeeder* currentFeeder,
@@ -61,17 +52,17 @@ class CtiCapController : public MessageListener
                                         CtiCCSubstationBus* currentSubstationBus, CtiCCTwoWayPointsPtr twoWayPts);
 
         void analyzeVerificationBus(CtiCCSubstationBus* currentSubstationBus, const CtiTime& currentDateTime,
-                                CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages,
+                                CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages,
                                 CtiMultiMsg_vec& capMessages);
 
         void broadcastMessagesToClient(CtiCCSubstationBus_vec& substationBusChanges, CtiCCSubstation_vec& stationChanges,
                                        CtiCCArea_vec& areaChanges, long broadCastMask);
         void readClientMsgQueue();
         void checkBusForNeededControl(CtiCCArea* currentArea, CtiCCSubstation* currentSubstation, CtiCCSubstationBus* currentSubstationBus, const CtiTime& currentDateTime,
-                                CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
+                                CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages);
 
         DispatchConnectionPtr getDispatchConnection();
-        CtiConnectionPtr getPILConnection();
+        boost::shared_ptr<CtiClientConnection> getPILConnection();
 
         void processNewMessage(CtiMessage* message);
 
@@ -88,7 +79,9 @@ class CtiCapController : public MessageListener
         void controlLoop();
         void messageSender();
         void outClientMsgs();
-        void processCCEventMsgs();
+        virtual void enqueueEventLogEntry(const Cti::CapControl::EventLogEntry &event);
+        void enqueueEventLogEntries(const Cti::CapControl::EventLogEntries &events);
+        void writeEventLogsToDatabase();
         void incomingMessageProcessor();
 
         void checkDispatch();
@@ -97,7 +90,7 @@ class CtiCapController : public MessageListener
         void registerForPoints(const CtiCCSubstationBus_vec& subBuses);
         void updateAllPointQualities(long quality);
 
-        void parseMessage(RWCollectable* message);
+        void parseMessage(CtiMessage* message);
         void pointDataMsg(CtiPointDataMsg* message);
         void pointDataMsgBySubBus(long pointID, double value, unsigned quality, CtiTime& timestamp);
         void pointDataMsgByFeeder(long pointID, double value, unsigned quality, CtiTime& timestamp);
@@ -118,16 +111,19 @@ class CtiCapController : public MessageListener
         RWThread _messageSenderThread;
         RWThread _incomingMessageProcessorThread;
 
-        CtiConnectionPtr _pilConnection;
+        boost::shared_ptr<CtiClientConnection> _pilConnection;
         DispatchConnectionPtr _dispatchConnection;
 
+        typedef Cti::readers_writer_lock_t Lock;
+        typedef Lock::reader_lock_guard_t  ReaderGuard;
+        typedef Lock::writer_lock_guard_t  WriterGuard;
+
+        mutable Lock _pilConnectionLock;
+        mutable Lock _dispatchConnectionLock;
+
         CtiPCPtrQueue< CtiMessage > _incomingMessageQueue;
-        CtiPCPtrQueue< RWCollectable > _inClientMsgQueue;
-        CtiPCPtrQueue< RWCollectable > _outClientMsgQueue;
+        static CtiConnection::Que_t _inClientMsgQueue;
+        CtiPCPtrQueue< CtiMessage > _outClientMsgQueue;
 
-        CtiPCPtrQueue< RWCollectable > _ccEventMsgQueue;
-
-        int control_loop_delay;
-        int control_loop_inmsg_delay;
-        int control_loop_outmsg_delay;
+        CtiValueQueue<Cti::CapControl::EventLogEntry> _eventLogs;
 };

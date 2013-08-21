@@ -111,7 +111,7 @@ public class TagMsg extends Message {
 	 * Only dispatch (and restoreGuts) should set this.
 	 * @param i
 	 */
-	void setInstanceID(int instanceID) {
+	public void setInstanceID(int instanceID) {
 		_tag.setInstanceID(instanceID);
 	}
 
@@ -154,7 +154,7 @@ public class TagMsg extends Message {
 	 * Only dispatch (and restoreGuts) should set this. 
 	 * @param date
 	 */
-	void setTagTime(Date tagTime) {
+	public void setTagTime(Date tagTime) {
 		_tag.setTagTime(tagTime);
 	}
 

@@ -5,7 +5,8 @@
 
 class CtiCCSpecialAreasMsg : public CapControlMessage
 {
-    RWDECLARE_COLLECTABLE( CtiCCSpecialAreasMsg )
+    public:
+        DECLARE_COLLECTABLE( CtiCCSpecialAreasMsg );
 
     private:
         typedef CapControlMessage Inherited;
@@ -22,9 +23,6 @@ class CtiCCSpecialAreasMsg : public CapControlMessage
         CtiCCSpArea_vec* getCCSpecialAreas() const     { return _ccSpecialAreas; }
 
         virtual CtiMessage* replicateMessage() const;
-
-        void restoreGuts( RWvistream& );
-        void saveGuts( RWvostream&) const;
 
         CtiCCSpecialAreasMsg& operator=(const CtiCCSpecialAreasMsg& right);
     private:

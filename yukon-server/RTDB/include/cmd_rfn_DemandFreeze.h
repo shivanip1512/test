@@ -52,7 +52,7 @@ protected:
 
     virtual unsigned char getOperation() const;
 
-    virtual Bytes getData();
+    virtual Bytes getCommandData();
 
     const Operation _operation;
 
@@ -61,8 +61,8 @@ protected:
 
 public:
 
-    virtual RfnResult decode( const CtiTime now,
-                              const RfnResponse & response ) = 0;
+    virtual RfnResult decodeCommand( const CtiTime now,
+                                     const RfnResponse & response ) = 0;
 
     virtual RfnResult error( const CtiTime now,
                              const YukonError_t error_code );
@@ -78,14 +78,14 @@ class IM_EX_DEVDB RfnDemandFreezeConfigurationCommand : public RfnDemandFreezeCo
 
 protected:
 
-    virtual Bytes getData();
+    virtual Bytes getCommandData();
 
 public:
 
     RfnDemandFreezeConfigurationCommand( const unsigned char day_of_freeze );
 
-    virtual RfnResult decode( const CtiTime now,
-                              const RfnResponse & response );
+    virtual RfnResult decodeCommand( const CtiTime now,
+                                     const RfnResponse & response );
 
 };
 
@@ -99,8 +99,8 @@ public:
 
     RfnImmediateDemandFreezeCommand();
 
-    virtual RfnResult decode( const CtiTime now,
-                              const RfnResponse & response );
+    virtual RfnResult decodeCommand( const CtiTime now,
+                                     const RfnResponse & response );
 
 };
 
@@ -143,8 +143,8 @@ public:
 
     RfnGetDemandFreezeInfoCommand( ResultHandler & rh );
 
-    virtual RfnResult decode( const CtiTime now,
-                              const RfnResponse & response );
+    virtual RfnResult decodeCommand( const CtiTime now,
+                                     const RfnResponse & response );
 
     DemandFreezeData getDemandFreezeData() const;
 

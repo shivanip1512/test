@@ -34,6 +34,8 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "calclogicsvc.h"
 #include "calcthread.h"
 
+#include "amq_constants.h"
+
 #define CHECK_RATE_SECONDS  30     // 30 second check for db change, on a change some re-loading is done, this slows the max rate down.
 
 using Cti::ThreadStatusKeeper;
@@ -231,7 +233,8 @@ void CtiCalcLogicService::Run( )
                         dout << CtiTime() << " Creating a new connection to dispatch." << endl;
                     }
 
-                    _conxion = CTIDBG_new  CtiConnection(_dispatchPort, _dispatchMachine);
+                    _conxion = CTIDBG_new  CtiClientConnection( Cti::Messaging::ActiveMQ::Queue::dispatch );
+                    _conxion->start();
 
                     //  write the registration message (this is only done once, because if the database changes,
                     //    the program name and such doesn't change - only our requested points do.)
@@ -625,7 +628,7 @@ void CtiCalcLogicService::Run( )
 
         //  tell Dispatch we're going away, then leave
         if(_conxion) _conxion->WriteConnQue( CTIDBG_new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
-        if(_conxion) _conxion->ShutdownConnection();
+        if(_conxion) _conxion->close();
 
         SetStatus(SERVICE_STOP_PENDING, 75, 5000 );
         dropDispatchConnection();
@@ -752,7 +755,7 @@ void CtiCalcLogicService::_inputThread( void )
     try
     {
         RWRunnableSelf  _pSelf = rwRunnable( );
-        RWCollectable   *incomingMsg;
+        CtiMessage     *incomingMsg;
         BOOL            interrupted = FALSE;
 
         ThreadStatusKeeper threadStatus("CalcLogicSvc _inputThread");
@@ -849,7 +852,7 @@ void CtiCalcLogicService::_inputThread( void )
 }
 
 // return is not used at this time
-BOOL CtiCalcLogicService::parseMessage( RWCollectable *message, CtiCalculateThread *thread )
+BOOL CtiCalcLogicService::parseMessage( CtiMessage *message, CtiCalculateThread *thread )
 {
     BOOL retval = TRUE;
 
@@ -1172,8 +1175,8 @@ bool CtiCalcLogicService::readCalcPoints( CtiCalculateThread *thread )
         long uomid;
 
         //Read from PointUnit Table, insert into pointStore
-        static const string sqlPoint = "SELECT DISTINCT PU.POINTID, PU.UOMID "
-                                       "FROM POINTUNIT PU, CALCBASE CB, CALCCOMPONENT CC "
+        static const string sqlPoint =  "SELECT DISTINCT PU.POINTID, PU.UOMID "
+                                        "FROM POINTUNIT PU, CALCBASE CB, CALCCOMPONENT CC "
                                        "WHERE PU.POINTID = CC.COMPONENTPOINTID "
                                        "   UNION "
                                        "SELECT DISTINCT PU.POINTID, PU.UOMID "
@@ -1283,7 +1286,7 @@ void CtiCalcLogicService::dropDispatchConnection(  )
             }
 
             Sleep(2500);
-            if(_conxion) _conxion->ShutdownConnection();
+            if(_conxion) _conxion->close();
         }
     }
     catch(...)

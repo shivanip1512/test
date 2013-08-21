@@ -15,13 +15,12 @@
 #include "row_reader.h"
 #include "database_connection.h"
 
-class CtiLMControlArea : public CtiMemDBObject, public RWCollectable
+class CtiLMControlArea : public CtiMemDBObject
 {
+public:
+    DECLARE_COLLECTABLE( CtiLMControlArea );
 
 public:
-
-RWDECLARE_COLLECTABLE( CtiLMControlArea )
-
     static LONG numberOfReferences;
 
     CtiLMControlArea();
@@ -42,6 +41,8 @@ RWDECLARE_COLLECTABLE( CtiLMControlArea )
     const std::string& getDefOperationalState() const;
     LONG getControlInterval() const;
     LONG getMinResponseTime() const;
+    LONG getDefStartSecondsFromDayBegin() const;
+    LONG getDefStopSecondsFromDayBegin() const;
     CtiTime getDefDailyStartTime(const CtiDate &defaultDate = CtiDate::now()) const;
     CtiTime getDefDailyStopTime(const CtiDate &defaultDate = CtiDate::now()) const;
     BOOL getRequireAllTriggersActiveFlag() const;
@@ -57,9 +58,12 @@ RWDECLARE_COLLECTABLE( CtiLMControlArea )
     CtiTime getCurrentDailyStartTime(const CtiDate &defaultDate = CtiDate::now()) const;
     CtiTime getCurrentDailyStopTime(const CtiDate &defaultDate = CtiDate::now()) const;
     std::vector<CtiLMControlAreaTrigger*>& getLMControlAreaTriggers();
+    const std::vector<CtiLMControlAreaTrigger*>& getLMControlAreaTriggers() const;
     CtiLMControlAreaTrigger* getThresholdTrigger() const;
     CtiLMControlAreaTrigger* getThresholdPointTrigger() const;
     std::vector<CtiLMProgramBaseSPtr>& getLMPrograms();
+    const std::vector<CtiLMProgramBaseSPtr>& getLMPrograms() const;
+    LONG getCurrentPriority() const;
 
     CtiLMControlArea& setPAOId(LONG id);
     CtiLMControlArea& setPAOCategory(const std::string& category);
@@ -83,6 +87,8 @@ RWDECLARE_COLLECTABLE( CtiLMControlArea )
     CtiLMControlArea& setCurrentDailyStopTime(LONG tempstop);
     CtiLMControlArea& resetCurrentDailyStartTime();
     CtiLMControlArea& resetCurrentDailyStopTime();
+
+    CtiLMControlArea& setPAOType( const LONG paoType );
 
     BOOL isTriggerCheckNeeded(CtiTime currentTime);
     BOOL isControlTime(LONG secondsFromBeginningOfDay);
@@ -116,10 +122,6 @@ RWDECLARE_COLLECTABLE( CtiLMControlArea )
 
     void dumpDynamicData();
     void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
-
-    //Members inherited from RWCollectable
-    void restoreGuts(RWvistream& );
-    void saveGuts(RWvostream& ) const;
 
     CtiLMControlArea& operator=(const CtiLMControlArea& right);
 

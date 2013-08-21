@@ -20,7 +20,7 @@ public:
     RfnCentronLcdConfigurationCommand(ResultHandler &rh);  //  read
     RfnCentronLcdConfigurationCommand(ResultHandler &rh, const metric_vector_t &display_metrics);  //  write
 
-    virtual RfnResult decode (const CtiTime now, const RfnResponse &response);
+    virtual RfnResult decodeCommand(const CtiTime now, const RfnResponse &response);
     virtual RfnResult error  (const CtiTime now, const YukonError_t error_code);
 
     metric_vector_t getReceivedMetrics() const;
@@ -29,7 +29,7 @@ protected:
 
     virtual unsigned char getCommandCode() const;
     virtual unsigned char getOperation() const;
-    virtual Bytes         getData();
+    virtual Bytes         getCommandData();
 
 private:
 

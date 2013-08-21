@@ -105,9 +105,12 @@ yukon-client/yukonappserver/bin
 yukon-client/yukonappserver/build
 yukon-install/build
 yukon-server/.git
+yukon-server/Message/connection_test_consumer.cpp
+yukon-server/Message/connection_test_producer.cpp
 yukon-server/Message/vc90.idb
 yukon-server/Message/vc90.pdb
 yukon-server/Simulator/*.idb
 yukon-server/Simulator/*.obj
 yukon-server/Simulator/*.pdb
 yukon-server/bin
+yukon-server/lib

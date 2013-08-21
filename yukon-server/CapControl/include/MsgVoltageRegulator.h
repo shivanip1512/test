@@ -4,9 +4,12 @@
 
 #include "VoltageRegulator.h"
 
+#include <boost/ptr_container/ptr_vector.hpp>
+
 class VoltageRegulatorMessage : public CapControlMessage
 {
-    RWDECLARE_COLLECTABLE( VoltageRegulatorMessage )
+    public:
+        DECLARE_COLLECTABLE( VoltageRegulatorMessage );
 
     private:
         typedef CapControlMessage Inherited;
@@ -20,9 +23,9 @@ class VoltageRegulatorMessage : public CapControlMessage
 
         virtual CtiMessage * replicateMessage() const;
 
-        void saveGuts(RWvostream & ostrm) const;
-
         void insert(Cti::CapControl::VoltageRegulator * regulator);
+
+        const boost::ptr_vector<Cti::CapControl::VoltageRegulator> getVoltageRegulators() const;
 
     private:
         void cleanup();

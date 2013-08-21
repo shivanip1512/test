@@ -7,7 +7,8 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 //
 #include "cparms.h"
 #include "message.h"
-#include "connection.h"
+#include "connection_client.h"
+#include "amq_constants.h"
 #include "ctinexus.h"
 #include "msg_multi.h"
 #include "msg_ptreg.h"
@@ -66,7 +67,8 @@ void main(int argc, char **argv)
             return;
         }
 
-        CtiConnection myConnection(VANGOGHNEXUS, argv[1]);
+        CtiClientConnection myConnection( Cti::Messaging::ActiveMQ::Queue::dispatch );
+        myConnection.start();
 
         //  write the registration message (this is only done once, because if the database changes,
         //    the program name and such doesn't change - only our requested points.)
@@ -98,7 +100,7 @@ void main(int argc, char **argv)
 
         //  tell Dispatch we're going away, then leave
         myConnection.WriteConnQue( CTIDBG_new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
-        myConnection.ShutdownConnection();
+        myConnection.close();
 
     }
     catch( RWxmsg &msg )

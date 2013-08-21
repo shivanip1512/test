@@ -6,25 +6,7 @@
 
 namespace std {
 
-ostream &operator<<(ostream &o, const std::vector<unsigned char> &bytes)
-{
-    o << "(";
-
-    const unsigned char oldfill = o.fill('0');
-    const ios::fmtflags oldformat = o.setf(ios_base::hex, ios::basefield);
-
-    for each( unsigned char b in bytes )
-    {
-        o << "(0x" << setw(2) << (unsigned)b << ")";
-    }
-
-    o.setf(oldformat, ios::basefield);
-    o.fill(oldfill);
-
-    o << ")";
-
-    return o;
-}
+ostream &operator<<(ostream &o, const vector<unsigned char> &bytes);
 
 }
 

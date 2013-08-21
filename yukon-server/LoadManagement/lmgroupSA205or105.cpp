@@ -5,7 +5,7 @@
 
 using std::endl;
 
-RWDEFINE_COLLECTABLE( CtiLMGroupSA205OR105, CTILMGROUPSA205OR105_ID )
+DEFINE_COLLECTABLE( CtiLMGroupSA205OR105, CTILMGROUPSA205OR105_ID )
 
 /*---------------------------------------------------------------------------
   Constructors
@@ -96,26 +96,6 @@ CtiRequestMsg* CtiLMGroupSA205OR105::createMasterCycleRequestMsg(LONG offTime, L
     dout << CtiTime() << " - createMasterCycleRequestMsg() not implemented for SA205/105 LM Groups " << __FILE__ << " at:" << __LINE__ << endl;
     return NULL;
 
-}
-
-/*-------------------------------------------------------------------------
-  restoreGuts
-    
-  Restore self's state from the given stream
-  --------------------------------------------------------------------------*/
-void CtiLMGroupSA205OR105::restoreGuts(RWvistream& istrm)
-{
-    CtiLMGroupBase::restoreGuts( istrm );
-}
-
-/*---------------------------------------------------------------------------
-  saveGuts
-    
-  Save self's state onto the given stream
-  ---------------------------------------------------------------------------*/
-void CtiLMGroupSA205OR105::saveGuts(RWvostream& ostrm ) const  
-{
-    CtiLMGroupBase::saveGuts( ostrm );
 }
 
 /*---------------------------------------------------------------------------

@@ -14,7 +14,7 @@ class CtiLMEnergyExchangeCustomer : public CtiLMCICustomerBase
 
 public:
 
-RWDECLARE_COLLECTABLE( CtiLMEnergyExchangeCustomer )
+DECLARE_COLLECTABLE( CtiLMEnergyExchangeCustomer );
 
     CtiLMEnergyExchangeCustomer();
     CtiLMEnergyExchangeCustomer(Cti::RowReader &rdr);
@@ -23,13 +23,10 @@ RWDECLARE_COLLECTABLE( CtiLMEnergyExchangeCustomer )
     virtual ~CtiLMEnergyExchangeCustomer();
     
     std::vector<CtiLMEnergyExchangeCustomerReply*>& getLMEnergyExchangeCustomerReplies();
+    const std::vector<CtiLMEnergyExchangeCustomerReply*>& getLMEnergyExchangeCustomerReplies() const;
 
     BOOL hasAcceptedOffer(LONG offerid) const;
     CtiLMEnergyExchangeCustomer* replicate() const;
-
-    //Members inherited from RWCollectable
-    void restoreGuts(RWvistream& );
-    void saveGuts(RWvostream& ) const;
 
     CtiLMEnergyExchangeCustomer& operator=(const CtiLMEnergyExchangeCustomer& right);
 

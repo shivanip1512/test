@@ -9,7 +9,7 @@
 #include "dlldefs.h"
 #include "message.h"
 #include "msg_dbchg.h"
-#include "connection.h"
+#include "connection_client.h"
 #include "mgr_fdrpoint.h"
 #include "cparms.h"
 #include "fdrdebuglevel.h"
@@ -117,7 +117,7 @@ class IM_EX_FDRBASE CtiFDRInterface
     protected:
 
         CtiMutex            iDispatchMux;
-        CtiConnection       *iDispatchConn;
+        CtiClientConnection *iDispatchConn;
         CtiFDRManager       *iOutBoundPoints;
         CtiMutex            iCparmMutex;
 

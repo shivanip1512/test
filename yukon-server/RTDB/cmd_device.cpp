@@ -43,6 +43,39 @@ unsigned DeviceCommand::getValueFromBits(const Bytes &data, const unsigned start
 
 
 //  throws CommandException
+unsigned DeviceCommand::getValueFromBitsLE(const Bytes &data, const unsigned start_offset, const unsigned length)
+{
+    const unsigned end_offset = start_offset + length; // = 8
+
+    if( end_offset > data.size() * 8 )
+    {
+        throw CommandException(NOTNORMAL, "Payload too small");
+    }
+
+    unsigned value = 0;
+
+    for( unsigned pos = start_offset; pos < end_offset; )
+    {
+        const unsigned bit_offset   = pos % 8;
+        const unsigned byte_offset  = pos / 8;
+        const unsigned bits_to_read = std::min(end_offset - pos, 8 - bit_offset);
+
+        unsigned char tmp = data[byte_offset];
+        tmp >>= bit_offset;
+
+        unsigned char mask = 0xff >> ( 8 - bits_to_read );
+        tmp &= mask;
+
+        value |= tmp << (pos - start_offset);
+
+        pos += bits_to_read;
+    }
+
+    return value;
+}
+
+
+//  throws CommandException
 vector<unsigned> DeviceCommand::getValueVectorFromBits(const Bytes &data, const unsigned start_offset, const unsigned length, const unsigned count)
 {
     vector<unsigned> values;

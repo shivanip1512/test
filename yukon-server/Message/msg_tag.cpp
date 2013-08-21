@@ -20,35 +20,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "msg_tag.h"
 #include "numstr.h"
 
-RWDEFINE_COLLECTABLE( CtiTagMsg, MSG_TAG );
-
-void CtiTagMsg::saveGuts(RWvostream &aStream) const
-{
-   Inherited::saveGuts(aStream);
-   aStream << _instanceid
-       << _pointid
-       << _tagid
-       << _descriptionStr
-       << _action
-       << _tagtime
-       << _referenceStr
-       << _taggedForStr
-       << _clientMsgId;
-}
-
-void CtiTagMsg::restoreGuts(RWvistream& aStream)
-{
-   Inherited::restoreGuts(aStream);
-   aStream >> _instanceid
-       >> _pointid
-       >> _tagid
-       >> _descriptionStr
-       >> _action
-       >> _tagtime
-       >> _referenceStr
-       >> _taggedForStr
-       >> _clientMsgId;
-}
+DEFINE_COLLECTABLE( CtiTagMsg, MSG_TAG );
 
 int CtiTagMsg::getInstanceID() const
 {

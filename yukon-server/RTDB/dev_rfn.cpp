@@ -2,14 +2,48 @@
 
 #include "dev_rfn.h"
 
+#include "std_helper.h"
+
 #include <boost/assign/list_of.hpp>
 
 namespace Cti {
 namespace Devices {
 
-int RfnDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &vgList, CtiMessageList &retList, RfnRequestMessages &rfnRequests)
+std::string RfnDevice::getSQLCoreStatement() const
 {
-    typedef int (RfnDevice::*RfnExecuteMethod)(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &vgList, CtiMessageList &retList, RfnRequestMessages &rfnRequests);
+    static const string sqlCore =
+        "SELECT "
+            "YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, YP.disableflag, "
+            "DV.deviceid, DV.alarminhibit, DV.controlinhibit, "
+            "RFN.SerialNumber, RFN.Manufacturer, RFN.Model "
+        "FROM "
+            "YukonPAObject YP "
+            "JOIN Device DV ON YP.YukonPaObjectId = DV.DeviceID "
+            "JOIN RFNAddress RFN on DV.DeviceId = RFN.DeviceID "
+         "WHERE "
+            "1=1 ";  //  Unfortunately, it seems that our selectors require a WHERE clause.
+
+    return sqlCore;
+}
+
+
+void RfnDevice::DecodeDatabaseReader(RowReader &rdr)
+{
+    RfnIdentifier rfnId;
+
+    rdr["SerialNumber"] >> rfnId.serialNumber;
+    rdr["Manufacturer"] >> rfnId.manufacturer;
+    rdr["Model"]        >> rfnId.model;
+
+    _rfnId = rfnId;
+
+    CtiDeviceSingle::DecodeDatabaseReader(rdr);
+}
+
+
+int RfnDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests)
+{
+    typedef int (RfnDevice::*RfnExecuteMethod)(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
 
     typedef std::map<int, RfnExecuteMethod> ExecuteLookup;
 
@@ -18,71 +52,110 @@ int RfnDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiM
         (GetConfigRequest, &RfnDevice::executeGetConfig)
         (GetValueRequest,  &RfnDevice::executeGetValue);
 
-    ExecuteLookup::const_iterator itr = executeMethods.find(parse.getCommand());
+    boost::optional<RfnExecuteMethod> executeMethod = mapFind(executeMethods, parse.getCommand());
 
-    if( itr == executeMethods.end() )
+    if( ! executeMethod )
     {
         return NoMethod;
     }
 
-    const RfnExecuteMethod executeMethod = itr->second;
+    try
+    {
+        return (this->**executeMethod)(pReq, parse, retList, rfnRequests);
+    }
+    catch( const Commands::RfnCommand::CommandException &ce )
+    {
+        std::auto_ptr<CtiReturnMsg> commandExceptionError(
+            new CtiReturnMsg(
+                    pReq->DeviceId(),
+                    pReq->CommandString(),
+                    ce.error_description,
+                    ce.error_code,
+                    0,
+                    0,
+                    0,
+                    pReq->GroupMessageId(),
+                    pReq->UserMessageId()));
 
-    return (this->*executeMethod)(pReq, parse, vgList, retList, rfnRequests);
+        retList.push_back(commandExceptionError.release());
+
+        return ExecutionComplete;
+    }
 }
 
-int RfnDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &vgList, CtiMessageList &retList, RfnRequestMessages &rfnRequests)
+int RfnDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests)
 {
-    if( const boost::optional<std::string> installValue = parse.findStringForKey("installvalue") )
+    if( parse.isKeyValid("install") )
     {
-        typedef int (RfnDevice::*PutConfigMethod)(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &vgList, CtiMessageList &retList, RfnRequestMessages &rfnRequests);
-
-        typedef std::map<std::string, PutConfigMethod> PutConfigLookup;
-
-        const PutConfigLookup putConfigMethods = boost::assign::map_list_of
-            ("display",          &RfnDevice::executePutConfigDisplay)
-            ("freezeday",        &RfnDevice::executePutConfigFreezeDay)
-            ("voltageaveraging", &RfnDevice::executePutConfigVoltageAveragingInterval)
-            ("tou",              &RfnDevice::executePutConfigTou);
-
-        PutConfigLookup::const_iterator itr = putConfigMethods.find(*installValue);
-
-        if( itr != putConfigMethods.end() )
-        {
-            PutConfigMethod method = itr->second;
-
-            return (this->*method)(pReq, parse, vgList, retList, rfnRequests);
-        }
+        return executePutConfigInstall(pReq, parse, retList, rfnRequests);
     }
 
     return NoMethod;
 }
 
-int RfnDevice::executePutConfigFreezeDay(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &vgList, CtiMessageList &retList, RfnRequestMessages &rfnRequests)
+
+int RfnDevice::executePutConfigInstall(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests)
+{
+    const boost::optional<std::string> installValue = parse.findStringForKey("installvalue");
+
+    if( ! installValue )
+    {
+        return NoMethod;
+    }
+
+    if( *installValue == "all" )
+    {
+        return NoMethod;  // executePutConfigInstallAll(pReq, parse, retList, rfnRequests);
+    }
+
+    typedef Commands::RfnCommandSPtr (RfnDevice::*PutConfigInstallMethod)(CtiRequestMsg *pReq, CtiCommandParser &parse);
+
+    typedef std::map<std::string, PutConfigInstallMethod> PutConfigLookup;
+
+    const PutConfigLookup putConfigInstallMethods = boost::assign::map_list_of
+        ("display",          &RfnDevice::executePutConfigInstallDisplay)
+        ("freezeday",        &RfnDevice::executePutConfigInstallFreezeDay)
+        ("tou",              &RfnDevice::executePutConfigInstallTou)
+        ("voltageaveraging", &RfnDevice::executePutConfigInstallVoltageAveragingInterval);
+
+    if( boost::optional<PutConfigInstallMethod> putConfigInstallMethod = mapFind(putConfigInstallMethods, *installValue) )
+    {
+        rfnRequests.push_back(
+           (this->**putConfigInstallMethod)(pReq, parse));
+    }
+
+    return rfnRequests.empty()
+        ? NoMethod
+        : NoError;
+}
+
+
+Commands::RfnCommandSPtr RfnDevice::executePutConfigInstallFreezeDay(CtiRequestMsg *pReq, CtiCommandParser &parse)
+{
+    return Commands::RfnCommandSPtr();
+}
+
+Commands::RfnCommandSPtr RfnDevice::executePutConfigInstallVoltageAveragingInterval(CtiRequestMsg *pReq, CtiCommandParser &parse)
+{
+    return Commands::RfnCommandSPtr();
+}
+
+Commands::RfnCommandSPtr RfnDevice::executePutConfigInstallTou(CtiRequestMsg *pReq, CtiCommandParser &parse)
+{
+    return Commands::RfnCommandSPtr();
+}
+
+Commands::RfnCommandSPtr RfnDevice::executePutConfigInstallDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse)
+{
+    return Commands::RfnCommandSPtr();
+}
+
+int RfnDevice::executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests)
 {
     return NoMethod;
 }
 
-int RfnDevice::executePutConfigVoltageAveragingInterval(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &vgList, CtiMessageList &retList, RfnRequestMessages &rfnRequests)
-{
-    return NoMethod;
-}
-
-int RfnDevice::executePutConfigTou(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &vgList, CtiMessageList &retList, RfnRequestMessages &rfnRequests)
-{
-    return NoMethod;
-}
-
-int RfnDevice::executePutConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &vgList, CtiMessageList &retList, RfnRequestMessages &rfnRequests)
-{
-    return NoMethod;
-}
-
-int RfnDevice::executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &vgList, CtiMessageList &retList, RfnRequestMessages &rfnRequests)
-{
-    return NoMethod;
-}
-
-int RfnDevice::executeGetValue (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &vgList, CtiMessageList &retList, RfnRequestMessages &rfnRequests)
+int RfnDevice::executeGetValue (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests)
 {
     return NoMethod;
 }

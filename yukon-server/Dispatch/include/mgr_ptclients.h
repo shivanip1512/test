@@ -15,7 +15,6 @@
 
 // Forward Declarations
 class CtiSignalMsg;
-class CtiConnectionManager;
 class CtiPointRegistrationMsg;
 
 class IM_EX_CTIVANGOGH CtiPointClientManager : public CtiPointManager

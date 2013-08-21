@@ -58,11 +58,12 @@ unsigned char RfnLoadProfileCommand::getOperation() const
 }
 
 
-RfnCommand::Bytes RfnLoadProfileCommand::getData()
+RfnCommand::Bytes RfnLoadProfileCommand::getCommandData()
 {
     std::vector< TypeLengthValue >  tlvs;
 
     populateTlvs( tlvs );
+
     return getBytesFromTlvs( tlvs );
 }
 
@@ -76,10 +77,7 @@ void RfnLoadProfileCommand::populateTlvs( std::vector< TypeLengthValue > & tlvs 
 RfnCommand::RfnResult RfnLoadProfileCommand::error( const CtiTime now,
                                                     const YukonError_t error_code )
 {
-    char error_str[80];
-
-    GetErrorString( error_code, error_str );
-    throw CommandException( error_code, error_str );
+    throw CommandException( error_code, GetErrorString( error_code ));
 }
 
 
@@ -167,9 +165,7 @@ void RfnVoltageProfileConfigurationCommand::populateTlvs( std::vector< TypeLengt
 {
     if ( _operation == Operation_SetConfiguration )
     {
-        TypeLengthValue  tlv;
-
-        tlv.type = TlvType_VoltageProfileConfiguration;
+        TypeLengthValue tlv(TlvType_VoltageProfileConfiguration);
 
         tlv.value.push_back( _demandInterval );
         tlv.value.push_back( _loadProfileInterval );
@@ -179,7 +175,7 @@ void RfnVoltageProfileConfigurationCommand::populateTlvs( std::vector< TypeLengt
 }
 
 
-RfnCommand::RfnResult RfnVoltageProfileConfigurationCommand::decode( const CtiTime now,
+RfnCommand::RfnResult RfnVoltageProfileConfigurationCommand::decodeCommand( const CtiTime now,
                                                                      const RfnCommand::RfnResponse & response )
 {
     RfnCommand::RfnResult  result = decodeResponseHeader( now, response );
@@ -207,7 +203,7 @@ RfnCommand::RfnResult RfnVoltageProfileConfigurationCommand::decode( const CtiTi
                                ErrorInvalidData, "Invalid TLV type (" + CtiNumStr(response[4]) + ")" );
 
             validateCondition( response[5] == 2,
-                               ErrorInvalidData, "Invalid TLV length (" + CtiNumStr(response[5]) + ")" );
+                           ErrorInvalidData, "Invalid TLV length (" + CtiNumStr(response[5]) + ")" );
 
             _demandInterval      = response[6];
             _loadProfileInterval = response[7];
@@ -261,8 +257,8 @@ RfnLoadProfileRecordingCommand::RfnLoadProfileRecordingCommand( ResultHandler & 
 }
 
 
-RfnCommand::RfnResult RfnLoadProfileRecordingCommand::decode( const CtiTime now,
-                                                              const RfnCommand::RfnResponse & response )
+RfnCommand::RfnResult RfnLoadProfileRecordingCommand::decodeCommand( const CtiTime now,
+                                                                     const RfnCommand::RfnResponse & response )
 {
     RfnCommand::RfnResult  result = decodeResponseHeader( now, response );
 
@@ -317,6 +313,49 @@ RfnCommand::RfnResult RfnLoadProfileRecordingCommand::decode( const CtiTime now,
 RfnLoadProfileRecordingCommand::RecordingOption RfnLoadProfileRecordingCommand::getRecordingOption() const
 {
     return _option;
+}
+////
+
+
+RfnLoadProfileReadPointsCommand::RfnLoadProfileReadPointsCommand( const CtiTime &now,
+                                                                  const CtiDate begin,
+                                                                  const CtiDate end ) :
+    RfnLoadProfileCommand( Operation_GetLoadProfilePoints ),
+    _begin(begin),
+    _end(end)
+{
+    validateCondition( _begin < _end,
+                       BADPARAM, "End date must be before begin date (begin = " + _begin.asStringUSFormat() + ", end = " + _end.asStringUSFormat() + ")" );
+
+    validateCondition( _end < now.date(),
+                       BADPARAM, "End date must be before today (end = " + _begin.asStringUSFormat() + ", now = " + now.date().asStringUSFormat() + ")" );
+}
+
+
+void RfnLoadProfileReadPointsCommand::populateTlvs( std::vector< TypeLengthValue > & tlvs )
+{
+    TypeLengthValue tlv(TlvType_GetProfilePointsRequest);
+
+    setBits(tlv.value,  0, 32, CtiTime(_begin).seconds());
+    setBits(tlv.value, 32, 32, CtiTime(_end  ).seconds());
+
+    tlvs.push_back( tlv );
+}
+
+
+RfnCommand::RfnResult RfnLoadProfileReadPointsCommand::decodeCommand( const CtiTime now,
+                                                                      const RfnCommand::RfnResponse & response )
+{
+    RfnCommand::RfnResult result = decodeResponseHeader( now, response );
+
+    validateCondition( response.size() >= 4,
+                       ErrorInvalidData, "Response too small (" + CtiNumStr(response.size()) + " < 4)" );
+
+    const unsigned tlv_count = response[3];
+
+
+
+    return result;
 }
 
 

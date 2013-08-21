@@ -90,7 +90,7 @@ INT CtiPort::traceIn(CtiXfer& Xfer, list< CtiMessage* > &traceList, CtiDeviceSPt
                     if(ErrorCode && ErrorCode != ErrPortSimulated)
                     {
                         trace.setBrightRed();
-                        trace.setTrace( FormatError(ErrorCode) );
+                        trace.setTrace( GetErrorString(ErrorCode) );
                         trace.setEnd(true);
                         traceList.push_back(trace.replicateMessage());
                         trace.setNormal();

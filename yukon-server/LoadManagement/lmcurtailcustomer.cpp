@@ -29,7 +29,7 @@ using std::endl;
 
 extern ULONG _LM_DEBUG;
 
-RWDEFINE_COLLECTABLE( CtiLMCurtailCustomer, CTILMCURTAILCUSTOMER_ID )
+DEFINE_COLLECTABLE( CtiLMCurtailCustomer, CTILMCURTAILCUSTOMER_ID )
 
 /*---------------------------------------------------------------------------
     Constructors
@@ -37,11 +37,6 @@ RWDEFINE_COLLECTABLE( CtiLMCurtailCustomer, CTILMCURTAILCUSTOMER_ID )
 CtiLMCurtailCustomer::CtiLMCurtailCustomer() :
 _requireack(false),
 _curtailreferenceid(0),
-_acknowledgestatus(0),
-_ipaddressofackuser(0),
-_useridname(0),
-_nameofackperson(0),
-_curtailmentnotes(0),
 _acklateflag(false)
 {
 }
@@ -162,52 +157,6 @@ CtiLMCurtailCustomer& CtiLMCurtailCustomer::setAckLateFlag(BOOL acklate)
 {
     _acklateflag = acklate;
     return *this;
-}
-
-
-/*-------------------------------------------------------------------------
-    restoreGuts
-
-    Restore self's state from the given stream
---------------------------------------------------------------------------*/
-void CtiLMCurtailCustomer::restoreGuts(RWvistream& istrm)
-{
-    CtiLMCICustomerBase::restoreGuts( istrm );
-
-    CtiTime tempTime;
-    istrm >> _requireack
-          >> _curtailreferenceid
-          >> _acknowledgestatus
-          >> tempTime
-          >> _ipaddressofackuser
-          >> _useridname
-          >> _nameofackperson
-          >> _curtailmentnotes
-          >> _acklateflag;
-
-    _ackdatetime = CtiTime(tempTime);
-}
-
-/*---------------------------------------------------------------------------
-    saveGuts
-
-    Save self's state onto the given stream
----------------------------------------------------------------------------*/
-void CtiLMCurtailCustomer::saveGuts(RWvostream& ostrm ) const
-{
-    CtiLMCICustomerBase::saveGuts( ostrm );
-
-    ostrm << _requireack
-          << _curtailreferenceid
-          << _acknowledgestatus
-          << _ackdatetime
-          << _ipaddressofackuser
-          << _useridname
-          << _nameofackperson
-          << _curtailmentnotes
-          << _acklateflag;
-
-    return;
 }
 
 /*---------------------------------------------------------------------------

@@ -25,7 +25,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "collectable.h"
 
 
-RWDEFINE_COLLECTABLE( CtiQueueDataMsg, MSG_QUEUEDATA );
+DEFINE_COLLECTABLE( CtiQueueDataMsg, MSG_QUEUEDATA );
 
 CtiQueueDataMsg::CtiQueueDataMsg(
                                 long       queid,
@@ -70,35 +70,6 @@ CtiQueueDataMsg& CtiQueueDataMsg::operator=(const CtiQueueDataMsg& aRef)
     }
 
     return *this;
-}
-
-void CtiQueueDataMsg::saveGuts(RWvostream &aStream) const
-{
-    Inherited::saveGuts(aStream);
-    aStream << getId() << getQueueCount() << getRate() << getRequestId() << getRequestIdCount() << getTime() << UserMessageId();
-}
-
-void CtiQueueDataMsg::restoreGuts(RWvistream& aStream)
-{
-    Inherited::restoreGuts(aStream);
-
-    long           id;
-    unsigned       rate;              // Time in ms to send out 1 entry
-    unsigned       queueCount;        // Count of items in queue
-    long           requestId;         // RequestID, if any.
-    unsigned       requestIdCount;    // Count of items with requestID _requestID
-    long           userMessageId;
-    CtiTime        aTime;
-
-    aStream >> id >> queueCount >> rate >> requestId >> requestIdCount >> aTime >> userMessageId;
-
-    setId(id);
-    setQueueCount(queueCount);
-    setRate(rate);
-    setRequestId(requestId);
-    setRequestIdCount(requestIdCount);
-    setTime(aTime);
-    setUserMessageId(userMessageId);
 }
 
 long  CtiQueueDataMsg::getId() const

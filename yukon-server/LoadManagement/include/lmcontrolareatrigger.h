@@ -9,6 +9,7 @@
 #include "row_reader.h"
 #include "observe.h"
 #include "database_connection.h"
+#include "collectable.h"
 
 class CtiLMProjectionPointEntry
 {//equivalent to an inner class, only used for projections
@@ -36,12 +37,12 @@ private:
 };
 
 
-class CtiLMControlAreaTrigger : public RWCollectable
+class CtiLMControlAreaTrigger
 {
 
 public:
 
-RWDECLARE_COLLECTABLE( CtiLMControlAreaTrigger )
+    DECLARE_COLLECTABLE( CtiLMControlAreaTrigger );
 
     CtiLMControlAreaTrigger();
     CtiLMControlAreaTrigger(Cti::RowReader &rdr);
@@ -98,10 +99,6 @@ RWDECLARE_COLLECTABLE( CtiLMControlAreaTrigger )
     
     bool hasReceivedPointData() const;
     
-    //Members inherited from RWCollectable
-    void restoreGuts(RWvistream& );
-    void saveGuts(RWvostream& ) const;
-
     CtiLMControlAreaTrigger& operator=(const CtiLMControlAreaTrigger& right);
 
     int operator==(const CtiLMControlAreaTrigger& right) const;

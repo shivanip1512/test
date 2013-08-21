@@ -20,7 +20,6 @@
 #include "MsgBankMove.h"
 #include "MsgObjectMove.h"
 #include "MsgSubstationBus.h"
-#include "MsgCapControlEventLog.h"
 #include "MsgCapBankStates.h"
 #include "MsgAreas.h"
 #include "MsgSpecialAreas.h"

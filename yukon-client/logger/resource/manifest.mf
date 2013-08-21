@@ -5,7 +5,6 @@ Class-Path: ./
  cbc.jar 
  common.jar 
  yukonappserver.jar 
- rwav.jar 
  jcfield401K.jar 
  jcpagelayout450K.jar 
  ojdbc6.jar 

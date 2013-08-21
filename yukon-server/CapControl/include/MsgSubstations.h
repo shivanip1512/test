@@ -5,7 +5,8 @@
 
 class CtiCCSubstationsMsg : public CapControlMessage
 {
-    RWDECLARE_COLLECTABLE( CtiCCSubstationsMsg )
+    public:
+        DECLARE_COLLECTABLE( CtiCCSubstationsMsg );
 
     private:
         typedef CapControlMessage Inherited;
@@ -23,9 +24,6 @@ class CtiCCSubstationsMsg : public CapControlMessage
         CtiCCSubstation_vec* getCCSubstations() const     { return _ccSubstations; }
 
         virtual CtiMessage* replicateMessage() const;
-
-        void restoreGuts( RWvistream& );
-        void saveGuts( RWvostream&) const;
 
         CtiCCSubstationsMsg& operator=(const CtiCCSubstationsMsg& right);
 

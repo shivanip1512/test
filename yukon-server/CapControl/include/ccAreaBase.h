@@ -11,11 +11,12 @@ namespace Cti
 
 
 
-class CtiCCAreaBase : public Controllable, public RWCollectable
+class CtiCCAreaBase : public Controllable
 {
+public:
+    DECLARE_COLLECTABLE( CtiCCAreaBase );
 
 public:
-    RWDECLARE_COLLECTABLE( CtiCCAreaBase )
     CtiCCAreaBase();
     CtiCCAreaBase(StrategyManager * strategyManager);
     CtiCCAreaBase(Cti::RowReader& rdr, StrategyManager * strategyManager);
@@ -49,12 +50,9 @@ public:
     void setDynamicData(Cti::RowReader& rdr);
     void restore(Cti::RowReader& rdr);
 
-    //Members inherited from RWCollectable
-    void saveGuts(RWvostream& ) const;
-
     CtiCCAreaBase& operator=(const CtiCCAreaBase& right);
 
-protected:
+public:
 
     double getPFactor() const;
     double getEstPFactor() const;

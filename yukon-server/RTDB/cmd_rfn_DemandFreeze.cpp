@@ -82,7 +82,7 @@ unsigned char RfnDemandFreezeCommand::getOperation() const
 }
 
 
-RfnCommand::Bytes RfnDemandFreezeCommand::getData()
+RfnCommand::Bytes RfnDemandFreezeCommand::getCommandData()
 {
     RfnCommand::Bytes   data;
 
@@ -93,10 +93,7 @@ RfnCommand::Bytes RfnDemandFreezeCommand::getData()
 RfnCommand::RfnResult RfnDemandFreezeCommand::error( const CtiTime now,
                                                      const YukonError_t error_code )
 {
-    char error_str[80];
-
-    GetErrorString( error_code, error_str );
-    throw CommandException( error_code, error_str );
+    throw CommandException( error_code, GetErrorString( error_code ));
 }
 
 
@@ -158,7 +155,7 @@ RfnDemandFreezeConfigurationCommand::RfnDemandFreezeConfigurationCommand( const 
 }
 
 
-RfnCommand::Bytes RfnDemandFreezeConfigurationCommand::getData()
+RfnCommand::Bytes RfnDemandFreezeConfigurationCommand::getCommandData()
 {
     RfnCommand::Bytes   data;
 
@@ -168,7 +165,7 @@ RfnCommand::Bytes RfnDemandFreezeConfigurationCommand::getData()
 }
 
 
-RfnCommand::RfnResult RfnDemandFreezeConfigurationCommand::decode( const CtiTime now,
+RfnCommand::RfnResult RfnDemandFreezeConfigurationCommand::decodeCommand( const CtiTime now,
                                                                    const RfnCommand::RfnResponse & response )
 {
     RfnCommand::RfnResult  result = decodeResponseHeader( now, response );
@@ -193,7 +190,7 @@ RfnImmediateDemandFreezeCommand::RfnImmediateDemandFreezeCommand()
 }
 
 
-RfnCommand::RfnResult RfnImmediateDemandFreezeCommand::decode( const CtiTime now,
+RfnCommand::RfnResult RfnImmediateDemandFreezeCommand::decodeCommand( const CtiTime now,
                                                                const RfnCommand::RfnResponse & response )
 {
     RfnCommand::RfnResult  result = decodeResponseHeader( now, response );
@@ -225,8 +222,8 @@ RfnGetDemandFreezeInfoCommand::DemandFreezeData RfnGetDemandFreezeInfoCommand::g
 }
 
 
-RfnCommand::RfnResult RfnGetDemandFreezeInfoCommand::decode( const CtiTime now,
-                                                             const RfnCommand::RfnResponse & response )
+RfnCommand::RfnResult RfnGetDemandFreezeInfoCommand::decodeCommand( const CtiTime now,
+                                                                    const RfnCommand::RfnResponse & response )
 {
     struct Accumulator
     {

@@ -23,7 +23,9 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "msg_pdata.h"
 #include "utility.h"
 
-RWDEFINE_COLLECTABLE( CtiSignalMsg, MSG_SIGNAL );
+DEFINE_COLLECTABLE( CtiSignalMsg, MSG_SIGNAL );
+
+//REGISTER_MSG_FACTORY( CtiSignalMsg );
 
 unsigned int CtiSignalMsg::_instanceCount = 0;
 
@@ -77,24 +79,6 @@ CtiSignalMsg& CtiSignalMsg::operator=(const CtiSignalMsg& aRef)
         _point_value   = aRef.getPointValue();
     }
     return *this;
-}
-
-void CtiSignalMsg::saveGuts(RWvostream &aStream) const
-{
-    Inherited::saveGuts(aStream);
-
-    aStream << getId() << getLogType() << getSignalCategory() << getText() << getAdditionalInfo() << getTags() << getCondition() << getSignalMillis() << getPointValue();
-}
-
-void CtiSignalMsg::restoreGuts(RWvistream& aStream)
-{
-    unsigned millis;
-
-    Inherited::restoreGuts(aStream);
-
-    aStream >> _id >> _logType >> _signalCategory >> _text >> _additional >> _tags >> _condition >> millis >> _point_value;
-
-    setSignalMillis(millis);
 }
 
 long CtiSignalMsg::getId() const

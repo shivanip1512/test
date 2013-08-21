@@ -10,7 +10,6 @@ Class-Path: ./
  dbeditor.jar 
  loadcontrol.jar 
  yukonappserver.jar 
- rwav.jar 
  ojdbc6.jar 
  SqlServer.jar 
  servlet-api.jar 

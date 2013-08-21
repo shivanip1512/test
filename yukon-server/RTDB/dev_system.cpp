@@ -113,7 +113,7 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                             CtiReturnMsg * pRet = CTIDBG_new CtiReturnMsg(0, string(OutMessage->Request.CommandStr), Route->getName(), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
                             if( (nRet = Route->ExecuteRequest(pReq, parse, OutMessage, vgList, retList, outList)) )
                             {
-                                string resultString = getName() + ": ERROR " + CtiNumStr(nRet) + " (" + FormatError(nRet) + ") performing command on route " + Route->getName().data();
+                                string resultString = getName() + ": ERROR " + CtiNumStr(nRet) + " (" + GetErrorString(nRet) + ") performing command on route " + Route->getName().data();
                                 pRet->setResultString(resultString);
                                 pRet->setStatus(nRet);
                                 retList.push_back(pRet);
@@ -441,7 +441,7 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
             case ProtocolVersacomType:
                 {
                     BOOL        error = TRUE;
-                    string   problem(parse.getCommandStr() + ": " + FormatError(ErrorInvalidRequest));
+                    string   problem(parse.getCommandStr() + ": " + GetErrorString(ErrorInvalidRequest));
 
                     memset(&(OutMessage->Buffer.VSt), 0, sizeof(VSTRUCT));
 

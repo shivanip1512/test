@@ -35,7 +35,7 @@ using std::vector;
 
 extern ULONG _LM_DEBUG;
 
-RWDEFINE_COLLECTABLE( CtiLMProgramEnergyExchange, CTILMPROGRAMENERGYEXCHANGE_ID )
+DEFINE_COLLECTABLE( CtiLMProgramEnergyExchange, CTILMPROGRAMENERGYEXCHANGE_ID )
 
 /*---------------------------------------------------------------------------
     Constructors
@@ -143,12 +143,24 @@ std::vector<CtiLMEnergyExchangeOffer*>& CtiLMProgramEnergyExchange::getLMEnergyE
     return _lmenergyexchangeoffers;
 }
 
+const std::vector<CtiLMEnergyExchangeOffer*>& CtiLMProgramEnergyExchange::getLMEnergyExchangeOffers() const
+{
+
+    return _lmenergyexchangeoffers;
+}
+
 /*---------------------------------------------------------------------------
     getLMEnergyExchangeCustomers
 
     Returns a list of customers for this energy exchange program
 ---------------------------------------------------------------------------*/
 std::vector<CtiLMEnergyExchangeCustomer*>& CtiLMProgramEnergyExchange::getLMEnergyExchangeCustomers()
+{
+
+    return _lmenergyexchangecustomers;
+}
+
+const std::vector<CtiLMEnergyExchangeCustomer*>& CtiLMProgramEnergyExchange::getLMEnergyExchangeCustomers() const
 {
 
     return _lmenergyexchangecustomers;
@@ -511,53 +523,6 @@ BOOL CtiLMProgramEnergyExchange::hasControlHoursAvailable()
 {
     BOOL returnBoolean = TRUE;
     return returnBoolean;
-}
-
-/*-------------------------------------------------------------------------
-    restoreGuts
-
-    Restore self's state from the given stream
---------------------------------------------------------------------------*/
-void CtiLMProgramEnergyExchange::restoreGuts(RWvistream& istrm)
-{
-
-
-
-    CtiLMProgramBase::restoreGuts( istrm );
-
-    istrm >> _minnotifytime
-          >> _heading
-          >> _messageheader
-          >> _messagefooter
-          >> _canceledmsg
-          >> _stoppedearlymsg
-          >> _lmenergyexchangeoffers
-          >> _lmenergyexchangecustomers;
-
-}
-
-/*---------------------------------------------------------------------------
-    saveGuts
-
-    Save self's state onto the given stream
----------------------------------------------------------------------------*/
-void CtiLMProgramEnergyExchange::saveGuts(RWvostream& ostrm ) const
-{
-
-
-
-    CtiLMProgramBase::saveGuts( ostrm );
-
-    ostrm << _minnotifytime
-          << _heading
-          << _messageheader
-          << _messagefooter
-          << _canceledmsg
-          << _stoppedearlymsg
-          << _lmenergyexchangeoffers
-          << _lmenergyexchangecustomers;
-
-    return;
 }
 
 /*---------------------------------------------------------------------------

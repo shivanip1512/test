@@ -12,7 +12,8 @@
 #include "database_reader.h"
 #include "database_connection.h"
 #include "database_transaction.h"
-#include "connection.h"
+#include "connection_client.h"
+#include "amq_constants.h"
 #include "cparms.h"
 #include "cmdparse.h"
 
@@ -39,8 +40,8 @@
 #include "xcel.h"
 #include "decodetextcmdfile.h"
 #include "utility.h"
+#include "smartmap.h"
 
-#include <rw/collstr.h>
 #include <rw/thr/thrutil.h>
 
 #include <boost/algorithm/string.hpp>
@@ -72,9 +73,9 @@ char* ScheduleIDVariable = "ScheduleID";
 char* HolidayScheduleIDVariable = "HolidayScheduleID";
 char* PILRequestPriorityVariable = "MessagePriority";
 
-CtiConnection* PILConnection = 0;
-CtiConnection* VanGoghConnection = 0;
-CtiConnection* NotificationConnection = 0;
+CtiClientConnection* PILConnection = 0;
+CtiClientConnection* VanGoghConnection = 0;
+CtiClientConnection* NotificationConnection = 0;
 
 RWThread MessageThr;
 
@@ -121,75 +122,82 @@ static const TclCommandMap tclCommands = boost::assign::map_list_of
     ("formatError", &formatError)
     ("getYukonBaseDir", &getYukonBaseDir);
 
+typedef CtiSmartMap<CtiFIFOQueue<CtiMessage>> RequestQueues;
+RequestQueues inboundMessageQueues;
+
+static RWRecursiveLock<RWMutexLock> _queue_mux;
+static RWTValHashDictionary<RWThreadId, boost::shared_ptr< CtiCountedPCPtrQueue<RWCollectable> >, thr_hash, std::equal_to<RWThreadId>  > InQueueStore;
+
+/* This function runs in it's own thread and simple watches the connection to the
+   PIL for incoming messages and places them in the appropriate queue */
 void _MessageThrFunc()
 {
     time_t last_cancellation_check = 0;
 
     try
     {
-        while( 1 )
+        while( true )
         {
             //Wake up every second to respect cancellation requests
-            CtiMessage* in = PILConnection->ReadConnQue( 1000 );
-
-            if( in != 0 )
+            if( CtiMessage *in_ptr = PILConnection->ReadConnQue( 1000 ) )
             {
-                boost::shared_ptr< CtiCountedPCPtrQueue<RWCollectable> > counted_ptr;
+                std::auto_ptr<CtiMessage> inboundMessage(in_ptr);
 
                 unsigned int msgid = 0;
 
-                if( in->isA() == MSG_PCRETURN )
+                switch( inboundMessage->isA() )
                 {
-                    msgid =((CtiReturnMsg *)in)->UserMessageId();
-                }
-                else if( in->isA() == MSG_QUEUEDATA )
-                {
-                    msgid =((CtiQueueDataMsg *)in)->UserMessageId();
-                }
-                else if( in->isA() == MSG_REQUESTCANCEL )
-                {
-                    msgid =((CtiRequestCancelMsg *)in)->UserMessageId();
+                    case MSG_PCRETURN:
+                        msgid = static_cast<CtiReturnMsg &>(*inboundMessage).UserMessageId();
+                        break;
+
+                    case MSG_QUEUEDATA:
+                        msgid = static_cast<CtiQueueDataMsg &>(*inboundMessage).UserMessageId();
+                        break;
+
+                    case MSG_REQUESTCANCEL:
+                        msgid = static_cast<CtiRequestCancelMsg &>(*inboundMessage).UserMessageId();
+                        break;
                 }
 
+                if( RequestQueues::ptr_type msgQueue = inboundMessageQueues.find(msgid) )
                 {
-                    RWRecursiveLock<RWMutexLock>::LockGuard guard(_queue_mux);
-                    if( InQueueStore.findValue( msgid, counted_ptr ) && (counted_ptr.use_count() > 0) )
-                        counted_ptr->write(in);
-                    else
+                    msgQueue->putQueue(inboundMessage.release());
+                }
+                else
+                {
+                    CtiLockGuard< CtiLogger > logGuard(dout);
+
+                    dout << CtiTime() <<
+                        " [" << rwThreadId() << "]"
+                        " Received message for interpreter"
+                        " [" << GetThreadIDFromMsgID(msgid) << "]" << endl;
+
+                    switch( inboundMessage->isA() )
                     {
-                        {
-                            CtiLockGuard< CtiLogger > logGuard(dout);
-                            dout << CtiTime() << " [" << rwThreadId() <<
-                            "] Received message for interpreter [" <<
-                            GetThreadIDFromMsgID(msgid) << "]" << endl;
-                            if( in->isA() == MSG_PCRETURN )
-                            {
-                                DumpReturnMessage(*(CtiReturnMsg*)in);
-                            }
-                            else if( in->isA() == MSG_REQUESTCANCEL )
-                            {
-                                in->dump();
-                            }
-                        }
-                        delete in;
+                        case MSG_PCRETURN:
+                            DumpReturnMessage(static_cast<CtiReturnMsg &>(*inboundMessage));
+                            break;
+
+                        case MSG_REQUESTCANCEL:
+                            inboundMessage->dump();
+                            break;
                     }
                 }
             }
 
             //Clean out the VanGogh Connection
-            RWCollectable* c;
-
-            while( (c = VanGoghConnection->ReadConnQue( 0 )) != 0 )
+            while( CtiMessage *vgMsg = VanGoghConnection->ReadConnQue( 0 ) )
             {
                 // If it is a command message (are you there)
                 // message then echo it right back
-                if( c->isA() == MSG_COMMAND )
+                if( vgMsg->isA() == MSG_COMMAND )
                 {
-                    VanGoghConnection->WriteConnQue( (CtiMessage*) c);
+                    VanGoghConnection->WriteConnQue(vgMsg);
                 }
                 else
                 {  // not interested, just delete it
-                    delete c;
+                    delete vgMsg;
                 }
             }
 
@@ -276,22 +284,10 @@ void WriteOutput(const char* output)
 {
     int thrId = rwThreadId();
 
-    //Write the output to stdout
     {
         CtiLockGuard< CtiLogger > guard(dout);
         dout << CtiTime() << " [" << thrId << "] " << output << endl;
     }
-
-    boost::shared_ptr< CtiCountedPCPtrQueue<RWCollectable> >ptr;//TS
-
-    OutQueueStore.findValue( thrId, ptr );
-
-    if( ptr.use_count() > 0 )
-    {
-        RWCollectableString* msg = new RWCollectableString(output);
-        ptr->write(msg);
-    }
-    return;
 }
 
 /* Connects to the PIL and VanGogh*/
@@ -416,22 +412,25 @@ int Mccmd_Connect(ClientData clientData, Tcl_Interp* interp, int argc, char* arg
         dout << CtiTime() << " MCCMD done loading cparms" << endl;
     }
 
-    PILConnection = new CtiConnection( pil_port, pil_host );
+    PILConnection = new CtiClientConnection( Cti::Messaging::ActiveMQ::Queue::pil );
     PILConnection->setName("MCCMD to Pil");
+    PILConnection->start();
 
     //Send a registration message
     CtiRegistrationMsg* reg = new CtiRegistrationMsg("MCCMD", 0, false );
     PILConnection->WriteConnQue( reg );
 
-    VanGoghConnection = new CtiConnection( dispatch_port, dispatch_host );
+    VanGoghConnection = new CtiClientConnection( Cti::Messaging::ActiveMQ::Queue::dispatch );
     VanGoghConnection->setName("MCCMD to Dispatch");
+    VanGoghConnection->start();
 
     //Send a registration message
     CtiRegistrationMsg* reg2 = new CtiRegistrationMsg("MCCMD", 0, false );
     VanGoghConnection->WriteConnQue( reg2 );
 
-    NotificationConnection = new CtiConnection( notification_port, notification_host.c_str() );
+    NotificationConnection = new CtiClientConnection( Cti::Messaging::ActiveMQ::Queue::notification );
     NotificationConnection->setName("MCCMD to Notification");
+    NotificationConnection->start();
 
     RWThreadFunction thr_func = rwMakeThreadFunction( _MessageThrFunc );
     thr_func.start();
@@ -452,21 +451,21 @@ int Mccmd_Disconnect(ClientData clientData, Tcl_Interp* interp, int argc, char* 
         dout << CtiTime() << " - " << "Shutting down connection to PIL" << endl;
     }
 
-    PILConnection->ShutdownConnection();
+    PILConnection->close();
 
     {
         CtiLockGuard< CtiLogger > guard(dout);
         dout << CtiTime() << " - " << "Shutting down connection to VanGogh" << endl;
     }
 
-    VanGoghConnection->ShutdownConnection();
+    VanGoghConnection->close();
 
     {
         CtiLockGuard< CtiLogger > guard(dout);
         dout << CtiTime() << " - " << "Shutting down connection to the Notification Server" << endl;
     }
 
-    NotificationConnection->ShutdownConnection();
+    NotificationConnection->close();
 
     delete PILConnection;
     PILConnection = 0;
@@ -572,7 +571,7 @@ int Mccmd_Init(Tcl_Interp* interp)
         dout << "Using MCCMD init script: " << init_script << endl;
     }
 
-    Tcl_EvalFile(interp, (char*) init_script.c_str() );
+    Tcl_EvalFile(interp, const_cast<char *>(init_script.c_str()));
 
     return TCL_OK;
 }
@@ -704,7 +703,7 @@ int mcu8100(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
     }
 
     string file = argv[1];
-    std::vector<RWCollectableString*> results;
+    std::vector<std::string*> results;
 
     if( DecodeCFDATAFile( file, &results) == false )
     {
@@ -712,12 +711,9 @@ int mcu8100(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
         return TCL_ERROR;
     }
 
-    std::vector<RWCollectableString*>::iterator iter = results.begin();
-
-    for( ; iter != results.end() ; ++iter )
+    for each( std::string *str in results )
     {
-        RWCollectableString* str = *iter;
-        Tcl_Eval( interp, (char*) str->data());
+        Tcl_Eval(interp, const_cast<char *>(str->c_str()));
     }
     delete_container(results);
     results.clear();
@@ -739,7 +735,7 @@ int mcu9000eoi(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[]
     }
 
     string file = argv[1];
-    std::vector<RWCollectableString*> results;
+    std::vector<std::string *> results;
 
     if( DecodeEOIFile(file, &results) == false )
     {
@@ -747,11 +743,9 @@ int mcu9000eoi(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[]
         return TCL_ERROR;
     }
 
-    std::vector<RWCollectableString*>::iterator iter = results.begin();
-    for( ; iter != results.end() ; ++iter )
+    for each( std::string *str in results )
     {
-        RWCollectableString* str = *iter;
-        Tcl_Eval( interp, (char*) str->data());
+        Tcl_Eval(interp, const_cast<char *>(str->c_str()));
     }
     delete_container(results);
     results.clear();
@@ -769,7 +763,7 @@ int mcu8100wepco(ClientData clientData, Tcl_Interp* interp, int argc, char* argv
     }
 
     string file = argv[1];
-    std::vector<RWCollectableString*> results;
+    std::vector<std::string *> results;
 
     if( DecodeWepcoFile( file, &results) == false )
     {
@@ -777,11 +771,9 @@ int mcu8100wepco(ClientData clientData, Tcl_Interp* interp, int argc, char* argv
         return TCL_ERROR;
     }
 
-    std::vector<RWCollectableString*>::iterator iter = results.begin();
-    for( ; iter != results.end() ; ++iter )
+    for each( std::string *str in results )
     {
-        RWCollectableString* str = *iter;
-        Tcl_Eval( interp, (char*) str->data());
+        Tcl_Eval( interp, const_cast<char *>(str->c_str()));
         Sleep(100); // CGP 051302  Buy some sanity.
 
         if( Tcl_DoOneEvent( TCL_ALL_EVENTS | TCL_DONT_WAIT) == 1 )
@@ -807,7 +799,7 @@ int mcu8100service(ClientData clientData, Tcl_Interp* interp, int argc, char* ar
     }
 
     string file = argv[1];
-    std::vector<RWCollectableString*> results;
+    std::vector<std::string *> results;
 
     if( DecodeWepcoFileService( file, &results) == false )
     {
@@ -817,11 +809,9 @@ int mcu8100service(ClientData clientData, Tcl_Interp* interp, int argc, char* ar
 
     int num_sent = 0;
 
-    std::vector<RWCollectableString*>::iterator iter = results.begin();
-    for( ; iter != results.end() ; ++iter )
+    for each( std::string *str in results )
     {
-        RWCollectableString* str = *iter;
-        Tcl_Eval( interp, (char*) str->data());
+        Tcl_Eval( interp, const_cast<char *>(str->c_str()));
         num_sent++;
         Sleep(100); // CGP 051302  Buy some sanity.
 
@@ -851,7 +841,7 @@ int mcu8100program(ClientData clientData, Tcl_Interp* interp, int argc, char* ar
     }
 
     string file = argv[1];
-    std::vector<RWCollectableString*> results;
+    std::vector<std::string *> results;
 
     if( DecodeWepcoFileConfig( file, &results) == false )
     {
@@ -860,11 +850,10 @@ int mcu8100program(ClientData clientData, Tcl_Interp* interp, int argc, char* ar
     }
 
     int num_sent = 0;
-    std::vector<RWCollectableString*>::iterator iter = results.begin();
-    for( ; iter != results.end() ; ++iter )
+
+    for each( std::string *str in results )
     {
-        RWCollectableString* str = *iter;
-        Tcl_Eval( interp, (char*) str->data());
+        Tcl_Eval( interp, const_cast<char *>(str->c_str()));
         num_sent++;
         Sleep(100); // CGP 051302  Buy some sanity.
 
@@ -896,7 +885,7 @@ int pmsi(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
     }
 
     string file = argv[1];
-    std::vector<RWCollectableString*> results;
+    std::vector<std::string *> results;
 
     if( DecodePMSIFile( file, &results) == false )
     {
@@ -907,12 +896,9 @@ int pmsi(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
         return TCL_ERROR;
     }
 
-    std::vector<RWCollectableString*>::iterator iter = results.begin();
-
-    for( ; iter != results.end() ; ++iter )
+    for each( std::string *str in results )
     {
-        RWCollectableString* str = *iter;
-        Tcl_Eval( interp, (char*) str->data());
+        Tcl_Eval( interp, const_cast<char *>(str->c_str()));
     }
     delete_container(results);
     results.clear();
@@ -952,7 +938,7 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
         string file = argv[1];
         string temp;
 
-        std::vector<RWCollectableString*> results;
+        std::vector<std::string *> results;
         ::sprintf (newFileName,"..\\export\\sent-%02d-%02d-%04d.txt",
                  CtiDate().month(),
                  CtiDate().dayOfMonth(),
@@ -1170,11 +1156,9 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
         }
         // send what we do have
 
-        std::vector<RWCollectableString*>::iterator itr = results.begin();
-        for( ; itr != results.end() ; ++itr )
+        for each( std::string *str in results )
         {
-            RWCollectableString* str = *itr;
-            Tcl_Eval( interp, (char*) str->data());
+            Tcl_Eval( interp, const_cast<char *>(str->c_str()));
         }
         delete_container(results);
         results.clear();
@@ -1521,7 +1505,7 @@ int formatError(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[
     }
 
   int id = atoi(argv[1]);
-  string err_str = FormatError(id);
+  string err_str = GetErrorString(id);
   Tcl_Obj* tcl_str = Tcl_NewStringObj(err_str.c_str(),-1);
   Tcl_SetObjResult(interp, tcl_str);
   return TCL_OK;
@@ -1570,37 +1554,6 @@ int DoTwoWayRequest(Tcl_Interp* interp, const string &cmd_line)
     return DoRequest(interp,cmd_line,timeout,true);
 }
 
-int WriteFailToFile(FILE* errFile, int status, string &dev_name)
-{
-    int retVal = 0;
-    string tempStr = "  <ERROR>\n";
-
-    if( errFile != NULL )
-    {
-        retVal = 1;
-        fwrite(tempStr.c_str(), sizeof(char), tempStr.length(), errFile);
-
-        tempStr = "    <STATUS>";
-        tempStr.append(CtiNumStr(status));
-        tempStr.append("</STATUS>\n");
-        fwrite(tempStr.c_str(), sizeof(char), tempStr.length(), errFile);
-
-        tempStr = "    <STATUSSTR>";
-        tempStr.append(FormatError(status));
-        tempStr.append("</STATUSSTR>\n");
-        fwrite(tempStr.c_str(), sizeof(char), tempStr.length(), errFile);
-
-        tempStr = "    <DEVNAME>";
-        tempStr.append(dev_name);
-        tempStr.append("</DEVNAME>\n");
-        fwrite(tempStr.c_str(), sizeof(char), tempStr.length(), errFile);
-
-        tempStr = "  </ERROR>\n";
-        fwrite(tempStr.c_str(), sizeof(char), tempStr.length(), errFile);
-    }
-    return retVal;
-}
-
 static bool isBreakStatus( int status )
 {
     switch( status )
@@ -1638,7 +1591,6 @@ static int DoRequest(Tcl_Interp* interp, const string &cmd_line, long timeout, b
         jobId = atoi(jobIdStr);
     }
 
-    boost::shared_ptr< CtiCountedPCPtrQueue<RWCollectable> > queue_ptr( new  CtiCountedPCPtrQueue<RWCollectable>() );
     CtiTblDeviceReadRequestLog deviceReadLog(requestLogId, msgid, cmd_line, CtiTime::now(), CtiTime::now(), jobId);
 
     if( timeout != 0 ) // don't bother if we don't want responses
@@ -1684,23 +1636,24 @@ static int DoRequest(Tcl_Interp* interp, const string &cmd_line, long timeout, b
         multi_req->getData().push_back(req);
     }
 
-    if( timeout == 0 ) // We dont care about responses, dont set up the queue, send the message and exit.
+    RequestQueues::ptr_type requestQueue;
+
+    if( timeout )
     {
-        PILConnection->WriteConnQue(multi_req);
+        requestQueue.reset(new CtiFIFOQueue<CtiMessage>);
+
+        inboundMessageQueues.insert(msgid, requestQueue);
+    }
+
+    PILConnection->WriteConnQue(multi_req);
+
+    // We dont care about responses, dont set up the queue, send the message and exit.
+    if ( ! timeout )
+    {
         return TCL_OK;
     }
-    else // We do care about responses, set up the queue, send the message and continue.
-    {
-        {
-            RWRecursiveLock<RWMutexLock>::LockGuard guard(_queue_mux);
-            InQueueStore.insertKeyAndValue(msgid, queue_ptr);
-            // Note from this point on, no early return is allowed as this queue must be un-initialized.
-        }
 
-        PILConnection->WriteConnQue(multi_req);
-    }
-
-    CtiTime start;
+    const CtiTime start;
     CtiTime lastPorterCountTime;
     //We will poll this in 60 seconds
     lastPorterCountTime = lastPorterCountTime - PORT_COUNT_REQUEST_SECONDS + 60;
@@ -1711,20 +1664,16 @@ static int DoRequest(Tcl_Interp* interp, const string &cmd_line, long timeout, b
     PILReturnMap bad_map;
     std::vector<string> bad_names;
     std::deque<CtiTableMeterReadLog> resultQueue;
-
-    RWCollectable* msg = NULL;
     int queueDataZeroCount = 0;
     bool status;
 
     do
     {
-        status = queue_ptr->read(msg,100);
-
-       if( status != false && msg != NULL )
-      {
+        if( CtiMessage *msg = requestQueue->getQueue(100) )
+        {
             if( msg->isA() == MSG_PCRETURN )
             {
-                CtiReturnMsg* ret_msg = (CtiReturnMsg*) msg;
+                CtiReturnMsg *ret_msg = static_cast<CtiReturnMsg *>(msg);
                 DumpReturnMessage(*ret_msg);
                 bool allowExitOnError = isBreakStatus(ret_msg->Status());
                 HandleReturnMessage(ret_msg, good_map, bad_map, device_map, bad_names, resultQueue);
@@ -1736,7 +1685,7 @@ static int DoRequest(Tcl_Interp* interp, const string &cmd_line, long timeout, b
             }
             else if( msg->isA() == MSG_QUEUEDATA )
             {
-                CtiQueueDataMsg *queueMessage = (CtiQueueDataMsg *)msg;
+                CtiQueueDataMsg *queueMessage = static_cast<CtiQueueDataMsg *>(msg);
                 if( queueMessage->getRequestId() == msgid )
                 {
                     porterCount = queueMessage->getRequestIdCount();
@@ -1770,8 +1719,6 @@ static int DoRequest(Tcl_Interp* interp, const string &cmd_line, long timeout, b
                 string err("Received unknown message __LINE__, __FILE__");
                 WriteOutput(err.c_str());
             }
-
-            msg = NULL;
         }
 
         if( Tcl_DoOneEvent( TCL_ALL_EVENTS | TCL_DONT_WAIT) == 1 )
@@ -1818,11 +1765,6 @@ static int DoRequest(Tcl_Interp* interp, const string &cmd_line, long timeout, b
         WriteOutput(info.c_str());
     }
 
-    //I left the next line because i'm not sure everything is getting cleanedup
-    //uncommenting it will cause a bomb however since all the messages are now stored
-    //and deleted below
-    //delete msg;
-
     // We now always send the cancel message.
     if( two_way && timeout > 0 && !gDoNotSendCancel)
     {
@@ -1838,79 +1780,70 @@ static int DoRequest(Tcl_Interp* interp, const string &cmd_line, long timeout, b
     Tcl_SetVar2Ex(interp, BadListVariable, NULL, bad_list, 0 );
     Tcl_SetVar2Ex(interp, BadStatusVariable, NULL, status_list, 0);
 
-    PILReturnMap::iterator m_iter;
     string next_line;
     string dev_name;
 
-    if( !good_map.empty() )
+    int count;
+
+    count = 0;
+
+    for each( PILReturnMap::value_type good_result in good_map )
     {
-        int count = 0;
-
-        for( m_iter = good_map.begin();
-             m_iter != good_map.end();
-             m_iter++ )
-        {
-            if( !(++count % 10000) )
-            {
-                string current = "Writing good list, " + CtiNumStr(count) + " / " + CtiNumStr(good_map.size()) + " written";
-                WriteOutput(current.c_str());
-            }
-
-            GetDeviceName(m_iter->first,dev_name);
-            next_line = dev_name;
-            if( !gUseOldStyleMissed )
-            {
-                next_line += ", " + CtiNumStr(m_iter->first);
-            }
-            Tcl_ListObjAppendElement(interp, good_list, Tcl_NewStringObj(next_line.c_str(), -1));
-        }
-
-        if( count % 10000 )
+        if( !(++count % 10000) )
         {
             string current = "Writing good list, " + CtiNumStr(count) + " / " + CtiNumStr(good_map.size()) + " written";
             WriteOutput(current.c_str());
         }
+
+        GetDeviceName(good_result.first,dev_name);
+        next_line = dev_name;
+        if( !gUseOldStyleMissed )
+        {
+            next_line += ", " + CtiNumStr(good_result.first);
+        }
+        Tcl_ListObjAppendElement(interp, good_list, Tcl_NewStringObj(next_line.c_str(), -1));
     }
 
-    if( !bad_map.empty() )
+    if( count % 10000 )
     {
-        int count = 0;
+        string current = "Writing good list, " + CtiNumStr(count) + " / " + CtiNumStr(good_map.size()) + " written";
+        WriteOutput(current.c_str());
+    }
 
-        for( m_iter = bad_map.begin();
-             m_iter != bad_map.end();
-             m_iter++ )
-        {
-            if( !(++count % 10000) )
-            {
-                string current = "Writing bad list, " + CtiNumStr(count) + " / " + CtiNumStr(bad_map.size()) + " written";
-                WriteOutput(current.c_str());
-            }
+    count = 0;
 
-            if( m_iter->second.status == IDNF )
-            {
-                dev_name = m_iter->second.deviceName;
-            }
-            else
-            {
-                GetDeviceName(m_iter->first,dev_name);
-            }
-
-            next_line = dev_name;
-            if( !gUseOldStyleMissed )
-            {
-                next_line += ", " + CtiNumStr(m_iter->first);
-            }
-
-            Tcl_ListObjAppendElement(interp, bad_list, Tcl_NewStringObj(next_line.c_str(), -1));
-            Tcl_ListObjAppendElement(interp, status_list,
-            Tcl_NewIntObj(m_iter->second.status));
-        }
-
-        if( count % 10000 )
+    for each( PILReturnMap::value_type bad_result in bad_map )
+    {
+        if( !(++count % 10000) )
         {
             string current = "Writing bad list, " + CtiNumStr(count) + " / " + CtiNumStr(bad_map.size()) + " written";
             WriteOutput(current.c_str());
         }
+
+        if( bad_result.second.status == IDNF )
+        {
+            dev_name = bad_result.second.deviceName;
+        }
+        else
+        {
+            GetDeviceName(bad_result.first,dev_name);
+        }
+
+        next_line = dev_name;
+        if( !gUseOldStyleMissed )
+        {
+            next_line += ", " + CtiNumStr(bad_result.first);
+        }
+
+        Tcl_ListObjAppendElement(interp, bad_list, Tcl_NewStringObj(next_line.c_str(), -1));
+        Tcl_ListObjAppendElement(interp, status_list,
+        Tcl_NewIntObj(bad_result.second.status));
+    }
+
+    if( count % 10000 )
+    {
+        string current = "Writing bad list, " + CtiNumStr(count) + " / " + CtiNumStr(bad_map.size()) + " written";
+        WriteOutput(current.c_str());
     }
 
     for each( const string &str in bad_names )
@@ -1919,58 +1852,51 @@ static int DoRequest(Tcl_Interp* interp, const string &cmd_line, long timeout, b
     }
 
     // any device id's left in this set must have timed out
-    if( device_map.size() > 0 )
+    count = 0;
+
+    for each( PILReturnMap::value_type orphan_result in device_map )
     {
-        int count = 0;
-
-        for( m_iter = device_map.begin();
-             m_iter != device_map.end();
-             m_iter++ )
-        {
-            if( !(++count % 10000) )
-            {
-                string current = "Writing orphans, " + CtiNumStr(count) + " / " + CtiNumStr(device_map.size()) + " written";
-                WriteOutput(current.c_str());
-            }
-
-            CtiTableMeterReadLog result(0, m_iter->first, 0, ErrorMACSTimeout, m_iter->second.time);
-            resultQueue.push_back(result);
-            GetDeviceName(m_iter->first,dev_name);
-            next_line = dev_name;
-            if( !gUseOldStyleMissed )
-            {
-                next_line += ", " + CtiNumStr(m_iter->first);
-            }
-
-            Tcl_ListObjAppendElement(interp, bad_list, Tcl_NewStringObj(next_line.c_str(), -1));
-            Tcl_ListObjAppendElement(interp, status_list,
-            Tcl_NewIntObj(m_iter->second.status));
-        }
-
-        if( count % 10000 )
+        if( !(++count % 10000) )
         {
             string current = "Writing orphans, " + CtiNumStr(count) + " / " + CtiNumStr(device_map.size()) + " written";
             WriteOutput(current.c_str());
         }
+
+        resultQueue.push_back(CtiTableMeterReadLog(0, orphan_result.first, 0, ErrorMACSTimeout, orphan_result.second.time));
+
+        GetDeviceName(orphan_result.first,dev_name);
+        next_line = dev_name;
+        if( !gUseOldStyleMissed )
+        {
+            next_line += ", " + CtiNumStr(orphan_result.first);
+        }
+
+        Tcl_ListObjAppendElement(interp, bad_list, Tcl_NewStringObj(next_line.c_str(), -1));
+        Tcl_ListObjAppendElement(interp, status_list,
+        Tcl_NewIntObj(orphan_result.second.status));
     }
 
-    //Remove the queue from the InQueueStore
+    if( count % 10000 )
     {
-        RWRecursiveLock<RWMutexLock>::LockGuard guard(_queue_mux);
-        InQueueStore.remove(msgid);
+        string current = "Writing orphans, " + CtiNumStr(count) + " / " + CtiNumStr(device_map.size()) + " written";
+        WriteOutput(current.c_str());
     }
+
+    //Remove the requestQueue from the inboundMessageQueues
+    inboundMessageQueues.remove(msgid);
 
     //Lets write this to the screen before the database locks us up.
-    while( queue_ptr->read(msg,10) )
+    while( CtiMessage *msg = requestQueue->getQueue(10) )
     {
-        if( msg->isA() == MSG_PCRETURN )
+        switch( msg->isA() )
         {
-            CtiReturnMsg* ret_msg = (CtiReturnMsg*) msg;
-            DumpReturnMessage(*ret_msg);
-        }
-        else if( msg->isA() == MSG_QUEUEDATA || msg->isA() == MSG_REQUESTCANCEL )
-        {
-            ((CtiMessage *)msg)->dump();
+            case MSG_PCRETURN:
+                DumpReturnMessage(static_cast<CtiReturnMsg &>(*msg));
+                break;
+            case MSG_QUEUEDATA:
+            case MSG_REQUESTCANCEL:
+                msg->dump();
+                break;
         }
         delete msg;
     }

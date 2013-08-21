@@ -1,7 +1,6 @@
 Manifest-Version: 1.0
 Main-Class: com.cannontech.export.gui.ExportGui
 Class-Path: ./ 
- rwav.jar 
  common.jar 
  calchist.jar 
  yukonappserver.jar 

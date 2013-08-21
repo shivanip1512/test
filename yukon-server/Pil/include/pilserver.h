@@ -17,17 +17,24 @@
 #include "mgr_config.h"
 #include "ctibase.h"
 
+#include "connection_listener.h"
+#include "amq_constants.h"
+
+#include <boost/thread.hpp>
 #include <boost/ptr_container/ptr_deque.hpp>
 
 #include <functional>
 #include <iostream>
 #include <set>
 
-class IM_EX_CTIPIL CtiPILServer : public CtiServer
+namespace Cti {
+namespace Pil {
+
+class IM_EX_CTIPIL PilServer : public CtiServer
 {
    BOOL                 bServerClosing;
-   BOOL                 ListenerAvailable;
-   RWSocket             _listenerSocket;
+
+   CtiListenerConnection _listenerConnection;
 
    CtiDeviceManager    *DeviceManager;
    CtiPointManager     *PointManager;
@@ -65,18 +72,18 @@ public:
 
    typedef CtiServer Inherited;
 
-   CtiPILServer(CtiDeviceManager *DM = NULL, CtiPointManager *PM = NULL, CtiRouteManager *RM = NULL, CtiConfigManager *CM = NULL) :
+   PilServer(CtiDeviceManager *DM = NULL, CtiPointManager *PM = NULL, CtiRouteManager *RM = NULL, CtiConfigManager *CM = NULL) :
       DeviceManager(DM),
       PointManager (PM),
       RouteManager (RM),
       ConfigManager(CM),
-      ListenerAvailable(0),
       bServerClosing(FALSE),
       _currentParse(""),
-      _currentUserMessageId(0)
+      _currentUserMessageId(0),
+      _listenerConnection( Cti::Messaging::ActiveMQ::Queue::pil )
    {}
 
-   virtual ~CtiPILServer()
+   virtual ~PilServer()
    {
       while( !_inQueue.isEmpty() )
       {
@@ -106,9 +113,12 @@ public:
    void putQueue(CtiMessage *Msg);
 
    bool isBroken() const { return _broken; }
-   void indicateControlOnSubGroups(CtiDeviceSPtr &Dev, CtiCommandParser &parse, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList);
+   void indicateControlOnSubGroups(CtiDeviceBase &Dev, CtiCommandParser &parse, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList);
 
-   int reportClientRequests(CtiDeviceSPtr &Dev, const CtiCommandParser &parse, const std::string &requestingUser, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList);
+   int reportClientRequests(const CtiDeviceBase &Dev, const CtiCommandParser &parse, const std::string &requestingUser, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList);
 
 };
+
+}
+}
 

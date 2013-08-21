@@ -1,9 +1,8 @@
 #pragma once
 
 #include "cmd_device.h"
-#include "dev_single.h"  //  for CtiDeviceSingle::point_info
 
-#include "msg_pdata.h"
+#include <boost/shared_ptr.hpp>
 
 namespace Cti {
 namespace Devices {
@@ -20,11 +19,10 @@ public:
     {
         std::string description;
         std::vector<point_data> points;
-        std::vector<CtiTableDynamicPaoInfo> paoInfo;
     };
 
-    RfnRequest execute (const CtiTime now);
-    virtual RfnResult decode (const CtiTime now, const RfnResponse &response) = 0;
+    RfnRequest executeCommand(const CtiTime now);
+    virtual RfnResult decodeCommand(const CtiTime now, const RfnResponse &response) = 0;
     virtual RfnResult error  (const CtiTime now, const YukonError_t error_code) = 0;
 
 protected:
@@ -39,7 +37,7 @@ protected:
     //
     virtual unsigned char getCommandCode() const = 0;
     virtual unsigned char getOperation() const = 0;
-    virtual Bytes         getData() = 0;
+    virtual Bytes         getCommandData() = 0;
 
     //
     // Type Length Values
@@ -48,11 +46,22 @@ protected:
     {
         unsigned char type;
         Bytes value;
+
+        TypeLengthValue(unsigned char type_) : type(type_)  {}
+        TypeLengthValue(unsigned char type_, Bytes value_) : type(type_), value(value_)  {}
     };
 
-    static Bytes getBytesFromTlvs( std::vector<TypeLengthValue> tlvs );
+    static Bytes getBytesFromTlvs( const std::vector<TypeLengthValue> &tlvs );
 
+    static std::vector<TypeLengthValue> getTlvsFromBytes( const Bytes &bytes );
+    static std::vector<TypeLengthValue> getLongTlvsFromBytes( const Bytes &bytes );
+
+private:
+
+    static std::vector<TypeLengthValue> getTlvsFromBytesWithLength( const unsigned length, const Bytes &bytes );
 };
+
+typedef boost::shared_ptr<RfnCommand> RfnCommandSPtr;
 
 }
 }
