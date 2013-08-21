@@ -156,8 +156,10 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
         if (jQuery(parentRow).hasClass('highlighted')) {
             // unselect
             jQuery(parentRow).removeClass('highlighted');
-            this.removeFromSelectedItems(hit);
-            this.selectAllCheckBox.checked = false;
+            removeFromSelectedItems.call(this, hit);
+            if ('undefined' !== typeof this.selectAllCheckBox) {
+                this.selectAllCheckBox.checked = false;
+            }
         } else {
             // select
             if (!this.multiSelectMode) {
