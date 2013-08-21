@@ -1,4 +1,5 @@
 Yukon.namespace('Yukon.ui.aux');
+
 Yukon.ui.aux = (function () {
     var uiAux;
     uiAux = {
@@ -19,7 +20,7 @@ Yukon.ui.aux = (function () {
 
             index[0] = -1;
             //the array index to remember all the selection of the user :)
-            indexNo = 0; 
+            indexNo = 0;
             selectList = selectElement;
             
             //loop to remember all the selection in the select element
@@ -136,27 +137,34 @@ Yukon.ui.aux = (function () {
             newOpt.text = optText;
         },
         activeResultsTable_highLightRow : function (row) {
-            row = $(row);
-            row.addClassName('hover');
+            row = jQuery(row);
+            row.addClass('hover');
         },
-        activeResultsTable_unHighLightRow : function (row){
-            row = $(row);
-            row.removeClassName('hover');
+        activeResultsTable_unHighLightRow : function (row) {
+            row = jQuery(row);
+            row.removeClass('hover');
         },
         cancelCommands : function (resultId, url, ccid, cancelingText, finishedText) {
-            
+
             // save button text for restore on error
-            //var orgCancelButtonText = $F('cancelButton' + ccid);
-            var orgCancelButtonText = jQuery('#cancelButton' + ccid).val();
+            var orgCancelButtonText = jQuery('#cancelButton' + ccid).val(),
+                args;
+
             // swap to wait img, disable button
             jQuery('#waitImg' + ccid).show();
             jQuery('#cancelButton' + ccid).prop('disabled', true);
             jQuery('#cancelButton' + ccid).val(cancelingText);
-            
+
+            // run cancel    
+            var args = {};
+            args.resultId = resultId;
             // setup callbacks
-            var onComplete = function(transport, json) {
-                
-                var errorMsg = json['errorMsg'];
+            jQuery.ajax({
+                type: "POST",
+                url: url,
+                data: args,
+            }).done( function (data, textStatus, jqXHR) {
+                var errorMsg = data['errorMsg'];
                 if (errorMsg != null) {
                     handleError(ccid, errorMsg, orgCancelButtonText);
                     return;
@@ -164,60 +172,54 @@ Yukon.ui.aux = (function () {
                     uiAux.showCancelResult(ccid, finishedText);
                     jQuery('#cancelButton' + ccid).hide();
                 }
-            };
-            
-            var onFailure = function(transport, json) {
-                uiAux.showCancelResult(ccid, transport.responseText);
+            }).fail( function (jqXHR, textStatus, errorThrown) {
+                uiAux.showCancelResult(ccid, textStatus);//transport.responseText);
                 jQuery('#cancelButton' + ccid).val(orgCancelButtonText);
                 jQuery('#cancelButton' + ccid).prop('disabled', false);
-            };
-
-            // run cancel    
-            var args = {};
-            args.resultId = resultId;
-            new Ajax.Request(url, {'method': 'post', 'evalScripts': true, 'onComplete': onComplete, 'onFailure': onFailure, 'onException': onFailure, 'parameters': args});
+            });
         },
         showCancelResult : function (ccid, msg) {
-        
-            $('waitImg' + ccid).hide();
-            $('cancelArea' + ccid).innerHTML = msg;
-            $('cancelArea' + ccid).show();
+
+            jQuery('#waitImg' + ccid).hide();
+            jQuery('#cancelArea' + ccid).html(msg);
+            jQuery('#cancelArea' + ccid).show();
         },
         // pass table css selectors
         // columns in each table will be made to have the same width as the widest element in that column across all tables
         alignTableColumnsByTable : function () {
 
-            var tableSelectors = $A(arguments);
-
-            Event.observe(window, "load", function() {
-
-            var tablesToAlign = $$(tableSelectors);
-            var columnSizes = $A();
-            tablesToAlign.each(function(table) {
-                
-                var rowsToAlign = table.getElementsBySelector("tr");
-                rowsToAlign.each(function(tr) {
-                    
-                    var cells = tr.getElementsBySelector("td");
-                    for (var index = 0; index < cells.length - 1; ++index) {
-                        var cell = cells[index];
-                        if (!columnSizes[index] || cell.getWidth() > columnSizes[index]) {
-                            columnSizes[index] = cell.getWidth();
-                        }
-                    }
+            var tableSelectors = Array.prototype.slice.call(arguments, 0),
+                tablesToAlign,
+                columnSizes;
+            jQuery( function () {
+                columnSizes = [];
+                tablesToAlign = jQuery(tableSelectors).map( function (ind, tab) {
+                    return jQuery(tab)[0];
                 });
-            });
-
-            tablesToAlign.each(function(table) {
-                
-                var rowsToAlign = table.getElementsBySelector("tr");
-                rowsToAlign.each(function(tr) {
-                    
-                    var cells = tr.getElementsBySelector("td");
-                    for (var index = 0; index < cells.length - 1; ++index) {
-                        var cell = cells[index];
-                        cell.setStyle({width: columnSizes[index]+'px'});
-                        }
+                tablesToAlign.each( function (ind, table) {
+                    var rowsToAlign = jQuery(table).find('tr');
+                    rowsToAlign.each( function (idx, tr) {
+                        var cells = jQuery(tr).find('td'),
+                            cell,
+                            index;
+                        for (index = 0; index < cells.length - 1; index += 1) {
+                            cell = cells[index];
+                            if (!columnSizes[index] || cell.getWidth() > columnSizes[index]) {
+                                columnSizes[index] = cell.getWidth();
+                            }
+                        };
+                    });
+                });
+                tablesToAlign.each( function (ind, table) {
+                    var rowsToAlign = jQuery(table).find('tr');
+                    rowsToAlign.each( function(idx, tr) {
+                        var cells = jQuery(tr).find('td'),
+                            cell,
+                            index = 0;
+                        for (index = 0; index < cells.length - 1; index += 1) {
+                            cell = cells[index];
+                            cell.setStyle({width: columnSizes[index]+'px'});
+                        };
                     });
                 });
             });
@@ -234,12 +236,12 @@ Yukon.ui.aux = (function () {
          * String inputType - The desired input type.
          */ 
         changeInputType : function (inputElement, inputType) {
-            var input = document.getElementById(inputElement);
-            var input2 = document.createElement('input');
-                input2.id = input.id;
-                input2.name = input.name;
-                input2.value = input.value;
-                input2.type = inputType;
+            var input = document.getElementById(inputElement),
+                input2 = document.createElement('input');
+            input2.id = input.id;
+            input2.name = input.name;
+            input2.value = input.value;
+            input2.type = inputType;
             input.parentNode.replaceChild(input2,input);
         },
         getHeaderJSON : function (xhr) {

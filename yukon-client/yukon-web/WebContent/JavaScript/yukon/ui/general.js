@@ -148,7 +148,7 @@ Yukon.namespace("Yukon.modules.ui"); // creates our ui module ns
 Yukon.modules.ui = function (mod) {
     var initialized = false;
 
-    mod.init = function() {
+    mod.init = function () {
         if (!initialized) {
             mod.autoWire();
             initialized = true;
@@ -156,25 +156,25 @@ Yukon.modules.ui = function (mod) {
         }
     };
     
-    mod.exclusiveSelect = function(item) {
+    mod.exclusiveSelect = function (item) {
         item = jQuery(item);
         item.siblings().removeClass('selected');
         item.addClass('selected');
     };
-    
-    mod.busy = function(item) {
+
+    mod.busy = function (item) {
         var btn = jQuery(item),
           label,
           busyText,
           originalText;
-        
+
         if (btn.is("[data-busy]")) {
             btn.attr('disabled', 'disabled');
             btn.addClass('busy');
             // if this button has an icon hide it
             btn.children(".icon").hide();
             btn.children(".icon.busy").show();
-            
+
             label = btn.children(".label");
             busyText = btn.attr("data-busy");
             if (label.length > 0 && busyText.length > 0) {
@@ -185,12 +185,12 @@ Yukon.modules.ui = function (mod) {
         }
         return btn;
     };
-    
-    mod.unbusy = function(item) {
+
+    mod.unbusy = function (item) {
         var btn = jQuery(item),
         label,
         originalText;
-    
+
         if (btn.is("[data-busy]")) {
             btn.removeAttr('disabled');
             btn.removeClass('busy');
@@ -207,7 +207,7 @@ Yukon.modules.ui = function (mod) {
         return btn;
     };
 
-    mod.autoWire = function() {
+    mod.autoWire = function () {
         var html;
         // register listeners
         
@@ -221,7 +221,7 @@ Yukon.modules.ui = function (mod) {
         // tipsy initialization:
         //   attaches tooltip handlers to all elements with a class of f-has-tooltip
         //   or a title attribute
-        jQuery (function() {
+        jQuery (function () {
             var tooltipTargets = ['.f-has-tooltip', '[title]'],
                 resetTipsyInner = function () {
                     // voodoo so inner div has full height of its container
@@ -273,7 +273,7 @@ Yukon.modules.ui = function (mod) {
         });
         
         //ajaxPage
-        jQuery(document).on('click', '.f-ajaxPage', function(e) {
+        jQuery(document).on('click', '.f-ajaxPage', function (e) {
             e.stopPropagation();
             jQuery(this.getAttribute("data-selector")).load(this.getAttribute("href"));
             return false;
@@ -283,7 +283,7 @@ Yukon.modules.ui = function (mod) {
         jQuery.placeholder();
         
         //buttons that redirect the page on click
-        jQuery(document).on('click', 'button[data-href]', function(event){window.location = jQuery(this).attr("data-href");});
+        jQuery(document).on('click', 'button[data-href]', function (event){window.location = jQuery(this).attr("data-href");});
         
         // page blockers
         jQuery(document).on('click', 'a.f-blocker, button.f-blocker', mod.block);
@@ -293,7 +293,7 @@ Yukon.modules.ui = function (mod) {
         jQuery(document).on('click', '.f-clearBlocker', mod.unblockPage);
     
         // Disable a form element after clicked
-        jQuery(document).on('click', '.f-disableAfterClick', function() {
+        jQuery(document).on('click', '.f-disableAfterClick', function () {
             var button = jQuery(this),
                 group,
                 form;
@@ -301,7 +301,7 @@ Yukon.modules.ui = function (mod) {
                 this.disabled = true;
                 group = button.attr('data-disable-group');
                 if (group != '') {
-                    jQuery("[data-disable-group='" + group + "']").each( function(idx) {
+                    jQuery("[data-disable-group='" + group + "']").each( function (idx) {
                         this.disabled = true;
                     });
                 }
@@ -326,7 +326,7 @@ Yukon.modules.ui = function (mod) {
         });
     
         //prevent forms from submitting via enter key
-        jQuery(document).on('keydown', 'form.f-preventSubmitViaEnterKey', function(e) {
+        jQuery(document).on('keydown', 'form.f-preventSubmitViaEnterKey', function (e) {
             //allow override submission elements
             if (jQuery(e.target).hasClass("f-allowSubmitViaEnterKey")) {
                 return true;
@@ -337,11 +337,11 @@ Yukon.modules.ui = function (mod) {
         });
     
         // close popup on submit event
-        jQuery(document).on('click', 'button.f-closePopupOnSubmit', function(event) {
+        jQuery(document).on('click', 'button.f-closePopupOnSubmit', function (event) {
             jQuery(event).closest('.popUpDiv').dialog('close');
         });
 
-        jQuery(document).on('click', '.f-setHomePage', function(event) {
+        jQuery(document).on('click', '.f-setHomePage', function (event) {
             var userId = jQuery("#changeHomepage_userId").val(),
                 send = document.location.href;
             event.preventDefault ? event.preventDefault() : event.returnValue = false;  // IE8 requires returnValue
@@ -351,73 +351,54 @@ Yukon.modules.ui = function (mod) {
                 type: "POST",
                 url: "/user/updatePreference.json",
                 data: {'userId': userId, 'prefName': 'HOME_URL', 'prefValue': send},
-            }).done( function(data) {
+            }).done( function (data) {
                 if (data.success) {
                     alert("SAVED");
                 } else {
                     alert("INTERNAL ERROR #9471: FAILED SAVING");
                 }
-            }).fail( function(nada) {
+            }).fail( function (nada) {
                 alert("INTERNAL ERROR #9472: FAILED SAVING");
             });
             return false;
         });
 
-        jQuery(".f-closeYukonApplicationDialog").click(function() {
+        jQuery(".f-closeYukonApplicationDialog").click(function () {
             jQuery("#yukonApplicationDialog").dialog("close");
         });
 
         // resize it with the window
-        
+
         // resize blocked elements w/ page resize
-        
-        $$("input.f-formatPhone").each(function(elem) {
-            elem.observe('blur', function(event) {
-                mod.formatPhone(event.element());
-            });
-            
+ 
+        jQuery('input.f-formatPhone').each( function (idx, elem) {
             mod.formatPhone(elem);
         });
-        jQuery(document).on('blur', 'input.f-formatPhone', function(event) {
+        jQuery(document).on('blur', 'input.f-formatPhone', function (event) {
             mod.formatPhone(event.target);
         });
 
-        $$("input.f-toggle:checkbox").each(function(elem) {
-            elem.observe('change', function(event) {
-                mod.toggleInputs(event.element());
+        jQuery('input.f-toggle:checkbox').each(function (idx, elem) {
+            jQuery(elem).on('change', function (e) {
+                mod.toggleInputs(e.target);
             });
-            
-            elem.observe('click', function(event) {
-                mod.toggleInputs(event.element());
+            jQuery(elem).on('click', function (e) {
+                mod.toggleInputs(e.target);
             });
-            
             mod.toggleInputs(elem);
         });
-    
-        $$(".f-toggleSwitch").each(function(container) {
-            
-            container.select("input:radio").each(function(input, index) {
-                var elem;
-                input.hide();
-                elem = input.up('.f-toggleSwitch').down('.f-switchInterface');
-                if (!elem) {
-                    input.up('.f-toggleSwitch').appendChild('<div class="f-switchInterface"></div>');
-                    elem = input.up('.f-toggleSwitch').down('.f-switchInterface');
-                }
-            });
-        });
-        
-        $$("input.f-selectAll").each(function(input) {
-            input.observe('focus', function(elem) {
+
+        jQuery("input.f-selectAll").each(function (index, input) {
+            jQuery(input).on('focus', function (elem) {
                 elem.target.select();
             });
         });
-        
+
         /* Focus the designated input element */
         mod._autofocus();
-        
+
         html = jQuery('#f-page-actions')[0];
-    
+
         if (typeof html !== 'undefined') {
             jQuery('#f-page-actions').remove();
             jQuery('#b-page-actions .dropdown-menu').html(html.innerHTML);
@@ -426,7 +407,7 @@ Yukon.modules.ui = function (mod) {
 
         /* Update page buttons */
         html = jQuery('#f-page-buttons')[0];
-        
+
         if (typeof html !== 'undefined') {
             jQuery('#f-page-buttons').remove();
             jQuery('.page-actions').append(html.innerHTML);
@@ -434,7 +415,7 @@ Yukon.modules.ui = function (mod) {
     };
 
     mod._AUTOFOCUS_TRIES = 0;
-    mod._autofocus = function() {
+    mod._autofocus = function () {
         var focusElement = jQuery("[autofocus], .f-focus:first")[0];
         
         if (focusElement) {
@@ -453,15 +434,15 @@ Yukon.modules.ui = function (mod) {
     /*
      * Sets the focus to the first input/textarea found on the page having a class of "error"
      */
-    mod.focusFirstError = function() {
+    mod.focusFirstError = function () {
         mod._setFocusFirstError();
         mod._autofocus();
     };
-    
+
     /*
      * Applies the "f-focus" class to the first input/textarea element having a class of "error"
      */
-    mod._setFocusFirstError = function() {
+    mod._setFocusFirstError = function () {
         var error_field = jQuery("input.error, textarea.error").first();
         if (error_field.length === 1) {
             jQuery(".f-focus").removeClass("f-focus");
@@ -469,7 +450,7 @@ Yukon.modules.ui = function (mod) {
         }
     };
 
-    mod.block = function(event) {
+    mod.block = function (event) {
        var blockElement = jQuery(event.target).closest(".f-block_this")[0];
        if (blockElement) {
            mod.elementGlass.show(blockElement);
@@ -478,7 +459,7 @@ Yukon.modules.ui = function (mod) {
        }
     };
 
-    mod.unblock = function(element) {
+    mod.unblock = function (element) {
         var blockElement = jQuery(event.target).closest(".f-block_this")[0];
         if (blockElement) {
             mod.elementGlass.hide(blockElement);
@@ -487,23 +468,23 @@ Yukon.modules.ui = function (mod) {
         }
     };
 
-    mod.blockPage = function(args) {
+    mod.blockPage = function (args) {
         mod.pageGlass.show();
     };
 
-    mod.unblockPage = function() {
+    mod.unblockPage = function () {
         mod.pageGlass.hide();
     };
 
-    mod.flashSuccess = function(markup) {
+    mod.flashSuccess = function (markup) {
         jQuery(".main-container").addMessage({message: markup, messageClass: "userMessage CONFIRM"});
     };
 
-    mod.flashError = function(markup) {
+    mod.flashError = function (markup) {
         jQuery(".main-container").addMessage({message: markup, messageClass: "userMessage ERROR"});
     };
 
-    mod.formatPhone = function(input) {
+    mod.formatPhone = function (input) {
         // strip the input down to just numbers, then format
         var stripped = input.value.replace(/[^\d]/g, ""),
             i,
@@ -523,69 +504,27 @@ Yukon.modules.ui = function (mod) {
         }
     };
 
-    /**
-     * args: { selector: String css selector for use by $$ classes: Array or
-     * string of class names to toggle on targeted elements }
-     */
-    mod.toggleClass = function(args) {
-        var classNames = args.classes,
-            i;
-
-        if (typeof(args.classes) == "string") {
-            classNames = classNames.split(",");
-        }
-
-        for (i=0; i<classNames.length; i++) {
-            $$(args.selector).invoke('toggleClassName', classNames);
-        }
-    };
-
-    mod.toggleInputs = function(input) {
-        // find matching inputs
-        var container = input.next("div.f-toggle"),
-            enable = input.checked;
-        
+    mod.toggleInputs = function (input) {
+        // find matching inputs. Note: jQuery next gets the immediately following
+        // sibling, so we have to use nextAll here.
+        var container = jQuery(jQuery(input).nextAll("div.f-toggle")[0]),
+            enable = input.checked,
+            inputList = ['input', 'select', 'textarea', 'button'],
+            inputInd;
         if (enable) {
-            container.removeClassName('disabled');
+            container.removeClass('disabled');
         } else {
-            container.addClassName('disabled');
+            container.addClass('disabled');
         }
-        
-        container.select("input").each(function(elem) {
-            if (enable) {
-                elem.enable();
-            } else {
-                elem.disable();
-            }
-        });
-
-        container.select("select").each(function(elem) {
-            if (enable) {
-                elem.enable();
-            } else {
-                elem.disable();
-            }
-        });
-        
-        container.select("textarea").each(function(elem) {
-            if (enable) {
-                elem.enable();
-            } else {
-                elem.disable();
-            }
-        });
-
-        container.select("button").each(function(elem) {
-            if (enable) {
-                elem.enable();
-            } else {
-                elem.disable();
-            }
-        });
+        for (inputInd = 0; inputInd < inputList.length; inputInd += 1) {
+            container.find(inputList[inputInd]).each(function (idx, elem) {
+                jQuery(elem).prop('disabled', !enable);
+            });
+        }
     };
 
-    mod.pad = function(number, length) {
-        
+    mod.pad = function (number, length) {
+
         var str = '' + number;
         while (str.length < length) {
             str = '0' + str;
@@ -593,7 +532,7 @@ Yukon.modules.ui = function (mod) {
         return str;
     };
 
-    mod.formatTime = function(time, opts) {
+    mod.formatTime = function (time, opts) {
         var timeStr = ''; 
         if (!opts) {
             opts = {};
@@ -610,7 +549,7 @@ Yukon.modules.ui = function (mod) {
             if (opts.meridian) {
                 meridian = time.getHours() >= 11 ? 'pm' : 'am';
             }
-            
+
             if (opts.pad) {
                 timeStr = pad(hours, 2) + ':' + mod.pad(time.getMinutes(),2) + meridian;
             } else {
@@ -620,7 +559,7 @@ Yukon.modules.ui = function (mod) {
         return timeStr;
     };
 
-    mod.getParameterByName = function( name ) {
+    mod.getParameterByName = function ( name ) {
         var regexS,
             regex,
             results;
@@ -637,56 +576,56 @@ Yukon.modules.ui = function (mod) {
 
     mod.wizard = {
         _initialized: false,
-        
-        init: function() {
-            $$(".f-wizard").each(function(elem) {
-                elem.select(".f-next").each(function(nextButton) {
-                    nextButton.observe('click', function(event) {
-                        mod.wizard.nextPage(event.element().up(".f-page"));
+
+        init: function () {
+            jQuery(".f-wizard").each(function (idx, elem) {
+                jQuery(elem).find(".f-next").each(function (index, nextButton) {
+                    jQuery(nextButton).on('click', function (event) {
+                        mod.wizard.nextPage(jQuery(event.target).closest(".f-page"));
                     });
                 });
-                
-                elem.select(".f-prev").each(function(prevButton) {
-                    prevButton.observe('click', function(event) {
-                        mod.wizard.prevPage(event.element().up(".f-page"));
+
+                jQuery(elem).find(".f-prev").each(function (index, prevButton) {
+                    jQuery(prevButton).on('click', function (event) {
+                        mod.wizard.prevPage(jQuery(event.target).closest(".f-page"));
                     });
                 });
-                
-                elem.select(".f-page").each(function(elem, idx) {
+
+                jQuery(elem).find(".f-page").each(function (index, elem) {
                     if (idx > 0) {
-                        elem.hide();
+                        jQuery(elem).hide();
                     } else {
-                        elem.show();
+                        jQuery(elem).show();
                     }
                 });
             });
-            
+
             mod.wizard._initialized = true;
         },
-    
-        nextPage : function(page) {
+
+        nextPage : function (page) {
             var nextPage;
             page = jQuery(page);
             if (typeof page !== 'undefined') {
-                nextPage = page.next(".f-page");
+                nextPage = page.nextAll(".f-page")[0];
                 if (typeof nextPage !== 'undefined') {
                     page.hide();
-                    nextPage.show();
+                    jQuery(nextPage).show();
                 }
             }
         },
-    
-        prevPage : function(page) {
+
+        prevPage : function (page) {
             var prevPage;
             if (typeof page !== 'undefined') {
-                prevPage = page.previous(".f-page");
+                prevPage = page.prevAll(".f-page")[0];
                 if (typeof prevPage !== 'undefined') {
-                    page.hide();
-                    prevPage.show();
+                    jQuery(page).hide();
+                    jQuery(prevPage).show();
                 }
             }
         },
-    
+
         /**
          * Resets the page of the wizard to the first/initial page. Does NOT do
          * anything with the contents
@@ -696,7 +635,7 @@ Yukon.modules.ui = function (mod) {
          * node, it will search for and reset ALL f-wizard containers within
          * 
          */
-        reset : function(wizard) {
+        reset : function (wizard) {
             wizard = jQuery(wizard);
             if (wizard.hasClass("f-wizard")) {
                 jQuery(".f-page", wizard).hide();
@@ -707,9 +646,9 @@ Yukon.modules.ui = function (mod) {
             }
         }
     };
-    
+
     mod.elementGlass = {
-        show: function(element) {
+        show: function (element) {
             var element = jQuery(element),
                 glass;
             if (element[0]) {
@@ -723,24 +662,24 @@ Yukon.modules.ui = function (mod) {
             // nothing to block
             return null;
         },
-        
-        hide: function(element) {
-            jQuery(element).find('.glass:first').fadeOut(200, function(){jQuery(this).remove();});
+
+        hide: function (element) {
+            jQuery(element).find('.glass:first').fadeOut(200, function () {jQuery(this).remove();});
         },
-        
-        redraw: function(glass) {
+
+        redraw: function (glass) {
             var container = glass.closest(".f-block_this");
             // resize the glass
             glass.css('width', container.outerWidth()).css('height', container.outerHeight()).fadeIn(200);
         },
 
-        resize: function(event) {
+        resize: function (event) {
             mod.elementGlass.redraw(jQuery(event.currentTarget));
         }
     };
-        
+
     mod.pageGlass = {
-        show : function(args) {
+        show : function (args) {
             var defaults = jQuery.extend({color:'#000', alpha: 0.25}, args),
                 glass = jQuery("#modal_glass");
             
@@ -754,37 +693,22 @@ Yukon.modules.ui = function (mod) {
             glass.fadeIn(200);
         },
 
-        hide : function() {
+        hide : function () {
             jQuery("#modal_glass").fadeOut(200);
         }
     };
 };
 
 // merge created sandbox module with existing Yukon barebones module
-Sandbox('base', function(basemod) {
+Sandbox('base', function (basemod) {
     jQuery.extend(Yukon, basemod);
 });
 
-Sandbox('ui', function(uimod) {
+Sandbox('ui', function (uimod) {
     Yukon.ui = uimod; // so for now, 90 references to Yukon.ui don't have to be changed
 });
 
-// Really Prototype doesn't have this!
-// does not appear to be used anywhere. generally has been replaced with jQuery().trigger
-Element.prototype.trigger = function (eventName) {
-    debugger;//force us into the debugger to see if this code executes anymore
-    if (document.createEvent) {
-        var evt = document.createEvent('HTMLEvents');
-        evt.initEvent(eventName, true, true);
-        return this.dispatchEvent(evt);
-    }
-
-    if (this.fireEvent) {
-        return this.fireEvent('on' + eventName);
-    }
-};
-
-jQuery.fn.selectText = function() {
+jQuery.fn.selectText = function () {
     var text = this[0],
         range,
         selection;
@@ -801,16 +725,16 @@ jQuery.fn.selectText = function() {
     }
 };
 // toggleDisabled, flashColor, flashYellow and flashColor are moving to jqueryAddons.js
-jQuery.fn.toggleDisabled = function() {
-    return this.each(function() {
+jQuery.fn.toggleDisabled = function () {
+    return this.each(function () {
         if (jQuery(this).is(":input")) {
             this.disabled = !this.disabled;
         }
     });
 };
 
-jQuery.fn.flashColor = function(args) {
-    return this.each(function() {
+jQuery.fn.flashColor = function (args) {
+    return this.each(function () {
         var _self = jQuery(this),
             prevColor = _self.data('previous_color') ? _self.data('previous_color') : _self.css('background-color');
         _self.data('previous_color', prevColor);
@@ -826,7 +750,7 @@ jQuery.fn.flashColor = function(args) {
 };
 
 jQuery.fn.flashYellow = function (duration) {
-    return this.each(function() {
+    return this.each(function () {
         if (typeof(duration) != 'number') {
             duration = 0.8;
         }
@@ -835,7 +759,7 @@ jQuery.fn.flashYellow = function (duration) {
 };
 
 // initialize the lib
-jQuery(document).ready(function() {
+jQuery(document).ready(function () {
     Yukon.ui.init();
 
     //turn off ajax caching application-wide by default

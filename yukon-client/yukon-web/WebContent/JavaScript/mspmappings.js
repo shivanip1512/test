@@ -1,57 +1,79 @@
 
 function SubstationToRouteMappings_SelectListener(url) {
-    var x = $("subSelectList").selectedIndex;
-    var substationId = $("subSelectList").options[x].value;
-    new Ajax.Updater($("route_element"), url, {"method": "post", "parameters": {"substationid": substationId, "view": ""}});
+    var x = jQuery("#subSelectList")[0].selectedIndex,
+        substationId = jQuery("#subSelectList")[0].options[x].value,
+        routeElement = jQuery('#route_element');
+    jQuery.ajax({
+        type: "POST",
+        url: url,
+        data: {"substationid": substationId, "view": ""},
+    }).done( function (data, textStatus, jqXHR) {
+        routeElement.html(data);
+    });
 }
 function SubstationToRouteMappings_addRoute() {
-    var substationIndex = $("subSelectList").selectedIndex;
+    var substationIndex = jQuery("#subSelectList")[0].selectedIndex,
+        routeIndex,
+        routeId,
+        routeName,
+        length;
     if (substationIndex == -1) {
         return false;
     }
-    var routeIndex = $("avRoutesSelectList").selectedIndex;
-    var routeId = $("avRoutesSelectList").options[routeIndex].value;
-    var routeName = $("avRoutesSelectList").options[routeIndex].text;
-    $($("avRoutesSelectList").options[routeIndex]).remove();
-    var length = $("routeIdSelectList").options.length;
-    $("routeIdSelectList").options[length] = new Option(routeName, routeId);
+    routeIndex = jQuery("#avRoutesSelectList")[0].selectedIndex;
+    routeId = jQuery("#avRoutesSelectList")[0].options[routeIndex].value;
+    routeName = jQuery("#avRoutesSelectList")[0].options[routeIndex].text;
+    jQuery(jQuery("#avRoutesSelectList")[0].options[routeIndex]).remove();
+    length = jQuery("#routeIdSelectList")[0].options.length;
+    jQuery("#routeIdSelectList")[0].options[length] = new Option(routeName, routeId);
 }
 function SubstationToRouteMappings_removeRoute() {
-    var substationIndex = $("subSelectList").selectedIndex;
+    var substationIndex = jQuery("#subSelectList")[0].selectedIndex,
+        routeIndex,
+        route,
+        length;
     if (substationIndex == -1) {
         return false;
     }
-    var routeIndex = $("routeIdSelectList").selectedIndex;
-    var route = $("routeIdSelectList").options[routeIndex];
-    $("routeIdSelectList").options[routeIndex] = null;
-    
-    var length = $("avRoutesSelectList").options.length;
-    $("avRoutesSelectList").options[length] = new Option(route.text, route.value);
+    routeIndex = jQuery("#routeIdSelectList")[0].selectedIndex;
+    route = jQuery("#routeIdSelectList")[0].options[routeIndex];
+    jQuery("#routeIdSelectList")[0].options[routeIndex] = null;
+
+    length = jQuery("#avRoutesSelectList")[0].options.length;
+    jQuery("#avRoutesSelectList")[0].options[length] = new Option(route.text, route.value);
 }
 function SubstationToRouteMappings_updateRoutes(url) {
-    var substationIndex = $("subSelectList").selectedIndex;
+    var substationIndex = jQuery("#subSelectList")[0].selectedIndex,
+        substationId,
+        array,
+        array2,
+        jsonObject;
     if (-1 === substationIndex) {
         return;
     }
-    var substationId = $("subSelectList").options[substationIndex].value;
-    var array = $("routeIdSelectList").options;
-    var array2 = $A(array).pluck("value");
-    var jsonObject = Object.toJSON(array2);
-    new Ajax.Request(url, {"method": "post", "parameters": {"array": jsonObject, "substationid": substationId, "update": ""}});
+    substationId = jQuery("#subSelectList")[0].options[substationIndex].value;
+    array = jQuery("#routeIdSelectList")[0].options;
+    array = Array.prototype.slice.call(array, 0); // convert HTMLOptionsCollection to array
+    array2 = array.map(function (el) {
+        return el.value;
+    });
+    jsonObject = JSON.stringify(array2);
+    jQuery.ajax({
+        type: "POST",
+        url: url,
+        data: {"array": jsonObject, "substationid": substationId, "update": ""},
+    }).done( function (data, textStatus, jqXHR) {
+    });
 }
 
 function mspSubstations_check(doCheck) {
-	$$('input[type=checkbox].mspSubstationCheckbox').each(function(c) {
-		c.checked = doCheck;
-	});
+    jQuery('input[type=checkbox].mspSubstationCheckbox').each(function(index, c) {
+        jQuery(c).prop("checked", doCheck);
+    });
 }
 
 function SubstationToRouteMappings_disableInputs(doDisable) {
-	$$('input').each(function(c) {
-		if (doDisable) {
-			c.disable();
-		} else {
-			c.enable();
-		}
-	});
+    jQuery('input').each(function(index, c) {
+        jQuery(c).prop('disabled', doDisable);
+    });
 }

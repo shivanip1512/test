@@ -109,7 +109,7 @@ Yukon.UserPreferences = (function () {
                 return;
             }
 
-            this.disable_password_user_input();
+            userPreferencesMod.disable_password_user_input();
 
             jQuery(document).on("click", "#tbl_preferences .selection_group button:not(.on):not(.f-pref-default)", this.set_enum_preference);
             jQuery(document).on("click", "#tbl_preferences .selection_group .f-pref-default", this.set_enum_preference_default);
