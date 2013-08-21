@@ -47,6 +47,7 @@ import org.springframework.util.FileCopyUtils;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.exception.BadConfigurationException;
+import com.cannontech.common.exception.FileCreationException;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.database.data.lite.LiteComparators;
@@ -379,26 +380,15 @@ public final class CtiUtilities {
     }
 
     public final static String getArchiveDirPath() {
-        return getYukonBase() + System.getProperty("file.separator") + EXPORT_ARCHIVE_DIR;
-    }
-    
-    public static String getArchiveDirPath(boolean create) {
-        String archivePath = getArchiveDirPath();
-        File f = new File(archivePath);
-        if (!f.exists()) {
-            if (create) {
-                boolean createSuccess = f.mkdir();
-                if (createSuccess) {
-                    return archivePath;
-                } else {
-                    return null;
-                }   
-            } else {
-                return null;
+        String path = getYukonBase() + System.getProperty("file.separator") + EXPORT_ARCHIVE_DIR;
+        File dir = new File(path);
+        if (!dir.exists()) {
+            boolean success = dir.mkdirs();
+            if (!success) {
+                throw new FileCreationException("Error creating directory " + path);
             }
-        } else {
-            return archivePath;
-        }    
+        }
+        return path;
     }
     
     public final static Character getFalseCharacter() {

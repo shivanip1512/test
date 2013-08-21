@@ -45,6 +45,6 @@ public class FileExportHistoryServiceImpl implements FileExportHistoryService {
 	}
 
 	private File getArchivePath() {
-		return new File(CtiUtilities.getArchiveDirPath(true));
+		return new File(CtiUtilities.getArchiveDirPath());
 	}
 }
