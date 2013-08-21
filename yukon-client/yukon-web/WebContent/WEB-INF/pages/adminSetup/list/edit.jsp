@@ -36,7 +36,7 @@ jQuery(document).ready(function() {
 });
 </script>
 
-<tags:nameValueContainer2>
+<tags:nameValueContainer2 tableClass="stacked">
     <tags:nameValue2 nameKey=".where">
         <tags:input path="whereIsList"/>
     </tags:nameValue2>
@@ -45,7 +45,7 @@ jQuery(document).ready(function() {
     </tags:nameValue2>
 </tags:nameValueContainer2>
 
-<tags:boxContainer2 nameKey="entries" id="selectionListEntries">
+<tags:sectionContainer2 nameKey="entries" id="selectionListEntries">
     <tags:dynamicTable id="entryTable" items="${list.entries}" nameKey="entries"
         addItemParameters="{'listId': ${list.listId}}">
         <table class="compactResultsTable rowHighlighting">
@@ -86,7 +86,7 @@ jQuery(document).ready(function() {
             </c:forEach>
         </table>
     </tags:dynamicTable>
-</tags:boxContainer2>
+</tags:sectionContainer2>
 
 <div class="pageActionArea">
     <cti:button nameKey="save" name="save" type="submit" classes="primary action"/>

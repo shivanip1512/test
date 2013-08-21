@@ -8,7 +8,7 @@
 
 <cti:standardPage module="adminSetup" page="list.VIEW">
 
-<tags:nameValueContainer2>
+<tags:nameValueContainer2 tableClass="stacked">
     <tags:nameValue2 nameKey=".where">
         <spring:escapeBody htmlEscape="true">${list.whereIsList}</spring:escapeBody>
     </tags:nameValue2>
@@ -17,7 +17,7 @@
     </tags:nameValue2>
 </tags:nameValueContainer2>
 
-<tags:boxContainer2 nameKey="entries" id="selectionListEntries">
+<tags:sectionContainer2 nameKey="entries" id="selectionListEntries">
     <c:if test="${empty list.yukonListEntries}">
         <i:inline key=".entries.noItems"/>
     </c:if>
@@ -48,7 +48,7 @@
             </c:forEach>
         </table>
     </c:if>
-</tags:boxContainer2>
+</tags:sectionContainer2>
 
 <c:if test="${!isInherited}">
     <div class="pageActionArea">
