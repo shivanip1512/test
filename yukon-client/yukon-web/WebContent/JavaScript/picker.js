@@ -202,7 +202,7 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
                 } else {
                     pickerThis.selectedItems.forEach(function(item, index, arr){
                         if (rowObject[pickerThis.idFieldName] === item[pickerThis.idFieldName]) {
-                            jQuery(rowElement).addClass('highlighted"');
+                            jQuery(rowElement).addClass('highlighted');
                         }
                     });
                 }
