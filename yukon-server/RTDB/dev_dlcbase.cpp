@@ -460,7 +460,7 @@ int DlcBaseDevice::decodeCommand(const INMESS &InMessage, CtiTime TimeNow, list<
                 function += 0x100;
             }
 
-            ptr = command.decode(TimeNow, function, payload, description, points);
+            ptr = command.decodeCommand(TimeNow, function, payload, description, points);
 
             for each( const DlcCommand::point_data &pdata in points )
             {
@@ -587,7 +587,7 @@ void DlcBaseDevice::fillOutMessage(OUTMESS &OutMessage, DlcCommand::request_t &r
 
 bool DlcBaseDevice::tryExecuteCommand(OUTMESS &OutMessage, DlcCommandSPtr command)
 {
-    DlcCommand::request_ptr request = command->execute(CtiTime());
+    DlcCommand::request_ptr request = command->executeCommand(CtiTime());
 
     if( request.get() )
     {

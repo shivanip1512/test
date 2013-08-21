@@ -18,7 +18,7 @@ BOOST_AUTO_TEST_CASE(test_empty_write)
     Cti::Devices::Commands::Mct420LcdConfigurationCommand lcdConfiguration(metrics, false);
 
     {
-        DlcCommand::request_ptr r = lcdConfiguration.execute(execute_time);
+        DlcCommand::request_ptr r = lcdConfiguration.executeCommand(execute_time);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
@@ -35,7 +35,7 @@ BOOST_AUTO_TEST_CASE(test_empty_write)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = lcdConfiguration.decode(execute_time, 0xf6, payload, description, points);
+        DlcCommand::request_ptr r = lcdConfiguration.decodeCommand(execute_time, 0xf6, payload, description, points);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
@@ -52,7 +52,7 @@ BOOST_AUTO_TEST_CASE(test_empty_write)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = lcdConfiguration.decode(execute_time, 0xf6, payload, description, points);
+        DlcCommand::request_ptr r = lcdConfiguration.decodeCommand(execute_time, 0xf6, payload, description, points);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
@@ -69,7 +69,7 @@ BOOST_AUTO_TEST_CASE(test_empty_write)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = lcdConfiguration.decode(execute_time, 0xf7, payload, description, points);
+        DlcCommand::request_ptr r = lcdConfiguration.decodeCommand(execute_time, 0xf7, payload, description, points);
 
         //  make sure it's null
         BOOST_CHECK( ! r.get());
@@ -86,7 +86,7 @@ BOOST_AUTO_TEST_CASE(test_one_metric)
         Cti::Devices::Commands::Mct420LcdConfigurationCommand lcdConfiguration(metrics, false);
 
         {
-            DlcCommand::request_ptr r = lcdConfiguration.execute(execute_time);
+            DlcCommand::request_ptr r = lcdConfiguration.executeCommand(execute_time);
 
             //  make sure it's not null
             BOOST_CHECK(r.get());
@@ -104,7 +104,7 @@ BOOST_AUTO_TEST_CASE(test_one_metric)
             string description;
             std::vector<DlcCommand::point_data> points;
 
-            DlcCommand::request_ptr r = lcdConfiguration.decode(execute_time, 0xf6, payload, description, points);
+            DlcCommand::request_ptr r = lcdConfiguration.decodeCommand(execute_time, 0xf6, payload, description, points);
 
             //  make sure it's not null
             BOOST_CHECK(r.get());
@@ -121,7 +121,7 @@ BOOST_AUTO_TEST_CASE(test_one_metric)
             string description;
             std::vector<DlcCommand::point_data> points;
 
-            DlcCommand::request_ptr r = lcdConfiguration.decode(execute_time, 0xf6, payload, description, points);
+            DlcCommand::request_ptr r = lcdConfiguration.decodeCommand(execute_time, 0xf6, payload, description, points);
 
             //  make sure it's not null
             BOOST_CHECK(r.get());
@@ -138,7 +138,7 @@ BOOST_AUTO_TEST_CASE(test_one_metric)
             string description;
             std::vector<DlcCommand::point_data> points;
 
-            DlcCommand::request_ptr r = lcdConfiguration.decode(execute_time, 0xf7, payload, description, points);
+            DlcCommand::request_ptr r = lcdConfiguration.decodeCommand(execute_time, 0xf7, payload, description, points);
 
             //  make sure it's not null
             BOOST_CHECK( ! r.get());
@@ -151,7 +151,7 @@ BOOST_AUTO_TEST_CASE(test_one_metric)
         Cti::Devices::Commands::Mct420LcdConfigurationCommand lcdConfiguration(metrics, false);
 
         {
-            DlcCommand::request_ptr r = lcdConfiguration.execute(execute_time);
+            DlcCommand::request_ptr r = lcdConfiguration.executeCommand(execute_time);
 
             //  make sure it's not null
             BOOST_CHECK(r.get());
@@ -169,7 +169,7 @@ BOOST_AUTO_TEST_CASE(test_one_metric)
             string description;
             std::vector<DlcCommand::point_data> points;
 
-            DlcCommand::request_ptr r = lcdConfiguration.decode(execute_time, 0xf6, payload, description, points);
+            DlcCommand::request_ptr r = lcdConfiguration.decodeCommand(execute_time, 0xf6, payload, description, points);
 
             //  make sure it's not null
             BOOST_CHECK(r.get());
@@ -186,7 +186,7 @@ BOOST_AUTO_TEST_CASE(test_one_metric)
             string description;
             std::vector<DlcCommand::point_data> points;
 
-            DlcCommand::request_ptr r = lcdConfiguration.decode(execute_time, 0xf6, payload, description, points);
+            DlcCommand::request_ptr r = lcdConfiguration.decodeCommand(execute_time, 0xf6, payload, description, points);
 
             //  make sure it's not null
             BOOST_CHECK(r.get());
@@ -203,7 +203,7 @@ BOOST_AUTO_TEST_CASE(test_one_metric)
             string description;
             std::vector<DlcCommand::point_data> points;
 
-            DlcCommand::request_ptr r = lcdConfiguration.decode(execute_time, 0xf7, payload, description, points);
+            DlcCommand::request_ptr r = lcdConfiguration.decodeCommand(execute_time, 0xf7, payload, description, points);
 
             //  make sure it's null
             BOOST_CHECK( ! r.get());
@@ -223,7 +223,7 @@ BOOST_AUTO_TEST_CASE(test_two_metrics)
     Cti::Devices::Commands::Mct420LcdConfigurationCommand lcdConfiguration(metrics, false);
 
     {
-        DlcCommand::request_ptr r = lcdConfiguration.execute(execute_time);
+        DlcCommand::request_ptr r = lcdConfiguration.executeCommand(execute_time);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
@@ -242,7 +242,7 @@ BOOST_AUTO_TEST_CASE(test_two_metrics)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = lcdConfiguration.decode(execute_time, 0xf6, payload, description, points);
+        DlcCommand::request_ptr r = lcdConfiguration.decodeCommand(execute_time, 0xf6, payload, description, points);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
@@ -259,7 +259,7 @@ BOOST_AUTO_TEST_CASE(test_two_metrics)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = lcdConfiguration.decode(execute_time, 0xf6, payload, description, points);
+        DlcCommand::request_ptr r = lcdConfiguration.decodeCommand(execute_time, 0xf6, payload, description, points);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
@@ -276,7 +276,7 @@ BOOST_AUTO_TEST_CASE(test_two_metrics)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = lcdConfiguration.decode(execute_time, 0xf7, payload, description, points);
+        DlcCommand::request_ptr r = lcdConfiguration.decodeCommand(execute_time, 0xf7, payload, description, points);
 
         //  make sure it's null
         BOOST_CHECK( ! r.get());
@@ -303,7 +303,7 @@ BOOST_AUTO_TEST_CASE(test_twelve_metrics)
     Cti::Devices::Commands::Mct420LcdConfigurationCommand lcdConfiguration(metrics, false);
 
     {
-        DlcCommand::request_ptr r = lcdConfiguration.execute(execute_time);
+        DlcCommand::request_ptr r = lcdConfiguration.executeCommand(execute_time);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
@@ -332,7 +332,7 @@ BOOST_AUTO_TEST_CASE(test_twelve_metrics)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = lcdConfiguration.decode(execute_time, 0xf6, payload, description, points);
+        DlcCommand::request_ptr r = lcdConfiguration.decodeCommand(execute_time, 0xf6, payload, description, points);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
@@ -349,7 +349,7 @@ BOOST_AUTO_TEST_CASE(test_twelve_metrics)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = lcdConfiguration.decode(execute_time, 0xf6, payload, description, points);
+        DlcCommand::request_ptr r = lcdConfiguration.decodeCommand(execute_time, 0xf6, payload, description, points);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
@@ -366,7 +366,7 @@ BOOST_AUTO_TEST_CASE(test_twelve_metrics)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = lcdConfiguration.decode(execute_time, 0xf7, payload, description, points);
+        DlcCommand::request_ptr r = lcdConfiguration.decodeCommand(execute_time, 0xf7, payload, description, points);
 
         //  make sure it's null
         BOOST_CHECK( ! r.get());
@@ -394,7 +394,7 @@ BOOST_AUTO_TEST_CASE(test_thirteen_metrics)
     Cti::Devices::Commands::Mct420LcdConfigurationCommand lcdConfiguration(metrics, false);
 
     {
-        DlcCommand::request_ptr r = lcdConfiguration.execute(execute_time);
+        DlcCommand::request_ptr r = lcdConfiguration.executeCommand(execute_time);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
@@ -424,7 +424,7 @@ BOOST_AUTO_TEST_CASE(test_thirteen_metrics)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = lcdConfiguration.decode(execute_time, 0xf6, payload, description, points);
+        DlcCommand::request_ptr r = lcdConfiguration.decodeCommand(execute_time, 0xf6, payload, description, points);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
@@ -441,7 +441,7 @@ BOOST_AUTO_TEST_CASE(test_thirteen_metrics)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = lcdConfiguration.decode(execute_time, 0xf7, payload, description, points);
+        DlcCommand::request_ptr r = lcdConfiguration.decodeCommand(execute_time, 0xf7, payload, description, points);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
@@ -458,7 +458,7 @@ BOOST_AUTO_TEST_CASE(test_thirteen_metrics)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = lcdConfiguration.decode(execute_time, 0xf6, payload, description, points);
+        DlcCommand::request_ptr r = lcdConfiguration.decodeCommand(execute_time, 0xf6, payload, description, points);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
@@ -475,7 +475,7 @@ BOOST_AUTO_TEST_CASE(test_thirteen_metrics)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = lcdConfiguration.decode(execute_time, 0xf7, payload, description, points);
+        DlcCommand::request_ptr r = lcdConfiguration.decodeCommand(execute_time, 0xf7, payload, description, points);
 
         //  make sure it's null
         BOOST_CHECK( ! r.get());
@@ -504,7 +504,7 @@ BOOST_AUTO_TEST_CASE(test_fourteen_metrics)
     Cti::Devices::Commands::Mct420LcdConfigurationCommand lcdConfiguration(metrics, false);
 
     {
-        DlcCommand::request_ptr r = lcdConfiguration.execute(execute_time);
+        DlcCommand::request_ptr r = lcdConfiguration.executeCommand(execute_time);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
@@ -534,7 +534,7 @@ BOOST_AUTO_TEST_CASE(test_fourteen_metrics)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = lcdConfiguration.decode(execute_time, 0xf6, payload, description, points);
+        DlcCommand::request_ptr r = lcdConfiguration.decodeCommand(execute_time, 0xf6, payload, description, points);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
@@ -552,7 +552,7 @@ BOOST_AUTO_TEST_CASE(test_fourteen_metrics)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = lcdConfiguration.decode(execute_time, 0xf7, payload, description, points);
+        DlcCommand::request_ptr r = lcdConfiguration.decodeCommand(execute_time, 0xf7, payload, description, points);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
@@ -569,7 +569,7 @@ BOOST_AUTO_TEST_CASE(test_fourteen_metrics)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = lcdConfiguration.decode(execute_time, 0xf6, payload, description, points);
+        DlcCommand::request_ptr r = lcdConfiguration.decodeCommand(execute_time, 0xf6, payload, description, points);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
@@ -586,7 +586,7 @@ BOOST_AUTO_TEST_CASE(test_fourteen_metrics)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = lcdConfiguration.decode(execute_time, 0xf7, payload, description, points);
+        DlcCommand::request_ptr r = lcdConfiguration.decodeCommand(execute_time, 0xf7, payload, description, points);
 
         //  make sure it's null
         BOOST_CHECK( ! r.get());
@@ -627,7 +627,7 @@ BOOST_AUTO_TEST_CASE(test_twenty_six_metrics)
     Cti::Devices::Commands::Mct420LcdConfigurationCommand lcdConfiguration(metrics, false);
 
     {
-        DlcCommand::request_ptr r = lcdConfiguration.execute(execute_time);
+        DlcCommand::request_ptr r = lcdConfiguration.executeCommand(execute_time);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
@@ -657,7 +657,7 @@ BOOST_AUTO_TEST_CASE(test_twenty_six_metrics)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = lcdConfiguration.decode(execute_time, 0xf6, payload, description, points);
+        DlcCommand::request_ptr r = lcdConfiguration.decodeCommand(execute_time, 0xf6, payload, description, points);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
@@ -687,7 +687,7 @@ BOOST_AUTO_TEST_CASE(test_twenty_six_metrics)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = lcdConfiguration.decode(execute_time, 0xf7, payload, description, points);
+        DlcCommand::request_ptr r = lcdConfiguration.decodeCommand(execute_time, 0xf7, payload, description, points);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
@@ -704,7 +704,7 @@ BOOST_AUTO_TEST_CASE(test_twenty_six_metrics)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = lcdConfiguration.decode(execute_time, 0xf6, payload, description, points);
+        DlcCommand::request_ptr r = lcdConfiguration.decodeCommand(execute_time, 0xf6, payload, description, points);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
@@ -721,7 +721,7 @@ BOOST_AUTO_TEST_CASE(test_twenty_six_metrics)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = lcdConfiguration.decode(execute_time, 0xf7, payload, description, points);
+        DlcCommand::request_ptr r = lcdConfiguration.decodeCommand(execute_time, 0xf7, payload, description, points);
 
         //  make sure it's null
         BOOST_CHECK( ! r.get());
@@ -738,9 +738,9 @@ BOOST_AUTO_TEST_CASE(test_too_many_metrics)
 
     try
     {
-        lcdConfiguration.execute(execute_time);
+        lcdConfiguration.executeCommand(execute_time);
 
-        BOOST_FAIL("Mct420LcdConfigurationCommand::execute() did not throw");
+        BOOST_FAIL("Mct420LcdConfigurationCommand::executeCommand() did not throw");
     }
     catch( DlcCommand::CommandException &ex )
     {
@@ -758,7 +758,7 @@ BOOST_AUTO_TEST_CASE(test_reads_only)
     Cti::Devices::Commands::Mct420LcdConfigurationCommand lcdConfiguration(metrics, true);
 
     {
-        DlcCommand::request_ptr r = lcdConfiguration.execute(execute_time);
+        DlcCommand::request_ptr r = lcdConfiguration.executeCommand(execute_time);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
@@ -775,7 +775,7 @@ BOOST_AUTO_TEST_CASE(test_reads_only)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = lcdConfiguration.decode(execute_time, 0xf6, payload, description, points);
+        DlcCommand::request_ptr r = lcdConfiguration.decodeCommand(execute_time, 0xf6, payload, description, points);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
@@ -792,7 +792,7 @@ BOOST_AUTO_TEST_CASE(test_reads_only)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = lcdConfiguration.decode(execute_time, 0xf7, payload, description, points);
+        DlcCommand::request_ptr r = lcdConfiguration.decodeCommand(execute_time, 0xf7, payload, description, points);
 
         //  make sure it's null
         BOOST_CHECK( ! r.get());

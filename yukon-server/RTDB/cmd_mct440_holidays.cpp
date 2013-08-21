@@ -58,12 +58,12 @@ Mct440HolidaysCommand::Mct440HolidaysCommand() :
 {
 }
 
-DlcCommand::request_ptr Mct440HolidaysCommand::execute(const CtiTime now)
+DlcCommand::request_ptr Mct440HolidaysCommand::executeCommand(const CtiTime now)
 {
     return doCommand();
 }
 
-DlcCommand::request_ptr Mct440HolidaysCommand::decode(const CtiTime now, const unsigned function, const boost::optional<Bytes> &payload, std::string &description, std::vector<point_data> &points)
+DlcCommand::request_ptr Mct440HolidaysCommand::decodeCommand(const CtiTime now, const unsigned function, const boost::optional<Bytes> &payload, std::string &description, std::vector<point_data> &points)
 {
     if( payload )
     {

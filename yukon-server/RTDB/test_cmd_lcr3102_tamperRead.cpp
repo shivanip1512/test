@@ -28,7 +28,7 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_rcircuit_tamper )
     Lcr3102TamperReadCommand tamperRead = Lcr3102TamperReadCommand();
 
     {
-        DlcCommand::request_ptr ptr = tamperRead.execute(executeTime);
+        DlcCommand::request_ptr ptr = tamperRead.executeCommand(executeTime);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
@@ -49,7 +49,7 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_rcircuit_tamper )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = tamperRead.decode(executeTime, 0x0, payload, description, points);
+        DlcCommand::request_ptr ptr = tamperRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
@@ -78,7 +78,7 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_rcircuit_tamper )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = tamperRead.decode(executeTime, 0x0, payload, description, points);
+        DlcCommand::request_ptr ptr = tamperRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  This is the last step in the command process. We should have a null pointer!
         BOOST_CHECK(!ptr.get());
@@ -115,7 +115,7 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_runtime_tamper )
     Lcr3102TamperReadCommand tamperRead = Lcr3102TamperReadCommand();
 
     {
-        DlcCommand::request_ptr ptr = tamperRead.execute(executeTime);
+        DlcCommand::request_ptr ptr = tamperRead.executeCommand(executeTime);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
@@ -136,7 +136,7 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_runtime_tamper )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = tamperRead.decode(executeTime, 0x0, payload, description, points);
+        DlcCommand::request_ptr ptr = tamperRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
@@ -165,7 +165,7 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_runtime_tamper )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = tamperRead.decode(executeTime, 0x0, payload, description, points);
+        DlcCommand::request_ptr ptr = tamperRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  This is the last step in the command process. We should have a null pointer!
         BOOST_CHECK(!ptr.get());
@@ -202,7 +202,7 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_both_tamper )
     Lcr3102TamperReadCommand tamperRead = Lcr3102TamperReadCommand();
 
     {
-        DlcCommand::request_ptr ptr = tamperRead.execute(executeTime);
+        DlcCommand::request_ptr ptr = tamperRead.executeCommand(executeTime);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
@@ -223,7 +223,7 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_both_tamper )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = tamperRead.decode(executeTime, 0x0, payload, description, points);
+        DlcCommand::request_ptr ptr = tamperRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
@@ -250,7 +250,7 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_both_tamper )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = tamperRead.decode(executeTime, 0x0, payload, description, points);
+        DlcCommand::request_ptr ptr = tamperRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  This is the last step in the command process. We should have a null pointer!
         BOOST_CHECK(!ptr.get());
@@ -287,7 +287,7 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_neither_tamper )
     Lcr3102TamperReadCommand tamperRead = Lcr3102TamperReadCommand();
 
     {
-        DlcCommand::request_ptr ptr = tamperRead.execute(executeTime);
+        DlcCommand::request_ptr ptr = tamperRead.executeCommand(executeTime);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
@@ -308,7 +308,7 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_neither_tamper )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = tamperRead.decode(executeTime, 0x0, payload, description, points);
+        DlcCommand::request_ptr ptr = tamperRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
@@ -335,7 +335,7 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_neither_tamper )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = tamperRead.decode(executeTime, 0x0, payload, description, points);
+        DlcCommand::request_ptr ptr = tamperRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  This is the last step in the command process. We should have a null pointer!
         BOOST_CHECK(!ptr.get());
@@ -372,7 +372,7 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_tamper_value_error )
     Lcr3102TamperReadCommand tamperRead = Lcr3102TamperReadCommand();
 
     {
-        DlcCommand::request_ptr ptr = tamperRead.execute(executeTime);
+        DlcCommand::request_ptr ptr = tamperRead.executeCommand(executeTime);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
@@ -393,7 +393,7 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_tamper_value_error )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = tamperRead.decode(executeTime, 0x0, payload, description, points);
+        DlcCommand::request_ptr ptr = tamperRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
@@ -423,9 +423,9 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_tamper_value_error )
         // Does not get retries! Will throw immediately upon bad payload!
         try
         {
-            tamperRead.decode(executeTime, 0x0, payload, description, points);
+            tamperRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
-            BOOST_FAIL("Lcr3102TamperReadCommand::decode() did not throw");
+            BOOST_FAIL("Lcr3102TamperReadCommand::decodeCommand() did not throw");
         }
         catch( DlcCommand::CommandException &ex )
         {

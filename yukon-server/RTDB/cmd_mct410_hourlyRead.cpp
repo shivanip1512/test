@@ -22,7 +22,7 @@ Mct410HourlyReadCommand::Mct410HourlyReadCommand(CtiDate date_begin, CtiDate dat
 
 
 //  throws CommandException
-DlcCommand::request_ptr Mct410HourlyReadCommand::execute(CtiTime now)
+DlcCommand::request_ptr Mct410HourlyReadCommand::executeCommand(CtiTime now)
 {
     const CtiDate Yesterday(make_yesterday(now));
 
@@ -221,7 +221,7 @@ DlcCommand::request_ptr Mct410HourlyReadCommand::makeRequest(const CtiTime now)
 
 
 //  throws CommandException
-DlcCommand::request_ptr Mct410HourlyReadCommand::decode(CtiTime now, const unsigned function, const boost::optional<Bytes> &payload, string &description, vector<point_data> &points)
+DlcCommand::request_ptr Mct410HourlyReadCommand::decodeCommand(CtiTime now, const unsigned function, const boost::optional<Bytes> &payload, string &description, vector<point_data> &points)
 try
 {
     const unsigned weekday = getValueFromBits(*payload, 0, 3);

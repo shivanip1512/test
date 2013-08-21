@@ -19,7 +19,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_controlled_only )
     Lcr3102DemandResponseSummaryCommand drSummaryRead = Lcr3102DemandResponseSummaryCommand();
 
     {
-        DlcCommand::request_ptr ptr = drSummaryRead.execute(executeTime);
+        DlcCommand::request_ptr ptr = drSummaryRead.executeCommand(executeTime);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
@@ -40,7 +40,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_controlled_only )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = drSummaryRead.decode(executeTime, 0x0, payload, description, points);
+        DlcCommand::request_ptr ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
@@ -69,7 +69,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_controlled_only )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = drSummaryRead.decode(executeTime, 0x0, payload, description, points);
+        DlcCommand::request_ptr ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  This is the last step in the command process. We should have a null pointer!
         BOOST_CHECK(!ptr.get());
@@ -92,7 +92,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_cold_load_pickup )
     Lcr3102DemandResponseSummaryCommand drSummaryRead = Lcr3102DemandResponseSummaryCommand();
 
     {
-        DlcCommand::request_ptr ptr = drSummaryRead.execute(executeTime);
+        DlcCommand::request_ptr ptr = drSummaryRead.executeCommand(executeTime);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
@@ -113,7 +113,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_cold_load_pickup )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = drSummaryRead.decode(executeTime, 0x0, payload, description, points);
+        DlcCommand::request_ptr ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
@@ -142,7 +142,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_cold_load_pickup )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = drSummaryRead.decode(executeTime, 0x0, payload, description, points);
+        DlcCommand::request_ptr ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  This is the last step in the command process. We should have a null pointer!
         BOOST_CHECK(!ptr.get());
@@ -164,7 +164,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_activated_not_controlling )
     Lcr3102DemandResponseSummaryCommand drSummaryRead = Lcr3102DemandResponseSummaryCommand();
 
     {
-        DlcCommand::request_ptr ptr = drSummaryRead.execute(executeTime);
+        DlcCommand::request_ptr ptr = drSummaryRead.executeCommand(executeTime);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
@@ -185,7 +185,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_activated_not_controlling )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = drSummaryRead.decode(executeTime, 0x0, payload, description, points);
+        DlcCommand::request_ptr ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
@@ -214,7 +214,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_activated_not_controlling )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = drSummaryRead.decode(executeTime, 0x0, payload, description, points);
+        DlcCommand::request_ptr ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  This is the last step in the command process. We should have a null pointer!
         BOOST_CHECK(!ptr.get());
@@ -237,7 +237,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_activated_controlling )
     Lcr3102DemandResponseSummaryCommand drSummaryRead = Lcr3102DemandResponseSummaryCommand();
 
     {
-        DlcCommand::request_ptr ptr = drSummaryRead.execute(executeTime);
+        DlcCommand::request_ptr ptr = drSummaryRead.executeCommand(executeTime);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
@@ -258,7 +258,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_activated_controlling )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = drSummaryRead.decode(executeTime, 0x0, payload, description, points);
+        DlcCommand::request_ptr ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
@@ -287,7 +287,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_activated_controlling )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = drSummaryRead.decode(executeTime, 0x0, payload, description, points);
+        DlcCommand::request_ptr ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  This is the last step in the command process. We should have a null pointer!
         BOOST_CHECK(!ptr.get());
@@ -310,7 +310,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_under_voltage_event )
     Lcr3102DemandResponseSummaryCommand drSummaryRead = Lcr3102DemandResponseSummaryCommand();
 
     {
-        DlcCommand::request_ptr ptr = drSummaryRead.execute(executeTime);
+        DlcCommand::request_ptr ptr = drSummaryRead.executeCommand(executeTime);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
@@ -331,7 +331,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_under_voltage_event )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = drSummaryRead.decode(executeTime, 0x0, payload, description, points);
+        DlcCommand::request_ptr ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
@@ -360,7 +360,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_under_voltage_event )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = drSummaryRead.decode(executeTime, 0x0, payload, description, points);
+        DlcCommand::request_ptr ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  This is the last step in the command process. We should have a null pointer!
         BOOST_CHECK(!ptr.get());
@@ -382,7 +382,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_under_frequency_event )
     Lcr3102DemandResponseSummaryCommand drSummaryRead = Lcr3102DemandResponseSummaryCommand();
 
     {
-        DlcCommand::request_ptr ptr = drSummaryRead.execute(executeTime);
+        DlcCommand::request_ptr ptr = drSummaryRead.executeCommand(executeTime);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
@@ -403,7 +403,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_under_frequency_event )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = drSummaryRead.decode(executeTime, 0x0, payload, description, points);
+        DlcCommand::request_ptr ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
@@ -432,7 +432,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_under_frequency_event )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = drSummaryRead.decode(executeTime, 0x0, payload, description, points);
+        DlcCommand::request_ptr ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  This is the last step in the command process. We should have a null pointer!
         BOOST_CHECK(!ptr.get());
@@ -454,7 +454,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_out_of_service )
     Lcr3102DemandResponseSummaryCommand drSummaryRead = Lcr3102DemandResponseSummaryCommand();
 
     {
-        DlcCommand::request_ptr ptr = drSummaryRead.execute(executeTime);
+        DlcCommand::request_ptr ptr = drSummaryRead.executeCommand(executeTime);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
@@ -475,7 +475,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_out_of_service )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = drSummaryRead.decode(executeTime, 0x0, payload, description, points);
+        DlcCommand::request_ptr ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
@@ -504,7 +504,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_out_of_service )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = drSummaryRead.decode(executeTime, 0x0, payload, description, points);
+        DlcCommand::request_ptr ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  This is the last step in the command process. We should have a null pointer!
         BOOST_CHECK(!ptr.get());
@@ -526,7 +526,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_activated_not_controlling_conflict )
     Lcr3102DemandResponseSummaryCommand drSummaryRead = Lcr3102DemandResponseSummaryCommand();
 
     {
-        DlcCommand::request_ptr ptr = drSummaryRead.execute(executeTime);
+        DlcCommand::request_ptr ptr = drSummaryRead.executeCommand(executeTime);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
@@ -547,7 +547,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_activated_not_controlling_conflict )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = drSummaryRead.decode(executeTime, 0x0, payload, description, points);
+        DlcCommand::request_ptr ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
@@ -578,9 +578,9 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_activated_not_controlling_conflict )
 
         try
         {
-            DlcCommand::request_ptr ptr = drSummaryRead.decode(executeTime, 0x0, payload, description, points);
+            DlcCommand::request_ptr ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
-            BOOST_FAIL("Lcr3102DemandResponseSummaryCommand::decode() did not throw");
+            BOOST_FAIL("Lcr3102DemandResponseSummaryCommand::decodeCommand() did not throw");
         }
         catch( DlcCommand::CommandException &ex )
         {
@@ -598,7 +598,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_activated_controlling_conflict )
     Lcr3102DemandResponseSummaryCommand drSummaryRead = Lcr3102DemandResponseSummaryCommand();
 
     {
-        DlcCommand::request_ptr ptr = drSummaryRead.execute(executeTime);
+        DlcCommand::request_ptr ptr = drSummaryRead.executeCommand(executeTime);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
@@ -619,7 +619,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_activated_controlling_conflict )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = drSummaryRead.decode(executeTime, 0x0, payload, description, points);
+        DlcCommand::request_ptr ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
@@ -650,9 +650,9 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_activated_controlling_conflict )
 
         try
         {
-            DlcCommand::request_ptr ptr = drSummaryRead.decode(executeTime, 0x0, payload, description, points);
+            DlcCommand::request_ptr ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
-            BOOST_FAIL("Lcr3102DemandResponseSummaryCommand::decode() did not throw");
+            BOOST_FAIL("Lcr3102DemandResponseSummaryCommand::decodeCommand() did not throw");
         }
         catch( DlcCommand::CommandException &ex )
         {
@@ -670,7 +670,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_both_activated_enabled_conflict )
     Lcr3102DemandResponseSummaryCommand drSummaryRead = Lcr3102DemandResponseSummaryCommand();
 
     {
-        DlcCommand::request_ptr ptr = drSummaryRead.execute(executeTime);
+        DlcCommand::request_ptr ptr = drSummaryRead.executeCommand(executeTime);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
@@ -691,7 +691,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_both_activated_enabled_conflict )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = drSummaryRead.decode(executeTime, 0x0, payload, description, points);
+        DlcCommand::request_ptr ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
@@ -722,9 +722,9 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_both_activated_enabled_conflict )
 
         try
         {
-            DlcCommand::request_ptr ptr = drSummaryRead.decode(executeTime, 0x0, payload, description, points);
+            DlcCommand::request_ptr ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
-            BOOST_FAIL("Lcr3102DemandResponseSummaryCommand::decode() did not throw");
+            BOOST_FAIL("Lcr3102DemandResponseSummaryCommand::decodeCommand() did not throw");
         }
         catch( DlcCommand::CommandException &ex )
         {

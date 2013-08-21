@@ -15,7 +15,7 @@ Lcr3102ThreePartCommand::Lcr3102ThreePartCommand(unsigned length, unsigned retri
 {
 }
 
-DlcCommand::request_ptr Lcr3102ThreePartCommand::execute(const CtiTime now)
+DlcCommand::request_ptr Lcr3102ThreePartCommand::executeCommand(const CtiTime now)
 {
     return makeRequest(now);
 }
@@ -32,7 +32,7 @@ DlcCommand::request_ptr Lcr3102ThreePartCommand::makeRequest(const CtiTime now)
     }
 }
 
-DlcCommand::request_ptr Lcr3102ThreePartCommand::decode(CtiTime now, const unsigned function, const boost::optional<Bytes> &payload, std::string &description, std::vector<point_data> &points)
+DlcCommand::request_ptr Lcr3102ThreePartCommand::decodeCommand(CtiTime now, const unsigned function, const boost::optional<Bytes> &payload, std::string &description, std::vector<point_data> &points)
 {
     if( _state == State_Reading )
     {
@@ -62,7 +62,7 @@ DlcCommand::request_ptr Lcr3102ThreePartCommand::error(const CtiTime now, const 
 
         description += "Retrying (" + CtiNumStr(_retries) + " remaining)";
 
-        return execute(now);
+        return executeCommand(now);
     }
     else
     {

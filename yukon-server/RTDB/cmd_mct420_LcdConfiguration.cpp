@@ -61,7 +61,7 @@ Mct420LcdConfigurationCommand::Mct420LcdConfigurationCommand(const metric_vector
 
 
 //  throws CommandException
-DlcCommand::request_ptr Mct420LcdConfigurationCommand::execute(CtiTime now)
+DlcCommand::request_ptr Mct420LcdConfigurationCommand::executeCommand(CtiTime now)
 {
     //  now that ExecuteRequest() is wrapped in a try/catch, we could move this check to the constructor
     if( _display_metrics.size() > TotalDisplayMetricSlots )
@@ -72,7 +72,7 @@ DlcCommand::request_ptr Mct420LcdConfigurationCommand::execute(CtiTime now)
     return doCommand();
 }
 
-DlcCommand::request_ptr Mct420LcdConfigurationCommand::decode(const CtiTime now, const unsigned function, const boost::optional<Bytes> &payload, std::string &description, std::vector<point_data> &points)
+DlcCommand::request_ptr Mct420LcdConfigurationCommand::decodeCommand(const CtiTime now, const unsigned function, const boost::optional<Bytes> &payload, std::string &description, std::vector<point_data> &points)
 {
     if( payload && ! payload->empty() )
     {

@@ -77,9 +77,9 @@ public:
 
     Mct410HourlyReadCommand(CtiDate date_begin, CtiDate date_end, const unsigned channel);
 
-    virtual request_ptr execute(const CtiTime now);
-    virtual request_ptr decode (const CtiTime now, const unsigned function, const boost::optional<Bytes> &payload, std::string &description, std::vector<point_data> &points);
-    virtual request_ptr error  (const CtiTime now, const int error_code, std::string &description);
+    virtual request_ptr executeCommand(const CtiTime now);
+    virtual request_ptr decodeCommand (const CtiTime now, const unsigned function, const boost::optional<Bytes> &payload, std::string &description, std::vector<point_data> &points);
+    virtual request_ptr error         (const CtiTime now, const int error_code, std::string &description);
 };
 
 }

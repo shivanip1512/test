@@ -178,7 +178,7 @@ BOOST_AUTO_TEST_CASE( test_decode_execute_incorrect_start_time )
     test_Lcr3102HourlyDataLogCommand hourlyRead = test_Lcr3102HourlyDataLogCommand(executeTime.seconds());
 
     {
-        DlcCommand::request_ptr ptr = hourlyRead.execute(executeTime.seconds());
+        DlcCommand::request_ptr ptr = hourlyRead.executeCommand(executeTime.seconds());
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
@@ -204,7 +204,7 @@ BOOST_AUTO_TEST_CASE( test_decode_execute_incorrect_start_time )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = hourlyRead.decode(executeTime, 0x0, payload, description, points);
+        DlcCommand::request_ptr ptr = hourlyRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
@@ -228,9 +228,9 @@ BOOST_AUTO_TEST_CASE( test_decode_execute_incorrect_start_time )
 
         try
         {
-            DlcCommand::request_ptr ptr = hourlyRead.decode(executeTime, 0x0, payload, description, points);
+            DlcCommand::request_ptr ptr = hourlyRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
-            BOOST_FAIL("Lcr3102HourlyDataLogCommand::decode() did not throw!");
+            BOOST_FAIL("Lcr3102HourlyDataLogCommand::decodeCommand() did not throw!");
         }
         catch(DlcCommand::CommandException &ex)
         {
@@ -252,7 +252,7 @@ BOOST_AUTO_TEST_CASE( test_decode_execute_insufficient_data )
     test_Lcr3102HourlyDataLogCommand hourlyRead = test_Lcr3102HourlyDataLogCommand(executeTime.seconds());
 
     {
-        DlcCommand::request_ptr ptr = hourlyRead.execute(executeTime.seconds());
+        DlcCommand::request_ptr ptr = hourlyRead.executeCommand(executeTime.seconds());
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
@@ -278,7 +278,7 @@ BOOST_AUTO_TEST_CASE( test_decode_execute_insufficient_data )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = hourlyRead.decode(executeTime, 0x0, payload, description, points);
+        DlcCommand::request_ptr ptr = hourlyRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
@@ -301,9 +301,9 @@ BOOST_AUTO_TEST_CASE( test_decode_execute_insufficient_data )
 
         try
         {
-            DlcCommand::request_ptr ptr = hourlyRead.decode(executeTime, 0x0, payload, description, points);
+            DlcCommand::request_ptr ptr = hourlyRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
-            BOOST_FAIL("Lcr3102HourlyDataLogCommand::decode() did not throw!");
+            BOOST_FAIL("Lcr3102HourlyDataLogCommand::decodeCommand() did not throw!");
         }
         catch(DlcCommand::CommandException &ex)
         {
@@ -325,7 +325,7 @@ BOOST_AUTO_TEST_CASE( test_decode_execute_normal_execution )
     test_Lcr3102HourlyDataLogCommand hourlyRead = test_Lcr3102HourlyDataLogCommand(executeTime.seconds());
 
     {
-        DlcCommand::request_ptr ptr = hourlyRead.execute(executeTime.seconds());
+        DlcCommand::request_ptr ptr = hourlyRead.executeCommand(executeTime.seconds());
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
@@ -351,7 +351,7 @@ BOOST_AUTO_TEST_CASE( test_decode_execute_normal_execution )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = hourlyRead.decode(executeTime, 0x0, payload, description, points);
+        DlcCommand::request_ptr ptr = hourlyRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
@@ -373,7 +373,7 @@ BOOST_AUTO_TEST_CASE( test_decode_execute_normal_execution )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = hourlyRead.decode(executeTime, 0x0, payload, description, points);
+        DlcCommand::request_ptr ptr = hourlyRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
@@ -401,7 +401,7 @@ BOOST_AUTO_TEST_CASE( test_decode_execute_normal_execution )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = hourlyRead.decode(executeTime, 0x0, payload, description, points);
+        DlcCommand::request_ptr ptr = hourlyRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
@@ -437,7 +437,7 @@ BOOST_AUTO_TEST_CASE( test_decode_execute_normal_execution )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = hourlyRead.decode(executeTime, 0x0, payload, description, points);
+        DlcCommand::request_ptr ptr = hourlyRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
@@ -473,7 +473,7 @@ BOOST_AUTO_TEST_CASE( test_decode_execute_normal_execution )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = hourlyRead.decode(executeTime, 0x0, payload, description, points);
+        DlcCommand::request_ptr ptr = hourlyRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
@@ -509,7 +509,7 @@ BOOST_AUTO_TEST_CASE( test_decode_execute_normal_execution )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = hourlyRead.decode(executeTime, 0x0, payload, description, points);
+        DlcCommand::request_ptr ptr = hourlyRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  Request pointer should be null here!
         BOOST_CHECK(!ptr.get());
@@ -538,7 +538,7 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_more_than_sixty_minutes_error )
     test_Lcr3102HourlyDataLogCommand hourlyRead = test_Lcr3102HourlyDataLogCommand(executeTime.seconds());
 
     {
-        DlcCommand::request_ptr ptr = hourlyRead.execute(executeTime.seconds());
+        DlcCommand::request_ptr ptr = hourlyRead.executeCommand(executeTime.seconds());
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
@@ -564,7 +564,7 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_more_than_sixty_minutes_error )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = hourlyRead.decode(executeTime, 0x0, payload, description, points);
+        DlcCommand::request_ptr ptr = hourlyRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
@@ -586,7 +586,7 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_more_than_sixty_minutes_error )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = hourlyRead.decode(executeTime, 0x0, payload, description, points);
+        DlcCommand::request_ptr ptr = hourlyRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
@@ -614,7 +614,7 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_more_than_sixty_minutes_error )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = hourlyRead.decode(executeTime, 0x0, payload, description, points);
+        DlcCommand::request_ptr ptr = hourlyRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());

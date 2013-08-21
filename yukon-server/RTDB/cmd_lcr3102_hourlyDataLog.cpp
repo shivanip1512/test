@@ -19,7 +19,7 @@ Lcr3102HourlyDataLogCommand::Lcr3102HourlyDataLogCommand(int utcStartSeconds) :
 {
 }
 
-DlcCommand::request_ptr Lcr3102HourlyDataLogCommand::execute(const CtiTime now)
+DlcCommand::request_ptr Lcr3102HourlyDataLogCommand::executeCommand(const CtiTime now)
 {
     return makeRequest(now);
 }
@@ -47,7 +47,7 @@ DlcCommand::request_ptr Lcr3102HourlyDataLogCommand::makeRequest(const CtiTime n
     }
 }
 
-DlcCommand::request_ptr Lcr3102HourlyDataLogCommand::decode(CtiTime now, const unsigned function, const boost::optional<Bytes> &payload, string &description, vector<point_data> &points)
+DlcCommand::request_ptr Lcr3102HourlyDataLogCommand::decodeCommand(CtiTime now, const unsigned function, const boost::optional<Bytes> &payload, string &description, vector<point_data> &points)
 {
     if(_state == State_WriteStartTime)
     {
