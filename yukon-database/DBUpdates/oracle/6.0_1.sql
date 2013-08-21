@@ -116,6 +116,10 @@ ALTER TABLE ApplianceCategory
 ADD AverageLoad VARCHAR2(32);
 /* End YUK-12464 */
 
+/* Start YUK-12230 */
+UPDATE Command SET Label = 'Read instant line data' WHERE CommandId = -189;
+/* End YUK-12230 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

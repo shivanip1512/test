@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     8/20/2013 6:01:01 PM                         */
+/* Created on:     8/21/2013 9:58:54 AM                         */
 /*==============================================================*/
 
 
@@ -1727,7 +1727,7 @@ INSERT INTO Command VALUES(-186, 'putconfig xcom led yyy', 'Configure LEDS (load
 INSERT INTO Command VALUES(-187, 'getconfig ied dnp address', 'Read DNP address configuration', 'MCT-470');
 INSERT INTO Command VALUES(-188, 'putconfig emetcon ied dnp address master ?''Master address'' outstation ?''Outstation address''', 'Write DNP address configuration', 'MCT-470');
 
-INSERT INTO Command VALUES (-189, 'getvalue instant line data', 'Read intant line data', 'MCT-440-2131B');
+INSERT INTO Command VALUES (-189, 'getvalue instant line data', 'Read instant line data', 'MCT-440-2131B');
 INSERT INTO Command VALUES (-190, 'getvalue outage ?''Outage Log (1 - 10)''', 'Read two outages per read.  Specify 1(1&2), 3(3&4), 5(5&6), 7(7&8), 9(9&10)', 'MCT-440-2131B');
 INSERT INTO Command VALUES (-191, 'putstatus reset alarms', 'Reset meter alarms', 'MCT-440-2131B');
 
