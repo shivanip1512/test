@@ -75,6 +75,7 @@ Yukon.DeviceDataMonitor = (function () {
         _url_to_add_points_to_display_devices="forwardToAddPoints",
 
         _supported_counts_xhr =                null,
+        _group_count_xhr =                     null,
 
         _get_violations_count = function () {
             jQuery.ajax({
@@ -463,7 +464,7 @@ Yukon.DeviceDataMonitor = (function () {
             });
 
             var row_id	= _get_proc_row_id_from_elem_name(row.find('select.f-attribute'));
-            if (_get_state_groups_xhr && _get_state_groups_xhr[row_id] && _supported_counts_xhr[row_id] !== 'undefined') {
+            if (_supported_counts_xhr && _supported_counts_xhr[row_id] && _supported_counts_xhr[row_id] !== 'undefined') {
                 _supported_counts_xhr[row_id].abort();
             }
             _supported_counts_xhr[row_id] = jQuery.ajax({
@@ -586,7 +587,7 @@ Yukon.DeviceDataMonitor = (function () {
             else {                                      // else: refresh ALL state groups
                 _waiting_to_finish_N_before_doing_counts = procs.length;
                 for( var pp=0; pp < procs.length; pp++)
-                    procs[pp].trigger('change');
+                    jQuery(procs[pp]).trigger('change');
             }
         }
     };
