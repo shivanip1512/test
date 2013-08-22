@@ -431,7 +431,7 @@
 <entry key="yukon.web.modules.dr.home.stateHeader.linkText">State</entry>
 <entry key="yukon.web.modules.dr.home.actionsHeader">Actions</entry>
 <entry key="yukon.web.modules.dr.home.loadFormulas">Load Formulas</entry>
-<entry key="yukon.web.modules.dr.home.assignments">Assignments</entry>
+<entry key="yukon.web.modules.dr.home.formulaAssignments">Formula Assignments</entry>
 
 <!-- Demand Response Quick Search -->
 <entry key="yukon.web.modules.dr.searchResults.pageTitle">Demand Response Quick Search</entry>
@@ -576,6 +576,7 @@
 <entry key="yukon.web.modules.dr.formula.appCatId">Id</entry>
 <entry key="yukon.web.modules.dr.formula.appCatType">Type</entry>
 
+<entry key="yukon.web.modules.dr.assignments.pageName">Formula Assignments</entry>
 <entry key="yukon.web.modules.dr.assignments.formulas.title">Formulas</entry>
 <entry key="yukon.web.modules.dr.assignments.noAssignment.label">No assignment</entry>
 <entry key="yukon.web.modules.dr.assignments.formula">Formula</entry>
@@ -591,6 +592,8 @@
 <entry key="yukon.web.modules.dr.assignments.gears.title">Gears</entry>
 <entry key="yukon.web.modules.dr.assignments.applianceCategories.title">Appliance Categories</entry>
 <entry key="yukon.web.modules.dr.assignments.noApplianceCategoriesForUser">No appliance categories available to user</entry>
+<entry key="yukon.web.modules.dr.assignments.noApplianceCategories">No appliance categories</entry>
+<entry key="yukon.web.modules.dr.assignments.noGears">No gears</entry>
 
 <!-- Control Area Detail -->
 <entry key="yukon.web.modules.dr.controlAreaDetail.pageTitle">Control Area {0}</entry>

@@ -84,8 +84,8 @@
                         <a href="${quickLinkUrl}"><i:inline key=".activeLoadGroupsQuickSearch"/></a><br>
                     </div>
                     <div class="column two nogutter">
-                        <a href="/dr/formula/list" class="clearfix dib"><span class="fl"><i:inline key=".loadFormulas"/></span></a>
-                        <a href="/dr/formula/assignments" class="clearfix dib"><span class="fl"><i:inline key=".assignments"/></span></a>
+                        <a href="/dr/formula/list"><span class="fl"><i:inline key=".loadFormulas"/></span></a><br>
+                        <a href="/dr/formula/assignments"><span class="fl"><i:inline key=".formulaAssignments"/></span></a>
                     </div>
                 </div>
             </tags:boxContainer2>

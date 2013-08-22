@@ -61,7 +61,7 @@ public class PickerController {
         SearchResult<?> searchResult =
             picker.search(Lists.newArrayList(initialIds),
                     extraArgs, context);
-        
+
         JSONObject json = getPopulatedJsonObj(searchResult, context);
 
         response.setContentType("application/json");
@@ -71,28 +71,6 @@ public class PickerController {
         }
     }
 
-    public JSONObject getPopulatedJsonObj(SearchResult<?> searchResult, YukonUserContext context) {
-        JSONObject json = new JSONObject();
-        // Here we have special support for maps. This allows us to support enums and resolve displayable objs
-        if (!searchResult.getResultList().isEmpty() && searchResult.getResultList().get(0) instanceof Map) {
-            List<Map<String, String>> newHits = new ArrayList<>();
-            for (Object hitObj : searchResult.getResultList()) {
-                Map<String, String> newHit = new HashMap<>();
-                for (Map.Entry<?, ?> entry : ((Map<?, ?>) hitObj).entrySet()) {
-                    String propertyName = (String) entry.getKey();
-                    Object propertyValue = entry.getValue();
-                    String translatedValue = objectFormattingService.formatObjectAsString(propertyValue, context);
-                    newHit.put(propertyName, translatedValue);
-                }
-                newHits.add(newHit);
-            }
-            searchResult = SearchResult.pageBasedForSubList(searchResult.getCount(),
-                          new SubList<>(newHits, (searchResult.getCurrentPage() - 1) * searchResult.getCount(), searchResult.getHitCount()));
-        }
-        json.put("hits", JSONObject.fromBean(searchResult));
-        return json;
-    }
-    
     @RequestMapping
     public void search(HttpServletResponse response, String type, String ss,
             @RequestParam(value = "start", required = false) String startStr,
@@ -134,6 +112,28 @@ public class PickerController {
         try (PrintWriter out = response.getWriter()) {
             out.print(json.toString());
         }
+    }
+
+    private JSONObject getPopulatedJsonObj(SearchResult<?> searchResult, YukonUserContext context) {
+        JSONObject json = new JSONObject();
+        // Here we have special support for maps. This allows us to support enums and resolve displayable objs
+        if (!searchResult.getResultList().isEmpty() && searchResult.getResultList().get(0) instanceof Map) {
+            List<Map<String, String>> newHits = new ArrayList<>();
+            for (Object hitObj : searchResult.getResultList()) {
+                Map<String, String> newHit = new HashMap<>();
+                for (Map.Entry<?, ?> entry : ((Map<?, ?>) hitObj).entrySet()) {
+                    String propertyName = (String) entry.getKey();
+                    Object propertyValue = entry.getValue();
+                    String translatedValue = objectFormattingService.formatObjectAsString(propertyValue, context);
+                    newHit.put(propertyName, translatedValue);
+                }
+                newHits.add(newHit);
+            }
+            searchResult = SearchResult.pageBasedForSubList(searchResult.getCount(),
+                          new SubList<>(newHits, (searchResult.getCurrentPage() - 1) * searchResult.getCount(), searchResult.getHitCount()));
+        }
+        json.put("hits", JSONObject.fromBean(searchResult));
+        return json;
     }
 
     /**

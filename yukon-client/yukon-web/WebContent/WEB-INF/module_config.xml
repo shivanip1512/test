@@ -463,6 +463,9 @@
               </page>
             </pages>
           </page>
+          <page name="assignments" type="BASIC">
+            <link>/dr/formula/assignments</link>
+          </page>
           <page name="searchResults" type="BASIC" hideSearch="true">
             <link>/dr/search</link>
           </page>

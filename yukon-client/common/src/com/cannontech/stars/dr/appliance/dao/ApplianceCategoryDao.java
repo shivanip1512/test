@@ -27,6 +27,11 @@ public interface ApplianceCategoryDao {
     
     public int getEnergyCompanyForApplianceCategory(int applianceCategoryId);
 
+    /**
+     * Returns a map of applianceCategoryId to energyCompanyId
+     */
+    public Map<Integer, Integer> getEnergyCompanyIdsForApplianceCategoryIds(List<Integer> appCatIds);
+
     public Map<Integer, ApplianceCategory> getByApplianceCategoryIds(Iterable<Integer> applianceCategoryIds);
     
     /**

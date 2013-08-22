@@ -11,6 +11,7 @@ public class ApplianceCategory {
     private ApplianceTypeEnum applianceType;
     private boolean consumerSelectable;
     private int energyCompanyId;
+    private double averageLoad;
 
     private WebConfiguration webConfiguration;
 
@@ -18,26 +19,26 @@ public class ApplianceCategory {
         applianceCategoryId = 0;
         consumerSelectable = true;
         webConfiguration = new WebConfiguration();
+        averageLoad = 0.0;
     }
 
     public ApplianceCategory(int applianceCategoryId, String name, ApplianceTypeEnum applianceType,
-                             boolean consumerSelectable, int energyCompanyId,
+                             boolean consumerSelectable, int energyCompanyId, double averageLoad,
                              WebConfiguration webConfiguration) {
         this.applianceCategoryId = applianceCategoryId;
         this.name = name;
         this.applianceType = applianceType;
         this.consumerSelectable = consumerSelectable;
         this.energyCompanyId = energyCompanyId;
+        this.averageLoad = averageLoad;
         this.webConfiguration = webConfiguration;
     }
 
     public static Comparator<ApplianceCategory> NAME_COMPARATOR = new Comparator<ApplianceCategory>() {
-
         @Override
         public int compare(ApplianceCategory appCat1, ApplianceCategory appCat2) {
             return appCat1.getName().toLowerCase().compareTo(appCat2.getName().toLowerCase());
         }
-        
     };
 
     
@@ -147,5 +148,13 @@ public class ApplianceCategory {
      */
     public ApplianceTypeEnum getApplianceTypeEnum() {
         return applianceType;
+    }
+
+    public double getAverageLoad() {
+        return averageLoad;
+    }
+
+    public void setAverageLoad(double averageLoad) {
+        this.averageLoad = averageLoad;
     }
 }

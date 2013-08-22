@@ -13,7 +13,10 @@
 <cti:msgScope paths="modules.dr.assignments">
     <c:choose>
         <c:when test="${noEnergyCompany}">
-            <span class="error"><i:inline key=".noApplianceCategoriesForUser"/></span>
+            <span class="error empty-list"><i:inline key=".noApplianceCategoriesForUser"/></span>
+        </c:when>
+        <c:when test="${empty pagedAppCats.resultList}">
+            <span class="empty-list"><i:inline key=".noApplianceCategories"/></span>
         </c:when>
         <c:otherwise>
             <table class="compactResultsTable rowHighlighting">
@@ -27,10 +30,17 @@
                 <tfoot></tfoot>
                 <tbody>
                     <c:forEach var="appCatAssignment" items="${pagedAppCats.resultList}">
+                        <c:set var="appCat" value="${appCatAssignment.applianceCategory}"/>
                          <tr>
-                             <td width="33%">${appCatAssignment.applianceCategory.name}</td>
-                             <td width="33%"><i:inline key="${appCatAssignment.applianceCategory.applianceType}"/></td>
-                             <td width="34%" id="formulaPickerRowAppCat_${appCatAssignment.applianceCategory.applianceCategoryId}">
+                             <td width="33%">
+                                <cti:url var="appCatUrl" value="/adminSetup/energyCompany/applianceCategory/view">
+                                    <cti:param name="applianceCategoryId" value="${appCat.applianceCategoryId}"/>
+                                    <cti:param name="ecId" value="${energyCompanyIds[appCat.applianceCategoryId]}"/>
+                                </cti:url>
+                                <a href="${appCatUrl}">${appCat.name}</a>
+                             </td>
+                             <td width="33%"><i:inline key="${appCat.applianceType}"/></td>
+                             <td width="34%" id="formulaPickerRowAppCat_${appCat.applianceCategoryId}">
                                 <%@ include file="_appCatFormulaPicker.jsp" %>
                              </td>
                      </tr>

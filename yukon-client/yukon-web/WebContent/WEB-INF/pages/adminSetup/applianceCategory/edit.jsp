@@ -123,16 +123,14 @@ function assignPrograms(devices) {
 <form:hidden path="energyCompanyId"/>
 <form:hidden path="applianceCategoryId"/>
 <form:hidden path="webConfiguration.configurationId"/>
-<tags:nameValueContainer>
+<tags:nameValueContainer2>
     <cti:displayForPageEditModes modes="CREATE,EDIT">
-        <cti:msg2 var="fieldName" key=".name"/>
-        <tags:nameValue name="${fieldName}" nameColumnWidth="150px">
+        <tags:nameValue2 nameKey=".name" >
             <tags:input id="nameInput" path="name" size="30" maxlength="40"
                 onkeyup="nameChanged()" onblur="nameChanged()"/>
-        </tags:nameValue>
+        </tags:nameValue2>
 
-        <cti:msg2 var="fieldName" key=".displayName"/>
-        <tags:nameValue name="${fieldName}" nameColumnWidth="150px">
+        <tags:nameValue2 nameKey=".displayName" >
             <tags:input id="displayNameInput" path="displayName" size="30" maxlength="100"/>
             <c:set var="selcted" value=""/>
             <c:if test="${applianceCategory.name == applianceCategory.displayName}">
@@ -141,11 +139,10 @@ function assignPrograms(devices) {
             <input id="sameAsName" type="checkbox"${checked}
                 onclick="sameAsNameClicked()"/>
             <label for="sameAsName"><i:inline key=".sameAsName"/></label>
-        </tags:nameValue>
+        </tags:nameValue2>
     </cti:displayForPageEditModes>
 
-    <cti:msg2 var="fieldName" key=".type"/>
-    <tags:nameValue name="${fieldName}" nameColumnWidth="150px">
+    <tags:nameValue2 nameKey=".type" >
         <cti:displayForPageEditModes modes="CREATE,EDIT">
             <form:select path="applianceType">
                 <c:forEach var="applianceType" items="${applianceTypes}">
@@ -158,10 +155,13 @@ function assignPrograms(devices) {
         <cti:displayForPageEditModes modes="VIEW">
             <i:inline key="${applianceCategory.applianceType.formatKey}"/>
         </cti:displayForPageEditModes>
-    </tags:nameValue>
+    </tags:nameValue2>
 
-    <cti:msg2 var="fieldName" key=".icon"/>
-    <tags:nameValue name="${fieldName}" nameColumnWidth="150px">
+    <tags:nameValue2 nameKey=".averageLoad">
+        <tags:input path="averageLoad"/>
+    </tags:nameValue2>
+
+    <tags:nameValue2 nameKey=".icon" >
         <cti:displayForPageEditModes modes="CREATE,EDIT">
             <dr:iconChooser id="iconChooser" path="icon" icons="${icons}"
                 selectedIcon="${applianceCategory.iconEnum}" applianceCategoryIconMode="true"/>
@@ -172,10 +172,9 @@ function assignPrograms(devices) {
                 <img src="<cti:url value="/WebConfig/${applianceCategory.icon}"/>"/>
             </c:if>
         </cti:displayForPageEditModes>
-    </tags:nameValue>
+    </tags:nameValue2>
 
-    <cti:msg2 var="fieldName" key=".description"/>
-    <tags:nameValue name="${fieldName}" nameColumnWidth="150px">
+    <tags:nameValue2 nameKey=".description" >
         <cti:displayForPageEditModes modes="CREATE,EDIT">
             <tags:textarea path="description" cols="40" rows="5"/>
         </cti:displayForPageEditModes>
@@ -186,12 +185,9 @@ function assignPrograms(devices) {
                 <cti:msg2 key=".noDescription"/>
             </c:if>
         </cti:displayForPageEditModes>
-    </tags:nameValue>
+    </tags:nameValue2>
 
-    <c:set var="fieldName">
-        <label for="consumerSelectableCheckbox"><i:inline key=".consumerSelectable"/></label>
-    </c:set>
-    <tags:nameValue name="${fieldName}" nameColumnWidth="150px">
+    <tags:nameValue2 nameKey=".consumerSelectable" >
         <cti:displayForPageEditModes modes="CREATE,EDIT">
             <form:checkbox id="consumerSelectableCheckbox" path="consumerSelectable"/>
             <label for="consumerSelectableCheckbox"><i:inline key=".consumerSelectableDescription"/></label>
@@ -204,8 +200,8 @@ function assignPrograms(devices) {
                 <i:inline key=".isNotConsumerSelectable"/>
             </c:if>
         </cti:displayForPageEditModes>
-    </tags:nameValue>
-</tags:nameValueContainer>
+    </tags:nameValue2>
+</tags:nameValueContainer2>
 
 <cti:displayForPageEditModes modes="VIEW">
     <cti:msg2 var="boxTitle" key=".assignedPrograms"/>

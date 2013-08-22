@@ -268,6 +268,7 @@ public class EstimatedLoadFormulaController {
         }
 
         List<Integer> appCatIds = applianceCategoryDao.getApplianceCategoryIdsByEC(yec.getEnergyCompanyId());
+        Map<Integer, Integer> energyCompanyIds = applianceCategoryDao.getEnergyCompanyIdsForApplianceCategoryIds(appCatIds);
         List<ApplianceCategoryAssignment> appCatAssignments = formulaDao.getAssignmentsForApplianceCategories(appCatIds);
 
         sortAppCatAssignments(appCatAssignments, orderBy, descending, context);
@@ -275,6 +276,7 @@ public class EstimatedLoadFormulaController {
         SearchResult<ApplianceCategoryAssignment> pagedAppCats
             = SearchResult.pageBasedForWholeList(page, itemsPerPage, appCatAssignments);
 
+        model.addAttribute("energyCompanyIds", energyCompanyIds);
         model.addAttribute("appCatOrderBy", orderBy);
         model.addAttribute("appCatDescending", descending);
         model.addAttribute("pagedAppCats", pagedAppCats);
