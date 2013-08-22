@@ -16,10 +16,10 @@
             <span class="empty-list"><i:inline key=".noGears"/></span>
         </c:when>
         <c:otherwise>
-            <table class="compactResultsTable rowHighlighting">
+            <table class="compactResultsTable rowHighlighting sortable-table">
                 <thead>
                     <tr>
-                        <th width="33%"><tags:sortLink nameKey="name" baseUrl="${sortUrl}" fieldName="NAME" sortParam="orderBy" styleClass="f-sortLink" isDefault="true" /></th>
+                        <th width="33%"><tags:sortLink nameKey="name" baseUrl="${sortUrl}" fieldName="NAME" sortParam="orderBy" styleClass="f-sortLink" isDefault="true"/></th>
                         <th width="33%"><tags:sortLink nameKey="gearControlMethod" baseUrl="${sortUrl}" fieldName="CONTROL_METHOD" sortParam="orderBy" styleClass="f-sortLink"/></th>
                         <th width="34%"><tags:sortLink nameKey="formula" baseUrl="${sortUrl}" fieldName="IS_ASSIGNED" sortParam="orderBy" styleClass="f-sortLink"/></th>
                     </tr>

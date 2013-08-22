@@ -19,7 +19,7 @@
             <span class="empty-list"><i:inline key=".noApplianceCategories"/></span>
         </c:when>
         <c:otherwise>
-            <table class="compactResultsTable rowHighlighting">
+            <table class="compactResultsTable rowHighlighting sortable-table">
                 <thead>
                     <tr>
                         <th width="33%"><tags:sortLink nameKey="name" baseUrl="${sortUrl}" fieldName="NAME" sortParam="orderBy" styleClass="f-sortLink" isDefault="true" /></th>
