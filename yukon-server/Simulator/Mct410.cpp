@@ -27,7 +27,6 @@ bool Mct410Sim::_behaviorsInited = false;
 //  To be deleted when we move functions to a shared location.
 struct mct410_utility : private Devices::Mct410Device
 {
-    using Mct410Device::makeDynamicDemand;
     using Mct410Device::crc8;
 };
 
@@ -912,7 +911,7 @@ int Mct410Sim::getDynamicDemand(const unsigned address, const unsigned demandInt
 
     const double diffWh = (demand_hwh_end - demand_hwh_begin) * 100.0;
 
-    return mct410_utility::makeDynamicDemand(diffWh);
+    return Devices::Mct410Device::Utility::makeDynamicDemand(diffWh);
 }
 
 void Mct410Sim::writeNewPeakDemand(const int dynamicDemand, const unsigned seconds)
@@ -1137,7 +1136,7 @@ void Mct410Sim::appendCalculatedLpValue(const double consumptionWs, byte_appende
 {
     double consumptionWh = consumptionWs / SecondsPerHour;
 
-    int dynamicDemand = mct410_utility::makeDynamicDemand(consumptionWh);
+    int dynamicDemand = Devices::Mct410Device::Utility::makeDynamicDemand(consumptionWh);
 
     *out_itr++ = dynamicDemand >> 8;
     *out_itr++ = dynamicDemand >> 0;

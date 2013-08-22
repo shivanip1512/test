@@ -287,7 +287,7 @@ BOOST_AUTO_TEST_CASE( test_peak_demand )
         {  42, 3600, lastFreeze.seconds(), nowTime, { 0x2000 | 2200, 1338123600 } },
         { 999,  300, lastFreeze.seconds(), nowTime, { 0x2000 | 3800, 1338120300 } },
         { 999,  900, lastFreeze.seconds(), nowTime, { 0x1000 | 1140, 1338120900 } },
-        { 999, 3600, lastFreeze.seconds(), nowTime, {        0xffff, 1338123600 } },
+        { 999, 3600, lastFreeze.seconds(), nowTime, {           454, 1338123600 } },
     };
 
     std::vector<testMct410Sim::test_peak_demand_t> result, expected;

@@ -3429,4 +3429,44 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Function_Read_3Dwords)
        expected.begin(), expected.end());
 }
 
+BOOST_AUTO_TEST_CASE(test_makeDynamicDemand)
+{
+    // Range: Under 0.0 Wh
+    BOOST_CHECK_EQUAL(Cti::Devices::Mct410Device::Utility::makeDynamicDemand(    -1.0),    -1);
+
+    // Range: 0.0 Wh - 400.0 Wh
+    BOOST_CHECK_EQUAL(Cti::Devices::Mct410Device::Utility::makeDynamicDemand(     0.0),     0);
+    BOOST_CHECK_EQUAL(Cti::Devices::Mct410Device::Utility::makeDynamicDemand(   400.0), 16288);
+
+    // Between endpoints, check rounding
+    BOOST_CHECK_EQUAL(Cti::Devices::Mct410Device::Utility::makeDynamicDemand(   400.4),  8592);
+    BOOST_CHECK_EQUAL(Cti::Devices::Mct410Device::Utility::makeDynamicDemand(   400.5),  8593);
+    BOOST_CHECK_EQUAL(Cti::Devices::Mct410Device::Utility::makeDynamicDemand(   400.6),  8593);
+
+    // Range: 401.0 Wh - 4,000.0 Wh
+    BOOST_CHECK_EQUAL(Cti::Devices::Mct410Device::Utility::makeDynamicDemand(   401.0),  8593);
+    BOOST_CHECK_EQUAL(Cti::Devices::Mct410Device::Utility::makeDynamicDemand(  4000.0), 12192);
+
+    // Between endpoints, check rounding
+    BOOST_CHECK_EQUAL(Cti::Devices::Mct410Device::Utility::makeDynamicDemand(  4004.0),  4496);
+    BOOST_CHECK_EQUAL(Cti::Devices::Mct410Device::Utility::makeDynamicDemand(  4005.0),  4497);
+    BOOST_CHECK_EQUAL(Cti::Devices::Mct410Device::Utility::makeDynamicDemand(  4006.0),  4497);
+
+    // Range: 4,010.0 Wh - 40,000.0 Wh
+    BOOST_CHECK_EQUAL(Cti::Devices::Mct410Device::Utility::makeDynamicDemand(  4010.0),  4497);
+    BOOST_CHECK_EQUAL(Cti::Devices::Mct410Device::Utility::makeDynamicDemand( 40000.0),  8096);
+
+    // Between endpoints, check rounding
+    BOOST_CHECK_EQUAL(Cti::Devices::Mct410Device::Utility::makeDynamicDemand( 40040.0),   400);
+    BOOST_CHECK_EQUAL(Cti::Devices::Mct410Device::Utility::makeDynamicDemand( 40050.0),   401);
+    BOOST_CHECK_EQUAL(Cti::Devices::Mct410Device::Utility::makeDynamicDemand( 40060.0),   401);
+
+    // Range: 40,100.0 Wh - 409,500.0 Wh
+    BOOST_CHECK_EQUAL(Cti::Devices::Mct410Device::Utility::makeDynamicDemand( 40100.0),   401);
+    BOOST_CHECK_EQUAL(Cti::Devices::Mct410Device::Utility::makeDynamicDemand(409500.0),  4095);
+
+    // Range: Over 409,500.0 Wh
+    BOOST_CHECK_EQUAL(Cti::Devices::Mct410Device::Utility::makeDynamicDemand(409501.0),    -1);
+}
+
 BOOST_AUTO_TEST_SUITE_END()

@@ -369,8 +369,6 @@ protected:
 
     point_info getData(const unsigned char *buf, const unsigned len, const ValueType410 vt) const;
 
-    static int makeDynamicDemand(double input);
-
     long getLoadProfileInterval(unsigned channel);
     point_info getLoadProfileData(unsigned channel, long interval_len, const unsigned char *buf, unsigned len);
 
@@ -432,6 +430,11 @@ protected:
     void sendIntervals( OUTMESS *&OutMessage, OutMessageList &outList );
 
 public:
+
+    struct IM_EX_DEVDB Utility
+    {
+        static int makeDynamicDemand(double input);
+    };
 
     enum
     {

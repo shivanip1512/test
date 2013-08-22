@@ -59,6 +59,7 @@ test_cmd_rfn_LoadProfile.obj \
 test_cmd_rfn_TouConfiguration.obj \
 test_cmd_device.obj \
 test_cmd_mct410_hourlyread.obj \
+test_cmd_mct410_disconnectConfiguration.obj \
 test_cmd_mct420_hourlyread.obj \
 test_cmd_mct420_LcdConfiguration.obj \
 test_cmd_lcr3102_tamperRead.obj \
