@@ -58,12 +58,12 @@ Mct410DisconnectConfigurationCommand::Mct410DisconnectConfigurationCommand() :
 {
 }
 
-DlcCommand::request_ptr Mct410DisconnectConfigurationCommand::execute(const CtiTime now)
+DlcCommand::request_ptr Mct410DisconnectConfigurationCommand::executeCommand(const CtiTime now)
 {
     return doCommand();
 }
 
-DlcCommand::request_ptr Mct410DisconnectConfigurationCommand::decode(const CtiTime now, const unsigned function, const boost::optional<Bytes> &payload, std::string &description, std::vector<point_data> &points)
+DlcCommand::request_ptr Mct410DisconnectConfigurationCommand::decodeCommand(const CtiTime now, const unsigned function, const boost::optional<Bytes> &payload, std::string &description, std::vector<point_data> &points)
 {
     // Nothing to decode for this message.
     return doCommand();

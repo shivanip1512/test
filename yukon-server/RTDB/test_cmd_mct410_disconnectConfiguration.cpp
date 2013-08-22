@@ -22,7 +22,7 @@ BOOST_AUTO_TEST_CASE(test_command_payload)
         const std::vector<unsigned char> expected = boost::assign::list_of
             (0x00)(0x00)(0x00)(0x00)(0x00)(0x05)(0x05)(0x05)(0x40);
 
-        DlcCommand::request_ptr r = disconnectCommand.execute(execute_time);
+        DlcCommand::request_ptr r = disconnectCommand.executeCommand(execute_time);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
@@ -44,7 +44,7 @@ BOOST_AUTO_TEST_CASE(test_command_payload)
         const std::vector<unsigned char> expected = boost::assign::list_of
             (0x04)(0x08)(0x15)(0x02)(0x9b)(0x0a)(0x03c)(0x3c)(0x44);
 
-        DlcCommand::request_ptr r = disconnectCommand.execute(execute_time);
+        DlcCommand::request_ptr r = disconnectCommand.executeCommand(execute_time);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
