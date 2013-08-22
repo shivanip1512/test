@@ -1,25 +1,8 @@
-/*-----------------------------------------------------------------------------
-    Filename:  ccclientconn.cpp
-
-    Programmer:  Josh Wolberg
-
-    Description: Source file for CtiCCClientConnection
-
-    Initial Date:  9/04/2001
-
-    COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2001
------------------------------------------------------------------------------*/
 #include "precompiled.h"
 
-#include "ccclientconn.h"
-#include "ccmessage.h"
-#include "ccexecutor.h"
-#include "ccsubstationbusstore.h"
-#include "ctibase.h"
 #include "capcontroller.h"
 #include "logger.h"
-#include "utility.h"
-#include "thread_monitor.h"
+#include "ccclientconn.h"
 
 using namespace std;
 
