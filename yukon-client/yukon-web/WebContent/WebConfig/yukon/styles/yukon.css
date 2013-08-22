@@ -292,6 +292,10 @@ table.nowrap th,table.nowrap td {
 	margin-right: 5px;
 }
 
+.compactResultsTable.with-footer {
+	border-bottom: 1px solid #cccccc;
+}
+
 .compactResultsPaging {
 	border-top: 1px solid #ccc;
 }
