@@ -2,7 +2,9 @@ package com.cannontech.dr.estimatedload.dao;
 
 import java.util.List;
 
+import com.cannontech.dr.estimatedload.ApplianceCategoryAssignment;
 import com.cannontech.dr.estimatedload.Formula;
+import com.cannontech.dr.estimatedload.GearAssignment;
 
 public interface FormulaDao {
 
@@ -19,29 +21,35 @@ public interface FormulaDao {
      * Saves appliance category ID's as assignments for formula
      */
     public void saveAppCategoryAssignmentsForId(int formulaId, List<Integer> appCategoryIds);
+    /**
+     * Will unassign this appCategory from any formula (if currently assigned) then
+     * add this assignment to the list of assignments for this formula
+     */
+    public void saveAppCategoryAssignmentForId(int formulaId, int appCategoryAssignment);
+    public void unassignAppCategory(int appCategoryId);
 
     /**
      * Returns a set of appliance category ID's which are assigned to this formulaId
      */
-    public List<Integer> getAppCategoryAssignmentsById(int formulaId);
+    public List<Integer> getAppCategoryAssignmentIds(int formulaId);
+    public List<ApplianceCategoryAssignment> getAssignmentsForApplianceCategories(List<Integer> appCategoryIds);
+    public ApplianceCategoryAssignment getAssignmentForApplianceCategory(int appCategoryId);
 
-    /** 
+    /**
      * Saves appliance category ID's as assignments for formula
      */
     public void saveGearAssignmentsForId(int formulaId, List<Integer> appCategoryIds);
-
+    /**
+     * Will unassign this gear from any formula (if currently assigned) then
+     * add this assignment to the list of assignments for this formula
+     */
+    public void saveGearAssignmentForId(int formulaId, int gearId);
+    public void unassignGear(int gearId);
+    
     /**
      * Returns a set of appliance category ID's which are assigned to this formulaId
      */
-    public List<Integer> getGearAssignmentsById(int formulaId);
-
-//    public Map<Integer, Integer> getAllAppCategories();
-//    public List<ApplianceCategory> getAllUnassignedAppCategories();
-
-    /** Returns all LMProgramDirectGears with assignments mapped to null if no assignment */
-//    public Map<LMProgramDirectGear, Integer> getAllGears();
-//    public List<LMProgramDirectGear> getGearAssignmentsById(int formulaId);
-//    public void saveGearAssignmentsForId(int formulaId, Set<Integer> gearAssignments);
-//    public List<LMProgramDirectGear> getAllUnassignedGears();
-
+    public List<Integer> getGearAssignmentIds(int formulaId);
+    public List<GearAssignment> getAssignmentsForGears(Iterable<Integer> gearIds);
+    public GearAssignment getAssignmentForGear(int gearId);
 }

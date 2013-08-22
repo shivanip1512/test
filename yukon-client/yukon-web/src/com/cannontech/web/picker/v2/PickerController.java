@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 
 import net.sf.jsonOLD.JSONObject;
@@ -55,27 +54,49 @@ public class PickerController {
 
     @RequestMapping
     public void idSearch(HttpServletResponse response, String type,
-            Integer[] initialIds, String extraArgs, YukonUserContext userContext)
+            Integer[] initialIds, String extraArgs, YukonUserContext context)
             throws IOException {
         Picker<?> picker = pickerService.getPicker(type);
 
-        SearchResult<?> hits =
+        SearchResult<?> searchResult =
             picker.search(Lists.newArrayList(initialIds),
-                    extraArgs, userContext);
-        JSONObject object = new JSONObject();
-        object.put("hits", JSONObject.fromBean(hits));
+                    extraArgs, context);
+        
+        JSONObject json = getPopulatedJsonObj(searchResult, context);
 
         response.setContentType("application/json");
-        PrintWriter out = response.getWriter();
-        out.print(object.toString());
-        out.close();
+
+        try (PrintWriter out = response.getWriter()) {
+            out.print(json.toString());
+        }
     }
 
+    public JSONObject getPopulatedJsonObj(SearchResult<?> searchResult, YukonUserContext context) {
+        JSONObject json = new JSONObject();
+        // Here we have special support for maps. This allows us to support enums and resolve displayable objs
+        if (!searchResult.getResultList().isEmpty() && searchResult.getResultList().get(0) instanceof Map) {
+            List<Map<String, String>> newHits = new ArrayList<>();
+            for (Object hitObj : searchResult.getResultList()) {
+                Map<String, String> newHit = new HashMap<>();
+                for (Map.Entry<?, ?> entry : ((Map<?, ?>) hitObj).entrySet()) {
+                    String propertyName = (String) entry.getKey();
+                    Object propertyValue = entry.getValue();
+                    String translatedValue = objectFormattingService.formatObjectAsString(propertyValue, context);
+                    newHit.put(propertyName, translatedValue);
+                }
+                newHits.add(newHit);
+            }
+            searchResult = SearchResult.pageBasedForSubList(searchResult.getCount(),
+                          new SubList<>(newHits, (searchResult.getCurrentPage() - 1) * searchResult.getCount(), searchResult.getHitCount()));
+        }
+        json.put("hits", JSONObject.fromBean(searchResult));
+        return json;
+    }
+    
     @RequestMapping
     public void search(HttpServletResponse response, String type, String ss,
             @RequestParam(value = "start", required = false) String startStr,
-            Integer count, String extraArgs, YukonUserContext userContext)
-            throws ServletException, IOException {
+            Integer count, String extraArgs, YukonUserContext context) throws IOException {
         int start = NumberUtils.toInt(startStr, 0);
         count = count == null ? 20 : count;
         if (count == -1) {
@@ -83,51 +104,36 @@ public class PickerController {
         }
 
         Picker<?> picker = pickerService.getPicker(type);
-        SearchResult<?> searchHits = picker.search(ss, start, count, extraArgs, userContext);
+        SearchResult<?> searchResult = picker.search(ss, start, count, extraArgs, context);
 
         response.setContentType("application/json");
 
-        JSONObject object = new JSONObject();
-        if (!searchHits.getResultList().isEmpty() && searchHits.getResultList().get(0) instanceof Map) {
-            List<Map<String, String>> newHits = new ArrayList<>();
-            for (Object hitObj : searchHits.getResultList()) {
-                Map<String, String> newHit = new HashMap<>();
-                for (Map.Entry<?, ?> entry : ((Map<?, ?>) hitObj).entrySet()) {
-                    String propertyName = (String) entry.getKey();
-                    Object propertyValue = entry.getValue();
-                    String translatedValue = objectFormattingService.formatObjectAsString(propertyValue, userContext);
-                    newHit.put(propertyName, translatedValue);
-                }
-                newHits.add(newHit);
-            }
-            searchHits = SearchResult.pageBasedForSubList(searchHits.getCount(),
-                          new SubList<>(newHits, (searchHits.getCurrentPage() - 1) * searchHits.getCount(), searchHits.getHitCount()));
-        }
-        object.put("hits", JSONObject.fromBean(searchHits));
+        JSONObject json = getPopulatedJsonObj(searchResult, context);
 
         MessageSourceAccessor messageSourceAccessor = 
-            messageSourceResolver.getMessageSourceAccessor(userContext);
+            messageSourceResolver.getMessageSourceAccessor(context);
         MessageSourceResolvable resolvable =
             new YukonMessageSourceResolvable("yukon.common.paging.viewing",
-                                             searchHits.getStartIndex() + 1,
-                                             searchHits.getEndIndex(),
-                                             searchHits.getHitCount());
-        object.put("pages", messageSourceAccessor.getMessage(resolvable));
+                                             searchResult.getStartIndex() + 1,
+                                             searchResult.getEndIndex(),
+                                             searchResult.getHitCount());
+        json.put("pages", messageSourceAccessor.getMessage(resolvable));
 
         resolvable =
             new YukonMessageSourceResolvable("yukon.web.picker.selectAllPages",
-                                             searchHits.getHitCount());
-        object.put("selectAllPages", messageSourceAccessor.getMessage(resolvable));
+                                             searchResult.getHitCount());
+        json.put("selectAllPages", messageSourceAccessor.getMessage(resolvable));
 
         resolvable =
             new YukonMessageSourceResolvable("yukon.web.picker.allPagesSelected",
-                                             searchHits.getHitCount());
-        object.put("allPagesSelected", messageSourceAccessor.getMessage(resolvable));
+                                             searchResult.getHitCount());
+        json.put("allPagesSelected", messageSourceAccessor.getMessage(resolvable));
 
         response.setContentType("application/json");
-        PrintWriter out = response.getWriter();
-        out.print(object.toString());
-        out.close();
+
+        try (PrintWriter out = response.getWriter()) {
+            out.print(json.toString());
+        }
     }
 
     /**

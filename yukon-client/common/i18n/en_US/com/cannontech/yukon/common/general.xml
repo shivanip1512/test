@@ -134,6 +134,8 @@
 <entry key="yukon.common.console">Console</entry>
 <entry key="yukon.common.file">File</entry>
 
+<entry key="yukon.common.view">view</entry>
+
 <entry key="yukon.common.search.noResultsFound">No results found.</entry>
 
 <entry key="yukon.common.file1">File 1</entry>

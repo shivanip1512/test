@@ -435,7 +435,7 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
                 jQuery(extraDestSelector).html(value);
             }
         }
-        if (this.endAction) {
+        if (this.endAction && !isInitial) {
             this.endAction(this.selectedItems, this);
         }
         return true;

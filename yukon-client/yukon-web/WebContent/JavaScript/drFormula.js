@@ -246,6 +246,17 @@ Yukon.DrFormula = (function() {
         });
     },
 
+    _ajaxPagingBtnClick = function(event) {
+        var url = jQuery(event.currentTarget).data('url');
+        jQuery(event.target).parents(".f-replaceViaAjax").load(url);
+        return false;
+    },
+
+    _sortBtnClick = function(event) {
+        jQuery(event.target).parents(".f-replaceViaAjax").load(this.href);
+        return false;
+    },
+
     drFormulaModule = {
         init: function () {
             if (_initialized) {
@@ -271,6 +282,9 @@ Yukon.DrFormula = (function() {
                 .on("click", ".f-newEntryButton", _addTableEntryBtnClick);
             jQuery("#formulaForm")
                 .submit(_beforeFormSubmit);
+            jQuery(".f-replaceViaAjax")
+                .on('click', '.f-ajaxPaging', _ajaxPagingBtnClick)
+                .on('click', ".f-sortLink", _sortBtnClick);
 
             _initialized = true;
         },
@@ -301,13 +315,50 @@ Yukon.DrFormula = (function() {
                 }
             }
             picker.excludeIds = choosenIds;
+        },
+
+        appCatFormulaPickerClose : function(selectedFormula, picker) {
+            var appCatId = picker.pickerId.split("_").pop();
+            var unassign = false;
+            var formulaId = 0;
+
+            if (selectedFormula.length < 1) {
+                unassign = true;
+            } else {
+                formulaId = selectedFormula[0].formulaId;
+            }
+
+            jQuery.ajax("assignFormulaToAppCat", {
+                data: {'appCatId' : appCatId, 'formulaId' : formulaId, 'unassign' : unassign}
+            })
+            .done(function(data) {
+                jQuery("#formulaPickerRowAppCat_"+appCatId).html(data).flashYellow(.75);
+            });
+        },
+
+        gearFormulaPickerClose : function(selectedFormula, picker) {
+            var gearId = picker.pickerId.split("_").pop();
+            var unassign = false;
+            var formulaId = 0;
+
+            if (selectedFormula.length < 1) {
+                unassign = true;
+            } else {
+                formulaId = selectedFormula[0].formulaId;
+            }
+
+            jQuery.ajax("assignFormulaToGear", {
+                data: {'gearId' : gearId, 'formulaId' : formulaId, 'unassign' : unassign}
+            })
+            .done(function(data) {
+                jQuery("#formulaPickerRowGear_"+gearId).html(data).flashYellow(.75);
+            });
         }
     };
     return drFormulaModule;
 }());
 
 jQuery(function() {
-
     Yukon.DrFormula.init();
 
     jQuery("#assignments").on("mouseenter", ".f-show-on-hover-target", function() {

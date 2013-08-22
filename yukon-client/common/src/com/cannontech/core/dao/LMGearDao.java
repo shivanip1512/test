@@ -33,4 +33,6 @@ public interface LMGearDao {
 
     public Map<Integer, LMProgramDirectGear> getByGearIds(Iterable<Integer> gearIds);
 
+    public Map<Integer, LMProgramDirectGear> getAllGears();
+
 }

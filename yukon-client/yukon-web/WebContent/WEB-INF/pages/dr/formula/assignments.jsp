@@ -9,7 +9,15 @@
 <%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog"%>
 
 <cti:standardPage module="dr" page="assignments">
-Under Construction<br>
-<br>
-Coming <span style="color:red">C</span><span style="color:green">h</span><span style="color:red">r</span><span style="color:green">i</span><span style="color:red">s</span><span style="color:green">t</span><span style="color:red">m</span><span style="color:green">a</span><span style="color:red">s</span> 2002!
+    <cti:includeScript link="/JavaScript/drFormula.js"/>
+    <tags:formElementContainer nameKey="applianceCategories">
+	     <div class="f-replaceViaAjax">
+	        <%@ include file="_appCatAssignmentsTable.jsp" %>
+	     </div>
+     </tags:formElementContainer>
+     <tags:formElementContainer nameKey="gears">
+	     <div class="f-replaceViaAjax">
+	        <%@ include file="_gearAssignmentsTable.jsp" %>
+	     </div>
+     </tags:formElementContainer>
 </cti:standardPage>

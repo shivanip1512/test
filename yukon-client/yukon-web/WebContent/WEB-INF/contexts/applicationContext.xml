@@ -1777,6 +1777,8 @@
     <bean name="assignedProgramPicker" class="com.cannontech.web.picker.v2.AssignedProgramPicker"/>
     <bean name="unassignedApplianceCategoryPicker" class="com.cannontech.web.picker.v2.UnassignedApplianceCategoryPicker"/>
     <bean name="unassignedGearPicker" class="com.cannontech.web.picker.v2.UnassignedGearPicker"/>
+    <bean name="appCatFormulaPicker" class="com.cannontech.web.picker.v2.AppCatFormulaPicker"/>
+    <bean name="gearFormulaPicker" class="com.cannontech.web.picker.v2.GearFormulaPicker"/>
 
     <bean name="lmProgramPicker" class="com.cannontech.web.picker.v2.LmProgramPicker">
     	<property name="permission" value="LM_VISIBLE"/>

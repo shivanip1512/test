@@ -550,6 +550,7 @@
 <entry key="yukon.web.modules.dr.formula.noPointSelected">No point selected</entry>
 <entry key="yukon.web.modules.dr.formula.noAssignments">No assignments</entry>
 <entry key="yukon.web.modules.dr.formula.assignments.title">Assignments</entry>
+<entry key="yukon.web.modules.dr.formula.assignments">Assignments</entry>
 
 <entry key="yukon.web.modules.dr.formula.error.inputMaxUnderMin">Input Max must be greater than Input Min.</entry>
 <entry key="yukon.web.modules.dr.formula.error.inputMinOverMax">Input Min must be lower than Input Max.</entry>
@@ -561,6 +562,7 @@
 <entry key="yukon.web.modules.dr.formula.error.invalidPoint">Invalid Point</entry>
 <entry key="yukon.web.modules.dr.formula.success.updated">Formula {0} updated successfully.</entry>
 <entry key="yukon.web.modules.dr.formula.success.created">Formula {0} created successfully.</entry>
+<entry key="yukon.web.modules.dr.formula.success.deleted">Formula deleted successfully.</entry>
 <entry key="yukon.web.modules.dr.formula.noFunctions">No functions</entry>
 <entry key="yukon.web.modules.dr.formula.noTables">No lookup tables</entry>
 
@@ -575,7 +577,20 @@
 <entry key="yukon.web.modules.dr.formula.appCatType">Type</entry>
 
 <entry key="yukon.web.modules.dr.assignments.formulas.title">Formulas</entry>
-
+<entry key="yukon.web.modules.dr.assignments.noAssignment.label">No assignment</entry>
+<entry key="yukon.web.modules.dr.assignments.formula">Formula</entry>
+<entry key="yukon.web.modules.dr.assignments.formula.linkText">Formula</entry>
+<entry key="yukon.web.modules.dr.assignments.name">Name</entry>
+<entry key="yukon.web.modules.dr.assignments.name.linkText">Name</entry>
+<entry key="yukon.web.modules.dr.assignments.gearId">Gear Id</entry>
+<entry key="yukon.web.modules.dr.assignments.gearControlMethod">Control Method</entry>
+<entry key="yukon.web.modules.dr.assignments.gearControlMethod.linkText">Control Method</entry>
+<entry key="yukon.web.modules.dr.assignments.appCatId">Id</entry>
+<entry key="yukon.web.modules.dr.assignments.appCatType">Type</entry>
+<entry key="yukon.web.modules.dr.assignments.appCatType.linkText">Type</entry>
+<entry key="yukon.web.modules.dr.assignments.gears.title">Gears</entry>
+<entry key="yukon.web.modules.dr.assignments.applianceCategories.title">Appliance Categories</entry>
+<entry key="yukon.web.modules.dr.assignments.noApplianceCategoriesForUser">No appliance categories available to user</entry>
 
 <!-- Control Area Detail -->
 <entry key="yukon.web.modules.dr.controlAreaDetail.pageTitle">Control Area {0}</entry>

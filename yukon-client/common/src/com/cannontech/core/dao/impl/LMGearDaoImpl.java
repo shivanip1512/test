@@ -81,6 +81,23 @@ public class LMGearDaoImpl implements LMGearDao {
     }
 
     @Override
+    public Map<Integer, LMProgramDirectGear> getAllGears() {
+        LMProgramDirectGearRowMapper gearMapper = new LMProgramDirectGearRowMapper();
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append(gearMapper.getBaseQuery());
+
+        List<LMProgramDirectGear> gears = yukonJdbcTemplate.query(sql, gearMapper);
+
+        Map<Integer, LMProgramDirectGear> gearMap = Maps.newHashMap();
+        for (LMProgramDirectGear gear : gears) {
+            gearMap.put(gear.getYukonID(), gear);
+        }
+
+        return gearMap;
+    }
+
+    @Override
     public Map<Integer, LMProgramDirectGear> getByGearIds(Iterable<Integer> gearIds) {
         LMProgramDirectGearRowMapper gearMapper = new LMProgramDirectGearRowMapper();
 

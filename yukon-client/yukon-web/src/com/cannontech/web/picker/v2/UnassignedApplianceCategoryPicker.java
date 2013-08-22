@@ -1,20 +1,33 @@
 package com.cannontech.web.picker.v2;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.cannontech.common.bulk.filter.AbstractRowMapperWithBaseQuery;
+import com.cannontech.common.bulk.filter.PostProcessingFilter;
+import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.EnergyCompanyNotFoundException;
 import com.cannontech.database.YukonResultSet;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
 import com.cannontech.stars.dr.appliance.model.ApplianceTypeEnum;
 import com.cannontech.stars.energyCompany.EcMappingCategory;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
+import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 
 public class UnassignedApplianceCategoryPicker extends DatabasePicker<Map<String, Object>> {
+
+    @Autowired private ApplianceCategoryDao applianceCategoryDao;
+    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
 
     private final static String[] searchColumnNames = new String[] {
         "ac.applianceCategoryId", "ac.description", "yle.yukonDefinitionId"
@@ -31,6 +44,37 @@ public class UnassignedApplianceCategoryPicker extends DatabasePicker<Map<String
         outputColumns = Collections.unmodifiableList(columns);
     }
 
+    @Override
+    protected void updateFilters(List<SqlFilter> sqlFilters,
+            List<PostProcessingFilter<Map<String, Object>>> postProcessingFilters, String extraArgs,
+            final YukonUserContext userContext) {
+
+        postProcessingFilters.add(new PostProcessingFilter<Map<String,Object>>() {
+            @Override
+            public List<Map<String, Object>> process(List<Map<String, Object>> objectsFromDb) {
+                List<Map<String, Object>> validAppliancesForEc = new ArrayList<>();
+
+                YukonEnergyCompany yec;
+                try {
+                    yec = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
+                } catch (EnergyCompanyNotFoundException e) {
+                    return validAppliancesForEc;
+                }
+
+               List<Integer> applianceCategoryIds
+                   = applianceCategoryDao.getApplianceCategoryIdsByEC(yec.getEnergyCompanyId());
+
+                for (Map<String, Object> map : objectsFromDb) {
+                    int id = (int) map.get("applianceCategoryId");
+                    if (applianceCategoryIds.contains(id)) {
+                        validAppliancesForEc.add(map);
+                    }
+                }
+                return validAppliancesForEc;
+            }
+        });
+    }
+    
     public UnassignedApplianceCategoryPicker() {
         super(new UnassignedApplianceCategoryRowMapper(), searchColumnNames);
     }

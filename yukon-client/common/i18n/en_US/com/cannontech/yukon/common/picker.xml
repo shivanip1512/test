@@ -102,6 +102,14 @@
 <entry key="yukon.web.picker.unassignedApplianceCategoryPicker.applianceType">Appliance Type</entry>
 <entry key="yukon.web.picker.unassignedApplianceCategoryPicker.dialogTitle">Select an Appliance Category</entry>
 
+<entry key="yukon.web.picker.appCatFormulaPicker.name">Name</entry>
+<entry key="yukon.web.picker.appCatFormulaPicker.calculationType">Calculation Type</entry>
+<entry key="yukon.web.picker.appCatFormulaPicker.dialogTitle">Assign a Formula</entry>
+
+<entry key="yukon.web.picker.gearFormulaPicker.name">Name</entry>
+<entry key="yukon.web.picker.gearFormulaPicker.calculationType">Calculation Type</entry>
+<entry key="yukon.web.picker.gearFormulaPicker.dialogTitle">Assign a Formula</entry>
+
 <!-- Available Switch Picker -->
 <entry key="yukon.web.picker.availableSwitchPicker.dialogTitle">Select A Switch</entry>
 <entry key="yukon.web.picker.switch.serialNumber">Serial Number</entry>

@@ -2,6 +2,7 @@ package com.cannontech.dr.estimatedload.dao.impl;
 
 import java.beans.PropertyEditor;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -12,12 +13,14 @@ import javax.annotation.PostConstruct;
 import org.apache.log4j.Logger;
 import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.SqlFragment;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.LMGearDao;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.RowMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
@@ -26,12 +29,18 @@ import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.dr.estimatedload.ApplianceCategoryAssignment;
 import com.cannontech.dr.estimatedload.Formula;
 import com.cannontech.dr.estimatedload.FormulaFunction;
 import com.cannontech.dr.estimatedload.FormulaInput;
 import com.cannontech.dr.estimatedload.FormulaInput.InputType;
 import com.cannontech.dr.estimatedload.FormulaLookupTable;
+import com.cannontech.dr.estimatedload.GearAssignment;
 import com.cannontech.dr.estimatedload.dao.FormulaDao;
+import com.cannontech.dr.estimatedload.dao.FormulaNotFoundException;
+import com.cannontech.loadcontrol.data.LMProgramDirectGear;
+import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
+import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -41,6 +50,8 @@ public class FormulaDaoImpl implements FormulaDao {
     private final Logger log = YukonLogManager.getLogger(FormulaDaoImpl.class);
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private ApplianceCategoryDao applianceCategoryDao;
+    @Autowired private LMGearDao gearDao;
 
     private static SimpleTableAccessTemplate<Formula> formulaInsertTemplate;
     private static SimpleTableAccessTemplate<FormulaFunction> functionInsertTemplate;
@@ -505,25 +516,65 @@ public class FormulaDaoImpl implements FormulaDao {
                 .setPrimaryKeyValidOver(0);
     }
 
+    private boolean doesFormulaExist(int formulaId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+
+        sql.append("SELECT 1 FROM").append(formulaTableName);
+        sql.append("WHERE EstimatedLoadFormulaId ").eq(formulaId);
+
+        try {
+            yukonJdbcTemplate.queryForInt(sql);
+            return true;
+        } catch(EmptyResultDataAccessException e) {
+            return false;
+        }
+    }
+    
     @Override
     public void saveAppCategoryAssignmentsForId(int formulaId, List<Integer> appCategoryAssignments) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("DELETE FROM EstimatedLoadFormulaAssignment");
+        sql.append("DELETE FROM").append(assignmentTableName);
         sql.append("WHERE EstimatedLoadFormulaId ").eq(formulaId);
         yukonJdbcTemplate.update(sql);
 
         for (Integer assignId : appCategoryAssignments) {
             sql = new SqlStatementBuilder();
-            sql.append("INSERT INTO EstimatedLoadFormulaAssignment");
+            sql.append("INSERT INTO").append(assignmentTableName);
             sql.append("(FormulaAssignmentId, EstimatedLoadFormulaId, ApplianceCategoryId)");
             sql.values(nextValueHelper.getNextValue("EstimatedLoadFormulaAssignment"),formulaId, assignId);
-
             yukonJdbcTemplate.update(sql);
         }
     }
 
     @Override
-    public List<Integer> getAppCategoryAssignmentsById(int formulaId) {
+    public void unassignAppCategory(int appCategoryId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM").append(assignmentTableName);
+        sql.append("WHERE ApplianceCategoryId").eq(appCategoryId);
+        yukonJdbcTemplate.update(sql);
+    }
+
+    @Override
+    public void unassignGear(int gearId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM").append(assignmentTableName);
+        sql.append("WHERE GearId").eq(gearId);
+        yukonJdbcTemplate.update(sql);
+    }
+
+    @Override
+    public void saveAppCategoryAssignmentForId(int formulaId, int appCategoryId) {
+        if (!doesFormulaExist(formulaId)) {
+            throw new FormulaNotFoundException("Formula id# "+formulaId+" does not exist. Cannot assign appliance category");
+        }
+        unassignAppCategory(appCategoryId);
+        List<Integer> assignments = getAppCategoryAssignmentIds(formulaId);
+        assignments.add(appCategoryId);
+        saveAppCategoryAssignmentsForId(formulaId, assignments);
+    }
+
+    @Override
+    public List<Integer> getAppCategoryAssignmentIds(int formulaId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
 
         sql.append("SELECT ApplianceCategoryId FROM").append(assignmentTableName);
@@ -553,7 +604,18 @@ public class FormulaDaoImpl implements FormulaDao {
     }
 
     @Override
-    public List<Integer> getGearAssignmentsById(int formulaId) {
+    public void saveGearAssignmentForId(int formulaId, int gearId) {
+        if (!doesFormulaExist(formulaId)) {
+            throw new FormulaNotFoundException("Formula id# "+formulaId+" does not exist. Cannot assign gear");
+        }
+        unassignGear(gearId);
+        List<Integer> assignments = getGearAssignmentIds(formulaId);
+        assignments.add(gearId);
+        saveGearAssignmentsForId(formulaId, assignments);
+    }
+
+    @Override
+    public List<Integer> getGearAssignmentIds(int formulaId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
 
         sql.append("SELECT GearId FROM").append(assignmentTableName);
@@ -563,5 +625,74 @@ public class FormulaDaoImpl implements FormulaDao {
         List<Integer> gearIds = yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
 
         return gearIds;
+    }
+
+    @Override
+    public List<GearAssignment> getAssignmentsForGears(Iterable<Integer> gearIds) {
+        final Map<Integer, LMProgramDirectGear> gears = gearDao.getByGearIds(gearIds);
+
+        final Map<Integer, GearAssignment> assignmentMap = new HashMap<>();
+        for (LMProgramDirectGear gear : gears.values()) {
+            assignmentMap.put(gear.getYukonID(), new GearAssignment(gear, null));
+        }
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT GearId, EstimatedLoadFormulaId FROM").append(assignmentTableName);
+        sql.append("WHERE GearId").in(gearIds);
+
+        yukonJdbcTemplate.query(sql , new YukonRowCallbackHandler() {
+            @Override
+            public void processRow(YukonResultSet rs) throws SQLException {
+                int gearId = rs.getInt("GearId");
+                int formulaIdOrNull = rs.getInt("EstimatedLoadFormulaId");
+                Integer formulaId = rs.wasNull() ? null : formulaIdOrNull;
+
+                assignmentMap.put(gearId, new GearAssignment(gears.get(gearId), formulaId));
+            }
+        });
+        return new ArrayList<>(assignmentMap.values());
+    }
+
+    @Override
+    public GearAssignment getAssignmentForGear(int gearId) {
+        List<Integer> singleId = new ArrayList<>(1);
+        singleId.add(gearId);
+        return getAssignmentsForGears(singleId).get(0);
+    }
+
+    /**
+     * Returns Map&lt;AppCatId, FormulaId(nullable)&gt;
+     */
+    @Override
+    public List<ApplianceCategoryAssignment> getAssignmentsForApplianceCategories(List<Integer> appCategoryIds) {
+        final Map<Integer, ApplianceCategory> appCats = applianceCategoryDao.getByApplianceCategoryIds(appCategoryIds);
+
+        final Map<Integer, ApplianceCategoryAssignment> assignmentMap = new HashMap<>();
+        for (ApplianceCategory appCat : appCats.values()) {
+            assignmentMap.put(appCat.getApplianceCategoryId(), new ApplianceCategoryAssignment(appCat, null));
+        }
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT ApplianceCategoryId, EstimatedLoadFormulaId FROM").append(assignmentTableName);
+        sql.append("WHERE ApplianceCategoryId").in(appCategoryIds);
+
+        yukonJdbcTemplate.query(sql , new YukonRowCallbackHandler() {
+            @Override
+            public void processRow(YukonResultSet rs) throws SQLException {
+                int appCatId = rs.getInt("ApplianceCategoryId");
+                int formulaIdOrNull = rs.getInt("EstimatedLoadFormulaId");
+                Integer formulaId = rs.wasNull() ? null : formulaIdOrNull;
+
+                assignmentMap.put(appCatId, new ApplianceCategoryAssignment(appCats.get(appCatId), formulaId));
+            }
+        });
+        return new ArrayList<>(assignmentMap.values());
+    }
+
+    @Override
+    public ApplianceCategoryAssignment getAssignmentForApplianceCategory(int appCategoryId) {
+        List<Integer> singleId = new ArrayList<>(1);
+        singleId.add(appCategoryId);
+        return getAssignmentsForApplianceCategories(singleId).get(0);
     }
 }
