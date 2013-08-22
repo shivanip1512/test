@@ -114,7 +114,7 @@
             </div>
             <br>
             <span style="float:right;">
-                <cti:button nameKey="addAction" onclick="addAction()" icon="icon-add"/>
+                <cti:button nameKey="addAction" onclick="Yukon.StatusPointMonitor.addAction()" icon="icon-add"/>
             </span>
         </tags:boxContainer2>
 		
@@ -138,7 +138,7 @@
     
     <script type="text/javascript">
         var processors = ${cti:jsonString2(statusPointMonitor.processors)};
-        initWithProcessors(processors);
+        Yukon.StatusPointMonitor.initWithProcessors(processors);
     </script>
         
 </cti:standardPage>

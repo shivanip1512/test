@@ -53,10 +53,8 @@
          Action: The message to be sent to all multispeak vendors supporting ODEventNotification messages.
          <br><br>
     ]]></entry>
-    <entry key="yukon.web.modules.amr.statusPointMonitorEditor.addAction.hoverText">Add a processing action.</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitorEditor.addAction.label">Add Action</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitorEditor.addAction.title">Add Action</entry>
-    <entry key="yukon.web.modules.amr.statusPointMonitorEditor.deleteAction.hoverText">Delete Action</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitorEditor.deleteAction.title">Delete Action</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitorEditor.popupInfo.deviceGroup.title">Device Group Picker Help</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitorEditor.popupInfo.deviceGroup"><![CDATA[

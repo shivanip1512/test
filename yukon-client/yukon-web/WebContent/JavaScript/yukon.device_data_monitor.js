@@ -181,7 +181,7 @@ Yukon.DeviceDataMonitor = (function () {
 
             var addStyle = data.totalMissingCount === 0 ? '': 'border-bottom: 1px dotted #ccc;';
             var helpDivId = 'totalSupportedHelpId';
-            jQuery(countSel).html("<div style='"+ addStyle +"padding: 3px 0;'>"+ data.totalSupportedCountMessage 
+            jQuery(countSel).html("<div>"+ data.totalSupportedCountMessage 
                     +"<a href='javascript:void(0);' class='f-showViolationHelp violation_help_link' target-id='"+ helpDivId +"' target-title='"+ data.totalSupportedCountHelpTitle +"'><i class='icon icon-help'>&nbsp;</i></a>"
                     +"<div class='dn' id='"+ helpDivId +"'>"+ data.totalSupportedCountHelp +"</div></div>" );
 
@@ -219,7 +219,6 @@ Yukon.DeviceDataMonitor = (function () {
                     var helpTitle   = procRowMsgs[jj][8];
                     var helpText    = procRowMsgs[jj][9];
                     var addPointsTxt= procRowMsgs[jj][10];
-                    var style       = (jj + 1 == procRowMsgs.length) ? "border-bottom: 1px dotted #ccc;" : "";
                     var ctrl_attr   = jQuery('[name="processors['+ rowId +'].attribute"]');
                     var attr_id     = ctrl_attr.find(':selected').val();
                     var row         = ctrl_attr.closest('tr');
@@ -230,7 +229,7 @@ Yukon.DeviceDataMonitor = (function () {
 
                     var the_list_url = _url_to_display_devices_in_violation +'?'+ url_params;
                     var trId        = "violationRow"+ itemType + rowId;
-                    var output      = "<tr style='"+ style +"padding: 3px 0;' id='"+ trId +"'>";
+                    var output      = "<tr id='"+ trId +"'>";
                     var popupListId = "violationListPopup"+ itemType + rowId;
                     var popupHelpId = "violationHelpPopup"+ itemType + rowId;
                     var countText   = ""+ counts;
