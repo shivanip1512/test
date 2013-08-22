@@ -11838,6 +11838,15 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+            <i__foreignKeyName>FK_EstLoadLookup_Point</i__foreignKeyName>
+            <i__keySequence>1</i__keySequence>
+            <i__columnName>InputPointId</i__columnName>
+            <i__foreignColumnName>POINTID</i__foreignColumnName>
+            <i__foreignTableName>POINT</i__foreignTableName>
+            <i__updateRule>1</i__updateRule>
+            <i__deleteRule>1</i__deleteRule>
+          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
             <i__foreignKeyName>SYS_C0013300</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>POINTID</i__columnName>
@@ -11919,6 +11928,15 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+            <i__foreignKeyName>FK_PTTRIGGER_PT</i__foreignKeyName>
+            <i__keySequence>1</i__keySequence>
+            <i__columnName>PointID</i__columnName>
+            <i__foreignColumnName>POINTID</i__foreignColumnName>
+            <i__foreignTableName>POINT</i__foreignTableName>
+            <i__updateRule>1</i__updateRule>
+            <i__deleteRule>1</i__deleteRule>
+          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
             <i__foreignKeyName>FK_PTTRIGGERTRIGGERPT_PT</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>TriggerID</i__columnName>
@@ -11937,9 +11955,9 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_PTTRIGGER_PT</i__foreignKeyName>
+            <i__foreignKeyName>FK_EstLoadFunction_Point</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
-            <i__columnName>PointID</i__columnName>
+            <i__columnName>InputPointId</i__columnName>
             <i__foreignColumnName>POINTID</i__foreignColumnName>
             <i__foreignTableName>POINT</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
