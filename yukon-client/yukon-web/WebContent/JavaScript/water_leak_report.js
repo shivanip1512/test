@@ -79,11 +79,6 @@ Yukon.WaterLeakReport = (function() {
             Yukon.ui.focusFirstError();
         },
 
-        _schedule_dialog_open = function(e) {
-            var schedule_text = jQuery("#schedule_shortcut_text").val();
-            jQuery("button.leakScheduleSubmitButton").before('<span class="filter_shortcut">'+schedule_text+'</span>');
-        },
-
         _store_filter_values = function() {
             var the_filter = jQuery(_filter_form_selector);
             _f_filter_values.from_datetime  = the_filter.find("input.f-from_datetime").val();
@@ -230,7 +225,6 @@ Yukon.WaterLeakReport = (function() {
                 jQuery(_single_selector).bind("change", _single_checked);
                 jQuery(_leak_filter_dialog).bind("keyup", _init_filter_key_bindings);
                 jQuery(document).on("dialogopen", _leak_filter_dialog, _filter_dialog_open);
-                jQuery(document).on("dialogopen", _leak_schedule_dialog, _schedule_dialog_open);
                 jQuery(document).bind("keyup", _init_open_filter_key_binding);
                 jQuery("a.f-cis_details").bind("click", _view_cis_details);
                 jQuery(".f-open_filter_dialog").bind("click", function(){Yukon.ui._autofocus();});

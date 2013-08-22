@@ -53,7 +53,7 @@
                     <tags:nameValue2 nameKey=".filter.threshold">
                         <tags:input path="threshold" size="3" inputClass="threshold_input f-threshold"/>
 						<span class="focusableFieldHolder">
-                            <a title="<i:inline key=".filter.helpText"/>"><i class="icon icon-help"></i></a>
+                            <a><cti:icon icon="icon-help cp fn"/></a>
 						</span>
 						<span class="focusedFieldDescription"><i:inline key=".filter.threshold.helpText"/></span>
                     </tags:nameValue2>
@@ -64,7 +64,7 @@
 					</tags:nameValue2>
 				</tags:nameValueContainer2>
 			</div>
-			<div class="filter_shortcut tac hint"><cti:msg2 key=".filterShortcutOpen"/></div>
+			<div class="tac hint"><cti:msg2 key=".filterShortcutOpen"/></div>
 		</form:form>
 	</dialog:inline>
     <%@ include file="leakAlgorithmDialog.jspf"%>
@@ -74,8 +74,8 @@
 		<c:set var="popupTitleArgs" value="\"${fn:escapeXml(fileExportData.scheduleName)}\""/>
 	</c:if>
 	<dialog:inline id="leakScheduleDialog" okEvent="none" nameKey="leakScheduleDialog" arguments="${popupTitleArgs}" on=".f-open_schedule_dialog"
-		options="{width: 650, 'buttons': [{text: '${empty jobId ? scheduleButton : updateButton}', click: function() {Yukon.WaterLeakReport.schedule_submit();}, title: '${empty jobId ? scheduleButtonTitle : updateButtonTitle}', 'class': 'leakScheduleSubmitButton'},
-										  {text: '${cancelButton}', click: function() {jQuery(this).dialog('close');}, title: '${cancelButtonTitle}', 'class': 'leakScheduleCancelButton'}]}">
+		options="{width: 650, 'buttons': [{text: '${cancelButton}', click: function() {jQuery(this).dialog('close');}, title: '${cancelButtonTitle}', 'class': 'leakScheduleCancelButton'}, 
+                                          {text: '${empty jobId ? scheduleButton : updateButton}', click: function() {Yukon.WaterLeakReport.schedule_submit();}, title: '${empty jobId ? scheduleButtonTitle : updateButtonTitle}', 'class': 'leakScheduleSubmitButton primary action'}]}">
 		
 		<form:form id="scheduleForm" action="schedule" method="get" commandName="fileExportData">
 			<tags:selectDevicesTabbed deviceCollection="${backingBean.deviceCollection}" tabClass="waterLeakFilterTab" individualPickerType="waterMeterPicker"
@@ -95,9 +95,9 @@
 					<tags:scheduledFileExportInputs cronExpressionTagState="${cronExpressionTagState}" exportData="${fileExportData}" />
 				</tags:nameValueContainer2>
 			</div>
+            <div class="tac hint"><cti:msg2 key=".scheduleShortcutOpen"/></div>
 		</form:form>
 	</dialog:inline>
-	<input type="hidden" id="schedule_shortcut_text" value="<cti:msg2 key=".scheduleShortcutOpen"/>"/>
 
 	<form:form id="resetForm" action="report" method="get">
 		<input type="hidden" name="resetReport" value="true"/>

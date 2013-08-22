@@ -75,7 +75,7 @@ jQuery(function() {
 </c:if>
 </script>
 
-<div id="${id}" style="display: none" title="${titleMsg}">
+<div id="${id}" style="display: none">
     <cti:flashScopeMessages/>
     <jsp:doBody/>
 </div>
