@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     8/22/2013 11:38:20 AM                        */
+/* Created on:     8/22/2013 2:54:01 PM                         */
 /*==============================================================*/
 
 
@@ -277,11 +277,12 @@ create table ApplianceCategory (
    CategoryID           numeric              null,
    WebConfigurationID   numeric              null,
    ConsumerSelectable   char(1)              not null,
+   AverageLoad          varchar(32)          not null,
    constraint PK_APPLIANCECATEGORY primary key (ApplianceCategoryID)
 )
 go
 
-insert into ApplianceCategory values (0,'(none)',0,0,'Y');
+insert into ApplianceCategory values (0, '(none)', 0, 0, 'Y', '1.0');
 
 /*==============================================================*/
 /* Table: ApplianceChiller                                      */

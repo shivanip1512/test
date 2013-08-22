@@ -122,6 +122,12 @@ DROP TABLE CommErrorHistory;
 /* Start YUK-12464 */
 ALTER TABLE ApplianceCategory
 ADD AverageLoad VARCHAR2(32);
+
+UPDATE ApplianceCategory
+SET AverageLoad = '1.0';
+
+ALTER TABLE ApplianceCategory
+MODIFY AverageLoad VARCHAR2(32) NOT NULL;
 /* End YUK-12464 */
 
 /* Start YUK-12230 */
