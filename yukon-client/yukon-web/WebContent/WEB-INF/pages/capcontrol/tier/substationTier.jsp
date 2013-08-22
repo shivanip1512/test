@@ -110,7 +110,7 @@
                         <i:simplePopup titleKey=".analysisTrends" id="analysisTrendsOptions" on="#analysisTrendsButton">
                              <%@ include file="analysisTrendsOptions.jspf" %>
                         </i:simplePopup>
-                        <cti:button nameKey="analysis" id="analysisTrendsButton" icon="icon-chart-curve"/>
+                        <cti:button nameKey="analysis" id="analysisTrendsButton" icon="icon-chart-line"/>
                     </c:if>
                 
                     <i:simplePopup titleKey=".recentEvents" id="recentEventsOptions" on="#recentEventsButton">
