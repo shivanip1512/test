@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/21/2013 1:07:58 PM                         */
+/* Created on:     8/22/2013 11:43:42 AM                        */
 /*==============================================================*/
 
 
@@ -11132,10 +11132,18 @@ alter table EstimatedLoadFunction
       references EstimatedLoadFormula (EstimatedLoadFormulaId)
       on delete cascade;
 
+alter table EstimatedLoadFunction
+   add constraint FK_EstLoadFunction_Point foreign key (InputPointId)
+      references POINT (POINTID);
+
 alter table EstimatedLoadLookupTable
    add constraint FK_EstLoadLookup_LoadFormula foreign key (EstimatedLoadFormulaId)
       references EstimatedLoadFormula (EstimatedLoadFormulaId)
       on delete cascade;
+
+alter table EstimatedLoadLookupTable
+   add constraint FK_EstLoadLookup_Point foreign key (InputPointId)
+      references POINT (POINTID);
 
 alter table EstimatedLoadTableEntry
    add constraint FK_EstLoadTableEntry_LookupTab foreign key (EstimatedLoadLookupTableId)

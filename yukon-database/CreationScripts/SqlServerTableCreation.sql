@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     8/21/2013 1:11:40 PM                         */
+/* Created on:     8/22/2013 11:38:20 AM                        */
 /*==============================================================*/
 
 
@@ -11986,10 +11986,20 @@ alter table EstimatedLoadFunction
          on delete cascade
 go
 
+alter table EstimatedLoadFunction
+   add constraint FK_EstLoadFunction_Point foreign key (InputPointId)
+      references POINT (POINTID)
+go
+
 alter table EstimatedLoadLookupTable
    add constraint FK_EstLoadLookup_LoadFormula foreign key (EstimatedLoadFormulaId)
       references EstimatedLoadFormula (EstimatedLoadFormulaId)
          on delete cascade
+go
+
+alter table EstimatedLoadLookupTable
+   add constraint FK_EstLoadLookup_Point foreign key (InputPointId)
+      references POINT (POINTID)
 go
 
 alter table EstimatedLoadTableEntry

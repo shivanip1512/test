@@ -46,6 +46,10 @@ ALTER TABLE EstimatedLoadFunction
       REFERENCES EstimatedLoadFormula (EstimatedLoadFormulaId)
          ON DELETE CASCADE;
 
+ALTER TABLE EstimatedLoadFunction 
+   ADD CONSTRAINT FK_EstLoadFunction_Point FOREIGN KEY (InputPointId)
+      REFERENCES Point (PointId);
+
 CREATE TABLE EstimatedLoadLookupTable (
     EstimatedLoadLookupTableId NUMBER NOT NULL,
     EstimatedLoadFormulaId NUMBER NOT NULL,
@@ -61,6 +65,10 @@ ALTER TABLE EstimatedLoadLookupTable
       REFERENCES EstimatedLoadFormula (EstimatedLoadFormulaId)
          ON DELETE CASCADE;
 
+ALTER TABLE EstimatedLoadLookupTable 
+   ADD CONSTRAINT FK_EstLoadLookup_Point FOREIGN KEY (InputPointId)
+      REFERENCES Point (PointId);
+
 CREATE TABLE EstimatedLoadTableEntry (
     EstimatedLoadTableEntryId NUMBER NOT NULL,
     EstimatedLoadLookupTableId NUMBER NOT NULL,
@@ -75,7 +83,7 @@ ALTER TABLE EstimatedLoadTableEntry
 
 CREATE TABLE EstimatedLoadFormulaAssignment (
     FormulaAssignmentId NUMBER NOT NULL,
-    FormulaId NUMBER NOT NULL,
+    EstimatedLoadFormulaId NUMBER NOT NULL,
     GearId NUMBER,
     ApplianceCategoryId NUMBER
     CONSTRAINT PK_EstimatedLoadFormulaAssignm PRIMARY KEY (FormulaAssignmentId)
