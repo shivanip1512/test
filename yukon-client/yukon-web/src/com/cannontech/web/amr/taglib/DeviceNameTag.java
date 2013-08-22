@@ -6,9 +6,10 @@ import javax.servlet.jsp.JspContext;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 
+import org.apache.commons.lang.StringEscapeUtils;
+import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.core.dao.DeviceDao;
@@ -16,15 +17,41 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.web.taglib.YukonTagSupport;
 
-@Configurable("deviceNameTagPrototype")
+@Configurable(value="deviceNameTagPrototype", autowire=Autowire.BY_NAME)
 public class DeviceNameTag extends YukonTagSupport {
     
+    @Autowired private DeviceDao deviceDao;
+    @Autowired private PaoLoadingService paoLoadingService;
+    
 	private String var = null;
-    private DeviceDao deviceDao;
-    private PaoLoadingService paoLoadingService = null;
     private int deviceId = 0;
     private boolean deviceIdSet = false;
     private SimpleDevice device = null;
+    
+    public String getVar() {
+        return var;
+    }
+    
+    public void setVar(String var) {
+        this.var = var;
+    }
+    
+    public int getDeviceId() {
+        return deviceId;
+    }
+    
+    public void setDeviceId(int deviceId) {
+        deviceIdSet = true;
+        this.deviceId = deviceId;
+    }
+    
+    public SimpleDevice getDevice() {
+        return device;
+    }
+    
+    public void setDevice(SimpleDevice device) {
+        this.device = device;
+    }
     
     @Override
     public void doTag() throws JspException, IOException {
@@ -55,41 +82,11 @@ public class DeviceNameTag extends YukonTagSupport {
         if (var == null) {
         	JspWriter out = jspContext.getOut();
         	out.print("<span class=\"deviceNameTagSpan\" title=\"deviceId: " + deviceId + "\">");
-            out.print(formattedName);
+            out.print(StringEscapeUtils.escapeHtml(formattedName));
             out.print("</span>");
         } else {
         	jspContext.setAttribute(var, formattedName);
         }
     }
-    
-    
-    public String getVar() {
-		return var;
-	}
-    public void setVar(String var) {
-		this.var = var;
-	}
-    public int getDeviceId() {
-        return deviceId;
-    }
-    public void setDeviceId(int deviceId) {
-        deviceIdSet = true;
-        this.deviceId = deviceId;
-    }
-    public SimpleDevice getDevice() {
-        return device;
-    }
-    public void setDevice(SimpleDevice device) {
-        this.device = device;
-    }
-    
-    @Required
-    public void setDeviceDao(DeviceDao deviceDao) {
-        this.deviceDao = deviceDao;
-    }
-    
-    @Autowired
-    public void setPaoLoadingService(PaoLoadingService paoLoadingService) {
-        this.paoLoadingService = paoLoadingService;
-    }
+
 }

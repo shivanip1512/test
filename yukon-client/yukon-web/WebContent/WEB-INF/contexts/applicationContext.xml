@@ -1045,10 +1045,7 @@
     <bean id="pointValueTagPrototype" class="com.cannontech.web.updater.point.PointValueTag"/>
     <bean id="pointColorTagPrototype" class="com.cannontech.web.updater.point.PointColorTag"/>
 
-    <bean id="deviceNameTagPrototype" class="com.cannontech.web.amr.taglib.DeviceNameTag">
-        <property name="deviceDao" ref="deviceDao"/>
-        <property name="paoLoadingService" ref="paoLoadingService"/>
-    </bean>
+    <bean id="deviceNameTagPrototype" class="com.cannontech.web.amr.taglib.DeviceNameTag"/>
     
     <bean id="dataUpdaterCallbackTagPrototype" class="com.cannontech.web.updater.DataUpdaterCallbackTag">
         <property name="registrationService" ref="dataUpdaterService"/>

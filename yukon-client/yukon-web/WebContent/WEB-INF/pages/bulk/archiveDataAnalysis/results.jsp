@@ -69,7 +69,7 @@
                     <c:url var="csvUrl" value="/bulk/archiveDataAnalysis/tabular/csv">
                         <c:param name="analysisId" value="${result.analysis.analysisId}"/>
                     </c:url>
-                    <li><cti:button nameKey="csv" renderMode="labeledImage" href="${csvUrl}" icon="icon-csv"/></li>
+                    <li><cti:button nameKey="csv" renderMode="labeledImage" href="${csvUrl}" icon="icon-page-white-excel"/></li>
                     
                     <%-- TABULAR BUTTON --%>
                     <c:choose>
