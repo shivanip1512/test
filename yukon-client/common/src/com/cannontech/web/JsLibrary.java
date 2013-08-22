@@ -49,6 +49,7 @@ public enum JsLibrary {
     RSV("/JavaScript/lib/prototype/plugins/rsv/2.5.1/prototype.rsv.js"),
     YUKON_UI("/JavaScript/yukon/ui/general.js"),
     YUKON_ALERTS("/JavaScript/yukon/yukon.alerts.js"),
+    YUKON_FAVORITES("/JavaScript/yukon/yukon.favorites.js"),
     
     // --DEPRECATED VERSIONS --//
     PROTOTYPE_150("/JavaScript/prototype150.js");

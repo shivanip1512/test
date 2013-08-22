@@ -1,5 +1,9 @@
 package com.cannontech.database.db.pao;
 
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.userpage.dao.UserPageDao;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * This type was created in VisualAge.
@@ -58,6 +62,9 @@ public void delete() throws java.sql.SQLException
 	Object values[] = { getPaObjectID() };
 
 	delete( TABLE_NAME, CONSTRAINT_COLUMNS, values );
+
+    UserPageDao userPageDao = YukonSpringHook.getBean(UserPageDao.class);
+    userPageDao.paoDeleted(new PaoIdentifier(paObjectID, PaoType.getForDbString(type)));
 }
 
 

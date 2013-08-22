@@ -311,6 +311,15 @@
       <sequence name="UserPreference">
         <table name="UserPreference" identitycolumn="PreferenceId" initsequence="true" />
       </sequence>
+      <sequence name="UserPage">
+        <table name="UserPage" identitycolumn="UserPageId" initsequence="true" />
+      </sequence>
+      <sequence name="UserPageParam">
+        <table name="UserPageParam" identitycolumn="UserPageParamId" initsequence="true" />
+      </sequence>
+      <sequence name="UserMonitor">
+        <table name="UserMonitor" identitycolumn="UserMonitorId" initsequence="true" />
+      </sequence>
       <sequence name="EstimatedLoadFormula">
         <table name="EstimatedLoadFormula" identitycolumn="EstimatedLoadFormulaId" initsequence="true" />
       </sequence>

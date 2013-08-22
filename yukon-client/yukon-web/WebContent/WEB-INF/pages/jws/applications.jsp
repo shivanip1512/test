@@ -12,7 +12,9 @@
             <i:inline key=".applications.installJava"/>
         </a>
     </c:set>
-    <cti:msg2 key=".applications.description" argument="${installJreLink}" htmlEscapeArguments="false"/>
+    <span class="notes">
+        <cti:msg2 key=".applications.description" argument="${installJreLink}" htmlEscapeArguments="false"/>
+    </span>
 </div>
 
 <div  style="display:inline-block; float:left; width:50%;">

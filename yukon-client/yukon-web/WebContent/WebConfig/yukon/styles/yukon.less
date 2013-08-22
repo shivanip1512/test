@@ -26,6 +26,7 @@
     DROPDOWN MENUS
     MODAL/BLOCKING GLASS
     CONNECTION WARNING
+    FAVORITES
     JUNK TO FIX
 */
 
@@ -132,7 +133,7 @@ table.nowrap th, table.nowrap td {white-space: nowrap;}
 .compactResultsTable, .resultsTable, .nameValueTable {width: 100%;border-collapse: collapse;}
 .compactResultsTable tr.focused, .compactResultsTable tr.focused:nth-child(2n) {background-color: #DAE2FF;}
 .compactResultsTable {font-size: 0.9em;}
-.compactResultsTable tr:nth-child(even), .resultsTable tr:nth-child(even), .striped-list > div:nth-child(even), .striped tr:nth-child(even), .undo-row {background-color: #f6f6f6;}
+.compactResultsTable tr:nth-child(even), .resultsTable tr:nth-child(even), .striped-list > div:nth-child(even), .striped tr:nth-child(even) {background-color: #f6f6f6;}
 .compactResultsTable td, .resultsTable td, .nameValueTable td {border: none;}
 .compactResultsTable td > .icon {margin-left: 0;}
 .compactResultsTable td > .naked .icon {margin-right: 5px;}
@@ -144,7 +145,7 @@ table.nowrap th, table.nowrap td {white-space: nowrap;}
 .nameValueTable .name, .property-list .name {color: #777;}
 .nameValueTable .value, .property-list .value {color: #333;}
 
-.rowHighlighting tr:hover, .highlighted {background-color:#dedede !important;}
+.rowHighlighting tr:hover, .highlighted, .undo-row {background-color:#dedede !important;}
 .undo-row {text-align: center;}
 .undo-row .undo {float: right;}
 .aligned_4_actions .first, .aligned_4_actions .middle {width: 30%;}
@@ -459,6 +460,12 @@ input.dateTimePicker {margin: 0;}
 /* CONNECTION WARNING */
 #dataUpdaterErrorDiv {position: fixed;bottom: 0;left: 0;right: 0;background: @red;color: white;font-weight: bold;text-align: center;padding: 3px;}
 #dataUpdaterErrorDiv .alert {padding-top: 64px;width: 64px;position: absolute;bottom: 0;left: 10px;}
+
+/* FAVORITES */
+.b-favorite {margin-right: 5px !important;}
+.favorites .favorite .b-favorite, .monitor .b-subscribe {visibility: hidden;}
+.favorites .favorite:hover .b-favorite, .monitor:hover .b-subscribe {visibility: visible;}
+.page-title-bar .b-favorite {margin-top: 3px !important;}
 
 /* JUNK TO FIX */
 .CONTROLAREA_STATE_ACTIVE, .CONTROLAREA_STATE_PARTIALLY_ACTIVE, .CONTROLAREA_STATE_MANUAL_ACTIVE, .PROGRAM_STATE_ACTIVE, .PROGRAM_STATE_PARTIALLY_ACTIVE, .PROGRAM_STATE_MANUAL_ACTIVE, .PROGRAM_STATE_TIMED_ACTIVE, .LOADGROUP_STATE_ACTIVE {color: @green;}

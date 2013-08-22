@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import com.google.common.collect.Lists;
+
 public final class StringUtils {
     /**
      * StringUtils constructor comment.
@@ -224,5 +226,48 @@ public final class StringUtils {
     
     public static String stripNone (String value) {
         return CtiUtilities.STRING_NONE.equals(value) ? "" : value;
+    }
+
+    public static String listAsJsSafeString(List<String> input) {
+
+        Object[] listeElems = new Object[input.size()];
+
+        int index = 0;
+        for (String item : input) {
+            listeElems[index] = "'" + escapeXmlAndJavascript(item) + "'";
+            index++;
+        }
+        String result =  "[" + toStringList(listeElems) + "]";
+        return result;
+    }
+
+    public static List<String> restoreJsSafeList(String input) {
+        List<String> result = Lists.newArrayList();
+
+        if( org.apache.commons.lang.StringUtils.isEmpty(input)) return result;
+        if( input.equals("[]")) return result;
+
+        input = input.replaceAll("(^\\[')|('\\]$)", "");
+        String[] items = input.split("','");
+
+        for(String item : items){
+            String f = item.replaceAll("\\\\'", "\\'");
+            f = f.replaceAll("\\\\\"", "\"");
+            result.add(f);
+        }
+        return result;
+    }
+
+    public static String escapeXmlAndJavascript (String input) {
+        String result = input;
+        result = result.replaceAll("\\\\", "\\\\\\\\");
+        result = result.replaceAll("\t", "\\t");
+        result = result.replaceAll("\n", "\\n");
+        result = result.replaceAll("&", "&#x26");
+        result = result.replaceAll("'", "\\\\&apos;");
+        result = result.replaceAll("\"", "\\\\&quot;");
+        result = result.replaceAll("<", "&lt;");
+        result = result.replaceAll(">", "&gt;");
+        return result;
     }
 }

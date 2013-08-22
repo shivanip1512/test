@@ -10,23 +10,8 @@
 		<div class="column_12_12">
             <div class="column one">
 
-				    <ct:widget bean="deviceDataMonitorsWidget"/>
+                <ct:widget bean="allMonitorsWidget"/>
 
-					<%-- OUTAGE MONITORS WIDGET --%>
-					<ct:widget bean="outageMonitorsWidget"/>
-
-					<%-- TAMPER FLAGS WIDGET --%>
-					<ct:widget bean="tamperFlagMonitorsWidget"/>
-
-                    <%-- STATUS POINT MONITORS WIDGET --%>
-                    <ct:widget bean="statusPointMonitorsWidget"/>
-
-                    <%-- PORTER RESPONSE MONITORS WIDGET --%>
-                    <ct:widget bean="porterResponseMonitorsWidget"/>
-
-                    <%-- VALIDATION MONITORS WIDGET --%>
-                    <ct:widget bean="validationMonitorsWidget"/>
-					
 					<%-- SCHEDULED GROUP REQUESTS WIDGET --%>
 					<cti:checkRolesAndProperties value="SCHEDULER">
 						<ct:widget bean="scheduledGroupRequestExecutionWidget"/>

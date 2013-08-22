@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -69,6 +68,7 @@ public class LayoutController {
     @Autowired private YukonUserDao yukonUserDao;
     @Autowired private StandardMenuRenderer stdMenuRender;
     @Autowired private SearchRenderer searchRenderer;
+    @Autowired private HttpExpressionLanguageResolver expressionLanguageResolver;
     
     private List<String> layoutScriptFiles;
     
@@ -103,13 +103,14 @@ public class LayoutController {
         builder.add("/JavaScript/simpleCookies.js");
         builder.add("/JavaScript/simpleDialog.js");
         builder.add("/JavaScript/yukon/util/analytics_manager.js");
+        builder.add(JsLibrary.YUKON_FAVORITES.getPath());
         
         layoutScriptFiles = builder.build();
     }
     
     // StandardPageTag forwards to here!
     @RequestMapping("/")
-    public String display(final HttpServletRequest request, final HttpServletResponse response, ModelMap map, Locale locale) throws JspException {
+    public String display(final HttpServletRequest request, final HttpServletResponse response, ModelMap map) throws JspException {
 
         // get data passed over - in attributes
         final BodyContent bodyContent = StandardPageTag.getBodyContent(request);
@@ -137,6 +138,10 @@ public class LayoutController {
 
         PageDetail pageDetailTemp;
         if (pageInfo != null) {
+            map.addAttribute("canFavorite", ! pageInfo.isHideFavorite());
+            List<String> resolvedLabelArgs = expressionLanguageResolver.resolveElExpressions(pageInfo.getLabelArgumentExpressions(), request);
+            String labelArgs = com.cannontech.common.util.StringUtils.listAsJsSafeString(resolvedLabelArgs);
+            map.addAttribute("labelArgs", labelArgs);
             pageDetailTemp = pageDetailProducer.render(pageInfo, request, messageSourceAccessor);
         } else {
             // create dummy page detail for pre-2010 pages

@@ -155,6 +155,9 @@ public class CommonModuleBuilder implements ModuleBuilder {
             String hideSearch = pageElement.getAttributeValue("hideSearch");
             pageInfo.setHideSearch(BooleanUtils.toBoolean(hideSearch));
             
+            String hideFavorite = pageElement.getAttributeValue("hideFavorite");
+            pageInfo.setHideFavorite(BooleanUtils.toBoolean(hideFavorite));
+            
             String typeString = pageElement.getAttributeValue("type");
             PageTypeEnum pageType;
             if (typeString == null) {

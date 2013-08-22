@@ -24,6 +24,7 @@ public class PageInfo implements Comparable<PageInfo> {
     private boolean navigationMenuRoot; //some node needs to have this set to true in order to have a left-hand menu
     private boolean contributeToMenu;
     private boolean hideSearch; //used on search results pages
+    private boolean hideFavorite;
     
     public String getName() {
         return name;
@@ -157,11 +158,19 @@ public class PageInfo implements Comparable<PageInfo> {
     public void setHideSearch(boolean hideSearch) {
 		this.hideSearch = hideSearch;
 	}
-    
+
     public boolean isHideSearch() {
 		return hideSearch;
 	}
     
+    public void setHideFavorite(boolean hideFavorite) {
+        this.hideFavorite = hideFavorite;
+    }
+
+    public boolean isHideFavorite() {
+        return hideFavorite;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;

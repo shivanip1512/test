@@ -110,6 +110,15 @@
     <div class="page-title-bar">
         <div class="inner clearfix">
 	        <c:if test="${not empty pageDetail.pageHeading}">
+                <c:if test="${canFavorite}">
+                    <cti:button id="favButton" 
+                        classes="b-favorite" 
+                        renderMode="image" 
+                        icon="icon-favorite-not" 
+                        data-module="${module.moduleName}" 
+                        data-name="${info.pageName}" 
+                        data-label-args="${labelArgs}" />
+                </c:if>
 			    <h1 class="page-heading">
 			        ${requestScope['com.cannontech.web.layout.part.headingPrefix']}
 			        <spring:escapeBody htmlEscape="true">

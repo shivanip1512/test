@@ -94,8 +94,7 @@
         <xsd:attribute name="hideSearch" type="xsd:boolean"/>
         <xsd:attribute name="navigationMenuRoot" type="xsd:boolean"/>
         <xsd:attribute name="contributeToMenu" type="xsd:boolean"/>
-        <xsd:attribute name="home" type="xsd:boolean"/>
-        <xsd:attribute name="favorite" type="xsd:boolean"/>
+        <xsd:attribute name="hideFavorite" type="xsd:boolean"/>
         <xsd:attribute name="actions" type="xsd:boolean"/>
     </xsd:complexType>
     

@@ -164,7 +164,7 @@ public class PageDetailProducer {
         return result;
     }
     
-    private String getPagePart(String pagePart, PageContext pageContext, MessageSourceAccessor messageSourceAccessor) {
+    public String getPagePart(String pagePart, PageContext pageContext, MessageSourceAccessor messageSourceAccessor) {
         // look for specific override message
         PageInfo pageInfo = pageContext.pageInfo;
         String pagePrefix = "yukon.web.modules." + pageInfo.getModuleName() + "." + pageInfo.getName() + ".";
@@ -213,7 +213,7 @@ public class PageDetailProducer {
     }
     
     // use standard.xml to figure out the relevant page labels
-    private void fillInPageLabels(PageContext pageContext, MessageSourceAccessor messageSourceAccessor) {
+    public void fillInPageLabels(PageContext pageContext, MessageSourceAccessor messageSourceAccessor) {
         Builder<String, String> resultBuilder = ImmutableMap.builder();
         
         PageInfo pageInfo = pageContext.pageInfo;
@@ -258,11 +258,11 @@ public class PageDetailProducer {
         this.expressionLanguageResolver = expressionLanguageResolver;
     }
 
-    private static class PageContext {
-        List<String> labelArguments;
-        PageContext parent;
-        PageInfo pageInfo;
-        Map<String, String> pageLabels;
+    public static class PageContext {
+        public List<String> labelArguments;
+        public PageContext parent;
+        public PageInfo pageInfo;
+        public Map<String, String> pageLabels;
     }
     
 }

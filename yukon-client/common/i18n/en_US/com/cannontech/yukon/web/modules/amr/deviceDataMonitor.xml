@@ -6,7 +6,7 @@
 
 	<!-- DeviceDataMonitorWidget render.jsp -->
     <entry key="yukon.web.widgetClasses.DeviceDataMonitorsWidget.noMonitors">No Monitors</entry>
-    <entry key="yukon.web.widgetClasses.DeviceDataMonitorsWidget.name">Name</entry>
+    <entry key="yukon.web.widgetClasses.DeviceDataMonitorsWidget.name">Device Data</entry>
     <entry key="yukon.web.widgetClasses.DeviceDataMonitorsWidget.violations">Violations</entry>
     <entry key="yukon.web.widgetClasses.DeviceDataMonitorsWidget.monitoring">Monitoring</entry>
     <entry key="yukon.web.widgetClasses.DeviceDataMonitorsWidget.enabled">Enabled</entry>

@@ -697,6 +697,59 @@ Yukon.modules.ui = function (mod) {
             jQuery("#modal_glass").fadeOut(200);
         }
     };
+
+    /**
+     * @param jElem -jQuery element to be remvoed
+     * @param actionDo - remove action
+     * @param actionUndo - undo remove action
+     * @param confirmLabel - row text
+     */
+    mod.removeWithUndo = function(jElem, actionDo, actionUndo, itemName) {
+        var elemType = jElem.prop('tagName'),
+        undoneElements = jQuery('#undone-elements'),
+        removedText = jElem.closest('[data-removed-text]').attr('data-removed-text'),
+        undoText = jElem.closest('[data-undo-text]').attr('data-undo-text'),
+        undoLink = jQuery('<a class="fr" href="javascript:void(0)">' + undoText + '</a>'),
+        undo,
+        undoTd;
+
+        if (elemType == 'TR') {
+            elemType = 'td colspan=100';
+        }
+
+        if (undoneElements.length === 0) {
+            undoneElements = jQuery('<div id="undone-elements"></div>');
+            undoneElements.hide();
+        }
+
+        undo = jQuery('<' + elemType + ' class="undo-row"></' + elemType + '>').hide();
+        undo.append(jQuery('<span>' + itemName + ' '+ removedText + '</span>'));
+        undo.append(undoLink);
+
+        actionDo();
+
+        undoLink.click(function() {
+            actionUndo();
+            undo.fadeOut(100, function() {
+                undo.after(jElem);
+                jElem.fadeIn(100);
+                undo.remove();
+            });
+        });
+
+        if (elemType == 'td colspan=100') {
+            undoTd= undo;
+            undoTd.show();
+            undo = jQuery('<tr></tr>').hide();
+            undo.append(undoTd);
+        }
+
+        jElem.fadeOut(100, function() {
+            jElem.after(undo);
+            undoneElements.append(jElem);
+            undo.fadeIn(100);
+        });
+    };
 };
 
 // merge created sandbox module with existing Yukon barebones module

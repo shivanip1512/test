@@ -617,6 +617,24 @@
         </property>
     </bean>
 
+    <bean id="allMonitorsWidget" class="com.cannontech.web.widget.AllMonitorsWidget">
+        <property name="identityPath" value="common/deviceIdentity.jsp" />
+        <property name="roleAndPropertiesChecker">
+            <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+                <constructor-arg value="DEVICE_DATA_MONITORING"/>
+            </bean>
+        </property>
+    </bean>
+
+    <bean id="subscribedMonitorsWidget" class="com.cannontech.web.widget.SubscribedMonitorsWidget">
+        <property name="identityPath" value="common/deviceIdentity.jsp" />
+        <property name="roleAndPropertiesChecker">
+            <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+                <constructor-arg value="DEVICE_DATA_MONITORING"/>
+            </bean>
+        </property>
+    </bean>
+
     <bean id="porterResponseMonitorsWidget" class="com.cannontech.web.widget.PorterResponseMonitorsWidget">
         <property name="identityPath" value="common/deviceIdentity.jsp" />
         <property name="roleAndPropertiesChecker">

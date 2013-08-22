@@ -37,6 +37,7 @@ import com.cannontech.common.pao.annotation.YukonPaoField;
 import com.cannontech.common.pao.annotation.YukonPaoPart;
 import com.cannontech.common.pao.dao.PaoPersistenceDao;
 import com.cannontech.common.pao.model.CompleteYukonPao;
+import com.cannontech.common.userpage.dao.UserPageDao;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.SqlParameterSink;
@@ -55,6 +56,7 @@ public class PaoPersistenceDaoImpl implements PaoPersistenceDao {
     
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private PaoDao paoDao;
+    @Autowired private UserPageDao userPageDao;
 
     /**
      * This map stores an insertion-order sorted DbTableMapping list for each supported PaoType.
@@ -449,6 +451,8 @@ public class PaoPersistenceDaoImpl implements PaoPersistenceDao {
             
              jdbcTemplate.update(sql);
         }
+
+        userPageDao.paoDeleted(paoIdentifier);
     }
 
     /**

@@ -367,4 +367,6 @@
     <bean id="archiveValuesExportAttributeDao" class="com.cannontech.amr.archivedValueExporter.dao.impl.ArchiveValuesExportAttributeDaoImpl"/>
     <bean id="archiveValuesExportFieldDao" class="com.cannontech.amr.archivedValueExporter.dao.impl.ArchiveValuesExportFieldDaoImpl"/>
     
+    <bean class="com.cannontech.common.userpage.dao.impl.UserMonitorDaoImpl"/>
+    <bean class="com.cannontech.common.userpage.dao.impl.UserPageDaoImpl"/>
 </beans>

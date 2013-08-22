@@ -6,7 +6,7 @@
 
 	<!-- StatusPointMonitorsWidget render.jsp -->
     <entry key="yukon.web.widgets.statusPointMonitorsWidget.noMonitors">No Status Point Monitors</entry>
-    <entry key="yukon.web.widgets.statusPointMonitorsWidget.tableHeader.name">Name</entry>
+    <entry key="yukon.web.widgets.statusPointMonitorsWidget.tableHeader.name">Status Point</entry>
     <entry key="yukon.web.widgets.statusPointMonitorsWidget.tableHeader.monitoring">Monitoring</entry>
     <entry key="yukon.web.widgets.statusPointMonitorsWidget.tableHeader.enabled">Enabled</entry>
     <entry key="yukon.web.widgets.statusPointMonitorsWidget.edit.hoverText">Edit Status Point Monitor Details ({0})</entry>

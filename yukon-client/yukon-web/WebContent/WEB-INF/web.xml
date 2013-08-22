@@ -876,6 +876,11 @@
         <servlet-name>login</servlet-name>
         <url-pattern>/login.jsp</url-pattern>
         <url-pattern>/dashboard</url-pattern>
+        <url-pattern>/isFavorite</url-pattern>
+        <url-pattern>/toggleFavorite</url-pattern>
+        <url-pattern>/isSubscribed</url-pattern>
+        <url-pattern>/toggleSubscribed</url-pattern>
+        <url-pattern>/addToHistory</url-pattern>
         <url-pattern>/home</url-pattern>
         <url-pattern>/login/*</url-pattern>
         <url-pattern>/integrationLogin</url-pattern>

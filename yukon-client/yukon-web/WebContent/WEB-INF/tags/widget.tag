@@ -1,13 +1,15 @@
 <%@ tag  dynamic-attributes="widgetAttributes" %>
-<%@ attribute name="bean" required="true" type="java.lang.String"%>
-<%@ attribute name="paramMap" required="false" type="java.util.Map"%>
-<%@ attribute name="hideEnabled" required="false" type="java.lang.Boolean"%>
-<%@ attribute name="title" required="false" type="java.lang.String"%>
-<%@ attribute name="helpText" required="false" type="java.lang.String"%>
 
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="ct" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ attribute name="bean" required="true" %>
+<%@ attribute name="paramMap" type="java.util.Map" %>
+<%@ attribute name="hideEnabled" type="java.lang.Boolean" %>
+<%@ attribute name="title" %>
+<%@ attribute name="helpText" %>
+<%@ attribute name="container" description="container type: 'box' or 'section'. Default:'box'" %>
+
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:includeScript link="/JavaScript/simpleDialog.js"/>
 <cti:includeScript link="/JavaScript/widgetObject.js"/>
@@ -50,17 +52,34 @@
     <c:if test="${not empty pageScope.title}">
         <c:set var="containerTitle" value="${pageScope.title}"/>
     </c:if>
-    <ct:boxContainer title="${containerTitle}" id="widgetTitledContainer_${widgetParameters.widgetId}" styleClass="widgetContainer" showInitially="true" hideEnabled="${empty pageScope.hideEnabled ? true : pageScope.hideEnabled}" helpText="${pageScope.helpText}">
-        <div id="widgetContainer_${widgetParameters.widgetId}" style="height: ${widgetParameters.height};">
-            <c:choose>
-            <c:when test="${beanInst.lazyLoad}">
-                <img src="<c:url value="/WebConfig/yukon/Icons/spinner.gif"/>">
-            </c:when>
-            <c:otherwise>
-                <jsp:include flush="false" page="/widget/${beanInst.shortName}/render"/>
-            </c:otherwise>
-            </c:choose>
-        </div>
-    </ct:boxContainer>
+
+    <c:if test="${empty container or container eq 'box' }">
+        <tags:boxContainer title="${containerTitle}" id="widgetTitledContainer_${widgetParameters.widgetId}" styleClass="widgetContainer" showInitially="true" hideEnabled="${empty pageScope.hideEnabled ? true : pageScope.hideEnabled}" helpText="${pageScope.helpText}">
+            <div id="widgetContainer_${widgetParameters.widgetId}" style="height: ${widgetParameters.height};">
+                <c:choose>
+                <c:when test="${beanInst.lazyLoad}">
+                    <img src="<c:url value="/WebConfig/yukon/Icons/spinner.gif"/>">
+                </c:when>
+                <c:otherwise>
+                    <jsp:include flush="false" page="/widget/${beanInst.shortName}/render"/>
+                </c:otherwise>
+                </c:choose>
+            </div>
+        </tags:boxContainer>
+    </c:if>
+    <c:if test="${container eq 'section'}">
+        <tags:sectionContainer title="${containerTitle}" id="widgetTitledContainer_${widgetParameters.widgetId}" styleClass="widgetContainer" helpText="${pageScope.helpText}">
+            <div id="widgetContainer_${widgetParameters.widgetId}" style="height: ${widgetParameters.height};">
+                <c:choose>
+                <c:when test="${beanInst.lazyLoad}">
+                    <img src="<c:url value="/WebConfig/yukon/Icons/spinner.gif"/>">
+                </c:when>
+                <c:otherwise>
+                    <jsp:include flush="false" page="/widget/${beanInst.shortName}/render"/>
+                </c:otherwise>
+                </c:choose>
+            </div>
+        </tags:sectionContainer>
+    </c:if>
 </div>
 </cti:checkUserChecker>

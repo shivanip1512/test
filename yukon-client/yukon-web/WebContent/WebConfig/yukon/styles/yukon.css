@@ -27,6 +27,7 @@ DATE/TIME PICKER
 DROPDOWN MENUS
 MODAL/BLOCKING GLASS
 CONNECTION WARNING
+FAVORITES
 JUNK TO FIX
  */
 /* VARIABLES */
@@ -276,7 +277,7 @@ table.nowrap th,table.nowrap td {
 	font-size: 0.9em;
 }
 
-.compactResultsTable tr:nth-child(even),.resultsTable tr:nth-child(even),.striped-list > div:nth-child(even),.striped tr:nth-child(even),.undo-row {
+.compactResultsTable tr:nth-child(even),.resultsTable tr:nth-child(even),.striped-list > div:nth-child(even),.striped tr:nth-child(even) {
 	background-color: #f6f6f6;
 }
 
@@ -325,7 +326,7 @@ table.nowrap th,table.nowrap td {
 	color: #333;
 }
 
-.rowHighlighting tr:hover,.highlighted {
+.rowHighlighting tr:hover,.highlighted,.undo-row {
 	background-color: #dedede !important;
 }
 
@@ -1661,6 +1662,23 @@ input.dateTimePicker {
 	position: absolute;
 	bottom: 0;
 	left: 10px;
+}
+
+/* FAVORITES */
+.b-favorite {
+	margin-right: 5px !important;
+}
+
+.favorites .favorite .b-favorite,.monitor .b-subscribe {
+	visibility: hidden;
+}
+
+.favorites .favorite:hover .b-favorite,.monitor:hover .b-subscribe {
+	visibility: visible;
+}
+
+.page-title-bar .b-favorite {
+	margin-top: 3px !important;
 }
 
 /* JUNK TO FIX */

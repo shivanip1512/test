@@ -32,10 +32,10 @@
               <page name="outageMonitorConfig" type="DETAIL">
                 <labelArgument>${outageMonitor.outageMonitorName}</labelArgument>
               </page>
-              <page name="outageMonitorConfig.EDIT" type="DETAIL">
+              <page name="outageMonitorConfig.EDIT" type="DETAIL" hideFavorite="true">
                 <labelArgument>${outageMonitor.outageMonitorName}</labelArgument>
               </page>
-              <page name="outageMonitorConfig.CREATE" type="DETAIL">
+              <page name="outageMonitorConfig.CREATE" type="DETAIL" hideFavorite="true">
               </page>
             </pages>
           </page>
@@ -44,10 +44,10 @@
               <page name="tamperFlagProcessing" type="DETAIL">
                 <labelArgument>${tamperFlagMonitor.tamperFlagMonitorName}</labelArgument>
               </page>
-              <page name="tamperFlagEditor.EDIT" type="DETAIL">
+              <page name="tamperFlagEditor.EDIT" type="DETAIL" hideFavorite="true">
                 <labelArgument>${tamperFlagMonitor.tamperFlagMonitorName}</labelArgument>
               </page>
-              <page name="tamperFlagEditor.CREATE" type="DETAIL">
+              <page name="tamperFlagEditor.CREATE" type="DETAIL" hideFavorite="true">
               </page>
             </pages>
           </page>
@@ -68,10 +68,10 @@
               <page name="deviceDataMonitor.VIEW" type="DETAIL">
                 <labelArgument>${monitor.name}</labelArgument>
               </page>
-              <page name="deviceDataMonitor.EDIT" type="DETAIL">
+              <page name="deviceDataMonitor.EDIT" type="DETAIL" hideFavorite="true">
                 <labelArgument>${monitor.name}</labelArgument>
               </page>
-              <page name="deviceDataMonitor.CREATE" type="BASIC">
+              <page name="deviceDataMonitor.CREATE" type="BASIC" hideFavorite="true">
               </page>
             </pages>
           </page>
@@ -80,28 +80,28 @@
               <page name="porterResponseMonitor.VIEW" type="DETAIL">
                 <labelArgument>${monitorDto.name}</labelArgument>
               </page>
-              <page name="porterResponseMonitor.EDIT" type="DETAIL">
+              <page name="porterResponseMonitor.EDIT" type="DETAIL" hideFavorite="true">
                 <labelArgument>${monitorDto.name}</labelArgument>
               </page>
-              <page name="porterResponseMonitor.CREATE" type="DETAIL">
+              <page name="porterResponseMonitor.CREATE" type="DETAIL" hideFavorite="true">
                 <labelArgument>${monitorDto.name}</labelArgument>
               </page>
             </pages>
           </page>
           <page name="validationProcessing" type="BASIC">
             <pages>
-              <page name="validationEditor.EDIT" type="DETAIL">
+              <page name="validationEditor.EDIT" type="DETAIL" hideFavorite="true">
                 <labelArgument>${editPageDesc}</labelArgument>
               </page>
-              <page name="validationEditor.CREATE" type="BASIC">
+              <page name="validationEditor.CREATE" type="BASIC" hideFavorite="true">
               </page>
             </pages>
           </page>
           <page name="scheduledGroupRequestProcessing" type="BASIC">
             <pages>
-              <page name="scheduledGroupRequestHome.CREATE" type="DETAIL">
+              <page name="scheduledGroupRequestHome.CREATE" type="DETAIL" hideFavorite="true">
               </page>
-              <page name="scheduledGroupRequestHome.EDIT" type="DETAIL">
+              <page name="scheduledGroupRequestHome.EDIT" type="DETAIL" hideFavorite="true">
                 <labelArgument>${scheduleName}</labelArgument>
               </page>
               <page name="scheduledGroupRequestAllJobs" type="BASIC">
@@ -134,8 +134,7 @@
                   </page>
                   <page name="meterDetailLocateRoute" type="BASIC">
                   </page>
-                  <page name="meterPoints" type="DETAIL_CHILD">
-                      <labelArgument>${deviceName}</labelArgument>
+                  <page name="meterPoints" type="BASIC">
                   </page>
                 </pages>
               </page>
@@ -167,9 +166,9 @@
           <pages>
             <page name="waterLeakReport.report.intervalData" type="DETAIL"/>
           </pages>
-		  </page>
+          </page>
           <page name="waterLeakReport.jobs" type="BASIC"/>
-	      <page name="billing" type="BASIC"/>
+          <page name="billing" type="BASIC"/>
         </pages>
       </page>
     </pages>
@@ -210,7 +209,7 @@
             <link>/deviceConfiguration/viewConfiguration?configId=${deviceConfigurationBackingBean.configId}</link>
             <labelArgument>${deviceConfigurationBackingBean.configName}</labelArgument>
             <pages>
-              <page name="configs.config.EDIT" type="BASIC"/>
+              <page name="configs.config.EDIT" type="BASIC" hideFavorite="true"/>
             </pages>
           </page>
           <page name="configs.category.CREATE" type="BASIC"/>
@@ -218,7 +217,7 @@
             <link>/deviceConfiguration/viewCategory?categoryId=${categoryEditBean.categoryId}</link>
             <labelArgument>${categoryEditBean.categoryName}</labelArgument>
             <pages>
-              <page name="configs.category.EDIT" type="BASIC"/>
+              <page name="configs.category.EDIT" type="BASIC" hideFavorite="true"/>
             </pages>
           </page>
           <page name="configs.setup" type="BASIC"/>
@@ -255,10 +254,10 @@
           <page name="bulk.archivedValueExporter" type="BASIC">
             <link>/amr/archivedValuesExporter/view</link>
             <pages>
-              <page name="bulk.archivedValueExporter.EDIT" type="DETAIL_CHILD">
+              <page name="bulk.archivedValueExporter.EDIT" type="DETAIL_CHILD" hideFavorite="true">
                 <labelArgument>${formatName}</labelArgument>
               </page>
-              <page name="bulk.archivedValueExporter.CREATE" type="BASIC"/>
+              <page name="bulk.archivedValueExporter.CREATE" type="BASIC" hideFavorite="true"/>
               <page name="bulk.archivedValueExporter.selectDevices" type="BASIC">
                 <link>/amr/archivedValueExporter/selectDevices</link>
               </page>
@@ -708,6 +707,9 @@
   <module name="operations">
     <skin name="STANDARD" />
     <css file="/WebConfig/yukon/styles/operationsStyles.css" />
+    <pages>
+          <page name="dashboard" type="BASIC" hideFavorite="true"/>
+      </pages>
   </module>
 
     <module name="adminSetup">
@@ -763,7 +765,7 @@
                                 <labelArgument>${roleGroupName}</labelArgument>
                                 <infoInclude>/WEB-INF/pages/adminSetup/userGroupEditor/roleGroupInfoFragment.jsp</infoInclude>
                                 <pages>
-                                    <page name="roleGroupEditor.EDIT" type="DETAIL_CHILD">
+                                    <page name="roleGroupEditor.EDIT" type="DETAIL_CHILD" hideFavorite="true">
                                         <link>/adminSetup/roleGroup/edit?roleGroupId=${roleGroupId}</link>
                                         <labelArgument>${roleGroupName}</labelArgument>
                                     </page>
@@ -782,7 +784,7 @@
                                 <labelArgument>${editingUsername}</labelArgument>
                                 <infoInclude>/WEB-INF/pages/adminSetup/userGroupEditor/userInfoFragment.jsp</infoInclude>
                                 <pages>
-                                    <page name="userEditor.EDIT" type="DETAIL_CHILD">
+                                    <page name="userEditor.EDIT" type="DETAIL_CHILD" hideFavorite="true">
                                         <link>/adminSetup/user/edit?userId=${userId}</link>
                                         <labelArgument>${editingUsername}</labelArgument>
                                     </page>
@@ -798,7 +800,7 @@
                                 <labelArgument>${userGroupName}</labelArgument>
                                 <infoInclude>/WEB-INF/pages/adminSetup/userGroupEditor/userGroupInfoFragment.jsp</infoInclude>
                                 <pages>
-                                    <page name="userGroupEditor.EDIT" type="DETAIL_CHILD">
+                                    <page name="userGroupEditor.EDIT" type="DETAIL_CHILD" hideFavorite="true">
                                         <link>/adminSetup/userGroup/edit?userId=${userId}</link>
                                         <labelArgument>${userGroupName}</labelArgument>
                                     </page>
@@ -827,7 +829,7 @@
                         <requireRoleProperty value="ADMIN_SUPER_USER" />
                         <link>/adminSetup/maintenance/view</link>
                         <pages>
-                            <page name="maintenance.EDIT" type="DETAIL">
+                            <page name="maintenance.EDIT" type="DETAIL" hideFavorite="true">
                                 <link>/adminSetup/maintenance/edit</link>
                                 <labelArgument>${jobNameMsg}</labelArgument>
                             </page>
@@ -836,7 +838,7 @@
                     <page name="home" type="BASIC">
                         <link>/adminSetup/energyCompany/home?ecId=${ecId}</link>
                         <pages>
-                            <page name="createEnergyCompany" type="BASIC">
+                            <page name="createEnergyCompany" type="BASIC" hideFavorite="true">
                                 <link>/adminSetup/energyCompany/new</link>
                             </page>
                             <page name="generalInfo.VIEW" type="DETAIL" navigationMenuRoot="true" contributeToMenu="true">
@@ -844,7 +846,7 @@
                                 <labelArgument>${energyCompanyName}</labelArgument>
                                 <infoInclude>/WEB-INF/pages/adminSetup/energyCompany/ecInfoFragment.jsp</infoInclude>
                                 <pages>
-                                    <page name="generalInfo.EDIT" type="DETAIL_CHILD">
+                                    <page name="generalInfo.EDIT" type="DETAIL_CHILD" hideFavorite="true">
                                         <link>/adminSetup/energyCompany/generalInfo?ecId=${ecId}</link>
                                         <labelArgument>${energyCompanyName}</labelArgument>
                                     </page>
@@ -864,12 +866,12 @@
                                                 <link>/adminSetup/energyCompany/operatorLogin/view?operatorLoginId=${operatorLogin.userId}&amp;ecId=${ecId}</link>
                                                 <labelArgument>${operatorLogin.username}</labelArgument>
                                                 <pages>
-                                                    <page name="operatorLogin.EDIT" type="DETAIL_CHILD">
+                                                    <page name="operatorLogin.EDIT" type="DETAIL_CHILD" hideFavorite="true">
                                                         <labelArgument>${operatorLogin.username}</labelArgument>
                                                     </page>
                                                 </pages>
                                             </page>
-                                            <page name="operatorLogin.CREATE" type="BASIC" contributeToMenu="false">
+                                            <page name="operatorLogin.CREATE" type="BASIC" contributeToMenu="false" hideFavorite="true">
                                             </page>
                                         </pages>
                                     </page>
@@ -881,13 +883,13 @@
                                                 <link>/adminSetup/energyCompany/applianceCategory/view?ecId=${ecId}&amp;applianceCategoryId=${applianceCategory.applianceCategoryId}</link>
                                                 <labelArgument>${applianceCategory.categoryLabel}</labelArgument>
                                                 <pages>
-                                                    <page name="applianceCategory.EDIT" type="DETAIL_CHILD">
+                                                    <page name="applianceCategory.EDIT" type="DETAIL_CHILD" hideFavorite="true">
                                                         <link>/adminSetup/energyCompany/applianceCategory/edit?ecId=${ecId}&amp;applianceCategoryId=${applianceCategory.applianceCategoryId}</link>
                                                         <labelArgument>${applianceCategory.categoryLabel}</labelArgument>
                                                     </page>
                                                 </pages>
                                             </page>
-                                            <page name="applianceCategory.CREATE" type="BASIC">
+                                            <page name="applianceCategory.CREATE" type="BASIC" hideFavorite="true">
                                                 <link>/adminSetup/energyCompany/applianceCategory/create?ecId=${ecId}</link>
                                             </page>
                                         </pages>
@@ -905,13 +907,13 @@
                                                 <link>/adminSetup/energyCompany/serviceCompany/view?serviceCompanyId=${serviceCompany.companyId}&amp;ecId=${ecId}</link>
                                                 <labelArgument>${serviceCompany.companyName}</labelArgument>
                                                 <pages>
-                                                    <page name="serviceCompany.EDIT" type="DETAIL_CHILD" contributeToMenu="false">
+                                                    <page name="serviceCompany.EDIT" type="DETAIL_CHILD" contributeToMenu="false" hideFavorite="true">
                                                         <link>/adminSetup/energyCompany/serviceCompany/edit?serviceCompany=${serviceCompanyId}</link>
                                                         <labelArgument>${serviceCompany.companyName}</labelArgument>
                                                     </page>
                                                 </pages>
                                             </page>
-                                            <page name="serviceCompany.CREATE" type="DETAIL_CHILD" contributeToMenu="false">
+                                            <page name="serviceCompany.CREATE" type="DETAIL_CHILD" contributeToMenu="false" hideFavorite="true">
                                                 <link>/adminSetup/energyCompany/serviceCompany/create?ecId=${ecId}</link>
                                             </page>
                                         </pages>
@@ -925,13 +927,13 @@
                                                 <link>/adminSetup/energyCompany/warehouse/view?warehouseId=${warehouseDto.warehouse.warehouseID}&amp;ecId=${ecId}</link>
                                                 <labelArgument>${warehouseDto.warehouse.warehouseName}</labelArgument>
                                                 <pages>
-                                                    <page name="warehouse.EDIT" type="DETAIL_CHILD">
+                                                    <page name="warehouse.EDIT" type="DETAIL_CHILD" hideFavorite="true">
                                                         <link>/adminSetup/energyCompany/warehouse/edit?warehouseId=${warehouseId}</link>
                                                         <labelArgument>${warehouseDto.warehouse.warehouseName}</labelArgument>
                                                     </page>
                                                 </pages>
                                             </page>
-                                            <page name="warehouse.CREATE" type="DETAIL" contributeToMenu="false">
+                                            <page name="warehouse.CREATE" type="DETAIL" contributeToMenu="false" hideFavorite="true">
                                                 <link>/adminSetup/energyCompany/warehouse/create?id=${id}</link>
                                             </page>
                                         </pages>
@@ -940,7 +942,7 @@
                                         <link>/adminSetup/energyCompany/routesAndSubstations/view?ecId=${ecId}</link>
                                         <labelArgument>${energyCompanyName}</labelArgument>
                                         <pages>
-                                            <page name="routesAndSubstations.EDIT" type="DETAIL_CHILD">
+                                            <page name="routesAndSubstations.EDIT" type="DETAIL_CHILD" hideFavorite="true">
                                                 <link>/adminSetup/energyCompany/routesAndSubstations/edit?ecId=${ecId}</link>
                                                 <labelArgument>${energyCompanyName}</labelArgument>
                                             </page>
@@ -954,7 +956,7 @@
                                                 <link>/adminSetup/energyCompany/list/view?ecId=${ecId}&amp;listId=${list.listId}</link>
                                                 <labelArgument>${list.type}</labelArgument>
                                                 <pages>
-                                                    <page name="list.EDIT" type="DETAIL_CHILD">
+                                                    <page name="list.EDIT" type="DETAIL_CHILD" hideFavorite="true">
                                                         <link>/adminSetup/energyCompany/list/edit?ecId=${ecId}&amp;listId=${list.listId}</link>
                                                         <labelArgument>${list.type}</labelArgument>
                                                     </page>
@@ -967,7 +969,7 @@
                                         <link>/adminSetup/energyCompany/schedules/view?ecId=${ecId}</link>
                                         <labelArgument>${energyCompanyName}</labelArgument>
                                         <pages>
-                                            <page name="schedules.EDIT" type="DETAIL_CHILD">
+                                            <page name="schedules.EDIT" type="DETAIL_CHILD" hideFavorite="true">
                                                 <link>/adminSetup/energyCompany/schedules/edit?ecId=${ecId}&amp;type=${type}</link>
                                                 <labelArgument>${typeStr}</labelArgument>
                                             </page>
@@ -1016,7 +1018,7 @@
             <page name="accountList" type="BASIC" hideSearch="true">
                 <link>/stars/operator/account/search</link>
                 <pages>
-                    <page name="account.CREATE" type="BASIC" hideSearch="true">
+                    <page name="account.CREATE" type="BASIC" hideSearch="true" hideFavorite="true">
                         <link>/stars/operator/account/accountCreate</link>
                     </page>
                     <page name="account.VIEW" type="DETAIL" navigationMenuRoot="true" contributeToMenu="true">
@@ -1024,7 +1026,7 @@
                         <labelArgument>${accountNumber}</labelArgument>
                         <infoInclude>/WEB-INF/pages/stars/operator/accountInfoFragment.jsp</infoInclude>
                         <pages>
-                            <page name="account.EDIT" type="DETAIL_CHILD">
+                            <page name="account.EDIT" type="DETAIL_CHILD" hideFavorite="true">
                                 <link>/stars/operator/account/edit?accountId=${accountId}</link>
                                 <labelArgument>${accountNumber}</labelArgument>
                                 <infoInclude>/WEB-INF/pages/stars/operator/accountInfoFragment.jsp</infoInclude>
@@ -1038,14 +1040,14 @@
                                         <labelArgument>${firstName}</labelArgument>
                                         <labelArgument>${lastName}</labelArgument>
                                         <pages>
-                                            <page name="contact.EDIT" type="DETAIL_CHILD">
+                                            <page name="contact.EDIT" type="DETAIL_CHILD" hideFavorite="true">
                                                 <link>/stars/operator/contacts/edit?accountId=${accountId}&amp;contactId=${contactId}</link>
                                                 <labelArgument>${firstName}</labelArgument>
                                                 <labelArgument>${lastName}</labelArgument>
                                             </page>
                                         </pages>
                                     </page>
-                                    <page name="contact.CREATE" type="BASIC">
+                                    <page name="contact.CREATE" type="BASIC" hideFavorite="true">
                                         <link>/stars/operator/contacts/create?accountId=${accountId}&amp;contactId=0</link>
                                         <labelArgument>${firstName}</labelArgument>
                                         <labelArgument>${lastName}</labelArgument>
@@ -1062,7 +1064,7 @@
                                 <link>/stars/operator/callTracking/callList?accountId=${accountId}</link>
                                 <labelArgument>${accountNumber}</labelArgument>
                                 <pages>
-                                    <page name="viewCall.CREATE" type="BASIC">
+                                    <page name="viewCall.CREATE" type="BASIC" hideFavorite="true">
                                         <requireRoleProperty value="OPERATOR_CONSUMER_INFO_ACCOUNT_CALL_TRACKING" />
                                         <link>/stars/operator/callTracking/viewCall?accountId=${accountId}</link>
                                         <labelArgument>${callNumber}</labelArgument>
@@ -1072,7 +1074,7 @@
                                         <link>/stars/operator/callTracking/view?accountId=${accountId}</link>
                                         <labelArgument>${callNumber}</labelArgument>
                                         <pages>
-                                            <page name="viewCall.EDIT" type="DETAIL_CHILD">
+                                            <page name="viewCall.EDIT" type="DETAIL_CHILD" hideFavorite="true">
                                                 <requireRoleProperty value="OPERATOR_CONSUMER_INFO_ACCOUNT_CALL_TRACKING" />
                                                 <link>/stars/operator/callTracking/edit?accountId=${accountId}</link>
                                                 <labelArgument>${callNumber}</labelArgument>
@@ -1147,14 +1149,14 @@
                                 <link>/stars/operator/hardware/list?accountId=${accountId}</link>
                                 <labelArgument>${accountNumber}</labelArgument>
                                 <pages>
-                                    <page name="hardware.CREATE" type="BASIC">
+                                    <page name="hardware.CREATE" type="BASIC" hideFavorite="true">
                                         <labelArgument>${displayName}</labelArgument>
                                     </page>
                                     <page name="hardware.VIEW" type="DETAIL">
                                         <link>/stars/operator/hardware/view?accountId=${accountId}&amp;inventoryId=${inventoryId}</link>
                                         <labelArgument>${displayName}</labelArgument>
                                         <pages>
-                                            <page name="hardware.EDIT" type="DETAIL_CHILD">
+                                            <page name="hardware.EDIT" type="DETAIL_CHILD" hideFavorite="true">
                                                 <labelArgument>${displayName}</labelArgument>
                                             </page>
                                             <page name="thermostatManual.single" type="DETAIL_CHILD">
@@ -1168,19 +1170,16 @@
                                             </page>
                                         </pages>
                                     </page>
-                                    <page name="meterProfile.CREATE" type="BASIC">
+                                    <page name="meterProfile.CREATE" type="BASIC" hideFavorite="true">
                                     </page>
                                     <page name="meterProfile.VIEW" type="DETAIL">
                                         <link>/stars/operator/hardware/viewMeterProfile?accountId=${accountId}&amp;inventoryId=${inventoryId}</link>
                                         <labelArgument>${displayName}</labelArgument>
                                         <pages>
-                                            <page name="meterProfile.EDIT" type="DETAIL_CHILD">
+                                            <page name="meterProfile.EDIT" type="DETAIL_CHILD" hideFavorite="true">
                                                 <labelArgument>${displayName}</labelArgument>
                                             </page>
                                         </pages>
-                                    </page>
-                                    <page name="hardware.points" type="DETAIL_CHILD">
-                                        <labelArgument>${deviceName}</labelArgument>
                                     </page>
                                     <page name="hardwareConfig" type="DETAIL">
                                         <labelArgument>${displayName}</labelArgument>
@@ -1214,11 +1213,11 @@
                                         <requireRoleProperty value="OPERATOR_CONSUMER_INFO_WORK_ORDERS" />
                                         <labelArgument>${workOrderDto.workOrderBase.orderNumber}</labelArgument>
                                     </page>
-                                    <page name="workOrder.EDIT" type="DETAIL">
+                                    <page name="workOrder.EDIT" type="DETAIL" hideFavorite="true">
                                         <requireRoleProperty value="OPERATOR_CONSUMER_INFO_WORK_ORDERS" />
                                         <labelArgument>${workOrderDto.workOrderBase.orderNumber}</labelArgument>
                                     </page>
-                                    <page name="workOrder.CREATE" type="DETAIL">
+                                    <page name="workOrder.CREATE" type="DETAIL" hideFavorite="true">
                                         <requireRoleProperty value="OPERATOR_CONSUMER_INFO_WORK_ORDERS" />
                                     </page>
                                 </pages>
@@ -1236,12 +1235,12 @@
                 <pages>
                     <page name="inventory.list" type="BASIC">
                     </page>
-                    <page name="inventory.CREATE" type="BASIC">
+                    <page name="inventory.CREATE" type="BASIC" hideFavorite="true">
                     </page>
                     <page name="inventory.VIEW" type="DETAIL">
                         <labelArgument>${displayName}</labelArgument>
                         <pages>
-                            <page name="inventory.EDIT" type="DETAIL_CHILD">
+                            <page name="inventory.EDIT" type="DETAIL_CHILD" hideFavorite="true">
                                 <labelArgument>${displayName}</labelArgument>
                             </page>
                         </pages>
@@ -1254,10 +1253,10 @@
                     <page name="filterSelection" type="DETAIL">
                         <link>/stars/operator/inventory/setupFilterRules</link>
                     </page>
-                    <page name="commandSchedule.CREATE" type="BASIC">
+                    <page name="commandSchedule.CREATE" type="BASIC" hideFavorite="true">
                         <labelArgument>${displayName}</labelArgument>
                     </page>
-                    <page name="commandSchedule.EDIT" type="DETAIL">
+                    <page name="commandSchedule.EDIT" type="DETAIL" hideFavorite="true">
                         <labelArgument>${displayName}</labelArgument>
                     </page>
                     <page name="inventoryActions" type="DETAIL">
@@ -1390,7 +1389,7 @@
             <page name="profile.VIEW" type="BASIC">
                 <link>/user/profile</link>
                 <pages>
-                    <page name="profile.EDIT" type="BASIC">
+                    <page name="profile.EDIT" type="BASIC" hideFavorite="true">
                     </page>
                 </pages>
             </page>
