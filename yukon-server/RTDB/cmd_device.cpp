@@ -10,8 +10,23 @@ namespace Cti {
 namespace Devices {
 namespace Commands {
 
+
 //  throws CommandException
-unsigned DeviceCommand::getValueFromBits(const Bytes &data, const unsigned start_offset, const unsigned length)
+vector<unsigned> DeviceCommand::getValueVectorFromBits(const Bytes &data, const unsigned start_offset, const unsigned length, const unsigned count)
+{
+    vector<unsigned> values;
+
+    for( unsigned i = 0; i < count; ++i )
+    {
+        values.push_back(getValueFromBits_bEndian(data, start_offset + i * length, length));
+    }
+
+    return values;
+}
+
+
+//  throws CommandException
+unsigned DeviceCommand::getValueFromBits_bEndian(const Bytes &data, const unsigned start_offset, const unsigned length)
 {
     if( start_offset + length > data.size() * 8 )
     {
@@ -41,9 +56,8 @@ unsigned DeviceCommand::getValueFromBits(const Bytes &data, const unsigned start
     return value;
 }
 
-
 //  throws CommandException
-unsigned DeviceCommand::getValueFromBitsLE(const Bytes &data, const unsigned start_offset, const unsigned length)
+unsigned DeviceCommand::getValueFromBits_lEndian(const Bytes &data, const unsigned start_offset, const unsigned length)
 {
     const unsigned end_offset = start_offset + length; // = 8
 
@@ -75,21 +89,44 @@ unsigned DeviceCommand::getValueFromBitsLE(const Bytes &data, const unsigned sta
 }
 
 
-//  throws CommandException
-vector<unsigned> DeviceCommand::getValueVectorFromBits(const Bytes &data, const unsigned start_offset, const unsigned length, const unsigned count)
+void DeviceCommand::setBits_bEndian(Bytes &data, const unsigned start_offset, const unsigned length, const unsigned value)
 {
-    vector<unsigned> values;
-
-    for( unsigned i = 0; i < count; ++i )
+    if( ! length )
     {
-        values.push_back(getValueFromBits(data, start_offset + i * length, length));
+        return;
     }
 
-    return values;
+    const unsigned end_offset     = start_offset + length;
+    const unsigned bytes_required = (end_offset + 7) / 8;
+
+    if( data.size() < bytes_required )
+    {
+        data.resize(bytes_required);
+    }
+
+    for( unsigned pos = start_offset; pos < end_offset; )
+    {
+        const unsigned bit_offset    = pos % 8;                                     // offset in the current byte
+        const unsigned byte_offset   = pos / 8;                                     // byte index
+        const unsigned bits_to_write = std::min(end_offset - pos, 8 - bit_offset);  // number of bits to write in the current byte
+
+        unsigned char mask = 0xff;
+        mask >>= bit_offset;
+        mask <<= (8 - bits_to_write - bit_offset);
+
+        unsigned char data_to_write;
+        data_to_write = value >> ( end_offset - pos - bits_to_write );
+        data_to_write <<= ( 8 - bit_offset - bits_to_write );
+
+        data[byte_offset] &= ~mask;
+        data[byte_offset] |= data_to_write & mask;
+
+        pos += bits_to_write;
+    }
 }
 
 
-void DeviceCommand::setBits(Bytes &data, const unsigned start_offset, const unsigned length, const unsigned value)
+void DeviceCommand::setBits_lEndian(Bytes &data, const unsigned start_offset, const unsigned length, const unsigned value)
 {
     if( ! length )
     {
@@ -129,7 +166,6 @@ void DeviceCommand::setBits(Bytes &data, const unsigned start_offset, const unsi
         pos += bits_to_write;
     }
 }
-
 
 }
 }

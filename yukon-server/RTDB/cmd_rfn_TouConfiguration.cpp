@@ -461,7 +461,7 @@ void RfnTouScheduleConfigurationCommand::decodeDayTable( RfnResult& result, cons
 
     for( int day_nbr = 0; day_nbr < 8; day_nbr++ )
     {
-        const unsigned schedule_nbr = getValueFromBitsLE( value, day_nbr*3, 3 );
+        const unsigned schedule_nbr = getValueFromBits( value, day_nbr*3, 3 );
 
         validateCondition( schedule_nbr <= 3,
                            ErrorInvalidData, "Invalid day table schedule number - (" + CtiNumStr(schedule_nbr) + ")");
@@ -493,7 +493,7 @@ void RfnTouScheduleConfigurationCommand::decodeScheduleSwitchTimes( RfnResult& r
 
     for( int switchTime_nbr = 0; switchTime_nbr < 5; switchTime_nbr++ )
     {
-        const unsigned short switchTime = getValueFromBitsLE( value, switchTime_nbr*16, 16 );
+        const unsigned short switchTime = getValueFromBits( value, switchTime_nbr*16, 16 );
         result.description += " Switch time " + CtiNumStr(switchTime_nbr + 1) + " - " + CtiNumStr(switchTime) + " minutes\n";
 
         _paoInfo.push_back( CtiTableDynamicPaoInfo( -1, keys[switchTime_nbr] ));
@@ -531,7 +531,7 @@ void RfnTouScheduleConfigurationCommand::decodeScheduleRates( RfnResult& result,
 
     for( int switch_nbr = 0; switch_nbr < 6; switch_nbr++ )
     {
-        const unsigned char rate = getValueFromBitsLE( value, switch_nbr*3, 3 );
+        const unsigned char rate = getValueFromBits( value, switch_nbr*3, 3 );
 
         boost::optional<string> rateDesc = mapFind( rateItems, rate );
 
@@ -651,7 +651,7 @@ void RfnTouHolidayConfigurationCommand::decodeHoliday( RfnResult& result, const 
 
     for( int date_nbr = 0; date_nbr < 3; date_nbr++ )
     {
-        const unsigned long date = getValueFromBitsLE( value, date_nbr*32, 32 );
+        const unsigned long date = getValueFromBits( value, date_nbr*32, 32 );
         result.description += " Date " + CtiNumStr( date_nbr + 1 ) + " - " + CtiTime(date).asString() + "\n";
 
         _paoInfo.push_back( CtiTableDynamicPaoInfo( -1, holidaysKeys[date_nbr] ));

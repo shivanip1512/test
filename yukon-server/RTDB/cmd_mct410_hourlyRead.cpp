@@ -105,7 +105,7 @@ DlcCommand::point_data Mct410HourlyReadCommand::extractBlinkCount(const Bytes &p
     blink.offset  = 20;
     blink.type    = PulseAccumulatorPointType;
     blink.quality = NormalQuality;
-    blink.value   = getValueFromBits(payload, 3, 10);
+    blink.value   = getValueFromBits_bEndian(payload, 3, 10);
 
 
     //  This is the only error case - it's a catch-all for any error value or overflow.
@@ -224,7 +224,7 @@ DlcCommand::request_ptr Mct410HourlyReadCommand::makeRequest(const CtiTime now)
 DlcCommand::request_ptr Mct410HourlyReadCommand::decodeCommand(CtiTime now, const unsigned function, const boost::optional<Bytes> &payload, string &description, vector<point_data> &points)
 try
 {
-    const unsigned weekday = getValueFromBits(*payload, 0, 3);
+    const unsigned weekday = getValueFromBits_bEndian(*payload, 0, 3);
 
     if( weekday != _request.date.weekDay() )
     {

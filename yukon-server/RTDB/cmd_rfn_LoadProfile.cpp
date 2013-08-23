@@ -336,8 +336,8 @@ void RfnLoadProfileReadPointsCommand::populateTlvs( std::vector< TypeLengthValue
 {
     TypeLengthValue tlv(TlvType_GetProfilePointsRequest);
 
-    setBits(tlv.value,  0, 32, CtiTime(_begin).seconds());
-    setBits(tlv.value, 32, 32, CtiTime(_end  ).seconds());
+    setBits_lEndian(tlv.value,  0, 32, CtiTime(_begin).seconds());
+    setBits_lEndian(tlv.value, 32, 32, CtiTime(_end  ).seconds());
 
     tlvs.push_back( tlv );
 }

@@ -14,12 +14,13 @@ BOOST_AUTO_TEST_SUITE( test_cmd_device )
 
 struct Test_DeviceCommand : Cti::Devices::Commands::DeviceCommand
 {
-    using Cti::Devices::Commands::DeviceCommand::getValueFromBits;
+    using Cti::Devices::Commands::DeviceCommand::getValueFromBits_bEndian;
     using Cti::Devices::Commands::DeviceCommand::getValueVectorFromBits;
-    using Cti::Devices::Commands::DeviceCommand::setBits;
+    using Cti::Devices::Commands::DeviceCommand::setBits_lEndian;
+    using Cti::Devices::Commands::DeviceCommand::setBits_bEndian;
 };
 
-BOOST_AUTO_TEST_CASE(test_getValueFromBits)
+BOOST_AUTO_TEST_CASE(test_getValueFromBits_lEndian)
 {
     std::vector<unsigned char> init;
 
@@ -30,39 +31,39 @@ BOOST_AUTO_TEST_CASE(test_getValueFromBits)
 
     const std::vector<unsigned char> data = init;
 
-    BOOST_CHECK_EQUAL(0, Test_DeviceCommand::getValueFromBits(data, 0, 1));
-    BOOST_CHECK_EQUAL(1, Test_DeviceCommand::getValueFromBits(data, 7, 1));
+    BOOST_CHECK_EQUAL(0, Test_DeviceCommand::getValueFromBits_bEndian(data, 0, 1));
+    BOOST_CHECK_EQUAL(1, Test_DeviceCommand::getValueFromBits_bEndian(data, 7, 1));
 
-    BOOST_CHECK_EQUAL(0, Test_DeviceCommand::getValueFromBits(data,  2, 2));
-    BOOST_CHECK_EQUAL(1, Test_DeviceCommand::getValueFromBits(data,  6, 2));
-    BOOST_CHECK_EQUAL(2, Test_DeviceCommand::getValueFromBits(data, 18, 2));
-    BOOST_CHECK_EQUAL(3, Test_DeviceCommand::getValueFromBits(data,  9, 2));
+    BOOST_CHECK_EQUAL(0, Test_DeviceCommand::getValueFromBits_bEndian(data,  2, 2));
+    BOOST_CHECK_EQUAL(1, Test_DeviceCommand::getValueFromBits_bEndian(data,  6, 2));
+    BOOST_CHECK_EQUAL(2, Test_DeviceCommand::getValueFromBits_bEndian(data, 18, 2));
+    BOOST_CHECK_EQUAL(3, Test_DeviceCommand::getValueFromBits_bEndian(data,  9, 2));
 
-    BOOST_CHECK_EQUAL(0, Test_DeviceCommand::getValueFromBits(data,  4, 3));
-    BOOST_CHECK_EQUAL(1, Test_DeviceCommand::getValueFromBits(data,  5, 3));
-    BOOST_CHECK_EQUAL(2, Test_DeviceCommand::getValueFromBits(data, 17, 3));
-    BOOST_CHECK_EQUAL(3, Test_DeviceCommand::getValueFromBits(data,  6, 3));
-    BOOST_CHECK_EQUAL(4, Test_DeviceCommand::getValueFromBits(data, 25, 3));
-    BOOST_CHECK_EQUAL(5, Test_DeviceCommand::getValueFromBits(data, 21, 3));
-    BOOST_CHECK_EQUAL(6, Test_DeviceCommand::getValueFromBits(data, 15, 3));
-    BOOST_CHECK_EQUAL(7, Test_DeviceCommand::getValueFromBits(data, 10, 3));
+    BOOST_CHECK_EQUAL(0, Test_DeviceCommand::getValueFromBits_bEndian(data,  4, 3));
+    BOOST_CHECK_EQUAL(1, Test_DeviceCommand::getValueFromBits_bEndian(data,  5, 3));
+    BOOST_CHECK_EQUAL(2, Test_DeviceCommand::getValueFromBits_bEndian(data, 17, 3));
+    BOOST_CHECK_EQUAL(3, Test_DeviceCommand::getValueFromBits_bEndian(data,  6, 3));
+    BOOST_CHECK_EQUAL(4, Test_DeviceCommand::getValueFromBits_bEndian(data, 25, 3));
+    BOOST_CHECK_EQUAL(5, Test_DeviceCommand::getValueFromBits_bEndian(data, 21, 3));
+    BOOST_CHECK_EQUAL(6, Test_DeviceCommand::getValueFromBits_bEndian(data, 15, 3));
+    BOOST_CHECK_EQUAL(7, Test_DeviceCommand::getValueFromBits_bEndian(data, 10, 3));
 
-    BOOST_CHECK_EQUAL(10, Test_DeviceCommand::getValueFromBits(data, 16, 4));
-    BOOST_CHECK_EQUAL( 9, Test_DeviceCommand::getValueFromBits(data, 18, 4));
+    BOOST_CHECK_EQUAL(10, Test_DeviceCommand::getValueFromBits_bEndian(data, 16, 4));
+    BOOST_CHECK_EQUAL( 9, Test_DeviceCommand::getValueFromBits_bEndian(data, 18, 4));
 
-    BOOST_CHECK_EQUAL(20, Test_DeviceCommand::getValueFromBits(data, 16, 5));
-    BOOST_CHECK_EQUAL(24, Test_DeviceCommand::getValueFromBits(data, 24, 5));
+    BOOST_CHECK_EQUAL(20, Test_DeviceCommand::getValueFromBits_bEndian(data, 16, 5));
+    BOOST_CHECK_EQUAL(24, Test_DeviceCommand::getValueFromBits_bEndian(data, 24, 5));
 
-    BOOST_CHECK_EQUAL(18, Test_DeviceCommand::getValueFromBits(data, 17, 6));
+    BOOST_CHECK_EQUAL(18, Test_DeviceCommand::getValueFromBits_bEndian(data, 17, 6));
 
-    BOOST_CHECK_EQUAL(127, Test_DeviceCommand::getValueFromBits(data, 8, 7));
+    BOOST_CHECK_EQUAL(127, Test_DeviceCommand::getValueFromBits_bEndian(data, 8, 7));
 
-    BOOST_CHECK_EQUAL(255, Test_DeviceCommand::getValueFromBits(data, 8, 8));
+    BOOST_CHECK_EQUAL(255, Test_DeviceCommand::getValueFromBits_bEndian(data, 8, 8));
 
-    BOOST_CHECK_EQUAL(511, Test_DeviceCommand::getValueFromBits(data, 7, 9));
+    BOOST_CHECK_EQUAL(511, Test_DeviceCommand::getValueFromBits_bEndian(data, 7, 9));
 
-    BOOST_CHECK_EQUAL(1023, Test_DeviceCommand::getValueFromBits(data,  7, 10));
-    BOOST_CHECK_EQUAL( 604, Test_DeviceCommand::getValueFromBits(data, 18, 10));
+    BOOST_CHECK_EQUAL(1023, Test_DeviceCommand::getValueFromBits_bEndian(data,  7, 10));
+    BOOST_CHECK_EQUAL( 604, Test_DeviceCommand::getValueFromBits_bEndian(data, 18, 10));
 }
 
 BOOST_AUTO_TEST_CASE(test_getValueVectorFromBits)
@@ -158,7 +159,7 @@ BOOST_AUTO_TEST_CASE( test_getValueVectorFromBits_throw )
 }
 
 
-BOOST_AUTO_TEST_CASE( test_setBits_into_empty_vector )
+BOOST_AUTO_TEST_CASE( test_setBits_into_empty_vector_lEndian )
 {
     using boost::assign::list_of;
 
@@ -174,7 +175,7 @@ BOOST_AUTO_TEST_CASE( test_setBits_into_empty_vector )
             for( unsigned offset = 0; offset < 10; ++offset)
             {
                 std::vector<unsigned char> result;
-                Test_DeviceCommand::setBits(result, offset, length, value);
+                Test_DeviceCommand::setBits_lEndian(result, offset, length, value);
 
                 results.push_back(result);
             }
@@ -523,7 +524,7 @@ BOOST_AUTO_TEST_CASE( test_setBits_into_empty_vector )
 }
 
 
-BOOST_AUTO_TEST_CASE( test_setBits_into_full_vector )
+BOOST_AUTO_TEST_CASE( test_setBits_into_full_vector_lEndian )
 {
     using boost::assign::list_of;
 
@@ -542,7 +543,7 @@ BOOST_AUTO_TEST_CASE( test_setBits_into_full_vector )
             for( unsigned offset = 0; offset < 10; ++offset)
             {
                 std::vector<unsigned char> result = full;
-                Test_DeviceCommand::setBits(result, offset, length, value);
+                Test_DeviceCommand::setBits_lEndian(result, offset, length, value);
 
                 results.push_back(result);
             }
@@ -851,6 +852,379 @@ BOOST_AUTO_TEST_CASE( test_setBits_into_full_vector )
     //  value: Fs
         //  length: 0  -  index 300
             .repeat(100, full)
+    ;
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(
+       results.begin(),  results.end(),
+       expected.begin(), expected.end());
+}
+
+
+BOOST_AUTO_TEST_CASE( test_setBits_into_empty_vector_bEndian )
+{
+    using boost::assign::list_of;
+
+    unsigned values[] = { 0, 0x87654321, 0x789abcde, 0xffffffff };
+    unsigned lengths[] = { 0, 1, 2, 3, 7, 8, 9, 10, 27, 32 };
+
+    std::vector<std::vector<unsigned char> > results;
+
+    for each( const unsigned value in values )
+    {
+        for each( const unsigned length in lengths )
+        {
+            for( unsigned offset = 0; offset < 10; ++offset)
+            {
+                std::vector<unsigned char> result;
+                Test_DeviceCommand::setBits_bEndian(result, offset, length, value);
+
+                results.push_back(result);
+            }
+        }
+    }
+
+    const std::vector<unsigned char> empty;
+
+    const std::vector<std::vector<unsigned char> > expected = list_of
+    //  value: 0
+        //  length: 0  -  index 0
+            (empty)
+            .repeat(9, empty)
+        //  length: 1  -  index 10
+            .repeat(8, list_of(0))
+            .repeat(2, list_of(0)(0))
+        //  length: 2  -  index 20
+            .repeat(7, list_of(0))
+            .repeat(3, list_of(0)(0))
+        //  length: 3  -  index 30
+            .repeat(6, list_of(0))
+            .repeat(4, list_of(0)(0))
+        //  length: 7  -  index 40
+            .repeat(2, list_of(0))
+            .repeat(8, list_of(0)(0))
+        //  length: 8  -  index 50
+            .repeat(1, list_of(0))
+            .repeat(8, list_of(0)(0))
+            .repeat(1, list_of(0)(0)(0))
+        //  length: 9  -  index 60
+            .repeat(8, list_of(0)(0))
+            .repeat(2, list_of(0)(0)(0))
+        //  length: 10  -  index 70
+            .repeat(7, list_of(0)(0))
+            .repeat(3, list_of(0)(0)(0))
+        //  length: 27  -  index 80
+            .repeat(6, list_of(0)(0)(0)(0))
+            .repeat(4, list_of(0)(0)(0)(0)(0))
+        //  length: 32  -  index 90
+            .repeat(1, list_of(0)(0)(0)(0))
+            .repeat(8, list_of(0)(0)(0)(0)(0))
+            .repeat(1, list_of(0)(0)(0)(0)(0)(0))
+    //  value: 0x87654321
+        //  length: 0  -  index 100
+            .repeat(10, empty)
+        //  length: 1  -  index 110
+            (list_of(0x80))
+            (list_of(0x40))
+            (list_of(0x20))
+            (list_of(0x10))
+            (list_of(0x08))
+            (list_of(0x04))
+            (list_of(0x02))
+            (list_of(0x01))
+            (list_of(0x00)(0x80))
+            (list_of(0x00)(0x40))
+        //  length: 2  -  index 120
+            (list_of(0x40))
+            (list_of(0x20))
+            (list_of(0x10))
+            (list_of(0x08))
+            (list_of(0x04))
+            (list_of(0x02))
+            (list_of(0x01))
+            (list_of(0x00)(0x80))
+            (list_of(0x00)(0x40))
+            (list_of(0x00)(0x20))
+        //  length: 3  - index 130
+            (list_of(0x20))
+            (list_of(0x10))
+            (list_of(0x08))
+            (list_of(0x04))
+            (list_of(0x02))
+            (list_of(0x01))
+            (list_of(0x00)(0x80))
+            (list_of(0x00)(0x40))
+            (list_of(0x00)(0x20))
+            (list_of(0x00)(0x10))
+        //  length: 7  -  index 140
+            (list_of(0x42))
+            (list_of(0x21))
+            (list_of(0x10)(0x80))
+            (list_of(0x08)(0x40))
+            (list_of(0x04)(0x20))
+            (list_of(0x02)(0x10))
+            (list_of(0x01)(0x08))
+            (list_of(0x00)(0x84))
+            (list_of(0x00)(0x42))
+            (list_of(0x00)(0x21))
+        //  length: 8  -  index 150
+            (list_of(0x21))
+            (list_of(0x10)(0x80))
+            (list_of(0x08)(0x40))
+            (list_of(0x04)(0x20))
+            (list_of(0x02)(0x10))
+            (list_of(0x01)(0x08))
+            (list_of(0x00)(0x84))
+            (list_of(0x00)(0x42))
+            (list_of(0x00)(0x21))
+            (list_of(0x00)(0x10)(0x80))
+        //  length: 9  -  index 160
+            (list_of(0x90)(0x80))
+            (list_of(0x48)(0x40))
+            (list_of(0x24)(0x20))
+            (list_of(0x12)(0x10))
+            (list_of(0x09)(0x08))
+            (list_of(0x04)(0x84))
+            (list_of(0x02)(0x42))
+            (list_of(0x01)(0x21))
+            (list_of(0x00)(0x90)(0x80))
+            (list_of(0x00)(0x48)(0x40))
+        //  length: 10  -  index 170
+            (list_of(0xc8)(0x40))
+            (list_of(0x64)(0x20))
+            (list_of(0x32)(0x10))
+            (list_of(0x19)(0x08))
+            (list_of(0x0c)(0x84))
+            (list_of(0x06)(0x42))
+            (list_of(0x03)(0x21))
+            (list_of(0x01)(0x90)(0x80))
+            (list_of(0x00)(0xc8)(0x40))
+            (list_of(0x00)(0x64)(0x20))
+        //  length: 27  -  index 180
+            (list_of(0xec)(0xa8)(0x64)(0x20))
+            (list_of(0x76)(0x54)(0x32)(0x10))
+            (list_of(0x3b)(0x2a)(0x19)(0x08))
+            (list_of(0x1d)(0x95)(0x0c)(0x84))
+            (list_of(0x0e)(0xca)(0x86)(0x42))
+            (list_of(0x07)(0x65)(0x43)(0x21))
+            (list_of(0x03)(0xb2)(0xa1)(0x90)(0x80))
+            (list_of(0x01)(0xd9)(0x50)(0xc8)(0x40))
+            (list_of(0x00)(0xec)(0xa8)(0x64)(0x20))
+            (list_of(0x00)(0x76)(0x54)(0x32)(0x10))
+        //  length: 32  -  index 190
+            (list_of(0x87)(0x65)(0x43)(0x21))
+            (list_of(0x43)(0xb2)(0xa1)(0x90)(0x80))
+            (list_of(0x21)(0xd9)(0x50)(0xc8)(0x40))
+            (list_of(0x10)(0xec)(0xa8)(0x64)(0x20))
+            (list_of(0x08)(0x76)(0x54)(0x32)(0x10))
+            (list_of(0x04)(0x3b)(0x2a)(0x19)(0x08))
+            (list_of(0x02)(0x1d)(0x95)(0x0c)(0x84))
+            (list_of(0x01)(0x0e)(0xca)(0x86)(0x42))
+            (list_of(0x00)(0x87)(0x65)(0x43)(0x21))
+            (list_of(0x00)(0x43)(0xb2)(0xa1)(0x90)(0x80))
+    //  value: 0x789abcde
+        //  length: 0  -  index 200
+            .repeat(10, empty)
+        //  length: 1  -  index 210
+            (list_of(0x00))
+            (list_of(0x80))
+            (list_of(0xc0))
+            (list_of(0xe0))
+            (list_of(0x70))
+            (list_of(0x18))
+            (list_of(0x04))
+            (list_of(0x00))
+            (list_of(0x00)(0x00))
+            (list_of(0x00)(0x80))
+        //  length: 2  -  index 220
+            (list_of(0x80))
+            (list_of(0xc0))
+            (list_of(0xe0))
+            (list_of(0xf0))
+            (list_of(0x38))
+            (list_of(0x0c))
+            (list_of(0x02))
+            (list_of(0x01)(0x00))
+            (list_of(0x00)(0x80))
+            (list_of(0x00)(0xc0))
+        //  length: 3  -  index 230
+            (list_of(0xc0))
+            (list_of(0xe0))
+            (list_of(0xf0))
+            (list_of(0x78))
+            (list_of(0x1c))
+            (list_of(0x06))
+            (list_of(0x03)(0x00))
+            (list_of(0x01)(0x80))
+            (list_of(0x00)(0xc0))
+            (list_of(0x00)(0xe0))
+        //  length: 7  -  index 240
+            (list_of(0xbc))
+            (list_of(0x5e))
+            (list_of(0x2f)(0x00))
+            (list_of(0x17)(0x80))
+            (list_of(0x0b)(0xc0))
+            (list_of(0x05)(0xe0))
+            (list_of(0x02)(0xf0))
+            (list_of(0x01)(0x78))
+            (list_of(0x00)(0xbc))
+            (list_of(0x00)(0x5e))
+        //  length: 8  -  index 250
+            (list_of(0xde))
+            (list_of(0x6f)(0x00))
+            (list_of(0x37)(0x80))
+            (list_of(0x1b)(0xc0))
+            (list_of(0x0d)(0xe0))
+            (list_of(0x06)(0xf0))
+            (list_of(0x03)(0x78))
+            (list_of(0x01)(0xbc))
+            (list_of(0x00)(0xde))
+            (list_of(0x00)(0x6f)(0x00))
+        //  length: 9  -  index 260
+            (list_of(0x6f)(0x00))
+            (list_of(0x37)(0x80))
+            (list_of(0x1b)(0xc0))
+            (list_of(0x0d)(0xe0))
+            (list_of(0x06)(0xf0))
+            (list_of(0x03)(0x78))
+            (list_of(0x01)(0xbc))
+            (list_of(0x00)(0xde))
+            (list_of(0x00)(0x6f)(0x00))
+            (list_of(0x00)(0x37)(0x80))
+        //  length: 10  -  index 270
+            (list_of(0x37)(0x80))
+            (list_of(0x1b)(0xc0))
+            (list_of(0x0d)(0xe0))
+            (list_of(0x06)(0xf0))
+            (list_of(0x03)(0x78))
+            (list_of(0x01)(0xbc))
+            (list_of(0x00)(0xde))
+            (list_of(0x00)(0x6f)(0x00))
+            (list_of(0x00)(0x37)(0x80))
+            (list_of(0x00)(0x1b)(0xc0))
+        //  length: 27  -  index 280
+            (list_of(0x13)(0x57)(0x9b)(0xc0))
+            (list_of(0x09)(0xab)(0xcd)(0xe0))
+            (list_of(0x04)(0xd5)(0xe6)(0xf0))
+            (list_of(0x02)(0x6a)(0xf3)(0x78))
+            (list_of(0x01)(0x35)(0x79)(0xbc))
+            (list_of(0x00)(0x9a)(0xbc)(0xde))
+            (list_of(0x00)(0x4d)(0x5e)(0x6f)(0x00))
+            (list_of(0x00)(0x26)(0xaf)(0x37)(0x80))
+            (list_of(0x00)(0x13)(0x57)(0x9b)(0xc0))
+            (list_of(0x00)(0x09)(0xab)(0xcd)(0xe0))
+        //  length: 32  -  index 290
+            (list_of(0x78)(0x9a)(0xbc)(0xde))
+            (list_of(0x3c)(0x4d)(0x5e)(0x6f)(0x00))
+            (list_of(0x1e)(0x26)(0xaf)(0x37)(0x80))
+            (list_of(0x0f)(0x13)(0x57)(0x9b)(0xc0))
+            (list_of(0x07)(0x89)(0xab)(0xcd)(0xe0))
+            (list_of(0x03)(0xc4)(0xd5)(0xe6)(0xf0))
+            (list_of(0x01)(0xe2)(0x6a)(0xf3)(0x78))
+            (list_of(0x00)(0xf1)(0x35)(0x79)(0xbc))
+            (list_of(0x00)(0x78)(0x9a)(0xbc)(0xde))
+            (list_of(0x00)(0x3c)(0x4d)(0x5e)(0x6f)(0x00))
+    //  value: Fs
+        //  length: 0  -  index 300
+            .repeat(10, empty)
+        //  length: 1  -  index 310
+            (list_of(0x80))
+            (list_of(0xc0))
+            (list_of(0xe0))
+            (list_of(0xf0))
+            (list_of(0x78))
+            (list_of(0x1c))
+            (list_of(0x06))
+            (list_of(0x01))
+            (list_of(0x00)(0x80))
+            (list_of(0x00)(0xc0))
+        //  length: 2  -  index 320
+            (list_of(0xc0))
+            (list_of(0xe0))
+            (list_of(0xf0))
+            (list_of(0xf8))
+            (list_of(0x3c))
+            (list_of(0x0e))
+            (list_of(0x03))
+            (list_of(0x01)(0x80))
+            (list_of(0x00)(0xc0))
+            (list_of(0x00)(0xe0))
+        //  length: 3  -  index 330
+            (list_of(0xe0))
+            (list_of(0xf0))
+            (list_of(0xf8))
+            (list_of(0x7c))
+            (list_of(0x1e))
+            (list_of(0x07))
+            (list_of(0x03)(0x80))
+            (list_of(0x01)(0xc0))
+            (list_of(0x00)(0xe0))
+            (list_of(0x00)(0xf0))
+        //  length: 7  -  index 340
+            (list_of(0xfe))
+            (list_of(0x7f))
+            (list_of(0x3f)(0x80))
+            (list_of(0x1f)(0xc0))
+            (list_of(0x0f)(0xe0))
+            (list_of(0x07)(0xf0))
+            (list_of(0x03)(0xf8))
+            (list_of(0x01)(0xfc))
+            (list_of(0x00)(0xfe))
+            (list_of(0x00)(0x7f))
+        //  length: 8  -  index 350
+            (list_of(0xff))
+            (list_of(0x7f)(0x80))
+            (list_of(0x3f)(0xc0))
+            (list_of(0x1f)(0xe0))
+            (list_of(0x0f)(0xf0))
+            (list_of(0x07)(0xf8))
+            (list_of(0x03)(0xfc))
+            (list_of(0x01)(0xfe))
+            (list_of(0x00)(0xff))
+            (list_of(0x00)(0x7f)(0x80))
+        //  length: 9  -  index 360
+            (list_of(0xff)(0x80))
+            (list_of(0x7f)(0xc0))
+            (list_of(0x3f)(0xe0))
+            (list_of(0x1f)(0xf0))
+            (list_of(0x0f)(0xf8))
+            (list_of(0x07)(0xfc))
+            (list_of(0x03)(0xfe))
+            (list_of(0x01)(0xff))
+            (list_of(0x00)(0xff)(0x80))
+            (list_of(0x00)(0x7f)(0xc0))
+        //  length: 10  -  index 370
+            (list_of(0xff)(0xc0))
+            (list_of(0x7f)(0xe0))
+            (list_of(0x3f)(0xf0))
+            (list_of(0x1f)(0xf8))
+            (list_of(0x0f)(0xfc))
+            (list_of(0x07)(0xfe))
+            (list_of(0x03)(0xff))
+            (list_of(0x01)(0xff)(0x80))
+            (list_of(0x00)(0xff)(0xc0))
+            (list_of(0x00)(0x7f)(0xe0))
+        //  length: 27  -  index 380
+            (list_of(0xff)(0xff)(0xff)(0xe0))
+            (list_of(0x7f)(0xff)(0xff)(0xf0))
+            (list_of(0x3f)(0xff)(0xff)(0xf8))
+            (list_of(0x1f)(0xff)(0xff)(0xfc))
+            (list_of(0x0f)(0xff)(0xff)(0xfe))
+            (list_of(0x07)(0xff)(0xff)(0xff))
+            (list_of(0x03)(0xff)(0xff)(0xff)(0x80))
+            (list_of(0x01)(0xff)(0xff)(0xff)(0xc0))
+            (list_of(0x00)(0xff)(0xff)(0xff)(0xe0))
+            (list_of(0x00)(0x7f)(0xff)(0xff)(0xf0))
+        //  length: 32  -  index 390
+            (list_of(0xff)(0xff)(0xff)(0xff))
+            (list_of(0x7f)(0xff)(0xff)(0xff)(0x80))
+            (list_of(0x3f)(0xff)(0xff)(0xff)(0xc0))
+            (list_of(0x1f)(0xff)(0xff)(0xff)(0xe0))
+            (list_of(0x0f)(0xff)(0xff)(0xff)(0xf0))
+            (list_of(0x07)(0xff)(0xff)(0xff)(0xf8))
+            (list_of(0x03)(0xff)(0xff)(0xff)(0xfc))
+            (list_of(0x01)(0xff)(0xff)(0xff)(0xfe))
+            (list_of(0x00)(0xff)(0xff)(0xff)(0xff))
+            (list_of(0x00)(0x7f)(0xff)(0xff)(0xff)(0x80))
     ;
 
     BOOST_CHECK_EQUAL_COLLECTIONS(

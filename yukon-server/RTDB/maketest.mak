@@ -56,7 +56,6 @@ test_cmd_rfn.obj \
 test_cmd_rfn_CentronLcdConfiguration.obj \
 test_cmd_rfn_DemandFreeze.obj \
 test_cmd_rfn_LoadProfile.obj \
-test_cmd_rfn_TouConfiguration.obj \
 test_cmd_device.obj \
 test_cmd_mct410_hourlyread.obj \
 test_cmd_mct410_disconnectConfiguration.obj \

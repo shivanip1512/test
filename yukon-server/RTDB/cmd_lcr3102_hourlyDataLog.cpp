@@ -57,7 +57,7 @@ DlcCommand::request_ptr Lcr3102HourlyDataLogCommand::decodeCommand(CtiTime now, 
     }
     else if(_state == State_ConfirmStartTime)
     {
-        unsigned int startTime = getValueFromBits(*payload, 0, 32);
+        unsigned int startTime = getValueFromBits_bEndian(*payload, 0, 32);
 
         if(startTime != _utcSeconds)
         {
@@ -73,7 +73,7 @@ DlcCommand::request_ptr Lcr3102HourlyDataLogCommand::decodeCommand(CtiTime now, 
     }
     else
     {
-        const unsigned char flags = getValueFromBits(*payload, 0, 8);
+        const unsigned char flags = getValueFromBits_bEndian(*payload, 0, 8);
 
         validateFlags(flags);
 

@@ -142,7 +142,7 @@ DlcCommand::request_ptr Mct440HolidaysCommand::write()
 
     unsigned index = 0;
 
-    setBits(payload, index, 1, TodayGmt.month() % 2);
+    setBits_lEndian(payload, index, 1, TodayGmt.month() % 2);
     index += 1;
 
     const CtiDate Today(_now.date());
@@ -156,18 +156,18 @@ DlcCommand::request_ptr Mct440HolidaysCommand::write()
 
         if( delta > 252 )
         {
-            setBits(payload, index, 7, 0x7f);
+            setBits_lEndian(payload, index, 7, 0x7f);
             index += 7;
             delta -= 252;
         }
         if( delta > 126 )
         {
-            setBits(payload, index, 7, 0x7e);
+            setBits_lEndian(payload, index, 7, 0x7e);
             index += 7;
             delta -= 126;
         }
 
-        setBits(payload, index, 7, delta);
+        setBits_lEndian(payload, index, 7, delta);
         index += 7;
 
         offset = holiday.daysFrom1970();
