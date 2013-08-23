@@ -19,7 +19,7 @@
 <li <c:if test="${not empty pageScope.id}">id="${id}"</c:if> <c:forEach items="${pageScope.attrs}" var="attr">${attr.key}="${attr.value}"</c:forEach>>
     <a <c:if test="${not empty pageScope.href}">href="${href}"</c:if> class="${classes}">
         <c:choose>
-            <c:when test="${pageScope.displayable}">
+            <c:when test="${not empty pageScope.displayable}">
                 <c:choose>
                     <c:when test="${not empty pageScope.disabled && disabled == 'true'}">
                         <cti:icon icon="${icon}" classes="disabled"/>
@@ -32,7 +32,7 @@
                     <cti:formatObject value="${displayable}"/>
                 </span>
             </c:when>
-            <c:when test="${pageScope.key}">
+            <c:when test="${not empty pageScope.key}">
                 <c:choose>
                     <c:when test="${not empty pageScope.disabled && disabled == 'true'}">
                         <cti:icon icon="${icon}" classes="disabled"/>
@@ -45,7 +45,7 @@
                     <cti:msg2 key="${key}"/>
                 </span>
             </c:when>
-            <c:when test="${pageScope.label}">
+            <c:when test="${not empty pageScope.label}">
                 <c:choose>
                     <c:when test="${not empty pageScope.disabled && disabled == 'true'}">
                         <cti:icon icon="${icon}" classes="disabled"/>
