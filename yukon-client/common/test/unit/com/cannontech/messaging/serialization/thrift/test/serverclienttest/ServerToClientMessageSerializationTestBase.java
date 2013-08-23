@@ -1,4 +1,4 @@
-package com.cannontech.messaging.serialization.thrift.test;
+package com.cannontech.messaging.serialization.thrift.test.serverclienttest;
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -15,16 +15,19 @@ import com.cannontech.messaging.connection.Connection.ConnectionState;
 import com.cannontech.messaging.connection.amq.AmqClientConnection;
 import com.cannontech.messaging.connection.amq.AmqConnectionFactoryService;
 import com.cannontech.messaging.connection.event.MessageEventHandler;
+import com.cannontech.messaging.serialization.thrift.test.MessageSerializationTestBase;
 import com.cannontech.messaging.serialization.thrift.test.validator.AutoInitializedClassValidator;
 import com.cannontech.messaging.serialization.thrift.test.validator.ValidationResult;
 
-public class ServerToClientMessageSerializationValidation extends MessageSerializationTestBase implements
+public abstract class ServerToClientMessageSerializationTestBase extends MessageSerializationTestBase implements
     MessageEventHandler {
+
+    protected ValidationResult globalResult;
 
     protected Queue<Message> recievedMessages;
     protected Connection conn;
 
-    public ServerToClientMessageSerializationValidation() {
+    public ServerToClientMessageSerializationTestBase() {
         recievedMessages = new LinkedList<Message>();
 
         AmqConnectionFactoryService.getDefaultService()
@@ -46,11 +49,8 @@ public class ServerToClientMessageSerializationValidation extends MessageSeriali
         conn.start();
     }
 
-    static ValidationResult globalResult;
-    
-    public static ValidationResult getResult(){return globalResult;}
-    @Ignore("Requires server test to be run concurrently")
     @Test
+    @Ignore("Requires server test to be run concurrently")
     public void messageSerializationValidationTest() {
 
         Message msg;
@@ -68,7 +68,8 @@ public class ServerToClientMessageSerializationValidation extends MessageSeriali
             else {
                 result.addNestedResults(validator.validate(msg));
             }
-            globalResult.addNestedResults(result);  
+            
+            globalResult.addNestedResults(result);
         }
 
         if (conn.getState() != ConnectionState.Connected) {

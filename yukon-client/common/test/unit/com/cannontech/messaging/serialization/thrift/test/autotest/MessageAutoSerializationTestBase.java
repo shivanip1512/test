@@ -1,6 +1,10 @@
-package com.cannontech.messaging.serialization.thrift.test;
+package com.cannontech.messaging.serialization.thrift.test.autotest;
+
+import org.junit.Assert;
 
 import com.cannontech.messaging.serialization.SerializationResult;
+import com.cannontech.messaging.serialization.thrift.test.MessageSerializationTestBase;
+import com.cannontech.messaging.serialization.thrift.test.ValidationHelper;
 import com.cannontech.messaging.serialization.thrift.test.validator.AutoInitializedClassValidator;
 import com.cannontech.messaging.serialization.thrift.test.validator.RandomGenerator;
 import com.cannontech.messaging.serialization.thrift.test.validator.ValidationResult;
@@ -13,8 +17,14 @@ public abstract class MessageAutoSerializationTestBase extends MessageSerializat
         generator = new RandomGenerator(System.currentTimeMillis());
     }
 
-    protected <T> void testMessage(Class<T> msgClass) {
-        checkResults(validateMessage(msgClass));
+    @Override
+    protected String[] getContextUri() {
+        return new String[] { "com/cannontech/messaging/thriftConnectionContext.xml",
+                             "com/cannontech/messaging/serialization/thrift/test/messagevalidator/messageValidatorContext.xml" };
+    }    
+    
+    protected <T> void autoTestMessage(Class<T> msgClass) {
+        checkResultsIgnoreAsymetric(validateMessage(msgClass));
     }
 
     protected <T> ValidationResult validateMessage(Class<T> msgClass) {
@@ -67,20 +77,20 @@ public abstract class MessageAutoSerializationTestBase extends MessageSerializat
     }
 
     public void testAllMessages() {
-        for (Validator<?> validator : globalValidatorList) {
+        for (Validator<?> validator : validatorList) {
             if (validator instanceof AutoInitializedClassValidator<?>) {
-                ValidationResult result = validateMessage(validator.getValidatedClass());
+                checkResultsIgnoreAsymetric(validateMessage(validator.getValidatedClass()));
+            }
+        }
+    }
 
-                if (result.hasError()) {
-                    if (result.getErrors().get(0)
-                        .endsWith("UnsupportedOperationException (Message serialization not supported)")) {
-                        // This message does not support serialization thus it can not be tested with auto
-                        // serialization. Therefore we don't fail the test
-                    }
-                    else {
-                        checkResults(result);
-                    }
-                }
+    protected void checkResultsIgnoreAsymetric(ValidationResult result) {
+        if (result.hasError()) {
+            // If this message does not support serialization thus it can not be tested with auto
+            // serialization. Therefore we don't fail the test
+            if (!result.getErrors().get(0)
+                .endsWith("UnsupportedOperationException (Message serialization not supported)")) {
+                Assert.fail(ValidationHelper.formatErrorString(result));
             }
         }
     }

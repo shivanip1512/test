@@ -312,10 +312,12 @@
 		<constructor-arg value="CurtailmentEvent" />
 	</bean>
 
+    <!--  Nerver Used
 	<bean id="messaging.thrift.notif.CustomerEmailSerializer" parent="messaging.thrift.IInheritanceSerializer"
 		class="com.cannontech.messaging.serialization.thrift.serializer.notif.CustomerEmailSerializer">
 		<constructor-arg value="NotifCustomerEmail" />
 	</bean>
+	 -->
 
 	<bean id="messaging.thrift.notif.EconomicEventDeleteSerializer"
 		parent="messaging.thrift.IInheritanceSerializer"

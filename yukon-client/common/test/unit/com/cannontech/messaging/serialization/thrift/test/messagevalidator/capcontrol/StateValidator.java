@@ -2,6 +2,7 @@ package com.cannontech.messaging.serialization.thrift.test.messagevalidator.capc
 
 import com.cannontech.database.db.state.State;
 import com.cannontech.messaging.serialization.thrift.test.validator.AutoInitializedClassValidator;
+import com.cannontech.messaging.serialization.thrift.test.validator.ClassValidator;
 import com.cannontech.messaging.serialization.thrift.test.validator.RandomGenerator;
 
 public class StateValidator extends AutoInitializedClassValidator<State> {
@@ -20,5 +21,13 @@ public class StateValidator extends AutoInitializedClassValidator<State> {
         this.ignoreField("stateGroupID");
         this.ignoreField("rawState");
         this.ignoreField("imageID");
+    }
+
+    @Override
+    /**
+     * We ignore parent validator because State base class is a DB related class and is not involved in serialization
+     */
+    public ClassValidator<com.cannontech.database.db.DBPersistent> getParentValidator() {
+        return null;
     }
 }

@@ -3,11 +3,11 @@ package com.cannontech.messaging.serialization.thrift.test.messagevalidator.disp
 import java.util.Vector;
 
 import com.cannontech.message.dispatch.message.Multi;
+import com.cannontech.message.server.ServerRequestMsg;
 import com.cannontech.message.util.Command;
 import com.cannontech.message.util.Message;
 import com.cannontech.messaging.serialization.thrift.test.validator.AutoInitializedClassValidator;
 import com.cannontech.messaging.serialization.thrift.test.validator.RandomGenerator;
-import com.cannontech.thirdparty.messaging.ControlHistoryMessage;
 
 @SuppressWarnings("rawtypes")
 public class MultiValidator extends AutoInitializedClassValidator<Multi> {
@@ -22,7 +22,7 @@ public class MultiValidator extends AutoInitializedClassValidator<Multi> {
         Vector<Message> vect = new Vector<Message>();
 
         vect.add(getDefaultObjectFor(Command.class, generator));
-        vect.add(getDefaultObjectFor(ControlHistoryMessage.class, generator));
+        vect.add(getDefaultObjectFor(ServerRequestMsg.class, generator));
 
         ctrlObj.setVector(vect);
     }

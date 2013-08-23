@@ -1,6 +1,5 @@
 package com.cannontech.messaging.serialization.thrift.test.validator;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 

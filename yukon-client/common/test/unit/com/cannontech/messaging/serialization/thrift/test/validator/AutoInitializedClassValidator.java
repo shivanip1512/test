@@ -17,7 +17,7 @@ public abstract class AutoInitializedClassValidator<T> extends ClassValidator<T>
     protected AutoInitializedClassValidator(Class<T> clazz, long seed) {
         super(clazz, null);
         this.seed = seed;
-        this.isAbstract = Modifier.isAbstract( clazz.getModifiers() );
+        this.isAbstract = Modifier.isAbstract(clazz.getModifiers());
     }
 
     public T getDefaultObject() {
@@ -55,8 +55,14 @@ public abstract class AutoInitializedClassValidator<T> extends ClassValidator<T>
         }
         catch (Exception e) {}
 
-        if (parentValidator != null && parentValidator instanceof AutoInitializedClassValidator) {
-            ((AutoInitializedClassValidator<? super T>) parentValidator).initControlObject(ctrlObj, generator);
+        if (parentValidator != null) {
+            if (parentValidator instanceof AutoInitializedClassValidator) {
+                ((AutoInitializedClassValidator<? super T>) parentValidator).initControlObject(ctrlObj, generator);
+            }
+            else {
+                throw new RuntimeException("Unable to find auto validator for type '" +
+                                           parentValidator.getValidatedClass().getSimpleName() + "'");
+            }
         }
 
         populateExpectedValue(ctrlObj, generator);
@@ -105,7 +111,7 @@ public abstract class AutoInitializedClassValidator<T> extends ClassValidator<T>
     protected <C> List<C> getDefaultObjectListFor(Class<C> elementClass, RandomGenerator generator, int size) {
         return getAutoValidatorFor(elementClass).getDefaultObjectList(generator, size);
     }
-    
+
     protected <C> Vector<C> getDefaultObjectVectorFor(Class<C> elementClass, RandomGenerator generator) {
         return new Vector<>(getAutoValidatorFor(elementClass).getDefaultObjectList(generator));
     }

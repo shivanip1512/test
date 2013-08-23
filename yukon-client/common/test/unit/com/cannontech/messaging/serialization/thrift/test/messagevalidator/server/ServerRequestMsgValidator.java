@@ -1,7 +1,7 @@
 package com.cannontech.messaging.serialization.thrift.test.messagevalidator.server;
 
-import com.cannontech.message.porter.message.RequestCancel;
 import com.cannontech.message.server.ServerRequestMsg;
+import com.cannontech.message.util.Command;
 import com.cannontech.messaging.serialization.thrift.test.validator.AutoInitializedClassValidator;
 import com.cannontech.messaging.serialization.thrift.test.validator.RandomGenerator;
 
@@ -16,6 +16,6 @@ public class ServerRequestMsgValidator extends AutoInitializedClassValidator<Ser
     public void populateExpectedValue(ServerRequestMsg ctrlObj, RandomGenerator generator) {
         ctrlObj.setId(generator.generateInt());
 
-        ctrlObj.setPayload(getDefaultObjectFor(RequestCancel.class, generator));
+        ctrlObj.setPayload(getDefaultObjectFor(Command.class, generator));
     }
 }
