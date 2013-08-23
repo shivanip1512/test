@@ -8,10 +8,10 @@
 <%@ attribute name="displayable" description="Object that implements Displayable or DisplayableEnum. Used in place of 'label' and 'key' attributes." %>
 <%@ attribute name="icon" description="Icon class name.  Defaut: icon-blank" %>
 <%@ attribute name="id" description="Id attribute applied to the 'li' element." %>
+<%@ attribute name="disabled" %>
 <%@ attribute name="href" description="Href attribute applied to the 'a' element." %>
 <%@ attribute name="key" description="Required when 'label' or 'displayable' attributes are not used." %>
 <%@ attribute name="label" description="Text for the criteria name, ie'RFN-420 FL'" %>
-<%@ attribute name="disabled" %>
 
 <cti:default var="icon" value="icon-blank"/>
 <c:set var="classes" value="clearfix ${pageScope.classes}"/>
