@@ -1,6 +1,7 @@
 #include "precompiled.h"
 
 #include "msg_pcreturn.h"
+#include "dsm2.h"  //  for PIL_ECHO
 #include "logger.h"
 
 using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore

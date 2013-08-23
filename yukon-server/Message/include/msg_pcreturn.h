@@ -3,6 +3,8 @@
 #include "dlldefs.h"
 #include "msg_multi.h"
 
+struct PIL_ECHO;
+
 class IM_EX_MSG CtiReturnMsg : public CtiMultiMsg
 {
 public:
@@ -11,7 +13,7 @@ public:
 public:
 
     long       _device_id;
-    std::string  _command_string;        // Replica of the original request (only first 80 characters)
+    std::string  _command_string;        // Replica of the original request
     std::string  _result_string;         // String representation of the result of the request.
     int        _status;                // Result code of the operation.  Zero if successful
     int        _routeid;               // Route ID which just succeeded, or failed.
