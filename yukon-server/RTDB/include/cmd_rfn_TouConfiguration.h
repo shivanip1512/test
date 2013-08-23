@@ -2,6 +2,7 @@
 
 #include "cmd_rfn.h"
 #include "boost/array.hpp"
+#include "ctidate.h"
 
 namespace Cti {
 namespace Devices {
@@ -17,21 +18,27 @@ public:
     virtual RfnResult decodeCommand(const CtiTime now, const RfnResponse &response);
     virtual RfnResult error(const CtiTime now, const YukonError_t error_code);
 
-    std::vector<CtiTableDynamicPaoInfo> getPaoInfo() const;
+    enum TouState
+    {
+        TouEnable,
+        TouDisable
+    };
+
+    boost::optional<TouState> getTouStateReceived() const;
 
 protected:
-
-    std::vector<CtiTableDynamicPaoInfo> _paoInfo;
 
     RfnTouConfigurationCommand();
 
     virtual unsigned char getCommandCode() const;
 
-    // this is an abstract class : the following functions are implemented in the derived class
-    // virtual unsigned char getOperation() const;
-    // virtual unsigned char getData() const;
+    // methods implemented in derived classes
+    virtual unsigned char getOperation() const = 0;
+    virtual Bytes         getCommandData() = 0;
 
     virtual void decodeTlv( RfnResult& result, const TypeLengthValue& tlv ) = 0;
+
+    boost::optional<TouState> _touState_received;
 };
 
 /**
@@ -41,40 +48,42 @@ class IM_EX_DEVDB RfnTouScheduleConfigurationCommand : public RfnTouConfiguratio
 {
 public:
 
-    enum ScheduleE
+    enum ScheduleNbr
     {
-        Schedule1 = 0,
+        Schedule1,
         Schedule2,
         Schedule3,
         Schedule4,
     };
 
-    enum RateE
+    enum Rate
     {
-        RateA = 0,
+        RateA,
         RateB,
         RateC,
         RateD,
     };
 
-    typedef boost::array<unsigned short, 5>   dailyTimesT;
-    typedef boost::array<RateE, 6>            dailyRatesT;
+    typedef boost::array<ScheduleNbr, 8>       DayTable;
 
-    typedef boost::array<ScheduleE, 8>        dayTableT;
-    typedef std::map<ScheduleE, dailyTimesT>  timesT;
-    typedef std::map<ScheduleE, dailyRatesT>  ratesT;
-    typedef RateE                             defaultRateT;
+    typedef boost::array<unsigned short, 5>    DailyTimes;
+    typedef boost::array<Rate, 6>              DailyRates;
+
+    typedef std::map<ScheduleNbr, DailyTimes>  Times;
+    typedef std::map<ScheduleNbr, DailyRates>  Rates;
 
     struct Schedule
     {
-        dayTableT     _dayTable;
-        timesT        _times;
-        ratesT        _rates;
-        defaultRateT  _defaultRate;
+        boost::optional<DayTable>  _dayTable;
+        boost::optional<Rate>      _defaultRate;
+        Times                      _times;
+        Rates                      _rates;
     };
 
     RfnTouScheduleConfigurationCommand(); // read
-    RfnTouScheduleConfigurationCommand( const Schedule &schedule ); // write
+    RfnTouScheduleConfigurationCommand( const Schedule &schedule_to_send ); // write
+
+    boost::optional<Schedule> getTouScheduleReceived() const;
 
 protected:
 
@@ -85,12 +94,13 @@ protected:
 
     void decodeDayTable            ( RfnResult& result, const Bytes& value );
     void decodeDefaultTouRate      ( RfnResult& result, const Bytes& value );
-    void decodeScheduleSwitchTimes ( RfnResult& result, const Bytes& value, const unsigned schedule_nbr );
-    void decodeScheduleRates       ( RfnResult& result, const Bytes& value, const unsigned schedule_nbr );
+    void decodeScheduleSwitchTimes ( RfnResult& result, const Bytes& value, const ScheduleNbr schedule_nbr );
+    void decodeScheduleRates       ( RfnResult& result, const Bytes& value, const ScheduleNbr schedule_nbr );
 
 private:
 
     boost::optional<Schedule> const _schedule_to_send;
+    boost::optional<Schedule>       _schedule_received;
 };
 
 /**
@@ -100,10 +110,12 @@ class IM_EX_DEVDB RfnTouHolidayConfigurationCommand : public RfnTouConfiguration
 {
 public:
 
-    typedef boost::array<unsigned long, 3> holidaysT;
+    typedef boost::array<CtiDate, 3> Holidays;
 
     RfnTouHolidayConfigurationCommand(); // read
-    RfnTouHolidayConfigurationCommand( const holidaysT &holidays ); // write
+    RfnTouHolidayConfigurationCommand( const Holidays &holidays_to_send ); // write
+
+    boost::optional<Holidays> getHolidaysReceived() const;
 
 protected:
 
@@ -116,7 +128,8 @@ protected:
 
 private:
 
-    boost::optional<holidaysT> const _holidays_to_send;
+    boost::optional<Holidays> const _holidays_to_send;
+    boost::optional<Holidays>       _holidays_received;
 };
 
 /**
@@ -127,7 +140,7 @@ class IM_EX_DEVDB RfnTouEnableConfigurationCommand : public RfnTouConfigurationC
 public:
 
     RfnTouEnableConfigurationCommand(); // read
-    RfnTouEnableConfigurationCommand( bool bEnableTou ); // write
+    RfnTouEnableConfigurationCommand( TouState touState_to_send ); // write
 
 protected:
 
@@ -138,7 +151,34 @@ protected:
 
 private:
 
-    boost::optional<bool> const _enableTou_to_send;
+    boost::optional<TouState> const _touState_to_send;
+};
+
+/**
+ * RFN TOU configuration command enable/disable
+ */
+class IM_EX_DEVDB RfnTouHolidayActiveConfigurationCommand : public RfnTouConfigurationCommand
+{
+public:
+
+    enum HolidayActive
+    {
+        SetHolidayActive,
+        CancelHolidayActive,
+    };
+
+    RfnTouHolidayActiveConfigurationCommand( HolidayActive holidayActive_to_send ); // write
+
+protected:
+
+    virtual unsigned char getOperation() const;
+    virtual Bytes         getCommandData();
+
+    virtual void decodeTlv( RfnResult& result, const TypeLengthValue& tlv );
+
+private:
+
+    HolidayActive const _holidayActive_to_send;
 };
 
 }

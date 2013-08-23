@@ -2,6 +2,7 @@
 #include <boost/assign/list_of.hpp>
 
 #include "ctidate.h"
+#include "std_helper.h"
 #include "cmd_rfn_TouConfiguration.h"
 
 using Cti::Devices::Commands::RfnCommand;
@@ -9,18 +10,21 @@ using Cti::Devices::Commands::RfnTouConfigurationCommand;
 using Cti::Devices::Commands::RfnTouScheduleConfigurationCommand;
 using Cti::Devices::Commands::RfnTouHolidayConfigurationCommand;
 using Cti::Devices::Commands::RfnTouEnableConfigurationCommand;
-
-template< typename value_type >
-CtiTableDynamicPaoInfo makePaoInfo( CtiTableDynamicPaoInfo::PaoInfoKeys key, value_type value )
-{
-    CtiTableDynamicPaoInfo paoInfo;
-    paoInfo.setKey(key);
-    paoInfo.setValue(value);
-    return paoInfo;
-}
-
+using Cti::Devices::Commands::RfnTouHolidayActiveConfigurationCommand;
 
 BOOST_AUTO_TEST_SUITE( test_cmd_rfn_TouConfiguration )
+
+std::vector<unsigned char> convertLongToBytes( unsigned long val )
+{
+    std::vector<unsigned char> vec;
+
+    vec.push_back( (val >> 24) & 0xff );
+    vec.push_back( (val >> 16) & 0xff );
+    vec.push_back( (val >>  8) & 0xff );
+    vec.push_back( (val >>  0) & 0xff );
+
+    return vec;
+}
 
 const CtiTime execute_time(CtiDate(17, 2, 2010), 10);
 
@@ -28,10 +32,9 @@ BOOST_AUTO_TEST_CASE( test_RfnTouScheduleConfigurationCommand )
 {
     RfnTouScheduleConfigurationCommand::Schedule sched;
 
-
     // Schedule 1
     {
-        RfnTouScheduleConfigurationCommand::dailyTimesT times;
+        RfnTouScheduleConfigurationCommand::DailyTimes times;
 
         times[0] = 0x0000;
         times[1] = 0x1111;
@@ -41,7 +44,7 @@ BOOST_AUTO_TEST_CASE( test_RfnTouScheduleConfigurationCommand )
 
         sched._times[RfnTouScheduleConfigurationCommand::Schedule1] = times;
 
-        RfnTouScheduleConfigurationCommand::dailyRatesT rates;
+        RfnTouScheduleConfigurationCommand::DailyRates rates;
 
         rates[0] = RfnTouScheduleConfigurationCommand::RateA; // midnight rate
         rates[1] = RfnTouScheduleConfigurationCommand::RateB;
@@ -55,7 +58,7 @@ BOOST_AUTO_TEST_CASE( test_RfnTouScheduleConfigurationCommand )
 
     // Schedule 2
     {
-        RfnTouScheduleConfigurationCommand::dailyTimesT times;
+        RfnTouScheduleConfigurationCommand::DailyTimes times;
 
         times[0] = 0x0123;
         times[1] = 0x3012;
@@ -65,7 +68,7 @@ BOOST_AUTO_TEST_CASE( test_RfnTouScheduleConfigurationCommand )
 
         sched._times[RfnTouScheduleConfigurationCommand::Schedule2] = times;
 
-        RfnTouScheduleConfigurationCommand::dailyRatesT rates;
+        RfnTouScheduleConfigurationCommand::DailyRates rates;
 
         rates[0] = RfnTouScheduleConfigurationCommand::RateD; // midnight rate
         rates[1] = RfnTouScheduleConfigurationCommand::RateA;
@@ -79,7 +82,7 @@ BOOST_AUTO_TEST_CASE( test_RfnTouScheduleConfigurationCommand )
 
     // Schedule 3
     {
-        RfnTouScheduleConfigurationCommand::dailyTimesT times;
+        RfnTouScheduleConfigurationCommand::DailyTimes times;
 
         times[0] = 0xAAAA;
         times[1] = 0x5555;
@@ -89,7 +92,7 @@ BOOST_AUTO_TEST_CASE( test_RfnTouScheduleConfigurationCommand )
 
         sched._times[RfnTouScheduleConfigurationCommand::Schedule3] = times;
 
-        RfnTouScheduleConfigurationCommand::dailyRatesT rates;
+        RfnTouScheduleConfigurationCommand::DailyRates rates;
 
         rates[0] = RfnTouScheduleConfigurationCommand::RateC; // midnight rate
         rates[1] = RfnTouScheduleConfigurationCommand::RateD;
@@ -103,7 +106,7 @@ BOOST_AUTO_TEST_CASE( test_RfnTouScheduleConfigurationCommand )
 
     // Schedule 4
     {
-        RfnTouScheduleConfigurationCommand::dailyTimesT times;
+        RfnTouScheduleConfigurationCommand::DailyTimes times;
 
         times[0] = 0x0000;
         times[1] = 0xFFFF;
@@ -113,7 +116,7 @@ BOOST_AUTO_TEST_CASE( test_RfnTouScheduleConfigurationCommand )
 
         sched._times[RfnTouScheduleConfigurationCommand::Schedule4] = times;
 
-        RfnTouScheduleConfigurationCommand::dailyRatesT rates;
+        RfnTouScheduleConfigurationCommand::DailyRates rates;
 
         rates[0] = RfnTouScheduleConfigurationCommand::RateB; // midnight rate
         rates[1] = RfnTouScheduleConfigurationCommand::RateC;
@@ -126,23 +129,31 @@ BOOST_AUTO_TEST_CASE( test_RfnTouScheduleConfigurationCommand )
     }
 
     // day table
-    sched._dayTable[0] = RfnTouScheduleConfigurationCommand::Schedule1;
-    sched._dayTable[1] = RfnTouScheduleConfigurationCommand::Schedule3;
-    sched._dayTable[2] = RfnTouScheduleConfigurationCommand::Schedule2;
-    sched._dayTable[3] = RfnTouScheduleConfigurationCommand::Schedule4;
-    sched._dayTable[4] = RfnTouScheduleConfigurationCommand::Schedule2;
-    sched._dayTable[5] = RfnTouScheduleConfigurationCommand::Schedule3;
-    sched._dayTable[6] = RfnTouScheduleConfigurationCommand::Schedule1;
-    sched._dayTable[7] = RfnTouScheduleConfigurationCommand::Schedule3;
+    {
+        RfnTouScheduleConfigurationCommand::DayTable dayTable;
+
+        dayTable[0] = RfnTouScheduleConfigurationCommand::Schedule1;
+        dayTable[1] = RfnTouScheduleConfigurationCommand::Schedule3;
+        dayTable[2] = RfnTouScheduleConfigurationCommand::Schedule2;
+        dayTable[3] = RfnTouScheduleConfigurationCommand::Schedule4;
+        dayTable[4] = RfnTouScheduleConfigurationCommand::Schedule2;
+        dayTable[5] = RfnTouScheduleConfigurationCommand::Schedule3;
+        dayTable[6] = RfnTouScheduleConfigurationCommand::Schedule1;
+        dayTable[7] = RfnTouScheduleConfigurationCommand::Schedule3;
+
+        sched._dayTable = dayTable;
+    }
 
     // default rate
-    sched._defaultRate = RfnTouScheduleConfigurationCommand::RateB;
+    {
+        sched._defaultRate = RfnTouScheduleConfigurationCommand::RateB;
+    }
 
     // execute
     {
-        RfnTouScheduleConfigurationCommand touConfig( sched );
+        RfnTouScheduleConfigurationCommand cmd( sched );
 
-        RfnCommand::RfnRequest rcv = touConfig.executeCommand( execute_time );
+        RfnCommand::RfnRequest rcv = cmd.executeCommand( execute_time );
 
         std::vector<unsigned char> exp = boost::assign::list_of
                 (0x60)(0x04)
@@ -152,11 +163,11 @@ BOOST_AUTO_TEST_CASE( test_RfnTouScheduleConfigurationCommand )
                 (0x02)(0x0A) // schedule 1 switch times
                 (0x00)(0x00)(0x11)(0x11)(0x22)(0x22)(0x33)(0x33)(0x44)(0x44)
                 (0x03)(0x0A) // schedule 2 switch times
-                (0x23)(0x01)(0x12)(0x30)(0x01)(0x23)(0x30)(0x12)(0x23)(0x01)
+                (0x01)(0x23)(0x30)(0x12)(0x23)(0x01)(0x12)(0x30)(0x01)(0x23)
                 (0x04)(0x0A) // schedule 3 switch times
-                (0xAA)(0xAA)(0x55)(0x55)(0x55)(0xAA)(0xAA)(0x55)(0x5A)(0xA5)
+                (0xAA)(0xAA)(0x55)(0x55)(0xAA)(0x55)(0x55)(0xAA)(0xA5)(0x5A)
                 (0x05)(0x0A) // schedule 4 switch time
-                (0x00)(0x00)(0xFF)(0xFF)(0x0F)(0x0F)(0xF0)(0xF0)(0xFF)(0x00)
+                (0x00)(0x00)(0xFF)(0xFF)(0x0F)(0x0F)(0xF0)(0xF0)(0x00)(0xFF)
                 (0x06)(0x03) // schedule 1 rates
                 (0x88)(0x86)(0x00)
                 (0x07)(0x03) // schedule 2 rates
@@ -175,9 +186,9 @@ BOOST_AUTO_TEST_CASE( test_RfnTouScheduleConfigurationCommand )
 
     // execute read only
     {
-        RfnTouScheduleConfigurationCommand touConfig;
+        RfnTouScheduleConfigurationCommand cmd;
 
-        RfnCommand::RfnRequest rcv = touConfig.executeCommand( execute_time );
+        RfnCommand::RfnRequest rcv = cmd.executeCommand( execute_time );
 
         std::vector<unsigned char> exp = boost::assign::list_of
                 (0x60)(0x05)(0x00);
@@ -189,7 +200,7 @@ BOOST_AUTO_TEST_CASE( test_RfnTouScheduleConfigurationCommand )
 
     // decode
     {
-        RfnTouScheduleConfigurationCommand touConfig;
+        RfnTouScheduleConfigurationCommand cmd;
 
         std::vector<unsigned char> response = boost::assign::list_of
                 (0x61)(0x00)(0x00)(0x00)(0x00)
@@ -199,11 +210,11 @@ BOOST_AUTO_TEST_CASE( test_RfnTouScheduleConfigurationCommand )
                 (0x02)(0x0A) // schedule 1 switch times
                 (0x00)(0x00)(0x11)(0x11)(0x22)(0x22)(0x33)(0x33)(0x44)(0x44)
                 (0x03)(0x0A) // schedule 2 switch times
-                (0x23)(0x01)(0x12)(0x30)(0x01)(0x23)(0x30)(0x12)(0x23)(0x01)
+                (0x01)(0x23)(0x30)(0x12)(0x23)(0x01)(0x12)(0x30)(0x01)(0x23)
                 (0x04)(0x0A) // schedule 3 switch times
-                (0xAA)(0xAA)(0x55)(0x55)(0x55)(0xAA)(0xAA)(0x55)(0x5A)(0xA5)
+                (0xAA)(0xAA)(0x55)(0x55)(0xAA)(0x55)(0x55)(0xAA)(0xA5)(0x5A)
                 (0x05)(0x0A) // schedule 4 switch time
-                (0x00)(0x00)(0xFF)(0xFF)(0x0F)(0x0F)(0xF0)(0xF0)(0xFF)(0x00)
+                (0x00)(0x00)(0xFF)(0xFF)(0x0F)(0x0F)(0xF0)(0xF0)(0x00)(0xFF)
                 (0x06)(0x03) // schedule 1 rates
                 (0x88)(0x86)(0x00)
                 (0x07)(0x03) // schedule 2 rates
@@ -215,9 +226,9 @@ BOOST_AUTO_TEST_CASE( test_RfnTouScheduleConfigurationCommand )
                 (0x0A)(0x01) // default TOU rate
                 (0x01);
 
-        RfnCommand::RfnResult rcv = touConfig.decodeCommand(execute_time, response);
+        RfnCommand::RfnResult rcv = cmd.decodeCommand(execute_time, response);
 
-        std::string exp =
+        std::string desc_exp =
                 "Status : Success\n"
                 "Additional Status : NO ADDITIONAL STATUS\n"
                 "TOU State : Disabled\n"
@@ -284,119 +295,79 @@ BOOST_AUTO_TEST_CASE( test_RfnTouScheduleConfigurationCommand )
                 " Switch 5 rate - C\n"
                 "Default TOU rate : B\n";
 
-        BOOST_CHECK_EQUAL(rcv.description, exp);
+        BOOST_CHECK_EQUAL(rcv.description, desc_exp);
 
-        std::vector<CtiTableDynamicPaoInfo> paoInfoExp = boost::assign::list_of
-        // day table
-                ( makePaoInfo( CtiTableDynamicPaoInfo::Key_RFN_MondaySchedule,        (int)RfnTouScheduleConfigurationCommand::Schedule1 ))
-                ( makePaoInfo( CtiTableDynamicPaoInfo::Key_RFN_TuesdaySchedule,       (int)RfnTouScheduleConfigurationCommand::Schedule3 ))
-                ( makePaoInfo( CtiTableDynamicPaoInfo::Key_RFN_WednesdaySchedule,     (int)RfnTouScheduleConfigurationCommand::Schedule2 ))
-                ( makePaoInfo( CtiTableDynamicPaoInfo::Key_RFN_ThursdaySchedule,      (int)RfnTouScheduleConfigurationCommand::Schedule4 ))
-                ( makePaoInfo( CtiTableDynamicPaoInfo::Key_RFN_FridaySchedule,        (int)RfnTouScheduleConfigurationCommand::Schedule2 ))
-                ( makePaoInfo( CtiTableDynamicPaoInfo::Key_RFN_SaturdaySchedule,      (int)RfnTouScheduleConfigurationCommand::Schedule3 ))
-                ( makePaoInfo( CtiTableDynamicPaoInfo::Key_RFN_SundaySchedule,        (int)RfnTouScheduleConfigurationCommand::Schedule1 ))
-                ( makePaoInfo( CtiTableDynamicPaoInfo::Key_RFN_HolidaySchedule,       (int)RfnTouScheduleConfigurationCommand::Schedule3 ))
-        // schedule 1 times
-                ( makePaoInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time1,        (unsigned short)0x0000 ))
-                ( makePaoInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time2,        (unsigned short)0x1111 ))
-                ( makePaoInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time3,        (unsigned short)0x2222 ))
-                ( makePaoInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time4,        (unsigned short)0x3333 ))
-                ( makePaoInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time5,        (unsigned short)0x4444 ))
-        // schedule 2 times
-                ( makePaoInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Time1,        (unsigned short)0x0123 ))
-                ( makePaoInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Time2,        (unsigned short)0x3012 ))
-                ( makePaoInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Time3,        (unsigned short)0x2301 ))
-                ( makePaoInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Time4,        (unsigned short)0x1230 ))
-                ( makePaoInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Time5,        (unsigned short)0x0123 ))
-        // schedule 3 times
-                ( makePaoInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Time1,        (unsigned short)0xAAAA ))
-                ( makePaoInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Time2,        (unsigned short)0x5555 ))
-                ( makePaoInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Time3,        (unsigned short)0xAA55 ))
-                ( makePaoInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Time4,        (unsigned short)0x55AA ))
-                ( makePaoInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Time5,        (unsigned short)0xA55A ))
-        // schedule 4 times
-                ( makePaoInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Time1,        (unsigned short)0x0000 ))
-                ( makePaoInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Time2,        (unsigned short)0xFFFF ))
-                ( makePaoInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Time3,        (unsigned short)0x0F0F ))
-                ( makePaoInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Time4,        (unsigned short)0xF0F0 ))
-                ( makePaoInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Time5,        (unsigned short)0x00FF ))
-        // schedule 1 rates
-                ( makePaoInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule1MidnightRate, (int)RfnTouScheduleConfigurationCommand::RateA ))
-                ( makePaoInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate1,        (int)RfnTouScheduleConfigurationCommand::RateB ))
-                ( makePaoInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate2,        (int)RfnTouScheduleConfigurationCommand::RateC ))
-                ( makePaoInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate3,        (int)RfnTouScheduleConfigurationCommand::RateD ))
-                ( makePaoInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate4,        (int)RfnTouScheduleConfigurationCommand::RateA ))
-                ( makePaoInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate5,        (int)RfnTouScheduleConfigurationCommand::RateB ))
-        // schedule 2 rates
-                ( makePaoInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule2MidnightRate, (int)RfnTouScheduleConfigurationCommand::RateD ))
-                ( makePaoInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate1,        (int)RfnTouScheduleConfigurationCommand::RateA ))
-                ( makePaoInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate2,        (int)RfnTouScheduleConfigurationCommand::RateB ))
-                ( makePaoInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate3,        (int)RfnTouScheduleConfigurationCommand::RateC ))
-                ( makePaoInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate4,        (int)RfnTouScheduleConfigurationCommand::RateD ))
-                ( makePaoInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate5,        (int)RfnTouScheduleConfigurationCommand::RateA ))
-        // schedule 3 rates
-                ( makePaoInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule3MidnightRate, (int)RfnTouScheduleConfigurationCommand::RateC ))
-                ( makePaoInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate1,        (int)RfnTouScheduleConfigurationCommand::RateD ))
-                ( makePaoInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate2,        (int)RfnTouScheduleConfigurationCommand::RateA ))
-                ( makePaoInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate3,        (int)RfnTouScheduleConfigurationCommand::RateB ))
-                ( makePaoInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate4,        (int)RfnTouScheduleConfigurationCommand::RateC ))
-                ( makePaoInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate5,        (int)RfnTouScheduleConfigurationCommand::RateD ))
-        // schedule 4 rates
-                ( makePaoInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule4MidnightRate, (int)RfnTouScheduleConfigurationCommand::RateB ))
-                ( makePaoInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate1,        (int)RfnTouScheduleConfigurationCommand::RateC ))
-                ( makePaoInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate2,        (int)RfnTouScheduleConfigurationCommand::RateD ))
-                ( makePaoInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate3,        (int)RfnTouScheduleConfigurationCommand::RateA ))
-                ( makePaoInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate4,        (int)RfnTouScheduleConfigurationCommand::RateB ))
-                ( makePaoInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate5,        (int)RfnTouScheduleConfigurationCommand::RateC ))
-        // default tou rate
-                ( makePaoInfo( CtiTableDynamicPaoInfo::Key_RFN_DefaultTOURate,        (int)RfnTouScheduleConfigurationCommand::RateB ));
+        BOOST_REQUIRE( cmd.getTouScheduleReceived() );
 
+        RfnTouScheduleConfigurationCommand::Schedule sched_rcv = *cmd.getTouScheduleReceived();
 
-        std::vector<CtiTableDynamicPaoInfo> paoInfoRcv = touConfig.getPaoInfo();
+        BOOST_REQUIRE( sched_rcv._dayTable );
+        BOOST_REQUIRE( sched_rcv._defaultRate );
 
-        BOOST_REQUIRE_EQUAL( paoInfoRcv.size(),  paoInfoExp.size() );
+        BOOST_CHECK_EQUAL( sched_rcv._dayTable,    sched._dayTable );
+        BOOST_CHECK_EQUAL( sched_rcv._defaultRate, sched._defaultRate );
 
-        int index = 0;
-        for each( const CtiTableDynamicPaoInfo& item in paoInfoExp )
-        {
-            BOOST_CHECK_EQUAL( paoInfoRcv[index].getKey(),   item.getKey() );
-            BOOST_CHECK_EQUAL( paoInfoRcv[index].getValue(), item.getValue() );
-            index++;
-        }
+        BOOST_REQUIRE( Cti::mapFind(sched_rcv._times, RfnTouScheduleConfigurationCommand::Schedule1) );
+        BOOST_REQUIRE( Cti::mapFind(sched_rcv._times, RfnTouScheduleConfigurationCommand::Schedule2) );
+        BOOST_REQUIRE( Cti::mapFind(sched_rcv._times, RfnTouScheduleConfigurationCommand::Schedule3) );
+        BOOST_REQUIRE( Cti::mapFind(sched_rcv._times, RfnTouScheduleConfigurationCommand::Schedule4) );
+
+        BOOST_CHECK_EQUAL( Cti::mapFind(sched_rcv._times,  RfnTouScheduleConfigurationCommand::Schedule1),
+                           Cti::mapFind(sched._times,      RfnTouScheduleConfigurationCommand::Schedule1) );
+
+        BOOST_CHECK_EQUAL( Cti::mapFind(sched_rcv._times,  RfnTouScheduleConfigurationCommand::Schedule2),
+                           Cti::mapFind(sched._times,      RfnTouScheduleConfigurationCommand::Schedule2) );
+
+        BOOST_CHECK_EQUAL( Cti::mapFind(sched_rcv._times,  RfnTouScheduleConfigurationCommand::Schedule3),
+                           Cti::mapFind(sched._times,      RfnTouScheduleConfigurationCommand::Schedule3) );
+
+        BOOST_CHECK_EQUAL( Cti::mapFind(sched_rcv._times,  RfnTouScheduleConfigurationCommand::Schedule4),
+                           Cti::mapFind(sched._times,      RfnTouScheduleConfigurationCommand::Schedule4) );
     }
 }
 
 BOOST_AUTO_TEST_CASE( test_RfnTouHolidayConfigurationCommand )
 {
-    const RfnTouHolidayConfigurationCommand::holidaysT holidays =
+    const CtiDate date1 = CtiDate( 01, 02, 1970 ),
+                  date2 = CtiDate( 14, 06, 2012 ),
+                  date3 = CtiDate( 30, 12, 2050 );
+
+    const std::vector<unsigned char> holiday1 = convertLongToBytes( CtiTime(date1).seconds() ),
+                                     holiday2 = convertLongToBytes( CtiTime(date2).seconds() ),
+                                     holiday3 = convertLongToBytes( CtiTime(date3).seconds() );
+
+    const RfnTouHolidayConfigurationCommand::Holidays holidays =
     {
-        0x12345678,
-        0xAAAAAAAA,
-        0x55555555,
+        date1,
+        date2,
+        date3,
     };
 
     // execute
     {
-        RfnTouHolidayConfigurationCommand touConfig( holidays );
+        RfnTouHolidayConfigurationCommand cmd( holidays );
 
-        RfnCommand::RfnRequest rcv = touConfig.executeCommand( execute_time );
+        RfnCommand::RfnRequest rcv = cmd.executeCommand( execute_time );
 
         std::vector<unsigned char> exp = boost::assign::list_of
                 (0x60)(0x06)
                 (0x01)
-                (0x0C)(0x0C) // holiday
-                (0x78)(0x56)(0x34)(0x12)(0xAA)(0xAA)(0xAA)(0xAA)(0x55)(0x55)(0x55)(0x55);
+                (0x0C)(0x0C); // holiday
+
+        exp.insert( exp.end(), holiday1.begin(), holiday1.end() );
+        exp.insert( exp.end(), holiday2.begin(), holiday2.end() );
+        exp.insert( exp.end(), holiday3.begin(), holiday3.end() );
 
         BOOST_CHECK_EQUAL_COLLECTIONS(
-                        rcv.begin(), rcv.end(),
-                        exp.begin(), exp.end());
+                rcv.begin(), rcv.end(),
+                exp.begin(), exp.end());
     }
 
     // execute read only
     {
-        RfnTouHolidayConfigurationCommand touConfig;
+        RfnTouHolidayConfigurationCommand cmd;
 
-        RfnCommand::RfnRequest rcv = touConfig.executeCommand( execute_time );
+        RfnCommand::RfnRequest rcv = cmd.executeCommand( execute_time );
 
         std::vector<unsigned char> exp = boost::assign::list_of
                 (0x60)(0x07)
@@ -409,44 +380,42 @@ BOOST_AUTO_TEST_CASE( test_RfnTouHolidayConfigurationCommand )
 
     // decode
     {
-        RfnTouHolidayConfigurationCommand touConfig;
+        RfnTouHolidayConfigurationCommand cmd;
 
         std::vector<unsigned char> response = boost::assign::list_of
                 (0x61)(0x00)(0x00)(0x00)(0x00)
                 (0x01)
-                (0x0C)(0x0C) // holiday
-                (0x78)(0x56)(0x34)(0x12)(0xAA)(0xAA)(0xAA)(0xAA)(0x55)(0x55)(0x55)(0x55);
+                (0x0C)(0x0C); // holiday
 
-        RfnCommand::RfnResult rcv = touConfig.decodeCommand(execute_time, response);
+        response.insert( response.end(), holiday1.begin(), holiday1.end() );
+        response.insert( response.end(), holiday2.begin(), holiday2.end() );
+        response.insert( response.end(), holiday3.begin(), holiday3.end() );
 
-        std::string exp =
+        RfnCommand::RfnResult rcv = cmd.decodeCommand(execute_time, response);
+
+        std::string desc_exp =
             "Status : Success\n"
             "Additional Status : NO ADDITIONAL STATUS\n"
             "TOU State : Disabled\n"
             "Holidays :\n"
-            " Date 1 - " + CtiTime(0x12345678).asString() + "\n"
-            " Date 2 - " + CtiTime(0xAAAAAAAA).asString() + "\n"
-            " Date 3 - " + CtiTime(0x55555555).asString() + "\n";
+            " Date 1 - 02/01/1970 00:00:00\n"
+            " Date 2 - 06/14/2012 00:00:00\n"
+            " Date 3 - 12/30/2050 00:00:00\n";
 
-        BOOST_CHECK_EQUAL(rcv.description, exp);
+        BOOST_CHECK_EQUAL(rcv.description, desc_exp);
 
-        std::vector<CtiTableDynamicPaoInfo> paoInfoExp = boost::assign::list_of
-                ( makePaoInfo( CtiTableDynamicPaoInfo::Key_RFN_Holiday1, (unsigned long)0x12345678 ))
-                ( makePaoInfo( CtiTableDynamicPaoInfo::Key_RFN_Holiday2, (unsigned long)0xAAAAAAAA ))
-                ( makePaoInfo( CtiTableDynamicPaoInfo::Key_RFN_Holiday3, (unsigned long)0x55555555 ));
+        BOOST_REQUIRE( cmd.getHolidaysReceived() );
 
-        std::vector<CtiTableDynamicPaoInfo> paoInfoRcv = touConfig.getPaoInfo();
+        RfnTouHolidayConfigurationCommand::Holidays holidays_rcv = *cmd.getHolidaysReceived();
 
-        BOOST_REQUIRE_EQUAL( paoInfoRcv.size(),  paoInfoExp.size() );
+        //BOOST_CHECK_EQUAL( holidays_rcv, holidays ); // doesnt work??
 
         int index = 0;
-        for each( const CtiTableDynamicPaoInfo& item in paoInfoExp )
+        for each(const CtiDate & date_exp in holidays)
         {
-            BOOST_CHECK_EQUAL( paoInfoRcv[index].getKey(),   item.getKey() );
-            BOOST_CHECK_EQUAL( paoInfoRcv[index].getValue(), item.getValue() );
-            index++;
+            const CtiDate & date_rcv = holidays_rcv[index++];
+            BOOST_CHECK_EQUAL( date_rcv, date_exp );
         }
-
     }
 }
 
@@ -454,9 +423,9 @@ BOOST_AUTO_TEST_CASE( test_RfnTouEnableConfigurationCommand )
 {
     // execute enable
     {
-        RfnTouEnableConfigurationCommand touConfig( true );
+        RfnTouEnableConfigurationCommand cmd( RfnTouConfigurationCommand::TouEnable );
 
-        RfnCommand::RfnRequest rcv = touConfig.executeCommand( execute_time );
+        RfnCommand::RfnRequest rcv = cmd.executeCommand( execute_time );
 
         std::vector<unsigned char> exp = boost::assign::list_of
                 (0x60)(0x01)
@@ -469,9 +438,9 @@ BOOST_AUTO_TEST_CASE( test_RfnTouEnableConfigurationCommand )
 
     // execute disable
     {
-        RfnTouEnableConfigurationCommand touConfig( false );
+        RfnTouEnableConfigurationCommand cmd( RfnTouConfigurationCommand::TouDisable );
 
-        RfnCommand::RfnRequest rcv = touConfig.executeCommand( execute_time );
+        RfnCommand::RfnRequest rcv = cmd.executeCommand( execute_time );
 
         std::vector<unsigned char> exp = boost::assign::list_of
                 (0x60)(0x02)
@@ -484,9 +453,9 @@ BOOST_AUTO_TEST_CASE( test_RfnTouEnableConfigurationCommand )
 
     // execute read only
     {
-        RfnTouEnableConfigurationCommand touConfig;
+        RfnTouEnableConfigurationCommand cmd;
 
-        RfnCommand::RfnRequest rcv = touConfig.executeCommand( execute_time );
+        RfnCommand::RfnRequest rcv = cmd.executeCommand( execute_time );
 
         std::vector<unsigned char> exp = boost::assign::list_of
                 (0x60)(0x03)
@@ -499,40 +468,86 @@ BOOST_AUTO_TEST_CASE( test_RfnTouEnableConfigurationCommand )
 
     // decode tou state tou enabled
     {
-        RfnTouEnableConfigurationCommand touConfig;
+        RfnTouEnableConfigurationCommand cmd;
 
         std::vector<unsigned char> response = boost::assign::list_of
                 (0x61)(0x00)(0x00)(0x00)(0x01)
                 (0x00);
 
-        RfnCommand::RfnResult rcv = touConfig.decodeCommand(execute_time, response);
+        RfnCommand::RfnResult rcv = cmd.decodeCommand(execute_time, response);
 
-        std::string exp =
+        std::string desc_exp =
             "Status : Success\n"
             "Additional Status : NO ADDITIONAL STATUS\n"
             "TOU State : Enabled\n";
 
-        BOOST_CHECK_EQUAL(rcv.description, exp);
+        BOOST_CHECK_EQUAL(rcv.description, desc_exp);
+
+        BOOST_REQUIRE( cmd.getTouStateReceived() );
+
+        RfnTouConfigurationCommand::TouState touState_rcv = *cmd.getTouStateReceived();
+
+        BOOST_CHECK_EQUAL( touState_rcv, RfnTouConfigurationCommand::TouEnable );
+
     }
 
     // decode tou state tou disabled
     {
-        RfnTouEnableConfigurationCommand touConfig;
+        RfnTouEnableConfigurationCommand cmd;
 
         std::vector<unsigned char> response = boost::assign::list_of
                 (0x61)(0x00)(0x00)(0x00)(0x00)
                 (0x00);
 
-        RfnCommand::RfnResult rcv = touConfig.decodeCommand(execute_time, response);
+        RfnCommand::RfnResult rcv = cmd.decodeCommand(execute_time, response);
 
-        std::string exp =
+        std::string desc_exp =
             "Status : Success\n"
             "Additional Status : NO ADDITIONAL STATUS\n"
             "TOU State : Disabled\n";
 
-        BOOST_CHECK_EQUAL(rcv.description, exp);
+        BOOST_CHECK_EQUAL(rcv.description, desc_exp);
+
+        BOOST_REQUIRE( cmd.getTouStateReceived() );
+
+        RfnTouConfigurationCommand::TouState touState_rcv = *cmd.getTouStateReceived();
+
+        BOOST_CHECK_EQUAL( touState_rcv, RfnTouConfigurationCommand::TouDisable );
     }
 
+}
+
+BOOST_AUTO_TEST_CASE( test_RfnTouHolidayActiveConfigurationCommand )
+{
+    // execute set active
+    {
+        RfnTouHolidayActiveConfigurationCommand cmd( RfnTouHolidayActiveConfigurationCommand::SetHolidayActive );
+
+        RfnCommand::RfnRequest rcv = cmd.executeCommand( execute_time );
+
+        std::vector<unsigned char> exp = boost::assign::list_of
+                (0x60)(0x0C)
+                (0x00);
+
+        BOOST_CHECK_EQUAL_COLLECTIONS(
+                rcv.begin(), rcv.end(),
+                exp.begin(), exp.end());
+    }
+
+    // execute cancel active
+    {
+        RfnTouHolidayActiveConfigurationCommand cmd( RfnTouHolidayActiveConfigurationCommand::CancelHolidayActive );
+
+        RfnCommand::RfnRequest rcv = cmd.executeCommand( execute_time );
+
+        std::vector<unsigned char> exp = boost::assign::list_of
+                (0x60)(0x0D)
+                (0x00);
+
+        BOOST_CHECK_EQUAL_COLLECTIONS(
+                rcv.begin(), rcv.end(),
+                exp.begin(), exp.end());
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()

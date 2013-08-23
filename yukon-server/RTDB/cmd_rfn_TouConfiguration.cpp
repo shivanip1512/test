@@ -65,9 +65,7 @@ enum
     Type_Holiday                                    = 0x0C,
 };
 
-typedef map<unsigned char, string> descriptionMapT;
-
-const descriptionMapT statusItems = map_list_of
+const map<unsigned char, string> statusItems = map_list_of
         ( 0x0, "Success" )
         ( 0x1, "Not Ready" )
         ( 0x2, "Busy" )
@@ -77,13 +75,13 @@ const descriptionMapT statusItems = map_list_of
         ( 0x6, "Aborted Command" )
         ( 0x7, "Timeout" );
 
-const descriptionMapT rateItems = map_list_of
+const map<unsigned char, string> rateItems = map_list_of
         ( 0x0, "A" )
         ( 0x1, "B" )
         ( 0x2, "C" )
         ( 0x3, "D" );
 
-const map<unsigned char, descriptionMapT> additionalStatusItems = map_list_of
+const map<unsigned char, map<unsigned char, string>> additionalStatusItems = map_list_of
         ( 0x0, map_list_of
                 ( 0x0, "NO ADDITIONAL STATUS" )
                 ( 0x1, "REJECTED, SERVICE NOT SUPPORTED" )
@@ -102,88 +100,13 @@ const map<unsigned char, descriptionMapT> additionalStatusItems = map_list_of
                 ( 0x2, "ACCESS DENIED, INVALID SERVICE SEQUENCE STATE" )
                 ( 0x3, "ACCESS DENIED, RENEGOTIATE REQUEST" ))
         ( 0x2, map_list_of
-                ( 0x0, "DATA NOT READY"))
+                ( 0x0, "DATA NOT READY" ))
         ( 0x3, map_list_of
-                ( 0x0, "DEVICE NOT PRESENT"));
+                ( 0x0, "DEVICE NOT PRESENT" ));
 
-const descriptionMapT touStateItems = map_list_of
-        ( 0x0, "Disabled" )
-        ( 0x1, "Enabled" );
-
-const vector<CtiDeviceBase::PaoInfoKeys> dayTableKeys = boost::assign::list_of
-        ( CtiTableDynamicPaoInfo::Key_RFN_MondaySchedule    )
-        ( CtiTableDynamicPaoInfo::Key_RFN_TuesdaySchedule   )
-        ( CtiTableDynamicPaoInfo::Key_RFN_WednesdaySchedule )
-        ( CtiTableDynamicPaoInfo::Key_RFN_ThursdaySchedule  )
-        ( CtiTableDynamicPaoInfo::Key_RFN_FridaySchedule    )
-        ( CtiTableDynamicPaoInfo::Key_RFN_SaturdaySchedule  )
-        ( CtiTableDynamicPaoInfo::Key_RFN_SundaySchedule    )
-        ( CtiTableDynamicPaoInfo::Key_RFN_HolidaySchedule   );
-
-const vector<CtiDeviceBase::PaoInfoKeys> schedule1RatesKeys = boost::assign::list_of
-        ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1MidnightRate )
-        ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate1        )
-        ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate2        )
-        ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate3        )
-        ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate4        )
-        ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate5        );
-
-const vector<CtiDeviceBase::PaoInfoKeys> schedule2RatesKeys = boost::assign::list_of
-        ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2MidnightRate )
-        ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate1        )
-        ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate2        )
-        ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate3        )
-        ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate4        )
-        ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate5        );
-
-const vector<CtiDeviceBase::PaoInfoKeys> schedule3RatesKeys = boost::assign::list_of
-        ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3MidnightRate )
-        ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate1        )
-        ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate2        )
-        ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate3        )
-        ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate4        )
-        ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate5        );
-
-const vector<CtiDeviceBase::PaoInfoKeys> schedule4RatesKeys = boost::assign::list_of
-        ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4MidnightRate )
-        ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate1        )
-        ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate2        )
-        ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate3        )
-        ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate4        )
-        ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate5        );
-
-const vector<CtiDeviceBase::PaoInfoKeys> schedule1TimesKeys = boost::assign::list_of
-        ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time1 )
-        ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time2 )
-        ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time3 )
-        ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time4 )
-        ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time5 );
-
-const vector<CtiDeviceBase::PaoInfoKeys> schedule2TimesKeys = boost::assign::list_of
-        ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Time1 )
-        ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Time2 )
-        ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Time3 )
-        ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Time4 )
-        ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Time5 );
-
-const vector<CtiDeviceBase::PaoInfoKeys> schedule3TimesKeys = boost::assign::list_of
-        ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Time1 )
-        ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Time2 )
-        ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Time3 )
-        ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Time4 )
-        ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Time5 );
-
-const vector<CtiDeviceBase::PaoInfoKeys> schedule4TimesKeys = boost::assign::list_of
-        ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Time1 )
-        ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Time2 )
-        ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Time3 )
-        ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Time4 )
-        ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Time5 );
-
-const vector<CtiDeviceBase::PaoInfoKeys> holidaysKeys = boost::assign::list_of
-        ( CtiTableDynamicPaoInfo::Key_RFN_Holiday1 )
-        ( CtiTableDynamicPaoInfo::Key_RFN_Holiday2 )
-        ( CtiTableDynamicPaoInfo::Key_RFN_Holiday3 );
+const map<unsigned char, RfnTouConfigurationCommand::TouState> touStateItems = map_list_of
+        ( 0x0, RfnTouConfigurationCommand::TouDisable )
+        ( 0x1, RfnTouConfigurationCommand::TouEnable );
 
 } // anonymous namespace
 
@@ -238,7 +161,7 @@ RfnCommand::RfnResult RfnTouConfigurationCommand::decodeCommand(const CtiTime no
 
     // decode acs
 
-    boost::optional<descriptionMapT> acsMap = mapFind( additionalStatusItems, ascCode );
+    boost::optional<map<unsigned char, string>> acsMap = mapFind( additionalStatusItems, ascCode );
 
     validateCondition( acsMap,
                        ErrorInvalidData, "Invalid additional status - (" + CtiNumStr(ascCode) + ")");
@@ -252,14 +175,16 @@ RfnCommand::RfnResult RfnTouConfigurationCommand::decodeCommand(const CtiTime no
 
     // decode tou state
 
-    boost::optional<string> touStateDesc = mapFind( touStateItems, touStateCode );
+    _touState_received = mapFind( touStateItems, touStateCode );
 
-    validateCondition( touStateDesc,
+    validateCondition( _touState_received,
                        ErrorInvalidData, "Invalid TOU state - (" + CtiNumStr(touStateCode) + ")");
+
+    string touStateDesc = ( *_touState_received == TouEnable ) ? "Enabled" : "Disabled";
 
     result.description += "Status : " + *statusDesc + "\n"
                        +  "Additional Status : " + *acsqDesc + "\n"
-                       +  "TOU State : " + *touStateDesc + "\n";
+                       +  "TOU State : " + touStateDesc + "\n";
 
     const vector<TypeLengthValue> tlvs = getTlvsFromBytes( Bytes( response.begin() + 5 , response.end() ));
     for each(const TypeLengthValue& tlv in tlvs)
@@ -283,12 +208,12 @@ RfnCommand::RfnResult RfnTouConfigurationCommand::error(const CtiTime now, const
 }
 
 /**
- * get the pao information that was received
- * @return vector with copy of dynamic pao Info
+ * get the tou state decoded
+ * @return the tou state
  */
-std::vector<CtiTableDynamicPaoInfo> RfnTouConfigurationCommand::getPaoInfo() const
+boost::optional<RfnTouConfigurationCommand::TouState> RfnTouConfigurationCommand::getTouStateReceived() const
 {
-    return _paoInfo;
+    return _touState_received;
 }
 
 //-----------------------------------------------------------------------------
@@ -338,13 +263,14 @@ RfnCommand::Bytes RfnTouScheduleConfigurationCommand::getCommandData()
     vector<TypeLengthValue> tlvs;
 
     // day table
+    if( _schedule_to_send->_dayTable )
     {
         TypeLengthValue tlv( Type_DayTable );
         tlv.value.resize(3, 0);
 
         for( int day_nbr = 0; day_nbr < 8; day_nbr++ )
         {
-            setBits(tlv.value, day_nbr*3, 3, (*_schedule_to_send)._dayTable[day_nbr]);
+            setBits_lEndian(tlv.value, day_nbr*3, 3, (*_schedule_to_send->_dayTable)[day_nbr]);
         }
 
         tlvs.push_back(tlv);
@@ -353,39 +279,46 @@ RfnCommand::Bytes RfnTouScheduleConfigurationCommand::getCommandData()
     // schedule 1 - 4 switch times
     for( int schedule_nbr = 0; schedule_nbr < 4; schedule_nbr++ )
     {
-        TypeLengthValue tlv( Type_Schedule1_SwitchTimes + schedule_nbr );
-        tlv.value.resize(10, 0);
+        boost::optional<DailyTimes> times = *mapFind( _schedule_to_send->_times, (ScheduleNbr)schedule_nbr );
 
-        const dailyTimesT& times = *mapFind( _schedule_to_send->_times, (ScheduleE)schedule_nbr );
-
-        for( int switchTime_nbr = 0; switchTime_nbr < 5; switchTime_nbr++ )
+        if( times )
         {
-            setBits(tlv.value, switchTime_nbr*16, 16, times[switchTime_nbr]);
-        }
+            TypeLengthValue tlv( Type_Schedule1_SwitchTimes + schedule_nbr );
+            tlv.value.resize(10, 0);
 
-        tlvs.push_back(tlv);
+            for( int time_nbr = 0; time_nbr < 5; time_nbr++ )
+            {
+                setBits_bEndian(tlv.value, time_nbr*16, 16, (*times)[time_nbr]);
+            }
+
+            tlvs.push_back(tlv);
+        }
     }
 
     // schedule 1 - 4 rates
     for( int schedule_nbr = 0; schedule_nbr < 4; schedule_nbr++ )
     {
-        TypeLengthValue tlv( Type_Schedule1_Rates + schedule_nbr );
-        tlv.value.resize(3, 0);
+        boost::optional<DailyRates> rates = *mapFind( _schedule_to_send->_rates, (ScheduleNbr)schedule_nbr );
 
-        const dailyRatesT& rates = *mapFind( _schedule_to_send->_rates, (ScheduleE)schedule_nbr );
-
-        for( int rate_nbr = 0; rate_nbr < 6; rate_nbr++ )
+        if( rates )
         {
-            setBits(tlv.value, rate_nbr*3, 3, rates[rate_nbr]);
-        }
+            TypeLengthValue tlv( Type_Schedule1_Rates + schedule_nbr );
+            tlv.value.resize(3, 0);
 
-        tlvs.push_back(tlv);
+            for( int rate_nbr = 0; rate_nbr < 6; rate_nbr++ )
+            {
+                setBits_lEndian(tlv.value, rate_nbr*3, 3, (*rates)[rate_nbr]);
+            }
+
+            tlvs.push_back(tlv);
+        }
     }
 
     // default tou rate
+    if( _schedule_to_send->_defaultRate )
     {
         TypeLengthValue tlv( Type_DefaultTouRate );
-        tlv.value.push_back((unsigned char)_schedule_to_send->_defaultRate);
+        tlv.value.push_back( (unsigned char)*_schedule_to_send->_defaultRate );
 
         tlvs.push_back(tlv);
     }
@@ -412,7 +345,7 @@ void RfnTouScheduleConfigurationCommand::decodeTlv( RfnResult& result,  const Ty
         case Type_Schedule3_SwitchTimes :
         case Type_Schedule4_SwitchTimes :
         {
-            decodeScheduleSwitchTimes( result, tlv.value, (tlv.type - Type_Schedule1_SwitchTimes) );
+            decodeScheduleSwitchTimes( result, tlv.value, (ScheduleNbr)(tlv.type - Type_Schedule1_SwitchTimes) );
             break;
         }
         case Type_Schedule1_Rates :
@@ -420,7 +353,7 @@ void RfnTouScheduleConfigurationCommand::decodeTlv( RfnResult& result,  const Ty
         case Type_Schedule3_Rates :
         case Type_Schedule4_Rates :
         {
-            decodeScheduleRates( result, tlv.value, (tlv.type - Type_Schedule1_Rates) );
+            decodeScheduleRates( result, tlv.value, (ScheduleNbr)(tlv.type - Type_Schedule1_Rates) );
             break;
         }
         case Type_DefaultTouRate :
@@ -457,20 +390,31 @@ void RfnTouScheduleConfigurationCommand::decodeDayTable( RfnResult& result, cons
         "Holiday  ",    // 7
     };
 
+    DayTable dayTable;
+
     result.description += "Day Table :\n";
 
     for( int day_nbr = 0; day_nbr < 8; day_nbr++ )
     {
-        const unsigned schedule_nbr = getValueFromBits( value, day_nbr*3, 3 );
+        const unsigned schedule_nbr = getValueFromBits_lEndian( value, day_nbr*3, 3 );
 
         validateCondition( schedule_nbr <= 3,
                            ErrorInvalidData, "Invalid day table schedule number - (" + CtiNumStr(schedule_nbr) + ")");
 
         result.description += string(" ") + days[day_nbr] + " - schedule " + CtiNumStr(schedule_nbr + 1) + "\n";
 
-        _paoInfo.push_back( CtiTableDynamicPaoInfo( -1, dayTableKeys[day_nbr] ));
-        _paoInfo.back().setValue( schedule_nbr );
+        dayTable[day_nbr] = (ScheduleNbr)schedule_nbr;
     }
+
+    if( ! _schedule_received )
+    {
+        _schedule_received = Schedule();
+    }
+
+    validateCondition( ! _schedule_received->_dayTable,
+                       ErrorInvalidData, "Unexpected day table tlv has been already received" );
+
+    _schedule_received->_dayTable = dayTable;
 }
 
 /**
@@ -479,26 +423,33 @@ void RfnTouScheduleConfigurationCommand::decodeDayTable( RfnResult& result, cons
  * @param value byte vector containing the tlv value
  * @param schedule_nbr schedule number <=> [0,3]
  */
-void RfnTouScheduleConfigurationCommand::decodeScheduleSwitchTimes( RfnResult& result, const Bytes& value, const unsigned schedule_nbr )
+void RfnTouScheduleConfigurationCommand::decodeScheduleSwitchTimes( RfnResult& result, const Bytes& value, const ScheduleNbr schedule_nbr )
 {
     validateCondition( value.size() == 10,
                        ErrorInvalidData, "Invalid schedule switch times data size - (" + CtiNumStr(value.size()) + ", expecting 10-byte)" );
 
-    const vector<CtiDeviceBase::PaoInfoKeys>& keys = schedule_nbr == Schedule1 ? schedule1TimesKeys :
-                                                     schedule_nbr == Schedule2 ? schedule2TimesKeys :
-                                                     schedule_nbr == Schedule3 ? schedule3TimesKeys :
-                                                     schedule4TimesKeys;
+    DailyTimes times;
 
-    result.description += "Schedule " + CtiNumStr(schedule_nbr+1) + " switch times :\n";
+    result.description += "Schedule " + CtiNumStr((int)schedule_nbr+1) + " switch times :\n";
 
-    for( int switchTime_nbr = 0; switchTime_nbr < 5; switchTime_nbr++ )
+    for( int time_nbr = 0; time_nbr < 5; time_nbr++ )
     {
-        const unsigned short switchTime = getValueFromBits( value, switchTime_nbr*16, 16 );
-        result.description += " Switch time " + CtiNumStr(switchTime_nbr + 1) + " - " + CtiNumStr(switchTime) + " minutes\n";
+        const unsigned short switchTime = getValueFromBits_bEndian( value, time_nbr*16, 16 );
 
-        _paoInfo.push_back( CtiTableDynamicPaoInfo( -1, keys[switchTime_nbr] ));
-        _paoInfo.back().setValue( switchTime );
+        result.description += " Switch time " + CtiNumStr(time_nbr + 1) + " - " + CtiNumStr(switchTime) + " minutes\n";
+
+        times[time_nbr] = switchTime;
     }
+
+    if( ! _schedule_received )
+    {
+        _schedule_received = Schedule();
+    }
+
+    validateCondition( ! mapFind( _schedule_received->_times, schedule_nbr ),
+                       ErrorInvalidData, "Unexpected switch Times tlv has been already received" );
+
+    _schedule_received->_times[schedule_nbr] = times;
 }
 
 /**
@@ -507,7 +458,7 @@ void RfnTouScheduleConfigurationCommand::decodeScheduleSwitchTimes( RfnResult& r
  * @param value byte vector containing the tlv value
  * @param schedule_nbr schedule number <=> [0,3]
  */
-void RfnTouScheduleConfigurationCommand::decodeScheduleRates( RfnResult& result, const Bytes& value, const unsigned schedule_nbr )
+void RfnTouScheduleConfigurationCommand::decodeScheduleRates( RfnResult& result, const Bytes& value, const ScheduleNbr schedule_nbr )
 {
     validateCondition( value.size() == 3,
                        ErrorInvalidData, "Invalid schedule rate data size - (" + CtiNumStr(value.size()) + ", expecting 3-byte)");
@@ -522,27 +473,32 @@ void RfnTouScheduleConfigurationCommand::decodeScheduleRates( RfnResult& result,
         "Switch 5",  // 5
     };
 
-    const vector<CtiDeviceBase::PaoInfoKeys>& keys = schedule_nbr == Schedule1 ? schedule1RatesKeys :
-                                                     schedule_nbr == Schedule2 ? schedule2RatesKeys :
-                                                     schedule_nbr == Schedule3 ? schedule3RatesKeys :
-                                                     schedule4RatesKeys;
+    DailyRates rates;
 
-    result.description += "Schedule " + CtiNumStr(schedule_nbr+1) + " rates :\n";
+    result.description += "Schedule " + CtiNumStr((int)schedule_nbr+1) + " rates :\n";
 
-    for( int switch_nbr = 0; switch_nbr < 6; switch_nbr++ )
+    for( int rate_nbr = 0; rate_nbr < 6; rate_nbr++ )
     {
-        const unsigned char rate = getValueFromBits( value, switch_nbr*3, 3 );
-
+        const unsigned char rate = getValueFromBits_lEndian( value, rate_nbr*3, 3 );
         boost::optional<string> rateDesc = mapFind( rateItems, rate );
 
         validateCondition( rateDesc,
                            ErrorInvalidData, "Invalid schedule rate - (" + CtiNumStr(rate) + ")");
 
-        result.description += string(" ") + switchRates[switch_nbr] + " rate - " + *rateDesc + "\n";
+        result.description += string(" ") + switchRates[rate_nbr] + " rate - " + *rateDesc + "\n";
 
-        _paoInfo.push_back( CtiTableDynamicPaoInfo( -1, keys[switch_nbr] ));
-        _paoInfo.back().setValue( rate );
+        rates[rate_nbr] = (Rate)rate;
     }
+
+    if( ! _schedule_received )
+    {
+        _schedule_received = Schedule();
+    }
+
+    validateCondition( ! mapFind( _schedule_received->_rates, schedule_nbr ),
+                       ErrorInvalidData, "Unexpected switch rates tlv has been already received" );
+
+    _schedule_received->_rates[schedule_nbr] = rates;
 }
 
 /**
@@ -555,7 +511,7 @@ void RfnTouScheduleConfigurationCommand::decodeDefaultTouRate( RfnResult& result
     validateCondition( value.size() == 1,
                        ErrorInvalidData, "Invalid default rate data size - (" + CtiNumStr(value.size()) + ", expecting 1-byte)");
 
-    const unsigned char rate         = value[0];
+    const unsigned char rate = value[0];
     boost::optional<string> rateDesc = mapFind( rateItems, rate );
 
     validateCondition( rateDesc,
@@ -563,8 +519,24 @@ void RfnTouScheduleConfigurationCommand::decodeDefaultTouRate( RfnResult& result
 
     result.description += "Default TOU rate : " + *rateDesc + "\n";
 
-    _paoInfo.push_back( CtiTableDynamicPaoInfo( -1, CtiTableDynamicPaoInfo::Key_RFN_DefaultTOURate ));
-    _paoInfo.back().setValue( rate );
+    if( ! _schedule_received )
+    {
+        _schedule_received = Schedule();
+    }
+
+    validateCondition( ! _schedule_received->_defaultRate,
+                       ErrorInvalidData, "Unexpected tlv - default rates has been already received" );
+
+    _schedule_received->_defaultRate = (Rate)rate;
+}
+
+/**
+ * get the tou schedule that has been decoded
+ * @return the tou schedule
+ */
+boost::optional<RfnTouScheduleConfigurationCommand::Schedule> RfnTouScheduleConfigurationCommand::getTouScheduleReceived() const
+{
+    return _schedule_received;
 }
 
 //-----------------------------------------------------------------------------
@@ -585,7 +557,7 @@ RfnTouHolidayConfigurationCommand::RfnTouHolidayConfigurationCommand()
  * @param holiday contains 3 dates to configuration
  * @param readOnly set to true to read back
  */
-RfnTouHolidayConfigurationCommand::RfnTouHolidayConfigurationCommand( const holidaysT &holidays ) :
+RfnTouHolidayConfigurationCommand::RfnTouHolidayConfigurationCommand( const Holidays &holidays ) :
     _holidays_to_send(holidays)
 {
 }
@@ -596,7 +568,8 @@ RfnTouHolidayConfigurationCommand::RfnTouHolidayConfigurationCommand( const holi
  */
 unsigned char RfnTouHolidayConfigurationCommand::getOperation() const
 {
-    return _holidays_to_send ? Operation_SetHoliday : Operation_GetHoliday;
+    return _holidays_to_send ? Operation_SetHoliday :
+                               Operation_GetHoliday;
 }
 
 /**
@@ -615,7 +588,7 @@ RfnCommand::Bytes RfnTouHolidayConfigurationCommand::getCommandData()
 
     for( int holiday_nbr = 0; holiday_nbr < 3; holiday_nbr++ )
     {
-        setBits(tlv.value, holiday_nbr*32, 32, (*_holidays_to_send)[holiday_nbr]);
+        setBits_bEndian( tlv.value, holiday_nbr*32, 32, CtiTime((*_holidays_to_send)[holiday_nbr]).seconds() );
     }
 
     vector<TypeLengthValue> tlvs;
@@ -627,12 +600,12 @@ RfnCommand::Bytes RfnTouHolidayConfigurationCommand::getCommandData()
 /**
  * decode tlv in the context of a holiday configuration command
  * @param result append description to the result
- * @param tlv
+ * @param tlv item to decode
  */
 void RfnTouHolidayConfigurationCommand::decodeTlv( RfnResult& result, const TypeLengthValue& tlv )
 {
     validateCondition( tlv.type == Type_Holiday,
-                       ErrorInvalidData, "Unexpected tlv type - (" + CtiNumStr(tlv.type) + ")");
+                       ErrorInvalidData, "Unexpected tlv - (type " + CtiNumStr(tlv.type) + ")");
 
     decodeHoliday( result, tlv.value );
 }
@@ -647,16 +620,34 @@ void RfnTouHolidayConfigurationCommand::decodeHoliday( RfnResult& result, const 
     validateCondition( value.size() == 12,
                        ErrorInvalidData, "Invalid holiday data size - (" + CtiNumStr(value.size()) + ", expecting 12-byte)");
 
+    Holidays holidays;
+
     result.description += "Holidays :\n";
 
-    for( int date_nbr = 0; date_nbr < 3; date_nbr++ )
+    for( int holiday_nbr = 0; holiday_nbr < 3; holiday_nbr++ )
     {
-        const unsigned long date = getValueFromBits( value, date_nbr*32, 32 );
-        result.description += " Date " + CtiNumStr( date_nbr + 1 ) + " - " + CtiTime(date).asString() + "\n";
+        const unsigned long date = getValueFromBits_bEndian( value, holiday_nbr*32, 32 );
 
-        _paoInfo.push_back( CtiTableDynamicPaoInfo( -1, holidaysKeys[date_nbr] ));
-        _paoInfo.back().setValue( date );
+        CtiTime holidayTime( date );
+
+        result.description += " Date " + CtiNumStr( holiday_nbr + 1 ) + " - " + holidayTime.asString() + "\n";
+
+        holidays[holiday_nbr] = CtiDate( holidayTime );
     }
+
+    validateCondition( ! _holidays_received,
+                       ErrorInvalidData, "Unexpected tlv - holiday has been already received" );
+
+    _holidays_received = holidays;
+}
+
+/**
+ * get the holiday that has been received
+ * @return the holidays
+ */
+boost::optional<RfnTouHolidayConfigurationCommand::Holidays> RfnTouHolidayConfigurationCommand::getHolidaysReceived() const
+{
+    return _holidays_received;
 }
 
 //-----------------------------------------------------------------------------
@@ -672,14 +663,13 @@ RfnTouEnableConfigurationCommand::RfnTouEnableConfigurationCommand()
 {
 }
 
-
 /**
  * Constructor
  * @param bEnable TOU enable
  * @param readOnly set to true to read back
  */
-RfnTouEnableConfigurationCommand::RfnTouEnableConfigurationCommand( bool bEnable ) :
-    _enableTou_to_send( bEnable )
+RfnTouEnableConfigurationCommand::RfnTouEnableConfigurationCommand( TouState touState_to_send  ) :
+    _touState_to_send( touState_to_send )
 {
 }
 
@@ -689,12 +679,13 @@ RfnTouEnableConfigurationCommand::RfnTouEnableConfigurationCommand( bool bEnable
  */
 unsigned char RfnTouEnableConfigurationCommand::getOperation() const
 {
-    if( ! _enableTou_to_send )
+    if( ! _touState_to_send )
     {
         return Operation_GetTouState;
     }
 
-    return *_enableTou_to_send ? Operation_EnableTou : Operation_DisableTou;
+    return (*_touState_to_send == TouEnable) ? Operation_EnableTou :
+                                               Operation_DisableTou;
 }
 
 /**
@@ -707,16 +698,57 @@ RfnCommand::Bytes RfnTouEnableConfigurationCommand::getCommandData()
 }
 
 /**
- * called if a tlv is to be decoded
+ * Called if a tlv is to be decoded
  * since no tlv is expected, throws a command exception
  * @param result
  * @param tlv
  */
 void RfnTouEnableConfigurationCommand::decodeTlv( RfnResult& result, const TypeLengthValue& tlv )
 {
-    throw RfnCommand::CommandException( ErrorInvalidData, "Unexpected tlv type - (" + CtiNumStr(tlv.type) + ")");
+    throw RfnCommand::CommandException( ErrorInvalidData, "Unexpected tlv - (type " + CtiNumStr(tlv.type) + ")");
 }
 
+//-----------------------------------------------------------------------------
+//  RFN TOU configuration command set/cancel holiday active
+//-----------------------------------------------------------------------------
+
+/**
+ * Constructor of holiday active set/cancel command
+ * @param holidayActive_to_send
+ */
+RfnTouHolidayActiveConfigurationCommand::RfnTouHolidayActiveConfigurationCommand( HolidayActive holidayActive_to_send ) :
+    _holidayActive_to_send( holidayActive_to_send )
+{
+}
+
+/**
+ * Get the operation code to execute (set or cancel)
+ * @return the operation code
+ */
+unsigned char RfnTouHolidayActiveConfigurationCommand::getOperation() const
+{
+    return (_holidayActive_to_send == SetHolidayActive) ? Operation_SetHolidayActive :
+                                                          Operation_CancelHolidayActive;
+}
+
+/**
+ * Return 0 tlv as payload data
+ * @return list of byte containing zero tlvs
+ */
+RfnCommand::Bytes RfnTouHolidayActiveConfigurationCommand::getCommandData()
+{
+    return Bytes(1,0); // zero tlvs
+}
+
+/**
+ * Called if a tlv is decoded - throw since no tlv are expected
+ * @param result
+ * @param tlv
+ */
+void RfnTouHolidayActiveConfigurationCommand::decodeTlv( RfnResult& result, const TypeLengthValue& tlv )
+{
+    throw RfnCommand::CommandException( ErrorInvalidData, "Unexpected tlv - (type " + CtiNumStr(tlv.type) + ")");
+}
 
 }
 }
