@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
@@ -17,6 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.util.ChunkingSqlTemplate;
+import com.cannontech.common.util.SqlFragmentGenerator;
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.ProgramNotFoundException;
@@ -41,10 +45,16 @@ public class ProgramDaoImpl implements ProgramDao {
     private final ParameterizedRowMapper<Integer> groupIdRowMapper = createGroupIdRowMapper();
     private final ParameterizedRowMapper<Integer> programIdRowMapper = createProgramIdRowMapper();
 
-    private ApplianceAndProgramDao applianceAndProgramDao;
-    private ApplianceCategoryDao applianceCategoryDao;
-    private StarsDatabaseCache starsDatabaseCache;
-    private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private ApplianceAndProgramDao applianceAndProgramDao;
+    @Autowired private ApplianceCategoryDao applianceCategoryDao;
+    @Autowired private StarsDatabaseCache starsDatabaseCache;
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    private ChunkingSqlTemplate chunkingSqlTemplate;
+    
+    @PostConstruct
+    public void init() {
+        chunkingSqlTemplate = new ChunkingSqlTemplate(yukonJdbcTemplate);
+    }
 
     private final String selectSQLHeader =
         "SELECT LMPWP.programId, LMPWP.programOrder, YWC.description, YWC.url, "+
@@ -222,16 +232,21 @@ public class ProgramDaoImpl implements ProgramDao {
         }
     }
 
-    
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<Integer> getDistinctGroupIdsByYukonProgramIds(final Set<Integer> programIds) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append(" SELECT Distinct LMPDG.LMGroupDeviceId "); 
-        sql.append(" FROM LMProgramDirectGroup LMPDG ");
-        sql.append(" WHERE LMPDG.DeviceId in (", programIds, ") ");
+        SqlFragmentGenerator<Integer> sqlFragmentGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT Distinct LMPDG.LMGroupDeviceId"); 
+                sql.append("FROM LMProgramDirectGroup LMPDG");
+                sql.append("WHERE LMPDG.DeviceId").in(subList);
+                return sql;
+            }
+        };
         
-        List<Integer> list = yukonJdbcTemplate.query(sql.toString(), groupIdRowMapper);
+        List<Integer> list = chunkingSqlTemplate.query(sqlFragmentGenerator, programIds, groupIdRowMapper);
         return list;
     }
     
@@ -337,26 +352,4 @@ public class ProgramDaoImpl implements ProgramDao {
         }
         return 0;
     }
-
-    // DI Setters
-    @Autowired
-    public void setApplianceAndProgramDao(ApplianceAndProgramDao applianceAndProgramDao) {
-        this.applianceAndProgramDao = applianceAndProgramDao;
-    }
-    
-    @Autowired
-    public void setApplianceCategoryDao(ApplianceCategoryDao applianceCategoryDao) {
-        this.applianceCategoryDao = applianceCategoryDao;
-    }
-    
-    @Autowired
-    public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
-        this.starsDatabaseCache = starsDatabaseCache;
-    }
-    
-    @Autowired
-    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
-        this.yukonJdbcTemplate = yukonJdbcTemplate;
-    }
-
 }

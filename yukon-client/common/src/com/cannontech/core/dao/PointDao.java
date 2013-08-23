@@ -1,12 +1,12 @@
 package com.cannontech.core.dao;
 
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.util.SqlFragmentSource;
@@ -38,13 +38,12 @@ public interface PointDao {
     /**
      * Retrieves point ids for every point attached to the specified paos.
      */
-    public Map<Integer, Integer> getPointIdsForPaos(Collection<Integer> paoIds);
+    public Map<Integer, Integer> getPointIdsForPaos(Iterable<Integer> paoIds);
     
     /**
-     * Retrieves point ids for the points matching the attribute lookup sql on the specified paos. 
+     * Retrieves point ids for the points matching the attribute on the specified paos. 
      */
-    public Map<Integer, Integer> getPointIdsForPaosAndAttribute(SqlFragmentSource attributeLookupSql, 
-                                                                Collection<Integer> paoIds);
+    public Map<Integer, Integer> getPointIdsForPaosAndAttribute(Attribute attribute, Iterable<Integer> paoIds);
     
     /**
      * Returns the next available point id.
@@ -194,4 +193,22 @@ public interface PointDao {
      * @return LitePoint or null
      */
     public LitePoint findPointByNameAndType(YukonPao pao, String pointName, PointType pointType);
+    
+    /**
+     * Returns the Sql that gives you the paObjectId and pointId based on a
+     * passed in Attribute
+     * @param attribute
+     */
+    public SqlFragmentSource getAttributeLookupSql(Attribute attribute);
+
+    /**
+     * Returns the Sql that gives you the paObjectId and pointId based on a
+     * passed in Attribute AND a maximum row count.
+     * 
+     * @param attribute
+     * @param limitToRowCount
+     * @return
+     */
+    public SqlFragmentSource getAttributeLookupSqlLimit(Attribute attribute, int limitToRowCount);
+
 }

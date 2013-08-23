@@ -37,7 +37,7 @@ public interface AssetAvailabilityService {
      * Gets a simple asset availability summary of all inventory in all specified load groups.
      * @throws DynamicDataAccessException if the connection to dispatch is invalid.
      */
-    public SimpleAssetAvailabilitySummary getAssetAvailabilityFromLoadGroups(Collection<Integer> loadGroupIds) throws DynamicDataAccessException;
+    public SimpleAssetAvailabilitySummary getAssetAvailabilityFromLoadGroups(Iterable<Integer> loadGroupIds) throws DynamicDataAccessException;
     
     /**
      * @return The AssetAvailability for the specified inventory.
@@ -49,7 +49,7 @@ public interface AssetAvailabilityService {
      * @return A map of inventoryId to AssetAvailability for the specified inventory.
      * @throws DynamicDataAccessException if the connection to dispatch is invalid.
      */
-    public Map<Integer, SimpleAssetAvailability> getAssetAvailability(Collection<Integer> inventoryIds) throws DynamicDataAccessException;
+    public Map<Integer, SimpleAssetAvailability> getAssetAvailability(Iterable<Integer> inventoryIds) throws DynamicDataAccessException;
     
     /**
      * @return A map of inventoryId to AssetAvailability for all inventory in the specified DR

@@ -150,14 +150,6 @@ public interface RawPointHistoryDao {
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getAttributeData(Iterable<? extends YukonPao> paos,
         Attribute attribute, Date startDate, Date stopDate, boolean excludeDisabledPaos, Clusivity clusivity,
         Order order);
-
-    /**
-     * This method returns RawPointHistory data for a list of PAOs and a given Attribute. This data will be returned
-     * as a ListMultimap such that the RPH values for each PAO will be accessible (and ordered) on their own.
-     */
-    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getAttributeData(Iterable<? extends YukonPao> paos,
-        Attribute attribute, ReadableRange<Instant> dateRange, ReadableRange<Long> changeIdRange, 
-        boolean excludeDisabledPaos, Order order);
     
     /**
      * This method returns RawPointHistory data for a list of PAOs and a given Attribute. This data will be returned
@@ -384,5 +376,5 @@ public interface RawPointHistoryDao {
     * @return A set of ids for all 2-way inventory in the specified load groups that has communicated
     * in the specified date range.
     */
-   public Set<Integer> getCommunicatingInventoryByLoadGroups(Collection<Integer> loadGroupIds, ReadableRange<Instant> dateRange);
+   public Set<Integer> getCommunicatingInventoryByLoadGroups(Iterable<Integer> loadGroupIds, ReadableRange<Instant> dateRange);
 }

@@ -395,7 +395,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
      */
     private ListMultimap<PaoIdentifier, PointValueQualityHolder> getDynamicAttributeData(List<Meter> meters, Attribute attribute, ReadableRange<Instant> dateRange, ReadableRange<Long> changeIdRange) {
         ListMultimap<PaoIdentifier, PointValueQualityHolder> attributeDataValues = 
-                rawPointHistoryDao.getAttributeData(meters, attribute, dateRange, changeIdRange, false, Order.FORWARD);
+                rawPointHistoryDao.getAttributeData(meters, attribute, dateRange, changeIdRange, false, Order.FORWARD, null);
         return attributeDataValues;
     }
 

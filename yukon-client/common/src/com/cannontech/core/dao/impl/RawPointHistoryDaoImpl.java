@@ -11,6 +11,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,10 +75,16 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     private static final Logger log = YukonLogManager.getLogger(RawPointHistoryDaoImpl.class);
 
     @Autowired private YukonJdbcTemplate yukonTemplate = null;
+    private ChunkingSqlTemplate chunkingSqlTemplate;
     @Autowired private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
     @Autowired private AttributeService attributeService;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
-
+    
+    @PostConstruct
+    public void init() {
+        chunkingSqlTemplate = new ChunkingSqlTemplate(yukonTemplate);
+    }
+    
     YukonRowMapper<Map.Entry<Integer, PointValueQualityHolder>> rphYukonRowMapper =
         new YukonRowMapper<Map.Entry<Integer, PointValueQualityHolder>>() {
             final LiteRPHQualityRowMapper liteRPHQualityRowMapper = new LiteRPHQualityRowMapper();
@@ -341,13 +349,6 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     
     @Override
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getAttributeData(
-             Iterable<? extends YukonPao> paos, Attribute attribute, ReadableRange<Instant> dateRange,
-             ReadableRange<Long> changeIdRange, boolean excludeDisabledPaos, Order order) {
-        return getAttributeData(paos, attribute, dateRange, changeIdRange, excludeDisabledPaos, order, null);
-    }
-    
-    @Override
-    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getAttributeData(
             Iterable<? extends YukonPao> paos, Attribute attribute, final ReadableRange<Instant> dateRange,
             final ReadableRange<Long> changeIdRange, final boolean excludeDisabledPaos, final Order order, final Double minimumValue) {
         SqlFragmentGeneratorFactory factory = new SqlFragmentGeneratorFactory() {
@@ -389,7 +390,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
             Attribute attribute, Date startDate, Date stopDate, boolean excludeDisabledPaos, Clusivity clusivity,
             Order order) {
         Range<Instant> dateRange = clusivity.makeRange(startDate, stopDate).translate(CtiUtilities.INSTANT_FROM_DATE);
-        return getAttributeData(paos, attribute, dateRange, null, excludeDisabledPaos, order);
+        return getAttributeData(paos, attribute, dateRange, null, excludeDisabledPaos, order, null);
     }
 
     @Override
@@ -1024,19 +1025,25 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     }
     
     @Override
-    public Set<Integer> getCommunicatingInventoryByLoadGroups(Collection<Integer> loadGroupIds, ReadableRange<Instant> dateRange) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT DISTINCT ib.InventoryId");
-        sql.append("FROM LmHardwareControlGroup lmhc");
-        sql.append("JOIN InventoryBase ib ON ib.InventoryId = lmhc.InventoryId");
-        sql.append("JOIN Point p ON p.PaObjectId = ib.DeviceId");
-        sql.append("JOIN RawPointHistory rph ON rph.PointId = p.PointId");
-        sql.append("WHERE LmGroupId").in(loadGroupIds);
-        sql.append("AND ib.DeviceId").gt(0);
-        sql.append("AND rph.Quality").eq(PointQuality.Normal.getQuality());
-        appendTimeStampClause(sql, dateRange);
+    public Set<Integer> getCommunicatingInventoryByLoadGroups(Iterable<Integer> loadGroupIds, final ReadableRange<Instant> dateRange) {
+        SqlFragmentGenerator<Integer> sqlFragmentGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT DISTINCT ib.InventoryId");
+                sql.append("FROM LmHardwareControlGroup lmhc");
+                sql.append("JOIN InventoryBase ib ON ib.InventoryId = lmhc.InventoryId");
+                sql.append("JOIN Point p ON p.PaObjectId = ib.DeviceId");
+                sql.append("JOIN RawPointHistory rph ON rph.PointId = p.PointId");
+                sql.append("WHERE LmGroupId").in(subList);
+                sql.append("AND ib.DeviceId").gt(0);
+                sql.append("AND rph.Quality").eq(PointQuality.Normal.getQuality());
+                appendTimeStampClause(sql, dateRange);
+                return sql;
+            }
+        };
         
-        List<Integer> inventoryIds = yukonTemplate.query(sql, RowMapper.INTEGER);
+        List<Integer> inventoryIds = chunkingSqlTemplate.query(sqlFragmentGenerator, loadGroupIds, RowMapper.INTEGER);
         return Sets.newHashSet(inventoryIds);
     }
 }

@@ -1,5 +1,9 @@
 package com.cannontech.dr.assetavailability;
 
+/**
+ * This object represents a single appliance, with the device and relay to which it is attached, and the 
+ * applianceCategoryId of the category to which it belongs.
+ */
 public class DeviceRelayApplianceCategory {
     private final int deviceId;
     private final int relay;

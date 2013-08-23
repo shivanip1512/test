@@ -1,21 +1,26 @@
 package com.cannontech.dr.assetavailability;
 
-import com.cannontech.stars.dr.appliance.model.Appliance;
+import org.joda.time.Instant;
 
-public class ApplianceWithRuntime {
-    private final Appliance appliance;
-    private final ApplianceRuntime runtime;
+/**
+ * Object representing an appliance, including the applianceCategoryId and the most recent Instant that non-zero
+ * runtime was recorded.
+ */
+public final class ApplianceWithRuntime {
+    //applianceCategoryId is used to get appliance category display name
+    final int applianceCategoryId;
+    final Instant lastNonZeroRuntimeTime;
     
-    public ApplianceWithRuntime(Appliance appliance, ApplianceRuntime runtime) {
-        this.appliance = appliance; //TODO copy
-        this.runtime = runtime;
+    public ApplianceWithRuntime(int applianceCategoryId, Instant lastNonZeroRuntimeTime) {
+        this.applianceCategoryId = applianceCategoryId;
+        this.lastNonZeroRuntimeTime = lastNonZeroRuntimeTime;
     }
-    
-    public Appliance getAppliance() {
-        return appliance; //TODO copy
+
+    public int getApplianceCategoryId() {
+        return applianceCategoryId;
     }
-    
-    public ApplianceRuntime getRuntime() {
-        return runtime;
+
+    public Instant getLastNonZeroRuntime() {
+        return lastNonZeroRuntimeTime;
     }
 }

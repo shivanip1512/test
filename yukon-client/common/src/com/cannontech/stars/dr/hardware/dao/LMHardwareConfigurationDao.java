@@ -37,17 +37,17 @@ public interface LMHardwareConfigurationDao {
      * @return A multimap of relay -> device for all inventory devices in the specified load group.
      * This uses the relay mapping specified during program enrollment.
      */
-    public Multimap<Integer, PaoIdentifier> getRelayToDeviceMapByLoadGroups(Collection<Integer> loadGroupIds);
+    public Multimap<Integer, PaoIdentifier> getRelayToDeviceMapByLoadGroups(Iterable<Integer> loadGroupIds);
     
     /**
      * @return A multimap of relay -> device for all inventory devices specified.
      * This uses the relay mapping specified during program enrollment.
      */
-    public Multimap<Integer, PaoIdentifier> getRelayToDeviceMapByDeviceIds(Collection<Integer> deviceIds);
+    public Multimap<Integer, PaoIdentifier> getRelayToDeviceMapByDeviceIds(Iterable<Integer> deviceIds);
     
     /**
      * For a collection of inventory, gets the applianceCategoryIds of each appliance mapped to the
      * device and relay.
      */
-    public DeviceRelayApplianceCategories getDeviceRelayApplianceCategoryId(Collection<Integer> inventoryIds);
+    public DeviceRelayApplianceCategories getDeviceRelayApplianceCategoryId(Iterable<Integer> inventoryIds);
 }

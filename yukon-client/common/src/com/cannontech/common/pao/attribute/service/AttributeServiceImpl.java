@@ -9,7 +9,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -42,15 +41,12 @@ import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.definition.service.PaoDefinitionService;
 import com.cannontech.common.pao.service.PointCreationService;
 import com.cannontech.common.pao.service.PointService;
-import com.cannontech.common.util.SqlBuilder;
-import com.cannontech.common.util.SqlFragmentCollection;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.core.dao.StateDao;
-import com.cannontech.core.dao.impl.RawPointHistoryDaoImpl;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -58,8 +54,6 @@ import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.point.PointBase;
-import com.cannontech.database.vendor.DatabaseVendor;
-import com.cannontech.database.vendor.VendorSpecificSqlBuilder;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.base.Function;
@@ -72,7 +66,6 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 import com.google.common.collect.Ordering;
-import com.google.common.collect.SetMultimap;
 import com.google.common.collect.Sets;
 
 
@@ -306,105 +299,6 @@ public class AttributeServiceImpl implements AttributeService {
         } catch (IllegalUseOfAttribute e) {
             return false;
         }
-    }
-
-    @Override
-    public SqlFragmentSource getAttributeLookupSql(Attribute attribute) {
-        Map<PaoType, Map<Attribute, AttributeDefinition>> definitionMap = paoDefinitionDao.getPaoAttributeAttrDefinitionMap();
-
-        SetMultimap<PointIdentifier, PaoType> typesByPointIdentifier = HashMultimap.create();
-        for (Entry<PaoType, Map<Attribute, AttributeDefinition>> entry : definitionMap.entrySet()) {
-            AttributeDefinition attributeDefinition = entry.getValue().get(attribute);
-            
-            if (attributeDefinition == null) continue;
-            
-            PointIdentifier pointIdentifier = attributeDefinition.getPointTemplate().getPointIdentifier();
-            typesByPointIdentifier.put(pointIdentifier, entry.getKey());
-        }
-
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT YPO.paObjectid, P.pointId");
-        sql.append("FROM YukonPAObject YPO");
-        sql.append("JOIN Point P ON YPO.paObjectId = P.paObjectId");
-
-        SqlFragmentCollection orCollection = SqlFragmentCollection.newOrCollection();
-        for (Entry<PointIdentifier, Collection<PaoType>> entry : typesByPointIdentifier.asMap().entrySet()) {
-            SqlStatementBuilder clause1 = new SqlStatementBuilder();
-            clause1.append("(");
-            clause1.append("YPO.Type").in(entry.getValue());
-            clause1.append("AND P.pointType").eq(entry.getKey().getPointType());
-            clause1.append("AND P.pointOffset").eq_k(entry.getKey().getOffset());
-            clause1.append(")");
-            orCollection.add(clause1);
-        }
-
-        if (!orCollection.isEmpty()) {
-            sql.append("WHERE").appendFragment(orCollection);
-        }
-
-        return sql;
-    }
-
-    /**
-     * Add a version which limits the results.  Used {@link RawPointHistoryDaoImpl} as multi-DB-engine example,
-     * however had to add TOP to sqlb for it to be valid within MSSQL2008.
-     * 
-     * @category    YUK-11992
-     * @since       5.6.4
-     */
-    @Override
-    public SqlFragmentSource getAttributeLookupSqlLimit(Attribute attribute, int limitToRowCount) {
-        Map<PaoType, Map<Attribute, AttributeDefinition>> definitionMap =
-            paoDefinitionDao.getPaoAttributeAttrDefinitionMap();
-
-        SetMultimap<PointIdentifier, PaoType> typesByPointIdentifier = HashMultimap.create();
-        for (Entry<PaoType, Map<Attribute, AttributeDefinition>> entry : definitionMap.entrySet()) {
-            AttributeDefinition attributeDefinition = entry.getValue().get(attribute);
-
-            if (attributeDefinition == null)
-                continue;
-
-            PointIdentifier pointIdentifier = attributeDefinition.getPointTemplate().getPointIdentifier();
-            typesByPointIdentifier.put(pointIdentifier, entry.getKey());
-        }
-
-        String orderByClause = "ORDER BY YPO.paObjectid ASC, P.pointId ASC";
-
-        VendorSpecificSqlBuilder builder = vendorSpecificSqlBuilderFactory.create();
-        SqlBuilder sqla = builder.buildFor(DatabaseVendor.MS2000);
-        sqla.append("SELECT TOP " + limitToRowCount + " YPO.paObjectid, P.pointId");
-        sqla.append("FROM YukonPAObject YPO");
-        sqla.append("JOIN Point P ON YPO.paObjectId = P.paObjectId");
-        sqla.append(orderByClause);
-
-        SqlBuilder sqlb = builder.buildOther();
-        sqlb.append("select TOP " + limitToRowCount + " * from (");
-        sqlb.append("SELECT YPO.paObjectid, P.pointId, ROW_NUMBER() over (");
-        sqlb.append(orderByClause);
-        sqlb.append(") rn");
-        sqlb.append("FROM YukonPAObject YPO");
-        sqlb.append("JOIN Point P ON YPO.paObjectId = P.paObjectId");
-
-        SqlFragmentCollection orCollection = SqlFragmentCollection.newOrCollection();
-        for (Entry<PointIdentifier, Collection<PaoType>> entry : typesByPointIdentifier.asMap().entrySet()) {
-            SqlStatementBuilder clause1 = new SqlStatementBuilder();
-            clause1.append("(");
-            clause1.append("YPO.Type").in(entry.getValue());
-            clause1.append("AND P.pointType").eq_k(entry.getKey().getPointType());
-            clause1.append("AND P.pointOffset").eq_k(entry.getKey().getOffset());
-            clause1.append(")");
-            orCollection.add(clause1);
-        }
-
-        if (!orCollection.isEmpty()) {
-            sqla.append("WHERE").appendFragment(orCollection);
-            sqlb.append("WHERE").appendFragment(orCollection);
-        }
-        sqlb.append(") numberedRows");
-        sqlb.append("WHERE numberedRows.rn").lte(limitToRowCount);
-        sqlb.append("ORDER BY numberedRows.rn");
-
-        return builder;
     }
 
     @Override

@@ -5,6 +5,10 @@ import java.util.Map;
 
 import com.google.common.collect.Maps;
 
+/**
+ * A simple wrapper around a map of a map. This is mostly just to ease readability. It maps deviceIds to relay numbers 
+ * to applianceCategoryIds for the appliance on each relay.
+ */
 public class DeviceRelayApplianceCategories {
     Map<Integer, Map<Integer, Integer>> map = Maps.newHashMap();
     

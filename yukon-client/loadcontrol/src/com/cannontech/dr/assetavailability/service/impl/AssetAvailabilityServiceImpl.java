@@ -16,7 +16,6 @@ import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.ReadableRange;
-import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
@@ -24,7 +23,7 @@ import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
-import com.cannontech.dr.assetavailability.DisplayableApplianceWithRuntime;
+import com.cannontech.dr.assetavailability.ApplianceWithRuntime;
 import com.cannontech.dr.assetavailability.SimpleAssetAvailability;
 import com.cannontech.dr.assetavailability.AssetAvailabilityStatus;
 import com.cannontech.dr.assetavailability.DeviceRelayApplianceCategories;
@@ -72,7 +71,7 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
     }
     
     @Override
-    public SimpleAssetAvailabilitySummary getAssetAvailabilityFromLoadGroups(Collection<Integer> loadGroupIds) throws DynamicDataAccessException {
+    public SimpleAssetAvailabilitySummary getAssetAvailabilityFromLoadGroups(Iterable<Integer> loadGroupIds) throws DynamicDataAccessException {
         //Get all inventory & associated paos
         Map<Integer, Integer> inventoryAndDevices = drGroupDeviceMappingDao.getInventoryAndDeviceIdsForLoadGroups(loadGroupIds);
         Set<Integer> inventoryIds = Sets.newHashSet(inventoryAndDevices.keySet());
@@ -94,8 +93,9 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
         aaSummary.addOptedOut(optedOutInventory);
         
         //Get communicating
-        Instant communicatingWindowEnd = Instant.now().minus(Duration.standardHours(LAST_COMMUNICATION_HOURS));
-        Range<Instant> communicatingWindow = Range.inclusive(communicatingWindowEnd, Instant.now());
+        Instant now = Instant.now();
+        Instant communicatingWindowEnd = now.minus(Duration.standardHours(LAST_COMMUNICATION_HOURS));
+        Range<Instant> communicatingWindow = Range.inclusive(communicatingWindowEnd, now);
         Set<Integer> communicatedInventory = rawPointHistoryDao.getCommunicatingInventoryByLoadGroups(loadGroupIds, communicatingWindow);
         aaSummary.addCommunicating(communicatedInventory);
         
@@ -109,8 +109,8 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
             relayPaoIdentifiers = Sets.difference(relayPaoIdentifiers, allPaosWithRuntime);
             
             Instant runtimeWindowEnd = Instant.now().minus(Duration.standardHours(LAST_RUNTIME_HOURS));
-            ReadableRange<Instant> runtimeRange = Range.inclusive(runtimeWindowEnd, Instant.now());
-            ReadableRange<Long> changeIdRange = Range.unbounded();
+            Range<Instant> runtimeRange = Range.inclusive(runtimeWindowEnd, Instant.now());
+            Range<Long> changeIdRange = Range.unbounded();
             
             Multimap<PaoIdentifier, PointValueQualityHolder> relayAttributeData = rawPointHistoryDao.getAttributeData(relayPaoIdentifiers, RELAY_ATTRIBUTES.get(i), runtimeRange, changeIdRange, false, Order.FORWARD, 0.0);
             
@@ -136,7 +136,7 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
     }
     
     @Override
-    public Map<Integer, SimpleAssetAvailability> getAssetAvailability(Collection<Integer> inventoryIds) throws DynamicDataAccessException {
+    public Map<Integer, SimpleAssetAvailability> getAssetAvailability(Iterable<Integer> inventoryIds) throws DynamicDataAccessException {
         Map<Integer, Integer> inventoryAndDevices = inventoryDao.getDeviceIds(inventoryIds);
         Set<Integer> oneWayInventory = getOneWayInventory(inventoryAndDevices);
         Set<Integer> deviceIds = getTwoWayInventoryDevices(inventoryAndDevices);
@@ -195,6 +195,12 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
         return getAssetAvailability(inventoryIds);
     }
     
+    /*
+     * Each relayAttributeData entry is checked against the paoRelayRuntimes - if there is no entry for that pao/relay
+     * in paoRelayRuntimes, the relayAttributeData entry is added. If there is existing data, the entry is only added if
+     * it has a later timestamp.
+     * The end result is that paoRelayRuntimes is updated to contain any newer data from relayAttributeData.
+     */
     private void updatePaoRuntimeTimesFromDatabase(PaoRelayRuntimes paoRelayRuntimes, Multimap<PaoIdentifier, 
                                                 PointValueQualityHolder> relayAttributeData, int relay) {
         for(Map.Entry<PaoIdentifier, PointValueQualityHolder> entry : relayAttributeData.entries()) {
@@ -210,14 +216,18 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
         }
     }
     
+    /*
+     * Queries dispatch for point data with a value greater than 0, for the specified attribute, on the specified paos.
+     * Returns the subset of paoIdentifiers that returned valid values. (Note that any value greater than 0, at any
+     * time, is considered valid to this method.)
+     */
     private Set<PaoIdentifier> getPaoRuntimeFromDispatch(Set<PaoIdentifier> relayPaoIdentifiers, Attribute attribute) {
         Map<Integer, PaoIdentifier> paoIdMap = Maps.newHashMap();
         for(PaoIdentifier paoIdentifier : relayPaoIdentifiers) {
             paoIdMap.put(paoIdentifier.getPaoId(), paoIdentifier);
         }
         //get list of points
-        SqlFragmentSource attributeLookupSql = attributeService.getAttributeLookupSql(attribute);
-        Map<Integer, Integer> pointsToPao = pointDao.getPointIdsForPaosAndAttribute(attributeLookupSql, paoIdMap.keySet());
+        Map<Integer, Integer> pointsToPao = pointDao.getPointIdsForPaosAndAttribute(attribute, paoIdMap.keySet());
         //query dispatch for points w/ value > 0
         Map<Integer, Instant> paoToPointTimeMap = getPaoLatestPointTimes(pointsToPao, 0.0);
         Set<PaoIdentifier> paosWithRuntime = Sets.newHashSet();
@@ -227,19 +237,30 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
         return paosWithRuntime;
     }
     
+    /*
+     * Queries dispatch for point data with a value greater than 0, for the specified attribute, on the specified paos.
+     * Returns a map of deviceId to instant of last non-zero read.
+     */
     private Map<Integer, Instant> getPaoRuntimeTimesFromDispatch(Set<PaoIdentifier> relayPaoIdentifiers, Attribute attribute) {
         Set<Integer> relayDeviceIds = Sets.newHashSet();
         for(PaoIdentifier paoIdentifier : relayPaoIdentifiers) {
             relayDeviceIds.add(paoIdentifier.getPaoId());
         }
         //get list of points
-        SqlFragmentSource attributeLookupSql = attributeService.getAttributeLookupSql(attribute);
-        Map<Integer, Integer> pointsToPao = pointDao.getPointIdsForPaosAndAttribute(attributeLookupSql, relayDeviceIds);
+        Map<Integer, Integer> pointsToPao = pointDao.getPointIdsForPaosAndAttribute(attribute, relayDeviceIds);
         //query dispatch for points w/ value > 0
         return getPaoLatestPointTimes(pointsToPao, 0.0);
     }
     
-    private Map<Integer, SimpleAssetAvailability> buildAssetAvailabilityMap(Collection<Integer> inventoryIds, 
+    /*
+     * From the supplied sets and maps, this method determines the asset availability of each inventory and returns a
+     * map of inventoryId to SimpleAssetAvailability of that inventory.
+     * One-way inventory are considered to be always communicating and running, but the communication time and runtimes
+     * on their SimpleAssetAvailability object will be null.
+     * Two-way inventory may also have null communication time and/or an empty set of runtimes if no communication or
+     * runtime data has ever been collected for the device.
+     */
+    private Map<Integer, SimpleAssetAvailability> buildAssetAvailabilityMap(Iterable<Integer> inventoryIds, 
                                                                        Collection<Integer> optedOutInventory, 
                                                                        Collection<Integer> oneWayInventory, 
                                                                        Map<Integer, Integer> inventoryAndDevices,
@@ -259,13 +280,13 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
                 Instant lastCommunicationTime = paoCommunicationTimes.get(deviceId);
                 //get runtime
                 Map<Integer, Instant> relayRuntimes = paoRelayRuntimes.get(deviceId);
-                Set<DisplayableApplianceWithRuntime> applianceRuntimes = Sets.newHashSet();
+                Set<ApplianceWithRuntime> applianceRuntimes = Sets.newHashSet();
                 if(relayRuntimes != null) {
                     for(Map.Entry<Integer, Instant> relayRuntime : relayRuntimes.entrySet()) {
                         int relay = relayRuntime.getKey();
                         Instant runtime = relayRuntime.getValue();
                         int applianceCategoryId = dracs.getApplianceCategoryId(deviceId, relay);
-                        applianceRuntimes.add(new DisplayableApplianceWithRuntime(applianceCategoryId, runtime));
+                        applianceRuntimes.add(new ApplianceWithRuntime(applianceCategoryId, runtime));
                     }
                 }
                 //get status
@@ -279,6 +300,10 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
         return assetAvailabilityMap;
     }
     
+    /*
+     * Given the map of inventoryIds to deviceIds, this method returns the subset of inventoryIds that belong to
+     * one-way inventory. These are identified by their mapping to deviceId 0.
+     */
     private Set<Integer> getOneWayInventory(Map<Integer, Integer> inventoryAndDevices) {
         Set<Integer> oneWayInventory = Sets.newHashSet();
         for(Map.Entry<Integer, Integer> entry : inventoryAndDevices.entrySet()) {
@@ -290,14 +315,25 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
         return oneWayInventory;
     }
     
+    /*
+     * Given the map of inventoryIds to deviceIds, this method returns the subset of inventoryIds that belong to
+     * two-way inventory. (This is done by removing all inventory that map to deviceId of 0, which are one-way
+     * inventory, since they don't map to a real pao.)
+     */
     private Set<Integer> getTwoWayInventoryDevices(Map<Integer, Integer> inventoryAndDevices) {
         Set<Integer> deviceIds = Sets.newHashSet(inventoryAndDevices.values());
         deviceIds.remove(0); //Remove system device (possibly in this list due to 1-way inventory)
         return deviceIds;
     }
     
+    /*
+     * Gets an AssetAvailabilityStatus by comparing the current instant to the instant of last communication time and
+     * the instants of last runtime(s). The device is communicating if the last communication time is within
+     * LAST_COMMUNICATION_HOURS of the current time, and the device is running if any of the non-zero runtime values
+     * was reported within LAST_RUNTIME_HOURS of the current time.
+     */
     private AssetAvailabilityStatus getStatus(Instant now, Instant lastCommunicationTime, 
-                                              Collection<DisplayableApplianceWithRuntime> applianceRuntimes) {
+                                              Collection<ApplianceWithRuntime> applianceRuntimes) {
         boolean communicating = false;
         boolean hasRuntime = false;
         Instant endOfCommunicationWindow = now.minus(Duration.standardHours(LAST_COMMUNICATION_HOURS));
@@ -305,7 +341,7 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
             communicating = true;
         }
         Instant endOfRuntimeWindow = now.minus(Duration.standardHours(LAST_RUNTIME_HOURS));
-        for(DisplayableApplianceWithRuntime runtime : applianceRuntimes) {
+        for(ApplianceWithRuntime runtime : applianceRuntimes) {
             if(runtime.getLastNonZeroRuntime().isAfter(endOfRuntimeWindow)) {
                 hasRuntime = true;
                 break;
@@ -320,7 +356,10 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
         return AssetAvailabilityStatus.UNAVAILABLE;
     }
     
-    //gets current values of all specified points, but ignores any whose value is less than valueLowerBound
+    /*
+     * Gets current values of all specified points from dispatch, but ignores any whose value is less than 
+     * valueLowerBound.
+     */
     private Map<Integer, Instant> getPaoLatestPointTimes(Map<Integer, Integer> pointsToPaos, Double valueLowerBound) {
         Map<Integer, Instant> paoCommunicationTimes = Maps.newHashMap();
         Set<Integer> pointIds = pointsToPaos.keySet();
@@ -343,15 +382,25 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
         return paoCommunicationTimes;
     }
     
+    /*
+     * Takes a map of inventoryIds to deviceIds and a set of paoIdentifiers. Uses the map to find inventoryId matching
+     * the deviceId for each paoIdentifier (if one exists). Returns the set of inventoryIds. 
+     */
     private Set<Integer> getInventoryIdsFromPaoIdentifiers(Map<Integer, Integer> inventoryAndDevices, Set<PaoIdentifier> paoIds) {
         Map<Integer, Integer> devicesAndInventory = HashBiMap.create(inventoryAndDevices).inverse();
         Set<Integer> inventory = Sets.newHashSet();
         for(PaoIdentifier paoId : paoIds) {
-            inventory.add(devicesAndInventory.get(paoId.getPaoId()));
+            Integer inventoryId = devicesAndInventory.get(paoId.getPaoId());
+            if(inventoryId != null) {
+                inventory.add(inventoryId);
+            }
         }
         return inventory;
     }
     
+    /*
+     * A simple wrapper around a map of a map. This is mostly just to ease readability.
+     */
     private static class PaoRelayRuntimes {
         Map<Integer, Map<Integer, Instant>> map = Maps.newHashMap();
         

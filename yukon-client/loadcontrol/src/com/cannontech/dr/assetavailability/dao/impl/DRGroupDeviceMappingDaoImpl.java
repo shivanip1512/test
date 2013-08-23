@@ -6,11 +6,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.Pair;
+import com.cannontech.common.util.SqlFragmentGenerator;
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -19,14 +24,21 @@ import com.cannontech.dr.assetavailability.dao.DRGroupDeviceMappingDao;
 import com.cannontech.dr.controlarea.dao.ControlAreaDao;
 import com.cannontech.dr.scenario.dao.ScenarioDao;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 public class DRGroupDeviceMappingDaoImpl implements DRGroupDeviceMappingDao {
-    @Autowired YukonJdbcTemplate yukonJdbcTemplate;
-    @Autowired ControlAreaDao controlAreaDao;
-    @Autowired ProgramDao programDao;
-    @Autowired ScenarioDao scenarioDao;
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    private ChunkingSqlTemplate chunkingSqlTemplate;
+    @Autowired private ControlAreaDao controlAreaDao;
+    @Autowired private ProgramDao programDao;
+    @Autowired private ScenarioDao scenarioDao;
+    
+    @PostConstruct
+    public void init() {
+        chunkingSqlTemplate = new ChunkingSqlTemplate(yukonJdbcTemplate);
+    }
     
     @Override
     public Set<Integer> getDeviceIdsForGrouping(PaoIdentifier paoIdentifier) {
@@ -36,14 +48,20 @@ public class DRGroupDeviceMappingDaoImpl implements DRGroupDeviceMappingDao {
     }
     
     @Override
-    public Map<Integer, Integer> getInventoryAndDeviceIdsForLoadGroups(Collection<Integer> loadGroupIds) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT ib.DeviceId, ib.InventoryId");
-        sql.append("FROM LMHardwareConfiguration lmhc");
-        sql.append("JOIN InventoryBase ib ON ib.InventoryId = lmhc.InventoryId");
-        sql.append("WHERE lmhc.AddressingGroupId").in(loadGroupIds);
+    public Map<Integer, Integer> getInventoryAndDeviceIdsForLoadGroups(Iterable<Integer> loadGroupIds) {
+        SqlFragmentGenerator<Integer> sqlFragmentGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT ib.DeviceId, ib.InventoryId");
+                sql.append("FROM LMHardwareConfiguration lmhc");
+                sql.append("JOIN InventoryBase ib ON ib.InventoryId = lmhc.InventoryId");
+                sql.append("WHERE lmhc.AddressingGroupId").in(subList);
+                return sql;
+            }
+        };
         
-        List<Pair<Integer, Integer>> idsList = yukonJdbcTemplate.query(sql, new YukonRowMapper<Pair<Integer, Integer>>() {
+        List<Pair<Integer, Integer>> idsList = chunkingSqlTemplate.query(sqlFragmentGenerator, loadGroupIds, new YukonRowMapper<Pair<Integer, Integer>>() {
             public Pair<Integer, Integer> mapRow(YukonResultSet rs) throws SQLException {
                 int deviceId = rs.getInt("DeviceId");
                 int inventoryId = rs.getInt("InventoryId");
@@ -61,19 +79,19 @@ public class DRGroupDeviceMappingDaoImpl implements DRGroupDeviceMappingDao {
     public Set<Integer> getLoadGroupIdsForDrGroup(PaoIdentifier paoIdentifier) {
         PaoType paoType = paoIdentifier.getPaoType();
         if(paoType.isLoadGroup()) {
-            return Sets.newHashSet(paoIdentifier.getPaoId());
+            return ImmutableSet.of(paoIdentifier.getPaoId());
         } else if(paoType.isLmProgram()) {
             Set<Integer> programIdSet = Sets.newHashSet(paoIdentifier.getPaoId());
             List<Integer> groupIds = programDao.getDistinctGroupIdsByYukonProgramIds(programIdSet);
-            return Sets.newHashSet(groupIds);
+            return ImmutableSet.copyOf(groupIds);
         } else if(paoType == PaoType.LM_CONTROL_AREA) {
             Set<Integer> programIds = controlAreaDao.getProgramIdsForControlArea(paoIdentifier.getPaoId());
             List<Integer> groupIds = programDao.getDistinctGroupIdsByYukonProgramIds(programIds);
-            return Sets.newHashSet(groupIds);
+            return ImmutableSet.copyOf(groupIds);
         } else if(paoType == PaoType.LM_SCENARIO) {
             Set<Integer> programIds = scenarioDao.findScenarioProgramsForScenario(paoIdentifier.getPaoId()).keySet();
             List<Integer> groupIds = programDao.getDistinctGroupIdsByYukonProgramIds(programIds);
-            return Sets.newHashSet(groupIds);
+            return ImmutableSet.copyOf(groupIds);
         } else {
             throw new IllegalArgumentException("PAO with id " + paoIdentifier.getPaoId() + " is not a DR grouping.");
         }

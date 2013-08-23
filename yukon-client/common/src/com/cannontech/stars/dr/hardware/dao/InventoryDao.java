@@ -109,7 +109,7 @@ public interface InventoryDao {
 
     public int getDeviceId(int inventoryId);
     
-    public Map<Integer, Integer> getDeviceIds(Collection<Integer> inventoryIds);
+    public Map<Integer, Integer> getDeviceIds(Iterable<Integer> inventoryIds);
 
     /**
      * Returns the account id for this inventory or 0 if the inventory is not attached to an account.

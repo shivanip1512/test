@@ -4,6 +4,8 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +15,10 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.Pair;
+import com.cannontech.common.util.SqlFragmentGenerator;
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dao.NotFoundException;
@@ -45,6 +50,12 @@ public class LMHardwareConfigurationDaoImpl implements LMHardwareConfigurationDa
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate; 
     @Autowired private StarsApplianceDao starsApplianceDao;
     @Autowired private StaticLoadGroupMappingDao staticLoadGroupMappingDao;
+    private ChunkingSqlTemplate chunkingSqlTemplate;
+    
+    @PostConstruct
+    public void init() {
+        chunkingSqlTemplate = new ChunkingSqlTemplate(yukonJdbcTemplate);
+    }
     
     @Override    
     public LMHardwareConfiguration getStaticLoadGroupMapping(
@@ -192,16 +203,22 @@ public class LMHardwareConfigurationDaoImpl implements LMHardwareConfigurationDa
     }
     
     @Override
-    public DeviceRelayApplianceCategories getDeviceRelayApplianceCategoryId(Collection<Integer> inventoryIds) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT ib.DeviceId, ab.ApplianceCategoryID, lmhc.LoadNumber AS Relay");
-        sql.append("FROM LmHardwareConfiguration lmhc");
-        sql.append("JOIN ApplianceBase ab ON ab.ApplianceId = lmhc.ApplianceId");
-        sql.append("JOIN InventoryBase ib ON ib.InventoryId = lmhc.InventoryId");
-        sql.append("WHERE ib.DeviceId").gt(0);
-        sql.append("AND ib.InventoryId").in(inventoryIds);
+    public DeviceRelayApplianceCategories getDeviceRelayApplianceCategoryId(Iterable<Integer> inventoryIds) {
+        SqlFragmentGenerator<Integer> sqlFragmentGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT ib.DeviceId, ab.ApplianceCategoryID, lmhc.LoadNumber AS Relay");
+                sql.append("FROM LmHardwareConfiguration lmhc");
+                sql.append("JOIN ApplianceBase ab ON ab.ApplianceId = lmhc.ApplianceId");
+                sql.append("JOIN InventoryBase ib ON ib.InventoryId = lmhc.InventoryId");
+                sql.append("WHERE ib.DeviceId").gt(0);
+                sql.append("AND ib.InventoryId").in(subList);
+                return sql;
+            }
+        };
         
-        List<DeviceRelayApplianceCategory> results = yukonJdbcTemplate.query(sql, new YukonRowMapper<DeviceRelayApplianceCategory>() {
+        List<DeviceRelayApplianceCategory> results = chunkingSqlTemplate.query(sqlFragmentGenerator, inventoryIds, new YukonRowMapper<DeviceRelayApplianceCategory>() {
             public DeviceRelayApplianceCategory mapRow(YukonResultSet rs) throws SQLException {
                 return new DeviceRelayApplianceCategory(rs.getInt("DeviceId"), 
                                                         rs.getInt("Relay"), 
@@ -213,16 +230,22 @@ public class LMHardwareConfigurationDaoImpl implements LMHardwareConfigurationDa
     }
     
     @Override
-    public Multimap<Integer, PaoIdentifier> getRelayToDeviceMapByDeviceIds(Collection<Integer> deviceIds) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT DISTINCT DeviceId, ypo.Type, lmhc.LoadNumber AS Relay");
-        sql.append("FROM LMHardwareConfiguration lmhc");
-        sql.append("JOIN LMHardwareControlGroup lmhcg ON lmhcg.InventoryID = lmhc.InventoryId");
-        sql.append("JOIN InventoryBase ib ON ib.InventoryId = lmhc.InventoryId");
-        sql.append("JOIN YukonPaObject ypo ON ypo.PaObjectId = ib.DeviceId");
-        sql.append("WHERE DeviceId").in(deviceIds);
+    public Multimap<Integer, PaoIdentifier> getRelayToDeviceMapByDeviceIds(Iterable<Integer> deviceIds) {
+        SqlFragmentGenerator<Integer> sqlFragmentGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT DISTINCT DeviceId, ypo.Type, lmhc.LoadNumber AS Relay");
+                sql.append("FROM LMHardwareConfiguration lmhc");
+                sql.append("JOIN LMHardwareControlGroup lmhcg ON lmhcg.InventoryID = lmhc.InventoryId");
+                sql.append("JOIN InventoryBase ib ON ib.InventoryId = lmhc.InventoryId");
+                sql.append("JOIN YukonPaObject ypo ON ypo.PaObjectId = ib.DeviceId");
+                sql.append("WHERE DeviceId").in(subList);
+                return sql;
+            }
+        };
         
-        List<Pair<Integer, PaoIdentifier>> resultsList = yukonJdbcTemplate.query(sql, new YukonRowMapper<Pair<Integer, PaoIdentifier>>() {
+        List<Pair<Integer, PaoIdentifier>> resultsList = chunkingSqlTemplate.query(sqlFragmentGenerator, deviceIds, new YukonRowMapper<Pair<Integer, PaoIdentifier>>() {
             public Pair<Integer, PaoIdentifier> mapRow(YukonResultSet rs) throws SQLException {
                 int relay = rs.getInt("Relay");
                 int paoId = rs.getInt("DeviceId");
@@ -240,16 +263,22 @@ public class LMHardwareConfigurationDaoImpl implements LMHardwareConfigurationDa
     }
     
     @Override
-    public Multimap<Integer, PaoIdentifier> getRelayToDeviceMapByLoadGroups(Collection<Integer> loadGroupIds) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT DISTINCT DeviceId, ypo.Type, lmhc.LoadNumber AS Relay");
-        sql.append("FROM LMHardwareConfiguration lmhc");
-        sql.append("JOIN LMHardwareControlGroup lmhcg ON lmhcg.InventoryID = lmhc.InventoryId");
-        sql.append("JOIN InventoryBase ib ON ib.InventoryId = lmhc.InventoryId");
-        sql.append("JOIN YukonPaObject ypo ON ypo.PaObjectId = ib.DeviceId");
-        sql.append("WHERE LmGroupId").in(loadGroupIds);
+    public Multimap<Integer, PaoIdentifier> getRelayToDeviceMapByLoadGroups(Iterable<Integer> loadGroupIds) {
+        SqlFragmentGenerator<Integer> sqlFragmentGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT DISTINCT DeviceId, ypo.Type, lmhc.LoadNumber AS Relay");
+                sql.append("FROM LMHardwareConfiguration lmhc");
+                sql.append("JOIN LMHardwareControlGroup lmhcg ON lmhcg.InventoryID = lmhc.InventoryId");
+                sql.append("JOIN InventoryBase ib ON ib.InventoryId = lmhc.InventoryId");
+                sql.append("JOIN YukonPaObject ypo ON ypo.PaObjectId = ib.DeviceId");
+                sql.append("WHERE LmGroupId").in(subList);
+                return sql;
+            }
+        };
         
-        List<Pair<Integer, PaoIdentifier>> resultsList = yukonJdbcTemplate.query(sql, new YukonRowMapper<Pair<Integer, PaoIdentifier>>() {
+        List<Pair<Integer, PaoIdentifier>> resultsList = chunkingSqlTemplate.query(sqlFragmentGenerator, loadGroupIds, new YukonRowMapper<Pair<Integer, PaoIdentifier>>() {
             public Pair<Integer, PaoIdentifier> mapRow(YukonResultSet rs) throws SQLException {
                 int relay = rs.getInt("Relay");
                 int paoId = rs.getInt("DeviceId");

@@ -149,27 +149,6 @@ public interface AttributeService {
      */
     public Set<Attribute> getAdvancedReadableAttributes();
     
-    
-    /**
-     * Returns the Sql that gives you the paObjectId and pointId based on a
-     * passed in Attribute
-     * @param attribute
-     * @deprecated Use PointDao to get points by attribute. Talk to someone if you think you need
-     *             this method.  See YUK-12459
-     */
-    @Deprecated
-    public SqlFragmentSource getAttributeLookupSql(Attribute attribute);
-
-    /**
-     * Returns the Sql that gives you the paObjectId and pointId based on a
-     * passed in Attribute AND a maximum row count.
-     * 
-     * @param attribute
-     * @param limitToRowCount
-     * @return
-     */
-    public SqlFragmentSource getAttributeLookupSqlLimit(Attribute attribute, int limitToRowCount);
-
     /**
      * Returns a list of all the devices in a given DeviceGroup that support the given Attribute.
      * This method works recursively on each child group of the requested group.

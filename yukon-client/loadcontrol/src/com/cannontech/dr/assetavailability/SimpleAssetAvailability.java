@@ -14,11 +14,11 @@ public final class SimpleAssetAvailability {
     private final AssetAvailabilityStatus status;
     private final boolean isOptedOut;
     private final Instant lastCommunicationTime;
-    private final ImmutableSet<DisplayableApplianceWithRuntime> applianceRuntimes;
+    private final ImmutableSet<ApplianceWithRuntime> applianceRuntimes;
     
     public SimpleAssetAvailability(int inventoryId, AssetAvailabilityStatus status, boolean isOptedOut,
                               Instant lastCommunicationTime,
-                              Collection<DisplayableApplianceWithRuntime> applianceRuntimes) {
+                              Collection<ApplianceWithRuntime> applianceRuntimes) {
         this.inventoryId = inventoryId;
         this.status = status;
         this.isOptedOut = isOptedOut;
@@ -64,7 +64,7 @@ public final class SimpleAssetAvailability {
     /**
      * Can be null if this inventory is one-way, or empty if no non-zero runtime has been reported.
      */
-    public ImmutableSet<DisplayableApplianceWithRuntime> getApplianceRuntimes() {
+    public ImmutableSet<ApplianceWithRuntime> getApplianceRuntimes() {
         return applianceRuntimes;
     }
 }

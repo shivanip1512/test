@@ -131,7 +131,7 @@ public class MockRawPointHistoryDaoImpl extends RawPointHistoryDaoImpl {
     @Override
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getAttributeData(
             Iterable<? extends YukonPao> yukonPaos, Attribute attribute, final ReadableRange<Instant> dateRange,
-            final ReadableRange<Long> changeIdRange, final boolean excludeDisabledPaos, final Order order) {
+            final ReadableRange<Long> changeIdRange, final boolean excludeDisabledPaos, final Order order, final Double minimumValue) {
 
         ListMultimap<PaoIdentifier, PointValueQualityHolder> paoIdToPointValueQualityHolder = ArrayListMultimap.create();
 

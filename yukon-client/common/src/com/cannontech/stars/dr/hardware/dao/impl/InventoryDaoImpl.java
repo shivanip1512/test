@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -91,10 +93,16 @@ public class InventoryDaoImpl implements InventoryDao {
     private @Autowired PaoDefinitionDao paoDefinitionDao;
     private @Autowired AccountEventLogService accountEventLogService;
     private @Autowired CustomerAccountDao customerAccountDao;
-
+    private ChunkingSqlTemplate chunkingSqlTemplate;
+    
     private Set<HardwareType> THERMOSTAT_TYPES = HardwareType.getForClass(HardwareClass.THERMOSTAT);
     private HardwareSummaryRowMapper hardwareSummaryRowMapper = new HardwareSummaryRowMapper();
-
+    
+    @PostConstruct
+    public void init() {
+        chunkingSqlTemplate = new ChunkingSqlTemplate(yukonJdbcTemplate);
+    }
+    
     @Override
     public List<Pair<LiteLmHardware, SimplePointValue>> getZigbeeProblemDevices(final String inWarehouseMsg) {
         AttributeDefinition definition = (AttributeDefinition) paoDefinitionDao.getAttributeLookup(PaoType.ZIGBEE_ENDPOINT, BuiltInAttribute.ZIGBEE_LINK_STATUS);
@@ -513,8 +521,6 @@ public class InventoryDaoImpl implements InventoryDao {
         
         Set<InventoryIdentifier> result = new HashSet<InventoryIdentifier>();
         
-        ChunkingSqlTemplate template = new ChunkingSqlTemplate(yukonJdbcTemplate);
-        
         SqlFragmentGenerator<Integer> generator = new SqlFragmentGenerator<Integer>() {
             public SqlFragmentSource generate(List<Integer> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -526,7 +532,7 @@ public class InventoryDaoImpl implements InventoryDao {
                 return sql;
             }
         };
-        template.queryInto(generator, inventoryIds, inventoryIdentifierMapper, result);
+        chunkingSqlTemplate.queryInto(generator, inventoryIds, inventoryIdentifierMapper, result);
 
         return result;
     }
@@ -650,13 +656,19 @@ public class InventoryDaoImpl implements InventoryDao {
     }
     
     @Override
-    public Map<Integer, Integer> getDeviceIds(Collection<Integer> inventoryIds) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT InventoryId, DeviceId");
-        sql.append("FROM InventoryBase");
-        sql.append("WHERE InventoryId").in(inventoryIds);
+    public Map<Integer, Integer> getDeviceIds(Iterable<Integer> inventoryIds) {
+        SqlFragmentGenerator<Integer> sqlFragmentGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT InventoryId, DeviceId");
+                sql.append("FROM InventoryBase");
+                sql.append("WHERE InventoryId").in(subList);
+                return sql;
+            }
+        };
         
-        List<Pair<Integer, Integer>> idsList = yukonJdbcTemplate.query(sql, new YukonRowMapper<Pair<Integer, Integer>>() {
+        List<Pair<Integer, Integer>> idsList = chunkingSqlTemplate.query(sqlFragmentGenerator, inventoryIds, new YukonRowMapper<Pair<Integer, Integer>>() {
             public Pair<Integer, Integer> mapRow(YukonResultSet rs) throws SQLException {
                 int deviceId = rs.getInt("DeviceId");
                 int inventoryId = rs.getInt("InventoryId");
@@ -861,10 +873,7 @@ public class InventoryDaoImpl implements InventoryDao {
 
     @Override
     public List<String> getThermostatLabels(List<Integer> thermostatIds) {
-        
-        ChunkingSqlTemplate template = new ChunkingSqlTemplate(yukonJdbcTemplate);
-        
-        List<String> deviceLabels = template.query(new SqlFragmentGenerator<Integer>() {
+        List<String> deviceLabels = chunkingSqlTemplate.query(new SqlFragmentGenerator<Integer>() {
             public SqlFragmentSource generate(List<Integer> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
                 sql.append("SELECT IB.DeviceLabel");
@@ -929,9 +938,6 @@ public class InventoryDaoImpl implements InventoryDao {
             inventoryMap.put(id.getInventoryId(), id);
         }
         
-        
-        ChunkingSqlTemplate template = new ChunkingSqlTemplate(yukonJdbcTemplate);
-
         SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
             public SqlFragmentSource generate(List<Integer> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -945,7 +951,7 @@ public class InventoryDaoImpl implements InventoryDao {
             }
         };
         
-        List<LiteLmHardware> hardware = template.query(sqlGenerator, inventoryMap.keySet(), new YukonRowMapper<LiteLmHardware>() {
+        List<LiteLmHardware> hardware = chunkingSqlTemplate.query(sqlGenerator, inventoryMap.keySet(), new YukonRowMapper<LiteLmHardware>() {
 
             @Override
             public LiteLmHardware mapRow(YukonResultSet rs) throws SQLException {

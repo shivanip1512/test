@@ -40,7 +40,7 @@ import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.assetavailability.AssetAvailabilityCombinedStatus;
-import com.cannontech.dr.assetavailability.DisplayableApplianceWithRuntime;
+import com.cannontech.dr.assetavailability.ApplianceWithRuntime;
 import com.cannontech.dr.assetavailability.SimpleAssetAvailability;
 import com.cannontech.dr.assetavailability.SimpleAssetAvailabilitySummary;
 import com.cannontech.dr.assetavailability.service.AssetAvailabilityService;
@@ -214,9 +214,9 @@ public class ProgramController extends ProgramControllerBase {
         // Create set of applianceCategoryId's (& eliminates duplicates)
         Set<Integer> applianceCatIds = Sets.newHashSet();
         for (SimpleAssetAvailability entry : resultMap.values()) {
-            ImmutableSet<DisplayableApplianceWithRuntime> appRuntime = entry.getApplianceRuntimes();
-            for (DisplayableApplianceWithRuntime dispAppRun : appRuntime) {
-                applianceCatIds.add(dispAppRun.getApplianceCategoryId());
+            ImmutableSet<ApplianceWithRuntime> appRuntime = entry.getApplianceRuntimes();
+            for (ApplianceWithRuntime AppRun : appRuntime) {
+                applianceCatIds.add(AppRun.getApplianceCategoryId());
             }
         }
         Map<Integer, ApplianceCategory> appCatMap = applianceCategoryDao.getByApplianceCategoryIds(applianceCatIds);
@@ -235,12 +235,12 @@ public class ProgramController extends ProgramControllerBase {
             aaDetails.setLastComm(value.getLastCommunicationTime());
 
             // parse through the appRuntime set to get list of appliances & last runtime.
-            ImmutableSet<DisplayableApplianceWithRuntime> appRuntime = value.getApplianceRuntimes();
-            Iterator<DisplayableApplianceWithRuntime> iter = appRuntime.iterator();
+            ImmutableSet<ApplianceWithRuntime> appRuntime = value.getApplianceRuntimes();
+            Iterator<ApplianceWithRuntime> iter = appRuntime.iterator();
             String applianceStr = "";
             Instant lastRun = null;
             while (iter.hasNext()) {
-                DisplayableApplianceWithRuntime tmp = (DisplayableApplianceWithRuntime) iter.next();
+                ApplianceWithRuntime tmp = (ApplianceWithRuntime) iter.next();
                 ApplianceCategory appCat = appCatMap.get(tmp.getApplianceCategoryId());
                 // The Appliances will be a comma-separated list of the appliances for this device. 
                 // No Internationalization since this comes from YukonSelectionList.

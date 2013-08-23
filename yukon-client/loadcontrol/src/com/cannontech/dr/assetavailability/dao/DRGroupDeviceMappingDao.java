@@ -1,6 +1,5 @@
 package com.cannontech.dr.assetavailability.dao;
 
-import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
@@ -15,7 +14,7 @@ public interface DRGroupDeviceMappingDao {
     /**
      * @return The inventory ids / device ids associated with the specified load groups.
      */
-    public Map<Integer, Integer> getInventoryAndDeviceIdsForLoadGroups(Collection<Integer> loadGroupIds);
+    public Map<Integer, Integer> getInventoryAndDeviceIdsForLoadGroups(Iterable<Integer> loadGroupIds);
     
     /**
      * @return The set of device ids associated with the specified load group, program, scenario or

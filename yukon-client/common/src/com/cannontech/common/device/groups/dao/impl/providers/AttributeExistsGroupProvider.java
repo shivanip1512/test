@@ -11,12 +11,14 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.PointDao;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
 
 public class AttributeExistsGroupProvider extends AttributeGroupProviderBase {
-    private AttributeService attributeService;
+    @Autowired private AttributeService attributeService;
+    @Autowired private PointDao pointDao;
     
     @Override
     protected Set<BuiltInAttribute> getBinsForDevice(YukonDevice device) {
@@ -37,7 +39,7 @@ public class AttributeExistsGroupProvider extends AttributeGroupProviderBase {
     
     @Override
     protected SqlFragmentSource getChildSqlSelectForBin(BuiltInAttribute bin) {
-        SqlFragmentSource fragment = attributeService.getAttributeLookupSql(bin);
+        SqlFragmentSource fragment = pointDao.getAttributeLookupSql(bin);
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT exists_frag.paobjectId");
         sql.append("FROM (").appendFragment(fragment).append(") exists_frag");

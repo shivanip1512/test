@@ -139,7 +139,7 @@ public class PointServiceImpl implements PointService {
                                                               LiteStateGroup stateGroup) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT COUNT(*)");
-        SqlFragmentSource lookupSql = attributeService.getAttributeLookupSql(attribute);
+        SqlFragmentSource lookupSql = pointDao.getAttributeLookupSql(attribute);
         sql.append("FROM (").appendFragment(lookupSql).append(") PaoPointLookup");
         sql.append("JOIN Point PT on PT.pointId = PaoPointLookup.pointId");
         sql.append("WHERE");
@@ -180,7 +180,7 @@ public class PointServiceImpl implements PointService {
             return Collections.emptyList();
         }
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        SqlFragmentSource lookupSql = attributeService.getAttributeLookupSql(attribute);
+        SqlFragmentSource lookupSql = pointDao.getAttributeLookupSql(attribute);
         sql.append("SELECT PaoPointLookup.paObjectid");
         sql.append("FROM (").appendFragment(lookupSql).append(") PaoPointLookup");
         sql.append("JOIN Point PT ON PT.pointId = PaoPointLookup.pointId");
@@ -213,7 +213,7 @@ public class PointServiceImpl implements PointService {
     @Override
     public int getCountDevicesInGroupWithAttributePoint(DeviceGroup group, Attribute attribute) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        SqlFragmentSource lookupSql = attributeService.getAttributeLookupSql(attribute);
+        SqlFragmentSource lookupSql = pointDao.getAttributeLookupSql(attribute);
         sql.append("SELECT COUNT(*)");
         sql.append("FROM (").appendFragment(lookupSql).append(") PaoPointLookup");
         sql.append("JOIN Point PT ON PT.pointId = PaoPointLookup.pointId");
@@ -236,7 +236,7 @@ public class PointServiceImpl implements PointService {
         SqlBuilder sqla = builder.buildFor(DatabaseVendor.MS2000);
         sqla.append("SELECT COUNT(*)");
         SqlFragmentSource lookupSql = 
-                attributeService.getAttributeLookupSqlLimit(attribute, limitToRowCount);
+                pointDao.getAttributeLookupSqlLimit(attribute, limitToRowCount);
         sqla.append("FROM (").appendFragment(lookupSql).append(") PaoPointLookup");
         sqla.append("JOIN Point PT ON PT.pointId = PaoPointLookup.pointId");
         sqla.append("WHERE");
@@ -262,7 +262,7 @@ public class PointServiceImpl implements PointService {
             DeviceGroup group, Attribute attribute) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT PaoPointLookup.paObjectid");
-        SqlFragmentSource lookupSql = attributeService.getAttributeLookupSql(attribute);
+        SqlFragmentSource lookupSql = pointDao.getAttributeLookupSql(attribute);
         sql.append("FROM (").appendFragment(lookupSql).append(") PaoPointLookup");
         sql.append("JOIN Point PT ON PT.pointId = PaoPointLookup.pointId");
         sql.append("WHERE");

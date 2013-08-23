@@ -4,12 +4,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.annotation.PostConstruct;
 
 import org.joda.time.Instant;
 import org.joda.time.ReadableInstant;
@@ -23,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
+import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -63,14 +65,20 @@ import com.google.common.collect.Sets;
  */
 public class OptOutEventDaoImpl implements OptOutEventDao {
 
-	private YukonJdbcTemplate yukonJdbcTemplate;
-	private NextValueHelper nextValueHelper;
+	@Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+	private ChunkingSqlTemplate chunkingSqlTemplate;
+	@Autowired private NextValueHelper nextValueHelper;
 	
-	private EnrollmentDao enrollmentDao;
-	private InventoryDao inventoryDao;
-	private CustomerAccountDao customerAccountDao;
-	private YukonUserDao yukonUserDao;
-
+	@Autowired private EnrollmentDao enrollmentDao;
+	@Autowired private InventoryDao inventoryDao;
+	@Autowired private CustomerAccountDao customerAccountDao;
+	@Autowired private YukonUserDao yukonUserDao;
+	
+	@PostConstruct
+	public void init() {
+	    chunkingSqlTemplate = new ChunkingSqlTemplate(yukonJdbcTemplate);
+	}
+	
 	@Override
 	@Transactional
 	public OptOutLog save(OptOutEvent event, OptOutAction action, LiteYukonUser user) {
@@ -760,33 +768,48 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 	}
 	
 	@Override
-	public Set<Integer> getOptedOutInventory(Collection<Integer> inventoryIds) {
-	    SqlStatementBuilder sql = new SqlStatementBuilder();
-	    sql.append("SELECT DISTINCT ib.InventoryId");
-	    sql.append("FROM InventoryBase ib");
-        sql.append("JOIN OptOutEvent ooe on ooe.InventoryId = ib.InventoryId");
-        sql.append("WHERE ib.InventoryId").in(inventoryIds);
-        sql.append("AND ooe.StartDate").lte(Instant.now());
-        sql.append("AND ooe.StopDate").gt(Instant.now());
-        sql.append("AND ooe.EventState").eq_k(OptOutEventState.START_OPT_OUT_SENT);
+	public Set<Integer> getOptedOutInventory(Iterable<Integer> inventoryIds) {
+	    final Instant NOW = Instant.now();
+        SqlFragmentGenerator<Integer> sqlFragmentGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT DISTINCT ib.InventoryId");
+                sql.append("FROM InventoryBase ib");
+                sql.append("JOIN OptOutEvent ooe on ooe.InventoryId = ib.InventoryId");
+                sql.append("WHERE ib.InventoryId").in(subList);
+                sql.append("AND ooe.StartDate").lte(NOW);
+                sql.append("AND ooe.StopDate").gt(NOW);
+                sql.append("AND ooe.EventState").eq_k(OptOutEventState.START_OPT_OUT_SENT);
+                return sql;
+            }
+        };
+	    
+        List<Integer> optedOutInventoryIds = chunkingSqlTemplate.query(sqlFragmentGenerator, inventoryIds, RowMapper.INTEGER);
         
-        List<Integer> optedOutInventoryIds = yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
         return Sets.newHashSet(optedOutInventoryIds);
 	}
 	
 	@Override
-	public Set<Integer> getOptedOutInventoryByLoadGroups(Collection<Integer> loadGroupIds) {
-	    SqlStatementBuilder sql = new SqlStatementBuilder();
-	    sql.append("SELECT DISTINCT ib.InventoryId");
-	    sql.append("FROM LmHardwareControlGroup lmhc");
-	    sql.append("JOIN InventoryBase ib ON ib.InventoryID = lmhc.InventoryId");
-	    sql.append("JOIN OptOutEvent ooe on ooe.InventoryId = ib.InventoryId");
-	    sql.append("WHERE lmhc.LMGroupID").in(loadGroupIds);
-	    sql.append("AND ooe.StartDate").lte(Instant.now());
-	    sql.append("AND ooe.StopDate").gt(Instant.now());
-	    sql.append("AND ooe.EventState").eq_k(OptOutEventState.START_OPT_OUT_SENT);
+	public Set<Integer> getOptedOutInventoryByLoadGroups(Iterable<Integer> loadGroupIds) {
+	    final Instant NOW = Instant.now();
+	    SqlFragmentGenerator<Integer> sqlFragmentGenerator = new SqlFragmentGenerator<Integer>() {
+	        @Override
+	        public SqlFragmentSource generate(List<Integer> subList) {
+	            SqlStatementBuilder sql = new SqlStatementBuilder();
+	            sql.append("SELECT DISTINCT ib.InventoryId");
+	            sql.append("FROM LmHardwareControlGroup lmhc");
+	            sql.append("JOIN InventoryBase ib ON ib.InventoryID = lmhc.InventoryId");
+	            sql.append("JOIN OptOutEvent ooe on ooe.InventoryId = ib.InventoryId");
+	            sql.append("WHERE lmhc.LMGroupID").in(subList);
+	            sql.append("AND ooe.StartDate").lte(NOW);
+	            sql.append("AND ooe.StopDate").gt(NOW);
+	            sql.append("AND ooe.EventState").eq_k(OptOutEventState.START_OPT_OUT_SENT);
+	            return sql;
+	        }
+	    };
 	    
-	    List<Integer> optedOutInventoryIds = yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
+	    List<Integer> optedOutInventoryIds = chunkingSqlTemplate.query(sqlFragmentGenerator, loadGroupIds, RowMapper.INTEGER);
 	    return Sets.newHashSet(optedOutInventoryIds);
 	}
 	
@@ -993,35 +1016,4 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 		}
 		
 	}
-
-	@Autowired
-	public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
-		this.yukonJdbcTemplate = yukonJdbcTemplate;
-	}
-	
-	@Autowired
-	public void setNextValueHelper(NextValueHelper nextValueHelper) {
-		this.nextValueHelper = nextValueHelper;
-	}
-	
-	@Autowired
-	public void setEnrollmentDao(EnrollmentDao enrollmentDao) {
-		this.enrollmentDao = enrollmentDao;
-	}
-	
-	@Autowired
-    public void setInventoryDao(InventoryDao inventoryDao) {
-        this.inventoryDao = inventoryDao;
-    }
-	
-	@Autowired
-	public void setCustomerAccountDao(CustomerAccountDao customerAccountDao) {
-		this.customerAccountDao = customerAccountDao;
-	}
-	
-    @Autowired
-	public void setYukonUserDao(YukonUserDao yukonUserDao) {
-		this.yukonUserDao = yukonUserDao;
-	}
-
 }
