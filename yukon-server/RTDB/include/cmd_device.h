@@ -63,14 +63,30 @@ public:
 
 protected:
 
-    static unsigned getValueFromBits(const Bytes &data, const unsigned start_offset, const unsigned length);
-
     static std::vector<unsigned> getValueVectorFromBits(const Bytes &data, const unsigned start_offset, const unsigned length, const unsigned count);
+    
+    /*
+     *  Example with start offset = 5, length = 8
+     *
+     *  Little Endian
+     *  |  7  6  5  4  3  2  1  0 | 15 14 13 12 11 10  9  8 | start offset
+     *  | byte 0                  | byte 1                  | byte index
+     *  |  2  1  0                |           7  6  5  4  3 | value alignment (msb = 7, lsb = 0)
+     *
+     *  Big Endian
+     *  |  0  1  2  3  4  5  6  7 |  8  9 10 11 12 13 14 15 | start offset
+     *  | byte 0                  | byte 1                  | byte index
+     *  |                 7  6  5 |  4  3  2  1  0          | value alignment (msb = 7, lsb = 0)
+     *
+     */
 
-    static void setBits(Bytes &data, const unsigned start_offset, const unsigned length, const unsigned value);
+    static unsigned getValueFromBits_bEndian(const Bytes &data, const unsigned start_offset, const unsigned length);
+    static unsigned getValueFromBits_lEndian(const Bytes &data, const unsigned start_offset, const unsigned length);
 
-    static unsigned getValueFromBitsLE(const Bytes &data, const unsigned start_offset, const unsigned length);
+    static void setBits_bEndian(Bytes &data, const unsigned start_offset, const unsigned length, const unsigned value);
+    static void setBits_lEndian(Bytes &data, const unsigned start_offset, const unsigned length, const unsigned value);
 };
+
 
 }
 }
