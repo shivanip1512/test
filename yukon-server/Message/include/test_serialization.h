@@ -62,7 +62,6 @@ struct TestCase<CtiMessage> : public TestCaseBase<CtiMessage>
     }
 };
 
-
 /*-----------------------------------------------------------------------------
     Command
 -----------------------------------------------------------------------------*/
@@ -192,57 +191,6 @@ struct TestCase<CtiLMControlHistoryMsg> : public TestCase<CtiMessage>
 };
 
 /*-----------------------------------------------------------------------------
-    Multi
------------------------------------------------------------------------------*/
-template<>
-struct TestCase<CtiMultiMsg> : public TestCase<CtiMessage>
-{
-    typedef CtiCommandMsg          message0_t;
-    typedef CtiLMControlHistoryMsg message1_t;
-
-    TestCaseItem<message0_t> _tc_message0;
-    TestCaseItem<message1_t> _tc_message1;
-
-    void Create()
-    {
-        _imsg.reset( new CtiMultiMsg );
-        _omsg.reset( new CtiMultiMsg );
-    }
-
-    void Populate()
-    {
-        TestCase<CtiMessage>::Populate();
-
-        CtiMultiMsg &imsg = dynamic_cast<CtiMultiMsg&>(*_imsg);
-
-        imsg.insert( new message0_t );
-        imsg.insert( new message1_t );
-
-        _tc_message0.Populate( (message0_t*)imsg._bag[0] );
-        _tc_message1.Populate( (message1_t*)imsg._bag[1] );
-    }
-
-    void Compare()
-    {
-        TestCase<CtiMessage>::Compare();
-
-        CtiMultiMsg &imsg = dynamic_cast<CtiMultiMsg&>(*_imsg),
-                    &omsg = dynamic_cast<CtiMultiMsg&>(*_omsg);
-
-        if( omsg._bag.size() == 2 )
-        {
-            if( !_tc_message0.Compare( (message0_t*)omsg._bag[0] )) reportMismatch( "_bag[0]", _tc_message0._failures );
-            if( !_tc_message1.Compare( (message1_t*)omsg._bag[1] )) reportMismatch( "_bag[1]", _tc_message1._failures );
-        }
-        else
-        {
-            reportMismatch( "_bag", "size expected != size received" );
-        }
-
-    }
-};
-
-/*-----------------------------------------------------------------------------
     NotifAlarm
 -----------------------------------------------------------------------------*/
 template<>
@@ -287,7 +235,6 @@ struct TestCase<CtiNotifAlarmMsg> : public TestCase<CtiMessage>
         CompareMember( "_abnormal",             imsg._abnormal,            omsg._abnormal );
     }
 };
-
 
 /*-----------------------------------------------------------------------------
     NotifEmail
@@ -457,57 +404,6 @@ struct TestCase<CtiRequestMsg> : public TestCase<CtiMessage>
         CompareMember( "_group_message_id",             imsg._group_message_id,                 omsg._group_message_id );
         CompareMember( "_user_message_id",              imsg._user_message_id,                  omsg._user_message_id );
         CompareMember( "_options_field",                imsg._options_field,                    omsg._options_field );
-    }
-};
-
-/*-----------------------------------------------------------------------------
-    Return
------------------------------------------------------------------------------*/
-template<>
-struct TestCase<CtiReturnMsg> : public TestCase<CtiMultiMsg>
-{
-    void Create()
-    {
-        _imsg.reset( new CtiReturnMsg );
-        _omsg.reset( new CtiReturnMsg );
-    }
-
-    void Populate()
-    {
-        TestCase<CtiMultiMsg>::Populate();
-
-        CtiReturnMsg &imsg = dynamic_cast<CtiReturnMsg&>(*_imsg);
-
-        GenerateRandom( imsg._device_id );
-        GenerateRandom( imsg._command_string );
-        GenerateRandom( imsg._result_string );
-        GenerateRandom( imsg._status );
-        GenerateRandom( imsg._routeid );
-        GenerateRandom( imsg._macro_offset );
-        GenerateRandom( imsg._attempt_num );
-        GenerateRandom( imsg._expectMore );
-        GenerateRandom( imsg._group_message_id );
-        GenerateRandom( imsg._user_message_id );
-
-    }
-
-    void Compare()
-    {
-        TestCase<CtiMultiMsg>::Compare();
-
-        CtiReturnMsg &imsg = dynamic_cast<CtiReturnMsg&>(*_imsg),
-                     &omsg = dynamic_cast<CtiReturnMsg&>(*_omsg);
-
-        CompareMember( "_device_id",           imsg._device_id,                 omsg._device_id );
-        CompareMember( "_command_string",      imsg._command_string,            omsg._command_string );
-        CompareMember( "_result_string",       imsg._result_string,             omsg._result_string );
-        CompareMember( "_status",              imsg._status,                    omsg._status );
-        CompareMember( "_routeid",             imsg._routeid,                   omsg._routeid );
-        CompareMember( "_macro_offset",        imsg._macro_offset,              omsg._macro_offset );
-        CompareMember( "_attempt_num",         imsg._attempt_num,               omsg._attempt_num );
-        CompareMember( "_expectMore",          imsg._expectMore,                omsg._expectMore );
-        CompareMember( "_group_message_id",    imsg._group_message_id,          omsg._group_message_id );
-        CompareMember( "_user_message_id",     imsg._user_message_id,           omsg._user_message_id );
     }
 };
 
@@ -727,7 +623,7 @@ struct TestCase<CtiRequestCancelMsg> : public TestCase<CtiMessage>
 template<>
 struct TestCase<CtiServerRequestMsg> : public TestCase<CtiMessage>
 {
-    typedef CtiRequestCancelMsg payload_t;
+    typedef CtiCommandMsg payload_t;
 
     TestCaseItem<payload_t> _tc_payload;
 
@@ -771,7 +667,7 @@ struct TestCase<CtiServerRequestMsg> : public TestCase<CtiMessage>
 template<>
 struct TestCase<CtiServerResponseMsg> : public TestCase<CtiMessage>
 {
-    typedef CtiRequestCancelMsg payload_t;
+    typedef CtiCommandMsg payload_t;
 
     TestCaseItem<payload_t> _tc_payload;
 
@@ -942,5 +838,107 @@ struct TestCase<CtiTraceMsg> : public TestCase<CtiMessage>
         CompareMember( "_end",               imsg._end,                   omsg._end );
         CompareMember( "_attributes",        imsg._attributes,            omsg._attributes );
         CompareMember( "_trace",             imsg._trace,                 omsg._trace );
+    }
+};
+
+/*-----------------------------------------------------------------------------
+    Multi
+-----------------------------------------------------------------------------*/
+template<>
+struct TestCase<CtiMultiMsg> : public TestCase<CtiMessage>
+{
+    typedef CtiCommandMsg       message0_t;
+    typedef CtiServerRequestMsg message1_t;
+
+    TestCaseItem<message0_t> _tc_message0;
+    TestCaseItem<message1_t> _tc_message1;
+
+    void Create()
+    {
+        _imsg.reset( new CtiMultiMsg );
+        _omsg.reset( new CtiMultiMsg );
+    }
+
+    void Populate()
+    {
+        TestCase<CtiMessage>::Populate();
+
+        CtiMultiMsg &imsg = dynamic_cast<CtiMultiMsg&>(*_imsg);
+
+        imsg.insert( new message0_t );
+        imsg.insert( new message1_t );
+
+        _tc_message0.Populate( (message0_t*)imsg._bag[0] );
+        _tc_message1.Populate( (message1_t*)imsg._bag[1] );
+    }
+
+    void Compare()
+    {
+        TestCase<CtiMessage>::Compare();
+
+        CtiMultiMsg &imsg = dynamic_cast<CtiMultiMsg&>(*_imsg),
+                    &omsg = dynamic_cast<CtiMultiMsg&>(*_omsg);
+
+        if( omsg._bag.size() == 2 )
+        {
+            if( !_tc_message0.Compare( (message0_t*)omsg._bag[0] )) reportMismatch( "_bag[0]", _tc_message0._failures );
+            if( !_tc_message1.Compare( (message1_t*)omsg._bag[1] )) reportMismatch( "_bag[1]", _tc_message1._failures );
+        }
+        else
+        {
+            reportMismatch( "_bag", "size expected != size received" );
+        }
+
+    }
+};
+
+/*-----------------------------------------------------------------------------
+    Return
+-----------------------------------------------------------------------------*/
+template<>
+struct TestCase<CtiReturnMsg> : public TestCase<CtiMultiMsg>
+{
+    void Create()
+    {
+        _imsg.reset( new CtiReturnMsg );
+        _omsg.reset( new CtiReturnMsg );
+    }
+
+    void Populate()
+    {
+        TestCase<CtiMultiMsg>::Populate();
+
+        CtiReturnMsg &imsg = dynamic_cast<CtiReturnMsg&>(*_imsg);
+
+        GenerateRandom( imsg._device_id );
+        GenerateRandom( imsg._command_string );
+        GenerateRandom( imsg._result_string );
+        GenerateRandom( imsg._status );
+        GenerateRandom( imsg._routeid );
+        GenerateRandom( imsg._macro_offset );
+        GenerateRandom( imsg._attempt_num );
+        GenerateRandom( imsg._expectMore );
+        GenerateRandom( imsg._group_message_id );
+        GenerateRandom( imsg._user_message_id );
+
+    }
+
+    void Compare()
+    {
+        TestCase<CtiMultiMsg>::Compare();
+
+        CtiReturnMsg &imsg = dynamic_cast<CtiReturnMsg&>(*_imsg),
+                     &omsg = dynamic_cast<CtiReturnMsg&>(*_omsg);
+
+        CompareMember( "_device_id",           imsg._device_id,                 omsg._device_id );
+        CompareMember( "_command_string",      imsg._command_string,            omsg._command_string );
+        CompareMember( "_result_string",       imsg._result_string,             omsg._result_string );
+        CompareMember( "_status",              imsg._status,                    omsg._status );
+        CompareMember( "_routeid",             imsg._routeid,                   omsg._routeid );
+        CompareMember( "_macro_offset",        imsg._macro_offset,              omsg._macro_offset );
+        CompareMember( "_attempt_num",         imsg._attempt_num,               omsg._attempt_num );
+        CompareMember( "_expectMore",          imsg._expectMore,                omsg._expectMore );
+        CompareMember( "_group_message_id",    imsg._group_message_id,          omsg._group_message_id );
+        CompareMember( "_user_message_id",     imsg._user_message_id,           omsg._user_message_id );
     }
 };

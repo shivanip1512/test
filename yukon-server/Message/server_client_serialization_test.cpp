@@ -31,6 +31,8 @@
 
 #include <crtdbg.h>
 #include "connection_server.h"
+#include "boost/assign/list_of.hpp"
+#include "std_helper.h"
 
 using namespace std;
 
@@ -96,7 +98,30 @@ struct ServerClientTestSequence
 };
 
 
-void main(void)
+enum TestMessage
+{
+    All,
+    Porter,
+    Dispatch,
+    Notif,
+};
+
+const std::map<std::string, TestMessage> enum_map = boost::assign::map_list_of
+        ("all",      All)
+        ("porter",   Porter)
+        ("dispatch", Dispatch)
+        ("notif",    Notif);
+
+void printUsage()
+{
+    cout << "argument usage : " << endl
+         << " all      - send all messages" << endl
+         << " porter   - send porter messages" << endl
+         << " dispatch - send dispatch messages" << endl
+         << " notif    - send notification messages" << endl;
+}
+
+void main(int argc, char* argv[])
 {
     _set_purecall_handler(Purecall);
 
@@ -115,6 +140,26 @@ void main(void)
     dout.setOutputFile      ( "server_client_serialization_test" );
     dout.setToStdOut        ( true );
     dout.setWriteInterval   ( 1000 );
+
+    if( argc != 2 )
+    {
+        printUsage();
+        exit(EXIT_FAILURE);
+    }
+
+    std::string arg_str( argv[1] );
+
+    boost::algorithm::to_lower(arg_str);
+
+    boost::optional<TestMessage> msg_type = Cti::mapFind( enum_map, arg_str );
+
+    if( ! msg_type )
+    {
+        printUsage();
+        exit(EXIT_FAILURE);
+    }
+
+    cout << "choice = " << arg_str << endl;
 
     for(;!bGCtrlC;)
     {
@@ -143,12 +188,14 @@ void main(void)
                 seq.Run();
             }
 
+            if( *msg_type == All || *msg_type == Dispatch )
             {
                 RandomGenerator::reset( 3 + RandomSeedBase );
                 ServerClientTestSequence<TestCase<CtiDBChangeMsg>> seq( * serverConn );
                 seq.Run();
             }
 
+            if( *msg_type == All || *msg_type == Dispatch )
             {
                 RandomGenerator::reset( 4 + RandomSeedBase );
                 ServerClientTestSequence<TestCase<CtiLMControlHistoryMsg>> seq( * serverConn );
@@ -161,66 +208,77 @@ void main(void)
                 seq.Run();
             }
 
+            if( *msg_type == All || *msg_type == Notif )
             {
                 RandomGenerator::reset( 6 + RandomSeedBase );
                 ServerClientTestSequence<TestCase<CtiNotifAlarmMsg>> seq( * serverConn );
                 seq.Run();
             }
 
+            if( *msg_type == All || *msg_type == Notif )
             {
                 RandomGenerator::reset( 7 + RandomSeedBase );
                 ServerClientTestSequence<TestCase<CtiNotifEmailMsg>> seq( * serverConn );
                 seq.Run();
             }
 
+            if( *msg_type == All ) // ==> not registered in client <==
             {
                 RandomGenerator::reset( 8 + RandomSeedBase );
                 ServerClientTestSequence<TestCase<CtiCustomerNotifEmailMsg>> seq( * serverConn );
                 seq.Run();
             }
 
+            if( *msg_type == All || *msg_type == Notif )
             {
                 RandomGenerator::reset( 9 + RandomSeedBase );
                 ServerClientTestSequence<TestCase<CtiNotifLMControlMsg>> seq( * serverConn );
                 seq.Run();
             }
 
+            if( *msg_type == All || *msg_type == Porter )
             {
                 RandomGenerator::reset( 10 + RandomSeedBase );
                 ServerClientTestSequence<TestCase<CtiRequestMsg>> seq( * serverConn );
                 seq.Run();
             }
 
+            if( *msg_type == All || *msg_type == Porter )
             {
                 RandomGenerator::reset( 11 + RandomSeedBase );
                 ServerClientTestSequence<TestCase<CtiReturnMsg>> seq( * serverConn );
                 seq.Run();
             }
 
+            if( *msg_type == All || *msg_type == Porter || *msg_type == Dispatch )
             {
                 RandomGenerator::reset( 12 + RandomSeedBase );
                 ServerClientTestSequence<TestCase<CtiPointDataMsg>> seq( * serverConn );
                 seq.Run();
             }
 
+            if( *msg_type == All || *msg_type == Dispatch )
             {
                 RandomGenerator::reset( 13 + RandomSeedBase );
                 ServerClientTestSequence<TestCase<CtiPointRegistrationMsg>> seq( * serverConn );
                 seq.Run();
             }
 
+            if( *msg_type == All || *msg_type == Porter )
             {
                 RandomGenerator::reset( 14 + RandomSeedBase );
                 ServerClientTestSequence<TestCase<CtiQueueDataMsg>> seq( * serverConn );
                 seq.Run();
             }
 
+            if( *msg_type == All || *msg_type == Dispatch )
             {
                 RandomGenerator::reset( 15 + RandomSeedBase );
                 ServerClientTestSequence<TestCase<CtiRegistrationMsg>> seq( * serverConn );
                 seq.Run();
             }
 
+            if( *msg_type == All || *msg_type == Porter )
             {
                 RandomGenerator::reset( 16 + RandomSeedBase );
                 ServerClientTestSequence<TestCase<CtiRequestCancelMsg>> seq( * serverConn );
@@ -239,12 +297,14 @@ void main(void)
                 seq.Run();
             }
 
+            if( *msg_type == All || *msg_type == Dispatch )
             {
                 RandomGenerator::reset( 19 + RandomSeedBase );
                 ServerClientTestSequence<TestCase<CtiSignalMsg>> seq( * serverConn );
                 seq.Run();
             }
 
+            if( *msg_type == All || *msg_type == Dispatch )
             {
                 RandomGenerator::reset( 20 + RandomSeedBase );
                 ServerClientTestSequence<TestCase<CtiTagMsg>> seq( * serverConn );
