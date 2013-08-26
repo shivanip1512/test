@@ -68,7 +68,17 @@
             <div class="utility">
                 <nav>
                     <ul>
-                        <li><a href="/billing">Contact Us</a></li>
+                        <li><a id="contact-us" href="javascript:void(0)"><i:inline key="yukon.web.layout.standard.contactUs"/></a></li>
+
+                        <i:simplePopup titleKey="layout.standard.contactUs" id="contact-us-dialog" on="#contact-us" options="{position: {my:'right bottom', at:'right top', of: '#contact-us'}}">
+                            <div class="stacked">
+                                <label><strong><i:inline key="yukon.web.modules.support.support.email.header"/></strong>&nbsp;<a href="mailto:<cti:msg2 key="yukon.web.modules.support.support.email.value"/>"><i:inline key="yukon.web.modules.support.support.email.value"/></a></label>
+                            </div>
+                            <div class="stacked">
+                                <div><label><strong><i:inline key="yukon.web.modules.support.support.phone.header"/></strong>&nbsp;<i:inline key="yukon.web.modules.support.support.phone.value"/></label></div>
+                                <div><label><strong><i:inline key="yukon.web.modules.support.support.hours.header"/></strong>&nbsp;<i:inline key="yukon.web.modules.support.support.hours.value"/></label></div>
+                            </div>
+                        </i:simplePopup>
                     </ul>
                 </nav>
             </div>
