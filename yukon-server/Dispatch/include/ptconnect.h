@@ -11,8 +11,6 @@
 #include "msg_pdata.h"
 #include "server_b.h"
 
-class CtiPointChange;
-
 
 class IM_EX_CTIVANGOGH CtiPointConnection
 {

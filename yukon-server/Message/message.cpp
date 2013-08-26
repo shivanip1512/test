@@ -13,7 +13,6 @@
 *-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
-#include <rw/collect.h>
 #include "message.h"
 #include "collectable.h"
 #include "dllbase.h"
@@ -118,32 +117,21 @@ CtiMessage& CtiMessage::operator=(const CtiMessage& aRef)
    return *this;
 }
 
-RWBoolean CtiMessage::operator==(const CtiMessage &aRef) const
+bool CtiMessage::operator==(const CtiMessage &aRef) const
 {
    return (this == &aRef);
 }
 
-RWBoolean CtiMessage::operator<(const CtiMessage& aRef) const
+bool CtiMessage::operator<(const CtiMessage& aRef) const
 {
-   RWBoolean bRet(FALSE);
-
-   if(MessagePriority < aRef.getMessagePriority())
-   {
-      bRet = RWBoolean(TRUE);   // Higher priority is "less".  Sorts ahead of lower priority.
-   }
-   return bRet;
+    // Higher priority is "less".  Sorts ahead of lower priority.
+    return MessagePriority < aRef.getMessagePriority();
 }
 
-RWBoolean CtiMessage::operator>(const CtiMessage& aRef) const
+bool CtiMessage::operator>(const CtiMessage& aRef) const
 {
-   RWBoolean bRet(FALSE);
-
-   if(MessagePriority > aRef.getMessagePriority())
-   {
-      bRet = RWBoolean(TRUE);   // Lower priority sorts behind greater.  Lower == is "more" in the lists.
-   }
-
-   return bRet;
+    // Lower priority sorts behind greater.  Lower == is "more" in the lists.
+    return MessagePriority > aRef.getMessagePriority();
 }
 
 CtiMessage& CtiMessage::setConnectionHandle(void *p)
@@ -173,11 +161,6 @@ void CtiMessage::resetTime()
 {
     MessageTime = MessageTime.now();
 }
-
-void CtiMessage::PreInsert()
-{
-}
-
 
 const string& CtiMessage::getSource() const
 {

@@ -3,7 +3,7 @@
 #include <rw/collect.h>
 #include <rw/vstream.h>
 #include <rw/thr/mutex.h>
-#include <rw/thr/recursiv.h> 
+#include <rw/thr/recursiv.h>
 
 #include "msg_cmd.h"
 #include "dbaccess.h"
@@ -11,6 +11,8 @@
 #include "types.h"
 
 namespace Cti {
+    class RowReader;
+
 namespace Database {
     class DatabaseConnection;
 }
@@ -18,7 +20,7 @@ namespace Database {
 
 namespace capcontrol
 {
-    typedef enum 
+    typedef enum
     {
         USER_DEF_CCSTATS = 0,
         DAILY_CCSTATS,
@@ -27,9 +29,9 @@ namespace capcontrol
     } ccStatsType;
 };
 
-               
 
-class CtiCCOperationStats  
+
+class CtiCCOperationStats
 {
 public:
     CtiCCOperationStats();
@@ -57,7 +59,7 @@ public:
     long    getMonthlyOpSuccessPercentId() const;
     double  getMonthlyOpSuccessPercent() const;
 
-    
+
     CtiCCOperationStats& setPAOId(long paoId);
     CtiCCOperationStats& setUserDefOpCount(long value);
     CtiCCOperationStats& setUserDefConfFail(long value);
@@ -82,8 +84,8 @@ public:
     CtiCCOperationStats& setWeeklyOpSuccessPercentId(long pointId);
     CtiCCOperationStats& setWeeklyOpSuccessPercent(double value);
     CtiCCOperationStats& setMonthlyOpSuccessPercentId(long pointId);
-    CtiCCOperationStats& setMonthlyOpSuccessPercent(double value); 
-    
+    CtiCCOperationStats& setMonthlyOpSuccessPercent(double value);
+
 
 
     double calculateSuccessPercent(capcontrol::ccStatsType type);
@@ -105,20 +107,20 @@ public:
     int operator==(const CtiCCOperationStats& right) const;
     int operator!=(const CtiCCOperationStats& right) const;
 
-  
-        
+
+
 private:
 
     long _paoid;
 
     long _userDefOpCount;
-	long _userDefConfFail;
-	long _dailyOpCount;
-	long _dailyConfFail;
-	long _weeklyOpCount;	
-	long _weeklyConfFail;
-	long _monthlyOpCount;
-	long _monthlyConfFail;
+    long _userDefConfFail;
+    long _dailyOpCount;
+    long _dailyConfFail;
+    long _weeklyOpCount;
+    long _weeklyConfFail;
+    long _monthlyOpCount;
+    long _monthlyConfFail;
 
     long    _userDefOpSuccessPercentId;
     double  _userDefOpSuccessPercent;

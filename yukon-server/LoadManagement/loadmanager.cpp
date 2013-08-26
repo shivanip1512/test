@@ -1054,7 +1054,7 @@ void CtiLoadManager::parseMessage( CtiMessage *message, CtiTime currentTime )
             _itoa(message->isA(),tempstr,10);
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime() << " - message->isA() = " << tempstr << endl;
-            dout << CtiTime() << " - Unknown message type: parseMessage(RWCollectable *message) in controller.cpp" << endl;
+            dout << CtiTime() << " - Unknown message type: parseMessage(CtiMessage *message) in controller.cpp" << endl;
         }
     }
     return;

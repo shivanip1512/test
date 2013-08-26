@@ -12,6 +12,8 @@
 #include "LitePoint.h"
 
 namespace Cti {
+    class RowReader;
+
 namespace Database {
     class DatabaseConnection;
 }

@@ -1,15 +1,5 @@
-/*---------------------------------------------------------------------------
-        Filename:  lmid.h
-                        
-        Programmer:  Josh Wolberg
-        
-        Description:    Header file containing id numbers for various
-                        Cti classes that inherit from RWCollectable.
+#poragma once
 
-        Initial Date:  9/6/2001
-        
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
----------------------------------------------------------------------------*/
 #include "ctitime.h"
 
 /* Various message classes */
@@ -53,11 +43,6 @@
 #define CTILMDYNAMICLMTRIGGERMSG_ID             638
 #define CTILMCONSTRAINTVIOLATION_ID             639
 #define LMGROUPDIGISEP_ID                       640
-
-
-/*
-#define CTILM_ID                        62
-*/
 
 
 /* Various debug levels */

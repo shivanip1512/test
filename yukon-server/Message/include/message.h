@@ -49,9 +49,9 @@ public:
    virtual ~CtiMessage();
 
    CtiMessage& CtiMessage::operator=(const CtiMessage& aRef);
-   RWBoolean operator==(const CtiMessage &aRef) const;
-   RWBoolean virtual operator<(const CtiMessage& aRef) const;
-   RWBoolean virtual operator>(const CtiMessage& aRef) const;
+   bool operator==(const CtiMessage &aRef) const;
+   bool virtual operator<(const CtiMessage& aRef) const;
+   bool virtual operator>(const CtiMessage& aRef) const;
    virtual CtiMessage& setConnectionHandle(void *p);
    virtual void* getConnectionHandle() const;
    void setMessagePriority(INT n);
@@ -75,8 +75,6 @@ public:
 
    // Adjust the time to now.
    void resetTime();
-
-   virtual void PreInsert();
 
    virtual void dump() const;
    std::string typeString() const;

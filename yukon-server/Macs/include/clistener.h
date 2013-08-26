@@ -57,10 +57,6 @@ private:
 
     volatile bool _doquit;
 
-    // collectables written to this queue will be
-    // broadcast to all the connections
-    CtiPCPtrQueue< CtiMessage > _broadcast_queue;
-
     CtiQueue< CtiMessage, std::greater<CtiMessage> >* _conn_in_queue;
 
     void removeAllConnections();

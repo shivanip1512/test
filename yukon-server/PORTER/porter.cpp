@@ -800,17 +800,12 @@ INT PorterMainFunction (INT argc, CHAR **argv)
 
     pfnOldCrtAllocHook = _CrtSetAllocHook(MyAllocHook);
 
-    /* Another new Yukon Thread:
-     * This thread manages connections to iMacs and other RWCollectable message senders
-     * This guy is the PIL
-     */
     _pilThread = rwMakeThreadFunction( PorterInterfaceThread, (void*)NULL );
     _pilThread.start();
 
     _dispThread = rwMakeThreadFunction( DispatchMsgHandlerThread, (void*)NULL );
     _dispThread.start();
 
-    /* Start the time sync thread */
     _tsyncThread = rwMakeThreadFunction( TimeSyncThread, (void*)NULL );
     _tsyncThread.start();
 

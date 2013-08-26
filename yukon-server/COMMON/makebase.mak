@@ -366,8 +366,6 @@ pexec.obj:	precompiled.h porter.h dsm2.h cticonnect.h yukon.h types.h \
 		CtiPCPtrQueue.h ctinexus.h
 pointattribute.obj:	precompiled.h PointAttribute.h yukon.h types.h \
 		ctidbgmem.h dlldefs.h
-point_change.obj:	precompiled.h point_change.h yukon.h types.h \
-		ctidbgmem.h dlldefs.h
 queue.obj:	precompiled.h queue.h cparms.h dlldefs.h rwutil.h yukon.h \
 		types.h ctidbgmem.h database_connection.h dbaccess.h \
 		dllbase.h dsm2.h cticonnect.h netports.h mutex.h guard.h \

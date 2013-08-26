@@ -1,5 +1,3 @@
-
-
 #include "precompiled.h"
 
 #include "RfnBroadcastMessage.h"
@@ -7,6 +5,8 @@
 #include "msg_pcreturn.h"
 
 #include <cms/StreamMessage.h>
+
+#include <ctime>
 
 using namespace std;
 
