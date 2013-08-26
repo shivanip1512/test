@@ -174,8 +174,6 @@ struct thr_hash
     }
 };
 
-static RWRecursiveLock<RWMutexLock> _queue_mux;
-
 std::string BuildCommandString(const int argc, const char * const argv[]);
 void DumpReturnMessage(CtiReturnMsg& msg);
 void DumpRequestMessage(CtiRequestMsg& msg);
