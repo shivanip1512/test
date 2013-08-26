@@ -442,6 +442,8 @@ function trim (s) {
 }
 
 function getCtiURL(url, callback) {
+    callback = callback || function(){};
+
     getURL(url, function(obj) {
         if (obj.success) {
             callback(obj);
