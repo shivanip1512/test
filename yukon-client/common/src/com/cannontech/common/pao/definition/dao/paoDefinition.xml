@@ -9618,4 +9618,42 @@
         </tags>
     </pao>
     
+    <pao id="WEATHER_LOCATION">
+    	<displayName>WEATHER LOCATION</displayName>
+    	<points>
+    		<point type="Analog" offset="1">
+    			<init>true</init>
+    			<name>Temperature</name>
+    			<archive>
+    				<type>ON_CHANGE</type>
+    				<interval>ZERO</interval>
+    			</archive>
+    			<multiplier value="1.0"/>
+    			<unitofmeasure value="Degrees"/>
+    			<decimalplaces value="1"/>
+    		</point>
+    		<point type="Analog" offset="2">
+    			<init>true</init>
+    			<name>Relative Humidity</name>
+    			<archive>
+    				<type>ON_CHANGE</type>
+    				<interval>ZERO</interval>
+    			</archive>
+    			<multiplier value="1.0"/>
+    			<unitofmeasure value="Percent"/>
+    			<decimalplaces value="1"/>
+    		</point>
+    	</points>
+    	
+<!--	Attributes are probably the way the points will be set, but for now points work just as well -->    	
+<!--     	<attributes> -->
+<!--             <attribute name="TEMPERATURE"> -->
+<!--                 <basicLookup point="Temperature" /> -->
+<!--             </attribute> -->
+<!--             <attribute name="HUMIDITY"> -->
+<!--                 <basicLookup point="Relative Humidity" /> -->
+<!--             </attribute> -->
+<!--         </attributes> -->
+    </pao>
+    
 </paoDefinitions>

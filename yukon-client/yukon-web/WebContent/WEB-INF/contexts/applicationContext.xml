@@ -2181,6 +2181,9 @@
            </list>
         </property>
     </bean>
+
+	<bean class="com.cannontech.web.dr.loadcontrol.impl.WeatherDataServiceImpl" />
+    
     <!-- Contextual Menu Beans (end) -->
 
     <bean class="com.cannontech.web.common.chart.service.impl.ChartServiceImpl"/>

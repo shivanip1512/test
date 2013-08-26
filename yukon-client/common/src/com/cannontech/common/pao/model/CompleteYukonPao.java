@@ -9,7 +9,7 @@ import com.cannontech.common.pao.annotation.YukonPaoField;
 import com.cannontech.common.util.CtiUtilities;
 import com.google.common.base.Objects;
 
-@YukonPao(tableName="YukonPaObject", idColumnName="PaObjectId")
+@YukonPao(tableName="YukonPaObject", idColumnName="PaObjectId", paoTypes=PaoType.WEATHER_LOCATION)
 public class CompleteYukonPao implements com.cannontech.common.pao.YukonPao {
     private PaoIdentifier paoIdentifier;
 

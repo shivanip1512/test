@@ -221,6 +221,8 @@ public enum PaoType implements DatabaseRepresentationSource {
     SIMPLE_SCHEDULE(DeviceTypes.SIMPLE_SCHEDULE, "Simple", PaoCategory.SCHEDULE, PaoClass.SCHEDULE),
     SYSTEM(DeviceTypes.SYSTEM, "SYSTEM", PaoCategory.DEVICE, PaoClass.SYSTEM),
     VIRTUAL_SYSTEM(DeviceTypes.VIRTUAL_SYSTEM, "VIRTUAL SYSTEM", PaoCategory.DEVICE, PaoClass.VIRTUAL),
+
+    WEATHER_LOCATION(DeviceTypes.WEATHER_LOCATION, "WEATHER LOCATION", PaoCategory.DEVICE, PaoClass.VIRTUAL),
     ;
     
     private final int deviceTypeId;

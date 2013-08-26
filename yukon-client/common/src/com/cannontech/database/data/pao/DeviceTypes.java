@@ -210,6 +210,9 @@ public interface DeviceTypes extends TypeBase
     public final static int RFN440_2132TD = DEVICE_OFFSET + 158;
 //    public final static int RFN440_2133T = DEVICE_OFFSET + 159;
     public final static int RFN440_2133TD = DEVICE_OFFSET + 160;
+    
+//    educated guess at this point...
+    public final static int WEATHER_LOCATION = DEVICE_OFFSET + 161;
 
 	//all the possible text representation of each device type.
 	//If you want the string of any type, just access the zeroth element, example: STRING_CCU_710[0]
@@ -345,5 +348,7 @@ public interface DeviceTypes extends TypeBase
     public static final String[] STRING_IPC_430SL = {"IPC-430SL"};
     public static final String[] STRING_IPC_420FD = {"IPC-420fD"};
     public static final String[] STRING_IPC_410FL = {"IPC-410fL"};
-
+    
+//  educated guess at this point...
+    public static final String[] STRING_WEATHER_LOCATION = {"WEATHER LOCATION"};
 }
