@@ -296,6 +296,7 @@ BOOST_AUTO_TEST_CASE(test_getKeyString)
         { CtiTableDynamicPaoInfo::Key_RFN_Holiday3,                                 "rfn holiday 3" },
         { CtiTableDynamicPaoInfo::Key_RFN_DemandInterval,                           "rfn demand interval" },
         { CtiTableDynamicPaoInfo::Key_RFN_LoadProfileInterval,                      "rfn load profile interval" },
+        { CtiTableDynamicPaoInfo::Key_RFN_DemandFreezeDay,                          "rfn demand freeze day" },
     };
 
     std::vector<std::string> expected, results;

@@ -154,6 +154,79 @@ int RfnConsumerDevice::executeLoadProfileRecording( CtiRequestMsg     * pReq,
 }
 
 
+int RfnConsumerDevice::executePutConfigDemandFreezeDay( CtiRequestMsg     * pReq,
+                                                        CtiCommandParser  & parse,
+                                                        CtiMessageList    & retList,
+                                                        RfnCommandList    & rfnRequests )
+{
+    Config::DeviceConfigSPtr deviceConfig = getDeviceConfig();
+
+    if( ! deviceConfig )
+    {
+        return NoConfigData;
+    }
+
+    boost::optional<unsigned char>  configFreezeDay,
+                                    paoFreezeDay;
+
+    {
+        const std::string           configKey( Config::RfnStrings::demandFreezeDay );
+        const boost::optional<long> configValue = deviceConfig->findLongValueForKey( configKey );
+
+        if ( ! configValue  )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Device \"" << getName() << "\" - Missing value for config key \"" << configKey << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+
+            return NoConfigData;
+        }
+
+        // Rudimentary check to see that we can coerce the 'long' into an 'unsigned char'.
+        //  - the command object will perform further validation of its input.
+        if ( *configValue < 0 || *configValue > std::numeric_limits<unsigned char>::max() )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Device \"" << getName() << "\" - Invalid value (" << *configValue << ") for config key \"" << configKey << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+
+            return NoConfigData;
+        }
+
+        configFreezeDay = static_cast<unsigned>( *configValue );
+    }
+
+    {
+        long pao_value;
+
+        if ( getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DemandFreezeDay, pao_value ) )
+        {
+            paoFreezeDay = static_cast<unsigned>( pao_value );
+        }
+    }
+
+    if( configFreezeDay && paoFreezeDay && *configFreezeDay == *paoFreezeDay )  // both exist and are equal
+    {
+        if( ! parse.isKeyValid("force") )
+        {
+            return ConfigCurrent;
+        }
+    }
+    else
+    {
+        if( parse.isKeyValid("verify") )
+        {
+            return ConfigNotCurrent;
+        }
+    }
+
+    std::auto_ptr<Commands::RfnCommand> freezeDayConfigCommand(
+       new Commands::RfnDemandFreezeConfigurationCommand( *configFreezeDay ) );
+
+    rfnRequests.push_back( Commands::RfnCommandSPtr( freezeDayConfigCommand.release() ) );
+
+    return NoError;
+}
+
+
 void RfnConsumerDevice::handleResult( const Commands::RfnVoltageProfileConfigurationCommand & cmd )
 {
     setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DemandInterval,      cmd.getDemandIntervalSeconds() );

@@ -2,6 +2,7 @@
 
 #include "dev_rfn.h"
 #include "cmd_rfn_LoadProfile.h"
+#include "cmd_rfn_DemandFreeze.h"
 
 
 namespace Cti       {
@@ -22,6 +23,11 @@ class IM_EX_DEVDB RfnConsumerDevice
                                      CtiCommandParser  & parse,
                                      CtiMessageList    & retList,
                                      RfnCommandList    & rfnRequests );
+
+    int executePutConfigDemandFreezeDay( CtiRequestMsg     * pReq,
+                                         CtiCommandParser  & parse,
+                                         CtiMessageList    & retList,
+                                         RfnCommandList    & rfnRequests );
 
     void handleResult( const Commands::RfnVoltageProfileConfigurationCommand & cmd );
     void handleResult( const Commands::RfnLoadProfileRecordingCommand & cmd );

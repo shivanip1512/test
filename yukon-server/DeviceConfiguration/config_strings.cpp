@@ -199,3 +199,5 @@ const string RfnStrings::displayMetric26 = "displayMetric26";
 const string RfnStrings::demandInterval         = "demandInterval";
 const string RfnStrings::loadProfileInterval    = "loadProfileInterval";
 
+const string RfnStrings::demandFreezeDay    = "demandFreezeDay";
+

@@ -500,6 +500,8 @@ const CtiTableDynamicPaoInfo::key_map_t   CtiTableDynamicPaoInfo::_key_map =
 
         (Key_RFN_DemandInterval,            "rfn demand interval")
         (Key_RFN_LoadProfileInterval,       "rfn load profile interval")
+
+        (Key_RFN_DemandFreezeDay,           "rfn demand freeze day")
         ;
 
 CtiTableDynamicPaoInfo::CtiTableDynamicPaoInfo() :
