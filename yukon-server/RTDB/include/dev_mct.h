@@ -147,7 +147,7 @@ protected:
         Memory_ModelLen          =    8,
     };
 
-    enum Commands
+    enum EmetconCommands
     {
         Command_Disconnect          = 0x41,
         Command_Connect             = 0x42,

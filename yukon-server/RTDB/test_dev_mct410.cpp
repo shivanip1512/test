@@ -3356,7 +3356,7 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Function_Read_2Dwords)
         (empty)
         (empty)
         (empty)
-        (tuple_list_of(5,2,133)(7,1,134))
+        (tuple_list_of(7,1,134))
         (empty);
 
     const test_Mct410IconDevice dev;

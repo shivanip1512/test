@@ -125,7 +125,7 @@ const Mct420Device::FunctionReadValueMappings Mct420Device::_readValueMaps = boo
         (11, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric25))
         (12, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric26)))
     (0x1fe, boost::assign::map_list_of
-        ( 5, make_value_descriptor(2, CtiTableDynamicPaoInfo::Key_MCT_DemandThreshold  ))
+        //( 5, make_value_descriptor(2, CtiTableDynamicPaoInfo::Key_MCT_DemandThreshold  ))  //  stored by Mct410DisconnectConfigurationCommand
         ( 7, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_ConnectDelay     ))
         ( 9, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_DisconnectMinutes))
         (10, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_ConnectMinutes   ))

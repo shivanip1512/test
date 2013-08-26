@@ -244,7 +244,7 @@ INT DlcBaseDevice::ExecuteRequest( CtiRequestMsg        *pReq,
 INT DlcBaseDevice::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list<CtiMessage *> &vgList, list<CtiMessage *> &retList, list<OUTMESS *> &outList)
 try
 {
-    int status = decodeCommand(*InMessage, TimeNow, vgList, retList, outList);
+    int status = findAndDecodeCommand(*InMessage, TimeNow, vgList, retList, outList);
 
     if( status == NoResultDecodeMethod )
     {
@@ -269,7 +269,7 @@ catch( DlcCommand::CommandException &e )
 INT DlcBaseDevice::SubmitRetry(const INMESS &InMessage, const CtiTime TimeNow, list<CtiMessage *> &vgList, list<CtiMessage *> &retList, list<OUTMESS *> &outList)
 try
 {
-    int status = decodeCommand(InMessage, TimeNow, vgList, retList, outList);
+    int status = findAndDecodeCommand(InMessage, TimeNow, vgList, retList, outList);
 
     if( status == NoResultDecodeMethod )
     {
@@ -402,7 +402,13 @@ bool DlcBaseDevice::dlcAddressMismatch(const DSTRUCT dst, const CtiDeviceBase & 
 }
 
 
-int DlcBaseDevice::decodeCommand(const INMESS &InMessage, CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+void DlcBaseDevice::handleCommandResult(const Commands::DlcCommand &command)
+{
+    command.invokeResultHandler(*this);
+}
+
+
+int DlcBaseDevice::findAndDecodeCommand(const INMESS &InMessage, CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     //  We need to protect _activeCommands/trackCommand()
     CtiLockGuard<CtiMutex> lock(getMux());
@@ -461,6 +467,8 @@ int DlcBaseDevice::decodeCommand(const INMESS &InMessage, CtiTime TimeNow, list<
             }
 
             ptr = command.decodeCommand(TimeNow, function, payload, description, points);
+
+            handleCommandResult(command);
 
             for each( const DlcCommand::point_data &pdata in points )
             {

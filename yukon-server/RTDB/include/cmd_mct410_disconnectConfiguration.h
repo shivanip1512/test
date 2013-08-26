@@ -19,7 +19,7 @@ public:
     };
 
     // Write constructor
-    Mct410DisconnectConfigurationCommand(const unsigned disconnectAddress, const float disconnectDemandThreshold, const unsigned connectDelay, 
+    Mct410DisconnectConfigurationCommand(const unsigned disconnectAddress, const float disconnectDemandThreshold, const unsigned connectDelay,
                             const unsigned disconnectMinutes, const unsigned connectMinutes, ReconnectButtonState reconnectButtonState,
                             const long demandInterval);
 
@@ -36,6 +36,8 @@ public:
     virtual request_ptr decodeCommand (const CtiTime now, const unsigned function, const boost::optional<Bytes> &payload, std::string &description, std::vector<point_data> &points);
     virtual request_ptr error         (const CtiTime now, const int error_code, std::string &description);
 
+    boost::optional<float> getDisconnectDemandThreshold() const;
+
 private:
 
     unsigned _disconnectAddress;
@@ -45,6 +47,8 @@ private:
     unsigned _connectMinutes;
     ReconnectButtonState _reconnectButtonState;
     long _demandInterval;
+
+    boost::optional<float> _returnedDisconnectDemandThreshold;
 
 protected:
 

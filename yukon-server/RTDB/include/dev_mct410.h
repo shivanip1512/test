@@ -6,13 +6,19 @@
 namespace Cti {
 namespace Devices {
 
-class IM_EX_DEVDB Mct410Device : public Mct4xxDevice
+template <class Child, class Parent>
+struct Inherits : Parent
+{
+    typedef Child Self;
+    typedef Parent Inherited;
+};
+
+class IM_EX_DEVDB Mct410Device :
+    public Inherits<Mct410Device, Mct4xxDevice>,
+    public Commands::Mct410Command::ResultHandler
 {
 private:
 
-    typedef Mct4xxDevice Inherited;
-
-    typedef Mct410Device Self;
     typedef int (Self::*DecodeMethod)(INMESS *, CtiTime &, CtiMessageList &, CtiMessageList &, OutMessageList &);
 
     typedef std::map<int, DecodeMethod> DecodeMapping;
@@ -108,7 +114,7 @@ protected:
     virtual bool isSupported(const Mct4xxDevice::Features f) const;
     virtual bool isSupported(const Mct410Device::Features f) const;
 
-    enum Commands
+    enum EmetconCommands
     {
         Command_Connect          = 0x4c,
         Command_Disconnect       = 0x4d,
@@ -388,6 +394,9 @@ protected:
 
     virtual INT ModelDecode( INMESS *InMessage, CtiTime &TimeNow, std::list< CtiMessage * > &vgList, std::list< CtiMessage * > &retList, std::list< OUTMESS * > &outList );
     virtual INT SubmitRetry( const INMESS &InMessage, const CtiTime TimeNow, std::list< CtiMessage * > &vgList, std::list< CtiMessage * > &retList, std::list< OUTMESS * > &outList );
+
+    virtual void handleCommandResult(const Commands::Mct410Command &command);
+    virtual void handleCommandResult(const Commands::Mct410DisconnectConfigurationCommand &command);
 
     INT decodeGetValueKWH          ( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
     INT decodeGetValueTOUkWh       ( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );

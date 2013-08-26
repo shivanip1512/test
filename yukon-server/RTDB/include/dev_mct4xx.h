@@ -63,7 +63,7 @@ protected:
 
     static const std::string ErrorText_OutOfRange;
 
-    enum Commands
+    enum EmetconCommands
     {
         Command_TOUDisable   = 0x55,
         Command_TOUEnable    = 0x56,

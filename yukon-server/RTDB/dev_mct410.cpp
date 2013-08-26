@@ -7,6 +7,7 @@
 #include "utility.h"
 
 #include "dev_mct410.h"
+#include "cmd_mct410_disconnectConfiguration.h"
 
 #include "tbl_ptdispatch.h"
 #include "pt_status.h"
@@ -154,7 +155,7 @@ Mct410Device::FunctionReadValueMappings Mct410Device::initFunctionReadValueMaps(
         { FuncRead_LLPStatusPos,         6, { 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel3Len    } },
         { FuncRead_LLPStatusPos,         7, { 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel4Len    } },
 
-        { FuncRead_DisconnectConfigPos,  5, { 2, CtiTableDynamicPaoInfo::Key_MCT_DemandThreshold   } },
+        //{ FuncRead_DisconnectConfigPos,  5, { 2, CtiTableDynamicPaoInfo::Key_MCT_DemandThreshold   } },  //  stored by Mct410DisconnectConfigurationCommand
         { FuncRead_DisconnectConfigPos,  7, { 1, CtiTableDynamicPaoInfo::Key_MCT_ConnectDelay      } },
         { FuncRead_DisconnectConfigPos,  9, { 1, CtiTableDynamicPaoInfo::Key_MCT_DisconnectMinutes } },
         { FuncRead_DisconnectConfigPos, 10, { 1, CtiTableDynamicPaoInfo::Key_MCT_ConnectMinutes    } },
@@ -1027,6 +1028,21 @@ INT Mct410Device::SubmitRetry(const INMESS &InMessage, const CtiTime TimeNow, Ct
     }
 
     return retVal;
+}
+
+
+void Mct410Device::handleCommandResult(const Mct410Command &command)
+{
+    command.invokeResultHandler(static_cast<Mct410Command::ResultHandler &>(*this));
+}
+
+
+void Mct410Device::handleCommandResult(const Mct410DisconnectConfigurationCommand &command)
+{
+    if( boost::optional<float> disconnectDemandThreshold = command.getDisconnectDemandThreshold() )
+    {
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DemandThreshold, *disconnectDemandThreshold);
+    }
 }
 
 

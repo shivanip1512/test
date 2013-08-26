@@ -7,7 +7,7 @@ namespace Cti {
 namespace Devices {
 namespace Commands {
 
-Mct410DisconnectConfigurationCommand::Mct410DisconnectConfigurationCommand(const unsigned disconnectAddress, const float disconnectDemandThreshold, const unsigned connectDelay, 
+Mct410DisconnectConfigurationCommand::Mct410DisconnectConfigurationCommand(const unsigned disconnectAddress, const float disconnectDemandThreshold, const unsigned connectDelay,
                                                  const unsigned disconnectMinutes, const unsigned connectMinutes, ReconnectButtonState reconnectButtonState,
                                                  const long demandInterval) :
     _disconnectAddress(disconnectAddress),
@@ -20,7 +20,7 @@ Mct410DisconnectConfigurationCommand::Mct410DisconnectConfigurationCommand(const
     _executionState(&Mct410DisconnectConfigurationCommand::write)
 {
     if( _disconnectAddress >> 22 )
-    { 
+    {
         throw CommandException(BADPARAM, "Invalid disconnect address (" + CtiNumStr(_disconnectAddress) + "), must be 0-4194303");
     }
     if( _disconnectDemandThreshold < 0.0 || _disconnectDemandThreshold > 400.0 )
@@ -49,7 +49,7 @@ Mct410DisconnectConfigurationCommand::Mct410DisconnectConfigurationCommand() :
     // Default values here, we're a read anyway, so these values will be ignored.
     _disconnectAddress(0),
     _disconnectDemandThreshold(0),
-    _connectDelay(5), 
+    _connectDelay(5),
     _disconnectMinutes(5),
     _connectMinutes(5),
     _reconnectButtonState(Enabled),
@@ -65,8 +65,32 @@ DlcCommand::request_ptr Mct410DisconnectConfigurationCommand::executeCommand(con
 
 DlcCommand::request_ptr Mct410DisconnectConfigurationCommand::decodeCommand(const CtiTime now, const unsigned function, const boost::optional<Bytes> &payload, std::string &description, std::vector<point_data> &points)
 {
-    // Nothing to decode for this message.
+    //  just did the read
+    if( _executionState == &Mct410DisconnectConfigurationCommand::done )
+    {
+        if( payload )
+        {
+            //  the rest of the disconnect configuration elements
+            unsigned dynamicDemand = (*payload)[5] << 8 | (*payload)[6];
+
+            _returnedDisconnectDemandThreshold = dynamicDemand & 0x0fff;
+
+            switch( dynamicDemand & 0x3000 )
+            {
+                case 0x3000:  *_returnedDisconnectDemandThreshold /= 10.0;
+                case 0x2000:  *_returnedDisconnectDemandThreshold /= 10.0;
+                case 0x1000:  *_returnedDisconnectDemandThreshold /= 10.0;
+                case 0x0000:  *_returnedDisconnectDemandThreshold /= 10.0;
+            }
+        }
+    }
+
     return doCommand();
+}
+
+boost::optional<float> Mct410DisconnectConfigurationCommand::getDisconnectDemandThreshold() const
+{
+    return _disconnectDemandThreshold;
 }
 
 DlcCommand::request_ptr Mct410DisconnectConfigurationCommand::error(const CtiTime now, const int error_code, std::string &description)

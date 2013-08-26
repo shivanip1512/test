@@ -8,14 +8,20 @@ namespace Cti {
 namespace Devices {
 namespace Commands {
 
+//  forward declaration for ResultHandler
+class Mct410Command;
+
 struct IM_EX_DEVDB DlcCommand : public DeviceCommand
 {
     struct ResultHandler
     {
-        virtual void handleResult()
-        {
-        }
+        virtual void handleCommandResult(const DlcCommand &command)  {};
+        //  must include overloads for all children that require a result handler
+        virtual void handleCommandResult(const Mct410Command &command)  {};
     };
+
+    //  to be overridden by children that require a result handler
+    virtual void invokeResultHandler(ResultHandler &rh) const  { };
 
     struct request_t
     {

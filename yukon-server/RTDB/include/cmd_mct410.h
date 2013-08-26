@@ -6,8 +6,28 @@ namespace Cti {
 namespace Devices {
 namespace Commands {
 
+//  forward declaration for ResultHandler
+class Mct410DisconnectConfigurationCommand;
+
 class Mct410Command : public DlcCommand
 {
+public:
+
+    struct ResultHandler
+    {
+        virtual void handleCommandResult(const Mct410Command &command) = 0;
+        //  must include children desiring a result handler call
+        virtual void handleCommandResult(const Mct410DisconnectConfigurationCommand &command) = 0;
+    };
+
+    virtual void invokeResultHandler(DlcCommand::ResultHandler &rh) const
+    {
+        rh.handleCommandResult(*this);
+    }
+
+    //  to be overridden by children desiring a result handler call
+    virtual void invokeResultHandler(ResultHandler &rh) const  { }
+
 protected:
 
     enum FunctionReads
