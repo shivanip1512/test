@@ -750,6 +750,73 @@ void RfnTouHolidayActiveConfigurationCommand::decodeTlv( RfnResult& result, cons
     throw RfnCommand::CommandException( ErrorInvalidData, "Unexpected tlv - (type " + CtiNumStr(tlv.type) + ")");
 }
 
+//
+
+RfnTouCriticalPeakCommand::RfnTouCriticalPeakCommand( const Rate rate, const CtiTime & utcExpireTime )
+    :   _rate( rate ),
+        _utcExpireTime( utcExpireTime )
+{
+
+}
+
+unsigned char RfnTouCriticalPeakCommand::getOperation() const
+{
+    return Operation_CriticalPeak;
+}
+
+RfnCommand::Bytes RfnTouCriticalPeakCommand::getCommandData()
+{
+    TypeLengthValue tlv( Type_CriticalPeak );
+    tlv.value.resize(5);
+
+    tlv.value[0] = _rate;
+    setBits_bEndian( tlv.value, 8, 32, _utcExpireTime.seconds() );
+
+    vector<TypeLengthValue> tlvs;
+    tlvs.push_back(tlv);
+
+    return getBytesFromTlvs( tlvs );
+}
+
+/**
+ * Called if a tlv is decoded - throw since no tlv are expected
+ * @param result
+ * @param tlv
+ */
+void RfnTouCriticalPeakCommand::decodeTlv( RfnResult& result, const TypeLengthValue& tlv )
+{
+    throw RfnCommand::CommandException( ErrorInvalidData, "Unexpected tlv - (type " + CtiNumStr(tlv.type) + ")");
+}
+
+//
+
+RfnTouCancelCriticalPeakCommand::RfnTouCancelCriticalPeakCommand()
+{
+
+}
+
+unsigned char RfnTouCancelCriticalPeakCommand::getOperation() const
+{
+    return Operation_CancelCriticalPeak;
+}
+
+
+RfnCommand::Bytes RfnTouCancelCriticalPeakCommand::getCommandData()
+{
+    return Bytes(1,0); // zero tlvs
+}
+
+/**
+ * Called if a tlv is decoded - throw since no tlv are expected
+ * @param result
+ * @param tlv
+ */
+void RfnTouCancelCriticalPeakCommand::decodeTlv( RfnResult& result, const TypeLengthValue& tlv )
+{
+    throw RfnCommand::CommandException( ErrorInvalidData, "Unexpected tlv - (type " + CtiNumStr(tlv.type) + ")");
+}
+
 }
 }
 }
+

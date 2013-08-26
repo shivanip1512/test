@@ -3,6 +3,7 @@
 #include "cmd_rfn.h"
 #include "boost/array.hpp"
 #include "ctidate.h"
+#include "ctitime.h"
 
 namespace Cti {
 namespace Devices {
@@ -179,6 +180,54 @@ protected:
 private:
 
     HolidayActive const _holidayActive_to_send;
+};
+
+/**
+ * RFN TOU critical peak command
+ */
+class IM_EX_DEVDB RfnTouCriticalPeakCommand : public RfnTouConfigurationCommand
+{
+public:
+
+    enum Rate
+    {
+        RateA,
+        RateB,
+        RateC,
+        RateD,
+    };
+
+    RfnTouCriticalPeakCommand( const Rate rate, const CtiTime & utcExpireTime );
+
+protected:
+
+    virtual unsigned char getOperation() const;
+    virtual Bytes         getCommandData();
+
+    virtual void decodeTlv( RfnResult& result, const TypeLengthValue& tlv );
+
+private:
+
+    Rate    _rate;
+    CtiTime _utcExpireTime;
+};
+
+/**
+ * RFN TOU cancel critical peak command
+ */
+class IM_EX_DEVDB RfnTouCancelCriticalPeakCommand : public RfnTouConfigurationCommand
+{
+public:
+
+    RfnTouCancelCriticalPeakCommand();
+
+protected:
+
+    virtual unsigned char getOperation() const;
+    virtual Bytes         getCommandData();
+
+    virtual void decodeTlv( RfnResult& result, const TypeLengthValue& tlv );
+
 };
 
 }
