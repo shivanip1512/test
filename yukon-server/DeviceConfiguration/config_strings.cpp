@@ -195,3 +195,7 @@ const string RfnStrings::displayMetric23 = "displayMetric23";
 const string RfnStrings::displayMetric24 = "displayMetric24";
 const string RfnStrings::displayMetric25 = "displayMetric25";
 const string RfnStrings::displayMetric26 = "displayMetric26";
+
+const string RfnStrings::demandInterval         = "demandInterval";
+const string RfnStrings::loadProfileInterval    = "loadProfileInterval";
+

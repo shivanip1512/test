@@ -290,6 +290,9 @@ public:
         Key_RFN_Holiday1,
         Key_RFN_Holiday2,
         Key_RFN_Holiday3,
+
+        Key_RFN_DemandInterval,
+        Key_RFN_LoadProfileInterval,
     };
 
 protected:

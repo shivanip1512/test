@@ -35,6 +35,10 @@ struct IM_EX_CONFIG RfnStrings
     static const std::string displayMetric24;
     static const std::string displayMetric25;
     static const std::string displayMetric26;
+
+    static const std::string demandInterval;
+    static const std::string loadProfileInterval;
+
 };
 
 }

@@ -437,7 +437,7 @@ const CtiTableDynamicPaoInfo::key_map_t   CtiTableDynamicPaoInfo::_key_map =
 
         (Key_RFN_MondaySchedule,            "rfn monday schedule")
         (Key_RFN_TuesdaySchedule,           "rfn tuesday schedule")
-        (Key_RFN_WednesdaySchedule,         "rfn wenesday schedule")
+        (Key_RFN_WednesdaySchedule,         "rfn wednesday schedule")
         (Key_RFN_ThursdaySchedule,          "rfn thursday schedule")
         (Key_RFN_FridaySchedule,            "rfn friday schedule")
         (Key_RFN_SaturdaySchedule,          "rfn saturday schedule")
@@ -497,6 +497,9 @@ const CtiTableDynamicPaoInfo::key_map_t   CtiTableDynamicPaoInfo::_key_map =
         (Key_RFN_Holiday1,                  "rfn holiday 1")
         (Key_RFN_Holiday2,                  "rfn holiday 2")
         (Key_RFN_Holiday3,                  "rfn holiday 3")
+
+        (Key_RFN_DemandInterval,            "rfn demand interval")
+        (Key_RFN_LoadProfileInterval,       "rfn load profile interval")
         ;
 
 CtiTableDynamicPaoInfo::CtiTableDynamicPaoInfo() :
