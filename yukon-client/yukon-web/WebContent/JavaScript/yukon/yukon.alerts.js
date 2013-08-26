@@ -60,7 +60,7 @@ Yukon.Alerts = (function () {
             jQuery(_alert_button).on("click", _handleBtnClick);
             jQuery(_clear_button).on("click", function() {alertMod.clearAlert();});
             
-            jQuery("#yukon_alert_popup").dialog({autoOpen: false, width:"auto", height: "auto"});
+            jQuery("#yukon_alert_popup").dialog({autoOpen: false, width:"auto", height: "auto", position: {my: "top", at: "bottom+3", of: ".outer"} });
             
             initialized = true;
         },
