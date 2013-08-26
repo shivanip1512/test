@@ -1,6 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="ct" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
@@ -10,28 +10,123 @@
 
     <cti:includeCss link="/WebConfig/yukon/styles/lib/dynatree/deviceGroup.css"/>
 
-	<ct:widgetContainer deviceId="${deviceId}" identify="false">
+    <c:if test="${not hasActions}">
+        <div id="f-page-buttons">
+            <cti:url var="collectionActionsUrl" value="/bulk/collectionActions">
+                <cti:param name="collectionType" value="idList" />
+                <cti:param name="idList.ids" value="${deviceId}" />
+            </cti:url>
+            <cti:button icon="icon-cog" href="${collectionActionsUrl}" nameKey="otherActions"/> 
+        </div>
+    </c:if>
+
+    <c:if test="${hasActions}">
+        <div id="f-page-actions" class="dn">
+            <c:if test="${moveSupported}">
+                <cti:url var="moveInUrl" value="/meter/moveIn">
+                    <cti:param name="deviceId" value="${deviceId}" />
+                </cti:url>
+                <cti:url var="moveOutUrl" value="/meter/moveOut">
+                    <cti:param name="deviceId" value="${deviceId}" />
+                </cti:url>
+                <li>
+                    <a href="${moveInUrl}"><i:inline key=".moveIn"/></a>
+                </li>
+                <li>
+                    <a href="${moveOutUrl}"><i:inline key=".moveOut"/></a>
+                </li>
+            </c:if>
+
+            <!-- Actions: High Bill Complaint -->
+            <cti:checkRolesAndProperties value="HIGH_BILL_COMPLAINT">
+                <c:if test="${highBillSupported}">
+                    <cti:url var="highBillUrl" value="/meter/highBill/view">
+                        <cti:param name="deviceId" value="${deviceId}" />
+                    </cti:url>
+                    <li>
+                        <a href="${highBillUrl}"><i:inline key=".highBill"/></a>
+                    </li>
+                </c:if>
+            </cti:checkRolesAndProperties>
+
+            <!-- Actions: Profile -->
+            <%-- need one of these at least for the profile page to display anything --%>
+            <c:if test="${lpSupported || peakReportSupported}">
+                <cti:url var="profileUrl" value="/amr/profile/home">
+                    <cti:param name="deviceId" value="${deviceId}" />
+                </cti:url>
+                <li>
+                    <a href="${profileUrl}"><i:inline key=".profile"/></a>
+                </li>
+            </c:if >
+
+            <!-- Actions: Voltage & TOU -->
+            <c:if test="${showVoltageAndTou}">
+                <cti:url var="voltageTouUrl" value="/amr/voltageAndTou/home">
+                    <cti:param name="deviceId" value="${deviceId}" />
+                </cti:url>
+                <li>
+                    <a href="${voltageTouUrl}"><i:inline key=".voltageAndTou"/></a>
+                </li>
+            </c:if>
+
+            <!-- Actions: Manual Commander -->
+            <cti:checkRolesAndProperties value="ENABLE_WEB_COMMANDER">
+                    <cti:url var="commanderUrl" value="/amr/manualCommand/home">
+                        <cti:param name="deviceId" value="${deviceId}" />
+                    </cti:url>
+                    <li>
+                        <a href="${commanderUrl}"><i:inline key=".manualCommander"/></a>
+                    </li>
+            </cti:checkRolesAndProperties>
+
+            <!-- Actions: Locate Route -->
+            <cti:checkRolesAndProperties value="LOCATE_ROUTE">
+                <c:if test="${porterCommandRequestsSupported}">
+                    <cti:url var="routeLocateUrl" value="/bulk/routeLocate/home">
+                        <cti:param name="collectionType" value="idList" />
+                        <cti:param name="idList.ids" value="${deviceId}" />
+                    </cti:url>
+                    <li>
+                        <a href="${routeLocateUrl}"><i:inline key=".locateRoute"/></a>
+                    </li>
+                </c:if>
+            </cti:checkRolesAndProperties>
+
+            <!-- Actions: Other Collection actions -->
+            <cti:url var="collectionActionsUrl" value="/bulk/collectionActions">
+                <cti:param name="collectionType" value="idList" />
+                <cti:param name="idList.ids" value="${deviceId}" />
+            </cti:url>
+            <li class="divider"/>
+            <li>
+                <a href="${collectionActionsUrl}"><i:inline key=".otherActions.label"/></a>
+            </li>
+        </div>
+    </c:if>
+
+	<tags:widgetContainer deviceId="${deviceId}" identify="false">
 
 		<div class="column_12_12 clear">
             <div class="one column">
 				
-				    <ct:widget bean="meterInformationWidget" />
+				    <tags:widget bean="meterInformationWidget" />
 
                     <c:choose>
                         <c:when test="${threePhaseVoltageOrCurrentSupported}">
-                           <ct:widget bean="polyphaseMeterReadingsWidget" />
+                           <tags:widget bean="polyphaseMeterReadingsWidget" />
                         </c:when>
                         <c:otherwise>
-    					   <ct:widget bean="meterReadingsWidget" />
+    					   <tags:widget bean="meterReadingsWidget" />
                         </c:otherwise>
                     </c:choose>
 
                     <c:if test="${showRfMetadata}">
-                        <ct:widget bean="rfnDeviceMetadataWidget"/>
+                        <tags:widget bean="rfnDeviceMetadataWidget"/>
                     </c:if>
 
 					<c:if test="${cisInfoWidgetName != null}">
-						<ct:widget bean="${cisInfoWidgetName}" />
+						<tags:widget bean="${cisInfoWidgetName}" />
 					</c:if>
 	
 					<!-- Including deviceGroupWidget's resources here since this particular
@@ -41,116 +136,44 @@
 					<cti:includeScript link="JQUERY_TREE" />
 					<cti:includeScript link="JQUERY_TREE_HELPERS" />
 					<cti:includeCss link="/WebConfig/yukon/styles/lib/dynatree/ui.dynatree.css"/>
-	                <ct:widget bean="deviceGroupWidget"/>
+	                <tags:widget bean="deviceGroupWidget"/>
 
-					<ct:boxContainer2 nameKey="actions" styleClass="widgetContainer">
-	                
-	                    <!-- Actions: Move In/Out -->
-                        <c:if test="${moveSupported}">
-                            <cti:url var="moveInUrl" value="/meter/moveIn">
-                                <cti:param name="deviceId" value="${deviceId}" />
-                            </cti:url>
-                            <a href="${moveInUrl}"><i:inline key=".moveIn"/></a><br/>
-
-                            <cti:url var="moveOutUrl" value="/meter/moveOut">
-                                <cti:param name="deviceId" value="${deviceId}" />
-                            </cti:url>
-                            <a href="${moveOutUrl}"><i:inline key=".moveOut"/></a><br/>
-                        </c:if>
-	                    
-						<!-- Actions: High Bill Complaint -->
-	                    <cti:checkRolesAndProperties value="HIGH_BILL_COMPLAINT">
-	                        <c:if test="${highBillSupported}">
-	                            <cti:url var="highBillUrl" value="/meter/highBill/view">
-	                                <cti:param name="deviceId" value="${deviceId}" />
-	                            </cti:url>
-	                            <a href="${highBillUrl}"><i:inline key=".highBill"/></a><br/>
-	                        </c:if>
-	                    </cti:checkRolesAndProperties>
-	                    
-                        <!-- Actions: Profile -->
-                        <%-- need one of these at least for the profile page to display anything --%>
-                        <c:if test="${lpSupported || peakReportSupported}">
-        					<cti:url var="profileUrl" value="/amr/profile/home">
-        						<cti:param name="deviceId" value="${deviceId}" />
-							</cti:url>
-                            <a href="${profileUrl}"><i:inline key=".profile"/></a><br/>
-						</c:if >
-	                        
-						<!-- Actions: Voltage & TOU -->
-						<c:if test="${showVoltageAndTou}">
-							<cti:url var="voltageTouUrl" value="/amr/voltageAndTou/home">
-								<cti:param name="deviceId" value="${deviceId}" />
-							</cti:url>
-       						<a href="${voltageTouUrl}"><i:inline key=".voltageAndTou"/></a><br/>
-						</c:if>
-                       
-						<!-- Actions: Manual Commander -->
-						<cti:checkRolesAndProperties value="ENABLE_WEB_COMMANDER">
-                        	
-								<cti:url var="commanderUrl" value="/amr/manualCommand/home">
-        							<cti:param name="deviceId" value="${deviceId}" />
-        						</cti:url>
-        						<a href="${commanderUrl}"><i:inline key=".manualCommander"/></a><br/>
-        				
-        				</cti:checkRolesAndProperties>
-	                        
-                        <!-- Actions: Locate Route -->
-                        <cti:checkRolesAndProperties value="LOCATE_ROUTE">
-							<c:if test="${porterCommandRequestsSupported}">
-								<cti:url var="routeLocateUrl" value="/bulk/routeLocate/home">
-        	                    	<cti:param name="collectionType" value="idList" />
-        	                        <cti:param name="idList.ids" value="${deviceId}" />
-								</cti:url>
-        	                    <a href="${routeLocateUrl}"><i:inline key=".locateRoute"/></a><br/>
-							</c:if>
-						</cti:checkRolesAndProperties>
-
-	                    <!-- Actions: Other Collection actions -->
-	                    <cti:url var="collectionActionsUrl" value="/bulk/collectionActions">
-	                        <cti:param name="collectionType" value="idList" />
-	                        <cti:param name="idList.ids" value="${deviceId}" />
-	                    </cti:url>
-	                    <a href="${collectionActionsUrl}"><i:inline key=".otherActions"/></a><br/>
-	                    
-					</ct:boxContainer2>
-	
             </div>
             
             <div class="column two nogutter">
 	
-					<ct:widget bean="csrTrendWidget" tabularDataViewer="archivedDataReport" />
+					<tags:widget bean="csrTrendWidget" tabularDataViewer="archivedDataReport" />
 					
 					<c:if test="${disconnectSupported}">
-						<ct:widget bean="disconnectMeterWidget"/>
+						<tags:widget bean="disconnectMeterWidget"/>
 					</c:if>
 					
 					<c:if test="${rfnDisconnectSupported}">
-						<ct:widget bean="rfnMeterDisconnectWidget"/>
+						<tags:widget bean="rfnMeterDisconnectWidget"/>
 					</c:if>
 					
                     <c:if test="${rfnEventsSupported}">
-    					<ct:widget bean="meterEventsWidget"/>
+    					<tags:widget bean="meterEventsWidget"/>
                     </c:if>
 	
 					<c:if test="${outageSupported}">
-						<ct:widget bean="meterOutagesWidget" />
+						<tags:widget bean="meterOutagesWidget" />
 					</c:if>
                     
                     <c:if test="${rfnOutageSupported}">
-                        <ct:widget bean="rfnOutagesWidget"/>
+                        <tags:widget bean="rfnOutagesWidget"/>
                     </c:if>
 	
 					<c:if test="${touSupported}">
-						<ct:widget bean="touWidget" />
+						<tags:widget bean="touWidget" />
 					</c:if>
 					
 					<c:if test="${configSupported}">
-	                    <ct:widget bean="configWidget" />
+	                    <tags:widget bean="configWidget" />
 	                </c:if>
 	        </div>
 	    </div>
 
-	</ct:widgetContainer>
+	</tags:widgetContainer>
     
 </cti:standardPage>

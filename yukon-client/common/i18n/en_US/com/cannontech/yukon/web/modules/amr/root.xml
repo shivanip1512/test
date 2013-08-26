@@ -96,7 +96,7 @@
     <entry key="yukon.web.modules.amr.meterDetail.voltageAndTou">Voltage &amp; TOU</entry>
     <entry key="yukon.web.modules.amr.meterDetail.manualCommander">Manual Commander</entry>
     <entry key="yukon.web.modules.amr.meterDetail.locateRoute">Locate Route</entry>
-    <entry key="yukon.web.modules.amr.meterDetail.otherActions">Other Actions...</entry>
+    <entry key="yukon.web.modules.amr.meterDetail.otherActions.label">Other Actions...</entry>
     <entry key="yukon.web.modules.amr.meterDetail.actions.title">Actions</entry>
     
     <!-- moveIn.jsp -->
