@@ -145,6 +145,56 @@ INSERT INTO DeviceTypeCommand VALUES (-1018, -192, 'MCT-440-2132B', 12, 'Y', -1)
 INSERT INTO DeviceTypeCommand VALUES (-1019, -192, 'MCT-440-2133B', 12, 'Y', -1);
 /* End YUK-12231 */
 
+/* Start YUK-12469 */
+CREATE TABLE UserPage (
+    UserPageId  NUMERIC NOT NULL,
+    UserId      NUMERIC NOT NULL,
+    PagePath    VARCHAR(2048) NOT NULL,
+    Module      VARCHAR(32) NOT NULL,
+    PageName    VARCHAR(32) NOT NULL,
+    Category    VARCHAR(32) NOT NULL,
+    Timestamp   DATETIME NOT NULL,
+    CONSTRAINT PK_UserPageTable PRIMARY KEY (UserPageId)
+);
+GO
+
+ALTER TABLE UserPage
+   ADD CONSTRAINT FK_UserPage_YukonUser FOREIGN KEY (UserId)
+      REFERENCES YukonUser (UserId)
+         ON DELETE CASCADE;
+GO
+
+CREATE TABLE UserPageParam (
+    UserPageParamId NUMERIC NOT NULL,
+    UserPageId      NUMERIC NOT NULL,
+    ParamNumber     NUMERIC NOT NULL,
+    Parameter       VARCHAR(80) NOT NULL,
+    CONSTRAINT PK_UserPageParamTable PRIMARY KEY (UserPageParamId)
+);
+GO
+
+ALTER TABLE UserPageParam
+   ADD CONSTRAINT FK_UserPageParam_UserPage FOREIGN KEY (UserPageId)
+      REFERENCES UserPage (UserPageId)
+         ON DELETE CASCADE;
+GO
+
+CREATE TABLE UserMonitor (
+    UserMonitorId  NUMERIC NOT NULL,
+    UserId         NUMERIC NOT NULL,
+    MonitorName    VARCHAR(80) NOT NULL,
+    MonitorType    VARCHAR(32) NOT NULL,
+    MonitorId      VARCHAR(32) NOT NULL,
+    CONSTRAINT PK_UserMonitorTable PRIMARY KEY (UserMonitorId)
+);
+GO
+
+ALTER TABLE UserMonitor
+   ADD CONSTRAINT FK_UserMonitor_YukonUser FOREIGN KEY (UserId)
+      REFERENCES YukonUser (UserId)
+         ON DELETE CASCADE;
+/* End YUK-12469 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

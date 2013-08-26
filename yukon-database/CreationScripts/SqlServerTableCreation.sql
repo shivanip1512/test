@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     8/22/2013 2:54:01 PM                         */
+/* Created on:     8/26/2013 4:17:16 PM                         */
 /*==============================================================*/
 
 
@@ -8572,6 +8572,46 @@ go
 INSERT INTO UserGroupToYukonGroupMapping VALUES(-1, -2);
 
 /*==============================================================*/
+/* Table: UserMonitor                                           */
+/*==============================================================*/
+create table UserMonitor (
+   UserMonitorId        numeric              not null,
+   UserId               numeric              not null,
+   MonitorName          varchar(80)          not null,
+   MonitorType          varchar(32)          not null,
+   MonitorId            varchar(32)          not null,
+   constraint PK_UserMonitor primary key (UserMonitorId)
+)
+go
+
+/*==============================================================*/
+/* Table: UserPage                                              */
+/*==============================================================*/
+create table UserPage (
+   UserPageId           numeric              not null,
+   UserId               numeric              not null,
+   PagePath             varchar(2048)        not null,
+   Module               varchar(32)          not null,
+   PageName             varchar(32)          not null,
+   Category             varchar(32)          not null,
+   Timestamp            datetime             not null,
+   constraint PK_UserPage primary key (UserPageId)
+)
+go
+
+/*==============================================================*/
+/* Table: UserPageParam                                         */
+/*==============================================================*/
+create table UserPageParam (
+   UserPageParamId      numeric              not null,
+   UserPageId           numeric              not null,
+   ParamNumber          numeric              not null,
+   Parameter            varchar(80)          not null,
+   constraint PK_UserPageParam primary key (UserPageParamId)
+)
+go
+
+/*==============================================================*/
 /* Table: UserPaoPermission                                     */
 /*==============================================================*/
 create table UserPaoPermission (
@@ -13366,6 +13406,24 @@ go
 alter table UserGroupToYukonGroupMapping
    add constraint FK_UserGrpYukGrpMap_YukGrp foreign key (GroupId)
       references YukonGroup (GroupID)
+         on delete cascade
+go
+
+alter table UserMonitor
+   add constraint FK_UserMonitor_YukonUser foreign key (UserId)
+      references YukonUser (UserID)
+         on delete cascade
+go
+
+alter table UserPage
+   add constraint FK_UserPage_YukonUser foreign key (UserId)
+      references YukonUser (UserID)
+         on delete cascade
+go
+
+alter table UserPageParam
+   add constraint FK_UserPageParam_UserPage foreign key (UserPageId)
+      references UserPage (UserPageId)
          on delete cascade
 go
 
