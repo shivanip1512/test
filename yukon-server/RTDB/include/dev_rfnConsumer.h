@@ -12,7 +12,9 @@ namespace Devices   {
 class IM_EX_DEVDB RfnConsumerDevice
     :   public RfnDevice,
         public Commands::RfnVoltageProfileConfigurationCommand::ResultHandler,
-        public Commands::RfnLoadProfileRecordingCommand::ResultHandler
+        public Commands::RfnLoadProfileRecordingCommand::ResultHandler,
+        public Commands::RfnGetDemandFreezeInfoCommand::ResultHandler
+
 {
     int executePutConfigVoltageAveragingInterval( CtiRequestMsg     * pReq,
                                                   CtiCommandParser  & parse,
@@ -29,8 +31,20 @@ class IM_EX_DEVDB RfnConsumerDevice
                                          CtiMessageList    & retList,
                                          RfnCommandList    & rfnRequests );
 
+    int executeImmediateDemandFreeze( CtiRequestMsg     * pReq,
+                                      CtiCommandParser  & parse,
+                                      CtiMessageList    & retList,
+                                      RfnCommandList    & rfnRequests );
+
+    int executeReadDemandFreezeInfo( CtiRequestMsg     * pReq,
+                                     CtiCommandParser  & parse,
+                                     CtiMessageList    & retList,
+                                     RfnCommandList    & rfnRequests );
+
     void handleResult( const Commands::RfnVoltageProfileConfigurationCommand & cmd );
     void handleResult( const Commands::RfnLoadProfileRecordingCommand & cmd );
+
+    void handleResult( const Commands::RfnGetDemandFreezeInfoCommand & cmd );
 };
 
 

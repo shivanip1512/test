@@ -227,6 +227,34 @@ int RfnConsumerDevice::executePutConfigDemandFreezeDay( CtiRequestMsg     * pReq
 }
 
 
+int RfnConsumerDevice::executeImmediateDemandFreeze( CtiRequestMsg     * pReq,
+                                                     CtiCommandParser  & parse,
+                                                     CtiMessageList    & retList,
+                                                     RfnCommandList    & rfnRequests )
+{
+    std::auto_ptr<Commands::RfnCommand> immediateFreezeCommand(
+       new Commands::RfnImmediateDemandFreezeCommand );
+
+    rfnRequests.push_back( Commands::RfnCommandSPtr( immediateFreezeCommand.release() ) );
+
+    return NoError;
+}
+
+
+int RfnConsumerDevice::executeReadDemandFreezeInfo( CtiRequestMsg     * pReq,
+                                                    CtiCommandParser  & parse,
+                                                    CtiMessageList    & retList,
+                                                    RfnCommandList    & rfnRequests )
+{
+    std::auto_ptr<Commands::RfnCommand> readFreezeInfoCommand(
+       new Commands::RfnGetDemandFreezeInfoCommand( *this ) );
+
+    rfnRequests.push_back( Commands::RfnCommandSPtr( readFreezeInfoCommand.release() ) );
+
+    return NoError;
+}
+
+
 void RfnConsumerDevice::handleResult( const Commands::RfnVoltageProfileConfigurationCommand & cmd )
 {
     setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DemandInterval,      cmd.getDemandIntervalSeconds() );
@@ -239,6 +267,14 @@ void RfnConsumerDevice::handleResult( const Commands::RfnLoadProfileRecordingCom
     // TBD
 
     Commands::RfnLoadProfileRecordingCommand::RecordingOption option = cmd.getRecordingOption();
+}
+
+
+void RfnConsumerDevice::handleResult( const Commands::RfnGetDemandFreezeInfoCommand & cmd )
+{
+    // TBD
+
+    Commands::RfnGetDemandFreezeInfoCommand::DemandFreezeData freezeData = cmd.getDemandFreezeData();
 }
 
 
