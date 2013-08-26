@@ -1,4 +1,4 @@
-#poragma once
+#pragma once
 
 #include "ctitime.h"
 
