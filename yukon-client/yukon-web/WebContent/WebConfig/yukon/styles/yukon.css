@@ -1329,6 +1329,10 @@ hr.dashed,.divider.dashed {
 	z-index: 9999;
 }
 
+.with-form-controls {
+    line-height: 26px;
+}
+
 /* DATE/TIME PICKERS */
 .datetimeEntry_wrap {
 	display: inline-block;
