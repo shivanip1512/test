@@ -11,7 +11,7 @@
 jQuery(function() {
 
     pingUnavailable = function() {
-//     FIXME - waiting for the Ping Service...
+//     FIXME - placeholder for the Ping Service...
         alert("Do the Ping Thing here...");
     }
 
@@ -113,9 +113,11 @@ jQuery(function() {
                                 <div><a href="${assetsUrl}">
                                     <cti:msg2 key="yukon.web.modules.operator.hardware.assetAvailability.viewDetails"/></a>
                                 </div>
+                                <%-- Temporarily disable until Ping feature is available.
                                 <div class="actionArea">
                                     <cti:button id="pingButton" nameKey="pingDevices" busy="true" classes="f-disableAfterClick"/>
                                 </div>
+                                 --%>
                             </c:otherwise>
                         </c:choose>
                     </c:otherwise>

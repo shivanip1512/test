@@ -4,21 +4,19 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.TimeUnit;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.StringUtils;
-import org.joda.time.Instant;
+import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
@@ -45,17 +43,13 @@ import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
-import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.core.service.DurationFormattingService;
 import com.cannontech.core.service.durationFormatter.DurationFormat;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.DemandResponseBackingField;
-import com.cannontech.dr.assetavailability.AssetAvailabilityCombinedStatus;
-import com.cannontech.dr.assetavailability.ApplianceWithRuntime;
-import com.cannontech.dr.assetavailability.SimpleAssetAvailability;
-import com.cannontech.dr.assetavailability.SimpleAssetAvailabilitySummary;
-import com.cannontech.dr.assetavailability.service.AssetAvailabilityService;
 import com.cannontech.dr.controlarea.filter.PriorityFilter;
 import com.cannontech.dr.controlarea.filter.StateFilter;
 import com.cannontech.dr.controlarea.model.ControlAreaNameField;
@@ -69,47 +63,29 @@ import com.cannontech.dr.program.filter.ForControlAreaFilter;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMControlAreaTrigger;
-import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
-import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
-import com.cannontech.stars.dr.hardware.dao.InventoryDao;
-import com.cannontech.stars.dr.hardware.model.HardwareSummary;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.common.chart.service.AssetAvailabilityChartService;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.ListBackingBean;
-import com.google.common.collect.ImmutableSet;
+import com.cannontech.web.util.WebFileUtils;
 import com.google.common.collect.Ordering;
-import com.google.common.collect.Sets;
 
 @Controller
 @CheckRoleProperty(value={YukonRoleProperty.SHOW_CONTROL_AREAS, YukonRoleProperty.DEMAND_RESPONSE},requireAll=true)
-public class ControlAreaController {
+public class ControlAreaController extends DemandResponseControllerBase {
+
+    @Autowired private ControlAreaFieldService controlAreaFieldService;
+    @Autowired private ControlAreaNameField controlAreaNameField;
     @Autowired private ControlAreaService controlAreaService;
+    @Autowired private DateFormattingService dateFormattingService;
+    @Autowired private DemandResponseEventLogService demandResponseEventLogService;
+    @Autowired private DurationFormattingService durationFormattingService;
+    @Autowired private FavoritesDao favoritesDao;
     @Autowired private PaoAuthorizationService paoAuthorizationService;
     @Autowired private ProgramControllerHelper programControllerHelper;
-    @Autowired private DurationFormattingService durationFormattingService;
-    @Autowired private DemandResponseEventLogService demandResponseEventLogService;
-    @Autowired private ControlAreaFieldService controlAreaFieldService;
     @Autowired private TriggerFieldService triggerFieldService;
-    @Autowired private FavoritesDao favoritesDao;
-    @Autowired private ControlAreaNameField controlAreaNameField;
-    @Autowired private AssetAvailabilityService assetAvailabilityService;
-    @Autowired private AssetAvailabilityChartService assetAvailabilityChartService;
-    @Autowired private InventoryDao inventoryDao;
-    @Autowired private ApplianceCategoryDao applianceCategoryDao;
     
-    private static Map<AssetAvailabilityCombinedStatus, String> colorMap;
-    static {
-        colorMap = new HashMap<>();
-        colorMap.put(AssetAvailabilityCombinedStatus.RUNNING, "green");
-        colorMap.put(AssetAvailabilityCombinedStatus.NOT_RUNNING, "orange");
-        colorMap.put(AssetAvailabilityCombinedStatus.UNAVAILABLE, "red");
-        colorMap.put(AssetAvailabilityCombinedStatus.OPTED_OUT, "grey");
-    }
-    private static final String ITEMS_PER_PAGE = "10";
-
     
     public static class ControlAreaListBackingBean extends ListBackingBean {
         private String state;
@@ -242,35 +218,27 @@ public class ControlAreaController {
 
     @RequestMapping("/controlArea/detail")
     public String detail(int controlAreaId, ModelMap model,
-            YukonUserContext userContext,
+                         YukonUserContext context,
             @ModelAttribute("backingBean") ProgramControllerHelper.ProgramListBackingBean backingBean,
-            BindingResult bindingResult, FlashScope flashScope) {
+                         BindingResult bindingResult, 
+                         FlashScope flashScope) {
         
         DisplayablePao controlArea = controlAreaService.getControlArea(controlAreaId);
-        paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(),
+        paoAuthorizationService.verifyAllPermissions(context.getYukonUser(),
                                                      controlArea,
                                                      Permission.LM_VISIBLE);
         favoritesDao.detailPageViewed(controlAreaId);
+        boolean isFavorite = favoritesDao.isFavorite(controlAreaId, context.getYukonUser());
         model.addAttribute("controlArea", controlArea);
-        boolean isFavorite =
-            favoritesDao.isFavorite(controlAreaId, userContext.getYukonUser());
         model.addAttribute("isFavorite", isFavorite);
 
         UiFilter<DisplayablePao> detailFilter = new ForControlAreaFilter(controlAreaId);
-        programControllerHelper.filterPrograms(model, userContext, backingBean,
+        programControllerHelper.filterPrograms(model, context, backingBean,
                                                bindingResult, detailFilter);
 
         addFilterErrorsToFlashScopeIfNecessary(model, bindingResult, flashScope);
         
-        try {
-            SimpleAssetAvailabilitySummary aaSummary = 
-                    assetAvailabilityService.getAssetAvailabilityFromDrGroup(controlArea.getPaoIdentifier());
-            model.addAttribute("assetAvailabilitySummary", aaSummary);
-            model.addAttribute("assetTotal", aaSummary.getAll().size());
-            model.addAttribute("pieJSONData", assetAvailabilityChartService.getJSONPieData(aaSummary, userContext));
-        } catch(DynamicDataAccessException e) {
-            model.addAttribute("dispatchDisconnected", true);
-        }
+        model = getAssetAvailabilityInfo(controlArea, model, context);
         
         return "dr/controlArea/detail.jsp";
     }
@@ -279,125 +247,34 @@ public class ControlAreaController {
     @RequestMapping("/controlArea/assetDetails")
     public String assetDetails(@RequestParam(defaultValue=ITEMS_PER_PAGE) int itemsPerPage, 
                                @RequestParam(defaultValue="1") int page,
+                               @RequestParam(defaultValue="SERIAL_NUM") AssetDetailsColumn sortBy,
+                               final boolean descending,
                                int assetId, 
                                ModelMap model, 
                                YukonUserContext context) {
         
         DisplayablePao controlArea = controlAreaService.getControlArea(assetId);
 
-        List<AssetAvailabilityDetails> resultsList = getResultsList(assetId, context, null);
+        List<AssetAvailabilityDetails> resultsList = getResultsList(controlArea, context, null);
+        sortAssetDetails(resultsList, sortBy, descending, context);
         
         SearchResult<AssetAvailabilityDetails> result = 
                 SearchResult.pageBasedForWholeList(page, itemsPerPage, resultsList);
 
-        try {
-            SimpleAssetAvailabilitySummary aaSummary = 
-                    assetAvailabilityService.getAssetAvailabilityFromDrGroup(controlArea.getPaoIdentifier());
-            model.addAttribute("assetAvailabilitySummary", aaSummary);
-            model.addAttribute("pieJSONData", assetAvailabilityChartService.getJSONPieData(aaSummary, context));
-        } catch(DynamicDataAccessException e) {
-            model.addAttribute("dispatchDisconnected", true);
-        }
+        model = getAssetAvailabilityInfo(controlArea, model, context);
         
         model.addAttribute("assetId", assetId);
         model.addAttribute("controlAreaId", assetId);
         model.addAttribute("controlArea", controlArea);
         model.addAttribute("type", "controlArea");
         model.addAttribute("result", result);
-        model.addAttribute("colorMap", colorMap);
         model.addAttribute("itemsPerPage", itemsPerPage);
+        model.addAttribute("assetDetailsSortBy", sortBy);
+        model.addAttribute("assetDetailsSortDesc", descending);
         
         return "dr/assetDetails.jsp";
     }
 
-    private List<AssetAvailabilityDetails> getResultsList(int assetId, YukonUserContext context, JSONArray filters) {
-
-        // Create a HashSet for the filtered AssetAvailabilityCombinedStatus values.
-        // Either null or an empty JSONArray will display all data values.
-        Set<AssetAvailabilityCombinedStatus> filterSet = Sets.newHashSet();
-        if (filters == null || filters.isEmpty()) {
-            filterSet.add(AssetAvailabilityCombinedStatus.RUNNING);
-            filterSet.add(AssetAvailabilityCombinedStatus.NOT_RUNNING);
-            filterSet.add(AssetAvailabilityCombinedStatus.OPTED_OUT);
-            filterSet.add(AssetAvailabilityCombinedStatus.UNAVAILABLE);
-        } else {
-            if (filters.contains(AssetAvailabilityCombinedStatus.RUNNING)) {
-                filterSet.add(AssetAvailabilityCombinedStatus.RUNNING);
-            }
-            if (filters.contains(AssetAvailabilityCombinedStatus.NOT_RUNNING)) {
-                filterSet.add(AssetAvailabilityCombinedStatus.NOT_RUNNING);
-            }
-            if (filters.contains(AssetAvailabilityCombinedStatus.OPTED_OUT)) {
-                filterSet.add(AssetAvailabilityCombinedStatus.OPTED_OUT);
-            }
-            if (filters.contains(AssetAvailabilityCombinedStatus.UNAVAILABLE)) {
-                filterSet.add(AssetAvailabilityCombinedStatus.UNAVAILABLE);
-            }
-        }
-        
-        DisplayablePao controlArea = controlAreaService.getControlArea(assetId);
-        paoAuthorizationService.verifyAllPermissions(context.getYukonUser(), controlArea, Permission.LM_VISIBLE);
-        
-        Map<Integer, SimpleAssetAvailability> resultMap = 
-                assetAvailabilityService.getAssetAvailability(controlArea.getPaoIdentifier());
-        List<AssetAvailabilityDetails> resultList = new ArrayList<>(resultMap.size());
-
-        // Create set of applianceCategoryId's (& eliminates duplicates)
-        Set<Integer> applianceCatIds = Sets.newHashSet();
-        for (SimpleAssetAvailability entry : resultMap.values()) {
-            ImmutableSet<ApplianceWithRuntime> appRuntime = entry.getApplianceRuntimes();
-            for (ApplianceWithRuntime dispAppRun : appRuntime) {
-                applianceCatIds.add(dispAppRun.getApplianceCategoryId());
-            }
-        }
-        Map<Integer, ApplianceCategory> appCatMap = applianceCategoryDao.getByApplianceCategoryIds(applianceCatIds);
-        
-        for (Map.Entry<Integer, SimpleAssetAvailability> entry : resultMap.entrySet()) {
-            
-            AssetAvailabilityDetails aaDetails = new AssetAvailabilityDetails();
-            HardwareSummary hwSum = inventoryDao.findHardwareSummaryById(entry.getKey());
-
-            // Set the Serial Number and Type columns
-            aaDetails.setSerialNumber(hwSum.getSerialNumber());
-            aaDetails.setType(hwSum.getHardwareType().toString());
-            
-            SimpleAssetAvailability value = entry.getValue();
-            // set the Last Communication column
-            aaDetails.setLastComm(value.getLastCommunicationTime());
-
-            // parse through the appRuntime set to get list of appliances & last runtime.
-            ImmutableSet<ApplianceWithRuntime> appRuntime = value.getApplianceRuntimes();
-            Iterator<ApplianceWithRuntime> iter = appRuntime.iterator();
-            String applianceStr = "";
-            Instant lastRun = null;
-            while (iter.hasNext()) {
-                ApplianceWithRuntime tmp = (ApplianceWithRuntime) iter.next();
-                ApplianceCategory appCat = appCatMap.get(tmp.getApplianceCategoryId());
-                // The Appliances will be a comma-separated list of the appliances for this device. 
-                // No Internationalization since this comes from YukonSelectionList.
-                applianceStr = (applianceStr == "") ? appCat.getDisplayName() 
-                                                    : applianceStr + ", " + appCat.getDisplayName();
-                Instant lnzrt = tmp.getLastNonZeroRuntime();
-                if (lnzrt != null) {
-                    if (lastRun == null) {
-                        lastRun = lnzrt;  
-                    } else {
-                        lastRun = (lastRun.isAfter(lnzrt)) ? lastRun : lnzrt;
-                    }
-                }
-            }
-            aaDetails.setAppliances(applianceStr);
-            aaDetails.setLastRun(lastRun);
-
-            aaDetails.setAvailability(value.getCombinedStatus());
-            if (filterSet.contains(aaDetails.getAvailability())) {
-                resultList.add(aaDetails);
-            } else {
-                aaDetails = null;
-            }
-        }
-        return resultList;
-    }
 
     /**
      * Used for paging and filtering operations.
@@ -407,12 +284,17 @@ public class ControlAreaController {
                        YukonUserContext context,
                        String type,
                        String assetId,
+                       @RequestParam(defaultValue="SERIAL_NUM") AssetDetailsColumn sortBy,
+                       final boolean descending,
                        @RequestParam(defaultValue=ITEMS_PER_PAGE) int itemsPerPage, 
                        @RequestParam(defaultValue="1") int page,
                        String filter) {
 
         JSONArray filters = (filter == null || filter.length() == 0) ? null : JSONArray.fromObject(filter);
-        List<AssetAvailabilityDetails> resultsList = getResultsList(Integer.parseInt(assetId), context, filters);
+        
+        DisplayablePao controlArea = controlAreaService.getControlArea(Integer.parseInt(assetId));
+        List<AssetAvailabilityDetails> resultsList = getResultsList(controlArea, context, filters);
+        sortAssetDetails(resultsList, sortBy, descending, context);
 
         SearchResult<AssetAvailabilityDetails> result = 
                 SearchResult.pageBasedForWholeList(page, itemsPerPage, resultsList);
@@ -422,11 +304,35 @@ public class ControlAreaController {
         model.addAttribute("assetId", assetId);
         model.addAttribute("colorMap", colorMap);
         model.addAttribute("itemsPerPage", itemsPerPage);
+        model.addAttribute("assetDetailsSortBy", sortBy);
+        model.addAttribute("assetDetailsSortDesc", descending);
         
         return "dr/assetTable.jsp";
     }
+    
+    @RequestMapping("/controlArea/downloadToCsv")
+    public void downloadToCsv(String assetId,
+                              String filter,
+                              String type,
+                              HttpServletRequest request,
+                              HttpServletResponse response,
+                              YukonUserContext context) throws IOException {
+        
+        DisplayablePao controlArea = controlAreaService.getControlArea(Integer.parseInt(assetId));
 
+        // get the header row
+        String[] headerRow = getDownloadHeaderRow(context);
 
+        // get the data rows
+        List<String[]> dataRows = getDownloadDataRows(controlArea, filter, request, response, context);
+        
+        String dateStr = dateFormattingService.format(new LocalDateTime(context.getJodaTimeZone()), 
+                                                      DateFormatEnum.BOTH, context);
+        String fileName = type + "_" + controlArea.getName() + "_" + dateStr + ".csv";
+        WebFileUtils.writeToCSV(response, headerRow, dataRows, fileName);
+            
+    }
+    
 
     @RequestMapping("/controlArea/sendEnableConfirm")
     public String sendEnableConfirm(ModelMap modelMap, int controlAreaId, boolean isEnabled,

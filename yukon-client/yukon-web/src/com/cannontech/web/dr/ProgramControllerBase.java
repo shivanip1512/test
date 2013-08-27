@@ -26,7 +26,7 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.google.common.collect.Maps;
 
-public class ProgramControllerBase {
+public class ProgramControllerBase extends DemandResponseControllerBase {
     
     @Autowired protected ControlAreaService controlAreaService;
     @Autowired protected ScenarioDao scenarioDao;

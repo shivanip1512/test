@@ -30,7 +30,7 @@ public enum AssetAvailabilityCombinedStatus implements DisplayableEnum {
         return name();
     }
     
-    public AssetAvailabilityCombinedStatus getDisplayName() {
+    public AssetAvailabilityCombinedStatus getCombinedStatus() {
         return this;
     }
 

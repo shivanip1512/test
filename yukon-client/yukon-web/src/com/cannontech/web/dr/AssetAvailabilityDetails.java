@@ -2,12 +2,13 @@ package com.cannontech.web.dr;
 
 import org.joda.time.Instant;
 
+import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.dr.assetavailability.AssetAvailabilityCombinedStatus;
 
 public class AssetAvailabilityDetails {
 
     private String serialNumber;
-    private String type;
+    private HardwareType type;
     private Instant lastComm;
     private Instant lastRun;
     private String appliances;
@@ -19,10 +20,10 @@ public class AssetAvailabilityDetails {
     public void setSerialNumber(String serialNumber) {
         this.serialNumber = serialNumber;
     }
-    public String getType() {
+    public HardwareType getType() {
         return type;
     }
-    public void setType(String type) {
+    public void setType(HardwareType type) {
         this.type = type;
     }
     public Instant getLastComm() {

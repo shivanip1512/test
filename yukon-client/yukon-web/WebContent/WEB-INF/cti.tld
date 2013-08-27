@@ -1019,33 +1019,6 @@
   </tag>
   
   <tag>
-    <name>simpleReportUrlFromNameTag</name>
-    <tag-class>com.cannontech.web.reports.SimpleReportUrlFromNameTag</tag-class>
-    <body-content>scriptless</body-content>
-    <attribute>
-      <name>definitionName</name>
-      <required>true</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>viewType</name>
-      <required>true</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>var</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>htmlOutput</name>
-      <required>true</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <dynamic-attributes>true</dynamic-attributes>
-  </tag>
-  
-  <tag>
     <name>simpleReportLinkFromModelTag</name>
     <tag-class>com.cannontech.web.reports.SimpleReportLinkFromModelTag</tag-class>
     <body-content>scriptless</body-content>
