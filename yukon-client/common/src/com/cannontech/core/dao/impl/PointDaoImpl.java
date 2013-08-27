@@ -630,7 +630,7 @@ public class PointDaoImpl implements PointDao {
             public Pair<Integer, Integer> mapRow(YukonResultSet rs) throws SQLException {
                 int paObjectId = rs.getInt("PaObjectId");
                 int pointId = rs.getInt("PointId");
-                return new Pair<Integer, Integer>(pointId, paObjectId);
+                return new Pair<>(pointId, paObjectId);
             }
         });
         Map<Integer, Integer> pointsToPao = Maps.newHashMap();
@@ -652,15 +652,17 @@ public class PointDaoImpl implements PointDao {
             }
         };
         
-        YukonRowMapper<Map.Entry<Integer, Integer>> pointToPaoRowMapper = new YukonRowMapper<Map.Entry<Integer, Integer>>() {
-            public Map.Entry<Integer, Integer> mapRow(YukonResultSet rs) throws SQLException {
+        List<Pair<Integer, Integer>> pointPaoPairs = chunkingSqlTemplate.query(sqlFragmentGenerator, paoIds, new YukonRowMapper<Pair<Integer, Integer>>() {
+            public Pair<Integer, Integer> mapRow(YukonResultSet rs) throws SQLException {
                 int paObjectId = rs.getInt("PaObjectId");
                 int pointId = rs.getInt("PointId");
-                return Maps.immutableEntry(pointId, paObjectId);
+                return new Pair<>(pointId, paObjectId);
             }
-        };
-        Function<Integer, Integer> identityFunction = Functions.identity();
-        Map<Integer, Integer> pointsToPao = chunkingMappedSqlTemplate.mappedQuery(sqlFragmentGenerator, paoIds, pointToPaoRowMapper, identityFunction);
+        });
+        Map<Integer, Integer> pointsToPao = Maps.newHashMap();
+        for(Pair<Integer, Integer> pair : pointPaoPairs) {
+            pointsToPao.put(pair.getFirst(), pair.getSecond());
+        }
         return pointsToPao;
     }
     

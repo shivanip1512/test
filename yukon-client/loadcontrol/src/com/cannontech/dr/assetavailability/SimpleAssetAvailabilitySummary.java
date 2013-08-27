@@ -131,11 +131,10 @@ public class SimpleAssetAvailabilitySummary {
      */
     public int getUnavailableSize(boolean includeOptedOut) {
         Set<Integer> notCommunicating = Sets.difference(all, communicating);
-        Set<Integer> notCommunicatingNotRunning = Sets.difference(notCommunicating, running);
         if(includeOptedOut) {
-            return notCommunicatingNotRunning.size();
+            return notCommunicating.size();
         }
-        return Sets.difference(notCommunicatingNotRunning, optedOut).size();
+        return Sets.difference(notCommunicating, optedOut).size();
     }
     
     /**

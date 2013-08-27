@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
+import com.cannontech.dr.assetavailability.ApplianceAssetAvailabilitySummary;
 import com.cannontech.dr.assetavailability.SimpleAssetAvailability;
 import com.cannontech.dr.assetavailability.SimpleAssetAvailabilitySummary;
 
@@ -40,10 +41,22 @@ public interface AssetAvailabilityService {
     public SimpleAssetAvailabilitySummary getAssetAvailabilityFromLoadGroups(Iterable<Integer> loadGroupIds) throws DynamicDataAccessException;
     
     /**
+     * Gets an asset availability summary of all appliances attached to inventory in any of the specified load groups.
+     * @throws DynamicDataAccessException if the connection to dispatch is invalid.
+     */
+    public ApplianceAssetAvailabilitySummary getApplianceAssetAvailability(Iterable<Integer> loadGroupIds) throws DynamicDataAccessException;
+    
+    /**
+     * Gets an asset availability summary of all appliances in all load groups in the specified DR grouping.
+     * @throws DynamicDataAccessException if the connection to dispatch is invalid.
+     */
+    public ApplianceAssetAvailabilitySummary getApplianceAssetAvailability(PaoIdentifier drPaoIdentifier) throws DynamicDataAccessException;
+    
+    /**
      * @return The AssetAvailability for the specified inventory.
      * @throws DynamicDataAccessException if the connection to dispatch is invalid.
      */
-    public SimpleAssetAvailability getAssetAvailability(int inventoryIds) throws DynamicDataAccessException;
+    public SimpleAssetAvailability getAssetAvailability(int inventoryId) throws DynamicDataAccessException;
     
     /**
      * @return A map of inventoryId to AssetAvailability for the specified inventory.

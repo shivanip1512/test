@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.dr.assetavailability.DeviceRelayApplianceCategories;
+import com.cannontech.dr.assetavailability.InventoryRelayAppliances;
 import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
@@ -50,4 +51,9 @@ public interface LMHardwareConfigurationDao {
      * device and relay.
      */
     public DeviceRelayApplianceCategories getDeviceRelayApplianceCategoryId(Iterable<Integer> inventoryIds);
+    
+    /**
+     * @return An object encompassing inventoryId to Relay to ApplianceId mapping for all inventory specified.
+     */
+    public InventoryRelayAppliances getInventoryRelayAppliances(Iterable<Integer> inventoryIds);
 }

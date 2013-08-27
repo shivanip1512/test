@@ -31,6 +31,8 @@ import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.dr.assetavailability.DeviceRelayApplianceCategories;
 import com.cannontech.dr.assetavailability.DeviceRelayApplianceCategory;
+import com.cannontech.dr.assetavailability.InventoryRelayAppliance;
+import com.cannontech.dr.assetavailability.InventoryRelayAppliances;
 import com.cannontech.stars.core.dao.StarsApplianceDao;
 import com.cannontech.stars.database.data.lite.LiteStarsAppliance;
 import com.cannontech.stars.database.data.lite.LiteAccountInfo;
@@ -293,5 +295,28 @@ public class LMHardwareConfigurationDaoImpl implements LMHardwareConfigurationDa
             resultMultiMap.put(pair.getFirst(), pair.getSecond());
         }
         return resultMultiMap;
+    }
+    
+    @Override
+    public InventoryRelayAppliances getInventoryRelayAppliances(Iterable<Integer> inventoryIds) {
+        SqlFragmentGenerator<Integer> sqlFragmentGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT InventoryId, ApplianceId, LoadNumber AS Relay");
+                sql.append("FROM LmHardwareConfiguration");
+                sql.append("WHERE InventoryId").in(subList);
+                return sql;
+            }
+        };
+        
+        List<InventoryRelayAppliance> resultsList = chunkingSqlTemplate.query(sqlFragmentGenerator, inventoryIds,
+                                                                              new YukonRowMapper<InventoryRelayAppliance>() {
+            public InventoryRelayAppliance mapRow(YukonResultSet rs) throws SQLException {
+                return new InventoryRelayAppliance(rs.getInt("InventoryId"), rs.getInt("Relay"), rs.getInt("ApplianceId"));
+            }
+        });
+        
+        return new InventoryRelayAppliances(resultsList);
     }
 }
