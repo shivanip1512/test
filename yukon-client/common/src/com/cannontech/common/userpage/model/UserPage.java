@@ -17,7 +17,7 @@ public class UserPage {
     private final String name;
     private final List<String> arguments;
     private final Category category;
-    private final Date timestamp;
+    private final Date createdDate;
 
     public enum Module implements DisplayableEnum, Comparable<Module> {
         AMI(1),
@@ -90,7 +90,7 @@ public class UserPage {
      this(userId, path, category, moduleName, name, arguments, new Date(), null);   
     }
 
-    public UserPage(Integer userId, String path, Category category,  String module, String name, List<String> arguments, Date timestamp, Integer id) {
+    public UserPage(Integer userId, String path, Category category,  String module, String name, List<String> arguments, Date createdDate, Integer id) {
         this.id = id;
         this.userId = userId;
         this.path = path;
@@ -98,7 +98,7 @@ public class UserPage {
         this.module = module;
         this.name = name;
         this.arguments = arguments;
-        this.timestamp = timestamp;
+        this.createdDate = createdDate;
     }
 
     public Integer getId() {
@@ -122,15 +122,15 @@ public class UserPage {
     public final Category getCategory() {
         return category;
     }
-    public Date getTimestamp() {
-        return timestamp;
+    public Date getCreatedDate() {
+        return createdDate;
     }
 
     public UserPage updateId(Integer id) {
         if (this.id == id) {
             return this;
         } else {
-            return new UserPage(this.userId, this.path, this.category, this.module, this.name, this.arguments, this.timestamp, id);
+            return new UserPage(this.userId, this.path, this.category, this.module, this.name, this.arguments, this.createdDate, id);
         }
     }
 }

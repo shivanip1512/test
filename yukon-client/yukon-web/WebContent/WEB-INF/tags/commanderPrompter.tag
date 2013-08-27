@@ -24,19 +24,23 @@
     // prompt for a replacement for the parameter
     // replacements will stop when no more parameters exist
     function processCommanderReplacement(paramIdx, originalCmd, cmd, cmdField) {
-        var param = params[paramIdx];
+        var param = params[paramIdx],
+        windowHeight = jQuery(window).height(),
+        position = {my: 'top', at: 'top+' + windowHeight/5 },
+        displayParam;
         if (param != undefined) {
-            var displayParam = params[paramIdx].replace(/'/g, '').replace(/"/g, '').replace('?', '');
+            displayParam = param.replace(/'/g, '').replace(/"/g, '').replace('?', '');
             jQuery("#commanderPrompterConfirm label>span").text(displayParam);
             jQuery("#commanderPrompterConfirm").dialog({
                 resizable: false,
                 modal: true,
-                title: jQuery("#commanderPrompterConfirm").attr('data-title'), 
+                title: jQuery("#commanderPrompterConfirm").attr('data-title'),
+                position : position,
                 buttons: {
                     "<cti:msg key="yukon.web.components.dialog.ok"/>": function() {
                         jQuery( this ).dialog( "close" );
                         replacement = jQuery( this ).find("input:text").val();
-                        cmd = cmd.replace(params[paramIdx], replacement);
+                        cmd = cmd.replace(param, replacement);
                         jQuery(document.getElementById(cmdField)).val(cmd);
                         // try next replacements
                         processCommanderReplacement(paramIdx + 1, originalCmd, cmd, cmdField);
@@ -57,7 +61,6 @@
                 $(cmdField).value = originalCmd;
             }
         }
-        
     }
     
     function getCommanderParams(cmd) {

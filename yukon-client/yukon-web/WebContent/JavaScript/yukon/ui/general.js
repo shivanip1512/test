@@ -706,14 +706,14 @@ Yukon.modules.ui = function (mod) {
      */
     mod.removeWithUndo = function(jElem, actionDo, actionUndo, itemName) {
         var elemType = jElem.prop('tagName'),
-        undoneElements = jQuery('#undone-elements'),
-        removedText = jElem.closest('[data-removed-text]').attr('data-removed-text'),
-        undoText = jElem.closest('[data-undo-text]').attr('data-undo-text'),
-        undoLink = jQuery('<a class="fr" href="javascript:void(0)">' + undoText + '</a>'),
-        undo,
-        undoTd;
+            undoneElements = jQuery('#undone-elements'),
+            removedText = jElem.closest('[data-removed-text]').attr('data-removed-text'),
+            undoText = jElem.closest('[data-undo-text]').attr('data-undo-text'),
+            undoLink = jQuery('<a class="fr" href="javascript:void(0)">' + undoText + '</a>'),
+            undo,
+            undoTd;
 
-        if (elemType == 'TR') {
+        if (elemType === 'TR') {
             elemType = 'td colspan=100';
         }
 
@@ -737,7 +737,7 @@ Yukon.modules.ui = function (mod) {
             });
         });
 
-        if (elemType == 'td colspan=100') {
+        if (elemType === 'td colspan=100') {
             undoTd= undo;
             undoTd.show();
             undo = jQuery('<tr></tr>').hide();

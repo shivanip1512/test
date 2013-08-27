@@ -18,5 +18,5 @@ public interface UserPageDao {
     public Multimap<Category, UserPage> getPagesForUser(LiteYukonUser user);
     public List<UserPage> getAllPages();
 
-    public void paoDeleted(PaoIdentifier paoIdentifier);
+    public void deletePagesForPao(PaoIdentifier paoIdentifier);
 }

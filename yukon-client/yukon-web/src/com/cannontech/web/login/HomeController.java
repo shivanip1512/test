@@ -61,40 +61,46 @@ public class HomeController {
     public String dashboard(ModelMap model, YukonUserContext context) {
 
         Multimap<Category, UserPage> pages = userPageDao.getPagesForUser(context.getYukonUser());
+
+        List<UserPageWrapper> history = setupDisplayableHistory(pages, context);
+        Multimap<Module, UserPageWrapper> favoritesMap = setupDisplayableFavorites(pages, context);
+
+        model.put("history", history);
+        model.put("favorites", favoritesMap.asMap());
+        model.addAttribute("jreInstaller", CtiUtilities.getJREInstaller());
+
+        return "dashboard.jsp";
+    }
+
+    private List<UserPageWrapper> setupDisplayableHistory( Multimap<Category, UserPage> pages, YukonUserContext context) {
+
         List<UserPage> rawHistory = Lists.newArrayList(pages.get(Category.HISTORY));
 
         List<UserPageWrapper> history = Lists.newArrayList();
-
         for (UserPage page : rawHistory) {
             history.add( new UserPageWrapper(page, context));
         }
 
-        Collections.sort(history, byDate);
+        Collections.sort(history, byDateDesc);
+        return history;
+    }
 
-        model.put("history", history);
+    private Multimap<Module, UserPageWrapper> setupDisplayableFavorites( Multimap<Category, UserPage> pages, YukonUserContext context) {
 
         List<UserPage> rawFavorites = Lists.newArrayList(pages.get(Category.FAVORITE));
 
         List<UserPageWrapper> favorites = Lists.newArrayList();
-
         for (UserPage page : rawFavorites) {
             favorites.add( new UserPageWrapper(page, context));
         }
-
-
-        Collections.sort(favorites, byName);
-        Collections.sort(favorites, byModule);
+        Collections.sort(favorites, byNameAsc);
+        Collections.sort(favorites, byModuleAsc);
 
         Multimap<Module, UserPageWrapper> favoritesMap = LinkedListMultimap.create();
-
         for (UserPageWrapper page : favorites) {
             favoritesMap.put(page.getPage().getModuleEnum(), page);
         }
-
-        model.put("favorites", favoritesMap.asMap());
-
-        model.addAttribute("jreInstaller", CtiUtilities.getJREInstaller());
-        return "dashboard.jsp";
+        return favoritesMap;
     }
 
     @RequestMapping("/operator/Operations.jsp")
@@ -127,7 +133,7 @@ public class HomeController {
     }
 
     @RequestMapping("/isFavorite")
-    private @ResponseBody JSONObject isFavorite(String path, YukonUserContext context) {
+    public @ResponseBody JSONObject isFavorite(String path, YukonUserContext context) {
 
         UserPage page = new UserPage(context.getYukonUser().getUserID(), path, Category.FAVORITE);
 
@@ -172,7 +178,7 @@ public class HomeController {
     }
 
     @RequestMapping("/isSubscribed")
-    private @ResponseBody JSONObject isFavorite(String monitorType, Integer monitorId, YukonUserContext context) {
+    public @ResponseBody JSONObject isSubscribed(String monitorType, Integer monitorId, YukonUserContext context) {
 
         UserMonitor monitor = new UserMonitor (context.getYukonUser().getUserID(), null, MonitorType.valueOf(monitorType), monitorId, null);
 
@@ -234,19 +240,19 @@ public class HomeController {
         }
     }
 
-    private static Comparator<UserPageWrapper> byDate = new Comparator<UserPageWrapper>() {
+    private static Comparator<UserPageWrapper> byDateDesc = new Comparator<UserPageWrapper>() {
         public int compare(UserPageWrapper left, UserPageWrapper right) {
-            return - (left.getPage().getTimestamp().compareTo(right.getPage().getTimestamp()));
+            return - (left.getPage().getCreatedDate().compareTo(right.getPage().getCreatedDate()));
         }
     };
 
-    private static Comparator<UserPageWrapper> byName = new Comparator<UserPageWrapper>() {
+    private static Comparator<UserPageWrapper> byNameAsc = new Comparator<UserPageWrapper>() {
         public int compare(UserPageWrapper left, UserPageWrapper right) {
             return left.getHeader().compareTo(right.getHeader());
         }
     };
 
-    private static Comparator<UserPageWrapper> byModule = new Comparator<UserPageWrapper>() {
+    private static Comparator<UserPageWrapper> byModuleAsc = new Comparator<UserPageWrapper>() {
         public int compare(UserPageWrapper left, UserPageWrapper right) {
             return left.getPage().getModuleEnum().compareTo(right.getPage().getModuleEnum());
         }

@@ -83,11 +83,12 @@ public class UserPageDaoImpl implements UserPageDao {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM UserPage");
-        sql.appendFragment(getUniquenessCriterion(page));
+        sql.appendFragment(buildUniquenessCriterion(page));
         yukonJdbcTemplate.update(sql);
     }
 
     private void maintainHistory(int userId) {
+
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM UserPage");
         sql.append("WHERE UserId").eq(userId);
@@ -96,7 +97,7 @@ public class UserPageDaoImpl implements UserPageDao {
         sql.append("  SELECT TOP 10 UserPageId FROM UserPage");
         sql.append("  WHERE UserId").eq(userId);
         sql.append("  AND Category").eq(Category.HISTORY);
-        sql.append("  ORDER BY Timestamp DESC");
+        sql.append("  ORDER BY CreatedDate DESC");
         sql.append(")");
 
         yukonJdbcTemplate.update(sql);
@@ -106,7 +107,7 @@ public class UserPageDaoImpl implements UserPageDao {
     public Multimap<Category, UserPage> getPagesForUser(LiteYukonUser user) {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT UserPage.UserPageId, UserId, PagePath, PageName, Module, Category, Timestamp");
+        sql.append("SELECT UserPage.UserPageId, UserId, PagePath, PageName, Module, Category, CreatedDate");
         sql.append(getFromStatement());
         sql.append("WHERE UserId").eq(user.getUserID());
 
@@ -122,9 +123,9 @@ public class UserPageDaoImpl implements UserPageDao {
 
     private Integer getId(UserPage page) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT UserPageId, UserId, PagePath, PageName, Module, Category, Timestamp");
+        sql.append("SELECT UserPageId, UserId, PagePath, PageName, Module, Category, CreatedDate");
         sql.append(getFromStatement());
-        sql.appendFragment(getUniquenessCriterion(page));
+        sql.appendFragment(buildUniquenessCriterion(page));
         List<UserPage> pages = yukonJdbcTemplate.query(sql, userPageRowMapper);
 
         switch(pages.size()){
@@ -133,7 +134,7 @@ public class UserPageDaoImpl implements UserPageDao {
         }
     }
 
-   private static SqlFragmentSource getUniquenessCriterion(UserPage page) {
+   private static SqlFragmentSource buildUniquenessCriterion(UserPage page) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("WHERE PagePath").eq(page.getPath());
         sql.append("AND UserId").eq(page.getUserId());
@@ -167,11 +168,11 @@ public class UserPageDaoImpl implements UserPageDao {
             String pageName = rs.getString("PageName");
             String module = rs.getString("Module");
             Category category = rs.getEnum("Category", UserPage.Category.class);
-            Date timestamp = rs.getDate("Timestamp");
+            Date createdDate = rs.getDate("CreatedDate");
 
             List<String> params = getParameters(id);
 
-            UserPage userPage = new UserPage(userId, pagePath, category, module, pageName, params, timestamp, id);
+            UserPage userPage = new UserPage(userId, pagePath, category, module, pageName, params, createdDate, id);
 
             return userPage;
         }
@@ -185,7 +186,7 @@ public class UserPageDaoImpl implements UserPageDao {
             p.addValue("PageName", page.getName());
             p.addValue("Module", page.getModule());
             p.addValue("Category", page.getCategory());
-            p.addValue("Timestamp", page.getTimestamp());
+            p.addValue("CreatedDate", page.getCreatedDate());
         }
         public Number getPrimaryKey(UserPage page) {
             return page.getId();
@@ -268,7 +269,7 @@ public class UserPageDaoImpl implements UserPageDao {
     public List<UserPage> getAllPages() {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT UserPageId, UserId, PagePath, PageName, Module, Category, Timestamp");
+        sql.append("SELECT UserPageId, UserId, PagePath, PageName, Module, Category, CreatedDate");
         sql.append("FROM UserPage");
 
         List<UserPage> results = yukonJdbcTemplate.query(sql, userPageRowMapper);
@@ -289,7 +290,7 @@ public class UserPageDaoImpl implements UserPageDao {
     }
 
     @Override
-    public void paoDeleted(PaoIdentifier paoIdentifier) {
+    public void deletePagesForPao(PaoIdentifier paoIdentifier) {
         List<UserPage> pages = getAllPages();
 
         for (UserPage page : pages) {

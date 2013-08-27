@@ -64,7 +64,7 @@ public void delete() throws java.sql.SQLException
 	delete( TABLE_NAME, CONSTRAINT_COLUMNS, values );
 
     UserPageDao userPageDao = YukonSpringHook.getBean(UserPageDao.class);
-    userPageDao.paoDeleted(new PaoIdentifier(paObjectID, PaoType.getForDbString(type)));
+    userPageDao.deletePagesForPao(new PaoIdentifier(paObjectID, PaoType.getForDbString(type)));
 }
 
 

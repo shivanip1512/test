@@ -75,7 +75,7 @@ Yukon.Favorites = (function () {
     _addToHistory = function () {
 
         var button = jQuery('#favButton'),
-        data = {};
+            data = {};
 
         if (button.length === 1) {
             data = _dataFavoriteButton(button);
@@ -112,11 +112,11 @@ Yukon.Favorites = (function () {
                 button.unbind('click');
                 button.click(function() {
                     var row = button.closest('li'),
-                    actionDo = function(){
-                        favoriteMod.toggleFavorite(button, 'icon-star', 'icon-star');
-                    },
-                    actionUndo = actionDo,
-                    header = button.attr('data-header');
+                        actionDo = function(){
+                            favoriteMod.toggleFavorite(button, 'icon-star', 'icon-star');
+                        },
+                        actionUndo = actionDo,
+                        header = button.attr('data-header');
 
                     header = header.replace( /</g, '&lt').replace( />/g, '&gt');
 
@@ -145,11 +145,11 @@ Yukon.Favorites = (function () {
                 button.unbind('click');
                 button.click(function() {
                     var row = button.closest('tr'),
-                    actionDo = function(){
-                        favoriteMod.toggleSubscribed(button, 'icon-feed', 'icon-feed');
-                    },
-                    actionUndo = actionDo,
-                    name = button.attr('data-name');
+                        actionDo = function(){
+                            favoriteMod.toggleSubscribed(button, 'icon-feed', 'icon-feed');
+                        },
+                        actionUndo = actionDo,
+                        name = button.attr('data-name');
 
                     localUi.removeWithUndo(row, actionDo, actionUndo, name) ;
                 });

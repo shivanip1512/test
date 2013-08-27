@@ -452,7 +452,7 @@ public class PaoPersistenceDaoImpl implements PaoPersistenceDao {
              jdbcTemplate.update(sql);
         }
 
-        userPageDao.paoDeleted(paoIdentifier);
+        userPageDao.deletePagesForPao(paoIdentifier);
     }
 
     /**

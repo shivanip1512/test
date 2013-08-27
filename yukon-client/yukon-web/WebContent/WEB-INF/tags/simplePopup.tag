@@ -15,7 +15,12 @@
     <jsp:doBody/>
 </div>
 <script type="text/javascript">
-var defaults = {width: 'auto', autoOpen: false};
+var windowHeight = jQuery(window).height(),
+position = {my: 'top', at: 'top+' + windowHeight/5 },
+defaults = { width: 'auto', 
+             autoOpen: false,
+             position : position
+};
 
 <c:if test="${not empty pageScope.options}">
 jQuery.extend(defaults, ${options});
