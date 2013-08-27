@@ -6,6 +6,7 @@
 
 using namespace std;
 using boost::assign::map_list_of;
+using boost::assign::list_of;
 
 namespace Cti {
 namespace Devices {
@@ -708,7 +709,7 @@ unsigned char RfnTouEnableConfigurationCommand::getOperation() const
  */
 RfnCommand::Bytes RfnTouEnableConfigurationCommand::getCommandData()
 {
-    return Bytes(1,0); // zero tlvs
+    return list_of(0); // zero tlvs
 }
 
 /**
@@ -751,7 +752,7 @@ unsigned char RfnTouHolidayActiveConfigurationCommand::getOperation() const
  */
 RfnCommand::Bytes RfnTouHolidayActiveConfigurationCommand::getCommandData()
 {
-    return Bytes(1,0); // zero tlvs
+    return list_of(0); // zero tlvs
 }
 
 /**
@@ -817,7 +818,7 @@ unsigned char RfnTouCancelCriticalPeakCommand::getOperation() const
 
 RfnCommand::Bytes RfnTouCancelCriticalPeakCommand::getCommandData()
 {
-    return Bytes(1,0); // zero tlvs
+    return list_of(0); // zero tlvs
 }
 
 /**
