@@ -54,8 +54,8 @@ jQuery(document).ready(function() {
     <c:if test="${okEvent != 'none'}">
         var okButton = {'text' : '${okBtnMsg}', 'click': function() { dialogDiv.trigger('${okEvent}'); }, 'class': 'primary'};
         var cancelButton = {'text' : '${cancelBtnMsg}', 'click' : function() { jQuery(this).dialog('close'); }};
-        buttons.push(okButton);
         buttons.push(cancelButton);
+        buttons.push(okButton);
     </c:if>
     <c:if test="${okEvent == 'none'}">
         buttons.push({'text' : '${closeBtnMsg}', 'click' : function() { jQuery(this).dialog('close'); }});
