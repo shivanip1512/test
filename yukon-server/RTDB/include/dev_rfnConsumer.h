@@ -16,6 +16,8 @@ class IM_EX_DEVDB RfnConsumerDevice
         public Commands::RfnGetDemandFreezeInfoCommand::ResultHandler
 
 {
+protected:
+
     int executePutConfigVoltageAveragingInterval( CtiRequestMsg     * pReq,
                                                   CtiCommandParser  & parse,
                                                   CtiMessageList    & retList,

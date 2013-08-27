@@ -50,7 +50,8 @@ int RfnDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiM
     const ExecuteLookup executeMethods = boost::assign::map_list_of
         (PutConfigRequest, &RfnDevice::executePutConfig)
         (GetConfigRequest, &RfnDevice::executeGetConfig)
-        (GetValueRequest,  &RfnDevice::executeGetValue);
+        (GetValueRequest,  &RfnDevice::executeGetValue)
+        (PutStatusRequest, &RfnDevice::executePutStatus);
 
     boost::optional<RfnExecuteMethod> executeMethod = mapFind(executeMethods, parse.getCommand());
 
@@ -127,6 +128,22 @@ int RfnDevice::executePutConfigInstall(CtiRequestMsg *pReq, CtiCommandParser &pa
     return rfnRequests.empty()
         ? NoMethod
         : NoError;
+}
+
+
+int RfnDevice::executePutStatus(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests)
+{
+    if( parse.isKeyValid("freeze") )
+    {
+        return executeImmediateDemandFreeze(pReq, parse, retList, rfnRequests);
+    }
+
+    return NoMethod;
+}
+
+int RfnDevice::executeImmediateDemandFreeze(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests)
+{
+    return NoMethod;
 }
 
 

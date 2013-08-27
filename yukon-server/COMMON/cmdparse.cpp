@@ -1595,6 +1595,10 @@ void  CtiCommandParser::doParsePutStatus(const string &_CmdStr)
                 setFlags(getFlags() | CMD_FLAG_PS_RESET);
             }
         }
+        if(CmdStr.contains(" freeze"))
+        {
+            _cmd["freeze"] = true;
+        }
     }
     else
     {

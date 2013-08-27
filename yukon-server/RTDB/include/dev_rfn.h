@@ -43,6 +43,7 @@ protected:
     virtual int executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
     virtual int executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
     virtual int executeGetValue (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
+    virtual int executePutStatus(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
 
     int executePutConfigInstall (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
 
@@ -50,6 +51,8 @@ protected:
     Commands::RfnCommandSPtr executePutConfigInstallVoltageAveragingInterval(CtiRequestMsg *pReq, CtiCommandParser &parse);
     Commands::RfnCommandSPtr executePutConfigInstallTou                     (CtiRequestMsg *pReq, CtiCommandParser &parse);
     virtual Commands::RfnCommandSPtr executePutConfigInstallDisplay         (CtiRequestMsg *pReq, CtiCommandParser &parse);
+
+    virtual int executeImmediateDemandFreeze(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
 
     RfnIdentifier _rfnId;
 };
