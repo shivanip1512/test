@@ -25,7 +25,7 @@ CREATE TABLE EstimatedLoadFormula (
     Name VARCHAR2(32) NOT NULL,
     FormulaType VARCHAR2(32) NOT NULL,
     CalculationType VARCHAR2(32) NOT NULL,
-    FunctionIntercept FLOAT NOT NULL
+    FunctionIntercept FLOAT NOT NULL,
     CONSTRAINT PK_EstimatedLoadFormula PRIMARY KEY (EstimatedLoadFormulaId)
 );
 
@@ -57,7 +57,7 @@ CREATE TABLE EstimatedLoadLookupTable (
     InputType VARCHAR2(32) NOT NULL,
     InputMin VARCHAR2(32)NOT NULL,
     InputMax VARCHAR2(32)NOT NULL,
-    InputPointId NUMBER
+    InputPointId NUMBER,
     CONSTRAINT PK_EstimatedLoadLookupTable PRIMARY KEY (EstimatedLoadLookupTableId)
 );
 ALTER TABLE EstimatedLoadLookupTable
@@ -73,7 +73,7 @@ CREATE TABLE EstimatedLoadTableEntry (
     EstimatedLoadTableEntryId NUMBER NOT NULL,
     EstimatedLoadLookupTableId NUMBER NOT NULL,
     EntryKey VARCHAR2(32) NOT NULL,
-    EntryValue FLOAT NOT NULL
+    EntryValue FLOAT NOT NULL,
     CONSTRAINT PK_EstimatedLoadTableEntry PRIMARY KEY (EstimatedLoadTableEntryId)
 );
 ALTER TABLE EstimatedLoadTableEntry
@@ -85,7 +85,7 @@ CREATE TABLE EstimatedLoadFormulaAssignment (
     FormulaAssignmentId NUMBER NOT NULL,
     EstimatedLoadFormulaId NUMBER NOT NULL,
     GearId NUMBER,
-    ApplianceCategoryId NUMBER
+    ApplianceCategoryId NUMBER,
     CONSTRAINT PK_EstimatedLoadFormulaAssignm PRIMARY KEY (FormulaAssignmentId)
 );
 
