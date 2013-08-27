@@ -149,7 +149,7 @@ CREATE TABLE UserPage (
     Module      VARCHAR2(32) NOT NULL,
     PageName    VARCHAR2(32) NOT NULL,
     Category    VARCHAR2(32) NOT NULL,
-    Timestamp   DATE NOT NULL,
+    CreatedDate DATE NOT NULL,
     CONSTRAINT PK_UserPageTable PRIMARY KEY (UserPageId)
 );
 ALTER TABLE UserPage
@@ -174,7 +174,7 @@ CREATE TABLE UserMonitor (
     UserId         NUMBER NOT NULL,
     MonitorName    VARCHAR2(80) NOT NULL,
     MonitorType    VARCHAR2(32) NOT NULL,
-    MonitorId      VARCHAR2(32) NOT NULL,
+    MonitorId      NUMBER NOT NULL,
     CONSTRAINT PK_UserMonitorTable PRIMARY KEY (UserMonitorId)
 );
 ALTER TABLE UserMonitor

@@ -153,7 +153,7 @@ CREATE TABLE UserPage (
     Module      VARCHAR(32) NOT NULL,
     PageName    VARCHAR(32) NOT NULL,
     Category    VARCHAR(32) NOT NULL,
-    Timestamp   DATETIME NOT NULL,
+    CreatedDate DATETIME NOT NULL,
     CONSTRAINT PK_UserPageTable PRIMARY KEY (UserPageId)
 );
 GO
@@ -184,7 +184,7 @@ CREATE TABLE UserMonitor (
     UserId         NUMERIC NOT NULL,
     MonitorName    VARCHAR(80) NOT NULL,
     MonitorType    VARCHAR(32) NOT NULL,
-    MonitorId      VARCHAR(32) NOT NULL,
+    MonitorId      NUMERIC NOT NULL,
     CONSTRAINT PK_UserMonitorTable PRIMARY KEY (UserMonitorId)
 );
 GO

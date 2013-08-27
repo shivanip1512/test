@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     8/26/2013 4:17:16 PM                         */
+/* Created on:     8/27/2013 2:57:54 PM                         */
 /*==============================================================*/
 
 
@@ -8579,7 +8579,7 @@ create table UserMonitor (
    UserId               numeric              not null,
    MonitorName          varchar(80)          not null,
    MonitorType          varchar(32)          not null,
-   MonitorId            varchar(32)          not null,
+   MonitorId            numeric              not null,
    constraint PK_UserMonitor primary key (UserMonitorId)
 )
 go
@@ -8594,7 +8594,7 @@ create table UserPage (
    Module               varchar(32)          not null,
    PageName             varchar(32)          not null,
    Category             varchar(32)          not null,
-   Timestamp            datetime             not null,
+   CreatedDate          datetime             not null,
    constraint PK_UserPage primary key (UserPageId)
 )
 go

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/26/2013 4:22:09 PM                         */
+/* Created on:     8/27/2013 2:50:24 PM                         */
 /*==============================================================*/
 
 
@@ -8070,7 +8070,7 @@ create table UserMonitor  (
    UserId               NUMBER                          not null,
    MonitorName          VARCHAR2(80)                    not null,
    MonitorType          VARCHAR2(32)                    not null,
-   MonitorId            VARCHAR2(32)                    not null,
+   MonitorId            NUMBER                          not null,
    constraint PK_UserMonitor primary key (UserMonitorId)
 );
 
@@ -8084,7 +8084,7 @@ create table UserPage  (
    Module               VARCHAR2(32)                    not null,
    PageName             VARCHAR2(32)                    not null,
    Category             VARCHAR2(32)                    not null,
-   Timestamp            DATE                            not null,
+   CreatedDate          DATE                            not null,
    constraint PK_UserPage primary key (UserPageId)
 );
 
