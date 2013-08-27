@@ -765,7 +765,9 @@ void RfnTouHolidayActiveConfigurationCommand::decodeTlv( RfnResult& result, cons
     throw RfnCommand::CommandException( ErrorInvalidData, "Unexpected tlv - (type " + CtiNumStr(tlv.type) + ")");
 }
 
-//
+//-----------------------------------------------------------------------------
+//  RFN TOU configuration critical peak set
+//-----------------------------------------------------------------------------
 
 RfnTouCriticalPeakCommand::RfnTouCriticalPeakCommand( const Rate rate, const CtiTime & utcExpireTime )
     :   _rate( rate ),
@@ -803,7 +805,9 @@ void RfnTouCriticalPeakCommand::decodeTlv( RfnResult& result, const TypeLengthVa
     throw RfnCommand::CommandException( ErrorInvalidData, "Unexpected tlv - (type " + CtiNumStr(tlv.type) + ")");
 }
 
-//
+//-----------------------------------------------------------------------------
+//  RFN TOU configuration critical peak cancel
+//-----------------------------------------------------------------------------
 
 RfnTouCancelCriticalPeakCommand::RfnTouCancelCriticalPeakCommand()
 {

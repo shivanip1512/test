@@ -3,6 +3,7 @@
 
 #include "ctidate.h"
 #include "std_helper.h"
+#include "boost_test_helpers.h"
 #include "cmd_rfn_TouConfiguration.h"
 
 using Cti::Devices::Commands::RfnCommand;
@@ -320,13 +321,15 @@ BOOST_AUTO_TEST_CASE( test_RfnTouScheduleConfigurationCommand )
 
 BOOST_AUTO_TEST_CASE( test_RfnTouHolidayConfigurationCommand )
 {
+    Cti::Test::set_to_central_timezone();
+
     const CtiDate date1 = CtiDate( 01, 02, 1970 ),
                   date2 = CtiDate( 14, 06, 2012 ),
                   date3 = CtiDate( 30, 12, 2050 );
 
-    const std::vector<unsigned char> holiday1 = convertLongToBytes( CtiTime(date1).seconds() ),
-                                     holiday2 = convertLongToBytes( CtiTime(date2).seconds() ),
-                                     holiday3 = convertLongToBytes( CtiTime(date3).seconds() );
+    const std::vector<unsigned char> holiday1 = boost::assign::list_of(0x00)(0x29)(0x32)(0xe0),
+                                     holiday2 = boost::assign::list_of(0x4f)(0xd9)(0x6f)(0xd0),
+                                     holiday3 = boost::assign::list_of(0x98)(0x59)(0x5a)(0xe0);
 
     const RfnTouHolidayConfigurationCommand::Holidays holidays =
     {
