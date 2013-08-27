@@ -38,6 +38,8 @@ struct test_CtiRouteCCU : CtiRouteCCU
 
 struct test_Mct410Device : Cti::Devices::Mct410Device
 {
+    long demand_interval;
+
 protected:
     CtiRouteSPtr rte;
 
@@ -47,6 +49,7 @@ protected:
         setType(type);
         _name = name;
         _paObjectID = 123456;
+        demand_interval = 3600;
     }
 
 public:
@@ -78,7 +81,7 @@ public:
 
     virtual LONG getDemandInterval()
     {
-        return 3600;
+        return demand_interval;
     }
 
     typedef std::map<int, CtiPointSPtr>              PointOffsetMap;
@@ -119,6 +122,7 @@ public:
             case AnalogPointType:
             {
                 Test_CtiPointAnalog *analog = new Test_CtiPointAnalog();
+                analog->setName(desolvePointType(type) + CtiNumStr(offset));
                 analog->setPointOffset(offset);
                 analog->setDeviceID(reinterpret_cast<long>(&points));
                 analog->setID(point_count);
@@ -130,6 +134,7 @@ public:
             case DemandAccumulatorPointType:
             {
                 Test_CtiPointAccumulator *accumulator = new Test_CtiPointAccumulator();
+                accumulator->setName(desolvePointType(type) + CtiNumStr(offset));
                 accumulator->setPointOffset(offset);
                 accumulator->setDeviceID(reinterpret_cast<long>(&points));
                 accumulator->setID(point_count);
@@ -140,6 +145,7 @@ public:
             case StatusPointType:
             {
                 Test_CtiPointStatus *status = new Test_CtiPointStatus();
+                status->setName(desolvePointType(type) + CtiNumStr(offset));
                 status->setPointOffset(offset);
                 status->setDeviceID(reinterpret_cast<long>(&points));
                 status->setID(point_count);
@@ -183,8 +189,9 @@ struct test_Mct410FocusDevice : test_Mct410Device
 
 namespace std {
     //  defined in rtdb/test_main.cpp
-    std::ostream& operator<<(std::ostream& out, const test_Mct410Device::ReadDescriptor &rd);
-    std::ostream& operator<<(std::ostream& out, const std::vector<boost::tuples::tuple<unsigned, unsigned, int>> &rd);
+    ostream& operator<<(ostream& out, const unsigned char &uc);
+    ostream& operator<<(ostream& out, const test_Mct410Device::ReadDescriptor &rd);
+    ostream& operator<<(ostream& out, const vector<boost::tuples::tuple<unsigned, unsigned, int>> &rd);
     bool operator==(const test_Mct410Device::value_locator &lhs, const boost::tuples::tuple<unsigned, unsigned, int> &rhs);
 }
 
@@ -661,7 +668,9 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
         BOOST_REQUIRE_EQUAL(  1 , retList.size() );
 
-        CtiReturnMsg *errorMsg = static_cast<CtiReturnMsg*>(retList.front());
+        const CtiReturnMsg *errorMsg = dynamic_cast<const CtiReturnMsg *>(retList.front());
+
+        BOOST_REQUIRE( errorMsg );
 
         BOOST_CHECK_EQUAL( BADPARAM , errorMsg->Status() );
         BOOST_CHECK_EQUAL( "Test MCT-410iL / Invalid display configuration \"5x3\"" , errorMsg->ResultString() );
@@ -677,7 +686,9 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
         BOOST_REQUIRE_EQUAL(  1 , retList.size() );
 
-        CtiReturnMsg *errorMsg = static_cast<CtiReturnMsg*>(retList.front());
+        const CtiReturnMsg *errorMsg = dynamic_cast<const CtiReturnMsg *>(retList.front());
+
+        BOOST_REQUIRE( errorMsg );
 
         BOOST_CHECK_EQUAL( BADPARAM , errorMsg->Status() );
         BOOST_CHECK_EQUAL( "Test MCT-410iL / Invalid display configuration \"5x3\"" , errorMsg->ResultString() );
@@ -693,7 +704,9 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
         BOOST_REQUIRE_EQUAL(  1 , retList.size() );
 
-        CtiReturnMsg *errorMsg = static_cast<CtiReturnMsg*>(retList.front());
+        const CtiReturnMsg *errorMsg = dynamic_cast<const CtiReturnMsg *>(retList.front());
+
+        BOOST_REQUIRE( errorMsg );
 
         BOOST_CHECK_EQUAL( BADPARAM , errorMsg->Status() );
         BOOST_CHECK_EQUAL( "Test MCT-410iL / Invalid test duration \"3\"" , errorMsg->ResultString() );
@@ -709,7 +722,9 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
         BOOST_REQUIRE_EQUAL(  1 , retList.size() );
 
-        CtiReturnMsg *errorMsg = static_cast<CtiReturnMsg*>(retList.front());
+        const CtiReturnMsg *errorMsg = dynamic_cast<const CtiReturnMsg *>(retList.front());
+
+        BOOST_REQUIRE( errorMsg );
 
         BOOST_CHECK_EQUAL( BADPARAM , errorMsg->Status() );
         BOOST_CHECK_EQUAL( "Test MCT-410iL / Invalid test duration \"3\"" , errorMsg->ResultString() );
@@ -725,7 +740,9 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
         BOOST_REQUIRE_EQUAL(  1 , retList.size() );
 
-        CtiReturnMsg *errorMsg = static_cast<CtiReturnMsg*>(retList.front());
+        const CtiReturnMsg *errorMsg = dynamic_cast<const CtiReturnMsg *>(retList.front());
+
+        BOOST_REQUIRE( errorMsg );
 
         BOOST_CHECK_EQUAL( BADPARAM , errorMsg->Status() );
         BOOST_CHECK_EQUAL( "Test MCT-410iL / Invalid transformer ratio (400)" , errorMsg->ResultString() );
@@ -867,7 +884,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         {
             BOOST_REQUIRE_EQUAL( retList.size(),  1 );
 
-            const CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
+            const CtiReturnMsg *retMsg = dynamic_cast<const CtiReturnMsg *>(retList.front());
 
             BOOST_REQUIRE(retMsg);
 
@@ -877,7 +894,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                 BOOST_REQUIRE_EQUAL( points.size(), 2 );
 
                 {
-                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[0]);
+                    const CtiPointDataMsg *pdata = dynamic_cast<const CtiPointDataMsg *>(points[0]);
 
                     BOOST_REQUIRE( pdata );
 
@@ -887,7 +904,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                     BOOST_CHECK_EQUAL( pdata->getString(), "Test MCT-410iL / Outage 1 : 07/14/2012 00:22:11 for 00:00:17.150");
                 }
                 {
-                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[1]);
+                    const CtiPointDataMsg *pdata = dynamic_cast<const CtiPointDataMsg *>(points[1]);
 
                     BOOST_REQUIRE( pdata );
 
@@ -946,7 +963,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         {
             BOOST_REQUIRE_EQUAL( retList.size(),  1 );
 
-            const CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
+            const CtiReturnMsg *retMsg = dynamic_cast<const CtiReturnMsg *>(retList.front());
 
             BOOST_REQUIRE(retMsg);
 
@@ -956,7 +973,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                 BOOST_REQUIRE_EQUAL( points.size(), 2 );
 
                 {
-                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[0]);
+                    const CtiPointDataMsg *pdata = dynamic_cast<const CtiPointDataMsg *>(points[0]);
 
                     BOOST_REQUIRE( pdata );
 
@@ -966,7 +983,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                     BOOST_CHECK_EQUAL( pdata->getString(), "Test MCT-410iL / Outage 1 : 07/14/2012 00:22:11 for 00:00:17.150");
                 }
                 {
-                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[1]);
+                    const CtiPointDataMsg *pdata = dynamic_cast<const CtiPointDataMsg *>(points[1]);
 
                     BOOST_REQUIRE( pdata );
 
@@ -1020,7 +1037,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         {
             BOOST_REQUIRE_EQUAL( retList.size(),  1 );
 
-            const CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
+            const CtiReturnMsg *retMsg = dynamic_cast<const CtiReturnMsg *>(retList.front());
 
             BOOST_REQUIRE(retMsg);
 
@@ -1032,7 +1049,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                 const CtiDate Midnight(timenow);
 
                 {
-                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[0]);
+                    const CtiPointDataMsg *pdata = dynamic_cast<const CtiPointDataMsg *>(points[0]);
 
                     BOOST_REQUIRE( pdata );
 
@@ -1041,7 +1058,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                     BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 5 );
                 }
                 {
-                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[1]);
+                    const CtiPointDataMsg *pdata = dynamic_cast<const CtiPointDataMsg *>(points[1]);
 
                     BOOST_REQUIRE( pdata );
 
@@ -1050,7 +1067,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                     BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 4 );
                 }
                 {
-                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[2]);
+                    const CtiPointDataMsg *pdata = dynamic_cast<const CtiPointDataMsg *>(points[2]);
 
                     BOOST_REQUIRE( pdata );
 
@@ -1059,7 +1076,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                     BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 3 );
                 }
                 {
-                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[3]);
+                    const CtiPointDataMsg *pdata = dynamic_cast<const CtiPointDataMsg *>(points[3]);
 
                     BOOST_REQUIRE( pdata );
 
@@ -1068,7 +1085,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                     BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 2 );
                 }
                 {
-                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[4]);
+                    const CtiPointDataMsg *pdata = dynamic_cast<const CtiPointDataMsg *>(points[4]);
 
                     BOOST_REQUIRE( pdata );
 
@@ -1077,7 +1094,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                     BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 1 );
                 }
                 {
-                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[5]);
+                    const CtiPointDataMsg *pdata = dynamic_cast<const CtiPointDataMsg *>(points[5]);
 
                     BOOST_REQUIRE( pdata );
 
@@ -1132,7 +1149,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         {
             BOOST_REQUIRE_EQUAL( retList.size(),  1 );
 
-            const CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
+            const CtiReturnMsg *retMsg = dynamic_cast<const CtiReturnMsg *>(retList.front());
 
             BOOST_REQUIRE(retMsg);
 
@@ -1144,7 +1161,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                 const CtiDate Midnight(timenow);
 
                 {
-                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[0]);
+                    const CtiPointDataMsg *pdata = dynamic_cast<const CtiPointDataMsg *>(points[0]);
 
                     BOOST_REQUIRE( pdata );
 
@@ -1153,7 +1170,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                     BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 5 );
                 }
                 {
-                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[1]);
+                    const CtiPointDataMsg *pdata = dynamic_cast<const CtiPointDataMsg *>(points[1]);
 
                     BOOST_REQUIRE( pdata );
 
@@ -1162,7 +1179,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                     BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 4 );
                 }
                 {
-                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[2]);
+                    const CtiPointDataMsg *pdata = dynamic_cast<const CtiPointDataMsg *>(points[2]);
 
                     BOOST_REQUIRE( pdata );
 
@@ -1171,7 +1188,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                     BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 3 );
                 }
                 {
-                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[3]);
+                    const CtiPointDataMsg *pdata = dynamic_cast<const CtiPointDataMsg *>(points[3]);
 
                     BOOST_REQUIRE( pdata );
 
@@ -1180,7 +1197,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                     BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 2 );
                 }
                 {
-                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[4]);
+                    const CtiPointDataMsg *pdata = dynamic_cast<const CtiPointDataMsg *>(points[4]);
 
                     BOOST_REQUIRE( pdata );
 
@@ -1189,7 +1206,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                     BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 1 );
                 }
                 {
-                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[5]);
+                    const CtiPointDataMsg *pdata = dynamic_cast<const CtiPointDataMsg *>(points[5]);
 
                     BOOST_REQUIRE( pdata );
 
@@ -1244,7 +1261,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         {
             BOOST_REQUIRE_EQUAL( retList.size(),  1 );
 
-            const CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
+            const CtiReturnMsg *retMsg = dynamic_cast<const CtiReturnMsg *>(retList.front());
 
             BOOST_REQUIRE(retMsg);
 
@@ -1256,7 +1273,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                 const CtiDate Midnight(timenow);
 
                 {
-                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[0]);
+                    const CtiPointDataMsg *pdata = dynamic_cast<const CtiPointDataMsg *>(points[0]);
 
                     BOOST_REQUIRE( pdata );
 
@@ -1265,7 +1282,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                     BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 5 );
                 }
                 {
-                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[1]);
+                    const CtiPointDataMsg *pdata = dynamic_cast<const CtiPointDataMsg *>(points[1]);
 
                     BOOST_REQUIRE( pdata );
 
@@ -1274,7 +1291,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                     BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 4 );
                 }
                 {
-                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[2]);
+                    const CtiPointDataMsg *pdata = dynamic_cast<const CtiPointDataMsg *>(points[2]);
 
                     BOOST_REQUIRE( pdata );
 
@@ -1283,7 +1300,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                     BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 3 );
                 }
                 {
-                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[3]);
+                    const CtiPointDataMsg *pdata = dynamic_cast<const CtiPointDataMsg *>(points[3]);
 
                     BOOST_REQUIRE( pdata );
 
@@ -1292,7 +1309,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                     BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 2 );
                 }
                 {
-                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[4]);
+                    const CtiPointDataMsg *pdata = dynamic_cast<const CtiPointDataMsg *>(points[4]);
 
                     BOOST_REQUIRE( pdata );
 
@@ -1301,7 +1318,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                     BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 1 );
                 }
                 {
-                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[5]);
+                    const CtiPointDataMsg *pdata = dynamic_cast<const CtiPointDataMsg *>(points[5]);
 
                     BOOST_REQUIRE( pdata );
 
@@ -1355,7 +1372,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         {
             BOOST_REQUIRE_EQUAL( retList.size(),  1 );
 
-            const CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
+            const CtiReturnMsg *retMsg = dynamic_cast<const CtiReturnMsg *>(retList.front());
 
             BOOST_REQUIRE(retMsg);
 
@@ -1367,7 +1384,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                 const CtiDate Midnight(timenow);
 
                 {
-                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[0]);
+                    const CtiPointDataMsg *pdata = dynamic_cast<const CtiPointDataMsg *>(points[0]);
 
                     BOOST_REQUIRE( pdata );
 
@@ -1376,7 +1393,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                     BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 5 );
                 }
                 {
-                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[1]);
+                    const CtiPointDataMsg *pdata = dynamic_cast<const CtiPointDataMsg *>(points[1]);
 
                     BOOST_REQUIRE( pdata );
 
@@ -1385,7 +1402,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                     BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 4 );
                 }
                 {
-                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[2]);
+                    const CtiPointDataMsg *pdata = dynamic_cast<const CtiPointDataMsg *>(points[2]);
 
                     BOOST_REQUIRE( pdata );
 
@@ -1394,7 +1411,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                     BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 3 );
                 }
                 {
-                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[3]);
+                    const CtiPointDataMsg *pdata = dynamic_cast<const CtiPointDataMsg *>(points[3]);
 
                     BOOST_REQUIRE( pdata );
 
@@ -1403,7 +1420,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                     BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 2 );
                 }
                 {
-                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[4]);
+                    const CtiPointDataMsg *pdata = dynamic_cast<const CtiPointDataMsg *>(points[4]);
 
                     BOOST_REQUIRE( pdata );
 
@@ -1457,7 +1474,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         {
             BOOST_REQUIRE_EQUAL( retList.size(),  1 );
 
-            const CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
+            const CtiReturnMsg *retMsg = dynamic_cast<const CtiReturnMsg *>(retList.front());
 
             BOOST_REQUIRE(retMsg);
 
@@ -1469,7 +1486,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                 const CtiDate Midnight(timenow);
 
                 {
-                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[0]);
+                    const CtiPointDataMsg *pdata = dynamic_cast<const CtiPointDataMsg *>(points[0]);
 
                     BOOST_REQUIRE( pdata );
 
@@ -1478,7 +1495,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                     BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 5 );
                 }
                 {
-                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[1]);
+                    const CtiPointDataMsg *pdata = dynamic_cast<const CtiPointDataMsg *>(points[1]);
 
                     BOOST_REQUIRE( pdata );
 
@@ -1487,7 +1504,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                     BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 4 );
                 }
                 {
-                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[2]);
+                    const CtiPointDataMsg *pdata = dynamic_cast<const CtiPointDataMsg *>(points[2]);
 
                     BOOST_REQUIRE( pdata );
 
@@ -1496,7 +1513,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                     BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 3 );
                 }
                 {
-                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[3]);
+                    const CtiPointDataMsg *pdata = dynamic_cast<const CtiPointDataMsg *>(points[3]);
 
                     BOOST_REQUIRE( pdata );
 
@@ -1505,7 +1522,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                     BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 2 );
                 }
                 {
-                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[4]);
+                    const CtiPointDataMsg *pdata = dynamic_cast<const CtiPointDataMsg *>(points[4]);
 
                     BOOST_REQUIRE( pdata );
 
@@ -1559,7 +1576,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         {
             BOOST_REQUIRE_EQUAL( retList.size(),  1 );
 
-            const CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
+            const CtiReturnMsg *retMsg = dynamic_cast<const CtiReturnMsg *>(retList.front());
 
             BOOST_REQUIRE(retMsg);
 
@@ -1571,7 +1588,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                 const CtiDate Midnight(timenow);
 
                 {
-                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[0]);
+                    const CtiPointDataMsg *pdata = dynamic_cast<const CtiPointDataMsg *>(points[0]);
 
                     BOOST_REQUIRE( pdata );
 
@@ -1580,7 +1597,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                     BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 2 );
                 }
                 {
-                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[1]);
+                    const CtiPointDataMsg *pdata = dynamic_cast<const CtiPointDataMsg *>(points[1]);
 
                     BOOST_REQUIRE( pdata );
 
@@ -1589,7 +1606,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                     BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 1 );
                 }
                 {
-                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[2]);
+                    const CtiPointDataMsg *pdata = dynamic_cast<const CtiPointDataMsg *>(points[2]);
 
                     BOOST_REQUIRE( pdata );
 
@@ -1643,7 +1660,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         {
             BOOST_REQUIRE_EQUAL( retList.size(),  1 );
 
-            const CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
+            const CtiReturnMsg *retMsg = dynamic_cast<const CtiReturnMsg *>(retList.front());
 
             BOOST_REQUIRE(retMsg);
 
@@ -1655,7 +1672,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                 const CtiDate Midnight(timenow);
 
                 {
-                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[0]);
+                    const CtiPointDataMsg *pdata = dynamic_cast<const CtiPointDataMsg *>(points[0]);
 
                     BOOST_REQUIRE( pdata );
 
@@ -1709,7 +1726,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         {
             BOOST_REQUIRE_EQUAL( retList.size(),  1 );
 
-            const CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
+            const CtiReturnMsg *retMsg = dynamic_cast<const CtiReturnMsg *>(retList.front());
 
             BOOST_REQUIRE(retMsg);
 
@@ -1761,7 +1778,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         {
             BOOST_REQUIRE_EQUAL( retList.size(),  1 );
 
-            const CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
+            const CtiReturnMsg *retMsg = dynamic_cast<const CtiReturnMsg *>(retList.front());
 
             BOOST_REQUIRE(retMsg);
 
@@ -1773,7 +1790,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                 const CtiDate Midnight(timenow);
 
                 {
-                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[0]);
+                    const CtiPointDataMsg *pdata = dynamic_cast<const CtiPointDataMsg *>(points[0]);
 
                     BOOST_REQUIRE( pdata );
 
@@ -1784,6 +1801,474 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             }
         }
     }
+
+    BOOST_AUTO_TEST_CASE(test_executeGetConfigDisconnect)
+    {
+        test_Mct410IconDevice test_dev;
+
+        test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration, 0x08);
+
+        unsigned commandSequence;
+
+        {
+            CtiCommandParser parse("getconfig disconnect");
+
+            BOOST_CHECK_EQUAL(NoError, test_dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
+
+            BOOST_CHECK( retList.empty() );
+            BOOST_CHECK( vgList.empty() );
+            BOOST_REQUIRE_EQUAL( outList.size(), 1 );
+
+            CtiOutMessage *outmsg = outList.front();
+
+            BOOST_REQUIRE( outmsg );
+
+            commandSequence = outmsg->Sequence;  //  for command tracking - must be copied to inmessage
+
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0xfe);
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.IO      , 0x03);  //  function read
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , 11);
+        }
+
+        delete_container(outList);
+        outList.clear();
+
+        {
+            INMESS  InMessage;
+            CtiTime t(CtiDate(14, 7, 2011), 19, 16, 11);
+
+            unsigned char test_data[] = {0x1,0x1,0x1,0x2,0x1,0x3,0x1,0x4,0x1,0x5,0x1,0x6};  //  leave as 12 bytes, as if we're reading queued
+
+            memcpy(InMessage.Buffer.DSt.Message, test_data, sizeof(test_data));
+            InMessage.Buffer.DSt.Length = sizeof(test_data);
+
+            InMessage.Return.UserID                        = 0;
+            InMessage.Sequence                             = commandSequence;
+            InMessage.Return.ProtocolInfo.Emetcon.Function = 0xfe;
+            InMessage.Return.ProtocolInfo.Emetcon.IO       = 3;
+
+            BOOST_CHECK_EQUAL(NoError, test_dev.ResultDecode(&InMessage, t, vgList, retList, outList));
+
+            BOOST_REQUIRE_EQUAL(retList.size(), 1);
+            BOOST_CHECK(outList.empty());
+            BOOST_REQUIRE_EQUAL(vgList.size(), 2);
+
+            {
+                const CtiReturnMsg *retMsg = dynamic_cast<const CtiReturnMsg *>(retList.front());
+
+                BOOST_REQUIRE(retMsg);
+
+                const std::string expected =
+                    "Test MCT-410iL / Disconnect Info:\n"
+                    "Disconnect load limit count: 1\n"
+                    "Test MCT-410iL / Disconnect Config:\n"
+                    "Disconnect receiver address: 66049\n"
+                    "Disconnect load limit connect delay: 4 minutes\n"
+                    "Autoreconnect enabled\n"
+                    "Disconnect demand threshold disabled\n";
+
+                BOOST_CHECK_EQUAL( retMsg->Status(), NoError );
+                BOOST_CHECK_EQUAL( retMsg->ResultString(), expected );
+
+                const CtiMultiMsg_vec &points = retMsg->getData();
+
+                BOOST_REQUIRE_EQUAL( points.size(), 1 );
+
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<const CtiPointDataMsg *>(points[0]);
+
+                    BOOST_REQUIRE( pdata );
+
+                    BOOST_CHECK_CLOSE( pdata->getValue(), 3, 0.001 );
+                    BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+                    BOOST_CHECK_EQUAL( pdata->getTime(), CtiTime(CtiDate(14, 7, 2011), 19, 16, 11) );
+                    BOOST_CHECK_EQUAL( pdata->getString(), "Test MCT-410iL / Status1 =  @ 07/14/2011 19:16:11");
+                }
+            }
+
+            test_Mct410Device::CtiMessageList::const_iterator vgList_itr = vgList.begin();
+
+            {
+                const CtiReturnMsg *retMsg = dynamic_cast<const CtiReturnMsg *>(*vgList_itr++);
+
+                BOOST_REQUIRE( retMsg );
+
+                const CtiMultiMsg_vec &points = retMsg->getData();
+
+                BOOST_CHECK_EQUAL( points.size(), 1 );
+
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<const CtiPointDataMsg *>(points[0]);
+
+                    BOOST_REQUIRE( pdata );
+
+                    BOOST_CHECK_CLOSE( pdata->getValue(), 3, 0.001 );
+                    BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+                    BOOST_CHECK_EQUAL( pdata->getTime(), CtiTime(CtiDate(14, 7, 2011), 19, 16, 11) );
+                    BOOST_CHECK_EQUAL( pdata->getString(), "Test MCT-410iL / Status1 =  @ 07/14/2011 19:16:11");
+                }
+            }
+            {
+                const CtiReturnMsg *retMsg = dynamic_cast<const CtiReturnMsg *>(*vgList_itr++);
+
+                BOOST_REQUIRE( retMsg );
+
+                const CtiMultiMsg_vec &points = retMsg->getData();
+
+                BOOST_CHECK_EQUAL( points.size(), 2 );
+
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<const CtiPointDataMsg *>(points[0]);
+
+                    BOOST_REQUIRE( pdata );
+
+                    BOOST_CHECK_CLOSE( pdata->getValue(), 0, 0.001 );
+                    BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+                    BOOST_CHECK_EQUAL( pdata->getTime(), CtiTime(CtiDate(14, 7, 2011), 19, 16, 11) );
+                    BOOST_CHECK_EQUAL( pdata->getString(), "Test MCT-410iL / Status10: Normal");
+                }
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<const CtiPointDataMsg *>(points[1]);
+
+                    BOOST_REQUIRE( pdata );
+
+                    BOOST_CHECK_CLOSE( pdata->getValue(), 0, 0.001 );
+                    BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+                    BOOST_CHECK_EQUAL( pdata->getTime(), CtiTime(CtiDate(14, 7, 2011), 19, 16, 11) );
+                    BOOST_CHECK_EQUAL( pdata->getString(), "Test MCT-410iL / Status9: Normal");
+                }
+            }
+        }
+    }
+
+    BOOST_AUTO_TEST_CASE(test_executeGetConfigDisconnect_no_Mct_Configuration)
+    {
+        test_Mct410IconDevice test_dev;
+
+        //test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration, 0x08);
+
+        CtiCommandParser parse("getconfig disconnect");
+
+        BOOST_CHECK_EQUAL(NoError, test_dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
+
+        BOOST_CHECK( retList.empty() );
+        BOOST_CHECK( vgList.empty() );
+        BOOST_REQUIRE_EQUAL( outList.size(), 2 );
+
+        test_Mct410Device::OutMessageList::const_iterator outList_itr = outList.begin();
+
+        {
+            CtiOutMessage *outmsg = *outList_itr++;
+
+            BOOST_REQUIRE( outmsg );
+
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x00);
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.IO      , 0x01);  //  read
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , 8);
+        }
+
+        {
+            CtiOutMessage *outmsg = *outList_itr++;
+
+            BOOST_REQUIRE( outmsg );
+
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0xfe);
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.IO      , 0x03);  //  read
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , 11);
+        }
+    }
+
+    BOOST_AUTO_TEST_CASE(test_executePutConfigDisconnect_no_parameters)
+    {
+        test_Mct410IconDevice mct410;
+
+        mct410.setDisconnectAddress(314159);
+        mct410.demand_interval = 300;
+
+        CtiCommandParser parse("putconfig emetcon disconnect");
+
+        BOOST_CHECK_EQUAL(NoError, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList));
+
+        BOOST_CHECK( retList.empty() );
+        BOOST_CHECK( vgList.empty() );
+        BOOST_REQUIRE_EQUAL( outList.size(), 1 );
+
+        CtiOutMessage *outmsg = outList.front();
+
+        BOOST_REQUIRE( outmsg );
+
+        std::vector<unsigned char> expected = boost::assign::list_of
+                (0x04)(0xcb)(0x2f)(0x00)(0x00)(0x05);
+
+        BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0fe);
+        BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.IO      , 0x02);  //  function write
+        BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , expected.size());
+
+        const unsigned char *results_begin = outmsg->Buffer.BSt.Message;
+        const unsigned char *results_end   = outmsg->Buffer.BSt.Message +
+                                             outmsg->Buffer.BSt.Length;
+
+        BOOST_CHECK_EQUAL_COLLECTIONS(
+                expected.begin(), expected.end(),
+                results_begin, results_end);
+    }
+
+    BOOST_AUTO_TEST_CASE(test_executePutConfigDisconnect_load_limit)
+    {
+        test_Mct410IconDevice mct410;
+
+        mct410.setDisconnectAddress(314159);
+        mct410.demand_interval = 300;
+
+        CtiCommandParser parse("putconfig emetcon disconnect load limit 1.234 4");
+
+        BOOST_CHECK_EQUAL(NoError, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList));
+
+        BOOST_CHECK( retList.empty() );
+        BOOST_CHECK( vgList.empty() );
+        BOOST_REQUIRE_EQUAL( outList.size(), 1 );
+
+        CtiOutMessage *outmsg = outList.front();
+
+        BOOST_REQUIRE( outmsg );
+
+        std::vector<unsigned char> expected = boost::assign::list_of
+                (0x04)(0xcb)(0x2f)(0x34)(0x04)(0x04);
+
+        BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0fe);
+        BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.IO      , 0x02);  //  function write
+        BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , expected.size());
+
+        const unsigned char *results_begin = outmsg->Buffer.BSt.Message;
+        const unsigned char *results_end   = outmsg->Buffer.BSt.Message +
+                                             outmsg->Buffer.BSt.Length;
+
+        BOOST_CHECK_EQUAL_COLLECTIONS(
+                expected.begin(), expected.end(),
+                results_begin, results_end);
+    }
+
+    BOOST_AUTO_TEST_CASE(test_executePutConfigDisconnect_load_limit_bad_threshold)
+    {
+        test_Mct410IconDevice mct410;
+
+        mct410.setDisconnectAddress(314159);
+        mct410.demand_interval = 300;
+
+        //  load limit of 12345.678 kW is 1028.81 kWh/5 min interval - much higher than the 409.5 kWh allowed
+        CtiCommandParser parse("putconfig emetcon disconnect load limit 12345.678 4");
+
+        BOOST_CHECK_EQUAL(NoError, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList));
+
+        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
+        BOOST_CHECK( vgList.empty() );
+        BOOST_CHECK( outList.empty() );
+
+        const CtiReturnMsg *errorMsg = dynamic_cast<const CtiReturnMsg*>(retList.front());
+
+        BOOST_REQUIRE( errorMsg );
+
+        const std::string expected = "Test MCT-410iL / Invalid disconnect parameters (1028806.500, 4)";
+
+        BOOST_CHECK_EQUAL( BADPARAM , errorMsg->Status() );
+        BOOST_CHECK_EQUAL( expected , errorMsg->ResultString() );
+    }
+
+    BOOST_AUTO_TEST_CASE(test_executePutConfigDisconnect_load_limit_bad_connect_delay)
+    {
+        test_Mct410IconDevice mct410;
+
+        mct410.setDisconnectAddress(314159);
+        mct410.demand_interval = 300;
+
+        CtiCommandParser parse("putconfig emetcon disconnect load limit 1.234 11");  //  max is 10 mins
+
+        BOOST_CHECK_EQUAL(NoError, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList));
+
+        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
+        BOOST_CHECK( vgList.empty() );
+        BOOST_CHECK( outList.empty() );
+
+        const CtiReturnMsg *errorMsg = dynamic_cast<const CtiReturnMsg*>(retList.front());
+
+        BOOST_REQUIRE( errorMsg );
+
+        const std::string expected = "Test MCT-410iL / Invalid disconnect parameters (102.833, 11)";
+
+        BOOST_CHECK_EQUAL( BADPARAM , errorMsg->Status() );
+        BOOST_CHECK_EQUAL( expected , errorMsg->ResultString() );
+    }
+
+    BOOST_AUTO_TEST_CASE(test_executePutConfigDisconnect_cycle)
+    {
+        test_Mct410IconDevice mct410;
+
+        mct410.setDisconnectAddress(314159);
+        mct410.demand_interval = 300;
+
+        CtiCommandParser parse("putconfig emetcon disconnect cycle 7 17");
+
+        BOOST_CHECK_EQUAL(NoError, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList));
+
+        BOOST_CHECK( retList.empty() );
+        BOOST_CHECK( vgList.empty() );
+        BOOST_REQUIRE_EQUAL( outList.size(), 1 );
+
+        CtiOutMessage *outmsg = outList.front();
+
+        BOOST_REQUIRE( outmsg );
+
+        std::vector<unsigned char> expected = boost::assign::list_of
+                (0x04)(0xcb)(0x2f)(0x00)(0x00)(0x05)(0x07)(0x11);
+
+        BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0fe);
+        BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.IO      , 0x02);  //  function write
+        BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , expected.size());
+
+        const unsigned char *results_begin = outmsg->Buffer.BSt.Message;
+        const unsigned char *results_end   = outmsg->Buffer.BSt.Message +
+                                             outmsg->Buffer.BSt.Length;
+
+        BOOST_CHECK_EQUAL_COLLECTIONS(
+                expected.begin(), expected.end(),
+                results_begin, results_end);
+    }
+
+    BOOST_AUTO_TEST_CASE(test_executePutConfigDisconnect_cycle_bad_connect_low)
+    {
+        test_Mct410IconDevice mct410;
+
+        mct410.setDisconnectAddress(314159);
+        mct410.demand_interval = 300;
+
+        CtiCommandParser parse("putconfig emetcon disconnect cycle 4 17");  //  min is 5
+
+        BOOST_CHECK_EQUAL(NoError, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList));
+
+        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
+        BOOST_CHECK( vgList.empty() );
+        BOOST_CHECK( outList.empty() );
+
+        const CtiReturnMsg *errorMsg = dynamic_cast<const CtiReturnMsg*>(retList.front());
+
+        BOOST_REQUIRE( errorMsg );
+
+        const std::string expected = "Test MCT-410iL / Invalid disconnect cycle parameters (4, 17)";
+
+        BOOST_CHECK_EQUAL( BADPARAM , errorMsg->Status() );
+        BOOST_CHECK_EQUAL( expected , errorMsg->ResultString() );
+    }
+
+    BOOST_AUTO_TEST_CASE(test_executePutConfigDisconnect_cycle_bad_connect_high)
+    {
+        test_Mct410IconDevice mct410;
+
+        mct410.setDisconnectAddress(314159);
+        mct410.demand_interval = 300;
+
+        CtiCommandParser parse("putconfig emetcon disconnect cycle 64 17");  //  max is 60
+
+        BOOST_CHECK_EQUAL(NoError, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList));
+
+        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
+        BOOST_CHECK( vgList.empty() );
+        BOOST_CHECK( outList.empty() );
+
+        const CtiReturnMsg *errorMsg = dynamic_cast<const CtiReturnMsg*>(retList.front());
+
+        BOOST_REQUIRE( errorMsg );
+
+        const std::string expected = "Test MCT-410iL / Invalid disconnect cycle parameters (64, 17)";
+
+        BOOST_CHECK_EQUAL( BADPARAM , errorMsg->Status() );
+        BOOST_CHECK_EQUAL( expected , errorMsg->ResultString() );
+    }
+
+    BOOST_AUTO_TEST_CASE(test_executePutConfigDisconnect_cycle_bad_disconnect_low)
+    {
+        test_Mct410IconDevice mct410;
+
+        mct410.setDisconnectAddress(314159);
+        mct410.demand_interval = 300;
+
+        CtiCommandParser parse("putconfig emetcon disconnect cycle 7 4");  //  min is 5
+
+        BOOST_CHECK_EQUAL(NoError, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList));
+
+        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
+        BOOST_CHECK( vgList.empty() );
+        BOOST_CHECK( outList.empty() );
+
+        const CtiReturnMsg *errorMsg = dynamic_cast<const CtiReturnMsg*>(retList.front());
+
+        BOOST_REQUIRE( errorMsg );
+
+        const std::string expected = "Test MCT-410iL / Invalid disconnect cycle parameters (7, 4)";
+
+        BOOST_CHECK_EQUAL( BADPARAM , errorMsg->Status() );
+        BOOST_CHECK_EQUAL( expected , errorMsg->ResultString() );
+    }
+
+    BOOST_AUTO_TEST_CASE(test_executePutConfigDisconnect_cycle_bad_disconnect_high)
+    {
+        test_Mct410IconDevice mct410;
+
+        mct410.setDisconnectAddress(314159);
+        mct410.demand_interval = 300;
+
+        CtiCommandParser parse("putconfig emetcon disconnect cycle 7 77");  //  max is 60
+
+        BOOST_CHECK_EQUAL(NoError, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList));
+
+        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
+        BOOST_CHECK( vgList.empty() );
+        BOOST_CHECK( outList.empty() );
+
+        const CtiReturnMsg *errorMsg = dynamic_cast<const CtiReturnMsg*>(retList.front());
+
+        BOOST_REQUIRE( errorMsg );
+
+        const std::string expected = "Test MCT-410iL / Invalid disconnect cycle parameters (7, 77)";
+
+        BOOST_CHECK_EQUAL( BADPARAM , errorMsg->Status() );
+        BOOST_CHECK_EQUAL( expected , errorMsg->ResultString() );
+    }
+
+    BOOST_AUTO_TEST_CASE(test_executePutConfigDisconnect_load_limit_and_cycle)
+    {
+        test_Mct410IconDevice mct410;
+
+        mct410.setDisconnectAddress(314159);
+        mct410.demand_interval = 300;
+
+        CtiCommandParser parse("putconfig emetcon disconnect load limit 1.234 4 cycle 7 17");
+
+        BOOST_CHECK_EQUAL(NoError, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList));
+
+        BOOST_CHECK( retList.empty() );
+        BOOST_CHECK( vgList.empty() );
+        BOOST_REQUIRE_EQUAL( outList.size(), 1 );
+
+        CtiOutMessage *outmsg = outList.front();
+
+        BOOST_REQUIRE( outmsg );
+
+        std::vector<unsigned char> expected = boost::assign::list_of
+                (0x04)(0xcb)(0x2f)(0x34)(0x04)(0x04)(0x07)(0x11);
+
+        BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0fe);
+        BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.IO      , 0x02);  //  function write
+        BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , expected.size());
+
+        const unsigned char *results_begin = outmsg->Buffer.BSt.Message;
+        const unsigned char *results_end   = outmsg->Buffer.BSt.Message +
+                                             outmsg->Buffer.BSt.Length;
+
+        BOOST_CHECK_EQUAL_COLLECTIONS(
+                expected.begin(), expected.end(),
+                results_begin, results_end);
+    }
+
 //}  Brace matching for BOOST_FIXTURE_TEST_SUITE
 BOOST_AUTO_TEST_SUITE_END()
 

@@ -145,6 +145,11 @@ void CtiTablePointBase::setID(LONG id)
    _pointID = id;
 }
 
+void CtiTablePointBase::setName(std::string name)
+{
+   _name = name;
+}
+
 void CtiTablePointBase::setType(CtiPointType_t t)
 {
    _type = t;

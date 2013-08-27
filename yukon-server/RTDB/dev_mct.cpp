@@ -878,7 +878,7 @@ INT MctDevice::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList 
 
         if( point_powerfail || point_generalalarm )
         {
-            CtiReturnMsg *retMsg = CTIDBG_new CtiReturnMsg(getID());
+            std::auto_ptr<CtiReturnMsg> retMsg(new CtiReturnMsg(getID()));
 
             string pointResult;
 
@@ -886,17 +886,27 @@ INT MctDevice::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList 
             {
                 pointResult = getName() + " / " + point_powerfail->getName() + ": " + ResolveStateName(point_powerfail->getStateGroupID(), InMessage->Buffer.DSt.Power);
 
-                retMsg->PointData().push_back(CTIDBG_new CtiPointDataMsg(point_powerfail->getPointID(), InMessage->Buffer.DSt.Power, NormalQuality, StatusPointType, pointResult));
+                std::auto_ptr<CtiPointDataMsg> pData(
+                   new CtiPointDataMsg(point_powerfail->getPointID(), InMessage->Buffer.DSt.Power, NormalQuality, StatusPointType, pointResult));
+
+                pData->setTime(TimeNow);
+
+                retMsg->PointData().push_back(pData.release());
             }
 
             if( point_generalalarm )
             {
                 pointResult = getName() + " / " + point_generalalarm->getName() + ": " + ResolveStateName(point_generalalarm->getStateGroupID(), InMessage->Buffer.DSt.Alarm);
 
-                retMsg->PointData().push_back(CTIDBG_new CtiPointDataMsg(point_generalalarm->getPointID(), InMessage->Buffer.DSt.Alarm, NormalQuality, StatusPointType, pointResult));
+                std::auto_ptr<CtiPointDataMsg> pData(
+                   new CtiPointDataMsg(point_generalalarm->getPointID(), InMessage->Buffer.DSt.Alarm, NormalQuality, StatusPointType, pointResult));
+
+                pData->setTime(TimeNow);
+
+                retMsg->PointData().push_back(pData.release());
             }
 
-            vgList.push_back(retMsg);
+            vgList.push_back(retMsg.release());
         }
     }
 

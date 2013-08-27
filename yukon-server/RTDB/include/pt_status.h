@@ -32,10 +32,11 @@ public:
 
 struct IM_EX_PNTDB Test_CtiPointStatus : public CtiPointStatus
 {
-    void setPointOffset  ( int  offset   )  {  _pointBase.setPointOffset(offset);   }
-    void setControlOffset( int offset    )  {  getPointStatusControl()->setControlOffset(offset);   }
-    void setID           ( long id       )  {  _pointBase.setID(id);                }
-    void setDeviceID     ( long deviceid )  {  _pointBase.setPAObjectID(deviceid);  }
+    void setPointOffset  ( int  offset   )     {  _pointBase.setPointOffset(offset);   }
+    void setControlOffset( int offset    )     {  getPointStatusControl()->setControlOffset(offset);   }
+    void setID           ( long id       )     {  _pointBase.setID(id);                }
+    void setDeviceID     ( long deviceid )     {  _pointBase.setPAObjectID(deviceid);  }
+    void setName       ( std::string name )  {  _pointBase.setName(name);  }
 
     void setControlType  ( CtiControlType_t type )  {  getPointStatusControl()->setControlType(type);  }
 

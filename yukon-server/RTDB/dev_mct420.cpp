@@ -444,9 +444,16 @@ int Mct420Device::executePutConfigDisplay(CtiRequestMsg *pReq,CtiCommandParser &
 
     DlcCommandSPtr lcdConfiguration(new Mct420LcdConfigurationCommand(display_metrics, readsOnly));
 
-    return tryExecuteCommand(*OutMessage, lcdConfiguration)
-               ? NoError
-               : NoMethod;
+    std::auto_ptr<OUTMESS> om(new OUTMESS(*OutMessage));
+
+    if( ! tryExecuteCommand(*om, lcdConfiguration) )
+    {
+        return NoMethod;
+    }
+
+    outList.push_back(om.release());
+
+    return NoError;
 }
 
 int Mct420Device::executePutConfigMeterParameters(CtiRequestMsg *pReq,
@@ -587,9 +594,16 @@ int Mct420Device::executePutConfigMeterParameters(CtiRequestMsg *pReq,
             new Mct420MeterParametersDisplayDigitsCommand());
     }
 
-    return tryExecuteCommand(*OutMessage, meterParameterCommand)
-               ? NoError
-               : NoMethod;
+    std::auto_ptr<OUTMESS> om(new OUTMESS(*OutMessage));
+
+    if( ! tryExecuteCommand(*om, meterParameterCommand) )
+    {
+        return NoMethod;
+    }
+
+    outList.push_back(om.release());
+
+    return NoError;
 }
 
 int Mct420Device::executeGetConfig( CtiRequestMsg        *pReq,

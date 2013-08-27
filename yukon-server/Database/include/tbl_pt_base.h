@@ -71,6 +71,7 @@ public:
    BOOL getPseudoTag() const;
 
    std::string getName() const;
+   void setName( std::string name );
 
    CtiPointType_t getType() const;
    void setType(CtiPointType_t t);
