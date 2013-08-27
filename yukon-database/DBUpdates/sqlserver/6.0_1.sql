@@ -124,14 +124,7 @@ GO
 
 /* Start YUK-12464 */
 ALTER TABLE ApplianceCategory
-ADD AverageLoad VARCHAR(32);
-GO
-
-UPDATE ApplianceCategory
-SET AverageLoad = '1.0';
-
-ALTER TABLE ApplianceCategory
-ALTER COLUMN AverageLoad VARCHAR(32) NOT NULL;
+ADD AverageKwLoad VARCHAR(32);
 /* End YUK-12464 */
 
 /* Start YUK-12230 */
