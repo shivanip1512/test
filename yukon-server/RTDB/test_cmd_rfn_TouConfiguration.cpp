@@ -301,16 +301,8 @@ BOOST_AUTO_TEST_CASE( test_RfnTouScheduleConfigurationCommand )
 
         RfnTouScheduleConfigurationCommand::Schedule sched_rcv = *cmd.getTouScheduleReceived();
 
-        BOOST_REQUIRE( sched_rcv._dayTable );
-        BOOST_REQUIRE( sched_rcv._defaultRate );
-
         BOOST_CHECK_EQUAL( sched_rcv._dayTable,    sched._dayTable );
         BOOST_CHECK_EQUAL( sched_rcv._defaultRate, sched._defaultRate );
-
-        BOOST_REQUIRE( Cti::mapFind(sched_rcv._times, RfnTouScheduleConfigurationCommand::Schedule1) );
-        BOOST_REQUIRE( Cti::mapFind(sched_rcv._times, RfnTouScheduleConfigurationCommand::Schedule2) );
-        BOOST_REQUIRE( Cti::mapFind(sched_rcv._times, RfnTouScheduleConfigurationCommand::Schedule3) );
-        BOOST_REQUIRE( Cti::mapFind(sched_rcv._times, RfnTouScheduleConfigurationCommand::Schedule4) );
 
         BOOST_CHECK_EQUAL( Cti::mapFind(sched_rcv._times,  RfnTouScheduleConfigurationCommand::Schedule1),
                            Cti::mapFind(sched._times,      RfnTouScheduleConfigurationCommand::Schedule1) );

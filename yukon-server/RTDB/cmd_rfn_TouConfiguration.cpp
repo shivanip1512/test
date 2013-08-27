@@ -108,6 +108,18 @@ const map<unsigned char, RfnTouConfigurationCommand::TouState> touStateItems = m
         ( 0x0, RfnTouConfigurationCommand::TouDisable )
         ( 0x1, RfnTouConfigurationCommand::TouEnable );
 
+const map<unsigned char, RfnTouScheduleConfigurationCommand::ScheduleNbr> timesScheduleNbrItems = map_list_of
+        ( Type_Schedule1_SwitchTimes, RfnTouScheduleConfigurationCommand::Schedule1 )
+        ( Type_Schedule2_SwitchTimes, RfnTouScheduleConfigurationCommand::Schedule2 )
+        ( Type_Schedule3_SwitchTimes, RfnTouScheduleConfigurationCommand::Schedule3 )
+        ( Type_Schedule4_SwitchTimes, RfnTouScheduleConfigurationCommand::Schedule4 );
+
+const map<unsigned char, RfnTouScheduleConfigurationCommand::ScheduleNbr> ratesScheduleNbrItems = map_list_of
+        ( Type_Schedule1_Rates, RfnTouScheduleConfigurationCommand::Schedule1 )
+        ( Type_Schedule2_Rates, RfnTouScheduleConfigurationCommand::Schedule2 )
+        ( Type_Schedule3_Rates, RfnTouScheduleConfigurationCommand::Schedule3 )
+        ( Type_Schedule4_Rates, RfnTouScheduleConfigurationCommand::Schedule4 );
+
 } // anonymous namespace
 
 /**
@@ -345,7 +357,8 @@ void RfnTouScheduleConfigurationCommand::decodeTlv( RfnResult& result,  const Ty
         case Type_Schedule3_SwitchTimes :
         case Type_Schedule4_SwitchTimes :
         {
-            decodeScheduleSwitchTimes( result, tlv.value, (ScheduleNbr)(tlv.type - Type_Schedule1_SwitchTimes) );
+            ScheduleNbr schedule_nbr = *mapFind( timesScheduleNbrItems, tlv.type );
+            decodeScheduleSwitchTimes( result, tlv.value, schedule_nbr );
             break;
         }
         case Type_Schedule1_Rates :
@@ -353,7 +366,8 @@ void RfnTouScheduleConfigurationCommand::decodeTlv( RfnResult& result,  const Ty
         case Type_Schedule3_Rates :
         case Type_Schedule4_Rates :
         {
-            decodeScheduleRates( result, tlv.value, (ScheduleNbr)(tlv.type - Type_Schedule1_Rates) );
+            ScheduleNbr schedule_nbr = *mapFind( ratesScheduleNbrItems, tlv.type );
+            decodeScheduleRates( result, tlv.value, schedule_nbr );
             break;
         }
         case Type_DefaultTouRate :
