@@ -2099,6 +2099,10 @@ int Mct4xxDevice::executePutConfigSingle(CtiRequestMsg *pReq,
     {
         nRet = executePutConfigMeterParameters(pReq,parse,OutMessage,vgList,retList,outList,readsOnly);
     }
+    else if (installValue == PutConfigPart_disconnect)
+    {
+        nRet = executePutConfigInstallDisconnect(pReq,parse,OutMessage,vgList,retList,outList,readsOnly);
+    }
     else
     {   //Not sure if this is correct, this could just return NoMethod. This is here
         //just in case anyone wants to use a putconfig install  for anything but configs.
@@ -2426,6 +2430,11 @@ int Mct4xxDevice::executePutConfigInstallDST (CtiRequestMsg *pReq, CtiCommandPar
 }
 
 int Mct4xxDevice::executePutConfigMeterParameters(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly)
+{
+    return NoMethod;
+}
+
+int Mct4xxDevice::executePutConfigInstallDisconnect(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly)
 {
     return NoMethod;
 }

@@ -1023,6 +1023,7 @@ bool CtiDeviceBase::getDynamicInfo(PaoInfoKeys k,           int &destination) co
 bool CtiDeviceBase::getDynamicInfo(PaoInfoKeys k,          long &destination) const    {   return getInfo(_paoInfo, getID(), k, destination);  }
 bool CtiDeviceBase::getDynamicInfo(PaoInfoKeys k, unsigned long &destination) const    {   return getInfo(_paoInfo, getID(), k, destination);  }
 bool CtiDeviceBase::getDynamicInfo(PaoInfoKeys k,        double &destination) const    {   return getInfo(_paoInfo, getID(), k, destination);  }
+bool CtiDeviceBase::getDynamicInfo(PaoInfoKeys k,  unsigned int &destination) const    {   return getInfo(_paoInfo, getID(), k, destination);  }
 bool CtiDeviceBase::getDynamicInfo(PaoInfoKeys k,       CtiTime &destination) const
 {
     ctitime_t t;

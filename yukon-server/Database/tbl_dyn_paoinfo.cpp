@@ -803,6 +803,21 @@ void CtiTableDynamicPaoInfo::getValue(int &destination) const
     destination = atoi(_value.c_str());
 }
 
+void CtiTableDynamicPaoInfo::getValue(unsigned int &destination) const
+{
+    double tmp;
+    getValue(tmp);
+
+    if( tmp >= 0 )
+    {
+        destination = (unsigned int)tmp;
+    }
+    else
+    {
+        destination = 0UL;
+    }
+}
+
 void CtiTableDynamicPaoInfo::getValue(long &destination) const
 {
     destination = atol(_value.c_str());

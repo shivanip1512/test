@@ -1,5 +1,7 @@
 #include "precompiled.h"
 
+#include "numstr.h"
+
 #include "cmd_mct410_disconnectConfiguration.h"
 #include "dev_mct410.h"
 
@@ -70,6 +72,12 @@ DlcCommand::request_ptr Mct410DisconnectConfigurationCommand::decodeCommand(cons
     {
         if( payload )
         {
+            description += "\nConfig data received: ";
+            for each(const unsigned char byte in *payload)
+            {
+                description += CtiNumStr(byte).hex().zpad(2);
+            }
+
             //  the rest of the disconnect configuration elements
             unsigned dynamicDemand = (*payload)[5] << 8 | (*payload)[6];
 

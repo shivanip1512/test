@@ -343,6 +343,7 @@ public:
     void getValue(unsigned long &destination) const;
     void getValue(double        &destination) const;
     void getValue(std::string   &destination) const;
+    void getValue(unsigned int  &destination) const;
 
     void setEntryID(long entry_id);
     void setOwner(CtiApplication_t o);

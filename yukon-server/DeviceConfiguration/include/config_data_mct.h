@@ -160,6 +160,12 @@ public:
     static const std::string LcdCycleTime;
     static const std::string DisconnectDisplayDisabled;
     static const std::string DisplayDigits;
+
+    static const std::string DisconnectDemandThreshold;
+    static const std::string DisconnectLoadLimitConnectDelay;
+    static const std::string DisconnectMinutes;
+    static const std::string ConnectMinutes;
+    static const std::string ReconnectButton;
 };
 
 }

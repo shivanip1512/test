@@ -5,9 +5,10 @@
 #include "dllyukon.h"  //  for ResolveStateName()
 #include "date_utility.h"
 #include "utility.h"
+#include "config_data_mct.h"
 
 #include "dev_mct410.h"
-#include "cmd_mct410_disconnectConfiguration.h"
+#include "dev_mct410_commands.h"
 
 #include "tbl_ptdispatch.h"
 #include "pt_status.h"
@@ -177,17 +178,17 @@ Mct410Device::ConfigPartsList Mct410Device::initConfigParts()
 {
     Mct410Device::ConfigPartsList tempList;
 
-    tempList.push_back(Mct4xxDevice::PutConfigPart_dst);
-    tempList.push_back(Mct4xxDevice::PutConfigPart_vthreshold);
-    tempList.push_back(Mct4xxDevice::PutConfigPart_demand_lp);
-    tempList.push_back(Mct4xxDevice::PutConfigPart_options);
-    tempList.push_back(Mct4xxDevice::PutConfigPart_addressing);
+    //tempList.push_back(Mct4xxDevice::PutConfigPart_dst);
+    //tempList.push_back(Mct4xxDevice::PutConfigPart_vthreshold);
+    //tempList.push_back(Mct4xxDevice::PutConfigPart_demand_lp);
+    //tempList.push_back(Mct4xxDevice::PutConfigPart_options);
+    //tempList.push_back(Mct4xxDevice::PutConfigPart_addressing);
     tempList.push_back(Mct4xxDevice::PutConfigPart_disconnect);
-    tempList.push_back(Mct4xxDevice::PutConfigPart_holiday);
-    tempList.push_back(Mct4xxDevice::PutConfigPart_llp);
+    //tempList.push_back(Mct4xxDevice::PutConfigPart_holiday);
+    //tempList.push_back(Mct4xxDevice::PutConfigPart_llp);
     //tempList.push_back(Mct4xxDevice::PutConfigPart_usage); //Jess does not know what this was intended for...
-    tempList.push_back(Mct4xxDevice::PutConfigPart_centron);
-    tempList.push_back(Mct4xxDevice::PutConfigPart_tou);
+    //tempList.push_back(Mct4xxDevice::PutConfigPart_centron);
+    //tempList.push_back(Mct4xxDevice::PutConfigPart_tou);
 
     return tempList;
 }
@@ -1238,8 +1239,9 @@ INT Mct410Device::executePutConfig( CtiRequestMsg              *pReq,
 
         demand_threshold /= 3600 / getDemandInterval();
 
-        if( (dynamic_demand_threshold = Utility::makeDynamicDemand(demand_threshold)) < 0
-            ||  connect_delay > 10 )
+        dynamic_demand_threshold = Utility::makeDynamicDemand(demand_threshold);
+
+        if( dynamic_demand_threshold < 0 ||  connect_delay > 10 )
         {
             found = false;
             nRet  = ExecutionComplete;
@@ -1573,6 +1575,169 @@ INT Mct410Device::executePutConfig( CtiRequestMsg              *pReq,
     }
 
     return nRet;
+}
+
+int Mct410Device::executePutConfigInstallDisconnect(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly)
+{
+    if (!isSupported(Feature_Disconnect)) 
+    {
+        returnErrorMessage(ErrorUnsupportedDevice, OutMessage, retList, "This device type does not support the putconfig disconnect command");
+        return ExecutionComplete;
+    }
+
+    Config::DeviceConfigSPtr deviceConfig = getDeviceConfig();
+    if( !deviceConfig )
+    {
+        return NoConfigData;
+    }
+
+    DlcCommandSPtr disconnectCommand;
+
+    if( ! readsOnly )
+    {
+        float disconnectDemandThreshold = deviceConfig->getFloatValueFromKey(MCTStrings::DisconnectDemandThreshold);
+        if( disconnectDemandThreshold == std::numeric_limits<double>::min() )
+        {
+            if( getMCTDebugLevel(DebugLevel_Configs) )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Device \"" << getName() << "\" - invalid value ("
+                     << deviceConfig->getValueFromKey(MCTStrings::DisconnectDemandThreshold) << ") for config key \""
+                     << MCTStrings::DisconnectDemandThreshold << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            return NoConfigData;
+        }
+
+        boost::optional<long> disconnectLoadLimitDelay = deviceConfig->findLongValueForKey(MCTStrings::DisconnectLoadLimitConnectDelay);
+        if( !disconnectLoadLimitDelay )
+        {
+            if( getMCTDebugLevel(DebugLevel_Configs) )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Device \"" << getName() << "\" - invalid value ("
+                     << deviceConfig->getValueFromKey(MCTStrings::DisconnectLoadLimitConnectDelay) << ") for config key \""
+                     << MCTStrings::DisconnectLoadLimitConnectDelay << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            return NoConfigData;
+        } 
+        else if( *disconnectLoadLimitDelay < 0 )
+        {
+            //another error, must be unsigned.
+        }
+
+        boost::optional<long> disconnectMinutes = deviceConfig->findLongValueForKey(MCTStrings::DisconnectMinutes);
+        if( !disconnectMinutes )
+        {
+            if( getMCTDebugLevel(DebugLevel_Configs) )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Device \"" << getName() << "\" - invalid value ("
+                     << deviceConfig->getValueFromKey(MCTStrings::DisconnectMinutes) << ") for config key \""
+                     << MCTStrings::DisconnectMinutes << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            return NoConfigData;
+        }
+        else if( *disconnectMinutes < 0 )
+        {
+            //another error, must be unsigned.
+        }
+
+        boost::optional<long> connectMinutes = deviceConfig->findLongValueForKey(MCTStrings::ConnectMinutes);
+        if( !connectMinutes )
+        {
+            if( getMCTDebugLevel(DebugLevel_Configs) )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Device \"" << getName() << "\" - invalid value ("
+                     << deviceConfig->getValueFromKey(MCTStrings::ConnectMinutes) << ") for config key \""
+                     << MCTStrings::ConnectMinutes << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            return NoConfigData;
+        }
+        else if( *connectMinutes < 0 )
+        {
+            //another error, must be unsigned.
+        }
+
+        bool reconnectButtonEnabled;
+        if( !deviceConfig->getBoolValue(MCTStrings::ReconnectButton, reconnectButtonEnabled) )
+        {
+            if( getMCTDebugLevel(DebugLevel_Configs) )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Device \"" << getName() << "\" - invalid value ("
+                     << deviceConfig->getValueFromKey(MCTStrings::ReconnectButton) << ") for config key \""
+                     << MCTStrings::ReconnectButton << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            return NoConfigData;
+        }
+
+        double dpi_demandThreshold;
+        unsigned dpi_connectDelay, dpi_disconnectMinutes, dpi_connectMinutes, dpi_configurationByte;
+
+        getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DemandThreshold,   dpi_demandThreshold);
+        getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_ConnectDelay,      dpi_connectDelay);
+        getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DisconnectMinutes, dpi_disconnectMinutes);
+        getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_ConnectMinutes,    dpi_connectMinutes);
+        getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration,     dpi_configurationByte);
+
+        bool thresholdMatches = fabs(dpi_demandThreshold - disconnectDemandThreshold) < 1e-6;
+
+        if( thresholdMatches &&
+            dpi_connectDelay == *disconnectLoadLimitDelay &&
+            dpi_disconnectMinutes == *disconnectMinutes &&
+            dpi_connectMinutes == *connectMinutes &&
+            (dpi_configurationByte >> 2) & 0x01 == reconnectButtonEnabled )
+        {
+            if( ! parse.isKeyValid("force") )
+            {
+                return ConfigCurrent;
+            }
+        }
+        else
+        {
+            if( parse.isKeyValid("verify") )
+            {
+                return ConfigNotCurrent;
+            }
+        }
+            
+        Mct410DisconnectConfigurationCommand::ReconnectButtonState buttonState = 
+            reconnectButtonEnabled ? 
+                Mct410DisconnectConfigurationCommand::Enabled : 
+                Mct410DisconnectConfigurationCommand::Disabled;
+
+        disconnectCommand.reset(
+           new Mct410DisconnectConfigurationCommand(
+              _disconnectAddress, 
+              disconnectDemandThreshold, 
+              static_cast<unsigned>(*disconnectLoadLimitDelay), 
+              static_cast<unsigned>(*disconnectMinutes), 
+              static_cast<unsigned>(*connectMinutes), 
+              buttonState,
+              getDemandInterval()));
+    }
+    else 
+    {
+        // This is a read
+        disconnectCommand.reset(new Mct410DisconnectConfigurationCommand());
+    }
+
+    std::auto_ptr<OUTMESS> om(new OUTMESS(*OutMessage));
+
+    if( ! tryExecuteCommand(*om, disconnectCommand) )
+    {
+        return NoMethod;
+    }
+    
+    outList.push_back(om.release());
+
+    return NoError;
 }
 
 INT Mct410Device::executePutStatus( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
@@ -4409,6 +4574,7 @@ bool Mct410Device::isSupported(const Features feature) const
         {
             return sspecAtLeast(SspecRev_HourlyKwh);
         }
+        case Feature_Disconnect:
         case Feature_DisconnectCollar:
         {
             //  all MCT-410s support the disconnect collar

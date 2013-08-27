@@ -528,6 +528,21 @@ int DlcBaseDevice::findAndDecodeCommand(const INMESS &InMessage, CtiTime TimeNow
                               CtiCommandParser(newReq.CommandString()),
                               list<OUTMESS *>(1, OutMessage),
                               vgList, retList, outList, false);
+
+            if (getGroupMessageCount(newReq.UserMessageId(), (long)newReq.getConnectionHandle()))
+            {
+                for each(CtiMessage* msg in retList)
+                {
+                    if( CtiReturnMsg* retMsg = dynamic_cast<CtiReturnMsg*>(msg) )
+                    {
+                        retMsg->setExpectMore(true);
+                    }
+                }
+            }
+        }
+        else
+        {
+            decrementGroupMessageCount(InMessage.Return.UserID, (long)InMessage.Return.Connection);
         }
 
         _activeCommands.erase(command_itr);

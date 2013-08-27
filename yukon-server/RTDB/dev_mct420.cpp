@@ -1040,6 +1040,22 @@ bool Mct420Device::isSupported(const Mct410Device::Features feature) const
             //  this is the only MCT-420 that supports the collar
             return getType() == TYPEMCT420FL;
         }
+        case Feature_Disconnect:
+        {
+            switch( getType() )
+            {
+                case TYPEMCT420CD:
+                case TYPEMCT420FL:
+                case TYPEMCT420FD:
+                {
+                    return true;
+                }
+                default:
+                {
+                    return false;
+                }
+            }
+        }
     }
 
     return Mct410Device::isSupported(feature);
