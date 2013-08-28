@@ -121,6 +121,16 @@ const map<unsigned char, RfnTouScheduleConfigurationCommand::ScheduleNbr> ratesS
         ( Type_Schedule3_Rates, RfnTouScheduleConfigurationCommand::Schedule3 )
         ( Type_Schedule4_Rates, RfnTouScheduleConfigurationCommand::Schedule4 );
 
+const map<string, RfnTouConfigurationCommand::Rate> rateResolver = map_list_of
+        ( "A", RfnTouConfigurationCommand::RateA )
+        ( "a", RfnTouConfigurationCommand::RateA )
+        ( "B", RfnTouConfigurationCommand::RateB )
+        ( "b", RfnTouConfigurationCommand::RateB )
+        ( "C", RfnTouConfigurationCommand::RateC )
+        ( "c", RfnTouConfigurationCommand::RateC )
+        ( "D", RfnTouConfigurationCommand::RateD )
+        ( "d", RfnTouConfigurationCommand::RateD );
+
 } // anonymous namespace
 
 /**
@@ -769,12 +779,22 @@ void RfnTouHolidayActiveConfigurationCommand::decodeTlv( RfnResult& result, cons
 //  RFN TOU configuration critical peak set
 //-----------------------------------------------------------------------------
 
-RfnTouCriticalPeakCommand::RfnTouCriticalPeakCommand( const Rate rate, const unsigned hour, const unsigned minute )
-    :   _rate( rate ),
-        _hour( hour ),
+RfnTouCriticalPeakCommand::RfnTouCriticalPeakCommand( const std::string & rate, const unsigned hour, const unsigned minute )
+    :   _hour( hour ),
         _minute( minute )
 {
+    validateCondition( _hour < 24,
+                       BADPARAM, "Invalid hour (" + CtiNumStr(_hour) + "), expecting hour < 24" );
 
+    validateCondition( _minute < 60,
+                       BADPARAM, "Invalid minute (" + CtiNumStr(_hour) + "), expecting minute < 60" );
+
+    boost::optional<Rate>   rateLookup = Cti::mapFind( rateResolver, rate );
+
+    validateCondition( rateLookup,
+                       BADPARAM, "Invalid rate - (" + rate + ")");
+
+    _rate = *rateLookup;
 }
 
 unsigned char RfnTouCriticalPeakCommand::getOperation() const

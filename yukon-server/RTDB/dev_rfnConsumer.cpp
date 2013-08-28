@@ -252,15 +252,27 @@ int RfnConsumerDevice::executeTouCriticalPeak( CtiRequestMsg     * pReq,
     }
     else
     {
-        const std::string rateStr = parse.getsValue( "tou_critical_peak_rate" );
+        const int parsedHour     = parse.getiValue( "tou_critical_peak_stop_time_hour" );
+        const int parsedMinute   = parse.getiValue( "tou_critical_peak_stop_time_minute" );
 
-        Commands::RfnTouCriticalPeakCommand::Rate   rate = Commands::RfnTouCriticalPeakCommand::RateD;
-        if ( rateStr == "a" ) { rate = Commands::RfnTouCriticalPeakCommand::RateA; }
-        if ( rateStr == "b" ) { rate = Commands::RfnTouCriticalPeakCommand::RateB; }
-        if ( rateStr == "c" ) { rate = Commands::RfnTouCriticalPeakCommand::RateC; }
+        if ( parsedHour == -1 )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Device \"" << getName() << "\" - Missing hour value. " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
 
-        const unsigned hour   = parse.getiValue( "tou_critical_peak_stop_time_hour" );
-        const unsigned minute = parse.getiValue( "tou_critical_peak_stop_time_minute" );
+            return BADPARAM;
+        }
+        if ( parsedMinute == -1 )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Device \"" << getName() << "\" - Missing minute value. " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+
+            return BADPARAM;
+        }
+
+        const unsigned hour     = parsedHour;
+        const unsigned minute   = parsedMinute;
+        const std::string rate  = parse.getsValue( "tou_critical_peak_rate" );
 
         rfnRequests.push_back( boost::make_shared<Commands::RfnTouCriticalPeakCommand>( rate, hour, minute ) );
     }

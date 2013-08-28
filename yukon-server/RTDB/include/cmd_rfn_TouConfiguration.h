@@ -19,6 +19,14 @@ public:
     virtual RfnResult decodeCommand(const CtiTime now, const RfnResponse &response);
     virtual RfnResult error(const CtiTime now, const YukonError_t error_code);
 
+    enum Rate
+    {
+        RateA,
+        RateB,
+        RateC,
+        RateD
+    };
+
     enum TouState
     {
         TouEnable,
@@ -55,14 +63,6 @@ public:
         Schedule2,
         Schedule3,
         Schedule4,
-    };
-
-    enum Rate
-    {
-        RateA,
-        RateB,
-        RateC,
-        RateD,
     };
 
     typedef boost::array<ScheduleNbr, 8>       DayTable;
@@ -189,15 +189,7 @@ class IM_EX_DEVDB RfnTouCriticalPeakCommand : public RfnTouConfigurationCommand
 {
 public:
 
-    enum Rate
-    {
-        RateA,
-        RateB,
-        RateC,
-        RateD,
-    };
-
-    RfnTouCriticalPeakCommand( const Rate rate, const unsigned hour, const unsigned minute );
+    RfnTouCriticalPeakCommand( const std::string & rate, const unsigned hour, const unsigned minute );
 
     virtual void prepareCommandData( const CtiTime & now );
 
