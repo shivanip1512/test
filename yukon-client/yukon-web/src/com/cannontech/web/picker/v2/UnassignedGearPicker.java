@@ -10,6 +10,7 @@ import com.cannontech.common.bulk.filter.AbstractRowMapperWithBaseQuery;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.db.device.lm.GearControlMethod;
 import com.google.common.collect.Lists;
 
 public class UnassignedGearPicker extends DatabasePicker<Map<String, Object>> {
@@ -67,7 +68,7 @@ public class UnassignedGearPicker extends DatabasePicker<Map<String, Object>> {
 
             map.put("gearName", rs.getString("gearName"));
             map.put("gearId", rs.getInt("gearId"));
-            map.put("controlMethod", rs.getString("controlMethod"));
+            map.put("controlMethod", rs.getEnum("controlMethod", GearControlMethod.class));
 
             return map;
         }

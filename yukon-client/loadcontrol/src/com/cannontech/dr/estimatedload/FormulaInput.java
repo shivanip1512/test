@@ -15,7 +15,8 @@ import com.cannontech.common.i18n.DisplayableEnum;
 public final class FormulaInput<T> {
 
     public enum InputType implements DisplayableEnum {
-        TEMP,
+        TEMP_C,
+        TEMP_F,
         HUMIDITY,
         TIME {
             // Use a ReadableInstant property editor when converting Time values
@@ -34,11 +35,11 @@ public final class FormulaInput<T> {
         }
 
         public static Set<InputType> getApplianceCategoryFunctionInputs() {
-            return EnumSet.of(TEMP, HUMIDITY, POINT);
+            return EnumSet.of(TEMP_C, TEMP_F, HUMIDITY, POINT);
         }
 
         public static Set<InputType> getApplianceCategoryTableInputs() {
-            return EnumSet.of(TEMP, HUMIDITY, TIME, POINT);
+            return EnumSet.of(TEMP_C, TEMP_F, HUMIDITY, TIME, POINT);
         }
 
         public static Set<InputType> getGearInputs() {

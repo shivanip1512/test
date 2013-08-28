@@ -30,7 +30,7 @@ public class UnassignedApplianceCategoryPicker extends DatabasePicker<Map<String
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
 
     private final static String[] searchColumnNames = new String[] {
-        "ac.applianceCategoryId", "ac.description", "yle.yukonDefinitionId"
+        "ac.applianceCategoryId", "ac.description", "yle.yukonDefinitionId", "ac.averageKwLoad"
     };
 
     private final static List<OutputColumn> outputColumns;
@@ -38,7 +38,7 @@ public class UnassignedApplianceCategoryPicker extends DatabasePicker<Map<String
         List<OutputColumn> columns = Lists.newArrayList();
         
         columns.add(new OutputColumn("name", "yukon.web.picker.unassignedApplianceCategoryPicker.applianceCategoryName"));
-        columns.add(new OutputColumn("applianceCategoryId", "yukon.web.picker.unassignedApplianceCategoryPicker.applianceCategoryId"));
+        columns.add(new OutputColumn("applianceLoad", "yukon.web.picker.unassignedApplianceCategoryPicker.applianceLoad"));
         columns.add(new OutputColumn("applianceType", "yukon.web.picker.unassignedApplianceCategoryPicker.applianceType"));
 
         outputColumns = Collections.unmodifiableList(columns);
@@ -100,7 +100,7 @@ public class UnassignedApplianceCategoryPicker extends DatabasePicker<Map<String
         @Override
         public SqlFragmentSource getBaseQuery() {
             SqlStatementBuilder retVal = new SqlStatementBuilder();
-            retVal.append("SELECT ac.description, ac.applianceCategoryId, yle.yukonDefinitionId");
+            retVal.append("SELECT ac.description, ac.applianceCategoryId, yle.yukonDefinitionId, ac.averageKwLoad");
             retVal.append("FROM applianceCategory ac");
             retVal.append(    "JOIN yukonListEntry yle ON ac.categoryId = yle.entryId");
             retVal.append(    "JOIN ecToGenericMapping ecm ON ac.applianceCategoryId = ecm.itemId AND ecm.mappingCategory").eq_k(EcMappingCategory.APPLIANCE_CATEGORY);
@@ -115,6 +115,7 @@ public class UnassignedApplianceCategoryPicker extends DatabasePicker<Map<String
             
             map.put("name", rs.getString("description")); // description field is used as name, consistent with ACDao
             map.put("applianceCategoryId", rs.getInt("applianceCategoryId"));
+            map.put("applianceLoad", rs.getDouble("averageKwLoad"));
             map.put("applianceType", ApplianceTypeEnum.getByDefinitionId(rs.getInt("yukonDefinitionId")));
 
             return map;

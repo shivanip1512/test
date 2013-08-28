@@ -156,10 +156,16 @@ function assignPrograms(devices) {
             <i:inline key="${applianceCategory.applianceType.formatKey}"/>
         </cti:displayForPageEditModes>
     </tags:nameValue2>
+    
+    <cti:checkRolesAndProperties value="!ENABLE_ESTIMATED_LOAD">
+        <tags:hidden path="applianceLoad"/>
+    </cti:checkRolesAndProperties>
 
-    <tags:nameValue2 nameKey=".averageLoad">
-        <tags:input path="averageLoad"/>
-    </tags:nameValue2>
+	<cti:checkRolesAndProperties value="ENABLE_ESTIMATED_LOAD">
+	    <tags:nameValue2 nameKey=".applianceLoad">
+	        <tags:input path="applianceLoad"/>
+	    </tags:nameValue2>
+	</cti:checkRolesAndProperties>
 
     <tags:nameValue2 nameKey=".icon" >
         <cti:displayForPageEditModes modes="CREATE,EDIT">

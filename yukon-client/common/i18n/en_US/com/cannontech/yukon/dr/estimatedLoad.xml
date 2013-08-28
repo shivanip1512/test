@@ -8,7 +8,8 @@
     <entry key="yukon.dr.estimatedLoad.calculationType.FUNCTION">Function</entry>
     <entry key="yukon.dr.estimatedLoad.calculationType.LOOKUP">Lookup Table</entry>
 
-    <entry key="yukon.dr.estimatedLoad.inputType.TEMP">Temperature</entry>
+    <entry key="yukon.dr.estimatedLoad.inputType.TEMP_F">Temperature (&#8457;)</entry>
+    <entry key="yukon.dr.estimatedLoad.inputType.TEMP_C">Temperature (&#8451;)</entry>
     <entry key="yukon.dr.estimatedLoad.inputType.HUMIDITY">Humidity</entry>
     <entry key="yukon.dr.estimatedLoad.inputType.TIME">Time</entry>
     <entry key="yukon.dr.estimatedLoad.inputType.CONTROL_PERCENT">Control %</entry>

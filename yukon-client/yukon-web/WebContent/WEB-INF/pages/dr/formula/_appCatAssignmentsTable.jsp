@@ -22,9 +22,10 @@
             <table class="compactResultsTable rowHighlighting sortable-table">
                 <thead>
                     <tr>
-                        <th width="33%"><tags:sortLink nameKey="name" baseUrl="${sortUrl}" fieldName="NAME" sortParam="orderBy" styleClass="f-sortLink" isDefault="true" /></th>
-                        <th width="33%"><tags:sortLink nameKey="appCatType" baseUrl="${sortUrl}" fieldName="TYPE" sortParam="orderBy" styleClass="f-sortLink"/></th>
-                        <th width="34%"><tags:sortLink nameKey="formula" baseUrl="${sortUrl}" fieldName="IS_ASSIGNED" sortParam="orderBy" styleClass="f-sortLink"/></th>
+                        <th width="25%"><tags:sortLink nameKey="name" fieldName="NAME" baseUrl="${sortUrl}" styleClass="f-sortLink" isDefault="true" /></th>
+                        <th width="25%"><tags:sortLink nameKey="appCatType" fieldName="TYPE" baseUrl="${sortUrl}" styleClass="f-sortLink"/></th>
+                        <th width="25%"><tags:sortLink nameKey="applianceLoad" fieldName="APP_CAT_AVERAGE_LOAD" baseUrl="${sortUrl}" styleClass="f-sortLink"/></th>
+                        <th width="25%"><tags:sortLink nameKey="formula" fieldName="IS_ASSIGNED" baseUrl="${sortUrl}" styleClass="f-sortLink"/></th>
                     </tr>
                 </thead>
                 <tfoot></tfoot>
@@ -32,15 +33,16 @@
                     <c:forEach var="appCatAssignment" items="${pagedAppCats.resultList}">
                         <c:set var="appCat" value="${appCatAssignment.applianceCategory}"/>
                          <tr>
-                             <td width="33%">
+                             <td width="25%">
                                 <cti:url var="appCatUrl" value="/adminSetup/energyCompany/applianceCategory/view">
                                     <cti:param name="applianceCategoryId" value="${appCat.applianceCategoryId}"/>
                                     <cti:param name="ecId" value="${energyCompanyIds[appCat.applianceCategoryId]}"/>
                                 </cti:url>
                                 <a href="${appCatUrl}">${appCat.name}</a>
                              </td>
-                             <td width="33%"><i:inline key="${appCat.applianceType}"/></td>
-                             <td width="34%" id="formulaPickerRowAppCat_${appCat.applianceCategoryId}">
+                             <td width="25%"><i:inline key="${appCat.applianceType}"/></td>
+                             <td width="25%">${appCat.applianceLoad} kW</td>
+                             <td width="25%" id="formulaPickerRowAppCat_${appCat.applianceCategoryId}">
                                 <%@ include file="_appCatFormulaPicker.jsp" %>
                              </td>
                      </tr>
@@ -49,7 +51,7 @@
             </table>
         
             <cti:url value="${sortUrl}" var="pagedurl">
-               <cti:param name="appCatOrderBy" value="${appCatOrderBy}"/>
+               <cti:param name="appCatSort" value="${appCatSort}"/>
                <cti:param name="appCatOrderByDescending" value="${appCatOrderByDescending}"/>
             </cti:url>
             <tags:pagingResultsControls baseUrl="${pagedurl}" result="${pagedAppCats}"/>

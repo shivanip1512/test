@@ -7,41 +7,21 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <cti:standardPage module="dr" page="formulaList">
-
+    <cti:includeScript link="/JavaScript/drFormula.js"/>
+<%--     <tags:sectionContainer2 nameKey="weatherInputs"> --%>
+<%--         Name: <input type='text'/><br> --%>
+<%--         Lat: <input type='text'/><br> --%>
+<%--         Lon: <input type='text'/><br> --%>
+<!--         <div class="actionArea"> -->
+<%--            <cti:button icon="icon-plus-green" nameKey="newFormula" href="create"/> --%>
+<!--         </div> -->
+<%--     </tags:sectionContainer2> --%>
     <tags:sectionContainer2 nameKey="formulas">
-        <c:if test="${not empty formulas}">
-            <table class="compactResultsTable">
-                <thead>
-                    <th><i:inline key=".name"/></th>
-                    <th><i:inline key=".calculationType"/></th>
-                    <th><i:inline key=".formulaType"/></th>
-                    <th><i:inline key=".assignments"/></th>
-                </thead>
-                <tfoot></tfoot>
-                <tbody>
-	                <c:forEach var="formula" items="${formulas}">
-	                    <tr>
-	                        <td><a href="view/${formula.formulaId}">${formula.name}</a></td>
-	                        <td><i:inline key="${formula.calculationType}"/></td>
-	                        <td><i:inline key="${formula.formulaType}"/></td>
-	                        <td>
-	                            <c:choose>
-	                                <c:when test="${formula.formulaType == 'GEAR'}">${formula.assignments}</c:when>
-	                                <c:otherwise>
-	                                    <a href="#">${formula.assignments}</a>
-	                                </c:otherwise>
-	                            </c:choose>
-	                        </td>
-	                    </tr>
-	                </c:forEach>
-                </tbody>
-            </table>
-            </c:if>
-        <c:if test="${empty formulas}">
-            <span class="empty-list" colspan="3"><i:inline key=".noFormulas"/></span>
-        </c:if>
+         <div class="f-replaceViaAjax">
+            <%@ include file="_formulasTable.jsp" %>
+         </div>
+    </tags:sectionContainer2>
         <div class="actionArea">
            <cti:button icon="icon-plus-green" nameKey="newFormula" href="create"/>
         </div>
-    </tags:sectionContainer2>
 </cti:standardPage>

@@ -16,16 +16,10 @@ public enum PaoInfo {
     RDS_TRANSMITTER_AID_REPEAT_PERIOD,
     
     // Other....
-    CPS_ONE_WAY_ENCRYPTION_KEY;
+    CPS_ONE_WAY_ENCRYPTION_KEY,
     
-    private final String defaultValue;
-    
-    PaoInfo() {
-        this.defaultValue = null;
-    }
-    
-    public String getDefaultValue() {
-        return defaultValue;
-    }
-    
+    // WeatherLocation info
+    WEATHER_LOCATION_LATITUDE,
+    WEATHER_LOCATION_LONGITUDE,
+    ;
 }

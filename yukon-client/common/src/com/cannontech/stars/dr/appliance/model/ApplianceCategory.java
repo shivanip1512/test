@@ -11,7 +11,7 @@ public class ApplianceCategory {
     private ApplianceTypeEnum applianceType;
     private boolean consumerSelectable;
     private int energyCompanyId;
-    private double averageLoad;
+    private Double applianceLoad;
 
     private WebConfiguration webConfiguration;
 
@@ -19,18 +19,18 @@ public class ApplianceCategory {
         applianceCategoryId = 0;
         consumerSelectable = true;
         webConfiguration = new WebConfiguration();
-        averageLoad = 0.0;
+        applianceLoad = null;
     }
 
     public ApplianceCategory(int applianceCategoryId, String name, ApplianceTypeEnum applianceType,
-                             boolean consumerSelectable, int energyCompanyId, double averageLoad,
+                             boolean consumerSelectable, int energyCompanyId, Double applianceLoad,
                              WebConfiguration webConfiguration) {
         this.applianceCategoryId = applianceCategoryId;
         this.name = name;
         this.applianceType = applianceType;
         this.consumerSelectable = consumerSelectable;
         this.energyCompanyId = energyCompanyId;
-        this.averageLoad = averageLoad;
+        this.applianceLoad = applianceLoad;
         this.webConfiguration = webConfiguration;
     }
 
@@ -150,11 +150,11 @@ public class ApplianceCategory {
         return applianceType;
     }
 
-    public double getAverageLoad() {
-        return averageLoad;
+    public Double getApplianceLoad() {
+        return applianceLoad;
     }
 
-    public void setAverageLoad(double averageLoad) {
-        this.averageLoad = averageLoad;
+    public void setApplianceLoad(Double applianceLoad) {
+        this.applianceLoad = applianceLoad;
     }
 }

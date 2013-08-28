@@ -369,4 +369,7 @@
     
     <bean class="com.cannontech.common.userpage.dao.impl.UserMonitorDaoImpl"/>
     <bean class="com.cannontech.common.userpage.dao.impl.UserPageDaoImpl"/>
+
+    <bean class="com.cannontech.database.db.pao.dao.impl.StaticPaoInfoDaoImpl"/>
+
 </beans>

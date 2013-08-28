@@ -19,9 +19,9 @@
             <table class="compactResultsTable rowHighlighting sortable-table">
                 <thead>
                     <tr>
-                        <th width="33%"><tags:sortLink nameKey="name" baseUrl="${sortUrl}" fieldName="NAME" sortParam="orderBy" styleClass="f-sortLink" isDefault="true"/></th>
-                        <th width="33%"><tags:sortLink nameKey="gearControlMethod" baseUrl="${sortUrl}" fieldName="CONTROL_METHOD" sortParam="orderBy" styleClass="f-sortLink"/></th>
-                        <th width="34%"><tags:sortLink nameKey="formula" baseUrl="${sortUrl}" fieldName="IS_ASSIGNED" sortParam="orderBy" styleClass="f-sortLink"/></th>
+                        <th width="33%"><tags:sortLink nameKey="name" baseUrl="${sortUrl}" fieldName="NAME" styleClass="f-sortLink" isDefault="true"/></th>
+                        <th width="33%"><tags:sortLink nameKey="gearControlMethod" baseUrl="${sortUrl}" fieldName="GEAR_CONTROL_METHOD" styleClass="f-sortLink"/></th>
+                        <th width="34%"><tags:sortLink nameKey="formula" baseUrl="${sortUrl}" fieldName="IS_ASSIGNED" styleClass="f-sortLink"/></th>
                     </tr>
                 </thead>
                 <tfoot></tfoot>
@@ -38,7 +38,7 @@
                 </tbody>
             </table>
             <cti:url value="${sortUrl}" var="pagedUrl">
-               <cti:param name="gearOrderBy" value="${gearOrderBy}"/>
+               <cti:param name="gearSort" value="${gearSort}"/>
                <cti:param name="gearOrderByDescending" value="${gearOrderByDescending}"/>
             </cti:url>
             <tags:pagingResultsControls baseUrl="${pagedUrl}" result="${pagedGears}"/>

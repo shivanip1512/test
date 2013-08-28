@@ -60,7 +60,7 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
         public SqlFragmentSource getBaseQuery() {
             SqlStatementBuilder retVal = new SqlStatementBuilder();
             retVal.append("SELECT ac.applianceCategoryId, ac.description, ac.webConfigurationId,");
-            retVal.append(    "ecm.energyCompanyId, ac.consumerSelectable, ac.averageLoad, yle.yukonDefinitionId");
+            retVal.append(    "ecm.energyCompanyId, ac.consumerSelectable, ac.averageKwLoad, yle.yukonDefinitionId");
             retVal.append("FROM applianceCategory ac");
             retVal.append(    "JOIN yukonListEntry yle ON ac.categoryId = yle.entryId");
             retVal.append(    "JOIN ecToGenericMapping ecm ON ac.applianceCategoryId = ecm.itemId AND ecm.mappingCategory").eq_k(EcMappingCategory.APPLIANCE_CATEGORY);
@@ -79,13 +79,13 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
                 rs.getString("consumerSelectable").equalsIgnoreCase("y");
             int energyCompanyId = rs.getInt("energyCompanyId");
             Integer webConfigurationId = rs.getInt("webConfigurationId");
-            Double averageLoad = rs.getDouble("averageLoad");
+            Double applianceLoad = rs.getDouble("averageKwLoad");
             WebConfiguration webConfiguration =
                 webConfigurations.get(webConfigurationId);
 
             ApplianceCategory applianceCategory =
                 new ApplianceCategory(applianceCategoryId, name, applianceType,
-                                      consumerSelectable, energyCompanyId, averageLoad, webConfiguration);
+                                      consumerSelectable, energyCompanyId, applianceLoad, webConfiguration);
 
             return applianceCategory;
         }

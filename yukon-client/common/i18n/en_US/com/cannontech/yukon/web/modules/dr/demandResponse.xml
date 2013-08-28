@@ -506,9 +506,13 @@
 <entry key="yukon.web.modules.dr.formulaList.pageName">Estimated Load</entry>
 <entry key="yukon.web.modules.dr.formulaList.formulas">Formulas</entry>
 <entry key="yukon.web.modules.dr.formulaList.formulas.title">Formulas</entry>
+<entry key="yukon.web.modules.dr.formulaList.weatherInputs.title">Weather Data Inputs</entry>
 <entry key="yukon.web.modules.dr.formulaList.name">Name</entry>
+<entry key="yukon.web.modules.dr.formulaList.name.linkText">Name</entry>
 <entry key="yukon.web.modules.dr.formulaList.formulaType">Formula Type</entry>
+<entry key="yukon.web.modules.dr.formulaList.formulaType.linkText">Formula Type</entry>
 <entry key="yukon.web.modules.dr.formulaList.calculationType">Calculation Type</entry>
+<entry key="yukon.web.modules.dr.formulaList.calculationType.linkText">Calculation Type</entry>
 <entry key="yukon.web.modules.dr.formulaList.assignments">Assignments</entry>
 <entry key="yukon.web.modules.dr.formulaList.actions">Actions</entry>
 <entry key="yukon.web.modules.dr.formulaList.newFormula.label">New Formula</entry>
@@ -574,7 +578,9 @@
 <entry key="yukon.web.modules.dr.formula.gearId">Gear Id</entry>
 <entry key="yukon.web.modules.dr.formula.gearControlMethod">Control Method</entry>
 <entry key="yukon.web.modules.dr.formula.appCatId">Id</entry>
+<entry key="yukon.web.modules.dr.formula.applianceLoad">Appliance Load</entry>
 <entry key="yukon.web.modules.dr.formula.appCatType">Type</entry>
+<entry key="yukon.web.modules.dr.formula.undo">Undo</entry>
 
 <entry key="yukon.web.modules.dr.assignments.pageName">Formula Assignments</entry>
 <entry key="yukon.web.modules.dr.assignments.formulas.title">Formulas</entry>
@@ -589,11 +595,28 @@
 <entry key="yukon.web.modules.dr.assignments.appCatId">Id</entry>
 <entry key="yukon.web.modules.dr.assignments.appCatType">Type</entry>
 <entry key="yukon.web.modules.dr.assignments.appCatType.linkText">Type</entry>
+<entry key="yukon.web.modules.dr.assignments.applianceLoad.linkText">Appliance Load</entry>
 <entry key="yukon.web.modules.dr.assignments.gears.title">Gears</entry>
 <entry key="yukon.web.modules.dr.assignments.applianceCategories.title">Appliance Categories</entry>
 <entry key="yukon.web.modules.dr.assignments.noApplianceCategoriesForUser">No appliance categories available to user</entry>
 <entry key="yukon.web.modules.dr.assignments.noApplianceCategories">No appliance categories</entry>
 <entry key="yukon.web.modules.dr.assignments.noGears">No gears</entry>
+
+<!-- GearControlMethod.java -->
+<entry key="yukon.web.modules.dr.gearControlMethod.TimeRefresh">Time Refresh</entry>
+<entry key="yukon.web.modules.dr.gearControlMethod.SmartCycle">Smart Cycle</entry>
+<entry key="yukon.web.modules.dr.gearControlMethod.SepCycle">SEP Cycle</entry>
+<entry key="yukon.web.modules.dr.gearControlMethod.SepTemperatureOffset">SEP Temperature Offset</entry>
+<entry key="yukon.web.modules.dr.gearControlMethod.MasterCycle">Master Cycle</entry>
+<entry key="yukon.web.modules.dr.gearControlMethod.Rotation">Rotation</entry>
+<entry key="yukon.web.modules.dr.gearControlMethod.Latching">Latching</entry>
+<entry key="yukon.web.modules.dr.gearControlMethod.TrueCycle">True Cycle</entry>
+<entry key="yukon.web.modules.dr.gearControlMethod.MagnitudeCycle">Magnitude Cycle</entry>
+<entry key="yukon.web.modules.dr.gearControlMethod.TargetCycle">Target Cycle</entry>
+<entry key="yukon.web.modules.dr.gearControlMethod.ThermostatRamping">Thermostat Ramping</entry>
+<entry key="yukon.web.modules.dr.gearControlMethod.SimpleThermostatRamping">Simple Thermostat Ramping</entry>
+<entry key="yukon.web.modules.dr.gearControlMethod.BeatThePeak">Bear The Peak</entry>
+<entry key="yukon.web.modules.dr.gearControlMethod.NoControl">No Control</entry>
 
 <!-- Control Area Detail -->
 <entry key="yukon.web.modules.dr.controlAreaDetail.pageTitle">Control Area {0}</entry>

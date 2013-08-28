@@ -42,7 +42,7 @@
 <entry key="yukon.web.modules.adminSetup.applianceCategory.sameAsName">Same as Category Name</entry>
 <entry key="yukon.web.modules.adminSetup.applianceCategory.type">Type</entry>
 <entry key="yukon.web.modules.adminSetup.applianceCategory.icon">Icon</entry>
-<entry key="yukon.web.modules.adminSetup.applianceCategory.averageLoad">Average Appliance Load</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.applianceLoad">Appliance Load</entry>
 
 <entry key="yukon.web.modules.adminSetup.applianceCategory.edit.hoverText">Edit detailed information for this appliance category.</entry>
 <entry key="yukon.web.modules.adminSetup.applianceCategory.edit.label">Edit</entry>

@@ -18,13 +18,13 @@ public class ApplianceCategory extends DBPersistent {
 
     private Integer applianceCategoryID = null;
     private String description = "";
-    private Integer categoryID = new Integer( com.cannontech.common.util.CtiUtilities.NONE_ZERO_ID );
-    private Integer webConfigurationID = new Integer( CtiUtilities.NONE_ZERO_ID );
+    private Integer categoryID = CtiUtilities.NONE_ZERO_ID;
+    private Integer webConfigurationID = CtiUtilities.NONE_ZERO_ID;
     private boolean consumerSelectable = true;
-    private double averageLoad = 0.0;
+    private Double applianceLoad = null;
 
     public static final String[] SETTER_COLUMNS = {
-        "Description", "CategoryID", "WebConfigurationID", "ConsumerSelectable", "AverageLoad"
+        "Description", "CategoryID", "WebConfigurationID", "ConsumerSelectable", "AverageKwLoad"
     };
 
     public static final String[] CONSTRAINT_COLUMNS = { "ApplianceCategoryID" };
@@ -49,7 +49,7 @@ public class ApplianceCategory extends DBPersistent {
     		
         Object[] addValues = {
             getApplianceCategoryID(), getDescription(), getCategoryID(),
-            getWebConfigurationID(), consumerSelectable ? "Y" : "N", getAverageLoad()
+            getWebConfigurationID(), consumerSelectable ? "Y" : "N", getApplianceLoad()
         };
 
         add( TABLE_NAME, addValues );
@@ -59,7 +59,7 @@ public class ApplianceCategory extends DBPersistent {
     public void update() throws java.sql.SQLException {
         Object[] setValues = {
             getDescription(), getCategoryID(), getWebConfigurationID(),
-            consumerSelectable ? "Y" : "N", getAverageLoad()
+            consumerSelectable ? "Y" : "N", getApplianceLoad()
         };
 
         Object[] constraintValues = { getApplianceCategoryID() };
@@ -78,7 +78,7 @@ public class ApplianceCategory extends DBPersistent {
             setCategoryID( (Integer) results[1] );
             setWebConfigurationID( (Integer) results[2] );
             consumerSelectable = "y".equalsIgnoreCase((String) results[3]);
-            setAverageLoad(Double.parseDouble((String) results[4]));
+            setApplianceLoad((String) results[4] != null ? Double.parseDouble((String) results[4]) : null);
         }
         else
             throw new Error(getClass() + " - Incorrect number of results retrieved");
@@ -113,7 +113,7 @@ public class ApplianceCategory extends DBPersistent {
                 applianceCategory.setCategoryID(rs.getInt("CategoryId"));
                 applianceCategory.setWebConfigurationID(rs.getInt("WebConfigurationId"));
                 applianceCategory.setConsumerSelectable(rs.getBooleanYN("ConsumerSelectable"));
-                applianceCategory.setAverageLoad(rs.getDouble("AverageLoad"));
+                applianceCategory.setApplianceLoad(rs.getDouble("AverageKwLoad"));
                 return applianceCategory;
             }
         });
@@ -175,11 +175,11 @@ public class ApplianceCategory extends DBPersistent {
         this.consumerSelectable = consumerSelectable;
     }
 
-    public double getAverageLoad() {
-        return averageLoad;
+    public Double getApplianceLoad() {
+        return applianceLoad;
     }
 
-    public void setAverageLoad(double averageLoad) {
-        this.averageLoad = averageLoad;
+    public void setApplianceLoad(Double applianceLoad) {
+        this.applianceLoad = applianceLoad;
     }
 }

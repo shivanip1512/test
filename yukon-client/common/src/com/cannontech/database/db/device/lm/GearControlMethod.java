@@ -1,5 +1,6 @@
 package com.cannontech.database.db.device.lm;
 
+import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.util.DatabaseRepresentationSource;
 import com.cannontech.database.data.device.lm.BeatThePeakGear;
 import com.cannontech.database.data.device.lm.LatchingGear;
@@ -16,7 +17,7 @@ import com.cannontech.database.data.device.lm.ThermostatSetbackGear;
 import com.cannontech.database.data.device.lm.TimeRefreshGear;
 import com.cannontech.database.data.device.lm.TrueCycleGear;
 
-public enum GearControlMethod implements DatabaseRepresentationSource {
+public enum GearControlMethod implements DatabaseRepresentationSource, DisplayableEnum {
     TimeRefresh(TimeRefreshGear.class, "Time Refresh"),
     SmartCycle(SmartCycleGear.class, "Smart Cycle"),
     SepCycle(SepCycleGear.class, "SEP Cycle"),
@@ -33,7 +34,8 @@ public enum GearControlMethod implements DatabaseRepresentationSource {
     NoControl(NoControlGear.class, "No Control");
 
 	private Class<?> gearClass;
-	private String displayName;
+    private String displayName;
+    private String baseKey = "yukon.web.modules.dr.gearControlMethod.";
 
 	private GearControlMethod(Class<?> gear, String displayName) {
 		this.gearClass = gear;
@@ -42,7 +44,7 @@ public enum GearControlMethod implements DatabaseRepresentationSource {
 
 	public String getDisplayName() {
 		return displayName;
-	};
+	}
 	
 	static public GearControlMethod getGearControlMethod(String value) {
 		try{
@@ -53,11 +55,7 @@ public enum GearControlMethod implements DatabaseRepresentationSource {
 	}
 	
 	public boolean isRamping() {
-		if(this == SimpleThermostatRamping || this == ThermostatRamping) {
-			return true;
-		} else {
-			return false;
-		}
+	    return this == SimpleThermostatRamping || this == ThermostatRamping;
 	}
 	
 	public LMProgramDirectGear createNewGear() {
@@ -80,4 +78,9 @@ public enum GearControlMethod implements DatabaseRepresentationSource {
 	public String toString() {
 		return getDisplayName();
 	}
+
+    @Override
+    public String getFormatKey() {
+        return baseKey + name();
+    }
 }

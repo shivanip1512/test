@@ -34,10 +34,10 @@
                     <c:if test="${formulaBean.formulaType eq 'APPLIANCE_CATEGORY'}">
                         <div class="column_8_8_8">
                             <div class="column one"><h4><i:inline key=".name"/></h4></div>
-                            <div class="column two"><h4><i:inline key=".appCatId"/></h4></div>
-                            <div class="column three nogutter"><h4><i:inline key=".appCatType"/></h4></div>
+                            <div class="column two"><h4><i:inline key=".appCatType"/></h4></div>
+                            <div class="column three nogutter"><h4><i:inline key=".applianceLoad"/></h4></div>
                         </div>
-                        <c:forEach var="rowIndex" items="${formulaBean.assignments}">
+                        <c:forEach var="assignmentId" items="${formulaBean.assignments}">
                             <%@ include file="appCategoryAssignmentRow.jspf" %>
                         </c:forEach>
                     </c:if>
@@ -47,7 +47,7 @@
                             <div class="column two"><h4><i:inline key=".gearId"/></h4></div>
                             <div class="column three nogutter"><h4><i:inline key=".gearControlMethod"/></h4></div>
                         </div>
-                        <c:forEach var="rowIndex" items="${formulaBean.assignments}">
+                        <c:forEach var="assignmentId" items="${formulaBean.assignments}">
                             <%@ include file="gearAssignmentRow.jspf" %>
                         </c:forEach>
                     </c:if>
@@ -232,7 +232,7 @@
     </div>
 </form:form>
 
-<c:set var="rowIndex" value="-1"/>
+<c:set var="assignmentId" value="-1"/>
 <c:if test="${formulaBean.formulaType eq 'GEAR'}">
     <%@ include file="gearAssignmentRow.jspf" %>
 </c:if>

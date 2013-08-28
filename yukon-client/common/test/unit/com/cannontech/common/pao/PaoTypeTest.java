@@ -371,7 +371,8 @@ public class PaoTypeTest {
                         PaoType.SCRIPT,
                         PaoType.SIMPLE_SCHEDULE,
                         PaoType.SYSTEM,
-                        PaoType.VIRTUAL_SYSTEM);
+                        PaoType.VIRTUAL_SYSTEM,
+                        PaoType.WEATHER_LOCATION);
 
     private static final ImmutableSet<PaoType> nonMeterTypes =
         ImmutableSet.of(PaoType.CCU710A,
@@ -484,7 +485,8 @@ public class PaoTypeTest {
                         PaoType.SCRIPT,
                         PaoType.SIMPLE_SCHEDULE,
                         PaoType.SYSTEM,
-                        PaoType.VIRTUAL_SYSTEM);
+                        PaoType.VIRTUAL_SYSTEM,
+                        PaoType.WEATHER_LOCATION);
 
     private static final ImmutableSet<PaoType> nonMctTypes =
         ImmutableSet.of(PaoType.CCU710A,
@@ -637,7 +639,8 @@ public class PaoTypeTest {
                         PaoType.SCRIPT,
                         PaoType.SIMPLE_SCHEDULE,
                         PaoType.SYSTEM,
-                        PaoType.VIRTUAL_SYSTEM);
+                        PaoType.VIRTUAL_SYSTEM,
+                        PaoType.WEATHER_LOCATION);
 
     private static final ImmutableSet<PaoType> nonIedTypes =
         ImmutableSet.of(PaoType.CCU710A,
@@ -801,7 +804,8 @@ public class PaoTypeTest {
                         PaoType.SCRIPT,
                         PaoType.SIMPLE_SCHEDULE,
                         PaoType.SYSTEM,
-                        PaoType.VIRTUAL_SYSTEM);
+                        PaoType.VIRTUAL_SYSTEM,
+                        PaoType.WEATHER_LOCATION);
 
     private static final ImmutableSet<PaoType> nonRtuTypes =
         ImmutableSet.of(PaoType.CCU710A,
@@ -981,7 +985,8 @@ public class PaoTypeTest {
                         PaoType.SCRIPT,
                         PaoType.SIMPLE_SCHEDULE,
                         PaoType.SYSTEM,
-                        PaoType.VIRTUAL_SYSTEM);
+                        PaoType.VIRTUAL_SYSTEM,
+                        PaoType.WEATHER_LOCATION);
 
     private static final ImmutableSet<PaoType> nonPortTypes =
         ImmutableSet.of(PaoType.CCU710A,
@@ -1155,7 +1160,8 @@ public class PaoTypeTest {
                         PaoType.SCRIPT,
                         PaoType.SIMPLE_SCHEDULE,
                         PaoType.SYSTEM,
-                        PaoType.VIRTUAL_SYSTEM);
+                        PaoType.VIRTUAL_SYSTEM,
+                        PaoType.WEATHER_LOCATION);
     
     @Test
     public void testIsMeter() {

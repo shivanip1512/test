@@ -71,7 +71,7 @@ public class ApplianceCategoryServiceImpl implements ApplianceCategoryService {
         appCatDB.setCategoryID(applianceTypeId);
         appCatDB.setDescription(applianceCategory.getName());
         appCatDB.setConsumerSelectable(applianceCategory.isConsumerSelectable());
-        appCatDB.setAverageLoad(applianceCategory.getAverageLoad());
+        appCatDB.setApplianceLoad(applianceCategory.getApplianceLoad());
         appCat.setWebConfiguration(webConfiguration);
 
         LiteApplianceCategory liteApplianceCateogry = null;

@@ -14,6 +14,8 @@ import com.cannontech.common.util.TemplateProcessorFactory;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
+import com.google.common.base.Function;
+import com.google.common.base.Functions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -49,19 +51,27 @@ public class ObjectFormattingServiceImpl implements ObjectFormattingService {
     @Override
     public <T> List<T> sortDisplayableValues(T[] toSort, final T first, final T last,
                                              YukonUserContext context) {
-        return sortDisplayableValues(Lists.newArrayList(toSort), first, last, context);
+        Function<T, T> identity = Functions.identity();
+        return sort(Lists.newArrayList(toSort), first, last, identity, false, context);
     }
 
     @Override
     public <T> List<T> sortDisplayableValues(Iterable<T> toSort, final T first, final T last,
                                              final YukonUserContext context) {
-        return sortDisplayableValues(Lists.newArrayList(toSort), first, last, context);
+        Function<T, T> identity = Functions.identity();
+        return sort(Lists.newArrayList(toSort), first, last, identity, false, context);
+    }
+
+    @Override
+    public <T, U> List<T> sortDisplayableValuesWithMapper(Iterable<T> toSort, T first, T last, Function<T, U> mapper,
+        boolean descending, YukonUserContext context) {
+        return sort(Lists.newArrayList(toSort), first, last, mapper, descending, context);
     }
 
     /**
      * Sorts the passed in list and returns it.
      */
-    private <T> List<T> sortDisplayableValues(List<T> retVal, final T first, final T last,
+    private <T, U> List<T> sort(List<T> retVal, final T first, final T last, final Function<T, U> mapper, final boolean descending,
                                              final YukonUserContext context) {
         if (first != null && !retVal.contains(first)) {
             retVal.add(first);
@@ -76,17 +86,17 @@ public class ObjectFormattingServiceImpl implements ObjectFormattingService {
                 if (t1 == t2)
                     return 0;
                 if (t1 == first || t2 == last) {
-                    return -1;
+                    return descending ? 1 : -1;
                 }
                 if (t1 == last || t2 == first) {
-                    return 1;
+                    return descending ? -1 : 1;
                 }
-                String localName1 = formatObjectAsString(t1, context);
-                String localName2 = formatObjectAsString(t2, context);
-                return localName1.compareToIgnoreCase(localName2);
+                String localName1 = formatObjectAsString(mapper.apply(t1), context);
+                String localName2 = formatObjectAsString(mapper.apply(t2), context);
+                int compare = localName1.compareToIgnoreCase(localName2);
+                return descending ? -compare : compare;
             }
         });
-
         return retVal;
     }
 

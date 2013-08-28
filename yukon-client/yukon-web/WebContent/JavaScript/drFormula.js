@@ -13,8 +13,8 @@ Yukon.DrFormula = (function() {
     _addGearAssignment = function (gear) {
         var id = gear.gearId;
 
-        var $newAssignmentInput = jQuery("#assignment_-1").clone();
-        $newAssignmentInput.attr("id", "assignment_" + id);
+        var $newAssignmentInput = jQuery("#assignmentInput_-1").clone();
+        $newAssignmentInput.attr("id", "assignmentInput_" + id);
         $newAssignmentInput.val(id);
         jQuery("#assignments").append($newAssignmentInput);
 
@@ -28,7 +28,7 @@ Yukon.DrFormula = (function() {
         $newAssignment.show();
         jQuery("#assignments").append($newAssignment);
 
-        $assignRemoved = jQuery("#assignmentRemove_-1").clone();
+        var $assignRemoved = jQuery("#assignmentRemove_-1").clone();
         $assignRemoved.attr("id", "assignmentRemove_" + id);
         $assignRemoved.find(".f-undo").data("assign-id", id);
         jQuery("#assignments").append($assignRemoved);
@@ -41,22 +41,22 @@ Yukon.DrFormula = (function() {
     _addAppCatAssignment = function (appCat) {
         var id = appCat.applianceCategoryId;
         
-        var $newAssignmentInput = jQuery("#assignment_-1").clone();
-        $newAssignmentInput.attr("id", "assignment_" + id);
+        var $newAssignmentInput = jQuery("#assignmentInput_-1").clone();
+        $newAssignmentInput.attr("id", "assignmentInput_" + id);
         $newAssignmentInput.val(id);
         jQuery("#assignments").append($newAssignmentInput);
 
         // #assignment_-1 is the dummy assignment element 
         var $newAssignment = jQuery("#assignmentAdd_-1").clone();
         $newAssignment.attr("id", "assignmentAdd_" + id);
-        $newAssignment.find(".f-id").html(id);
+        $newAssignment.find(".f-average-load").html(appCat.applianceLoad + "  kW");
         $newAssignment.find(".f-name").html(appCat.name);
         $newAssignment.find(".f-type").html(appCat.applianceType);
         $newAssignment.find(".f-remove").data("assign-id", id);
         $newAssignment.show();
         jQuery("#assignments").append($newAssignment);
 
-        $assignRemoved = jQuery("#assignmentRemove_-1").clone();
+        var $assignRemoved = jQuery("#assignmentRemove_-1").clone();
         $assignRemoved.attr("id", "assignmentRemove_" + id);
         $assignRemoved.find(".f-undo").data("assign-id", id);
         jQuery("#assignments").append($assignRemoved);
@@ -70,14 +70,14 @@ Yukon.DrFormula = (function() {
         var id = jQuery(this).data("assign-id");
         jQuery("#assignmentAdd_"+id).hide();
         jQuery("#assignmentRemove_"+id).show();
-        jQuery("#assignment_"+id).prop("disabled", true);
+        jQuery("#assignmentInput_"+id).prop("disabled", true);
     },
 
     _undoBtnClick = function() {
         var id = jQuery(this).data("assign-id");
         jQuery("#assignmentAdd_"+id).show();
         jQuery("#assignmentRemove_"+id).hide();
-        jQuery("#assignment_"+id).prop("disabled", false);
+        jQuery("#assignmentInput_"+id).prop("disabled", false);
     },
 
     _newFunctionBtnClick = function() {

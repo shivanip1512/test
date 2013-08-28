@@ -84,8 +84,10 @@
                         <a href="${quickLinkUrl}"><i:inline key=".activeLoadGroupsQuickSearch"/></a><br>
                     </div>
                     <div class="column two nogutter">
-                        <a href="/dr/formula/list"><span class="fl"><i:inline key=".loadFormulas"/></span></a><br>
-                        <a href="/dr/formula/assignments"><span class="fl"><i:inline key=".formulaAssignments"/></span></a>
+                        <cti:checkRolesAndProperties value="ENABLE_ESTIMATED_LOAD">
+	                        <a href="/dr/formula/list"><span class="fl"><i:inline key=".loadFormulas"/></span></a><br>
+	                        <a href="/dr/formula/assignments"><span class="fl"><i:inline key=".formulaAssignments"/></span></a>
+                        </cti:checkRolesAndProperties>
                     </div>
                 </div>
             </tags:boxContainer2>
