@@ -11,6 +11,8 @@
 #include "std_helper.h"
 
 #include "boost/regex.hpp"
+#include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/classification.hpp>
 
 using namespace std;
 
@@ -1602,8 +1604,7 @@ void  CtiCommandParser::doParsePutStatus(const string &_CmdStr)
         if(CmdStr.contains(" critical"))
         {
             static const boost::regex
-                re_touCriticalPeak(CtiString("tou critical peak (cancel|rate [a-d] until ") + str_time
-                                   + CtiString("|until ") + str_time + CtiString(" rate [a-d])"));
+                re_touCriticalPeak(CtiString("tou critical peak (cancel|rate [a-d] until ") + str_time + CtiString(")"));
 
             if(!(token = CmdStr.match(re_touCriticalPeak)).empty())
             {
@@ -1619,21 +1620,18 @@ void  CtiCommandParser::doParsePutStatus(const string &_CmdStr)
                     cmdtok();   // tou
                     cmdtok();   // critical
                     cmdtok();   // peak
+                    cmdtok();   // rate
+                    _cmd["tou_critical_peak_rate"] = cmdtok();
+                    cmdtok();   // until
 
-                    std::string action = cmdtok();
+                    std::string untilTime = cmdtok();
 
-                    if ( action == "rate" )
-                    {
-                        _cmd["tou_critical_peak_rate"] = cmdtok();
-                        cmdtok();   // until
-                        _cmd["tou_critical_peak_stop_time"] = cmdtok();
-                    }
-                    else    // action == "until"
-                    {
-                        _cmd["tou_critical_peak_stop_time"] = cmdtok();
-                        cmdtok();   // rate
-                        _cmd["tou_critical_peak_rate"] = cmdtok();
-                    }
+                    std::vector<std::string>    timeComponents;
+                    boost::split( timeComponents, untilTime, boost::is_any_of(":"), boost::token_compress_on );
+
+                    // regex guarantees at 2 or 3 elements in the vector -- we only care about the first 2
+                    _cmd["tou_critical_peak_stop_time_hour"]   = CtiParseValue( atoi( timeComponents[0].c_str() ) );
+                    _cmd["tou_critical_peak_stop_time_minute"] = CtiParseValue( atoi( timeComponents[1].c_str() ) );
                 }
             }
         }

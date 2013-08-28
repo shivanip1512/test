@@ -4,8 +4,7 @@
 #include "dev_rfnConsumer.h"
 
 #include <boost/optional.hpp>
-#include <boost/algorithm/string/split.hpp>
-#include <boost/algorithm/string/classification.hpp>
+#include <boost/make_shared.hpp>
 
 #include <limits>
 #include <string>
@@ -27,10 +26,15 @@ int RfnConsumerDevice::executePutConfigVoltageAveragingInterval( CtiRequestMsg  
         return NoConfigData;
     }
 
-    struct // IntervalSettings
+    struct IntervalSettings
     {
         boost::optional<unsigned>   demandInterval,
                                     loadProfileInterval;
+
+        bool operator==( const IntervalSettings & rhs ) const
+        {
+            return demandInterval == rhs.demandInterval && loadProfileInterval == rhs.loadProfileInterval;
+        }
     }
     configSettings,
     paoSettings;
@@ -97,13 +101,7 @@ int RfnConsumerDevice::executePutConfigVoltageAveragingInterval( CtiRequestMsg  
         }
     }
 
-    const bool equalDemandIntervals = configSettings.demandInterval && paoSettings.demandInterval &&        // both exist -and-
-                                        *configSettings.demandInterval == *paoSettings.demandInterval;      // are the same
-
-    const bool equalLpIntervals = configSettings.loadProfileInterval && paoSettings.loadProfileInterval &&
-                                    *configSettings.loadProfileInterval == *paoSettings.loadProfileInterval;
-
-    if( equalDemandIntervals && equalLpIntervals )
+    if( configSettings == paoSettings )
     {
         if( ! parse.isKeyValid("force") )
         {
@@ -118,12 +116,10 @@ int RfnConsumerDevice::executePutConfigVoltageAveragingInterval( CtiRequestMsg  
         }
     }
 
-    std::auto_ptr<Commands::RfnCommand> voltageProfileConfigCommand(
-       new Commands::RfnVoltageProfileConfigurationCommand( *this,
-                                                            *configSettings.demandInterval,
-                                                            *configSettings.loadProfileInterval ) );
-
-    rfnRequests.push_back( Commands::RfnCommandSPtr( voltageProfileConfigCommand.release() ) );
+    rfnRequests.push_back(
+        boost::make_shared<Commands::RfnVoltageProfileConfigurationCommand>( boost::ref(*this),
+                                                                             *configSettings.demandInterval,
+                                                                             *configSettings.loadProfileInterval ) );
 
     return NoError;
 }
@@ -136,21 +132,17 @@ int RfnConsumerDevice::executeLoadProfileRecording( CtiRequestMsg     * pReq,
 {
     // TBD
 
-    std::auto_ptr<Commands::RfnCommand> command;
-
     if ( 0 /* parse says enable or disable recording -- TBD */ )
     {
         Commands::RfnLoadProfileRecordingCommand::RecordingOption option =
             Commands::RfnLoadProfileRecordingCommand::DisableRecording;  // get from parse...
 
-        command = std::auto_ptr<Commands::RfnCommand>( new Commands::RfnLoadProfileRecordingCommand( *this, option ) );
+        rfnRequests.push_back( boost::make_shared<Commands::RfnLoadProfileRecordingCommand>( boost::ref(*this), option ) );
     }
     else    // reading the state of recording from the device
     {
-        command = std::auto_ptr<Commands::RfnCommand>( new Commands::RfnLoadProfileRecordingCommand( *this ) );
+        rfnRequests.push_back( boost::make_shared<Commands::RfnLoadProfileRecordingCommand>( boost::ref(*this) ) );
     }
-
-    rfnRequests.push_back( Commands::RfnCommandSPtr( command.release() ) );
 
     return NoError;
 }
@@ -205,7 +197,7 @@ int RfnConsumerDevice::executePutConfigDemandFreezeDay( CtiRequestMsg     * pReq
         }
     }
 
-    if( configFreezeDay && paoFreezeDay && *configFreezeDay == *paoFreezeDay )  // both exist and are equal
+    if( *configFreezeDay == *paoFreezeDay )  // both exist and are equal
     {
         if( ! parse.isKeyValid("force") )
         {
@@ -220,10 +212,7 @@ int RfnConsumerDevice::executePutConfigDemandFreezeDay( CtiRequestMsg     * pReq
         }
     }
 
-    std::auto_ptr<Commands::RfnCommand> freezeDayConfigCommand(
-       new Commands::RfnDemandFreezeConfigurationCommand( *configFreezeDay ) );
-
-    rfnRequests.push_back( Commands::RfnCommandSPtr( freezeDayConfigCommand.release() ) );
+    rfnRequests.push_back( boost::make_shared<Commands::RfnDemandFreezeConfigurationCommand>( *configFreezeDay ) );
 
     return NoError;
 }
@@ -234,10 +223,7 @@ int RfnConsumerDevice::executeImmediateDemandFreeze( CtiRequestMsg     * pReq,
                                                      CtiMessageList    & retList,
                                                      RfnCommandList    & rfnRequests )
 {
-    std::auto_ptr<Commands::RfnCommand> immediateFreezeCommand(
-       new Commands::RfnImmediateDemandFreezeCommand );
-
-    rfnRequests.push_back( Commands::RfnCommandSPtr( immediateFreezeCommand.release() ) );
+    rfnRequests.push_back( boost::make_shared<Commands::RfnImmediateDemandFreezeCommand>() );
 
     return NoError;
 }
@@ -248,10 +234,7 @@ int RfnConsumerDevice::executeReadDemandFreezeInfo( CtiRequestMsg     * pReq,
                                                     CtiMessageList    & retList,
                                                     RfnCommandList    & rfnRequests )
 {
-    std::auto_ptr<Commands::RfnCommand> readFreezeInfoCommand(
-       new Commands::RfnGetDemandFreezeInfoCommand( *this ) );
-
-    rfnRequests.push_back( Commands::RfnCommandSPtr( readFreezeInfoCommand.release() ) );
+    rfnRequests.push_back( boost::make_shared<Commands::RfnGetDemandFreezeInfoCommand>( boost::ref(*this) ) );
 
     return NoError;
 }
@@ -265,10 +248,7 @@ int RfnConsumerDevice::executeTouCriticalPeak( CtiRequestMsg     * pReq,
 
     if( parse.isKeyValid("tou_critical_peak_cancel") )
     {
-        std::auto_ptr<Commands::RfnCommand> cancelCriticalPeakCommand(
-            new Commands::RfnTouCancelCriticalPeakCommand );
-
-        rfnRequests.push_back( Commands::RfnCommandSPtr( cancelCriticalPeakCommand.release() ) );
+        rfnRequests.push_back( boost::make_shared<Commands::RfnTouCancelCriticalPeakCommand>() );
     }
     else
     {
@@ -279,19 +259,10 @@ int RfnConsumerDevice::executeTouCriticalPeak( CtiRequestMsg     * pReq,
         if ( rateStr == "b" ) { rate = Commands::RfnTouCriticalPeakCommand::RateB; }
         if ( rateStr == "c" ) { rate = Commands::RfnTouCriticalPeakCommand::RateC; }
 
-        const std::string stopTime = parse.getsValue( "tou_critical_peak_stop_time" );
+        const unsigned hour   = parse.getiValue( "tou_critical_peak_stop_time_hour" );
+        const unsigned minute = parse.getiValue( "tou_critical_peak_stop_time_minute" );
 
-        std::vector<std::string>    timeComponents;
-
-        boost::split( timeComponents, stopTime, boost::is_any_of(":"), boost::token_compress_on );
-
-        const unsigned hour   = strtoul( timeComponents[0].c_str(), NULL, 10 );
-        const unsigned minute = strtoul( timeComponents[1].c_str(), NULL, 10 );
-
-        std::auto_ptr<Commands::RfnCommand> criticalPeakCommand(
-            new Commands::RfnTouCriticalPeakCommand( rate, hour, minute ) );
-
-        rfnRequests.push_back( Commands::RfnCommandSPtr( criticalPeakCommand.release() ) );
+        rfnRequests.push_back( boost::make_shared<Commands::RfnTouCriticalPeakCommand>( rate, hour, minute ) );
     }
 
     return NoError;
