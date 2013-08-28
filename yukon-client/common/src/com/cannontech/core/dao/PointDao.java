@@ -197,18 +197,15 @@ public interface PointDao {
     /**
      * Returns the Sql that gives you the paObjectId and pointId based on a
      * passed in Attribute
-     * @param attribute
      */
+    @Deprecated
     public SqlFragmentSource getAttributeLookupSql(Attribute attribute);
 
     /**
      * Returns the Sql that gives you the paObjectId and pointId based on a
      * passed in Attribute AND a maximum row count.
-     * 
-     * @param attribute
-     * @param limitToRowCount
-     * @return
      */
+    @Deprecated
     public SqlFragmentSource getAttributeLookupSqlLimit(Attribute attribute, int limitToRowCount);
 
 }
