@@ -163,6 +163,13 @@ public:
     }
 };
 
+struct test_DeviceConfig : public Cti::Config::DeviceConfig
+{
+    test_DeviceConfig() : DeviceConfig(-1, string()) {}
+
+    using DeviceConfig::insertValue;
+};
+
 struct test_Mct410IconDevice : test_Mct410Device
 {
     test_Mct410IconDevice() :
@@ -2267,6 +2274,76 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         BOOST_CHECK_EQUAL_COLLECTIONS(
                 expected.begin(), expected.end(),
                 results_begin, results_end);
+    }
+
+    BOOST_AUTO_TEST_CASE(test_putconfig_install_all_no_config)
+    {
+        test_Mct410IconDevice mct410;
+
+        CtiCommandParser parse("putconfig install all");
+
+        BOOST_CHECK_EQUAL( NoError, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+        BOOST_CHECK( vgList.empty() );
+        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
+        BOOST_CHECK( outList.empty() );
+
+        CtiDeviceBase::CtiMessageList::const_iterator retList_itr = retList.begin();
+
+        {
+            const CtiReturnMsg *errorMsg = dynamic_cast<const CtiReturnMsg*>(*retList_itr++);
+
+            BOOST_REQUIRE( errorMsg );
+
+            const std::string expected = "ERROR: Device not assigned to a config.";
+
+            BOOST_CHECK_EQUAL( 218,      errorMsg->Status() );
+            BOOST_CHECK_EQUAL( expected, errorMsg->ResultString() );
+        }
+    }
+    BOOST_AUTO_TEST_CASE(test_putconfig_install_all)
+    {
+        test_Mct410IconDevice mct410;
+
+        test_DeviceConfig config;
+
+        mct410.changeDeviceConfig(Cti::Config::DeviceConfigSPtr(&config, null_deleter()));  //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+        config.insertValue("disconnectDemandThreshold", "2.71");
+        config.insertValue("disconnectLoadLimitConnectDelay", "4");
+        config.insertValue("disconnectMinutes", "7");
+        config.insertValue("connectMinutes", "17");
+        config.insertValue("reconnectButton", "true");
+
+        CtiCommandParser parse("putconfig install all");
+
+        BOOST_CHECK_EQUAL( NoError, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+        BOOST_CHECK( vgList.empty() );
+        BOOST_CHECK( retList.empty() );
+
+        BOOST_REQUIRE_EQUAL( outList.size(), 1 );
+
+        CtiDeviceBase::OutMessageList::const_iterator om_itr = outList.begin();
+
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,           2 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x1fe );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,       9 );
+
+            const std::vector<unsigned char> expected = boost::assign::list_of
+                ( 0 )( 0 )( 0 )( 42 )( 9 )( 0 )( 0 )( 0 )( 0 );
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                om->Buffer.BSt.Message,
+                om->Buffer.BSt.Message + om->Buffer.BSt.Length,
+                expected.begin(),
+                expected.end() );
+        }
     }
 
 //}  Brace matching for BOOST_FIXTURE_TEST_SUITE
