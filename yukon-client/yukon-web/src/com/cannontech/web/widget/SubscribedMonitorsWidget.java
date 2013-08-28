@@ -10,26 +10,21 @@ import com.cannontech.amr.outageProcessing.OutageMonitor;
 import com.cannontech.amr.porterResponseMonitor.model.PorterResponseMonitor;
 import com.cannontech.amr.statusPointMonitoring.model.StatusPointMonitor;
 import com.cannontech.amr.tamperFlagProcessing.TamperFlagMonitor;
-import com.cannontech.common.userpage.dao.UserMonitorDao;
-import com.cannontech.common.userpage.dao.UserPageDao;
-import com.cannontech.common.userpage.model.UserMonitor;
-import com.cannontech.common.userpage.model.UserPage;
-import com.cannontech.common.userpage.model.UserPage.Category;
-import com.cannontech.common.userpage.model.UserPage.Module;
+import com.cannontech.common.userpage.dao.UserSubscriptionDao;
+import com.cannontech.common.userpage.model.UserSubscription;
 import com.cannontech.common.validation.model.ValidationMonitor;
-import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 
 public class SubscribedMonitorsWidget extends AllMonitorsWidget {
     
-    @Autowired private UserMonitorDao userMonitorDao;
+    @Autowired private UserSubscriptionDao userSubscriptionDao;
     
     
     @Override
     protected void putMonitorsInModel(ModelMap model, YukonUserContext context) {
-        List<UserMonitor> subscribed = Lists.newArrayList(userMonitorDao.getMonitorsForUser(context.getYukonUser()));
-        
+        List<UserSubscription> subscribed = Lists.newArrayList(userSubscriptionDao.getSubscriptionsForUser(context.getYukonUser()));
+
         List<DeviceDataMonitor> deviceDataMonitors = Lists.newArrayList();
         List<OutageMonitor> outageMonitors = Lists.newArrayList();
         List<TamperFlagMonitor> tamperFlagMonitors = Lists.newArrayList();
@@ -37,32 +32,33 @@ public class SubscribedMonitorsWidget extends AllMonitorsWidget {
         List<PorterResponseMonitor> porterResponseMonitors = Lists.newArrayList();
         List<ValidationMonitor> validationMonitors = Lists.newArrayList();
 
-        for (UserMonitor monitor : subscribed) {
+        for (UserSubscription monitor : subscribed) {
             switch (monitor.getType()) {
-            case DEVICE_DATA:
-                deviceDataMonitors.add(deviceDataMonitorDao.getMonitorById(monitor.getMonitorId()));
+            case DEVICE_DATA_MONITOR:
+                deviceDataMonitors.add(deviceDataMonitorDao.getMonitorById(monitor.getRefId()));
                 break;
-            case OUTAGE:
-                outageMonitors.add(outageMonitorDao.getById(monitor.getMonitorId()));
+            case OUTAGE_MONITOR:
+                outageMonitors.add(outageMonitorDao.getById(monitor.getRefId()));
                 break;
-            case TAMPER_FLAG:
-                tamperFlagMonitors.add(tamperFlagMonitorDao.getById(monitor.getMonitorId()));
+            case TAMPER_FLAG_MONITOR:
+                tamperFlagMonitors.add(tamperFlagMonitorDao.getById(monitor.getRefId()));
                 break;
-            case STATUS_POINT:
-                statusPointMonitors.add(statusPointMonitorDao.getStatusPointMonitorById(monitor.getMonitorId()));
+            case STATUS_POINT_MONITOR:
+                statusPointMonitors.add(statusPointMonitorDao.getStatusPointMonitorById(monitor.getRefId()));
                 break;
-            case PORTER_RESPONSE:
-                porterResponseMonitors.add(porterResponseMonitorDao.getMonitorById(monitor.getMonitorId()));
+            case PORTER_RESPONSE_MONITOR:
+                porterResponseMonitors.add(porterResponseMonitorDao.getMonitorById(monitor.getRefId()));
                 break;
-            case VALIDATION:
-                validationMonitors.add(validationMonitorDao.getById(monitor.getMonitorId()));
+            case VALIDATION_MONITOR:
+                validationMonitors.add(validationMonitorDao.getById(monitor.getRefId()));
                 break;
-                
+            default:
+                //Non-monitor subscription
+                break;
             }
         }
-        
-        model.addAttribute("isSubscribedWidget", true);
 
+        model.addAttribute("isSubscribedWidget", true);
         model.addAttribute("deviceDataMonitors", deviceDataMonitors);
         model.addAttribute("outageMonitors", outageMonitors);
         model.addAttribute("tamperFlagMonitors", tamperFlagMonitors);
