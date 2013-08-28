@@ -31,6 +31,7 @@ public class LMProgramDirectGear {
     private Integer rampOutInterval;
     private Integer rampOutPercent;
     private Double kwReduction;
+    private Integer deviceId;
 
     public String getChangeCondition() {
         return changeCondition;
@@ -224,5 +225,13 @@ public class LMProgramDirectGear {
 
     public void setKwReduction(Double kwReduction) {
         this.kwReduction = kwReduction;
+    }
+
+    public Integer getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(Integer deviceId) {
+        this.deviceId = deviceId;
     }
 }

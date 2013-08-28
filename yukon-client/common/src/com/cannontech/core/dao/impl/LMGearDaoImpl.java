@@ -150,6 +150,7 @@ public class LMGearDaoImpl implements LMGearDao {
             gear.setRampOutInterval(rs.getInt("RampOutInterval"));
             gear.setRampOutPercent(rs.getInt("RampOutPercent"));
             gear.setYukonID(rs.getInt("GearId"));
+            gear.setDeviceId(rs.getInt("DeviceID"));
 
             return gear;
         }

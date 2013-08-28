@@ -37,7 +37,7 @@
                         <div class="column_8_8_8">
                             <div class="column one"><h4><i:inline key=".name"/></h4></div>
                             <div class="column two"><h4><i:inline key=".gearControlMethod"/></h4></div>
-                            <div class="column three nogutter"><h4><i:inline key=".gearId"/></h4></div>
+                            <div class="column three nogutter"><h4><i:inline key=".program"/></h4></div>
                         </div>
                         <c:forEach var="assignmentId" items="${formulaBean.assignments}">
                             <%@ include file="gearAssignmentRow.jspf" %>

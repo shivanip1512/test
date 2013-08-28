@@ -21,7 +21,7 @@ Yukon.DrFormula = (function() {
         // #assignment_-1 is the dummy assignment element 
         var $newAssignment = jQuery("#assignmentAdd_-1").clone();
         $newAssignment.attr("id", "assignmentAdd_" + id);
-        $newAssignment.find(".f-drFormula-id").html(id);
+        $newAssignment.find(".f-drFormula-program").html(gear.programName);
         $newAssignment.find(".f-drFormula-name").html(gear.gearName);
         $newAssignment.find(".f-drFormula-control-method").html(gear.controlMethod);
         $newAssignment.find(".f-drFormula-remove").data("assign-id", id);

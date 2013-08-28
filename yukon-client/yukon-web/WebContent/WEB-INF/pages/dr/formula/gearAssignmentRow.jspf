@@ -3,7 +3,7 @@
     <div class="column one f-drFormula-name">${assignments[assignmentId].gearName}</div>
     <div class="column two f-drFormula-control-method"><i:inline key="${assignments[assignmentId].controlMethod}"/></div>
     <div class="column three nogutter">
-        <span class="f-drFormula-id">${assignments[assignmentId].yukonID}</span>
+        <span class="f-drFormula-program">${gearPrograms[assignments[assignmentId].deviceId].paoName}</span>
         <cti:displayForPageEditModes modes="EDIT">
             <div class="f-drFormula-show-on-hover fr" style="display:none">
                <cti:button data-assign-id="${assignmentId}" nameKey="remove" renderMode="image" icon="icon-cross" classes="f-drFormula-remove"/>

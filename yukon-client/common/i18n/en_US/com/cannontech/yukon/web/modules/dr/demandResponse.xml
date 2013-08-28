@@ -575,7 +575,7 @@
 <entry key="yukon.web.modules.dr.formula.gearWillBeUnassigned">This gear will be unassigned.</entry>
 <entry key="yukon.web.modules.dr.formula.appCatWillBeUnassigned">This appliance will be unassigned.</entry>
 <entry key="yukon.web.modules.dr.formula.name">Name</entry>
-<entry key="yukon.web.modules.dr.formula.gearId">Gear Id</entry>
+<entry key="yukon.web.modules.dr.formula.program">Program</entry>
 <entry key="yukon.web.modules.dr.formula.gearControlMethod">Control Method</entry>
 <entry key="yukon.web.modules.dr.formula.appCatId">Id</entry>
 <entry key="yukon.web.modules.dr.formula.applianceLoad">Appliance Load</entry>
@@ -587,6 +587,7 @@
 <entry key="yukon.web.modules.dr.assignments.noAssignment.label">No assignment</entry>
 <entry key="yukon.web.modules.dr.assignments.formula">Formula</entry>
 <entry key="yukon.web.modules.dr.assignments.formula.linkText">Formula</entry>
+<entry key="yukon.web.modules.dr.assignments.program.linkText">Program</entry>
 <entry key="yukon.web.modules.dr.assignments.name">Name</entry>
 <entry key="yukon.web.modules.dr.assignments.name.linkText">Name</entry>
 <entry key="yukon.web.modules.dr.assignments.gearId">Gear Id</entry>

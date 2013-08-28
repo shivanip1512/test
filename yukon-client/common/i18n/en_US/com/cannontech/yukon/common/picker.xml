@@ -95,6 +95,7 @@
 <entry key="yukon.web.picker.unassignedGearPicker.gearName">Gear Name</entry>
 <entry key="yukon.web.picker.unassignedGearPicker.gearId">Id</entry>
 <entry key="yukon.web.picker.unassignedGearPicker.controlMethod">Control Method</entry>
+<entry key="yukon.web.picker.unassignedGearPicker.programName">Program</entry>
 <entry key="yukon.web.picker.unassignedGearPicker.dialogTitle">Select a Gear</entry>
 
 <entry key="yukon.web.picker.unassignedApplianceCategoryPicker.applianceLoad">Appliance Load</entry>

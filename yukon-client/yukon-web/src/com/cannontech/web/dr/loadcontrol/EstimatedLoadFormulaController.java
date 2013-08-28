@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import net.sf.json.JSONArray;
+
 import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -27,10 +29,13 @@ import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.EnergyCompanyNotFoundException;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.impl.LMGearDaoImpl;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.db.device.lm.GearControlMethod;
 import com.cannontech.dr.estimatedload.ApplianceCategoryAssignment;
 import com.cannontech.dr.estimatedload.Formula;
@@ -65,10 +70,12 @@ public class EstimatedLoadFormulaController {
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
     @Autowired private ObjectFormattingService objectFormatingService;
+    @Autowired private PaoDao paoDao;
 
     private String baseKey = "yukon.web.modules.dr.formula.";
     private FormulaBeanValidator formulaBeanValidator = new FormulaBeanValidator(baseKey);
-    public static enum SortBy {NAME, CALCULATION_TYPE, TYPE, GEAR_CONTROL_METHOD, APP_CAT_AVERAGE_LOAD, IS_ASSIGNED}
+    public static enum SortBy {NAME, CALCULATION_TYPE, TYPE, GEAR_CONTROL_METHOD,
+                               APP_CAT_AVERAGE_LOAD, IS_ASSIGNED, PROGRAM_NAME}
 
     private Function<GearAssignment, GearControlMethod> controlMethodFunction
         = new Function<GearAssignment, GearControlMethod>() {
@@ -239,7 +246,8 @@ public class EstimatedLoadFormulaController {
         Map<Integer, LMProgramDirectGear> allGears = gearDao.getAllGears();
         List<GearAssignment> gearAssignments = formulaDao.getAssignmentsForGears(allGears.keySet());
 
-        gearAssignments = sortGearAssignments(gearAssignments, sort, descending, context);
+        Map<Integer, LiteYukonPAObject> gearPrograms = getGearPrograms();
+        gearAssignments = sortGearAssignments(gearAssignments, gearPrograms, sort, descending, context);
 
         SearchResult<GearAssignment> pagedGears
             = SearchResult.pageBasedForWholeList(page, itemsPerPage, gearAssignments);
@@ -247,6 +255,7 @@ public class EstimatedLoadFormulaController {
         model.addAttribute("gearSort", sort);
         model.addAttribute("gearDescending", descending);
         model.addAttribute("pagedGears", pagedGears);
+        model.addAttribute("gearPrograms", gearPrograms);
 
         return "dr/formula/_gearAssignmentsTable.jsp";
     }
@@ -327,6 +336,7 @@ public class EstimatedLoadFormulaController {
                 formulaBean.setAssignments(assignmentIds);
                 Map<Integer, LMProgramDirectGear> assignments = gearDao.getByGearIds(assignmentIds);
                 model.addAttribute("assignments", assignments);
+                model.addAttribute("gearPrograms", getGearPrograms());
             }
         }
 
@@ -343,7 +353,23 @@ public class EstimatedLoadFormulaController {
         model.addAttribute("formulaBean", formulaBean);
     }
 
-    private List<GearAssignment> sortGearAssignments(List<GearAssignment> gearAssignments, SortBy sortBy, final boolean desc, final YukonUserContext context) {
+    /**
+     * Returns a map of PaoId to LiteYukonPAObject for gears.
+     * 
+     * This is used to get programs for gears. We need to display which program is currently tied to each gear.
+     */
+    private Map<Integer, LiteYukonPAObject> getGearPrograms() {
+        Map<Integer, LiteYukonPAObject> gearPrograms = new HashMap<>();
+        List<LiteYukonPAObject> programs = paoDao.getLiteYukonPAObjectByType(DeviceTypes.LM_DIRECT_PROGRAM);
+        for(LiteYukonPAObject program : programs) {
+            gearPrograms.put(program.getLiteID(), program);
+        }
+        return gearPrograms;
+    }
+
+    private List<GearAssignment> sortGearAssignments(List<GearAssignment> gearAssignments,
+            final Map<Integer, LiteYukonPAObject> gearPrograms, SortBy sortBy,
+            final boolean desc, final YukonUserContext context) {
         switch(sortBy) {
         default:
         case NAME:
@@ -366,6 +392,25 @@ public class EstimatedLoadFormulaController {
                         return desc ? 1 : -1;
                     }
                     return desc ? -1 : 1;
+                }
+            });
+            return gearAssignments;
+        case PROGRAM_NAME:
+            Collections.sort(gearAssignments, new Comparator<GearAssignment>() {
+                @Override public int compare(GearAssignment o1, GearAssignment o2) {
+                    LiteYukonPAObject program1 = gearPrograms.get(o1.getGear().getDeviceId());
+                    LiteYukonPAObject program2 = gearPrograms.get(o2.getGear().getDeviceId());
+                    if (program1 == program2) {
+                        return 0;
+                    }
+                    if (program1 == null) {
+                        return desc ? 1 : -1;
+                    }
+                    if (program2 == null) {
+                        return desc ? -1 : 1;
+                    }
+                    int compare = program1.getPaoName().compareToIgnoreCase(program2.getPaoName());
+                    return desc ? -compare : compare;
                 }
             });
             return gearAssignments;
