@@ -56,4 +56,10 @@ public interface LMHardwareConfigurationDao {
      * @return An object encompassing inventoryId to Relay to ApplianceId mapping for all inventory specified.
      */
     public InventoryRelayAppliances getInventoryRelayAppliances(Iterable<Integer> inventoryIds);
+    
+    /**
+     * Gets a multimap of inventoryId to applianceCategoryId for appliances attached to the specified inventory.
+     * If an inventory has multiple attached appliances in the same applianceCategory, there will be duplicate entries.
+     */
+    public Multimap<Integer, Integer> getInventoryApplianceMap(Iterable<Integer> inventoryIds);
 }

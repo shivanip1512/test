@@ -232,6 +232,34 @@ public class LMHardwareConfigurationDaoImpl implements LMHardwareConfigurationDa
     }
     
     @Override
+    public Multimap<Integer, Integer> getInventoryApplianceMap(Iterable<Integer> inventoryIds) {
+        SqlFragmentGenerator<Integer> sqlFragmentGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT lmhc.InventoryId, ab.ApplianceCategoryId");
+                sql.append("FROM LmHardwareConfiguration lmhc");
+                sql.append("JOIN ApplianceBase ab ON ab.ApplianceId = lmhc.ApplianceId");
+                sql.append("WHERE lmhc.InventoryId").in(subList);
+                return sql;
+            }
+        };
+        
+        List<Pair<Integer, Integer>> resultsList = chunkingSqlTemplate.query(sqlFragmentGenerator, inventoryIds, new YukonRowMapper<Pair<Integer, Integer>>() {
+            public Pair<Integer, Integer> mapRow(YukonResultSet rs) throws SQLException {
+                return new Pair<Integer, Integer>(rs.getInt("InventoryId"), rs.getInt("ApplianceCategoryId"));
+            }
+        });
+        //ArrayListMultimap allows duplicate entries - this is very important, as an inventory may have multiple
+        //appliances attached with the same applianceCategoryId, so duplicates must be supported.
+        Multimap<Integer, Integer> resultMultiMap = ArrayListMultimap.create();
+        for(Pair<Integer, Integer> pair : resultsList) {
+            resultMultiMap.put(pair.getFirst(), pair.getSecond());
+        }
+        return resultMultiMap;
+    }
+    
+    @Override
     public Multimap<Integer, PaoIdentifier> getRelayToDeviceMapByDeviceIds(Iterable<Integer> deviceIds) {
         SqlFragmentGenerator<Integer> sqlFragmentGenerator = new SqlFragmentGenerator<Integer>() {
             @Override

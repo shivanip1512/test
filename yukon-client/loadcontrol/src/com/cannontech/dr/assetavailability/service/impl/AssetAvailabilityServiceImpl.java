@@ -338,13 +338,15 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
                                                                        Map<Integer, Instant> paoCommunicationTimes,
                                                                        PaoRelayRuntimes paoRelayRuntimes) {
         DeviceRelayApplianceCategories dracs = lmHardwareConfigurationDao.getDeviceRelayApplianceCategoryId(inventoryIds);
+        Multimap<Integer, Integer> oneWayInventoryApplianceCategoryIds = lmHardwareConfigurationDao.getInventoryApplianceMap(oneWayInventory);
         Map<Integer, SimpleAssetAvailability> assetAvailabilityMap = Maps.newHashMap();
         Instant now = Instant.now();
         for(int inventoryId : inventoryIds) {
             boolean isOptedOut = optedOutInventory.contains(inventoryId);
             
             if(oneWayInventory.contains(inventoryId)) {
-                SimpleAssetAvailability assetAvailability = new SimpleAssetAvailability(inventoryId, isOptedOut);
+                Collection<Integer> applianceCategoryIds = oneWayInventoryApplianceCategoryIds.get(inventoryId);
+                SimpleAssetAvailability assetAvailability = new SimpleAssetAvailability(inventoryId, isOptedOut, applianceCategoryIds);
                 assetAvailabilityMap.put(inventoryId, assetAvailability);
             } else {
                 int deviceId = inventoryAndDevices.get(inventoryId);

@@ -1,10 +1,12 @@
 package com.cannontech.dr.assetavailability;
 
 import java.util.Collection;
+import java.util.Set;
 
 import org.joda.time.Instant;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
 
 /**
  * Contains asset availability information for a single piece of inventory.
@@ -28,14 +30,19 @@ public final class SimpleAssetAvailability {
     
     /**
      * Constructor for one-way inventory (which are always considered to be in communication &
-     * running). Communication time and runtime will be set to null.
+     * running). Communication time and runtimes will be set to null.
      */
-    public SimpleAssetAvailability(int inventoryId, boolean isOptedOut) {
+    public SimpleAssetAvailability(int inventoryId, boolean isOptedOut, Iterable<Integer> appliances) {
         this.inventoryId = inventoryId;
         this.status = AssetAvailabilityStatus.IN_COMMUNICATION_RUNNING;
         this.isOptedOut = isOptedOut;
         this.lastCommunicationTime = null;
-        this.applianceRuntimes = null;
+        Set<ApplianceWithRuntime> appliancesWithoutRuntime = Sets.newHashSet();
+        for(Integer applianceCategoryId : appliances) {
+            ApplianceWithRuntime applianceWithoutRuntime = new ApplianceWithRuntime(applianceCategoryId, null);
+            appliancesWithoutRuntime.add(applianceWithoutRuntime);
+        }
+        this.applianceRuntimes = ImmutableSet.copyOf(appliancesWithoutRuntime);
     }
     
     public int getInventoryId() {
