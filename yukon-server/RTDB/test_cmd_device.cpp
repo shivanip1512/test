@@ -20,7 +20,7 @@ struct Test_DeviceCommand : Cti::Devices::Commands::DeviceCommand
     using Cti::Devices::Commands::DeviceCommand::setBits_bEndian;
 };
 
-BOOST_AUTO_TEST_CASE(test_getValueFromBits_lEndian)
+BOOST_AUTO_TEST_CASE(test_getValueFromBits_bEndian)
 {
     std::vector<unsigned char> init;
 
