@@ -15,6 +15,7 @@ import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.SqlFragment;
@@ -587,6 +588,7 @@ public class FormulaDaoImpl implements FormulaDao {
     }
 
     @Override
+    @Transactional
     public void saveGearAssignmentsForId(int formulaId, List<Integer> gearIds) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM").append(assignmentTableName);
@@ -604,6 +606,7 @@ public class FormulaDaoImpl implements FormulaDao {
     }
 
     @Override
+    @Transactional
     public void saveGearAssignmentForId(int formulaId, int gearId) {
         if (!doesFormulaExist(formulaId)) {
             throw new FormulaNotFoundException("Formula id# "+formulaId+" does not exist. Cannot assign gear");

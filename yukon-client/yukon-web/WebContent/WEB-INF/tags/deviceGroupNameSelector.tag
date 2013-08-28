@@ -3,9 +3,9 @@
 <%@ attribute name="fieldName" required="true"%>
 <%@ attribute name="fieldValue" required="false"%>
 <%@ attribute name="dataJson" required="true"%>
-<%@ attribute name="linkGroupName" required="false" description="will make the group name a link that when clicked bring you to group editor for group"%>
-<%@ attribute name="showSelectedDevicesIcon" required="false" description="will make the group name a link that when clicked bring you to group editor for group"%>
-<%@ attribute name="submitCallback" required="false" description="optional additional function to call when group is picked" %>
+<%@ attribute name="linkGroupName" required="false" description="Will make the group name a link that when clicked brings you to the group editor for group"%>
+<%@ attribute name="showSelectedDevicesIcon" required="false"%>
+<%@ attribute name="submitCallback" required="false" description="optional additional function to call when group is picked"%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>

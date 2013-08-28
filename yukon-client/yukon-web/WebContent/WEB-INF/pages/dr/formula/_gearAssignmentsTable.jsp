@@ -1,12 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog"%>
 
 <cti:url value="gearAssignmentsPage" var="sortUrl"/>
 
@@ -37,11 +32,13 @@
                     </c:forEach>
                 </tbody>
             </table>
-            <cti:url value="${sortUrl}" var="pagedUrl">
-               <cti:param name="gearSort" value="${gearSort}"/>
-               <cti:param name="gearOrderByDescending" value="${gearOrderByDescending}"/>
-            </cti:url>
-            <tags:pagingResultsControls baseUrl="${pagedUrl}" result="${pagedGears}"/>
+            <c:if test="${pagedGears.hitCount > pagedGears.count}">
+                <cti:url value="${sortUrl}" var="pagedUrl">
+                   <cti:param name="gearSort" value="${gearSort}"/>
+                   <cti:param name="gearOrderByDescending" value="${gearOrderByDescending}"/>
+                </cti:url>
+                <tags:pagingResultsControls baseUrl="${pagedUrl}" result="${pagedGears}"/>
+            </c:if>
         </c:otherwise>
     </c:choose>
 </cti:msgScope>

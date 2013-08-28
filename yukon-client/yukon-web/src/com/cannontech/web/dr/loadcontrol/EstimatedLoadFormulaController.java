@@ -113,7 +113,7 @@ public class EstimatedLoadFormulaController {
                        @RequestParam(defaultValue="1") int page) {
 
         List<FormulaBean> allFormulas = FormulaBean.toBeans(formulaDao.getAllFormulas());
-        sortFormulas(allFormulas, sort, descending, context);
+        allFormulas = sortFormulas(allFormulas, sort, descending, context);
         SearchResult<FormulaBean> pagedFormulas
             = SearchResult.pageBasedForWholeList(page, itemsPerPage, allFormulas);
 
@@ -241,7 +241,7 @@ public class EstimatedLoadFormulaController {
         Map<Integer, LMProgramDirectGear> allGears = gearDao.getAllGears();
         List<GearAssignment> gearAssignments = formulaDao.getAssignmentsForGears(allGears.keySet());
 
-        sortGearAssignments(gearAssignments, sort, descending, context);
+        gearAssignments = sortGearAssignments(gearAssignments, sort, descending, context);
 
         SearchResult<GearAssignment> pagedGears
             = SearchResult.pageBasedForWholeList(page, itemsPerPage, gearAssignments);
@@ -287,7 +287,7 @@ public class EstimatedLoadFormulaController {
         Map<Integer, Integer> energyCompanyIds = applianceCategoryDao.getEnergyCompanyIdsForApplianceCategoryIds(appCatIds);
         List<ApplianceCategoryAssignment> appCatAssignments = formulaDao.getAssignmentsForApplianceCategories(appCatIds);
 
-        sortAppCatAssignments(appCatAssignments, sort, descending, context);
+        appCatAssignments = sortAppCatAssignments(appCatAssignments, sort, descending, context);
 
         SearchResult<ApplianceCategoryAssignment> pagedAppCats
             = SearchResult.pageBasedForWholeList(page, itemsPerPage, appCatAssignments);
@@ -345,7 +345,7 @@ public class EstimatedLoadFormulaController {
         model.addAttribute("formulaBean", formulaBean);
     }
 
-    private void sortGearAssignments(List<GearAssignment> gearAssignments, SortBy sortBy, final boolean desc, final YukonUserContext context) {
+    private List<GearAssignment> sortGearAssignments(List<GearAssignment> gearAssignments, SortBy sortBy, final boolean desc, final YukonUserContext context) {
         switch(sortBy) {
         default:
         case NAME:
@@ -355,10 +355,9 @@ public class EstimatedLoadFormulaController {
                     return desc ? -compare : compare;
                 }
             });
-            break;
+            return gearAssignments;
         case GEAR_CONTROL_METHOD:
-            gearAssignments = objectFormatingService.sortDisplayableValuesWithMapper(gearAssignments, null, null, controlMethodFunction, desc, context);
-            break;
+            return objectFormatingService.sortDisplayableValuesWithMapper(gearAssignments, null, null, controlMethodFunction, desc, context);
         case IS_ASSIGNED:
             Collections.sort(gearAssignments, new Comparator<GearAssignment>() {
                 @Override public int compare(GearAssignment o1, GearAssignment o2) {
@@ -371,11 +370,11 @@ public class EstimatedLoadFormulaController {
                     return desc ? -1 : 1;
                 }
             });
-            break;
+            return gearAssignments;
         }
     }
 
-    private void sortAppCatAssignments(List<ApplianceCategoryAssignment> appCatAssignments, SortBy sortBy,final boolean desc, final YukonUserContext context) {
+    private List<ApplianceCategoryAssignment> sortAppCatAssignments(List<ApplianceCategoryAssignment> appCatAssignments, SortBy sortBy,final boolean desc, final YukonUserContext context) {
         switch(sortBy) {
         default:
         case NAME:
@@ -385,10 +384,9 @@ public class EstimatedLoadFormulaController {
                     return desc ? -compare : compare;
                 }
             });
-            break;
+            return appCatAssignments;
         case TYPE:
-            appCatAssignments = objectFormatingService.sortDisplayableValuesWithMapper(appCatAssignments, null, null, applianceTypeFunction, desc, context);
-            break;
+            return objectFormatingService.sortDisplayableValuesWithMapper(appCatAssignments, null, null, applianceTypeFunction, desc, context);
         case APP_CAT_AVERAGE_LOAD:
             Collections.sort(appCatAssignments, new Comparator<ApplianceCategoryAssignment>() {
                 @Override public int compare(ApplianceCategoryAssignment o1, ApplianceCategoryAssignment o2) {
@@ -396,7 +394,7 @@ public class EstimatedLoadFormulaController {
                     return desc ? -compare : compare;
                 }
             });
-                break;
+            return appCatAssignments;
         case IS_ASSIGNED:
             Collections.sort(appCatAssignments, new Comparator<ApplianceCategoryAssignment>() {
                 @Override public int compare(ApplianceCategoryAssignment o1, ApplianceCategoryAssignment o2) {
@@ -409,11 +407,11 @@ public class EstimatedLoadFormulaController {
                     return desc ? -1 : 1;
                 }
             });
-            break;
+            return appCatAssignments;
         }
     }
 
-    private void sortFormulas(List<FormulaBean> appCatAssignments, SortBy sortBy, final boolean desc, final YukonUserContext context) {
+    private List<FormulaBean> sortFormulas(List<FormulaBean> appCatAssignments, SortBy sortBy, final boolean desc, final YukonUserContext context) {
         switch(sortBy) {
         default:
         case NAME:
@@ -423,13 +421,11 @@ public class EstimatedLoadFormulaController {
                     return desc ? -compare : compare;
                 }
             });
-            break;
+            return appCatAssignments;
         case TYPE:
-            appCatAssignments = objectFormatingService.sortDisplayableValuesWithMapper(appCatAssignments, null, null, formulaTypeFunction, desc, context);
-            break;
+            return objectFormatingService.sortDisplayableValuesWithMapper(appCatAssignments, null, null, formulaTypeFunction, desc, context);
         case CALCULATION_TYPE:
-            appCatAssignments = objectFormatingService.sortDisplayableValuesWithMapper(appCatAssignments, null, null, calculationTypeFunction, desc, context);
-            break;
+            return objectFormatingService.sortDisplayableValuesWithMapper(appCatAssignments, null, null, calculationTypeFunction, desc, context);
         }
     }
 
