@@ -16,8 +16,8 @@ public class UserPage {
     private final String module;
     private final String name;
     private final List<String> arguments;
-    private final Category category;
-    private final Date createdDate;
+    private final boolean favorite;
+    private final Date lastAccess;
 
     public enum Module implements DisplayableEnum, Comparable<Module> {
         AMI(1),
@@ -51,8 +51,6 @@ public class UserPage {
         }
     }
 
-    public enum Category{HISTORY, FAVORITE};
-
     public  Module getModuleEnum() {
         String moduleName = module;
         if (moduleName.equals("capcontrol")) {
@@ -82,23 +80,23 @@ public class UserPage {
         return temp;
     }
 
-    public UserPage(Integer userId, String path, Category category) {
-        this(userId, path, category, null, null, new ArrayList<String>(), new Date(), null);   
+    public UserPage(Integer userId, String path, boolean isFavorite) {
+        this(userId, path, isFavorite, null, null, new ArrayList<String>(), new Date(), null);   
     }
 
-    public UserPage(Integer userId, String path, Category category, String moduleName, String name, List<String> arguments) {
+    public UserPage(Integer userId, String path, boolean category, String moduleName, String name, List<String> arguments) {
      this(userId, path, category, moduleName, name, arguments, new Date(), null);   
     }
 
-    public UserPage(Integer userId, String path, Category category,  String module, String name, List<String> arguments, Date createdDate, Integer id) {
+    public UserPage(Integer userId, String path, boolean isFavorite,  String module, String name, List<String> arguments, Date lastAccess, Integer id) {
         this.id = id;
         this.userId = userId;
         this.path = path;
-        this.category = category;
+        this.favorite = isFavorite;
         this.module = module;
         this.name = name;
         this.arguments = arguments;
-        this.createdDate = createdDate;
+        this.lastAccess = lastAccess;
     }
 
     public Integer getId() {
@@ -119,18 +117,32 @@ public class UserPage {
     public final List<String> getArguments() {
         return arguments;
     }
-    public final Category getCategory() {
-        return category;
+    public final boolean isFavorite() {
+        return favorite;
     }
-    public Date getCreatedDate() {
-        return createdDate;
+    public Date getLastAccess() {
+        return lastAccess;
     }
 
     public UserPage updateId(Integer id) {
         if (this.id == id) {
             return this;
         } else {
-            return new UserPage(this.userId, this.path, this.category, this.module, this.name, this.arguments, this.createdDate, id);
+            return new UserPage(this.userId, this.path, this.favorite, this.module, this.name, this.arguments, this.lastAccess, id);
+        }
+    }
+    public UserPage updateFavorite(boolean isFavorite) {
+        if (this.favorite == isFavorite) {
+            return this;
+        } else {
+            return new UserPage(this.userId, this.path, isFavorite, this.module, this.name, this.arguments, this.lastAccess, this.id);
+        }
+    }
+    public UserPage updateLastAccess(Date lastAccessedDate) {
+        if (this.lastAccess == lastAccessedDate) {
+            return this;
+        } else {
+            return new UserPage(this.userId, this.path, this.favorite, this.module, this.name, this.arguments, lastAccessedDate, this.id);
         }
     }
 }

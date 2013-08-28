@@ -19,7 +19,6 @@ import com.cannontech.common.userpage.dao.UserPageDao;
 import com.cannontech.common.userpage.model.UserSubscription;
 import com.cannontech.common.userpage.model.UserSubscription.SubscriptionType;
 import com.cannontech.common.userpage.model.UserPage;
-import com.cannontech.common.userpage.model.UserPage.Category;
 import com.cannontech.common.userpage.model.UserPage.Module;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.StringUtils;
@@ -60,7 +59,7 @@ public class HomeController {
     @RequestMapping("/dashboard")
     public String dashboard(ModelMap model, YukonUserContext context) {
 
-        Multimap<Category, UserPage> pages = userPageDao.getPagesForUser(context.getYukonUser());
+        List<UserPage> pages = userPageDao.getPagesForUser(context.getYukonUser());
 
         List<UserPageWrapper> history = setupDisplayableHistory(pages, context);
         Multimap<Module, UserPageWrapper> favoritesMap = setupDisplayableFavorites(pages, context);
@@ -72,9 +71,9 @@ public class HomeController {
         return "dashboard.jsp";
     }
 
-    private List<UserPageWrapper> setupDisplayableHistory( Multimap<Category, UserPage> pages, YukonUserContext context) {
+    private List<UserPageWrapper> setupDisplayableHistory( List<UserPage> pages, YukonUserContext context) {
 
-        List<UserPage> rawHistory = Lists.newArrayList(pages.get(Category.HISTORY));
+        List<UserPage> rawHistory = Lists.newArrayList(pages);
 
         List<UserPageWrapper> history = Lists.newArrayList();
         for (UserPage page : rawHistory) {
@@ -82,12 +81,22 @@ public class HomeController {
         }
 
         Collections.sort(history, byDateDesc);
+
+        if (history.size() > UserPageDao.MAX_HISTORY ) {
+            history = history.subList(0, UserPageDao.MAX_HISTORY);
+        }
+        
         return history;
     }
 
-    private Multimap<Module, UserPageWrapper> setupDisplayableFavorites( Multimap<Category, UserPage> pages, YukonUserContext context) {
+    private Multimap<Module, UserPageWrapper> setupDisplayableFavorites( List<UserPage> pages, YukonUserContext context) {
 
-        List<UserPage> rawFavorites = Lists.newArrayList(pages.get(Category.FAVORITE));
+        List<UserPage> rawFavorites = Lists.newArrayList();
+        for (UserPage page : pages) {
+            if (page.isFavorite()) {
+                rawFavorites.add(page);
+            }
+        }
 
         List<UserPageWrapper> favorites = Lists.newArrayList();
         for (UserPage page : rawFavorites) {
@@ -118,26 +127,21 @@ public class HomeController {
 
         List<String> arguments = StringUtils.restoreJsSafeList(labelArgs);
 
-        UserPage page = new UserPage (context.getYukonUser().getUserID(), path, Category.FAVORITE, module, name, arguments);
+        UserPage page = new UserPage (context.getYukonUser().getUserID(), path, true, module, name, arguments);
 
-        boolean isFavorite = userPageDao.contains(page);
-        if( isFavorite ) {
-            userPageDao.delete(page);
-        } else {
-            userPageDao.save(page);
-        }
+        boolean isFavorite = userPageDao.toggleFavorite(page);
 
         JSONObject result = new JSONObject();
-        result.put( "isFavorite", ! isFavorite );
+        result.put( "isFavorite", isFavorite );
         return result;
     }
 
     @RequestMapping("/isFavorite")
     public @ResponseBody JSONObject isFavorite(String path, YukonUserContext context) {
 
-        UserPage page = new UserPage(context.getYukonUser().getUserID(), path, Category.FAVORITE);
+        UserPage page = new UserPage(context.getYukonUser().getUserID(), path, true);
 
-        boolean isFavorite = userPageDao.contains(page);
+        boolean isFavorite = userPageDao.isFavorite(page);
 
         JSONObject result = new JSONObject();
         result.put( "isFavorite", isFavorite );
@@ -154,16 +158,16 @@ public class HomeController {
 
         List<String> arguments = StringUtils.restoreJsSafeList(labelArgs);
 
-        UserPage page = new UserPage(context.getYukonUser().getUserID(), path, Category.HISTORY, module, name, arguments);
-        userPageDao.save(page);
+        UserPage page = new UserPage(context.getYukonUser().getUserID(), path, false, module, name, arguments);
+        userPageDao.updateHistory(page);
 
         return new JSONObject();
     }
 
     @RequestMapping("/toggleSubscribed")
-    public @ResponseBody JSONObject toggleSubscribed(String monitorType, Integer monitorId, YukonUserContext context) {
+    public @ResponseBody JSONObject toggleSubscribed(String subscriptionType, Integer refId, YukonUserContext context) {
 
-        UserSubscription monitor = new UserSubscription (context.getYukonUser().getUserID(), SubscriptionType.valueOf(monitorType), monitorId, null);
+        UserSubscription monitor = new UserSubscription (context.getYukonUser().getUserID(), SubscriptionType.valueOf(subscriptionType), refId, null);
 
         boolean isSubscribed = userSubscriptionDao.contains(monitor);
         if( isSubscribed ) {
@@ -178,9 +182,9 @@ public class HomeController {
     }
 
     @RequestMapping("/isSubscribed")
-    public @ResponseBody JSONObject isSubscribed(String monitorType, Integer monitorId, YukonUserContext context) {
+    public @ResponseBody JSONObject isSubscribed(String subscriptionType, Integer refId, YukonUserContext context) {
 
-        UserSubscription monitor = new UserSubscription (context.getYukonUser().getUserID(), SubscriptionType.valueOf(monitorType), monitorId, null);
+        UserSubscription monitor = new UserSubscription (context.getYukonUser().getUserID(), SubscriptionType.valueOf(subscriptionType), refId, null);
 
         boolean isSubscribed = userSubscriptionDao.contains(monitor);
 
@@ -242,7 +246,7 @@ public class HomeController {
 
     private static Comparator<UserPageWrapper> byDateDesc = new Comparator<UserPageWrapper>() {
         public int compare(UserPageWrapper left, UserPageWrapper right) {
-            return - (left.getPage().getCreatedDate().compareTo(right.getPage().getCreatedDate()));
+            return - (left.getPage().getLastAccess().compareTo(right.getPage().getLastAccess()));
         }
     };
 

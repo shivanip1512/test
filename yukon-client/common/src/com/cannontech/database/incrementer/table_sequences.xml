@@ -317,8 +317,8 @@
       <sequence name="UserPageParam">
         <table name="UserPageParam" identitycolumn="UserPageParamId" initsequence="true" />
       </sequence>
-      <sequence name="UserMonitor">
-        <table name="UserMonitor" identitycolumn="UserMonitorId" initsequence="true" />
+      <sequence name="UserSubscription">
+        <table name="UserSubscription" identitycolumn="UserSubscriptionId" initsequence="true" />
       </sequence>
       <sequence name="EstimatedLoadFormula">
         <table name="EstimatedLoadFormula" identitycolumn="EstimatedLoadFormulaId" initsequence="true" />

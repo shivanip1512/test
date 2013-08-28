@@ -4,10 +4,6 @@ var Yukon = (function (yukonMod) {
 Yukon.namespace('Yukon.Favorites');
 Yukon.Favorites = (function () {
 
-    /*******************
-     * Private Methods *
-     *******************/
-
     var _dataFavoriteButton = function (button) {
 
         var data = { module:    button.attr('data-module'),
@@ -25,9 +21,8 @@ Yukon.Favorites = (function () {
 
     _dataSubscribeButton = function (button) {
 
-        var data = { name:        button.attr('data-name'),
-                     monitorType: button.attr('data-monitorType'),
-                     monitorId:   button.attr('data-monitorId')
+        var data = { subscriptionType: button.attr('data-subscription-type'),
+                     refId:   button.attr('data-ref-id')
                    };
         return data;
     },
@@ -82,6 +77,29 @@ Yukon.Favorites = (function () {
             jQuery.getJSON( '/addToHistory', data);
         }
     },
+    
+    _toggleFavorite = function (button, iconOn, iconOff) {
+
+        var data = _dataFavoriteButton(button);
+
+        jQuery.getJSON( '/toggleFavorite', data).done( function (json) {
+            _setIcon(button, json.isFavorite, iconOn, iconOff);
+        });
+    },
+
+    _toggleSubscribed = function (button, iconOn, iconOff) {
+
+        var data = _dataSubscribeButton(button);
+
+        if (typeof iconOn === 'undefined') {
+            iconOn = 'icon-feed';
+            iconOff = 'icon-feed disabled cp';
+        }
+
+        jQuery.getJSON( '/toggleSubscribed', data).done( function (json) {
+            _setIcon(button, json.isSubscribed, iconOn, iconOff);
+        });
+    },
 
     favoriteMod = {
 
@@ -102,7 +120,7 @@ Yukon.Favorites = (function () {
 
                 button.unbind('click');
                 button.click( function() {
-                    favoriteMod.toggleFavorite(button);
+                    _toggleFavorite(button);
                 });
             });
 
@@ -113,7 +131,7 @@ Yukon.Favorites = (function () {
                 button.click(function() {
                     var row = button.closest('li'),
                         actionDo = function(){
-                            favoriteMod.toggleFavorite(button, 'icon-star', 'icon-star');
+                            _toggleFavorite(button, 'icon-star', 'icon-star');
                         },
                         actionUndo = actionDo,
                         header = button.attr('data-header');
@@ -134,7 +152,7 @@ Yukon.Favorites = (function () {
                 _initializeSubscribedIcon(button);
                 button.unbind('click');
                 button.click(function() {
-                    favoriteMod.toggleSubscribed(button);
+                    _toggleSubscribed(button);
                 });
             });
 
@@ -146,7 +164,7 @@ Yukon.Favorites = (function () {
                 button.click(function() {
                     var row = button.closest('tr'),
                         actionDo = function(){
-                            favoriteMod.toggleSubscribed(button, 'icon-feed', 'icon-feed');
+                            _toggleSubscribed(button, 'icon-feed', 'icon-feed');
                         },
                         actionUndo = actionDo,
                         name = button.attr('data-name');
@@ -155,31 +173,7 @@ Yukon.Favorites = (function () {
                 });
             });
         },
-
-        toggleFavorite : function (button, iconOn, iconOff) {
-
-            var data = _dataFavoriteButton(button);
-
-            jQuery.getJSON( '/toggleFavorite', data).done( function (json) {
-                _setIcon(button, json.isFavorite, iconOn, iconOff);
-            });
-        },
-
-        toggleSubscribed: function (button, iconOn, iconOff) {
-
-            var data = _dataSubscribeButton(button);
-
-            if (typeof iconOn === 'undefined') {
-                iconOn = 'icon-feed';
-                iconOff = 'icon-feed disabled cp';
-            }
-
-            jQuery.getJSON( '/toggleSubscribed', data).done( function (json) {
-                _setIcon(button, json.isSubscribed, iconOn, iconOff);
-            });
-        }
-    };
-
+    }
     return favoriteMod;
 }());
 

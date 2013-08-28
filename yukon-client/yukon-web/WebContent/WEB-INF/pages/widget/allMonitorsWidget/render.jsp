@@ -42,12 +42,12 @@
                         </c:if>
 
                         <cti:button classes="hover-actions b-subscribe ${buttonClasses}" nameKey="subscribe" renderMode="image" icon="icon-feed ${iconClasses}"
-                            data-name="${monitor.name}" data-monitorType="DEVICE_DATA" data-monitorId="${monitor.id}"/>
+                            data-name="${fn:escapeXml(monitor.name)}" data-subscription-type="DEVICE_DATA_MONITOR" data-ref-id="${monitor.id}"/>
 
                         <cti:url var="viewMonitorUrl" value="/amr/deviceDataMonitor/view">
                             <cti:param name="monitorId" value="${monitor.id}" />
                         </cti:url>
-                        <a href="${viewMonitorUrl}" title="<cti:msg2 key=".edit.hoverText" arguments="${monitor.name}"/>">${fn:escapeXml(monitor.name)}</a>
+                        <a href="${viewMonitorUrl}" title="<cti:msg2 key=".edit.hoverText" arguments="${fn:escapeXml(monitor.name)}"/>">${fn:escapeXml(monitor.name)}</a>
                     </td>
 
                     <%-- violations count --%>
@@ -111,12 +111,12 @@
                         </c:if>
 
                         <cti:button classes="hover-actions b-subscribe ${buttonClasses}" nameKey="subscribe" renderMode="image" icon="icon-feed ${iconClasses}"
-                         data-name="${monitorName}" data-monitorType="OUTAGE" data-monitorId="${monitorId}"/>
+                            data-name="${fn:escapeXml(monitorName)}" data-subscription-type="OUTAGE_MONITOR" data-ref-id="${monitorId}"/>
 
                         <cti:url var="viewOutageProcessingUrl" value="/amr/outageProcessing/process/process">
                             <cti:param name="outageMonitorId" value="${monitorId}"/>
                         </cti:url>
-                        <a href="${viewOutageProcessingUrl}" title="<cti:msg2 key=".edit.hoverText" arguments="${monitorName}"/>">${fn:escapeXml(monitorName)}</a>
+                        <a href="${viewOutageProcessingUrl}" title="<cti:msg2 key=".edit.hoverText" arguments="${fn:escapeXml(monitorName)}"/>">${fn:escapeXml(monitorName)}</a>
                     </td>
 
                     <%-- violations count --%>
@@ -181,12 +181,12 @@
                         </c:if>
 
                         <cti:button classes="hover-actions b-subscribe ${buttonClasses}" nameKey="subscribe" renderMode="image" icon="icon-feed ${iconClasses}"
-                         data-name="${monitorName}" data-monitorType="TAMPER_FLAG" data-monitorId="${monitorId}"/>
+                            data-name="${fn:escapeXml(monitorName)}" data-subscription-type="TAMPER_FLAG_MONITOR" data-ref-id="${monitorId}"/>
 
                         <cti:url var="viewTamperFlagProcessingUrl" value="/amr/tamperFlagProcessing/process/process">
                             <cti:param name="tamperFlagMonitorId" value="${monitorId}"/>
                         </cti:url>
-                        <a href="${viewTamperFlagProcessingUrl}" title="<cti:msg2 key=".edit.hoverText" arguments="${monitorName}"/>">${fn:escapeXml(monitorName)}</a>
+                        <a href="${viewTamperFlagProcessingUrl}" title="<cti:msg2 key=".edit.hoverText" arguments="${fn:escapeXml(monitorName)}"/>">${fn:escapeXml(monitorName)}</a>
                     </td>
 
                     <%-- violations count --%>
@@ -250,12 +250,12 @@
                     </c:if>
 
                     <cti:button classes="hover-actions b-subscribe ${buttonClasses}" nameKey="subscribe" renderMode="image" icon="icon-feed ${iconClasses}"
-                     data-name="${monitorName}" data-monitorType="STATUS_POINT" data-monitorId="${monitorId}"/>
+                        data-name="${fn:escapeXml(monitorName)}" data-subscription-type="STATUS_POINT_MONITOR" data-ref-id="${monitorId}"/>
 
                     <cti:url var="viewStatusPointMonitoringUrl" value="/amr/statusPointMonitoring/viewPage">
                         <cti:param name="statusPointMonitorId" value="${monitorId}"/>
                     </cti:url>
-                    <a href="${viewStatusPointMonitoringUrl}" title="<cti:msg2 key=".edit.hoverText" arguments="${monitorName}"/>">${fn:escapeXml(monitorName)}</a>
+                    <a href="${viewStatusPointMonitoringUrl}" title="<cti:msg2 key=".edit.hoverText" arguments="${fn:escapeXml(monitorName)}"/>">${fn:escapeXml(monitorName)}</a>
                 </td>
 
                 <%-- monitoring count --%>
@@ -310,12 +310,12 @@
                     </c:if>
 
                     <cti:button classes="hover-actions b-subscribe ${buttonClasses}" nameKey="subscribe" renderMode="image" icon="icon-feed ${iconClasses}"
-                     data-name="${monitor.name}" data-monitorType="PORTER_RESPONSE" data-monitorId="${monitor.monitorId}"/>
+                        data-name="${fn:escapeXml(monitor.name)}" data-subscription-Type="PORTER_RESPONSE_MONITOR" data-ref-id="${monitor.monitorId}"/>
 
                     <cti:url var="viewMonitorUrl" value="/amr/porterResponseMonitor/viewPage">
                         <cti:param name="monitorId" value="${monitor.monitorId}" />
                     </cti:url>
-                    <a href="${viewMonitorUrl}" title="<cti:msg2 key=".edit.hoverText" arguments="${monitor.name}"/>">${fn:escapeXml(monitor.name)}</a>
+                    <a href="${viewMonitorUrl}" title="<cti:msg2 key=".edit.hoverText" arguments="${fn:escapeXml(monitor.name)}"/>">${fn:escapeXml(monitor.name)}</a>
                 </td>
 
                 <%-- enable/disable --%>
@@ -372,12 +372,12 @@
                         <c:set var="buttonClasses" value="remove" />
                     </c:if>
                     <cti:button classes="hover-actions b-subscribe ${buttonClasses}" nameKey="subscribe" renderMode="image" icon="icon-feed ${iconClasses}"
-                     data-name="${monitorName}" data-monitorType="VALIDATION" data-monitorId="${monitorId}"/>
+                        data-name="${fn:escapeXml(monitorName)}" data-subscription-type="VALIDATION_MONITOR" data-ref-id="${monitorId}"/>
 
                     <cti:url var="viewValidationMonitorEditorUrl" value="/common/vee/monitor/edit">
                         <cti:param name="validationMonitorId" value="${monitorId}"/>
                     </cti:url>
-                    <a href="${viewValidationMonitorEditorUrl}" title="<cti:msg2 key=".edit.hoverText" arguments="${monitorName}"/>" >
+                    <a href="${viewValidationMonitorEditorUrl}" title="<cti:msg2 key=".edit.hoverText" arguments="${fn:escapeXml(monitorName)}"/>" >
                         ${fn:escapeXml(monitorName)}
                     </a>
                 </td>
