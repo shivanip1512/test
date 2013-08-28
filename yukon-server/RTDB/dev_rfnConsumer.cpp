@@ -4,6 +4,8 @@
 #include "dev_rfnConsumer.h"
 
 #include <boost/optional.hpp>
+#include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/classification.hpp>
 
 #include <limits>
 #include <string>
@@ -250,6 +252,47 @@ int RfnConsumerDevice::executeReadDemandFreezeInfo( CtiRequestMsg     * pReq,
        new Commands::RfnGetDemandFreezeInfoCommand( *this ) );
 
     rfnRequests.push_back( Commands::RfnCommandSPtr( readFreezeInfoCommand.release() ) );
+
+    return NoError;
+}
+
+
+int RfnConsumerDevice::executeTouCriticalPeak( CtiRequestMsg     * pReq,
+                                               CtiCommandParser  & parse,
+                                               CtiMessageList    & retList,
+                                               RfnCommandList    & rfnRequests )
+{
+
+    if( parse.isKeyValid("tou_critical_peak_cancel") )
+    {
+        std::auto_ptr<Commands::RfnCommand> cancelCriticalPeakCommand(
+            new Commands::RfnTouCancelCriticalPeakCommand );
+
+        rfnRequests.push_back( Commands::RfnCommandSPtr( cancelCriticalPeakCommand.release() ) );
+    }
+    else
+    {
+        const std::string rateStr = parse.getsValue( "tou_critical_peak_rate" );
+
+        Commands::RfnTouCriticalPeakCommand::Rate   rate = Commands::RfnTouCriticalPeakCommand::RateD;
+        if ( rateStr == "a" ) { rate = Commands::RfnTouCriticalPeakCommand::RateA; }
+        if ( rateStr == "b" ) { rate = Commands::RfnTouCriticalPeakCommand::RateB; }
+        if ( rateStr == "c" ) { rate = Commands::RfnTouCriticalPeakCommand::RateC; }
+
+        const std::string stopTime = parse.getsValue( "tou_critical_peak_stop_time" );
+
+        std::vector<std::string>    timeComponents;
+
+        boost::split( timeComponents, stopTime, boost::is_any_of(":"), boost::token_compress_on );
+
+        const unsigned hour   = strtoul( timeComponents[0].c_str(), NULL, 10 );
+        const unsigned minute = strtoul( timeComponents[1].c_str(), NULL, 10 );
+
+        std::auto_ptr<Commands::RfnCommand> criticalPeakCommand(
+            new Commands::RfnTouCriticalPeakCommand( rate, hour, minute ) );
+
+        rfnRequests.push_back( Commands::RfnCommandSPtr( criticalPeakCommand.release() ) );
+    }
 
     return NoError;
 }

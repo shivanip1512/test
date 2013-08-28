@@ -1599,6 +1599,44 @@ void  CtiCommandParser::doParsePutStatus(const string &_CmdStr)
         {
             _cmd["freeze"] = true;
         }
+        if(CmdStr.contains(" critical"))
+        {
+            static const boost::regex
+                re_touCriticalPeak(CtiString("tou critical peak (cancel|rate [a-d] until ") + str_time
+                                   + CtiString("|until ") + str_time + CtiString(" rate [a-d])"));
+
+            if(!(token = CmdStr.match(re_touCriticalPeak)).empty())
+            {
+                _cmd["tou_critical_peak"] = true;
+
+                if ( CmdStr.contains(" cancel") )
+                {
+                    _cmd["tou_critical_peak_cancel"] = true;
+                }
+                else
+                {
+                    CtiTokenizer cmdtok(token);
+                    cmdtok();   // tou
+                    cmdtok();   // critical
+                    cmdtok();   // peak
+
+                    std::string action = cmdtok();
+
+                    if ( action == "rate" )
+                    {
+                        _cmd["tou_critical_peak_rate"] = cmdtok();
+                        cmdtok();   // until
+                        _cmd["tou_critical_peak_stop_time"] = cmdtok();
+                    }
+                    else    // action == "until"
+                    {
+                        _cmd["tou_critical_peak_stop_time"] = cmdtok();
+                        cmdtok();   // rate
+                        _cmd["tou_critical_peak_rate"] = cmdtok();
+                    }
+                }
+            }
+        }
     }
     else
     {

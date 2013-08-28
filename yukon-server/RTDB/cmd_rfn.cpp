@@ -11,6 +11,8 @@ RfnCommand::RfnRequest RfnCommand::executeCommand(const CtiTime now)
 {
     RfnRequest req;
 
+    prepareCommandData(now);
+
     req.push_back(getCommandCode());
     req.push_back(getOperation());
 

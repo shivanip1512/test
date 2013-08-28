@@ -53,6 +53,7 @@ protected:
     virtual Commands::RfnCommandSPtr executePutConfigInstallDisplay         (CtiRequestMsg *pReq, CtiCommandParser &parse);
 
     virtual int executeImmediateDemandFreeze(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
+    virtual int executeTouCriticalPeak(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
 
     RfnIdentifier _rfnId;
 };

@@ -137,11 +137,20 @@ int RfnDevice::executePutStatus(CtiRequestMsg *pReq, CtiCommandParser &parse, Ct
     {
         return executeImmediateDemandFreeze(pReq, parse, retList, rfnRequests);
     }
+    if( parse.isKeyValid("tou_critical_peak") )
+    {
+        return executeTouCriticalPeak(pReq, parse, retList, rfnRequests);
+    }
 
     return NoMethod;
 }
 
 int RfnDevice::executeImmediateDemandFreeze(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests)
+{
+    return NoMethod;
+}
+
+int RfnDevice::executeTouCriticalPeak(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests)
 {
     return NoMethod;
 }

@@ -197,7 +197,9 @@ public:
         RateD,
     };
 
-    RfnTouCriticalPeakCommand( const Rate rate, const CtiTime & utcExpireTime );
+    RfnTouCriticalPeakCommand( const Rate rate, const unsigned hour, const unsigned minute );
+
+    virtual void prepareCommandData( const CtiTime & now );
 
 protected:
 
@@ -208,8 +210,10 @@ protected:
 
 private:
 
-    Rate    _rate;
-    CtiTime _utcExpireTime;
+    Rate        _rate;
+    unsigned    _hour,
+                _minute;
+    CtiTime     _utcExpireTime;
 };
 
 /**

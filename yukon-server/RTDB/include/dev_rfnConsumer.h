@@ -3,6 +3,7 @@
 #include "dev_rfn.h"
 #include "cmd_rfn_LoadProfile.h"
 #include "cmd_rfn_DemandFreeze.h"
+#include "cmd_rfn_TouConfiguration.h"
 
 
 namespace Cti       {
@@ -42,6 +43,12 @@ protected:
                                      CtiCommandParser  & parse,
                                      CtiMessageList    & retList,
                                      RfnCommandList    & rfnRequests );
+
+    int executeTouCriticalPeak( CtiRequestMsg     * pReq,
+                                CtiCommandParser  & parse,
+                                CtiMessageList    & retList,
+                                RfnCommandList    & rfnRequests );
+
 
     void handleResult( const Commands::RfnVoltageProfileConfigurationCommand & cmd );
     void handleResult( const Commands::RfnLoadProfileRecordingCommand & cmd );

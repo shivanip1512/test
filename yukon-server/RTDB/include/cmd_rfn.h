@@ -39,6 +39,8 @@ protected:
     virtual unsigned char getOperation() const = 0;
     virtual Bytes         getCommandData() = 0;
 
+    virtual void    prepareCommandData(const CtiTime & now) { }
+
     //
     // Type Length Values
     //

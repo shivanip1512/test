@@ -769,9 +769,10 @@ void RfnTouHolidayActiveConfigurationCommand::decodeTlv( RfnResult& result, cons
 //  RFN TOU configuration critical peak set
 //-----------------------------------------------------------------------------
 
-RfnTouCriticalPeakCommand::RfnTouCriticalPeakCommand( const Rate rate, const CtiTime & utcExpireTime )
+RfnTouCriticalPeakCommand::RfnTouCriticalPeakCommand( const Rate rate, const unsigned hour, const unsigned minute )
     :   _rate( rate ),
-        _utcExpireTime( utcExpireTime )
+        _hour( hour ),
+        _minute( minute )
 {
 
 }
@@ -779,6 +780,16 @@ RfnTouCriticalPeakCommand::RfnTouCriticalPeakCommand( const Rate rate, const Cti
 unsigned char RfnTouCriticalPeakCommand::getOperation() const
 {
     return Operation_CriticalPeak;
+}
+
+void RfnTouCriticalPeakCommand::prepareCommandData( const CtiTime & now )
+{
+    CtiDate todaysDate( now );
+
+    CtiTime today( todaysDate, _hour, _minute, 0 );
+    CtiTime tomorrow( todaysDate + 1, _hour, _minute, 0 );
+
+    _utcExpireTime = ( today > now ) ? today : tomorrow;
 }
 
 RfnCommand::Bytes RfnTouCriticalPeakCommand::getCommandData()
