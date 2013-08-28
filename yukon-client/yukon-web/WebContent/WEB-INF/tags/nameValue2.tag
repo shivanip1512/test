@@ -17,7 +17,7 @@
 	<c:when test="${nameValueContainter2}">
         <tr <c:if test="${!empty rowId}"> id="${rowId}"</c:if>
             <c:if test="${!empty rowClass}"> class="${rowClass}"</c:if>>
-			<td class="name <c:if test="${!empty nameClass}"> ${nameClass}</c:if>" style="white-space:nowrap; <c:if test="${not empty pageScope.nameColumnWidth}">width:${pageScope.nameColumnWidth};</c:if>">
+			<td class="name <c:if test="${!empty nameClass}"> ${nameClass}</c:if>" style="<c:if test="${not empty pageScope.nameColumnWidth}">width:${pageScope.nameColumnWidth};</c:if>">
             
 				<c:set var="colonSuffix" value=":"/>
 				<c:if test="${excludeColon == true}">

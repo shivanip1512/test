@@ -9,13 +9,13 @@
 <%@ attribute name="type" description="Values are 'confirm', 'error', 'warning'. Default: 'error'" %>
 <%@ attribute name="nameKey" %>
 <%@ attribute name="arguments" type="java.lang.Object" %>
-<%@ attribute name="text" description="Used when 'nameKey' is not provided." %>
+<%@ attribute name="contents" description="Used when 'nameKey' is not provided." %>
 
 <cti:default var="type" value="error"/>
 
 <div class="userMessage ${fn:toUpperCase(type)}">
     <c:choose>
-        <c:when test="${not empty pageScope.text}">${text}</c:when>
+        <c:when test="${not empty pageScope.contents}">${contents}</c:when>
         <c:otherwise>
             <i:inline key="${nameKey}" arguments="${arguments}"/>
         </c:otherwise>

@@ -2,7 +2,6 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <cti:msgScope paths=",yukon.web.modules.tools.configs.category">
     <div class="clearfix">
@@ -64,7 +63,7 @@
                                         multiSelectMode="false"
                                         immediateSelectMode="true"
                                         icon="icon-arrow-swap"
-                                        endAction="function(items) {return changeOut('${catType}');}"
+                                        endAction="function(items) {return Yukon.DeviceConfig.changeOut('${catType}');}"
                                         extraArgs="${catType}"
                                         />
                                 </c:if>

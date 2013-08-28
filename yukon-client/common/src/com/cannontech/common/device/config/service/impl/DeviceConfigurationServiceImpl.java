@@ -13,9 +13,9 @@ import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 
 public class DeviceConfigurationServiceImpl implements DeviceConfigurationService {    
-    public static final String CONFIG_OBJECT_TYPE = "config";
-    public static final String DEVICE_OBJECT_TYPE = "device";
-    public static final String CATEGORY_OBJECT_TYPE = "category";
+    private static final String CONFIG_OBJECT_TYPE = "config";
+    private static final String DEVICE_OBJECT_TYPE = "device";
+    private static final String CATEGORY_OBJECT_TYPE = "category";
 
     @Autowired private DeviceConfigurationDao deviceConfigurationDao;
     @Autowired private DbChangeManager dbChangeManager;
@@ -26,7 +26,7 @@ public class DeviceConfigurationServiceImpl implements DeviceConfigurationServic
         
         int configId = deviceConfigurationDao.saveConfigurationBase(deviceConfigurationId, name, description);
         
-        dbChangeManager.processDbChange(deviceConfigurationId, 
+        dbChangeManager.processDbChange(configId, 
                                         DBChangeMsg.CHANGE_CONFIG_DB, 
                                         DBChangeMsg.CAT_DEVICE_CONFIG, 
                                         CONFIG_OBJECT_TYPE, 

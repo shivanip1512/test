@@ -1,4 +1,3 @@
-<%@page import="com.cannontech.web.deviceConfiguration.model.DeviceConfigurationBackingBean"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
@@ -13,39 +12,14 @@
 <cti:includeScript link="/JavaScript/configurationCategory.js"/>
 
 <script type="text/javascript">
-jQuery(function() {
-    jQuery("#addTypeBtn").click(function() {
-        jQuery('#supportedTypePopup').load('processAddTypes', {configId : '${deviceConfigurationBackingBean.configId}'});
-    });
-
-    jQuery(".f-removeTypeBtn").click(function() {
-        var typeClass = jQuery(this).attr('class').match(/f-deviceType-(\w*)/)[0];
-        var splitClass = typeClass.split('-');
-        var devType = splitClass[splitClass.length - 1];
-        jQuery('#supportedTypePopup').load('removeSupportedTypeConfirm', {paoType : devType, configId : '${deviceConfigurationBackingBean.configId}'});
-    });
-    
-    if (${configurationDeviceTypesBackingBean.supportedTypesEmpty} && '${mode}' == 'VIEW') {
-        jQuery('#supportedTypePopup').load('processAddTypes', {configId : '${deviceConfigurationBackingBean.configId}'});
+Yukon.DeviceConfig.configInit(
+    {
+        configId : '${deviceConfigurationBackingBean.configId}',
+        paramsConfigId : ${deviceConfigurationBackingBean.configId},
+        supportedTypes : ${configurationDeviceTypesBackingBean.supportedTypesEmpty},
+        mode : '${mode}'
     }
-    
-    jQuery(".f-editBtn").click(function() {
-        var catTypeClass = jQuery(this).attr('class').match(/f-devType-\w*/)[0].split('-');
-        var params = {'categoryId' : jQuery('#categoryId_' + catTypeClass[catTypeClass.length - 1]).val(),
-                      'configId' : ${configurationCategoriesBackingBean.configId} };
-        
-        makeAjaxCall('editInPlace', params, jQuery(this));
-    });
-    
-    jQuery(".f-createBtn").click(function() {
-        var catTypeClass = jQuery(this).attr('class').match(/f-devType-\w*/)[0].split('-');
-        var params = {'categoryType' : catTypeClass[catTypeClass.length - 1], 
-                      'configId' : ${configurationCategoriesBackingBean.configId} };
-
-        makeAjaxCall('createInPlace', params, jQuery(this));        
-    });
-});
-
+);
 </script>
 
     <tags:setFormEditMode mode="${mode}"/>
@@ -60,7 +34,7 @@ jQuery(function() {
         <!-- CONFIGURATION NAME AND DESCRIPTION -->
         <tags:nameValueContainer2 tableClass="stacked">
             <tags:inputNameValue nameKey=".name" path="configName" size="50" maxlength="60"/>
-            <tags:textareaNameValue nameKey=".description" rows="4" cols="100" path="description" nameClass="vat"/>
+            <tags:textareaNameValue nameKey=".description" rows="4" cols="100" path="description"/>
         </tags:nameValueContainer2>
 
         <!-- PAGE ACTION BUTTONS -->
@@ -92,8 +66,8 @@ jQuery(function() {
             </cti:displayForPageEditModes>
             <cti:displayForPageEditModes modes="CREATE">
                 <cti:checkRolesAndProperties value="${editingRoleProperty}">
-                    <cti:button nameKey="cancel" href="/deviceConfiguration/home"/>
                     <cti:button nameKey="create" type="submit" classes="primary action"/>
+                    <cti:button nameKey="cancel" href="/deviceConfiguration/home"/>
                 </cti:checkRolesAndProperties>
             </cti:displayForPageEditModes>
         </div>
@@ -122,7 +96,12 @@ jQuery(function() {
                                         <cti:checkRolesAndProperties value="${editingRoleProperty}">
                                             <cti:displayForPageEditModes modes="VIEW">
                                                 <c:if test="${fn:length(configurationDeviceTypesBackingBean.supportedTypes) > 1}">
-                                                    <cti:button nameKey="remove" icon="icon-cross" renderMode="image" classes="remove-item fr vh f-removeTypeBtn f-deviceType-${type.key}"/>
+                                                    <dialog:confirm on="#remove-${type.key}" nameKey="confirmSupportedTypeRemove" argument="${type.key.dbString}"/>
+                                                    <cti:url var="removeUrl" value="removeSupportedType">
+                                                        <cti:param name="configId" value="${deviceConfigurationBackingBean.configId}"/>
+                                                        <cti:param name="paoType" value="${type.key}"/>
+                                                    </cti:url>
+                                                    <cti:button nameKey="remove" icon="icon-cross" renderMode="image" id="remove-${type.key}" classes="remove-item fr vh" href="${removeUrl}"/>
                                                 </c:if>
                                             </cti:displayForPageEditModes>
                                         </cti:checkRolesAndProperties>

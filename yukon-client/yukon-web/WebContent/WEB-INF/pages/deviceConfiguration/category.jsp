@@ -15,6 +15,7 @@
         <tags:nameValueContainer2 tableClass="stacked">
             <tags:inputNameValue nameKey=".categoryName" path="categoryName" size="50" maxlength="60" nameClass="vat"/>
             <tags:nameValue2 nameKey=".type"><i:inline key=".${categoryTemplate.categoryType}.title"/></tags:nameValue2>
+            <tags:nameValue2 nameKey=".definition"><i:inline key=".${categoryTemplate.categoryType}.definition"/></tags:nameValue2>
             <tags:textareaNameValue nameKey=".description" rows="2" cols="50" path="description" nameClass="vat"/>
         </tags:nameValueContainer2>
         

@@ -5,13 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import org.apache.commons.collections.FactoryUtils;
-import org.apache.commons.collections.map.LazyMap;
+import java.util.SortedMap;
 
 import com.cannontech.common.device.config.model.DeviceConfigCategory;
 import com.cannontech.common.device.config.model.DeviceConfigCategoryItem;
-import com.google.common.collect.Maps;
+import com.cannontech.common.util.LazySortedMap;
 
 public class CategoryEditBean {
     private Integer categoryId;
@@ -22,19 +20,17 @@ public class CategoryEditBean {
     private List<String> assignments = new ArrayList<>();
     
     // This maps a schedule to its rates. The key for this map will be the schedule.
-    private Map<String, RateBackingBean> scheduleInputs =
-            LazyMap.decorate(Maps.newTreeMap(), FactoryUtils.instantiateFactory(RateBackingBean.class));
+    private SortedMap<String, RateBackingBean> scheduleInputs = new LazySortedMap<>(String.class, RateBackingBean.class);
         
     public static final class RateBackingBean {
         // This maps the field to the rates.
-        Map<String, RateInput> rateInputs =
-            LazyMap.decorate(Maps.newTreeMap(), FactoryUtils.instantiateFactory(RateInput.class));
-        
-        public Map<String, RateInput> getRateInputs() {
+        SortedMap<String, RateInput> rateInputs = new LazySortedMap<>(String.class, RateInput.class);
+
+        public SortedMap<String, RateInput> getRateInputs() {
             return rateInputs;
         }
-        
-        public void setRateInputs(Map<String, RateInput> rateInputs) {
+
+        public void setRateInputs(SortedMap<String, RateInput> rateInputs) {
             this.rateInputs = rateInputs;
         }
     }
@@ -47,11 +43,11 @@ public class CategoryEditBean {
         this.categoryId = categoryId;
     }
     
-    public Map<String, RateBackingBean> getScheduleInputs() {
+    public SortedMap<String, RateBackingBean> getScheduleInputs() {
         return scheduleInputs;
     }
     
-    public void setScheduleInputs(Map<String, RateBackingBean> scheduleInputs) {
+    public void setScheduleInputs(SortedMap<String, RateBackingBean> scheduleInputs) {
         this.scheduleInputs = scheduleInputs;
     }
 
@@ -93,6 +89,30 @@ public class CategoryEditBean {
     
     public void setAssignments(List<String> assignments) {
         this.assignments = assignments;
+    }
+    
+    public boolean isFieldHidden(String fieldName) {
+        if (fieldName.contains("displayItem") && 
+            !fieldName.toLowerCase().equals("displayItem1".toLowerCase())) {
+            String val = categoryInputs.get(fieldName);
+        
+            if (val.equals("0")) {
+                // This is a display item whose value is "Slot Disabled." Hide it since it isn't the first display item.
+                return true;
+            }
+        }
+
+        return false;
+    }
+    
+    public boolean isScheduleRateHidden(String fieldName, String rateField) {
+        RateBackingBean rate = scheduleInputs.get(fieldName);
+        
+        if (rate != null && "00:00".equals(rate.getRateInputs().get(rateField).getTime())) {
+            return true;
+        }
+        
+        return false;
     }
     
     public DeviceConfigCategory getModelObject() {

@@ -39,18 +39,18 @@ public interface DeviceConfigurationService {
     public void deleteCategory(int categoryId);
     
     /**
-     * 
-     * @param configuration
-     * @param device
-     * @throws InvalidDeviceTypeException
+     * Assign a configuration to a device.
+     * @param configuration the configuration being assigned
+     * @param device the device being assigned to
+     * @throws InvalidDeviceTypeException if the configuration doesn't support the device type.
      */
     public void assignConfigToDevice(LightDeviceConfiguration configuration, YukonDevice device)
             throws InvalidDeviceTypeException;
     
     /**
-     * 
-     * @param device
-     * @throws InvalidDeviceTypeException
+     * Remove a configuration from a device
+     * @param device the device being unassigned from
+     * @throws InvalidDeviceTypeException if the device is a DNP device (which cannot be configurationless.)
      */
     public void unassignConfig(YukonDevice device) throws InvalidDeviceTypeException;
 }

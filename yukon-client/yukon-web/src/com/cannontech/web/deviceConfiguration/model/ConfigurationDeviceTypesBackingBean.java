@@ -95,6 +95,11 @@ public class ConfigurationDeviceTypesBackingBean {
         this.configId = configId;
     }
     
+    /**
+     * Check to see if the configuration supports no device types.
+     * @return false if any pao type in the supported types map for this configuration has a value of true,
+     *      true otherwise.
+     */
     public boolean isSupportedTypesEmpty() {
         for (Entry<PaoType, Boolean> entry : supportedTypes.entrySet()) {
             if (entry.getValue() != null && entry.getValue() == true) {

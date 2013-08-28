@@ -41,7 +41,6 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
-import com.cannontech.web.deviceConfiguration.DeviceConfigurationController.DisplayableCategoryType;
 import com.cannontech.web.deviceConfiguration.model.CategoryDisplay;
 import com.cannontech.web.deviceConfiguration.model.ConfigurationCategoriesBackingBean;
 import com.cannontech.web.deviceConfiguration.model.ConfigurationCategoriesBackingBean.CategorySelection;
@@ -76,19 +75,6 @@ public class DeviceConfigurationConfigController {
         @Override
         public int compare(PaoType o1, PaoType o2) {
             return o1.getDbString().compareTo(o2.getDbString());
-        }
-    };
-    
-    private final Comparator<CategorySelection> categorySelectionComparator = new Comparator<CategorySelection>() {
-        @Override
-        public int compare(CategorySelection o1, CategorySelection o2) {
-            if ((o1.getCategoryId() == null) == (o2.getCategoryId() == null)) {
-                return 0;
-            } else if (o1.getCategoryId() == null) {
-                return -1;
-            } else {
-                return 1;
-            }
         }
     };
     
@@ -190,25 +176,6 @@ public class DeviceConfigurationConfigController {
         flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + ".config.swapSuccess"));
         
         return viewOrEdit(configId, model, flashScope, context, PageEditMode.VIEW);
-    }
-    
-    @RequestMapping
-    public String removeSupportedTypeConfirm(ModelMap model, PaoType paoType, int configId, YukonUserContext context) {
-        Set<CategoryType> difference = deviceConfigurationDao.getCategoryDifferenceForPaoTypeRemove(paoType, configId);
-        
-        if (!difference.isEmpty()) {
-            Set<DisplayableCategoryType> removedTypes = new HashSet<>();
-            for (CategoryType categoryType : difference) {
-                removedTypes.add(new DisplayableCategoryType(categoryType));
-            }
-            
-            model.addAttribute("removedTypes", removedTypes);
-        }
-        
-        model.addAttribute("paoType", paoType);
-        model.addAttribute("configId", configId);
-        
-        return "removeSupportedType.jsp";
     }
     
     @RequestMapping
@@ -345,8 +312,6 @@ public class DeviceConfigurationConfigController {
         
         List<CategorySelection> orderedSelections = 
             formattingService.sortDisplayableValues(selections, null, null, context);
-        
-        Collections.sort(orderedSelections, categorySelectionComparator);
         
         configurationCategoriesBackingBean.setCategorySelections(orderedSelections);
         
@@ -562,13 +527,8 @@ public class DeviceConfigurationConfigController {
         boolean isDeletable = configId == null ? false : deviceConfigurationDao.isConfigurationDeletable(configId);
         model.addAttribute("isDeletable", isDeletable);
 
-        // Add the DeviceConfigurationBackingBean.
         model.addAttribute("deviceConfigurationBackingBean", deviceConfigurationBackingBean);
-        
-        // Add the ConfigurationDeviceTypesBackingBean
         model.addAttribute("configurationDeviceTypesBackingBean", configurationDeviceTypesBackingBean);
-        
-        // Add the ConfigurationCategoriesBackingBean
         model.addAttribute("configurationCategoriesBackingBean", configurationCategoriesBackingBean);
 
         model.addAttribute("mode", mode);

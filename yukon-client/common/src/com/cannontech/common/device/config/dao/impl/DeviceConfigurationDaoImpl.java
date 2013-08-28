@@ -548,8 +548,6 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
             params.addValue("DeviceConfigCategoryId", newCategoryId);
             sql.append("WHERE DeviceConfigurationId").eq(deviceConfigurationId);
             sql.append("   AND DeviceConfigCategoryId").eq(previousId.get(0));
-            
-            jdbcTemplate.update(sql);
         } else {
             // No assignment existed. Insert.
             SqlParameterSink params = sql.insertInto("DeviceConfigCategoryMap");
@@ -577,6 +575,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     }
 
     @Override
+    @Transactional
     public void removeSupportedDeviceType(int deviceConfigurationId, PaoType paoType) {
         // Get the categories that will be different following the removal of this pao type (if any.)
         Set<CategoryType> difference = getCategoryDifferenceForPaoTypeRemove(paoType, deviceConfigurationId);
@@ -588,19 +587,16 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         
         if (!difference.isEmpty()) {
             // There are category types that need to be removed as a result of this pao type being removed.
-            SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("SELECT DCCM.DeviceConfigCategoryId");
-            sql.append("FROM DeviceConfigCategoryMap DCCM");
-            sql.append("   JOIN DeviceConfigCategory DCC ON DCC.DeviceConfigCategoryId = DCCM.DeviceConfigCategoryId");
-            sql.append("WHERE DCCM.DeviceConfigurationId").eq(deviceConfigurationId);
-            sql.append("   AND DCC.CategoryType").in(categoryTypes);
-            
-            List<Integer> categoryIds = jdbcTemplate.query(sql, RowMapper.INTEGER);
-            
             SqlStatementBuilder removeSql = new SqlStatementBuilder();
             removeSql.append("DELETE FROM DeviceConfigCategoryMap");
             removeSql.append("WHERE DeviceConfigurationId").eq(deviceConfigurationId);
-            removeSql.append("   AND DeviceConfigCategoryId").in(categoryIds);
+            removeSql.append("   AND DeviceConfigCategoryId IN");
+            removeSql.append("      (SELECT DCCM.DeviceConfigCategoryId");
+            removeSql.append("       FROM DeviceConfigCategoryMap DCCM");
+            removeSql.append("          JOIN DeviceConfigCategory DCC");
+            removeSql.append("             ON DCC.DeviceConfigCategoryId = DCCM.DeviceConfigCategoryId");
+            removeSql.append("       WHERE DCCM.DeviceConfigurationId").eq(deviceConfigurationId);
+            removeSql.append("          AND DCC.CategoryType").in(categoryTypes).append(")");
             
             jdbcTemplate.update(removeSql);
         }
@@ -714,6 +710,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     }
     
     @Override
+    @Transactional
     public void deleteConfiguration(int deviceConfigurationId) throws InvalidConfigurationRemovalException {
         if (DEFAULT_DNP_CONFIG_ID == deviceConfigurationId) {
             throw new InvalidConfigurationRemovalException("Cannot remove the default DNP configuration.");
@@ -800,11 +797,11 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     }
     
     private void insertCategoryItem(DeviceConfigCategoryItem item, int categoryId) {
-        int deviceConfiCategoryItemId = nextValueHelper.getNextValue("DeviceConfigCategoryItem");
+        int deviceConfigCategoryItemId = nextValueHelper.getNextValue("DeviceConfigCategoryItem");
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
         SqlParameterSink params = sql.insertInto("DeviceConfigCategoryItem");
-        params.addValue("DeviceConfigCategoryItemId", deviceConfiCategoryItemId);
+        params.addValue("DeviceConfigCategoryItemId", deviceConfigCategoryItemId);
         params.addValue("DeviceConfigCategoryId", categoryId);
         params.addValue("ItemName", item.getFieldName());
         params.addValue("ItemValue", item.getValue());
@@ -897,15 +894,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
             return null;
         }
         
-        List<DeviceConfigCategory> categories = config.getCategories();
-        
-        DeviceConfigCategory dnpCategory = null;
-        for (DeviceConfigCategory category : categories) {
-            if (CategoryType.DNP.value().compareTo(category.getCategoryType()) == 0) {
-                dnpCategory = category;
-                break;
-            }
-        }
+        DeviceConfigCategory dnpCategory = config.getDnpCategory();
         
         if (dnpCategory == null) {
             return null;
@@ -993,7 +982,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         sql.append("    JOIN DeviceConfiguration DC ON DC.DeviceConfigurationId = DCM.DeviceConfigurationId");
         sql.append("    JOIN DeviceConfigCategory DCC ON DCM.DeviceConfigCategoryId = DCC.DeviceConfigCategoryId");
         sql.append("WHERE DC.DeviceConfigurationId").eq(configId).append("AND DCI.ItemName").eq(itemName);
-        sql.append("    AND DCC.CategoryType").eq(categoryType.value());
+        sql.append("    AND DCC.CategoryType").eq_k(categoryType);
         
         try {
             return jdbcTemplate.queryForString(sql);

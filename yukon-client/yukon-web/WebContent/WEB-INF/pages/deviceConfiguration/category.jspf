@@ -19,15 +19,13 @@
         <c:set var="classes" value=""/>
         
         <%-- Hide display item fields whose values are "Slot Disabled" --%>
-        <c:if test="${fn:contains(field.fieldName, 'displayItem') && 
-                      fn:toLowerCase(field.fieldName) != fn:toLowerCase('displayItem1') &&
-                      categoryEditBean.categoryInputs[(field.fieldName)] == 0}">
+        <c:if test="${categoryEditBean.isFieldHidden(field.fieldName)}">
             <c:set var="classes" value="dn"/>
         </c:if>
         
-        <div class="setting clearfix ${classes}" id="${field.fieldName}">
-            <div class="box fl" style="width: 25%;">${field.displayName}</div>
-            <div class="box detail fl" style="width: 70%;">
+        <div class="setting clearfix column_6_18 ${classes}" id="${field.fieldName}">
+            <div class="column one">${field.displayName}</div>
+            <div class="column two detail nogutter">
                 <c:choose>
                     <c:when test="${empty field.inputType}">
                         <%-- InputType is empty for fields that represent maps --%>
@@ -37,15 +35,15 @@
                                 <c:set var="isMidnight" value="${loopStatus.index == 0}"/>
                                 
                                 <%-- Hide TOU entries whose values are midnight (but whose times are not!) --%>
-                                <c:if test="${categoryEditBean.scheduleInputs[(field.fieldName)].rateInputs[(rate.field)].time eq '00:00' && !isMidnight}">
+                                <c:if test="${categoryEditBean.isScheduleRateHidden(field.fieldName, rate.field) && !isMidnight}">
                                     <c:set var="rowStyle" value="display: none;"/>
                                 </c:if>
                                 
                                 <tr style="${rowStyle}">
-                                    <td id="${field.fieldName}_${rate.field}Label" style="vertical-align: inherit;">
-                                        <i:inline key=".${categoryTemplate.categoryName}.${rate.field}"/>
+                                    <td id="${field.fieldName}_${rate.field}Label">
+                                        <i:inline key=".${categoryTemplate.categoryType}.${rate.field}"/>
                                     </td>
-                                    <td id="${field.fieldName}_${rate.field}" style="vertical-align: inherit;">
+                                    <td id="${field.fieldName}_${rate.field}">
                                         <c:choose>
                                             <c:when test="${!isMidnight}">
                                                 <cti:displayForPageEditModes modes="VIEW">
@@ -62,20 +60,20 @@
                                             </c:when>
                                             <c:otherwise>
                                                 <cti:displayForPageEditModes modes="VIEW">
-                                                    <i:inline key=".${categoryTemplate.categoryName}.midnightTime"/>
+                                                    <i:inline key=".${categoryTemplate.categoryType}.midnightTime"/>
                                                 </cti:displayForPageEditModes>
                                                 <cti:displayForPageEditModes modes="CREATE,EDIT">
                                                     <select disabled>
-                                                        <option><i:inline key=".${categoryTemplate.categoryName}.midnightTime"/></option>
+                                                        <option><i:inline key=".${categoryTemplate.categoryType}.midnightTime"/></option>
                                                     </select>
                                                 </cti:displayForPageEditModes>
                                             </c:otherwise>
                                         </c:choose>
                                     </td>
-                                    <td id="${field.fieldName}_rate${loopStatus.index}Label" style="vertical-align: inherit;">
+                                    <td id="${field.fieldName}_rate${loopStatus.index}Label">
                                         <i:inline key="yukon.web.modules.tools.configs.rate"/>
                                     </td>
-                                    <td id="${field.fieldName}_rate${loopStatus.index}" style="vertical-align: inherit;">
+                                    <td id="${field.fieldName}_rate${loopStatus.index}">
                                         <cti:displayForPageEditModes modes="VIEW">
                                             ${categoryEditBean.scheduleInputs[(field.fieldName)].rateInputs[(rate.field)].rate}
                                         </cti:displayForPageEditModes>
@@ -122,17 +120,17 @@
         </div>
     </c:forEach>
     <cti:displayForPageEditModes modes="CREATE,EDIT">
-        <c:if test="${fn:contains(categoryTemplate.categoryType, 'displayItems')}">
+        <c:if test="${isDisplayItemsCategory}">
             <div class="pageActionArea stacked dn" id="showNextDiv">
                 <cti:msg2 var="addTitle" key=".addDisplayItem"/>
                 <cti:button nameKey="addDisplayItem" icon="icon-add" id="showNextFieldBtn" title="${addTitle}" classes="fr"/>
             </div>
         </c:if>
-        <c:if test="${fn:containsIgnoreCase(categoryTemplate.categoryType, 'tou')}">
+        <c:if test="${isTouCategory}">
             <c:forEach begin="1" end="4" var="status">
                 <div class="stacked dn" id="showNextDivSchedule${status}">
                     <cti:msg2 var="title" key=".addScheduleItem" argument="${status}"/>
-                    <cti:button nameKey="addSchedule" icon="icon-add" id="showNextSchedule${status}TimeBtn" onclick="showNextSchedule('${status}')" title="${title}" classes="fr"/>
+                    <cti:button nameKey="addSchedule" icon="icon-add" id="showNextSchedule${status}TimeBtn" data-addSchedule="${status}" title="${title}" classes="fr f-addScheduleBtn"/>
                 </div>
             </c:forEach>
         </c:if>

@@ -150,6 +150,12 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     private PointDao pointDao;
     @Autowired private ConfigResourceLoader configResourceLoader;
     
+    /**
+     * Enum used to filter when retrieving paos that support tags. 
+     *      YES returns only Paos that are creatable.
+     *      NO returns only Paos that are not creatable.
+     *      DONT_CARE returns all paos regardless of whether or not they are creatable
+     */
     private enum Creatable {
         YES,
         NO,
@@ -331,16 +337,16 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     }
     
     private BiMap<PaoType, PaoDefinition> getPaoDefinitionsThatSupportTag(PaoTag tag, Creatable creatability) {
-        BiMap<PaoType, PaoDefinition> biMap = typesBySupportedTag.get(tag);
+        BiMap<PaoType, PaoDefinition> biMap = EnumHashBiMap.<PaoType, PaoDefinition>create(PaoType.class);
         
         if (creatability != Creatable.DONT_CARE) {
             // We have criteria to match.
-            for (Entry<PaoType, PaoDefinition> entry : biMap.entrySet()) {
+            for (Entry<PaoType, PaoDefinition> entry : typesBySupportedTag.get(tag).entrySet()) {
                 boolean isCreatable = entry.getValue().isCreatable();
                 
-                if ((!isCreatable && creatability == Creatable.YES) || (isCreatable && creatability == Creatable.NO)) {
+                if ((!isCreatable && creatability == Creatable.NO) || (isCreatable && creatability == Creatable.YES)) {
                     // This entry doesn't match our criteria.
-                    biMap.remove(entry.getKey());
+                    biMap.put(entry.getKey(), entry.getValue());
                 }
             }
         }

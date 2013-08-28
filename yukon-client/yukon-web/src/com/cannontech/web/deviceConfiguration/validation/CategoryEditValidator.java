@@ -42,7 +42,7 @@ public class CategoryEditValidator extends SimpleValidator<CategoryEditBean> {
             // Handle this guy differently.
             boolean slotDisabledHit = false;
             for (Field<?> field : fields) {
-                if (Integer.valueOf(target.getCategoryInputs().get(field.getFieldName())) == 0) {
+                if (Integer.parseInt(target.getCategoryInputs().get(field.getFieldName())) == 0) {
                     slotDisabledHit = true;
                 } else if (slotDisabledHit) {
                     // Error
@@ -87,7 +87,7 @@ public class CategoryEditValidator extends SimpleValidator<CategoryEditBean> {
                     
                     for (Entry<String, RateInput> entry : rateBackingBean.getRateInputs().entrySet()) {
                         if (!"time0".equals(entry.getKey())) {
-                            Integer thisTime = Integer.valueOf(entry.getValue().getTime().replace(":", ""));
+                            int thisTime = Integer.parseInt(entry.getValue().getTime().replace(":", ""));
                             
                             if (thisTime <= prevTime) {
                                 if (thisTime == 0) {

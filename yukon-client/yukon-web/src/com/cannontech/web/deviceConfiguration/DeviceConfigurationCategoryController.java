@@ -2,9 +2,12 @@ package com.cannontech.web.deviceConfiguration;
 
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +30,7 @@ import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -104,9 +108,11 @@ public class DeviceConfigurationCategoryController {
         
         // Passing this through so we can redirect correctly.
         model.addAttribute("configId", configId);
+        model.addAttribute("nameKey", "createCategory");
         
         setupModelMap(model, PageEditMode.CREATE, categoryEditBean, context);
-        return "createCategory.jsp";
+        
+        return "ajaxCategory.jsp";
     }
     
     @RequestMapping
@@ -114,12 +120,13 @@ public class DeviceConfigurationCategoryController {
         DeviceConfigCategory category = deviceConfigurationDao.getDeviceConfigCategory(categoryId);
         
         CategoryEditBean categoryEditBean = createCategoryEditBean(category);
+        
+        model.addAttribute("configId", configId);
+        model.addAttribute("nameKey", "editCategory");
 
         setupModelMap(model, PageEditMode.EDIT, categoryEditBean, context);
         
-        model.addAttribute("configId", configId);
-        
-        return "editCategory.jsp";
+        return "ajaxCategory.jsp";
     }
     
     @RequestMapping
@@ -191,7 +198,8 @@ public class DeviceConfigurationCategoryController {
     }
     
     @RequestMapping
-    public String saveInPlace(ModelMap model, 
+    public String saveInPlace(HttpServletResponse response,
+                              ModelMap model, 
                               FlashScope flashScope, 
                               @ModelAttribute CategoryEditBean categoryEditBean,
                               BindingResult bindingResult, 
@@ -213,8 +221,13 @@ public class DeviceConfigurationCategoryController {
             // Return to the edit view if the category has an Id, create otherwise.
             PageEditMode mode = categoryEditBean.getCategoryId() != null ? PageEditMode.EDIT : PageEditMode.CREATE;
             
+            model.addAttribute("nameKey", mode == PageEditMode.EDIT ? "editCategory" : "createCategory");
+
+            model.addAttribute("configId", configId);
+            
             setupModelMap(model, mode, categoryEditBean, context);
-            return "editCategory.jsp";
+            
+            return "ajaxCategory.jsp";
         }
         
         try {
@@ -227,7 +240,9 @@ public class DeviceConfigurationCategoryController {
         }
         
         model.clear();
-        return "redirect:/deviceConfiguration/config/view?configId=" + configId;
+        
+        ServletUtils.dialogFormSuccess(response, "categorySubmitted");
+        return null;
     }
     
     /**
@@ -289,13 +304,13 @@ public class DeviceConfigurationCategoryController {
      * @param scheduleItems the map of schedule fields and their respective values.
      * @return a view-appropriate map containing the information from the scheduleItems map.
      */
-    private Map<String, RateBackingBean> convertTouScheduleItems(Map<String, String> scheduleItems) {
-        Map<String, RateBackingBean> scheduleInputs = new TreeMap<>();
+    private SortedMap<String, RateBackingBean> convertTouScheduleItems(Map<String, String> scheduleItems) {
+        SortedMap<String, RateBackingBean> scheduleInputs = new TreeMap<>();
 
         for (int schedule = 1; schedule <= 4; schedule++) {
             RateBackingBean backingBean = new RateBackingBean();
             
-            Map<String, RateInput> rateInputs = new TreeMap<>();
+            SortedMap<String, RateInput> rateInputs = new TreeMap<>();
             
             /*
              * There are four schedules, and each entry for each schedule has a rate and a time in the map. 
@@ -347,15 +362,16 @@ public class DeviceConfigurationCategoryController {
            
         model.addAttribute("isDeletable", isDeletable);
         
-        // Add the bean itself.
         model.addAttribute("categoryEditBean", categoryEditBean);
         
         CategoryType type = CategoryType.fromValue(categoryEditBean.getCategoryType());
         CategoryTemplate categoryTemplate = 
             deviceConfigurationHelper.createTemplate(deviceConfigurationDao.getCategoryByType(type), context);
         
-        // Add the category template.
         model.addAttribute("categoryTemplate", categoryTemplate);
+        
+        model.addAttribute("isDisplayItemsCategory", categoryTemplate.getCategoryType().equals("displayItems"));
+        model.addAttribute("isTouCategory", categoryTemplate.getCategoryType().toLowerCase().contains("tou"));
         
         model.addAttribute("mode", mode);
         

@@ -26,11 +26,6 @@ public class CategoryTemplate {
         return categoryType.value();
     }
     
-    // For use in JSP-land
-    public String getCategoryName() {
-        return categoryType.value();
-    }
-    
     public List<Field<?>> getFields() {
         return fields;
     }

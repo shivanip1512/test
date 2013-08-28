@@ -8,3 +8,11 @@ function closeAjaxDialogAndRefresh() {
 jQuery(document).bind('yukonDialogSubmit', function(event) {
     jQuery(this).find('form').submit();
 });
+
+jQuery(document).bind('ajaxDialogSubmit', function(event) {
+    var target = jQuery(event.target);
+    var dialogId = target.attr('id');
+    var formId = target.find('form').attr('id');
+    
+    submitFormViaAjax(dialogId, formId);
+});
