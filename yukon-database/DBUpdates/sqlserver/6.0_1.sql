@@ -145,9 +145,9 @@ CREATE TABLE UserPage (
     PagePath    VARCHAR(2048) NOT NULL,
     Module      VARCHAR(32) NOT NULL,
     PageName    VARCHAR(32) NOT NULL,
-    Category    VARCHAR(32) NOT NULL,
-    CreatedDate DATETIME NOT NULL,
-    CONSTRAINT PK_UserPageTable PRIMARY KEY (UserPageId)
+    Favorite    CHAR(1) NOT NULL,
+    LastAccess  DATETIME NULL,
+    CONSTRAINT PK_UserPage PRIMARY KEY (UserPageId)
 );
 GO
 
@@ -162,7 +162,7 @@ CREATE TABLE UserPageParam (
     UserPageId      NUMERIC NOT NULL,
     ParamNumber     NUMERIC NOT NULL,
     Parameter       VARCHAR(80) NOT NULL,
-    CONSTRAINT PK_UserPageParamTable PRIMARY KEY (UserPageParamId)
+    CONSTRAINT PK_UserPageParam PRIMARY KEY (UserPageParamId)
 );
 GO
 
@@ -172,18 +172,17 @@ ALTER TABLE UserPageParam
          ON DELETE CASCADE;
 GO
 
-CREATE TABLE UserMonitor (
-    UserMonitorId  NUMERIC NOT NULL,
-    UserId         NUMERIC NOT NULL,
-    MonitorName    VARCHAR(80) NOT NULL,
-    MonitorType    VARCHAR(32) NOT NULL,
-    MonitorId      NUMERIC NOT NULL,
-    CONSTRAINT PK_UserMonitorTable PRIMARY KEY (UserMonitorId)
+CREATE TABLE UserSubscription (
+    UserSubscriptionId NUMERIC NOT NULL,
+    UserId             NUMERIC NOT NULL,
+    SubscriptionType   VARCHAR(64) NOT NULL,
+    RefId              NUMERIC NOT NULL,
+    CONSTRAINT PK_UserSubscription PRIMARY KEY (UserSubscriptionId)
 );
 GO
 
-ALTER TABLE UserMonitor
-   ADD CONSTRAINT FK_UserMonitor_YukonUser FOREIGN KEY (UserId)
+ALTER TABLE UserSubscription
+   ADD CONSTRAINT FK_UserSubscription_YukonUser FOREIGN KEY (UserId)
       REFERENCES YukonUser (UserId)
          ON DELETE CASCADE;
 /* End YUK-12469 */

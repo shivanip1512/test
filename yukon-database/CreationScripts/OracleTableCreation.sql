@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/27/2013 3:55:31 PM                         */
+/* Created on:     8/28/2013 5:44:35 PM                         */
 /*==============================================================*/
 
 
@@ -8063,18 +8063,6 @@ create table UserGroupToYukonGroupMapping  (
 INSERT INTO UserGroupToYukonGroupMapping VALUES(-1, -2);
 
 /*==============================================================*/
-/* Table: UserMonitor                                           */
-/*==============================================================*/
-create table UserMonitor  (
-   UserMonitorId        NUMBER                          not null,
-   UserId               NUMBER                          not null,
-   MonitorName          VARCHAR2(80)                    not null,
-   MonitorType          VARCHAR2(32)                    not null,
-   MonitorId            NUMBER                          not null,
-   constraint PK_UserMonitor primary key (UserMonitorId)
-);
-
-/*==============================================================*/
 /* Table: UserPage                                              */
 /*==============================================================*/
 create table UserPage  (
@@ -8083,8 +8071,8 @@ create table UserPage  (
    PagePath             VARCHAR2(2048)                  not null,
    Module               VARCHAR2(32)                    not null,
    PageName             VARCHAR2(32)                    not null,
-   Category             VARCHAR2(32)                    not null,
-   CreatedDate          DATE                            not null,
+   Favorite             CHAR(1)                         not null,
+   LastAccess           DATE,
    constraint PK_UserPage primary key (UserPageId)
 );
 
@@ -8131,6 +8119,17 @@ create table UserPreference  (
 create unique index Indx_UserPref_UserId_Name_UNQ on UserPreference (
    UserId ASC,
    Name ASC
+);
+
+/*==============================================================*/
+/* Table: UserSubscription                                      */
+/*==============================================================*/
+create table UserSubscription  (
+   UserSubscriptionId   NUMBER                          not null,
+   UserId               NUMBER                          not null,
+   SubscriptionType     VARCHAR2(64)                    not null,
+   RefId                NUMBER                          not null,
+   constraint PK_UserSubscription primary key (UserSubscriptionId)
 );
 
 /*==============================================================*/
@@ -12289,11 +12288,6 @@ alter table UserGroupToYukonGroupMapping
       references YukonGroup (GroupID)
       on delete cascade;
 
-alter table UserMonitor
-   add constraint FK_UserMonitor_YukonUser foreign key (UserId)
-      references YukonUser (UserID)
-      on delete cascade;
-
 alter table UserPage
    add constraint FK_UserPage_YukonUser foreign key (UserId)
       references YukonUser (UserID)
@@ -12314,6 +12308,11 @@ alter table UserPaoPermission
 
 alter table UserPreference
    add constraint FK_UserPreference_YukonUser foreign key (UserId)
+      references YukonUser (UserID)
+      on delete cascade;
+
+alter table UserSubscription
+   add constraint FK_UserSubscription_YukonUser foreign key (UserId)
       references YukonUser (UserID)
       on delete cascade;
 
