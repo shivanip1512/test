@@ -18,10 +18,10 @@
             <table class="compactResultsTable rowHighlighting sortable-table">
                 <thead>
                     <tr>
-                        <th width="25%"><tags:sortLink nameKey="name" fieldName="NAME" baseUrl="${sortUrl}" styleClass="f-sortLink" isDefault="true" /></th>
-                        <th width="25%"><tags:sortLink nameKey="appCatType" fieldName="TYPE" baseUrl="${sortUrl}" styleClass="f-sortLink"/></th>
-                        <th width="25%"><tags:sortLink nameKey="applianceLoad" fieldName="APP_CAT_AVERAGE_LOAD" baseUrl="${sortUrl}" styleClass="f-sortLink"/></th>
-                        <th width="25%"><tags:sortLink nameKey="formula" fieldName="IS_ASSIGNED" baseUrl="${sortUrl}" styleClass="f-sortLink"/></th>
+                        <th width="25%"><tags:sortLink nameKey="name" fieldName="NAME" baseUrl="${sortUrl}" styleClass="f-drFormula-sortLink" isDefault="true" /></th>
+                        <th width="25%"><tags:sortLink nameKey="appCatType" fieldName="TYPE" baseUrl="${sortUrl}" styleClass="f-drFormula-sortLink"/></th>
+                        <th width="25%"><tags:sortLink nameKey="applianceLoad" fieldName="APP_CAT_AVERAGE_LOAD" baseUrl="${sortUrl}" styleClass="f-drFormula-sortLink"/></th>
+                        <th width="25%"><tags:sortLink nameKey="formula" fieldName="IS_ASSIGNED" baseUrl="${sortUrl}" styleClass="f-drFormula-sortLink"/></th>
                     </tr>
                 </thead>
                 <tfoot></tfoot>

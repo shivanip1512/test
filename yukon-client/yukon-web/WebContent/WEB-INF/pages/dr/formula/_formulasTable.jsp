@@ -9,9 +9,9 @@
     <c:if test="${not empty pagedFormulas.resultList}">
         <table class="compactResultsTable sortable-table">
             <thead>
-                <th><tags:sortLink nameKey="name" baseUrl="${sortUrl}" fieldName="NAME" styleClass="f-sortLink" isDefault="true"/></th>
-                <th><tags:sortLink nameKey="calculationType" baseUrl="${sortUrl}" fieldName="CALCULATION_TYPE" styleClass="f-sortLink"/></th>
-                <th><tags:sortLink nameKey="formulaType" baseUrl="${sortUrl}" fieldName="TYPE" styleClass="f-sortLink"/></th>
+                <th><tags:sortLink nameKey="name" baseUrl="${sortUrl}" fieldName="NAME" styleClass="f-drFormula-sortLink" isDefault="true"/></th>
+                <th><tags:sortLink nameKey="calculationType" baseUrl="${sortUrl}" fieldName="CALCULATION_TYPE" styleClass="f-drFormula-sortLink"/></th>
+                <th><tags:sortLink nameKey="formulaType" baseUrl="${sortUrl}" fieldName="TYPE" styleClass="f-drFormula-sortLink"/></th>
             </thead>
             <tfoot></tfoot>
             <tbody>

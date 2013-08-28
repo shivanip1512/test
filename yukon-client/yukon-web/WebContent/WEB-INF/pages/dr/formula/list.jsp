@@ -3,8 +3,6 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <cti:standardPage module="dr" page="formulaList">
     <cti:includeScript link="/JavaScript/drFormula.js"/>
@@ -17,7 +15,7 @@
 <!--         </div> -->
 <%--     </tags:sectionContainer2> --%>
     <tags:sectionContainer2 nameKey="formulas">
-         <div class="f-replaceViaAjax">
+         <div class="f-drFormula-replaceViaAjax">
             <%@ include file="_formulasTable.jsp" %>
          </div>
     </tags:sectionContainer2>

@@ -115,4 +115,20 @@ public class FormulaBean {
     public void setFunctionIntercept(Double functionIntercept) {
         this.functionIntercept = functionIntercept;
     }
+
+    public boolean isFunctionCalculation() {
+        return calculationType == CalculationType.FUNCTION;
+    }
+
+    public boolean isLookupTableCalculation() {
+        return calculationType == CalculationType.LOOKUP;
+    }
+
+    public boolean isGearFormula() {
+        return formulaType == Formula.Type.GEAR;
+    }
+
+    public boolean isAppCatFormula() {
+        return formulaType == Formula.Type.APPLIANCE_CATEGORY;
+    }
 }

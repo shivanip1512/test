@@ -98,8 +98,6 @@ public class EstimatedLoadFormulaController {
         }
     };
 
-
-    
     @RequestMapping(value={"list","view"})
     public String listPage(ModelMap model, YukonUserContext context) {
         listPageAjax(model, context, SortBy.NAME, false, 10, 1);

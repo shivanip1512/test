@@ -172,4 +172,12 @@ public class LookupTableBean {
     public void setTimeEntries(List<TimeTableEntryBean> timeEntries) {
         this.timeEntries = timeEntries;
     }
+
+    public boolean isPointType() {
+        return inputType == InputType.POINT;
+    }
+
+    public boolean isTimeInput() {
+        return inputType == InputType.TIME;
+    }
 }

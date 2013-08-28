@@ -1,12 +1,12 @@
 <input id="assignmentInput_${assignmentId}" type="hidden" name="assignments" value="${assignmentId}"/> 
-<div id="assignmentAdd_${assignmentId}" class="column_8_8_8 f-removeable f-show-on-hover-target clearfix">
-    <div class="column one f-name">${assignments[assignmentId].gearName}</div>
-    <div class="column two f-control-method"><i:inline key="${assignments[assignmentId].controlMethod}"/></div>
+<div id="assignmentAdd_${assignmentId}" class="column_8_8_8 f-drFormula-removeable f-drFormula-show-on-hover-target clearfix">
+    <div class="column one f-drFormula-name">${assignments[assignmentId].gearName}</div>
+    <div class="column two f-drFormula-control-method"><i:inline key="${assignments[assignmentId].controlMethod}"/></div>
     <div class="column three nogutter">
-        <span class="f-id">${assignments[assignmentId].yukonID}</span>
+        <span class="f-drFormula-id">${assignments[assignmentId].yukonID}</span>
         <cti:displayForPageEditModes modes="EDIT">
-            <div class="f-show-on-hover fr" style="display:none">
-               <cti:button data-assign-id="${assignmentId}" nameKey="remove" renderMode="image" icon="icon-cross" classes="f-remove"/>
+            <div class="f-drFormula-show-on-hover fr" style="display:none">
+               <cti:button data-assign-id="${assignmentId}" nameKey="remove" renderMode="image" icon="icon-cross" classes="f-drFormula-remove"/>
             </div>
         </cti:displayForPageEditModes>
     </div>
@@ -14,6 +14,6 @@
 <div id="assignmentRemove_${assignmentId}" class="column_24" style="display:none">
     <div class="column one nogutter">
         <div class="fl undorow"><i:inline key=".gearWillBeUnassigned"/></div>
-        <div class="fr undorow"><a class="f-undo" data-assign-id="${assignmentId}" href="javascript:void(0)"><i:inline key=".undo"/></a></div>
+        <div class="fr undorow"><a class="f-drFormula-undo" data-assign-id="${assignmentId}" href="javascript:void(0)"><i:inline key=".undo"/></a></div>
     </div>
 </div>

@@ -14,9 +14,9 @@
             <table class="compactResultsTable rowHighlighting sortable-table">
                 <thead>
                     <tr>
-                        <th width="33%"><tags:sortLink nameKey="name" baseUrl="${sortUrl}" fieldName="NAME" styleClass="f-sortLink" isDefault="true"/></th>
-                        <th width="33%"><tags:sortLink nameKey="gearControlMethod" baseUrl="${sortUrl}" fieldName="GEAR_CONTROL_METHOD" styleClass="f-sortLink"/></th>
-                        <th width="34%"><tags:sortLink nameKey="formula" baseUrl="${sortUrl}" fieldName="IS_ASSIGNED" styleClass="f-sortLink"/></th>
+                        <th width="33%"><tags:sortLink nameKey="name" baseUrl="${sortUrl}" fieldName="NAME" styleClass="f-drFormula-sortLink" isDefault="true"/></th>
+                        <th width="33%"><tags:sortLink nameKey="gearControlMethod" baseUrl="${sortUrl}" fieldName="GEAR_CONTROL_METHOD" styleClass="f-drFormula-sortLink"/></th>
+                        <th width="34%"><tags:sortLink nameKey="formula" baseUrl="${sortUrl}" fieldName="IS_ASSIGNED" styleClass="f-drFormula-sortLink"/></th>
                     </tr>
                 </thead>
                 <tfoot></tfoot>

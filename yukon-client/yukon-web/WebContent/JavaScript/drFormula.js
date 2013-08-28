@@ -21,16 +21,16 @@ Yukon.DrFormula = (function() {
         // #assignment_-1 is the dummy assignment element 
         var $newAssignment = jQuery("#assignmentAdd_-1").clone();
         $newAssignment.attr("id", "assignmentAdd_" + id);
-        $newAssignment.find(".f-id").html(id);
-        $newAssignment.find(".f-name").html(gear.gearName);
-        $newAssignment.find(".f-control-method").html(gear.controlMethod);
-        $newAssignment.find(".f-remove").data("assign-id", id);
+        $newAssignment.find(".f-drFormula-id").html(id);
+        $newAssignment.find(".f-drFormula-name").html(gear.gearName);
+        $newAssignment.find(".f-drFormula-control-method").html(gear.controlMethod);
+        $newAssignment.find(".f-drFormula-remove").data("assign-id", id);
         $newAssignment.show();
         jQuery("#assignments").append($newAssignment);
 
         var $assignRemoved = jQuery("#assignmentRemove_-1").clone();
         $assignRemoved.attr("id", "assignmentRemove_" + id);
-        $assignRemoved.find(".f-undo").data("assign-id", id);
+        $assignRemoved.find(".f-drFormula-undo").data("assign-id", id);
         jQuery("#assignments").append($assignRemoved);
         
         _addedAssignments.push(id);
@@ -49,16 +49,16 @@ Yukon.DrFormula = (function() {
         // #assignment_-1 is the dummy assignment element 
         var $newAssignment = jQuery("#assignmentAdd_-1").clone();
         $newAssignment.attr("id", "assignmentAdd_" + id);
-        $newAssignment.find(".f-average-load").html(appCat.applianceLoad + "  kW");
-        $newAssignment.find(".f-name").html(appCat.name);
-        $newAssignment.find(".f-type").html(appCat.applianceType);
-        $newAssignment.find(".f-remove").data("assign-id", id);
+        $newAssignment.find(".f-drFormula-average-load").html(appCat.applianceLoad + "  kW");
+        $newAssignment.find(".f-drFormula-name").html(appCat.name);
+        $newAssignment.find(".f-drFormula-type").html(appCat.applianceType);
+        $newAssignment.find(".f-drFormula-remove").data("assign-id", id);
         $newAssignment.show();
         jQuery("#assignments").append($newAssignment);
 
         var $assignRemoved = jQuery("#assignmentRemove_-1").clone();
         $assignRemoved.attr("id", "assignmentRemove_" + id);
-        $assignRemoved.find(".f-undo").data("assign-id", id);
+        $assignRemoved.find(".f-drFormula-undo").data("assign-id", id);
         jQuery("#assignments").append($assignRemoved);
         
         _addedAssignments.push(id);
@@ -86,7 +86,7 @@ Yukon.DrFormula = (function() {
         $newRow.find("input, select").each(function() {
             jQuery(this).attr("name", "functions[" + _rowIndex + "]." + jQuery(this).attr("name"));
         });
-        $newRow.find(".f-appendTableId").each(function () {
+        $newRow.find(".f-drFormula-appendTableId").each(function () {
             this.id = this.id + _rowIndex;
         });
 
@@ -123,7 +123,7 @@ Yukon.DrFormula = (function() {
     },
 
     _removeBtnClick = function() {
-        jQuery(this).parents(".f-removeable").slideUp(150).promise().done(function (){this.remove();});
+        jQuery(this).parents(".f-drFormula-removeable").slideUp(150).promise().done(function (){this.remove();});
     },
 
     _addTableBtnClick = function() {
@@ -136,10 +136,10 @@ Yukon.DrFormula = (function() {
         });
 
         $newRow.find(".tableIndex").val(_rowIndex);
-        $newRow.find(".f-appendTableId").each(function () {
+        $newRow.find(".f-drFormula-appendTableId").each(function () {
             this.id = this.id + _rowIndex;
         });
-        $newRow.find(".f-appendTableIdData").each(function () {
+        $newRow.find(".f-drFormula-appendTableIdData").each(function () {
             jQuery(this).data("table-id", _rowIndex);
         });
 
@@ -163,10 +163,10 @@ Yukon.DrFormula = (function() {
 
         $newRow.attr("id","tableEntry_"+ tableId + "_" + entryId);
 
-        $newRow.find(".f-appendTableId").each(function () {
+        $newRow.find(".f-drFormula-appendTableId").each(function () {
             this.id = this.id + tableId + "_" + entryId;
         });
-        $newRow.find(".f-tableEntryKey_")
+        $newRow.find(".f-drFormula-tableEntryKey_")
             .removeClass("f-tableEntryKey_")
             .addClass("f-tableEntryKey_" + tableId);
 
@@ -188,7 +188,7 @@ Yukon.DrFormula = (function() {
 
             });
             // Setup the remove button
-            $this.find(".f-removeEntry").data("table-id", tableId).data("entry-id", entryId);
+            $this.find(".f-drFormula-removeEntry").data("table-id", tableId).data("entry-id", entryId);
 
         });
 
@@ -213,7 +213,7 @@ Yukon.DrFormula = (function() {
         jQuery("#tableEntry_" + tableId + "_" + entryId)
             .slideUp(150, function() {
             this.remove();
-            if (jQuery(".f-tableEntryKey_" + tableId).size() < 1) {
+            if (jQuery(".f-drFormula-tableEntryKey_" + tableId).size() < 1) {
                 jQuery("#noEntriesMessage_" + tableId).show(150);
                 jQuery("#formulaInputSelect_" + tableId).removeAttr("disabled");
             }
@@ -222,17 +222,17 @@ Yukon.DrFormula = (function() {
 
     _beforeFormSubmit = function (e) {
         // Need to send these along with form submit
-        jQuery(".f-formulaInputSelect").removeAttr("disabled");
+        jQuery(".f-drFormula-formulaInputSelect").removeAttr("disabled");
 
         // adjust indexes to be sequential for java List
-        jQuery(".f-table, .f-function").each(function (index) {
+        jQuery(".f-drFormula-table, .f-drFormula-function").each(function (index) {
             var $inputs = jQuery(this).find(":input[name]");
             $inputs.each(function() {
                 var $self = jQuery(this);
                 var name = $self.attr("name").replace(/\[.*?\]/, "["+index+"]");
                 $self.attr("name", name);
             });
-            jQuery(this).find(".f-tableEntries").each(function (index2) {
+            jQuery(this).find(".f-drFormula-tableEntries").each(function (index2) {
                 var inputs = jQuery(this).find(":input[name]");
                 inputs.each(function(entryLoopIndex) {
                     var $self = jQuery(this);
@@ -248,12 +248,12 @@ Yukon.DrFormula = (function() {
 
     _ajaxPagingBtnClick = function(event) {
         var url = jQuery(event.currentTarget).data('url');
-        jQuery(event.target).parents(".f-replaceViaAjax").load(url);
+        jQuery(event.target).parents(".f-drFormula-replaceViaAjax").load(url);
         return false;
     },
 
     _sortBtnClick = function(event) {
-        jQuery(event.target).parents(".f-replaceViaAjax").load(this.href);
+        jQuery(event.target).parents(".f-drFormula-replaceViaAjax").load(this.href);
         return false;
     },
 
@@ -266,25 +266,25 @@ Yukon.DrFormula = (function() {
             _rowIndex = jQuery("#formulaRowIndex").val();
 
             jQuery("#assignments")
-                .on("click", ".f-remove", _removeAssignmentBtnClick)
-                .on("click", ".f-undo", _undoBtnClick);
+                .on("click", ".f-drFormula-remove", _removeAssignmentBtnClick)
+                .on("click", ".f-drFormula-undo", _undoBtnClick);
             jQuery("#newFunctionBtn")
                 .click(_newFunctionBtnClick);
             jQuery("#formulaFunctions, #formulaTables")
-                .on("change", ".f-formulaInputSelect", _formulaInputSelectChange)
-                .on("click", ".f-pointPicker", _pointPickerClick);
+                .on("change", ".f-drFormula-formulaInputSelect", _formulaInputSelectChange)
+                .on("click", ".f-drFormula-pointPicker", _pointPickerClick);
             jQuery("#formulaFunctions, #formulaTables")
-                .on("click", ".f-remove", _removeBtnClick);
+                .on("click", ".f-drFormula-remove", _removeBtnClick);
             jQuery("#newTableBtn")
                 .click(_addTableBtnClick);
-            jQuery("#formulaTables").on("click", ".f-removeEntry",_removeTableEntryBtnClick)
-                .on("change", ".f-formulaInputSelect", _formulaInputSelectChangeTable)
-                .on("click", ".f-newEntryButton", _addTableEntryBtnClick);
+            jQuery("#formulaTables").on("click", ".f-drFormula-removeEntry",_removeTableEntryBtnClick)
+                .on("change", ".f-drFormula-formulaInputSelect", _formulaInputSelectChangeTable)
+                .on("click", ".f-drFormula-newEntryButton", _addTableEntryBtnClick);
             jQuery("#formulaForm")
                 .submit(_beforeFormSubmit);
-            jQuery(".f-replaceViaAjax")
+            jQuery(".f-drFormula-replaceViaAjax")
                 .on('click', '.f-ajaxPaging', _ajaxPagingBtnClick)
-                .on('click', ".f-sortLink", _sortBtnClick);
+                .on('click', ".f-drFormula-sortLink", _sortBtnClick);
 
             _initialized = true;
         },
@@ -361,9 +361,9 @@ Yukon.DrFormula = (function() {
 jQuery(function() {
     Yukon.DrFormula.init();
 
-    jQuery("#assignments").on("mouseenter", ".f-show-on-hover-target", function() {
-        jQuery(this).find(".f-show-on-hover").show();
-    }).on("mouseleave", ".f-show-on-hover-target", function() {
-        jQuery(this).find(".f-show-on-hover").hide();
+    jQuery("#assignments").on("mouseenter", ".f-drFormula-show-on-hover-target", function() {
+        jQuery(this).find(".f-drFormula-show-on-hover").show();
+    }).on("mouseleave", ".f-drFormula-show-on-hover-target", function() {
+        jQuery(this).find(".f-drFormula-show-on-hover").hide();
     });
 });

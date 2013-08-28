@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.cannontech.dr.estimatedload.FormulaFunction;
 import com.cannontech.dr.estimatedload.FormulaInput;
+import com.cannontech.dr.estimatedload.FormulaInput.InputType;
 import com.google.common.collect.ImmutableList;
 
 public class FunctionBean {
@@ -118,5 +119,9 @@ public class FunctionBean {
 
     public void setFunctionId(Integer functionId) {
         this.functionId = functionId;
+    }
+
+    public boolean isPointType() {
+        return inputType == InputType.POINT;
     }
 }
