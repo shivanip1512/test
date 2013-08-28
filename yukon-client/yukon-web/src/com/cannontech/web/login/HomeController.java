@@ -14,10 +14,10 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.cannontech.common.userpage.dao.UserMonitorDao;
+import com.cannontech.common.userpage.dao.UserSubscriptionDao;
 import com.cannontech.common.userpage.dao.UserPageDao;
-import com.cannontech.common.userpage.model.UserMonitor;
-import com.cannontech.common.userpage.model.UserMonitor.MonitorType;
+import com.cannontech.common.userpage.model.UserSubscription;
+import com.cannontech.common.userpage.model.UserSubscription.SubscriptionType;
 import com.cannontech.common.userpage.model.UserPage;
 import com.cannontech.common.userpage.model.UserPage.Category;
 import com.cannontech.common.userpage.model.UserPage.Module;
@@ -43,7 +43,7 @@ public class HomeController {
 
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private UserPageDao userPageDao;
-    @Autowired private UserMonitorDao userMonitorDao;
+    @Autowired private UserSubscriptionDao userSubscriptionDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private PageDetailProducer pageDetailProducer;
     @Autowired private CommonModuleBuilder moduleBuilder;
@@ -161,15 +161,15 @@ public class HomeController {
     }
 
     @RequestMapping("/toggleSubscribed")
-    public @ResponseBody JSONObject toggleSubscribed(String name, String monitorType, Integer monitorId, YukonUserContext context) {
+    public @ResponseBody JSONObject toggleSubscribed(String monitorType, Integer monitorId, YukonUserContext context) {
 
-        UserMonitor monitor = new UserMonitor (context.getYukonUser().getUserID(), name, MonitorType.valueOf(monitorType), monitorId, null);
+        UserSubscription monitor = new UserSubscription (context.getYukonUser().getUserID(), SubscriptionType.valueOf(monitorType), monitorId, null);
 
-        boolean isSubscribed = userMonitorDao.contains(monitor);
+        boolean isSubscribed = userSubscriptionDao.contains(monitor);
         if( isSubscribed ) {
-            userMonitorDao.delete(monitor);
+            userSubscriptionDao.delete(monitor);
         } else {
-            userMonitorDao.save(monitor);
+            userSubscriptionDao.save(monitor);
         }
 
         JSONObject result = new JSONObject();
@@ -180,9 +180,9 @@ public class HomeController {
     @RequestMapping("/isSubscribed")
     public @ResponseBody JSONObject isSubscribed(String monitorType, Integer monitorId, YukonUserContext context) {
 
-        UserMonitor monitor = new UserMonitor (context.getYukonUser().getUserID(), null, MonitorType.valueOf(monitorType), monitorId, null);
+        UserSubscription monitor = new UserSubscription (context.getYukonUser().getUserID(), SubscriptionType.valueOf(monitorType), monitorId, null);
 
-        boolean isSubscribed = userMonitorDao.contains(monitor);
+        boolean isSubscribed = userSubscriptionDao.contains(monitor);
 
         JSONObject result = new JSONObject();
         result.put( "isSubscribed", isSubscribed );

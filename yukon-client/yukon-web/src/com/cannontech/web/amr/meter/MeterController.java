@@ -4,14 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
+import org.springframework.web.servlet.view.RedirectView;
 
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.amr.meter.search.model.FilterBy;
@@ -44,6 +46,7 @@ import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.multispeak.client.MultispeakFuncs;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.web.amr.meter.service.MspMeterSearchService;
 import com.cannontech.web.bulk.model.collection.DeviceFilterCollectionHelper;
 import com.cannontech.web.common.pao.service.PaoDetailUrlHelper;
@@ -54,9 +57,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 
 @CheckRole({YukonRole.METERING,YukonRole.APPLICATION_BILLING,YukonRole.SCHEDULER,YukonRole.DEVICE_ACTIONS})
-@Controller
-@RequestMapping("/*")
-public class MeterController {
+public class MeterController extends MultiActionController {
 
     @Autowired private MeterSearchService meterSearchService = null;
     @Autowired private AttributeService attributeService = null;
@@ -74,14 +75,17 @@ public class MeterController {
     @Autowired private MspMeterSearchService mspMeterSearchService;
     @Autowired private DeviceConfigService deviceConfigService;
     @Autowired private DeviceConfigurationDao deviceConfigurationDao;
-
-    @RequestMapping
-    public String start() {
-        return "start.jsp";
+    
+    public MeterController() {
+        super();
+    }
+    
+    public ModelAndView start(HttpServletRequest request, HttpServletResponse response) {
+        return new ModelAndView("start.jsp");
     }
 
-    @RequestMapping
-    public String search(HttpServletRequest request, ModelMap model) {
+    public ModelAndView search(HttpServletRequest request, HttpServletResponse response)
+    throws ServletException {
 
         // Set the request url and parameters as a session attribute
         String url = request.getRequestURL().toString();
@@ -118,26 +122,32 @@ public class MeterController {
         SearchResult<Meter> meterSearchResults = 
             meterSearchService.search(queryFilter, orderBy, startIndex, itemsPerPage);
 
+        ModelAndView mav;
         // Redirect to device home page if only one result is found
         if (meterSearchResults.getHitCount() == 1) {
-            Meter meter = meterSearchResults.getResultList().get(0);
+            mav = new ModelAndView();
 
+            Meter meter = meterSearchResults.getResultList().get(0);
+            
             String urlForPaoDetailPage = paoDetailUrlHelper.getUrlForPaoDetailPage(meter);
             if (!StringUtils.isBlank(urlForPaoDetailPage)) {
-                return "redirect:" + urlForPaoDetailPage;
+                mav.setView(new RedirectView(urlForPaoDetailPage));
+                return mav;
             }
         }
-
-        model.addAttribute("defaultSearchField", defaultField);
+        
+        mav = new ModelAndView("meters.jsp");
+        mav.addObject("defaultSearchField", defaultField);
         // Create a device collection (only used to generate a link)
         DeviceCollection deviceGroupCollection = filterCollectionHelper.createDeviceGroupCollection(queryFilter, orderBy);
-
-        model.addAttribute("deviceGroupCollection", deviceGroupCollection);
-        model.addAttribute("orderBy", orderBy);
-        model.addAttribute("meterSearchResults", meterSearchResults);
-        model.addAttribute("orderByFields", MeterSearchField.values());
-        model.addAttribute("filterByList", filterByList);
-
+        
+        mav.addObject("deviceGroupCollection", deviceGroupCollection);
+        
+        mav.addObject("orderBy", orderBy);
+        mav.addObject("meterSearchResults", meterSearchResults);
+        mav.addObject("orderByFields", MeterSearchField.values());
+        mav.addObject("filterByList", filterByList);
+        
         ImmutableMap<String,Meter> paoIdToMeterMap = 
             Maps.uniqueIndex(meterSearchResults.getResultList(), new Function<Meter, String>() {
                 @Override
@@ -145,19 +155,23 @@ public class MeterController {
                     return String.valueOf(meter.getDeviceId());
                 }
             });
-
-        model.addAttribute("paoIdToMeterMap", paoIdToMeterMap);
-
-        return "meters.jsp";
+        
+        mav.addObject("paoIdToMeterMap", paoIdToMeterMap);
+            
+        return mav;
     }
+    
+    public ModelAndView home(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException {
 
-    @RequestMapping
-    public String home(ModelMap model, int deviceId, LiteYukonUser user) {
+        ModelAndView mav = new ModelAndView("meterHome.jsp");
+
+        int deviceId = ServletRequestUtils.getIntParameter(request, "deviceId");
 
         SimpleDevice device = deviceDao.getYukonDevice(deviceId);
-        model.addAttribute("deviceId", deviceId);
-        model.addAttribute("deviceName",  paoLoadingService.getDisplayablePao(device).getName());
-
+        mav.addObject("deviceId", deviceId);
+        mav.addObject("deviceName",  paoLoadingService.getDisplayablePao(device).getName());
+        
         boolean isRFMesh = device.getDeviceType().getPaoClass() == PaoClass.RFMESH;
         
         // do some hinting to speed loading
@@ -165,64 +179,65 @@ public class MeterController {
         cachingPointFormattingService.addLitePointsToCache(litePoints);
         pointUpdateBackingService.notifyOfImminentPoints(litePoints);
 
+        LiteYukonUser user = ServletUtil.getYukonUser(request);
+        
         Set<Attribute> availableAttributes = attributeService.getAvailableAttributes(device);
         
         boolean highBillSupported = paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.HIGH_BILL);
-        model.addAttribute("highBillSupported", highBillSupported);
+        mav.addObject("highBillSupported", highBillSupported);
 
         boolean outageSupported = paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.OUTAGE) 
             && (availableAttributes.contains(BuiltInAttribute.OUTAGE_LOG) 
                     || availableAttributes.contains(BuiltInAttribute.BLINK_COUNT));
-        model.addAttribute("outageSupported", outageSupported && !isRFMesh);
-        model.addAttribute("rfnOutageSupported", outageSupported && isRFMesh);
-
+        mav.addObject("outageSupported", outageSupported && !isRFMesh);
+        mav.addObject("rfnOutageSupported", outageSupported && isRFMesh);
+        
         String cisInfoWidgetName = multispeakFuncs.getCisDetailWidget(user);
-        model.addAttribute("cisInfoWidgetName", cisInfoWidgetName);
+        mav.addObject("cisInfoWidgetName", cisInfoWidgetName);
 
         boolean disconnectSupported = DeviceTypesFuncs.isDisconnectMCTOrHasCollar(device);
-        model.addAttribute("disconnectSupported", disconnectSupported);
-
+        mav.addObject("disconnectSupported", disconnectSupported);
+        
         boolean rfnDisconnectSupported = paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.DISCONNECT_RFN);
-        model.addAttribute("rfnDisconnectSupported", rfnDisconnectSupported);
+        mav.addObject("rfnDisconnectSupported", rfnDisconnectSupported);
 
         boolean touSupported = paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.TOU);
-        model.addAttribute("touSupported", touSupported);
+        mav.addObject("touSupported", touSupported);
 
         boolean moveSupported = paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.MOVE_SUPPORTED);
         boolean moveEnabled = rolePropertyDao.checkProperty(YukonRoleProperty.MOVE_IN_MOVE_OUT, user);
-        model.addAttribute("moveSupported", (moveSupported && moveEnabled));
+        mav.addObject("moveSupported", (moveSupported && moveEnabled));
 
         boolean lpSupported = paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.LOAD_PROFILE);
-        model.addAttribute("lpSupported", lpSupported);
+        mav.addObject("lpSupported", lpSupported);
 
         boolean peakReportSupported = paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.PEAK_REPORT);
-        model.addAttribute("peakReportSupported", peakReportSupported);
+        mav.addObject("peakReportSupported", peakReportSupported);
 
         boolean threePhaseVoltageOrCurrentSupported = (paoDefinitionDao.isTagSupported(device.getPaoIdentifier().getPaoType(),
                                                                                       PaoTag.THREE_PHASE_VOLTAGE) ||
                                                        paoDefinitionDao.isTagSupported(device.getPaoIdentifier().getPaoType(),
                                                                                       PaoTag.THREE_PHASE_CURRENT));
-        model.addAttribute("threePhaseVoltageOrCurrentSupported", threePhaseVoltageOrCurrentSupported);
+        mav.addObject("threePhaseVoltageOrCurrentSupported", threePhaseVoltageOrCurrentSupported);
 
         boolean singlePhaseVoltageSupported = availableAttributes.contains(BuiltInAttribute.VOLTAGE);
         boolean showVoltageAndTou = (DeviceTypesFuncs.isMCT4XX(device.getType()) || device.getDeviceType().isRfn()) 
                 && (singlePhaseVoltageSupported || threePhaseVoltageOrCurrentSupported);
-        model.addAttribute("showVoltageAndTou", showVoltageAndTou);
+        mav.addObject("showVoltageAndTou", showVoltageAndTou);
 
         boolean configSupported = !deviceConfigurationDao.getAllConfigurationsByType(device.getDeviceType()).isEmpty();
-        model.addAttribute("configSupported", configSupported);
-
+        mav.addObject("configSupported", configSupported);
+        
         if (isRFMesh) {
-            model.addAttribute("showRfMetadata", true);
+            mav.addObject("showRfMetadata", true);
         }
-
+        
         if (paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.RFN_EVENTS)) {
-            model.addAttribute("rfnEventsSupported", true);
+            mav.addObject("rfnEventsSupported", true);
         }
-
+        
         boolean porterCommandRequestsSupported = paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.PORTER_COMMAND_REQUESTS);
-
-        model.addAttribute("porterCommandRequestsSupported", porterCommandRequestsSupported);
+        mav.addObject("porterCommandRequestsSupported", porterCommandRequestsSupported);
 
         boolean hasActions = 
                 moveSupported ||
@@ -230,15 +245,16 @@ public class MeterController {
                 lpSupported || peakReportSupported ||
                 showVoltageAndTou ||
                 rolePropertyDao.checkProperty(YukonRoleProperty.ENABLE_WEB_COMMANDER, user) ||
-                (porterCommandRequestsSupported && rolePropertyDao.checkProperty(YukonRoleProperty.LOCATE_ROUTE, user))
-                ;
-        model.addAttribute("hasActions", hasActions);
+                (porterCommandRequestsSupported && rolePropertyDao.checkProperty(YukonRoleProperty.LOCATE_ROUTE, user));
+        mav.addObject("hasActions", hasActions);
 
-        return "meterHome.jsp";
+        return mav;
     }
 
-    @RequestMapping
-    public String touPreviousReadings(ModelMap model, int deviceId) {
+    public ModelAndView touPreviousReadings(HttpServletRequest request,
+                                            HttpServletResponse response) throws ServletException {
+        ModelAndView mav = new ModelAndView("touPreviousReadings.jsp");
+        int deviceId = ServletRequestUtils.getRequiredIntParameter(request, "deviceId");
         SimpleDevice device = deviceDao.getYukonDevice(deviceId);
 
         // Find the existing TOU attributes
@@ -251,11 +267,11 @@ public class MeterController {
                 LitePoint touPoint = attributeService.getPointForAttribute(device, touAttribute);
                 PreviousReadings previousReadings = pointService.getPreviousReadings(touPoint);
                 previousReadings.setAttribute(touAttribute);
-                model.addAttribute(touAttribute.getKey(), previousReadings);
+                mav.addObject(touAttribute.getKey(), previousReadings);
 
             }
         }
-
-        return "touPreviousReadings.jsp";
+        
+        return mav;
     }
 }

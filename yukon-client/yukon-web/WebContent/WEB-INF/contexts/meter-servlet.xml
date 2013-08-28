@@ -23,6 +23,7 @@
                 <prop key="/moveOut">MoveInMoveOutController</prop>
                 <prop key="/moveOutRequest">MoveInMoveOutController</prop>
                 <prop key="/highBill/*">HighBillController</prop>
+                <prop key="/*">MeterController</prop>
             </props>
         </property>
         <property name="order" value="2"/>
@@ -32,6 +33,21 @@
       class="org.springframework.web.servlet.view.UrlBasedViewResolver">
         <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
         <property name="prefix" value="/WEB-INF/pages/amr/meter/"/>
+    </bean>
+    
+    <bean id="MeterController" class="com.cannontech.web.amr.meter.MeterController" >
+        <property name="cacheSeconds">
+            <value type="int">0</value>
+        </property>
+        <property name="methodNameResolver">
+           <bean class="org.springframework.web.servlet.mvc.multiaction.InternalPathMethodNameResolver"/>
+        </property>
+        <property name="requireSession">
+            <value type="boolean">true</value>
+        </property>
+        <property name="synchronizeOnSession">
+            <value type="boolean">true</value>
+        </property>
     </bean>
     
     <bean id="MoveInMoveOutController" class="com.cannontech.web.moveInMoveOut.MoveInMoveOutController" >
