@@ -160,7 +160,11 @@
         <tags>
         	<tag name="DISCONNECT_410"/>
         	<tag name="DISCONNECT_COLLAR_COMPATIBLE"/>
+            <tag name="DEVICE_CONFIGURATION"/>
         </tags>
+        <configuration>
+            <category type="disconnectConfiguration"/>
+        </configuration>
     </pao>
 
     <pao id="SUPPORTS_INTEGRATED_DISCONNECT" abstract="true">   <!-- Integrated into the device itself -->
@@ -185,7 +189,14 @@
         </attributes>
         <tags>
         	<tag name="DISCONNECT_410"/>
+            <tag name="DEVICE_CONFIGURATION"/>
         </tags>
+    </pao>
+    
+    <pao id="SUPPORTS_INTEGRATED_DISCONNECT_AND_CONFIG" abstract="true" inherits="SUPPORTS_INTEGRATED_DISCONNECT">   <!-- Integrated into the device itself -->
+        <configuration>
+            <category type="disconnectConfiguration"/>
+        </configuration>
     </pao>
     
     <pao id="REVERSE_POWER_ALARM" abstract="true">
@@ -1477,7 +1488,7 @@
 	<pao id="MCT420FL" inherits="MCT_420_BASE, SUPPORTS_MCT_DISCONNECT">
         <displayName>MCT-420fL</displayName>
     </pao>
-    <pao id="MCT420FD" inherits="MCT_420_BASE, SUPPORTS_INTEGRATED_DISCONNECT">
+    <pao id="MCT420FD" inherits="MCT_420_BASE, SUPPORTS_INTEGRATED_DISCONNECT_AND_CONFIG">
         <displayName>MCT-420fD</displayName>
     </pao>
     <pao id="MCT420CL" inherits="MCT_420_BASE"> <!-- This doesn't support a disconnect collar either -->
@@ -1489,7 +1500,7 @@
             </tag>
         </tags>
     </pao>
-    <pao id="MCT420CD" inherits="MCT_420_BASE, SUPPORTS_INTEGRATED_DISCONNECT">
+    <pao id="MCT420CD" inherits="MCT_420_BASE, SUPPORTS_INTEGRATED_DISCONNECT_AND_CONFIG">
         <displayName>MCT-420cD</displayName>
     </pao>
 

@@ -23,6 +23,7 @@
             <xs:enumeration value="mct430LoadProfileChannels"/>
             <xs:enumeration value="mct430ConfigurationByte"/>
             <xs:enumeration value="mct430PrecannedTable"/>
+            <xs:enumeration value="disconnectConfiguration"/>
         </xs:restriction>
     </xs:simpleType>
     

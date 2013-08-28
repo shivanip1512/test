@@ -83,6 +83,7 @@
             <xs:enumeration value="ElectronicMeter"/>
             <xs:enumeration value="RelayTiming"/>
             <xs:enumeration value="TableReadInterval"/>
+            <xs:enumeration value="DisconnectLoadLimitConnectDelay"/>
         </xs:restriction>
     </xs:simpleType>
     
