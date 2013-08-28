@@ -8,89 +8,101 @@ Yukon.namespace('Yukon.StatusPointMonitor');
 
 Yukon.StatusPointMonitor = (function () {
     var mod;
-    
+
     mod = {
-            
+
         initWithProcessors: function (processors) {
+            var index;
             mod.addAction.nextRowIdNum = 0;
             if (processors) {
-                for (var index = 0; index < processors.length; index++) {
+                for (index = 0; index < processors.length; index++) {
                     mod.addAction(processors[index]);
                 }
             }
         },
-        
+
         deleteAction: function (rowIdNum) {
+            var index,
+                inputElement;
+
             jQuery('#actionRow' + rowIdNum).remove();
 
-            var inputElement = jQuery('#actionsTable td input.statusPointMonitorProcessorId');
-            for (var index = 0; index < inputElement.length; index++) {
+            inputElement = jQuery('#actionsTable td input.statusPointMonitorProcessorId');
+            for (index = 0; index < inputElement.length; index++) {
                 inputElement[index].name = 'processors[' + index + '].statusPointMonitorProcessorId';
             }
             
             inputElement = jQuery('#actionsTable td select.prevStateSelect');
-            for (var index = 0; index < inputElement.length; index++) {
+            for (index = 0; index < inputElement.length; index++) {
                 inputElement[index].name = 'processors[' + index + '].prevState';
             }
             
             inputElement = jQuery('#actionsTable td select.nextStateSelect');
-            for (var index = 0; index < inputElement.length; index++) {
+            for (index = 0; index < inputElement.length; index++) {
                 inputElement[index].name = 'processors[' + index + '].nextState';
             }
             
             inputElement = jQuery('#actionsTable td select.actionTypeSelect');
-            for (var index = 0; index < inputElement.length; index++) {
+            for (index = 0; index < inputElement.length; index++) {
                 inputElement[index].name = 'processors[' + index + '].actionType';
             }
         },
         
         addAction: function (processor) {
-            var templateHtml = jQuery('#templateHtml > a');
-            var deleteActionIcon = templateHtml[0];
-            
-            var templateHtml = jQuery('#templateHtml > select');
-            var states = templateHtml[0];
-            var eventTypes = templateHtml[1];
-            
-            var actionsTable = jQuery('#actionsTable > tbody:last');
-            var rowNum = actionsTable.prop('rows').length;
-            
+            var templateHtml = jQuery('#templateHtml > a'),
+                deleteActionIcon = templateHtml[0],
+                templateHtml = jQuery('#templateHtml > select'),
+                states = templateHtml[0],
+                eventTypes = templateHtml[1],
+                actionsTable = jQuery('#actionsTable > tbody:last'),
+                rowNum = actionsTable.prop('rows').length,
+                newRow,
+                newRowIdNum,
+                cellPrevState,
+                cellNextState,
+                cellActionType,
+                cellDelete,
+                prevSelectNode,
+                nextSelectNode,
+                actionTypeSelectNode,
+                deleteIconNode,
+                processorIdNode;
+
             actionsTable.append("<tr></tr>");
-            var newRow = actionsTable.find("tr:last");
-            var newRowIdNum = mod.addAction.nextRowIdNum++;
+            newRow = actionsTable.find("tr:last");
+            newRowIdNum = mod.addAction.nextRowIdNum++;
             newRow.attr('id', 'actionRow' + newRowIdNum);
-            
+
             newRow.append('<td></td>');
-            var cellPrevState = newRow.find('td:last');
+            cellPrevState = newRow.find('td:last');
             newRow.append('<td></td>');
-            var cellNextState = newRow.find('td:last');
+            cellNextState = newRow.find('td:last');
             newRow.append('<td></td>');
-            var cellActionType = newRow.find('td:last');
+            cellActionType = newRow.find('td:last');
             newRow.append('<td></td>');
-            var cellDelete = newRow.find('td:last');;
-            
-            
-            var prevSelectNode = states.clone(true);
+            cellDelete = newRow.find('td:last');;
+
+            prevSelectNode = states.clone(true);
             prevSelectNode.name = 'processors[' + (rowNum) + '].prevState';
             prevSelectNode.className = 'prevStateSelect';
             cellPrevState.append(prevSelectNode);
-            
-            var nextSelectNode = states.clone(true);
+
+            nextSelectNode = states.clone(true);
             nextSelectNode.name = 'processors[' + (rowNum) + '].nextState';
             nextSelectNode.className = 'nextStateSelect';
             cellNextState.append(nextSelectNode);
-            
-            var actionTypeSelectNode = eventTypes.clone(true);
+
+            actionTypeSelectNode = eventTypes.clone(true);
             actionTypeSelectNode.name = 'processors[' + (rowNum) + '].actionType';
             actionTypeSelectNode.className = 'actionTypeSelect';
             cellActionType.append(actionTypeSelectNode);
-            
-            var deleteIconNode = deleteActionIcon.clone(true);
+
+            deleteIconNode = deleteActionIcon.clone(true);
             deleteIconNode.href = "javascript:Yukon.StatusPointMonitor.deleteAction(" + newRowIdNum + ")";
             cellDelete.append(deleteIconNode);
-            
+
             if(processor) {
-                var processorIdNode = document.createElement("input");
+                processorIdNode = document.createElement("input");
                 processorIdNode.name = 'processors[' + (rowNum) + '].statusPointMonitorProcessorId';
                 processorIdNode.type = 'hidden';
                 processorIdNode.className = 'statusPointMonitorProcessorId';

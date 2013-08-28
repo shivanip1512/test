@@ -137,8 +137,7 @@
 	</form:form>
     
     <script type="text/javascript">
-        var processors = ${cti:jsonString2(statusPointMonitor.processors)};
-        Yukon.StatusPointMonitor.initWithProcessors(processors);
+        Yukon.StatusPointMonitor.initWithProcessors(${cti:jsonString2(statusPointMonitor.processors)});
     </script>
         
 </cti:standardPage>
