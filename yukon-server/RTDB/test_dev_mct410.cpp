@@ -2304,6 +2304,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
     BOOST_AUTO_TEST_CASE(test_putconfig_install_all)
     {
         test_Mct410IconDevice mct410;
+        mct410.setDisconnectAddress(1234567);
 
         test_DeviceConfig config;
 
@@ -2336,7 +2337,52 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,       9 );
 
             const std::vector<unsigned> expected = boost::assign::list_of
-                ( 0 )( 0 )( 0 )( 42 )( 150 )( 4 )( 7 )( 17 )( 64 );
+                (0x12)(0xd6)(0x87)(0x2a)(0x96)(0x04)(0x07)(0x11)(0x40);
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                expected.begin(),
+                expected.end(),
+                om->Buffer.BSt.Message,
+                om->Buffer.BSt.Message + om->Buffer.BSt.Length );
+        }
+    }
+    BOOST_AUTO_TEST_CASE(test_putconfig_install_all_alternate)
+    {
+        test_Mct410IconDevice mct410;
+        mct410.setDisconnectAddress(123456);
+
+        test_DeviceConfig config;
+
+        mct410.changeDeviceConfig(Cti::Config::DeviceConfigSPtr(&config, null_deleter()));  //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+        config.insertValue("disconnectDemandThreshold", "4.71");
+        config.insertValue("disconnectLoadLimitConnectDelay", "3");
+        config.insertValue("disconnectMinutes", "6");
+        config.insertValue("connectMinutes", "18");
+        config.insertValue("reconnectButton", "false");
+
+        CtiCommandParser parse("putconfig install all");
+
+        BOOST_CHECK_EQUAL( NoError, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+        BOOST_CHECK( vgList.empty() );
+        BOOST_CHECK( retList.empty() );
+
+        BOOST_REQUIRE_EQUAL( outList.size(), 1 );
+
+        CtiDeviceBase::OutMessageList::const_iterator om_itr = outList.begin();
+
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,           2 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x1fe );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,       9 );
+
+            const std::vector<unsigned> expected = boost::assign::list_of
+                (0x01)(0xe2)(0x40)(0x11)(0xd7)(0x03)(0x06)(0x12)(0x44);
 
             BOOST_CHECK_EQUAL_COLLECTIONS(
                 expected.begin(),
@@ -3993,41 +4039,42 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Function_Read_3Dwords)
 BOOST_AUTO_TEST_CASE(test_makeDynamicDemand)
 {
     // Range: Under 0.0 Wh
-    BOOST_CHECK_EQUAL(Cti::Devices::Mct410Device::Utility::makeDynamicDemand(    -1.0),    -1);
+    BOOST_CHECK_EQUAL(Cti::Devices::Mct410Device::Utility::makeDynamicDemand(    -1.0), -1);
 
     // Range: 0.0 Wh - 400.0 Wh
-    BOOST_CHECK_EQUAL(Cti::Devices::Mct410Device::Utility::makeDynamicDemand(     0.0),     0);
-    BOOST_CHECK_EQUAL(Cti::Devices::Mct410Device::Utility::makeDynamicDemand(   400.0), 16288);
+    BOOST_CHECK_EQUAL(Cti::Devices::Mct410Device::Utility::makeDynamicDemand(     0.0),  0x0000 |    0);
+    BOOST_CHECK_EQUAL(Cti::Devices::Mct410Device::Utility::makeDynamicDemand(     0.1),  0x3000 |    1);
+    BOOST_CHECK_EQUAL(Cti::Devices::Mct410Device::Utility::makeDynamicDemand(   400.0),  0x3000 | 4000);
 
     // Between endpoints, check rounding
-    BOOST_CHECK_EQUAL(Cti::Devices::Mct410Device::Utility::makeDynamicDemand(   400.4),  8592);
-    BOOST_CHECK_EQUAL(Cti::Devices::Mct410Device::Utility::makeDynamicDemand(   400.5),  8593);
-    BOOST_CHECK_EQUAL(Cti::Devices::Mct410Device::Utility::makeDynamicDemand(   400.6),  8593);
+    BOOST_CHECK_EQUAL(Cti::Devices::Mct410Device::Utility::makeDynamicDemand(   400.4),  0x2000 |  400);
+    BOOST_CHECK_EQUAL(Cti::Devices::Mct410Device::Utility::makeDynamicDemand(   400.5),  0x2000 |  401);
+    BOOST_CHECK_EQUAL(Cti::Devices::Mct410Device::Utility::makeDynamicDemand(   400.6),  0x2000 |  401);
 
     // Range: 401.0 Wh - 4,000.0 Wh
-    BOOST_CHECK_EQUAL(Cti::Devices::Mct410Device::Utility::makeDynamicDemand(   401.0),  8593);
-    BOOST_CHECK_EQUAL(Cti::Devices::Mct410Device::Utility::makeDynamicDemand(  4000.0), 12192);
+    BOOST_CHECK_EQUAL(Cti::Devices::Mct410Device::Utility::makeDynamicDemand(   401.0),  0x2000 |  401);
+    BOOST_CHECK_EQUAL(Cti::Devices::Mct410Device::Utility::makeDynamicDemand(  4000.0),  0x2000 | 4000);
 
     // Between endpoints, check rounding
-    BOOST_CHECK_EQUAL(Cti::Devices::Mct410Device::Utility::makeDynamicDemand(  4004.0),  4496);
-    BOOST_CHECK_EQUAL(Cti::Devices::Mct410Device::Utility::makeDynamicDemand(  4005.0),  4497);
-    BOOST_CHECK_EQUAL(Cti::Devices::Mct410Device::Utility::makeDynamicDemand(  4006.0),  4497);
+    BOOST_CHECK_EQUAL(Cti::Devices::Mct410Device::Utility::makeDynamicDemand(  4004.0),  0x1000 |  400);
+    BOOST_CHECK_EQUAL(Cti::Devices::Mct410Device::Utility::makeDynamicDemand(  4005.0),  0x1000 |  401);
+    BOOST_CHECK_EQUAL(Cti::Devices::Mct410Device::Utility::makeDynamicDemand(  4006.0),  0x1000 |  401);
 
     // Range: 4,010.0 Wh - 40,000.0 Wh
-    BOOST_CHECK_EQUAL(Cti::Devices::Mct410Device::Utility::makeDynamicDemand(  4010.0),  4497);
-    BOOST_CHECK_EQUAL(Cti::Devices::Mct410Device::Utility::makeDynamicDemand( 40000.0),  8096);
+    BOOST_CHECK_EQUAL(Cti::Devices::Mct410Device::Utility::makeDynamicDemand(  4010.0),  0x1000 |  401);
+    BOOST_CHECK_EQUAL(Cti::Devices::Mct410Device::Utility::makeDynamicDemand( 40000.0),  0x1000 | 4000);
 
     // Between endpoints, check rounding
-    BOOST_CHECK_EQUAL(Cti::Devices::Mct410Device::Utility::makeDynamicDemand( 40040.0),   400);
-    BOOST_CHECK_EQUAL(Cti::Devices::Mct410Device::Utility::makeDynamicDemand( 40050.0),   401);
-    BOOST_CHECK_EQUAL(Cti::Devices::Mct410Device::Utility::makeDynamicDemand( 40060.0),   401);
+    BOOST_CHECK_EQUAL(Cti::Devices::Mct410Device::Utility::makeDynamicDemand( 40040.0),  0x0000 |  400);
+    BOOST_CHECK_EQUAL(Cti::Devices::Mct410Device::Utility::makeDynamicDemand( 40050.0),  0x0000 |  401);
+    BOOST_CHECK_EQUAL(Cti::Devices::Mct410Device::Utility::makeDynamicDemand( 40060.0),  0x0000 |  401);
 
     // Range: 40,100.0 Wh - 409,500.0 Wh
-    BOOST_CHECK_EQUAL(Cti::Devices::Mct410Device::Utility::makeDynamicDemand( 40100.0),   401);
-    BOOST_CHECK_EQUAL(Cti::Devices::Mct410Device::Utility::makeDynamicDemand(409500.0),  4095);
+    BOOST_CHECK_EQUAL(Cti::Devices::Mct410Device::Utility::makeDynamicDemand( 40100.0),  0x0000 |  401);
+    BOOST_CHECK_EQUAL(Cti::Devices::Mct410Device::Utility::makeDynamicDemand(409500.0),  0x0000 | 4095);
 
     // Range: Over 409,500.0 Wh
-    BOOST_CHECK_EQUAL(Cti::Devices::Mct410Device::Utility::makeDynamicDemand(409501.0),    -1);
+    BOOST_CHECK_EQUAL(Cti::Devices::Mct410Device::Utility::makeDynamicDemand(409501.0), -1);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
