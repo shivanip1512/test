@@ -808,14 +808,7 @@ void CtiTableDynamicPaoInfo::getValue(unsigned int &destination) const
     double tmp;
     getValue(tmp);
 
-    if( tmp >= 0 )
-    {
-        destination = (unsigned int)tmp;
-    }
-    else
-    {
-        destination = 0UL;
-    }
+    destination = std::max<unsigned>(tmp, 0U);
 }
 
 void CtiTableDynamicPaoInfo::getValue(long &destination) const

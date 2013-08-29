@@ -178,17 +178,7 @@ Mct410Device::ConfigPartsList Mct410Device::initConfigParts()
 {
     Mct410Device::ConfigPartsList tempList;
 
-    //tempList.push_back(Mct4xxDevice::PutConfigPart_dst);
-    //tempList.push_back(Mct4xxDevice::PutConfigPart_vthreshold);
-    //tempList.push_back(Mct4xxDevice::PutConfigPart_demand_lp);
-    //tempList.push_back(Mct4xxDevice::PutConfigPart_options);
-    //tempList.push_back(Mct4xxDevice::PutConfigPart_addressing);
     tempList.push_back(Mct4xxDevice::PutConfigPart_disconnect);
-    //tempList.push_back(Mct4xxDevice::PutConfigPart_holiday);
-    //tempList.push_back(Mct4xxDevice::PutConfigPart_llp);
-    //tempList.push_back(Mct4xxDevice::PutConfigPart_usage); //Jess does not know what this was intended for...
-    //tempList.push_back(Mct4xxDevice::PutConfigPart_centron);
-    //tempList.push_back(Mct4xxDevice::PutConfigPart_tou);
 
     return tempList;
 }
@@ -1601,8 +1591,7 @@ int Mct410Device::executePutConfigInstallDisconnect(CtiRequestMsg *pReq, CtiComm
             if( getMCTDebugLevel(DebugLevel_Configs) )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Device \"" << getName() << "\" - invalid value ("
-                     << deviceConfig->getValueFromKey(MCTStrings::DisconnectDemandThreshold) << ") for config key \""
+                dout << CtiTime() << " Device \"" << getName() << "\" - no value found for config key \""
                      << MCTStrings::DisconnectDemandThreshold << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
@@ -1615,8 +1604,7 @@ int Mct410Device::executePutConfigInstallDisconnect(CtiRequestMsg *pReq, CtiComm
             if( getMCTDebugLevel(DebugLevel_Configs) )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Device \"" << getName() << "\" - invalid value ("
-                     << deviceConfig->getValueFromKey(MCTStrings::DisconnectLoadLimitConnectDelay) << ") for config key \""
+                dout << CtiTime() << " Device \"" << getName() << "\" - no value found for config key \""
                      << MCTStrings::DisconnectLoadLimitConnectDelay << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
@@ -1624,7 +1612,11 @@ int Mct410Device::executePutConfigInstallDisconnect(CtiRequestMsg *pReq, CtiComm
         } 
         else if( *disconnectLoadLimitDelay < 0 )
         {
-            //another error, must be unsigned.
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Device \"" << getName() << "\" - invalid value (" << *disconnectLoadLimitDelay << ") found for config key \""
+                 << MCTStrings::DisconnectLoadLimitConnectDelay << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+
+            return BADPARAM;
         }
 
         boost::optional<long> disconnectMinutes = deviceConfig->findLongValueForKey(MCTStrings::DisconnectMinutes);
@@ -1633,8 +1625,7 @@ int Mct410Device::executePutConfigInstallDisconnect(CtiRequestMsg *pReq, CtiComm
             if( getMCTDebugLevel(DebugLevel_Configs) )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Device \"" << getName() << "\" - invalid value ("
-                     << deviceConfig->getValueFromKey(MCTStrings::DisconnectMinutes) << ") for config key \""
+                dout << CtiTime() << " Device \"" << getName() << "\" - no value found for config key \""
                      << MCTStrings::DisconnectMinutes << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
@@ -1642,7 +1633,11 @@ int Mct410Device::executePutConfigInstallDisconnect(CtiRequestMsg *pReq, CtiComm
         }
         else if( *disconnectMinutes < 0 )
         {
-            //another error, must be unsigned.
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Device \"" << getName() << "\" - invalid value (" << *disconnectMinutes << ") found for config key \""
+                 << MCTStrings::DisconnectMinutes << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+
+            return BADPARAM;
         }
 
         boost::optional<long> connectMinutes = deviceConfig->findLongValueForKey(MCTStrings::ConnectMinutes);
@@ -1651,8 +1646,7 @@ int Mct410Device::executePutConfigInstallDisconnect(CtiRequestMsg *pReq, CtiComm
             if( getMCTDebugLevel(DebugLevel_Configs) )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Device \"" << getName() << "\" - invalid value ("
-                     << deviceConfig->getValueFromKey(MCTStrings::ConnectMinutes) << ") for config key \""
+                dout << CtiTime() << " Device \"" << getName() << "\" - no value found for config key \""
                      << MCTStrings::ConnectMinutes << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
@@ -1660,7 +1654,11 @@ int Mct410Device::executePutConfigInstallDisconnect(CtiRequestMsg *pReq, CtiComm
         }
         else if( *connectMinutes < 0 )
         {
-            //another error, must be unsigned.
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Device \"" << getName() << "\" - invalid value (" << *connectMinutes << ") found for config key \""
+                 << MCTStrings::ConnectMinutes << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+
+            return BADPARAM;
         }
 
         bool reconnectButtonEnabled;
@@ -1669,8 +1667,7 @@ int Mct410Device::executePutConfigInstallDisconnect(CtiRequestMsg *pReq, CtiComm
             if( getMCTDebugLevel(DebugLevel_Configs) )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Device \"" << getName() << "\" - invalid value ("
-                     << deviceConfig->getValueFromKey(MCTStrings::ReconnectButton) << ") for config key \""
+                dout << CtiTime() << " Device \"" << getName() << "\" - no value found for config key \""
                      << MCTStrings::ReconnectButton << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 

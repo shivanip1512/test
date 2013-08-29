@@ -25,9 +25,9 @@ bool Mct410Sim::_behaviorsInited = false;
 
 //  Temporary class to access protected functions in Mct410Device and Mct4xxDevice.
 //  To be deleted when we move functions to a shared location.
-struct mct410_utility : private Devices::Mct410Device
+struct mct4xx_utility : private Devices::Mct4xxDevice
 {
-    using Mct410Device::crc8;
+    using Mct4xxDevice::crc8;
 };
 
 const Mct410Sim::function_reads_t  Mct410Sim::_function_reads     = Mct410Sim::initFunctionReads();
@@ -1055,7 +1055,7 @@ bytes Mct410Sim::formatLongLoadProfile(const unsigned offset, const unsigned add
     bytes result_bytes;
     byte_appender result_oitr = byte_appender(result_bytes);
 
-    *result_oitr++ = mct410_utility::crc8(&interest_bytes.front(), interest_bytes.size());
+    *result_oitr++ = mct4xx_utility::crc8(&interest_bytes.front(), interest_bytes.size());
 
     const CtiTime blockStart = periodOfInterest + offset * LoadProfile_IntervalsPerBlock * lpIntervalSeconds;
 
