@@ -1,6 +1,7 @@
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
@@ -33,7 +34,7 @@
                         <c:otherwise>
                             <ul class="simple-list">
                                 <c:forEach var="assignment" items="${categoryEditBean.assignments}">
-                                    <li>${assignment}</li>
+                                    <li>${fn:escapeXml(assignment)}</li>
                                 </c:forEach>
                             </ul>
                         </c:otherwise>

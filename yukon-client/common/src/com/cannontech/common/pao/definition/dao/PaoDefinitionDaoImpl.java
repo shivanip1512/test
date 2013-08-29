@@ -337,14 +337,16 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     }
     
     private BiMap<PaoType, PaoDefinition> getPaoDefinitionsThatSupportTag(PaoTag tag, Creatable creatability) {
-        BiMap<PaoType, PaoDefinition> biMap = EnumHashBiMap.<PaoType, PaoDefinition>create(PaoType.class);
+        BiMap<PaoType, PaoDefinition> biMap = EnumHashBiMap.create(PaoType.class);
         
         if (creatability != Creatable.DONT_CARE) {
             // We have criteria to match.
             for (Entry<PaoType, PaoDefinition> entry : typesBySupportedTag.get(tag).entrySet()) {
                 boolean isCreatable = entry.getValue().isCreatable();
                 
-                if ((!isCreatable && creatability == Creatable.NO) || (isCreatable && creatability == Creatable.YES)) {
+                if (creatability == Creatable.DONT_CARE ||
+                    (!isCreatable && creatability == Creatable.NO) || 
+                    (isCreatable && creatability == Creatable.YES)) {
                     // This entry doesn't match our criteria.
                     biMap.put(entry.getKey(), entry.getValue());
                 }
