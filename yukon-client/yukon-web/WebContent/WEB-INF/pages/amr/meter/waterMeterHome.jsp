@@ -7,6 +7,14 @@
 
 <cti:standardPage module="amr" page="meterDetail.water">
     <dt:pickerIncludes/>
+    
+    <div id="f-page-buttons">
+        <cti:url var="collectionActionsUrl" value="/bulk/collectionActions">
+            <cti:param name="collectionType" value="idList" />
+            <cti:param name="idList.ids" value="${deviceId}" />
+        </cti:url>
+        <cti:button icon="icon-cog" href="${collectionActionsUrl}" nameKey="otherActions"/> 
+    </div>
 
 	<ct:widgetContainer deviceId="${deviceId}" identify="false">
 
@@ -32,17 +40,6 @@
 					<cti:includeScript link="JQUERY_TREE_HELPERS" />
 					<cti:includeCss link="/WebConfig/yukon/styles/lib/dynatree/ui.dynatree.css"/>
 	                <ct:widget bean="deviceGroupWidget"/>
-
-					<ct:boxContainer2 nameKey="actions" styleClass="widgetContainer">
-	                
-	                    <!-- Actions: Other Collection actions -->
-	                    <cti:url var="collectionActionsUrl" value="/bulk/collectionActions">
-	                        <cti:param name="collectionType" value="idList" />
-	                        <cti:param name="idList.ids" value="${deviceId}" />
-	                    </cti:url>
-	                    <a href="${collectionActionsUrl}"><i:inline key=".otherActions"/></a><br/>
-	                    
-					</ct:boxContainer2>
             </div>
             <div class="column two nogutter">
                 <ct:widget bean="waterCsrTrendWidget" tabularDataViewer="archivedDataReport" />
