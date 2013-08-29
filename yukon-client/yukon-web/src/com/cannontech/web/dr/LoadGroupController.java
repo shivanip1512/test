@@ -93,27 +93,27 @@ public class LoadGroupController extends DemandResponseControllerBase {
     @RequestMapping("/loadGroup/detail")
     public String detail(int loadGroupId, ModelMap model,
             @ModelAttribute("backingBean") LoadGroupControllerHelper.LoadGroupListBackingBean backingBean,
-            BindingResult bindingResult, FlashScope flashScope, YukonUserContext context) {
+            BindingResult bindingResult, FlashScope flashScope, YukonUserContext userContext) {
         
         DisplayablePao loadGroup = loadGroupService.getLoadGroup(loadGroupId);
-        paoAuthorizationService.verifyAllPermissions(context.getYukonUser(), 
+        paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
                                                      loadGroup, 
                                                      Permission.LM_VISIBLE);
         favoritesDao.detailPageViewed(loadGroupId);
-        boolean isFavorite = favoritesDao.isFavorite(loadGroupId, context.getYukonUser());
+        boolean isFavorite = favoritesDao.isFavorite(loadGroupId, userContext.getYukonUser());
         model.addAttribute("loadGroup", loadGroup);
         model.addAttribute("isFavorite", isFavorite);
 
         model.addAttribute("parentPrograms",
-                              programService.findProgramsForLoadGroup(loadGroupId, context));
+                              programService.findProgramsForLoadGroup(loadGroupId, userContext));
         model.addAttribute("parentLoadGroups",
-                              loadGroupService.findLoadGroupsForMacroLoadGroup(loadGroupId, context));
+                              loadGroupService.findLoadGroupsForMacroLoadGroup(loadGroupId, userContext));
 
         UiFilter<DisplayablePao> detailFilter = new LoadGroupsForMacroLoadGroupFilter(loadGroupId);
-        loadGroupControllerHelper.filterGroups(model, context, backingBean,
+        loadGroupControllerHelper.filterGroups(model, userContext, backingBean,
                                                bindingResult, detailFilter, flashScope);
 
-        model = getAssetAvailabilityInfo(loadGroup, model, context);
+        model = getAssetAvailabilityInfo(loadGroup, model, userContext);
 
         return "dr/loadGroup/detail.jsp";
     }
@@ -125,17 +125,17 @@ public class LoadGroupController extends DemandResponseControllerBase {
                                final boolean descending,
                                int assetId, 
                                ModelMap model, 
-                               YukonUserContext context) {
+                               YukonUserContext userContext) {
         
         DisplayablePao loadGroup = loadGroupService.getLoadGroup(assetId);
 
-        List<AssetAvailabilityDetails> resultsList = getResultsList(loadGroup, context, null);
-        sortAssetDetails(resultsList, sortBy, descending, context);
+        List<AssetAvailabilityDetails> resultsList = getResultsList(loadGroup, userContext, null);
+        sortAssetDetails(resultsList, sortBy, descending, userContext);
         
         SearchResult<AssetAvailabilityDetails> result = 
                 SearchResult.pageBasedForWholeList(page, itemsPerPage, resultsList);
 
-        model = getAssetAvailabilityInfo(loadGroup, model, context);
+        model = getAssetAvailabilityInfo(loadGroup, model, userContext);
         
         model.addAttribute("assetId", assetId);
         model.addAttribute("loadGroupId", assetId);
@@ -154,7 +154,7 @@ public class LoadGroupController extends DemandResponseControllerBase {
      */
     @RequestMapping("/loadGroup/page")
     public String page(ModelMap model, 
-                       YukonUserContext context,
+                       YukonUserContext userContext,
                        String type,
                        String assetId,
                        @RequestParam(defaultValue="SERIAL_NUM") AssetDetailsColumn sortBy,
@@ -166,8 +166,8 @@ public class LoadGroupController extends DemandResponseControllerBase {
         JSONArray filters = (filter == null || filter.length() == 0) ? null : JSONArray.fromObject(filter);
 
         DisplayablePao loadGroup = loadGroupService.getLoadGroup(Integer.parseInt(assetId));
-        List<AssetAvailabilityDetails> resultsList = getResultsList(loadGroup, context, filters);
-        sortAssetDetails(resultsList, sortBy, descending, context);
+        List<AssetAvailabilityDetails> resultsList = getResultsList(loadGroup, userContext, filters);
+        sortAssetDetails(resultsList, sortBy, descending, userContext);
 
         SearchResult<AssetAvailabilityDetails> result = 
                 SearchResult.pageBasedForWholeList(page, itemsPerPage, resultsList);
@@ -190,18 +190,18 @@ public class LoadGroupController extends DemandResponseControllerBase {
                               String type,
                               HttpServletRequest request,
                               HttpServletResponse response,
-                              YukonUserContext context) throws IOException {
+                              YukonUserContext userContext) throws IOException {
         
         DisplayablePao loadGroup = loadGroupService.getLoadGroup(Integer.parseInt(assetId));
 
         // get the header row
-        String[] headerRow = getDownloadHeaderRow(context);
+        String[] headerRow = getDownloadHeaderRow(userContext);
 
         // get the data rows
-        List<String[]> dataRows = getDownloadDataRows(loadGroup, filter, request, response, context);
+        List<String[]> dataRows = getDownloadDataRows(loadGroup, filter, request, response, userContext);
         
-        String dateStr = dateFormattingService.format(new LocalDateTime(context.getJodaTimeZone()), 
-                                                      DateFormatEnum.BOTH, context);
+        String dateStr = dateFormattingService.format(new LocalDateTime(userContext.getJodaTimeZone()), 
+                                                      DateFormatEnum.BOTH, userContext);
         String fileName = type + "_" + loadGroup.getName() + "_" + dateStr + ".csv";
         WebFileUtils.writeToCSV(response, headerRow, dataRows, fileName);
             

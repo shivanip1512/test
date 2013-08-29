@@ -13,9 +13,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONArray;
 
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -38,15 +38,15 @@ import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.HardwareSummary;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.util.NaturalOrderComparator;
 import com.cannontech.web.common.chart.service.AssetAvailabilityChartService;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-@Controller
-@CheckRoleProperty(value={YukonRoleProperty.SHOW_CONTROL_AREAS, YukonRoleProperty.DEMAND_RESPONSE},requireAll=true)
-public class DemandResponseControllerBase {
+@CheckRoleProperty(YukonRoleProperty.DEMAND_RESPONSE)
+public abstract class DemandResponseControllerBase {
     
     @Autowired private ApplianceCategoryDao applianceCategoryDao;
     @Autowired private AssetAvailabilityChartService assetAvailabilityChartService;
@@ -66,20 +66,23 @@ public class DemandResponseControllerBase {
         colorMap.put(AssetAvailabilityCombinedStatus.UNAVAILABLE, "red");
         colorMap.put(AssetAvailabilityCombinedStatus.OPTED_OUT, "grey");
     }
+
     protected static final String ITEMS_PER_PAGE = "10";
 
     protected static enum AssetDetailsColumn {SERIAL_NUM, TYPE, LAST_COMM, LAST_RUN, APPLIANCES, AVAILABILITY};
 
+    protected static NaturalOrderComparator naturalOrder = new NaturalOrderComparator();
+
 
     protected ModelMap getAssetAvailabilityInfo(DisplayablePao dispPao, 
                                          ModelMap model, 
-                                         YukonUserContext context) {
+                                         YukonUserContext userContext) {
         try {
             SimpleAssetAvailabilitySummary aaSummary = 
                     assetAvailabilityService.getAssetAvailabilityFromDrGroup(dispPao.getPaoIdentifier());
             model.addAttribute("assetAvailabilitySummary", aaSummary);
             model.addAttribute("assetTotal", aaSummary.getAll().size());
-            model.addAttribute("pieJSONData", assetAvailabilityChartService.getJSONPieData(aaSummary, context));
+            model.addAttribute("pieJSONData", assetAvailabilityChartService.getJSONPieData(aaSummary, userContext));
             model.addAttribute("colorMap", colorMap);
         } catch(DynamicDataAccessException e) {
             model.addAttribute("dispatchDisconnected", true);
@@ -87,14 +90,14 @@ public class DemandResponseControllerBase {
         return model;
     }
     
-
+    
     protected List<AssetAvailabilityDetails> getResultsList(DisplayablePao dispPao, 
-                                                            YukonUserContext context, 
+                                                            YukonUserContext userContext, 
                                                             JSONArray filters) {
 
         Set<AssetAvailabilityCombinedStatus> filterSet = getFilterSet(filters);
         
-        paoAuthorizationService.verifyAllPermissions(context.getYukonUser(), dispPao, Permission.LM_VISIBLE);
+        paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), dispPao, Permission.LM_VISIBLE);
         
         Map<Integer, SimpleAssetAvailability> resultMap = 
                 assetAvailabilityService.getAssetAvailability(dispPao.getPaoIdentifier());
@@ -132,10 +135,8 @@ public class DemandResponseControllerBase {
                 // Only get the latest last runtime.
                 Instant lnzrt = awr.getLastNonZeroRuntime();
                 if (lnzrt != null) {
-                    if (lastRun == null) {
+                    if (lastRun == null || lastRun.isBefore(lnzrt)) {
                         lastRun = lnzrt;  
-                    } else {
-                        lastRun = (lastRun.isAfter(lnzrt)) ? lastRun : lnzrt;
                     }
                 }
                 ApplianceCategory appCat = appCatMap.get(awr.getApplianceCategoryId());
@@ -190,13 +191,13 @@ public class DemandResponseControllerBase {
     protected void sortAssetDetails(List<AssetAvailabilityDetails> assetDetails,
                                     AssetDetailsColumn sortBy,
                                     final boolean descending,
-                                    final YukonUserContext context) {
+                                    final YukonUserContext userContext) {
         switch(sortBy) {
         default:
         case SERIAL_NUM:
             Collections.sort(assetDetails, new Comparator<AssetAvailabilityDetails>() {
                 @Override public int compare(AssetAvailabilityDetails o1, AssetAvailabilityDetails o2) {
-                    int compare = o1.getSerialNumber().compareToIgnoreCase(o2.getSerialNumber());
+                    int compare = naturalOrder.compare(o1.getSerialNumber(), o2.getSerialNumber());
                     return descending ? -compare : compare;
                 }
             });
@@ -204,8 +205,8 @@ public class DemandResponseControllerBase {
         case TYPE:
             Collections.sort(assetDetails, new Comparator<AssetAvailabilityDetails>() {
                 @Override public int compare(AssetAvailabilityDetails o1, AssetAvailabilityDetails o2) {
-                    String typeStr1 = objectFormatingService.formatObjectAsString(o1.getType(), context);
-                    String typeStr2 = objectFormatingService.formatObjectAsString(o2.getType(), context);
+                    String typeStr1 = objectFormatingService.formatObjectAsString(o1.getType(), userContext);
+                    String typeStr2 = objectFormatingService.formatObjectAsString(o2.getType(), userContext);
                     int compare = typeStr1.compareToIgnoreCase(typeStr2);
                     return descending ? -compare : compare;
                 }
@@ -258,8 +259,8 @@ public class DemandResponseControllerBase {
         case AVAILABILITY:
             Collections.sort(assetDetails, new Comparator<AssetAvailabilityDetails>() {
                 @Override public int compare(AssetAvailabilityDetails o1, AssetAvailabilityDetails o2) {
-                    String typeStr1 = objectFormatingService.formatObjectAsString(o1.getAvailability(), context);
-                    String typeStr2 = objectFormatingService.formatObjectAsString(o2.getAvailability(), context);
+                    String typeStr1 = objectFormatingService.formatObjectAsString(o1.getAvailability(), userContext);
+                    String typeStr2 = objectFormatingService.formatObjectAsString(o2.getAvailability(), userContext);
                     int compare = typeStr1.compareToIgnoreCase(typeStr2);
                     return descending ? -compare : compare;
                 }
@@ -271,9 +272,9 @@ public class DemandResponseControllerBase {
     /*
      * Used as part of the downloadToCsv feature in the controllers.
      */
-    protected String[] getDownloadHeaderRow(YukonUserContext context) {
+    protected String[] getDownloadHeaderRow(YukonUserContext userContext) {
                                             
-        MessageSourceAccessor msa = messageSourceResolver.getMessageSourceAccessor(context);
+        MessageSourceAccessor msa = messageSourceResolver.getMessageSourceAccessor(userContext);
 
         // header row
         String[] headerRow = new String[6];
@@ -294,12 +295,12 @@ public class DemandResponseControllerBase {
                                                  String filter,
                                                  HttpServletRequest request,
                                                  HttpServletResponse response,
-                                                 YukonUserContext context) {
+                                                 YukonUserContext userContext) {
         
-        JSONArray filters = (filter == null || filter.length() == 0) ? null : JSONArray.fromObject(filter);
+        JSONArray filters = (StringUtils.isEmpty(filter)) ? null : JSONArray.fromObject(filter);
         
         Set<AssetAvailabilityCombinedStatus> filterSet = getFilterSet(filters);
-        MessageSourceAccessor msa = messageSourceResolver.getMessageSourceAccessor(context);
+        MessageSourceAccessor msa = messageSourceResolver.getMessageSourceAccessor(userContext);
 
         Map<Integer, SimpleAssetAvailability> resultMap = 
                 assetAvailabilityService.getAssetAvailability(dispPao.getPaoIdentifier());
@@ -330,7 +331,7 @@ public class DemandResponseControllerBase {
             SimpleAssetAvailability simpleAA = entry.getValue();
             // set the Last Communication column
             Instant lastComm = simpleAA.getLastCommunicationTime();
-            String dateStr = (lastComm == null) ? "" : dateFormattingService.format(lastComm, DateFormatEnum.BOTH, context);
+            String dateStr = (lastComm == null) ? "" : dateFormattingService.format(lastComm, DateFormatEnum.BOTH, userContext);
             dataRow[2] = dateStr; 
             
             ImmutableSet<ApplianceWithRuntime> appRuntime = simpleAA.getApplianceRuntimes();
@@ -346,7 +347,7 @@ public class DemandResponseControllerBase {
             } else {
                 for (ApplianceWithRuntime awr: appRuntime) {
                     Instant lnzrt = awr.getLastNonZeroRuntime();
-                    String lastRun = (lnzrt == null) ? "" : dateFormattingService.format(lnzrt, DateFormatEnum.BOTH, context);
+                    String lastRun = (lnzrt == null) ? "" : dateFormattingService.format(lnzrt, DateFormatEnum.BOTH, userContext);
                     dataRow[3] = lastRun;
                     ApplianceCategory appCat = appCatMap.get(awr.getApplianceCategoryId());
                     String appStr = (appCat == null) ? "" : appCat.getDisplayName();

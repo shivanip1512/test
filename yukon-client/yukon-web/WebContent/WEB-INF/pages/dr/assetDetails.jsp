@@ -9,77 +9,11 @@
 
 <cti:standardPage module="dr" page="${type}.assetDetails">
 
-<script type="text/javascript">
-jQuery(function() {
-    
-    // makes clicked button appear pushed in or popped out.
-    jQuery('[data-filter]').click(function(e) {
-        jQuery(e.currentTarget).toggleClass('on');
-    });
-    
-    // Gets string representation of the current filters.
-    function getFilter() {
-        var filter = [];
-        jQuery('[data-filter].on').each(function (idx, item) {
-            filter.push(jQuery(item).data('filter'));
-        });
-        if (filter.length > 0) {
-            return JSON.stringify(filter);
-        } else {
-            return null;
-        }
-    }
-    // Used for filtering...
-    jQuery(document).on('click', '[data-filter]', function (event) {
-        event.stopPropagation();
-        var data = {'assetId': '${assetId}', 'type': '${type}', 'filter': getFilter()};
-        if (${not empty itemsPerPage}) {
-            data.itemsPerPage = '${itemsPerPage}';
-        }
-        jQuery('.device-detail-table').load('page', data);
-    });
+<input id="assetId" type="hidden" value="${assetId}"/>
+<input id="assetType" type="hidden" value="${type}"/>
+<input id="itemsPerPage" type="hidden" value="${itemsPerPage}"/>
 
-    
-    // Used for paging...
-    jQuery(document).on('click', '.f-ajaxPaging', function(event) {
-        event.stopPropagation();
-        var url = jQuery(event.currentTarget).attr('data-url');
-        var data = {'filter': getFilter()}
-        jQuery.ajax({
-            url: url,
-            method: 'get',
-            data: data
-        }).done(function(data) {
-            var parent = jQuery(event.currentTarget).closest(".device-detail-table");
-            parent.html(data);
-        });
-        return false;
-    });
-
-    // Used for sorting...
-    jQuery(document).on('click', '.f-sortLink', function(event) {
-        event.stopPropagation();
-        var url = this.href;
-        var data = {'filter': getFilter()}
-        jQuery.ajax({
-            url: url,
-            method: 'get',
-            data: data
-        }).done(function(data) {
-            var parent = jQuery(event.currentTarget).closest(".device-detail-table");
-            parent.html(data);
-        });
-        return false;
-    });
-
-    // Used for download to csv...
-    jQuery('#dd-download').click(function(e) {
-        e.stopPropagation();
-        var url = "downloadToCsv?filter=" + getFilter() + "&assetId=${assetId}&type=${type}";
-        window.location.href = url;
-    });
-});
-</script>
+<cti:includeScript link="/JavaScript/drAssetDetails.js"/>
 
 <cti:msgScope paths="modules.operator.hardware.assetAvailability">
 <!-- Page Dropdown Actions -->

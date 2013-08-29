@@ -218,27 +218,27 @@ public class ControlAreaController extends DemandResponseControllerBase {
 
     @RequestMapping("/controlArea/detail")
     public String detail(int controlAreaId, ModelMap model,
-                         YukonUserContext context,
+                         YukonUserContext userContext,
             @ModelAttribute("backingBean") ProgramControllerHelper.ProgramListBackingBean backingBean,
                          BindingResult bindingResult, 
                          FlashScope flashScope) {
         
         DisplayablePao controlArea = controlAreaService.getControlArea(controlAreaId);
-        paoAuthorizationService.verifyAllPermissions(context.getYukonUser(),
+        paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(),
                                                      controlArea,
                                                      Permission.LM_VISIBLE);
         favoritesDao.detailPageViewed(controlAreaId);
-        boolean isFavorite = favoritesDao.isFavorite(controlAreaId, context.getYukonUser());
+        boolean isFavorite = favoritesDao.isFavorite(controlAreaId, userContext.getYukonUser());
         model.addAttribute("controlArea", controlArea);
         model.addAttribute("isFavorite", isFavorite);
 
         UiFilter<DisplayablePao> detailFilter = new ForControlAreaFilter(controlAreaId);
-        programControllerHelper.filterPrograms(model, context, backingBean,
+        programControllerHelper.filterPrograms(model, userContext, backingBean,
                                                bindingResult, detailFilter);
 
         addFilterErrorsToFlashScopeIfNecessary(model, bindingResult, flashScope);
         
-        model = getAssetAvailabilityInfo(controlArea, model, context);
+        model = getAssetAvailabilityInfo(controlArea, model, userContext);
         
         return "dr/controlArea/detail.jsp";
     }
@@ -251,17 +251,17 @@ public class ControlAreaController extends DemandResponseControllerBase {
                                final boolean descending,
                                int assetId, 
                                ModelMap model, 
-                               YukonUserContext context) {
+                               YukonUserContext userContext) {
         
         DisplayablePao controlArea = controlAreaService.getControlArea(assetId);
 
-        List<AssetAvailabilityDetails> resultsList = getResultsList(controlArea, context, null);
-        sortAssetDetails(resultsList, sortBy, descending, context);
+        List<AssetAvailabilityDetails> resultsList = getResultsList(controlArea, userContext, null);
+        sortAssetDetails(resultsList, sortBy, descending, userContext);
         
         SearchResult<AssetAvailabilityDetails> result = 
                 SearchResult.pageBasedForWholeList(page, itemsPerPage, resultsList);
 
-        model = getAssetAvailabilityInfo(controlArea, model, context);
+        model = getAssetAvailabilityInfo(controlArea, model, userContext);
         
         model.addAttribute("assetId", assetId);
         model.addAttribute("controlAreaId", assetId);
@@ -281,7 +281,7 @@ public class ControlAreaController extends DemandResponseControllerBase {
      */
     @RequestMapping("/controlArea/page")
     public String page(ModelMap model, 
-                       YukonUserContext context,
+                       YukonUserContext userContext,
                        String type,
                        String assetId,
                        @RequestParam(defaultValue="SERIAL_NUM") AssetDetailsColumn sortBy,
@@ -293,8 +293,8 @@ public class ControlAreaController extends DemandResponseControllerBase {
         JSONArray filters = (filter == null || filter.length() == 0) ? null : JSONArray.fromObject(filter);
         
         DisplayablePao controlArea = controlAreaService.getControlArea(Integer.parseInt(assetId));
-        List<AssetAvailabilityDetails> resultsList = getResultsList(controlArea, context, filters);
-        sortAssetDetails(resultsList, sortBy, descending, context);
+        List<AssetAvailabilityDetails> resultsList = getResultsList(controlArea, userContext, filters);
+        sortAssetDetails(resultsList, sortBy, descending, userContext);
 
         SearchResult<AssetAvailabilityDetails> result = 
                 SearchResult.pageBasedForWholeList(page, itemsPerPage, resultsList);
@@ -316,18 +316,18 @@ public class ControlAreaController extends DemandResponseControllerBase {
                               String type,
                               HttpServletRequest request,
                               HttpServletResponse response,
-                              YukonUserContext context) throws IOException {
+                              YukonUserContext userContext) throws IOException {
         
         DisplayablePao controlArea = controlAreaService.getControlArea(Integer.parseInt(assetId));
 
         // get the header row
-        String[] headerRow = getDownloadHeaderRow(context);
+        String[] headerRow = getDownloadHeaderRow(userContext);
 
         // get the data rows
-        List<String[]> dataRows = getDownloadDataRows(controlArea, filter, request, response, context);
+        List<String[]> dataRows = getDownloadDataRows(controlArea, filter, request, response, userContext);
         
-        String dateStr = dateFormattingService.format(new LocalDateTime(context.getJodaTimeZone()), 
-                                                      DateFormatEnum.BOTH, context);
+        String dateStr = dateFormattingService.format(new LocalDateTime(userContext.getJodaTimeZone()), 
+                                                      DateFormatEnum.BOTH, userContext);
         String fileName = type + "_" + controlArea.getName() + "_" + dateStr + ".csv";
         WebFileUtils.writeToCSV(response, headerRow, dataRows, fileName);
             

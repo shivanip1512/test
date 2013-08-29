@@ -106,25 +106,25 @@ public class ScenarioController extends DemandResponseControllerBase {
     @RequestMapping("/scenario/detail")
     public String detail(int scenarioId, ModelMap model,
             @ModelAttribute("backingBean") ProgramListBackingBean backingBean,
-            BindingResult bindingResult, YukonUserContext context,
+            BindingResult bindingResult, YukonUserContext userContext,
             FlashScope flashScope) {
         
         DisplayablePao scenario = scenarioDao.getScenario(scenarioId);
-        paoAuthorizationService.verifyAllPermissions(context.getYukonUser(), 
+        paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
                                                      scenario, 
                                                      Permission.LM_VISIBLE);
         favoritesDao.detailPageViewed(scenarioId);
-        boolean isFavorite = favoritesDao.isFavorite(scenarioId, context.getYukonUser());
+        boolean isFavorite = favoritesDao.isFavorite(scenarioId, userContext.getYukonUser());
         model.addAttribute("scenario", scenario);
         model.addAttribute("isFavorite", isFavorite);
 
         UiFilter<DisplayablePao> detailFilter = new ForScenarioFilter(scenarioId);
-        programControllerHelper.filterPrograms(model, context, backingBean,
+        programControllerHelper.filterPrograms(model, userContext, backingBean,
                                                bindingResult, detailFilter);
 
         addFilterErrorsToFlashScopeIfNecessary(model, bindingResult, flashScope);
         
-        model = getAssetAvailabilityInfo(scenario, model, context);
+        model = getAssetAvailabilityInfo(scenario, model, userContext);
         
         return "dr/scenario/detail.jsp";
     }
@@ -136,17 +136,17 @@ public class ScenarioController extends DemandResponseControllerBase {
                                final boolean descending,
                                int assetId, 
                                ModelMap model, 
-                               YukonUserContext context) {
+                               YukonUserContext userContext) {
         
         DisplayablePao scenario = scenarioService.getScenario(assetId);
 
-        List<AssetAvailabilityDetails> resultsList = getResultsList(scenario, context, null);
-        sortAssetDetails(resultsList, sortBy, descending, context);
+        List<AssetAvailabilityDetails> resultsList = getResultsList(scenario, userContext, null);
+        sortAssetDetails(resultsList, sortBy, descending, userContext);
         
         SearchResult<AssetAvailabilityDetails> result = 
                 SearchResult.pageBasedForWholeList(page, itemsPerPage, resultsList);
 
-        model = getAssetAvailabilityInfo(scenario, model, context);
+        model = getAssetAvailabilityInfo(scenario, model, userContext);
         
         model.addAttribute("assetId", assetId);
         model.addAttribute("scenarioId", assetId);
@@ -165,7 +165,7 @@ public class ScenarioController extends DemandResponseControllerBase {
      */
     @RequestMapping("/scenario/page")
     public String page(ModelMap model, 
-                       YukonUserContext context,
+                       YukonUserContext userContext,
                        String type,
                        String assetId,
                        @RequestParam(defaultValue="SERIAL_NUM") AssetDetailsColumn sortBy,
@@ -177,8 +177,8 @@ public class ScenarioController extends DemandResponseControllerBase {
         JSONArray filters = (filter == null || filter.length() == 0) ? null : JSONArray.fromObject(filter);
 
         DisplayablePao scenario = scenarioService.getScenario(Integer.parseInt(assetId));
-        List<AssetAvailabilityDetails> resultsList = getResultsList(scenario, context, filters);
-        sortAssetDetails(resultsList, sortBy, descending, context);
+        List<AssetAvailabilityDetails> resultsList = getResultsList(scenario, userContext, filters);
+        sortAssetDetails(resultsList, sortBy, descending, userContext);
 
         SearchResult<AssetAvailabilityDetails> result = 
                 SearchResult.pageBasedForWholeList(page, itemsPerPage, resultsList);
@@ -200,18 +200,18 @@ public class ScenarioController extends DemandResponseControllerBase {
                               String type,
                               HttpServletRequest request,
                               HttpServletResponse response,
-                              YukonUserContext context) throws IOException {
+                              YukonUserContext userContext) throws IOException {
         
         DisplayablePao scenario = scenarioService.getScenario(Integer.parseInt(assetId));
 
         // get the header row
-        String[] headerRow = getDownloadHeaderRow(context);
+        String[] headerRow = getDownloadHeaderRow(userContext);
 
         // get the data rows
-        List<String[]> dataRows = getDownloadDataRows(scenario, filter, request, response, context);
+        List<String[]> dataRows = getDownloadDataRows(scenario, filter, request, response, userContext);
         
-        String dateStr = dateFormattingService.format(new LocalDateTime(context.getJodaTimeZone()), 
-                                                      DateFormatEnum.BOTH, context);
+        String dateStr = dateFormattingService.format(new LocalDateTime(userContext.getJodaTimeZone()), 
+                                                      DateFormatEnum.BOTH, userContext);
         String fileName = type + "_" + scenario.getName() + "_" + dateStr + ".csv";
         WebFileUtils.writeToCSV(response, headerRow, dataRows, fileName);
             

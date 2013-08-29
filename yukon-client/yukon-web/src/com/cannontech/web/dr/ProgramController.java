@@ -85,29 +85,29 @@ public class ProgramController extends ProgramControllerBase {
     @RequestMapping
     public String detail(int programId, ModelMap model,
             @ModelAttribute("backingBean") LoadGroupListBackingBean backingBean,
-            BindingResult bindingResult, YukonUserContext context,
+            BindingResult bindingResult, YukonUserContext userContext,
             FlashScope flashScope) {
         
         DisplayablePao program = programService.getProgram(programId);
-        paoAuthorizationService.verifyAllPermissions(context.getYukonUser(), 
+        paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
                                                      program, 
                                                      Permission.LM_VISIBLE);
         favoritesDao.detailPageViewed(programId);
-        boolean isFavorite = favoritesDao.isFavorite(programId, context.getYukonUser());
+        boolean isFavorite = favoritesDao.isFavorite(programId, userContext.getYukonUser());
         model.addAttribute("program", program);
         model.addAttribute("isFavorite", isFavorite);
 
         UiFilter<DisplayablePao> detailFilter = new LoadGroupsForProgramFilter(programId);
-        loadGroupControllerHelper.filterGroups(model, context, backingBean,
+        loadGroupControllerHelper.filterGroups(model, userContext, backingBean,
                                                bindingResult, detailFilter, flashScope);
 
         DisplayablePao parentControlArea =
-            controlAreaService.findControlAreaForProgram(context, programId);
+            controlAreaService.findControlAreaForProgram(userContext, programId);
         model.addAttribute("parentControlArea", parentControlArea);
         List<Scenario> parentScenarios = scenarioDao.findScenariosForProgram(programId);
         model.addAttribute("parentScenarios", parentScenarios);
         
-        model = getAssetAvailabilityInfo(program, model, context);
+        model = getAssetAvailabilityInfo(program, model, userContext);
         
         return "dr/program/detail.jsp";
     }
@@ -119,17 +119,17 @@ public class ProgramController extends ProgramControllerBase {
                                final boolean descending,
                                int assetId, 
                                ModelMap model, 
-                               YukonUserContext context) {
+                               YukonUserContext userContext) {
         
         DisplayablePao program = programService.getProgram(assetId);
 
-        List<AssetAvailabilityDetails> resultsList = getResultsList(program, context, null);
-        sortAssetDetails(resultsList, sortBy, descending, context);
+        List<AssetAvailabilityDetails> resultsList = getResultsList(program, userContext, null);
+        sortAssetDetails(resultsList, sortBy, descending, userContext);
         
         SearchResult<AssetAvailabilityDetails> result = 
                 SearchResult.pageBasedForWholeList(page, itemsPerPage, resultsList);
 
-        model = getAssetAvailabilityInfo(program, model, context);
+        model = getAssetAvailabilityInfo(program, model, userContext);
         
         model.addAttribute("assetId", assetId);
         model.addAttribute("programId", assetId);
@@ -148,7 +148,7 @@ public class ProgramController extends ProgramControllerBase {
      */
     @RequestMapping("/program/page")
     public String page(ModelMap model, 
-                       YukonUserContext context,
+                       YukonUserContext userContext,
                        String type,
                        String assetId,
                        @RequestParam(defaultValue="SERIAL_NUM") AssetDetailsColumn sortBy,
@@ -160,8 +160,8 @@ public class ProgramController extends ProgramControllerBase {
         JSONArray filters = (filter == null || filter.length() == 0) ? null : JSONArray.fromObject(filter);
 
         DisplayablePao program = programService.getProgram(Integer.parseInt(assetId));
-        List<AssetAvailabilityDetails> resultsList = getResultsList(program, context, filters);
-        sortAssetDetails(resultsList, sortBy, descending, context);
+        List<AssetAvailabilityDetails> resultsList = getResultsList(program, userContext, filters);
+        sortAssetDetails(resultsList, sortBy, descending, userContext);
 
         SearchResult<AssetAvailabilityDetails> result = 
                 SearchResult.pageBasedForWholeList(page, itemsPerPage, resultsList);
@@ -184,18 +184,18 @@ public class ProgramController extends ProgramControllerBase {
                               String type,
                               HttpServletRequest request,
                               HttpServletResponse response,
-                              YukonUserContext context) throws IOException {
+                              YukonUserContext userContext) throws IOException {
         
         DisplayablePao program = programService.getProgram(Integer.parseInt(assetId));
 
         // get the header row
-        String[] headerRow = getDownloadHeaderRow(context);
+        String[] headerRow = getDownloadHeaderRow(userContext);
 
         // get the data rows
-        List<String[]> dataRows = getDownloadDataRows(program, filter, request, response, context);
+        List<String[]> dataRows = getDownloadDataRows(program, filter, request, response, userContext);
         
-        String dateStr = dateFormattingService.format(new LocalDateTime(context.getJodaTimeZone()), 
-                                                      DateFormatEnum.BOTH, context);
+        String dateStr = dateFormattingService.format(new LocalDateTime(userContext.getJodaTimeZone()), 
+                                                      DateFormatEnum.BOTH, userContext);
         String fileName = type + "_" + program.getName() + "_" + dateStr + ".csv";
         WebFileUtils.writeToCSV(response, headerRow, dataRows, fileName);
             
