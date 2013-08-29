@@ -18,8 +18,6 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.util.SqlFragment;
-import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.LMGearDao;
 import com.cannontech.database.FieldMapper;
@@ -83,7 +81,8 @@ public class FormulaDaoImpl implements FormulaDao {
     // First-level CRUD operations (Formula objects)
     @Override
     public Formula getFormulaById(int formulaId) {
-        SqlFragment whereClause = new SqlFragment("WHERE EstimatedLoadFormulaId = ?", formulaId);
+        SqlStatementBuilder whereClause = new SqlStatementBuilder();
+        whereClause.append("WHERE EstimatedLoadFormulaId").eq(formulaId);
 
         SqlStatementBuilder sql = getFormulaQuery(whereClause);
         Map<Integer, ImmutableList<FormulaFunction>> functions = getFunctions(whereClause);
@@ -94,7 +93,7 @@ public class FormulaDaoImpl implements FormulaDao {
         return yukonJdbcTemplate.queryForLimitedResults(sql, formulaRowMapper, 1).get(0);
     }
 
-    private SqlStatementBuilder getFormulaQuery(SqlFragmentSource whereClause) {
+    private SqlStatementBuilder getFormulaQuery(SqlStatementBuilder whereClause) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT EstimatedLoadFormulaId, Name, FormulaType, CalculationType, FunctionIntercept FROM");
         sql.append(formulaTableName);
@@ -148,7 +147,7 @@ public class FormulaDaoImpl implements FormulaDao {
     }
 
     // Second-level CRUD operations (FormulaFunction and FormulaLookupTable objects).
-    private Map<Integer, ImmutableList<FormulaFunction>> getFunctions(SqlFragmentSource whereClause) {
+    private Map<Integer, ImmutableList<FormulaFunction>> getFunctions(SqlStatementBuilder whereClause) {
         Map<Integer, ImmutableList<FormulaFunction>> functionsByFormulaId = new HashMap<>();
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -179,16 +178,16 @@ public class FormulaDaoImpl implements FormulaDao {
     }
 
     /** Returns a Map of FormulaId to a List of its lookup tables for all Double input types. */
-    private Map<Integer, ImmutableList<FormulaLookupTable<Double>>> getLookupTables(SqlFragmentSource whereClause) {
-        SqlFragment entriesWhereClause;
+    private Map<Integer, ImmutableList<FormulaLookupTable<Double>>> getLookupTables(SqlStatementBuilder whereClause) {
+        SqlStatementBuilder entriesWhereClause;
+        entriesWhereClause = new SqlStatementBuilder();
+        entriesWhereClause.append("WHERE EstimatedLoadLookupTableId IN ");
+        entriesWhereClause.append("(SELECT EstimatedLoadLookupTableId FROM EstimatedLoadLookupTable ");
         if (whereClause != null) {
-             entriesWhereClause = new SqlFragment("WHERE EstimatedLoadLookupTableId IN "
-                    + "(SELECT EstimatedLoadLookupTableId FROM EstimatedLoadLookupTable " + whereClause.getSql()
-                    + " AND InputType != 'TIME')", 
-                    whereClause.getArguments());
+            entriesWhereClause.append(whereClause);
+            entriesWhereClause.append("AND InputType").neq_k(InputType.TIME).append(")"); 
         } else {
-            entriesWhereClause = new SqlFragment("WHERE EstimatedLoadLookupTableId IN "
-                    + "(SELECT EstimatedLoadLookupTableId FROM EstimatedLoadLookupTable WHERE InputType != 'TIME')");
+            entriesWhereClause.append("WHERE InputType").neq_k(InputType.TIME).append(")");
         }
         Map<Integer, Map<String, Double>> tableEntries = getTableEntries(entriesWhereClause);
 
@@ -198,9 +197,9 @@ public class FormulaDaoImpl implements FormulaDao {
         sql.append("FROM").append(lookupTableName);
         if (whereClause != null) {
             sql.append(whereClause);
-            sql.append("AND InputType != 'TIME'");
+            sql.append("AND InputType").neq_k(InputType.TIME);
         } else {
-            sql.append("WHERE InputType != 'TIME'");
+            sql.append("WHERE InputType").neq_k(InputType.TIME);
         }
 
         LookupTableRowHandler lookupTableRowMapper = new LookupTableRowHandler(tableEntries);
@@ -216,28 +215,28 @@ public class FormulaDaoImpl implements FormulaDao {
     }
 
     /** Returns a Map of FormulaId to a List of its lookup tables for all Double input types. */
-    private Map<Integer, ImmutableList<FormulaLookupTable<LocalTime>>> getTimeLookupTables(SqlFragmentSource whereClause) {
-        SqlFragment entriesWhereClause;
+    private Map<Integer, ImmutableList<FormulaLookupTable<LocalTime>>> getTimeLookupTables(SqlStatementBuilder whereClause) {
+        SqlStatementBuilder entriesWhereClause;
+        entriesWhereClause = new SqlStatementBuilder();
+        entriesWhereClause.append("WHERE EstimatedLoadLookupTableId IN ");
+        entriesWhereClause.append("(SELECT EstimatedLoadLookupTableId FROM EstimatedLoadLookupTable ");
         if (whereClause != null) {
-             entriesWhereClause = new SqlFragment("WHERE EstimatedLoadLookupTableId IN "
-                    + "(SELECT EstimatedLoadLookupTableId FROM EstimatedLoadLookupTable " + whereClause.getSql()
-                    + " AND InputType = 'TIME')", 
-                    whereClause.getArguments());
+            entriesWhereClause.append(whereClause);
+            entriesWhereClause.append("AND InputType").eq_k(InputType.TIME).append(")"); 
         } else {
-            entriesWhereClause = new SqlFragment("WHERE EstimatedLoadLookupTableId IN "
-                    + "(SELECT EstimatedLoadLookupTableId FROM EstimatedLoadLookupTable WHERE InputType = 'TIME')");
+            entriesWhereClause.append("WHERE InputType").eq_k(InputType.TIME).append(")");
         }
         Map<Integer, Map<String, Double>> tableEntries = getTableEntries(entriesWhereClause);
-
+        
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT EstimatedLoadLookupTableId, EstimatedLoadFormulaId,");
         sql.append(       "Name, InputType, InputMin, InputMax, InputPointId");
         sql.append("FROM").append(lookupTableName);
         if (whereClause != null) {
             sql.append(whereClause);
-            sql.append("AND InputType = 'TIME'");
+            sql.append("AND InputType").eq_k(InputType.TIME);
         } else {
-            sql.append("WHERE InputType = 'TIME'");
+            sql.append("WHERE InputType").eq_k(InputType.TIME);
         }
 
         LookupTableRowHandler lookupTableRowMapper = new LookupTableRowHandler(tableEntries);
@@ -292,12 +291,12 @@ public class FormulaDaoImpl implements FormulaDao {
         yukonJdbcTemplate.update(sql);
     }
 
-    private Map<Integer, Map<String, Double>> getTableEntries(SqlFragmentSource whereClause) {
+    private Map<Integer, Map<String, Double>> getTableEntries(SqlStatementBuilder entriesWhereClause) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT EstimatedLoadLookupTableId, EntryKey, EntryValue");
         sql.append("FROM").append(tableEntryTableName);
-        if (whereClause != null) {
-            sql.append(whereClause);
+        if (entriesWhereClause != null) {
+            sql.append(entriesWhereClause);
         }
         LookupTableEntryRowHandler entryMapper = new LookupTableEntryRowHandler();
         yukonJdbcTemplate.query(sql, entryMapper);
@@ -412,7 +411,8 @@ public class FormulaDaoImpl implements FormulaDao {
         Multimap<Integer, FormulaFunction> functionsByFormulaId = HashMultimap.create();
         @Override
         public void processRow(YukonResultSet rs) throws SQLException {
-            FormulaInput<Double> formulaInput = mapFormulaInput(rs).castAsDouble();
+            InputType inputType = rs.getEnum("InputType", FormulaInput.InputType.class);
+            FormulaInput<Double> formulaInput = mapFormulaInput(rs, inputType, Double.class);
             
             Integer formulaId = rs.getInt("EstimatedLoadFormulaId");
             functionsByFormulaId.put(formulaId, new FormulaFunction(
@@ -436,35 +436,38 @@ public class FormulaDaoImpl implements FormulaDao {
 
         @Override
         public void processRow(YukonResultSet rs) throws SQLException {
-            FormulaInput<Object> formulaInput = mapFormulaInput(rs);
-            PropertyEditor typeConverter = formulaInput.getInputType().makeTypeConverter();
+            InputType inputType = rs.getEnum("InputType", FormulaInput.InputType.class);
 
             Integer tableId = rs.getInt("EstimatedLoadLookupTableId");
             Integer formulaId = rs.getInt("EstimatedLoadFormulaId");
-            if (formulaInput.getInputType() == InputType.TIME) {
+            if (inputType == InputType.TIME) {
+                FormulaInput<LocalTime> formulaInput = mapFormulaInput(rs, inputType, LocalTime.class);
+                PropertyEditor typeConverter = formulaInput.getInputType().makeTypeConverter();
                 ImmutableMap.Builder<LocalTime, Double> entries = ImmutableMap.builder();
                 for (Map.Entry<String, Double> entry : entriesByTableId.get(tableId).entrySet()) {
                     typeConverter.setAsText(entry.getKey());
                     entries.put((LocalTime) typeConverter.getValue(), entry.getValue());
                 }
-                FormulaLookupTable<LocalTime> table = new FormulaLookupTable<>(
+                FormulaLookupTable<LocalTime> table = new FormulaLookupTable<LocalTime>(
                         tableId,
                         formulaId,
                         rs.getString("Name"),
-                        formulaInput.castAsLocalTime(),
+                        formulaInput,
                         entries.build());
                 timeLookupTablesByFormulaId.put(formulaId, table);
             } else {
+                FormulaInput<Double> formulaInput = mapFormulaInput(rs, inputType, Double.class);
+                PropertyEditor typeConverter = formulaInput.getInputType().makeTypeConverter();
                 ImmutableMap.Builder<Double, Double> entries = ImmutableMap.builder();
                 for (Map.Entry<String, Double> entry : entriesByTableId.get(tableId).entrySet()) {
                     typeConverter.setAsText(entry.getKey());
                     entries.put((Double) typeConverter.getValue(), entry.getValue());
                 }
-                FormulaLookupTable<Double> table = new FormulaLookupTable<>(
+                FormulaLookupTable<Double> table = new FormulaLookupTable<Double>(
                         tableId,
                         formulaId,
                         rs.getString("Name"),
-                        formulaInput.castAsDouble(),
+                        formulaInput,
                         entries.build());
                 lookupTablesByFormulaId.put(formulaId, table);
             }
@@ -486,15 +489,16 @@ public class FormulaDaoImpl implements FormulaDao {
         }
     }
 
-    private static FormulaInput<Object> mapFormulaInput(YukonResultSet rs) throws SQLException {
-        InputType inputType = rs.getEnum("InputType", FormulaInput.InputType.class);
+    private static <T extends Comparable<? super T>> FormulaInput<T> mapFormulaInput(YukonResultSet rs,
+            InputType inputType, Class<T> klass) throws SQLException {
         PropertyEditor typeConverter = inputType.makeTypeConverter();
         typeConverter.setAsText(rs.getString("InputMin"));
         Object inputMin = typeConverter.getValue();
         typeConverter.setAsText(rs.getString("InputMax"));
         Object inputMax = typeConverter.getValue();
 
-        return new FormulaInput<>(inputType, inputMin, inputMax, rs.getNullableInt("InputPointId"));
+        return new FormulaInput<T>(inputType, klass.cast(inputMin), klass.cast(inputMax),
+                rs.getNullableInt("InputPointId"));
     }
 
     // Setting up SimpleTableAccessTemplate objects.

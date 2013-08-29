@@ -2,7 +2,7 @@ package com.cannontech.dr.estimatedload;
 
 import com.google.common.collect.ImmutableMap;
 
-public final class FormulaLookupTable<T> {
+public final class FormulaLookupTable<T extends Comparable<? super T>> {
 
     private final Integer lookupTableId;
     private final Integer formulaId;

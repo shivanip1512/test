@@ -12,7 +12,7 @@ import org.springframework.beans.propertyeditors.CustomNumberEditor;
 
 import com.cannontech.common.i18n.DisplayableEnum;
 
-public final class FormulaInput<T> {
+public final class FormulaInput<T extends Comparable<? super T>> {
 
     public enum InputType implements DisplayableEnum {
         TEMP_C,
@@ -91,13 +91,5 @@ public final class FormulaInput<T> {
 
     public Integer getPointId() {
         return pointId;
-    }
-    
-    public FormulaInput<Double> castAsDouble() {
-        return new FormulaInput<>(inputType, (Double) min, (Double) max, pointId);
-    }
-    
-    public FormulaInput<LocalTime> castAsLocalTime() {
-        return new FormulaInput<>(inputType, (LocalTime) min, (LocalTime) max, pointId);
     }
 }
