@@ -168,7 +168,7 @@ CREATE TABLE UserSubscription (
     UserId             NUMBER NOT NULL,
     SubscriptionType   VARCHAR2(64) NOT NULL,
     RefId              NUMBER NOT NULL,
-    CONSTRAINT PK_UserSubscription PRIMARY KEY (UserMonitorId)
+    CONSTRAINT PK_UserSubscription PRIMARY KEY (UserSubscriptionId)
 );
 ALTER TABLE UserSubscription
    ADD CONSTRAINT FK_UserSubscription_YukonUser FOREIGN KEY (UserId)
