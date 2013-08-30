@@ -40,6 +40,7 @@ test_rwutil.obj \
 test_string_utility.obj \
 test_timeperiod.obj \
 test_utility.obj \
+test_words.obj \
 
 SQLAPILIB=$(SQLAPI)\lib\$(SQLAPI_LIB).lib
 
