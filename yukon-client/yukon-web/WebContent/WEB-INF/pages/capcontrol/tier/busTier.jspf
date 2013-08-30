@@ -28,7 +28,7 @@
 <%--             <cti:url value="${onelineCBCServlet}" var="oneLineLink" htmlEscape="true"> --%>
 <%--                 <cti:param name="id" value="${subbusId}"/> --%>
 <%--                 <cti:param name="redirectURL" value="${fullURL}"/> --%>
-<!--             </cti:url> -->
+<%--             </cti:url> --%>
             <cti:url value="/capcontrol/ivvc/bus/detail" var="ivvcLink" htmlEscape="true">
                 <cti:param name="subBusId" value="${subbusId}"/>
                 <cti:param name="isSpecialArea" value="${isSpecialArea}"/>
@@ -69,7 +69,7 @@
                     <cti:icon nameKey="location" href="${locationLink}" icon="icon-interstate"/>
 <%--                     <c:if test="${!hideOneLine}"> --%>
 <%--                         <cti:icon nameKey="oneline" href="${oneLineLink}" icon="icon-oneline"/> --%>
-<!--                     </c:if> -->
+<%--                     </c:if> --%>
                     <c:if test="${viewableSubBus.ivvcControlled}">
                         <cti:icon nameKey="ivvc" href="${ivvcLink}" icon="icon-ivvc"/>
                     </c:if>
