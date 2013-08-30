@@ -20,6 +20,7 @@ import com.cannontech.common.device.config.model.DeviceConfiguration;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.device.config.model.VerifyResult;
 import com.cannontech.common.device.config.service.DeviceConfigService;
+import com.cannontech.common.device.config.service.DeviceConfigurationService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
@@ -36,6 +37,7 @@ public class ConfigWidget extends WidgetControllerBase {
     @Autowired private MeterDao meterDao;
     @Autowired private DeviceConfigurationDao deviceConfigurationDao;
     @Autowired private DeviceConfigService deviceConfigService;
+    @Autowired private DeviceConfigurationService deviceConfigurationService;
     
     /**
      * This method renders the default deviceGroupWidget
@@ -86,9 +88,9 @@ public class ConfigWidget extends WidgetControllerBase {
         final int configId = ServletRequestUtils.getRequiredIntParameter(request, "configuration");
         if (configId > -1) {
             DeviceConfiguration configuration = deviceConfigurationDao.getDeviceConfiguration(configId);
-            deviceConfigurationDao.assignConfigToDevice(configuration, meter);
+            deviceConfigurationService.assignConfigToDevice(configuration, meter);
         } else {
-            deviceConfigurationDao.unassignConfig(meter);
+            deviceConfigurationService.unassignConfig(meter);
         }
         
         ModelAndView mav = getConfigModelAndView(request);
@@ -99,7 +101,7 @@ public class ConfigWidget extends WidgetControllerBase {
     public ModelAndView unassignConfig(HttpServletRequest request, HttpServletResponse response) throws Exception {
         Meter meter = getMeter(request);
         
-        deviceConfigurationDao.unassignConfig(meter);
+        deviceConfigurationService.unassignConfig(meter);
         
         ModelAndView mav = getConfigModelAndView(request);
         return mav;
