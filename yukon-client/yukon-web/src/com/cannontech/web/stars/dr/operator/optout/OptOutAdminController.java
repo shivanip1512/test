@@ -79,6 +79,7 @@ public class OptOutAdminController {
         		YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CHANGE_ENABLE,
         		YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CHANGE_COUNTS,
         		YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CANCEL_CURRENT);
+    	        // ADMIN_VIEW_OPT_OUT_EVENTS property is checked in the setupScheduledOptOuts method which loads the events. 
     	
     	if(yukonEnergyCompanyService.isEnergyCompanyOperator(user)){
         	LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
@@ -272,44 +273,46 @@ public class OptOutAdminController {
     }
 
     public void setupScheduledOptOuts(LiteYukonUser user, ModelMap map) throws Exception {
+
+        // Only load these events when they have the property set
+    	if (rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_VIEW_OPT_OUT_EVENTS, user)) {
     	
-    	rolePropertyDao.verifyProperty(YukonRoleProperty.ADMIN_VIEW_OPT_OUT_EVENTS, user);
+        	LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
+        	List<OptOutEvent> scheduledEvents = 
+        		optOutEventDao.getAllScheduledOptOutEvents(energyCompany);
+        	
+        	List<ScheduledOptOutEventDto> events = new ArrayList<ScheduledOptOutEventDto>();
+        	for(OptOutEvent event : scheduledEvents) {
+        		
+        		ScheduledOptOutEventDto eventDto = new ScheduledOptOutEventDto();
+        		eventDto.setStartDate(event.getStartDate());
+        		eventDto.setStopDate(event.getStopDate());
+        		
+        		Integer accountId = event.getCustomerAccountId();
+        		CustomerAccount customerAccount = customerAccountDao.getById(accountId);
+        		eventDto.setAccountNumber(customerAccount.getAccountNumber());
+        		
+        		Integer inventoryId = event.getInventoryId();
+        		LiteLmHardwareBase inventory = 
+        			(LiteLmHardwareBase) inventoryBaseDao.getByInventoryId(inventoryId);
+        		eventDto.setSerialNumber(inventory.getManufacturerSerialNumber());
+        		
+        		events.add(eventDto);
+        	}
     	
-    	LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
-    	List<OptOutEvent> scheduledEvents = 
-    		optOutEventDao.getAllScheduledOptOutEvents(energyCompany);
+        	map.addAttribute("scheduledEvents", events);
     	
-    	List<ScheduledOptOutEventDto> events = new ArrayList<ScheduledOptOutEventDto>();
-    	for(OptOutEvent event : scheduledEvents) {
-    		
-    		ScheduledOptOutEventDto eventDto = new ScheduledOptOutEventDto();
-    		eventDto.setStartDate(event.getStartDate());
-    		eventDto.setStopDate(event.getStopDate());
-    		
-    		Integer accountId = event.getCustomerAccountId();
-    		CustomerAccount customerAccount = customerAccountDao.getById(accountId);
-    		eventDto.setAccountNumber(customerAccount.getAccountNumber());
-    		
-    		Integer inventoryId = event.getInventoryId();
-    		LiteLmHardwareBase inventory = 
-    			(LiteLmHardwareBase) inventoryBaseDao.getByInventoryId(inventoryId);
-    		eventDto.setSerialNumber(inventory.getManufacturerSerialNumber());
-    		
-    		events.add(eventDto);
+        	// Get the customer search by list for search drop down box
+        	YukonSelectionList yukonSelectionList = energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SEARCH_TYPE);
+        	List<YukonListEntry> customerSearchList = new ArrayList<YukonListEntry>();
+    		List<YukonListEntry> yukonListEntries = yukonSelectionList.getYukonListEntries();
+    		for (YukonListEntry entry : yukonListEntries) {
+    			if (entry.getYukonDefID() != YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_METER_NO) {
+    				customerSearchList.add(entry);
+    			}
+    		}
+    		map.addAttribute("customerSearchList", customerSearchList);
     	}
-    	
-    	map.addAttribute("scheduledEvents", events);
-    	
-    	// Get the customer search by list for search drop down box
-    	YukonSelectionList yukonSelectionList = energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SEARCH_TYPE);
-    	List<YukonListEntry> customerSearchList = new ArrayList<YukonListEntry>();
-		List<YukonListEntry> yukonListEntries = yukonSelectionList.getYukonListEntries();
-		for (YukonListEntry entry : yukonListEntries) {
-			if (entry.getYukonDefID() != YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_METER_NO) {
-				customerSearchList.add(entry);
-			}
-		}
-		map.addAttribute("customerSearchList", customerSearchList);
     }
     
     /**
