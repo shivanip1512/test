@@ -11,6 +11,7 @@ import com.cannontech.common.csvImport.ImportAction;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.dao.InvalidDeviceTypeException;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
+import com.cannontech.common.device.config.service.DeviceConfigurationService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
@@ -27,6 +28,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 
     @Autowired private PaoPersistenceService paoPersistenceService;
     @Autowired private DeviceConfigurationDao deviceConfigurationDao;
+    @Autowired private DeviceConfigurationService deviceConfigurationService;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
 	
     @Override
@@ -59,7 +61,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
             
             SimpleDevice device = new SimpleDevice(pao.getPaoIdentifier());
             try {
-                deviceConfigurationDao.assignConfigToDevice(config, device);
+                deviceConfigurationService.assignConfigToDevice(config, device);
             } catch (InvalidDeviceTypeException e) {
                 /*
                  *  This only happens if config is null for a DNP CBC or if we try to assign a

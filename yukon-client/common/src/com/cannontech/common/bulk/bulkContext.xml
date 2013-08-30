@@ -34,9 +34,7 @@
     <bean id="objectMapperFactory" class="com.cannontech.common.bulk.mapper.ObjectMapperFactoryImpl">
     </bean>
     
-    <bean id="processorFactory" class="com.cannontech.common.bulk.processor.ProcessorFactoryImpl">
-        <property name="deviceConfigurationDao" ref="deviceConfigurationDao" />
-    </bean>
+    <bean id="processorFactory" class="com.cannontech.common.bulk.processor.ProcessorFactoryImpl"/>
     
     <bean id="bulkImportDataDao" class="com.cannontech.common.bulk.importdata.dao.impl.BulkImportDataDaoImpl">
         <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>

@@ -1,8 +1,10 @@
 package com.cannontech.common.bulk.processor;
 
-import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.cannontech.common.device.config.dao.InvalidDeviceTypeException;
 import com.cannontech.common.device.config.model.DeviceConfiguration;
+import com.cannontech.common.device.config.service.DeviceConfigurationService;
 import com.cannontech.common.device.model.SimpleDevice;
 
 /**
@@ -10,18 +12,14 @@ import com.cannontech.common.device.model.SimpleDevice;
  */
 public class ProcessorFactoryImpl implements ProcessorFactory {
 
-    private DeviceConfigurationDao deviceConfigurationDao = null;
-
-    public void setDeviceConfigurationDao(DeviceConfigurationDao deviceConfigurationDao) {
-        this.deviceConfigurationDao = deviceConfigurationDao;
-    }
+    @Autowired private DeviceConfigurationService deviceConfigurationService = null;
 
     @Override
     public Processor<SimpleDevice> createAssignConfigurationToYukonDeviceProcessor(final DeviceConfiguration configuration) {
         return new SingleProcessor<SimpleDevice>() {
             public void process(SimpleDevice device) throws ProcessingException {
                 try {
-                    deviceConfigurationDao.assignConfigToDevice(configuration, device);
+                    deviceConfigurationService.assignConfigToDevice(configuration, device);
                 } catch (InvalidDeviceTypeException e) {
                     throw new ProcessingException(e.getMessage());
                 }
@@ -34,7 +32,7 @@ public class ProcessorFactoryImpl implements ProcessorFactory {
         return new SingleProcessor<SimpleDevice>() {
             public void process(SimpleDevice device) throws ProcessingException {
                 try {
-                    deviceConfigurationDao.unassignConfig(device);
+                    deviceConfigurationService.unassignConfig(device);
                 } catch (InvalidDeviceTypeException e) {
                     throw new ProcessingException(e.getMessage());
                 }

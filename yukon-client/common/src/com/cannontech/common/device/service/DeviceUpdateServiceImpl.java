@@ -20,6 +20,7 @@ import com.cannontech.common.device.commands.impl.CommandCallbackBase;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.dao.InvalidDeviceTypeException;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
+import com.cannontech.common.device.config.service.DeviceConfigurationService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
@@ -58,7 +59,6 @@ import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.PAOFactory;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointUtil;
 import com.cannontech.database.db.DBPersistent;
@@ -82,6 +82,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
     @Autowired private DbChangeManager dbChangeManager;
     @Autowired private DlcAddressRangeService dlcAddressRangeService;
     @Autowired private DeviceConfigurationDao deviceConfigurationDao;
+    @Autowired private DeviceConfigurationService deviceConfigurationService;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     
     private final Logger log = YukonLogManager.getLogger(DeviceUpdateServiceImpl.class);
@@ -198,7 +199,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
                 deviceConfigurationDao.isTypeSupportedByConfiguration(config, device.getPaoIdentifier().getPaoType()); 
             if (!configSupported) {
                 try {
-                    deviceConfigurationDao.unassignConfig(device);
+                    deviceConfigurationService.unassignConfig(device);
                 } catch(InvalidDeviceTypeException e) {
                     log.error("Unable to remove device config on type change.", e);
                 }

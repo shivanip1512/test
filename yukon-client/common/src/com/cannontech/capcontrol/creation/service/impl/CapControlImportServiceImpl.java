@@ -28,6 +28,7 @@ import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.dao.InvalidDeviceTypeException;
 import com.cannontech.common.device.config.model.DeviceConfiguration;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
+import com.cannontech.common.device.config.service.DeviceConfigurationService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.model.PaoProperty;
 import com.cannontech.common.model.PaoPropertyName;
@@ -72,6 +73,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
     @Autowired private FeederDao feederDao;
     @Autowired private SubstationBusDao substationBusDao;
     @Autowired private DeviceConfigurationDao deviceConfigurationDao;
+    @Autowired private DeviceConfigurationService deviceConfigurationService;
     @Autowired private PaoPropertyDao paoPropertyDao;
 
     private abstract class PaoRetriever {
@@ -241,7 +243,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
             DeviceConfiguration config = deviceConfigurationDao.getDefaultDNPConfiguration();
             try {
                 SimpleDevice device = new SimpleDevice(pao.getPaoIdentifier());
-                deviceConfigurationDao.assignConfigToDevice(config, device);
+                deviceConfigurationService.assignConfigToDevice(config, device);
             } catch (InvalidDeviceTypeException e) {
                 /*
                  *  This can only happen if there wasn't a default configuration in the database.
@@ -355,7 +357,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
             LightDeviceConfiguration config = deviceConfigurationDao.findConfigurationForDevice(device);
             YukonDevice newDevice = new SimpleDevice(template.getPaoIdentifier());
             try {
-                deviceConfigurationDao.assignConfigToDevice(config, newDevice);
+                deviceConfigurationService.assignConfigToDevice(config, newDevice);
             } catch (InvalidDeviceTypeException e) {
                 log.error("An error occurred attempting to assign a DNP configuration to CBC '" +
                           template.getPaoName() + "'. Please assign this device a configuration manually.", e);

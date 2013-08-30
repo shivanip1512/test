@@ -17,6 +17,7 @@ import org.springframework.dao.DataAccessException;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.dao.InvalidDeviceTypeException;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
+import com.cannontech.common.device.config.service.DeviceConfigurationService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
@@ -51,6 +52,7 @@ public final class DatabaseEditorUtil {
     private static final DBPersistentDao dbPersistentDao = YukonSpringHook.getBean("dbPersistentDao", DBPersistentDao.class);
     private static final PaoDao paoDao = YukonSpringHook.getBean("paoDao", PaoDao.class);
     private static final DeviceConfigurationDao configurationDao = YukonSpringHook.getBean("deviceConfigurationDao", DeviceConfigurationDao.class);
+    private static final DeviceConfigurationService configurationService = YukonSpringHook.getBean(DeviceConfigurationService.class);
     
     private DatabaseEditorUtil() {
         
@@ -68,7 +70,7 @@ public final class DatabaseEditorUtil {
         LightDeviceConfiguration config = configurationDao.findConfigurationForDevice(device);
         if(config != null) {
             if (!configurationDao.isTypeSupportedByConfiguration(config, device.getPaoIdentifier().getPaoType())) {
-                configurationDao.unassignConfig(device);
+                configurationService.unassignConfig(device);
                 return true;
             }
         }
