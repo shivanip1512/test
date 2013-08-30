@@ -512,7 +512,9 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
         if (this.memoryGroup && Yukon.protoPicker.rememberedSearches && Yukon.protoPicker.rememberedSearches[this.memoryGroup]) {
             this.ssInput.value = Yukon.protoPicker.rememberedSearches[this.memoryGroup];
         }
-        this.nothingSelectedDiv.hide();
+        if (this.nothingSelectedDiv) {
+            this.nothingSelectedDiv.hide();
+        }
         if (!skipFocus) {
             this.ssInput.focus();
         }

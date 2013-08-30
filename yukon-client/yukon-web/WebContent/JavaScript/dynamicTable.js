@@ -129,7 +129,7 @@ DynamicTable.prototype = {
                 url: url,
                 data: parameters
             }).done(function (data, status, xhrobj) {
-                that.tempRequestDiv.html(data);
+                jQuery(that.tempRequestDiv).html(data);
                 onComplete();
             });
         };
