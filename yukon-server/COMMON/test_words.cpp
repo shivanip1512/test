@@ -51,7 +51,7 @@ BOOST_AUTO_TEST_CASE(test_B_Word)
     }
     {
         std::vector<unsigned char> expected = boost::assign::list_of
-            (0xa0)(0x00)(0x00)(0x00)(0x1f)(0xe0)(0x90);
+            (0xa0)(0x00)(0x00)(0x00)(0x1f)(0xe1)(0xa0);
 
         std::vector<unsigned char> results;
         results.resize(7);
