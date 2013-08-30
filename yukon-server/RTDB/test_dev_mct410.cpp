@@ -2332,9 +2332,9 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
             BOOST_REQUIRE(om);
 
-            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,           2 );
-            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x1fe );
-            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,       9 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,          2 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0xfe );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,      9 );
 
             const std::vector<unsigned> expected = boost::assign::list_of
                 (0x12)(0xd6)(0x87)(0x2a)(0x96)(0x04)(0x07)(0x11)(0x40);
@@ -2377,9 +2377,9 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
             BOOST_REQUIRE(om);
 
-            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,           2 );
-            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x1fe );
-            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,       9 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,          2 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0xfe );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,      9 );
 
             const std::vector<unsigned> expected = boost::assign::list_of
                 (0x01)(0xe2)(0x40)(0x11)(0xd7)(0x03)(0x06)(0x12)(0x44);

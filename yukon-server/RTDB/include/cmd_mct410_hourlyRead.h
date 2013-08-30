@@ -46,6 +46,12 @@ class IM_EX_DEVDB Mct410HourlyReadCommand : public Mct410Command
 
     } _request;
 
+    enum DayPart
+    {
+        DayBegin = 0,
+        DayEnd   = 1
+    };
+
     unsigned _retries;
 
     boost::optional<unsigned> _midday_reading;
@@ -60,6 +66,7 @@ class IM_EX_DEVDB Mct410HourlyReadCommand : public Mct410Command
 
     static CtiTime make_midday_time(const CtiTime request_midnight);
     static CtiDate make_yesterday(const CtiTime t);
+    static read_request_t requestDay     (const CtiDate &date_begin, const unsigned channel, const CtiDate &Yesterday, const DayPart meridian);
 
 protected:
 

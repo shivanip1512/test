@@ -23,9 +23,9 @@ BOOST_AUTO_TEST_CASE(test_empty_write)
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function,  0x1F6);
-        BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Write);
-        BOOST_CHECK_EQUAL(r->length(),  0);
+        BOOST_CHECK_EQUAL(r->function(), 0xF6);
+        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Write);
+        BOOST_CHECK_EQUAL(r->length(),   0);
         BOOST_CHECK_EQUAL(r->payload().size(), 0);
     }
 
@@ -40,9 +40,9 @@ BOOST_AUTO_TEST_CASE(test_empty_write)
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function,  0x1F6);
-        BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),  13);
+        BOOST_CHECK_EQUAL(r->function(), 0xF6);
+        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(r->length(),   13);
         BOOST_CHECK_EQUAL(r->payload().size(), 0);
     }
 
@@ -57,9 +57,9 @@ BOOST_AUTO_TEST_CASE(test_empty_write)
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function,  0x1F7);
-        BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),  13);
+        BOOST_CHECK_EQUAL(r->function(), 0xF7);
+        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(r->length(),   13);
         BOOST_CHECK_EQUAL(r->payload().size(), 0);
     }
 
@@ -91,9 +91,9 @@ BOOST_AUTO_TEST_CASE(test_one_metric)
             //  make sure it's not null
             BOOST_CHECK(r.get());
 
-            BOOST_CHECK_EQUAL(r->function,  0x1F6);
-            BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Write);
-            BOOST_CHECK_EQUAL(r->length(),  1);
+            BOOST_CHECK_EQUAL(r->function(), 0xF6);
+            BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Write);
+            BOOST_CHECK_EQUAL(r->length(),   1);
             BOOST_CHECK_EQUAL(r->payload().size(), 1);
             BOOST_CHECK_EQUAL(r->payload()[0], 17);
         }
@@ -109,9 +109,9 @@ BOOST_AUTO_TEST_CASE(test_one_metric)
             //  make sure it's not null
             BOOST_CHECK(r.get());
 
-            BOOST_CHECK_EQUAL(r->function,  0x1F6);
-            BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-            BOOST_CHECK_EQUAL(r->length(),  13);
+            BOOST_CHECK_EQUAL(r->function(), 0xF6);
+            BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+            BOOST_CHECK_EQUAL(r->length(),   13);
             BOOST_CHECK_EQUAL(r->payload().size(), 0);
         }
 
@@ -126,9 +126,9 @@ BOOST_AUTO_TEST_CASE(test_one_metric)
             //  make sure it's not null
             BOOST_CHECK(r.get());
 
-            BOOST_CHECK_EQUAL(r->function,  0x1F7);
-            BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-            BOOST_CHECK_EQUAL(r->length(),  13);
+            BOOST_CHECK_EQUAL(r->function(), 0xF7);
+            BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+            BOOST_CHECK_EQUAL(r->length(),   13);
             BOOST_CHECK_EQUAL(r->payload().size(), 0);
         }
 
@@ -156,9 +156,9 @@ BOOST_AUTO_TEST_CASE(test_one_metric)
             //  make sure it's not null
             BOOST_CHECK(r.get());
 
-            BOOST_CHECK_EQUAL(r->function,  0x1F6);
-            BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Write);
-            BOOST_CHECK_EQUAL(r->length(),  1);
+            BOOST_CHECK_EQUAL(r->function(), 0xF6);
+            BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Write);
+            BOOST_CHECK_EQUAL(r->length(),   1);
             BOOST_CHECK_EQUAL(r->payload().size(), 1);
             BOOST_CHECK_EQUAL(r->payload()[0], 1);
         }
@@ -174,9 +174,9 @@ BOOST_AUTO_TEST_CASE(test_one_metric)
             //  make sure it's not null
             BOOST_CHECK(r.get());
 
-            BOOST_CHECK_EQUAL(r->function,  0x1F6);
-            BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-            BOOST_CHECK_EQUAL(r->length(),  13);
+            BOOST_CHECK_EQUAL(r->function(), 0xF6);
+            BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+            BOOST_CHECK_EQUAL(r->length(),   13);
             BOOST_CHECK_EQUAL(r->payload().size(), 0);
         }
 
@@ -191,9 +191,9 @@ BOOST_AUTO_TEST_CASE(test_one_metric)
             //  make sure it's not null
             BOOST_CHECK(r.get());
 
-            BOOST_CHECK_EQUAL(r->function,  0x1F7);
-            BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-            BOOST_CHECK_EQUAL(r->length(),  13);
+            BOOST_CHECK_EQUAL(r->function(), 0xF7);
+            BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+            BOOST_CHECK_EQUAL(r->length(),   13);
             BOOST_CHECK_EQUAL(r->payload().size(), 0);
         }
 
@@ -228,9 +228,9 @@ BOOST_AUTO_TEST_CASE(test_two_metrics)
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function,  0x1F6);
-        BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Write);
-        BOOST_CHECK_EQUAL(r->length(),  2);
+        BOOST_CHECK_EQUAL(r->function(), 0xF6);
+        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Write);
+        BOOST_CHECK_EQUAL(r->length(),   2);
         BOOST_CHECK_EQUAL(r->payload().size(), 2);
         BOOST_CHECK_EQUAL(r->payload()[0], 2);
         BOOST_CHECK_EQUAL(r->payload()[1], 17);
@@ -247,9 +247,9 @@ BOOST_AUTO_TEST_CASE(test_two_metrics)
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function,  0x1F6);
-        BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),  13);
+        BOOST_CHECK_EQUAL(r->function(), 0xF6);
+        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(r->length(),   13);
         BOOST_CHECK_EQUAL(r->payload().size(), 0);
     }
 
@@ -264,9 +264,9 @@ BOOST_AUTO_TEST_CASE(test_two_metrics)
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function,  0x1F7);
-        BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),  13);
+        BOOST_CHECK_EQUAL(r->function(), 0xF7);
+        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(r->length(),   13);
         BOOST_CHECK_EQUAL(r->payload().size(), 0);
     }
 
@@ -308,9 +308,9 @@ BOOST_AUTO_TEST_CASE(test_twelve_metrics)
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function,  0x1F6);
-        BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Write);
-        BOOST_CHECK_EQUAL(r->length(),  12);
+        BOOST_CHECK_EQUAL(r->function(), 0xF6);
+        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Write);
+        BOOST_CHECK_EQUAL(r->length(),   12);
         BOOST_CHECK_EQUAL(r->payload().size(), 12);
         BOOST_CHECK_EQUAL(r->payload() [0],   1);
         BOOST_CHECK_EQUAL(r->payload() [1],   1);
@@ -337,9 +337,9 @@ BOOST_AUTO_TEST_CASE(test_twelve_metrics)
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function,  0x1F6);
-        BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),  13);
+        BOOST_CHECK_EQUAL(r->function(), 0xF6);
+        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(r->length(),   13);
         BOOST_CHECK_EQUAL(r->payload().size(), 0);
     }
 
@@ -354,9 +354,9 @@ BOOST_AUTO_TEST_CASE(test_twelve_metrics)
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function,  0x1F7);
-        BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),  13);
+        BOOST_CHECK_EQUAL(r->function(), 0xF7);
+        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(r->length(),   13);
         BOOST_CHECK_EQUAL(r->payload().size(), 0);
     }
 
@@ -399,9 +399,9 @@ BOOST_AUTO_TEST_CASE(test_thirteen_metrics)
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function,  0x1F6);
-        BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Write);
-        BOOST_CHECK_EQUAL(r->length(),  13);
+        BOOST_CHECK_EQUAL(r->function(), 0xF6);
+        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Write);
+        BOOST_CHECK_EQUAL(r->length(),   13);
         BOOST_CHECK_EQUAL(r->payload().size(), 13);
         BOOST_CHECK_EQUAL(r->payload() [0],   1);
         BOOST_CHECK_EQUAL(r->payload() [1],   1);
@@ -429,9 +429,9 @@ BOOST_AUTO_TEST_CASE(test_thirteen_metrics)
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function,  0x1F7);
-        BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Write);
-        BOOST_CHECK_EQUAL(r->length(),  0);
+        BOOST_CHECK_EQUAL(r->function(), 0xF7);
+        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Write);
+        BOOST_CHECK_EQUAL(r->length(),   0);
         BOOST_CHECK_EQUAL(r->payload().size(), 0);
     }
 
@@ -446,9 +446,9 @@ BOOST_AUTO_TEST_CASE(test_thirteen_metrics)
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function,  0x1F6);
-        BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),  13);
+        BOOST_CHECK_EQUAL(r->function(), 0xF6);
+        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(r->length(),   13);
         BOOST_CHECK_EQUAL(r->payload().size(), 0);
     }
 
@@ -463,9 +463,9 @@ BOOST_AUTO_TEST_CASE(test_thirteen_metrics)
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function,  0x1F7);
-        BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),  13);
+        BOOST_CHECK_EQUAL(r->function(), 0xF7);
+        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(r->length(),   13);
         BOOST_CHECK_EQUAL(r->payload().size(), 0);
     }
 
@@ -509,9 +509,9 @@ BOOST_AUTO_TEST_CASE(test_fourteen_metrics)
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function,  0x1F6);
-        BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Write);
-        BOOST_CHECK_EQUAL(r->length(),  13);
+        BOOST_CHECK_EQUAL(r->function(), 0xF6);
+        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Write);
+        BOOST_CHECK_EQUAL(r->length(),   13);
         BOOST_CHECK_EQUAL(r->payload().size(), 13);
         BOOST_CHECK_EQUAL(r->payload() [0],   1);
         BOOST_CHECK_EQUAL(r->payload() [1],   1);
@@ -539,9 +539,9 @@ BOOST_AUTO_TEST_CASE(test_fourteen_metrics)
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function,  0x1F7);
-        BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Write);
-        BOOST_CHECK_EQUAL(r->length(),  1);
+        BOOST_CHECK_EQUAL(r->function(), 0xF7);
+        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Write);
+        BOOST_CHECK_EQUAL(r->length(),   1);
         BOOST_CHECK_EQUAL(r->payload().size(), 1);
         BOOST_CHECK_EQUAL(r->payload() [0], 212);
     }
@@ -557,9 +557,9 @@ BOOST_AUTO_TEST_CASE(test_fourteen_metrics)
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function,  0x1F6);
-        BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),  13);
+        BOOST_CHECK_EQUAL(r->function(), 0xF6);
+        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(r->length(),   13);
         BOOST_CHECK_EQUAL(r->payload().size(), 0);
     }
 
@@ -574,9 +574,9 @@ BOOST_AUTO_TEST_CASE(test_fourteen_metrics)
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function,  0x1F7);
-        BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),  13);
+        BOOST_CHECK_EQUAL(r->function(), 0xF7);
+        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(r->length(),   13);
         BOOST_CHECK_EQUAL(r->payload().size(), 0);
     }
 
@@ -632,9 +632,9 @@ BOOST_AUTO_TEST_CASE(test_twenty_six_metrics)
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function,  0x1F6);
-        BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Write);
-        BOOST_CHECK_EQUAL(r->length(),  13);
+        BOOST_CHECK_EQUAL(r->function(), 0xF6);
+        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Write);
+        BOOST_CHECK_EQUAL(r->length(),   13);
         BOOST_CHECK_EQUAL(r->payload().size(), 13);
         BOOST_CHECK_EQUAL(r->payload() [0],   1);
         BOOST_CHECK_EQUAL(r->payload() [1],   1);
@@ -662,9 +662,9 @@ BOOST_AUTO_TEST_CASE(test_twenty_six_metrics)
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function,  0x1F7);
-        BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Write);
-        BOOST_CHECK_EQUAL(r->length(),  13);
+        BOOST_CHECK_EQUAL(r->function(), 0xF7);
+        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Write);
+        BOOST_CHECK_EQUAL(r->length(),   13);
         BOOST_CHECK_EQUAL(r->payload().size(), 13);
         BOOST_CHECK_EQUAL(r->payload() [0], 232);
         BOOST_CHECK_EQUAL(r->payload() [1], 231);
@@ -692,9 +692,9 @@ BOOST_AUTO_TEST_CASE(test_twenty_six_metrics)
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function,  0x1F6);
-        BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),  13);
+        BOOST_CHECK_EQUAL(r->function(), 0xF6);
+        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(r->length(),   13);
         BOOST_CHECK_EQUAL(r->payload().size(), 0);
     }
 
@@ -709,9 +709,9 @@ BOOST_AUTO_TEST_CASE(test_twenty_six_metrics)
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function,  0x1F7);
-        BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),  13);
+        BOOST_CHECK_EQUAL(r->function(), 0xF7);
+        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(r->length(),   13);
         BOOST_CHECK_EQUAL(r->payload().size(), 0);
     }
 
@@ -763,9 +763,9 @@ BOOST_AUTO_TEST_CASE(test_reads_only)
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function,  0x1F6);
-        BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),  13);
+        BOOST_CHECK_EQUAL(r->function(), 0xF6);
+        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(r->length(),   13);
         BOOST_CHECK_EQUAL(r->payload().size(), 0);
     }
 
@@ -780,9 +780,9 @@ BOOST_AUTO_TEST_CASE(test_reads_only)
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function,  0x1F7);
-        BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),  13);
+        BOOST_CHECK_EQUAL(r->function(), 0xF7);
+        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(r->length(),   13);
         BOOST_CHECK_EQUAL(r->payload().size(), 0);
     }
 

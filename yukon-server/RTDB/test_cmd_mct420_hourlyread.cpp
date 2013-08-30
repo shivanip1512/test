@@ -63,9 +63,9 @@ BOOST_AUTO_TEST_CASE(test_command_single_day_read_dst_active)
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function,  0x1CB);
-        BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),  13);
+        BOOST_CHECK_EQUAL(r->function(), 0xCB);
+        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(r->length(),   13);
         BOOST_CHECK_EQUAL(r->payload().size(), 0);
     }
 
@@ -95,9 +95,9 @@ BOOST_AUTO_TEST_CASE(test_command_single_day_read_dst_active)
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function,  0x1CA);
-        BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),  13);
+        BOOST_CHECK_EQUAL(r->function(), 0xCA);
+        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(r->length(),   13);
         BOOST_CHECK_EQUAL(r->payload().size(), 0);
 
         expected_pointdata expected[] =
@@ -183,9 +183,9 @@ BOOST_AUTO_TEST_CASE(test_command_single_day_read_dst_inactive)
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function,  0x1CB);
-        BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),  13);
+        BOOST_CHECK_EQUAL(r->function(), 0xCB);
+        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(r->length(),   13);
         BOOST_CHECK_EQUAL(r->payload().size(), 0);
     }
 
@@ -215,9 +215,9 @@ BOOST_AUTO_TEST_CASE(test_command_single_day_read_dst_inactive)
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function,  0x1CA);
-        BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),  13);
+        BOOST_CHECK_EQUAL(r->function(), 0xCA);
+        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(r->length(),   13);
         BOOST_CHECK_EQUAL(r->payload().size(), 0);
 
         expected_pointdata expected[] =
@@ -303,9 +303,9 @@ BOOST_AUTO_TEST_CASE(test_command_single_day_read_dst_fall_2010)
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function,  0x1C1);
-        BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),  13);
+        BOOST_CHECK_EQUAL(r->function(), 0xC1);
+        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(r->length(),   13);
         BOOST_CHECK_EQUAL(r->payload().size(), 0);
     }
 
@@ -335,9 +335,9 @@ BOOST_AUTO_TEST_CASE(test_command_single_day_read_dst_fall_2010)
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function,  0x1C0);
-        BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),  13);
+        BOOST_CHECK_EQUAL(r->function(), 0xC0);
+        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(r->length(),   13);
         BOOST_CHECK_EQUAL(r->payload().size(), 0);
 
         expected_pointdata expected[] =
@@ -425,9 +425,9 @@ BOOST_AUTO_TEST_CASE(test_command_single_day_read_dst_spring_2011)
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function,  0x1C1);
-        BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),  13);
+        BOOST_CHECK_EQUAL(r->function(), 0xC1);
+        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(r->length(),   13);
         BOOST_CHECK_EQUAL(r->payload().size(), 0);
     }
 
@@ -457,9 +457,9 @@ BOOST_AUTO_TEST_CASE(test_command_single_day_read_dst_spring_2011)
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function,  0x1C0);
-        BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),  13);
+        BOOST_CHECK_EQUAL(r->function(), 0xC0);
+        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(r->length(),   13);
         BOOST_CHECK_EQUAL(r->payload().size(), 0);
 
         expected_pointdata expected[] =
@@ -546,9 +546,9 @@ BOOST_AUTO_TEST_CASE(test_command_single_day_read_channel_2)
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function,  0x1DB);
-        BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),  13);
+        BOOST_CHECK_EQUAL(r->function(), 0xDB);
+        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(r->length(),   13);
         BOOST_CHECK_EQUAL(r->payload().size(), 0);
     }
 
@@ -578,9 +578,9 @@ BOOST_AUTO_TEST_CASE(test_command_single_day_read_channel_2)
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function,  0x1DA);
-        BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),  13);
+        BOOST_CHECK_EQUAL(r->function(), 0xDA);
+        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(r->length(),   13);
         BOOST_CHECK_EQUAL(r->payload().size(), 0);
 
         expected_pointdata expected[] =
@@ -665,9 +665,9 @@ BOOST_AUTO_TEST_CASE(test_command_single_day_read_yesterday)
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function,  0x1C1);
-        BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),  13);
+        BOOST_CHECK_EQUAL(r->function(), 0xC1);
+        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(r->length(),   13);
         BOOST_CHECK_EQUAL(r->payload().size(), 0);
     }
 
@@ -697,9 +697,9 @@ BOOST_AUTO_TEST_CASE(test_command_single_day_read_yesterday)
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function,  0x1C0);
-        BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),  13);
+        BOOST_CHECK_EQUAL(r->function(), 0xC0);
+        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(r->length(),   13);
         BOOST_CHECK_EQUAL(r->payload().size(), 0);
 
         expected_pointdata expected[] =
@@ -786,9 +786,9 @@ BOOST_AUTO_TEST_CASE(test_command_multi_day_read_dst_active)
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function,  0x1C5);
-        BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),  13);
+        BOOST_CHECK_EQUAL(r->function(), 0xC5);
+        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(r->length(),   13);
         BOOST_CHECK_EQUAL(r->payload().size(), 0);
     }
 
@@ -818,9 +818,9 @@ BOOST_AUTO_TEST_CASE(test_command_multi_day_read_dst_active)
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function,  0x1C4);
-        BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),  13);
+        BOOST_CHECK_EQUAL(r->function(), 0xC4);
+        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(r->length(),   13);
         BOOST_CHECK_EQUAL(r->payload().size(), 0);
 
         expected_pointdata expected[] =
@@ -868,9 +868,9 @@ BOOST_AUTO_TEST_CASE(test_command_multi_day_read_dst_active)
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function,  0x1C3);
-        BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),  13);
+        BOOST_CHECK_EQUAL(r->function(), 0xC3);
+        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(r->length(),   13);
         BOOST_CHECK_EQUAL(r->payload().size(), 0);
 
         expected_pointdata expected[] =
@@ -923,9 +923,9 @@ BOOST_AUTO_TEST_CASE(test_command_multi_day_read_dst_active)
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function,  0x1C2);
-        BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),  13);
+        BOOST_CHECK_EQUAL(r->function(), 0xC2);
+        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(r->length(),   13);
         BOOST_CHECK_EQUAL(r->payload().size(), 0);
 
         expected_pointdata expected[] =
@@ -1163,9 +1163,9 @@ BOOST_AUTO_TEST_CASE(test_decode_invalid_midnight_kwh_reading)
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function,  0x1CB);
-        BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),  13);
+        BOOST_CHECK_EQUAL(r->function(), 0xCB);
+        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(r->length(),   13);
         BOOST_CHECK_EQUAL(r->payload().size(), 0);
     }
 
@@ -1195,9 +1195,9 @@ BOOST_AUTO_TEST_CASE(test_decode_invalid_midnight_kwh_reading)
         //  make sure it's not null, we're going to try for the blink count
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function,  0x1CA);
-        BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),  2);
+        BOOST_CHECK_EQUAL(r->function(), 0xCA);
+        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(r->length(),   2);
         BOOST_CHECK_EQUAL(r->payload().size(), 0);
 
         expected_pointdata expected[] =
@@ -1250,9 +1250,9 @@ BOOST_AUTO_TEST_CASE(test_decode_one_bad_delta_on_first_read)
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function,  0x1CB);
-        BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),  13);
+        BOOST_CHECK_EQUAL(r->function(), 0xCB);
+        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(r->length(),   13);
         BOOST_CHECK_EQUAL(r->payload().size(), 0);
     }
 
@@ -1282,9 +1282,9 @@ BOOST_AUTO_TEST_CASE(test_decode_one_bad_delta_on_first_read)
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function,  0x1CA);
-        BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),  2);
+        BOOST_CHECK_EQUAL(r->function(), 0xCA);
+        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(r->length(),   2);
         BOOST_CHECK_EQUAL(r->payload().size(), 0);
 
         expected_pointdata expected[] =
@@ -1348,9 +1348,9 @@ BOOST_AUTO_TEST_CASE(test_decode_all_bad_deltas_on_first_read)
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function,  0x1CB);
-        BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),  13);
+        BOOST_CHECK_EQUAL(r->function(), 0xCB);
+        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(r->length(),   13);
         BOOST_CHECK_EQUAL(r->payload().size(), 0);
     }
 
@@ -1380,9 +1380,9 @@ BOOST_AUTO_TEST_CASE(test_decode_all_bad_deltas_on_first_read)
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function,  0x1CA);
-        BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),  2);
+        BOOST_CHECK_EQUAL(r->function(), 0xCA);
+        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(r->length(),   2);
         BOOST_CHECK_EQUAL(r->payload().size(), 0);
 
         expected_pointdata expected[] =
@@ -1409,9 +1409,9 @@ BOOST_AUTO_TEST_CASE(test_decode_payload_too_small_once)
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function,  0x1CB);
-        BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),  13);
+        BOOST_CHECK_EQUAL(r->function(), 0xCB);
+        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(r->length(),   13);
         BOOST_CHECK_EQUAL(r->payload().size(), 0);
     }
 
@@ -1441,9 +1441,9 @@ BOOST_AUTO_TEST_CASE(test_decode_payload_too_small_once)
         //  make sure it's not null, we're retrying
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function,  0x1CB);
-        BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),  13);
+        BOOST_CHECK_EQUAL(r->function(), 0xCB);
+        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(r->length(),   13);
         BOOST_CHECK_EQUAL(r->payload().size(), 0);
 
         BOOST_CHECK(points.empty());
@@ -1476,9 +1476,9 @@ BOOST_AUTO_TEST_CASE(test_decode_payload_too_small_once)
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function,  0x1CA);
-        BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),  13);
+        BOOST_CHECK_EQUAL(r->function(), 0xCA);
+        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(r->length(),   13);
         BOOST_CHECK_EQUAL(r->payload().size(), 0);
 
         expected_pointdata expected[] =
@@ -1515,9 +1515,9 @@ BOOST_AUTO_TEST_CASE(test_decode_bad_weekday)
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function,  0x1CB);
-        BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),  13);
+        BOOST_CHECK_EQUAL(r->function(), 0xCB);
+        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(r->length(),   13);
         BOOST_CHECK_EQUAL(r->payload().size(), 0);
     }
 
@@ -1550,9 +1550,9 @@ BOOST_AUTO_TEST_CASE(test_decode_bad_weekday)
             BOOST_CHECK_EQUAL(description, "Day of week does not match (2 != 3)\nRetrying (1 remaining)");
             BOOST_CHECK_EQUAL(points.size(), 0);
 
-            BOOST_CHECK_EQUAL(r->function,  0x1CB);
-            BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-            BOOST_CHECK_EQUAL(r->length(),  13);
+            BOOST_CHECK_EQUAL(r->function(), 0xCB);
+            BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+            BOOST_CHECK_EQUAL(r->length(),   13);
             BOOST_CHECK_EQUAL(r->payload().size(), 0);
         }
 
@@ -1564,9 +1564,9 @@ BOOST_AUTO_TEST_CASE(test_decode_bad_weekday)
             BOOST_CHECK_EQUAL(description, "Day of week does not match (2 != 3)\nRetrying (0 remaining)");
             BOOST_CHECK_EQUAL(points.size(), 0);
 
-            BOOST_CHECK_EQUAL(r->function,  0x1CB);
-            BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-            BOOST_CHECK_EQUAL(r->length(),  13);
+            BOOST_CHECK_EQUAL(r->function(), 0xCB);
+            BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+            BOOST_CHECK_EQUAL(r->length(),   13);
             BOOST_CHECK_EQUAL(r->payload().size(), 0);
         }
 
@@ -1599,9 +1599,9 @@ BOOST_AUTO_TEST_CASE(test_decode_wrong_read)
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function,  0x1CB);
-        BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),  13);
+        BOOST_CHECK_EQUAL(r->function(), 0xCB);
+        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(r->length(),   13);
         BOOST_CHECK_EQUAL(r->payload().size(), 0);
     }
 
@@ -1633,9 +1633,9 @@ BOOST_AUTO_TEST_CASE(test_decode_wrong_read)
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function,  0x1CB);
-        BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),  13);
+        BOOST_CHECK_EQUAL(r->function(), 0xCB);
+        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(r->length(),   13);
         BOOST_CHECK_EQUAL(r->payload().size(), 0);
     }
 }
@@ -1654,9 +1654,9 @@ BOOST_AUTO_TEST_CASE(test_decode_expired)
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function,  0x1CB);
-        BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),  13);
+        BOOST_CHECK_EQUAL(r->function(), 0xCB);
+        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(r->length(),   13);
         BOOST_CHECK_EQUAL(r->payload().size(), 0);
     }
 
@@ -1710,9 +1710,9 @@ BOOST_AUTO_TEST_CASE(test_decode_read_timeout)
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function,  0x1CB);
-        BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),  13);
+        BOOST_CHECK_EQUAL(r->function(), 0xCB);
+        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(r->length(),   13);
         BOOST_CHECK_EQUAL(r->payload().size(), 0);
     }
 
@@ -1726,9 +1726,9 @@ BOOST_AUTO_TEST_CASE(test_decode_read_timeout)
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function,  0x1CB);
-        BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),  13);
+        BOOST_CHECK_EQUAL(r->function(), 0xCB);
+        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(r->length(),   13);
         BOOST_CHECK_EQUAL(r->payload().size(), 0);
     }
 }
@@ -1748,9 +1748,9 @@ BOOST_AUTO_TEST_CASE(test_request_day_begin)
 
         DlcCommand::read_request_t r = test::requestDayBegin(start, 1, yesterday);
 
-        BOOST_CHECK_EQUAL(r.function,  0x1CA);
-        BOOST_CHECK_EQUAL(r.io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r.length(),  13);
+        BOOST_CHECK_EQUAL(r.function(), 0xCA);
+        BOOST_CHECK_EQUAL(r.io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(r.length(),   13);
         BOOST_CHECK_EQUAL(r.payload().size(), 0);
     }
 
@@ -1759,9 +1759,9 @@ BOOST_AUTO_TEST_CASE(test_request_day_begin)
 
         DlcCommand::read_request_t r = test::requestDayBegin(start, 1, yesterday);
 
-        BOOST_CHECK_EQUAL(r.function,  0x1C8);
-        BOOST_CHECK_EQUAL(r.io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r.length(),  13);
+        BOOST_CHECK_EQUAL(r.function(), 0xC8);
+        BOOST_CHECK_EQUAL(r.io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(r.length(),   13);
         BOOST_CHECK_EQUAL(r.payload().size(), 0);
     }
 
@@ -1770,9 +1770,9 @@ BOOST_AUTO_TEST_CASE(test_request_day_begin)
 
         DlcCommand::read_request_t r = test::requestDayBegin(start, 1, yesterday);
 
-        BOOST_CHECK_EQUAL(r.function,  0x1C0);
-        BOOST_CHECK_EQUAL(r.io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r.length(),  13);
+        BOOST_CHECK_EQUAL(r.function(), 0xC0);
+        BOOST_CHECK_EQUAL(r.io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(r.length(),   13);
         BOOST_CHECK_EQUAL(r.payload().size(), 0);
     }
 
@@ -1820,9 +1820,9 @@ BOOST_AUTO_TEST_CASE(test_request_day_end)
 
         DlcCommand::read_request_t r = test::requestDayEnd(start, 1, yesterday);
 
-        BOOST_CHECK_EQUAL(r.function,  0x1CB);
-        BOOST_CHECK_EQUAL(r.io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r.length(),  13);
+        BOOST_CHECK_EQUAL(r.function(), 0xCB);
+        BOOST_CHECK_EQUAL(r.io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(r.length(),   13);
         BOOST_CHECK_EQUAL(r.payload().size(), 0);
     }
 
@@ -1831,9 +1831,9 @@ BOOST_AUTO_TEST_CASE(test_request_day_end)
 
         DlcCommand::read_request_t r = test::requestDayEnd(start, 1, yesterday);
 
-        BOOST_CHECK_EQUAL(r.function,  0x1C9);
-        BOOST_CHECK_EQUAL(r.io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r.length(),  13);
+        BOOST_CHECK_EQUAL(r.function(), 0xC9);
+        BOOST_CHECK_EQUAL(r.io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(r.length(),   13);
         BOOST_CHECK_EQUAL(r.payload().size(), 0);
     }
 
@@ -1842,9 +1842,9 @@ BOOST_AUTO_TEST_CASE(test_request_day_end)
 
         DlcCommand::read_request_t r = test::requestDayEnd(start, 1, yesterday);
 
-        BOOST_CHECK_EQUAL(r.function,  0x1C1);
-        BOOST_CHECK_EQUAL(r.io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r.length(),  13);
+        BOOST_CHECK_EQUAL(r.function(), 0xC1);
+        BOOST_CHECK_EQUAL(r.io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(r.length(),   13);
         BOOST_CHECK_EQUAL(r.payload().size(), 0);
     }
 

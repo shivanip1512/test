@@ -183,9 +183,9 @@ BOOST_AUTO_TEST_CASE( test_decode_execute_incorrect_start_time )
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
 
-        BOOST_CHECK_EQUAL(ptr->function,  0x186);
-        BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Write);
-        BOOST_CHECK_EQUAL(ptr->length(),  4);
+        BOOST_CHECK_EQUAL(ptr->function(), 0x86);
+        BOOST_CHECK_EQUAL(ptr->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Write);
+        BOOST_CHECK_EQUAL(ptr->length(),   4);
         BOOST_CHECK_EQUAL(ptr->payload().size(), 4);
 
         DlcCommand::Bytes payload = ptr->payload();
@@ -209,9 +209,9 @@ BOOST_AUTO_TEST_CASE( test_decode_execute_incorrect_start_time )
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
 
-        BOOST_CHECK_EQUAL(ptr->function,  0x04);
-        BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Read);
-        BOOST_CHECK_EQUAL(ptr->length(),  4);
+        BOOST_CHECK_EQUAL(ptr->function(), 0x04);
+        BOOST_CHECK_EQUAL(ptr->io(),       Cti::Protocols::EmetconProtocol::IO_Read);
+        BOOST_CHECK_EQUAL(ptr->length(),   4);
         BOOST_CHECK_EQUAL(ptr->payload().size(), 0);
     }
 
@@ -257,9 +257,9 @@ BOOST_AUTO_TEST_CASE( test_decode_execute_insufficient_data )
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
 
-        BOOST_CHECK_EQUAL(ptr->function,  0x186);
-        BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Write);
-        BOOST_CHECK_EQUAL(ptr->length(),  4);
+        BOOST_CHECK_EQUAL(ptr->function(), 0x86);
+        BOOST_CHECK_EQUAL(ptr->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Write);
+        BOOST_CHECK_EQUAL(ptr->length(),   4);
         BOOST_CHECK_EQUAL(ptr->payload().size(), 4);
 
         DlcCommand::Bytes payload = ptr->payload();
@@ -283,9 +283,9 @@ BOOST_AUTO_TEST_CASE( test_decode_execute_insufficient_data )
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
 
-        BOOST_CHECK_EQUAL(ptr->function,  0x04);
-        BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Read);
-        BOOST_CHECK_EQUAL(ptr->length(),  4);
+        BOOST_CHECK_EQUAL(ptr->function(), 0x04);
+        BOOST_CHECK_EQUAL(ptr->io(),       Cti::Protocols::EmetconProtocol::IO_Read);
+        BOOST_CHECK_EQUAL(ptr->length(),   4);
         BOOST_CHECK_EQUAL(ptr->payload().size(), 0);
     }
 
@@ -330,9 +330,9 @@ BOOST_AUTO_TEST_CASE( test_decode_execute_normal_execution )
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
 
-        BOOST_CHECK_EQUAL(ptr->function,  0x186);
-        BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Write);
-        BOOST_CHECK_EQUAL(ptr->length(),  4);
+        BOOST_CHECK_EQUAL(ptr->function(), 0x86);
+        BOOST_CHECK_EQUAL(ptr->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Write);
+        BOOST_CHECK_EQUAL(ptr->length(),   4);
         BOOST_CHECK_EQUAL(ptr->payload().size(), 4);
 
         DlcCommand::Bytes payload = ptr->payload();
@@ -356,9 +356,9 @@ BOOST_AUTO_TEST_CASE( test_decode_execute_normal_execution )
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
 
-        BOOST_CHECK_EQUAL(ptr->function,  0x04);
-        BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Read);
-        BOOST_CHECK_EQUAL(ptr->length(),  4);
+        BOOST_CHECK_EQUAL(ptr->function(), 0x04);
+        BOOST_CHECK_EQUAL(ptr->io(),       Cti::Protocols::EmetconProtocol::IO_Read);
+        BOOST_CHECK_EQUAL(ptr->length(),   4);
         BOOST_CHECK_EQUAL(ptr->payload().size(), 0);
     }
 
@@ -378,9 +378,9 @@ BOOST_AUTO_TEST_CASE( test_decode_execute_normal_execution )
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
 
-        BOOST_CHECK_EQUAL(ptr->function,  0x183);
-        BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(ptr->length(),  10);
+        BOOST_CHECK_EQUAL(ptr->function(), 0x83);
+        BOOST_CHECK_EQUAL(ptr->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(ptr->length(),   10);
         BOOST_CHECK_EQUAL(ptr->payload().size(), 0);
     }
 
@@ -406,9 +406,9 @@ BOOST_AUTO_TEST_CASE( test_decode_execute_normal_execution )
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
 
-        BOOST_CHECK_EQUAL(ptr->function,  0x184);
-        BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(ptr->length(),  10);
+        BOOST_CHECK_EQUAL(ptr->function(), 0x84);
+        BOOST_CHECK_EQUAL(ptr->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(ptr->length(),   10);
         BOOST_CHECK_EQUAL(ptr->payload().size(), 0);
 
         BOOST_CHECK_EQUAL(description,  "Hour 0 - Runtime: 45 minutes, Shedtime: 15 minutes\n"
@@ -442,9 +442,9 @@ BOOST_AUTO_TEST_CASE( test_decode_execute_normal_execution )
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
 
-        BOOST_CHECK_EQUAL(ptr->function,  0x185);
-        BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(ptr->length(),  10);
+        BOOST_CHECK_EQUAL(ptr->function(), 0x85);
+        BOOST_CHECK_EQUAL(ptr->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(ptr->length(),   10);
         BOOST_CHECK_EQUAL(ptr->payload().size(), 0);
 
         BOOST_CHECK_EQUAL(description,  "Hour 6 - Runtime: 10 minutes, Shedtime: 50 minutes\n"
@@ -478,9 +478,9 @@ BOOST_AUTO_TEST_CASE( test_decode_execute_normal_execution )
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
 
-        BOOST_CHECK_EQUAL(ptr->function,  0x186);
-        BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(ptr->length(),  10);
+        BOOST_CHECK_EQUAL(ptr->function(), 0x86);
+        BOOST_CHECK_EQUAL(ptr->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(ptr->length(),   10);
         BOOST_CHECK_EQUAL(ptr->payload().size(), 0);
 
         BOOST_CHECK_EQUAL(description,  "Hour 12 - Runtime: 10 minutes, Shedtime: 50 minutes\n"
@@ -543,9 +543,9 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_more_than_sixty_minutes_error )
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
 
-        BOOST_CHECK_EQUAL(ptr->function,  0x186);
-        BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Write);
-        BOOST_CHECK_EQUAL(ptr->length(),  4);
+        BOOST_CHECK_EQUAL(ptr->function(), 0x86);
+        BOOST_CHECK_EQUAL(ptr->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Write);
+        BOOST_CHECK_EQUAL(ptr->length(),   4);
         BOOST_CHECK_EQUAL(ptr->payload().size(), 4);
 
         DlcCommand::Bytes payload = ptr->payload();
@@ -569,9 +569,9 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_more_than_sixty_minutes_error )
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
 
-        BOOST_CHECK_EQUAL(ptr->function,  0x04);
-        BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Read);
-        BOOST_CHECK_EQUAL(ptr->length(),  4);
+        BOOST_CHECK_EQUAL(ptr->function(), 0x04);
+        BOOST_CHECK_EQUAL(ptr->io(),       Cti::Protocols::EmetconProtocol::IO_Read);
+        BOOST_CHECK_EQUAL(ptr->length(),   4);
         BOOST_CHECK_EQUAL(ptr->payload().size(), 0);
     }
 
@@ -591,9 +591,9 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_more_than_sixty_minutes_error )
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
 
-        BOOST_CHECK_EQUAL(ptr->function,  0x183);
-        BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(ptr->length(),  10);
+        BOOST_CHECK_EQUAL(ptr->function(), 0x83);
+        BOOST_CHECK_EQUAL(ptr->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(ptr->length(),   10);
         BOOST_CHECK_EQUAL(ptr->payload().size(), 0);
     }
 
@@ -619,9 +619,9 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_more_than_sixty_minutes_error )
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
 
-        BOOST_CHECK_EQUAL(ptr->function,  0x184);
-        BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(ptr->length(),  10);
+        BOOST_CHECK_EQUAL(ptr->function(), 0x84);
+        BOOST_CHECK_EQUAL(ptr->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(ptr->length(),   10);
         BOOST_CHECK_EQUAL(ptr->payload().size(), 0);
 
         BOOST_CHECK_EQUAL(description,  "Hour 0 - Runtime: 45 minutes, Shedtime: 15 minutes\n"

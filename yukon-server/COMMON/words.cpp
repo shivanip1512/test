@@ -43,7 +43,7 @@ INT IM_EX_CTIBASE B_Word (PBYTE BWord, const BSTRUCT &BSt, unsigned wordCount, B
    BWord[1]  = (UCHAR)(BSt.DlcRoute.RepFixed << 4 | BSt.Address >> 18);
    BWord[2]  = (UCHAR)(BSt.Address  >> 10);
    BWord[3]  = (UCHAR)(BSt.Address  >> 2);
-   BWord[4]  = (UCHAR)(BSt.Address  << 6 | wordCount << 4 | BSt.Function >> 4);
+   BWord[4]  = (UCHAR)(BSt.Address  << 6 | wordCount << 4 | (BSt.Function & 0xff) >> 4);
    BWord[5]  = (UCHAR)(BSt.Function << 4);
    BWord[5] |= (UCHAR)((BSt.IO) << 2);
 

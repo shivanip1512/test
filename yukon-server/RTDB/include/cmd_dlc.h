@@ -23,13 +23,17 @@ struct IM_EX_DEVDB DlcCommand : public DeviceCommand
     //  to be overridden by children that require a result handler
     virtual void invokeResultHandler(ResultHandler &rh) const  { };
 
-    struct request_t
+    class request_t
     {
+    protected:
+        unsigned short _function;
+
+    public:
         request_t(unsigned function) :
-            function(function)
+            _function(function)
         { }
 
-        unsigned function;
+        unsigned char function() const  {  return _function & 0xff;  }
 
         //  I would like to typedef away this long name, but it's worth the scads of characters
         //    to keep the type information intact.
@@ -55,9 +59,9 @@ struct IM_EX_DEVDB DlcCommand : public DeviceCommand
 
         virtual Protocols::EmetconProtocol::IO_Bits io() const
         {
-            return (function >= 0x100)?
-                       (Protocols::EmetconProtocol::IO_Function_Read):
-                       (Protocols::EmetconProtocol::IO_Read);
+            return (_function >= 0x100)
+                ? (Protocols::EmetconProtocol::IO_Function_Read)
+                : (Protocols::EmetconProtocol::IO_Read);
         }
     };
 
@@ -76,9 +80,9 @@ struct IM_EX_DEVDB DlcCommand : public DeviceCommand
 
         virtual Protocols::EmetconProtocol::IO_Bits io() const
         {
-            return (function >= 0x100)?
-                       (Protocols::EmetconProtocol::IO_Function_Write):
-                       (Protocols::EmetconProtocol::IO_Write);
+            return (_function >= 0x100)
+                ? (Protocols::EmetconProtocol::IO_Function_Write)
+                : (Protocols::EmetconProtocol::IO_Write);
         }
     };
 

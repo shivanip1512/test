@@ -27,9 +27,9 @@ BOOST_AUTO_TEST_CASE(test_command_payload)
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function,  0x1fe);
-        BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Write);
-        BOOST_CHECK_EQUAL(r->length(),  9);
+        BOOST_CHECK_EQUAL(r->function(), 0xfe);
+        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Write);
+        BOOST_CHECK_EQUAL(r->length(),   9);
 
         const std::vector<unsigned char> actual = r->payload();
 
@@ -49,9 +49,9 @@ BOOST_AUTO_TEST_CASE(test_command_payload)
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function,  0x1fe);
-        BOOST_CHECK_EQUAL(r->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Write);
-        BOOST_CHECK_EQUAL(r->length(),  9);
+        BOOST_CHECK_EQUAL(r->function(), 0xfe);
+        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Write);
+        BOOST_CHECK_EQUAL(r->length(),   9);
 
         const std::vector<unsigned char> actual = r->payload();
 

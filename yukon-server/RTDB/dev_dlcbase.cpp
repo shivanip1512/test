@@ -596,7 +596,7 @@ void DlcBaseDevice::fillOutMessage(OUTMESS &OutMessage, DlcCommand::request_t &r
         OutMessage.Request.MacroOffset = selectInitialMacroRouteOffset(OutMessage.Request.RouteID);
     }
 
-    OutMessage.Buffer.BSt.Function = request.function;
+    OutMessage.Buffer.BSt.Function = request.function();
     OutMessage.Buffer.BSt.IO       = request.io();
     OutMessage.Buffer.BSt.Length   = request.length();
 

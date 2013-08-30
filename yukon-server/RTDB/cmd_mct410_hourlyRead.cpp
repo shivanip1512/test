@@ -47,16 +47,19 @@ DlcCommand::request_ptr Mct410HourlyReadCommand::executeCommand(CtiTime now)
 //  throws CommandException
 DlcCommand::read_request_t Mct410HourlyReadCommand::requestDayEnd(const CtiDate &date_begin, const unsigned channel, const CtiDate &Yesterday)
 {
-    read_request_t request = requestDayBegin(date_begin, channel, Yesterday);
-
-    request.function += 1;
-
-    return request;
+    return requestDay(date_begin, channel, Yesterday, DayEnd);
 }
 
 
 //  throws CommandException
 DlcCommand::read_request_t Mct410HourlyReadCommand::requestDayBegin(const CtiDate &date_begin, const unsigned channel, const CtiDate &Yesterday)
+{
+    return requestDay(date_begin, channel, Yesterday, DayBegin);
+}
+
+
+//  throws CommandException
+DlcCommand::read_request_t Mct410HourlyReadCommand::requestDay(const CtiDate &date_begin, const unsigned channel, const CtiDate &Yesterday, DayPart meridian)
 {
     if( channel == 0 || channel > 2 )
     {
@@ -69,11 +72,11 @@ DlcCommand::read_request_t Mct410HourlyReadCommand::requestDayBegin(const CtiDat
 
     if( channel == 2 )
     {
-        return read_request_t(Read_HourlyReadChannel2BasePos + days_back * 2, Read_HourlyReadLen);
+        return read_request_t(Read_HourlyReadChannel2BasePos + days_back * 2 + meridian, Read_HourlyReadLen);
     }
     else
     {
-        return read_request_t(Read_HourlyReadChannel1BasePos + days_back * 2, Read_HourlyReadLen);
+        return read_request_t(Read_HourlyReadChannel1BasePos + days_back * 2 + meridian, Read_HourlyReadLen);
     }
 }
 
