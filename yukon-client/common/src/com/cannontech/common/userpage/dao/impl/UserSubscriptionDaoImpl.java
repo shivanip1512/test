@@ -69,6 +69,17 @@ public class UserSubscriptionDaoImpl implements UserSubscriptionDao {
         return results;
     }
 
+    @Override
+    public void deleteSubscriptionsForItem(SubscriptionType type, Integer refId) {
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM UserSubscription");
+        sql.append("WHERE SubscriptionType").eq(type);
+        sql.append("AND RefId").eq(refId);
+
+        yukonJdbcTemplate.update(sql);
+    }
+
     private Integer getId(UserSubscription subscription) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT UserSubscriptionId, UserId, SubscriptionType, RefId");

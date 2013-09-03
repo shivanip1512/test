@@ -15,6 +15,8 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
+import com.cannontech.common.userpage.dao.UserSubscriptionDao;
+import com.cannontech.common.userpage.model.UserSubscription.SubscriptionType;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.OutageMonitorNotFoundException;
 
@@ -22,6 +24,7 @@ public class OutageMonitorServiceImpl implements OutageMonitorService {
 
     @Autowired private OutageMonitorDao outageMonitorDao;
     @Autowired private DeviceGroupEditorDao deviceGroupEditorDao;
+    @Autowired private UserSubscriptionDao userSubscriptionDao;
 	private Logger log = YukonLogManager.getLogger(OutageMonitorServiceImpl.class);
 	
 	@Override
@@ -44,6 +47,7 @@ public class OutageMonitorServiceImpl implements OutageMonitorService {
 			// may have been deleted? who cares
 		}
         
+        userSubscriptionDao.deleteSubscriptionsForItem(SubscriptionType.OUTAGE_MONITOR, outageMonitorId);
         // delete processor
         return outageMonitorDao.delete(outageMonitorId);
 	}

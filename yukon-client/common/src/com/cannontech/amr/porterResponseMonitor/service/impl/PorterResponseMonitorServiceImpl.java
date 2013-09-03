@@ -9,16 +9,21 @@ import com.cannontech.amr.porterResponseMonitor.model.PorterResponseMonitor;
 import com.cannontech.amr.porterResponseMonitor.service.PorterResponseMonitorService;
 import com.cannontech.amr.statusPointMonitoring.service.impl.StatusPointMonitorServiceImpl;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.userpage.dao.UserSubscriptionDao;
+import com.cannontech.common.userpage.model.UserSubscription.SubscriptionType;
 import com.cannontech.core.dao.NotFoundException;
 
 public class PorterResponseMonitorServiceImpl implements PorterResponseMonitorService {
-	private PorterResponseMonitorDao porterResponseMonitorDao;
-	private Logger log = YukonLogManager.getLogger(StatusPointMonitorServiceImpl.class);
 
-	@Override
-	public boolean delete(int monitorId) throws NotFoundException {
-		return porterResponseMonitorDao.deleteMonitor(monitorId);
-	}
+    @Autowired private PorterResponseMonitorDao porterResponseMonitorDao;
+    @Autowired private UserSubscriptionDao userSubscriptionDao;
+    private Logger log = YukonLogManager.getLogger(StatusPointMonitorServiceImpl.class);
+
+    @Override
+    public boolean delete(int monitorId) throws NotFoundException {
+        userSubscriptionDao.deleteSubscriptionsForItem(SubscriptionType.PORTER_RESPONSE_MONITOR, monitorId);
+        return porterResponseMonitorDao.deleteMonitor(monitorId);
+    }
 
 	@Override
 	public MonitorEvaluatorStatus toggleEnabled(int monitorId) throws NotFoundException {
@@ -34,10 +39,5 @@ public class PorterResponseMonitorServiceImpl implements PorterResponseMonitorSe
 		log.debug("Updated porterResponseMonitor evaluator status: status=" + newStatus + ", porterResponseMonitor=" + monitor);
 
 		return newStatus;
-	}
-
-	@Autowired
-	public void setPorterResponseMonitorDao(PorterResponseMonitorDao porterResponseMonitorDao) {
-		this.porterResponseMonitorDao = porterResponseMonitorDao;
 	}
 }

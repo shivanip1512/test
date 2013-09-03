@@ -22,6 +22,8 @@ import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.common.userpage.dao.UserSubscriptionDao;
+import com.cannontech.common.userpage.model.UserSubscription.SubscriptionType;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.common.validation.dao.ValidationMonitorDao;
 import com.cannontech.common.validation.dao.ValidationMonitorNotFoundException;
@@ -39,12 +41,13 @@ import com.google.common.collect.SetMultimap;
 public class ValidationMonitorDaoImpl implements ValidationMonitorDao  {
 
 	private final Logger log = YukonLogManager.getLogger(ValidationMonitorDaoImpl.class);
-		
+
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private NextValueHelper nextValueHelper;
+    @Autowired private DeviceGroupService deviceGroupService;
+    @Autowired private UserSubscriptionDao userSubscriptionDao;
     private static final ParameterizedRowMapper<ValidationMonitor> rowMapper;
-    private YukonJdbcTemplate yukonJdbcTemplate;
-    private NextValueHelper nextValueHelper;
     private SimpleTableAccessTemplate<ValidationMonitor> template;
-    private DeviceGroupService deviceGroupService;
     
     static {
         rowMapper = ValidationMonitorDaoImpl.createRowMapper();
@@ -132,6 +135,7 @@ public class ValidationMonitorDaoImpl implements ValidationMonitorDao  {
         sql.append("DELETE FROM ValidationMonitor ");
         sql.append("WHERE ValidationMonitorId ").eq(validationMonitorId);
         
+        userSubscriptionDao.deleteSubscriptionsForItem(SubscriptionType.VALIDATION_MONITOR, validationMonitorId);
         return yukonJdbcTemplate.update(sql) > 0;
     }
     
@@ -184,20 +188,5 @@ public class ValidationMonitorDaoImpl implements ValidationMonitorDao  {
         template.setTableName("ValidationMonitor");
         template.setPrimaryKeyField("ValidationMonitorId");
         template.setFieldMapper(validationMonitorFieldMapper); 
-    }
-    
-    @Autowired
-    public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
-        this.deviceGroupService = deviceGroupService;
-    }
-    
-    @Autowired
-    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
-        this.yukonJdbcTemplate = yukonJdbcTemplate;
-    }
-    
-    @Autowired
-    public void setNextValueHelper(NextValueHelper nextValueHelper) {
-        this.nextValueHelper = nextValueHelper;
     }
 }

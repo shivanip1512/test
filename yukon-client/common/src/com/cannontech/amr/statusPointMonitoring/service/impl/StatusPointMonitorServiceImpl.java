@@ -8,17 +8,21 @@ import com.cannontech.amr.statusPointMonitoring.model.StatusPointMonitor;
 import com.cannontech.amr.statusPointMonitoring.service.StatusPointMonitorService;
 import com.cannontech.amr.statusPointMonitoring.dao.StatusPointMonitorDao;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.userpage.dao.UserSubscriptionDao;
+import com.cannontech.common.userpage.model.UserSubscription.SubscriptionType;
 import com.cannontech.core.dao.NotFoundException;
 
 public class StatusPointMonitorServiceImpl implements StatusPointMonitorService {
 
-	private StatusPointMonitorDao statusPointMonitorDao;
+    @Autowired private StatusPointMonitorDao statusPointMonitorDao;
+	@Autowired private UserSubscriptionDao userSubscriptionDao;
 	private Logger log = YukonLogManager.getLogger(StatusPointMonitorServiceImpl.class);
-	
-	@Override
-	public boolean delete(int statusPointMonitorId) throws NotFoundException {
+
+    @Override
+    public boolean delete(int statusPointMonitorId) throws NotFoundException {
+        userSubscriptionDao.deleteSubscriptionsForItem(SubscriptionType.STATUS_POINT_MONITOR, statusPointMonitorId);
         return statusPointMonitorDao.deleteStatusPointMonitor(statusPointMonitorId);
-	}
+    }
 	
 	@Override
 	public MonitorEvaluatorStatus toggleEnabled(int statusPointMonitorId) throws NotFoundException {
@@ -34,10 +38,5 @@ public class StatusPointMonitorServiceImpl implements StatusPointMonitorService 
 		log.debug("Updated statusPointMonitor evaluator status: status=" + newStatus + ", statusPointMonitor=" + statusPointMonitor);
 		
 		return newStatus;
-	}
-	
-	@Autowired
-	public void setStatusPointMonitorDao(StatusPointMonitorDao statusPointMonitorDao) {
-		this.statusPointMonitorDao = statusPointMonitorDao;
 	}
 }

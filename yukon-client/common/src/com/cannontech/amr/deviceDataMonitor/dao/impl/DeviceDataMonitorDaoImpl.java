@@ -21,6 +21,8 @@ import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.userpage.dao.UserSubscriptionDao;
+import com.cannontech.common.userpage.model.UserSubscription.SubscriptionType;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.NotFoundException;
@@ -48,7 +50,7 @@ public class DeviceDataMonitorDaoImpl implements DeviceDataMonitorDao {
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private DbChangeManager dbChangeManager;
-    
+    @Autowired private UserSubscriptionDao userSubscriptionDao;
     private static final Logger log = YukonLogManager.getLogger(DeviceDataMonitorDaoImpl.class);
     
     private SimpleTableAccessTemplate<DeviceDataMonitor> monitorTemplate;
@@ -161,6 +163,7 @@ public class DeviceDataMonitorDaoImpl implements DeviceDataMonitorDao {
         int rowsAffected = yukonJdbcTemplate.update(sql);
         log.info("Deleted device data monitor: " + monitor.getName());
         
+        userSubscriptionDao.deleteSubscriptionsForItem(SubscriptionType.DEVICE_DATA_MONITOR, monitorId);
         dbChangeManager.processDbChange(DbChangeType.DELETE, 
                                         DbChangeCategory.DEVICE_DATA_MONITOR, 
                                         monitorId);
