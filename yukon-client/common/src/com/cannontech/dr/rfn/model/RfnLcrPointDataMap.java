@@ -10,6 +10,11 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
 
+/* This specifies the data and translations needed to pull RF LCR information from the XML received.
+ * 
+ * This includes offsets, bitshifts, and multipliers similar to what Porter would do to incoming data. Point Multipliers
+ * are not applied to this data but the multipliers specified here are.
+ */
 public enum RfnLcrPointDataMap {
     BLINK_COUNT(BuiltInAttribute.BLINK_COUNT, "/DRReport/Info/BlinkCount"),
     CONTROL_STATUS(BuiltInAttribute.CONTROL_STATUS, "/DRReport/Info/Flags", 0x2, 1, null),
