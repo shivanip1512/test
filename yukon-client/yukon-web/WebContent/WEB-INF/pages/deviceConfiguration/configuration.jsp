@@ -14,7 +14,7 @@
     <tags:setFormEditMode mode="${mode}"/>
     
     <form:form commandName="deviceConfigurationBackingBean" action="save">
-        <form:hidden path="configId" id=""/>
+        <form:hidden path="configId"/>
         
         <c:if test="${configurationDeviceTypesBackingBean.supportedTypesEmpty}">
             <tags:alertBox nameKey=".noSupportedTypesPage"/>
