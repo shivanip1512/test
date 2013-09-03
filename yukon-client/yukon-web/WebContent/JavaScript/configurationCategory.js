@@ -74,30 +74,33 @@ Yukon.DeviceConfig = (function () {
         /******************
          * Public Methods *
          ******************/
-        configInit : function(config) {
+        configInit : function() {
             jQuery(function() {
-                if (config.supportedTypesEmpty && config.mode === 'VIEW') {
-                    jQuery('#supportedTypePopup').load('processAddTypes', {configId : config.configId});
+                var typesPopup = jQuery('#supportedTypePopup');
+                if (typesPopup.attr('data-show-on-load') === 'true') {
+                    typesPopup.load('processAddTypes', {configId : typesPopup.attr('data-config-id')});
                 }
             
                 jQuery("#addTypeBtn").click(function() {
-                    jQuery('#supportedTypePopup').load('processAddTypes', {configId : config.configId});
+                    jQuery('#supportedTypePopup').load('processAddTypes', {configId : jQuery(this).attr('data-config-id')});
                 });
                 
                 jQuery(".f-editBtn").click(function() {
-                    var catTypeClass = jQuery(this).attr('class').match(/f-devType-\w*/)[0].split('-');
+                    var btn = jQuery(this);
+                    var catTypeClass = btn.attr('class').match(/f-devType-\w*/)[0].split('-');
                     var params = {'categoryId' : jQuery('#categoryId_' + catTypeClass[catTypeClass.length - 1]).val(),
-                                  'configId' : config.configId };
+                                  'configId' : btn.attr('data-config-id') };
                     
-                    _makeAjaxCall('editInPlace', params, jQuery(this));
+                    _makeAjaxCall('editInPlace', params, btn);
                 });
                 
                 jQuery(".f-createBtn").click(function() {
-                    var catTypeClass = jQuery(this).attr('class').match(/f-devType-\w*/)[0].split('-');
+                    var btn = jQuery(this);
+                    var catTypeClass = btn.attr('class').match(/f-devType-\w*/)[0].split('-');
                     var params = {'categoryType' : catTypeClass[catTypeClass.length - 1], 
-                                  'configId' : config.configId };
+                                  'configId' : btn.attr('data-config-id') };
             
-                    _makeAjaxCall('createInPlace', params, jQuery(this));        
+                    _makeAjaxCall('createInPlace', params, btn);        
                 });
             });
         }, 
@@ -165,3 +168,7 @@ Yukon.DeviceConfig = (function () {
     
     return deviceConfigMod;
 }());
+
+jQuery(function() {
+    Yukon.DeviceConfig.configInit();
+});

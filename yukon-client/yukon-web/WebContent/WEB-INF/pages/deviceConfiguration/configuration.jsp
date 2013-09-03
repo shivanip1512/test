@@ -11,20 +11,10 @@
 <cti:includeScript link="/JavaScript/ajaxDialog.js"/>
 <cti:includeScript link="/JavaScript/configurationCategory.js"/>
 
-<script type="text/javascript">
-Yukon.DeviceConfig.configInit(
-    {
-        configId : '${deviceConfigurationBackingBean.configId}',
-        supportedTypesEmpty : ${configurationDeviceTypesBackingBean.supportedTypesEmpty},
-        mode : '${mode}'
-    }
-);
-</script>
-
     <tags:setFormEditMode mode="${mode}"/>
     
     <form:form commandName="deviceConfigurationBackingBean" action="save">
-        <form:hidden path="configId"/>
+        <form:hidden path="configId" id=""/>
         
         <c:if test="${configurationDeviceTypesBackingBean.supportedTypesEmpty}">
             <tags:alertBox nameKey=".noSupportedTypesPage"/>
@@ -113,7 +103,7 @@ Yukon.DeviceConfig.configInit(
                         <cti:checkRolesAndProperties value="${editingRoleProperty}">
                             <c:if test="${! empty configurationDeviceTypesBackingBean.availableTypes}">
                                 <div class="actionArea">
-                                    <cti:button nameKey="addTypes" id="addTypeBtn" icon="icon-add" renderMode="button"/>
+                                    <cti:button nameKey="addTypes" data-config-id="${deviceConfigurationBackingBean.configId}" id="addTypeBtn" icon="icon-add" renderMode="button"/>
                                 </div>
                             </c:if>
                         </cti:checkRolesAndProperties>
@@ -136,7 +126,7 @@ Yukon.DeviceConfig.configInit(
         </div>
     </cti:displayForPageEditModes>
     
-    <div id="supportedTypePopup"></div>
+    <div id="supportedTypePopup" data-show-on-load="${showTypesPopupOnLoad}" data-config-id="${deviceConfigurationBackingBean.configId}"></div>
     
     <div id="categoryPopup" class="dn"></div>
 </cti:standardPage>

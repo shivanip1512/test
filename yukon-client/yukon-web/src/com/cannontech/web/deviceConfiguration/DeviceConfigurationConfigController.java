@@ -533,6 +533,12 @@ public class DeviceConfigurationConfigController {
 
         model.addAttribute("mode", mode);
         
+        boolean showTypesPopupOnLoad = 
+            mode == PageEditMode.VIEW && 
+            configurationDeviceTypesBackingBean.isSupportedTypesEmpty();
+        
+        model.addAttribute("showTypesPopupOnLoad", showTypesPopupOnLoad);
+        
         model.addAttribute("editingRoleProperty", YukonRoleProperty.ADMIN_EDIT_CONFIG);
     }
     
