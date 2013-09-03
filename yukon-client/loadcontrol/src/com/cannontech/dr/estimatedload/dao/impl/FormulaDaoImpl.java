@@ -18,6 +18,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.LMGearDao;
 import com.cannontech.database.FieldMapper;
@@ -93,7 +94,12 @@ public class FormulaDaoImpl implements FormulaDao {
         return yukonJdbcTemplate.queryForLimitedResults(sql, formulaRowMapper, 1).get(0);
     }
 
-    private SqlStatementBuilder getFormulaQuery(SqlStatementBuilder whereClause) {
+    /** Returns the base query used for retrieving formula objects.  If no whereClause is supplied,
+     * the query provided will select all Formula objects.
+     * 
+     * @param whereClause Appended to the base query to select a smaller subset of Formula objects.  
+     */
+    private SqlStatementBuilder getFormulaQuery(SqlFragmentSource whereClause) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT EstimatedLoadFormulaId, Name, FormulaType, CalculationType, FunctionIntercept FROM");
         sql.append(formulaTableName);
@@ -147,7 +153,12 @@ public class FormulaDaoImpl implements FormulaDao {
     }
 
     // Second-level CRUD operations (FormulaFunction and FormulaLookupTable objects).
-    private Map<Integer, ImmutableList<FormulaFunction>> getFunctions(SqlStatementBuilder whereClause) {
+    /** Returns a map of formula id to list of FormulaFunction objects that belong to that formula.
+     * If no whereClause is supplied, the query provided will select all FormulaFunction objects.
+     * 
+     * @param whereClause Appended to the base query to select a smaller subset of FormulaFunction objects.
+     */
+    private Map<Integer, ImmutableList<FormulaFunction>> getFunctions(SqlFragmentSource whereClause) {
         Map<Integer, ImmutableList<FormulaFunction>> functionsByFormulaId = new HashMap<>();
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -168,7 +179,8 @@ public class FormulaDaoImpl implements FormulaDao {
 
         return functionsByFormulaId;
     }
-    
+
+    /** Deletes all formula functions that belong to a given formula id. */
     private void deleteFunctionsByFormulaId(int formulaId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM").append(functionTableName);
@@ -177,8 +189,12 @@ public class FormulaDaoImpl implements FormulaDao {
         yukonJdbcTemplate.update(sql);
     }
 
-    /** Returns a Map of FormulaId to a List of its lookup tables for all Double input types. */
-    private Map<Integer, ImmutableList<FormulaLookupTable<Double>>> getLookupTables(SqlStatementBuilder whereClause) {
+    /** Returns a Map of FormulaId to a List of its lookup tables for all Double input types.
+     * If no whereClause is supplied, the query provided will select all FormulaFunction objects.
+     * 
+     * @param whereClause Appended to the base query to select a smaller subset of FormulaFunction objects. 
+     */
+    private Map<Integer, ImmutableList<FormulaLookupTable<Double>>> getLookupTables(SqlFragmentSource whereClause) {
         SqlStatementBuilder entriesWhereClause;
         entriesWhereClause = new SqlStatementBuilder();
         entriesWhereClause.append("WHERE EstimatedLoadLookupTableId IN ");
@@ -214,8 +230,12 @@ public class FormulaDaoImpl implements FormulaDao {
         return tablesByFormulaId;
     }
 
-    /** Returns a Map of FormulaId to a List of its lookup tables for all Double input types. */
-    private Map<Integer, ImmutableList<FormulaLookupTable<LocalTime>>> getTimeLookupTables(SqlStatementBuilder whereClause) {
+    /** Returns a Map of FormulaId to a List of its lookup tables for all LocalTime input types.
+     * If no whereClause is supplied, the query provided will select all FormulaFunction objects.
+     * 
+     * @param whereClause Appended to the base query to select a smaller subset of FormulaFunction objects.
+     */
+    private Map<Integer, ImmutableList<FormulaLookupTable<LocalTime>>> getTimeLookupTables(SqlFragmentSource whereClause) {
         SqlStatementBuilder entriesWhereClause;
         entriesWhereClause = new SqlStatementBuilder();
         entriesWhereClause.append("WHERE EstimatedLoadLookupTableId IN ");
@@ -251,6 +271,7 @@ public class FormulaDaoImpl implements FormulaDao {
         return tablesByFormulaId;
     }
 
+    /** Deletes all lookup tables that belong to a given formula id. */
     private void deleteLookupTablesByFormulaId(int formulaId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM").append(lookupTableName);
@@ -260,11 +281,19 @@ public class FormulaDaoImpl implements FormulaDao {
     }
 
     // Third-level CRUD operations (FormulaLookupTable entries).
+    /** Saves all table entries for a FormulaLookupTable object.  First deletes all existing entries
+     * and then saves the new entry values.
+     * 
+     * @param tableId The id of the formula lookup table to which the entries belong.
+     * @param formulaInput The FormulaInput object associated with the lookup table and its entries.
+     * @param entries The map of key, value pairs that comprise the actual lookup table entries.
+     */
     private void saveTableEntries(Integer tableId, FormulaInput<?> formulaInput, Map<?, Double> entries) {
         deleteTableEntries(tableId);
         insertTableEntries(tableId, formulaInput, entries);
     }
 
+    /** Removes all existing lookup table entries for a given lookup table id. */
     private void deleteTableEntries(int lookupTableId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM").append(tableEntryTableName);
@@ -273,12 +302,14 @@ public class FormulaDaoImpl implements FormulaDao {
         yukonJdbcTemplate.update(sql);
     }
 
+    /** Inserts the list of lookup table entries for a given lookup table id and its associated input object. */
     private void insertTableEntries(int lookupTableId, FormulaInput<?> formulaInput, Map<?, Double> entries) {
         for (Map.Entry<?, Double> entry : entries.entrySet()) {
             insertTableEntry(lookupTableId, formulaInput, entry);
         }
     }
 
+    /** Inserts a single lookup table entry for a given lookup table id and input. */
     private void insertTableEntry(int lookupTableId, FormulaInput<?> formulaInput, Map.Entry<?, Double> entry) {
         PropertyEditor typeConverter = formulaInput.getInputType().makeTypeConverter();
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -291,7 +322,12 @@ public class FormulaDaoImpl implements FormulaDao {
         yukonJdbcTemplate.update(sql);
     }
 
-    private Map<Integer, Map<String, Double>> getTableEntries(SqlStatementBuilder entriesWhereClause) {
+    /** Retrieves all lookup table entries as a map of lookup table id to a map of entry key/value pairs.
+     * By default all table entries will be returned unless a where clause is specified.
+     * 
+     * @param entriesWhereClause Appended to the base query to select a smaller subset of lookup table entries.
+     */
+    private Map<Integer, Map<String, Double>> getTableEntries(SqlFragmentSource entriesWhereClause) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT EstimatedLoadLookupTableId, EntryKey, EntryValue");
         sql.append("FROM").append(tableEntryTableName);
@@ -521,6 +557,7 @@ public class FormulaDaoImpl implements FormulaDao {
                 .setPrimaryKeyValidOver(0);
     }
 
+    /** Tests for the existence of a given formula by looking for existence of a formula id. */ 
     private boolean doesFormulaExist(int formulaId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
 
