@@ -59,7 +59,7 @@ DlcCommand::read_request_t Mct410HourlyReadCommand::requestDayBegin(const CtiDat
 
 
 //  throws CommandException
-DlcCommand::read_request_t Mct410HourlyReadCommand::requestDay(const CtiDate &date_begin, const unsigned channel, const CtiDate &Yesterday, DayPart meridian)
+DlcCommand::read_request_t Mct410HourlyReadCommand::requestDay(const CtiDate &date_begin, const unsigned channel, const CtiDate &Yesterday, DayPart meridiem)
 {
     if( channel == 0 || channel > 2 )
     {
@@ -72,11 +72,11 @@ DlcCommand::read_request_t Mct410HourlyReadCommand::requestDay(const CtiDate &da
 
     if( channel == 2 )
     {
-        return read_request_t(Read_HourlyReadChannel2BasePos + days_back * 2 + meridian, Read_HourlyReadLen);
+        return read_request_t(Read_HourlyReadChannel2BasePos + days_back * 2 + meridiem, Read_HourlyReadLen);
     }
     else
     {
-        return read_request_t(Read_HourlyReadChannel1BasePos + days_back * 2 + meridian, Read_HourlyReadLen);
+        return read_request_t(Read_HourlyReadChannel1BasePos + days_back * 2 + meridiem, Read_HourlyReadLen);
     }
 }
 
