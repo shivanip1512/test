@@ -165,5 +165,5 @@
     <entry key="yukon.web.modules.amr.widgetClasses.MeterReadingsWidget.historicalReadings.tableHeader.value.linkText">Value</entry>
     
     <entry key="yukon.web.widgetClasses.SubscribedMonitorsWidget.emptyList">No Monitors</entry>
-    <entry key="yukon.web.widgetClasses.SubscribedMonitorsWidget.subscription.removed">removed from Subscriptions</entry>
+    <entry key="yukon.web.widgetClasses.SubscribedMonitorsWidget.subscription.removed">{0} removed from Subscriptions</entry>
 </properties>

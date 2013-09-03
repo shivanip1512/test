@@ -256,6 +256,10 @@ table th,.TitleHeader,.columnHeader {
 	border-bottom: solid 1px #ccc;
 }
 
+table.dashed th,.TitleHeader.dashed,.columnHeader.dashed {
+	border-bottom-style: dashed;
+}
+
 table.naturalWidth {
 	width: auto;
 }
@@ -1330,7 +1334,7 @@ hr.dashed,.divider.dashed {
 }
 
 .with-form-controls {
-    line-height: 26px;
+	line-height: 26px;
 }
 
 /* DATE/TIME PICKERS */

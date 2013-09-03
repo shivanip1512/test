@@ -10,12 +10,11 @@ Yukon.Favorites = (function () {
                      name:      button.attr('data-name'),
                      labelArgs: button.attr('data-label-args'),
                      path:      button.attr('data-path')
-       };
+                   };
 
         if (typeof data.path === 'undefined') {
             data.path = window.location.pathname + window.location.search;
         }
-
         return data;
     },
 
@@ -51,7 +50,7 @@ Yukon.Favorites = (function () {
         });
     },
 
-    _setIcon = function (jQueryItem, isFavorite, iconOn, iconOff) {
+    _setIcon = function (jQueryItem, isOn, iconOn, iconOff) {
 
         var icon = jQueryItem.find('i');
 
@@ -60,7 +59,7 @@ Yukon.Favorites = (function () {
             iconOff = 'icon-favorite-not';
         }
 
-        if (isFavorite) {
+        if (isOn) {
             icon.removeClass(iconOff).addClass(iconOn);
         } else {
             icon.removeClass(iconOn).addClass(iconOff);
@@ -117,7 +116,6 @@ Yukon.Favorites = (function () {
                 var button = jQuery(this);
 
                 _initializeFavoriteIcon(button);
-
                 button.unbind('click');
                 button.click( function() {
                     _toggleFavorite(button);
@@ -125,6 +123,7 @@ Yukon.Favorites = (function () {
             });
 
             jQuery('.b-favorite.remove').each( function() {
+
                 var button = jQuery(this);
 
                 button.unbind('click');
@@ -133,17 +132,15 @@ Yukon.Favorites = (function () {
                         actionDo = function(){
                             _toggleFavorite(button, 'icon-star', 'icon-star');
                         },
-                        actionUndo = actionDo,
-                        header = button.attr('data-header');
+                        actionUndo = actionDo;
 
-                    header = header.replace( /</g, '&lt').replace( />/g, '&gt');
-
-                    localUi.removeWithUndo(row, actionDo, actionUndo, header);
+                    localUi.removeWithUndo(row, actionDo, actionUndo);
                 });
             });
         },
 
         initSubscribe: function() {
+
             var localUi = Yukon.ui;
 
             jQuery('.b-subscribe:not(.remove)').each( function() {
@@ -157,7 +154,6 @@ Yukon.Favorites = (function () {
             });
 
             jQuery('.b-subscribe.remove').each( function() {
-
                 var button = jQuery(this);
 
                 button.unbind('click');
@@ -173,7 +169,7 @@ Yukon.Favorites = (function () {
                 });
             });
         },
-    }
+    };
     return favoriteMod;
 }());
 

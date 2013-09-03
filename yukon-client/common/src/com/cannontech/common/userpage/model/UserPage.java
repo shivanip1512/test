@@ -2,13 +2,18 @@ package com.cannontech.common.userpage.model;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
+import org.apache.log4j.Logger;
+import org.joda.time.Instant;
+
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.DisplayableEnum;
+import com.google.common.collect.ImmutableMap;
 
-public class UserPage {
+public final class UserPage {
 
     private final Integer id;
     private final Integer userId;
@@ -17,7 +22,8 @@ public class UserPage {
     private final String name;
     private final List<String> arguments;
     private final boolean favorite;
-    private final Date lastAccess;
+    private final Instant lastAccess;
+    private final static Logger log = YukonLogManager.getLogger(UserPage.class);
 
     public enum Module implements DisplayableEnum, Comparable<Module> {
         AMI(1),
@@ -51,44 +57,34 @@ public class UserPage {
         }
     }
 
+    private final static Map<String, String> mappedModuleNames = ImmutableMap.of("capcontrol", "vv", "amr", "ami",
+            "adminSetup", "admin", "operator", "assets", "survey", "assets");
+
     public  Module getModuleEnum() {
         String moduleName = module;
-        if (moduleName.equals("capcontrol")) {
-            moduleName = "vv";
+        if (mappedModuleNames.containsKey(moduleName)) {
+            moduleName = mappedModuleNames.get(moduleName);
         }
-        if (moduleName.equals("amr")) {
-            moduleName = "ami";
-        }
-        if (moduleName.equals("adminSetup")) {
-            moduleName = "admin";
-        }
-        if (moduleName.equals("operator")) {
-            moduleName = "assets";
-        }
-        if (moduleName.equals("survey")) {
-            moduleName = "assets";
-        }
-
-        moduleName = moduleName.toUpperCase(Locale.US);
+        moduleName = moduleName.toUpperCase();
 
         Module temp = Module.UNKNOWN;
         try {
             temp = Module.valueOf(moduleName);
-        } catch(Exception e) {
-            temp = Module.UNKNOWN;
+        } catch (Exception e) {
+            log.error("unknown module name " + moduleName);
         }
         return temp;
     }
 
     public UserPage(Integer userId, String path, boolean isFavorite) {
-        this(userId, path, isFavorite, null, null, new ArrayList<String>(), new Date(), null);   
+        this(userId, path, isFavorite, null, null, new ArrayList<String>(), new Instant(), null);   
     }
 
     public UserPage(Integer userId, String path, boolean category, String moduleName, String name, List<String> arguments) {
-     this(userId, path, category, moduleName, name, arguments, new Date(), null);   
+     this(userId, path, category, moduleName, name, arguments, new Instant(), null);   
     }
 
-    public UserPage(Integer userId, String path, boolean isFavorite,  String module, String name, List<String> arguments, Date lastAccess, Integer id) {
+    public UserPage(Integer userId, String path, boolean isFavorite,  String module, String name, List<String> arguments, Instant lastAccess, Integer id) {
         this.id = id;
         this.userId = userId;
         this.path = path;
@@ -120,25 +116,27 @@ public class UserPage {
     public final boolean isFavorite() {
         return favorite;
     }
-    public Date getLastAccess() {
+    public Instant getLastAccess() {
         return lastAccess;
     }
 
-    public UserPage updateId(Integer id) {
+    public UserPage withId(Integer id) {
         if (this.id == id) {
             return this;
         } else {
             return new UserPage(this.userId, this.path, this.favorite, this.module, this.name, this.arguments, this.lastAccess, id);
         }
     }
-    public UserPage updateFavorite(boolean isFavorite) {
+
+    public UserPage withFavorite(boolean isFavorite) {
         if (this.favorite == isFavorite) {
             return this;
         } else {
             return new UserPage(this.userId, this.path, isFavorite, this.module, this.name, this.arguments, this.lastAccess, this.id);
         }
     }
-    public UserPage updateLastAccess(Date lastAccessedDate) {
+
+    public UserPage withLastAccess(Instant lastAccessedDate) {
         if (this.lastAccess == lastAccessedDate) {
             return this;
         } else {

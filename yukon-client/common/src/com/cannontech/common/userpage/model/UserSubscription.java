@@ -1,7 +1,7 @@
 package com.cannontech.common.userpage.model;
 
 
-public class UserSubscription {
+public final class UserSubscription {
 
     private final Integer id;
     private final Integer userId;

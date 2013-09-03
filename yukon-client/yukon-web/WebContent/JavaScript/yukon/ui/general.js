@@ -702,9 +702,13 @@ Yukon.modules.ui = function (mod) {
      * @param jElem -jQuery element to be remvoed
      * @param actionDo - remove action
      * @param actionUndo - undo remove action
-     * @param confirmLabel - row text
+     * 
+     * jElem (or an ancestor) is expected to have attributes
+     *     data-removed-text: text to confirm operation (eg. 'Item removed from list')
+     *     data-undo-text: text to revert change (eg. 'Undo')
+     *
      */
-    mod.removeWithUndo = function(jElem, actionDo, actionUndo, itemName) {
+    mod.removeWithUndo = function(jElem, actionDo, actionUndo) {
         var elemType = jElem.prop('tagName'),
             undoneElements = jQuery('#undone-elements'),
             removedText = jElem.closest('[data-removed-text]').attr('data-removed-text'),
@@ -723,7 +727,7 @@ Yukon.modules.ui = function (mod) {
         }
 
         undo = jQuery('<' + elemType + ' class="undo-row"></' + elemType + '>').hide();
-        undo.append(jQuery('<span>' + itemName + ' '+ removedText + '</span>'));
+        undo.append(jQuery('<span>' + removedText + '</span>'));
         undo.append(undoLink);
 
         actionDo();

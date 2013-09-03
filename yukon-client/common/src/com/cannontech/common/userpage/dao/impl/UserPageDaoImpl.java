@@ -1,14 +1,15 @@
 package com.cannontech.common.userpage.dao.impl;
 
 import java.sql.SQLException;
-import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.annotation.PostConstruct;
 
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.userpage.dao.UserPageDao;
@@ -19,7 +20,6 @@ import com.cannontech.database.AdvancedFieldMapper;
 import com.cannontech.database.RowMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.SqlParameterChildSink;
-import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
@@ -34,19 +34,21 @@ public class UserPageDaoImpl implements UserPageDao {
     private static SimpleTableAccessTemplate<UserPage> userPageTemplate;
     private static SimpleTableAccessTemplate<UserPageParameterEntry> userPageParamTemplate;
 
-    @Override
+    @Override 
+    @Transactional
     public boolean toggleFavorite(UserPage page) {
         UserPage dbPage = findPage(page);
         if (dbPage == null) {
-            page = page.updateFavorite(true);
+            page = page.withFavorite(true);
         } else {
-            page = dbPage.updateFavorite( ! dbPage.isFavorite());
+            page = dbPage.withFavorite( ! dbPage.isFavorite());
         }
         UserPage afterUpdate = save(page);
         return afterUpdate.isFavorite();
     }
 
     @Override
+    @Transactional(readOnly=true)
     public boolean isFavorite(UserPage page) {
 
         UserPage dbPage = findPage(page);
@@ -55,21 +57,23 @@ public class UserPageDaoImpl implements UserPageDao {
     }
 
     @Override
+    @Transactional
     public void updateHistory(UserPage page) {
         UserPage dbPage = findPage(page);
         if (dbPage != null) {
-            page = dbPage.updateLastAccess(page.getLastAccess());
+            page = dbPage.withLastAccess(page.getLastAccess());
         }
         save(page);
         maintainHistory(page.getUserId());
     }
 
     @Override
+    @Transactional(readOnly=true)
     public List<UserPage> getPagesForUser(LiteYukonUser user) {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT UserPage.UserPageId, UserId, PagePath, PageName, Module, Favorite, LastAccess");
-        sql.append(buildFromStatement());
+        sql.append("SELECT UserPageId, UserId, PagePath, PageName, Module, Favorite, LastAccess");
+        sql.append("FROM UserPage");
         sql.append("WHERE UserId").eq(user.getUserID());
 
         List<UserPage> results = yukonJdbcTemplate.query(sql, userPageRowMapper);
@@ -77,10 +81,15 @@ public class UserPageDaoImpl implements UserPageDao {
         return results;
     }
 
+    /**
+     * Performs the insert/update operation
+     * @return UserPage with id to match database structure.
+     * If an insert is performed, this id is generated.
+     */
     private UserPage save(UserPage page) {
 
         int userPageId = userPageTemplate.save(page);
-        page = page.updateId(userPageId);
+        page = page.withId(userPageId);
 
         clearParameters(page);
         List<UserPageParameterEntry> params = UserPageParameterEntry.getParamEntries(page);
@@ -99,10 +108,14 @@ public class UserPageDaoImpl implements UserPageDao {
         yukonJdbcTemplate.update(sql);
     }
 
+    /**
+     * Finds a page with the specified userId and path. If none is found, null is returned.
+     */
     private UserPage findPage(UserPage page) {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append(buildSelectStatement()).append(buildFromStatement());
+        sql.append("SELECT UserPageId, UserId, PagePath, PageName, Module, Favorite, LastAccess");
+        sql.append("FROM UserPage");
         sql.appendFragment(buildUniquenessCriterion(page));
         List<UserPage> pages = yukonJdbcTemplate.query(sql, userPageRowMapper);
 
@@ -112,6 +125,9 @@ public class UserPageDaoImpl implements UserPageDao {
         }
     }
 
+    /**
+     * Deletes all but the most recent MAX_HISTORY elements for a userId that are not favorited
+     */
     private void maintainHistory(int userId) {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -123,11 +139,14 @@ public class UserPageDaoImpl implements UserPageDao {
         sql.append("    WHERE UP.UserId").eq(userId);
         sql.append("  ) T");
         sql.append("  WHERE T.RowNumber").gt(MAX_HISTORY);
-        sql.append("  AND T.Favorite").eq("N");
+        sql.append("  AND T.Favorite").eq(false);
         sql.append(")");
         yukonJdbcTemplate.update(sql);
     }
 
+    /**
+     * Removes references to specified UserPage in the UserPageParams table
+     */
     private void clearParameters(UserPage page) {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -137,26 +156,20 @@ public class UserPageDaoImpl implements UserPageDao {
 
     }
 
-   private static SqlFragmentSource buildUniquenessCriterion(UserPage page) {
+   /**
+     * @return WHERE clause for path and UserId
+     */
+    private static SqlFragmentSource buildUniquenessCriterion(UserPage page) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("WHERE PagePath").eq(page.getPath());
         sql.append("AND UserId").eq(page.getUserId());
         return sql;
     }
 
-   private static SqlFragmentSource buildSelectStatement() {
-       SqlStatementBuilder sql = new SqlStatementBuilder();
-       sql.append("SELECT UserPageId, UserId, PagePath, PageName, Module, Favorite, LastAccess");
-       return sql;
-   }
-   
-   private static SqlFragmentSource buildFromStatement() {
-       SqlStatementBuilder sql = new SqlStatementBuilder();
-       sql.append("FROM UserPage");
-       return sql;
-   }
-
-   private List<String> getParameters(Integer pageId) {
+   /**
+     * @return labelArgs for page to generate i18n display title
+     */
+    private List<String> getParameters(Integer pageId) {
        SqlStatementBuilder sql = new SqlStatementBuilder();
        sql.append("SELECT Parameter");
        sql.append("FROM UserPageParam");
@@ -176,7 +189,7 @@ public class UserPageDaoImpl implements UserPageDao {
             String pageName = rs.getString("PageName");
             String module = rs.getString("Module");
             boolean isFavorite = rs.getBoolean("Favorite");
-            Date lastAccess = rs.getDate("LastAccess");
+            Instant lastAccess = rs.getInstant("LastAccess");
 
             List<String> params = getParameters(id);
 
@@ -193,7 +206,7 @@ public class UserPageDaoImpl implements UserPageDao {
             p.addValue("PagePath", page.getPath());
             p.addValue("PageName", page.getName());
             p.addValue("Module", page.getModule());
-            p.addValue("Favorite", YNBoolean.valueOf(page.isFavorite()));
+            p.addValue("Favorite", page.isFavorite());
             p.addValue("LastAccess", page.getLastAccess());
         }
         public Number getPrimaryKey(UserPage page) {
@@ -263,7 +276,8 @@ public class UserPageDaoImpl implements UserPageDao {
     private List<UserPage> getAllPages() {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append(buildSelectStatement()).append(buildFromStatement());
+        sql.append("SELECT UserPageId, UserId, PagePath, PageName, Module, Favorite, LastAccess");
+        sql.append("FROM UserPage");
 
         List<UserPage> results = yukonJdbcTemplate.query(sql, userPageRowMapper);
         return results;

@@ -12,26 +12,33 @@
     });
 </script>
 
-<c:if test="${isSubscribedWidget}">
-    <cti:msg2 var="removedText" key=".subscription.removed"/>
-    <cti:msg2 var="undoText" key="yukon.common.undo"/>
-</c:if>
+<style type="text/css">
+    .monitor-subs th.name {width: 50%}
+    .monitor-subs th.data {width: 20%}
+    .monitor-subs th.monitoring {width: 25%}
+    .monitor-subs th.enable {width: 5%}
+    
+</style>
+
+<cti:msg2 var="undoText" key="yukon.common.undo"/>
 
 <cti:msgScope paths="widgetClasses.DeviceDataMonitorsWidget">
     <c:if test="${not empty deviceDataMonitors}">
-    <table class="compactResultsTable stacked" data-removed-text="${removedText}" data-undo-text="${undoText}">
+    <table class="compactResultsTable monitor-subs dashed stacked" data-undo-text="${undoText}">
         <thead>
             <tr>
-                <th><i:inline key=".name"/></th>
-                <th class="tar"><i:inline key=".violations"/></th>
-                <th class="tar"><i:inline key=".monitoring"/></th>
-                <th>&nbsp;</th>
+                <th class="name"><i:inline key=".name"/></th>
+                <th class="data tar"><i:inline key=".violations"/></th>
+                <th class="monitoring tar"><i:inline key=".monitoring"/></th>
+                <th class="enable">&nbsp;</th>
             </tr>
         </thead>
         <tfoot></tfoot>
         <tbody>
             <c:forEach var="monitor" items="${deviceDataMonitors}">
-                <tr class="monitor">
+                <cti:msg2 var="removedText" key="widgetClasses.SubscribedMonitorsWidget.subscription.removed" argument="${fn:escapeXml(monitor.name)}"/>
+
+                <tr class="monitor" data-removed-text="${removedText}">
                     <%-- monitor name --%>
                     <td>
                         <c:set var="buttonClasses" value="" />
@@ -42,7 +49,7 @@
                         </c:if>
 
                         <cti:button classes="hover-actions b-subscribe ${buttonClasses}" nameKey="subscribe" renderMode="image" icon="icon-feed ${iconClasses}"
-                            data-name="${fn:escapeXml(monitor.name)}" data-subscription-type="DEVICE_DATA_MONITOR" data-ref-id="${monitor.id}"/>
+                            data-subscription-type="DEVICE_DATA_MONITOR" data-ref-id="${monitor.id}" />
 
                         <cti:url var="viewMonitorUrl" value="/amr/deviceDataMonitor/view">
                             <cti:param name="monitorId" value="${monitor.id}" />
@@ -85,13 +92,13 @@
 
 <cti:msgScope paths="widgets.outageMonitorsWidget">
     <c:if test="${not empty outageMonitors}">
-    <table class="compactResultsTable stacked" data-removed-text="${removedText}" data-undo-text="${undoText}">
+    <table class="compactResultsTable monitor-subs dashed stacked" data-removed-text="${removedText}" data-undo-text="${undoText}">
         <thead>
             <tr>
-                <th><i:inline key=".tableHeader.name"/></th>
-                <th class="tar"><i:inline key=".tableHeader.violations"/></th>
-                <th class="tar"><i:inline key=".tableHeader.monitoring"/></th>
-                <th>&nbsp;</th>
+                <th class="name"><i:inline key=".tableHeader.name"/></th>
+                <th class="data tar"><i:inline key=".tableHeader.violations"/></th>
+                <th class="monitoring tar"><i:inline key=".tableHeader.monitoring"/></th>
+                <th class="enable">&nbsp;</th>
             </tr>
         </thead>
         <tfoot></tfoot>
@@ -99,8 +106,9 @@
             <c:forEach var="monitor" items="${outageMonitors}">
                 <c:set var="monitorId" value="${monitor.outageMonitorId}"/>
                 <c:set var="monitorName" value="${monitor.outageMonitorName}"/>
+                <cti:msg2 var="removedText" key="widgetClasses.SubscribedMonitorsWidget.subscription.removed" argument="${fn:escapeXml(monitorName)}"/>
 
-                <tr class="monitor">
+                <tr class="monitor" data-removed-text="${removedText}">
                     <%-- monitor name --%>
                     <td>
                         <c:set var="buttonClasses" value="" />
@@ -155,13 +163,13 @@
     </c:if>
 
     <c:if test="${not empty tamperFlagMonitors}">
-    <table class="compactResultsTable stacked" data-removed-text="${removedText}" data-undo-text="${undoText}">
+    <table class="compactResultsTable monitor-subs dashed stacked" data-removed-text="${removedText}" data-undo-text="${undoText}">
         <thead>
             <tr>
-                <th><i:inline key=".tableHeader.name"/></th>
-                <th class="tar"><i:inline key=".tableHeader.violations"/></th>
-                <th class="tar"><i:inline key=".tableHeader.monitoring"/></th>
-                <th>&nbsp;</th>
+                <th class="name"><i:inline key=".tableHeader.name"/></th>
+                <th class="data tar"><i:inline key=".tableHeader.violations"/></th>
+                <th class="monitoring tar"><i:inline key=".tableHeader.monitoring"/></th>
+                <th class="enable">&nbsp;</th>
             </tr>
         </thead>
         <tfoot></tfoot>
@@ -169,8 +177,9 @@
             <c:forEach var="monitor" items="${tamperFlagMonitors}">
                 <c:set var="monitorId" value="${monitor.tamperFlagMonitorId}"/>
                 <c:set var="monitorName" value="${monitor.tamperFlagMonitorName}"/>
+                <cti:msg2 var="removedText" key="widgetClasses.SubscribedMonitorsWidget.subscription.removed" argument="${fn:escapeXml(monitorName)}"/>
 
-                <tr class="monitor">
+                <tr class="monitor" data-removed-text="${removedText}">
                     <%-- monitor name --%>
                     <td>
                         <c:set var="buttonClasses" value="" />
@@ -225,12 +234,13 @@
         <div class="errorMessage"><i:inline key="${statusPointMonitorsWidgetError}"/></div>
     </c:if>
     <c:if test="${not empty statusPointMonitors}">
-    <table class="compactResultsTable stacked" data-removed-text="${removedText}" data-undo-text="${undoText}">
+    <table class="compactResultsTable monitor-subs dashed stacked" data-removed-text="${removedText}" data-undo-text="${undoText}">
         <thead>
             <tr>
-                <th><i:inline key=".tableHeader.name"/></th>
-                <th class="tar"><i:inline key=".tableHeader.monitoring"/></th>
-                <th>&nbsp;</th>
+                <th class="name"><i:inline key=".tableHeader.name"/></th>
+                <th class="data">&nbsp;</th>
+                <th class="monitoring tar"><i:inline key=".tableHeader.monitoring"/></th>
+                <th class="enable">&nbsp;</th>
             </tr>
         </thead>
         <tfoot></tfoot>
@@ -238,10 +248,11 @@
         <c:forEach var="monitor" items="${statusPointMonitors}">
             <c:set var="monitorId" value="${monitor.statusPointMonitorId}"/>
             <c:set var="monitorName" value="${monitor.statusPointMonitorName}"/>
+            <cti:msg2 var="removedText" key="widgetClasses.SubscribedMonitorsWidget.subscription.removed" argument="${fn:escapeXml(monitorName)}"/>
 
-            <tr class="monitor">
+            <tr class="monitor" data-removed-text="${removedText}">
                 <%-- monitor name --%>
-                <td>
+                <td colspan="2">
                     <c:set var="buttonClasses" value="" />
                     <c:set var="iconClasses" value="disabled cp" />
                     <c:if test="${isSubscribedWidget}">
@@ -289,19 +300,23 @@
     </c:if>
 
     <c:if test="${not empty porterResponseMonitors}">
-    <table class="compactResultsTable stacked" data-removed-text="${removedText}" data-undo-text="${undoText}">
+    <table class="compactResultsTable monitor-subs dashed stacked" data-removed-text="${removedText}" data-undo-text="${undoText}">
         <thead>
             <tr>
-                <th><i:inline key=".name"/></th>
-                <th>&nbsp;</th>
+                <th class="name"><i:inline key=".name"/></th>
+                <th class="data">&nbsp;</th>
+                <th class="monitoring">&nbsp;</th>
+                <th class="enable">&nbsp;</th>
             </tr>
         </thead>
         <tfoot></tfoot>
         <tbody>
         <c:forEach var="monitor" items="${porterResponseMonitors}">
-            <tr class="monitor">
+            <cti:msg2 var="removedText" key="widgetClasses.SubscribedMonitorsWidget.subscription.removed" argument="${fn:escapeXml(monitor.name)}"/>
+
+            <tr class="monitor" data-removed-text="${removedText}">
                 <%-- monitor name --%>
-                <td>
+                <td colspan="3">
                     <c:set var="buttonClasses" value="" />
                     <c:set var="iconClasses" value="disabled cp" />
                     <c:if test="${isSubscribedWidget}">
@@ -347,13 +362,13 @@
     </c:if>
 
     <c:if test="${not empty validationMonitors}">
-    <table class="compactResultsTable stacked" data-removed-text="${removedText}" data-undo-text="${undoText}">
+    <table class="compactResultsTable monitor-subs dashed stacked" data-removed-text="${removedText}" data-undo-text="${undoText}">
         <thead>
             <tr>
-                <th><i:inline key=".tableHeader.name"/></th>
-                <th class="tar"><i:inline key=".tableHeader.threshold"/>&nbsp;(<i:inline key=".thresholdUnits"/>)</th>
-                <th class="tar"><i:inline key=".tableHeader.monitoring"/></th>
-                <th>&nbsp;</th>
+                <th class="name"><i:inline key=".tableHeader.name"/></th>
+                <th class="data tar"><i:inline key=".tableHeader.threshold"/></th>
+                <th class="monitoring tar"><i:inline key=".tableHeader.monitoring"/></th>
+                <th class="enable">&nbsp;</th>
             </tr>
         </thead>
         <tfoot></tfoot>
@@ -361,8 +376,9 @@
         <c:forEach var="monitor" items="${validationMonitors}">
             <c:set var="monitorId" value="${monitor.validationMonitorId}"/>
             <c:set var="monitorName" value="${monitor.name}"/>
+            <cti:msg2 var="removedText" key="widgetClasses.SubscribedMonitorsWidget.subscription.removed" argument="${fn:escapeXml(monitorName)}"/>
 
-            <tr class="monitor">
+            <tr class="monitor" data-removed-text="${removedText}">
                 <%-- monitor name --%>
                 <td>
                     <c:set var="buttonClasses" value="" />
@@ -384,7 +400,7 @@
 
                 <%-- threshold --%>
                 <td class="tar">
-                    <cti:msg2 key="yukon.common.float.tenths" argument="${monitor.reasonableMaxKwhPerDay}" />
+                    <cti:msg2 key="yukon.common.float.tenths" argument="${monitor.reasonableMaxKwhPerDay}" />&nbsp;<i:inline key=".thresholdUnits"/>
                 </td>
 
                 <%-- monitoring count --%>

@@ -15,23 +15,22 @@
                         <span class="empty-list"><i:inline key=".favorites.emptyList" /></span>
                     </c:if>
                     <c:if test="${not empty favorites}">
-                            <cti:msg2 var="removedText" key=".favorites.removed"/>
                             <cti:msg2 var="undoText" key="yukon.common.undo"/>
 
                             <c:forEach var="module" items="${favorites}">
                                         <c:if test="${favorites.size() > 1}">
                                             <h5><cti:msg2 key="${module.key}"/></h5>
                                         </c:if>
-                                        <ul class="simple-list stacked favorites" data-removed-text="${removedText}" data-undo-text="${undoText}">
+                                        <ul class="simple-list stacked favorites" data-undo-text="${undoText}">
                                             <c:forEach items="${module.value}" var="favorite">
-                                                <li class="favorite">
+                                                <cti:msg2 var="removedText" key=".favorites.removed" argument="${fn:escapeXml(favorite.header)}"/>
+                                                <li class="favorite" data-removed-text="${removedText}">
 
                                                     <cti:button classes="b-favorite remove" nameKey="favorite" renderMode="image" icon="icon-star" 
                                                         data-name="${favorite.name}" 
                                                         data-module="${favorite.module}" 
                                                         data-path="${favorite.path}" 
-                                                        data-label-args="${favorite.labelArgs}" 
-                                                        data-header="${fn:escapeXml(favorite.header)}"/>
+                                                        data-label-args="${favorite.labelArgs}"/>
 
                                                     <a href="${favorite.page.path}">${fn:escapeXml(favorite.header)}</a>
                                                 </li>
@@ -56,18 +55,6 @@
             </cti:tabbedContentSelector>
         </div>
         <div class="column two nogutter">
-            <cti:checkRolesAndProperties value="JAVA_WEB_START_LAUNCHER_ENABLED">
-                <cti:msgScope paths="yukon.web.layout.standard">
-                    <tags:sectionContainer2 nameKey="applications">
-                            <%@ include file="../jws/applications.jsp" %>
-                    </tags:sectionContainer2>
-                </cti:msgScope>
-            </cti:checkRolesAndProperties>
-        </div>
-    </div>
-
-    <div class="column_12_12 clear">
-        <div class="column one">
             <tags:widget bean="subscribedMonitorsWidget" container="section"/>
         </div>
     </div>
