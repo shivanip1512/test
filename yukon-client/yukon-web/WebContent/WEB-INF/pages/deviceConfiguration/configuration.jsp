@@ -15,7 +15,7 @@
 Yukon.DeviceConfig.configInit(
     {
         configId : '${deviceConfigurationBackingBean.configId}',
-        supportedTypes : ${configurationDeviceTypesBackingBean.supportedTypesEmpty},
+        supportedTypesEmpty : ${configurationDeviceTypesBackingBean.supportedTypesEmpty},
         mode : '${mode}'
     }
 );
