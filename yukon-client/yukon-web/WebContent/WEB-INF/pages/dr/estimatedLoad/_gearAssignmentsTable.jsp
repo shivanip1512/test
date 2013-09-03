@@ -5,7 +5,7 @@
 
 <cti:url value="gearAssignmentsPage" var="sortUrl"/>
 
-<cti:msgScope paths="modules.dr.assignments">
+<cti:msgScope paths="modules.dr.estimatedLoad">
     <c:choose>
         <c:when test="${empty pagedGears.resultList}">
             <span class="empty-list"><i:inline key=".noGears"/></span>

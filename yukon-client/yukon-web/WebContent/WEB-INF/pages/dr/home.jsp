@@ -85,8 +85,7 @@
                     </div>
                     <div class="column two nogutter">
                         <cti:checkRolesAndProperties value="ENABLE_ESTIMATED_LOAD">
-	                        <a href="/dr/formula/list"><span class="fl"><i:inline key=".loadFormulas"/></span></a><br>
-	                        <a href="/dr/formula/assignments"><span class="fl"><i:inline key=".formulaAssignments"/></span></a>
+	                        <a href="/dr/estimatedLoad/home"><span class="fl"><i:inline key=".estimatedLoad"/></span>
                         </cti:checkRolesAndProperties>
                     </div>
                 </div>

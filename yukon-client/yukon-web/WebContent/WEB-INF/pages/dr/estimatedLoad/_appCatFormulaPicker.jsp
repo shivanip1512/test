@@ -3,7 +3,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
 <cti:url value="appCatAssignmentsPage" var="baseUrl"/>
-<cti:msgScope paths="modules.dr.assignments">
+<cti:msgScope paths="modules.dr.estimatedLoad">
 <tags:pickerDialog
     id="appCatFormulaPicker_${appCatAssignment.applianceCategory.applianceCategoryId}"
     type="appCatFormulaPicker"
@@ -15,6 +15,6 @@
     initialId="${appCatAssignment.formulaId}"
     allowEmptySelection="true"/>
     <c:if test="${appCatAssignment.formulaId != null}">
-        (<a href="view/${appCatAssignment.formulaId}"><cti:msg2 key="yukon.common.view"/></a>)
+        (<a href="formula/view?formulaId=${appCatAssignment.formulaId}"><cti:msg2 key="yukon.common.view"/></a>)
     </c:if>
 </cti:msgScope>

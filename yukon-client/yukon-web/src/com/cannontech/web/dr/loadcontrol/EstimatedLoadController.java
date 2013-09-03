@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.sf.json.JSONArray;
-
 import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -19,7 +17,6 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -59,9 +56,9 @@ import com.cannontech.web.security.annotation.AuthorizeByCparm;
 import com.google.common.base.Function;
 
 @Controller
-@RequestMapping("/formula/*")
+@RequestMapping("/estimatedLoad/*")
 @AuthorizeByCparm(MasterConfigBooleanKeysEnum.ENABLE_ESTIMATED_LOAD)
-public class EstimatedLoadFormulaController {
+public class EstimatedLoadController {
 
     @Autowired private FormulaDao formulaDao;
     @Autowired private LMGearDaoImpl gearDao;
@@ -105,10 +102,14 @@ public class EstimatedLoadFormulaController {
         }
     };
 
-    @RequestMapping(value={"list","view"})
-    public String listPage(ModelMap model, YukonUserContext context) {
+    @RequestMapping("home")
+    public String home(ModelMap model, YukonUserContext context) {
+
         listPageAjax(model, context, SortBy.NAME, false, 10, 1);
-        return "dr/formula/list.jsp";
+        appCatAssignmentsPage(model, context, SortBy.NAME, false, 10, 1);
+        gearAssignmentsPage(model, context, SortBy.NAME, false, 10, 1);
+
+        return "dr/estimatedLoad/home.jsp";
     }
 
     @RequestMapping
@@ -126,22 +127,22 @@ public class EstimatedLoadFormulaController {
         model.addAttribute("descending", descending);
         model.addAttribute("pagedFormulas", pagedFormulas);
 
-        return "dr/formula/_formulasTable.jsp";
+        return "dr/estimatedLoad/_formulasTable.jsp";
     }
 
-    @RequestMapping("view/{formulaId}")
-    public String viewPage(ModelMap model, @PathVariable Integer formulaId) {
+    @RequestMapping("formula/view")
+    public String viewPage(ModelMap model, Integer formulaId) {
         model.addAttribute("mode", PageEditMode.VIEW);
 
         Formula formula = formulaDao.getFormulaById(formulaId);
         FormulaBean formulaBean = new FormulaBean(formula);
 
-        setupCommonModel(model, formulaBean);
+        populateFormulaPageModel(model, formulaBean);
 
-        return "dr/formula/formula.jsp";
+        return "dr/estimatedLoad/formula.jsp";
     }
 
-    @RequestMapping(value="create", method=RequestMethod.GET)
+    @RequestMapping(value="formula/create", method=RequestMethod.GET)
     public String createPage(ModelMap model, FormulaBean formulaBean) {
         model.addAttribute("mode", PageEditMode.CREATE);
 
@@ -149,12 +150,12 @@ public class EstimatedLoadFormulaController {
             formulaBean = new FormulaBean();
         }
 
-        setupCommonModel(model, formulaBean);
+        populateFormulaPageModel(model, formulaBean);
 
-        return "dr/formula/formula.jsp";
+        return "dr/estimatedLoad/formula.jsp";
     }
 
-    @RequestMapping(value="create", method=RequestMethod.POST)
+    @RequestMapping(value="formula/create", method=RequestMethod.POST)
     public String doCreate(ModelMap model, FormulaBean formulaBean, BindingResult bindingResult, FlashScope flashScope) {
 
         formulaBeanValidator.validate(formulaBean, bindingResult);
@@ -163,40 +164,40 @@ public class EstimatedLoadFormulaController {
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
 
-            setupCommonModel(model, formulaBean);
+            populateFormulaPageModel(model, formulaBean);
 
-            return "dr/formula/formula.jsp";
+            return "dr/estimatedLoad/formula.jsp";
         }
 
         int newId = formulaDao.saveFormula(formulaBean.getFormula());
 
         flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + "success.created", formulaBean.getName()));
 
-        return "redirect:/dr/formula/edit/" + newId;
+        return "redirect:/dr/estimatedLoad/edit?formulaId=" + newId;
     }
 
-    @RequestMapping(value="edit/{formulaId}", method=RequestMethod.GET)
-    public String editPage(ModelMap model, @PathVariable Integer formulaId) {
+    @RequestMapping(value="formula/edit", method=RequestMethod.GET)
+    public String editPage(ModelMap model, Integer formulaId) {
         model.addAttribute("mode", PageEditMode.EDIT);
 
         Formula formula = formulaDao.getFormulaById(formulaId);
         FormulaBean formulaBean = new FormulaBean(formula);
 
-        setupCommonModel(model, formulaBean);
+        populateFormulaPageModel(model, formulaBean);
 
-        return "dr/formula/formula.jsp";
+        return "dr/estimatedLoad/formula.jsp";
     }
 
-    @RequestMapping(value="edit/*", method=RequestMethod.POST)
+    @RequestMapping(value="formula/edit", method=RequestMethod.POST)
     public String doEdit(ModelMap model, FormulaBean formulaBean, BindingResult bindingResult, FlashScope flashScope) {
 
         formulaBeanValidator.validate(formulaBean, bindingResult);
         if (bindingResult.hasErrors()) {
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
-            setupCommonModel(model, formulaBean);
+            populateFormulaPageModel(model, formulaBean);
             model.addAttribute("pointNames", getPointNames(formulaBean));
-            return "dr/formula/formula.jsp";
+            return "dr/estimatedLoad/formula.jsp";
         }
 
         formulaDao.saveFormula(formulaBean.getFormula());
@@ -210,10 +211,10 @@ public class EstimatedLoadFormulaController {
         flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + "success.updated", formulaBean.getName()));
 
         model.addAttribute("pointNames", getPointNames(formulaBean));
-        return "redirect:/dr/formula/view/" + formulaBean.getFormulaId();
+        return "redirect:view?formulaId=" + formulaBean.getFormulaId();
     }
 
-    @RequestMapping("delete")
+    @RequestMapping("formula/delete")
     public String doDelete(Integer formulaId, FlashScope flashScope) {
         formulaDao.deleteFormulaById(formulaId);
         flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + "success.deleted"));
@@ -233,7 +234,7 @@ public class EstimatedLoadFormulaController {
 
         model.addAttribute("gearAssignment", currentAssignment);
 
-        return "dr/formula/_gearFormulaPicker.jsp";
+        return "dr/estimatedLoad/_gearFormulaPicker.jsp";
     }
 
     @RequestMapping
@@ -257,7 +258,7 @@ public class EstimatedLoadFormulaController {
         model.addAttribute("pagedGears", pagedGears);
         model.addAttribute("gearPrograms", gearPrograms);
 
-        return "dr/formula/_gearAssignmentsTable.jsp";
+        return "dr/estimatedLoad/_gearAssignmentsTable.jsp";
     }
 
     @RequestMapping("assignFormulaToAppCat")
@@ -273,7 +274,7 @@ public class EstimatedLoadFormulaController {
         ApplianceCategoryAssignment currentAssignment = formulaDao.getAssignmentForApplianceCategory(appCatId);
 
         model.addAttribute("appCatAssignment", currentAssignment);
-        return "dr/formula/_appCatFormulaPicker.jsp";
+        return "dr/estimatedLoad/_appCatFormulaPicker.jsp";
     }
 
     @RequestMapping
@@ -304,18 +305,10 @@ public class EstimatedLoadFormulaController {
         model.addAttribute("appCatDescending", descending);
         model.addAttribute("pagedAppCats", pagedAppCats);
 
-        return "dr/formula/_appCatAssignmentsTable.jsp";
+        return "dr/estimatedLoad/_appCatAssignmentsTable.jsp";
     }
 
-    @RequestMapping("assignments")
-    public String assignmentsPage(ModelMap model, YukonUserContext context) {
-        appCatAssignmentsPage(model, context, SortBy.NAME, false, 10, 1);
-        gearAssignmentsPage(model, context, SortBy.NAME, false, 10, 1);
-        return "dr/formula/assignments.jsp";
-    }
-
-    private void setupCommonModel(ModelMap model, FormulaBean formulaBean) {
-
+    private void populateFormulaPageModel(ModelMap model, FormulaBean formulaBean) {
         Set<FormulaInput.InputType> formulaInputs;
         if (formulaBean.getFormulaType() == Formula.Type.GEAR) {
             formulaInputs = FormulaInput.InputType.getGearInputs();

@@ -6,7 +6,7 @@
 
 <cti:url value="appCatAssignmentsPage" var="sortUrl"/>
 
-<cti:msgScope paths="modules.dr.assignments">
+<cti:msgScope paths="modules.dr.estimatedLoad">
     <c:choose>
         <c:when test="${noEnergyCompany}">
             <span class="error empty-list"><i:inline key=".noApplianceCategoriesForUser"/></span>

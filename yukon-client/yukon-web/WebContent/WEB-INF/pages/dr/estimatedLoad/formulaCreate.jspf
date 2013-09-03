@@ -1,5 +1,5 @@
 <tags:setFormEditMode mode="${mode}"/>
-<form:form id="formulaForm" commandName="formulaBean" action="create">
+<form:form id="formulaForm" commandName="formulaBean" action="formula/create">
     <div class="column_12_12 clearfix">
         <div class="column one">
             <tags:sectionContainer2 nameKey="formulaSettings">
@@ -17,6 +17,6 @@
 
     <div class="pageActionArea">
         <cti:button nameKey="create" type="submit" classes="primary action"/>
-        <cti:button nameKey="cancel" href="/dr/formula/list"/>
+        <cti:button nameKey="cancel" href="/dr/estimatedLoad/home"/>
     </div>
 </form:form>

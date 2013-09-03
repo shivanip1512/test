@@ -5,7 +5,7 @@
 
 <cti:url value="listPageAjax" var="sortUrl"/>
 
-<cti:msgScope paths="modules.dr.formulaList">
+<cti:msgScope paths="modules.dr.estimatedLoad">
     <c:if test="${not empty pagedFormulas.resultList}">
         <table class="compactResultsTable sortable-table">
             <thead>
@@ -17,7 +17,7 @@
             <tbody>
                 <c:forEach var="formula" items="${pagedFormulas.resultList}">
                     <tr>
-                        <td><a href="view/${formula.formulaId}">${formula.name}</a></td>
+                        <td><a href="formula/view?formulaId=${formula.formulaId}">${formula.name}</a></td>
                         <td><i:inline key="${formula.calculationType}"/></td>
                         <td><i:inline key="${formula.formulaType}"/></td>
                     </tr>

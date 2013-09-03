@@ -1,12 +1,11 @@
 <input id="formulaRowIndex" type="hidden" value="${fn:length(formulaBean.functions)}"/>
 
 <c:set var="formulaId" value="${formulaBean.formulaId}"/>
-<form:form id="formulaForm" commandName="formulaBean" action="../edit/${formulaBean.formulaId}">
+<form:form id="formulaForm" commandName="formulaBean" action="edit?formulaId=${formulaBean.formulaId}">
     <div class="column_12_12 clearfix">
         <div class="column one">
             <tags:sectionContainer2 nameKey="formulaSettings">
                 <tags:nameValueContainer2>
-                    <tags:hidden path="formulaId"/>
                     <tags:hidden path="formulaType"/>
                     <tags:hidden path="calculationType"/>
                     <tags:inputNameValue nameKey=".name" path="name" size="40"/>
@@ -138,12 +137,12 @@
     </tags:sectionContainer2>
     <div class="pageActionArea">
         <cti:displayForPageEditModes modes="VIEW">
-            <cti:button nameKey="edit" icon="icon-pencil" href="/dr/formula/edit/${formulaBean.formulaId}"/>
+            <cti:button nameKey="edit" icon="icon-pencil" href="edit?formulaId=${formulaBean.formulaId}"/>
         </cti:displayForPageEditModes>
         <cti:displayForPageEditModes modes="EDIT">
             <cti:button nameKey="save" type="submit" classes="primary action"/>
-            <cti:button nameKey="delete" id="deleteBtn" href="/dr/formula/delete?formulaId=${formulaBean.formulaId}"/>
-            <cti:button nameKey="cancel" href="/dr/formula/view/${formulaBean.formulaId}"/>
+            <cti:button nameKey="delete" id="deleteBtn" href="delete?formulaId=${formulaBean.formulaId}"/>
+            <cti:button nameKey="cancel" href="view?formulaId=${formulaBean.formulaId}"/>
             <dialog:confirm nameKey="confirmDelete" on="#deleteBtn" argument="${formulaBean.name}"/>
         </cti:displayForPageEditModes>
     </div>

@@ -264,6 +264,7 @@ Yukon.DrFormula = (function() {
             }
 
             _rowIndex = jQuery("#formulaRowIndex").val();
+            jQuery('#display_tabs').tabs({'cookie' : {}}).show();
 
             jQuery("#assignments")
                 .on("click", ".f-drFormula-remove", _removeAssignmentBtnClick)

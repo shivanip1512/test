@@ -430,8 +430,7 @@
 <entry key="yukon.web.modules.dr.home.typeHeader.linkText">Type</entry>
 <entry key="yukon.web.modules.dr.home.stateHeader.linkText">State</entry>
 <entry key="yukon.web.modules.dr.home.actionsHeader">Actions</entry>
-<entry key="yukon.web.modules.dr.home.loadFormulas">Load Formulas</entry>
-<entry key="yukon.web.modules.dr.home.formulaAssignments">Formula Assignments</entry>
+<entry key="yukon.web.modules.dr.home.estimatedLoad">Estimated Load</entry>
 
 <!-- Demand Response Quick Search -->
 <entry key="yukon.web.modules.dr.searchResults.pageTitle">Demand Response Quick Search</entry>
@@ -501,22 +500,38 @@
 <entry key="yukon.web.modules.dr.controlAreaList.heading.priority.linkText">Priority</entry>
 <entry key="yukon.web.modules.dr.controlAreaList.heading.timeWindow.linkText">Time Window</entry>
 
-<!-- Formula List -->
-
-<entry key="yukon.web.modules.dr.formulaList.pageName">Estimated Load</entry>
-<entry key="yukon.web.modules.dr.formulaList.formulas">Formulas</entry>
-<entry key="yukon.web.modules.dr.formulaList.formulas.title">Formulas</entry>
-<entry key="yukon.web.modules.dr.formulaList.weatherInputs.title">Weather Data Inputs</entry>
-<entry key="yukon.web.modules.dr.formulaList.name">Name</entry>
-<entry key="yukon.web.modules.dr.formulaList.name.linkText">Name</entry>
-<entry key="yukon.web.modules.dr.formulaList.formulaType">Formula Type</entry>
-<entry key="yukon.web.modules.dr.formulaList.formulaType.linkText">Formula Type</entry>
-<entry key="yukon.web.modules.dr.formulaList.calculationType">Calculation Type</entry>
-<entry key="yukon.web.modules.dr.formulaList.calculationType.linkText">Calculation Type</entry>
-<entry key="yukon.web.modules.dr.formulaList.assignments">Assignments</entry>
-<entry key="yukon.web.modules.dr.formulaList.actions">Actions</entry>
-<entry key="yukon.web.modules.dr.formulaList.newFormula.label">New Formula</entry>
-<entry key="yukon.web.modules.dr.formulaList.noFormulas">No formulas</entry>
+<!-- Estimated Load -->
+<entry key="yukon.web.modules.dr.estimatedLoad.actions">Actions</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.appCatId">Id</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.appCatType">Type</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.appCatType.linkText">Type</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.applianceCategories.title">Appliance Categories</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.applianceLoad.linkText">Appliance Load</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.assignments">Assignments</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.calculationType">Calculation Type</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.calculationType.linkText">Calculation Type</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.formula">Formula</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.formula.linkText">Formula</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.formulas">Formulas</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.formulas.title">Formulas</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.formulaType">Formula Type</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.formulaType.linkText">Formula Type</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.gearControlMethod">Control Method</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.gearControlMethod.linkText">Control Method</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.gearId">Gear Id</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.gears.title">Gears</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.name">Name</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.name.linkText">Name</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.newFormula.label">New Formula</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.noApplianceCategories">No appliance categories</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.noApplianceCategoriesForUser">No appliance categories available to user</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.noAssignment.label">No assignment</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.noGears">No gears</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.noFormulas">No formulas</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.pageName">Estimated Load</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.program.linkText">Program</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.weatherInputs.title">Weather Data Inputs</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.weatherInputs">Weather Inputs</entry>
 
 <entry key="yukon.web.modules.dr.formula.tableEntries.title">Table Entries</entry>
 
@@ -581,27 +596,6 @@
 <entry key="yukon.web.modules.dr.formula.applianceLoad">Appliance Load</entry>
 <entry key="yukon.web.modules.dr.formula.appCatType">Type</entry>
 <entry key="yukon.web.modules.dr.formula.undo">Undo</entry>
-
-<entry key="yukon.web.modules.dr.assignments.pageName">Formula Assignments</entry>
-<entry key="yukon.web.modules.dr.assignments.formulas.title">Formulas</entry>
-<entry key="yukon.web.modules.dr.assignments.noAssignment.label">No assignment</entry>
-<entry key="yukon.web.modules.dr.assignments.formula">Formula</entry>
-<entry key="yukon.web.modules.dr.assignments.formula.linkText">Formula</entry>
-<entry key="yukon.web.modules.dr.assignments.program.linkText">Program</entry>
-<entry key="yukon.web.modules.dr.assignments.name">Name</entry>
-<entry key="yukon.web.modules.dr.assignments.name.linkText">Name</entry>
-<entry key="yukon.web.modules.dr.assignments.gearId">Gear Id</entry>
-<entry key="yukon.web.modules.dr.assignments.gearControlMethod">Control Method</entry>
-<entry key="yukon.web.modules.dr.assignments.gearControlMethod.linkText">Control Method</entry>
-<entry key="yukon.web.modules.dr.assignments.appCatId">Id</entry>
-<entry key="yukon.web.modules.dr.assignments.appCatType">Type</entry>
-<entry key="yukon.web.modules.dr.assignments.appCatType.linkText">Type</entry>
-<entry key="yukon.web.modules.dr.assignments.applianceLoad.linkText">Appliance Load</entry>
-<entry key="yukon.web.modules.dr.assignments.gears.title">Gears</entry>
-<entry key="yukon.web.modules.dr.assignments.applianceCategories.title">Appliance Categories</entry>
-<entry key="yukon.web.modules.dr.assignments.noApplianceCategoriesForUser">No appliance categories available to user</entry>
-<entry key="yukon.web.modules.dr.assignments.noApplianceCategories">No appliance categories</entry>
-<entry key="yukon.web.modules.dr.assignments.noGears">No gears</entry>
 
 <!-- GearControlMethod.java -->
 <entry key="yukon.web.modules.dr.gearControlMethod.TimeRefresh">Time Refresh</entry>

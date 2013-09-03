@@ -445,8 +445,8 @@
               </page>
             </pages>
           </page>
-          <page name="formulaList" type="BASIC">
-            <link>/dr/formula/list</link>
+          <page name="estimatedLoad" type="BASIC">
+            <link>/dr/estimatedLoad/home</link>
             <pages>
               <page name="formula.CREATE" type="BASIC">
                 <labelArgument>${formulaBean.name}</labelArgument>
@@ -461,9 +461,6 @@
                 </pages>
               </page>
             </pages>
-          </page>
-          <page name="assignments" type="BASIC">
-            <link>/dr/formula/assignments</link>
           </page>
           <page name="searchResults" type="BASIC" hideSearch="true">
             <link>/dr/search</link>
