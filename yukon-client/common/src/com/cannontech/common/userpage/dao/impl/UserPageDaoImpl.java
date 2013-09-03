@@ -48,7 +48,6 @@ public class UserPageDaoImpl implements UserPageDao {
     }
 
     @Override
-    @Transactional(readOnly=true)
     public boolean isFavorite(UserPage page) {
 
         UserPage dbPage = findPage(page);
@@ -68,7 +67,6 @@ public class UserPageDaoImpl implements UserPageDao {
     }
 
     @Override
-    @Transactional(readOnly=true)
     public List<UserPage> getPagesForUser(LiteYukonUser user) {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
