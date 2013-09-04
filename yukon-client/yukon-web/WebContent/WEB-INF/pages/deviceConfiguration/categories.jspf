@@ -11,11 +11,11 @@
         <input type="hidden" id="categoryId_${catType}" value="${selection.categoryId}"/>
     
         <div class="pr clearfix">
-            <c:set var="style" value="pipe"/>
+            <c:set var="attrs" value=""/>
             <c:forEach var="deviceType" items="${configurationDeviceTypesBackingBean.typesByCategory[catType]}">
-                <c:set var="style" value="${style} f-devtype-${deviceType}"/>
+                <c:set var="attrs" value="${attrs} data-device-type-${deviceType}"/>
             </c:forEach>
-            <span class="${style}" style="margin-bottom: 20px;">&nbsp;</span>
+            <span ${attrs} class="pipe" style="margin-bottom: 20px;">&nbsp;</span>
             
             <c:if test="${empty selection.categoryId}">
                 <tags:alertBox nameKey=".needsSelection"/>
@@ -70,10 +70,10 @@
                                     
                                 <cti:msg2 var="i18nCatType" key=".${catType}.title"/>
                                 <cti:msg2 var="createBtnTitle" key=".createCategory" argument="${i18nCatType}"/>                            
-                                <cti:button nameKey="create" data-config-id="${configurationCategoriesBackingBean.configId}" classes="f-createBtn f-devType-${catType} f-disableAfterClick" busy="true" icon="icon-plus-green" title="${createBtnTitle}"/>
+                                <cti:button nameKey="create" data-config-id="${configurationCategoriesBackingBean.configId}" data-category-type="${catType}" classes="f-createBtn f-disableAfterClick" busy="true" icon="icon-plus-green" title="${createBtnTitle}"/>
                                 <c:if test="${not empty selection.categoryId}">
                                     <cti:msg2 var="editBtnTitle" key=".editAssignedCategory" argument="${selection.categoryName}"/>
-                                    <cti:button nameKey="edit" data-config-id="${configurationCategoriesBackingBean.configId}" classes="f-editBtn f-devType-${catType} f-disableAfterClick" busy="true" icon="icon-pencil" title="${editBtnTitle}"/>
+                                    <cti:button nameKey="edit" data-config-id="${configurationCategoriesBackingBean.configId}" data-category-type="${catType}" classes="f-editBtn f-disableAfterClick" busy="true" icon="icon-pencil" title="${editBtnTitle}"/>
                                 </c:if>
                             </div>
                         </cti:displayForPageEditModes>

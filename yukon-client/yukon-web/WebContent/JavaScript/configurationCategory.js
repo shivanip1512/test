@@ -43,9 +43,12 @@ Yukon.DeviceConfig = (function () {
     },
     
     _determineScheduleAddButtonVisibility = function(num) {
-        var regex = '^schedule' + num + '_time\\d+$';
-        var total = jQuery("td").filter(function() { return this.id.match(regex); }).length;
-        var schedule1visibles = jQuery("td").filter(function() { return this.id.match(regex) && jQuery(this.parentElement).is(':visible'); });
+        var regex = '^schedule' + num + '_time\\d+$',
+            total = jQuery("td").filter(function() { return this.id.match(regex); }).length,
+            schedule1visibles = jQuery("td").filter(function() { 
+                return this.id.match(regex) && jQuery(this.parentElement).is(':visible'); 
+            });
+
         if (schedule1visibles.length < total) {
             var btn = jQuery('#showNextDivSchedule' + num);
             btn.show();
@@ -62,8 +65,8 @@ Yukon.DeviceConfig = (function () {
     },
     
     _makeAjaxCall = function(method, params, button) {
-        jQuery('#' + button.attr('id')).mouseleave();
         var temp = '/deviceConfiguration/category/' + method;
+        jQuery('#' + button.attr('id')).mouseleave();
         jQuery('#categoryPopup').load(temp, params, function() {
             _handleVisibleElemsAndButtons();
             _enableButton(button);
@@ -86,18 +89,18 @@ Yukon.DeviceConfig = (function () {
                 });
                 
                 jQuery(".f-editBtn").click(function() {
-                    var btn = jQuery(this);
-                    var catTypeClass = btn.attr('class').match(/f-devType-\w*/)[0].split('-');
-                    var params = {'categoryId' : jQuery('#categoryId_' + catTypeClass[catTypeClass.length - 1]).val(),
+                    var btn = jQuery(this),
+                        catType = btn.attr('data-category-type'),
+                        params = {'categoryId' : jQuery('#categoryId_' + catType).val(),
                                   'configId' : btn.attr('data-config-id') };
                     
                     _makeAjaxCall('editInPlace', params, btn);
                 });
                 
                 jQuery(".f-createBtn").click(function() {
-                    var btn = jQuery(this);
-                    var catTypeClass = btn.attr('class').match(/f-devType-\w*/)[0].split('-');
-                    var params = {'categoryType' : catTypeClass[catTypeClass.length - 1], 
+                    var btn = jQuery(this),
+                        catType = btn.attr('data-category-type'),
+                        params = {'categoryType' : catType, 
                                   'configId' : btn.attr('data-config-id') };
             
                     _makeAjaxCall('createInPlace', params, btn);        
@@ -129,17 +132,18 @@ Yukon.DeviceConfig = (function () {
         });
         
         jQuery(".f-categories").click(function() {
+            var deviceType = jQuery(this).attr('data-device-type');
             jQuery(".pipe").css('visibility', 'hidden');
-            var devTypeClass = jQuery(this).attr('class').match(/f-devtype-\w*/)[0];
-            jQuery('.' + devTypeClass + '.pipe').css('visibility', 'visible');
+            jQuery(".pipe[data-device-type-" + deviceType + "]").css('visibility', 'visible');
+            jQuery(".pipe[data-device-type=" + deviceType + "]").css('visibility', 'visible');
         });
         
         jQuery("#categoryPopup").on("click", function(event) {
             if (jQuery(event.target).closest('#showNextFieldBtn').length > 0) {
                 // Show the next hidden display item.
-                var hiddenElems = jQuery("[id^='displayItem']").filter(function() { return this.classList.contains('dn'); });
+                var hiddenElems = jQuery("[id^='displayItem']").filter(function() { return this.classList.contains('dn'); }),
+                    visibleElems = jQuery("[id^='displayItem']").filter(function() { return !this.classList.contains('dn'); });
                 jQuery('#' + hiddenElems[0].id).removeClass('dn');
-                var visibleElems = jQuery("[id^='displayItem']").filter(function() { return !this.classList.contains('dn'); });
                 if (visibleElems.length < 26) {
                     jQuery('#showNextDiv').show();
                 } else {
@@ -149,10 +153,13 @@ Yukon.DeviceConfig = (function () {
         });
         
         jQuery(".f-addScheduleBtn").click(function() {
-            var button = jQuery(this);
-            var num = button.attr('data-add-schedule');
-            var regex = '^schedule' + num + '_time\\d+$';
-            var hiddenElems = jQuery("td").filter(function() { return this.id.match(regex) && !jQuery(this.parentElement).is(':visible'); });
+            var button = jQuery(this),
+                num = button.attr('data-add-schedule'),
+                regex = '^schedule' + num + '_time\\d+$',
+                hiddenElems = jQuery("td").filter(function() { 
+                    return this.id.match(regex) && !jQuery(this.parentElement).is(':visible'); 
+                });
+            
             jQuery('#' + hiddenElems[0].id).parent().show();
             _determineScheduleAddButtonVisibility(num);
         });
@@ -160,8 +167,8 @@ Yukon.DeviceConfig = (function () {
         // Find the first type and select his categories
         var pipe = jQuery(".pipe").get(0);
         if (pipe) {
-            var devTypeClass = jQuery(pipe).attr('class').match(/f-devtype-\w*/)[0];
-            jQuery('.' + devTypeClass + '.pipe').css('visibility', 'visible');
+            var deviceType = pipe.attributes["data-device-type"].value;
+            jQuery('.pipe[data-device-type-' + deviceType + ']').css('visibility', 'visible');
             jQuery(pipe).css('visibility', 'visible');
         }
     });
