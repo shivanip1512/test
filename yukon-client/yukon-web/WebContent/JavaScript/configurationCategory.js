@@ -65,9 +65,9 @@ Yukon.DeviceConfig = (function () {
     },
     
     _makeAjaxCall = function(method, params, button) {
-        var temp = '/deviceConfiguration/category/' + method;
+        var url = '/deviceConfiguration/category/' + method;
         jQuery('#' + button.attr('id')).mouseleave();
-        jQuery('#categoryPopup').load(temp, params, function() {
+        jQuery('#categoryPopup').load(url, params, function() {
             _handleVisibleElemsAndButtons();
             _enableButton(button);
         });
