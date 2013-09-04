@@ -331,8 +331,9 @@ public class LMHardwareConfigurationDaoImpl implements LMHardwareConfigurationDa
             @Override
             public SqlFragmentSource generate(List<Integer> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
-                sql.append("SELECT InventoryId, ApplianceId, LoadNumber AS Relay");
-                sql.append("FROM LmHardwareConfiguration");
+                sql.append("SELECT InventoryId, lmhc.ApplianceId, ApplianceCategoryId, LoadNumber AS Relay");
+                sql.append("FROM LmHardwareConfiguration lmhc");
+                sql.append("JOIN ApplianceBase ab ON ab.ApplianceId = lmhc.ApplianceId");
                 sql.append("WHERE InventoryId").in(subList);
                 return sql;
             }
@@ -341,7 +342,7 @@ public class LMHardwareConfigurationDaoImpl implements LMHardwareConfigurationDa
         List<InventoryRelayAppliance> resultsList = chunkingSqlTemplate.query(sqlFragmentGenerator, inventoryIds,
                                                                               new YukonRowMapper<InventoryRelayAppliance>() {
             public InventoryRelayAppliance mapRow(YukonResultSet rs) throws SQLException {
-                return new InventoryRelayAppliance(rs.getInt("InventoryId"), rs.getInt("Relay"), rs.getInt("ApplianceId"));
+                return new InventoryRelayAppliance(rs.getInt("InventoryId"), rs.getInt("Relay"), rs.getInt("ApplianceId"), rs.getInt("ApplianceCategoryId"));
             }
         });
         

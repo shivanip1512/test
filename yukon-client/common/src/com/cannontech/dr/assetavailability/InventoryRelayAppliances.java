@@ -9,6 +9,7 @@ import com.google.common.collect.Multimap;
 
 public final class InventoryRelayAppliances {
     private final Map<Integer, Map<Integer, Integer>> map = Maps.newHashMap();
+    private final Map<Integer, Integer> applianceToCategoryMap = Maps.newHashMap();
     
     public InventoryRelayAppliances(Iterable<InventoryRelayAppliance> iras) {
         for(InventoryRelayAppliance ira : iras) {
@@ -24,10 +25,16 @@ public final class InventoryRelayAppliances {
             relayMap.put(ira.getRelay(), ira.getApplianceId());
             map.put(ira.getInventoryId(), relayMap);
         }
+        applianceToCategoryMap.put(ira.getApplianceId(), ira.getApplianceCategoryId());
     }
     
     public Integer getApplianceId(int inventoryId, int relay) {
         return map.get(inventoryId).get(relay);
+    }
+    
+    public Integer getApplianceCategoryId(int inventoryId, int relay) {
+        int applianceId = getApplianceId(inventoryId, relay);
+        return applianceToCategoryMap.get(applianceId);
     }
     
     public Multimap<Integer, Integer> getInventoryToApplianceMultimap() {
@@ -36,5 +43,9 @@ public final class InventoryRelayAppliances {
             multimap.putAll(entry.getKey(), entry.getValue().values());
         }
         return multimap;
+    }
+    
+    public Map<Integer, Integer> getRelayApplianceMap(int inventoryId) {
+        return map.get(inventoryId);
     }
 }

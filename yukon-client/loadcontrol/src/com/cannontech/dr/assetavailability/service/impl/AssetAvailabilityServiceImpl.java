@@ -33,7 +33,6 @@ import com.cannontech.dr.assetavailability.SimpleAssetAvailabilitySummary;
 import com.cannontech.dr.assetavailability.dao.DRGroupDeviceMappingDao;
 import com.cannontech.dr.assetavailability.service.AssetAvailabilityService;
 import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
-import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.appliance.dao.ApplianceDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareConfigurationDao;
@@ -46,7 +45,6 @@ import com.google.common.collect.Sets;
 
 public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
     @Autowired private OptOutEventDao optOutEventDao;
-    @Autowired private CustomerAccountDao customerAccountDao;
     @Autowired private RawPointHistoryDao rawPointHistoryDao;
     @Autowired private DeviceDao deviceDao;
     @Autowired private LMHardwareConfigurationDao lmHardwareConfigurationDao;
@@ -253,8 +251,8 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
         
         //build the asset availability objects
         Map<Integer, SimpleAssetAvailability> assetAvailabilityMap = 
-                buildAssetAvailabilityMap(inventoryIds, optedOutInventory, oneWayInventory, 
-                                          inventoryAndDevices, paoCommunicationTimes, paoRelayRuntimes);
+                buildAssetAvailabilityMap(inventoryIds, optedOutInventory, oneWayInventory, inventoryAndDevices, 
+                                          paoCommunicationTimes, paoRelayRuntimes);
         
         return assetAvailabilityMap;
     }
@@ -337,6 +335,7 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
                                                                        Map<Integer, Integer> inventoryAndDevices,
                                                                        Map<Integer, Instant> paoCommunicationTimes,
                                                                        PaoRelayRuntimes paoRelayRuntimes) {
+        InventoryRelayAppliances inventoryRelayAppliances = lmHardwareConfigurationDao.getInventoryRelayAppliances(inventoryIds);
         DeviceRelayApplianceCategories dracs = lmHardwareConfigurationDao.getDeviceRelayApplianceCategoryId(inventoryIds);
         Multimap<Integer, Integer> oneWayInventoryApplianceCategoryIds = lmHardwareConfigurationDao.getInventoryApplianceMap(oneWayInventory);
         Map<Integer, SimpleAssetAvailability> assetAvailabilityMap = Maps.newHashMap();
@@ -351,18 +350,22 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
             } else {
                 int deviceId = inventoryAndDevices.get(inventoryId);
                 Instant lastCommunicationTime = paoCommunicationTimes.get(deviceId);
-                //get runtime
+                Map<Integer, Integer> relayApplianceMap = inventoryRelayAppliances.getRelayApplianceMap(inventoryId);
                 Map<Integer, Instant> relayRuntimes = paoRelayRuntimes.get(deviceId);
                 Set<ApplianceWithRuntime> applianceRuntimes = Sets.newHashSet();
-                if(relayRuntimes != null) {
-                    for(Map.Entry<Integer, Instant> relayRuntime : relayRuntimes.entrySet()) {
-                        int relay = relayRuntime.getKey();
-                        Instant runtime = relayRuntime.getValue();
+                for(Integer relay : relayApplianceMap.keySet()) {
+                    if(relayRuntimes != null && relayRuntimes.containsKey(relay)) {
+                        //runtime exists for this relay
+                        Instant runtime = relayRuntimes.get(relay);
                         int applianceCategoryId = dracs.getApplianceCategoryId(deviceId, relay);
                         applianceRuntimes.add(new ApplianceWithRuntime(applianceCategoryId, runtime));
+                    } else {
+                        //no runtime for this relay - insert appliance category and null runtime
+                        int applianceCategoryId = inventoryRelayAppliances.getApplianceCategoryId(inventoryId, relay);
+                        applianceRuntimes.add(new ApplianceWithRuntime(applianceCategoryId, null));
                     }
                 }
-                //get status
+                
                 AssetAvailabilityStatus status = getStatus(now, lastCommunicationTime, applianceRuntimes);
                 
                 SimpleAssetAvailability assetAvailability = new SimpleAssetAvailability(inventoryId, status, isOptedOut, 
@@ -414,8 +417,9 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
             communicating = true;
         }
         Instant endOfRuntimeWindow = now.minus(Duration.standardHours(LAST_RUNTIME_HOURS));
-        for(ApplianceWithRuntime runtime : applianceRuntimes) {
-            if(runtime.getLastNonZeroRuntime().isAfter(endOfRuntimeWindow)) {
+        for(ApplianceWithRuntime applianceRuntime : applianceRuntimes) {
+            Instant runtime = applianceRuntime.getLastNonZeroRuntime();
+            if(runtime != null && runtime.isAfter(endOfRuntimeWindow)) {
                 hasRuntime = true;
                 break;
             }
