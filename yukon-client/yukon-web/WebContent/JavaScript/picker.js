@@ -79,11 +79,11 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
     },
 
     block = function() {
-        Yukon.ui.elementGlass.show(jQuery('#' + this.pickerId + ' .f-block_this'));
+        Yukon.ui.elementGlass.show(document.getElementById(this.pickerId + ' .f-block_this'));
     },
 
     unblock = function() {
-        Yukon.ui.elementGlass.hide(jQuery('#' + this.pickerId + ' .f-block_this'));
+        Yukon.ui.elementGlass.hide(document.getElementById(this.pickerId + ' .f-block_this'));
     },
 
     updateSelectAllCheckbox = function() {
@@ -105,14 +105,16 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
 
     okPressed = function() {
         var fieldName,
-            pickerThis;
+            pickerThis,
+            destinationFieldElem;
 
         if (!this.allowEmptySelection && this.selectedItems.length === 0) {
             this.nothingSelectedDiv.show();
         } else {
             if (this.destinationFieldId) {
                 fieldName = this.idFieldName;
-                jQuery('#' + this.destinationFieldId).val(
+                destinationFieldElem = document.getElementById(this.destinationFieldId);
+                jQuery(destinationFieldElem).val(
                     jQuery.map(this.selectedItems, function(val, index) {
                         return val[fieldName];
                     }).join(',')
@@ -131,7 +133,7 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
 
             if (updateOutsideFields.call(this, false)) {
                 if (!this.containerDiv) {
-                    jQuery('#' + this.pickerId).dialog('close');
+                    jQuery(document.getElementById(this.pickerId)).dialog('close');
                 }
             }
         }
@@ -248,7 +250,7 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
      * Update the paging area of the form for the current search results.
      */
     updatePagingArea = function(json) {
-        var pickerDiv = jQuery('#' + this.pickerId);
+        var pickerDiv = document.getElementById(this.pickerId);
         this.previousIndex = -1;
         this.nextIndex = -1;
 
@@ -289,12 +291,12 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
         updatePagingArea.call(this, json);
         this.selectAllPagesMsg = json.selectAllPages;
         this.allPagesSelectedMsg = json.allPagesSelected;
-        oldResultArea = jQuery('#' + this.resultAreaId)[0];
+        oldResultArea = document.getElementById(this.resultAreaId);
         resultHolder = this.resultsDiv;
         if (oldResultArea) {
             resultHolder.removeChild(oldResultArea);
         }
-        oldError = jQuery('#' + this.errorHolderId)[0];
+        oldError = document.getElementById(this.errorHolderId);
         if (oldError) {
             resultHolder.removeChild(oldError);
         }
@@ -393,7 +395,8 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
             index,
             value,
             extraDestinationField,
-            extraDestSelector;
+            extraDestSelector,
+            extraDestElem;
         // protect from calling endAction for empty lists on first run.
         if (this.selectedItems.length === 0 && isInitial) {
             return;
@@ -427,12 +430,13 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
             extraDestinationField = this.extraDestinationFields[index];
             value = hit === null ? '' : hit[extraDestinationField.property];
             // support for both innerHTML and value setting
-            extraDestSelector = '#' + extraDestinationField.fieldId;
-            if (jQuery(extraDestSelector)[0].tagName === 'INPUT') {
-                jQuery(extraDestSelector).val(value);
+            extraDestSelector = extraDestinationField.fieldId;
+            extraDestElem = document.getElementById(extraDestSelector);
+            if (extraDestElem.tagName === 'INPUT') {
+                extraDestElem.value = value;
             }
             else {
-                jQuery(extraDestSelector).html(value);
+                extraDestElem.innerHTML = value;
             }
         }
         if (this.endAction && !isInitial) {
@@ -500,7 +504,7 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
     cancel = function() {
         this.selectedItems = this.lastSelectedItems;
         if (!this.containerDiv) {
-            jQuery('#' + this.pickerId).dialog('close');
+            jQuery(document.getElementById(this.pickerId)).dialog('close');
         }
         if (this.cancelAction) {
             this.cancelAction(this);
@@ -515,7 +519,7 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
         if (this.nothingSelectedDiv) {
             this.nothingSelectedDiv.hide();
         }
-        if (!skipFocus) {
+        if ('undefined' !== typeof skipFocus && !skipFocus) {
             this.ssInput.focus();
         }
         that = this;
@@ -525,7 +529,7 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
                 buttons = [{'text' : that.cancelText, 'click' : function() {cancel.call(that);}},
                            {'text' : that.okText, 'click' : function() {okPressed.call(that);}, 'class': 'primary action'}];
                 if (!that.inline) {
-                    jQuery('#' + that.pickerId).dialog({buttons : buttons, width : 600, height : 'auto'});
+                    jQuery(document.getElementById(that.pickerId)).dialog({buttons : buttons, width : 600, height : 'auto'});
                 }
             }
         });
@@ -542,16 +546,16 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
             alert(errString);
             return;
         }
-        this.ssInput = jQuery('#picker_' + this.pickerId + '_ss')[0];
-        this.showAllLink = jQuery('#picker_' + this.pickerId + '_showAllLink')[0];
-        this.resultsDiv = jQuery('#picker_' + this.pickerId + '_results')[0];
-        this.noResultsDiv = jQuery('#picker_' + this.pickerId + '_noResults')[0];
-        this.nothingSelectedDiv = jQuery('#picker_' + this.pickerId + '_nothingSelected')[0];
-        this.selectAllCheckBox = jQuery('#picker_' + this.pickerId + '_selectAll')[0];
-        this.selectAllPagesLink = jQuery('#picker_' + this.pickerId + '_selectAllPages')[0];
-        this.allPagesSelected = jQuery('#picker_' + this.pickerId + '_allPagesSelected')[0];
-        this.clearEntireSelectionLink = jQuery('#picker_' + this.pickerId + '_clearEntireSelection')[0];
-        this.entireSelectionCleared = jQuery('#picker_' + this.pickerId + '_entireSelectionCleared')[0];
+        this.ssInput = document.getElementById('picker_' + this.pickerId + '_ss');
+        this.showAllLink = document.getElementById('picker_' + this.pickerId + '_showAllLink');
+        this.resultsDiv = document.getElementById('picker_' + this.pickerId + '_results');
+        this.noResultsDiv = document.getElementById('picker_' + this.pickerId + '_noResults');
+        this.nothingSelectedDiv = document.getElementById('picker_' + this.pickerId + '_nothingSelected');
+        this.selectAllCheckBox = document.getElementById('picker_' + this.pickerId + '_selectAll');
+        this.selectAllPagesLink = document.getElementById('picker_' + this.pickerId + '_selectAllPages');
+        this.allPagesSelected = document.getElementById('picker_' + this.pickerId + '_allPagesSelected');
+        this.clearEntireSelectionLink = document.getElementById('picker_' + this.pickerId + '_clearEntireSelection');
+        this.entireSelectionCleared = document.getElementById('picker_' + this.pickerId + '_entireSelectionCleared');
 
         doIdSearch.call(this, initialIds);
 
@@ -595,11 +599,12 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
 
         onCompleteBind = Yukon.doBind(onPrimeComplete, this, showPicker, initialIds, skipFocus);
         jQuery(pickerDialogDivContainer).load('/picker/v2/build', parameters, onCompleteBind);
+
     },
 
     clearSelected = function() {
         if (this.destinationFieldId) {
-            jQuery('#' + this.destinationFieldId).val('');
+            jQuery(document.getElementById(this.destinationFieldId)).val('');
         } else {
             this.inputAreaDiv.innerHTML = '';
         }
@@ -616,7 +621,7 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
      */
     getSelected = function() { // called from zoneWizardDetails.js
         var retVal = this.destinationFieldId
-            ? jQuery('#' + this.destinationFieldId).val().split(',')
+            ? jQuery(document.getElementById(this.destinationFieldId)).val().split(',')
             : jQuery.map(jQuery(':input', this.inputAreaDiv), function(val, index) {
                 return val.value;
             });
@@ -634,7 +639,7 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
             return;
         }
         updatePagingArea.call(this);
-        oldResultArea = jQuery('#' + this.resultAreaId)[0];
+        oldResultArea = document.getElementById(this.resultAreaId);
         resultHolder = this.resultsDiv;
         if (oldResultArea) {
             resultHolder.removeChild(oldResultArea);
@@ -650,7 +655,8 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
                 this.selectedItems.push(oldSelectedItems[index]);
             }
         }
-    };
+    },
+    getSsInput;
 
     // globally-accessible functions hung off the prototype
     
@@ -809,12 +815,12 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
         var showSelectedImg,
             initialIds = [],
             destFieldSelector;
-        this.inputAreaDiv = jQuery('#picker_' + this.pickerId + '_inputArea')[0];
+        this.inputAreaDiv = document.getElementById('picker_' + this.pickerId + '_inputArea');
         if (!viewMode) {
             if (this.selectionProperty) {
-                this.selectedItemsPopup = jQuery('#picker_' + this.pickerId + '_selectedItemsPopup')[0];
-                this.selectedItemsDisplayArea = jQuery('#picker_' + this.pickerId + '_selectedItemsDisplayArea')[0];
-                showSelectedImg = jQuery('#picker_' + this.pickerId + '_showSelectedImg')[0];
+                this.selectedItemsPopup = document.getElementById('picker_' + this.pickerId + '_selectedItemsPopup');
+                this.selectedItemsDisplayArea = document.getElementById('picker_' + this.pickerId + '_selectedItemsDisplayArea');
+                showSelectedImg = document.getElementById('picker_' + this.pickerId + '_showSelectedImg');
                 if (showSelectedImg) {
                     this.showSelectedLink = showSelectedImg.parentNode;
                     this.showSelectedLink.hide();
@@ -822,17 +828,17 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
             }
         }
         if (this.selectionProperty) {
-            this.selectionLabel = jQuery('span', jQuery('#picker_' + this.pickerId + '_label'))[0];
+            this.selectionLabel = jQuery('span', jQuery(document.getElementById('picker_' + this.pickerId + '_label')))[0];
             this.originalSelectionLabel = this.selectionLabel.innerHTML;
         }
 
         if (this.destinationFieldId) {
-            destFieldSelector = '#' + this.destinationFieldId;
-            if (jQuery(destFieldSelector).val()) {
-                initialIds = jQuery(destFieldSelector).val().split(',');
+            destFieldSelector = this.destinationFieldId;
+            if (jQuery(document.getElementById(destFieldSelector)).val()) {
+                initialIds = jQuery(document.getElementById(destFieldSelector)).val().split(',');
             }
         } else {
-            initialIds = jQuery.map(jQuery(':input',this.inputAreaDiv), function(val, index) {
+            initialIds = jQuery.map(jQuery(':input', this.inputAreaDiv), function(val, index) {
                 return val.value;
             });
         }
