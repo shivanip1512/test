@@ -353,16 +353,18 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
                 Map<Integer, Integer> relayApplianceMap = inventoryRelayAppliances.getRelayApplianceMap(inventoryId);
                 Map<Integer, Instant> relayRuntimes = paoRelayRuntimes.get(deviceId);
                 Set<ApplianceWithRuntime> applianceRuntimes = Sets.newHashSet();
-                for(Integer relay : relayApplianceMap.keySet()) {
-                    if(relayRuntimes != null && relayRuntimes.containsKey(relay)) {
-                        //runtime exists for this relay
-                        Instant runtime = relayRuntimes.get(relay);
-                        int applianceCategoryId = dracs.getApplianceCategoryId(deviceId, relay);
-                        applianceRuntimes.add(new ApplianceWithRuntime(applianceCategoryId, runtime));
-                    } else {
-                        //no runtime for this relay - insert appliance category and null runtime
-                        int applianceCategoryId = inventoryRelayAppliances.getApplianceCategoryId(inventoryId, relay);
-                        applianceRuntimes.add(new ApplianceWithRuntime(applianceCategoryId, null));
+                if(relayApplianceMap != null) {
+                    for(Integer relay : relayApplianceMap.keySet()) {
+                        if(relayRuntimes != null && relayRuntimes.containsKey(relay)) {
+                            //runtime exists for this relay
+                            Instant runtime = relayRuntimes.get(relay);
+                            int applianceCategoryId = dracs.getApplianceCategoryId(deviceId, relay);
+                            applianceRuntimes.add(new ApplianceWithRuntime(applianceCategoryId, runtime));
+                        } else {
+                            //no runtime for this relay - insert appliance category and null runtime
+                            int applianceCategoryId = inventoryRelayAppliances.getApplianceCategoryId(inventoryId, relay);
+                            applianceRuntimes.add(new ApplianceWithRuntime(applianceCategoryId, null));
+                        }
                     }
                 }
                 
