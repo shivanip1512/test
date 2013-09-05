@@ -106,7 +106,8 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
     okPressed = function() {
         var fieldName,
             pickerThis,
-            destinationFieldElem;
+            destinationFieldElem,
+            dialogElem;
 
         if (!this.allowEmptySelection && this.selectedItems.length === 0) {
             this.nothingSelectedDiv.show();
@@ -133,7 +134,8 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
 
             if (updateOutsideFields.call(this, false)) {
                 if (!this.containerDiv) {
-                    jQuery(document.getElementById(this.pickerId)).dialog('close');
+                    dialogElem = document.getElementById(this.pickerId);
+                    jQuery(dialogElem).dialog('close');
                 }
             }
         }
@@ -602,32 +604,6 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
 
     },
 
-    clearSelected = function() {
-        if (this.destinationFieldId) {
-            jQuery(document.getElementById(this.destinationFieldId)).val('');
-        } else {
-            this.inputAreaDiv.innerHTML = '';
-        }
-        if (this.selectionProperty) {
-            this.selectionLabel.innerHTML = this.originalSelectionLabel;
-            jQuery(this.selectionLabel).addClass('noSelectionPickerLabel');
-        }
-    },
-
-    /**
-     * Get the id(s) of the selected item(s).
-     * If this is a multi-select picker, an array will be returned, 
-     * but in single select mode a single selected item will be returned.
-     */
-    getSelected = function() { // called from zoneWizardDetails.js
-        var retVal = this.destinationFieldId
-            ? jQuery(document.getElementById(this.destinationFieldId)).val().split(',')
-            : jQuery.map(jQuery(':input', this.inputAreaDiv), function(val, index) {
-                return val.value;
-            });
-        return this.multiSelectMode ? retVal : retVal[0];
-    },
-
     /**
      * Clear any old search results (used when the dialog is first popped up).
      */
@@ -655,8 +631,7 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
                 this.selectedItems.push(oldSelectedItems[index]);
             }
         }
-    },
-    getSsInput;
+    };
 
     // globally-accessible functions hung off the prototype
     
@@ -803,6 +778,32 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
             jQuery(hitRow.link.parentNode.parentNode).removeClass('highlighted');
         });
         this.selectAllCheckBox.checked = false;
+    };
+
+    Yukon.protoPicker.prototype.clearSelected = function() {
+        if (this.destinationFieldId) {
+            jQuery(document.getElementById(this.destinationFieldId)).val('');
+        } else {
+            this.inputAreaDiv.innerHTML = '';
+        }
+        if (this.selectionProperty) {
+            this.selectionLabel.innerHTML = this.originalSelectionLabel;
+            jQuery(this.selectionLabel).addClass('noSelectionPickerLabel');
+        }
+    };
+
+    /**
+     * Get the id(s) of the selected item(s).
+     * If this is a multi-select picker, an array will be returned, 
+     * but in single select mode a single selected item will be returned.
+     */
+    Yukon.protoPicker.prototype.getSelected = function() { // called from zoneWizardDetails.js
+        var retVal = this.destinationFieldId
+            ? jQuery(document.getElementById(this.destinationFieldId)).val().split(',')
+            : jQuery.map(jQuery(':input', this.inputAreaDiv), function(val, index) {
+                return val.value;
+            });
+        return this.multiSelectMode ? retVal : retVal[0];
     };
 
     /**
