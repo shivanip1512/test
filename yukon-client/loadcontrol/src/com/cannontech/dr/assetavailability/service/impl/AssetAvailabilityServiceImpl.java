@@ -95,6 +95,10 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
                 oneWayInventory.add(pair.getKey());
             }
         }
+        //remove 1-way inventory from inventoryAndDevices map
+        for(Integer oneWayInventoryId : oneWayInventory) {
+            inventoryAndDevices.remove(oneWayInventoryId);
+        }
         Set<Integer> oneWayAppliances = getAppliancesFromInventory(inventoryToApplianceMultimap, oneWayInventory);
         summary.addCommunicating(oneWayAppliances);
         summary.addRunning(oneWayAppliances);
@@ -154,6 +158,11 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
                 oneWayInventory.add(pair.getKey());
             }
         }
+        //remove 1-way inventory from inventoryAndDevices map
+        for(Integer oneWayInventoryId : oneWayInventory) {
+            inventoryAndDevices.remove(oneWayInventoryId);
+        }
+        
         aaSummary.addCommunicating(oneWayInventory);
         aaSummary.addRunning(oneWayInventory);
         
@@ -463,7 +472,9 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
     
     /*
      * Takes a map of inventoryIds to deviceIds and a set of paoIdentifiers. Uses the map to find inventoryId matching
-     * the deviceId for each paoIdentifier (if one exists). Returns the set of inventoryIds. 
+     * the deviceId for each paoIdentifier (if one exists). Returns the set of inventoryIds.
+     * The map should not contain one-way inventory (inventory mapping to deviceId 0) - all inventory *and* deviceIds in
+     * the map should be unique.
      */
     private Set<Integer> getInventoryIdsFromPaoIdentifiers(Map<Integer, Integer> inventoryAndDevices, Set<PaoIdentifier> paoIds) {
         Map<Integer, Integer> devicesAndInventory = HashBiMap.create(inventoryAndDevices).inverse();
