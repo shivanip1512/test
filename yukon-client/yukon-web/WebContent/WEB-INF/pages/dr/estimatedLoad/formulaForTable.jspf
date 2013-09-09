@@ -33,8 +33,8 @@
                     <c:if test="${formulaBean.gearFormula}">
                         <div class="column_8_8_8">
                             <div class="column one"><h4><i:inline key=".name"/></h4></div>
-                            <div class="column two"><h4><i:inline key=".gearId"/></h4></div>
-                            <div class="column three nogutter"><h4><i:inline key=".gearControlMethod"/></h4></div>
+                            <div class="column two"><h4><i:inline key=".gearControlMethod"/></h4></div>
+                            <div class="column three nogutter"><h4><i:inline key=".program"/></h4></div>
                         </div>
                         <c:forEach var="assignmentId" items="${formulaBean.assignments}">
                             <%@ include file="gearAssignmentRow.jspf" %>
@@ -66,7 +66,7 @@
     <tags:sectionContainer2 nameKey="lookupTables" id="formulaTables">
         <c:forEach var="table" items="${formulaBean.tables}" varStatus="tableLoop">
             <div class="setting f-drFormula-removeable f-drFormula-table">
-                <input class="f-formulaId" type="hidden" name="tables[${tableLoop.index}].formulaId" value="${formulaBean.formulaId}"/>
+                <input type="hidden" name="tables[${tableLoop.index}].formulaId" value="${formulaBean.formulaId}"/>
                 <input type="hidden" name="tables[${tableLoop.index}].functionId"/>
                 <c:set var="pointId" value="${formulaBean.tables[tableLoop.index].inputPointId}"/>
                 <input type='hidden' id="inputPointId_${tableLoop.index}" name="tables[${tableLoop.index}].inputPointId"

@@ -452,7 +452,7 @@
                 <labelArgument>${formulaBean.name}</labelArgument>
               </page>
               <page name="formula.VIEW" type="DETAIL">
-                <link>/dr/formula/view/${formulaBean.formulaId}</link>
+                <link>/dr/estimatedLoad/formula/view?formulaId=${formulaBean.formulaId}</link>
                 <labelArgument>${formulaBean.name}</labelArgument>
                 <pages>
                   <page name="formula.EDIT" type="DETAIL_CHILD">

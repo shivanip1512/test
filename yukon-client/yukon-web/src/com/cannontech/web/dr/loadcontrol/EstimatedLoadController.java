@@ -173,7 +173,7 @@ public class EstimatedLoadController {
 
         flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + "success.created", formulaBean.getName()));
 
-        return "redirect:/dr/estimatedLoad/edit?formulaId=" + newId;
+        return "redirect:/dr/estimatedLoad/formula/edit?formulaId=" + newId;
     }
 
     @RequestMapping(value="formula/edit", method=RequestMethod.GET)

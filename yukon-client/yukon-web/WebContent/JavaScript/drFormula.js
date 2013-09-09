@@ -167,8 +167,8 @@ Yukon.DrFormula = (function() {
             this.id = this.id + tableId + "_" + entryId;
         });
         $newRow.find(".f-drFormula-tableEntryKey_")
-            .removeClass("f-tableEntryKey_")
-            .addClass("f-tableEntryKey_" + tableId);
+            .removeClass("f-drFormula-tableEntryKey_")
+            .addClass("f-drFormula-tableEntryKey_" + tableId);
 
         $newRow.children().each(function() {
             var $this = jQuery(this);
