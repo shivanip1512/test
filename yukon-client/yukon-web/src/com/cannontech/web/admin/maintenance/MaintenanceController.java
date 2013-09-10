@@ -49,11 +49,11 @@ public class MaintenanceController {
     private YukonJobDefinition<ScheduledRphDanglingEntriesDeletionExecutionTask> rphDanglingEntriesJobDef;
     private YukonJobDefinition<ScheduledSystemLogDanglingEntriesDeletionExecutionTask> systemLogDanglingEntriesJobDef;
     private YukonJobDefinition<ScheduledWeatherDataUpdateExecutionTask> weatherDataJobDef;
-    
+
     private final static String RPH_DUPLICATE_CRON = "0 0 21 ? * *"; // every night at 9:00pm
     private final static String RPH_DANGLING_CRON = "0 15 21 ? * *"; // every night at 9:15pm
     private final static String SYSTEM_LOG_DANGLING_CRON = "0 30 21 ? * *"; // every night at 9:30pm
-    private final static String WEATHER_DATA_UPDATE_CRON = "0 0/5 * * * ? *"; //every hour at 20 minutes after the hour
+    private final static String WEATHER_DATA_UPDATE_CRON = "0 20 * * * ? *"; //every hour at 20 minutes after the hour
 
     @RequestMapping
     public String view(ModelMap model, YukonUserContext userContext) {
