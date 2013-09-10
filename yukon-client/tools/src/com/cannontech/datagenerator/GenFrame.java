@@ -486,7 +486,7 @@ public void update(java.util.Observable observ, Object obj)
 		
 		if (validConn)
 		{
-			title += "   [Connected to Dispatch@" + conn.getHost() + ":" + conn.getPort() + "]";
+			title += "   [Connected to Dispatch@" + conn.toString() + "]";
 		}
 		else
 		{

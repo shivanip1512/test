@@ -20,8 +20,6 @@ public static void main(String[] args)
 		int deviceID = 1;
 		String command = "GetStatus";
 		com.cannontech.message.porter.PorterClientConnection conn = ClientConnectionFactory.getInstance().createPorterConn();
-		conn.setHost("10.100.9.230");
-		conn.setPort(1540);
 		conn.connect();
 		com.cannontech.message.porter.message.Request req = new com.cannontech.message.porter.message.Request(deviceID, command, 1);
 		conn.write(req);

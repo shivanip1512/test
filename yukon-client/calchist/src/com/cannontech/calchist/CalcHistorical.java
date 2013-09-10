@@ -503,17 +503,6 @@ public DispatchClientConnection getDispatchConnection()
 {
 	if( dispatchConnection == null || !dispatchConnection.isValid() )
 	{
-		String host = "127.0.0.1";
-		int port = 1510;
-		GlobalSettingDao globalSettingDao = YukonSpringHook.getBean(GlobalSettingDao.class);
-		try {
-		    host = globalSettingDao.getString(GlobalSettingType.DISPATCH_MACHINE);
-            port = globalSettingDao.getInteger(GlobalSettingType.DISPATCH_PORT);
-		}
-		catch( Exception e)
-		{
-			CTILogger.error( e.getMessage(), e );
-		}		
 		dispatchConnection = ClientConnectionFactory.getInstance().createDispatchConn();
 
 		Registration reg = new Registration();
@@ -523,8 +512,6 @@ public DispatchClientConnection getDispatchConnection()
 		reg.setAppExpirationDelay( 3600 );  // 1 hour should be OK
 
 		//dispatchConnection.addObserver(this);
-		dispatchConnection.setHost(host);
-		dispatchConnection.setPort(port);
 		dispatchConnection.setAutoReconnect(true);
 		dispatchConnection.setRegistrationMsg(reg);
 		

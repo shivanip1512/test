@@ -644,7 +644,7 @@ public String getConnectionState()
 	{
 		// connected and change
 		title.append("   [Connected to " +
-			LOAD_MANAGEMENT_NAME + "@" + getLoadControlClientConnection().getHost() + ":" + getLoadControlClientConnection().getPort() + "]");
+			LOAD_MANAGEMENT_NAME + "@" + getLoadControlClientConnection().toString() + "]");
 
 		getMessagePanel().messageEvent(new com.cannontech.common.util.MessageEvent(this, 
 				"Connection to " + LOAD_MANAGEMENT_NAME + " server established", com.cannontech.common.util.MessageEvent.INFORMATION_MESSAGE));
@@ -662,8 +662,7 @@ public String getConnectionState()
 	else if( lastConnectionStatus )  // still connected
 	{
 		title.append("   [Connected to " + LOAD_MANAGEMENT_NAME + "@" + 
-				getLoadControlClientConnection().getHost() + ":" + 
-				getLoadControlClientConnection().getPort() + "]");
+				getLoadControlClientConnection().toString() + "]");
 	}
 	else // still disconnected
 	{		

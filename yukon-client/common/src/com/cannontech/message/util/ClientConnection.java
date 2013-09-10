@@ -7,7 +7,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.apache.commons.lang.math.RandomUtils;
 import org.apache.log4j.Logger;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
@@ -45,9 +44,6 @@ public abstract class ClientConnection extends java.util.Observable implements I
     private Queue<Message> inQueue = new LinkedList<Message>();
     private PriorityBlockingQueue<Message> outQueue =
         new PriorityBlockingQueue<Message>(100, new MessagePriorityComparable());
-
-    private String host = "127.0.0.1";
-    private int port;
 
     private boolean isValid = false;
     private boolean autoReconnect = false;
@@ -211,22 +207,12 @@ public abstract class ClientConnection extends java.util.Observable implements I
 
     @Override
     public String toString() {
-        return "ClientConnection [name= " + getName() + ", " + connection + "]";
+        return "ClientConnection [name = " + getName() + ", " + connection + "]";
     }
 
     /**************************************************************************
      * Properties
      **************************************************************************/
-    @Deprecated
-    public final void setHost(String host) {
-        this.host = host;
-    }
-
-    @Deprecated
-    public final void setPort(int port) {
-        this.port = port;
-    }
-
     protected final String getName() {
         return connectionName;
     }
@@ -340,25 +326,8 @@ public abstract class ClientConnection extends java.util.Observable implements I
 
     @Override
     @ManagedAttribute
-    public final String getHost() {
-        return this.host;
-    }
-
-    @Override
-    @ManagedAttribute
     public final int getNumOutMessages() {
         return outQueue.size();
-    }
-
-    @Override
-    @ManagedAttribute
-    public final int getPort() {
-        return this.port;
-    }
-
-    @Override
-    public final int getTimeToReconnect() {
-        return RandomUtils.nextInt(50) + 10;
     }
 
     /**

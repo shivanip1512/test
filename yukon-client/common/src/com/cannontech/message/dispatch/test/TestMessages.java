@@ -15,9 +15,6 @@ public class TestMessages {
 public static void main(String[] args) {
 
 	DispatchClientConnection conn = ClientConnectionFactory.getInstance().createDispatchConn();
-	conn.setHost("10.100.9.230");
-	conn.setPort(1510);
-
 	com.cannontech.message.dispatch.message.Multi multiReg = new com.cannontech.message.dispatch.message.Multi();
 	
 	//First do a registration

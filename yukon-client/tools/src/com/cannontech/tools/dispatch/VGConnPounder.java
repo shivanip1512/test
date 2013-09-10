@@ -1,7 +1,5 @@
 package com.cannontech.tools.dispatch;
 
-import java.io.IOException;
-
 import com.cannontech.message.dispatch.DispatchClientConnection;
 import com.cannontech.message.dispatch.message.PointRegistration;
 import com.cannontech.message.util.ClientConnectionFactory;
@@ -76,11 +74,8 @@ public class VGConnPounder {
 
         void connect() {
 
-            int port = 1510;
 
             conn = ClientConnectionFactory.getInstance().createDispatchConn();
-            conn.setHost(VGConnPounder.this.host);
-            conn.setPort(port);
 
             com.cannontech.message.dispatch.message.Registration reg = new com.cannontech.message.dispatch.message.Registration();
             reg.setAppName("VGPounder " + Thread.currentThread().getId());

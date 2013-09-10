@@ -14,24 +14,21 @@ public class PointChangeSource {
  */
 public static void main(String[] args) {
 
-	if( args.length < 5 )
+	if( args.length < 3 )
 	{
-		com.cannontech.clientutils.CTILogger.info("Usage:  PointChangeSource vangoghmachine port numberofchanges delay { pointID }");
+		com.cannontech.clientutils.CTILogger.info("Usage:  PointChangeSource  numberofchanges delay { pointID }");
 		com.cannontech.clientutils.CTILogger.info("specify numberofchanges = -1 to keep sending changes forever");
-		com.cannontech.clientutils.CTILogger.info("note that port 1510 has been the default");
 		System.exit(0);
 	}
 
-	String vanGogh = args[0];
-	int port = (Integer.decode(args[1])).intValue();
-	int numChanges = (Integer.decode(args[2])).intValue();
-	int delay = (Integer.decode(args[3])).intValue();
+	int numChanges = (Integer.decode(args[0])).intValue();
+	int delay = (Integer.decode(args[1])).intValue();
 
-	int[] id = new int[ args.length - 4 ];
+	int[] id = new int[ args.length - 2 ];
 
 	for( int i = 0; i < id.length; i++ )
 	{
-		id[i] = (Integer.decode( args[4+i] )).intValue();
+		id[i] = (Integer.decode( args[2+i] )).intValue();
 	}
 	
 	boolean forever = false;
@@ -41,8 +38,6 @@ public static void main(String[] args) {
 	
 	DispatchClientConnection conn = ClientConnectionFactory.getInstance().createDispatchConn();
 
-	conn.setHost(vanGogh);
-	conn.setPort(port);
 
 	try
 	{

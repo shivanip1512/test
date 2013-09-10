@@ -13,15 +13,9 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 public interface IServerConnection extends BasicServerConnection 
 {
     public boolean getAutoReconnect();
-
-    public String getHost();
 	
 	public 	int getNumOutMessages();
 	
-	public int getPort();
-
-	public int getTimeToReconnect();
-
 	public boolean isMonitorThreadAlive(); 
 
 	public void setAutoReconnect(boolean val);

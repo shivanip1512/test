@@ -182,12 +182,4 @@ public void removeMessageListener( MessageListener ml )
 	getConnection().removeMessageListener( ml );
 }
 
-public String getHost(){
-    return getConnection().getHost();
-}
-
-public int getPort(){
-    return getConnection().getPort();
-}
-
 }

@@ -48,10 +48,7 @@ public class PointChangePlayer {
 		System.out.println("loaded " + pChanges.length + " point changes");
 		
 		DispatchClientConnection conn = ClientConnectionFactory.getInstance().createDispatchConn();
-		GlobalSettingDao globalSettingDao = YukonSpringHook.getBean(GlobalSettingDao.class);
-		conn.setHost(globalSettingDao.getString(GlobalSettingType.DISPATCH_MACHINE));
-		conn.setPort(globalSettingDao.getInteger(GlobalSettingType.DISPATCH_PORT));
-				
+						
 		try {
 			conn.connect();
 		} catch (IOException e) {

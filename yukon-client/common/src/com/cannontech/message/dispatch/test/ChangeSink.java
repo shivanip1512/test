@@ -16,9 +16,6 @@ public static void main(String[] args) {
 
 	DispatchClientConnection conn = ClientConnectionFactory.getInstance().createDispatchConn();
 
-	conn.setHost("127.0.0.1");
-	conn.setPort(1510);
-
 	try
 	{
 		conn.connect();

@@ -39,9 +39,6 @@ class Rat
 
 	private boolean emailSent = false;
 	public final int CHECK_INTERVAL = 60; //seconds to check
-
-	private int DISPATCH_PORT = 1510;
-	private int PORTER_PORT = 1540;
 	
 	private final String PROGRAM_NAME = "dispatch.exe";
 	
@@ -225,12 +222,11 @@ private boolean executeCheckDispatchConnection()
 		reg.setAppKnownPort(0);
 		reg.setAppExpirationDelay( 60 );  // 1 minutes
 		
-		CTILogger.info("Trying to connect to:  " + getYukonHost() + " " + DISPATCH_PORT );
 		com.cannontech.message.dispatch.DispatchClientConnection connection = 
 		    ClientConnectionFactory.getInstance().createDispatchConn();
-
-		connection.setHost(getYukonHost());
-		connection.setPort(DISPATCH_PORT);
+		
+		CTILogger.info("Trying to connect to:  " + connection );
+        
 		
 		connection.setAutoReconnect( false );
 		connection.setQueueMessages( true );
@@ -285,15 +281,12 @@ private boolean executeCheckPorterConnection()
 {
 	
 	try
-	{
-		CTILogger.info("Trying to connect to:  " + getYukonHost() + " " + DISPATCH_PORT );
-        
+	{		
         //get his own porter connection
         PorterClientConnection portConn = 
             (PorterClientConnection)ConnPool.getInstance().getDefPorterConn();
-
-        portConn.setHost( getYukonHost() );
-        portConn.setPort( PORTER_PORT );
+        
+        CTILogger.info("Trying to connect to:  " + portConn );        
 
         try 
         {

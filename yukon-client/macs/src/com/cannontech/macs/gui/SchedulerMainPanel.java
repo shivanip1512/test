@@ -389,8 +389,7 @@ public String getConnectionState()
 	{
 		// connected and change
 		title.append("   [Connected to MacsServer@" + 
-				getIMACSConnection().getHost() + 
-				":" + getIMACSConnection().getPort() + "]");
+				getIMACSConnection().toString() + "]");
 
 		getMessagePanel().messageEvent(new com.cannontech.common.util.MessageEvent(this, "Connection to MACS server established", com.cannontech.common.util.MessageEvent.INFORMATION_MESSAGE));
 		
@@ -413,8 +412,7 @@ public String getConnectionState()
 	}
 	else if( lastConnectionStatus )  // still connected
 		title.append("   [Connected to MacsServer@" + 
-					getIMACSConnection().getHost() + 
-					":" + getIMACSConnection().getPort() + "]");
+					getIMACSConnection().toString() + "]");
 					
 	else // still disconnected
 	{		

@@ -25,11 +25,10 @@ public class PointGenerator implements MessageListener
  */
 public static void main(String[] args) 
 {
-	if( args.length < 5 )
+	if( args.length < 3 )
 	{
-		CTILogger.info("Usage:  PointChangeSource vangoghmachine port numberofchanges delay [-t|-l] pointcount { pointID } { pointType }");
+		CTILogger.info("Usage:  PointChangeSource numberofchanges delay [-t|-l] pointcount { pointID } { pointType }");
 		CTILogger.info("specify numberofchanges = -1 to keep sending changes forever");
-		CTILogger.info("note that port 1510 has been the default");
 		CTILogger.info("  Options    : -t get point data from FDRTranslation table");
 		CTILogger.info("               -l get point data from command line");
 		CTILogger.info("  PointTypes : 0=Status  1=Analog  2=PulsAccum  3=DmdAccum  4=Calculated");		
@@ -37,11 +36,9 @@ public static void main(String[] args)
 	}
 	
 	
-	String vanGogh = args[0];
-	int port = (Integer.decode(args[1])).intValue();
-	int numChanges = (Integer.decode(args[2])).intValue();
-	int delay = (Integer.decode(args[3])).intValue();
-	String options = args[4];
+	int numChanges = (Integer.decode(args[0])).intValue();
+	int delay = (Integer.decode(args[1])).intValue();
+	String options = args[2];
 	
 	int pointCount = 0;		
 	int[] id = null;
@@ -73,19 +70,19 @@ public static void main(String[] args)
 	}
 	else
 	{
-		pointCount = (Integer.decode(args[5])).intValue();
+		pointCount = (Integer.decode(args[3])).intValue();
 		
 		id = new int[ pointCount ];
 		type = new int[ pointCount ];
 	
 		for( int i = 0; i < id.length; i++ )
 		{
-			id[i] = (Integer.decode( args[6+i] )).intValue();
+			id[i] = (Integer.decode( args[4+i] )).intValue();
 		}
 	
 		for( int i = 0; i < type.length; i++ )
 		{
-			type[i] = (Integer.decode( args[6+pointCount+i] )).intValue();
+			type[i] = (Integer.decode( args[4+pointCount+i] )).intValue();
 		}
 	}
 
@@ -100,8 +97,6 @@ public static void main(String[] args)
 	
 	conn.setQueueMessages(false);
 
-	conn.setHost(vanGogh);
-	conn.setPort(port);
 
 	try
 	{

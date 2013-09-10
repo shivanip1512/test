@@ -456,8 +456,7 @@ public void viewMenuRefreshAction() {
     	if( getConnToDispatch().isValid() )
     	{
     		f.setTitle("Yukon Database Editor [Connected to Dispatch@" +
-    					 		 getConnToDispatch().getHost() + ":" +
-    					 		 getConnToDispatch().getPort() + "]" );
+    					 		 getConnToDispatch().toString() + "]" );
     		f.repaint();
     	}
     	else
@@ -2877,8 +2876,7 @@ private void updateConnectionStatus(IServerConnection conn) {
 		fireMessage( new MessageEvent( this, "Connection to Message Dispatcher Established.") );
 		if( owner != null ) {
             owner.setTitle("Yukon Database Editor [Connected to Dispatch@" +
-				 		 conn.getHost() + ":" +
-				 		 conn.getPort() + "]" );
+				 		 conn.toString() + "]" );
         }
 	}
 	else

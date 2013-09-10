@@ -14,18 +14,15 @@ public class DBChangeSource {
  */
 public static void main(String[] args) {
 
-	if( args.length != 4 )
+	if( args.length != 2 )
 	{
-		CTILogger.info("Usage:  DBChangeSource vangoghmachine port numberofchanges delay");
+		CTILogger.info("Usage:  DBChangeSource numberofchanges delay");
 		CTILogger.info("specify numberofchanges = -1 to keep sending changes forever");
-		CTILogger.info("note that port 1510 has been the default");
 		System.exit(0);
 	}
 
-	String vanGogh = args[0];
-	int port = (Integer.decode(args[1])).intValue();
-	int numChanges = (Integer.decode(args[2])).intValue();
-	int delay = (Integer.decode(args[3])).intValue();
+	int numChanges = (Integer.decode(args[0])).intValue();
+	int delay = (Integer.decode(args[1])).intValue();
 
 	boolean forever = false;
 
@@ -33,9 +30,6 @@ public static void main(String[] args) {
 	 	forever = true;
 	
 	DispatchClientConnection conn = ClientConnectionFactory.getInstance().createDispatchConn();
-
-	conn.setHost(vanGogh);
-	conn.setPort(port);
 
 	try
 	{

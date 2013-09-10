@@ -13,7 +13,6 @@ import com.cannontech.message.dispatch.DispatchClientConnection;
 import com.cannontech.message.dispatch.message.Registration;
 import com.cannontech.message.util.ClientConnectionFactory;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.yukon.IMACSConnection;
 import com.cannontech.yukon.INotifConnection;
@@ -114,16 +113,10 @@ public class ConnPool
 	        (DispatchClientConnection)getAllConns().get(DISPATCH_CONN);
 
 	    if( connToDispatch == null ) {
-	        String defaultHost = "127.0.0.1";
-
-	        defaultHost = globalSettingDao.getString(GlobalSettingType.DISPATCH_MACHINE);
-	        int port = globalSettingDao.getInteger(GlobalSettingType.DISPATCH_PORT);
 
 	        connToDispatch = (DispatchClientConnection)createDispatchConn();
-	        connToDispatch.setHost(defaultHost);
-	        connToDispatch.setPort(port);
 	        
-	        CTILogger.info("Attempting Dispatch connection to " + connToDispatch.getHost() + ":" + connToDispatch.getPort());
+	        CTILogger.info("Attempting Dispatch connection to " + connToDispatch.toString());
 	        connToDispatch.connectWithoutWait();
 
 	        getAllConns().put( DISPATCH_CONN, connToDispatch); 
@@ -145,18 +138,10 @@ public class ConnPool
             (com.cannontech.message.porter.PorterClientConnection)getAllConns().get(PORTER_CONN);
         
         if( porterCC == null )
-        {
-            String host = "127.0.0.1";
-            
-            host = globalSettingDao.getString(GlobalSettingType.PORTER_MACHINE);
-            int port = globalSettingDao.getInteger(GlobalSettingType.PORTER_PORT);
-    
+        {   
             porterCC = (com.cannontech.message.porter.PorterClientConnection)createPorterConn();
-    
-            porterCC.setHost(host);
-            porterCC.setPort(port);
-            
-            CTILogger.info("Attempting Porter connection to " + porterCC.getHost() + ":" + porterCC.getPort());
+       
+            CTILogger.info("Attempting Porter connection to " + porterCC.toString());
             porterCC.connectWithoutWait();
 
             getAllConns().put( PORTER_CONN, porterCC );            
@@ -176,20 +161,12 @@ public class ConnPool
         ServerMACSConnection macsConn = (ServerMACSConnection)getAllConns().get(MACS_CONN);
         
         if( macsConn == null ) {
-            
-            String host = "127.0.0.1";
-
-            host = globalSettingDao.getString(GlobalSettingType.MACS_MACHINE);
-            int port = globalSettingDao.getInteger(GlobalSettingType.MACS_PORT);
-
+          
             macsConn = (ServerMACSConnection)createMacsConn();
-    
-            macsConn.setHost(host);
-            macsConn.setPort(port);
-            
+                
             macsConn.setRegistrationMsg(macsConn.getRetrieveAllSchedulesMsg());
 
-            CTILogger.info("Attempting MACS connection to " + macsConn.getHost() + ":" + macsConn.getPort());
+            CTILogger.info("Attempting MACS connection to " + macsConn.toString());
             macsConn.connectWithoutWait();
 
             getAllConns().put( MACS_CONN, macsConn );            
@@ -219,10 +196,7 @@ public class ConnPool
         if( cbcConn == null )
         {		
         	cbcConn = (CapControlClientConnection)createCapControlConn();
-            cbcConn.setHost(globalSettingDao.getString(GlobalSettingType.CAP_CONTROL_MACHINE));
-            int port = globalSettingDao.getInteger(GlobalSettingType.CAP_CONTROL_PORT);
-            cbcConn.setPort(port);
-
+            
             cbcConn.connectWithoutWait();
 			
 			getAllConns().put( CAPCONTROL_CONN, cbcConn );

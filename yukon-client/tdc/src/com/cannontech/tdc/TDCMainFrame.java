@@ -4479,7 +4479,7 @@ private void setTitleFromDisplay()
 
 	if( getTdcClient().connected() )
 	{
-		connected = "   [Connected to Dispatch@" + ConnPool.getInstance().getDefDispatchConn().getHost() + ":" + ConnPool.getInstance().getDefDispatchConn().getPort() + "]";
+		connected = "   [Connected to Dispatch@" + ConnPool.getInstance().getDefDispatchConn().toString() + "]";
 	}
 	else
 	{

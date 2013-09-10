@@ -28,39 +28,11 @@ public PHConverter() {
 }
 private static DispatchClientConnection connect() throws java.io.IOException {
 	DispatchClientConnection conn;
-	String host;
-	int port;
-
-	//figure out where vangogh is
-	java.io.InputStream is = PHConverter.class.getResourceAsStream("/config.properties");
-	java.util.Properties props = new java.util.Properties();
-
-	try {
-		props.load(is);
-	}
-	catch (Exception e) {		
-		System.out.println("Can't read the properties file. " + "Make sure config.properties is in the CLASSPATH");
-		return null;
-	}
-	
-	host = props.getProperty("dispatch_machine", "localhost");	
-	String portStr = props.getProperty("dispatch_port", "1510");
-
-	try	{
-		port = Integer.parseInt(portStr);
-	}
-	catch (NumberFormatException ne) {		
-		System.out.println("Unable to determine vangog_port");
-		return null;
-	}
-		
-
-	System.out.println("Connecting to dispatch @" + host + ":" + port);
-
+			
 	conn = ClientConnectionFactory.getInstance().createDispatchConn();
-	conn.setHost(host);
-	conn.setPort(port);
 
+	System.out.println("Connecting to dispatch @" + conn);
+	
 	Registration reg = new Registration();
 	
 	reg.setAppName( CtiUtilities.getAppRegistration() );
