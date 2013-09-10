@@ -5,7 +5,7 @@ import java.util.Observer;
 import java.util.Vector;
 
 import com.cannontech.clientutils.tags.TagUtils;
-import com.cannontech.message.dispatch.ClientConnection;
+import com.cannontech.message.dispatch.DispatchClientConnection;
 import com.cannontech.message.dispatch.message.Signal;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
@@ -113,7 +113,7 @@ public class AlarmHandler implements Observer, MessageListener
 	
 	public void update( Observable src, Object val )
 	{
-		if( val instanceof ClientConnection )
+		if( val instanceof DispatchClientConnection )
 		{
 			if( !getAlarmClient().connected() )
 				yukonSysTray.setTrayText( ISystrayDefines.MSG_NOT_CONN );

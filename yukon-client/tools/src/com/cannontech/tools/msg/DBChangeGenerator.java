@@ -7,9 +7,10 @@ package com.cannontech.tools.msg;
  */
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.pao.PAOGroups;
-import com.cannontech.message.dispatch.ClientConnection;
+import com.cannontech.message.dispatch.DispatchClientConnection;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.message.util.ClientConnectionFactory;
 import com.cannontech.message.util.Command;
 
 public class DBChangeGenerator {
@@ -43,7 +44,7 @@ public static void main(String[] args)
 	if( numChanges == -1 )
 	 	forever = true;
 	
-	ClientConnection conn = new ClientConnection();
+	DispatchClientConnection conn = ClientConnectionFactory.getInstance().createDispatchConn();
 
 	conn.setHost(vanGogh);
 	conn.setPort(port);

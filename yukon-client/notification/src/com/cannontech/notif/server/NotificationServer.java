@@ -29,6 +29,7 @@ public class NotificationServer implements NotificationServerMBean {
     @Autowired private NotificationMessageHandler messageHandler;
     @Autowired private OutputHandlerHelper outputHelper;
     @Autowired private GlobalSettingDao globalSettingDao;
+    @Autowired public ConnectionFactoryService connFactorySvc;
 
     public static void main(String[] argsv) {
         try {
@@ -63,8 +64,7 @@ public class NotificationServer implements NotificationServerMBean {
     @Override
     public void start() {
         try {
-            ListenerConnectionFactory notifListenerFactory =
-                ConnectionFactoryService.getInstance().findListenerConnectionFactory("NotifListener");
+            ListenerConnectionFactory notifListenerFactory = connFactorySvc.findListenerConnectionFactory("NotifListener");
 
             server = notifListenerFactory.createListenerConnection();
             server.setName("NotifListener");

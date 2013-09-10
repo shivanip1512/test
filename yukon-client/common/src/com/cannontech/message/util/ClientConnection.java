@@ -15,16 +15,12 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.message.util.ConnectionException;
+import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.messaging.connection.Connection;
 import com.cannontech.messaging.connection.Connection.ConnectionState;
 import com.cannontech.messaging.connection.event.ConnectionEventHandler;
 import com.cannontech.messaging.connection.event.MessageEventHandler;
-import com.cannontech.messaging.util.ConnectionFactoryService;
-import com.cannontech.message.util.Message;
-import com.cannontech.message.util.Command;
-import com.cannontech.message.util.ConnStateChange;
-import com.cannontech.message.dispatch.message.Multi;
+import com.cannontech.messaging.util.ConnectionFactory;
 import com.cannontech.yukon.IServerConnection;
 import com.google.common.collect.Lists;
 
@@ -32,6 +28,7 @@ import com.google.common.collect.Lists;
 public abstract class ClientConnection extends java.util.Observable implements IServerConnection {
 
     private Connection connection;
+    private ConnectionFactory connectionFactory;
 
     // Keep track of all of this connections MessageListeners
     private List<MessageListener> messageListeners = new CopyOnWriteArrayList<MessageListener>();
@@ -59,7 +56,7 @@ public abstract class ClientConnection extends java.util.Observable implements I
 
     protected ClientConnection(String connectionName) {
         super();
-        this.connectionName = connectionName;
+        this.connectionName = connectionName;       
         autoReconnect = true;
     }
 
@@ -69,10 +66,12 @@ public abstract class ClientConnection extends java.util.Observable implements I
     protected ClientConnection(Connection connection) {
         this("Auto from " + connection);
 
+        autoReconnect = false;
+
+        connection.setName(connectionName);
+        connection.getMessageEvent().registerHandler(eventHandler);
+        connection.getConnectionEvent().registerHandler(eventHandler);
         this.connection = connection;
-        this.connection.setName(connectionName);
-        this.connection.getMessageEvent().registerHandler(eventHandler);
-        this.connection.getConnectionEvent().registerHandler(eventHandler);
     }
 
     private final void cleanUp() {
@@ -107,7 +106,7 @@ public abstract class ClientConnection extends java.util.Observable implements I
 
     public final void connectWithoutWait() {
         if (connection == null) {
-            connection = ConnectionFactoryService.getInstance().findConnectionFactory(connectionName).createConnection();
+            connection = getConnectionFactory().createConnection();
             connection.setName(connectionName);
             connection.getMessageEvent().registerHandler(eventHandler);
             connection.getConnectionEvent().registerHandler(eventHandler);
@@ -258,6 +257,14 @@ public abstract class ClientConnection extends java.util.Observable implements I
     @ManagedAttribute
     public final long getTotalSentMessages() {
         return totalSentMessages.get();
+    }
+
+    public ConnectionFactory getConnectionFactory() {
+        return connectionFactory;
+    }
+
+    public void setConnectionFactory(ConnectionFactory connectionFactory) {
+        this.connectionFactory = connectionFactory;
     }
 
     /**************************************************************************

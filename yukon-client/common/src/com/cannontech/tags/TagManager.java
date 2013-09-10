@@ -22,7 +22,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.db.point.TAGLog;
-import com.cannontech.message.dispatch.ClientConnection;
+import com.cannontech.message.dispatch.DispatchClientConnection;
 import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.dispatch.message.TagMsg;
 import com.cannontech.message.util.Message;
@@ -60,7 +60,7 @@ public class TagManager implements MessageListener {
 	private static TagManager _instance;
 	
 	//an optional reference to a Dispatch connection
-	private ClientConnection _dispatchConn = null;
+	private DispatchClientConnection _dispatchConn = null;
 	
 	
 	public static synchronized TagManager getInstance() {
@@ -278,10 +278,10 @@ public class TagManager implements MessageListener {
 	 * gets the current dispatch connection we should use
 	 * 
 	 */
-	private synchronized ClientConnection getDispatchConn()
+	private synchronized DispatchClientConnection getDispatchConn()
 	{
 		if( _dispatchConn == null )
-			return (ClientConnection) ConnPool.getInstance().getDefDispatchConn();
+			return (DispatchClientConnection) ConnPool.getInstance().getDefDispatchConn();
 		else
 			return _dispatchConn;
 	}
@@ -290,7 +290,7 @@ public class TagManager implements MessageListener {
 	 * Allow for others to give me a connection to Dispatch I can use
 	 * Only use this constructor if needed!!
 	 */
-	public TagManager( ClientConnection conn )
+	public TagManager( DispatchClientConnection conn )
 	{
 		if( conn == null )
 			throw new IllegalArgumentException("Need a non null connection for the constructor");

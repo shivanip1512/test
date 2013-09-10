@@ -476,7 +476,7 @@ public void update(java.util.Observable observ, Object obj)
 {
 	//Should be an instance of com.cannontech.message.dispatch.ClientConnection
 	//notifying us of a change in the connections state
-	com.cannontech.message.dispatch.ClientConnection conn = (com.cannontech.message.dispatch.ClientConnection) obj;
+	com.cannontech.message.dispatch.DispatchClientConnection conn = (com.cannontech.message.dispatch.DispatchClientConnection) obj;
 
 	boolean validConn = conn.isValid();
 		

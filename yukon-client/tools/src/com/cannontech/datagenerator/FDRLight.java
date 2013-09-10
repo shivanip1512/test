@@ -1,13 +1,18 @@
 package com.cannontech.datagenerator;
 
+// This Class is scheduled to be removed soon
+// Do not use as Dispatch connections now use the ActiveMQ broker
+
+
 import java.io.IOException;
 import java.util.Iterator;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.message.dispatch.ClientConnection;
+import com.cannontech.message.dispatch.DispatchClientConnection;
 import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.message.util.ClientConnectionFactory;
 
 /**
  * FDRLight sends point changes from one dispatch to another.  
@@ -30,9 +35,7 @@ public class FDRLight {
 		FDRLightArgs args = getArgs();
 		
 		// set up the connections
-		ClientConnection srcConn = new ClientConnection();
-		srcConn.setHost(args.getSrcHost());
-		srcConn.setPort(args.getSrcPort());
+		DispatchClientConnection srcConn = ClientConnectionFactory.getInstance().createDispatchConn();
 		
 		com.cannontech.message.dispatch.message.Registration reg = new com.cannontech.message.dispatch.message.Registration();
 		reg.setAppName( CtiUtilities.getAppRegistration() );
@@ -47,9 +50,7 @@ public class FDRLight {
 		srcConn.setRegistrationMsg(multi);
 		srcConn.setAutoReconnect(true);
 		
-		ClientConnection destConn = new ClientConnection();
-		destConn.setHost(args.getDestHost());
-		destConn.setPort(args.getDestPort());
+		DispatchClientConnection destConn = ClientConnectionFactory.getInstance().createDispatchConn();
 		
 		destConn.setRegistrationMsg(reg);
 		destConn.setAutoReconnect(true);
@@ -85,7 +86,7 @@ public class FDRLight {
 
 	}
 
-	private void handleMessage(ClientConnection dest, Object msg) {
+	private void handleMessage(DispatchClientConnection dest, Object msg) {
 		if( msg instanceof Multi ) {
 			Multi multi = (Multi) msg;
 			Iterator iter = multi.getVector().iterator();

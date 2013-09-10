@@ -25,7 +25,7 @@ public class WPSCMain implements Runnable
 	private final String VERSION = "2.1.12";
 	static boolean DEBUG = true;
 	
-	private com.cannontech.message.dispatch.ClientConnection dispatchConn = null;
+	private com.cannontech.message.dispatch.DispatchClientConnection dispatchConn = null;
 
 	private CFDATA CFDATAInstance = null;
 	private LDCNTSUM LDCNTSUMInstance = null;
@@ -77,7 +77,7 @@ public class WPSCMain implements Runnable
 public WPSCMain(String dispatchHost, int dispatchPort, String porterHost, int porterPort, String CFDATADir, String CFDATAFileExt, long CFDATACheckFreq, String outputFile) {
 	super();
 	
-	dispatchConn = (com.cannontech.message.dispatch.ClientConnection) ConnPool.getInstance().getDefDispatchConn();
+	dispatchConn = (com.cannontech.message.dispatch.DispatchClientConnection) ConnPool.getInstance().getDefDispatchConn();
 	dispatchConn.setQueueMessages( true );
 
 	CFDATAInstance = new CFDATA(CFDATADir, CFDATAFileExt );

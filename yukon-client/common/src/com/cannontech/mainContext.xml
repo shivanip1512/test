@@ -56,6 +56,8 @@
     <bean id="databaseVendorResolver" class="com.cannontech.database.vendor.MetaDataDatabaseVendorResolver"/>
     <bean id="vendorSpecificSqlBuilderFactory" class="com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory"/>
 
+	<bean class="com.cannontech.message.util.ClientConnectionFactory"/>
+	
     <bean id="connectionPool" class="com.cannontech.yukon.conns.ConnPool"/>
 
     <bean id="notificationProxy" factory-bean="connectionPool" factory-method="getDefNotificationConn" scope="prototype" />

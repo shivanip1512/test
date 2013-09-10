@@ -3,8 +3,8 @@ package com.cannontech.message.dispatch;
 import com.cannontech.message.util.Command;
 import com.cannontech.message.util.Message;
 
-public class ClientConnection extends com.cannontech.message.util.ClientConnection {
-    public ClientConnection() {
+public class DispatchClientConnection extends com.cannontech.message.util.ClientConnection {
+    public DispatchClientConnection() {
         super("Dispatch");
     }
 

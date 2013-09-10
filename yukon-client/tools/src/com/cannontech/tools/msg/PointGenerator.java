@@ -9,8 +9,9 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.message.dispatch.ClientConnection;
+import com.cannontech.message.dispatch.DispatchClientConnection;
 import com.cannontech.message.dispatch.message.PointRegistration;
+import com.cannontech.message.util.ClientConnectionFactory;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
 
@@ -91,7 +92,7 @@ public static void main(String[] args)
 
 
 	boolean forever = ( numChanges == -1);
-	ClientConnection conn = new ClientConnection();
+	DispatchClientConnection conn = ClientConnectionFactory.getInstance().createDispatchConn();
 	PointRegistration pr = new PointRegistration();
 	pr.setRegFlags( PointRegistration.REG_ALL_PTS_MASK );
 	conn.setRegistrationMsg( pr );

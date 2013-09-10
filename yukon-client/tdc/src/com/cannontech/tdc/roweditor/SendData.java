@@ -6,7 +6,7 @@ package com.cannontech.tdc.roweditor;
  * @author: 
  */
 import com.cannontech.common.util.BootstrapUtils;
-import com.cannontech.message.dispatch.ClientConnection;
+import com.cannontech.message.dispatch.DispatchClientConnection;
 import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.PointRegistration;
@@ -69,8 +69,8 @@ public static synchronized boolean classExists()
 		return true;
 }
 
-private ClientConnection getConnection() {
-    return (ClientConnection)ConnPool.getInstance().getDefDispatchConn();
+private DispatchClientConnection getConnection() {
+    return (DispatchClientConnection)ConnPool.getInstance().getDefDispatchConn();
 }
 
 /**
@@ -112,7 +112,7 @@ private void handleException(java.lang.Throwable exception) {
  */
 private void initialize() 
 {
-    ClientConnection connection = getConnection();
+    DispatchClientConnection connection = getConnection();
 	buildRegistration();
 	tagManager = new TagManager( connection );
 	
@@ -124,7 +124,7 @@ private void initialize()
  */
 public void sendCommandMsg( Command cmd )
 {
-    ClientConnection connection = getConnection();
+    DispatchClientConnection connection = getConnection();
 	if( connection != null && connection.isValid() )
 	{
 		cmd.setUserName( com.cannontech.common.util.CtiUtilities.getUserName() );
@@ -145,7 +145,7 @@ public void sendCommandMsg( Command cmd )
  */
 public void sendPointData( PointData point )
 {
-    ClientConnection connection = getConnection();
+    DispatchClientConnection connection = getConnection();
 	if( connection != null && connection.isValid() )
 	{
 		point.setUserName( com.cannontech.common.util.CtiUtilities.getUserName() );
@@ -166,7 +166,7 @@ public void sendPointData( PointData point )
  */
 public void sendSignal( Signal point )
 {
-    ClientConnection connection = getConnection();
+    DispatchClientConnection connection = getConnection();
 	if( connection != null && connection.isValid() )
 	{
 		point.setUserName( com.cannontech.common.util.CtiUtilities.getUserName() );

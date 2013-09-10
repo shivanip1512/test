@@ -34,11 +34,6 @@ public class ScheduleController extends javax.servlet.http.HttpServlet {
 	// hackaround to set a schedule state until MACS replies
 	private static final String PSEUDO_SCHEDULE_STATE = "Request Pending";
 	
-	private static java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM-dd-yyyy-HH-mm-ss");
-
-	private static com.cannontech.message.dispatch.ClientConnection vangoghConn = null;
-
-	private int soeTag = 0;
 
 /**
  * ProgramController constructor comment.

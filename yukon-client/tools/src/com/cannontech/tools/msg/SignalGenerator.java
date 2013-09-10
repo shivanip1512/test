@@ -6,7 +6,8 @@ package com.cannontech.tools.msg;
  * @author: 
  */
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.message.dispatch.ClientConnection;
+import com.cannontech.message.dispatch.DispatchClientConnection;
+import com.cannontech.message.util.ClientConnectionFactory;
 import com.cannontech.message.util.Command;
 
 public class SignalGenerator {
@@ -42,7 +43,7 @@ public static void main(String[] args)
 	if( numChanges == -1 )
 	 	forever = true;
 	
-	ClientConnection conn = new ClientConnection();
+	DispatchClientConnection conn = ClientConnectionFactory.getInstance().createDispatchConn();
 
 	conn.setHost(vanGogh);
 	conn.setPort(port);

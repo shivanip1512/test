@@ -12,7 +12,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.CommonUtils;
 import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.database.SqlStatement;
-import com.cannontech.message.dispatch.ClientConnection;
+import com.cannontech.message.dispatch.DispatchClientConnection;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.dispatch.message.PointData;
@@ -27,7 +27,7 @@ public class LoggerClient extends com.cannontech.clientutils.ClientBase
 	private Enumeration pointEnum = null;
 	private Logger outStream = null;
 		
-	private ClientConnection connection = null;
+	private DispatchClientConnection connection = null;
 	private Thread runningThread = null;
 	
 

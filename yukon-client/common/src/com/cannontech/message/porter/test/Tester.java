@@ -1,5 +1,7 @@
 package com.cannontech.message.porter.test;
 
+import com.cannontech.message.util.ClientConnectionFactory;
+
 /**
  * Insert the type's description here.
  * Creation date: (5/17/00 2:22:43 PM)
@@ -17,7 +19,7 @@ public static void main(String[] args)
 	{
 		int deviceID = 1;
 		String command = "GetStatus";
-		com.cannontech.message.porter.ClientConnection conn = new com.cannontech.message.porter.ClientConnection();
+		com.cannontech.message.porter.PorterClientConnection conn = ClientConnectionFactory.getInstance().createPorterConn();
 		conn.setHost("10.100.9.230");
 		conn.setPort(1540);
 		conn.connect();

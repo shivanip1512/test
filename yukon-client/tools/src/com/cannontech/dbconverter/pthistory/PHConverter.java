@@ -5,10 +5,11 @@ import java.io.File;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.message.dispatch.ClientConnection;
+import com.cannontech.message.dispatch.DispatchClientConnection;
 import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.Registration;
+import com.cannontech.message.util.ClientConnectionFactory;
 
 /**
 * Import DSM/2 point history into yukon via Dispatch.
@@ -25,8 +26,8 @@ class PHConverter {
 public PHConverter() {
 	super();
 }
-private static ClientConnection connect() throws java.io.IOException {
-	ClientConnection conn;
+private static DispatchClientConnection connect() throws java.io.IOException {
+	DispatchClientConnection conn;
 	String host;
 	int port;
 
@@ -56,7 +57,7 @@ private static ClientConnection connect() throws java.io.IOException {
 
 	System.out.println("Connecting to dispatch @" + host + ":" + port);
 
-	conn = new ClientConnection();
+	conn = ClientConnectionFactory.getInstance().createDispatchConn();
 	conn.setHost(host);
 	conn.setPort(port);
 
@@ -92,7 +93,7 @@ public void convert(String dsm2Root) throws Exception {
 	}
 
 	//connect to dispatch
-	ClientConnection conn = connect();
+	DispatchClientConnection conn = connect();
 
 	if( conn == null ) {
 		System.out.println("Couldn't connect to dispatch, check config.properties and make sure dispatch is running");
@@ -288,7 +289,7 @@ public static void main(String[] args) throws Exception {
  * @param data com.cannontech.dbconverter.pthistory.DSM2PointData
  * @param multiplier float
  */
-private static void sendPointData(ClientConnection conn, int id, float multiplier, DSM2PointData[] data)
+private static void sendPointData(DispatchClientConnection conn, int id, float multiplier, DSM2PointData[] data)
 {	
 	java.util.Date now = new java.util.Date();
 

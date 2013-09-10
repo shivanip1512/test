@@ -4,7 +4,8 @@ package com.cannontech.message.dispatch.test;
  * This type was created in VisualAge.
  */
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.message.dispatch.ClientConnection;
+import com.cannontech.message.dispatch.DispatchClientConnection;
+import com.cannontech.message.util.ClientConnectionFactory;
 
 public class DBChangeSource {
 /**
@@ -31,7 +32,7 @@ public static void main(String[] args) {
 	if( numChanges == -1 )
 	 	forever = true;
 	
-	ClientConnection conn = new ClientConnection();
+	DispatchClientConnection conn = ClientConnectionFactory.getInstance().createDispatchConn();
 
 	conn.setHost(vanGogh);
 	conn.setPort(port);

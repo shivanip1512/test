@@ -3,7 +3,8 @@ package com.cannontech.message.dispatch.test;
 /**
  * This type was created in VisualAge.
  */
-import com.cannontech.message.dispatch.ClientConnection;
+import com.cannontech.message.dispatch.DispatchClientConnection;
+import com.cannontech.message.util.ClientConnectionFactory;
 import com.cannontech.message.util.Command;
 
 public class TestMessages {
@@ -13,8 +14,7 @@ public class TestMessages {
  */
 public static void main(String[] args) {
 
-	ClientConnection conn = new ClientConnection();
-
+	DispatchClientConnection conn = ClientConnectionFactory.getInstance().createDispatchConn();
 	conn.setHost("10.100.9.230");
 	conn.setPort(1510);
 

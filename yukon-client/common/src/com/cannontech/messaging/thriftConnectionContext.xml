@@ -334,7 +334,7 @@
 		class="com.cannontech.messaging.serialization.thrift.serializer.notif.EmailSerializer">
 		<constructor-arg value="NotifEmail"/>
 	</bean>
-	
+
 	<bean id="messaging.thrift.notif.ProgramActionSerializer" parent="messaging.thrift.IInheritanceSerializer"
 		class="com.cannontech.messaging.serialization.thrift.serializer.notif.ProgramActionSerializer">
 		<constructor-arg value="NotifProgramAction"/>
@@ -419,7 +419,7 @@
 				<ref local="messaging.thrift.PingSerializer"/>
 				<ref local="messaging.thrift.serv.RequestSerializer"/>
 				<ref local="messaging.thrift.serv.ResponseSerializer"/>
-				<ref local="messaging.thrift.BooleanDataSerializer"/>				
+				<ref local="messaging.thrift.BooleanDataSerializer"/>
 			</list>
 		</property>
 	</bean>
@@ -440,19 +440,19 @@
 				<ref local="messaging.thrift.cap.ItemCommandSerializer"/>
 				<ref local="messaging.thrift.cap.ServerResponseSerializer"/>
 				<ref local="messaging.thrift.cap.SpecialAreasSerializer"/>
-				<ref local="messaging.thrift.cap.SpecialAreaSerializer"/>			
+				<ref local="messaging.thrift.cap.SpecialAreaSerializer"/>
 				<ref local="messaging.thrift.cap.StateSerializer"/>
-				<ref local="messaging.thrift.cap.StatesSerializer"/>				
+				<ref local="messaging.thrift.cap.StatesSerializer"/>
 				<ref local="messaging.thrift.cap.StreamableSerializer"/>
 				<ref local="messaging.thrift.cap.SubAreasSerializer"/>
 				<ref local="messaging.thrift.cap.SubBusSerializer"/>
-				<ref local="messaging.thrift.cap.SubstationBusesSerializer"/>				
+				<ref local="messaging.thrift.cap.SubstationBusesSerializer"/>
 				<ref local="messaging.thrift.cap.SubStationSerializer"/>	
 				<ref local="messaging.thrift.cap.SubStationsSerializer"/>
 				<ref local="messaging.thrift.cap.SystemStatusSerializer"/>
 				<ref local="messaging.thrift.cap.VerifyBanksSerializer"/>
 				<ref local="messaging.thrift.cap.VerifyInactiveBanksSerializer"/>
-				<ref local="messaging.thrift.cap.VerifySelectedBankSerializer"/>				
+				<ref local="messaging.thrift.cap.VerifySelectedBankSerializer"/>
 				<ref local="messaging.thrift.cap.VoltageRegulatorItemSerializer"/>
 				<ref local="messaging.thrift.cap.VoltageRegulatorSerializer"/>
 				<ref local="messaging.thrift.disp.PointDataSerializer"/>
@@ -499,11 +499,11 @@
 			<list merge="true">
 				<ref local="messaging.thrift.notif.AlarmSerializer"/>
 				<ref local="messaging.thrift.notif.CurtailmentEventDeleteSerializer"/>
-				<ref local="messaging.thrift.notif.CurtailmentEventSerializer"/>				
+				<ref local="messaging.thrift.notif.CurtailmentEventSerializer"/>
 				<ref local="messaging.thrift.notif.EconomicEventDeleteSerializer"/>
 				<ref local="messaging.thrift.notif.EconomicEventSerializer"/>
 				<ref local="messaging.thrift.notif.EmailSerializer"/>
-				<ref local="messaging.thrift.notif.ProgramActionSerializer"/>			
+				<ref local="messaging.thrift.notif.ProgramActionSerializer"/>
 				<ref local="messaging.thrift.notif.ControlSerializer"/>
 				<ref local="messaging.thrift.notif.VoiceCompletedSerializer"/>
 				<ref local="messaging.thrift.notif.VoiceDataRequestSerializer"/>

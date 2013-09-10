@@ -13,9 +13,10 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.message.dispatch.ClientConnection;
+import com.cannontech.message.dispatch.DispatchClientConnection;
 import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.message.util.ClientConnectionFactory;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
@@ -46,7 +47,7 @@ public class PointChangePlayer {
 		PointData[] pChanges = loadChanges(begin);
 		System.out.println("loaded " + pChanges.length + " point changes");
 		
-		ClientConnection conn = new ClientConnection();
+		DispatchClientConnection conn = ClientConnectionFactory.getInstance().createDispatchConn();
 		GlobalSettingDao globalSettingDao = YukonSpringHook.getBean(GlobalSettingDao.class);
 		conn.setHost(globalSettingDao.getString(GlobalSettingType.DISPATCH_MACHINE));
 		conn.setPort(globalSettingDao.getInteger(GlobalSettingType.DISPATCH_PORT));

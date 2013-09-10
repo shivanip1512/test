@@ -160,7 +160,7 @@ import com.cannontech.dbeditor.wizard.user.LoginGroupWizardPanel;
 import com.cannontech.dbeditor.wizard.user.UserGroupWizardPanel;
 import com.cannontech.dbeditor.wizard.user.YukonUserWizardPanel;
 import com.cannontech.debug.gui.AboutDialog;
-import com.cannontech.message.dispatch.ClientConnection;
+import com.cannontech.message.dispatch.DispatchClientConnection;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.spring.YukonSpringHook;
@@ -2860,7 +2860,7 @@ private void showWizardPanel(WizardPanel wizard) {
 @Override
 public void update(java.util.Observable o, Object arg) 
 {
-	if( o instanceof ClientConnection )
+	if( o instanceof DispatchClientConnection )
 	{
 		updateConnectionStatus((IServerConnection) o);
 	}

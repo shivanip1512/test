@@ -8,17 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class ConnectionFactoryService {
 
-    private static ConnectionFactoryService instance;
-
-    @Autowired
-    private BeanFactory beanFactory;
+    @Autowired private BeanFactory beanFactory;
     private Map<String, String> connectionFactoryMap;
     private Map<String, String> listenerConnectionFactoryMap;
 
     private ConnectionFactoryService() {
         connectionFactoryMap = new HashMap<String, String>();
         listenerConnectionFactoryMap = new HashMap<String, String>();
-        instance = this;
+
     }
 
     public ConnectionFactory findConnectionFactory(String name) {
@@ -49,10 +46,6 @@ public class ConnectionFactoryService {
         }
 
         return factory;
-    }
-
-    public static ConnectionFactoryService getInstance() {
-        return instance;
     }
 
     public static class ConnectionFactoryServiceInitializer {

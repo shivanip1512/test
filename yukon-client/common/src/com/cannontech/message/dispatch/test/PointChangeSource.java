@@ -3,7 +3,8 @@ package com.cannontech.message.dispatch.test;
 /**
  * This type was created in VisualAge.
  */
-import com.cannontech.message.dispatch.ClientConnection;
+import com.cannontech.message.dispatch.DispatchClientConnection;
+import com.cannontech.message.util.ClientConnectionFactory;
 import com.cannontech.message.util.Command;
 
 public class PointChangeSource {
@@ -38,7 +39,7 @@ public static void main(String[] args) {
 	if( numChanges == -1 )
 	 	forever = true;
 	
-	ClientConnection conn = new ClientConnection();
+	DispatchClientConnection conn = ClientConnectionFactory.getInstance().createDispatchConn();
 
 	conn.setHost(vanGogh);
 	conn.setPort(port);

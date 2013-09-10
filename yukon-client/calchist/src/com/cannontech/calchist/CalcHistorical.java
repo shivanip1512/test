@@ -23,10 +23,11 @@ import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.database.db.point.calculation.CalcComponent;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
-import com.cannontech.message.dispatch.ClientConnection;
+import com.cannontech.message.dispatch.DispatchClientConnection;
 import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.Registration;
+import com.cannontech.message.util.ClientConnectionFactory;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
@@ -36,7 +37,7 @@ public final class CalcHistorical
 	private Thread starter = null;
 
 	private Integer aggregationInterval = null;//interval in seconds between calculations
-	private ClientConnection dispatchConnection = null;
+	private DispatchClientConnection dispatchConnection = null;
 	private GregorianCalendar nextCalcTime = null;
 
 	public static boolean isService = true;
@@ -498,7 +499,7 @@ public Vector getRawPointHistoryVectorOfVectors(Vector calcComponentVector, Greg
  * Insert the method's description here.
  * Creation date: (12/4/2000 2:27:20 PM)
  */
-public ClientConnection getDispatchConnection()
+public DispatchClientConnection getDispatchConnection()
 {
 	if( dispatchConnection == null || !dispatchConnection.isValid() )
 	{
@@ -513,7 +514,7 @@ public ClientConnection getDispatchConnection()
 		{
 			CTILogger.error( e.getMessage(), e );
 		}		
-		dispatchConnection = new ClientConnection();
+		dispatchConnection = ClientConnectionFactory.getInstance().createDispatchConn();
 
 		Registration reg = new Registration();
 		reg.setAppName( CtiUtilities.getAppRegistration() );

@@ -2,8 +2,9 @@ package com.cannontech.tools.dispatch;
 
 import java.io.IOException;
 
-import com.cannontech.message.dispatch.ClientConnection;
+import com.cannontech.message.dispatch.DispatchClientConnection;
 import com.cannontech.message.dispatch.message.PointRegistration;
+import com.cannontech.message.util.ClientConnectionFactory;
 
 public class VGConnPounder {
 
@@ -40,7 +41,7 @@ public class VGConnPounder {
     }
 
     class PounderThr implements Runnable {
-        ClientConnection conn;
+        DispatchClientConnection conn;
 
         public void run() {
             try {
@@ -77,7 +78,7 @@ public class VGConnPounder {
 
             int port = 1510;
 
-            conn = new com.cannontech.message.dispatch.ClientConnection();
+            conn = ClientConnectionFactory.getInstance().createDispatchConn();
             conn.setHost(VGConnPounder.this.host);
             conn.setPort(port);
 

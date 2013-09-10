@@ -14,8 +14,9 @@ import javax.mail.internet.MimeMessage;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.commandlineparameters.CommandLineParser;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.message.porter.ClientConnection;
+import com.cannontech.message.porter.PorterClientConnection;
 import com.cannontech.message.porter.message.Request;
+import com.cannontech.message.util.ClientConnectionFactory;
 import com.cannontech.message.util.Command;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
@@ -225,8 +226,8 @@ private boolean executeCheckDispatchConnection()
 		reg.setAppExpirationDelay( 60 );  // 1 minutes
 		
 		CTILogger.info("Trying to connect to:  " + getYukonHost() + " " + DISPATCH_PORT );
-		com.cannontech.message.dispatch.ClientConnection connection = 
-					new com.cannontech.message.dispatch.ClientConnection();
+		com.cannontech.message.dispatch.DispatchClientConnection connection = 
+		    ClientConnectionFactory.getInstance().createDispatchConn();
 
 		connection.setHost(getYukonHost());
 		connection.setPort(DISPATCH_PORT);
@@ -288,8 +289,8 @@ private boolean executeCheckPorterConnection()
 		CTILogger.info("Trying to connect to:  " + getYukonHost() + " " + DISPATCH_PORT );
         
         //get his own porter connection
-        ClientConnection portConn = 
-            (ClientConnection)ConnPool.getInstance().getDefPorterConn();
+        PorterClientConnection portConn = 
+            (PorterClientConnection)ConnPool.getInstance().getDefPorterConn();
 
         portConn.setHost( getYukonHost() );
         portConn.setPort( PORTER_PORT );

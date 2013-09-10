@@ -11,7 +11,7 @@ import com.cannontech.database.SqlUtils;
  */
 public class LDCNTSUM implements Runnable
 {
-	private com.cannontech.message.dispatch.ClientConnection dispatchConn = null;
+	private com.cannontech.message.dispatch.DispatchClientConnection dispatchConn = null;
 
 	private long writeDelay = 30000;
 	private java.lang.String fileName = "LDCNTSUM.SND";
@@ -26,7 +26,7 @@ public class LDCNTSUM implements Runnable
 /**
  * LDCNTSUM constructor comment.
  */
-public LDCNTSUM(com.cannontech.message.dispatch.ClientConnection newDispatchConn, String outputFile)
+public LDCNTSUM(com.cannontech.message.dispatch.DispatchClientConnection newDispatchConn, String outputFile)
 {
 	super();
 	this.dispatchConn = newDispatchConn;

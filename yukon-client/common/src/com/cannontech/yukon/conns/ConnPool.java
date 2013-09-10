@@ -9,8 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.BootstrapUtils;
-import com.cannontech.message.dispatch.ClientConnection;
+import com.cannontech.message.dispatch.DispatchClientConnection;
 import com.cannontech.message.dispatch.message.Registration;
+import com.cannontech.message.util.ClientConnectionFactory;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
@@ -40,6 +41,8 @@ public class ConnPool
 	public static final String CAPCONTROL_CONN = "CAPCONTROL";
 	public static final String NOTIFCATION_CONN = "NOTIFCATION";
 	@Autowired private GlobalSettingDao globalSettingDao;
+	@Autowired private ClientConnectionFactory clientConnectionFactory ;
+    
 
 	// Map<String, IServerConnection>
 	private Hashtable<String, IServerConnection> _allConns = null;
@@ -73,13 +76,9 @@ public class ConnPool
      * Creates a new Porter connection.
      * 
      */
-	private IServerConnection createPorterConn()
-	{		
-		com.cannontech.message.porter.ClientConnection porterCC = 
-				new com.cannontech.message.porter.ClientConnection();
-
-		return porterCC;
-	}
+	private IServerConnection createPorterConn() {
+	    return clientConnectionFactory.createPorterConn();
+    }
 
 	/**
 	 * Creates a new Dispatch connection.
@@ -87,7 +86,7 @@ public class ConnPool
 	 */
 	private IServerConnection createDispatchConn()
 	{		
-		ClientConnection connToDispatch = new ClientConnection();
+		DispatchClientConnection connToDispatch = clientConnectionFactory.createDispatchConn();
 		
 		Registration reg = new Registration();
          /*
@@ -111,8 +110,8 @@ public class ConnPool
 	public IServerConnection getDefDispatchConn() {
 
 	    //check our master Map of existing connections
-	    ClientConnection connToDispatch =
-	        (ClientConnection)getAllConns().get(DISPATCH_CONN);
+	    DispatchClientConnection connToDispatch =
+	        (DispatchClientConnection)getAllConns().get(DISPATCH_CONN);
 
 	    if( connToDispatch == null ) {
 	        String defaultHost = "127.0.0.1";
@@ -120,7 +119,7 @@ public class ConnPool
 	        defaultHost = globalSettingDao.getString(GlobalSettingType.DISPATCH_MACHINE);
 	        int port = globalSettingDao.getInteger(GlobalSettingType.DISPATCH_PORT);
 
-	        connToDispatch = (ClientConnection)createDispatchConn();
+	        connToDispatch = (DispatchClientConnection)createDispatchConn();
 	        connToDispatch.setHost(defaultHost);
 	        connToDispatch.setPort(port);
 	        
@@ -142,8 +141,8 @@ public class ConnPool
     public IServerConnection getDefPorterConn()
     {
         //check our master Map of existing connections
-        com.cannontech.message.porter.ClientConnection porterCC =
-            (com.cannontech.message.porter.ClientConnection)getAllConns().get(PORTER_CONN);
+        com.cannontech.message.porter.PorterClientConnection porterCC =
+            (com.cannontech.message.porter.PorterClientConnection)getAllConns().get(PORTER_CONN);
         
         if( porterCC == null )
         {
@@ -152,7 +151,7 @@ public class ConnPool
             host = globalSettingDao.getString(GlobalSettingType.PORTER_MACHINE);
             int port = globalSettingDao.getInteger(GlobalSettingType.PORTER_PORT);
     
-            porterCC = (com.cannontech.message.porter.ClientConnection)createPorterConn();
+            porterCC = (com.cannontech.message.porter.PorterClientConnection)createPorterConn();
     
             porterCC.setHost(host);
             porterCC.setPort(port);
@@ -204,8 +203,7 @@ public class ConnPool
      * 
      */
     private IMACSConnection createMacsConn() {       
-        ServerMACSConnection macsConn = new ServerMACSConnection();
-        return macsConn;
+        return clientConnectionFactory.createMacsConn();
     }
 
     /**
@@ -259,23 +257,15 @@ public class ConnPool
      * Creates a new CapControl connection.
      * 
      */
-    private IServerConnection createCapControlConn()
-    {       
-    	CapControlClientConnection cbcConn = new CapControlClientConnection();
-        return cbcConn;
+    private IServerConnection createCapControlConn() {
+        return clientConnectionFactory.createCapControlConn();
     }
     
 	/**
 	 * Creates a new NotifServer connection.
 	 * 
 	 */
-	private IServerConnection createNotificationConn()
-	{       
-		NotifClientConnection notifConn = new NotifClientConnection();
-		String host = globalSettingDao.getString(GlobalSettingType.NOTIFICATION_HOST);
-        notifConn.setHost(host);
-        int port = globalSettingDao.getInteger(GlobalSettingType.NOTIFICATION_PORT);
-        notifConn.setPort(port);
-		return notifConn;
+	private IServerConnection createNotificationConn() {
+	    return clientConnectionFactory.createNotificationConn();
 	}
 }

@@ -74,7 +74,7 @@ public class DeviceDataMonitorServiceImpl extends ServiceWorker<DeviceDataMonito
     @Autowired private DynamicDataSource dynamicDataSource;
     @Autowired private PointDao pointDao;
 
-    private com.cannontech.message.dispatch.ClientConnection dispatchConnection;
+    private com.cannontech.message.dispatch.DispatchClientConnection dispatchConnection;
     private static final Logger log = YukonLogManager.getLogger(DeviceDataMonitorServiceImpl.class);
     
     private static final String WORKER_COUNT_CONFIG = "DEVICE_DATA_MONITOR_WORKER_COUNT";
@@ -495,7 +495,7 @@ public class DeviceDataMonitorServiceImpl extends ServiceWorker<DeviceDataMonito
     
     private void waitForDispatch() throws InterruptedException {
         if (dispatchConnection == null) {
-            dispatchConnection = (com.cannontech.message.dispatch.ClientConnection)connPool.getDefDispatchConn();
+            dispatchConnection = (com.cannontech.message.dispatch.DispatchClientConnection)connPool.getDefDispatchConn();
         }
         dispatchConnection.waitForValidConnection();
     }
