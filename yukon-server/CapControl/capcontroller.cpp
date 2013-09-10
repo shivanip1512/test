@@ -2089,7 +2089,6 @@ void CtiCapController::parseMessage(CtiMessage *message)
     {
         CtiMultiMsg* msgMulti;
         CtiPointDataMsg* pData;
-        CtiReturnMsg* pcReturn;
         CtiCommandMsg* cmdMsg;
         CtiDBChangeMsg* dbChange;
         CtiSignalMsg* signal;
@@ -2163,8 +2162,8 @@ void CtiCapController::parseMessage(CtiMessage *message)
                 break;
             case MSG_PCRETURN:
                 {
-                    pcReturn = (CtiReturnMsg *)message;
-                    porterReturnMsg(pcReturn->DeviceId(), pcReturn->CommandString(), pcReturn->Status(), pcReturn->ResultString());
+                    const CtiReturnMsg *pcReturn = static_cast<const CtiReturnMsg *>(message);
+                    porterReturnMsg(*pcReturn);
                 }
                 break;
             case MSG_COMMAND:
@@ -3774,11 +3773,19 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
     Handles porter return messages and updates the status of substation bus
     cap bank controls.
 ---------------------------------------------------------------------------*/
-void CtiCapController::porterReturnMsg( long deviceId, const string& _commandString, int status, const string& _resultString )
+void CtiCapController::porterReturnMsg( const CtiReturnMsg &retMsg )
 {
-    string commandString = _commandString;
+    const long   deviceId      = retMsg.DeviceId();
+    const string commandString = retMsg.CommandString();
+    const int    status        = retMsg.Status();
+    const bool   expectMore    = retMsg.ExpectMore();
+
     if( ciStringEqual(commandString, "scan general") ||
         ciStringEqual(commandString, "scan integrity") )
+    {
+        return;
+    }
+    if( status == ErrorPortNotInitialized && expectMore )
     {
         return;
     }

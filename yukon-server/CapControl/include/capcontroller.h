@@ -20,6 +20,8 @@
 #include "yukon.h"
 #include "ctdpcptrq.h"
 
+class CtiReturnMsg;
+
 class CtiCapController : public MessageListener
 {
     public:
@@ -71,7 +73,7 @@ class CtiCapController : public MessageListener
 
     protected:
 
-        void porterReturnMsg(long deviceId, const string& commandString, int status, const string& resultString);
+        void porterReturnMsg(const CtiReturnMsg &retMsg);
 
     private:
 

@@ -2,6 +2,7 @@
 
 #include "capcontroller.h"
 #include "ccunittestutil.h"
+#include "msg_pcreturn.h"
 
 using namespace Cti::Test::CapControl;
 using namespace Cti::CapControl;
@@ -63,6 +64,21 @@ BOOST_AUTO_TEST_CASE( test_porterReturnMsg_oneway_device )
 
     test_CtiCapController cc;
 
+    const CtiReturnMsg controlOpen_noError (6, "control open",  "n/a", 0);
+    const CtiReturnMsg controlOpen_error   (6, "control open",  "n/a", 1);
+
+    const CtiReturnMsg controlClose_noError(6, "control close", "n/a", 0);
+    const CtiReturnMsg controlClose_error  (6, "control close", "n/a", 1);
+
+    const CtiReturnMsg hippopotamusAlligator_noError(6, "hippopotamus alligator", "n/a", 0);
+    const CtiReturnMsg hippopotamusAlligator_error  (6, "hippopotamus alligator", "n/a", 1);
+
+    const CtiReturnMsg giraffeBaboon_noError(6, "giraffe baboon", "n/a", 0);
+    const CtiReturnMsg giraffeBaboon_error  (6, "giraffe baboon", "n/a", 1);
+
+    const CtiReturnMsg controlFlip_noError (6, "control flip", "n/a", 0);
+    const CtiReturnMsg controlFlip_error   (6, "control flip", "n/a", 1);
+
     {
         //  Note that we have not set the control strings yet, so the point has none.
         //p.setStateZeroControl("");
@@ -75,17 +91,17 @@ BOOST_AUTO_TEST_CASE( test_porterReturnMsg_oneway_device )
             bank->setControlStatus(-1);
 
             bus->setRecentlyControlledFlag(true);
-            cc.porterReturnMsg(6, "hippopotamus alligator", 0, "n/a");
+            cc.porterReturnMsg(hippopotamusAlligator_noError);
 
             BOOST_CHECK_EQUAL( bank->getControlStatus(), -1 );
 
             bus->setRecentlyControlledFlag(true);
-            cc.porterReturnMsg(6, "control open", 0, "n/a");
+            cc.porterReturnMsg(controlOpen_noError);
 
             BOOST_CHECK_EQUAL( bank->getControlStatus(), CtiCCCapBank::OpenPending );
 
             bus->setRecentlyControlledFlag(true);
-            cc.porterReturnMsg(6, "control open", 1, "n/a");
+            cc.porterReturnMsg(controlOpen_error);
 
             BOOST_CHECK_EQUAL( bank->getControlStatus(), CtiCCCapBank::OpenQuestionable );
         }
@@ -95,17 +111,17 @@ BOOST_AUTO_TEST_CASE( test_porterReturnMsg_oneway_device )
             bank->setControlStatus(-1);
 
             bus->setRecentlyControlledFlag(true);
-            cc.porterReturnMsg(6, "giraffe baboon", 0, "n/a");
+            cc.porterReturnMsg(giraffeBaboon_noError);
 
             BOOST_CHECK_EQUAL( bank->getControlStatus(), -1 );
 
             bus->setRecentlyControlledFlag(true);
-            cc.porterReturnMsg(6, "control close", 0, "n/a");
+            cc.porterReturnMsg(controlClose_noError);
 
             BOOST_CHECK_EQUAL( bank->getControlStatus(), CtiCCCapBank::ClosePending );
 
             bus->setRecentlyControlledFlag(true);
-            cc.porterReturnMsg(6, "control close", 1, "n/a");
+            cc.porterReturnMsg(controlClose_error);
 
             BOOST_CHECK_EQUAL( bank->getControlStatus(), CtiCCCapBank::CloseQuestionable );
         }
@@ -115,24 +131,24 @@ BOOST_AUTO_TEST_CASE( test_porterReturnMsg_oneway_device )
             bank->setControlStatus(CtiCCCapBank::ClosePending);
 
             bus->setRecentlyControlledFlag(true);
-            cc.porterReturnMsg(6, "control flip", 0, "n/a");
+            cc.porterReturnMsg(controlFlip_noError);
 
             BOOST_CHECK_EQUAL( bank->getControlStatus(), CtiCCCapBank::ClosePending );
 
             bus->setRecentlyControlledFlag(true);
-            cc.porterReturnMsg(6, "control flip", 1, "n/a");
+            cc.porterReturnMsg(controlFlip_error);
 
             BOOST_CHECK_EQUAL( bank->getControlStatus(), CtiCCCapBank::CloseFail );
 
             bank->setControlStatus(CtiCCCapBank::OpenPending);
 
             bus->setRecentlyControlledFlag(true);
-            cc.porterReturnMsg(6, "control flip", 0, "n/a");
+            cc.porterReturnMsg(controlFlip_noError);
 
             BOOST_CHECK_EQUAL( bank->getControlStatus(), CtiCCCapBank::OpenPending );
 
             bus->setRecentlyControlledFlag(true);
-            cc.porterReturnMsg(6, "control flip", 1, "n/a");
+            cc.porterReturnMsg(controlFlip_error);
 
             BOOST_CHECK_EQUAL( bank->getControlStatus(), CtiCCCapBank::OpenFail );
         }
@@ -148,17 +164,17 @@ BOOST_AUTO_TEST_CASE( test_porterReturnMsg_oneway_device )
             bank->setControlStatus(-1);
 
             bus->setRecentlyControlledFlag(true);
-            cc.porterReturnMsg(6, "hippopotamus alligator", 0, "n/a");
+            cc.porterReturnMsg(hippopotamusAlligator_noError);
 
             BOOST_CHECK_EQUAL( bank->getControlStatus(), -1 );
 
             bus->setRecentlyControlledFlag(true);
-            cc.porterReturnMsg(6, "control open", 0, "n/a");
+            cc.porterReturnMsg(controlOpen_noError);
 
             BOOST_CHECK_EQUAL( bank->getControlStatus(), CtiCCCapBank::OpenPending );
 
             bus->setRecentlyControlledFlag(true);
-            cc.porterReturnMsg(6, "control open", 1, "n/a");
+            cc.porterReturnMsg(controlOpen_error);
 
             BOOST_CHECK_EQUAL( bank->getControlStatus(), CtiCCCapBank::OpenQuestionable );
         }
@@ -168,17 +184,17 @@ BOOST_AUTO_TEST_CASE( test_porterReturnMsg_oneway_device )
             bank->setControlStatus(-1);
 
             bus->setRecentlyControlledFlag(true);
-            cc.porterReturnMsg(6, "giraffe baboon", 0, "n/a");
+            cc.porterReturnMsg(giraffeBaboon_noError);
 
             BOOST_CHECK_EQUAL( bank->getControlStatus(), -1 );
 
             bus->setRecentlyControlledFlag(true);
-            cc.porterReturnMsg(6, "control close", 0, "n/a");
+            cc.porterReturnMsg(controlClose_noError);
 
             BOOST_CHECK_EQUAL( bank->getControlStatus(), CtiCCCapBank::ClosePending );
 
             bus->setRecentlyControlledFlag(true);
-            cc.porterReturnMsg(6, "control close", 1, "n/a");
+            cc.porterReturnMsg(controlClose_error);
 
             BOOST_CHECK_EQUAL( bank->getControlStatus(), CtiCCCapBank::CloseQuestionable );
         }
@@ -194,17 +210,17 @@ BOOST_AUTO_TEST_CASE( test_porterReturnMsg_oneway_device )
             bank->setControlStatus(-1);
 
             bus->setRecentlyControlledFlag(true);
-            cc.porterReturnMsg(6, "control open", 0, "n/a");
+            cc.porterReturnMsg(controlOpen_noError);
 
             BOOST_CHECK_EQUAL( bank->getControlStatus(), -1 );
 
             bus->setRecentlyControlledFlag(true);
-            cc.porterReturnMsg(6, "hippopotamus alligator", 0, "n/a");
+            cc.porterReturnMsg(hippopotamusAlligator_noError);
 
             BOOST_CHECK_EQUAL( bank->getControlStatus(), CtiCCCapBank::OpenPending );
 
             bus->setRecentlyControlledFlag(true);
-            cc.porterReturnMsg(6, "hippopotamus alligator", 1, "n/a");
+            cc.porterReturnMsg(hippopotamusAlligator_error);
 
             BOOST_CHECK_EQUAL( bank->getControlStatus(), CtiCCCapBank::OpenQuestionable );
         }
@@ -214,17 +230,17 @@ BOOST_AUTO_TEST_CASE( test_porterReturnMsg_oneway_device )
             bank->setControlStatus(-1);
 
             bus->setRecentlyControlledFlag(true);
-            cc.porterReturnMsg(6, "control close", 0, "n/a");
+            cc.porterReturnMsg(controlClose_noError);
 
             BOOST_CHECK_EQUAL( bank->getControlStatus(), -1 );
 
             bus->setRecentlyControlledFlag(true);
-            cc.porterReturnMsg(6, "giraffe baboon", 0, "n/a");
+            cc.porterReturnMsg(giraffeBaboon_noError);
 
             BOOST_CHECK_EQUAL( bank->getControlStatus(), CtiCCCapBank::ClosePending );
 
             bus->setRecentlyControlledFlag(true);
-            cc.porterReturnMsg(6, "giraffe baboon", 1, "n/a");
+            cc.porterReturnMsg(giraffeBaboon_error);
 
             BOOST_CHECK_EQUAL( bank->getControlStatus(), CtiCCCapBank::CloseQuestionable );
         }
