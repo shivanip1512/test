@@ -78,23 +78,11 @@ public enum GlobalSettingType implements DisplayableEnum {
     OADR_OPEN_ENDED_CONTROL_DURATION(GlobalSettingSubCategory.OPEN_ADR, stringType(), null),
     
     // Yukon Services
-    DISPATCH_MACHINE(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), "127.0.0.1"),
-    DISPATCH_PORT(GlobalSettingSubCategory.YUKON_SERVICES, integerType(), 1510),
-    PORTER_MACHINE(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), "127.0.0.1"),
-    PORTER_PORT(GlobalSettingSubCategory.YUKON_SERVICES, integerType(), 1540),
-    MACS_MACHINE(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), "127.0.0.1"),
-    MACS_PORT(GlobalSettingSubCategory.YUKON_SERVICES, integerType(), 1900),
-    CAP_CONTROL_MACHINE(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), "127.0.0.1"),
-    CAP_CONTROL_PORT(GlobalSettingSubCategory.YUKON_SERVICES, integerType(), 1910),
-    LOADCONTROL_MACHINE(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), "127.0.0.1"),
-    LOADCONTROL_PORT(GlobalSettingSubCategory.YUKON_SERVICES, integerType(), 1920),
     SMTP_HOST(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), "127.0.0.1"),
     SMTP_PORT(GlobalSettingSubCategory.YUKON_SERVICES, integerType(), null),
     SMTP_USERNAME(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), null),
     SMTP_PASSWORD(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), null),
     MAIL_FROM_ADDRESS(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), "yukon@cannontech.com"),
-    NOTIFICATION_HOST(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), "127.0.0.1"),
-    NOTIFICATION_PORT(GlobalSettingSubCategory.YUKON_SERVICES, integerType(), 1515),
     
     // DR
     BATCHED_SWITCH_COMMAND_TOGGLE(GlobalSettingSubCategory.DR, stringType(), "auto"),
