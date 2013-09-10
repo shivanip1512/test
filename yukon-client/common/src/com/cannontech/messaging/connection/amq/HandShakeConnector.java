@@ -14,8 +14,8 @@ class HandShakeConnector {
 
     private static final int WAIT_REPLY_TIME = 30000;
     private static final int MAX_HAND_SHAKE_MSG_COUNT = 120;
-    private static final String HAND_SHAKE_REQ_MSG_TYPE = "com.cooper.eas.yukon.clientinit";
-    private static final String HAND_SHAKE_RESP_MSG_TYPE = "com.cooper.eas.yukon.serverresp";
+    private static final String HAND_SHAKE_REQ_MSG_TYPE = "com.eaton.eas.yukon.clientinit";
+    private static final String HAND_SHAKE_RESP_MSG_TYPE = "com.eaton.eas.yukon.serverresp";
 
     static TwoWayTransport createClientConnectionTransport(AmqClientConnection clientConnection) {
         AmqConsumerTransport consumer = null;

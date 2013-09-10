@@ -49,7 +49,7 @@ public class AmqListenerConnection extends AmqConnectionBase<AmqConsumerTranspor
     @Override
     public void onMessage(Message message) {
         try {
-            if (message == null || !"com.cooper.eas.yukon.clientinit".equals(message.getJMSType())) {
+            if (message == null || !"com.eaton.eas.yukon.clientinit".equals(message.getJMSType())) {
                 return;
             }
 

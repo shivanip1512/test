@@ -90,7 +90,7 @@ public abstract class ServerToClientMessageSerializationTestBase extends Message
     public Connection createClientConnection() {
         AmqClientConnection client = null;
 
-        client = new AmqClientConnection("", "com.cooper.eas.yukon.conntest");
+        client = new AmqClientConnection("", "com.eaton.eas.yukon.conntest");
         client.setMessageFactory(messageFactory);
 
         return client;
