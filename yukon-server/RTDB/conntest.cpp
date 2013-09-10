@@ -80,7 +80,7 @@ void ConnectionHandlerThread( string name )
     // Up this threads priority a notch over the other procs
     CTISetPriority( PRTYC_NOCHANGE, THREAD_PRIORITY_BELOW_NORMAL );
 
-    CtiListenerConnection listenerConnection( "com.cooper.eas.yukon.conntest" );
+    CtiListenerConnection listenerConnection( "com.eaton.eas.yukon.conntest" );
 
     try
     {
@@ -156,7 +156,7 @@ void runClient( string name )
 {
     cout << CtiTime() << " Starting Client Connection " << endl;
 
-    CtiClientConnection conn( "com.cooper.eas.yukon.conntest" );
+    CtiClientConnection conn( "com.eaton.eas.yukon.conntest" );
 
     conn.setName( name );
     conn.start();

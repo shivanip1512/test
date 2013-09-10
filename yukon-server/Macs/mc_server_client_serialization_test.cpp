@@ -47,7 +47,7 @@ void __cdecl Purecall(void)
 bool bGCtrlC;
 DLLIMPORT extern CtiLogger dout;
 
-CtiListenerConnection listenerConn( "com.cooper.eas.yukon.conntest" );
+CtiListenerConnection listenerConn( "com.eaton.eas.yukon.conntest" );
 
 // CtrlHandler handles is used to catch ctrl-c when run in a console
 BOOL WINAPI CtrlHandler(DWORD fdwCtrlType)

@@ -15,14 +15,14 @@ namespace Broker {
 }
 
 namespace MessageType {
-    const std::string prefix          = "com.cooper.eas.yukon.";
+    const std::string prefix          = "com.eaton.eas.yukon.";
 
     const std::string clientInit      = prefix + "clientinit";
     const std::string serverResp      = prefix + "serverresp";
 }
 
 namespace Queue {
-    const std::string prefix          = "com.cooper.eas.yukon.";
+    const std::string prefix          = "com.eaton.eas.yukon.";
 
     const std::string dispatch        = prefix + "dispatch";
     const std::string pil             = prefix + "pil";
