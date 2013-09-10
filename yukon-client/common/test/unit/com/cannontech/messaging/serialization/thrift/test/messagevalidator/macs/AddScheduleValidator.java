@@ -1,4 +1,4 @@
-package com.cannontech.messaging.serialization.thrift.test.messagevalidator.mac;
+package com.cannontech.messaging.serialization.thrift.test.messagevalidator.macs;
 
 import com.cannontech.message.macs.message.AddSchedule;
 import com.cannontech.message.macs.message.Schedule;

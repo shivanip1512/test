@@ -1,4 +1,4 @@
-package com.cannontech.messaging.serialization.thrift.test.messagevalidator.mac;
+package com.cannontech.messaging.serialization.thrift.test.messagevalidator.macs;
 
 import com.cannontech.message.macs.message.OverrideRequest;
 import com.cannontech.messaging.serialization.thrift.test.validator.AutoInitializedClassValidator;

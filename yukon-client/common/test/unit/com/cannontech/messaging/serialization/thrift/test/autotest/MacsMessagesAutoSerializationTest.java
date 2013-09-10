@@ -4,7 +4,7 @@ import org.junit.Test;
 
 import com.cannontech.messaging.serialization.thrift.ThriftMessageFactory;
 
-public class MacMessagesAutoSerializationTest  extends MessageAutoSerializationTestBase {
+public class MacsMessagesAutoSerializationTest  extends MessageAutoSerializationTestBase {
 
     @Override
     protected ThriftMessageFactory createMessageFactory() {
@@ -12,7 +12,7 @@ public class MacMessagesAutoSerializationTest  extends MessageAutoSerializationT
     }
 
     @Test
-    public void testMacMessages() {        
+    public void testMacsMessages() {        
         autoTestMessage(com.cannontech.message.macs.message.AddSchedule.class);
         autoTestMessage(com.cannontech.message.macs.message.DeleteSchedule.class);
         autoTestMessage(com.cannontech.message.macs.message.Info.class);

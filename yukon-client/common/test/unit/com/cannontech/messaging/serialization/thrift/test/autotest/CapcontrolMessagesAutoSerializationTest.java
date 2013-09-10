@@ -12,7 +12,7 @@ public class CapcontrolMessagesAutoSerializationTest  extends MessageAutoSeriali
     }
 
     @Test
-    public void testPorterMessages() {
+    public void testCapcontrolMessages() {
         autoTestMessage(com.cannontech.message.capcontrol.streamable.Area.class);
         autoTestMessage(com.cannontech.message.capcontrol.model.BankMove.class);
         autoTestMessage(com.cannontech.message.capcontrol.streamable.CapBankDevice.class);

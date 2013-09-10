@@ -1,4 +1,4 @@
-package com.cannontech.messaging.serialization.thrift.test.messagevalidator.mac;
+package com.cannontech.messaging.serialization.thrift.test.messagevalidator.macs;
 
 import java.util.Date;
 

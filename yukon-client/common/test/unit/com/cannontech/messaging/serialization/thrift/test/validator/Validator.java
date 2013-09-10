@@ -41,6 +41,7 @@ public abstract class Validator<T> {
             result.addError("value object is null while expected object is not");
             return true;
         }
+        
         if (expected == null) {
             result.addError("expected object is null while value object is not");
             return true;
