@@ -20,6 +20,11 @@ public interface FormulaDao {
     /** Deletes a formula by its id **/
     public void deleteFormulaById(int formulaId);
 
+    /** 
+     * Searches formula inputs and returns true if this pao is used as an input for a formula.
+     * returns false if not
+     **/
+    public boolean isPointAFormulaInput(int pointId);
 
     // Handling appliance category assignments
 

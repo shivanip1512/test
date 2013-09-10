@@ -91,6 +91,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.OUT_OF_VOLTAGE_FLAG">Out of Voltage</entry>
     <entry key="yukon.common.attribute.builtInAttribute.VOLTAGE_OUT_OF_LIMITS_FLAG">Voltage Out of Limits</entry>
     <entry key="yukon.common.attribute.builtInAttribute.INTERNAL_ERROR_FLAG">Internal Error</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.TEMPERATURE">Temperature</entry>
     <entry key="yukon.common.attribute.builtInAttribute.TEMPORARY_OUT_OF_SERVICE">Temp Out of Service Duration</entry>
     <entry key="yukon.common.attribute.builtInAttribute.TOU_RATE_A_PEAK_DEMAND">Tou Rate A Peak</entry>
     <entry key="yukon.common.attribute.builtInAttribute.TOU_RATE_B_PEAK_DEMAND">Tou Rate B Peak</entry>
@@ -113,6 +114,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.POWER_FACTOR_PHASE_A">Power Factor (Phase A)</entry>
     <entry key="yukon.common.attribute.builtInAttribute.POWER_FACTOR_PHASE_B">Power Factor (Phase B)</entry>
     <entry key="yukon.common.attribute.builtInAttribute.POWER_FACTOR_PHASE_C">Power Factor (Phase C)</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.HUMIDITY">Relative Humidity</entry>
     <entry key="yukon.common.attribute.builtInAttribute.VOLTAGE">Voltage</entry>
     <entry key="yukon.common.attribute.builtInAttribute.VOLTAGE_PHASE_A">Voltage (Phase A)</entry>
     <entry key="yukon.common.attribute.builtInAttribute.VOLTAGE_PHASE_B">Voltage (Phase B)</entry>

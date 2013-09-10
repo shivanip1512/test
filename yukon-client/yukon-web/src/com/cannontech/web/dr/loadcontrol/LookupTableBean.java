@@ -15,8 +15,9 @@ import com.google.common.collect.ImmutableList;
 public class LookupTableBean {
     private Integer lookupTableId;
     private String name;
-    private Integer inputPointId;
     private FormulaInput.InputType inputType;
+    private Integer inputPointId;
+    private Integer weatherInputPaoId;
 
     private double inputMax;
     private List<TableEntryBean> entries = LazyList.ofInstance(TableEntryBean.class);
@@ -179,5 +180,11 @@ public class LookupTableBean {
 
     public boolean isTimeInput() {
         return inputType == InputType.TIME;
+    }
+    public Integer getWeatherInputPaoId() {
+        return weatherInputPaoId;
+    }
+    public void setWeatherInputPaoId(Integer weatherInputPaoId) {
+        this.weatherInputPaoId = weatherInputPaoId;
     }
 }

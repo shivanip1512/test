@@ -211,7 +211,6 @@ public interface DeviceTypes extends TypeBase
 //    public final static int RFN440_2133T = DEVICE_OFFSET + 159;
     public final static int RFN440_2133TD = DEVICE_OFFSET + 160;
     
-//    educated guess at this point...
     public final static int WEATHER_LOCATION = DEVICE_OFFSET + 161;
 
 	//all the possible text representation of each device type.

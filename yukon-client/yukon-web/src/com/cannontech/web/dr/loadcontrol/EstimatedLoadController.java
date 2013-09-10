@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.common.i18n.ObjectFormattingService;
+import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.EnergyCompanyNotFoundException;
@@ -33,6 +35,7 @@ import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.DeviceTypes;
+import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.db.device.lm.GearControlMethod;
 import com.cannontech.dr.estimatedload.ApplianceCategoryAssignment;
 import com.cannontech.dr.estimatedload.Formula;
@@ -41,6 +44,12 @@ import com.cannontech.dr.estimatedload.GearAssignment;
 import com.cannontech.dr.estimatedload.dao.FormulaDao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.loadcontrol.data.LMProgramDirectGear;
+import com.cannontech.loadcontrol.weather.GeographicCoordinate;
+import com.cannontech.loadcontrol.weather.NoaaWeatherDataService;
+import com.cannontech.loadcontrol.weather.WeatherDataService;
+import com.cannontech.loadcontrol.weather.WeatherLocation;
+import com.cannontech.loadcontrol.weather.WeatherObservation;
+import com.cannontech.loadcontrol.weather.WeatherStation;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
 import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
@@ -68,48 +77,123 @@ public class EstimatedLoadController {
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
     @Autowired private ObjectFormattingService objectFormatingService;
     @Autowired private PaoDao paoDao;
+    @Autowired private WeatherDataService weatherDataService;
+    @Autowired private NoaaWeatherDataService noaaWeatherDataService;
+    @Autowired private AttributeService attributeService;
 
     private String baseKey = "yukon.web.modules.dr.formula.";
     private FormulaBeanValidator formulaBeanValidator = new FormulaBeanValidator(baseKey);
     public static enum SortBy {NAME, CALCULATION_TYPE, TYPE, GEAR_CONTROL_METHOD,
                                APP_CAT_AVERAGE_LOAD, IS_ASSIGNED, PROGRAM_NAME}
 
-    private Function<GearAssignment, GearControlMethod> controlMethodFunction
-        = new Function<GearAssignment, GearControlMethod>() {
-        @Override public GearControlMethod apply(GearAssignment from) {
-            return from.getGear().getControlMethod();
-        }
-    };
-
-    private Function<ApplianceCategoryAssignment, ApplianceTypeEnum> applianceTypeFunction
-        = new Function<ApplianceCategoryAssignment, ApplianceTypeEnum>() {
-        @Override public ApplianceTypeEnum apply(ApplianceCategoryAssignment from) {
-            return from.getApplianceCategory().getApplianceType();
-        }
-    };
-
-    private Function<FormulaBean, Formula.Type> formulaTypeFunction
-        = new Function<FormulaBean, Formula.Type>() {
-        @Override public Formula.Type apply(FormulaBean from) {
-            return from.getFormulaType();
-        }
-    };
-
-    private Function<FormulaBean, Formula.CalculationType> calculationTypeFunction
-        = new Function<FormulaBean, Formula.CalculationType>() {
-        @Override public Formula.CalculationType apply(FormulaBean from) {
-            return from.getCalculationType();
-        }
-    };
-
     @RequestMapping("home")
-    public String home(ModelMap model, YukonUserContext context) {
+    public String home(ModelMap model,YukonUserContext context) {
 
         listPageAjax(model, context, SortBy.NAME, false, 10, 1);
         appCatAssignmentsPage(model, context, SortBy.NAME, false, 10, 1);
         gearAssignmentsPage(model, context, SortBy.NAME, false, 10, 1);
+        wetherLocationsTableAjax(model);
 
         return "dr/estimatedLoad/home.jsp";
+    }
+
+    @RequestMapping
+    public String wetherLocationsTableAjax(ModelMap model) {
+
+        List<WeatherLocation> weatherLocations = weatherDataService.getAllWeatherLocations();
+        Map<String, WeatherStation> weatherStations = noaaWeatherDataService.getAllWeatherStations();
+
+        model.addAttribute("weatherLocations", weatherLocations);
+        model.addAttribute("weatherStations", weatherStations);
+        model.addAttribute("weatherLocationBean", new WeatherLocationBean());
+
+        Map<String, WeatherObservation> weatherObservations = new HashMap<>();
+        for (WeatherLocation weatherLoc : weatherLocations) {
+            WeatherObservation observation = weatherDataService.getCurrentWeatherObservation(weatherLoc);
+            weatherObservations.put(weatherLoc.getStationId(), observation);
+        }
+        model.addAttribute("weatherObservations", weatherObservations);
+
+        return "dr/estimatedLoad/_weatherLocationsTable.jsp";
+    }
+
+    @RequestMapping
+    public String removeWeatherLocation(ModelMap model, FlashScope flashScope, int paoId, YukonUserContext context) {
+
+        List<PointBase> points = pointDao.getPointsForPao(paoId);
+        boolean isUsed = true;
+        for (PointBase point : points) {
+            isUsed |= formulaDao.isPointAFormulaInput(point.getPoint().getPointID());
+        }
+
+        if (isUsed) {
+            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.dr.estimatedLoad.errors.cannotRemoveWeatherLoc"));
+        } else {
+            weatherDataService.deleteWeatherLocation(paoId);
+            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.estimatedLoad.success.removedWeatherLocation"));
+        }
+        return "redirect:home";
+    }
+
+    @RequestMapping
+    public String saveWeatherLocation(ModelMap model, WeatherLocationBean weatherLocationBean, BindingResult bindingResult) {
+
+        validateLatLon(weatherLocationBean.getLatitude(), weatherLocationBean.getLongitude(), bindingResult);
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("dialogState", "searching");
+            return "dr/estimatedLoad/_weatherStations.jsp";
+        }
+
+        double lat = Double.parseDouble(weatherLocationBean.getLatitude());
+        double lon = Double.parseDouble(weatherLocationBean.getLongitude());
+        GeographicCoordinate requestedCoordinate = new GeographicCoordinate(lat, lon);
+
+        if (StringUtils.isBlank(weatherLocationBean.getName())) {
+            bindingResult.rejectValue("name", "yukon.web.modules.dr.estimatedLoad.errors.blankName");
+        } else if (!weatherDataService.isNameAvailableForWeatherLocation(weatherLocationBean.getName())){
+            bindingResult.rejectValue("name", "yukon.web.modules.dr.estimatedLoad.errors.nameAlreadyUsed");
+        }
+        if (StringUtils.isBlank(weatherLocationBean.getStationId())) {
+            bindingResult.rejectValue("stationId", "yukon.web.modules.dr.estimatedLoad.errors.noStationId");
+        }
+
+        if (bindingResult.hasErrors()) {
+            addWeatherStationsToModel(model, requestedCoordinate);
+            model.addAttribute("dialogState", "saving");
+            return "dr/estimatedLoad/_weatherStations.jsp";
+        }
+
+        WeatherLocation weatherLocation = new WeatherLocation(null, null,
+                                                              weatherLocationBean.getName(),
+                                                              weatherLocationBean.getStationId(),
+                                                              requestedCoordinate);
+        weatherDataService.createWeatherLocation(weatherLocation);
+
+        model.addAttribute("dialogState", "done");
+        return "dr/estimatedLoad/_weatherStations.jsp";
+    }
+
+    @RequestMapping
+    public String findCloseStations(ModelMap model, WeatherLocationBean wheatherLocationBean, BindingResult bindingResult) {
+
+        validateLatLon(wheatherLocationBean.getLatitude(), wheatherLocationBean.getLongitude(), bindingResult);
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("dialogState", "searching");
+            return "dr/estimatedLoad/_weatherStations.jsp";
+        }
+
+        double lat = Double.parseDouble(wheatherLocationBean.getLatitude());;
+        double lon = Double.parseDouble(wheatherLocationBean.getLongitude());
+
+        GeographicCoordinate requestedCoordinate = new GeographicCoordinate(lat, lon);
+        addWeatherStationsToModel(model, requestedCoordinate);
+
+        model.addAttribute("requestedLat", lat);
+        model.addAttribute("requestedLon", lon);
+        model.addAttribute("dialogState", "saving");
+
+        return "dr/estimatedLoad/_weatherStations.jsp";
     }
 
     @RequestMapping
@@ -333,6 +417,9 @@ public class EstimatedLoadController {
             }
         }
 
+        List<WeatherLocation> weatherLocations = weatherDataService.getAllWeatherLocations();
+
+        model.addAttribute("weatherLocations", weatherLocations);
         model.addAttribute("formulaInputs",formulaInputs);
         model.addAttribute("formulaTypes", Formula.Type.values());
         model.addAttribute("calculationTypes", Formula.CalculationType.values());
@@ -344,6 +431,34 @@ public class EstimatedLoadController {
 
         model.addAttribute("pointNames", getPointNames(formulaBean));
         model.addAttribute("formulaBean", formulaBean);
+    }
+
+    private void addWeatherStationsToModel(ModelMap model, GeographicCoordinate requestedCoordinate) {
+        List<WeatherStation> weatherStationResults = noaaWeatherDataService.getWeatherStationsByDistance(requestedCoordinate);
+        weatherStationResults = weatherStationResults.subList(0, 5);
+
+        Map<String, Integer> distanceToStation = new HashMap<>();
+        for (WeatherStation station : weatherStationResults) {
+            int distance = (int) station.getGeoCoordinate().distanceTo(requestedCoordinate);
+            distanceToStation.put(station.getStationId(), distance);
+        }
+
+        model.addAttribute("weatherStationResults", weatherStationResults);
+        model.addAttribute("distanceToStation", distanceToStation);
+    }
+
+    private void validateLatLon(String lat, String lon, BindingResult bindingResult) {
+        try {
+            Double.parseDouble(lat);
+        } catch (NullPointerException | NumberFormatException e) {
+            bindingResult.rejectValue("latitude", "yukon.web.modules.dr.estimatedLoad.errors.invalidLatitude");
+        }
+
+        try {
+            Double.parseDouble(lon);
+        } catch (NullPointerException | NumberFormatException e) {
+            bindingResult.rejectValue("longitude", "yukon.web.modules.dr.estimatedLoad.errors.invalidLongitude");
+        }
     }
 
     /**
@@ -489,9 +604,43 @@ public class EstimatedLoadController {
         for (LitePoint point : points) {
             pointNames.put(point.getPointID(), point.getPointName());
         }
+        // Although the weather inputs are also points, we want a more descriptive name for the point
+        // so instead of 'Temperature' we will display 'Temperature - Minneapolis' for example
+        List<WeatherLocation> weatherLocations = weatherDataService.getAllWeatherLocations();
+        for (WeatherLocation weatherLoc : weatherLocations) {
+            pointNames.put(weatherLoc.getTempPoint().getPointID(), weatherLoc.getName());
+            pointNames.put(weatherLoc.getHumidityPoint().getPointID(), weatherLoc.getName());
+        }
         return pointNames;
     }
 
+    private Function<GearAssignment, GearControlMethod> controlMethodFunction
+        = new Function<GearAssignment, GearControlMethod>() {
+        @Override public GearControlMethod apply(GearAssignment from) {
+            return from.getGear().getControlMethod();
+        }
+    };
+
+    private Function<ApplianceCategoryAssignment, ApplianceTypeEnum> applianceTypeFunction
+        = new Function<ApplianceCategoryAssignment, ApplianceTypeEnum>() {
+        @Override public ApplianceTypeEnum apply(ApplianceCategoryAssignment from) {
+            return from.getApplianceCategory().getApplianceType();
+        }
+    };
+
+    private Function<FormulaBean, Formula.Type> formulaTypeFunction
+        = new Function<FormulaBean, Formula.Type>() {
+        @Override public Formula.Type apply(FormulaBean from) {
+            return from.getFormulaType();
+        }
+    };
+
+    private Function<FormulaBean, Formula.CalculationType> calculationTypeFunction
+        = new Function<FormulaBean, Formula.CalculationType>() {
+        @Override public Formula.CalculationType apply(FormulaBean from) {
+            return from.getCalculationType();
+        }
+    };
 
     @InitBinder
     public void initBinder(WebDataBinder webDataBinder, YukonUserContext userContext) {

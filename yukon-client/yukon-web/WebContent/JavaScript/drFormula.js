@@ -81,11 +81,8 @@ Yukon.DrFormula = (function() {
     },
 
     _newFunctionBtnClick = function() {
-        var $newRow = jQuery('#dummyFunction').clone().removeAttr("id");
+        var $newRow = jQuery('#functionRow_-1').clone().removeAttr("id");
 
-        $newRow.find("input, select").each(function() {
-            jQuery(this).attr("name", "functions[" + _rowIndex + "]." + jQuery(this).attr("name"));
-        });
         $newRow.find(".f-drFormula-appendTableId").each(function () {
             this.id = this.id + _rowIndex;
         });
@@ -99,9 +96,18 @@ Yukon.DrFormula = (function() {
         var tableId = this.id.split("_").pop();
 
         if (inputVal === 'POINT') {
-            jQuery("#formulaPointPicker_"+tableId).slideDown(150);
+            jQuery("#formulaPointPicker_"+tableId).fadeIn(150);
+            jQuery("#formulaWeatherStationTemp_"+tableId).hide();
+            jQuery("#formulaWeatherStationHumidity_"+tableId).hide();
         } else {
-            jQuery("#formulaPointPicker_"+tableId).slideUp(150);
+            jQuery("#formulaPointPicker_"+tableId).hide();
+            if (inputVal === 'TEMP_C' || inputVal == 'TEMP_F') {
+                jQuery("#formulaWeatherStationTemp_"+tableId).fadeIn(150);
+                jQuery("#formulaWeatherStationHumidity_"+tableId).hide();
+            } else if (inputVal == 'HUMIDITY') {
+                jQuery("#formulaWeatherStationHumidity_"+tableId).fadeIn(150);
+                jQuery("#formulaWeatherStationTemp_"+tableId).hide();
+            }
         }
     },
 
@@ -221,8 +227,25 @@ Yukon.DrFormula = (function() {
     },
 
     _beforeFormSubmit = function (e) {
-        // Need to send these along with form submit
-        jQuery(".f-drFormula-formulaInputSelect").removeAttr("disabled");
+
+        jQuery(".f-drFormula-formulaInputSelect").each(function() {
+            $this = jQuery(this);
+            $this.removeAttr("disabled");
+
+            var inputVal = $this.val();
+            var tableId = this.id.split("_").pop();
+
+            if (inputVal === 'POINT') {
+                jQuery("#formulaWeatherStationTemp_"+tableId).find("select").prop('disabled', true);
+                jQuery("#formulaWeatherStationHumidity_"+tableId).find("select").prop('disabled', true);
+            } else if (inputVal === 'TEMP_C' || inputVal == 'TEMP_F') {
+                jQuery("#inputPointId_"+tableId).prop('disabled', true);
+                jQuery("#formulaWeatherStationHumidity_"+tableId).find("select").prop('disabled', true);
+            } else if (inputVal == 'HUMIDITY') {
+                jQuery("#inputPointId_"+tableId).prop('disabled', true);
+                jQuery("#formulaWeatherStationTemp_"+tableId).find("select").prop('disabled', true);
+            }
+        });
 
         // adjust indexes to be sequential for java List
         jQuery(".f-drFormula-table, .f-drFormula-function").each(function (index) {
@@ -257,6 +280,40 @@ Yukon.DrFormula = (function() {
         return false;
     },
 
+   _searchWeatherStationsAgainBtnClick = function() {
+        jQuery("#weatherLocationSearchResults").fadeOut(50, function() {
+            jQuery("#weatherLocationSearch").fadeIn(50);
+        });
+    },
+
+    _newWeatherLocationBtnClick = function() {
+        jQuery("#weatherLocationSearch").show();
+        jQuery("#weatherLocationSearchResults").hide();
+        jQuery("#weatherStationDialog").dialog({minWidth:500});
+    },
+
+    _searchWeatherStationsBtnClick = function() {
+        jQuery("#findCloseStationsForm").ajaxSubmit({success: function(data) {
+            jQuery("#weatherStationDialog").fadeOut(50, function () {
+                jQuery(this).html(data).fadeIn(50);
+            });
+        }});
+    },
+
+    _saveWeatherStationBtnClick = function() {
+        jQuery("#saveWeatherLocationForm").ajaxSubmit({success: function(data) {
+            jQuery("#weatherStationDialog").fadeOut(50, function () {
+                jQuery(this).html(data);
+                if (jQuery("#dialogState").val() == 'done') {
+                    jQuery("#weatherStationDialog").dialog('close');
+                    jQuery("#weatherLocations").load("wetherLocationsTableAjax");
+                } else {
+                    jQuery(this).fadeIn(50);
+                }
+            });
+        }});
+    },
+
     drFormulaModule = {
         init: function () {
             if (_initialized) {
@@ -264,8 +321,9 @@ Yukon.DrFormula = (function() {
             }
 
             _rowIndex = jQuery("#formulaRowIndex").val();
-            jQuery('#display_tabs').tabs({'cookie' : {}}).show();
 
+            jQuery('#display_tabs')
+                .tabs({'cookie' : {}}).show();
             jQuery("#assignments")
                 .on("click", ".f-drFormula-remove", _removeAssignmentBtnClick)
                 .on("click", ".f-drFormula-undo", _undoBtnClick);
@@ -286,6 +344,14 @@ Yukon.DrFormula = (function() {
             jQuery(".f-drFormula-replaceViaAjax")
                 .on('click', '.f-ajaxPaging', _ajaxPagingBtnClick)
                 .on('click', ".f-drFormula-sortLink", _sortBtnClick);
+            jQuery("#weatherStationDialog")
+                .on("click","#searchWeatherStationsAgain", _searchWeatherStationsAgainBtnClick);
+            jQuery("#weatherStationDialog")
+                .on("click","#searchWeatherStations", _searchWeatherStationsBtnClick);
+            jQuery("#weatherStationDialog")
+                .on("click","#saveWeatherStationBtn", _saveWeatherStationBtnClick);
+            jQuery("#newWeatherLocationBtn")
+                .click(_newWeatherLocationBtnClick);
 
             _initialized = true;
         },

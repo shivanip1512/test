@@ -34,6 +34,10 @@ public final class FormulaInput<T extends Comparable<? super T>> {
             return "yukon.dr.estimatedLoad.inputType." + name();
         }
 
+        public boolean isWeatherData() {
+            return this == TEMP_F || this == HUMIDITY || this == TEMP_C;
+        }
+        
         public static Set<InputType> getApplianceCategoryFunctionInputs() {
             return EnumSet.of(TEMP_C, TEMP_F, HUMIDITY, POINT);
         }

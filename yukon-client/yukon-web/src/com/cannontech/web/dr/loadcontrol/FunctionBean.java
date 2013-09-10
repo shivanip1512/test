@@ -124,4 +124,13 @@ public class FunctionBean {
     public boolean isPointType() {
         return inputType == InputType.POINT;
     }
+
+    public boolean isHumidityType() {
+        return inputType == InputType.HUMIDITY;
+    }
+
+    public boolean isTempType() {
+        return inputType == InputType.TEMP_C
+                || inputType == InputType.TEMP_F;
+    }
 }

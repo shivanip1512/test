@@ -7,13 +7,11 @@
 <%@ attribute name="argument" required="false" type="java.lang.Object" %>
 
 <cti:displayForPageEditModes modes="EDIT,CREATE">
-		<label>
-		    <h4>
-			    <c:if test="${empty pageScope.argument}"><i:inline key="${nameKey}"/></c:if>
-			    <c:if test="${not empty pageScope.argument}"><i:inline key="${nameKey}" arguments="${argument}"/></c:if>
-		    </h4>
-		    <jsp:doBody/>
-		</label>
+    <h4>
+	    <c:if test="${empty pageScope.argument}"><i:inline key="${nameKey}"/></c:if>
+	    <c:if test="${not empty pageScope.argument}"><i:inline key="${nameKey}" arguments="${argument}"/></c:if>
+    </h4>
+    <jsp:doBody/>
 </cti:displayForPageEditModes>
 <cti:displayForPageEditModes modes="VIEW">
     <div class="stacked property-list">

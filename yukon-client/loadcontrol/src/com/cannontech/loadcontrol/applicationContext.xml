@@ -86,4 +86,7 @@
     <bean class="com.cannontech.dr.estimatedload.dao.impl.FormulaDaoImpl"/>
     <bean class="com.cannontech.dr.estimatedload.service.impl.FormulaServiceImpl"/>
     <bean class="com.cannontech.dr.assetavailability.dao.impl.DRGroupDeviceMappingDaoImpl"/>
+
+    <bean class="com.cannontech.loadcontrol.weather.impl.WeatherDataServiceImpl"/>
+    <bean class="com.cannontech.loadcontrol.weather.impl.NoaaWeatherDataServiceImpl"/>
 </beans>

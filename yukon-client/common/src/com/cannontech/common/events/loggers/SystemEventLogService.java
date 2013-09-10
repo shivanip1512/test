@@ -35,7 +35,7 @@ public interface SystemEventLogService {
                                 @Arg(ArgEnum.username) String oldUsername,
                                 @Arg(ArgEnum.username) String newUsername);
     
-/* Logging in */    
+    /* Logging in */    
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.login")
     public void loginWeb(@Arg(ArgEnum.username) LiteYukonUser user, 
                          @Arg(ArgEnum.remoteAddress) String remoteAddress);
@@ -58,6 +58,9 @@ public interface SystemEventLogService {
     
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.maintenance")
     public void systemLogDeleteDanglingEntries(int rowsDeleted, Instant start, Instant finish);
+    
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.mantenance")
+    public void systemLogWeatherDataUpdate(int weatherLocationsUpdated, Instant start, Instant finish);
     
     /* System Admin */
     /* Configuration */

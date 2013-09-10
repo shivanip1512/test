@@ -7,6 +7,7 @@ import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -17,6 +18,7 @@ import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.dao.impl.YukonUserDaoImpl;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
+@Ignore("not a unit test")
 public class StaticAuthenticationThrottleImplTest {
 
     private PasswordPolicyServiceImpl passwordPolicyService;

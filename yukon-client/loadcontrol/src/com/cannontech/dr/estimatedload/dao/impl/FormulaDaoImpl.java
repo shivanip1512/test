@@ -739,4 +739,21 @@ public class FormulaDaoImpl implements FormulaDao {
         singleId.add(appCategoryId);
         return getAssignmentsForApplianceCategories(singleId).get(0);
     }
+
+    @Override
+    public boolean isPointAFormulaInput(int pointId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT COUNT(1) FROM").append(functionTableName);
+        sql.append("WHERE InputPointId").eq(pointId);
+
+        if (yukonJdbcTemplate.queryForInt(sql) != 0) {
+            return false;
+        }
+
+        sql = new SqlStatementBuilder();
+        sql.append("SELECT COUNT(1) FROM").append(lookupTableName);
+        sql.append("WHERE InputPointId").eq(pointId);
+
+        return yukonJdbcTemplate.queryForInt(sql) != 0;
+    }
 }

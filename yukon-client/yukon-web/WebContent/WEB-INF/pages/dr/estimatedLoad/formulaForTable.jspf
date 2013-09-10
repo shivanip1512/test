@@ -63,144 +63,146 @@
             </tags:sectionContainer2>
         </div>
     </div>
-    <tags:sectionContainer2 nameKey="lookupTables" id="formulaTables">
-        <c:forEach var="table" items="${formulaBean.tables}" varStatus="tableLoop">
-            <div class="setting f-drFormula-removeable f-drFormula-table">
-                <input type="hidden" name="tables[${tableLoop.index}].formulaId" value="${formulaBean.formulaId}"/>
-                <input type="hidden" name="tables[${tableLoop.index}].functionId"/>
-                <c:set var="pointId" value="${formulaBean.tables[tableLoop.index].inputPointId}"/>
-                <input type='hidden' id="inputPointId_${tableLoop.index}" name="tables[${tableLoop.index}].inputPointId"
-                    value="${formulaBean.tables[tableLoop.index].pointType ? pointId : ''}"/>
-                <div class="column_6_6_12 clearfix">
-                    <div class="column one">
-                        <tags:nameValueStacked nameKey=".name">
-                            <tags:input path="tables[${tableLoop.index}].name" size="20"/>
-                        </tags:nameValueStacked>
-                    </div>
-                    <div class="column two">
-                        <tags:nameValueStacked nameKey=".input">
-                            <cti:displayForPageEditModes modes="EDIT">
-                                <tags:selectWithItems id="formulaInputSelect_${tableLoop.index}" disabled="${formulaBean.tables[tableLoop.index].numberOfEntries > 0}"
-                                    inputClass="f-drFormula-formulaInputSelect" items="${formulaInputs}" path="tables[${tableLoop.index}].inputType"/>
-                                    <div id="formulaPointPicker_${tableLoop.index}" style="${formulaBean.tables[tableLoop.index].pointType ? '' : 'display:none'}">
-                                        <button id="formulaPointPickerBtn_${tableLoop.index}" role="button" type="button" class="button naked f-drFormula-pointPicker">
-                                            <span id="formulaPointPickerLbl_${tableLoop.index}" class="label">
-                                               <c:if test="${formulaBean.tables[tableLoop.index].pointType}">
-                                                   ${pointNames[formulaBean.tables[tableLoop.index].inputPointId]}
-                                               </c:if>
-                                               <c:if test="${not formulaBean.tables[tableLoop.index].pointType}">
-                                                   <i:inline key=".noPointSelected"/>
-                                               </c:if>
-                                            </span>
-                                            <i class="icon icon-database-add"></i>
-                                        </button>
-                                    </div>
-                            </cti:displayForPageEditModes>
+    <tags:sectionContainer2 nameKey="lookupTables">
+        <div id="formulaTables">
+            <c:forEach var="table" items="${formulaBean.tables}" varStatus="tableLoop">
+                <div class="setting f-drFormula-removeable f-drFormula-table">
+                    <input type="hidden" name="tables[${tableLoop.index}].formulaId" value="${formulaBean.formulaId}"/>
+                    <input type="hidden" name="tables[${tableLoop.index}].functionId"/>
+                    <c:set var="pointId" value="${formulaBean.tables[tableLoop.index].inputPointId}"/>
+                    <input type='hidden' id="inputPointId_${tableLoop.index}" name="tables[${tableLoop.index}].inputPointId"
+                        value="${formulaBean.tables[tableLoop.index].pointType ? pointId : ''}"/>
+                    <div class="column_6_6_12 clearfix">
+                        <div class="column one">
+                            <tags:nameValueStacked nameKey=".name">
+                                <tags:input path="tables[${tableLoop.index}].name" size="20"/>
+                            </tags:nameValueStacked>
+                        </div>
+                        <div class="column two">
+                            <tags:nameValueStacked nameKey=".input">
+                                <cti:displayForPageEditModes modes="EDIT">
+                                    <tags:selectWithItems id="formulaInputSelect_${tableLoop.index}" disabled="${formulaBean.tables[tableLoop.index].numberOfEntries > 0}"
+                                        inputClass="f-drFormula-formulaInputSelect" items="${formulaInputs}" path="tables[${tableLoop.index}].inputType"/>
+                                        <div id="formulaPointPicker_${tableLoop.index}" style="${formulaBean.tables[tableLoop.index].pointType ? '' : 'display:none'}">
+                                            <button id="formulaPointPickerBtn_${tableLoop.index}" role="button" type="button" class="button naked f-drFormula-pointPicker">
+                                                <span id="formulaPointPickerLbl_${tableLoop.index}" class="label">
+                                                   <c:if test="${formulaBean.tables[tableLoop.index].pointType}">
+                                                       ${pointNames[formulaBean.tables[tableLoop.index].inputPointId]}
+                                                   </c:if>
+                                                   <c:if test="${not formulaBean.tables[tableLoop.index].pointType}">
+                                                       <i:inline key=".noPointSelected"/>
+                                                   </c:if>
+                                                </span>
+                                                <i class="icon icon-database-add"></i>
+                                            </button>
+                                        </div>
+                                </cti:displayForPageEditModes>
+                                <cti:displayForPageEditModes modes="VIEW">
+                                    <i:inline key="${formulaBean.tables[tableLoop.index].inputType}"/>
+                                    <c:if test="${formulaBean.tables[tableLoop.index].pointType}">
+                                        / ${pointNames[formulaBean.tables[tableLoop.index].inputPointId]}
+                                    </c:if>
+                                </cti:displayForPageEditModes>
+                            </tags:nameValueStacked>
+                        </div>
+                        <div class="column three nogutter">
                             <cti:displayForPageEditModes modes="VIEW">
-                                <i:inline key="${formulaBean.tables[tableLoop.index].inputType}"/>
-                                <c:if test="${formulaBean.tables[tableLoop.index].pointType}">
-                                    / ${pointNames[formulaBean.tables[tableLoop.index].inputPointId]}
-                                </c:if>
-                            </cti:displayForPageEditModes>
-                        </tags:nameValueStacked>
-                    </div>
-                    <div class="column three nogutter">
-                        <cti:displayForPageEditModes modes="VIEW">
-                            <div class="column_12_12 clearfix">
-                                <div class="column one">
-                                    <tags:nameValueStacked nameKey=".entries">
-                                        ${formulaBean.tables[tableLoop.index].numberOfEntries}
-                                    </tags:nameValueStacked>
-                                </div>
-                                <div class="column two nogutter">
-                                    <c:if test="${formulaBean.tables[tableLoop.index].timeInput}">
-                                        <tags:nameValueStacked nameKey=".timeRange">
-                                            <cti:formatDate type="TIME" value="${formulaBean.tables[tableLoop.index].timeInputMin}"/>
-                                            <i:inline key="yukon.common.to"/>
-                                            <cti:formatDate type="TIME" value="${formulaBean.tables[tableLoop.index].timeInputMax}"/>
+                                <div class="column_12_12 clearfix">
+                                    <div class="column one">
+                                        <tags:nameValueStacked nameKey=".entries">
+                                            ${formulaBean.tables[tableLoop.index].numberOfEntries}
                                         </tags:nameValueStacked>
-                                    </c:if>
-                                    <c:if test="${not formulaBean.tables[tableLoop.index].timeInput}">
-                                        <tags:nameValueStacked nameKey=".inputRange">
-                                            ${formulaBean.tables[tableLoop.index].inputMin}
-                                            <i:inline key="yukon.common.to"/>
-                                            ${formulaBean.tables[tableLoop.index].inputMax}
-                                        </tags:nameValueStacked>
-                                    </c:if>
-                                </div>
-                            </div>
-                        </cti:displayForPageEditModes>
-                        <cti:displayForPageEditModes modes="EDIT">
-                            <div>
-                                <h4>
-                                    <i:inline key=".entries"/>
-                                    <cti:displayForPageEditModes modes="EDIT">
-                                        <cti:button nameKey="remove" icon="icon-cross" classes="fr f-drFormula-remove"/>
-                                    </cti:displayForPageEditModes>
-                                </h4>
-                            </div>
-                            <input class="tableIndex " type="hidden" value="${tableLoop.index}"/>
-                            <div class="column_12_12 clearfix">
-                                <div class="column one"><i:inline key=".key"/></div>
-                                <div class="column two nogutter"><i:inline key=".value"/></div>
-                            </div>
-                            <div class="liteContainer">
-                                <div class="scrollingContainer_medium">
-                                    <span id="noEntriesMessage_${tableLoop.index}" style="${formulaBean.tables[tableLoop.index].numberOfEntries > 0 ? 'display:none' : ''}">
-                                        <i:inline key=".noEntries"/>
-                                        <form:errors path="tables[${tableLoop.index}]" cssClass="errorMessage"/>
-                                    </span>
-                                    <div id="tableEntries_${tableLoop.index}" class="clearfix separated-sections no-lines f-drFormula-tableEntries">
+                                    </div>
+                                    <div class="column two nogutter">
                                         <c:if test="${formulaBean.tables[tableLoop.index].timeInput}">
-                                            <c:forEach items="${formulaBean.tables[tableLoop.index].timeEntries}" varStatus="tableEntriesLoop">
-                                                <div id="tableEntry_${tableLoop.index}_${tableEntriesLoop.index}" class="column_12_12 section clearfix">
-                                                    <div id="tableEntryKey_${tableLoop.index}_${tableEntriesLoop.index}" class="column one f-drFormula-tableEntryKey_${tableLoop.index}">
-                                                        <tags:input path="tables[${tableLoop.index}].timeEntries[${tableEntriesLoop.index}].key"/>
-                                                    </div>
-                                                    <div id="tableEntryValue_${tableLoop.index}_${tableEntriesLoop.index}" class="column two nogutter">
-                                                        <tags:input path="tables[${tableLoop.index}].timeEntries[${tableEntriesLoop.index}].value"/>
-                                                        <cti:button nameKey="remove" icon="icon-cross" renderMode="buttonImage" classes="f-drFormula-removeEntry fr"
-                                                            data-table-id="${tableLoop.index}" data-entry-id="${tableEntriesLoop.index}"/>
-                                                    </div>
-                                                </div>
-                                            </c:forEach>
+                                            <tags:nameValueStacked nameKey=".timeRange">
+                                                <cti:formatDate type="TIME" value="${formulaBean.tables[tableLoop.index].timeInputMin}"/>
+                                                <i:inline key="yukon.common.to"/>
+                                                <cti:formatDate type="TIME" value="${formulaBean.tables[tableLoop.index].timeInputMax}"/>
+                                            </tags:nameValueStacked>
                                         </c:if>
-
                                         <c:if test="${not formulaBean.tables[tableLoop.index].timeInput}">
-                                            <c:forEach items="${formulaBean.tables[tableLoop.index].entries}" varStatus="tableEntriesLoop">
-                                                <div id="tableEntry_${tableLoop.index}_${tableEntriesLoop.index}" class="column_12_12 section clearfix">
-                                                    <div id="tableEntryKey_${tableLoop.index}_${tableEntriesLoop.index}" class="column one f-drFormula-tableEntryKey_${tableLoop.index}">
-                                                        <tags:input path="tables[${tableLoop.index}].entries[${tableEntriesLoop.index}].key"/>
-                                                    </div>
-                                                    <div id="tableEntryValue_${tableLoop.index}_${tableEntriesLoop.index}" class="column two nogutter ">
-                                                        <tags:input path="tables[${tableLoop.index}].entries[${tableEntriesLoop.index}].value"/>
-                                                        <cti:button nameKey="remove" icon="icon-cross" renderMode="buttonImage" classes="f-drFormula-removeEntry fr"
-                                                            data-table-id="${tableLoop.index}" data-entry-id="${tableEntriesLoop.index}"/>
-                                                    </div>
-                                                </div>
-                                            </c:forEach>
+                                            <tags:nameValueStacked nameKey=".inputRange">
+                                                ${formulaBean.tables[tableLoop.index].inputMin}
+                                                <i:inline key="yukon.common.to"/>
+                                                ${formulaBean.tables[tableLoop.index].inputMax}
+                                            </tags:nameValueStacked>
                                         </c:if>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="actionArea stacked">
-                                    <div class="fl" id="inputMax_${tableLoop.index}" style="${formulaBean.tables[tableLoop.index].timeInput ? 'display:none' : ''}">
-                                       <i:inline key=".inputMax"/>:&nbsp
-                                       <tags:input path="tables[${tableLoop.index}].inputMax"/>
+                            </cti:displayForPageEditModes>
+                            <cti:displayForPageEditModes modes="EDIT">
+                                <div>
+                                    <h4>
+                                        <i:inline key=".entries"/>
+                                        <cti:displayForPageEditModes modes="EDIT">
+                                            <cti:button nameKey="remove" icon="icon-cross" classes="fr f-drFormula-remove"/>
+                                        </cti:displayForPageEditModes>
+                                    </h4>
+                                </div>
+                                <input class="tableIndex " type="hidden" value="${tableLoop.index}"/>
+                                <div class="column_12_12 clearfix">
+                                    <div class="column one"><i:inline key=".key"/></div>
+                                    <div class="column two nogutter"><i:inline key=".value"/></div>
+                                </div>
+                                <div class="liteContainer">
+                                    <div class="scrollingContainer_medium">
+                                        <span id="noEntriesMessage_${tableLoop.index}" style="${formulaBean.tables[tableLoop.index].numberOfEntries > 0 ? 'display:none' : ''}">
+                                            <i:inline key=".noEntries"/>
+                                            <form:errors path="tables[${tableLoop.index}]" cssClass="errorMessage"/>
+                                        </span>
+                                        <div id="tableEntries_${tableLoop.index}" class="clearfix separated-sections no-lines f-drFormula-tableEntries">
+                                            <c:if test="${formulaBean.tables[tableLoop.index].timeInput}">
+                                                <c:forEach items="${formulaBean.tables[tableLoop.index].timeEntries}" varStatus="tableEntriesLoop">
+                                                    <div id="tableEntry_${tableLoop.index}_${tableEntriesLoop.index}" class="column_12_12 section clearfix">
+                                                        <div id="tableEntryKey_${tableLoop.index}_${tableEntriesLoop.index}" class="column one f-drFormula-tableEntryKey_${tableLoop.index}">
+                                                            <tags:input path="tables[${tableLoop.index}].timeEntries[${tableEntriesLoop.index}].key"/>
+                                                        </div>
+                                                        <div id="tableEntryValue_${tableLoop.index}_${tableEntriesLoop.index}" class="column two nogutter">
+                                                            <tags:input path="tables[${tableLoop.index}].timeEntries[${tableEntriesLoop.index}].value"/>
+                                                            <cti:button nameKey="remove" icon="icon-cross" renderMode="buttonImage" classes="f-drFormula-removeEntry fr"
+                                                                data-table-id="${tableLoop.index}" data-entry-id="${tableEntriesLoop.index}"/>
+                                                        </div>
+                                                    </div>
+                                                </c:forEach>
+                                            </c:if>
+    
+                                            <c:if test="${not formulaBean.tables[tableLoop.index].timeInput}">
+                                                <c:forEach items="${formulaBean.tables[tableLoop.index].entries}" varStatus="tableEntriesLoop">
+                                                    <div id="tableEntry_${tableLoop.index}_${tableEntriesLoop.index}" class="column_12_12 section clearfix">
+                                                        <div id="tableEntryKey_${tableLoop.index}_${tableEntriesLoop.index}" class="column one f-drFormula-tableEntryKey_${tableLoop.index}">
+                                                            <tags:input path="tables[${tableLoop.index}].entries[${tableEntriesLoop.index}].key"/>
+                                                        </div>
+                                                        <div id="tableEntryValue_${tableLoop.index}_${tableEntriesLoop.index}" class="column two nogutter ">
+                                                            <tags:input path="tables[${tableLoop.index}].entries[${tableEntriesLoop.index}].value"/>
+                                                            <cti:button nameKey="remove" icon="icon-cross" renderMode="buttonImage" classes="f-drFormula-removeEntry fr"
+                                                                data-table-id="${tableLoop.index}" data-entry-id="${tableEntriesLoop.index}"/>
+                                                        </div>
+                                                    </div>
+                                                </c:forEach>
+                                            </c:if>
+                                        </div>
                                     </div>
-                                    <div class="fl" id="timeInputMax_${tableLoop.index}" style="${formulaBean.tables[tableLoop.index].timeInput ? '' : 'display:none'}">
-                                       <i:inline key=".timeMax"/>:&nbsp
-                                        <tags:input path="tables[${tableLoop.index}].timeInputMax"/>
-                                    </div>
-                                <cti:button classes="f-drFormula-newEntryButton" icon="icon-plus-green" nameKey="newEntry"
-                                    data-table-id="${tableLoop.index}"
-                                    data-entry-id-next="${formulaBean.tables[tableLoop.index].numberOfEntries}"/>
-                            </div>
-                        </cti:displayForPageEditModes>
+                                </div>
+                                <div class="actionArea stacked">
+                                        <div class="fl" id="inputMax_${tableLoop.index}" style="${formulaBean.tables[tableLoop.index].timeInput ? 'display:none' : ''}">
+                                           <i:inline key=".inputMax"/>:&nbsp
+                                           <tags:input path="tables[${tableLoop.index}].inputMax"/>
+                                        </div>
+                                        <div class="fl" id="timeInputMax_${tableLoop.index}" style="${formulaBean.tables[tableLoop.index].timeInput ? '' : 'display:none'}">
+                                           <i:inline key=".timeMax"/>:&nbsp
+                                            <tags:input path="tables[${tableLoop.index}].timeInputMax"/>
+                                        </div>
+                                    <cti:button classes="f-drFormula-newEntryButton" icon="icon-plus-green" nameKey="newEntry"
+                                        data-table-id="${tableLoop.index}"
+                                        data-entry-id-next="${formulaBean.tables[tableLoop.index].numberOfEntries}"/>
+                                </div>
+                            </cti:displayForPageEditModes>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </c:forEach>
+            </c:forEach>
+        </div>
     </tags:sectionContainer2>
     <cti:displayForPageEditModes modes="EDIT">
         <hr>

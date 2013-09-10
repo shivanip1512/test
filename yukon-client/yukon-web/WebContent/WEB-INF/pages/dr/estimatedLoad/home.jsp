@@ -12,7 +12,7 @@
         <ul>
             <li><a href="#formulasTab"><cti:msg2 key='.formulas'/></a></li>
             <li><a href="#assignmentsTab"><cti:msg2 key='.assignments'/></a></li>
-<%--             <li><a href="#weatherDataTab"><cti:msg2 key='.weatherInputs'/></a></li> --%>
+            <li><a href="#weatherDataTab"><cti:msg2 key='.weatherInputs'/></a></li>
         </ul>
         <div id="formulasTab">
             <div class="f-drFormula-replaceViaAjax clearfix">
@@ -34,9 +34,17 @@
                 </div>
             </tags:formElementContainer>
         </div>
-<!--         <div id="weatherDataTab"> -->
-<!--             TODO -->
-<!--         </div> -->
+        <div id="weatherDataTab">
+            <div id="weatherStationDialog" style="display:none">
+                <%@ include file="_weatherStations.jsp" %>
+            </div>
+            <div id="weatherLocations">
+                <%@ include file="_weatherLocationsTable.jsp" %>
+            </div>
+            <div class="actionArea">
+               <cti:button icon="icon-plus-green" nameKey="createWeatherLocation" id="newWeatherLocationBtn"/>
+            </div>
+        </div>
     </div>
         
 </cti:standardPage>

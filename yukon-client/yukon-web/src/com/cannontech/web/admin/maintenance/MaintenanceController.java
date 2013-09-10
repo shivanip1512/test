@@ -26,6 +26,7 @@ import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.service.JobManager;
 import com.cannontech.jobs.support.YukonJobDefinition;
 import com.cannontech.jobs.support.YukonTask;
+import com.cannontech.loadcontrol.scheduledWeatherDataUpdateExecutionTask.tasks.ScheduledWeatherDataUpdateExecutionTask;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState;
@@ -38,24 +39,29 @@ import com.google.common.collect.Lists;
 @RequestMapping("/maintenance/*")
 @CheckRoleProperty(YukonRoleProperty.ADMIN_SUPER_USER)
 public class MaintenanceController {
+
     @Autowired private ScheduledRepeatingJobDao scheduledRepeatingJobDao;
     @Autowired private CronExpressionTagService cronExpressionTagService;
     @Autowired private JobManager jobManager;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
-    private YukonJobDefinition<ScheduledRphDuplicateDeletionExecutionTask> scheduledRphDuplicateDeletionExecutionJobDefinition;
-    private YukonJobDefinition<ScheduledRphDanglingEntriesDeletionExecutionTask> scheduledRphDanglingEntriesDeletionExecutionJobDefinition;
-    private YukonJobDefinition<ScheduledSystemLogDanglingEntriesDeletionExecutionTask> scheduledSystemLogDanglingEntriesDeletionExecutionJobDefinition;
+
+    private YukonJobDefinition<ScheduledRphDuplicateDeletionExecutionTask> rphDuplicateJobDef;
+    private YukonJobDefinition<ScheduledRphDanglingEntriesDeletionExecutionTask> rphDanglingEntriesJobDef;
+    private YukonJobDefinition<ScheduledSystemLogDanglingEntriesDeletionExecutionTask> systemLogDanglingEntriesJobDef;
+    private YukonJobDefinition<ScheduledWeatherDataUpdateExecutionTask> weatherDataJobDef;
     
     private final static String RPH_DUPLICATE_CRON = "0 0 21 ? * *"; // every night at 9:00pm
     private final static String RPH_DANGLING_CRON = "0 15 21 ? * *"; // every night at 9:15pm
     private final static String SYSTEM_LOG_DANGLING_CRON = "0 30 21 ? * *"; // every night at 9:30pm
-    
+    private final static String WEATHER_DATA_UPDATE_CRON = "0 0/5 * * * ? *"; //every hour at 20 minutes after the hour
+
     @RequestMapping
     public String view(ModelMap model, YukonUserContext userContext) {
-    	List<ScheduledRepeatingJob> jobs = Lists.newArrayList();
-    	jobs.add(getJob(userContext, scheduledRphDuplicateDeletionExecutionJobDefinition, RPH_DUPLICATE_CRON));
-    	jobs.add(getJob(userContext, scheduledRphDanglingEntriesDeletionExecutionJobDefinition, RPH_DANGLING_CRON));
-    	jobs.add(getJob(userContext, scheduledSystemLogDanglingEntriesDeletionExecutionJobDefinition, SYSTEM_LOG_DANGLING_CRON));
+        List<ScheduledRepeatingJob> jobs = Lists.newArrayList();
+        jobs.add(getJob(userContext, rphDuplicateJobDef, RPH_DUPLICATE_CRON));
+        jobs.add(getJob(userContext, rphDanglingEntriesJobDef, RPH_DANGLING_CRON));
+        jobs.add(getJob(userContext, systemLogDanglingEntriesJobDef, SYSTEM_LOG_DANGLING_CRON));
+        jobs.add(getJob(userContext, weatherDataJobDef, WEATHER_DATA_UPDATE_CRON));
         model.addAttribute("jobs", jobs);
         return "maintenance/home.jsp";
     }
@@ -68,7 +74,7 @@ public class MaintenanceController {
         model.addAttribute("job", job);
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         String crumb = messageSourceAccessor.getMessage("yukon.web.modules.adminSetup.maintenance."+job.getBeanName()+ ".title");
-		model.addAttribute("jobNameMsg", crumb);
+        model.addAttribute("jobNameMsg", crumb);
         return "maintenance/edit.jsp";
     }
         
@@ -76,7 +82,7 @@ public class MaintenanceController {
     @RequestMapping
     public String update(ModelMap model, YukonUserContext userContext, HttpServletRequest request,
                          FlashScope flashScope, int jobId, String cronUniqueId) {
-    	ScheduledRepeatingJob job = scheduledRepeatingJobDao.getById(jobId);
+        ScheduledRepeatingJob job = scheduledRepeatingJobDao.getById(jobId);
         String cronExpression;
         try {
             cronExpression = cronExpressionTagService.build(cronUniqueId, request, userContext);
@@ -101,25 +107,25 @@ public class MaintenanceController {
     
     @RequestMapping
     public String toggleJobEnabled(ModelMap model, int jobId, YukonUserContext userContext) throws ServletException {
-    	toggleJobEnabled(jobId);
+        toggleJobEnabled(jobId);
         return "redirect:view";
     }
 
     @RequestMapping
     public @ResponseBody Boolean toggleJobEnabledAjax(ModelMap model, int jobId, YukonUserContext userContext) throws ServletException {
-    	return toggleJobEnabled(jobId);
+        return toggleJobEnabled(jobId);
     }
     
     private boolean toggleJobEnabled(int jobId) throws ServletException {
-    	boolean isEnabled = true;
-    	ScheduledRepeatingJob job = scheduledRepeatingJobDao.getById(jobId);
-    	if (job.isDisabled()) {
-    		jobManager.enableJob(job);
-    	} else {
-    		jobManager.disableJob(job);
-    		isEnabled = false;
-    	}
-    	return isEnabled;
+        boolean isEnabled = true;
+        ScheduledRepeatingJob job = scheduledRepeatingJobDao.getById(jobId);
+        if (job.isDisabled()) {
+            jobManager.enableJob(job);
+        } else {
+            jobManager.disableJob(job);
+            isEnabled = false;
+        }
+        return isEnabled;
     }
     
     private ScheduledRepeatingJob getJob(YukonUserContext userContext, YukonJobDefinition<? extends YukonTask> jobDefinition, String cronString) {
@@ -150,19 +156,22 @@ public class MaintenanceController {
     }
 
     @Resource(name = "scheduledRphDuplicateDeletionExecutionJobDefinition")
-    public void setScheduledRphDuplicateDeletionExecutionJobDefinition(YukonJobDefinition<ScheduledRphDuplicateDeletionExecutionTask> scheduledRphDuplicateDeletionExecutionJobDefinition) {
-        this.scheduledRphDuplicateDeletionExecutionJobDefinition =
-            scheduledRphDuplicateDeletionExecutionJobDefinition;
-    }
-    @Resource(name = "scheduledRphDanglingEntriesDeletionExecutionJobDefinition")
-    public void setScheduledRphDanglingEntriesDeletionExecutionJobDefinition(YukonJobDefinition<ScheduledRphDanglingEntriesDeletionExecutionTask> scheduledRphDanglingEntriesDeletionExecutionJobDefinition) {
-        this.scheduledRphDanglingEntriesDeletionExecutionJobDefinition =
-        		scheduledRphDanglingEntriesDeletionExecutionJobDefinition;
-    }
-    @Resource(name = "scheduledSystemLogDanglingEntriesDeletionExecutionJobDefinition")
-    public void setScheduledSystemLogDanglingEntriesDeletionExecutionJobDefinition(YukonJobDefinition<ScheduledSystemLogDanglingEntriesDeletionExecutionTask> scheduledSystemLogDanglingEntriesDeletionExecutionJobDefinition) {
-        this.scheduledSystemLogDanglingEntriesDeletionExecutionJobDefinition =
-        		scheduledSystemLogDanglingEntriesDeletionExecutionJobDefinition;
+    public void setScheduledRphDuplicateDeletionExecutionJobDefinition(YukonJobDefinition<ScheduledRphDuplicateDeletionExecutionTask> rphDuplicateJobDef) {
+        this.rphDuplicateJobDef = rphDuplicateJobDef;
     }
 
+    @Resource(name = "scheduledRphDanglingEntriesDeletionExecutionJobDefinition")
+    public void setScheduledRphDanglingEntriesDeletionExecutionJobDefinition(YukonJobDefinition<ScheduledRphDanglingEntriesDeletionExecutionTask> rphDanglingEntriesJobDef) {
+        this.rphDanglingEntriesJobDef = rphDanglingEntriesJobDef;
+    }
+
+    @Resource(name = "scheduledSystemLogDanglingEntriesDeletionExecutionJobDefinition")
+    public void setScheduledSystemLogDanglingEntriesDeletionExecutionJobDefinition(YukonJobDefinition<ScheduledSystemLogDanglingEntriesDeletionExecutionTask> systemLogDanglingEntriesJobDef) {
+        this.systemLogDanglingEntriesJobDef = systemLogDanglingEntriesJobDef;
+    }
+
+    @Resource(name = "scheduledWeatherDataUpdateExecutionJobDefinition")
+    public void setScheduledWeatherDataUpdateExecutionJobDefinition(YukonJobDefinition<ScheduledWeatherDataUpdateExecutionTask> weatherDataJobDef) {
+        this.weatherDataJobDef = weatherDataJobDef;
+    }
 }

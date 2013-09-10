@@ -9657,16 +9657,14 @@
     			<decimalplaces value="1"/>
     		</point>
     	</points>
-    	
-<!--	Attributes are probably the way the points will be set, but for now points work just as well -->    	
-<!--     	<attributes> -->
-<!--             <attribute name="TEMPERATURE"> -->
-<!--                 <basicLookup point="Temperature" /> -->
-<!--             </attribute> -->
-<!--             <attribute name="HUMIDITY"> -->
-<!--                 <basicLookup point="Relative Humidity" /> -->
-<!--             </attribute> -->
-<!--         </attributes> -->
+        <attributes>
+            <attribute name="TEMPERATURE">
+                <basicLookup point="Temperature" />
+            </attribute>
+            <attribute name="HUMIDITY">
+                <basicLookup point="Relative Humidity" />
+            </attribute>
+        </attributes>
     </pao>
     
 </paoDefinitions>

@@ -510,6 +510,13 @@
 <entry key="yukon.web.modules.dr.estimatedLoad.assignments">Assignments</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.calculationType">Calculation Type</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.calculationType.linkText">Calculation Type</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.createWeatherLocation.label">New Weather Location</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.errors.blankName">Name cannot be blank</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.errors.invalidLatitude">Invalid Latitude</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.errors.invalidLongitude">Invalid Longitude</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.errors.nameAlreadyUsed">Name is already used</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.errors.noStationId">You must select a weather station</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.errors.cannotRemoveWeatherLoc">You cannot remove a weather location that is being used in a formula.</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.formula">Formula</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.formula.linkText">Formula</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.formulas">Formulas</entry>
@@ -520,18 +527,28 @@
 <entry key="yukon.web.modules.dr.estimatedLoad.gearControlMethod.linkText">Control Method</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.gearId">Gear Id</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.gears.title">Gears</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.humidity">Humidity</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.latitude">Latitude</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.longitude">Longitude</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.name">Name</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.name.linkText">Name</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.newFormula.label">New Formula</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.noApplianceCategories">No appliance categories</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.noApplianceCategoriesForUser">No appliance categories available to user</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.noAssignment.label">No assignment</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.noGears">No gears</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.noFormulas">No formulas</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.noGears">No gears</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.noWeatherLocations">No Weather Locations</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.outdatedData">Outdated or no Data</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.success.removedWeatherLocation">Weather location removed successfully</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.stationDescription">Station Description</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.stationId">Station Id</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.temp">Temperature</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.pageName">Estimated Load</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.program.linkText">Program</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.weatherInputs.title">Weather Data Inputs</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.weatherInputs">Weather Inputs</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.weatherStations">Weather Stations</entry>
 
 <entry key="yukon.web.modules.dr.formula.tableEntries.title">Table Entries</entry>
 

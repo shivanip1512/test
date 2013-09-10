@@ -319,6 +319,21 @@
         </property>
     </bean>
     
+    <!-- Scheduled Weather Data updated -->
+    <bean id="scheduledWeatherDataUpdateExecutionJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
+        <property name="taskName">
+            <idref local="scheduledWeatherDataUpdateExecutionTask"/>
+        </property>
+        <property name="title" value="Scheduled Weather Data Update Execution Job"/>
+        <property name="inputs">
+            <bean class="com.cannontech.web.input.InputRoot">
+                <property name="inputList">
+                    <list></list>
+                </property>
+            </bean>
+        </property>
+    </bean>
+    
     <!-- Scheduled Group Request Execution Task -->
     <bean id="scheduledGroupRequestExecutionTask" class="com.cannontech.amr.scheduledGroupRequestExecution.tasks.ScheduledGroupRequestExecutionTask"
         scope="prototype">
@@ -339,6 +354,12 @@
     <!-- Scheduled System Log Dangling Entries Deletion Execution Task -->
     <bean id="scheduledSystemLogDanglingEntriesDeletionExecutionTask"
         class="com.cannontech.amr.scheduledSystemLogDanglingEntriesDeletionExecutionTask.tasks.ScheduledSystemLogDanglingEntriesDeletionExecutionTask"
+        scope="prototype">
+    </bean>
+
+    <!-- Scheduled Weather Data Update Execution task -->
+    <bean id="scheduledWeatherDataUpdateExecutionTask"
+        class="com.cannontech.loadcontrol.scheduledWeatherDataUpdateExecutionTask.tasks.ScheduledWeatherDataUpdateExecutionTask"
         scope="prototype">
     </bean>
 

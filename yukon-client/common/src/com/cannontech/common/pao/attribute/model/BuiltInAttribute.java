@@ -67,6 +67,7 @@ public enum BuiltInAttribute implements Attribute {
     PROFILE_CHANNEL_2("Profile Channel 2"),
     PROFILE_CHANNEL_3("Profile Channel 3"),
     RECORDING_INTERVAL("Recording Interval"),
+    HUMIDITY("Relative Humidity"),
     RELAY_1_LOAD_SIZE("Relay 1 kW Load Size"),
     RELAY_1_REMAINING_CONTROL("Relay 1 Remaining Control Time"),
     RELAY_1_RUN_TIME_DATA_LOG("Relay 1 Run Time"),
@@ -89,6 +90,7 @@ public enum BuiltInAttribute implements Attribute {
     SERVICE_STATUS("Service Status"),
     TAMPER_FLAG("Tamper Flag"),
     TEMPORARY_OUT_OF_SERVICE("Temp Out of Service Duration"),
+    TEMPERATURE("Temperature"),
     TOTAL_LUF_COUNT("Total LUF Event Count"),
     TOTAL_LUV_COUNT("Total LUV Event Count"),
     TOU_RATE_A_PEAK_DEMAND("Tou Rate A Peak"),
@@ -332,7 +334,9 @@ public enum BuiltInAttribute implements Attribute {
                 REPORTING_INTERVAL,
                 TEMPORARY_OUT_OF_SERVICE,
                 TOTAL_LUF_COUNT,
-                TOTAL_LUV_COUNT);
+                TOTAL_LUV_COUNT,
+                TEMPERATURE,
+                HUMIDITY);
         
         demandAttributes = ImmutableSet.of(
                 DEMAND,
