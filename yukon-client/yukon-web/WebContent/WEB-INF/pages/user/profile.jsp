@@ -33,43 +33,44 @@
                         </tags:nameValue2>
                     </cti:displayForPageEditModes>
                 </tags:nameValueContainer2>
+	            <div>
+	                <h4><i:inline key="yukon.web.modules.user.additionContactInfo.title" /></h4>
+	                <div style="margin-left:3px;" class="f-display_empty<c:if test="${not empty userProfile.contact.otherNotifications}"> dn</c:if>"><i:inline key="yukon.web.defaults.na"/></div>
+	                <tags:nameValueContainer2 id="contactNotifs">
+	                    <c:forEach var="contactNotif" items="${userProfile.contact.otherNotifications}" varStatus="row">
+	                        <c:set var="notifType" value="${contactNotif.contactNotificationType.contactNotificationMethodType.toString()}" />
+	                        <c:set var="isPhone" value='${"PHONE".equals(notifType) || "FAX".equals(notifType)}' />
+	                        <cti:displayForPageEditModes modes="EDIT">
+	                            <tr class="contactNotif">
+	                                <td class="name">
+	                                    <tags:selectWithItems items="${notificationTypes}" path="contact.otherNotifications[${row.index}].contactNotificationType" inputClass="f-contactNotif-type"/>
+	                                </td>
+	                                <td class="value">
+	                                    <tags:input path="contact.otherNotifications[${row.index}].notificationValue" inputClass='f-contactNotif-val${isPhone ? " f-formatPhone" : ""}'></tags:input>
+	                                </td>
+	                                <td class="actions">
+	                                    <cti:button renderMode="buttonImage" icon="icon-cross removeBtn"/>
+	                                </td>
+	                            </tr>
+	                        </cti:displayForPageEditModes>
+	                        <cti:displayForPageEditModes modes="VIEW">
+	                            <tags:nameValue2 nameKey="${contactNotif.contactNotificationType.formatKey}" rowClass="contactNotif">
+	                                <c:if test="${isPhone}">
+	                                    <cti:formatPhoneNumber value="${contactNotif.notificationValue}"/>
+	                                </c:if>
+	                                <c:if test="${! isPhone}">${fn:escapeXml(contactNotif.notificationValue)}</c:if>
+	                            </tags:nameValue2>
+	                        </cti:displayForPageEditModes>
+	                    </c:forEach>
+	                </tags:nameValueContainer2>
+	                <cti:displayForPageEditModes modes="EDIT">
+	                    <div class="actionArea">
+	                        <cti:button nameKey="add" icon="icon-add" id="btn_addContactInfo"/>
+	                    </div>
+	                </cti:displayForPageEditModes>
+	            </div>
             </tags:sectionContainer2>
 
-            <tags:sectionContainer2 nameKey="additionContactInfo" styleClass="no-line">
-                <div class="f-display_empty<c:if test="${not empty userProfile.contact.otherNotifications}"> dn</c:if>"><i:inline key="yukon.web.defaults.na"/></div>
-                <tags:nameValueContainer2 id="contactNotifs">
-                    <c:forEach var="contactNotif" items="${userProfile.contact.otherNotifications}" varStatus="row">
-                        <c:set var="notifType" value="${contactNotif.contactNotificationType.contactNotificationMethodType.toString()}" />
-                        <c:set var="isPhone" value='${"PHONE".equals(notifType) || "FAX".equals(notifType)}' />
-                        <cti:displayForPageEditModes modes="EDIT">
-                            <tr class="contactNotif">
-                                <td class="name">
-                                    <tags:selectWithItems items="${notificationTypes}" path="contact.otherNotifications[${row.index}].contactNotificationType" inputClass="f-contactNotif-type"/>
-                                </td>
-                                <td class="value">
-                                    <tags:input path="contact.otherNotifications[${row.index}].notificationValue" inputClass='f-contactNotif-val${isPhone ? " f-formatPhone" : ""}'></tags:input>
-                                </td>
-                                <td class="actions">
-                                    <a title="Remove" href="javascript:void(0);" class="removeBtn icon icon-cross"> </a>
-                                </td>
-                            </tr>
-                        </cti:displayForPageEditModes>
-                        <cti:displayForPageEditModes modes="VIEW">
-                            <tags:nameValue2 nameKey="${contactNotif.contactNotificationType.formatKey}" rowClass="contactNotif">
-                                <c:if test="${isPhone}">
-                                    <cti:formatPhoneNumber value="${contactNotif.notificationValue}"/>
-                                </c:if>
-                                <c:if test="${! isPhone}">${contactNotif.notificationValue}</c:if>
-                            </tags:nameValue2>
-                        </cti:displayForPageEditModes>
-                    </c:forEach>
-                </tags:nameValueContainer2>
-                <cti:displayForPageEditModes modes="EDIT">
-                    <div class="actionArea">
-                        <cti:button nameKey="add" icon="icon-add" id="btn_addContactInfo"/>
-                    </div>
-                </cti:displayForPageEditModes>
-            </tags:sectionContainer2>
 
             <cti:displayForPageEditModes modes="EDIT">
                 <div class="pageActionArea">
@@ -189,9 +190,7 @@
     <div class="column two nogutter" id="column_two">
     <cti:displayForPageEditModes modes="VIEW">
     
-<cti:tabbedContentSelector mode="section">
-    <cti:msg2 key=".groups.title" var="groupTitle"/>
-    <cti:tabbedContentSelectorContent selectorName="${groupTitle}">
+    <tags:sectionContainer2 nameKey="groups">
         <h3>${fn:escapeXml(userGroupName)}</h3>
         <c:choose>
             <c:when test="${empty categoryRoleMap}">
@@ -215,8 +214,7 @@
                 </div>
             </c:otherwise>
         </c:choose>
-    </cti:tabbedContentSelectorContent>
-</cti:tabbedContentSelector>
+    </tags:sectionContainer2>
     
     </cti:displayForPageEditModes>
     </div>
@@ -233,10 +231,10 @@
             <tags:simpleSelect name="contact.otherNotifications" items="${notificationTypes}" itemLabelKey="formatKey" defaultItemValue="-1" defaultItemLabel="${txt_selectOne}" cssClass="f-contactNotif-type"/>
         </td>
         <td class="value">
-            <input name="contact.otherNotifications" class="f-contactNotif-val">
+            <input type="text" name="contact.otherNotifications" class="f-contactNotif-val">
         </td>
         <td class="actions">
-            <a title="Remove" href="javascript:void(0);" class="removeBtn icon icon-cross"> </a>
+            <cti:button renderMode="buttonImage" icon="icon-cross" classes="removeBtn"/>
         </td>
     </tr>
 </tbody></table>
