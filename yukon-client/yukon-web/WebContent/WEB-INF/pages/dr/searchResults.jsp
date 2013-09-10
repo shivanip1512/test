@@ -15,10 +15,6 @@
 	<dr:favoriteIconSetup />
 
 	<c:set var="baseUrl" value="/dr/search" />
-	<cti:msg var="submitButtonSrc"
-		key="yukon.web.modules.dr.searchResults.searchBoxSubmitImg" />
-	<cti:msg var="submitButtonAlt"
-		key="yukon.web.modules.dr.searchResults.searchBoxSubmitAlt" />
         
 	<div id="findForm" class="box actionArea">
 	   <form accept-charset="ISO-8859-1" method="get" action="/dr/search" enctype="application/x-www-form-urlencoded">
