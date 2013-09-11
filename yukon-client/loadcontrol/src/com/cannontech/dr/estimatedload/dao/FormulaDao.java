@@ -49,7 +49,9 @@ public interface FormulaDao {
      * to the given appliance category id. */
     public ApplianceCategoryAssignment getAssignmentForApplianceCategory(int appCategoryId);
 
-
+    /** Returns the Formula object assigned to a given appliance category, or NULL if none is assigned. */
+    public Formula getFormulaForApplianceCategory(int appCategoryId);
+    
     // Handling gear assignments
 
     /** Saves gear ids as assignments for formula */
@@ -72,4 +74,7 @@ public interface FormulaDao {
     /** Returns a GearAssignment object that describes which formula is assigned
     * to the given gear id. */
     public GearAssignment getAssignmentForGear(int gearId);
+
+    /** Returns the Formula object assigned to a given gear, or NULL if none is assigned. */
+    public Formula getFormulaForGear(int gearId);
 }

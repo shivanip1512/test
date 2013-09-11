@@ -159,6 +159,10 @@
                             <cti:checkRolesAndProperties value="PROGRAM_REDUCTION">
                                 <th><tags:sortLink nameKey="heading.reduction" baseUrl="${baseUrl}" fieldName="REDUCTION" /></th>
                             </cti:checkRolesAndProperties>
+
+                            <cti:checkRolesAndProperties value="ENABLE_ESTIMATED_LOAD">
+                                <th><tags:sortLink nameKey="heading.kwSavings" baseUrl="${baseUrl}" fieldName="KW_SAVINGS"/></th>
+                            </cti:checkRolesAndProperties>
                             <th class="action-column"></th>
                         </tr>
                     </thead>
@@ -192,6 +196,9 @@
                                 </cti:checkRolesAndProperties>
                                 <cti:checkRolesAndProperties value="PROGRAM_REDUCTION">
                                     <td><cti:dataUpdaterValue identifier="${programId}/REDUCTION" type="DR_PROGRAM" /></td>
+                                </cti:checkRolesAndProperties>
+                                <cti:checkRolesAndProperties value="PROGRAM_LOAD_CAPACITY">
+                                    <td><cti:dataUpdaterValue identifier="${programId}/KW_SAVINGS" type="DR_PROGRAM"/></td>
                                 </cti:checkRolesAndProperties>
                                 <td><dr:programListActions pao="${program}" /></td>
                             </tr>

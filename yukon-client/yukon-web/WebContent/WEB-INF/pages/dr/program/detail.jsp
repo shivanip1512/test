@@ -39,7 +39,7 @@ jQuery(function() {
                     <tags:nameValueContainer>
                         <cti:checkRolesAndProperties value="PROGRAM_STATE">
                             <cti:msg var="fieldName" key="yukon.web.modules.dr.programDetail.info.state"/>
-                            <tags:nameValue name="${fieldName}" nameColumnWidth="150px">
+                            <tags:nameValue name="${fieldName}" nameColumnWidth="175px">
                                 <dr:programState programId="${programId}"/>
                             </tags:nameValue>
                         </cti:checkRolesAndProperties>
@@ -71,6 +71,20 @@ jQuery(function() {
                             <cti:msg var="fieldName" key="yukon.web.modules.dr.programDetail.info.reduction"/>
                             <tags:nameValue name="${fieldName}">
                                 <cti:dataUpdaterValue identifier="${programId}/REDUCTION" type="DR_PROGRAM"/>
+                            </tags:nameValue>
+                        </cti:checkRolesAndProperties>
+                        <cti:checkRolesAndProperties value="ENABLE_ESTIMATED_LOAD">
+                            <cti:msg var="fieldName" key="yukon.web.modules.dr.programDetail.info.connectedLoad"/>
+                            <tags:nameValue name="${fieldName}">
+                                <cti:dataUpdaterValue identifier="${programId}/CONNECTED_LOAD" type="DR_PROGRAM"/>
+                            </tags:nameValue>
+                            <cti:msg var="fieldName" key="yukon.web.modules.dr.programDetail.info.diversifiedLoad"/>
+                            <tags:nameValue name="${fieldName}">
+                                <cti:dataUpdaterValue identifier="${programId}/DIVERSIFIED_LOAD" type="DR_PROGRAM"/>
+                            </tags:nameValue>
+                            <cti:msg var="fieldName" key="yukon.web.modules.dr.programDetail.info.kwSavings"/>
+                            <tags:nameValue name="${fieldName}">
+                                <cti:dataUpdaterValue identifier="${programId}/KW_SAVINGS" type="DR_PROGRAM"/>
                             </tags:nameValue>
                         </cti:checkRolesAndProperties>
                     </tags:nameValueContainer>

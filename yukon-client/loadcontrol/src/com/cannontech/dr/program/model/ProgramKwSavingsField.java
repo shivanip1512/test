@@ -2,22 +2,27 @@ package com.cannontech.dr.program.model;
 
 import java.util.Comparator;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.dr.estimatedload.service.EstimatedLoadService;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.user.YukonUserContext;
 
-public class ProgramLoadCapacityField extends ProgramBackingFieldBase {
+public class ProgramKwSavingsField extends ProgramBackingFieldBase {
+
+    @Autowired EstimatedLoadService estimatedLoadService;
 
     @Override
     public String getFieldName() {
-        return "LOAD_CAPACITY";
+        return "KW_SAVINGS";
     }
-    
+
     @Override
     public Object getProgramValue(LMProgramBase program, YukonUserContext userContext) {
-        return buildResolvable(getFieldName(), new Double(0.0));
+        return estimatedLoadService.getKwSavings(program.getPaoIdentifier());
     }
-    
+
     @Override
     public Comparator<DisplayablePao> getSorter(YukonUserContext userContext) {
         return new Comparator<DisplayablePao>() {

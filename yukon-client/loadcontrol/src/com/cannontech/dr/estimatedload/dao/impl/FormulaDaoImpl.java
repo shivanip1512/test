@@ -756,4 +756,24 @@ public class FormulaDaoImpl implements FormulaDao {
 
         return yukonJdbcTemplate.queryForInt(sql) != 0;
     }
+
+    @Override
+    public Formula getFormulaForApplianceCategory(int appCategoryId) {
+        ApplianceCategoryAssignment assignment = getAssignmentForApplianceCategory(appCategoryId);
+        if (assignment.getFormulaId() == null) {
+            return null;
+        } else {
+            return getFormulaById(assignment.getFormulaId());
+        }
+    }
+
+    @Override
+    public Formula getFormulaForGear(int gearId) {
+        GearAssignment assignment = getAssignmentForGear(gearId);
+        if (assignment.getFormulaId() == null) {
+            return null;
+        } else {
+            return getFormulaById(assignment.getFormulaId());
+        }
+    }
 }

@@ -62,12 +62,14 @@
     <bean id="drProgramStopField" class="com.cannontech.dr.program.model.ProgramStopField"/>
     <bean id="drProgramReductionField" class="com.cannontech.dr.program.model.ProgramReductionField"/>
     <bean id="drProgramCurrentGearField" class="com.cannontech.dr.program.model.ProgramCurrentGearField"/>
-    <bean id="drProgramLoadCapacityField" class="com.cannontech.dr.program.model.ProgramLoadCapacityField"/>
     <bean id="drProgramStateClassnameField" class="com.cannontech.dr.program.model.ProgramStateClassnameField"/>
     <bean id="drProgramEnabledField" class="com.cannontech.dr.program.model.ProgramEnabledField"/>
     <bean id="drProgramEnabledClassnameField" class="com.cannontech.dr.program.model.ProgramEnabledClassnameField"/>
     <bean id="drProgramShowAction" class="com.cannontech.dr.program.model.ProgramShowActionField"/>
     <bean id="drProgramPriority" class="com.cannontech.dr.program.model.ProgramPriorityField"/>
+    <bean id="drProgramConnectedLoadField" class="com.cannontech.dr.program.model.ProgramConnectedLoadField"/>
+    <bean id="drProgramDiversifiedLoadField" class="com.cannontech.dr.program.model.ProgramDiversifiedLoadField"/>
+    <bean id="drProgramKwSavingsField" class="com.cannontech.dr.program.model.ProgramKwSavingsField"/>
 
     <bean id="drLoadGroupService" class="com.cannontech.dr.loadgroup.service.impl.LoadGroupServiceImpl"/>
     <bean id="drLoadGroupFieldService" class="com.cannontech.dr.loadgroup.service.impl.LoadGroupFieldServiceImpl"/>
@@ -83,9 +85,11 @@
     <bean id="drLoadGroupShowAction" class="com.cannontech.dr.loadgroup.model.LoadGroupShowActionField"/>
 
     <bean class="com.cannontech.dr.assetavailability.service.impl.AssetAvailabilityServiceImpl"/>
-    <bean class="com.cannontech.dr.estimatedload.dao.impl.FormulaDaoImpl"/>
-    <bean class="com.cannontech.dr.estimatedload.service.impl.FormulaServiceImpl"/>
     <bean class="com.cannontech.dr.assetavailability.dao.impl.DRGroupDeviceMappingDaoImpl"/>
+    <bean class="com.cannontech.dr.estimatedload.service.impl.EstimatedLoadServiceImpl"/>
+    <bean class="com.cannontech.dr.estimatedload.service.impl.FormulaServiceImpl"/>
+    <bean class="com.cannontech.dr.estimatedload.dao.impl.EstimatedLoadDaoImpl"/>
+    <bean class="com.cannontech.dr.estimatedload.dao.impl.FormulaDaoImpl"/>
 
     <bean class="com.cannontech.loadcontrol.weather.impl.WeatherDataServiceImpl"/>
     <bean class="com.cannontech.loadcontrol.weather.impl.NoaaWeatherDataServiceImpl"/>
