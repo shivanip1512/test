@@ -82,18 +82,29 @@ Yukon.DrFormula = (function() {
 
     _newFunctionBtnClick = function() {
         var $newRow = jQuery('#functionRow_-1').clone().removeAttr("id");
+        var tableId = _rowIndex;
 
         $newRow.find(".f-drFormula-appendTableId").each(function () {
-            this.id = this.id + _rowIndex;
+            this.id = this.id + tableId;
+        }).promise().done(function () {
+            $newRow.appendTo('#formulaFunctions').slideDown(150);
+            var $inputSelect = jQuery("#formulaInputSelect_"+tableId);
+            $inputSelect.addClass("f-drFormula-formulaInputSelect");
+            _updateFormulaInputs($inputSelect.val(), tableId);
         });
 
-        $newRow.appendTo('#formulaFunctions').slideDown(150);
         _rowIndex++;
     },
 
     _formulaInputSelectChange = function() {
+        // FormulaInput type
+        // com.cannontech.dr.estimatedload.FormulaInput
         var inputVal = jQuery(this).val();
         var tableId = this.id.split("_").pop();
+        _updateFormulaInputs(inputVal, tableId);
+    },
+
+    _updateFormulaInputs = function(inputVal, tableId) {
 
         if (inputVal === 'POINT') {
             jQuery("#formulaPointPicker_"+tableId).fadeIn(150);
@@ -244,6 +255,10 @@ Yukon.DrFormula = (function() {
             } else if (inputVal == 'HUMIDITY') {
                 jQuery("#inputPointId_"+tableId).prop('disabled', true);
                 jQuery("#formulaWeatherStationTemp_"+tableId).find("select").prop('disabled', true);
+            } else {
+                jQuery("#inputPointId_"+tableId).prop('disabled', true);
+                jQuery("#formulaWeatherStationTemp_"+tableId).find("select").prop('disabled', true);
+                jQuery("#formulaWeatherStationHumidity_"+tableId).find("select").prop('disabled', true);
             }
         });
 

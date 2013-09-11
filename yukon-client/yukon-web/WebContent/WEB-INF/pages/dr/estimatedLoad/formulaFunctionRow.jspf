@@ -23,7 +23,7 @@
                         <div class="column one">
                             <select name="functions[].inputType"
                                 id="formulaInputSelect_"
-                                class="f-drFormula-formulaInputSelect f-drFormula-appendTableId">
+                                class="f-drFormula-appendTableId">
                                 <c:forEach var="fInput" items="${formulaInputs}">
                                     <option value="${fInput}"><cti:msg2 key="${fInput}"/></option>
                                 </c:forEach>
@@ -31,7 +31,7 @@
                         </div>
                         <div class="column two nogutter">
                             <div id="formulaWeatherStationTemp_"
-                                class="f-drFormula-appendTableId">
+                                style="display:none" class="f-drFormula-appendTableId">
                                  <select name="functions[].inputPointId">
                                      <c:forEach var="weatherLocation" items="${weatherLocations}">
                                          <option value="${weatherLocation.tempPoint.liteID}">
