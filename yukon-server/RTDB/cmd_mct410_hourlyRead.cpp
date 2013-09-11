@@ -150,23 +150,23 @@ vector<unsigned> Mct410HourlyReadCommand::extractDeltas(const Bytes &payload, co
         if( day_end.isDST() )
         {
             //  If it's DST, the last delta (Hour 24) is from 24:00 to 25:00, which we don't need
-            return getValueVectorFromBits(payload, 3, 7, 10);
+            return getValueVectorFromBits_bEndian(payload, 3, 7, 10);
         }
         else
         {
-            return getValueVectorFromBits(payload, 3, 7, 11);
+            return getValueVectorFromBits_bEndian(payload, 3, 7, 11);
         }
     }
     else
     {
         if( day_begin.isDST() )
         {
-            return getValueVectorFromBits(payload, 13, 7, 13);
+            return getValueVectorFromBits_bEndian(payload, 13, 7, 13);
         }
         else
         {
             //  If it's not DST, the first delta (Hour 00) is from 00:00 to 01:00, which we don't need
-            return getValueVectorFromBits(payload, 20, 7, 12);
+            return getValueVectorFromBits_bEndian(payload, 20, 7, 12);
         }
     }
 }

@@ -15,9 +15,10 @@ BOOST_AUTO_TEST_SUITE( test_cmd_device )
 struct Test_DeviceCommand : Cti::Devices::Commands::DeviceCommand
 {
     using Cti::Devices::Commands::DeviceCommand::getValueFromBits_bEndian;
-    using Cti::Devices::Commands::DeviceCommand::getValueVectorFromBits;
-    using Cti::Devices::Commands::DeviceCommand::setBits_lEndian;
+    using Cti::Devices::Commands::DeviceCommand::getValueFromBits_lEndian;
+    using Cti::Devices::Commands::DeviceCommand::getValueVectorFromBits_bEndian;
     using Cti::Devices::Commands::DeviceCommand::setBits_bEndian;
+    using Cti::Devices::Commands::DeviceCommand::setBits_lEndian;
 };
 
 BOOST_AUTO_TEST_CASE(test_getValueFromBits_bEndian)
@@ -66,7 +67,153 @@ BOOST_AUTO_TEST_CASE(test_getValueFromBits_bEndian)
     BOOST_CHECK_EQUAL( 604, Test_DeviceCommand::getValueFromBits_bEndian(data, 18, 10));
 }
 
-BOOST_AUTO_TEST_CASE(test_getValueVectorFromBits)
+BOOST_AUTO_TEST_CASE(test_getValueFromBits_lEndian)
+{
+    using boost::assign::list_of;
+
+    const std::vector<unsigned char> data = list_of
+            (0x01)   // 0000 0001
+            (0xff)   // 1111 1111
+            (0xa5)   // 1010 0101
+            (0xc7)   // 1100 0111
+            (0xaa)   // 1010 1010
+            (0x55)   // 0101 0101
+            (0xa5)   // 1010 0101
+            (0x5a);  // 0101 1010
+
+    std::vector<unsigned> results;
+
+    int offsets[] = { 0, 1, 2, 3, 7, 8, 9, 10, 27, 32 };
+    int lengths[] = { 0, 1, 2, 3, 7, 8, 9, 10, 27, 32 };
+
+    for each( const int offset in offsets )
+    {
+        for each( const int length in lengths )
+        {
+            results.push_back( Test_DeviceCommand::getValueFromBits_lEndian( data, offset, length ));
+        }
+    }
+
+    const std::vector<unsigned> expected = list_of
+            // 0 - offset 0
+            (      0x00)
+            (      0x01)
+            (      0x01)
+            (      0x01)
+            (      0x01)
+            (      0x01)
+            (     0x101)
+            (     0x301)
+            ( 0x7A5ff01)
+            (0xc7A5ff01)
+            // 10 - offset 1
+            (       0x0)
+            (       0x0)
+            (       0x0)
+            (       0x0)
+            (       0x0)
+            (      0x80)
+            (     0x180)
+            (     0x380)
+            ( 0x3d2ff80)
+            (0x63d2ff80)
+            // 20 - offset 2
+            (       0x0)
+            (       0x0)
+            (       0x0)
+            (       0x0)
+            (      0x40)
+            (      0xc0)
+            (     0x1c0)
+            (     0x3c0)
+            ( 0x1e97fc0)
+            (0xb1E97FC0)
+            // 30 - offset 3
+            (       0x0)
+            (       0x0)
+            (       0x0)
+            (       0x0)
+            (      0x60)
+            (      0xe0)
+            (     0x1e0)
+            (     0x3e0)
+            (  0xf4bfe0)
+            (0x58f4bfe0)
+            // 40 - offset 7
+            (       0x0)
+            (       0x0)
+            (       0x2)
+            (       0x6)
+            (      0x7e)
+            (      0xfe)
+            (     0x1fe)
+            (     0x3fe)
+            ( 0x58f4bfe)
+            (0x558f4bfe)
+            // 50 - offset 8
+            (       0x0)
+            (       0x1)
+            (       0x3)
+            (       0x7)
+            (      0x7f)
+            (      0xff)
+            (     0x1ff)
+            (     0x1ff)
+            ( 0x2c7A5ff)
+            (0xaac7a5ff)
+            // 60 - offset 9
+            (       0x0)
+            (       0x1)
+            (       0x3)
+            (       0x7)
+            (      0x7f)
+            (      0xff)
+            (      0xff)
+            (     0x2ff)
+            ( 0x563d2ff)
+            (0xd563d2ff)
+            // 70 - offset 10
+            (       0x0)
+            (       0x1)
+            (       0x3)
+            (       0x7)
+            (      0x7f)
+            (      0x7f)
+            (     0x17f)
+            (     0x17f)
+            ( 0x2b1e97f)
+            (0x6ab1e97f)
+            // 80 - offset 27
+            (       0x0)
+            (       0x0)
+            (       0x0)
+            (       0x0)
+            (      0x58)
+            (      0x58)
+            (     0x158)
+            (     0x158)
+            ( 0x4aab558)
+            (0x54aab558)
+            // 90 - offset 32
+            (       0x0)
+            (       0x0)
+            (       0x2)
+            (       0x2)
+            (      0x2a)
+            (      0xaa)
+            (     0x1aa)
+            (     0x1aa)
+            ( 0x2a555aa)
+            (0x5aa555aa);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(
+            results.begin(),  results.end(),
+            expected.begin(), expected.end());
+}
+
+
+
+BOOST_AUTO_TEST_CASE(test_getValueVectorFromBits_bEndian)
 {
     std::vector<unsigned char> init;
 
@@ -80,7 +227,7 @@ BOOST_AUTO_TEST_CASE(test_getValueVectorFromBits)
     {
         unsigned check[] = { 0, 0, 0, 0, 0, 0, 0, 1 };
 
-        std::vector<unsigned> result = Test_DeviceCommand::getValueVectorFromBits(data, 0, 1, 8);
+        std::vector<unsigned> result = Test_DeviceCommand::getValueVectorFromBits_bEndian(data, 0, 1, 8);
 
         BOOST_CHECK(std::equal(result.begin(), result.end(), check));
     }
@@ -88,7 +235,7 @@ BOOST_AUTO_TEST_CASE(test_getValueVectorFromBits)
     {
         unsigned check[] = { 0, 0, 0, 1, 3, 3, 3 };
 
-        std::vector<unsigned> result = Test_DeviceCommand::getValueVectorFromBits(data, 0, 2, 7);
+        std::vector<unsigned> result = Test_DeviceCommand::getValueVectorFromBits_bEndian(data, 0, 2, 7);
 
         BOOST_CHECK(std::equal(result.begin(), result.end(), check));
     }
@@ -96,7 +243,7 @@ BOOST_AUTO_TEST_CASE(test_getValueVectorFromBits)
     {
         unsigned check[] = { 2, 2, 1, 1, 3, 0 };
 
-        std::vector<unsigned> result = Test_DeviceCommand::getValueVectorFromBits(data, 16, 2, 6);
+        std::vector<unsigned> result = Test_DeviceCommand::getValueVectorFromBits_bEndian(data, 16, 2, 6);
 
         BOOST_CHECK(std::equal(result.begin(), result.end(), check));
     }
@@ -104,7 +251,7 @@ BOOST_AUTO_TEST_CASE(test_getValueVectorFromBits)
     {
         unsigned check[] = { 0, 0, 0, 3, 3 };
 
-        std::vector<unsigned> result = Test_DeviceCommand::getValueVectorFromBits(data, 1, 2, 5);
+        std::vector<unsigned> result = Test_DeviceCommand::getValueVectorFromBits_bEndian(data, 1, 2, 5);
 
         BOOST_CHECK(std::equal(result.begin(), result.end(), check));
     }
@@ -112,7 +259,7 @@ BOOST_AUTO_TEST_CASE(test_getValueVectorFromBits)
     {
         unsigned check[] = { 1, 7, 7, 7, 2, 2, 7 };
 
-        std::vector<unsigned> result = Test_DeviceCommand::getValueVectorFromBits(data, 5, 3, 7);
+        std::vector<unsigned> result = Test_DeviceCommand::getValueVectorFromBits_bEndian(data, 5, 3, 7);
 
         BOOST_CHECK(std::equal(result.begin(), result.end(), check));
     }
@@ -120,7 +267,7 @@ BOOST_AUTO_TEST_CASE(test_getValueVectorFromBits)
     {
         unsigned check[] = { 0, 7, 31, 26 };
 
-        std::vector<unsigned> result = Test_DeviceCommand::getValueVectorFromBits(data, 0, 5, 4);
+        std::vector<unsigned> result = Test_DeviceCommand::getValueVectorFromBits_bEndian(data, 0, 5, 4);
 
         BOOST_CHECK(std::equal(result.begin(), result.end(), check));
     }
@@ -128,13 +275,13 @@ BOOST_AUTO_TEST_CASE(test_getValueVectorFromBits)
     {
         unsigned check[] = { 3, 510, 302 };
 
-        std::vector<unsigned> result = Test_DeviceCommand::getValueVectorFromBits(data, 0, 9, 3);
+        std::vector<unsigned> result = Test_DeviceCommand::getValueVectorFromBits_bEndian(data, 0, 9, 3);
 
         BOOST_CHECK(std::equal(result.begin(), result.end(), check));
     }
 }
 
-BOOST_AUTO_TEST_CASE( test_getValueVectorFromBits_throw )
+BOOST_AUTO_TEST_CASE( test_getValueVectorFromBits_bEndian_throw )
 {
     std::vector<unsigned char> init;
 
@@ -147,9 +294,9 @@ BOOST_AUTO_TEST_CASE( test_getValueVectorFromBits_throw )
 
     try
     {
-        std::vector<unsigned> result = Test_DeviceCommand::getValueVectorFromBits(data, 0, 8, 5);
+        std::vector<unsigned> result = Test_DeviceCommand::getValueVectorFromBits_bEndian(data, 0, 8, 5);
 
-        BOOST_FAIL("DeviceCommand::getValueVectorFromBits() did not throw!");
+        BOOST_FAIL("DeviceCommand::getValueVectorFromBits_bEndian() did not throw!");
     }
     catch(Test_DeviceCommand::CommandException &ex)
     {

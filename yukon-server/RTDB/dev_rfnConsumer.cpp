@@ -281,6 +281,204 @@ int RfnConsumerDevice::executeTouCriticalPeak( CtiRequestMsg     * pReq,
 }
 
 
+/**
+ * Execute put config tou schedule
+ */
+int RfnConsumerDevice::executePutConfigTou( CtiRequestMsg     * pReq,
+                                            CtiCommandParser  & parse,
+                                            CtiMessageList    & retList,
+                                            RfnCommandList    & rfnRequests )
+{
+    using Commands::RfnTouConfigurationCommand;
+    using Commands::RfnTouStateConfigurationCommand;
+    using Commands::RfnTouScheduleConfigurationCommand;
+
+    RfnTouScheduleConfigurationCommand::Schedule schedule;
+
+    if( parse.isKeyValid("tou_enable") )
+    {
+        rfnRequests.push_back( boost::make_shared<RfnTouStateConfigurationCommand>( RfnTouConfigurationCommand::TouEnable ));
+
+        return NoError;
+    }
+
+    if( parse.isKeyValid("tou_disable") )
+    {
+        rfnRequests.push_back( boost::make_shared<RfnTouStateConfigurationCommand>( RfnTouConfigurationCommand::TouDisable ));
+
+        return NoError;
+    }
+
+    //
+    // Day Table
+    //
+
+    if( ! parse.isKeyValid("tou_days") )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Device \"" << getName() << "\" - Missing day table. " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+
+        return BADPARAM;
+    }
+
+    const string dayTableStr = parse.getsValue("tou_days");
+
+    for( int day_nbr = 0; day_nbr < dayTableStr.length(); day_nbr++ )
+    {
+        schedule._dayTable.push_back( dayTableStr.substr(day_nbr,1) );
+    }
+
+    //
+    // Default Rate
+    //
+
+    if( ! parse.isKeyValid("tou_default") )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Device \"" << getName() << "\" - Missing TOU default rate. " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+
+        return BADPARAM;
+    }
+
+    schedule._defaultRate = parse.getsValue("tou_default");
+
+    //
+    // Switch Rates and Times
+    //
+
+    int iter = 0;
+    string schedule_name = "tou_schedule_" + CtiNumStr(iter).zpad(2);
+
+    while( parse.isKeyValid( schedule_name ))
+    {
+        const string schedule_str = CtiNumStr( parse.getiValue( schedule_name ));
+
+        RfnTouScheduleConfigurationCommand::ScheduleNbr schedule_nbr = RfnTouScheduleConfigurationCommand::resolveScheduleNbr( schedule_str );
+
+        int change_nbr = 0;
+        string change_name = schedule_name + "_" + CtiNumStr(change_nbr).zpad(2);
+
+        RfnTouScheduleConfigurationCommand::DailyTimes times;
+        RfnTouScheduleConfigurationCommand::DailyRates rates;
+
+        while( parse.isKeyValid( change_name ) )
+        {
+            if( change_nbr > rates.size() )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Device \"" << getName() << "\" - Schedule " << schedule_str << " has an invalid rate change. " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+
+                return BADPARAM;
+            }
+
+            const string change_str = parse.getsValue( change_name );
+
+            const string rate_str   = change_str.substr(0, 1),
+                         time_str   = change_str.substr(2, change_str.length()-2);
+
+            times.push_back( time_str );
+            rates.push_back( rate_str );
+
+            change_nbr++;
+            change_name = schedule_name + "_" + CtiNumStr(change_nbr).zpad(2);
+        }
+
+        schedule._times[schedule_nbr] = times;
+        schedule._rates[schedule_nbr] = rates;
+
+        iter++;
+        schedule_name = "tou_schedule_" + CtiNumStr(iter).zpad(2);
+    }
+
+    rfnRequests.push_back( boost::make_shared<RfnTouScheduleConfigurationCommand>( schedule ));
+
+    return NoError;
+}
+
+/**
+ * Execute get config schedule
+ */
+int RfnConsumerDevice::executeGetConfigTou( CtiRequestMsg     * pReq,
+                                            CtiCommandParser  & parse,
+                                            CtiMessageList    & retList,
+                                            RfnCommandList    & rfnRequests )
+{
+    rfnRequests.push_back( boost::make_shared<Commands::RfnTouScheduleConfigurationCommand>());
+
+    return NoError;
+}
+
+/**
+ * Execute put config holiday
+ */
+int RfnConsumerDevice::executePutConfigHoliday( CtiRequestMsg     * pReq,
+                                                CtiCommandParser  & parse,
+                                                CtiMessageList    & retList,
+                                                RfnCommandList    & rfnRequests )
+{
+    using Commands::RfnTouHolidayConfigurationCommand;
+    using Commands::RfnTouSetHolidayActiveCommand;
+    using Commands::RfnTouCancelHolidayActiveCommand;
+
+    if( parse.isKeyValid("holiday_set_active") )
+    {
+        rfnRequests.push_back( boost::make_shared<RfnTouSetHolidayActiveCommand>());
+
+        return NoError;
+    }
+
+    if( parse.isKeyValid("holiday_cancel_active") )
+    {
+        rfnRequests.push_back( boost::make_shared<RfnTouCancelHolidayActiveCommand>());
+
+        return NoError;
+    }
+
+    Commands::RfnTouHolidayConfigurationCommand::Holidays holidays;
+
+    int holiday_nbr = 0;
+
+    while( parse.isKeyValid("holiday_date" + CtiNumStr(holiday_nbr)))
+    {
+        const std::string holiday_str = parse.getsValue("holiday_date" + CtiNumStr(holiday_nbr));
+
+        if( holiday_nbr >= holidays.size() )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Device \"" << getName() << "\" - Holiday " << holiday_str << " specified. " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+
+            return BADPARAM;
+        }
+
+        int day, month, year;
+        char sep1, sep2;
+
+        std::istringstream iss( holiday_str );
+        iss >> month >> sep1 >> day >> sep2 >> year;
+
+        holidays[holiday_nbr] = CtiDate(day, month, year);
+
+        holiday_nbr++;
+    }
+
+    rfnRequests.push_back( boost::make_shared<RfnTouHolidayConfigurationCommand>( holidays ));
+
+    return NoError;
+}
+
+/**
+ * Execute get config holiday
+ */
+int RfnConsumerDevice::executeGetConfigHoliday( CtiRequestMsg     * pReq,
+                                                CtiCommandParser  & parse,
+                                                CtiMessageList    & retList,
+                                                RfnCommandList    & rfnRequests )
+{
+    rfnRequests.push_back( boost::make_shared<Commands::RfnTouHolidayConfigurationCommand>());
+
+    return NoError;
+}
+
 void RfnConsumerDevice::handleResult( const Commands::RfnVoltageProfileConfigurationCommand & cmd )
 {
     setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DemandInterval,      cmd.getDemandIntervalSeconds() );
@@ -301,6 +499,19 @@ void RfnConsumerDevice::handleResult( const Commands::RfnGetDemandFreezeInfoComm
     // TBD
 
     Commands::RfnGetDemandFreezeInfoCommand::DemandFreezeData freezeData = cmd.getDemandFreezeData();
+}
+
+
+void RfnConsumerDevice::handleResult( const Commands::RfnTouScheduleConfigurationCommand & cmd )
+{
+    // TODO
+
+}
+
+
+void RfnConsumerDevice::handleResult( const Commands::RfnTouHolidayConfigurationCommand & cmd )
+{
+    // TODO
 }
 
 

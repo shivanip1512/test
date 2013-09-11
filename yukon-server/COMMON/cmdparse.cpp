@@ -3077,6 +3077,22 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
                     _cmd[holiday_offset.data()] = CtiParseValue(holiday_str.data());
                 }
             }
+            else
+            {
+                static const boost::regex re_holidaySetActive(CtiString("holiday (active|cancel)"));
+
+                if(!(token = CmdStr.match(re_holidaySetActive)).empty())
+                {
+                    if( CmdStr.contains(" cancel") )
+                    {
+                        _cmd["holiday_cancel_active"] = true;
+                    }
+                    else
+                    {
+                        _cmd["holiday_set_active"] = true;
+                    }
+                }
+            }
         }
         if(CmdStr.contains(" load profile allocation "))
         {

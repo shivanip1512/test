@@ -57,6 +57,11 @@ class IM_EX_DEVDB RfnTouScheduleConfigurationCommand : public RfnTouConfiguratio
 {
 public:
 
+    struct ResultHandler
+    {
+        virtual void handleResult( const RfnTouScheduleConfigurationCommand &cmd ) = 0;
+    };
+
     enum ScheduleNbr
     {
         Schedule1,
@@ -65,26 +70,27 @@ public:
         Schedule4,
     };
 
-    typedef boost::array<ScheduleNbr, 8>       DayTable;
-
-    typedef boost::array<unsigned short, 5>    DailyTimes;
-    typedef boost::array<Rate, 6>              DailyRates;
+    typedef std::vector<std::string>  DayTable;
+    typedef std::vector<std::string>  DailyTimes;
+    typedef std::vector<std::string>  DailyRates;
 
     typedef std::map<ScheduleNbr, DailyTimes>  Times;
     typedef std::map<ScheduleNbr, DailyRates>  Rates;
 
     struct Schedule
     {
-        boost::optional<DayTable>  _dayTable;
-        boost::optional<Rate>      _defaultRate;
-        Times                      _times;
-        Rates                      _rates;
+        DayTable     _dayTable;
+        std::string  _defaultRate;
+        Times        _times;
+        Rates        _rates;
     };
 
     RfnTouScheduleConfigurationCommand(); // read
     RfnTouScheduleConfigurationCommand( const Schedule &schedule_to_send ); // write
 
     boost::optional<Schedule> getTouScheduleReceived() const;
+
+    static ScheduleNbr resolveScheduleNbr( const std::string & schedule_str );
 
 protected:
 
@@ -100,7 +106,9 @@ protected:
 
 private:
 
-    boost::optional<Schedule> const _schedule_to_send;
+    Bytes createCommandData( const Schedule & schedule_to_send );
+
+    boost::optional<Bytes>    const _commandData_to_send;
     boost::optional<Schedule>       _schedule_received;
 };
 
@@ -110,6 +118,11 @@ private:
 class IM_EX_DEVDB RfnTouHolidayConfigurationCommand : public RfnTouConfigurationCommand
 {
 public:
+
+    struct ResultHandler
+    {
+        virtual void handleResult( const RfnTouHolidayConfigurationCommand &cmd ) = 0;
+    };
 
     typedef boost::array<CtiDate, 3> Holidays;
 
@@ -136,12 +149,12 @@ private:
 /**
  * RFN TOU configuration command enable/disable
  */
-class IM_EX_DEVDB RfnTouEnableConfigurationCommand : public RfnTouConfigurationCommand
+class IM_EX_DEVDB RfnTouStateConfigurationCommand : public RfnTouConfigurationCommand
 {
 public:
 
-    RfnTouEnableConfigurationCommand(); // read
-    RfnTouEnableConfigurationCommand( TouState touState_to_send ); // write
+    RfnTouStateConfigurationCommand(); // read
+    RfnTouStateConfigurationCommand( TouState touState_to_send ); // write
 
 protected:
 
@@ -156,19 +169,13 @@ private:
 };
 
 /**
- * RFN TOU configuration command enable/disable
+ * RFN TOU set Holiday active
  */
-class IM_EX_DEVDB RfnTouHolidayActiveConfigurationCommand : public RfnTouConfigurationCommand
+class IM_EX_DEVDB RfnTouSetHolidayActiveCommand : public RfnTouConfigurationCommand
 {
 public:
 
-    enum HolidayActive
-    {
-        SetHolidayActive,
-        CancelHolidayActive,
-    };
-
-    RfnTouHolidayActiveConfigurationCommand( HolidayActive holidayActive_to_send ); // write
+    RfnTouSetHolidayActiveCommand(); // write
 
 protected:
 
@@ -176,10 +183,23 @@ protected:
     virtual Bytes         getCommandData();
 
     virtual void decodeTlv( RfnResult& result, const TypeLengthValue& tlv );
+};
 
-private:
+/**
+ * RFN TOU cancel Holiday active
+ */
+class IM_EX_DEVDB RfnTouCancelHolidayActiveCommand : public RfnTouConfigurationCommand
+{
+public:
 
-    HolidayActive const _holidayActive_to_send;
+    RfnTouCancelHolidayActiveCommand(); // write
+
+protected:
+
+    virtual unsigned char getOperation() const;
+    virtual Bytes         getCommandData();
+
+    virtual void decodeTlv( RfnResult& result, const TypeLengthValue& tlv );
 };
 
 /**

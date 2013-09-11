@@ -12,7 +12,7 @@ namespace Commands {
 
 
 //  throws CommandException
-vector<unsigned> DeviceCommand::getValueVectorFromBits(const Bytes &data, const unsigned start_offset, const unsigned length, const unsigned count)
+vector<unsigned> DeviceCommand::getValueVectorFromBits_bEndian(const Bytes &data, const unsigned start_offset, const unsigned length, const unsigned count)
 {
     vector<unsigned> values;
 

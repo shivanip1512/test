@@ -63,8 +63,6 @@ public:
 
 protected:
 
-    static std::vector<unsigned> getValueVectorFromBits(const Bytes &data, const unsigned start_offset, const unsigned length, const unsigned count);
-    
     /*
      *  Example with start offset = 5, length = 8
      *
@@ -85,6 +83,9 @@ protected:
 
     static void setBits_bEndian(Bytes &data, const unsigned start_offset, const unsigned length, const unsigned value);
     static void setBits_lEndian(Bytes &data, const unsigned start_offset, const unsigned length, const unsigned value);
+
+    static std::vector<unsigned> getValueVectorFromBits_bEndian(const Bytes &data, const unsigned start_offset, const unsigned length, const unsigned count);
+
 };
 
 

@@ -78,7 +78,7 @@ DlcCommand::request_ptr Lcr3102HourlyDataLogCommand::decodeCommand(CtiTime now, 
         validateFlags(flags);
 
         // Grab the hourly data from the payload. There are 12 items of 6-bit packed data.
-        std::vector<unsigned> data = getValueVectorFromBits(*payload, 8, 6, 12);
+        vector<unsigned> data = getValueVectorFromBits_bEndian(*payload, 8, 6, 12);
 
         getDescription(data, description);
 
