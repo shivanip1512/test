@@ -1,13 +1,22 @@
 package com.cannontech.core.authentication.service.impl;
 
-import static com.cannontech.core.roleproperties.YukonRole.*;
-import static com.cannontech.core.roleproperties.YukonRoleProperty.*;
+import static com.cannontech.core.roleproperties.YukonRole.PASSWORD_POLICY;
+import static com.cannontech.core.roleproperties.YukonRoleProperty.LOCKOUT_DURATION;
+import static com.cannontech.core.roleproperties.YukonRoleProperty.LOCKOUT_THRESHOLD;
+import static com.cannontech.core.roleproperties.YukonRoleProperty.MAXIMUM_PASSWORD_AGE;
+import static com.cannontech.core.roleproperties.YukonRoleProperty.MINIMUM_PASSWORD_AGE;
+import static com.cannontech.core.roleproperties.YukonRoleProperty.MINIMUM_PASSWORD_LENGTH;
+import static com.cannontech.core.roleproperties.YukonRoleProperty.PASSWORD_HISTORY;
+import static com.cannontech.core.roleproperties.YukonRoleProperty.POLICY_QUALITY_CHECK;
+import static com.cannontech.core.roleproperties.YukonRoleProperty.POLICY_RULE_BASE_10_DIGITS;
+import static com.cannontech.core.roleproperties.YukonRoleProperty.POLICY_RULE_LOWERCASE_CHARACTERS;
+import static com.cannontech.core.roleproperties.YukonRoleProperty.POLICY_RULE_NONALPHANUMERIC_CHARACTERS;
+import static com.cannontech.core.roleproperties.YukonRoleProperty.POLICY_RULE_UPPERCASE_CHARACTERS;
 
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -18,7 +27,6 @@ import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.dao.impl.YukonUserDaoImpl;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
-@Ignore("not a unit test")
 public class StaticAuthenticationThrottleImplTest {
 
     private PasswordPolicyServiceImpl passwordPolicyService;
