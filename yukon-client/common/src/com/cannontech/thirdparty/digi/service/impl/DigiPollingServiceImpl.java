@@ -89,16 +89,16 @@ public class DigiPollingServiceImpl {
                 try {
                     waitableExecutor.await();
                 } catch (InterruptedException e) {
-//                    log.warn("caught exception in digiDeviceNotificationPoll", e);
+                    log.warn("caught exception in digiDeviceNotificationPoll", e);
                     Thread.currentThread().interrupt();
                 } catch (ExecutionException e) {
-//                    log.warn("caught exception in digiDeviceNotificationPoll", e);
+                    log.warn("caught exception in digiDeviceNotificationPoll", e);
                 }
                 
             } catch (DispatchNotConnectedException dE) {
-//                log.error("Dispatch is not connected. Will not Poll gateways for device notifications.", dE);
+                log.error("Dispatch is not connected. Will not Poll gateways for device notifications.", dE);
             } catch (Exception e) {
-//                log.error("Exception while Polling Device Notifications", e);
+                log.error("Exception while Polling Device Notifications", e);
             }
             
             log.debug("Digi Device Notification Finished");
@@ -140,9 +140,9 @@ public class DigiPollingServiceImpl {
                 zigbeeStateUpdaterService.updateAllGatewayStatuses();
                 zigbeeStateUpdaterService.updateAllEndPointStatuses();
             } catch (DigiNotConfiguredException e) {
-//                log.warn("Digi not configured", e);
+                log.warn("Digi not configured", e);
             } catch (DigiWebServiceException e) {
-//                log.error("Digi status update failed",e);
+                log.error("Digi status update failed",e);
             }
             log.debug("Digi Device Status Poll Finished");
         }
