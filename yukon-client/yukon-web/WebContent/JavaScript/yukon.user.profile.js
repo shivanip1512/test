@@ -127,7 +127,7 @@ Yukon.UserPreferences = (function () {
             jQuery(document).on("click", "#btn_addContactInfo", this.add_contact_notif_row);
             jQuery(document).on("change", ".f-has_selectOne", this.select_remove_selectOne);
 
-            jQuery(document).on("click", "#contactNotifs td a.removeBtn", this.remove_contact_notif_row);
+            jQuery(document).on("click", "#contactNotifs td .removeBtn", this.remove_contact_notif_row);
             jQuery(document).on("change", "select.f-contactNotif-type", this.update_contact_notif_input_formatting);
 
             // NEW PAGINATION

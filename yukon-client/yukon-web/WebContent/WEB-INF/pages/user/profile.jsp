@@ -38,8 +38,8 @@
 	                <div style="margin-left:3px;" class="f-display_empty<c:if test="${not empty userProfile.contact.otherNotifications}"> dn</c:if>"><i:inline key="yukon.web.defaults.na"/></div>
 	                <tags:nameValueContainer2 id="contactNotifs">
 	                    <c:forEach var="contactNotif" items="${userProfile.contact.otherNotifications}" varStatus="row">
-	                        <c:set var="notifType" value="${contactNotif.contactNotificationType.contactNotificationMethodType.toString()}" />
-	                        <c:set var="isPhone" value='${"PHONE".equals(notifType) || "FAX".equals(notifType)}' />
+	                        <c:set var="notifType" value="${contactNotif.contactNotificationType}" />
+                            <c:set var="isPhone" value='${notifType.isPhoneType() || notifType.isFaxType()}' />
 	                        <cti:displayForPageEditModes modes="EDIT">
 	                            <tr class="contactNotif">
 	                                <td class="name">
