@@ -398,7 +398,7 @@ public class PhaseDetectServiceImpl implements PhaseDetectService{
             pointData.setPointQuality(PointQuality.Normal);
             pointData.setTime(new Date());
             pointData.setValue(liteState.getStateRawState());
-            pointData.setTags(PointData.TAG_POINT_MUST_ARCHIVE);
+            pointData.setTagsPointMustArchive(true);
             pointData.setMillis(0);
             dynamicDataSource.putValue(pointData);
         } catch (IllegalUseOfAttribute e) {

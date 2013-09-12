@@ -157,10 +157,8 @@ public class Baseline implements Serializable
 				
 				pointDataMsg.setPointQuality(PointQuality.NonUpdated);
 				pointDataMsg.setType(PointTypes.CALCULATED_POINT);
-				if( i+1 >= data.length() )
-					pointDataMsg.setTags(0x00000000); //represent the last PointData message in the group
-				else
-					pointDataMsg.setTags(0x00008000); //load profile tag setting
+				if( i+1 < data.length() )
+					pointDataMsg.setTagsLoadProfileData(true);
 				
 				pointDataMsg.setStr("Baseline Calc Historical");
 				pointDataVector.addElement(pointDataMsg);

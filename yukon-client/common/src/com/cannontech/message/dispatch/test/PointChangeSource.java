@@ -87,7 +87,6 @@ public static void main(String[] args) {
 			pData.setLimit(150);
 			//pData.setOffset( 10);
 			pData.setStr("Test Point Change");
-			pData.setTags(0);
 			pData.setValue( Math.random() * 100.0 );
 			pData.setTime( new java.util.Date() );
 			

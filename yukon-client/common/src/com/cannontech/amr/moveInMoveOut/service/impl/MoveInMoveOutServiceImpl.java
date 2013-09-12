@@ -403,7 +403,7 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
         pointData.setPointQuality(PointQuality.Estimated);
         pointData.setTime(new Date(calculatedDate.getTime() + 1));
         pointData.setValue(calculatedValue);
-        pointData.setTags(PointData.TAG_POINT_MUST_ARCHIVE);
+        pointData.setTagsPointMustArchive(true);
         pointData.setMillis(0);
         dynamicDataSource.putValue(pointData);
     }

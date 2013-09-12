@@ -274,7 +274,7 @@ private static void sendPointData(DispatchClientConnection conn, int id, float m
 
 		PointData pData = new PointData();
 		
-        pData.setTags(0x00002000);
+        pData.setTagsPointMustArchive(true);
 		pData.setType(PointTypes.INVALID_POINT);
   
    	 	pData.setId( id );

@@ -144,7 +144,6 @@ public static void main(String[] args)
 			
 			pData.setLimit(150);
 			pData.setStr("Test Point Change");
-			pData.setTags(0);
 
 			// We are unable to set a PointData Attributes
 			//pData.setAttributes( com.cannontech.message.dispatch.message.PointData.ATTRIB_CONTROL_AVAILABLE );

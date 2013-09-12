@@ -55,7 +55,7 @@ public class Signal extends com.cannontech.message.util.Message
 	public final static int TAG_POINT_FORCE_UPDATE 			 = 0x00001000;
 	public final static int TAG_POINT_MUST_ARCHIVE 			 = 0x00002000;
 	public final static int TAG_POINT_MAY_BE_EXEMPTED 		 = 0x00004000;
-	public final static int TAG_REPORT_MSG_BLOCK_EXTRA_EMAIL = 0x02000000;
+	public final static int TAG_DO_NOT_SEND_SIGNAL_AS_EMAIL  = 0x02000000;
 	public final static int TAG_ATTRIB_CONTROL_AVAILABLE 	 = 0x10000000;
 	public final static int TAG_ATTRIB_PSUEDO 				 = 0x20000000;
     public final static int TAG_ACTIVE_CONDITION             = 0x04000000;

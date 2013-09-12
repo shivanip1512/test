@@ -253,7 +253,6 @@ public class AnalogManualEntryPanel extends ManualEntryJPanel implements RowEdit
                 // Create new point Here
                 PointData pt = new PointData();
                 pt.setId(getEditorData().getPointID());
-                pt.setTags(getEditorData().getTags());
                 pt.setTimeStamp(new java.util.Date());
                 pt.setTime(new java.util.Date());
                 pt.setType(getEditorData().getPointType());

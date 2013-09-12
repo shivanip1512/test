@@ -61,6 +61,7 @@
 #include "millisecond_timer.h"
 
 #include <boost/tuple/tuple_comparison.hpp>
+#include <boost/ptr_container/ptr_deque.hpp>
 
 #include "amq_constants.h"
 
@@ -74,6 +75,8 @@ using namespace std;
 #define SANITY_RATE              300
 #define POINT_EXPIRE_CHECK_RATE  60
 #define DYNAMIC_LOAD_SIZE        256
+
+#define INCOMING_TAG_MASK (SIGNAL_MANAGER_MASK | TAG_DO_NOT_SEND_SIGNAL_AS_EMAIL)
 
 #define MAX_ALARM_TRX 256
 
@@ -1772,7 +1775,7 @@ void CtiVanGogh::archivePointDataMessage(const CtiPointDataMsg &aPD)
                     // Set the point in memory to the current value.
                     // Do not update with an older time unless we are in the forced condition or if
                     // the point has never been updated (uninit quality)
-                    pDyn->setPoint(aPD.getTime(), aPD.getMillis(), aPD.getValue(), aPD.getQuality(), (aPD.getTags() & ~SIGNAL_MANAGER_MASK) | _signalManager.getTagMask(aPD.getId()));
+                    pDyn->setPoint(aPD.getTime(), aPD.getMillis(), aPD.getValue(), aPD.getQuality(), (aPD.getTags() & ~INCOMING_TAG_MASK) | _signalManager.getTagMask(aPD.getId()));
 
                     if( isDuplicate && previouslyArchived )
                     {
@@ -2860,15 +2863,13 @@ void CtiVanGogh::loadPendingSignals()
 
 void CtiVanGogh::writeSignalsToDB(bool justdoit)
 {
-    CtiSignalMsg   *sigMsg;
-    UINT           panicCounter = 0;
-    static UINT  dumpCounter = 0;
-
-
-    std::vector<CtiSignalMsg*>      postList;
+    UINT         panicCounter = 0;
+    static UINT  dumpCounter  = 0;
 
     try
     {
+        boost::ptr_deque<CtiSignalMsg> postList;
+
         if(!(++dumpCounter % DUMP_RATE)
            || _signalMsgQueue.entries() > MAX_ARCHIVER_ENTRIES
            || justdoit == true )                                 // Only chase the queue once per DUMP_RATE seconds.
@@ -2889,31 +2890,28 @@ void CtiVanGogh::writeSignalsToDB(bool justdoit)
 
                     try
                     {
-                        do
+                        while( justdoit || (panicCounter++ < 500) )
                         {
-                            sigMsg = _signalMsgQueue.getQueue(0);
+                            std::auto_ptr<CtiSignalMsg> sigMsg(_signalMsgQueue.getQueue(0));
 
-                            if(sigMsg != NULL)
+                            if( ! sigMsg.get() )
+                            {
+                                break;
+                            }
+
+                            if( ! sigMsg->getText().empty() || ! sigMsg->getAdditionalInfo().empty() )
                             {
                                 CtiTableSignal sig(sigMsg->getId(), sigMsg->getMessageTime(), sigMsg->getSignalMillis(), sigMsg->getText(), sigMsg->getAdditionalInfo(), sigMsg->getSignalCategory(), sigMsg->getLogType(), sigMsg->getSOE(), sigMsg->getUser(), sigMsg->getLogID());
 
-                                if(!sigMsg->getText().empty() || !sigMsg->getAdditionalInfo().empty())
-                                {
-                                    // No text, no point then is there now?
-                                    sig.Insert(conn);
-                                }
-
-                                if(!(sigMsg->getTags() & TAG_REPORT_MSG_BLOCK_EXTRA_EMAIL))
-                                {
-                                    postList.push_back(sigMsg);
-                                }
-                                else
-                                {
-                                    delete sigMsg;
-                                }
+                                // No text, no point then is there now?
+                                sig.Insert(conn);
                             }
 
-                        } while( sigMsg != NULL && (justdoit || (panicCounter++ < 500)));
+                            if( ! (sigMsg->getTags() & TAG_DO_NOT_SEND_SIGNAL_AS_EMAIL) )
+                            {
+                                postList.push_back(sigMsg);
+                            }
+                        }
                     }
                     catch(...)
                     {
@@ -2939,22 +2937,20 @@ void CtiVanGogh::writeSignalsToDB(bool justdoit)
             _signalManager.writeDynamicSignalsToDB();
         }
 
+        while( ! postList.empty() )
         {
-            while(!postList.empty())
-            {
-                sigMsg = (CtiSignalMsg*)postList.back();
-                postList.pop_back();
-                bool done = _signalMsgPostQueue.putQueue(sigMsg, 5000);           // Place them on the email queue and let him clean them up!
-                if(!done)
-                {
-                    delete sigMsg;
+            boost::ptr_deque<CtiSignalMsg>::auto_type sigMsg = postList.pop_back();
 
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "   Failed to queue signal message for emailing. " << endl;
-                    }
-                }
+            // Place them on the email queue and let him clean them up!
+            if( _signalMsgPostQueue.putQueue(sigMsg.get(), 5000) )
+            {
+                sigMsg.release();
+            }
+            else
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << "   Failed to queue signal message for emailing. " << endl;
             }
         }
     }
@@ -6300,7 +6296,7 @@ void CtiVanGogh::activatePointAlarm(int alarm, CtiMultiWrapper &aWrap, const Cti
         //    updateDynTagsForSignalMsg(), so we should block this one from sending anything
         if(activate)
         {
-            sigtags = TAG_REPORT_MSG_BLOCK_EXTRA_EMAIL;
+            sigtags = TAG_DO_NOT_SEND_SIGNAL_AS_EMAIL;
         }
         //  If we're deactivating, and:
         //    * any of TAG_UNACKNOWLEDGED_ALARM, TAG_ACTIVE_ALARM, or TAG_ACTIVE_CONDITION are set
@@ -6309,7 +6305,7 @@ void CtiVanGogh::activatePointAlarm(int alarm, CtiMultiWrapper &aWrap, const Cti
         //  then block the email.
         else if( (dpd.getDispatch().getTags() & SIGNAL_MANAGER_MASK) || !PointMgr.getAlarming(point).getNotifyOnClear() )
         {
-            sigtags |= TAG_REPORT_MSG_BLOCK_EXTRA_EMAIL;
+            sigtags |= TAG_DO_NOT_SEND_SIGNAL_AS_EMAIL;
         }
 
         pSigActive->setTags( sigtags );
@@ -6353,7 +6349,7 @@ void CtiVanGogh::acknowledgeAlarmCondition( const CtiPointBase &point, const Cti
             {
                 pSigNew->setUser( Cmd->getUser() );
 
-                unsigned sigtags = (pDyn->getDispatch().getTags() & ~SIGNAL_MANAGER_MASK) | TAG_REPORT_MSG_TO_ALARM_CLIENTS | TAG_REPORT_MSG_BLOCK_EXTRA_EMAIL;
+                unsigned sigtags = (pDyn->getDispatch().getTags() & ~SIGNAL_MANAGER_MASK) | TAG_REPORT_MSG_TO_ALARM_CLIENTS | TAG_DO_NOT_SEND_SIGNAL_AS_EMAIL;
 
                 bool almclear = (_signalManager.getTagMask(point.getPointID()) & MASK_ANY_ALARM) == 0; // true if no bits are set.
 
@@ -6361,7 +6357,7 @@ void CtiVanGogh::acknowledgeAlarmCondition( const CtiPointBase &point, const Cti
 
                 if( ( almclear && alarming.getNotifyOnClear() ) || alarming.getNotifyOnAcknowledge())
                 {
-                    sigtags &= ~TAG_REPORT_MSG_BLOCK_EXTRA_EMAIL;   // Remove this to send the emails.
+                    sigtags &= ~TAG_DO_NOT_SEND_SIGNAL_AS_EMAIL;   // Remove this to send the emails.
                 }
 
                 pSigNew->setTags( sigtags );

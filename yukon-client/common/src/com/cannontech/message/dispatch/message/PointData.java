@@ -32,7 +32,6 @@ public class PointData extends com.cannontech.message.util.Message implements Po
     public static final long TAG_POINT_LOAD_PROFILE_DATA = 0x00008000;        // This data will archive to raw point history
     public static final long TAG_POINT_OLD_TIMESTAMP = 0x00100000;
 
-    public static final long TAG_POINT_LP_NO_REPORT = TAG_POINT_LOAD_PROFILE_DATA | TAG_POINT_DO_NOT_REPORT;	// for all but last entry of LP data
     // Point Types
     /* DEFINED IN com.cannontech.database.data.point.PointTypes */
 
@@ -150,4 +149,19 @@ public class PointData extends com.cannontech.message.util.Message implements Po
         }
     }
 
+    public void setTagsLoadProfileData(boolean b) {
+        if (b) {
+            tags |= TAG_POINT_LOAD_PROFILE_DATA;
+        } else {
+            tags &= ~TAG_POINT_LOAD_PROFILE_DATA;
+        }
+    }
+
+    public void setTagsDoNotReport(boolean b) {
+        if (b) {
+            tags |= TAG_POINT_DO_NOT_REPORT;
+        } else {
+            tags &= ~TAG_POINT_DO_NOT_REPORT;
+        }
+    }
 }

@@ -54,7 +54,7 @@ public static String getTagString(int tags)
 }
 
 public static boolean isNewAlarm(int tags) {
-    boolean result = (tags & Signal.TAG_REPORT_MSG_BLOCK_EXTRA_EMAIL) == 0;
+    boolean result = (tags & Signal.TAG_DO_NOT_SEND_SIGNAL_AS_EMAIL) == 0;
     return result;
 }
 

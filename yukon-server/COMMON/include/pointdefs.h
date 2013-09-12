@@ -69,7 +69,7 @@
                                                                // This is being added for the clients sake.
 
 #define TAG_REPORT_MSG_TO_ALARM_CLIENTS      0x01000000        // This Message should be reported to any alarm clients in the world
-#define TAG_REPORT_MSG_BLOCK_EXTRA_EMAIL     0x02000000        // This SIGNAL message should not be sent as an email!
+#define TAG_DO_NOT_SEND_SIGNAL_AS_EMAIL      0x02000000        // This SIGNAL message should not be sent as an email!
 #define TAG_ACTIVE_CONDITION                 0x04000000        // This SIGNAL message has violated a constraint (alarm MAY be set)
 
 #define TAG_ATTRIB_CONTROL_AVAILABLE         0x10000000        // This status point can also be controlled

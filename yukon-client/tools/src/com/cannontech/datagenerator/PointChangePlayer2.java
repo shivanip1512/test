@@ -88,8 +88,7 @@ public class PointChangePlayer2 {
 		msg.setValue(pd.getValue());
 		msg.setType(pd.getType());	
 		
-		if(lpFlag)	
-			msg.setTags(0x00008000);
+		msg.setTagsLoadProfileData(lpFlag);
 			
 		CTILogger.info("id: " + msg.getId() + " val: " + msg.getValue() + " timestamp: " + msg.getPointDataTimeStamp() + " lp: " + lpFlag);
 		ConnPool.getInstance().getDefDispatchConn().write(msg);
