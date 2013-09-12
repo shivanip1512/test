@@ -302,7 +302,7 @@ public class EstimatedLoadController {
     public String doDelete(Integer formulaId, FlashScope flashScope) {
         formulaDao.deleteFormulaById(formulaId);
         flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + "success.deleted"));
-        return "redirect:list";
+        return "redirect:../home";
     }
 
     @RequestMapping("assignFormulaToGear")

@@ -46,8 +46,10 @@ public class YukonValidationUtils extends ValidationUtils {
         }
     }
 
-    public static void checkIsBlank(Errors errors, String field, String fieldValue) {
-        if (fieldValue != null && StringUtils.isBlank(fieldValue)) {
+    public static void checkIsBlank(Errors errors, String field, String fieldValue, boolean fieldAllowsNull) {
+        // Skips error message when the field allows null and the field value is null,
+        // otherwise validates using isBlank.
+        if (!(fieldAllowsNull && fieldValue == null) && StringUtils.isBlank(fieldValue)) {
             errors.rejectValue(field, "yukon.web.error.isBlank", "Cannot be blank.");
         }
     }
@@ -59,11 +61,19 @@ public class YukonValidationUtils extends ValidationUtils {
     }
     
     public static void checkIsPositiveDouble(Errors errors, String field, Double fieldValue) {
-        if (fieldValue == null || fieldValue < 0) {
+        if (checkIsValidDouble(errors, field, fieldValue) && fieldValue < 0) {
             errors.rejectValue(field, "yukon.web.error.isNotPositive");
         }
     }
    
+    public static boolean checkIsValidDouble(Errors errors, String field, Double fieldValue) {
+        if (fieldValue == null || Double.isNaN(fieldValue) || Double.isInfinite(fieldValue)) {
+            errors.rejectValue(field, "yukon.web.error.notValidNumber");
+            return false;
+        }
+        return true;
+    }
+
     /**
      * Check to ensure that the given value is between the given min and max value. While this will
      * work with

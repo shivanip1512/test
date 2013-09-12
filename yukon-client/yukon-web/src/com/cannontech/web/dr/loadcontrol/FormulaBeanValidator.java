@@ -25,18 +25,15 @@ public class FormulaBeanValidator extends SimpleValidator<FormulaBean> {
     @Override
     protected void doValidation(FormulaBean bean, Errors errors) {
         // Probably prudent to check for NaN, infinity etc
-        if(StringUtils.isEmpty(bean.getName())) {
-            errors.rejectValue("name", "yukon.web.error.isBlank", null,"");
-        }
+        YukonValidationUtils.checkIsBlank(errors, "name", bean.getName(), false);
+        YukonValidationUtils.checkExceedsMaxLength(errors, "name", bean.getName(), 32);
         if(bean.getFunctionIntercept() == null) {
             errors.rejectValue("functionIntercept", "yukon.web.error.isBlank", null,"");
         }
 
         if (bean.getCalculationType() == Formula.CalculationType.FUNCTION) {
             
-            if (Double.isNaN(bean.getFunctionIntercept()) || Double.isInfinite(bean.getFunctionIntercept())) {
-                errors.rejectValue("functionIntercept", baseKey + "notValidNumber", null,"");
-            }
+            YukonValidationUtils.checkIsValidDouble(errors, "functionIntercept", bean.getFunctionIntercept());
             List<FunctionBean> functions = bean.getFunctions();
             for (int i=0; i<functions.size();i++) {
                 FunctionBean function = functions.get(i);
@@ -45,23 +42,12 @@ public class FormulaBeanValidator extends SimpleValidator<FormulaBean> {
                         errors.rejectValue("functions["+i+"].inputType", baseKey + "invalidPoint", null,"");
                     }
                 }
-                if(StringUtils.isEmpty(function.getName())) {
-                    errors.rejectValue("functions["+ i +"].name", "yukon.web.error.isBlank", null,"");
-                } else {
-                    YukonValidationUtils.checkExceedsMaxLength(errors, "functions["+ i +"].name", function.getName(), 32);
-                }
-                if (Double.isNaN(function.getInputMax()) || Double.isInfinite(function.getInputMax())) {
-                    errors.rejectValue("functions["+i+"].inputMax", baseKey + "notValidNumber", null,"");
-                }
-                if (Double.isNaN(function.getInputMin()) || Double.isInfinite(function.getInputMin())) {
-                    errors.rejectValue("functions["+i+"].inputMin", baseKey + "notValidNumber", null,"");
-                }
-                if (Double.isNaN(function.getQuadratic()) || Double.isInfinite(function.getQuadratic())) {
-                    errors.rejectValue("functions["+i+"].quadratic", baseKey + "notValidNumber", null,"");
-                }
-                if (Double.isNaN(function.getLinear()) || Double.isInfinite(function.getLinear())) {
-                    errors.rejectValue("functions["+i+"].linear", baseKey + "notValidNumber", null,"");
-                }
+                YukonValidationUtils.checkIsBlank(errors, "functions["+i+"].name", function.getName(), false);
+                YukonValidationUtils.checkExceedsMaxLength(errors, "functions["+i+"].name", function.getName(), 32);
+                YukonValidationUtils.checkIsValidDouble(errors, "functions["+i+"].inputMax", function.getInputMax());
+                YukonValidationUtils.checkIsValidDouble(errors, "functions["+i+"].inputMin", function.getInputMin());
+                YukonValidationUtils.checkIsValidDouble(errors, "functions["+i+"].quadratic", function.getQuadratic());
+                YukonValidationUtils.checkIsValidDouble(errors, "functions["+i+"].linear", function.getLinear());
                 if (function.getInputMin() >= function.getInputMax()) {
                     errors.rejectValue("functions["+i+"].inputMax", baseKey + "inputMaxUnderMin", null, "");
                     errors.rejectValue("functions["+i+"].inputMin", baseKey + "inputMinOverMax", null, "");
@@ -73,11 +59,10 @@ public class FormulaBeanValidator extends SimpleValidator<FormulaBean> {
                 LookupTableBean table = tables.get(i);
                 List<TableEntryBean> entries = table.getEntries();
                 List<TimeTableEntryBean> timeEntries = table.getTimeEntries();
-                if(StringUtils.isEmpty(table.getName())) {
-                    errors.rejectValue("tables["+i+"].name", "yukon.web.error.isBlank", null,"");
-                } else {
-                    YukonValidationUtils.checkExceedsMaxLength(errors, "functions["+ i +"].name", table.getName(), 32);
-                }
+                
+                YukonValidationUtils.checkIsBlank(errors, "tables["+ i +"].name", table.getName(), false);
+                YukonValidationUtils.checkExceedsMaxLength(errors, "tables["+i+"].name", table.getName(), 32);
+                
                 if (table.getInputType() == InputType.TIME) {
                     if(!table.getTimeEntries().isEmpty()) {
                         LocalTime tableMax = Collections.max(table.getTimeEntries()).getKey();
@@ -124,9 +109,7 @@ public class FormulaBeanValidator extends SimpleValidator<FormulaBean> {
                                 errors.rejectValue("tables["+i+"].entries["+entryIndex+"].key", baseKey + "duplicateKey", null,"");
                             }
                             keySet.add(key);
-                            if (Double.isNaN(key) || Double.isInfinite(key)) {
-                                errors.rejectValue("tables["+i+"].entries["+entryIndex+"].key", baseKey + "notValidNumber", null,"");
-                            }
+                            YukonValidationUtils.checkIsValidDouble(errors, "tables["+i+"].entries["+entryIndex+"].key", key);
                         }
                     } else {
                         errors.rejectValue("tables["+i+"]", baseKey + "noEntries", null, "");
