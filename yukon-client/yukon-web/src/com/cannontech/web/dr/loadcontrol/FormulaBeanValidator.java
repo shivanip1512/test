@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalTime;
 import org.springframework.validation.Errors;
 
@@ -84,6 +83,9 @@ public class FormulaBeanValidator extends SimpleValidator<FormulaBean> {
                             }
                             keySet.add(key);
                         }
+                        if (keySet.contains(table.getTimeInputMax())) {
+                            errors.rejectValue("tables["+i+"].timeInputMax", baseKey + "duplicateKey", null,"");
+                        }
                     } else {
                         errors.rejectValue("tables["+i+"]", baseKey + "noEntries", null, "");
                     }
@@ -110,6 +112,9 @@ public class FormulaBeanValidator extends SimpleValidator<FormulaBean> {
                             }
                             keySet.add(key);
                             YukonValidationUtils.checkIsValidDouble(errors, "tables["+i+"].entries["+entryIndex+"].key", key);
+                        }
+                        if (keySet.contains(table.getInputMax())) {
+                            errors.rejectValue("tables["+i+"].inputMax", baseKey + "duplicateKey", null,"");
                         }
                     } else {
                         errors.rejectValue("tables["+i+"]", baseKey + "noEntries", null, "");

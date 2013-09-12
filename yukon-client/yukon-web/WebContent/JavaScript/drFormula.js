@@ -32,7 +32,7 @@ Yukon.DrFormula = (function() {
         $assignRemoved.attr("id", "assignmentRemove_" + id);
         $assignRemoved.find(".f-drFormula-undo").data("assign-id", id);
         jQuery("#assignments").append($assignRemoved);
-        
+
         _addedAssignments.push(id);
         jQuery("#assignments").show();
         jQuery("#noAssignments").hide();
@@ -40,7 +40,7 @@ Yukon.DrFormula = (function() {
 
     _addAppCatAssignment = function (appCat) {
         var id = appCat.applianceCategoryId;
-        
+
         var $newAssignmentInput = jQuery("#assignmentInput_-1").clone();
         $newAssignmentInput.attr("id", "assignmentInput_" + id);
         $newAssignmentInput.val(id);
@@ -70,14 +70,12 @@ Yukon.DrFormula = (function() {
         var id = jQuery(this).data("assign-id");
         jQuery("#assignmentAdd_"+id).hide();
         jQuery("#assignmentRemove_"+id).show();
-        jQuery("#assignmentInput_"+id).prop("disabled", true);
     },
 
     _undoBtnClick = function() {
         var id = jQuery(this).data("assign-id");
         jQuery("#assignmentAdd_"+id).show();
         jQuery("#assignmentRemove_"+id).hide();
-        jQuery("#assignmentInput_"+id).prop("disabled", false);
     },
 
     _newFunctionBtnClick = function() {
@@ -105,7 +103,6 @@ Yukon.DrFormula = (function() {
     },
 
     _updateFormulaInputs = function(inputVal, tableId) {
-
         if (inputVal === 'POINT') {
             jQuery("#formulaPointPicker_"+tableId).fadeIn(150);
             jQuery("#formulaWeatherStationTemp_"+tableId).hide();
@@ -118,6 +115,9 @@ Yukon.DrFormula = (function() {
             } else if (inputVal == 'HUMIDITY') {
                 jQuery("#formulaWeatherStationHumidity_"+tableId).fadeIn(150);
                 jQuery("#formulaWeatherStationTemp_"+tableId).hide();
+            } else {
+                jQuery("#formulaWeatherStationHumidity_"+tableId).hide();
+                jQuery("#formulaWeatherStationTemp_"+tableId).hide();
             }
         }
     },
@@ -126,11 +126,23 @@ Yukon.DrFormula = (function() {
         var inputVal = jQuery(this).val();
         var tableId = this.id.split("_").pop();
         if (inputVal === 'TIME') {
-            jQuery("#inputMax_" + tableId).hide();
-            jQuery("#timeInputMax_" + tableId).show();
+            // Hide & disable all normal inputs
+            // show all time inputs
+            jQuery(".f-drFormula-notTimeInput_"+tableId)
+                .prop("disabled", true)
+                .hide();
+            jQuery(".f-drFormula-timeInput_"+tableId)
+                .prop("disabled", false)
+                .show();
         } else {
-            jQuery("#timeInputMax_" + tableId).hide();
-            jQuery("#inputMax_" + tableId).show();
+            // Hide & disable all time inputs
+            // show all normal inputs
+            jQuery(".f-drFormula-timeInput_"+tableId)
+                .prop("disabled", true)
+                .hide()
+            jQuery(".f-drFormula-notTimeInput_"+tableId)
+                .prop("disabled", false)
+                .show();
         }
     },
 
@@ -140,83 +152,100 @@ Yukon.DrFormula = (function() {
     },
 
     _removeBtnClick = function() {
-        jQuery(this).parents(".f-drFormula-removeable").slideUp(150).promise().done(function (){this.remove();});
+        jQuery(this).parents(".f-drFormula-removeable").slideUp(150)
+            .promise().done(function (){this.remove();});
     },
 
     _addTableBtnClick = function() {
+        var $newRow = jQuery('#tableRow_-1').clone().removeAttr("id");
+        var tableId = _rowIndex;
 
-        var $newRow = jQuery('#dummyTable').clone().removeAttr("id");
-
-        $newRow.find(":input[name], select").each(function() {
-            var $this = jQuery(this);
-            $this.attr("name", "tables[]." + $this.attr("name"));
-        });
-
-        $newRow.find(".tableIndex").val(_rowIndex);
-        $newRow.find(".f-drFormula-appendTableId").each(function () {
-            this.id = this.id + _rowIndex;
-        });
+        $newRow.find(".tableIndex").val(tableId);
         $newRow.find(".f-drFormula-appendTableIdData").each(function () {
-            jQuery(this).data("table-id", _rowIndex);
+            jQuery(this).data("table-id", tableId);
+        });
+        $newRow.find(".f-drFormula-newEntryButton")
+            .data("table-id", tableId);
+        $newRow.find(".f-drFormula-timeInput_")
+            .removeClass("f-drFormula-timeInput_")
+            .addClass("f-drFormula-timeInput_" + tableId);
+        $newRow.find(".f-drFormula-notTimeInput_")
+            .removeClass("f-drFormula-notTimeInput_")
+            .addClass("f-drFormula-notTimeInput_" + tableId);
+        
+        $newRow.find(".f-drFormula-appendTableId").each(function () {
+            this.id = this.id + tableId;
+        }).promise().done(function() {
+            $newRow.hide().appendTo('#formulaTables').slideDown(150);
+            var $inputSelect = jQuery("#formulaInputSelect_"+tableId);
+            $inputSelect.addClass("f-drFormula-formulaInputSelect");
+            _updateFormulaInputs($inputSelect.val(), tableId);
+            // add entry to this row
+            _addTableEntryBtnClick.call($newRow.find(".f-drFormula-newEntryButton"));
         });
 
-        $newRow.hide().appendTo('#formulaTables').slideDown(150);
         _rowIndex++;
     },
 
     _addTableEntryBtnClick = function () {
-
         var tableId = jQuery(this).data("table-id");
         var entryId = jQuery(this).data("entry-id-next");
-        var isTimeInput = jQuery("#formulaInputSelect_" + tableId).val() === 'TIME';
-        jQuery("#noEntriesMessage_" + tableId).hide();
 
-        var $newRow;
-        if (isTimeInput) {
-            $newRow = jQuery('#dummyTimeEntry').clone();
-        } else {
-            $newRow = jQuery('#dummyEntry').clone();
-        }
+
+        var isTimeInput = jQuery("#formulaInputSelect_" + tableId).val() === 'TIME';
+
+        var $newRow = jQuery('#tableEntry_-1_-1').clone();
 
         $newRow.attr("id","tableEntry_"+ tableId + "_" + entryId);
 
         $newRow.find(".f-drFormula-appendTableId").each(function () {
             this.id = this.id + tableId + "_" + entryId;
         });
+
         $newRow.find(".f-drFormula-tableEntryKey_")
             .removeClass("f-drFormula-tableEntryKey_")
             .addClass("f-drFormula-tableEntryKey_" + tableId);
 
-        $newRow.children().each(function() {
-            var $this = jQuery(this);
-            $this.id = $this.id + tableId + "_" + entryId;
+       $newRow.find(".f-drFormula-timeInput_")
+            .removeClass("f-drFormula-timeInput_")
+            .addClass("f-drFormula-timeInput_" + tableId);
 
-            $this.find("input").each(function () {
-                var $thisInput = jQuery(this);
-                if (isTimeInput) {
-                    var newName = "tables[].timeEntries[]." + $thisInput.attr("name");
-                    $thisInput.attr("name", newName);
-                    $thisInput.id = newName;
-                } else {
-                    var newName = "tables[].entries[]." + $thisInput.attr("name");
-                    $thisInput.attr("name", newName);
-                    $thisInput.id = newName;
-                }
+       $newRow.find(".f-drFormula-notTimeInput_")
+            .removeClass("f-drFormula-notTimeInput_")
+            .addClass("f-drFormula-notTimeInput_" + tableId);
 
-            });
+       if (!isTimeInput) {
+           $newRow.find(".f-drFormula-notTimeInput_" + tableId).show();
+           $newRow.find(".f-drFormula-timeInput_" + tableId).hide();
+       }
+
+       $newRow.children().each(function() {
+            this.id = this.id + tableId + "_" + entryId;
             // Setup the remove button
-            $this.find(".f-drFormula-removeEntry").data("table-id", tableId).data("entry-id", entryId);
+            jQuery(this).find(".f-drFormula-removeEntry")
+                .data("table-id", tableId)
+                .data("entry-id", entryId);
 
         });
 
-        $newRow.appendTo("#tableEntries_" + tableId)
+        $newRow.insertBefore("#tableEntries_"+tableId+" .f-drFormula-inputMax")
         .slideDown(150).promise().done(function() {
+            $newRow.css("overflow","visible");
             // Forces scroll down to focused input field
-            jQuery("#tableEntries_"+tableId).parent().scrollTop(jQuery("#tableEntries_"+tableId).parent().height() + 20);
+            jQuery("#tableEntries_"+tableId)
+                .parent().scrollTop(jQuery("#tableEntries_"+tableId).parent().height() + 20);
+
+            var numberEntries = jQuery(".f-drFormula-tableEntryKey_" + tableId).size();
+            if (numberEntries === 1) {
+                jQuery("#tableEntries_"+tableId)
+                    .find(".f-drFormula-removeEntry").hide();
+            } else {
+                jQuery("#tableEntries_"+tableId)
+                 .find(".f-drFormula-removeEntry").show();
+            }
         });
 
         jQuery("#tableEntryKey_" + tableId + "_" + entryId + " > input").focus();
-        jQuery("#formulaInputSelect_" + tableId).attr("disabled", "disabled");
 
         // update the add button
         entryId++;
@@ -230,9 +259,10 @@ Yukon.DrFormula = (function() {
         jQuery("#tableEntry_" + tableId + "_" + entryId)
             .slideUp(150, function() {
             this.remove();
-            if (jQuery(".f-drFormula-tableEntryKey_" + tableId).size() < 1) {
-                jQuery("#noEntriesMessage_" + tableId).show(150);
-                jQuery("#formulaInputSelect_" + tableId).removeAttr("disabled");
+            var numberEntries = jQuery(".f-drFormula-tableEntryKey_" + tableId).size();
+            if (numberEntries === 1) {
+                jQuery("#tableEntries_"+tableId)
+                    .find(".f-drFormula-removeEntry").hide();
             }
         });
     },
@@ -246,36 +276,59 @@ Yukon.DrFormula = (function() {
             var inputVal = $this.val();
             var tableId = this.id.split("_").pop();
 
+            if (inputVal === 'TIME') {
+                jQuery(".f-drFormula-notTimeInput_"+tableId).find("input")
+                    .prop('disabled',true);
+            } else {                
+                jQuery(".f-drFormula-timeInput_"+tableId).find("input")
+                   .prop('disabled',true);
+            }
+
             if (inputVal === 'POINT') {
-                jQuery("#formulaWeatherStationTemp_"+tableId).find("select").prop('disabled', true);
-                jQuery("#formulaWeatherStationHumidity_"+tableId).find("select").prop('disabled', true);
+                jQuery("#formulaWeatherStationTemp_"+tableId)
+                    .find("select").prop('disabled', true);
+                jQuery("#formulaWeatherStationHumidity_"+tableId)
+                    .find("select").prop('disabled', true);
             } else if (inputVal === 'TEMP_C' || inputVal == 'TEMP_F') {
                 jQuery("#inputPointId_"+tableId).prop('disabled', true);
-                jQuery("#formulaWeatherStationHumidity_"+tableId).find("select").prop('disabled', true);
+                jQuery("#formulaWeatherStationHumidity_"+tableId)
+                    .find("select").prop('disabled', true);
             } else if (inputVal == 'HUMIDITY') {
                 jQuery("#inputPointId_"+tableId).prop('disabled', true);
-                jQuery("#formulaWeatherStationTemp_"+tableId).find("select").prop('disabled', true);
+                jQuery("#formulaWeatherStationTemp_"+tableId)
+                    .find("select").prop('disabled', true);
             } else {
-                jQuery("#inputPointId_"+tableId).prop('disabled', true);
-                jQuery("#formulaWeatherStationTemp_"+tableId).find("select").prop('disabled', true);
-                jQuery("#formulaWeatherStationHumidity_"+tableId).find("select").prop('disabled', true);
+                jQuery("#inputPointId_"+tableId)
+                    .prop('disabled', true);
+                jQuery("#formulaWeatherStationTemp_"+tableId)
+                    .find("select").prop('disabled', true);
+                jQuery("#formulaWeatherStationHumidity_"+tableId)
+                    .find("select").prop('disabled', true);
             }
         });
 
         // adjust indexes to be sequential for java List
         jQuery(".f-drFormula-table, .f-drFormula-function").each(function (index) {
             var $inputs = jQuery(this).find(":input[name]");
+            // Add table index to all table inputs
             $inputs.each(function() {
                 var $self = jQuery(this);
                 var name = $self.attr("name").replace(/\[.*?\]/, "["+index+"]");
                 $self.attr("name", name);
             });
-            jQuery(this).find(".f-drFormula-tableEntries").each(function (index2) {
-                var inputs = jQuery(this).find(":input[name]");
-                inputs.each(function(entryLoopIndex) {
+
+            jQuery(this)
+                .find(".f-drFormula-tableEntries")
+                .each(function (index2) {
+                    var inputs = jQuery(this).find(":input[name]");
+                    inputs.each(function(entryLoopIndex) {
+
                     var $self = jQuery(this);
                     var name = $self.attr("name");
-                    var entryIndex = Math.floor(entryLoopIndex/2); // key/value needs to match (every other one)
+                    // there are four entry inputs for one entry row (key, value, timeKey, valueKey)
+                    // Each entry input needs the same entry id
+                    var entryIndex = Math.floor(entryLoopIndex/4);
+
                     name = name.replace(/entries\[.*?\]/, "entries["+entryIndex+"]");
                     name = name.replace(/timeEntries\[.*?\]/, "timeEntries["+entryIndex+"]");
                     $self.attr("name", name);
@@ -351,7 +404,8 @@ Yukon.DrFormula = (function() {
                 .on("click", ".f-drFormula-remove", _removeBtnClick);
             jQuery("#newTableBtn")
                 .click(_addTableBtnClick);
-            jQuery("#formulaTables").on("click", ".f-drFormula-removeEntry",_removeTableEntryBtnClick)
+            jQuery("#formulaTables")
+                .on("click", ".f-drFormula-removeEntry",_removeTableEntryBtnClick)
                 .on("change", ".f-drFormula-formulaInputSelect", _formulaInputSelectChangeTable)
                 .on("click", ".f-drFormula-newEntryButton", _addTableEntryBtnClick);
             jQuery("#formulaForm")
@@ -360,10 +414,8 @@ Yukon.DrFormula = (function() {
                 .on('click', '.f-ajaxPaging', _ajaxPagingBtnClick)
                 .on('click', ".f-drFormula-sortLink", _sortBtnClick);
             jQuery("#weatherStationDialog")
-                .on("click","#searchWeatherStationsAgain", _searchWeatherStationsAgainBtnClick);
-            jQuery("#weatherStationDialog")
-                .on("click","#searchWeatherStations", _searchWeatherStationsBtnClick);
-            jQuery("#weatherStationDialog")
+                .on("click","#searchWeatherStationsAgain", _searchWeatherStationsAgainBtnClick)
+                .on("click","#searchWeatherStations", _searchWeatherStationsBtnClick)
                 .on("click","#saveWeatherStationBtn", _saveWeatherStationBtnClick);
             jQuery("#newWeatherLocationBtn")
                 .click(_newWeatherLocationBtnClick);

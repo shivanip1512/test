@@ -70,10 +70,10 @@ public class NoaaWeatherDataServiceImpl implements NoaaWeatherDataService {
             HttpMethod method = new GetMethod(stationIndexUrl);
 
             String proxyHost = configurationSource.getString("HTTP_PROXY_HOST");
-            String proxyPort = configurationSource.getString("HTTP_PROXY_PORT", "80");
+            int proxyPort = configurationSource.getInteger("HTTP_PROXY_PORT", 80);
 
             if (proxyHost != null) {
-                client.getHostConfiguration().setProxy(proxyHost, Integer.parseInt(proxyPort));
+                client.getHostConfiguration().setProxy(proxyHost, proxyPort);
             }
 
             int status = client.executeMethod(method);

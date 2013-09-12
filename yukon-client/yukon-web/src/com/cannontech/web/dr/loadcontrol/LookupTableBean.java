@@ -17,14 +17,12 @@ public class LookupTableBean {
     private String name;
     private FormulaInput.InputType inputType;
     private Integer inputPointId;
-    private Integer weatherInputPaoId;
 
-    private double inputMax;
+    private double inputMax = 0;
     private List<TableEntryBean> entries = LazyList.ofInstance(TableEntryBean.class);
 
-    private LocalTime timeInputMax;
+    private LocalTime timeInputMax = LocalTime.MIDNIGHT;
     private List<TimeTableEntryBean> timeEntries = LazyList.ofInstance(TimeTableEntryBean.class);
-
 
     public LookupTableBean() {}
     public LookupTableBean(final FormulaLookupTable<?> table) {
@@ -49,7 +47,8 @@ public class LookupTableBean {
         return entries.size();
     }
 
-    public static List<LookupTableBean> toBeanMap(ImmutableList<FormulaLookupTable<Double>> tables, ImmutableList<FormulaLookupTable<LocalTime>> timeTables) {
+    public static List<LookupTableBean> toBeanMap(ImmutableList<FormulaLookupTable<Double>> tables,
+            ImmutableList<FormulaLookupTable<LocalTime>> timeTables) {
         List<LookupTableBean> beans = new ArrayList<>();
         if (tables != null) {
             for (FormulaLookupTable<Double> table : tables) {
@@ -181,10 +180,13 @@ public class LookupTableBean {
     public boolean isTimeInput() {
         return inputType == InputType.TIME;
     }
-    public Integer getWeatherInputPaoId() {
-        return weatherInputPaoId;
+
+    public boolean isHumidityType() {
+        return inputType == InputType.HUMIDITY;
     }
-    public void setWeatherInputPaoId(Integer weatherInputPaoId) {
-        this.weatherInputPaoId = weatherInputPaoId;
+
+    public boolean isTempType() {
+        return inputType == InputType.TEMP_C
+                || inputType == InputType.TEMP_F;
     }
 }

@@ -10,8 +10,8 @@
 <%@ attribute name="pathOrName" required="true" type="java.lang.String" rtexprvalue="true" description="if bindPath is true this acts as a spring binding path, otherwise this sets the name field on the plain html input."%>
 <%@ attribute name="autocomplete" type="java.lang.Boolean"%>
 
-<%@ attribute name="disabled"%>
-<%@ attribute name="readonly"%>
+<%@ attribute name="disabled" type="java.lang.Boolean"%>
+<%@ attribute name="readonly" type="java.lang.Boolean"%>
 <%@ attribute name="size"%>
 <%@ attribute name="maxlength"%>
 <%@ attribute name="inputClass"%>
@@ -29,10 +29,10 @@
 </c:if>
 
 <c:if test="${not pageScope.bindPath}">
-    <c:if test="${not empty pageScope.disabled}">
+    <c:if test="${not empty pageScope.disabled && pageScope.disabled}">
         <c:set var="disabledAttr" value="disabled=\"${pageScope.disabled}\""/>
     </c:if>
-    <c:if test="${not empty pageScope.readonly}">
+    <c:if test="${not empty pageScope.readonly && pageScope.disabled}">
         <c:set var="readonlyAttr" value="readonly=\"${pageScope.readonly}\""/>
     </c:if>
     <c:if test="${not empty pageScope.size}">
