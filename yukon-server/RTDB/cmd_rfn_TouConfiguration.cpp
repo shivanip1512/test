@@ -302,6 +302,7 @@ RfnCommand::Bytes RfnTouScheduleConfigurationCommand::createCommandData( const S
     vector<TypeLengthValue> tlvs;
 
     // day table
+    if( ! schedule_to_send._dayTable.empty() )
     {
         validateCondition( schedule_to_send._dayTable.size() == 8,
                            BADPARAM, "Invalid day table size (expected 8)");
@@ -324,7 +325,7 @@ RfnCommand::Bytes RfnTouScheduleConfigurationCommand::createCommandData( const S
     // schedule 1 - 4 times
     for( int schedule_nbr = 0; schedule_nbr < 4; schedule_nbr++ )
     {
-        boost::optional<DailyTimes> times = *mapFind( schedule_to_send._times, (ScheduleNbr)schedule_nbr );
+        boost::optional<DailyTimes> times = mapFind( schedule_to_send._times, (ScheduleNbr)schedule_nbr );
 
         if( times )
         {
@@ -376,7 +377,7 @@ RfnCommand::Bytes RfnTouScheduleConfigurationCommand::createCommandData( const S
     // schedule 1 - 4 rates
     for( int schedule_nbr = 0; schedule_nbr < 4; schedule_nbr++ )
     {
-        boost::optional<DailyRates> rates = *mapFind( schedule_to_send._rates, (ScheduleNbr)schedule_nbr );
+        boost::optional<DailyRates> rates = mapFind( schedule_to_send._rates, (ScheduleNbr)schedule_nbr );
 
         if( rates )
         {
@@ -403,6 +404,7 @@ RfnCommand::Bytes RfnTouScheduleConfigurationCommand::createCommandData( const S
     }
 
     // default rate
+    if( ! schedule_to_send._defaultRate.empty() )
     {
         TypeLengthValue tlv( Type_DefaultTouRate );
 

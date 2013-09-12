@@ -90,6 +90,29 @@ int RfnDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, Ct
     {
         return executePutConfigInstall(pReq, parse, retList, rfnRequests);
     }
+    if( parse.isKeyValid("tou") )
+    {
+        return executePutConfigTou(pReq, parse, retList, rfnRequests);
+    }
+    if( parse.isKeyValid("holiday") )
+    {
+        return executePutConfigHoliday(pReq, parse, retList, rfnRequests);
+    }
+
+    return NoMethod;
+}
+
+
+int RfnDevice::executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests)
+{
+    if( parse.isKeyValid("tou") )
+    {
+        return executeGetConfigTou(pReq, parse, retList, rfnRequests);
+    }
+    if( parse.isKeyValid("holiday") )
+    {
+        return executeGetConfigHoliday(pReq, parse, retList, rfnRequests);
+    }
 
     return NoMethod;
 }
@@ -155,6 +178,25 @@ int RfnDevice::executeTouCriticalPeak(CtiRequestMsg *pReq, CtiCommandParser &par
     return NoMethod;
 }
 
+int RfnDevice::executePutConfigTou(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests)
+{
+    return NoMethod;
+}
+
+int RfnDevice::executeGetConfigTou(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests)
+{
+    return NoMethod;
+}
+
+int RfnDevice::executePutConfigHoliday(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests)
+{
+    return NoMethod;
+}
+
+int RfnDevice::executeGetConfigHoliday(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests)
+{
+    return NoMethod;
+}
 
 Commands::RfnCommandSPtr RfnDevice::executePutConfigInstallFreezeDay(CtiRequestMsg *pReq, CtiCommandParser &parse)
 {
@@ -174,11 +216,6 @@ Commands::RfnCommandSPtr RfnDevice::executePutConfigInstallTou(CtiRequestMsg *pR
 Commands::RfnCommandSPtr RfnDevice::executePutConfigInstallDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse)
 {
     return Commands::RfnCommandSPtr();
-}
-
-int RfnDevice::executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests)
-{
-    return NoMethod;
 }
 
 int RfnDevice::executeGetValue (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests)
