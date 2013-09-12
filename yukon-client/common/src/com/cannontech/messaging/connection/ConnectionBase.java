@@ -55,7 +55,7 @@ public abstract class ConnectionBase<T extends Transport> implements Connection 
 
     /**
      * Starts the connection. This call is asynchronous (not blocking). When returning from this method, no assumptions
-     * can be made about the connection state (if it is connection or not). To know when a connection has actually been
+     * can be made about the connection state (if it is connected or not). To know when a connection has actually been
      * established, one must register to the {@link #connectionEvent connection Event} and decode "listen" for the
      * {@link {@link #Connection state} it is interested in.
      */
