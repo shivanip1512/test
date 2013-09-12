@@ -37,6 +37,7 @@ import com.cannontech.stars.dr.appliance.dao.ApplianceDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareConfigurationDao;
 import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
+import com.google.common.base.Predicates;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
@@ -96,9 +97,7 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
             }
         }
         //remove 1-way inventory from inventoryAndDevices map
-        for(Integer oneWayInventoryId : oneWayInventory) {
-            inventoryAndDevices.remove(oneWayInventoryId);
-        }
+        inventoryAndDevices = Maps.filterKeys(inventoryAndDevices, Predicates.in(oneWayInventory));
         Set<Integer> oneWayAppliances = getAppliancesFromInventory(inventoryToApplianceMultimap, oneWayInventory);
         summary.addCommunicating(oneWayAppliances);
         summary.addRunning(oneWayAppliances);
@@ -159,9 +158,7 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
             }
         }
         //remove 1-way inventory from inventoryAndDevices map
-        for(Integer oneWayInventoryId : oneWayInventory) {
-            inventoryAndDevices.remove(oneWayInventoryId);
-        }
+        inventoryAndDevices = Maps.filterKeys(inventoryAndDevices, Predicates.in(oneWayInventory));
         
         aaSummary.addCommunicating(oneWayInventory);
         aaSummary.addRunning(oneWayInventory);
