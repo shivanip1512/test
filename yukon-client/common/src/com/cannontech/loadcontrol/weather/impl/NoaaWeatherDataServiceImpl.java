@@ -2,6 +2,8 @@ package com.cannontech.loadcontrol.weather.impl;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -218,9 +220,16 @@ public class NoaaWeatherDataServiceImpl implements NoaaWeatherDataService {
             // Need to check for null when accessing these from weather observation
             Double tempInF = template.evaluateAsDouble("temp_f");
             Double relHum = template.evaluateAsDouble("relative_humidity");
-//          Instant timestamp = template.evaluateAsInstant("observation_time_rfc822");
-            Instant timestamp = Instant.now();
 
+            Instant timestamp = Instant.now();
+            String ts = template.evaluateAsString("observation_time_rfc822");
+            SimpleDateFormat inputDF = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
+            try {
+                timestamp = new Instant(inputDF.parse(ts));
+            } catch (ParseException e) {
+                log.warn("Caught exception in getCurrentWeatherObservation: ", e);
+            }
+            
             fullObservation = new WeatherObservation(weatherStation.getStationId(),
                                   tempInF, timestamp,
                                   relHum, timestamp);

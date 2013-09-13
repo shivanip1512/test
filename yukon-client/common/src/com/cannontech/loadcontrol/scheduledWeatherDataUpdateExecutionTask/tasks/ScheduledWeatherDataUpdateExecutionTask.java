@@ -31,7 +31,7 @@ import com.cannontech.message.dispatch.message.PointData;
 
 public class ScheduledWeatherDataUpdateExecutionTask extends YukonTaskBase {
 
-    private Logger log = YukonLogManager.getLogger(WeatherDataServiceImpl.class);
+    private Logger log = YukonLogManager.getLogger(ScheduledWeatherDataUpdateExecutionTask.class);
 
     @Autowired DynamicDataSource dynamicDataSource;
     @Autowired PaoDao paoDao;
@@ -74,19 +74,27 @@ public class ScheduledWeatherDataUpdateExecutionTask extends YukonTaskBase {
     private void updatePointDataForObservation(List<PointBase> points, WeatherObservation observation) {
         for (PointBase pointBase : points) {
             Point point = pointBase.getPoint();
-
-            PointData newData = new PointData();
-            newData.setId(point.getPointID());
-            newData.setPointQuality(PointQuality.Normal);
-            newData.setType(pointDao.getLitePoint(point.getPointID()).getLiteType());
-
+            Double pointValue = null;
+            Instant ts = Instant.now();
             if (point.getPointName().equals("Temperature")) {
-                newData.setValue(observation.getTemperature());
+                pointValue = observation.getTemperature();
+                ts = observation.getTemperatureTimestamp();
             } else if (point.getPointName().equals("Relative Humidity")) {
-                newData.setValue(observation.getHumidity());
+                pointValue = observation.getHumidity();
+                ts = observation.getHumidityTimestamp();
             }
-
-            dynamicDataSource.putValue(newData);
+            if (pointValue == null) {
+                log.warn("Unable to obtain "+point.getPointName()+" data for station "+observation.getStationId()+".");
+            } else {
+                PointData newData = new PointData();
+                newData.setId(point.getPointID());
+                newData.setPointQuality(PointQuality.Normal);
+                newData.setType(pointDao.getLitePoint(point.getPointID()).getLiteType());
+                newData.setValue(pointValue);
+                newData.setTime(ts.toDate());
+    
+                dynamicDataSource.putValue(newData);
+            }
         }
     }
 }
