@@ -37,13 +37,13 @@ public:
 
     DeviceConfig( const long ID, const std::string & name );
 
+    boost::optional<bool> findBoolValueForKey( const std::string & key ) const;
     boost::optional<long> findLongValueForKey( const std::string & key ) const;
 
     std::string getValueFromKey( const std::string & key ) const;
     bool        getLongValue( const std::string & key, long & value ) const;
     long        getLongValueFromKey( const std::string & key ) const;
     double      getFloatValueFromKey( const std::string & key ) const;
-    bool        getBoolValue( const std::string & key, bool & value ) const;
 };
 
 typedef boost::shared_ptr< DeviceConfig > DeviceConfigSPtr;

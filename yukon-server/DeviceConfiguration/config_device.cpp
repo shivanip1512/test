@@ -6,6 +6,9 @@ namespace Cti       {
 namespace Config    {
 
 
+const std::string BoolTrue = "true";
+
+
 DeviceConfig::DeviceConfig( const long ID, const std::string & name )
     :   _id(ID),
         _name(name)
@@ -49,7 +52,7 @@ bool DeviceConfig::getLongValue( const std::string & key, long & value ) const
 
     if ( ! result || result->length() == 0 )
     {
-    value = std::numeric_limits<long>::min();
+        value = std::numeric_limits<long>::min();
         return false;
     }
 
@@ -63,11 +66,24 @@ std::string DeviceConfig::getValueFromKey( const std::string & key ) const
     boost::optional<std::string>    result = lookup( key );
 
     if ( ! result )
-        {
+    {
         return std::string();
-        }
+    }
 
     return *result;
+}
+
+
+boost::optional<bool> DeviceConfig::findBoolValueForKey( const std::string & key ) const
+{
+    boost::optional<std::string> value = lookup( key );
+
+    if( ! value )
+    {
+        return boost::none;
+    }
+
+    return *value == BoolTrue;
 }
 
 
@@ -107,19 +123,6 @@ double DeviceConfig::getFloatValueFromKey( const std::string & key ) const
     return std::atof( result->c_str() );
 }
 
-
-bool DeviceConfig::getBoolValue( const std::string & key , bool & value ) const
-{
-    boost::optional<std::string>    result = lookup( key );
-
-    if ( ! result )
-    {
-        return false;
-    }
-
-    value = ciStringEqual( *result, "true" );
-    return true;
-}
 
 ///////////////////
 

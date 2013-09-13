@@ -1569,7 +1569,7 @@ INT Mct410Device::executePutConfig( CtiRequestMsg              *pReq,
 
 int Mct410Device::executePutConfigInstallDisconnect(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly)
 {
-    if (!isSupported(Feature_Disconnect)) 
+    if (!isSupported(Feature_Disconnect))
     {
         returnErrorMessage(ErrorUnsupportedDevice, OutMessage, retList, "This device type does not support the putconfig disconnect command");
         return ExecutionComplete;
@@ -1609,7 +1609,7 @@ int Mct410Device::executePutConfigInstallDisconnect(CtiRequestMsg *pReq, CtiComm
             }
 
             return NoConfigData;
-        } 
+        }
         else if( *disconnectLoadLimitDelay < 0 )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1661,8 +1661,8 @@ int Mct410Device::executePutConfigInstallDisconnect(CtiRequestMsg *pReq, CtiComm
             return BADPARAM;
         }
 
-        bool reconnectButtonEnabled;
-        if( !deviceConfig->getBoolValue(MCTStrings::ReconnectButton, reconnectButtonEnabled) )
+        boost::optional<bool> reconnectButtonEnabled = deviceConfig->findBoolValueForKey(MCTStrings::ReconnectButton);
+        if( ! reconnectButtonEnabled )
         {
             if( getMCTDebugLevel(DebugLevel_Configs) )
             {
@@ -1689,7 +1689,7 @@ int Mct410Device::executePutConfigInstallDisconnect(CtiRequestMsg *pReq, CtiComm
             dpi_connectDelay == *disconnectLoadLimitDelay &&
             dpi_disconnectMinutes == *disconnectMinutes &&
             dpi_connectMinutes == *connectMinutes &&
-            (dpi_configurationByte >> 2) & 0x01 == reconnectButtonEnabled )
+            (dpi_configurationByte >> 2) & 0x01 == *reconnectButtonEnabled )
         {
             if( ! parse.isKeyValid("force") )
             {
@@ -1703,23 +1703,23 @@ int Mct410Device::executePutConfigInstallDisconnect(CtiRequestMsg *pReq, CtiComm
                 return ConfigNotCurrent;
             }
         }
-            
-        Mct410DisconnectConfigurationCommand::ReconnectButtonState buttonState = 
-            reconnectButtonEnabled ? 
-                Mct410DisconnectConfigurationCommand::Enabled : 
+
+        Mct410DisconnectConfigurationCommand::ReconnectButtonState buttonState =
+            *reconnectButtonEnabled ?
+                Mct410DisconnectConfigurationCommand::Enabled :
                 Mct410DisconnectConfigurationCommand::Disabled;
 
         disconnectCommand.reset(
            new Mct410DisconnectConfigurationCommand(
-              _disconnectAddress, 
-              disconnectDemandThreshold, 
-              static_cast<unsigned>(*disconnectLoadLimitDelay), 
-              static_cast<unsigned>(*disconnectMinutes), 
-              static_cast<unsigned>(*connectMinutes), 
+              _disconnectAddress,
+              disconnectDemandThreshold,
+              static_cast<unsigned>(*disconnectLoadLimitDelay),
+              static_cast<unsigned>(*disconnectMinutes),
+              static_cast<unsigned>(*connectMinutes),
               buttonState,
               getDemandInterval()));
     }
-    else 
+    else
     {
         // This is a read
         disconnectCommand.reset(new Mct410DisconnectConfigurationCommand());
@@ -1731,7 +1731,7 @@ int Mct410Device::executePutConfigInstallDisconnect(CtiRequestMsg *pReq, CtiComm
     {
         return NoMethod;
     }
-    
+
     outList.push_back(om.release());
 
     return NoError;

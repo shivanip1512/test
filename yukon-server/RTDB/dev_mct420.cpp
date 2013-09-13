@@ -472,16 +472,17 @@ int Mct420Device::executePutConfigMeterParameters(CtiRequestMsg *pReq,
 
     DlcCommandSPtr meterParameterCommand;
 
-    long cycleTime, paoInfo_displayParams, paoInfo_cycleTime;
-    bool disconnectDisplayDisabled, paoInfo_displayDisabled;
-    boost::optional<unsigned char> display_digits, paoInfo_displayDigits;
-
-    boost::optional<unsigned> transformerRatio;
-
-    bool displayDigitsSupported = isSupported(Feature_LcdDisplayDigitConfiguration);
-
     if( ! readsOnly )
     {
+        long cycleTime, paoInfo_displayParams, paoInfo_cycleTime;
+        bool paoInfo_displayDisabled;
+        boost::optional<unsigned char> display_digits, paoInfo_displayDigits;
+        boost::optional<bool> disconnectDisplayDisabled;
+
+        boost::optional<unsigned> transformerRatio;
+
+        bool displayDigitsSupported = isSupported(Feature_LcdDisplayDigitConfiguration);
+
         if( !deviceConfig->getLongValue(MCTStrings::LcdCycleTime, cycleTime) )
         {
             if( getMCTDebugLevel(DebugLevel_Configs) )
@@ -524,7 +525,9 @@ int Mct420Device::executePutConfigMeterParameters(CtiRequestMsg *pReq,
             display_digits = 0x00;
         }
 
-        if( !deviceConfig->getBoolValue(MCTStrings::DisconnectDisplayDisabled, disconnectDisplayDisabled) )
+        disconnectDisplayDisabled = deviceConfig->findBoolValueForKey(MCTStrings::DisconnectDisplayDisabled);
+
+        if( ! disconnectDisplayDisabled )
         {
             if( getMCTDebugLevel(DebugLevel_Configs) )
             {
@@ -550,7 +553,7 @@ int Mct420Device::executePutConfigMeterParameters(CtiRequestMsg *pReq,
         paoInfo_displayDigits   = paoInfo_displayParams & 0x70;
         paoInfo_cycleTime       = paoInfo_displayParams & 0x0f;
 
-        if( paoInfo_displayDisabled == disconnectDisplayDisabled && paoInfo_cycleTime == cycleTime )
+        if( paoInfo_displayDisabled == *disconnectDisplayDisabled && paoInfo_cycleTime == cycleTime )
         {
             if( displayDigitsSupported )
             {
@@ -582,7 +585,7 @@ int Mct420Device::executePutConfigMeterParameters(CtiRequestMsg *pReq,
         meterParameterCommand.reset(
             new Mct420MeterParametersDisplayDigitsCommand(
                 cycleTime,
-                disconnectDisplayDisabled,
+                *disconnectDisplayDisabled,
                 transformerRatio,
                 boost::none,
                 display_digits));

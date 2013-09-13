@@ -4059,16 +4059,18 @@ int Mct440_213xBDevice::executePutConfigInstallDST(CtiRequestMsg     *pReq,
 
     if( !readsOnly )
     {
-        string enable_dst_str = deviceConfig->getValueFromKey(MCTStrings::EnableDst);
-        std::transform(enable_dst_str.begin(), enable_dst_str.end(), enable_dst_str.begin(), tolower);
+        boost::optional<bool> enable_dst = deviceConfig->findBoolValueForKey(MCTStrings::EnableDst);
 
-        const bool enable_dst = (enable_dst_str.compare("true") == 0);
+        if( ! enable_dst )
+        {
+            return NoConfigData;
+        }
 
         const long dyn_configuration = CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration);
         const bool dyn_enable_dst    = ((dyn_configuration & 0x1) != 0x0);
 
         if( parse.isKeyValid("force")
-            || enable_dst != dyn_enable_dst
+            || *enable_dst != dyn_enable_dst
             || !CtiDeviceBase::hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) )
         {
             if( !parse.isKeyValid("verify") )
@@ -4088,7 +4090,7 @@ int Mct440_213xBDevice::executePutConfigInstallDST(CtiRequestMsg     *pReq,
                     long configuration = CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration);
 
                     const bool config_enable_dst = ((configuration & 0x1) != 0x0);
-                    if( enable_dst != config_enable_dst )
+                    if( *enable_dst != config_enable_dst )
                     {
                         configuration ^= 0x1; // flip the bit
                     }

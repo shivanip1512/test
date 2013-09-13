@@ -36,5 +36,49 @@ BOOST_AUTO_TEST_CASE(test_findLongValueForKey)
     }
 }
 
+BOOST_AUTO_TEST_CASE(test_findBoolValueForKey)
+{
+    test_DeviceConfig dc;
+
+    dc.insertValue("foo_false", "false");
+    dc.insertValue("foo_true_titlecase", "True");
+    dc.insertValue("foo_true_lowercase", "true");
+
+    {
+        boost::optional<bool> value;
+
+        value = dc.findBoolValueForKey("foo_nonexistent");
+
+        BOOST_CHECK( ! value );
+    }
+
+    {
+        boost::optional<bool> value;
+
+        value = dc.findBoolValueForKey("foo_false");
+
+        BOOST_REQUIRE( value );
+        BOOST_CHECK_EQUAL( *value, false );
+    }
+
+    {
+        boost::optional<bool> value;
+
+        value = dc.findBoolValueForKey("foo_true_titlecase");
+
+        BOOST_REQUIRE( value );
+        BOOST_CHECK_EQUAL( *value, false );
+    }
+
+    {
+        boost::optional<bool> value;
+
+        value = dc.findBoolValueForKey("foo_true_lowercase");
+
+        BOOST_REQUIRE( value );
+        BOOST_CHECK_EQUAL( *value, true );
+    }
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
