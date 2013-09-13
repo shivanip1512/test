@@ -1,8 +1,7 @@
 package com.cannontech.common.util;
 
 import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import javax.annotation.PreDestroy;
 
@@ -11,60 +10,59 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 
 @ManagedResource
 public class ExecutorDelegate implements Executor {
+    protected final ThreadPoolExecutor threadPoolExecutor;
 
-    private final ExecutorService service;
-
-    public ExecutorDelegate(ExecutorService service) {
-        this.service = service;
+    public ExecutorDelegate(ThreadPoolExecutor threadPoolExecutor) {
+        this.threadPoolExecutor = threadPoolExecutor;
     }
 
+    @Override
     public void execute(Runnable command) {
-        service.execute(command);
+        threadPoolExecutor.execute(command);
     }
 
     @PreDestroy
-    public void shutdown() {
-        service.shutdownNow();
+    public void destroy() {
+        threadPoolExecutor.shutdownNow();
     }
 
     @ManagedAttribute
     public int getActiveCount() {
-        return ((ScheduledThreadPoolExecutor)service).getActiveCount() ;
+        return threadPoolExecutor.getActiveCount();
     }
 
     @ManagedAttribute
     public long getCompletedTaskCount() {
-        return ((ScheduledThreadPoolExecutor)service).getCompletedTaskCount() ;
+        return threadPoolExecutor.getCompletedTaskCount();
     }
 
     @ManagedAttribute
     public int getCorePoolSize() {
-        return ((ScheduledThreadPoolExecutor)service).getCorePoolSize() ;
+        return threadPoolExecutor.getCorePoolSize();
     }
 
     @ManagedAttribute
     public int getLargestPoolSize() {
-        return ((ScheduledThreadPoolExecutor)service).getLargestPoolSize() ;
+        return threadPoolExecutor.getLargestPoolSize();
     }
 
     @ManagedAttribute
     public int getMaximumPoolSize() {
-        return ((ScheduledThreadPoolExecutor)service).getMaximumPoolSize();
+        return threadPoolExecutor.getMaximumPoolSize();
     }
 
     @ManagedAttribute
     public int getPoolSize() {
-        return ((ScheduledThreadPoolExecutor)service).getPoolSize();
+        return threadPoolExecutor.getPoolSize();
     }
 
     @ManagedAttribute
     public long getTaskCount() {
-        return ((ScheduledThreadPoolExecutor)service).getTaskCount();
+        return threadPoolExecutor.getTaskCount();
     }
 
     @ManagedAttribute
     public long getQueueSize() {
-        return ((ScheduledThreadPoolExecutor)service).getQueue().size();
+        return threadPoolExecutor.getQueue().size();
     }
-
 }

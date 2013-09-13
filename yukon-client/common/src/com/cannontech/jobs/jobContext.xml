@@ -44,15 +44,8 @@
         <property name="yukonJobMapper" ref="yukonJobBaseRowMapper"/>
     </bean>
 
-    <bean id="jobScheduledExecutor"
-        class="com.cannontech.common.util.ScheduledExecutorDelegate">
+    <bean id="jobScheduledExecutor" class="com.cannontech.common.util.ThreadCachingScheduledExecutorService">
         <qualifier value="job"/>
-        <constructor-arg>
-            <bean class="java.util.concurrent.Executors"
-                factory-method="newScheduledThreadPool">
-                <constructor-arg value="2" />
-            </bean>
-        </constructor-arg>
     </bean>
 
     <bean id="jobManagerStub" class="com.cannontech.jobs.service.impl.JobManagerStub" />

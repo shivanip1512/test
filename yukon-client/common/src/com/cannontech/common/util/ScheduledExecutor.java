@@ -35,7 +35,7 @@ import java.util.concurrent.TimeUnit;
  * which the task is enabled due to network time synchronization
  * protocols, clock drift, or other factors. 
  * 
- * @see ScheduledExecutorDelegate
+ * @see ThreadCachingScheduledExecutorService
  *
  */
 public interface ScheduledExecutor extends Executor {
