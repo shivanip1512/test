@@ -19,6 +19,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigHelper;
+import com.cannontech.common.exception.AuthenticationThrottleException;
 import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.common.exception.PasswordExpiredException;
 import com.cannontech.common.util.CtiUtilities;
@@ -204,6 +205,9 @@ public class ClientSession {
                 } catch (PasswordExpiredException e) {
                     CTILogger.debug("The password for "+lp.getUsername()+" is expired.", e);
                     displayMessage(p, "The password for "+lp.getUsername()+" is expired.  Please login to the web to reset it.", "Error");
+                } catch (AuthenticationThrottleException e) {
+                    CTILogger.debug("Authentication failed for "+lp.getUsername()+" .", e);
+                    displayMessage(p, "Login disabled, please retry after "+e.getThrottleSeconds()+" seconds. If the problem persists, contact your system administrator.", "Error");
                 } catch (BadAuthenticationException e) {
                     CTILogger.debug("Authentication failed for "+lp.getUsername()+" .", e);
                     displayMessage(p, "Authentication failed for "+lp.getUsername()+". Check that CAPS LOCK is off, and try again. If the problem persists, contact your system administrator.", "Error");
