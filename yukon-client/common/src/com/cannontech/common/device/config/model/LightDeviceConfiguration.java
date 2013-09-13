@@ -1,6 +1,10 @@
 package com.cannontech.common.device.config.model;
 
-public class LightDeviceConfiguration {
+import java.io.Serializable;
+
+public class LightDeviceConfiguration implements Serializable {
+    private final static long serialVersionUID = 1L;
+    
     private final Integer configurationId;
     private final String name;
     private final String description;

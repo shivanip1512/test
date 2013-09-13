@@ -1,13 +1,12 @@
 package com.cannontech.common.device.config.model;
 
-import java.io.Serializable;
-
 /**
  * A small model object for the DNP configuration data. The DNP configuration data is
  * displayed in a couple special places (DB editor and CBC editor pages) and merits its
  * own model object to simplify the process.
  */
-public class DNPConfiguration extends LightDeviceConfiguration implements Serializable {
+public class DNPConfiguration extends LightDeviceConfiguration {
+    private final static long serialVersionUID = 1L;
     
     public static final int DEFAULT_DNP_CONFIG_ID = -1;
     
