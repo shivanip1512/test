@@ -24,11 +24,7 @@ public class FormulaBeanValidator extends SimpleValidator<FormulaBean> {
     @Override
     protected void doValidation(FormulaBean bean, Errors errors) {
         // Probably prudent to check for NaN, infinity etc
-        YukonValidationUtils.checkIsBlank(errors, "name", bean.getName(), false);
-        YukonValidationUtils.checkExceedsMaxLength(errors, "name", bean.getName(), 32);
-        if(bean.getFunctionIntercept() == null) {
-            errors.rejectValue("functionIntercept", "yukon.web.error.isBlank", null,"");
-        }
+        YukonValidationUtils.checkIsBlankOrExceedsMaxLength(errors, "name", bean.getName(), false, 32);
 
         if (bean.getCalculationType() == Formula.CalculationType.FUNCTION) {
             
@@ -41,8 +37,8 @@ public class FormulaBeanValidator extends SimpleValidator<FormulaBean> {
                         errors.rejectValue("functions["+i+"].inputType", baseKey + "invalidPoint", null,"");
                     }
                 }
-                YukonValidationUtils.checkIsBlank(errors, "functions["+i+"].name", function.getName(), false);
-                YukonValidationUtils.checkExceedsMaxLength(errors, "functions["+i+"].name", function.getName(), 32);
+                YukonValidationUtils.checkIsBlankOrExceedsMaxLength(errors, "functions["+i+"].name", function.getName(), 
+                                                                    false, 32);
                 YukonValidationUtils.checkIsValidDouble(errors, "functions["+i+"].inputMax", function.getInputMax());
                 YukonValidationUtils.checkIsValidDouble(errors, "functions["+i+"].inputMin", function.getInputMin());
                 YukonValidationUtils.checkIsValidDouble(errors, "functions["+i+"].quadratic", function.getQuadratic());
@@ -59,8 +55,8 @@ public class FormulaBeanValidator extends SimpleValidator<FormulaBean> {
                 List<TableEntryBean> entries = table.getEntries();
                 List<TimeTableEntryBean> timeEntries = table.getTimeEntries();
                 
-                YukonValidationUtils.checkIsBlank(errors, "tables["+ i +"].name", table.getName(), false);
-                YukonValidationUtils.checkExceedsMaxLength(errors, "tables["+i+"].name", table.getName(), 32);
+                YukonValidationUtils.checkIsBlankOrExceedsMaxLength(errors, "tables["+ i +"].name", table.getName(), 
+                                                                    false, 32);
                 
                 if (table.getInputType() == InputType.TIME) {
                     if(!table.getTimeEntries().isEmpty()) {

@@ -39,21 +39,35 @@ public class YukonValidationUtils extends ValidationUtils {
         return input.matches(BASIC_URL_PATH_REGEX);
     }
 
-    public static void checkExceedsMaxLength(Errors errors, String field, String fieldValue, int max) {
+    public static boolean checkExceedsMaxLength(Errors errors, String field, String fieldValue, int max) {
         if (fieldValue != null && fieldValue.length() > max) {
             errors.rejectValue(field, "yukon.web.error.exceedsMaximumLength", new Object[] { max },
                 "Exceeds maximum length of " + max);
+            return true;
         }
+        return false;
     }
 
-    public static void checkIsBlank(Errors errors, String field, String fieldValue, boolean fieldAllowsNull) {
+    public static boolean checkIsBlank(Errors errors, String field, String fieldValue, boolean fieldAllowsNull) {
         // Skips error message when the field allows null and the field value is null,
         // otherwise validates using isBlank.
         if (!(fieldAllowsNull && fieldValue == null) && StringUtils.isBlank(fieldValue)) {
             errors.rejectValue(field, "yukon.web.error.isBlank", "Cannot be blank.");
+            return true;
         }
+        return false;
     }
 
+    /*
+     * Convenience method to combine the above two common operations.
+     */
+    public static void checkIsBlankOrExceedsMaxLength(Errors errors, String field, String fieldValue, 
+                                                      boolean fieldAllowsNull, int max) {
+        if (!checkIsBlank(errors, field, fieldValue, fieldAllowsNull)) {
+            checkExceedsMaxLength(errors, field, fieldValue, max);
+        }
+    }
+    
     public static void checkIsPositiveInt(Errors errors, String field, Integer fieldValue) {
         if (fieldValue == null || fieldValue < 0) {
             errors.rejectValue(field, "yukon.web.error.isNotPositiveInt");
