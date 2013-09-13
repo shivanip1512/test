@@ -48,7 +48,6 @@ import com.cannontech.loadcontrol.weather.GeographicCoordinate;
 import com.cannontech.loadcontrol.weather.NoaaWeatherDataService;
 import com.cannontech.loadcontrol.weather.WeatherDataService;
 import com.cannontech.loadcontrol.weather.WeatherLocation;
-import com.cannontech.loadcontrol.weather.WeatherObservation;
 import com.cannontech.loadcontrol.weather.WeatherStation;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
@@ -82,6 +81,7 @@ public class EstimatedLoadController {
     @Autowired private AttributeService attributeService;
 
     private String baseKey = "yukon.web.modules.dr.formula.";
+    private static final int numWeatherStationsToReturn = 5;
     private FormulaBeanValidator formulaBeanValidator = new FormulaBeanValidator(baseKey);
     public static enum SortBy {NAME, CALCULATION_TYPE, TYPE, GEAR_CONTROL_METHOD,
                                APP_CAT_AVERAGE_LOAD, IS_ASSIGNED, PROGRAM_NAME}
@@ -92,7 +92,7 @@ public class EstimatedLoadController {
         listPageAjax(model, context, SortBy.NAME, false, 10, 1);
         appCatAssignmentsPage(model, context, SortBy.NAME, false, 10, 1);
         gearAssignmentsPage(model, context, SortBy.NAME, false, 10, 1);
-        wetherLocationsTableAjax(model);
+        model.addAttribute("weatherLocationBean", new WeatherLocationBean());
 
         return "dr/estimatedLoad/home.jsp";
     }
@@ -103,16 +103,9 @@ public class EstimatedLoadController {
         List<WeatherLocation> weatherLocations = weatherDataService.getAllWeatherLocations();
         Map<String, WeatherStation> weatherStations = noaaWeatherDataService.getAllWeatherStations();
 
-        model.addAttribute("weatherLocations", weatherLocations);
         model.addAttribute("weatherStations", weatherStations);
+        model.addAttribute("weatherLocations", weatherLocations);
         model.addAttribute("weatherLocationBean", new WeatherLocationBean());
-
-        Map<String, WeatherObservation> weatherObservations = new HashMap<>();
-        for (WeatherLocation weatherLoc : weatherLocations) {
-            WeatherObservation observation = weatherDataService.getCurrentWeatherObservation(weatherLoc);
-            weatherObservations.put(weatherLoc.getStationId(), observation);
-        }
-        model.addAttribute("weatherObservations", weatherObservations);
 
         return "dr/estimatedLoad/_weatherLocationsTable.jsp";
     }
@@ -158,8 +151,14 @@ public class EstimatedLoadController {
         }
 
         if (bindingResult.hasErrors()) {
-            addWeatherStationsToModel(model, requestedCoordinate);
-            model.addAttribute("dialogState", "saving");
+            int numStations = addWeatherStationsToModel(model, requestedCoordinate);
+            if (numStations < numWeatherStationsToReturn) {
+                model.addAttribute("dialogState", "searching");
+            } else {
+                model.addAttribute("dialogState", "saving");
+            }
+
+            model.addAttribute("numberWeatherStations", numStations);
             return "dr/estimatedLoad/_weatherStations.jsp";
         }
 
@@ -187,11 +186,18 @@ public class EstimatedLoadController {
         double lon = Double.parseDouble(wheatherLocationBean.getLongitude());
 
         GeographicCoordinate requestedCoordinate = new GeographicCoordinate(lat, lon);
-        addWeatherStationsToModel(model, requestedCoordinate);
+
+        int numStations = addWeatherStationsToModel(model, requestedCoordinate);
+        if (numStations < numWeatherStationsToReturn) {
+            model.addAttribute("dialogState", "searching");
+        } else {
+            model.addAttribute("dialogState", "saving");
+        }
+
+        model.addAttribute("numberWeatherStations", numStations);
 
         model.addAttribute("requestedLat", lat);
         model.addAttribute("requestedLon", lon);
-        model.addAttribute("dialogState", "saving");
 
         return "dr/estimatedLoad/_weatherStations.jsp";
     }
@@ -433,9 +439,15 @@ public class EstimatedLoadController {
         model.addAttribute("formulaBean", formulaBean);
     }
 
-    private void addWeatherStationsToModel(ModelMap model, GeographicCoordinate requestedCoordinate) {
+    /**
+     * Adds the weather stations found to the model, returns the number of weather stations
+     */
+    private int addWeatherStationsToModel(ModelMap model, GeographicCoordinate requestedCoordinate) {
         List<WeatherStation> weatherStationResults = noaaWeatherDataService.getWeatherStationsByDistance(requestedCoordinate);
-        weatherStationResults = weatherStationResults.subList(0, 5);
+
+        if (weatherStationResults.size() >= numWeatherStationsToReturn){
+            weatherStationResults = weatherStationResults.subList(0, numWeatherStationsToReturn);
+        }
 
         Map<String, Integer> distanceToStation = new HashMap<>();
         for (WeatherStation station : weatherStationResults) {
@@ -445,6 +457,8 @@ public class EstimatedLoadController {
 
         model.addAttribute("weatherStationResults", weatherStationResults);
         model.addAttribute("distanceToStation", distanceToStation);
+
+        return weatherStationResults.size();
     }
 
     private void validateLatLon(String lat, String lon, BindingResult bindingResult) {

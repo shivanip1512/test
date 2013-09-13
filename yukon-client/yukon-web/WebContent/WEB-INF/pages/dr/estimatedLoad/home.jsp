@@ -7,6 +7,7 @@
 <cti:standardPage module="dr" page="estimatedLoad">
     <cti:includeScript link="JQUERY_COOKIE"/>
     <cti:includeScript link="/JavaScript/drFormula.js"/>
+    <cti:includeScript link="/JavaScript/yukon/ui/confirm_dialog_manager.js"/>
 
     <div id="display_tabs" style="display:none">
         <ul>
@@ -39,7 +40,9 @@
                 <%@ include file="_weatherStations.jsp" %>
             </div>
             <div id="weatherLocations">
-                <%@ include file="_weatherLocationsTable.jsp" %>
+                <%-- Not loaded initially to increase page load speed --%>
+                <img src="<c:url value="/WebConfig/yukon/Icons/spinner.gif"/>" alt="<cti:msg2 key="yukon.web.components.waiting"/>"/>
+                <i:inline key=".loadingWeatherLocations"/>
             </div>
             <div class="actionArea">
                <cti:button icon="icon-plus-green" nameKey="createWeatherLocation" id="newWeatherLocationBtn"/>

@@ -6,11 +6,13 @@ public interface WeatherDataService {
 
     List<WeatherLocation> getAllWeatherLocations();
 
+    WeatherLocation getWeatherLocationForStationId(String weatherStationId);
+
     void createWeatherLocation(WeatherLocation weatherLocation);
 
     void deleteWeatherLocation(int paoId);
 
     boolean isNameAvailableForWeatherLocation(String name);
 
-    WeatherObservation getCurrentWeatherObservation(WeatherLocation weatherLocation);
+    WeatherObservation getCurrentWeatherObservation(String weatherStationId);
 }

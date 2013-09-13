@@ -104,6 +104,7 @@ public class NoaaWeatherDataServiceImpl implements NoaaWeatherDataService {
         // Its rare for NOAA to change station data so reloading the map every 30 days should suffice
         if (!weatherStationMap.isEmpty()
                 && Instant.now().isAfter(lastRefresh.plus(Duration.standardDays(30)))) {
+            log.debug("Returning cached weatherStationMap.");
             return weatherStationMap;
         }
 
@@ -111,7 +112,7 @@ public class NoaaWeatherDataServiceImpl implements NoaaWeatherDataService {
         try {
             response = queryForWeatherStations();
         } catch (NoaaWeatherDataServiceException e) {
-            log.warn("Could not retrieve weather stations.", e);
+            log.warn("Could not retrieve updated weather stations.", e);
             // returned map is either empty, or greater than 1 month old (which might still be up to date)
             return weatherStationMap;
         }

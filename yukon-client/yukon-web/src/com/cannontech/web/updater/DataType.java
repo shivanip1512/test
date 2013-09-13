@@ -39,5 +39,6 @@ public enum DataType {
     POINT_IMPORT,
     INVENTORY_TASK,
     LM_REPORTED_ADDRESS,
+    WEATHER_STATION,
     ;
 }

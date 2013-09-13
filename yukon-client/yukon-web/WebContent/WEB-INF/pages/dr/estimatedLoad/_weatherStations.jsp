@@ -6,11 +6,17 @@
 
 <cti:msgScope paths="modules.dr.estimatedLoad">
     <input type='hidden' id='dialogState' value="${dialogState}"/>
+    <div id="weatherStationSearchTitle" style="display:none">
+        <i:inline key=".weatherStations.searchDialog"/>
+    </div>
     <div id="weatherLocationSearch" style="${dialogState eq 'searching' ? '' : 'display:none'}">
+        <c:if test="${numberWeatherStations eq 0}">
+            <span class="error">
+                <i:inline key=".error.unableToLoadWeaterStations"/>
+            </span>
+        </c:if>
         <div class="stacked">
-            We will search the NOAA database and return the closest weather stations.
-            <br>
-            Valid inputs include only decimal values. S & W are negative. (e.g. 37°44'55.49''S = -37.74861)
+            <i:inline key=".weatherStations.search"/>
         </div>
         <form:form id="findCloseStationsForm" commandName="weatherLocationBean" action="findCloseStations">
             <div class="column_12_12 clearfix">
@@ -27,9 +33,15 @@
             </div>
         </form:form>
         <div class="actionArea">
-            <cti:button id="searchWeatherStations" icon="icon-magnifier" label="Search"/>
+            <cti:button
+                nameKey="weatherStations.search"
+                classes="f-disableAfterClick"
+                id="searchWeatherStations"
+                busy="true"
+                icon="icon-magnifier"/>
         </div>
     </div>
+
     <div id="weatherLocationSearchResults" style="${dialogState eq 'saving' ? '' : 'display:none'}">
         <form:form id="saveWeatherLocationForm" commandName="weatherLocationBean" action="saveWeatherLocation">
             <tags:hidden path="latitude"/>
@@ -39,8 +51,9 @@
             </tags:nameValueStacked>
             <h4><i:inline key=".weatherStations"/></h4>
             <c:forEach varStatus="status" var="station" items="${weatherStationResults}">
-                <c:set var="label" value="${station.stationDesc} - ${distanceToStation[station.stationId]} m"/>
-                <form:radiobutton path="stationId" value="${station.stationId}" label="${label}"/><br>
+                <c:set var="label" value="${station.stationDesc} - ${distanceToStation[station.stationId]}"/>
+                <cti:msg2 var="miles" key=".weatherStation.milesUnit"/>
+                <form:radiobutton path="stationId" value="${station.stationId}" label="${label} ${miles}"/><br>
             </c:forEach>
             <tags:bind path="stationId"></tags:bind>
         </form:form>
@@ -49,4 +62,5 @@
             <cti:button id="searchWeatherStationsAgain" icon="icon-magnifier" label="Search again"/>
         </div>
     </div>
+
 </cti:msgScope>

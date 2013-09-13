@@ -357,13 +357,15 @@ Yukon.DrFormula = (function() {
     _newWeatherLocationBtnClick = function() {
         jQuery("#weatherLocationSearch").show();
         jQuery("#weatherLocationSearchResults").hide();
-        jQuery("#weatherStationDialog").dialog({minWidth:500});
+        var title = jQuery("#weatherStationSearchTitle").html();
+        jQuery("#weatherStationDialog").dialog({minWidth:500, title:title});
     },
 
     _searchWeatherStationsBtnClick = function() {
         jQuery("#findCloseStationsForm").ajaxSubmit({success: function(data) {
             jQuery("#weatherStationDialog").fadeOut(50, function () {
                 jQuery(this).html(data).fadeIn(50);
+                Yukon.ui.elementGlass.hide(jQuery("#weatherStationDialog"));
             });
         }});
     },
@@ -419,6 +421,8 @@ Yukon.DrFormula = (function() {
                 .on("click","#saveWeatherStationBtn", _saveWeatherStationBtnClick);
             jQuery("#newWeatherLocationBtn")
                 .click(_newWeatherLocationBtnClick);
+            jQuery("#weatherLocations")
+                .load("wetherLocationsTableAjax");
 
             _initialized = true;
         },

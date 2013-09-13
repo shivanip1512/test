@@ -812,6 +812,9 @@
                 <entry key="LM_REPORTED_ADDRESS">
                     <ref local="lmReportedDataBackingService"/>
                 </entry>
+                <entry key="WEATHER_STATION">
+                    <ref local="weatherDataBackingService"/>
+                </entry>
             </map>
         </property>
     </bean>
@@ -971,6 +974,7 @@
     <bean id="drProgramBackingService" class="com.cannontech.web.updater.dr.ProgramBackingService"/>
     <bean id="drLoadGroupBackingService" class="com.cannontech.web.updater.dr.LoadGroupBackingService"/>
     <bean id="drScenarioBackingService" class="com.cannontech.web.updater.dr.ScenarioBackingService"/>
+    <bean id="weatherDataBackingService" class="com.cannontech.web.updater.dr.WeatherDataBackingService"/>
     
     <!-- phase detect -->    
     <bean id="phaseDetectBackingService" class="com.cannontech.web.updater.phaseDetect.PhaseDetectBackingService"/>

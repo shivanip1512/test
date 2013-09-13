@@ -36,7 +36,7 @@ public class StaticPaoInfoDaoImpl implements StaticPaoInfoDao {
                 return;
             }
             sql.append("UPDATE").append(tableName);
-            sql.append("SET value").eq(value);
+            sql.append("SET Value").eq(value);
             sql.append("WHERE InfoKey").eq(paoInfoKey);
             sql.append("AND PAObjectId").eq(paoId);
         } catch(EmptyResultDataAccessException e) {
@@ -45,5 +45,16 @@ public class StaticPaoInfoDaoImpl implements StaticPaoInfoDao {
             sql.values(nextValueHelper.getNextValue("StaticPaoInfo"), paoId, paoInfoKey, value);
         }
         yukonJdbcTemplate.update(sql);
+    }
+
+    @Override
+    public Integer getPaoIdForKeyValue(PaoInfo paoInfoKey, String value) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+
+        sql.append("SELECT PAObjectId FROM").append(tableName);
+        sql.append("WHERE InfoKey").eq(paoInfoKey);
+        sql.append("AND Value").eq(value);
+
+        return yukonJdbcTemplate.queryForInt(sql);
     }
 }
