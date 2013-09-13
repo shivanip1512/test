@@ -70,6 +70,10 @@ protected:
                                  CtiMessageList    & retList,
                                  RfnCommandList    & rfnRequests );
 
+    int executePutConfigInstallTou( CtiRequestMsg     * pReq,
+                                    CtiCommandParser  & parse,
+                                    CtiMessageList    & retList,
+                                    RfnCommandList    & rfnRequests );
 
     void handleResult( const Commands::RfnVoltageProfileConfigurationCommand & cmd );
     void handleResult( const Commands::RfnLoadProfileRecordingCommand & cmd );
@@ -78,6 +82,10 @@ protected:
 
     void handleResult( const Commands::RfnTouScheduleConfigurationCommand & cmd );
     void handleResult( const Commands::RfnTouHolidayConfigurationCommand & cmd );
+
+private:
+
+    bool isTouConfigurationCurrent();
 };
 
 

@@ -132,10 +132,10 @@ const map<string, RfnTouConfigurationCommand::Rate> rateResolver = map_list_of
         ( "d", RfnTouConfigurationCommand::RateD );
 
 const map<string, RfnTouScheduleConfigurationCommand::ScheduleNbr> scheduleResolver = map_list_of
-        ( "1", RfnTouScheduleConfigurationCommand::Schedule1 )
-        ( "2", RfnTouScheduleConfigurationCommand::Schedule2 )
-        ( "3", RfnTouScheduleConfigurationCommand::Schedule3 )
-        ( "4", RfnTouScheduleConfigurationCommand::Schedule4 );
+        ( "schedule 1", RfnTouScheduleConfigurationCommand::Schedule1 )
+        ( "schedule 2", RfnTouScheduleConfigurationCommand::Schedule2 )
+        ( "schedule 3", RfnTouScheduleConfigurationCommand::Schedule3 )
+        ( "schedule 4", RfnTouScheduleConfigurationCommand::Schedule4 );
 
 } // anonymous namespace
 
@@ -314,7 +314,7 @@ RfnCommand::Bytes RfnTouScheduleConfigurationCommand::createCommandData( const S
         {
             const string & schedule_str = schedule_to_send._dayTable[day_nbr];
 
-            ScheduleNbr schedule_nbr = resolveScheduleNbr( schedule_str );
+            ScheduleNbr schedule_nbr = resolveScheduleName( schedule_str );
 
             setBits_lEndian(tlv.value, day_nbr*3, 3, schedule_nbr);
         }
@@ -498,11 +498,11 @@ void RfnTouScheduleConfigurationCommand::decodeDayTable( RfnResult& result, cons
         validateCondition( schedule_nbr <= 3,
                            ErrorInvalidData, "Invalid day table schedule number - (" + CtiNumStr(schedule_nbr) + ")");
 
-        const string schedule_str = CtiNumStr(schedule_nbr + 1);
+        const string schedule_name = "schedule " + CtiNumStr(schedule_nbr + 1);
 
-        result.description += string(" ") + dayNames[day_nbr] + " - schedule " + schedule_str + "\n";
+        result.description += string(" ") + dayNames[day_nbr] + " - " + schedule_name + "\n";
 
-        dayTable.push_back( schedule_str );
+        dayTable.push_back( schedule_name );
     }
 
     if( ! _schedule_received )
@@ -657,12 +657,12 @@ boost::optional<RfnTouScheduleConfigurationCommand::Schedule> RfnTouScheduleConf
  * @param schedule_str
  * @return
  */
-RfnTouScheduleConfigurationCommand::ScheduleNbr RfnTouScheduleConfigurationCommand::resolveScheduleNbr( const std::string & schedule_str )
+RfnTouScheduleConfigurationCommand::ScheduleNbr RfnTouScheduleConfigurationCommand::resolveScheduleName( const string & schedule_name )
 {
-    boost::optional<ScheduleNbr> schedule_nbr = Cti::mapFind( scheduleResolver, schedule_str );
+    boost::optional<ScheduleNbr> schedule_nbr = Cti::mapFind( scheduleResolver, boost::to_lower_copy( schedule_name ));
 
     validateCondition( schedule_nbr,
-                       BADPARAM, "Invalid schedule number - (" + schedule_str + ")");
+                       BADPARAM, "Invalid schedule number - (" + schedule_name + ")");
 
     return *schedule_nbr;
 }

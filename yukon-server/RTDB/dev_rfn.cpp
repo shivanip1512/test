@@ -88,7 +88,7 @@ int RfnDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, Ct
 {
     if( parse.isKeyValid("install") )
     {
-        return executePutConfigInstall(pReq, parse, retList, rfnRequests);
+        return executeConfigInstall(pReq, parse, retList, rfnRequests, getPutConfigInstallMethods());
     }
     if( parse.isKeyValid("tou") )
     {
@@ -105,6 +105,10 @@ int RfnDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, Ct
 
 int RfnDevice::executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests)
 {
+    if( parse.isKeyValid("install") )
+    {
+        return executeConfigInstall(pReq, parse, retList, rfnRequests, getGetConfigInstallMethods());
+    }
     if( parse.isKeyValid("tou") )
     {
         return executeGetConfigTou(pReq, parse, retList, rfnRequests);
@@ -117,8 +121,36 @@ int RfnDevice::executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, Ct
     return NoMethod;
 }
 
+/**
+ *
+ */
+RfnDevice::InstallLookup RfnDevice::getPutConfigInstallMethods() const
+{
+    const InstallLookup methods = boost::assign::map_list_of
+        ("display",          &RfnDevice::executePutConfigInstallDisplay)
+        ("freezeday",        &RfnDevice::executePutConfigInstallFreezeDay)
+        ("tou",              &RfnDevice::executePutConfigInstallTou)
+        ("voltageaveraging", &RfnDevice::executePutConfigInstallVoltageAveragingInterval);
 
-int RfnDevice::executePutConfigInstall(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests)
+    return methods;
+}
+
+/**
+ *
+ */
+RfnDevice::InstallLookup RfnDevice::getGetConfigInstallMethods() const
+{
+    const InstallLookup methods;
+
+    // TODO
+
+    return methods;
+}
+
+/**
+ * Execute putconfig/getconfig Install
+ */
+int RfnDevice::executeConfigInstall(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests, const InstallLookup & lookup)
 {
     const boost::optional<std::string> installValue = parse.findStringForKey("installvalue");
 
@@ -129,28 +161,28 @@ int RfnDevice::executePutConfigInstall(CtiRequestMsg *pReq, CtiCommandParser &pa
 
     if( *installValue == "all" )
     {
-        return NoMethod;  // executePutConfigInstallAll(pReq, parse, retList, rfnRequests);
+        int nRet = NoMethod;
+
+        for each( const std::pair<std::string, InstallMethod> & p in lookup )
+        {
+            nRet = (this->*p.second)(pReq, parse, retList, rfnRequests);
+
+            if( nRet != NoError && nRet != ConfigCurrent )
+            {
+                // if we get an error or if the configuration is not current (in the case of putconfig install verify)
+                return nRet;
+            }
+        }
+
+        return nRet;
     }
 
-    typedef Commands::RfnCommandSPtr (RfnDevice::*PutConfigInstallMethod)(CtiRequestMsg *pReq, CtiCommandParser &parse);
-
-    typedef std::map<std::string, PutConfigInstallMethod> PutConfigLookup;
-
-    const PutConfigLookup putConfigInstallMethods = boost::assign::map_list_of
-        ("display",          &RfnDevice::executePutConfigInstallDisplay)
-        ("freezeday",        &RfnDevice::executePutConfigInstallFreezeDay)
-        ("tou",              &RfnDevice::executePutConfigInstallTou)
-        ("voltageaveraging", &RfnDevice::executePutConfigInstallVoltageAveragingInterval);
-
-    if( boost::optional<PutConfigInstallMethod> putConfigInstallMethod = mapFind(putConfigInstallMethods, *installValue) )
+    if( boost::optional<InstallMethod> func = mapFind( lookup, *installValue ))
     {
-        rfnRequests.push_back(
-           (this->**putConfigInstallMethod)(pReq, parse));
+        return (this->**func)(pReq, parse, retList, rfnRequests);
     }
 
-    return rfnRequests.empty()
-        ? NoMethod
-        : NoError;
+    return NoMethod;
 }
 
 
@@ -198,24 +230,24 @@ int RfnDevice::executeGetConfigHoliday(CtiRequestMsg *pReq, CtiCommandParser &pa
     return NoMethod;
 }
 
-Commands::RfnCommandSPtr RfnDevice::executePutConfigInstallFreezeDay(CtiRequestMsg *pReq, CtiCommandParser &parse)
+int RfnDevice::executePutConfigInstallFreezeDay(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests)
 {
-    return Commands::RfnCommandSPtr();
+    return NoMethod;
 }
 
-Commands::RfnCommandSPtr RfnDevice::executePutConfigInstallVoltageAveragingInterval(CtiRequestMsg *pReq, CtiCommandParser &parse)
+int RfnDevice::executePutConfigInstallVoltageAveragingInterval(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests)
 {
-    return Commands::RfnCommandSPtr();
+    return NoMethod;
 }
 
-Commands::RfnCommandSPtr RfnDevice::executePutConfigInstallTou(CtiRequestMsg *pReq, CtiCommandParser &parse)
+int RfnDevice::executePutConfigInstallTou(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests)
 {
-    return Commands::RfnCommandSPtr();
+    return NoMethod;
 }
 
-Commands::RfnCommandSPtr RfnDevice::executePutConfigInstallDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse)
+int RfnDevice::executePutConfigInstallDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests)
 {
-    return Commands::RfnCommandSPtr();
+    return NoMethod;
 }
 
 int RfnDevice::executeGetValue (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests)

@@ -41,6 +41,70 @@ struct IM_EX_CONFIG RfnStrings
 
     static const std::string demandFreezeDay;
 
+    // day table
+    static const std::string MondaySchedule;
+    static const std::string TuesdaySchedule;
+    static const std::string WednesdaySchedule;
+    static const std::string ThursdaySchedule;
+    static const std::string FridaySchedule;
+    static const std::string SaturdaySchedule;
+    static const std::string SundaySchedule;
+    static const std::string HolidaySchedule;
+
+    // default rate
+    static const std::string DefaultTouRate;
+
+    // schedule 1
+    static const std::string Schedule1MidnightRate;
+    static const std::string Schedule1Time1;
+    static const std::string Schedule1Rate1;
+    static const std::string Schedule1Time2;
+    static const std::string Schedule1Rate2;
+    static const std::string Schedule1Time3;
+    static const std::string Schedule1Rate3;
+    static const std::string Schedule1Time4;
+    static const std::string Schedule1Rate4;
+    static const std::string Schedule1Time5;
+    static const std::string Schedule1Rate5;
+
+    // schedule 2
+    static const std::string Schedule2MidnightRate;
+    static const std::string Schedule2Time1;
+    static const std::string Schedule2Rate1;
+    static const std::string Schedule2Time2;
+    static const std::string Schedule2Rate2;
+    static const std::string Schedule2Time3;
+    static const std::string Schedule2Rate3;
+    static const std::string Schedule2Time4;
+    static const std::string Schedule2Rate4;
+    static const std::string Schedule2Time5;
+    static const std::string Schedule2Rate5;
+
+    // schedule 3
+    static const std::string Schedule3MidnightRate;
+    static const std::string Schedule3Time1;
+    static const std::string Schedule3Rate1;
+    static const std::string Schedule3Time2;
+    static const std::string Schedule3Rate2;
+    static const std::string Schedule3Time3;
+    static const std::string Schedule3Rate3;
+    static const std::string Schedule3Time4;
+    static const std::string Schedule3Rate4;
+    static const std::string Schedule3Time5;
+    static const std::string Schedule3Rate5;
+
+    // schedule 4
+    static const std::string Schedule4MidnightRate;
+    static const std::string Schedule4Time1;
+    static const std::string Schedule4Rate1;
+    static const std::string Schedule4Time2;
+    static const std::string Schedule4Rate2;
+    static const std::string Schedule4Time3;
+    static const std::string Schedule4Rate3;
+    static const std::string Schedule4Time4;
+    static const std::string Schedule4Rate4;
+    static const std::string Schedule4Time5;
+    static const std::string Schedule4Rate5;
 };
 
 }

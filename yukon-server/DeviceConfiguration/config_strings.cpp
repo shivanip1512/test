@@ -207,3 +207,82 @@ const string RfnStrings::loadProfileInterval    = "loadProfileInterval";
 
 const string RfnStrings::demandFreezeDay    = "demandFreezeDay";
 
+// day table
+const string RfnStrings::MondaySchedule        = "monday";
+const string RfnStrings::TuesdaySchedule       = "tuesday";
+const string RfnStrings::WednesdaySchedule     = "wednesday";
+const string RfnStrings::ThursdaySchedule      = "thursday";
+const string RfnStrings::FridaySchedule        = "friday";
+const string RfnStrings::SaturdaySchedule      = "saturday";
+const string RfnStrings::SundaySchedule        = "sunday";
+const string RfnStrings::HolidaySchedule       = "holiday";
+
+// default rate
+const string RfnStrings::DefaultTouRate        = "defaultRate";
+
+// schedule 1
+const string RfnStrings::Schedule1MidnightRate = "schedule1MidnightRate";
+const string RfnStrings::Schedule1Time1        = "schedule1Time1";
+const string RfnStrings::Schedule1Rate1        = "schedule1Rate1";
+const string RfnStrings::Schedule1Time2        = "schedule1Time2";
+const string RfnStrings::Schedule1Rate2        = "schedule1Rate2";
+const string RfnStrings::Schedule1Time3        = "schedule1Time3";
+const string RfnStrings::Schedule1Rate3        = "schedule1Rate3";
+const string RfnStrings::Schedule1Time4        = "schedule1Time4";
+const string RfnStrings::Schedule1Rate4        = "schedule1Rate4";
+const string RfnStrings::Schedule1Time5        = "schedule1Time5";
+const string RfnStrings::Schedule1Rate5        = "schedule1Rate5";
+
+// schedule 2
+const string RfnStrings::Schedule2MidnightRate = "schedule2MidnightRate";
+const string RfnStrings::Schedule2Time1        = "schedule2Time1";
+const string RfnStrings::Schedule2Rate1        = "schedule2Rate1";
+const string RfnStrings::Schedule2Time2        = "schedule2Time2";
+const string RfnStrings::Schedule2Rate2        = "schedule2Rate2";
+const string RfnStrings::Schedule2Time3        = "schedule2Time3";
+const string RfnStrings::Schedule2Rate3        = "schedule2Rate3";
+const string RfnStrings::Schedule2Time4        = "schedule2Time4";
+const string RfnStrings::Schedule2Rate4        = "schedule2Rate4";
+const string RfnStrings::Schedule2Time5        = "schedule2Time5";
+const string RfnStrings::Schedule2Rate5        = "schedule2Rate5";
+
+// schedule 3
+const string RfnStrings::Schedule3MidnightRate = "schedule3MidnightRate";
+const string RfnStrings::Schedule3Time1        = "schedule3Time1";
+const string RfnStrings::Schedule3Rate1        = "schedule3Rate1";
+const string RfnStrings::Schedule3Time2        = "schedule3Time2";
+const string RfnStrings::Schedule3Rate2        = "schedule3Rate2";
+const string RfnStrings::Schedule3Time3        = "schedule3Time3";
+const string RfnStrings::Schedule3Rate3        = "schedule3Rate3";
+const string RfnStrings::Schedule3Time4        = "schedule3Time4";
+const string RfnStrings::Schedule3Rate4        = "schedule3Rate4";
+const string RfnStrings::Schedule3Time5        = "schedule3Time5";
+const string RfnStrings::Schedule3Rate5        = "schedule3Rate5";
+
+// schedule 4
+const string RfnStrings::Schedule4MidnightRate = "schedule4MidnightRate";
+const string RfnStrings::Schedule4Time1        = "schedule4Time1";
+const string RfnStrings::Schedule4Rate1        = "schedule4Rate1";
+const string RfnStrings::Schedule4Time2        = "schedule4Time2";
+const string RfnStrings::Schedule4Rate2        = "schedule4Rate2";
+const string RfnStrings::Schedule4Time3        = "schedule4Time3";
+const string RfnStrings::Schedule4Rate3        = "schedule4Rate3";
+const string RfnStrings::Schedule4Time4        = "schedule4Time4";
+const string RfnStrings::Schedule4Rate4        = "schedule4Rate4";
+const string RfnStrings::Schedule4Time5        = "schedule4Time5";
+const string RfnStrings::Schedule4Rate5        = "schedule4Rate5";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -126,14 +126,14 @@ BOOST_AUTO_TEST_CASE( test_RfnTouScheduleConfigurationCommand )
     {
         RfnTouScheduleConfigurationCommand::DayTable dayTable(8);
 
-        dayTable[0] = "1";
-        dayTable[1] = "3";
-        dayTable[2] = "2";
-        dayTable[3] = "4";
-        dayTable[4] = "2";
-        dayTable[5] = "3";
-        dayTable[6] = "1";
-        dayTable[7] = "3";
+        dayTable[0] = "schedule 1";
+        dayTable[1] = "schedule 3";
+        dayTable[2] = "schedule 2";
+        dayTable[3] = "schedule 4";
+        dayTable[4] = "schedule 2";
+        dayTable[5] = "schedule 3";
+        dayTable[6] = "schedule 1";
+        dayTable[7] = "schedule 3";
 
         sched._dayTable = dayTable;
     }

@@ -40,17 +40,23 @@ public:
 
 protected:
 
+    typedef int (RfnDevice::*InstallMethod)(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
+    typedef std::map<std::string, InstallMethod> InstallLookup;
+
+    virtual InstallLookup getGetConfigInstallMethods() const;
+    virtual InstallLookup getPutConfigInstallMethods() const;
+
     virtual int executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
     virtual int executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
     virtual int executeGetValue (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
     virtual int executePutStatus(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
 
-    int executePutConfigInstall (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
+    int executeConfigInstall(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests, const InstallLookup & lookup );
 
-    Commands::RfnCommandSPtr executePutConfigInstallFreezeDay               (CtiRequestMsg *pReq, CtiCommandParser &parse);
-    Commands::RfnCommandSPtr executePutConfigInstallVoltageAveragingInterval(CtiRequestMsg *pReq, CtiCommandParser &parse);
-    Commands::RfnCommandSPtr executePutConfigInstallTou                     (CtiRequestMsg *pReq, CtiCommandParser &parse);
-    virtual Commands::RfnCommandSPtr executePutConfigInstallDisplay         (CtiRequestMsg *pReq, CtiCommandParser &parse);
+    virtual int executePutConfigInstallFreezeDay               (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
+    virtual int executePutConfigInstallVoltageAveragingInterval(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
+    virtual int executePutConfigInstallTou                     (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
+    virtual int executePutConfigInstallDisplay                 (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
 
     virtual int executeImmediateDemandFreeze(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
     virtual int executeTouCriticalPeak(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);

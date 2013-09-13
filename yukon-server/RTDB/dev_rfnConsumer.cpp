@@ -2,10 +2,12 @@
 
 #include "std_helper.h"
 #include "config_data_rfn.h"
+#include "config_device.h"
 #include "dev_rfnConsumer.h"
 
 #include <boost/optional.hpp>
 #include <boost/make_shared.hpp>
+#include <boost/assign/list_of.hpp>
 
 #include <limits>
 #include <string>
@@ -14,6 +16,8 @@
 
 namespace Cti {
 namespace Devices {
+
+using Config::RfnStrings;
 
 int RfnConsumerDevice::executePutConfigVoltageAveragingInterval( CtiRequestMsg     * pReq,
                                                                  CtiCommandParser  & parse,
@@ -283,7 +287,7 @@ int RfnConsumerDevice::executeTouCriticalPeak( CtiRequestMsg     * pReq,
 
 
 /**
- * Execute put config tou schedule
+ * Execute putconfig tou schedule
  */
 int RfnConsumerDevice::executePutConfigTou( CtiRequestMsg     * pReq,
                                             CtiCommandParser  & parse,
@@ -313,7 +317,6 @@ int RfnConsumerDevice::executePutConfigTou( CtiRequestMsg     * pReq,
     //
     // Day Table
     //
-
     if( ! parse.isKeyValid("tou_days") )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -332,7 +335,6 @@ int RfnConsumerDevice::executePutConfigTou( CtiRequestMsg     * pReq,
     //
     // Default Rate
     //
-
     if( ! parse.isKeyValid("tou_default") )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -346,15 +348,14 @@ int RfnConsumerDevice::executePutConfigTou( CtiRequestMsg     * pReq,
     //
     // Switch Rates and Times
     //
-
     int iter = 0;
     string schedule_name = "tou_schedule_" + CtiNumStr(iter).zpad(2);
 
     while( parse.isKeyValid( schedule_name ))
     {
-        const string schedule_str = CtiNumStr( parse.getiValue( schedule_name ));
+        const string schedule_str = "schedule " + CtiNumStr( parse.getiValue( schedule_name ));
 
-        RfnTouScheduleConfigurationCommand::ScheduleNbr schedule_nbr = RfnTouScheduleConfigurationCommand::resolveScheduleNbr( schedule_str );
+        RfnTouScheduleConfigurationCommand::ScheduleNbr schedule_nbr = RfnTouScheduleConfigurationCommand::resolveScheduleName( schedule_str );
 
         int change_nbr = 0;
         string change_name = schedule_name + "_" + CtiNumStr(change_nbr).zpad(2);
@@ -367,7 +368,7 @@ int RfnConsumerDevice::executePutConfigTou( CtiRequestMsg     * pReq,
             if( change_nbr > rates.size() )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Device \"" << getName() << "\" - Schedule " << schedule_str << " has an invalid rate change. " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+                dout << CtiTime() << " Device \"" << getName() << "\" - Schedule " << schedule_nbr << " has an invalid rate change. " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
 
                 return BADPARAM;
             }
@@ -397,7 +398,7 @@ int RfnConsumerDevice::executePutConfigTou( CtiRequestMsg     * pReq,
 }
 
 /**
- * Execute get config schedule
+ * Execute getconfig schedule
  */
 int RfnConsumerDevice::executeGetConfigTou( CtiRequestMsg     * pReq,
                                             CtiCommandParser  & parse,
@@ -410,7 +411,7 @@ int RfnConsumerDevice::executeGetConfigTou( CtiRequestMsg     * pReq,
 }
 
 /**
- * Execute put config holiday
+ * Execute putconfig holiday
  */
 int RfnConsumerDevice::executePutConfigHoliday( CtiRequestMsg     * pReq,
                                                 CtiCommandParser  & parse,
@@ -468,7 +469,224 @@ int RfnConsumerDevice::executePutConfigHoliday( CtiRequestMsg     * pReq,
 }
 
 /**
- * Execute get config holiday
+ * Execute putconfig install tou
+ */
+int RfnConsumerDevice::executePutConfigInstallTou( CtiRequestMsg     * pReq,
+                                                   CtiCommandParser  & parse,
+                                                   CtiMessageList    & retList,
+                                                   RfnCommandList    & rfnRequests )
+{
+    using Commands::RfnTouScheduleConfigurationCommand;
+
+    // check if the dynamic info has the current configuration
+    if( ! parse.isKeyValid("force") && isTouConfigurationCurrent() )
+    {
+        return ConfigCurrent;
+    }
+
+    // if this is verify only
+    if( parse.isKeyValid("verify") )
+    {
+        return ConfigNotCurrent;
+    }
+
+    Config::DeviceConfigSPtr deviceConfig = getDeviceConfig();
+
+    RfnTouScheduleConfigurationCommand::Schedule schedule_to_send;
+
+    //
+    // Populate schedule to send
+    //
+
+    // day table
+    schedule_to_send._dayTable.resize(8);
+
+    schedule_to_send._dayTable[0] = deviceConfig->getValueFromKey( RfnStrings::MondaySchedule    );
+    schedule_to_send._dayTable[1] = deviceConfig->getValueFromKey( RfnStrings::TuesdaySchedule   );
+    schedule_to_send._dayTable[2] = deviceConfig->getValueFromKey( RfnStrings::WednesdaySchedule );
+    schedule_to_send._dayTable[3] = deviceConfig->getValueFromKey( RfnStrings::ThursdaySchedule  );
+    schedule_to_send._dayTable[4] = deviceConfig->getValueFromKey( RfnStrings::FridaySchedule    );
+    schedule_to_send._dayTable[5] = deviceConfig->getValueFromKey( RfnStrings::SaturdaySchedule  );
+    schedule_to_send._dayTable[6] = deviceConfig->getValueFromKey( RfnStrings::SundaySchedule    );
+    schedule_to_send._dayTable[7] = deviceConfig->getValueFromKey( RfnStrings::HolidaySchedule   );
+
+    // default rate
+    schedule_to_send._defaultRate = deviceConfig->getLongValueFromKey( RfnStrings::DefaultTouRate );
+
+    // switch rates
+    RfnTouScheduleConfigurationCommand::DailyRates schedule1_rates(6),
+                                                   schedule2_rates(6),
+                                                   schedule3_rates(6),
+                                                   schedule4_rates(6);
+
+    schedule1_rates[0] = deviceConfig->getValueFromKey( RfnStrings::Schedule1MidnightRate );
+    schedule1_rates[1] = deviceConfig->getValueFromKey( RfnStrings::Schedule1Rate1        );
+    schedule1_rates[2] = deviceConfig->getValueFromKey( RfnStrings::Schedule1Rate2        );
+    schedule1_rates[3] = deviceConfig->getValueFromKey( RfnStrings::Schedule1Rate3        );
+    schedule1_rates[4] = deviceConfig->getValueFromKey( RfnStrings::Schedule1Rate4        );
+    schedule1_rates[5] = deviceConfig->getValueFromKey( RfnStrings::Schedule1Rate5        );
+
+    schedule2_rates[0] = deviceConfig->getValueFromKey( RfnStrings::Schedule2MidnightRate );
+    schedule2_rates[1] = deviceConfig->getValueFromKey( RfnStrings::Schedule2Rate1        );
+    schedule2_rates[2] = deviceConfig->getValueFromKey( RfnStrings::Schedule2Rate2        );
+    schedule2_rates[3] = deviceConfig->getValueFromKey( RfnStrings::Schedule2Rate3        );
+    schedule2_rates[4] = deviceConfig->getValueFromKey( RfnStrings::Schedule2Rate4        );
+    schedule2_rates[5] = deviceConfig->getValueFromKey( RfnStrings::Schedule2Rate5        );
+
+    schedule3_rates[0] = deviceConfig->getValueFromKey( RfnStrings::Schedule3MidnightRate );
+    schedule3_rates[1] = deviceConfig->getValueFromKey( RfnStrings::Schedule3Rate1        );
+    schedule3_rates[2] = deviceConfig->getValueFromKey( RfnStrings::Schedule3Rate2        );
+    schedule3_rates[3] = deviceConfig->getValueFromKey( RfnStrings::Schedule3Rate3        );
+    schedule3_rates[4] = deviceConfig->getValueFromKey( RfnStrings::Schedule3Rate4        );
+    schedule3_rates[5] = deviceConfig->getValueFromKey( RfnStrings::Schedule3Rate5        );
+
+    schedule4_rates[0] = deviceConfig->getValueFromKey( RfnStrings::Schedule4MidnightRate );
+    schedule4_rates[1] = deviceConfig->getValueFromKey( RfnStrings::Schedule4Rate1        );
+    schedule4_rates[2] = deviceConfig->getValueFromKey( RfnStrings::Schedule4Rate2        );
+    schedule4_rates[3] = deviceConfig->getValueFromKey( RfnStrings::Schedule4Rate3        );
+    schedule4_rates[4] = deviceConfig->getValueFromKey( RfnStrings::Schedule4Rate4        );
+    schedule4_rates[5] = deviceConfig->getValueFromKey( RfnStrings::Schedule4Rate5        );
+
+    schedule_to_send._rates[RfnTouScheduleConfigurationCommand::Schedule1] = schedule1_rates;
+    schedule_to_send._rates[RfnTouScheduleConfigurationCommand::Schedule2] = schedule2_rates;
+    schedule_to_send._rates[RfnTouScheduleConfigurationCommand::Schedule3] = schedule3_rates;
+    schedule_to_send._rates[RfnTouScheduleConfigurationCommand::Schedule4] = schedule4_rates;
+
+    // switch times
+    RfnTouScheduleConfigurationCommand::DailyTimes schedule1_times(6),
+                                                   schedule2_times(6),
+                                                   schedule3_times(6),
+                                                   schedule4_times(6);
+
+    schedule1_times[0] = "00:00"; // midnight
+    schedule1_times[1] = deviceConfig->getValueFromKey( RfnStrings::Schedule1Time1 );
+    schedule1_times[2] = deviceConfig->getValueFromKey( RfnStrings::Schedule1Time2 );
+    schedule1_times[3] = deviceConfig->getValueFromKey( RfnStrings::Schedule1Time3 );
+    schedule1_times[4] = deviceConfig->getValueFromKey( RfnStrings::Schedule1Time4 );
+    schedule1_times[5] = deviceConfig->getValueFromKey( RfnStrings::Schedule1Time5 );
+
+    schedule2_times[0] = "00:00"; // midnight
+    schedule2_times[1] = deviceConfig->getValueFromKey( RfnStrings::Schedule2Time1 );
+    schedule2_times[2] = deviceConfig->getValueFromKey( RfnStrings::Schedule2Time2 );
+    schedule2_times[3] = deviceConfig->getValueFromKey( RfnStrings::Schedule2Time3 );
+    schedule2_times[4] = deviceConfig->getValueFromKey( RfnStrings::Schedule2Time4 );
+    schedule2_times[5] = deviceConfig->getValueFromKey( RfnStrings::Schedule2Time5 );
+
+    schedule3_times[0] = "00:00"; // midnight
+    schedule3_times[1] = deviceConfig->getValueFromKey( RfnStrings::Schedule3Time1 );
+    schedule3_times[2] = deviceConfig->getValueFromKey( RfnStrings::Schedule3Time2 );
+    schedule3_times[3] = deviceConfig->getValueFromKey( RfnStrings::Schedule3Time3 );
+    schedule3_times[4] = deviceConfig->getValueFromKey( RfnStrings::Schedule3Time4 );
+    schedule3_times[5] = deviceConfig->getValueFromKey( RfnStrings::Schedule3Time5 );
+
+    schedule4_times[0] = "00:00"; // midnight
+    schedule4_times[1] = deviceConfig->getValueFromKey( RfnStrings::Schedule4Time1 );
+    schedule4_times[2] = deviceConfig->getValueFromKey( RfnStrings::Schedule4Time2 );
+    schedule4_times[3] = deviceConfig->getValueFromKey( RfnStrings::Schedule4Time3 );
+    schedule4_times[4] = deviceConfig->getValueFromKey( RfnStrings::Schedule4Time4 );
+    schedule4_times[5] = deviceConfig->getValueFromKey( RfnStrings::Schedule4Time5 );
+
+    schedule_to_send._times[RfnTouScheduleConfigurationCommand::Schedule1] = schedule1_times;
+    schedule_to_send._times[RfnTouScheduleConfigurationCommand::Schedule2] = schedule2_times;
+    schedule_to_send._times[RfnTouScheduleConfigurationCommand::Schedule3] = schedule3_times;
+    schedule_to_send._times[RfnTouScheduleConfigurationCommand::Schedule4] = schedule4_times;
+
+    //
+    // create command
+    //
+
+    rfnRequests.push_back( boost::make_shared<RfnTouScheduleConfigurationCommand>( schedule_to_send ));
+
+    return NoError;
+}
+
+namespace { // anonymous namespace
+
+    const map<CtiDeviceBase::PaoInfoKeys, string> touScheduleCompareKeys = boost::assign::map_list_of
+    // day table
+    ( CtiTableDynamicPaoInfo::Key_RFN_MondaySchedule,        RfnStrings::MondaySchedule        )
+    ( CtiTableDynamicPaoInfo::Key_RFN_TuesdaySchedule,       RfnStrings::TuesdaySchedule       )
+    ( CtiTableDynamicPaoInfo::Key_RFN_WednesdaySchedule,     RfnStrings::WednesdaySchedule     )
+    ( CtiTableDynamicPaoInfo::Key_RFN_ThursdaySchedule,      RfnStrings::ThursdaySchedule      )
+    ( CtiTableDynamicPaoInfo::Key_RFN_FridaySchedule,        RfnStrings::FridaySchedule        )
+    ( CtiTableDynamicPaoInfo::Key_RFN_SaturdaySchedule,      RfnStrings::SaturdaySchedule      )
+    ( CtiTableDynamicPaoInfo::Key_RFN_SundaySchedule,        RfnStrings::SundaySchedule        )
+    ( CtiTableDynamicPaoInfo::Key_RFN_HolidaySchedule,       RfnStrings::HolidaySchedule       )
+    // default rate
+    ( CtiTableDynamicPaoInfo::Key_RFN_DefaultTOURate,        RfnStrings::DefaultTouRate        )
+    // schedule 1
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1MidnightRate, RfnStrings::Schedule1MidnightRate )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time1,        RfnStrings::Schedule1Time1        )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate1,        RfnStrings::Schedule1Rate1        )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time2,        RfnStrings::Schedule1Time2        )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate2,        RfnStrings::Schedule1Rate2        )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time3,        RfnStrings::Schedule1Time3        )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate3,        RfnStrings::Schedule1Rate3        )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time4,        RfnStrings::Schedule1Time4        )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate4,        RfnStrings::Schedule1Rate4        )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time5,        RfnStrings::Schedule1Time5        )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate5,        RfnStrings::Schedule1Rate5        )
+    // schedule 2
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2MidnightRate, RfnStrings::Schedule2MidnightRate )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Time1,        RfnStrings::Schedule2Time1        )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate1,        RfnStrings::Schedule2Rate1        )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Time2,        RfnStrings::Schedule2Time2        )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate2,        RfnStrings::Schedule2Rate2        )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Time3,        RfnStrings::Schedule2Time3        )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate3,        RfnStrings::Schedule2Rate3        )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Time4,        RfnStrings::Schedule2Time4        )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate4,        RfnStrings::Schedule2Rate4        )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Time5,        RfnStrings::Schedule2Time5        )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate5,        RfnStrings::Schedule2Rate5        )
+    // schedule 3
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3MidnightRate, RfnStrings::Schedule3MidnightRate )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Time1,        RfnStrings::Schedule3Time1        )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate1,        RfnStrings::Schedule3Rate1        )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Time2,        RfnStrings::Schedule3Time2        )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate2,        RfnStrings::Schedule3Rate2        )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Time3,        RfnStrings::Schedule3Time3        )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate3,        RfnStrings::Schedule3Rate3        )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Time4,        RfnStrings::Schedule3Time4        )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate4,        RfnStrings::Schedule3Rate4        )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Time5,        RfnStrings::Schedule3Time5        )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate5,        RfnStrings::Schedule3Rate5        )
+    // schedule 4
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4MidnightRate, RfnStrings::Schedule4MidnightRate )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Time1,        RfnStrings::Schedule4Time1        )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate1,        RfnStrings::Schedule4Rate1        )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Time2,        RfnStrings::Schedule4Time2        )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate2,        RfnStrings::Schedule4Rate2        )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Time3,        RfnStrings::Schedule4Time3        )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate3,        RfnStrings::Schedule4Rate3        )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Time4,        RfnStrings::Schedule4Time4        )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate4,        RfnStrings::Schedule4Rate4        )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Time5,        RfnStrings::Schedule4Time5        )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate5,        RfnStrings::Schedule4Rate5        );
+
+} // anonymous namespace
+
+/**
+ * check if the tou schedule from the config equals the dynamic info
+ */
+bool RfnConsumerDevice::isTouConfigurationCurrent()
+{
+    Config::DeviceConfigSPtr deviceConfig = getDeviceConfig();
+
+    for each( const std::pair<CtiDeviceBase::PaoInfoKeys, string> & p in touScheduleCompareKeys )
+    {
+        string dynamicInfo;
+
+        if( ! getDynamicInfo( p.first, dynamicInfo ) || dynamicInfo != deviceConfig->getValueFromKey( p.second ))
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+/**
+ * Execute getconfig holiday
  */
 int RfnConsumerDevice::executeGetConfigHoliday( CtiRequestMsg     * pReq,
                                                 CtiCommandParser  & parse,

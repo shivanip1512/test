@@ -90,7 +90,7 @@ public:
 
     boost::optional<Schedule> getTouScheduleReceived() const;
 
-    static ScheduleNbr resolveScheduleNbr( const std::string & schedule_str );
+    static ScheduleNbr resolveScheduleName( const std::string & scheduleName );
 
 protected:
 
