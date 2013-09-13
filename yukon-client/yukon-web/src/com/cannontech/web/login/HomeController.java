@@ -8,18 +8,20 @@ import javax.servlet.http.HttpServletRequest;
 
 import net.sf.json.JSONObject;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.cannontech.common.userpage.dao.UserSubscriptionDao;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.userpage.dao.UserPageDao;
-import com.cannontech.common.userpage.model.UserSubscription;
-import com.cannontech.common.userpage.model.UserSubscription.SubscriptionType;
+import com.cannontech.common.userpage.dao.UserSubscriptionDao;
 import com.cannontech.common.userpage.model.UserPage;
 import com.cannontech.common.userpage.model.UserPage.Module;
+import com.cannontech.common.userpage.model.UserSubscription;
+import com.cannontech.common.userpage.model.UserSubscription.SubscriptionType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -39,6 +41,7 @@ import com.google.common.collect.Multimap;
 
 @Controller
 public class HomeController {
+    private final static Logger log = YukonLogManager.getLogger(HomeController.class);
 
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private UserPageDao userPageDao;
@@ -77,7 +80,12 @@ public class HomeController {
 
         List<UserPageWrapper> history = Lists.newArrayList();
         for (UserPage page : rawHistory) {
-            history.add( new UserPageWrapper(page, context));
+            UserPageWrapper wrapper = buildWrapperForPage(page, context);
+            if (wrapper != null) {
+                history.add(wrapper);
+            } else {
+                log.error("bad page found in history list: " + page.getName());
+            }
         }
 
         Collections.sort(history, byDateDesc);
@@ -100,7 +108,12 @@ public class HomeController {
 
         List<UserPageWrapper> favorites = Lists.newArrayList();
         for (UserPage page : rawFavorites) {
-            favorites.add( new UserPageWrapper(page, context));
+            UserPageWrapper wrapper = buildWrapperForPage(page, context);
+            if (wrapper != null) {
+                favorites.add(wrapper);
+            } else {
+                log.error("bad page found in favorites list: " + page.getName());
+            }
         }
         Collections.sort(favorites, byNameAsc);
         Collections.sort(favorites, byModuleAsc);
@@ -193,14 +206,15 @@ public class HomeController {
         return result;
     }
 
-    public String getHeaderForPage(UserPage page, YukonUserContext context) {
-        ModuleBase a = moduleBuilder.getModuleBase(page.getModule());
+    private UserPageWrapper buildWrapperForPage(UserPage page, YukonUserContext context) {
+        ModuleBase moduleBase = moduleBuilder.getModuleBase(page.getModule());
 
-        PageInfo thisPage = null;
-        for (PageInfo pageInfo : a.getAllPageInfos()) {
-            if (pageInfo.getName().equals(page.getName())){
-                thisPage = pageInfo;
-            }
+        PageInfo thisPage = moduleBase.getPageInfo(page.getName());
+        if (thisPage == null) {
+            // This shouldn't _normally_ happen but can in a development environment when switching workspaces
+            // where one workspace has a new page the other doesn't.  (The new page will be in the user history
+            // and trigger this.)
+            return null;
         }
 
         PageContext pc = new PageContext();
@@ -211,16 +225,16 @@ public class HomeController {
 
         String result = pageDetailProducer.getPagePart("pageHeading", pc, messageSourceResolver.getMessageSourceAccessor(context));
 
-        return result;
+        return new UserPageWrapper(page, result);
     }
 
-    public class UserPageWrapper {
+    public static class UserPageWrapper {
         private final UserPage page;
         private final String header;
 
-        UserPageWrapper(UserPage page, YukonUserContext context) {
+        private UserPageWrapper(UserPage page, String header) {
             this.page = page;
-            this.header = getHeaderForPage(page, context);
+            this.header = header;
         }
 
         public UserPage getPage() {
@@ -245,18 +259,21 @@ public class HomeController {
     }
 
     private static Comparator<UserPageWrapper> byDateDesc = new Comparator<UserPageWrapper>() {
+        @Override
         public int compare(UserPageWrapper left, UserPageWrapper right) {
             return - (left.getPage().getLastAccess().compareTo(right.getPage().getLastAccess()));
         }
     };
 
     private static Comparator<UserPageWrapper> byNameAsc = new Comparator<UserPageWrapper>() {
+        @Override
         public int compare(UserPageWrapper left, UserPageWrapper right) {
             return left.getHeader().compareTo(right.getHeader());
         }
     };
 
     private static Comparator<UserPageWrapper> byModuleAsc = new Comparator<UserPageWrapper>() {
+        @Override
         public int compare(UserPageWrapper left, UserPageWrapper right) {
             return left.getPage().getModuleEnum().compareTo(right.getPage().getModuleEnum());
         }

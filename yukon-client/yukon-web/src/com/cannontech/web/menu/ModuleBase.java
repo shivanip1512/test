@@ -1,12 +1,10 @@
 package com.cannontech.web.menu;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import com.cannontech.web.menu.option.producer.SearchProducer;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 /**
@@ -77,12 +75,6 @@ public class ModuleBase {
 
     public void addPageInfo(PageInfo breadCrumb) {
         pageInfos.put(breadCrumb.getName(), breadCrumb);
-    }
-    
-    public List<PageInfo> getAllPageInfos() {
-        ArrayList<PageInfo> result = Lists.newArrayList(pageInfos.values());
-        Collections.sort(result);
-        return Collections.unmodifiableList(result);
     }
 
     public List<String> getCssFiles() {
