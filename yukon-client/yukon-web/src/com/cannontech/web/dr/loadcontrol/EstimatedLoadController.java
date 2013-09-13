@@ -121,7 +121,7 @@ public class EstimatedLoadController {
     public String removeWeatherLocation(ModelMap model, FlashScope flashScope, int paoId, YukonUserContext context) {
 
         List<PointBase> points = pointDao.getPointsForPao(paoId);
-        boolean isUsed = true;
+        boolean isUsed = false;
         for (PointBase point : points) {
             isUsed |= formulaDao.isPointAFormulaInput(point.getPoint().getPointID());
         }
