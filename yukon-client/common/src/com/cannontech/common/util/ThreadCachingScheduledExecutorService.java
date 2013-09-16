@@ -34,11 +34,7 @@ public class ThreadCachingScheduledExecutorService extends ExecutorDelegate impl
 
         @Override
         public void run() {
-            try {
-                threadPoolExecutor.submit(proxied);
-            } catch (RejectedExecutionException e) {
-                e.printStackTrace();
-            }
+            threadPoolExecutor.submit(proxied);
         }
     }
 
