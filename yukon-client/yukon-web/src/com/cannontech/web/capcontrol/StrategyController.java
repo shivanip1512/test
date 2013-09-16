@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.capcontrol.dao.StrategyDao;
 import com.cannontech.capcontrol.model.ViewableStrategy;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
 import com.cannontech.user.YukonUserContext;
@@ -39,7 +39,7 @@ public class StrategyController {
         if(numberOfResults < toIndex) toIndex = numberOfResults;
         strategies = strategies.subList(startIndex, toIndex);
         
-        SearchResult<ViewableStrategy> result = new SearchResult<ViewableStrategy>();
+        SearchResults<ViewableStrategy> result = new SearchResults<ViewableStrategy>();
         result.setResultList(strategies);
         result.setBounds(startIndex, itemsPerPage, numberOfResults);
         mav.addAttribute("searchResult", result);

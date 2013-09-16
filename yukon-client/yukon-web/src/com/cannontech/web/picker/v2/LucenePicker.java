@@ -8,9 +8,9 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.BooleanClause.Occur;
 
-import com.cannontech.common.search.SearchResult;
-import com.cannontech.common.search.Searcher;
-import com.cannontech.common.search.YukonObjectCriteria;
+import com.cannontech.common.search.criteria.YukonObjectCriteria;
+import com.cannontech.common.search.result.SearchResults;
+import com.cannontech.common.search.searcher.Searcher;
 import com.cannontech.user.YukonUserContext;
 
 public abstract class LucenePicker<T> extends BasePicker<T> {
@@ -23,9 +23,9 @@ public abstract class LucenePicker<T> extends BasePicker<T> {
 
 
     @Override
-    public SearchResult<T> search(String ss, int start, int count,
+    public SearchResults<T> search(String ss, int start, int count,
             String extraArgs, YukonUserContext userContext) {
-        SearchResult<T> hits;
+        SearchResults<T> hits;
         
         YukonObjectCriteria combinedCriteria = combineCriteria(criteria, userContext, extraArgs);
 		if (StringUtils.isBlank(ss)) {
@@ -37,10 +37,10 @@ public abstract class LucenePicker<T> extends BasePicker<T> {
     }
 
     @Override
-    public SearchResult<T> search(Iterable<Integer> initialIds,
+    public SearchResults<T> search(Iterable<Integer> initialIds,
             String extraArgs, YukonUserContext userContext) {
         YukonObjectCriteria combinedCriteria = combineCriteria(criteria, initialIds);
-        SearchResult<T> hits = searcher.all(combinedCriteria, 0, Integer.MAX_VALUE);
+        SearchResults<T> hits = searcher.all(combinedCriteria, 0, Integer.MAX_VALUE);
         return hits;
     }
 

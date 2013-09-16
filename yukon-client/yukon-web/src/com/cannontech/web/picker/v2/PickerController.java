@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.i18n.ObjectFormattingService;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.SubList;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -58,7 +58,7 @@ public class PickerController {
             throws IOException {
         Picker<?> picker = pickerService.getPicker(type);
 
-        SearchResult<?> searchResult =
+        SearchResults<?> searchResult =
             picker.search(Lists.newArrayList(initialIds),
                     extraArgs, context);
 
@@ -82,7 +82,7 @@ public class PickerController {
         }
 
         Picker<?> picker = pickerService.getPicker(type);
-        SearchResult<?> searchResult = picker.search(ss, start, count, extraArgs, context);
+        SearchResults<?> searchResult = picker.search(ss, start, count, extraArgs, context);
 
         response.setContentType("application/json");
 
@@ -114,7 +114,7 @@ public class PickerController {
         }
     }
 
-    private JSONObject getPopulatedJsonObj(SearchResult<?> searchResult, YukonUserContext context) {
+    private JSONObject getPopulatedJsonObj(SearchResults<?> searchResult, YukonUserContext context) {
         JSONObject json = new JSONObject();
         // Here we have special support for maps. This allows us to support enums and resolve displayable objs
         if (!searchResult.getResultList().isEmpty() && searchResult.getResultList().get(0) instanceof Map) {
@@ -129,7 +129,7 @@ public class PickerController {
                 }
                 newHits.add(newHit);
             }
-            searchResult = SearchResult.pageBasedForSubList(searchResult.getCount(),
+            searchResult = SearchResults.pageBasedForSubList(searchResult.getCount(),
                           new SubList<>(newHits, (searchResult.getCurrentPage() - 1) * searchResult.getCount(), searchResult.getHitCount()));
         }
         json.put("hits", JSONObject.fromBean(searchResult));

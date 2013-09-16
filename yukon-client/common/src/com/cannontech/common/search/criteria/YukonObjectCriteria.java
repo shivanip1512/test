@@ -1,4 +1,4 @@
-package com.cannontech.common.search;
+package com.cannontech.common.search.criteria;
 
 import org.apache.lucene.search.Query;
 

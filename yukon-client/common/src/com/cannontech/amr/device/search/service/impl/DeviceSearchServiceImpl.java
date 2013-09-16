@@ -21,7 +21,7 @@ import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -36,7 +36,7 @@ public class DeviceSearchServiceImpl implements DeviceSearchService {
     @Autowired private LoadGroupDao loadGroupDao;
     
     @Override
-    public SearchResult<DeviceSearchResultEntry> search(List<SearchField> fields, List<FilterBy> filters, OrderByField orderBy, int start, int count) {
+    public SearchResults<DeviceSearchResultEntry> search(List<SearchField> fields, List<FilterBy> filters, OrderByField orderBy, int start, int count) {
         return deviceSearchDao.search(fields, filters, orderBy, start, count);
     }
 

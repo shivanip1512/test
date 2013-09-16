@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.cannontech.common.search;
+package com.cannontech.common.search.searcher;
 
 import java.io.IOException;
 import java.util.List;
@@ -20,7 +20,11 @@ import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.util.Version;
 
+import com.cannontech.common.search.TopDocsCallbackHandler;
+import com.cannontech.common.search.YukonObjectSearchAnalyzer;
+import com.cannontech.common.search.criteria.YukonObjectCriteria;
 import com.cannontech.common.search.index.IndexManager;
+import com.cannontech.common.search.result.SearchResults;
 import com.google.common.collect.Lists;
 
 /**
@@ -33,10 +37,10 @@ public abstract class AbstractLuceneSearcher<E> {
     
     public abstract E buildResults(Document doc);
     
-    public final SearchResult<E> search(String queryString, YukonObjectCriteria criteria) {
+    public final SearchResults<E> search(String queryString, YukonObjectCriteria criteria) {
         return search(queryString, criteria, 0, -1);
     }
-    public final SearchResult<E> search(String queryString, YukonObjectCriteria criteria, int start, int count) {
+    public final SearchResults<E> search(String queryString, YukonObjectCriteria criteria, int start, int count) {
         try { 
             Query query = createQuery(queryString, criteria);
             return doSearch(query, start, count);
@@ -45,11 +49,11 @@ public abstract class AbstractLuceneSearcher<E> {
         }
     }
     
-    protected final SearchResult<E> doSearch(final Query query, final int start, final int count) throws IOException {
-        final SearchResult<E> result = getIndexManager().getSearchTemplate().doCallBackSearch(query, new TopDocsCallbackHandler<SearchResult<E>>() {
+    protected final SearchResults<E> doSearch(final Query query, final int start, final int count) throws IOException {
+        final SearchResults<E> result = getIndexManager().getSearchTemplate().doCallBackSearch(query, new TopDocsCallbackHandler<SearchResults<E>>() {
             
             @Override
-            public SearchResult<E> processHits(TopDocs topDocs, IndexSearcher indexSearcher) throws IOException {
+            public SearchResults<E> processHits(TopDocs topDocs, IndexSearcher indexSearcher) throws IOException {
                 final int stop = Math.min(start + count, topDocs.totalHits);
                 final List<E> list = Lists.newArrayListWithCapacity(stop - start);
 
@@ -59,7 +63,7 @@ public abstract class AbstractLuceneSearcher<E> {
                     list.add(buildResults(document));
                 }
 
-                SearchResult<E> result = new SearchResult<E>();
+                SearchResults<E> result = new SearchResults<E>();
                 result.setBounds(start, count, topDocs.totalHits);
                 result.setResultList(list);
                 return result;

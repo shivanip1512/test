@@ -31,7 +31,7 @@ import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.i18n.ObjectFormattingService;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.PaoDao;
@@ -187,7 +187,7 @@ public class ApplianceCategoryController {
         boolean sortDescending = backingBean.getDescending();
 
         Iterable<Integer> applianceCategoryIds = applianceCategoryDao.getApplianceCategoryIdsByEC(ecId);
-        SearchResult<AssignedProgram> assignedPrograms =
+        SearchResults<AssignedProgram> assignedPrograms =
             assignedProgramService.filter(applianceCategoryIds, UiFilterList.wrap(filters), sortBy,
                                           sortDescending, backingBean.getStartIndex(),
                                           backingBean.getItemsPerPage());
@@ -235,7 +235,7 @@ public class ApplianceCategoryController {
         }
         boolean sortDescending = backingBean.getDescending();
 
-        SearchResult<AssignedProgram> assignedPrograms =
+        SearchResults<AssignedProgram> assignedPrograms =
             assignedProgramService.filter(applianceCategory.getApplianceCategoryId(),
                                           UiFilterList.wrap(filters), sortBy, sortDescending,
                                           backingBean.getStartIndex(), backingBean.getItemsPerPage());

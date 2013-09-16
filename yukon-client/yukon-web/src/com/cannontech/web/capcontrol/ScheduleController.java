@@ -34,7 +34,7 @@ import com.cannontech.common.bulk.filter.service.FilterDao;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.PaoScheduleDao;
@@ -127,7 +127,7 @@ public class ScheduleController {
 		ScheduleAssignmentRowMapper rowMapper = new ScheduleAssignmentRowMapper();
 		
 		//Filter, sort and get search results
-		SearchResult<PaoScheduleAssignment> result = 
+		SearchResults<PaoScheduleAssignment> result = 
 		    filterService.filter(filter, sorter, startIndex, itemsPerPage, rowMapper);
 		
         model.addAttribute("searchResult", result);
@@ -157,7 +157,7 @@ public class ScheduleController {
         if (numberOfResults < toIndex) toIndex = numberOfResults;
         schedList = schedList.subList(startIndex, toIndex);
         
-        SearchResult<PAOSchedule> result = new SearchResult<PAOSchedule>();
+        SearchResults<PAOSchedule> result = new SearchResults<PAOSchedule>();
         result.setResultList(schedList);
         result.setBounds(startIndex, itemsPerPage, numberOfResults);
         mav.addAttribute("searchResult", result);
@@ -218,7 +218,7 @@ public class ScheduleController {
 	    String filterByCommand = ServletRequestUtils.getStringParameter(request, "startCommand", "");
 	    String filterBySchedule = ServletRequestUtils.getStringParameter(request, "startSchedule", "");
 	    
-	    SearchResult<PaoScheduleAssignment> searchResult = 
+	    SearchResults<PaoScheduleAssignment> searchResult = 
 	        filterPaoScheduleAssignments(filterByCommand, filterBySchedule, 0, Integer.MAX_VALUE);
         
 	    int numberFailed = 0;
@@ -252,7 +252,7 @@ public class ScheduleController {
         String filterByCommand = ServletRequestUtils.getStringParameter(request, "stopCommand", "");
         String filterBySchedule = ServletRequestUtils.getStringParameter(request, "stopSchedule", "");
 	    
-        SearchResult<PaoScheduleAssignment> searchResult =
+        SearchResults<PaoScheduleAssignment> searchResult =
             filterPaoScheduleAssignments(filterByCommand, filterBySchedule, 0, Integer.MAX_VALUE);
         
         String result = "";
@@ -546,7 +546,7 @@ public class ScheduleController {
     /* 
      * Helper method to simplify filtering schedule assignments.
      */
-    private SearchResult<PaoScheduleAssignment> filterPaoScheduleAssignments(String filterCommand, 
+    private SearchResults<PaoScheduleAssignment> filterPaoScheduleAssignments(String filterCommand, 
                                                     String filterSchedule, int startIndex, int itemsPerPage) {
         //Convert filter strings into filters
         //Filtering on "All" is equivalent to no filters
@@ -568,7 +568,7 @@ public class ScheduleController {
         ScheduleAssignmentRowMapper rowMapper = new ScheduleAssignmentRowMapper();
         
         //Filter, sort and get search results
-        SearchResult<PaoScheduleAssignment> searchResult = 
+        SearchResults<PaoScheduleAssignment> searchResult = 
             filterService.filter(filter, sorter, startIndex, itemsPerPage, rowMapper);
         
         return searchResult;

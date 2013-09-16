@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.user.UserAuthenticationInfo;
 import com.cannontech.common.util.Pair;
 import com.cannontech.common.util.StringUtils;
@@ -237,7 +237,7 @@ public class UserGroupEditorController {
         int startIndex = (page - 1) * itemsPerPage;
         
         com.cannontech.database.db.user.UserGroup userGroup = userGroupDao.getDBUserGroup(userGroupId);
-        SearchResult<LiteYukonUser> searchResult = yukonUserDao.getUsersForUserGroup(userGroupId, startIndex, itemsPerPage);
+        SearchResults<LiteYukonUser> searchResult = yukonUserDao.getUsersForUserGroup(userGroupId, startIndex, itemsPerPage);
         model.addAttribute("searchResult", searchResult);
         List<LiteYukonUser> users = searchResult.getResultList();
         model.addAttribute("users", users);

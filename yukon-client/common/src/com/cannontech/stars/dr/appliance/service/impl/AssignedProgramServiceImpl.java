@@ -13,7 +13,7 @@ import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.FilterDao;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.stars.dr.appliance.dao.AssignedProgramDao;
 import com.cannontech.stars.dr.appliance.dao.AssignedProgramForApplianceCategoryFilter;
 import com.cannontech.stars.dr.appliance.dao.AssignedProgramRowMapper;
@@ -32,7 +32,7 @@ public class AssignedProgramServiceImpl implements AssignedProgramService {
 
     @Override
     @Transactional(propagation=Propagation.SUPPORTS)
-    public SearchResult<AssignedProgram> filter(int applianceCategoryId,
+    public SearchResults<AssignedProgram> filter(int applianceCategoryId,
             UiFilter<AssignedProgram> filter, SortBy sortBy,
             boolean sortDescending, int startIndex, int count) {
         List<UiFilter<AssignedProgram>> filters = new ArrayList<UiFilter<AssignedProgram>>();
@@ -48,7 +48,7 @@ public class AssignedProgramServiceImpl implements AssignedProgramService {
 
     @Override
     @Transactional(propagation=Propagation.SUPPORTS)
-    public SearchResult<AssignedProgram> filter(Iterable<Integer> applianceCategoryIds,
+    public SearchResults<AssignedProgram> filter(Iterable<Integer> applianceCategoryIds,
                                                 UiFilter<AssignedProgram> filter, SortBy sortBy,
                                                 boolean sortDescending, int startIndex, int count) {
         List<UiFilter<AssignedProgram>> filters = new ArrayList<UiFilter<AssignedProgram>>();
@@ -62,12 +62,12 @@ public class AssignedProgramServiceImpl implements AssignedProgramService {
         return filter(filters, sortBy, null, sortDescending, startIndex, count);
     }
     
-    private SearchResult<AssignedProgram> filter(List<UiFilter<AssignedProgram>> filters,
+    private SearchResults<AssignedProgram> filter(List<UiFilter<AssignedProgram>> filters,
                                                  SortBy sortBy, Integer highestProgramOrder,
                                                  boolean sortDescending, int startIndex, int count) {
         RowMapperWithBaseQuery<AssignedProgram> rowMapper =
             new AssignedProgramRowMapper(sortBy, sortDescending, highestProgramOrder, null);
-        SearchResult<AssignedProgram> searchResult =
+        SearchResults<AssignedProgram> searchResult =
             filterDao.filter(UiFilterList.wrap(filters), null, startIndex, count, rowMapper);
 
         Function<AssignedProgram, Integer> idFromAssignedProgram = new Function<AssignedProgram, Integer>() {

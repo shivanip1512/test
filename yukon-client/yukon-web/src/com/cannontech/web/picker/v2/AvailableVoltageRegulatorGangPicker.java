@@ -4,9 +4,9 @@ import java.util.List;
 
 import com.cannontech.common.bulk.filter.PostProcessingFilter;
 import com.cannontech.common.bulk.filter.SqlFilter;
-import com.cannontech.common.search.UltraLightPao;
 import com.cannontech.common.search.pao.db.AvailableRegulatorFilter;
 import com.cannontech.common.search.pao.db.VoltageRegulatorGangFilter;
+import com.cannontech.common.search.result.UltraLightPao;
 import com.cannontech.user.YukonUserContext;
 
 public class AvailableVoltageRegulatorGangPicker extends DatabasePaoPicker {

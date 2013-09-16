@@ -1,6 +1,6 @@
 package com.cannontech.stars.dr.optout.service;
 
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.stars.dr.optout.model.OptOutSurvey;
 import com.google.common.collect.Multimap;
 
@@ -14,6 +14,6 @@ public interface OptOutSurveyService {
     Multimap<Integer, Integer> getActiveSurveyIdsByInventoryId(
             Iterable<Integer> inventoryIds);
 
-    SearchResult<OptOutSurvey> findSurveys(int energyCompanyId, int startIndex,
+    SearchResults<OptOutSurvey> findSurveys(int energyCompanyId, int startIndex,
             int count);
 }

@@ -4,7 +4,7 @@
 <%@ attribute name="baseUrl" %>
 <%@ attribute name="previousUrl" %>
 <%@ attribute name="nextUrl" %>
-<%@ attribute name="searchResult" type="com.cannontech.common.search.SearchResult" %>
+<%@ attribute name="searchResult" type="com.cannontech.common.search.result.SearchResults" %>
 <%@ tag body-content="empty" %>
 
 <%--

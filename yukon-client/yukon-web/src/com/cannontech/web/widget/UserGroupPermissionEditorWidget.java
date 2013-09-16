@@ -10,7 +10,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.cannontech.common.search.UltraLightPao;
+import com.cannontech.common.search.result.UltraLightPao;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.core.authorization.service.PaoPermissionEditorService;

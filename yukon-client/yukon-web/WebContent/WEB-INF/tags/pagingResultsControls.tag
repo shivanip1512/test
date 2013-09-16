@@ -1,6 +1,6 @@
 <%@ tag body-content="empty" %>
 
-<%@ attribute name="result" required="true" type="com.cannontech.common.search.SearchResult" %>
+<%@ attribute name="result" required="true" type="com.cannontech.common.search.result.SearchResults" %>
 <%@ attribute name="baseUrl" required="true" %>
 <%@ attribute name="adjustPageCount" description="When 'true', the items per page options appear. Default: false." %>
 

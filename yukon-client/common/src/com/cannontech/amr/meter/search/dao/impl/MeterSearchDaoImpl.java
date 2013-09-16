@@ -13,7 +13,7 @@ import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.amr.meter.search.dao.MeterSearchDao;
 import com.cannontech.amr.meter.search.model.FilterBy;
 import com.cannontech.amr.meter.search.model.MeterSearchOrderBy;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.SqlFragmentCollection;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -29,7 +29,7 @@ public class MeterSearchDaoImpl implements MeterSearchDao {
     }
 
     @SuppressWarnings("unchecked")
-    public SearchResult<Meter> search(List<FilterBy> filterByList,
+    public SearchResults<Meter> search(List<FilterBy> filterByList,
                                           MeterSearchOrderBy orderBy, 
                                           final int start, 
                                           final int count) {
@@ -78,7 +78,7 @@ public class MeterSearchDaoImpl implements MeterSearchDao {
 
         resultList = (List<Meter>) jdbcTemplate.getJdbcOperations().query(meterSql.getSql(), meterSql.getArguments(), new SearchPaoResultSetExtractor(start, count));
 
-        SearchResult<Meter> searchResult = new SearchResult<Meter>();
+        SearchResults<Meter> searchResult = new SearchResults<Meter>();
         searchResult.setBounds(start, count, totalCount);
         searchResult.setResultList((List<Meter>) resultList);
         

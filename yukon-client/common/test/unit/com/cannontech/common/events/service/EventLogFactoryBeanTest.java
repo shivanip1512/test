@@ -18,7 +18,7 @@ import com.cannontech.common.events.model.EventCategory;
 import com.cannontech.common.events.model.EventLog;
 import com.cannontech.common.events.service.impl.EventLogServiceImpl;
 import com.cannontech.common.exception.BadConfigurationException;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.TransactionExecutor;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -82,7 +82,7 @@ public class EventLogFactoryBeanTest {
                 return null;
             }
             @Override
-            public SearchResult<EventLog> getPagedSearchResultByCategories(Iterable<EventCategory> eventCategories,
+            public SearchResults<EventLog> getPagedSearchResultByCategories(Iterable<EventCategory> eventCategories,
                                                                            ReadableInstant startDate, 
                                                                            ReadableInstant stopDate, 
                                                                            Integer start, 
@@ -90,7 +90,7 @@ public class EventLogFactoryBeanTest {
                 return null;
             }
             @Override
-            public SearchResult<EventLog> getPagedSearchResultByLogTypes(Iterable<String> eventLogTypes,
+            public SearchResults<EventLog> getPagedSearchResultByLogTypes(Iterable<String> eventLogTypes,
                                                                          ReadableInstant startDate,
                                                                          ReadableInstant stopDate,
                                                                          Integer start,
@@ -98,7 +98,7 @@ public class EventLogFactoryBeanTest {
                 return null;
             }
             @Override
-            public SearchResult<EventLog> getFilteredPagedSearchResultByCategories(
+            public SearchResults<EventLog> getFilteredPagedSearchResultByCategories(
                                                                                    Iterable<EventCategory> eventCategories,
                                                                                    ReadableInstant startDate,
                                                                                    ReadableInstant stopDate,
@@ -112,7 +112,7 @@ public class EventLogFactoryBeanTest {
                 return null;
             }
             @Override
-            public SearchResult<EventLog> findEventsByStringAndPaginate(String searchString, Integer firstRowIndex, Integer pageRowCount) {
+            public SearchResults<EventLog> findEventsByStringAndPaginate(String searchString, Integer firstRowIndex, Integer pageRowCount) {
                 return null;
             }
         };
@@ -184,7 +184,7 @@ public class EventLogFactoryBeanTest {
                 return null;
             }
             @Override
-            public SearchResult<EventLog> getPagedSearchResultByCategories(Iterable<EventCategory> eventCategories,
+            public SearchResults<EventLog> getPagedSearchResultByCategories(Iterable<EventCategory> eventCategories,
                                                                            ReadableInstant startDate,
                                                                            ReadableInstant stopDate,
                                                                            Integer start,
@@ -192,7 +192,7 @@ public class EventLogFactoryBeanTest {
                 return null;
             }
             @Override
-            public SearchResult<EventLog> getPagedSearchResultByLogTypes(
+            public SearchResults<EventLog> getPagedSearchResultByLogTypes(
                                                                          Iterable<String> eventLogTypes,
                                                                          ReadableInstant startDate,
                                                                          ReadableInstant stopDate,
@@ -201,7 +201,7 @@ public class EventLogFactoryBeanTest {
                 return null;
             }
             @Override
-            public SearchResult<EventLog> getFilteredPagedSearchResultByCategories(
+            public SearchResults<EventLog> getFilteredPagedSearchResultByCategories(
                                                                                    Iterable<EventCategory> eventCategories,
                                                                                    ReadableInstant startDate,
                                                                                    ReadableInstant stopDate,
@@ -215,7 +215,7 @@ public class EventLogFactoryBeanTest {
                 return null;
             }
             @Override
-            public SearchResult<EventLog> findEventsByStringAndPaginate(String searchString, Integer firstRowIndex, Integer pageRowCount) {
+            public SearchResults<EventLog> findEventsByStringAndPaginate(String searchString, Integer firstRowIndex, Integer pageRowCount) {
                 return null;
             }
         };

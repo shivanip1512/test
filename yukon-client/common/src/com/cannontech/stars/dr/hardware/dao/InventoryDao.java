@@ -8,7 +8,7 @@ import java.util.Set;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.inventory.YukonInventory;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.Pair;
 import com.cannontech.core.dynamic.impl.SimplePointValue;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -149,7 +149,7 @@ public interface InventoryDao {
      * @param starsMeters Wether this energy company uses 'STARS' meters (MeterHardwareBase) or MCT's
      * @return result The resulting list of inventory
      */
-    public SearchResult<InventorySearchResult> search(InventorySearch inventorySearch, Collection<Integer> ecIds, int start, int pageCount, boolean starsMeters);
+    public SearchResults<InventorySearchResult> search(InventorySearch inventorySearch, Collection<Integer> ecIds, int start, int pageCount, boolean starsMeters);
 
     /**
      * This method is a performance method.  This allows us to get a huge map of serial numbers to inventory ids, which can be

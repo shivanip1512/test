@@ -1,6 +1,6 @@
 <%@ tag body-content="empty" %>
 
-<%@ attribute name="result" required="true" type="com.cannontech.common.search.SearchResult" %>
+<%@ attribute name="result" required="true" type="com.cannontech.common.search.result.SearchResults" %>
 <%@ attribute name="type" required="true" %>
 <%@ attribute name="auditId" required="true" %>
 

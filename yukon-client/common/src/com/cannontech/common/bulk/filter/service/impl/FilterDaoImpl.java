@@ -15,7 +15,7 @@ import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
 import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.FilterDao;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.SqlFragmentCollection;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -27,7 +27,7 @@ public class FilterDaoImpl implements FilterDao {
     private Logger log = YukonLogManager.getLogger(FilterDaoImpl.class);
 
     @Override
-    public <T> SearchResult<T> filter(UiFilter<T> filter,
+    public <T> SearchResults<T> filter(UiFilter<T> filter,
             Comparator<? super T> sorter, int startIndex, int count,
             RowMapperWithBaseQuery<T> rowMapper) {
         SqlFragmentCollection whereClause = SqlFragmentCollection.newAndCollection();
@@ -57,7 +57,7 @@ public class FilterDaoImpl implements FilterDao {
             sql.append(orderByClause);
         }
 
-        SearchResult<T> retVal = new SearchResult<T>();
+        SearchResults<T> retVal = new SearchResults<T>();
 
         List<T> objectsFromDb = yukonJdbcTemplate.query(sql, rowMapper);
         

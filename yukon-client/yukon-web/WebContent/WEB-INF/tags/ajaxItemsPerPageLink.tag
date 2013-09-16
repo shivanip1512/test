@@ -3,7 +3,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 
-<%@ attribute name="result" required="true" type="com.cannontech.common.search.SearchResult" %>
+<%@ attribute name="result" required="true" type="com.cannontech.common.search.result.SearchResults" %>
 <%@ attribute name="baseUrl" required="true" %>
 <%@ attribute name="itemsPerPage" required="true" type="java.lang.Integer" %>
 

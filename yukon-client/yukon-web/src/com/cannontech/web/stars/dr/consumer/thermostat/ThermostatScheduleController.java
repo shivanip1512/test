@@ -29,7 +29,7 @@ import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.temperature.TemperatureUnit;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -246,7 +246,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
         int itemsPerPage = ServletRequestUtils.getIntParameter(request, "itemsPerPage", 10);
         int currentPage = ServletRequestUtils.getIntParameter(request, "page", 1);
 
-        SearchResult<ThermostatEvent> result = SearchResult.pageBasedForWholeList(currentPage, itemsPerPage, eventHistoryList);
+        SearchResults<ThermostatEvent> result = SearchResults.pageBasedForWholeList(currentPage, itemsPerPage, eventHistoryList);
         map.addAttribute("searchResult", result);
         map.addAttribute("eventHistoryList", result.getResultList());
         

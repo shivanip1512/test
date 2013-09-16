@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.pao.attribute.service.AttributeService;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.EnergyCompanyNotFoundException;
 import com.cannontech.core.dao.PaoDao;
@@ -210,8 +210,8 @@ public class EstimatedLoadController {
 
         List<FormulaBean> allFormulas = FormulaBean.toBeans(formulaDao.getAllFormulas());
         allFormulas = sortFormulas(allFormulas, sort, descending, context);
-        SearchResult<FormulaBean> pagedFormulas
-            = SearchResult.pageBasedForWholeList(page, itemsPerPage, allFormulas);
+        SearchResults<FormulaBean> pagedFormulas
+            = SearchResults.pageBasedForWholeList(page, itemsPerPage, allFormulas);
 
         model.addAttribute("sort", sort);
         model.addAttribute("descending", descending);
@@ -340,8 +340,8 @@ public class EstimatedLoadController {
         Map<Integer, LiteYukonPAObject> gearPrograms = getGearPrograms();
         gearAssignments = sortGearAssignments(gearAssignments, gearPrograms, sort, descending, context);
 
-        SearchResult<GearAssignment> pagedGears
-            = SearchResult.pageBasedForWholeList(page, itemsPerPage, gearAssignments);
+        SearchResults<GearAssignment> pagedGears
+            = SearchResults.pageBasedForWholeList(page, itemsPerPage, gearAssignments);
 
         model.addAttribute("gearSort", sort);
         model.addAttribute("gearDescending", descending);
@@ -387,8 +387,8 @@ public class EstimatedLoadController {
 
         appCatAssignments = sortAppCatAssignments(appCatAssignments, sort, descending, context);
 
-        SearchResult<ApplianceCategoryAssignment> pagedAppCats
-            = SearchResult.pageBasedForWholeList(page, itemsPerPage, appCatAssignments);
+        SearchResults<ApplianceCategoryAssignment> pagedAppCats
+            = SearchResults.pageBasedForWholeList(page, itemsPerPage, appCatAssignments);
 
         model.addAttribute("energyCompanyIds", energyCompanyIds);
         model.addAttribute("appCatSort", sort);

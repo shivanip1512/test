@@ -14,7 +14,7 @@ import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.DisplayablePaoBase;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.YukonResultSet;
@@ -50,11 +50,11 @@ public class ScenarioServiceImpl implements ScenarioService {
     };
 
     @Override
-    public SearchResult<DisplayablePao> filterScenarios(
+    public SearchResults<DisplayablePao> filterScenarios(
             YukonUserContext userContext, UiFilter<DisplayablePao> filter,
             Comparator<DisplayablePao> sorter, int startIndex, int count) {
 
-        SearchResult<DisplayablePao> searchResult =
+        SearchResults<DisplayablePao> searchResult =
             filterDao.filter(filter, sorter, startIndex, count, rowMapper);
 
         return searchResult;

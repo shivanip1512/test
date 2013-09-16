@@ -3,8 +3,8 @@ package com.cannontech.web.picker.v2;
 import java.util.Collections;
 import java.util.List;
 
-import com.cannontech.common.search.UltraLightPao;
 import com.cannontech.common.search.pao.db.UltraLightPaoRowMapper;
+import com.cannontech.common.search.result.UltraLightPao;
 import com.google.common.collect.Lists;
 
 public abstract class DatabasePaoPicker extends

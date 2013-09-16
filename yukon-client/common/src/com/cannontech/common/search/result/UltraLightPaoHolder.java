@@ -1,4 +1,4 @@
-package com.cannontech.common.search;
+package com.cannontech.common.search.result;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;

@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.bulk.filter.PostProcessingFilter;
 import com.cannontech.common.bulk.filter.SqlFilter;
-import com.cannontech.common.search.UltraLightPao;
-import com.cannontech.common.search.UltraLightPaoHolder;
+import com.cannontech.common.search.result.UltraLightPao;
+import com.cannontech.common.search.result.UltraLightPaoHolder;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.user.YukonUserContext;

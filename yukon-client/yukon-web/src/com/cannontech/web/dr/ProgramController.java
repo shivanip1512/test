@@ -29,7 +29,7 @@ import com.cannontech.common.favorites.dao.FavoritesDao;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.DisplayablePaoComparator;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.DatedObject;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authorization.support.Permission;
@@ -126,8 +126,8 @@ public class ProgramController extends ProgramControllerBase {
         List<AssetAvailabilityDetails> resultsList = getResultsList(program, userContext, null);
         sortAssetDetails(resultsList, sortBy, descending, userContext);
         
-        SearchResult<AssetAvailabilityDetails> result = 
-                SearchResult.pageBasedForWholeList(page, itemsPerPage, resultsList);
+        SearchResults<AssetAvailabilityDetails> result = 
+                SearchResults.pageBasedForWholeList(page, itemsPerPage, resultsList);
 
         model = getAssetAvailabilityInfo(program, model, userContext);
         
@@ -163,8 +163,8 @@ public class ProgramController extends ProgramControllerBase {
         List<AssetAvailabilityDetails> resultsList = getResultsList(program, userContext, filters);
         sortAssetDetails(resultsList, sortBy, descending, userContext);
 
-        SearchResult<AssetAvailabilityDetails> result = 
-                SearchResult.pageBasedForWholeList(page, itemsPerPage, resultsList);
+        SearchResults<AssetAvailabilityDetails> result = 
+                SearchResults.pageBasedForWholeList(page, itemsPerPage, resultsList);
         
         model.addAttribute("result", result);
         model.addAttribute("type", type);
@@ -273,7 +273,7 @@ public class ProgramController extends ProgramControllerBase {
             throw new IllegalArgumentException();
         }
 
-        SearchResult<DisplayablePao> searchResult =
+        SearchResults<DisplayablePao> searchResult =
             programService.filterPrograms(filter, new DisplayablePaoComparator(),
                                           0, Integer.MAX_VALUE, userContext);
         List<DisplayablePao> programs = searchResult.getResultList();
@@ -425,7 +425,7 @@ public class ProgramController extends ProgramControllerBase {
                                                      Permission.LM_VISIBLE,
                                                      Permission.CONTROL_COMMAND);
         //Get programs
-        SearchResult<DisplayablePao> searchResult = programService.filterPrograms(filter, 
+        SearchResults<DisplayablePao> searchResult = programService.filterPrograms(filter, 
                                                                                   new DisplayablePaoComparator(),
                                                                                   0, 
                                                                                   Integer.MAX_VALUE, 

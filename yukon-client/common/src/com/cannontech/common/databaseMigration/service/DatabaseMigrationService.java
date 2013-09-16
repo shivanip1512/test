@@ -11,7 +11,7 @@ import com.cannontech.common.databaseMigration.bean.WarningProcessingEnum;
 import com.cannontech.common.databaseMigration.model.DatabaseMigrationContainer;
 import com.cannontech.common.databaseMigration.model.DisplayableExportType;
 import com.cannontech.common.databaseMigration.model.ExportTypeEnum;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.user.YukonUserContext;
 
 public interface DatabaseMigrationService {
@@ -47,7 +47,7 @@ public interface DatabaseMigrationService {
     public ImportDatabaseMigrationStatus getImportStatus(String id);
     public List<ImportDatabaseMigrationStatus> getAllImportStatuses();
     
-    public SearchResult<DatabaseMigrationContainer> search(ExportTypeEnum exportType, 
+    public SearchResults<DatabaseMigrationContainer> search(ExportTypeEnum exportType, 
                                                            String searchText, 
                                                            int startIndex, int count, 
                                                            YukonUserContext userContext);

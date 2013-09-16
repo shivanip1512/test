@@ -31,7 +31,7 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.inventory.Hardware;
 import com.cannontech.common.inventory.HardwareClass;
 import com.cannontech.common.inventory.HardwareType;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
@@ -208,7 +208,7 @@ public class InventoryController {
             if (itemsPerPage == null) itemsPerPage = 25;
             int startIndex = (page - 1) * itemsPerPage;
             
-            SearchResult<InventorySearchResult> results = inventoryDao.search(inventorySearch, 
+            SearchResults<InventorySearchResult> results = inventoryDao.search(inventorySearch, 
                                                                               liteEc.getAllEnergyCompaniesDownward(), 
                                                                               startIndex, 
                                                                               itemsPerPage,

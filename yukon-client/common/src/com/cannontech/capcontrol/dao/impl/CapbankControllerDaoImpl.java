@@ -16,7 +16,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
@@ -118,7 +118,7 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
 
     @Override
     @Transactional
-    public SearchResult<LiteCapControlObject> getOrphans(final int start, final int count) {
+    public SearchResults<LiteCapControlObject> getOrphans(final int start, final int count) {
         SqlStatementBuilder controlSql = new SqlStatementBuilder();
         controlSql.append("SELECT DISTINCT ControlDeviceId");
         controlSql.append("FROM CapBank");
@@ -149,7 +149,7 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
 
         List<LiteCapControlObject> unassignedCbcs = cbcOrphanExtractor.getResultList();
 
-        SearchResult<LiteCapControlObject> searchResult = new SearchResult<LiteCapControlObject>();
+        SearchResults<LiteCapControlObject> searchResult = new SearchResults<LiteCapControlObject>();
         searchResult.setResultList(unassignedCbcs);
         searchResult.setBounds(start, count, orphanCount);
 

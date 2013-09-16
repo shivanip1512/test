@@ -5,7 +5,7 @@ import java.util.Comparator;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.DatedObject;
 import com.cannontech.dr.controlarea.model.ControlArea;
 import com.cannontech.loadcontrol.data.LMControlArea;
@@ -20,7 +20,7 @@ public interface ControlAreaService {
 
     public DisplayablePao findControlAreaForProgram(YukonUserContext userContext, int programId);
 
-    public SearchResult<DisplayablePao> filterControlAreas(UiFilter<DisplayablePao> filter,
+    public SearchResults<DisplayablePao> filterControlAreas(UiFilter<DisplayablePao> filter,
                                                         Comparator<DisplayablePao> sorter, 
                                                         int startIndex, int count,
                                                         YukonUserContext userContext);

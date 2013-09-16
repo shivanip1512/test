@@ -16,7 +16,7 @@ import com.cannontech.common.pao.DisplayablePaoBase;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.DatedObject;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -58,7 +58,7 @@ public class LoadGroupServiceImpl implements LoadGroupService {
             int loadGroupId, YukonUserContext userContext) {
         UiFilter<DisplayablePao> filter = new MacroLoadGroupForLoadGroupFilter(loadGroupId);
 
-        SearchResult<DisplayablePao> searchResult =
+        SearchResults<DisplayablePao> searchResult =
             filterGroups(filter, null, 0, Integer.MAX_VALUE, userContext);
 
         return searchResult.getResultList();
@@ -70,11 +70,11 @@ public class LoadGroupServiceImpl implements LoadGroupService {
     }
     
     @Override
-    public SearchResult<DisplayablePao> filterGroups(
+    public SearchResults<DisplayablePao> filterGroups(
             UiFilter<DisplayablePao> filter, Comparator<DisplayablePao> sorter,
             int startIndex, int count, YukonUserContext userContext) {
 
-        SearchResult<DisplayablePao> searchResult =
+        SearchResults<DisplayablePao> searchResult =
             filterDao.filter(filter, sorter, startIndex, count, rowMapper);
         return searchResult;
     }    

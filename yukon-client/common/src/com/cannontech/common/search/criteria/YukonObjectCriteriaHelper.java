@@ -7,7 +7,6 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TermRangeQuery;
 
-import com.cannontech.common.search.YukonObjectCriteria;
 
 public class YukonObjectCriteriaHelper implements YukonObjectCriteria {
     BooleanQuery query = new BooleanQuery(false);

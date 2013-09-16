@@ -23,7 +23,7 @@ import com.cannontech.cbc.exceptions.MissingSearchType;
 import com.cannontech.cbc.util.CapControlUtils;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.CapControlDao;
 import com.cannontech.core.dao.PaoDao;
@@ -99,7 +99,7 @@ public class ResultsController {
         
         int hitCount = 0;
         List<LiteWrapper> items = Lists.newArrayList();
-        SearchResult<LiteCapControlObject> ccObjects = null;
+        SearchResults<LiteCapControlObject> ccObjects = null;
         SearchType searchType = null;
 
         if( CBCWebUtils.TYPE_ORPH_SUBSTATIONS.equals(srchCriteria) ) {
@@ -200,7 +200,7 @@ public class ResultsController {
             }
         }
         
-        SearchResult<ResultRow> searchResult = new SearchResult<ResultRow>();
+        SearchResults<ResultRow> searchResult = new SearchResults<ResultRow>();
         searchResult.setResultList(rows);
         if (rows.isEmpty()) {
             searchResult.setBounds(0, itemsPerPage, 0);

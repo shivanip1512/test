@@ -3,7 +3,7 @@ package com.cannontech.web.stars.dr.operator.inventory.model;
 import java.util.List;
 
 import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.Completable;
 import com.google.common.collect.Lists;
 
@@ -108,20 +108,20 @@ public class ControlAuditResult implements Completable {
         return true;
     }
     
-    public SearchResult<AuditRow> getControlledPaged() {
-        return SearchResult.pageBasedForWholeList(1, 10, controlledRows);
+    public SearchResults<AuditRow> getControlledPaged() {
+        return SearchResults.pageBasedForWholeList(1, 10, controlledRows);
     }
     
-    public SearchResult<AuditRow> getUncontrolledPaged() {
-        return SearchResult.pageBasedForWholeList(1, 10, uncontrolledRows);
+    public SearchResults<AuditRow> getUncontrolledPaged() {
+        return SearchResults.pageBasedForWholeList(1, 10, uncontrolledRows);
     }
     
-    public SearchResult<AuditRow> getUnknownPaged() {
-        return SearchResult.pageBasedForWholeList(1, 10, unknownRows);
+    public SearchResults<AuditRow> getUnknownPaged() {
+        return SearchResults.pageBasedForWholeList(1, 10, unknownRows);
     }
     
-    public SearchResult<AuditRow> getUnsupportedPaged() {
-        return SearchResult.pageBasedForWholeList(1, 10, unsupportedRows);
+    public SearchResults<AuditRow> getUnsupportedPaged() {
+        return SearchResults.pageBasedForWholeList(1, 10, unsupportedRows);
     }
     
 }

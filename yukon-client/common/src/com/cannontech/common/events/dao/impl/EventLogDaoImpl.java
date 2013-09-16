@@ -20,7 +20,7 @@ import com.cannontech.common.events.dao.EventLogDao;
 import com.cannontech.common.events.model.ArgumentColumn;
 import com.cannontech.common.events.model.EventCategory;
 import com.cannontech.common.events.model.EventLog;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.SimpleSqlFragment;
 import com.cannontech.common.util.SqlFragmentCollection;
 import com.cannontech.common.util.SqlFragmentSource;
@@ -230,15 +230,15 @@ public class EventLogDaoImpl implements EventLogDao {
 
     
     @Override
-    public SearchResult<EventLog> getPagedSearchResultByCategories(Iterable<EventCategory> eventCategories, 
+    public SearchResults<EventLog> getPagedSearchResultByCategories(Iterable<EventCategory> eventCategories, 
                                                                    ReadableInstant startDate, 
                                                                    ReadableInstant stopDate, 
                                                                    Integer start, 
                                                                    Integer pageCount) {
-        SearchResult<EventLog> result = new SearchResult<EventLog>();
+        SearchResults<EventLog> result = new SearchResults<EventLog>();
         Set<EventCategory> slimEventCategories = removeDuplicates(eventCategories);
         if (slimEventCategories.isEmpty()){
-            return SearchResult.emptyResult();
+            return SearchResults.emptyResult();
         }
         
         /* Get row count. */
@@ -267,16 +267,16 @@ public class EventLogDaoImpl implements EventLogDao {
     }
 
     @Override
-    public SearchResult<EventLog> getPagedSearchResultByLogTypes(Iterable<String> eventLogTypes,
+    public SearchResults<EventLog> getPagedSearchResultByLogTypes(Iterable<String> eventLogTypes,
                                                                  ReadableInstant startDate,
                                                                  ReadableInstant stopDate,
                                                                  Integer start,
                                                                  Integer pageCount) {
-        SearchResult<EventLog> result = new SearchResult<EventLog>();
+        SearchResults<EventLog> result = new SearchResults<EventLog>();
 
         Iterator<String> iterator = eventLogTypes.iterator();
         if (!iterator.hasNext()){
-            return SearchResult.emptyResult();
+            return SearchResults.emptyResult();
         }
         
         /* Get row count. */
@@ -304,7 +304,7 @@ public class EventLogDaoImpl implements EventLogDao {
 
 
     @Override
-    public SearchResult<EventLog> 
+    public SearchResults<EventLog> 
                 getFilteredPagedSearchResultByCategories(Iterable<EventCategory> eventCategories,
                                                          ReadableInstant startDate,
                                                          ReadableInstant stopDate,
@@ -312,10 +312,10 @@ public class EventLogDaoImpl implements EventLogDao {
                                                          Integer pageCount,
                                                          String filterString) {
 
-        SearchResult<EventLog> result = new SearchResult<EventLog>();
+        SearchResults<EventLog> result = new SearchResults<EventLog>();
         Set<EventCategory> slimEventCategories = removeDuplicates(eventCategories);
         if (slimEventCategories.isEmpty()){
-            return SearchResult.emptyResult();
+            return SearchResults.emptyResult();
         }
 
         /* Get row count. */
@@ -344,9 +344,9 @@ public class EventLogDaoImpl implements EventLogDao {
 
 
     @Override
-    public SearchResult<EventLog> findEventsByStringAndPaginate(String searchString, Integer firstRowIndex, Integer pageRowCount) {
+    public SearchResults<EventLog> findEventsByStringAndPaginate(String searchString, Integer firstRowIndex, Integer pageRowCount) {
 
-        SearchResult<EventLog> results = new SearchResult<EventLog>();
+        SearchResults<EventLog> results = new SearchResults<EventLog>();
         if (StringUtils.isEmpty(searchString)) {
             Log.info("findEventsByStringAndPaginate(..): Attempted query with blank searchString.  Returning no results.");
             return results;

@@ -11,7 +11,7 @@ import com.cannontech.common.bulk.filter.SqlFragmentUiFilter;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.FilterDao;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.survey.dao.SurveyDao;
 import com.cannontech.common.survey.dao.impl.SurveyRowMapper;
 import com.cannontech.common.survey.model.Answer;
@@ -34,7 +34,7 @@ public class SurveyServiceImpl implements SurveyService {
         new SurveyRowMapper();
 
     @Override
-    public SearchResult<Survey> findSurveys(final int energyCompanyId,
+    public SearchResults<Survey> findSurveys(final int energyCompanyId,
             int startIndex, int count) {
 
         UiFilter<Survey> filter = new SqlFragmentUiFilter<Survey>() {
@@ -44,7 +44,7 @@ public class SurveyServiceImpl implements SurveyService {
             }
         };
 
-        SearchResult<Survey> retVal =
+        SearchResults<Survey> retVal =
             filterDao.filter(filter, null, startIndex, count, rowMapper);
         return retVal;
     }

@@ -9,7 +9,7 @@ import com.cannontech.capcontrol.model.FeederPhaseData;
 import com.cannontech.capcontrol.model.LiteCapControlObject;
 import com.cannontech.capcontrol.model.PointIdContainer;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -53,7 +53,7 @@ public interface FeederDao {
      */
     public FeederPhaseData getFeederPhaseData(int feederId);
     
-    public SearchResult<LiteCapControlObject> getOrphans(int start, int count);
+    public SearchResults<LiteCapControlObject> getOrphans(int start, int count);
     
     /**
      * This method returns the SubBus ID that owns the given feeder ID.

@@ -3,13 +3,13 @@ package com.cannontech.web.bulk.model;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.model.Analysis;
 import com.cannontech.common.bulk.model.DeviceArchiveData;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 
 public class ArchiveAnalysisResult {
 
     private DeviceCollection deviceCollection;
     private Analysis analysis;
-    private SearchResult<DeviceArchiveData> searchResult;
+    private SearchResults<DeviceArchiveData> searchResult;
     
     public ArchiveAnalysisResult(Analysis analysis) {
         this.analysis = analysis;
@@ -23,11 +23,11 @@ public class ArchiveAnalysisResult {
         this.deviceCollection = deviceCollection;
     }
 
-    public void setSearchResult(SearchResult<DeviceArchiveData> searchResult) {
+    public void setSearchResult(SearchResults<DeviceArchiveData> searchResult) {
         this.searchResult = searchResult;
     }
 
-    public SearchResult<DeviceArchiveData> getSearchResult() {
+    public SearchResults<DeviceArchiveData> getSearchResult() {
         return searchResult;
     }
 

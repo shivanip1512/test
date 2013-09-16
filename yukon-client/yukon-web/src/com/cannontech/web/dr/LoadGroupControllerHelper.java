@@ -20,7 +20,7 @@ import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
 import com.cannontech.common.favorites.dao.FavoritesDao;
 import com.cannontech.common.pao.DisplayablePao;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.DateRange;
 import com.cannontech.common.util.MutableRange;
 import com.cannontech.common.validator.SimpleValidator;
@@ -167,7 +167,7 @@ public class LoadGroupControllerHelper {
         
         int startIndex = (backingBean.getPage() - 1) * backingBean.getItemsPerPage();
         UiFilter<DisplayablePao> filter = UiFilterList.wrap(filters);
-        SearchResult<DisplayablePao> searchResult =
+        SearchResults<DisplayablePao> searchResult =
             loadGroupService.filterGroups(filter, sorter, startIndex,
                                           backingBean.getItemsPerPage(), userContext);
 

@@ -5,12 +5,12 @@ import java.util.List;
 
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.pao.DisplayablePao;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.dr.scenario.model.Scenario;
 import com.cannontech.user.YukonUserContext;
 
 public interface ScenarioService {
-    public SearchResult<DisplayablePao> filterScenarios(
+    public SearchResults<DisplayablePao> filterScenarios(
             YukonUserContext userContext, UiFilter<DisplayablePao> filter,
             Comparator<DisplayablePao> sorter, int startIndex, int count);
 

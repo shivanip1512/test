@@ -7,7 +7,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.PhoneNumberFormattingService;
@@ -113,7 +113,7 @@ public class OperatorGeneralSearchServiceImpl implements OperatorGeneralSearchSe
         
         List<AccountSearchResult> accountSearchResultsList = operatorAccountSearchDao.getAccountSearchResultsForAccountIds(keeperAccountIds);
         
-        SearchResult<AccountSearchResult> searchResult = new SearchResult<AccountSearchResult>();
+        SearchResults<AccountSearchResult> searchResult = new SearchResults<AccountSearchResult>();
         searchResult.setBounds(startIndex, pageCount, accountIds.size());
         searchResult.setResultList((List<AccountSearchResult>) accountSearchResultsList);
         

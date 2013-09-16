@@ -5,7 +5,7 @@ import java.util.List;
 import com.cannontech.common.databaseMigration.model.DatabaseMigrationContainer;
 import com.cannontech.common.databaseMigration.model.ExportTypeEnum;
 import com.cannontech.common.databaseMigration.service.DatabaseMigrationService;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.user.YukonUserContext;
 
 public class DatabaseMigrationPicker extends BasePicker<DatabaseMigrationContainer> {
@@ -25,17 +25,17 @@ public class DatabaseMigrationPicker extends BasePicker<DatabaseMigrationContain
 	}
 
 	@Override
-	public SearchResult<DatabaseMigrationContainer> search(String ss,
+	public SearchResults<DatabaseMigrationContainer> search(String ss,
 			int start, int count, String extraArgs, YukonUserContext userContext) {
 
-		SearchResult<DatabaseMigrationContainer> searchResult = 
+		SearchResults<DatabaseMigrationContainer> searchResult = 
             databaseMigrationService.search(exportType, ss, start, count, userContext);
         
 		return searchResult;
 	}
 
     @Override
-    public SearchResult<DatabaseMigrationContainer> search(Iterable<Integer> initialIds,
+    public SearchResults<DatabaseMigrationContainer> search(Iterable<Integer> initialIds,
             String extraArgs, YukonUserContext userContext) {
         throw new UnsupportedOperationException("DatabaseMigrationPicker doesn't support initial ids");
     }

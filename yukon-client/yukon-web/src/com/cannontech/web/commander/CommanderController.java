@@ -28,7 +28,7 @@ import com.cannontech.amr.device.search.model.FilterBy;
 import com.cannontech.amr.device.search.model.OrderByField;
 import com.cannontech.amr.device.search.model.SearchField;
 import com.cannontech.amr.device.search.service.DeviceSearchService;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.dao.CommandDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteCommand;
@@ -68,7 +68,7 @@ public class CommanderController {
         List<FilterBy> searchFilters = new ArrayList<FilterBy>();
         searchFilters.add(categoryfilter);
         searchFilters.addAll(editableFilters);
-        SearchResult<DeviceSearchResultEntry> deviceSearchResults = deviceSearchService.search(fields, searchFilters, orderBy, ((page - 1) * itemsPerPage), itemsPerPage);
+        SearchResults<DeviceSearchResultEntry> deviceSearchResults = deviceSearchService.search(fields, searchFilters, orderBy, ((page - 1) * itemsPerPage), itemsPerPage);
         
         modelMap.addAttribute("filters", editableFilters);
         modelMap.addAttribute("fields", fields);

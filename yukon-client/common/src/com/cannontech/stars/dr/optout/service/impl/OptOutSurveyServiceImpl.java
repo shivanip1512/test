@@ -11,7 +11,7 @@ import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
 import com.cannontech.common.bulk.filter.SqlFragmentUiFilter;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.FilterDao;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.SqlBuilder;
 import com.cannontech.stars.dr.appliance.dao.AssignedProgramDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
@@ -72,7 +72,7 @@ public class OptOutSurveyServiceImpl implements OptOutSurveyService {
 
     @Override
     @Transactional(readOnly=true)
-    public SearchResult<OptOutSurvey> findSurveys(final int energyCompanyId,
+    public SearchResults<OptOutSurvey> findSurveys(final int energyCompanyId,
             int startIndex, int count) {
 
         UiFilter<OptOutSurvey> filter = new SqlFragmentUiFilter<OptOutSurvey>() {
@@ -82,7 +82,7 @@ public class OptOutSurveyServiceImpl implements OptOutSurveyService {
             }
         };
 
-        SearchResult<OptOutSurvey> retVal =
+        SearchResults<OptOutSurvey> retVal =
             filterDao.filter(filter, null, startIndex, count, rowMapper);
 
         Multimap<OptOutSurvey, Integer> programsByOptOutSurveyId =

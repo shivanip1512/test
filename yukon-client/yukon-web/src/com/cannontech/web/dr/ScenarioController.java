@@ -30,7 +30,7 @@ import com.cannontech.common.bulk.filter.service.UiFilterList;
 import com.cannontech.common.favorites.dao.FavoritesDao;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.DisplayablePaoComparator;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
@@ -87,7 +87,7 @@ public class ScenarioController extends DemandResponseControllerBase {
         }
         UiFilter<DisplayablePao> filter = UiFilterList.wrap(filters);
         int startIndex = (backingBean.getPage() - 1) * backingBean.getItemsPerPage();
-        SearchResult<DisplayablePao> searchResult =
+        SearchResults<DisplayablePao> searchResult =
             scenarioService.filterScenarios(userContext, filter, sorter, startIndex,
                                             backingBean.getItemsPerPage());
 
@@ -143,8 +143,8 @@ public class ScenarioController extends DemandResponseControllerBase {
         List<AssetAvailabilityDetails> resultsList = getResultsList(scenario, userContext, null);
         sortAssetDetails(resultsList, sortBy, descending, userContext);
         
-        SearchResult<AssetAvailabilityDetails> result = 
-                SearchResult.pageBasedForWholeList(page, itemsPerPage, resultsList);
+        SearchResults<AssetAvailabilityDetails> result = 
+                SearchResults.pageBasedForWholeList(page, itemsPerPage, resultsList);
 
         model = getAssetAvailabilityInfo(scenario, model, userContext);
         
@@ -180,8 +180,8 @@ public class ScenarioController extends DemandResponseControllerBase {
         List<AssetAvailabilityDetails> resultsList = getResultsList(scenario, userContext, filters);
         sortAssetDetails(resultsList, sortBy, descending, userContext);
 
-        SearchResult<AssetAvailabilityDetails> result = 
-                SearchResult.pageBasedForWholeList(page, itemsPerPage, resultsList);
+        SearchResults<AssetAvailabilityDetails> result = 
+                SearchResults.pageBasedForWholeList(page, itemsPerPage, resultsList);
         
         model.addAttribute("result", result);
         model.addAttribute("type", type);

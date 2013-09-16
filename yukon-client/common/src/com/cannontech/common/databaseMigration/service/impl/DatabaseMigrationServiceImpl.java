@@ -67,7 +67,7 @@ import com.cannontech.common.databaseMigration.service.DatabaseMigrationService;
 import com.cannontech.common.databaseMigration.service.ExportXMLGeneratorService;
 import com.cannontech.common.events.loggers.DatabaseMigrationEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.FormattingTemplateProcessor;
 import com.cannontech.common.util.RecentResultsCache;
@@ -1095,7 +1095,7 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
     }
     
     @Override
-    public SearchResult<DatabaseMigrationContainer> search(ExportTypeEnum exportType, 
+    public SearchResults<DatabaseMigrationContainer> search(ExportTypeEnum exportType, 
                                                            String searchText, 
                                                            int startIndex, int count, 
                                                            YukonUserContext userContext) {
@@ -1114,8 +1114,8 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
             pickerList.add(picker);
         }
         
-        SearchResult<DatabaseMigrationContainer> searchResult = 
-            new SearchResult<DatabaseMigrationContainer>();
+        SearchResults<DatabaseMigrationContainer> searchResult = 
+            new SearchResults<DatabaseMigrationContainer>();
         
         searchResult.setBounds(startIndex, count, pickerList.size());
         

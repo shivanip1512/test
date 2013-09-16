@@ -26,7 +26,7 @@ import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.DisplayablePaoComparator;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -212,7 +212,7 @@ public class StopProgramController extends ProgramControllerBase {
             throw new IllegalArgumentException();
         }
 
-        SearchResult<DisplayablePao> searchResult =
+        SearchResults<DisplayablePao> searchResult =
             programService.filterPrograms(filter, new DisplayablePaoComparator(),
                                           0, Integer.MAX_VALUE, userContext);
         List<DisplayablePao> programs = searchResult.getResultList();

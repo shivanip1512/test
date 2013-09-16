@@ -32,7 +32,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.DatedObject;
 import com.cannontech.common.util.SqlFragmentSource;
@@ -143,19 +143,19 @@ public class ProgramServiceImpl implements ProgramService {
                                                          YukonUserContext userContext) {
         UiFilter<DisplayablePao> filter = new ForLoadGroupFilter(loadGroupId);
 
-        SearchResult<DisplayablePao> searchResult =
+        SearchResults<DisplayablePao> searchResult =
             filterPrograms(filter, null, 0, Integer.MAX_VALUE, userContext);
 
         return searchResult.getResultList();
     }
 
     @Override
-    public SearchResult<DisplayablePao> filterPrograms(UiFilter<DisplayablePao> filter,
+    public SearchResults<DisplayablePao> filterPrograms(UiFilter<DisplayablePao> filter,
                                                        Comparator<DisplayablePao> sorter, 
                                                        int startIndex, int count,
                                                        YukonUserContext userContext) {
 
-        SearchResult<DisplayablePao> searchResult =
+        SearchResults<DisplayablePao> searchResult =
             filterService.filter(filter, sorter, startIndex, count, rowMapper);
         return searchResult;
     }

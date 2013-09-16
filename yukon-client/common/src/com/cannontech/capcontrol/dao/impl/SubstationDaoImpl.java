@@ -12,7 +12,7 @@ import com.cannontech.capcontrol.model.Substation;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.IntegerRowMapper;
@@ -129,7 +129,7 @@ public class SubstationDaoImpl implements SubstationDao {
     }
     
     @Override
-	public SearchResult<LiteCapControlObject> getOrphans(final int start, final int count) {
+	public SearchResults<LiteCapControlObject> getOrphans(final int start, final int count) {
 	    /* Get the unordered total count */
     	SqlStatementBuilder orphanSql = new SqlStatementBuilder();
     	
@@ -154,7 +154,7 @@ public class SubstationDaoImpl implements SubstationDao {
         
         List<LiteCapControlObject> unassignedSubstations = orphanExtractor.getResultList();
         
-        SearchResult<LiteCapControlObject> searchResult = new SearchResult<LiteCapControlObject>();
+        SearchResults<LiteCapControlObject> searchResult = new SearchResults<LiteCapControlObject>();
         searchResult.setResultList(unassignedSubstations);
         searchResult.setBounds(start, count, orphanCount);
         

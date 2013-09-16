@@ -20,7 +20,7 @@ import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.DatedObject;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -182,7 +182,7 @@ public class ControlAreaServiceImpl implements ControlAreaService {
     public DisplayablePao findControlAreaForProgram(YukonUserContext userContext, int programId) {
         UiFilter<DisplayablePao> filter = new ForProgramFilter(programId);
 
-        SearchResult<DisplayablePao> searchResult =
+        SearchResults<DisplayablePao> searchResult =
             filterControlAreas(filter, null, 0, Integer.MAX_VALUE, userContext);
 
         if (searchResult.getHitCount() > 0) {
@@ -192,7 +192,7 @@ public class ControlAreaServiceImpl implements ControlAreaService {
     }
 
     @Override
-    public SearchResult<DisplayablePao> filterControlAreas(UiFilter<DisplayablePao> filter,
+    public SearchResults<DisplayablePao> filterControlAreas(UiFilter<DisplayablePao> filter,
                                                         Comparator<DisplayablePao> sorter, 
                                                         int startIndex, int count,
                                                         YukonUserContext userContext) {
@@ -210,7 +210,7 @@ public class ControlAreaServiceImpl implements ControlAreaService {
         filterDao.filter(triggerFilter, null, 0, Integer.MAX_VALUE,
                              triggerRowMapper);
         
-        SearchResult<DisplayablePao> searchResult =
+        SearchResults<DisplayablePao> searchResult =
             filterDao.filter(filter, sorter, startIndex, count,
                                  new ControlAreaRowMapper(triggerRowMapper.triggersByControlAreaId));
 

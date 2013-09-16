@@ -14,7 +14,7 @@ import com.cannontech.capcontrol.model.LiteCapControlObject;
 import com.cannontech.capcontrol.model.PointIdContainer;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.impl.LitePaoRowMapper;
@@ -101,7 +101,7 @@ public class FeederDaoImpl implements FeederDao {
     }
 
     @Override
-	public SearchResult<LiteCapControlObject> getOrphans(final int start, final int count) {
+	public SearchResults<LiteCapControlObject> getOrphans(final int start, final int count) {
 	    /* Get the unordered total count */
         int orphanCount = yukonJdbcTemplate.queryForInt("SELECT COUNT(*) FROM CapControlFeeder where FeederId not in (SELECT FeederId FROM CCFeederSubAssignment)");
         
@@ -119,7 +119,7 @@ public class FeederDaoImpl implements FeederDao {
         
         List<LiteCapControlObject> unassignedFeeders = orphanExtractor.getResultList();
         
-        SearchResult<LiteCapControlObject> searchResult = new SearchResult<LiteCapControlObject>();
+        SearchResults<LiteCapControlObject> searchResult = new SearchResults<LiteCapControlObject>();
         searchResult.setResultList(unassignedFeeders);
         searchResult.setBounds(start, count, orphanCount);
         

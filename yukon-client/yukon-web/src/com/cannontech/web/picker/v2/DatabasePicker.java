@@ -9,7 +9,7 @@ import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
 import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.FilterDao;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.SqlFragmentCollection;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -70,7 +70,7 @@ public abstract class DatabasePicker<T> extends BasePicker<T> {
     }
 
     @Override
-    public final SearchResult<T> search(final String ss, int start, int count,
+    public final SearchResults<T> search(final String ss, int start, int count,
             String extraArgs, YukonUserContext userContext) {
         final List<SqlFilter> mySqlFilters = Lists.newArrayList();
         final List<PostProcessingFilter<T>> myPostProcessingFilters = Lists.newArrayList();
@@ -113,13 +113,13 @@ public abstract class DatabasePicker<T> extends BasePicker<T> {
         };
 
         // no sorter support
-        SearchResult<T> dbResults =
+        SearchResults<T> dbResults =
             filterDao.filter(filter, null, start, count, rowMapper);
         return dbResults;
     }
 
     @Override
-    public final SearchResult<T> search(Iterable<Integer> initialIds,
+    public final SearchResults<T> search(Iterable<Integer> initialIds,
             String extraArgs, YukonUserContext userContext) {
         if (initialIds == null || !initialIds.iterator().hasNext()) {
             return null;
@@ -143,7 +143,7 @@ public abstract class DatabasePicker<T> extends BasePicker<T> {
             }
         };
 
-        SearchResult<T> dbResults =
+        SearchResults<T> dbResults =
             filterDao.filter(filter, null, 0, Integer.MAX_VALUE, rowMapper);
         return dbResults;
     }

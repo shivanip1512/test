@@ -7,7 +7,7 @@ import com.cannontech.amr.device.search.model.DeviceSearchResultEntry;
 import com.cannontech.amr.device.search.model.FilterBy;
 import com.cannontech.amr.device.search.model.OrderByField;
 import com.cannontech.amr.device.search.model.SearchField;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 
 public interface DeviceSearchService {
@@ -20,7 +20,7 @@ public interface DeviceSearchService {
      * @param count Number of paos we want from the sorted, filtered list
      * @return A sorted list of paos that match the filter criteria
      */
-    SearchResult<DeviceSearchResultEntry> search(List<SearchField> fields, List<FilterBy> filters, OrderByField orderBy, int start, int count);
+    SearchResults<DeviceSearchResultEntry> search(List<SearchField> fields, List<FilterBy> filters, OrderByField orderBy, int start, int count);
 
     /**
      * Method used to get the list of fields to display

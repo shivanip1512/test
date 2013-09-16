@@ -7,7 +7,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import com.cannontech.capcontrol.model.CapbankAdditional;
 import com.cannontech.capcontrol.model.LiteCapControlObject;
 import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 
@@ -32,7 +32,7 @@ public interface CapbankDao {
      */
     public List<LiteYukonPAObject> getUnassignedCapBanks();
     
-    public SearchResult<LiteCapControlObject> getOrphans(int start, int count);
+    public SearchResults<LiteCapControlObject> getOrphans(int start, int count);
     
     /**
      * This method returns the PaoIdentifier of the Feeder that owns the given cap bank ID.

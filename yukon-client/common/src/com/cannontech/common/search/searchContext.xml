@@ -4,7 +4,7 @@
 <beans>
     <description>This file is for the Lucene Searching beans.</description>
 
-    <bean id="pointDeviceSearcherLucene" class="com.cannontech.common.search.PointDeviceLuceneSearcher" singleton="true" autowire="byType">
+    <bean id="pointDeviceSearcherLucene" class="com.cannontech.common.search.searcher.PointDeviceLuceneSearcher" singleton="true" autowire="byType">
         <property name="indexManager" ref="pointDeviceIndexManager" />
     </bean>
 
@@ -16,7 +16,7 @@
         <property name="asyncDynamicDataSource" ref="asyncDynamicDataSource" />
     </bean>
 
-    <bean id="userSearcherLucene" class="com.cannontech.common.search.UserLuceneSearcher" singleton="true" autowire="byType">
+    <bean id="userSearcherLucene" class="com.cannontech.common.search.searcher.UserLuceneSearcher" singleton="true" autowire="byType">
         <property name="indexManager" ref="userIndexManager" />
     </bean>
 
@@ -28,7 +28,7 @@
         <property name="asyncDynamicDataSource" ref="asyncDynamicDataSource" />
     </bean>
     
-    <bean id="customerAccountSearcherLucene" class="com.cannontech.common.search.CustomerAccountLuceneSearcher" singleton="true" autowire="byType">
+    <bean id="customerAccountSearcherLucene" class="com.cannontech.common.search.searcher.CustomerAccountLuceneSearcher" singleton="true" autowire="byType">
         <property name="indexManager" ref="customerAccountIndexManager" />
     </bean>
 
@@ -40,7 +40,7 @@
         <property name="asyncDynamicDataSource" ref="asyncDynamicDataSource" />
     </bean>
 
-    <bean id="userGroupSearcherLucene" class="com.cannontech.common.search.UserGroupLuceneSearcher" singleton="true" autowire="byType">
+    <bean id="userGroupSearcherLucene" class="com.cannontech.common.search.searcher.UserGroupLuceneSearcher" singleton="true" autowire="byType">
         <property name="indexManager" ref="userGroupIndexManager" />
     </bean>
 
@@ -52,7 +52,7 @@
         <property name="asyncDynamicDataSource" ref="asyncDynamicDataSource" />
     </bean>
     
-    <bean id="loginGroupSearcherLucene" class="com.cannontech.common.search.LoginGroupLuceneSearcher" singleton="true" autowire="byType">
+    <bean id="loginGroupSearcherLucene" class="com.cannontech.common.search.searcher.LoginGroupLuceneSearcher" singleton="true" autowire="byType">
         <property name="indexManager" ref="loginGroupIndexManager" />
     </bean>
 
@@ -64,7 +64,7 @@
         <property name="asyncDynamicDataSource" ref="asyncDynamicDataSource" />
     </bean>
     
-    <bean id="paoTypeSearcherLucene" class="com.cannontech.common.search.PaoTypeLuceneSearcher" singleton="true" autowire="byType">
+    <bean id="paoTypeSearcherLucene" class="com.cannontech.common.search.searcher.PaoTypeLuceneSearcher" singleton="true" autowire="byType">
         <property name="indexManager" ref="paoTypeIndexManager" />
     </bean>
 

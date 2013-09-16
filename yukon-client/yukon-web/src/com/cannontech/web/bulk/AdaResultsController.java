@@ -16,7 +16,7 @@ import com.cannontech.common.bulk.model.AdaStatus;
 import com.cannontech.common.bulk.model.Analysis;
 import com.cannontech.common.bulk.model.DeviceArchiveData;
 import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.dao.ArchiveDataAnalysisDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -69,7 +69,7 @@ public class AdaResultsController {
         List<DeviceArchiveData> data = archiveDataAnalysisDao.getSlotValues(analysisId, deviceIds);
         AdaResultsHelper.buildBars(analysis, BAR_WIDTH, data);
         
-        SearchResult<DeviceArchiveData> searchResult = new SearchResult<DeviceArchiveData>();
+        SearchResults<DeviceArchiveData> searchResult = new SearchResults<DeviceArchiveData>();
         searchResult.setResultList(data);
         searchResult.setBounds(startIndex, itemsPerPage, numberOfResults);
         result.setSearchResult(searchResult);

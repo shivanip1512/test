@@ -1,10 +1,14 @@
-package com.cannontech.common.search;
+package com.cannontech.common.search.searcher;
 
 import java.io.IOException;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.Query;
+
+import com.cannontech.common.search.criteria.YukonObjectCriteria;
+import com.cannontech.common.search.result.SearchResults;
+import com.cannontech.common.search.result.UltraLightLoginGroup;
 
 public class LoginGroupLuceneSearcher extends AbstractLuceneSearcher<UltraLightLoginGroup> implements LoginGroupSearcher {
     
@@ -21,7 +25,7 @@ public class LoginGroupLuceneSearcher extends AbstractLuceneSearcher<UltraLightL
         return ultra;
     }
 
-    public SearchResult<UltraLightLoginGroup> all(YukonObjectCriteria criteria,
+    public SearchResults<UltraLightLoginGroup> all(YukonObjectCriteria criteria,
             int start, int count) {
         try {
             final Query query = compileAndCombine(new MatchAllDocsQuery(), criteria);

@@ -29,7 +29,7 @@ import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.events.loggers.DemandResponseEventLogService;
 import com.cannontech.common.favorites.dao.FavoritesDao;
 import com.cannontech.common.pao.DisplayablePao;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.validator.YukonMessageCodeResolver;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
@@ -132,8 +132,8 @@ public class LoadGroupController extends DemandResponseControllerBase {
         List<AssetAvailabilityDetails> resultsList = getResultsList(loadGroup, userContext, null);
         sortAssetDetails(resultsList, sortBy, descending, userContext);
         
-        SearchResult<AssetAvailabilityDetails> result = 
-                SearchResult.pageBasedForWholeList(page, itemsPerPage, resultsList);
+        SearchResults<AssetAvailabilityDetails> result = 
+                SearchResults.pageBasedForWholeList(page, itemsPerPage, resultsList);
 
         model = getAssetAvailabilityInfo(loadGroup, model, userContext);
         
@@ -169,8 +169,8 @@ public class LoadGroupController extends DemandResponseControllerBase {
         List<AssetAvailabilityDetails> resultsList = getResultsList(loadGroup, userContext, filters);
         sortAssetDetails(resultsList, sortBy, descending, userContext);
 
-        SearchResult<AssetAvailabilityDetails> result = 
-                SearchResult.pageBasedForWholeList(page, itemsPerPage, resultsList);
+        SearchResults<AssetAvailabilityDetails> result = 
+                SearchResults.pageBasedForWholeList(page, itemsPerPage, resultsList);
         
         model.addAttribute("result", result);
         model.addAttribute("type", type);

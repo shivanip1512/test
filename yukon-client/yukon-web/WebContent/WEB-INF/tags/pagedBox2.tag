@@ -9,7 +9,7 @@
 <%@ attribute name="isFiltered" type="java.lang.Boolean"%>
 <%@ attribute name="nameKey" required="true"%>
 <%@ attribute name="pageByHundereds"%>
-<%@ attribute name="searchResult" required="true" type="com.cannontech.common.search.SearchResult"%>
+<%@ attribute name="searchResult" required="true" type="com.cannontech.common.search.result.SearchResults"%>
 <%@ attribute name="showAllUrl"%>
 <%@ attribute name="styleClass"%>
 <%@ attribute name="titleLinkHtml"%>

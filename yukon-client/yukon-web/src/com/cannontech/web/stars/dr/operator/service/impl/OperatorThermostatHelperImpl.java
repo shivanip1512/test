@@ -16,7 +16,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.temperature.Temperature;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.database.data.lite.LiteCustomer;
@@ -133,7 +133,7 @@ public class OperatorThermostatHelperImpl implements OperatorThermostatHelper {
         int itemsPerPage = ServletRequestUtils.getIntParameter(request, "itemsPerPage", numPerPage);
         int currentPage = ServletRequestUtils.getIntParameter(request, "page", 1);
         List<ThermostatEvent> eventHistoryList = thermostatEventHistoryDao.getEventsByThermostatIds(thermostatIdsList);
-        SearchResult<ThermostatEvent> result = SearchResult.pageBasedForWholeList(currentPage, itemsPerPage, eventHistoryList);
+        SearchResults<ThermostatEvent> result = SearchResults.pageBasedForWholeList(currentPage, itemsPerPage, eventHistoryList);
         modelMap.addAttribute("eventHistoryList", result.getResultList());
         modelMap.addAttribute("searchResult", result);
         modelMap.addAttribute("moreResults", result.getHitCount() > numPerPage);

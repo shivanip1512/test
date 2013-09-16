@@ -25,7 +25,7 @@ import com.cannontech.common.bulk.collection.device.DeviceCollectionType;
 import com.cannontech.common.bulk.collection.device.RangeBasedDeviceCollection;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoUtils;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.web.amr.meter.service.MspMeterSearchService;
 
@@ -117,7 +117,7 @@ public class DeviceFilterCollectionProducer implements DeviceCollectionProducer,
 
             @Override
             public List<SimpleDevice> getDevices(int start, int size) {
-                SearchResult<Meter> searchResult = meterSearchDao.search(filterBys, orderBy, start, size);
+                SearchResults<Meter> searchResult = meterSearchDao.search(filterBys, orderBy, start, size);
                 List<Meter> resultList = searchResult.getResultList();
                 List<SimpleDevice> result = PaoUtils.asSimpleDeviceListFromPaos(resultList);
                 return result;

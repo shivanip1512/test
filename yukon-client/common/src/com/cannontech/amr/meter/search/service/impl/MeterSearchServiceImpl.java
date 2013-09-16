@@ -7,7 +7,7 @@ import com.cannontech.amr.meter.search.dao.MeterSearchDao;
 import com.cannontech.amr.meter.search.model.FilterBy;
 import com.cannontech.amr.meter.search.model.MeterSearchOrderBy;
 import com.cannontech.amr.meter.search.service.MeterSearchService;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 
 public class MeterSearchServiceImpl implements MeterSearchService {
 
@@ -17,7 +17,7 @@ public class MeterSearchServiceImpl implements MeterSearchService {
         this.searchDao = meterSearchDao;
     }
 
-    public SearchResult<Meter> search(List<FilterBy> filterByList, MeterSearchOrderBy orderBy, int start,
+    public SearchResults<Meter> search(List<FilterBy> filterByList, MeterSearchOrderBy orderBy, int start,
             int count) {
 
         return searchDao.search(filterByList, orderBy, start, count);

@@ -22,7 +22,7 @@ import com.cannontech.common.dynamicBilling.dao.DynamicBillingFileDao;
 import com.cannontech.common.dynamicBilling.model.DynamicFormat;
 import com.cannontech.common.fileExportHistory.FileExportType;
 import com.cannontech.common.scheduledFileExport.ScheduledExportType;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.user.YukonUserContext;
@@ -108,8 +108,8 @@ public class BillingController {
         }
         Collections.sort(jobDataObjects);
 
-        SearchResult<ScheduledFileExportJobData> filterResult =
-                SearchResult.pageBasedForWholeList(pageIndex, rowsPerPage, jobDataObjects);
+        SearchResults<ScheduledFileExportJobData> filterResult =
+                SearchResults.pageBasedForWholeList(pageIndex, rowsPerPage, jobDataObjects);
         model.addAttribute("filterResult", filterResult);
         model.addAttribute("jobType", FileExportType.BILLING);
     }

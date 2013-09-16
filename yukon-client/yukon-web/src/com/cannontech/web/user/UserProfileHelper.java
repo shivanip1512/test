@@ -11,7 +11,7 @@ import com.cannontech.common.events.dao.EventLogDao;
 import com.cannontech.common.events.model.EventLog;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.model.ContactNotificationType;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.user.UserAuthenticationInfo;
 import com.cannontech.common.util.Pair;
 import com.cannontech.core.authentication.model.AuthenticationCategory;
@@ -64,7 +64,7 @@ public class UserProfileHelper {
     }
 
     public void setupActivityStream(ModelMap model, LiteYukonUser user, int firstRowIndex, int rowsToReturn) {
-        SearchResult<EventLog> searchResults =
+        SearchResults<EventLog> searchResults =
                 eventLogDao.findEventsByStringAndPaginate(user.getUsername(), firstRowIndex, rowsToReturn);
         model.addAttribute("userEvents", searchResults);
     }

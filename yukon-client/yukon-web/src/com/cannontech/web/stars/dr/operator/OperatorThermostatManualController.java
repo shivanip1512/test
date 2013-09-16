@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.events.model.EventSource;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.temperature.Temperature;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -103,7 +103,7 @@ public class OperatorThermostatManualController {
         int itemsPerPage = ServletRequestUtils.getIntParameter(request, "itemsPerPage", 10);
         int currentPage = ServletRequestUtils.getIntParameter(request, "page", 1);
 
-        SearchResult<ThermostatEvent> result = SearchResult.pageBasedForWholeList(currentPage, itemsPerPage, eventHistoryList);
+        SearchResults<ThermostatEvent> result = SearchResults.pageBasedForWholeList(currentPage, itemsPerPage, eventHistoryList);
         modelMap.addAttribute("searchResult", result);
         modelMap.addAttribute("eventHistoryList", result.getResultList());
         

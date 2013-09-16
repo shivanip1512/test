@@ -5,7 +5,7 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog"%>
 
-<%@ attribute name="searchResult" required="true" type="com.cannontech.common.search.SearchResult" %>
+<%@ attribute name="searchResult" required="true" type="com.cannontech.common.search.result.SearchResults" %>
 <%@ attribute name="jobType" required="true" type="com.cannontech.common.fileExportHistory.FileExportType" %>
 <%@ attribute name="baseUrl" %>
 <%@ attribute name="editUrl" required="true" %>

@@ -47,7 +47,7 @@ import com.cannontech.cbc.commands.CommandResultCallback;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.LazyList;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.PaoDao;
@@ -466,7 +466,7 @@ public class ZoneDetailController {
         int currentPage = ServletRequestUtils.getIntParameter(request, "page", 1);
         int startIndex = (currentPage - 1) * itemsPerPage;
         
-        SearchResult<CapBankPointDelta> searchResults = new SearchResult<CapBankPointDelta>();
+        SearchResults<CapBankPointDelta> searchResults = new SearchResults<CapBankPointDelta>();
         List<CapBankPointDelta> trimmedPointDeltas = Lists.newArrayList();
         
         if (startIndex < pointDeltas.size()) {

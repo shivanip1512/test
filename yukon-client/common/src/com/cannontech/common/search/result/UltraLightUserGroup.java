@@ -1,4 +1,4 @@
-package com.cannontech.common.search;
+package com.cannontech.common.search.result;
 
 /*
  * getters should match outputCols in the picker's JavaScript file

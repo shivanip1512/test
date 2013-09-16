@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.inventory.InventoryIdentifier;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -272,7 +272,7 @@ public class ControlAuditController {
             break;
         }
         
-        SearchResult<AuditRow> pagedRows = SearchResult.pageBasedForWholeList(page, itemsPerPage, inventory);
+        SearchResults<AuditRow> pagedRows = SearchResults.pageBasedForWholeList(page, itemsPerPage, inventory);
         model.addAttribute("result", pagedRows);
         model.addAttribute("type", type);
         model.addAttribute("auditId", auditId);

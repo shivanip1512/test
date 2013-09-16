@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.exception.NotAuthorizedException;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.survey.dao.SurveyDao;
 import com.cannontech.common.survey.model.Answer;
 import com.cannontech.common.survey.model.Question;
@@ -138,7 +138,7 @@ public class SurveyController {
             YukonUserContext userContext) {
         LiteEnergyCompany energyCompany =
             energyCompanyDao.getEnergyCompany(userContext.getYukonUser());
-        SearchResult<Survey> surveys =
+        SearchResults<Survey> surveys =
             surveyService.findSurveys(energyCompany.getEnergyCompanyID(),
                                  backingBean.getStartIndex(),
                                  backingBean.getItemsPerPage());
@@ -157,7 +157,7 @@ public class SurveyController {
         } else {
             LiteEnergyCompany energyCompany =
                 energyCompanyDao.getEnergyCompany(userContext.getYukonUser());
-            SearchResult<Survey> surveyResults =
+            SearchResults<Survey> surveyResults =
                 surveyService.findSurveys(energyCompany.getEnergyCompanyID(),
                                           0, Integer.MAX_VALUE);
             surveys = surveyResults.getResultList();

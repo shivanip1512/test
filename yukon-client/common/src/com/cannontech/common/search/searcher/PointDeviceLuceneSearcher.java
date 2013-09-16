@@ -1,4 +1,4 @@
-package com.cannontech.common.search;
+package com.cannontech.common.search.searcher;
 
 import java.io.IOException;
 
@@ -9,6 +9,11 @@ import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
+
+import com.cannontech.common.search.TopDocsCallbackHandler;
+import com.cannontech.common.search.criteria.YukonObjectCriteria;
+import com.cannontech.common.search.result.SearchResults;
+import com.cannontech.common.search.result.UltraLightPoint;
 
 public class PointDeviceLuceneSearcher extends AbstractLuceneSearcher<UltraLightPoint> implements PointDeviceSearcher {
     
@@ -35,14 +40,14 @@ public class PointDeviceLuceneSearcher extends AbstractLuceneSearcher<UltraLight
         return ultra;
     }
 
-    public SearchResult<UltraLightPoint> sameDevicePoints(final int currentPointId, final YukonObjectCriteria criteria, final int start, final int count) {
+    public SearchResults<UltraLightPoint> sameDevicePoints(final int currentPointId, final YukonObjectCriteria criteria, final int start, final int count) {
         final Query query = new TermQuery(new Term("pointid", Integer.toString(currentPointId)));
 
         try {
-            return this.getIndexManager().getSearchTemplate().doCallBackSearch(query, new TopDocsCallbackHandler<SearchResult<UltraLightPoint>>() {
-                public SearchResult<UltraLightPoint> processHits(TopDocs hits, IndexSearcher indexSearcher) throws IOException {
+            return this.getIndexManager().getSearchTemplate().doCallBackSearch(query, new TopDocsCallbackHandler<SearchResults<UltraLightPoint>>() {
+                public SearchResults<UltraLightPoint> processHits(TopDocs hits, IndexSearcher indexSearcher) throws IOException {
                     if (hits.totalHits != 1) {
-                        return SearchResult.emptyResult();
+                        return SearchResults.emptyResult();
                     }
                     
                     int docId = hits.scoreDocs[0].doc;
@@ -58,7 +63,7 @@ public class PointDeviceLuceneSearcher extends AbstractLuceneSearcher<UltraLight
         }
     }
     
-    public SearchResult<UltraLightPoint> all(YukonObjectCriteria criteria,
+    public SearchResults<UltraLightPoint> all(YukonObjectCriteria criteria,
             int start, int count) {
         try {
             final Query query = compileAndCombine(new MatchAllDocsQuery(), criteria);

@@ -56,7 +56,7 @@ import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.scheduledFileExport.MeterEventsExportGenerationParameters;
 import com.cannontech.common.scheduledFileExport.ScheduledExportType;
 import com.cannontech.common.scheduledFileExport.ScheduledFileExportData;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.service.DateFormattingService;
@@ -470,7 +470,7 @@ public class MeterEventsReportController {
         DeviceCollection collectionFromReportResults = getDeviceCollectionFromReportResults(events, userContext);
         model.addAttribute("collectionFromReportResults", collectionFromReportResults);
 
-        SearchResult<MeterPointValue> filterResult = new SearchResult<MeterPointValue>();
+        SearchResults<MeterPointValue> filterResult = new SearchResults<MeterPointValue>();
         filterResult.setBounds(backingBean.getStartIndex(),
                                backingBean.getItemsPerPage(),
                                events.size());

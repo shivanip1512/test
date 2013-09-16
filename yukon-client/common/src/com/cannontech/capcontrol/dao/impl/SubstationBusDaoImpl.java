@@ -17,7 +17,7 @@ import com.cannontech.capcontrol.model.SubstationBus;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
@@ -125,7 +125,7 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
     }
     
     @Override
-	public SearchResult<LiteCapControlObject> getOrphans(final int start, final int count) {
+	public SearchResults<LiteCapControlObject> getOrphans(final int start, final int count) {
 	    /* Get the unordered total count */
     	SqlStatementBuilder orphanSql = new SqlStatementBuilder();
     	
@@ -150,7 +150,7 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
         
         List<LiteCapControlObject> unassignedBuses = orphanExtractor.getResultList();
         
-        SearchResult<LiteCapControlObject> searchResult = new SearchResult<LiteCapControlObject>();
+        SearchResults<LiteCapControlObject> searchResult = new SearchResults<LiteCapControlObject>();
         searchResult.setResultList(unassignedBuses);
         searchResult.setBounds(start, count, orphanCount);
         

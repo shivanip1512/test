@@ -26,7 +26,7 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
@@ -138,7 +138,7 @@ public class QuickSearchController {
 
         UiFilter<DisplayablePao> filter = UiFilterList.wrap(filters);
         int startIndex = (quickSearchBean.getPage() - 1) * quickSearchBean.getItemsPerPage();
-        SearchResult<DisplayablePao> searchResult = 
+        SearchResults<DisplayablePao> searchResult = 
                 filterService.filter(filter, 
                                      sorter, 
                                      startIndex, 

@@ -8,7 +8,7 @@ import org.springframework.ui.ModelMap;
 
 import com.cannontech.common.fileExportHistory.FileExportType;
 import com.cannontech.common.scheduledFileExport.ScheduledExportType;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.web.scheduledFileExport.ScheduledFileExportJobData;
 import com.cannontech.web.scheduledFileExport.service.ScheduledFileExportJobsTagService;
@@ -30,7 +30,7 @@ public class ScheduledFileExportJobsTagServiceImpl implements ScheduledFileExpor
         }
 		Collections.sort(jobDataObjects);
 		
-		SearchResult<ScheduledFileExportJobData> filterResult = SearchResult.pageBasedForWholeList(page, itemsPerPage, jobDataObjects);
+		SearchResults<ScheduledFileExportJobData> filterResult = SearchResults.pageBasedForWholeList(page, itemsPerPage, jobDataObjects);
         model.addAttribute("filterResult", filterResult);
 	}
 }

@@ -2,7 +2,7 @@ package com.cannontech.capcontrol.dao;
 
 import com.cannontech.capcontrol.model.LiteCapControlObject;
 import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.dao.NotFoundException;
 
 public interface CapbankControllerDao {
@@ -47,7 +47,7 @@ public interface CapbankControllerDao {
      */
     public boolean isSerialNumberValid(int serialNumber);
 	
-	public SearchResult<LiteCapControlObject> getOrphans(final int start,final int count);
+	public SearchResults<LiteCapControlObject> getOrphans(final int start,final int count);
 	
 	/**
 	 * Looks up the subbus that the cbc is attached to.

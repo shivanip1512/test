@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.cannontech.common.fileExportHistory.ExportHistoryEntry;
 import com.cannontech.common.fileExportHistory.dao.FileExportHistoryDao;
 import com.cannontech.common.fileExportHistory.service.FileExportHistoryService;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.i18n.WebMessageSourceResolvable;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -58,7 +58,7 @@ public class FileExportHistoryController {
 		Collections.sort(entries);
 		int endIndex = startIndex + itemsPerPage > entries.size() ? entries.size() : startIndex + itemsPerPage;
 		
-		SearchResult<ExportHistoryEntry> searchResult = new SearchResult<ExportHistoryEntry>();
+		SearchResults<ExportHistoryEntry> searchResult = new SearchResults<ExportHistoryEntry>();
 		searchResult.setBounds(startIndex, itemsPerPage, entries.size());
 		searchResult.setResultList(entries.subList(startIndex, endIndex));
 		model.addAttribute("searchResult", searchResult);

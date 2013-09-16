@@ -3,7 +3,7 @@ package com.cannontech.web.picker.v2;
 import java.util.Collections;
 import java.util.List;
 
-import com.cannontech.common.search.UltraLightLoginGroup;
+import com.cannontech.common.search.result.UltraLightLoginGroup;
 import com.google.common.collect.Lists;
 
 public class LoginGroupPicker extends LucenePicker<UltraLightLoginGroup> {

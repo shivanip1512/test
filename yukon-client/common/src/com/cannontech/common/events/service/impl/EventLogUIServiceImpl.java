@@ -17,7 +17,7 @@ import com.cannontech.common.events.model.EventCategory;
 import com.cannontech.common.events.model.EventLog;
 import com.cannontech.common.events.service.EventLogUIService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.SqlBuilder;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
@@ -32,7 +32,7 @@ public class EventLogUIServiceImpl implements EventLogUIService {
     @Autowired private FilterDao filterDao;
 
     @Override
-    public List<List<String>> getDataGridRowByType(SearchResult<EventLog> searchResult, YukonUserContext userContext) {
+    public List<List<String>> getDataGridRowByType(SearchResults<EventLog> searchResult, YukonUserContext userContext) {
         
         List<EventLog> resultList = searchResult.getResultList();
         
@@ -60,7 +60,7 @@ public class EventLogUIServiceImpl implements EventLogUIService {
     }
 
     @Override
-    public List<List<String>> getDataGridRowByCategory(SearchResult<EventLog> searchResult, YukonUserContext userContext) {
+    public List<List<String>> getDataGridRowByCategory(SearchResults<EventLog> searchResult, YukonUserContext userContext) {
         final MessageSourceAccessor messageSourceAccessor = 
             messageSourceResolver.getMessageSourceAccessor(userContext);
         
@@ -84,7 +84,7 @@ public class EventLogUIServiceImpl implements EventLogUIService {
     }
     
     @Override
-    public SearchResult<EventLog> 
+    public SearchResults<EventLog> 
                 getFilteredPagedSearchResultByCategories(Iterable<EventCategory> eventCategories, 
                                                          ReadableInstant startDate, 
                                                          ReadableInstant stopDate, 
@@ -100,7 +100,7 @@ public class EventLogUIServiceImpl implements EventLogUIService {
                                                                 stopDate, start, pageCount);
         }
 
-        SearchResult<EventLog> pagedSearchResultByCategories = 
+        SearchResults<EventLog> pagedSearchResultByCategories = 
             eventLogDao.getFilteredPagedSearchResultByCategories(eventCategories, 
                                                                  startDate, 
                                                                  stopDate, 
@@ -113,7 +113,7 @@ public class EventLogUIServiceImpl implements EventLogUIService {
     }
     
     @Override
-    public SearchResult<EventLog> getFilteredPagedSearchResultByType(String eventLogType,
+    public SearchResults<EventLog> getFilteredPagedSearchResultByType(String eventLogType,
                                                                      ReadableInstant startDate,
                                                                      ReadableInstant stopDate,
                                                                      int startIndex,
@@ -132,7 +132,7 @@ public class EventLogUIServiceImpl implements EventLogUIService {
         UiFilter<EventLog> filter = UiFilterList.wrap(filters);
         
         // Process search results
-        SearchResult<EventLog> searchResult =
+        SearchResults<EventLog> searchResult =
             filterDao.filter(filter, null, startIndex, 
                                  itemsPerPage, eventLogDao.getEventLogRowMapper());
 

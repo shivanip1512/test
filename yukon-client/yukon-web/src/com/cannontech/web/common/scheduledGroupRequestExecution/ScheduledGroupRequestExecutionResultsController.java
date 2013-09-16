@@ -31,7 +31,7 @@ import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduleGroupReques
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupRequestExecutionDao;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -160,8 +160,8 @@ public class ScheduledGroupRequestExecutionResultsController extends MultiAction
                                                         backingBean.getIncludeOnetimeFilter(),
                                                         false);
 
-        SearchResult<ScheduledGroupRequestExecutionJobWrapper> filterResult =
-              new SearchResult<ScheduledGroupRequestExecutionJobWrapper>();
+        SearchResults<ScheduledGroupRequestExecutionJobWrapper> filterResult =
+              new SearchResults<ScheduledGroupRequestExecutionJobWrapper>();
         filterResult.setBounds(backingBean.getStartIndex(),
                                backingBean.getItemsPerPage(),
                                jobs.size());

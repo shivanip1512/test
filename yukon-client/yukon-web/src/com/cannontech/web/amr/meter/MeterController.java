@@ -34,7 +34,7 @@ import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.pao.service.PointService;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.roleproperties.YukonRole;
@@ -119,7 +119,7 @@ public class MeterController extends MultiActionController {
         List<FilterBy> queryFilter = MeterSearchUtils.getQueryFilter(request, filterByList);
         
         // Perform the search
-        SearchResult<Meter> meterSearchResults = 
+        SearchResults<Meter> meterSearchResults = 
             meterSearchService.search(queryFilter, orderBy, startIndex, itemsPerPage);
 
         ModelAndView mav;

@@ -9,7 +9,7 @@ import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
 import com.cannontech.common.events.model.ArgumentColumn;
 import com.cannontech.common.events.model.EventCategory;
 import com.cannontech.common.events.model.EventLog;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 
 public interface EventLogDao {
 
@@ -36,7 +36,7 @@ public interface EventLogDao {
      * @param startDate         Greater-than or equal to this (eg. inclusive).  Remember that it is TIME SENSITIVE
      * @param stopDate          Less than (eg. not inclusive).  Remember that it is TIME SENSITIVE
      */
-    public SearchResult<EventLog> 
+    public SearchResults<EventLog> 
                 getPagedSearchResultByCategories(Iterable<EventCategory> eventCategories, 
                                                  ReadableInstant startDate, 
                                                  ReadableInstant stopDate, 
@@ -50,7 +50,7 @@ public interface EventLogDao {
      * @param startDate         Greater-than or equal to this (eg. inclusive).  Remember that it is TIME SENSITIVE
      * @param stopDate          Less than (eg. not inclusive).  Remember that it is TIME SENSITIVE
      */
-    public SearchResult<EventLog> 
+    public SearchResults<EventLog> 
                 getPagedSearchResultByLogTypes(Iterable<String> eventLogTypes, 
                                                ReadableInstant startDate, 
                                                ReadableInstant stopDate, 
@@ -66,7 +66,7 @@ public interface EventLogDao {
      * @param startDate         Greater-than or equal to this (eg. inclusive).  Remember that it is TIME SENSITIVE
      * @param stopDate          Less than (eg. not inclusive).  Remember that it is TIME SENSITIVE
      */
-    public SearchResult<EventLog> 
+    public SearchResults<EventLog> 
                 getFilteredPagedSearchResultByCategories(Iterable<EventCategory> eventCategories,
                                                          ReadableInstant startDate,
                                                          ReadableInstant stopDate,
@@ -83,6 +83,6 @@ public interface EventLogDao {
      * @param pageRowCount      Maximum number of rows to return.
      * @return
      */
-    public SearchResult<EventLog> findEventsByStringAndPaginate(String searchString, Integer firstRowIndex, Integer pageRowCount);
+    public SearchResults<EventLog> findEventsByStringAndPaginate(String searchString, Integer firstRowIndex, Integer pageRowCount);
 
 }

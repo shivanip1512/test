@@ -11,7 +11,7 @@ import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.DatedObject;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.roleproperties.UserNotInRoleException;
@@ -42,7 +42,7 @@ public interface ProgramService {
     public List<DisplayablePao> findProgramsForLoadGroup(int loadGroupId, 
                                                          YukonUserContext userContext);
 
-    public SearchResult<DisplayablePao> filterPrograms(UiFilter<DisplayablePao> filter,
+    public SearchResults<DisplayablePao> filterPrograms(UiFilter<DisplayablePao> filter,
                                                        Comparator<DisplayablePao> sorter, 
                                                        int startIndex, int count, 
                                                        YukonUserContext userContext);

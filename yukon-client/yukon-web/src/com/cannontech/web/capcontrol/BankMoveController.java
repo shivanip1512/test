@@ -15,7 +15,7 @@ import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.cache.FilterCacheFactory;
 import com.cannontech.cbc.util.UpdaterHelper;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.CapControlType;
@@ -139,7 +139,7 @@ public class BankMoveController {
         if(numberOfResults < toIndex) toIndex = numberOfResults;
         movedCaps = movedCaps.subList(startIndex, toIndex);
         
-        SearchResult<MovedBank> result = new SearchResult<MovedBank>();
+        SearchResults<MovedBank> result = new SearchResults<MovedBank>();
         result.setResultList(movedCaps);
         result.setBounds(startIndex, itemsPerPage, numberOfResults);
         model.addAttribute("searchResult", result);

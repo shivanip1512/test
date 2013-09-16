@@ -53,7 +53,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.scheduledFileExport.ScheduledExportType;
 import com.cannontech.common.scheduledFileExport.ScheduledFileExportData;
 import com.cannontech.common.scheduledFileExport.WaterLeakExportGenerationParameters;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.PaoDao;
@@ -524,7 +524,7 @@ public class WaterLeakReportController {
         DeviceCollection collectionFromReportResults = getDeviceCollectionFromReportResults(waterLeaks, userContext);
         model.addAttribute("collectionFromReportResults", collectionFromReportResults);
 
-        SearchResult<WaterMeterLeak> filterResult = new SearchResult<WaterMeterLeak>();
+        SearchResults<WaterMeterLeak> filterResult = new SearchResults<WaterMeterLeak>();
         filterResult.setBounds(backingBean.getStartIndex(),
                                backingBean.getItemsPerPage(),
                                waterLeaks.size());

@@ -16,7 +16,7 @@ import com.cannontech.amr.device.search.model.DeviceSearchResultEntry;
 import com.cannontech.amr.device.search.model.FilterBy;
 import com.cannontech.amr.device.search.model.OrderByField;
 import com.cannontech.amr.device.search.model.SearchField;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.SqlFragmentCollection;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.YukonResultSet;
@@ -27,7 +27,7 @@ public class DeviceSearchDaoImpl implements DeviceSearchDao {
     @Autowired private DeviceSearchRowMapper deviceSearchRowMapper;
     
     @Override
-    public SearchResult<DeviceSearchResultEntry> search(List<SearchField> fields, List<FilterBy> filters, OrderByField orderBy, int start, int count) {
+    public SearchResults<DeviceSearchResultEntry> search(List<SearchField> fields, List<FilterBy> filters, OrderByField orderBy, int start, int count) {
         // whereClause
         SqlFragmentCollection whereClause = SqlFragmentCollection.newAndCollection();
         for(FilterBy filter : filters) {
@@ -56,7 +56,7 @@ public class DeviceSearchDaoImpl implements DeviceSearchDao {
         List<DeviceSearchResultEntry> resultList = null;
         resultList = jdbcTemplate.getJdbcOperations().<List<DeviceSearchResultEntry>>query(meterSql.getSql(), meterSql.getArguments(), new SearchResultSetExtractor(start, count));
         
-        SearchResult<DeviceSearchResultEntry> searchResult = new SearchResult<DeviceSearchResultEntry>();
+        SearchResults<DeviceSearchResultEntry> searchResult = new SearchResults<DeviceSearchResultEntry>();
         searchResult.setBounds(start, count, totalCount);
         searchResult.setResultList(resultList);
         

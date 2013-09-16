@@ -3,7 +3,7 @@ package com.cannontech.common.search.pao.db;
 import java.sql.SQLException;
 
 import com.cannontech.common.bulk.filter.AbstractRowMapperWithBaseQuery;
-import com.cannontech.common.search.UltraLightPao;
+import com.cannontech.common.search.result.UltraLightPao;
 import com.cannontech.common.util.SimpleSqlFragment;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.database.YukonResultSet;

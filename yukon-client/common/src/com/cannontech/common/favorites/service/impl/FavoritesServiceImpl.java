@@ -15,7 +15,7 @@ import com.cannontech.common.bulk.filter.service.UiFilterList;
 import com.cannontech.common.favorites.service.FavoritesService;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.DisplayablePaoComparator;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.impl.PaoNameDisplayablePaoRowMapper;
@@ -29,7 +29,7 @@ public class FavoritesServiceImpl implements FavoritesService {
     public List<DisplayablePao> getRecentlyViewed(LiteYukonUser user,
             int count, UiFilter<DisplayablePao> filter) {
         RecentlyViewedRowMapper rowMapper = new RecentlyViewedRowMapper();
-        SearchResult<DisplayablePao> searchResult =
+        SearchResults<DisplayablePao> searchResult =
             filterDao.filter(filter, null, 0, count, rowMapper);
         List<DisplayablePao> retVal = searchResult.getResultList();
         Collections.sort(retVal, new DisplayablePaoComparator());
@@ -45,7 +45,7 @@ public class FavoritesServiceImpl implements FavoritesService {
         UiFilter<DisplayablePao> filter = UiFilterList.wrap(filters);
         FavoriteRowMapper rowMapper = new FavoriteRowMapper();
         Comparator<DisplayablePao> sorter = new DisplayablePaoComparator();
-        SearchResult<DisplayablePao> searchResult =
+        SearchResults<DisplayablePao> searchResult =
             filterDao.filter(filter, sorter, 0, Integer.MAX_VALUE, rowMapper);
         return searchResult.getResultList();
     }

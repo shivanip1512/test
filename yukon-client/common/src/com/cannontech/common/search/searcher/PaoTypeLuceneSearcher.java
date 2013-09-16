@@ -1,4 +1,4 @@
-package com.cannontech.common.search;
+package com.cannontech.common.search.searcher;
 
 import java.io.IOException;
 
@@ -9,6 +9,11 @@ import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
+
+import com.cannontech.common.search.TopDocsCallbackHandler;
+import com.cannontech.common.search.criteria.YukonObjectCriteria;
+import com.cannontech.common.search.result.SearchResults;
+import com.cannontech.common.search.result.UltraLightPao;
 
 
 public class PaoTypeLuceneSearcher extends AbstractLuceneSearcher<UltraLightPao> implements PaoTypeSearcher {
@@ -32,14 +37,14 @@ public class PaoTypeLuceneSearcher extends AbstractLuceneSearcher<UltraLightPao>
         return ultra;
     }
 
-    public SearchResult<UltraLightPao> sameTypePaos(final int currentPaoId, final YukonObjectCriteria criteria, final int start, final int count) {
+    public SearchResults<UltraLightPao> sameTypePaos(final int currentPaoId, final YukonObjectCriteria criteria, final int start, final int count) {
         final Query query = new TermQuery(new Term("paoid", Integer.toString(currentPaoId)));
         
         try {
-            return this.getIndexManager().getSearchTemplate().doCallBackSearch(query, new TopDocsCallbackHandler<SearchResult<UltraLightPao>>() {
-                public SearchResult<UltraLightPao> processHits(TopDocs topDocs, IndexSearcher indexSearcher) throws IOException {
+            return this.getIndexManager().getSearchTemplate().doCallBackSearch(query, new TopDocsCallbackHandler<SearchResults<UltraLightPao>>() {
+                public SearchResults<UltraLightPao> processHits(TopDocs topDocs, IndexSearcher indexSearcher) throws IOException {
                     if (topDocs.totalHits != 1) {
-                        return SearchResult.emptyResult();
+                        return SearchResults.emptyResult();
                     }
                     
                     int docId = topDocs.scoreDocs[0].doc;
@@ -55,7 +60,7 @@ public class PaoTypeLuceneSearcher extends AbstractLuceneSearcher<UltraLightPao>
         }
     }
 
-    public SearchResult<UltraLightPao> all(final YukonObjectCriteria criteria,
+    public SearchResults<UltraLightPao> all(final YukonObjectCriteria criteria,
             final int start, final int count) {
         try {
             final Query query = compileAndCombine(new MatchAllDocsQuery(), criteria);

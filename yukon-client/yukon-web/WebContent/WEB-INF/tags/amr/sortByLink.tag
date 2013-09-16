@@ -1,5 +1,5 @@
 <%@ attribute name="field" required="true" type="com.cannontech.amr.meter.search.model.MeterSearchField"%>
-<%@ attribute name="results" required="true" type="com.cannontech.common.search.SearchResult"%>
+<%@ attribute name="results" required="true" type="com.cannontech.common.search.result.SearchResults"%>
 <%@ attribute name="orderBy" required="true" type="com.cannontech.amr.meter.search.model.OrderBy"%>
 <%@ attribute name="filterByList" required="false" type="java.util.List"%>
 

@@ -7,7 +7,7 @@ import org.joda.time.ReadableInstant;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.events.model.EventCategory;
 import com.cannontech.common.events.model.EventLog;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.user.YukonUserContext;
 
 public interface EventLogUIService {
@@ -17,7 +17,7 @@ public interface EventLogUIService {
      * which is used to display the results to the web page and the csv file.
      * 
      */
-    public List<List<String>> getDataGridRowByType(SearchResult<EventLog> searchResult, 
+    public List<List<String>> getDataGridRowByType(SearchResults<EventLog> searchResult, 
                                                    YukonUserContext userContext) ;
 
     /**
@@ -25,7 +25,7 @@ public interface EventLogUIService {
      * which is used to display the results to the web page and the csv file.
      * 
      */
-    public List<List<String>> getDataGridRowByCategory(SearchResult<EventLog> searchResult, 
+    public List<List<String>> getDataGridRowByCategory(SearchResults<EventLog> searchResult, 
                                                        YukonUserContext userContext) ;
     
     /**
@@ -38,7 +38,7 @@ public interface EventLogUIService {
      * NOTE: The filter value will be treated as case insensitive being dealt with a string.
      *   (user = USER)
      */
-    public SearchResult<EventLog> 
+    public SearchResults<EventLog> 
                 getFilteredPagedSearchResultByCategories(Iterable<EventCategory> eventCategories,
                                                          ReadableInstant startDate,
                                                          ReadableInstant stopDate,
@@ -53,7 +53,7 @@ public interface EventLogUIService {
      * null in this case to return all of the entries for the given event log type.
      * 
      */
-    public SearchResult<EventLog> getFilteredPagedSearchResultByType(String eventLogType,
+    public SearchResults<EventLog> getFilteredPagedSearchResultByType(String eventLogType,
                                                                      ReadableInstant startDate,
                                                                      ReadableInstant stopDate,
                                                                      int startIndex,

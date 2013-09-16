@@ -1,7 +1,7 @@
 package com.cannontech.capcontrol.dao;
 
 import com.cannontech.capcontrol.model.LiteCapControlObject;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 
 public interface VoltageRegulatorDao {
 
@@ -30,7 +30,7 @@ public interface VoltageRegulatorDao {
      * @param count
      * @return
      */
-    public SearchResult<LiteCapControlObject> getOrphans(final int start, final int count);
+    public SearchResults<LiteCapControlObject> getOrphans(final int start, final int count);
     
     /**
      * @return true if the regulator is an orphan, otherwise false

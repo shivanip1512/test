@@ -31,7 +31,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.definition.attribute.lookup.AttributeDefinition;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.CtiUtilities;
@@ -715,7 +715,7 @@ public class InventoryDaoImpl implements InventoryDao {
     
     @SuppressWarnings("unchecked")
     @Override
-    public SearchResult<InventorySearchResult> search(InventorySearch inventorySearch, 
+    public SearchResults<InventorySearchResult> search(InventorySearch inventorySearch, 
                                                       Collection<Integer> ecIds, 
                                                       int start, 
                                                       int pageCount, 
@@ -726,7 +726,7 @@ public class InventoryDaoImpl implements InventoryDao {
         final boolean usePhone = StringUtils.isNotBlank(inventorySearch.getPhoneNumber());
         final boolean useWorkOrder = StringUtils.isNotBlank(inventorySearch.getWorkOrderNumber());
         
-        SearchResult<InventorySearchResult> results = new SearchResult<InventorySearchResult>();
+        SearchResults<InventorySearchResult> results = new SearchResults<InventorySearchResult>();
         
         SqlStatementBuilder selectCount = new SqlStatementBuilder();
         selectCount.append("SELECT COUNT(*)");

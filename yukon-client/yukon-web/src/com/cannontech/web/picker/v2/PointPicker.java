@@ -3,7 +3,7 @@ package com.cannontech.web.picker.v2;
 import java.util.Collections;
 import java.util.List;
 
-import com.cannontech.common.search.UltraLightPoint;
+import com.cannontech.common.search.result.UltraLightPoint;
 import com.google.common.collect.Lists;
 
 public class PointPicker extends LucenePicker<UltraLightPoint> {

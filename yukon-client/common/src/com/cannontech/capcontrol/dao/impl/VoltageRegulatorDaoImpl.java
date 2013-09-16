@@ -12,7 +12,7 @@ import com.cannontech.capcontrol.model.LiteCapControlObject;
 import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.PagingResultSetExtractor;
 import com.cannontech.database.RowMapper;
@@ -60,7 +60,7 @@ public class VoltageRegulatorDaoImpl implements VoltageRegulatorDao {
     }
     
     @Override
-    public SearchResult<LiteCapControlObject> getOrphans(final int start, final int count) {
+    public SearchResults<LiteCapControlObject> getOrphans(final int start, final int count) {
         ParameterizedRowMapper<LiteCapControlObject> rowMapper = new ParameterizedRowMapper<LiteCapControlObject>() {
             public LiteCapControlObject mapRow(ResultSet rs, int rowNum) throws SQLException {
                 
@@ -105,7 +105,7 @@ public class VoltageRegulatorDaoImpl implements VoltageRegulatorDao {
         
         List<LiteCapControlObject> unassignedLtcs = orphanExtractor.getResultList();
         
-        SearchResult<LiteCapControlObject> searchResult = new SearchResult<LiteCapControlObject>();
+        SearchResults<LiteCapControlObject> searchResult = new SearchResults<LiteCapControlObject>();
         searchResult.setResultList(unassignedLtcs);
         searchResult.setBounds(start, count, orphanCount);
         

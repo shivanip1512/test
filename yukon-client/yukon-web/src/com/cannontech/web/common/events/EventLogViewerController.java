@@ -50,7 +50,7 @@ import com.cannontech.common.events.service.EventLogService;
 import com.cannontech.common.events.service.EventLogUIService;
 import com.cannontech.common.events.service.impl.MethodLogDetail;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
@@ -116,7 +116,7 @@ public class EventLogViewerController {
         eventCategories.addAll(Arrays.asList(backingBean.getCategories()));
         
         // Getting the search results
-        SearchResult<EventLog> searchResult = 
+        SearchResults<EventLog> searchResult = 
             eventLogUIService.getFilteredPagedSearchResultByCategories(eventCategories, 
                                                                        backingBean.getStartDate().toDateTimeAtStartOfDay(userContext.getJodaTimeZone()),
                                                                        backingBean.getStopDate().plusDays(1).toDateTimeAtStartOfDay(userContext.getJodaTimeZone()),
@@ -142,7 +142,7 @@ public class EventLogViewerController {
         eventCategories.addAll(Arrays.asList(backingBean.getCategories()));
         
         // Getting the search results
-        SearchResult<EventLog> searchResult = 
+        SearchResults<EventLog> searchResult = 
             eventLogUIService.getFilteredPagedSearchResultByCategories(eventCategories, 
                                                                        backingBean.getStartDate().toDateTimeAtStartOfDay(userContext.getJodaTimeZone()),
                                                                        backingBean.getStopDate().plusDays(1).toDateTimeAtStartOfDay(userContext.getJodaTimeZone()),
@@ -182,7 +182,7 @@ public class EventLogViewerController {
 
     @RequestMapping(value="viewByType", method=RequestMethod.GET)
     public void selectByType(ModelMap model) {
-        SearchResult<EventLog> emptyResult = SearchResult.emptyResult();
+        SearchResults<EventLog> emptyResult = SearchResults.emptyResult();
         
         model.addAttribute("searchResult", emptyResult);
     }
@@ -208,7 +208,7 @@ public class EventLogViewerController {
         UiFilter<EventLog> eventLogSqlFilters = getEventLogUIFilters(eventLogTypeBackingBean);
 
         // Get default search results
-        SearchResult<EventLog> searchResult = 
+        SearchResults<EventLog> searchResult = 
             eventLogUIService.getFilteredPagedSearchResultByType(eventLogTypeBackingBean.getEventLogType(), 
                                                                  eventLogTypeBackingBean.getStartDate().toDateTimeAtStartOfDay(userContext.getJodaTimeZone()),
                                                                  eventLogTypeBackingBean.getStopDate().plusDays(1).toDateTimeAtStartOfDay(userContext.getJodaTimeZone()),
@@ -250,7 +250,7 @@ public class EventLogViewerController {
         UiFilter<EventLog> eventLogSqlFilters = getEventLogUIFilters(eventLogTypeBackingBean);
         
         // Get search results
-        SearchResult<EventLog> searchResult = 
+        SearchResults<EventLog> searchResult = 
             eventLogUIService.getFilteredPagedSearchResultByType(eventLogTypeBackingBean.getEventLogType(), 
                                                                  eventLogTypeBackingBean.getStartDate().toDateTimeAtStartOfDay(userContext.getJodaTimeZone()),
                                                                  eventLogTypeBackingBean.getStopDate().plusDays(1).toDateTimeAtStartOfDay(userContext.getJodaTimeZone()),
@@ -308,7 +308,7 @@ public class EventLogViewerController {
      */
     private void buildEventLogResults(YukonUserContext userContext,
             EventLogTypeBackingBean eventLogTypeBackingBean,
-            SearchResult<EventLog> rawResults,
+            SearchResults<EventLog> rawResults,
             ModelMap model) {
         // Get column names
         List<ColumnHeader> columnNames = Lists.newArrayList();
@@ -332,7 +332,7 @@ public class EventLogViewerController {
         }
         model.addAttribute("columnNames", columnNames);
         
-        SearchResult<ReportableEventLog> result = new SearchResult<ReportableEventLog>();
+        SearchResults<ReportableEventLog> result = new SearchResults<ReportableEventLog>();
         result.setBounds(rawResults.getStartIndex(), rawResults.getCount(), rawResults.getHitCount());
         List<ReportableEventLog> resultList = Lists.newArrayListWithCapacity(rawResults.getResultList().size());
         for (EventLog rawLog : rawResults.getResultList()) {

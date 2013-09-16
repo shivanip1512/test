@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.events.loggers.SystemEventLogService;
 import com.cannontech.common.exception.NotAuthorizedException;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.user.UserAuthenticationInfo;
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.SimpleCallback;
@@ -380,7 +380,7 @@ public class YukonUserDaoImpl implements YukonUserDao {
     }
     
     @Override
-    public SearchResult<LiteYukonUser> getUsersForUserGroup(int userGroupId, final int start, final int count) {
+    public SearchResults<LiteYukonUser> getUsersForUserGroup(int userGroupId, final int start, final int count) {
         /* Get Total Count */
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT COUNT(*)");
@@ -399,7 +399,7 @@ public class YukonUserDaoImpl implements YukonUserDao {
         yukonJdbcTemplate.query(sql, pagingExtractor);
         
         List<LiteYukonUser> users = pagingExtractor.getResultList();
-        SearchResult<LiteYukonUser> searchResult = new SearchResult<LiteYukonUser>();
+        SearchResults<LiteYukonUser> searchResult = new SearchResults<LiteYukonUser>();
         searchResult.setResultList(users);
         searchResult.setBounds(start, count, totalCount);
         

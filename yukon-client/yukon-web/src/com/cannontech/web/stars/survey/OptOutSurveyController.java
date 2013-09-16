@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.common.exception.NotAuthorizedException;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.survey.dao.SurveyDao;
 import com.cannontech.common.survey.model.Survey;
 import com.cannontech.common.validator.SimpleValidator;
@@ -82,7 +82,7 @@ public class OptOutSurveyController {
             YukonUserContext userContext) {
         LiteEnergyCompany energyCompany =
             energyCompanyDao.getEnergyCompany(userContext.getYukonUser());
-        SearchResult<OptOutSurvey> optOutSurveys =
+        SearchResults<OptOutSurvey> optOutSurveys =
             optOutSurveyService.findSurveys(energyCompany.getEnergyCompanyID(),
                                  backingBean.getStartIndex(),
                                  backingBean.getItemsPerPage());

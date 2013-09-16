@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.context.MessageSourceResolvable;
 
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.user.YukonUserContext;
 
 /**
@@ -36,13 +36,13 @@ public interface Picker<T> {
      * @param extraArgs optional string which comes from the "extraArgs" argument to the 
      * @return An instance of SearchResult populated appropriately.
      */
-    public SearchResult<T> search(String ss, int start, int count,
+    public SearchResults<T> search(String ss, int start, int count,
             String extraArgs, YukonUserContext userContext);
 
     /**
      * Perform a search for the specific ids requested.  This is used to
      * populate the picker if there were previously saved results.
      */
-    public SearchResult<T> search(Iterable<Integer> initialIds,
+    public SearchResults<T> search(Iterable<Integer> initialIds,
             String extraArgs, YukonUserContext userContext);
 }
