@@ -72,7 +72,6 @@ public class ThreadCachingScheduledExecutorService extends ExecutorDelegate impl
     @Override
     @PreDestroy
     public void destroy() {
-        // TODO:  perhaps these should try to shut down nicely first?
         scheduledExecutorService.shutdownNow();
     }
 }
