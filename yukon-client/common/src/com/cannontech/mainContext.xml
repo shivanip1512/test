@@ -84,17 +84,11 @@
     <bean id="globalTimer" class="java.util.Timer" destroy-method="cancel" lazy-init="true">
        <constructor-arg value="true"/> <!--  create as daemon  -->
     </bean>
-    
-    <bean id="globalScheduledExecutor" class="com.cannontech.common.util.ScheduledExecutorDelegate">
-       <qualifier value="main"/>
-       <constructor-arg>
-            <bean class="java.util.concurrent.Executors"
-                factory-method="newScheduledThreadPool">
-                <constructor-arg value="4" />
-            </bean>
-       </constructor-arg>
+
+    <bean id="globalScheduledExecutor" class="com.cannontech.common.util.ThreadCachingScheduledExecutorService">
+        <qualifier value="main"/>
     </bean>
-    
+
     <bean id="globalTaskExecutor" class="org.springframework.scheduling.concurrent.ConcurrentTaskExecutor">
         <property name="concurrentExecutor" ref="globalScheduledExecutor"/>
     </bean>
