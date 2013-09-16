@@ -13,6 +13,10 @@ import javax.annotation.PreDestroy;
 
 import org.springframework.jmx.export.annotation.ManagedResource;
 
+/**
+ * An scheduled executor with a dynamically sized thread pool.  Threads are created as needed and unused threads will
+ * be cleaned up after 60 seconds of inactivity. 
+ */
 @ManagedResource
 public class ThreadCachingScheduledExecutorService extends ExecutorDelegate implements ScheduledExecutor {
     private final ScheduledExecutorService scheduledExecutorService;
