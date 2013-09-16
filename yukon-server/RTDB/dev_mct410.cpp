@@ -1661,7 +1661,7 @@ int Mct410Device::executePutConfigInstallDisconnect(CtiRequestMsg *pReq, CtiComm
             return BADPARAM;
         }
 
-        boost::optional<bool> reconnectButtonEnabled = deviceConfig->findBoolValueForKey(MCTStrings::ReconnectButton);
+        const boost::optional<bool> reconnectButtonEnabled = deviceConfig->findBoolValueForKey(MCTStrings::ReconnectButton);
         if( ! reconnectButtonEnabled )
         {
             if( getMCTDebugLevel(DebugLevel_Configs) )

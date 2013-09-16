@@ -477,8 +477,6 @@ int Mct420Device::executePutConfigMeterParameters(CtiRequestMsg *pReq,
         long cycleTime, paoInfo_displayParams, paoInfo_cycleTime;
         bool paoInfo_displayDisabled;
         boost::optional<unsigned char> display_digits, paoInfo_displayDigits;
-        boost::optional<bool> disconnectDisplayDisabled;
-
         boost::optional<unsigned> transformerRatio;
 
         bool displayDigitsSupported = isSupported(Feature_LcdDisplayDigitConfiguration);
@@ -525,7 +523,7 @@ int Mct420Device::executePutConfigMeterParameters(CtiRequestMsg *pReq,
             display_digits = 0x00;
         }
 
-        disconnectDisplayDisabled = deviceConfig->findBoolValueForKey(MCTStrings::DisconnectDisplayDisabled);
+        const boost::optional<bool> disconnectDisplayDisabled = deviceConfig->findBoolValueForKey(MCTStrings::DisconnectDisplayDisabled);
 
         if( ! disconnectDisplayDisabled )
         {

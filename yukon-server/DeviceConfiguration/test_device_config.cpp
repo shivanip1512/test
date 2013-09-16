@@ -45,35 +45,31 @@ BOOST_AUTO_TEST_CASE(test_findBoolValueForKey)
     dc.insertValue("foo_true_lowercase", "true");
 
     {
-        boost::optional<bool> value;
-
-        value = dc.findBoolValueForKey("foo_nonexistent");
+        const boost::optional<bool> value =
+            dc.findBoolValueForKey("foo_nonexistent");
 
         BOOST_CHECK( ! value );
     }
 
     {
-        boost::optional<bool> value;
-
-        value = dc.findBoolValueForKey("foo_false");
-
-        BOOST_REQUIRE( value );
-        BOOST_CHECK_EQUAL( *value, false );
-    }
-
-    {
-        boost::optional<bool> value;
-
-        value = dc.findBoolValueForKey("foo_true_titlecase");
+        const boost::optional<bool> value =
+            dc.findBoolValueForKey("foo_false");
 
         BOOST_REQUIRE( value );
         BOOST_CHECK_EQUAL( *value, false );
     }
 
     {
-        boost::optional<bool> value;
+        const boost::optional<bool> value =
+            dc.findBoolValueForKey("foo_true_titlecase");
 
-        value = dc.findBoolValueForKey("foo_true_lowercase");
+        BOOST_REQUIRE( value );
+        BOOST_CHECK_EQUAL( *value, false );
+    }
+
+    {
+        const boost::optional<bool> value =
+            dc.findBoolValueForKey("foo_true_lowercase");
 
         BOOST_REQUIRE( value );
         BOOST_CHECK_EQUAL( *value, true );
