@@ -70,6 +70,21 @@ Yukon.DeviceConfig = (function () {
         jQuery('#categoryPopup').load(url, params, function() {
             _handleVisibleElemsAndButtons();
             _enableButton(button);
+            _registerScheduleButtons();
+        });
+    },
+    
+    _registerScheduleButtons = function() {
+        jQuery(".f-addScheduleBtn").click(function() {
+            var button = jQuery(this),
+                num = button.attr('data-add-schedule'),
+                regex = '^schedule' + num + '_time\\d+$',
+                hiddenElems = jQuery("td").filter(function() { 
+                    return this.id.match(regex) && !jQuery(this.parentElement).is(':visible'); 
+                });
+            
+            jQuery('#' + hiddenElems[0].id).parent().show();
+            _determineScheduleAddButtonVisibility(num);
         });
     },
     
@@ -152,17 +167,7 @@ Yukon.DeviceConfig = (function () {
             }
         });
         
-        jQuery(".f-addScheduleBtn").click(function() {
-            var button = jQuery(this),
-                num = button.attr('data-add-schedule'),
-                regex = '^schedule' + num + '_time\\d+$',
-                hiddenElems = jQuery("td").filter(function() { 
-                    return this.id.match(regex) && !jQuery(this.parentElement).is(':visible'); 
-                });
-            
-            jQuery('#' + hiddenElems[0].id).parent().show();
-            _determineScheduleAddButtonVisibility(num);
-        });
+        _registerScheduleButtons();
         
         // Find the first type and select his categories
         var pipe = jQuery(".pipe").get(0);
