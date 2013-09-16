@@ -106,13 +106,7 @@ public class DeviceConfigurationCategoryController {
             categoryEditBean.getCategoryInputs().put(inputBase.getField(), inputBase.getDefault());
         }
         
-        // Passing this through so we can redirect correctly.
-        model.addAttribute("configId", configId);
-        model.addAttribute("nameKey", "createCategory");
-        
-        setupModelMap(model, PageEditMode.CREATE, categoryEditBean, context);
-        
-        return "ajaxCategory.jsp";
+        return navigateToCategoryPopup(categoryEditBean, model, configId, context);
     }
     
     @RequestMapping
@@ -121,12 +115,7 @@ public class DeviceConfigurationCategoryController {
         
         CategoryEditBean categoryEditBean = createCategoryEditBean(category);
         
-        model.addAttribute("configId", configId);
-        model.addAttribute("nameKey", "editCategory");
-
-        setupModelMap(model, PageEditMode.EDIT, categoryEditBean, context);
-        
-        return "ajaxCategory.jsp";
+        return navigateToCategoryPopup(categoryEditBean, model, configId, context);
     }
     
     @RequestMapping
@@ -218,16 +207,7 @@ public class DeviceConfigurationCategoryController {
                 new YukonMessageSourceResolvable(baseKey + ".errorsExist"), 
                 FlashScopeMessageType.ERROR);
             
-            // Return to the edit view if the category has an Id, create otherwise.
-            PageEditMode mode = categoryEditBean.getCategoryId() != null ? PageEditMode.EDIT : PageEditMode.CREATE;
-            
-            model.addAttribute("nameKey", mode == PageEditMode.EDIT ? "editCategory" : "createCategory");
-
-            model.addAttribute("configId", configId);
-            
-            setupModelMap(model, mode, categoryEditBean, context);
-            
-            return "ajaxCategory.jsp";
+            return navigateToCategoryPopup(categoryEditBean, model, configId, context);
         }
         
         try {
@@ -237,12 +217,35 @@ public class DeviceConfigurationCategoryController {
         } catch (DuplicateException de) {
             log.debug("An attempt to save a category with a duplicate name has occurred.");
             flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".category.nameExists"));
+            
+            return navigateToCategoryPopup(categoryEditBean, model, configId, context);
         }
         
         model.clear();
         
         ServletUtils.dialogFormSuccess(response, "categorySubmitted");
         return null;
+    }
+    
+    /**
+     * Return the user to the category popup.
+     * @param categoryEditBean - the backing bean for the category
+     * @param model - the model map
+     * @param configId - the config id of the configuration the user is modifying
+     * @param context - the user context
+     * @return the jsp of the category popup.
+     */
+    private String navigateToCategoryPopup(CategoryEditBean categoryEditBean, ModelMap model, int configId, 
+                                   YukonUserContext context) {
+        // Return to the edit view if the category has an Id, create otherwise.
+        PageEditMode mode = categoryEditBean.getCategoryId() != null ? PageEditMode.EDIT : PageEditMode.CREATE;
+        
+        model.addAttribute("nameKey", mode == PageEditMode.EDIT ? "editCategory" : "createCategory");
+
+        model.addAttribute("configId", configId);
+        
+        setupModelMap(model, mode, categoryEditBean, context);
+        return "ajaxCategory.jsp";
     }
     
     /**
