@@ -32,6 +32,9 @@ public class PageInfo implements Comparable<PageInfo> {
     public void setName(String name) {
         this.name = name;
     }
+    /**
+     * @return String      : The link if defined, else null.
+     */
     public String getLinkExpression() {
         return linkExpression;
     }
@@ -50,7 +53,11 @@ public class PageInfo implements Comparable<PageInfo> {
     public void setParent(PageInfo parent) {
         this.parent = parent;
     }
-    
+
+    /**
+     * @return String : This page's name preceded by all parent pages/modules' names.
+     *                  To be used as the basis for i18n keys.
+     */
     public String getFullName() {
         if (getParent() == null) {
             return getName();
