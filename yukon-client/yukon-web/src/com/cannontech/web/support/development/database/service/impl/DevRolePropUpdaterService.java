@@ -204,6 +204,7 @@ public class DevRolePropUpdaterService extends DevObjectCreationBase {
                 setRoleProperty(group, YukonRoleProperty.ALLOW_STOP_GEAR_ACCESS,true);
                 setRoleProperty(group, YukonRoleProperty.SHOW_CONTROL_AREAS,true);
                 setRoleProperty(group, YukonRoleProperty.SHOW_SCENARIOS,true);
+                setRoleProperty(group, YukonRoleProperty.SHOW_ASSET_AVAILABILITY,true);
                 setRoleProperty(group, YukonRoleProperty.CONTROL_AREA_STATE,true);
                 setRoleProperty(group, YukonRoleProperty.CONTROL_AREA_VALUE_THRESHOLD,true);
                 setRoleProperty(group, YukonRoleProperty.CONTROL_AREA_PEAK_PROJECTION,true);

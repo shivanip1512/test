@@ -88,7 +88,7 @@ Yukon.DrAssetDetails = (function() {
                 .on('click', '.f-ajaxPaging', _doPagingWithFilter);
             
             jQuery("#dd-download")
-            .click(_downloadToCsv);
+                .click(_downloadToCsv);
 
             _initialized = true;
         }

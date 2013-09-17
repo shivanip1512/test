@@ -206,6 +206,7 @@ jQuery(function() { updateServiceCompanyInfo();});
                 
                 </c:if>
 
+            <cti:checkRolesAndProperties value="SHOW_ASSET_AVAILABILITY">
                 <c:if test="${isTwoWayDevice && (!empty assetAvailability || dispatchDisconnected)}">
                     <tags:nameValue2 nameKey=".assetAvailability.label">
                         <c:choose>
@@ -254,7 +255,8 @@ jQuery(function() { updateServiceCompanyInfo();});
                         </c:choose>
                     </tags:nameValue2>
                 </c:if>
-
+            </cti:checkRolesAndProperties>
+            
             </tags:nameValueContainer2>
         </tags:formElementContainer>
         

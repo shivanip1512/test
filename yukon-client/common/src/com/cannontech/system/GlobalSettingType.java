@@ -90,6 +90,8 @@ public enum GlobalSettingType implements DisplayableEnum {
     STARS_PRELOAD_DATA(GlobalSettingSubCategory.DR, booleanType(), true),
     CUSTOMER_INFO_IMPORTER_FILE_LOCATION(GlobalSettingSubCategory.DR, stringType(), null),
     OPT_OUTS_COUNT(GlobalSettingSubCategory.DR, booleanType(), true),
+    LAST_COMMUNICATION_HOURS(GlobalSettingSubCategory.DR, integerType(), 60),
+    LAST_RUNTIME_HOURS(GlobalSettingSubCategory.DR, integerType(), 168),
     
     // Web Server
     GOOGLE_ANALYTICS_ENABLED(GlobalSettingSubCategory.WEB_SERVER, booleanType(), true),

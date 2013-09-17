@@ -37,6 +37,8 @@ import com.cannontech.stars.dr.appliance.dao.ApplianceDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareConfigurationDao;
 import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.HashBiMap;
@@ -57,9 +59,8 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
     @Autowired private DynamicDataSource dynamicDataSource;
     @Autowired private PointDao pointDao;
     @Autowired private AttributeService attributeService;
+    @Autowired private GlobalSettingDao globalSettingDao;
     
-    private static final int LAST_COMMUNICATION_HOURS = 60;
-    private static final int LAST_RUNTIME_HOURS = 168;
     private static final ImmutableMap<Integer, ? extends Attribute> RELAY_ATTRIBUTES =
             ImmutableMap.of(1, BuiltInAttribute.RELAY_1_RUN_TIME_DATA_LOG,
                 2, BuiltInAttribute.RELAY_2_RUN_TIME_DATA_LOG,
@@ -111,7 +112,7 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
         
         //Get communicating
         Instant now = Instant.now();
-        Instant communicatingWindowEnd = now.minus(Duration.standardHours(LAST_COMMUNICATION_HOURS));
+        Instant communicatingWindowEnd = now.minus(Duration.standardHours(globalSettingDao.getInteger(GlobalSettingType.LAST_COMMUNICATION_HOURS)));
         Range<Instant> communicatingWindow = Range.inclusive(communicatingWindowEnd, now);
         Set<Integer> communicatedInventory = rawPointHistoryDao.getCommunicatingInventoryByLoadGroups(loadGroupIds, communicatingWindow);
         Set<Integer> communicatedAppliances = getAppliancesFromInventory(inventoryToApplianceMultimap, communicatedInventory);
@@ -123,7 +124,7 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
         for(int relay = 1; relay <= 4; relay++) {
             Set<PaoIdentifier> relayPaoIdentifiers = Sets.newHashSet(relayToDeviceIdMultiMap.get(relay));
             
-            Instant runtimeWindowEnd = Instant.now().minus(Duration.standardHours(LAST_RUNTIME_HOURS));
+            Instant runtimeWindowEnd = Instant.now().minus(Duration.standardHours(globalSettingDao.getInteger(GlobalSettingType.LAST_RUNTIME_HOURS)));
             Range<Instant> runtimeRange = Range.inclusive(runtimeWindowEnd, Instant.now());
             Range<Long> changeIdRange = Range.unbounded();
             
@@ -172,7 +173,7 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
         
         //Get communicating
         Instant now = Instant.now();
-        Instant communicatingWindowEnd = now.minus(Duration.standardHours(LAST_COMMUNICATION_HOURS));
+        Instant communicatingWindowEnd = now.minus(Duration.standardHours(globalSettingDao.getInteger(GlobalSettingType.LAST_COMMUNICATION_HOURS)));
         Range<Instant> communicatingWindow = Range.inclusive(communicatingWindowEnd, now);
         Set<Integer> communicatedInventory = rawPointHistoryDao.getCommunicatingInventoryByLoadGroups(loadGroupIds, communicatingWindow);
         aaSummary.addCommunicating(communicatedInventory);
@@ -186,7 +187,7 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
             //remove any that we already found runtime for
             relayPaoIdentifiers = Sets.difference(relayPaoIdentifiers, allPaosWithRuntime);
             
-            Instant runtimeWindowEnd = Instant.now().minus(Duration.standardHours(LAST_RUNTIME_HOURS));
+            Instant runtimeWindowEnd = Instant.now().minus(Duration.standardHours(globalSettingDao.getInteger(GlobalSettingType.LAST_RUNTIME_HOURS)));
             Range<Instant> runtimeRange = Range.inclusive(runtimeWindowEnd, Instant.now());
             Range<Long> changeIdRange = Range.unbounded();
             
@@ -423,11 +424,11 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
                                               Collection<ApplianceWithRuntime> applianceRuntimes) {
         boolean communicating = false;
         boolean hasRuntime = false;
-        Instant endOfCommunicationWindow = now.minus(Duration.standardHours(LAST_COMMUNICATION_HOURS));
+        Instant endOfCommunicationWindow = now.minus(Duration.standardHours(globalSettingDao.getInteger(GlobalSettingType.LAST_COMMUNICATION_HOURS)));
         if(lastCommunicationTime != null && lastCommunicationTime.isAfter(endOfCommunicationWindow)) {
             communicating = true;
         }
-        Instant endOfRuntimeWindow = now.minus(Duration.standardHours(LAST_RUNTIME_HOURS));
+        Instant endOfRuntimeWindow = now.minus(Duration.standardHours(globalSettingDao.getInteger(GlobalSettingType.LAST_RUNTIME_HOURS)));
         for(ApplianceWithRuntime applianceRuntime : applianceRuntimes) {
             Instant runtime = applianceRuntime.getLastNonZeroRuntime();
             if(runtime != null && runtime.isAfter(endOfRuntimeWindow)) {

@@ -91,43 +91,43 @@ jQuery(function() {
                 </tags:sectionContainer2>
         </div>
         <div class="column two nogutter">
-
-            <%-- Display the Asset Availability Info --%>
-            <tags:sectionContainer2 nameKey="assetAvailability">
-                <c:choose>
-                    <c:when test="${dispatchDisconnected}">
-                        <span class="error">
-                            <i:inline key="yukon.web.modules.operator.hardware.assetAvailability.dispatchDisconnected"/>
-                        </span>
-                    </c:when>
-                    <c:otherwise>
-                        <c:choose>
-                            <c:when test="${assetTotal <= 0}">
-                                <span class="empty-list">
-                                    <cti:msg2 key="yukon.web.modules.operator.hardware.assetAvailability.noDevices"/>
-                                </span>
-                            </c:when>
-                            <c:otherwise>
-                                <dr:assetAvailabilityStatus assetId="${programId}" 
-                                    assetAvailabilitySummary="${assetAvailabilitySummary}" 
-                                    pieJSONData="${pieJSONData}"/>
-                                <cti:url var="assetsUrl" value="assetDetails">
-                                    <cti:param name="assetId" value="${programId}"/>
-                                </cti:url>
-                                <div><a href="${assetsUrl}">
-                                    <cti:msg2 key="yukon.web.modules.operator.hardware.assetAvailability.viewDetails"/></a>
-                                </div>
-                                <%-- Temporarily disable until Ping feature is available.
-                                <div class="actionArea">
-                                    <cti:button id="pingButton" nameKey="pingDevices" busy="true" classes="f-disableAfterClick"/>
-                                </div>
-                                --%>
-                            </c:otherwise>
-                        </c:choose>
-                    </c:otherwise>
-                </c:choose>
-            </tags:sectionContainer2>
-
+            <cti:checkRolesAndProperties value="SHOW_ASSET_AVAILABILITY">
+                <%-- Display the Asset Availability Info --%>
+                <tags:sectionContainer2 nameKey="assetAvailability">
+                    <c:choose>
+                        <c:when test="${dispatchDisconnected}">
+                            <span class="error">
+                                <i:inline key="yukon.web.modules.operator.hardware.assetAvailability.dispatchDisconnected"/>
+                            </span>
+                        </c:when>
+                        <c:otherwise>
+                            <c:choose>
+                                <c:when test="${assetTotal <= 0}">
+                                    <span class="empty-list">
+                                        <cti:msg2 key="yukon.web.modules.operator.hardware.assetAvailability.noDevices"/>
+                                    </span>
+                                </c:when>
+                                <c:otherwise>
+                                    <dr:assetAvailabilityStatus assetId="${programId}" 
+                                        assetAvailabilitySummary="${assetAvailabilitySummary}" 
+                                        pieJSONData="${pieJSONData}"/>
+                                    <cti:url var="assetsUrl" value="assetDetails">
+                                        <cti:param name="assetId" value="${programId}"/>
+                                    </cti:url>
+                                    <div><a href="${assetsUrl}">
+                                        <cti:msg2 key="yukon.web.modules.operator.hardware.assetAvailability.viewDetails"/></a>
+                                    </div>
+                                    <%-- Temporarily disable until Ping feature is available.
+                                    <div class="actionArea">
+                                        <cti:button id="pingButton" nameKey="pingDevices" busy="true" classes="f-disableAfterClick"/>
+                                    </div>
+                                    --%>
+                                </c:otherwise>
+                            </c:choose>
+                        </c:otherwise>
+                    </c:choose>
+                </tags:sectionContainer2>
+            </cti:checkRolesAndProperties>
 
                 <%-- 
                     Program Actions section each action has a simpleDialogLink that
