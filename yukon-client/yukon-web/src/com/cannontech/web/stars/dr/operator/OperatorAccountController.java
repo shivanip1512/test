@@ -365,12 +365,6 @@ public class OperatorAccountController {
 
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_NEW_ACCOUNT_WIZARD, user);
 	    
-	    /* Cancel Creation */
-	    String cancelButton = ServletRequestUtils.getStringParameter(request, "cancelCreation");
-	    if (cancelButton != null) {
-            return "redirect:search";
-        }
-	    
         LoginUsernameValidator usernameValidator = loginValidatorFactory.getUsernameValidator(new LiteYukonUser());
 	    LoginPasswordValidator passwordValidator = loginValidatorFactory.getPasswordValidator(new LiteYukonUser());
 

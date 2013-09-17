@@ -413,7 +413,8 @@
                 </cti:checkRolesAndProperties>
                 <cti:displayForPageEditModes modes="CREATE">
                     <cti:button nameKey="create" type="submit" classes="f-blocker f-prepPasswordFields primary action"/>
-                    <input name="cancelCreation" type="submit" class="button" value="<cti:msg2 key="yukon.web.components.slowInput.cancel.label"/>">
+                    <cti:url value="/stars/operator/inventory/home" var="homeUrl"/>
+                    <cti:button nameKey="cancel" href="${homeUrl}"/>
                 </cti:displayForPageEditModes>
             </cti:displayForPageEditModes>
             

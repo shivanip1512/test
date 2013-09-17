@@ -81,13 +81,13 @@ import com.google.common.collect.Sets;
 @Controller
 @CheckRole(YukonRole.INVENTORY)
 @RequestMapping("/operator/inventory/*")
-public class InventoryController {
+public class AssetDashboardController {
     
     @Autowired private HardwareUiService hardwareUiService;
     @Autowired private HardwareService hardwareService;
-    @Autowired private RolePropertyDao rolePropertyDao; 
+    @Autowired private RolePropertyDao rpDao; 
     @Autowired private StarsDatabaseCache starsDatabaseCache;
-    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private YukonUserContextMessageSourceResolver resolver;
     @Autowired private PaoDao paoDao;
     @Autowired private EnergyCompanyDao energyCompanyDao;
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
@@ -99,45 +99,58 @@ public class InventoryController {
     @Autowired private HardwareModelHelper helper;
     @Autowired private PhoneNumberFormattingService phoneNumberFormattingService;
     @Autowired private CustomerAccountDao customerAccountDao;
-    @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
+    @Autowired private EnergyCompanySettingDao ecSettingsDao;
 
     /* Home - Landing Page */
     @RequestMapping
     public String home(ModelMap model, YukonUserContext context) {
         
         LiteYukonUser user = context.getYukonUser();
-        rolePropertyDao.verifyRole(YukonRole.INVENTORY, user);
+        rpDao.verifyRole(YukonRole.INVENTORY, user);
         
-        if(yukonEnergyCompanyService.isEnergyCompanyOperator(context.getYukonUser())){
-            YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
-            LiteStarsEnergyCompany liteEc = starsDatabaseCache.getEnergyCompany(energyCompany);
+        boolean ecOperator = yukonEnergyCompanyService.isEnergyCompanyOperator(context.getYukonUser());
+        
+        if (ecOperator) {
             
-            model.addAttribute("energyCompanyId", energyCompany.getEnergyCompanyId());
+            YukonEnergyCompany yec = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
+            LiteStarsEnergyCompany liteEc = starsDatabaseCache.getEnergyCompany(yec);
             
-            MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(context);
+            int ecId = yec.getEnergyCompanyId();
+            model.addAttribute("energyCompanyId", ecId);
+            
+            MessageSourceAccessor messageSourceAccessor = resolver.getMessageSourceAccessor(context);
             String title = messageSourceAccessor.getMessage("yukon.web.modules.operator.inventory.home.fileUploadTitle");
             model.addAttribute("fileUploadTitle", title);
             
-            MeteringType type = energyCompanySettingDao.getEnum(EnergyCompanySettingType.METER_MCT_BASE_DESIGNATION,
-                                                                MeteringType.class,
-                                                                energyCompany.getEnergyCompanyId());
+            MeteringType type = ecSettingsDao.getEnum(EnergyCompanySettingType.METER_MCT_BASE_DESIGNATION, MeteringType.class, ecId);
             model.addAttribute("showAddMeter", type == MeteringType.yukon);
             
             boolean showLinks = configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DIGI_ENABLED);
             model.addAttribute("showLinks", showLinks);
             
-            boolean showSearch = rolePropertyDao.checkProperty(YukonRoleProperty.INVENTORY_SEARCH, user);
+            boolean showSearch = rpDao.checkProperty(YukonRoleProperty.INVENTORY_SEARCH, user);
             model.addAttribute("showSearch", showSearch);
             
-            boolean hasAddRange = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.SN_ADD_RANGE, user);
-            boolean hasCreate = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.INVENTORY_CREATE_HARDWARE, user);
-            boolean showActions = hasAddRange || hasCreate;
-            model.addAttribute("showActions", showActions);
+            /** Hardware Creation */
+            boolean hasAddHardwareByRange = rpDao.getPropertyBooleanValue(YukonRoleProperty.SN_ADD_RANGE, user);
+            boolean hasCreateHardware = rpDao.getPropertyBooleanValue(YukonRoleProperty.INVENTORY_CREATE_HARDWARE, user);
+            boolean showHardwareCreate = hasAddHardwareByRange || hasCreateHardware;
+            model.addAttribute("showHardwareCreate", showHardwareCreate);
             
-            SerialNumberValidation snv = energyCompanySettingDao.getEnum(EnergyCompanySettingType.SERIAL_NUMBER_VALIDATION,
+            /** Account Creation */
+            boolean hasCreateAccount = rpDao.checkProperty(YukonRoleProperty.OPERATOR_NEW_ACCOUNT_WIZARD, user);
+            boolean showAccountCreate = hasCreateAccount && ecOperator;
+            model.addAttribute("showAccountCreate", showAccountCreate);
+            
+            /** Actions Dropdown Button */
+            if(showHardwareCreate || showAccountCreate) {
+                model.addAttribute("showActions", true);
+            }
+            
+            SerialNumberValidation snv = ecSettingsDao.getEnum(EnergyCompanySettingType.SERIAL_NUMBER_VALIDATION,
                                                                          SerialNumberValidation.class,
-                                                                         energyCompany.getEnergyCompanyId());
-            model.addAttribute("showAddByRange", snv == SerialNumberValidation.NUMERIC && hasAddRange);
+                                                                         ecId);
+            model.addAttribute("showAddByRange", snv == SerialNumberValidation.NUMERIC && hasAddHardwareByRange);
             
             model.addAttribute("inventorySearch", new InventorySearch());
             
@@ -173,7 +186,7 @@ public class InventoryController {
                          Integer itemsPerPage, 
                          Integer page,
                          FlashScope flashScope) {
-        rolePropertyDao.verifyProperty(YukonRoleProperty.INVENTORY_SEARCH, context.getYukonUser());
+        rpDao.verifyProperty(YukonRoleProperty.INVENTORY_SEARCH, context.getYukonUser());
         YukonEnergyCompany ec = yukonEnergyCompanyService.getEnergyCompanyByOperator(context.getYukonUser()); //This may be wrong
         LiteStarsEnergyCompany liteEc = starsDatabaseCache.getEnergyCompany(ec);
         
@@ -198,7 +211,7 @@ public class InventoryController {
         }
                 
         if(!hasWarnings){
-            MeteringType value = energyCompanySettingDao.getEnum(EnergyCompanySettingType.METER_MCT_BASE_DESIGNATION, MeteringType.class, ec.getEnergyCompanyId());
+            MeteringType value = ecSettingsDao.getEnum(EnergyCompanySettingType.METER_MCT_BASE_DESIGNATION, MeteringType.class, ec.getEnergyCompanyId());
 
             boolean starsMeters = value == MeteringType.stars;
             model.addAttribute("starsMeters", starsMeters);
@@ -303,7 +316,7 @@ public class InventoryController {
     @RequestMapping
     public String creationPage(ModelMap model, YukonUserContext context, int hardwareTypeId) {
         model.addAttribute("mode", PageEditMode.CREATE);
-        rolePropertyDao.verifyProperty(YukonRoleProperty.INVENTORY_CREATE_HARDWARE, context.getYukonUser());
+        rpDao.verifyProperty(YukonRoleProperty.INVENTORY_CREATE_HARDWARE, context.getYukonUser());
         
         Hardware hardware = new Hardware();
         hardware.setHardwareTypeEntryId(hardwareTypeId);
@@ -334,7 +347,7 @@ public class InventoryController {
         
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(ec);
         
-        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(context);
+        MessageSourceAccessor messageSourceAccessor = resolver.getMessageSourceAccessor(context);
         
         String defaultRoute;
         try {
@@ -438,7 +451,7 @@ public class InventoryController {
         CustomerAccount custAccount = customerAccountDao.getById(hardware.getAccountId());
         hardwareEventLogService.hardwareUpdateAttempted(user, custAccount.getAccountNumber(), hardware.getSerialNumber(), EventSource.OPERATOR);
 
-        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES, user);
+        rpDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES, user);
         
         /* Validate and Update*/
         hardwareValidator.validate(hardware, result);
@@ -513,7 +526,7 @@ public class InventoryController {
         Hardware hardwareToDelete = hardwareUiService.getHardware(inventoryId);
         LiteYukonUser user = context.getYukonUser();
         hardwareEventLogService.hardwareDeletionAttempted(user, hardwareToDelete.getDisplayName(), EventSource.OPERATOR);
-        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, user);
+        rpDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, user);
         
         hardwareService.deleteHardware(user, true, inventoryId);
         
@@ -522,7 +535,7 @@ public class InventoryController {
     }
     
     public void setupModel(ModelMap model, YukonUserContext context, Hardware hardware) {
-        boolean inventoryChecking = rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_INVENTORY_CHECKING, context.getYukonUser());
+        boolean inventoryChecking = rpDao.checkProperty(YukonRoleProperty.OPERATOR_INVENTORY_CHECKING, context.getYukonUser());
         
         int inventoryId = hardware.getInventoryId();
         model.addAttribute("hardware", hardware);
@@ -555,7 +568,7 @@ public class InventoryController {
             model.addAttribute("showSerialNumber", true);
         }
         
-        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(context);
+        MessageSourceAccessor messageSourceAccessor = resolver.getMessageSourceAccessor(context);
         
         String defaultRoute;
         try {

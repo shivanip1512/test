@@ -18,7 +18,6 @@
                     <th><i:inline key=".taskName"/></th>
                     <th><i:inline key=".status"/></th>
                     <th nowrap="nowrap"><i:inline key=".deviceCount"/></th>
-                    <th class="removeColumn"><i:inline key=".remove"/></th>
                 </tr>
             </thead>
             <tfoot></tfoot>
@@ -45,11 +44,6 @@
                         </td>
                         
                         <td>${task.numberOfItems}</td>
-                        
-                        <td class="removeColumn">
-                            <tags:widgetActionRefreshImage method="delete" taskId="${task.inventoryConfigTaskId}" icon="icon-cross"
-                                                           nameKey="delete" arguments="${task.taskName}" showConfirm="true"/>
-                        </td>
                         
                     </tr>
                 

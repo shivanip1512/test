@@ -9,4 +9,7 @@
     <entry key="yukon.web.modules.operator.newOperation">New Inventory Action</entry>
     <entry key="yukon.web.modules.operator.download">Download</entry>
     
+    <entry key="yukon.web.modules.operator.create.account">Create Account</entry>
+    <entry key="yukon.web.modules.operator.create.device">Create Device</entry>
+    
 </properties>

@@ -25,10 +25,9 @@
     <entry key="yukon.web.modules.operator.inventory.home.invalidColumnHeaders">File contains invalid column headers.</entry>
     <entry key="yukon.web.modules.operator.inventory.home.invalidInventoryData">File contains invalid inventory data.</entry>
     <entry key="yukon.web.modules.operator.inventory.home.links.title">Links</entry>
-    <entry key="yukon.web.modules.operator.inventory.home.actions.title">Add Hardware</entry>
-    <entry key="yukon.web.modules.operator.inventory.home.addHardware.label">Add Hardware</entry>
-    <entry key="yukon.web.modules.operator.inventory.home.addHardwareByRange.label">Add by Range</entry>
-    <entry key="yukon.web.modules.operator.inventory.home.addMeter.label">Add Meter</entry>
+    <entry key="yukon.web.modules.operator.inventory.home.addHardware.label">Create Device</entry>
+    <entry key="yukon.web.modules.operator.inventory.home.addHardwareByRange.label">Create Devices by Range</entry>
+    <entry key="yukon.web.modules.operator.inventory.home.addMeter.label">Add Existing Meter</entry>
     <entry key="yukon.web.modules.operator.inventory.home.zbProblemDevices">ZigBee Problem Devices</entry>
     <entry key="yukon.web.modules.operator.inventory.home.inventorySearch.title">Inventory Search</entry>
     

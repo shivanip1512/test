@@ -237,6 +237,8 @@
     <entry key="yukon.common.setting.NOTIFICATION_PORT.description">TCP/IP port of the Yukon Notification service</entry>
     <entry key="yukon.common.setting.NOTIFICATION_HOST">Notification Host</entry>
     <entry key="yukon.common.setting.NOTIFICATION_HOST.description">Name or IP address of the Yukon Notification service</entry>
+    <entry key="yukon.common.setting.NETWORK_MANAGER_ADDRESS">Network Manager Address</entry>
+    <entry key="yukon.common.setting.NETWORK_MANAGER_ADDRESS.description">Name or IP address of the Network Manager web server</entry>
     <entry key="yukon.common.setting.WEB_LOGO_URL">Web Logo URL</entry>
     <entry key="yukon.common.setting.WEB_LOGO_URL.description">The logo that is used for the yukon web applications</entry>
     <entry key="yukon.common.setting.STARS_PRELOAD_DATA">STARS Preload Data</entry>

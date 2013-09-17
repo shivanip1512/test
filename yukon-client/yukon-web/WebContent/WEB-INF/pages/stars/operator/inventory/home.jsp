@@ -1,12 +1,9 @@
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
-
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="operator" page="inventory.home">
 
@@ -26,6 +23,9 @@ function addMeter() {
     jQuery('#addMeterForm').submit();
     return true;
 }
+jQuery('.f-create-hardware').click(function(event) {
+    jQuery('#add-hardware-dialog').dialog();
+});
 
 function showFileUpload() {
 	var buttons = [{text: '${cancelText}', click: function() {jQuery('#fileUploadPopup input[type=file]').val('');jQuery(this).dialog("close");}},
@@ -33,6 +33,61 @@ function showFileUpload() {
     jQuery('#fileUploadPopup').dialog({width:500, 'buttons': buttons});
 }
 </script>
+
+<!-- Popup for menus -->
+<div id="menuPopup" class="dn menuPopup"></div>
+
+<!-- Page Dropdown Actions -->
+<c:if test="${showActions}">
+    <div id="f-page-actions" class="dn">
+        <c:if test="${showAccountCreate}">
+            <cti:url var="createAccountUrl" value="/stars/operator/account/accountCreate"/>
+            <cm:dropdownOption href="${createAccountUrl}" icon="icon-plus-green" key=".create.account"/>
+        </c:if>
+        <c:if test="${showHardwareCreate}">
+            <cm:dropdownOption classes="f-create-hardware" icon="icon-plus-green" key=".create.device"/>
+        </c:if>
+    </div>
+</c:if>
+
+<i:simplePopup titleKey=".create.device" id="add-hardware-dialog" on=".f-create-hardware">
+    <div class="stacked clearfix">
+        <form action="creationPage" method="post">
+            <cti:button nameKey="addHardware" id="addHardwareBtn" type="submit"/>
+            <select name="hardwareTypeId">
+                <c:forEach items="${addHardwareTypes}" var="deviceType">
+                    <option value="${deviceType.entryID}">${fn:escapeXml(deviceType.entryText)}</option>
+                </c:forEach>
+            </select>
+        </form>
+    </div>
+    <div class="stacked clearfix">
+        <form action="abr/view" method="post">
+            <cti:button nameKey="addHardwareByRange" id="addHardwareByRangeBtn" type="submit"/>
+            <select name="hardwareTypeId">
+                <c:forEach items="${addHardwareByRangeTypes}" var="deviceType">
+                    <option value="${deviceType.entryID}">${fn:escapeXml(deviceType.entryText)}</option>
+                </c:forEach>
+            </select>
+        </form>
+    </div>
+        
+    <c:if test="${showAddMeter}">
+        <div class="stacked clearfix">
+            <form action="addMeter/view" id="addMeterForm">
+                <tags:pickerDialog id="addMeterPicker"
+                                   type="drUntrackedMctPicker"
+                                   nameKey="addMeter"
+                                   linkType="button"
+                                   destinationFieldName="mctId"
+                                   allowEmptySelection="false"
+                                   multiSelectMode="false"
+                                   immediateSelectMode="true"
+                                   endAction="addMeter"/>
+            </form>
+        </div>
+    </c:if>
+</i:simplePopup>
         
         <tags:widgetContainer identify="false">
         
@@ -99,51 +154,6 @@ function showFileUpload() {
                         <%@ include file="search.jsp" %>
                     </c:if>
                     
-                    <c:if test="${showActions}">
-                    
-                        <tags:boxContainer2 nameKey="actions">
-                            <ul class="buttonStack">
-                                <li>
-                                    <form action="creationPage" method="post">
-                                        <cti:button nameKey="addHardware" id="addHardwareBtn" type="submit"/>
-                                        <select name="hardwareTypeId">
-                                            <c:forEach items="${addHardwareTypes}" var="deviceType">
-                                                <option value="${deviceType.entryID}"><spring:escapeBody htmlEscape="true">${deviceType.entryText}</spring:escapeBody></option>
-                                            </c:forEach>
-                                        </select>
-                                    </form>
-                                </li>
-                                <li>
-                                    <form action="abr/view" method="post">
-                                        <cti:button nameKey="addHardwareByRange" id="addHardwareByRangeBtn" type="submit"/>
-                                        <select name="hardwareTypeId">
-                                            <c:forEach items="${addHardwareByRangeTypes}" var="deviceType">
-                                                <option value="${deviceType.entryID}"><spring:escapeBody htmlEscape="true">${deviceType.entryText}</spring:escapeBody></option>
-                                            </c:forEach>
-                                        </select>
-                                    </form>
-                                </li>
-                                
-                                <c:if test="${showAddMeter}">
-                                    <li>
-                                        <form action="addMeter/view" id="addMeterForm">
-                                            <tags:pickerDialog id="addMeterPicker"
-                                                                type="drUntrackedMctPicker"
-                                                                nameKey="addMeter"
-                                                                linkType="button"
-                                                                destinationFieldName="mctId"
-                                                                allowEmptySelection="false"
-                                                                multiSelectMode="false"
-                                                                immediateSelectMode="true"
-                                                                endAction="addMeter"/>
-                                        </form>
-                                    </li>
-                                </c:if>
-                            </ul>
-                        </tags:boxContainer2>
-                    
-                    </c:if>
-                        
                     <c:if test="${showLinks}">
                         <tags:boxContainer2 nameKey="links">
                             <a href="/stars/operator/inventory/zbProblemDevices/view"><i:inline key=".zbProblemDevices" /></a>

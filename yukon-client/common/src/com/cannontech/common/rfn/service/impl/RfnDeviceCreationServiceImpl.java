@@ -117,7 +117,7 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
      * callers of the {@link #create(final RfnIdentifier rfnIdentifier, Hardware hardware, LiteYukonUser user)} method are expected to
      * pass in a fully filled out (not null) hardware (and user).  This allows a single creation service for both types of 
      * users: rf message listeners LcrReadingArchiveRequestListener and 
-     * stars operator controllers {@link OperatorHardwareController}, {@link InventoryController}.
+     * stars operator controllers {@link OperatorHardwareController}, {@link AssetDashboardController}.
      */
     private RfnDevice createDevice(final RfnIdentifier rfnIdentifier, final Hardware hardware, final LiteYukonUser user) {
         RfnDevice result = TransactionTemplateHelper.execute(transactionTemplate, new Callable<RfnDevice>() {

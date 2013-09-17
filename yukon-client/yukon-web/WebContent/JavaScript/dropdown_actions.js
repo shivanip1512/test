@@ -145,8 +145,9 @@ jQuery(function() {
     
     jQuery('.dropdown-container').each(function(idx, container) {
         container = jQuery(container);
-        var menu = container.find('.dropdown-menu');
-        var button = container.find('button');
+        var menu = container.find('.dropdown-menu'),
+            button = container.find('button');
+        
         container.data({'menu': menu});
         jQuery('body').prepend(menu);
         menu.data('button', button);
