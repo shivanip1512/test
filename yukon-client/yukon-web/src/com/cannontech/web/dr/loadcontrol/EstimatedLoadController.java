@@ -35,11 +35,11 @@ import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.DeviceTypes;
-import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.db.device.lm.GearControlMethod;
 import com.cannontech.dr.estimatedload.ApplianceCategoryAssignment;
 import com.cannontech.dr.estimatedload.Formula;
 import com.cannontech.dr.estimatedload.FormulaInput;
+import com.cannontech.dr.estimatedload.FormulaInput.InputType;
 import com.cannontech.dr.estimatedload.GearAssignment;
 import com.cannontech.dr.estimatedload.dao.FormulaDao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -98,7 +98,7 @@ public class EstimatedLoadController {
     }
 
     @RequestMapping
-    public String wetherLocationsTableAjax(ModelMap model) {
+    public String weatherLocationsTableAjax(ModelMap model) {
 
         List<WeatherLocation> weatherLocations = weatherDataService.getAllWeatherLocations();
         Map<String, WeatherStation> weatherStations = noaaWeatherDataService.getAllWeatherStations();
@@ -113,11 +113,7 @@ public class EstimatedLoadController {
     @RequestMapping
     public String removeWeatherLocation(ModelMap model, FlashScope flashScope, int paoId, YukonUserContext context) {
 
-        List<PointBase> points = pointDao.getPointsForPao(paoId);
-        boolean isUsed = false;
-        for (PointBase point : points) {
-            isUsed |= formulaDao.isPointAFormulaInput(point.getPoint().getPointID());
-        }
+        boolean isUsed = formulaDao.hasFormulaInputPoints(paoId);
 
         if (isUsed) {
             flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.dr.estimatedLoad.errors.cannotRemoveWeatherLoc"));
@@ -182,7 +178,7 @@ public class EstimatedLoadController {
             return "dr/estimatedLoad/_weatherStations.jsp";
         }
 
-        double lat = Double.parseDouble(wheatherLocationBean.getLatitude());;
+        double lat = Double.parseDouble(wheatherLocationBean.getLatitude());
         double lon = Double.parseDouble(wheatherLocationBean.getLongitude());
 
         GeographicCoordinate requestedCoordinate = new GeographicCoordinate(lat, lon);
@@ -233,14 +229,10 @@ public class EstimatedLoadController {
     }
 
     @RequestMapping(value="formula/create", method=RequestMethod.GET)
-    public String createPage(ModelMap model, FormulaBean formulaBean) {
+    public String createPage(ModelMap model) {
         model.addAttribute("mode", PageEditMode.CREATE);
 
-        if (formulaBean == null) {
-            formulaBean = new FormulaBean();
-        }
-
-        populateFormulaPageModel(model, formulaBean);
+        populateFormulaPageModel(model, new FormulaBean());
 
         return "dr/estimatedLoad/formula.jsp";
     }
@@ -426,6 +418,12 @@ public class EstimatedLoadController {
         List<WeatherLocation> weatherLocations = weatherDataService.getAllWeatherLocations();
 
         model.addAttribute("weatherLocations", weatherLocations);
+        if (weatherLocations.isEmpty()) {
+            formulaInputs.remove(InputType.HUMIDITY);
+            formulaInputs.remove(InputType.TEMP_C);
+            formulaInputs.remove(InputType.TEMP_F);
+        }
+
         model.addAttribute("formulaInputs",formulaInputs);
         model.addAttribute("formulaTypes", Formula.Type.values());
         model.addAttribute("calculationTypes", Formula.CalculationType.values());

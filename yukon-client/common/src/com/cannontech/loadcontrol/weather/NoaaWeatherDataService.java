@@ -12,13 +12,8 @@ public interface NoaaWeatherDataService {
     public Map<String, WeatherStation> getAllWeatherStations();
 
     /**
-     * Returns all weather stations, sorted by distance to the coordinate supplied.
-     */
-    public WeatherStation getClosestWeatherStation(GeographicCoordinate coordinate);
-
-    /**
      * Scans the weather stations to find the closest to the given lat/lon
-     * @return - A list of weather stations sorted by distance, closest to furthest
+     * @return - A list of weather stations sorted by distance, closest to farthest
      */
     public List<WeatherStation> getWeatherStationsByDistance(GeographicCoordinate coordinate);
 

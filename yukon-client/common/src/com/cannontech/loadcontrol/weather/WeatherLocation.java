@@ -2,7 +2,7 @@ package com.cannontech.loadcontrol.weather;
 
 import com.cannontech.database.data.lite.LitePoint;
 
-public class WeatherLocation {
+public final class WeatherLocation {
 
     private final String name;
     private final String stationId;

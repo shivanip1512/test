@@ -74,6 +74,9 @@
       <option name="loadGroups">
         <link>/dr/loadGroup/list</link>
       </option>
+      <option name="estimatedLoad">
+        <link>/dr/estimatedLoad/home</link>
+      </option>
       <option name="ci">
         <permissions>
           <role name="CI_CURTAILMENT" />

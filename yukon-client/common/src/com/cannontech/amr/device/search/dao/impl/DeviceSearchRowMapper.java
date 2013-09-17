@@ -19,7 +19,7 @@ public class DeviceSearchRowMapper implements YukonRowMapper<DeviceSearchResultE
         
         sql.append("SELECT");
         if(fields == null || fields.isEmpty()) {
-            sql.append("COUNT(1)");
+            sql.append("COUNT(*)");
         } else {
             for(SearchField field : fields) {
                 sql.append(field.getQueryField() + " AS " + field.getFieldName());

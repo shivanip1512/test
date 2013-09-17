@@ -741,18 +741,22 @@ public class FormulaDaoImpl implements FormulaDao {
     }
 
     @Override
-    public boolean isPointAFormulaInput(int pointId) {
+    public boolean hasFormulaInputPoints(int paoId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT COUNT(1) FROM").append(functionTableName);
-        sql.append("WHERE InputPointId").eq(pointId);
+        sql.append("SELECT COUNT(*) FROM").append("YukonPaobject ypo");
+        sql.append("JOIN Point p ON p.PAObjectId = ypo.PAObjectId");
+        sql.append("JOIN EstimatedLoadFunction elf ON p.PointId = elf.InputPointId");
+        sql.append("WHERE ypo.PAObjectId").eq(paoId);
 
         if (yukonJdbcTemplate.queryForInt(sql) != 0) {
-            return false;
+            return true;
         }
 
         sql = new SqlStatementBuilder();
-        sql.append("SELECT COUNT(1) FROM").append(lookupTableName);
-        sql.append("WHERE InputPointId").eq(pointId);
+        sql.append("SELECT COUNT(*) FROM").append("YukonPaobject ypo");
+        sql.append("JOIN Point p ON p.PAObjectId = ypo.PAObjectId");
+        sql.append("JOIN EstimatedLoadLookupTable ellt ON p.PointId = ellt.InputPointId");
+        sql.append("WHERE ypo.PAObjectId").eq(paoId);
 
         return yukonJdbcTemplate.queryForInt(sql) != 0;
     }

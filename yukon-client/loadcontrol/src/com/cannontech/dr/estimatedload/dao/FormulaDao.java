@@ -24,7 +24,7 @@ public interface FormulaDao {
      * Searches formula inputs and returns true if this pao is used as an input for a formula.
      * returns false if not
      **/
-    public boolean isPointAFormulaInput(int pointId);
+    public boolean hasFormulaInputPoints(int pointId);
 
     // Handling appliance category assignments
 
@@ -77,4 +77,5 @@ public interface FormulaDao {
 
     /** Returns the Formula object assigned to a given gear, or NULL if none is assigned. */
     public Formula getFormulaForGear(int gearId);
+
 }

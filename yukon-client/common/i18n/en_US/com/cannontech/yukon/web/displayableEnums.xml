@@ -311,17 +311,18 @@
     <entry key="yukon.common.setting.OADR_YUKON_USER.description">The Yukon User for which the load management requests will be executed.</entry>
     <entry key="yukon.common.setting.OADR_OPEN_ENDED_CONTROL_DURATION">Open-Ended Control Duration</entry>
     <entry key="yukon.common.setting.OADR_OPEN_ENDED_CONTROL_DURATION.description">The duration to be used for open-ended control events, specified by a number and a character indicating weeks, days, hours, or minutes (i.e. "1.5d".)</entry>
-    
+
     <entry key="yukon.common.setting.DATABASE_MIGRATION_FILE_LOCATION">Database Migration File Location</entry>
     <entry key="yukon.common.setting.DATABASE_MIGRATION_FILE_LOCATION.description">File location of the database migration export process.</entry>
     <entry key="yukon.common.setting.TEMP_DEVICE_GROUP_DELETION_IN_DAYS">Temporary Device Group Deletion Period</entry>
     <entry key="yukon.common.setting.TEMP_DEVICE_GROUP_DELETION_IN_DAYS.description">The time period to be used for temporary device group deletion.</entry>
-
+    <entry key="yukon.common.setting.HTTP_PROXY">System HTTP proxy</entry>
+    <entry key="yukon.common.setting.HTTP_PROXY.description">System wide HTTP proxy settings. Used to facilitate HTTP requests which require a proxy server. (values = ip:port or 'none')</entry>
     <entry key="yukon.common.setting.LAST_COMMUNICATION_HOURS">Last Communication Hours</entry>
     <entry key="yukon.common.setting.LAST_COMMUNICATION_HOURS.description">Maximum number of hours since last communication with device.</entry>
     <entry key="yukon.common.setting.LAST_RUNTIME_HOURS">Last Runtime Hours</entry>
     <entry key="yukon.common.setting.LAST_RUNTIME_HOURS.description">Maximum number of hours since last runtime from device.</entry>
-    
+
     <entry key="yukon.common.energyCompanySetting.ADMIN_EMAIL_ADDRESS">Admin Email Address</entry>
     <entry key="yukon.common.energyCompanySetting.ADMIN_EMAIL_ADDRESS.description">Sender address of emails sent on behalf of energy company, e.g. control odds and opt out notification emails.</entry>
     <entry key="yukon.common.energyCompanySetting.ACCOUNT_NUMBER_LENGTH">Account Number Length</entry>

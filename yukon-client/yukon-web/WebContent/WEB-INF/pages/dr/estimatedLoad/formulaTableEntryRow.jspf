@@ -40,7 +40,7 @@
             </div>
         </div>
         <div style="position:absolute; top:1.65em; right:0em">
-            <cti:button nameKey="remove"
+            <cti:button nameKey="removeEntry"
                     icon="icon-cross"
                     renderMode="image"
                     classes="f-drFormula-removeEntry"

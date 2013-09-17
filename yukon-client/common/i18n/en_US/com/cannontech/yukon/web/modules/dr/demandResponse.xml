@@ -514,7 +514,7 @@
 <entry key="yukon.web.modules.dr.estimatedLoad.assignments">Assignments</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.invalidInput">Formula: {0} has an input value that is not within the valid range.</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.appCatNotFound">Appliance category not found for LM program: {0}</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.noAverageKwLoad">Per-appliance average kW load not found for appliance category : {0}</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.noAverageKwLoad">Per-appliance average kW load not found for appliance category: {0}</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.gearNotFound">Gear id not found for LM program: {0}</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.error">Error</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.calculationType">Calculation Type</entry>
@@ -589,6 +589,7 @@ Valid inputs include only decimal values. S & W are negative. (e.g. 37&#176;44'5
 <entry key="yukon.web.modules.dr.formula.calculationType">Calculation Type</entry>
 <entry key="yukon.web.modules.dr.formula.components.title">Components</entry>
 <entry key="yukon.web.modules.dr.formula.CREATE.pageName">Create Formula</entry>
+<entry key="yukon.web.modules.dr.formula.delete.hoverText">Delete Formula</entry>
 <entry key="yukon.web.modules.dr.formula.EDIT.pageName">Edit</entry>
 <entry key="yukon.web.modules.dr.formula.entries">Entries</entry>
 <entry key="yukon.web.modules.dr.formula.error.inputMaxUnderMin">Input Max must be greater than Input Min.</entry>
@@ -614,6 +615,7 @@ Valid inputs include only decimal values. S & W are negative. (e.g. 37&#176;44'5
 <entry key="yukon.web.modules.dr.formula.lookupTables.title">Lookup Tables</entry>
 <entry key="yukon.web.modules.dr.formula.name">Name</entry>
 <entry key="yukon.web.modules.dr.formula.newEntry.label">Add Entry</entry>
+<entry key="yukon.web.modules.dr.formula.newEntry.hoverText">Adds a new row to this table</entry>
 <entry key="yukon.web.modules.dr.formula.newFunction.label">Add Function</entry>
 <entry key="yukon.web.modules.dr.formula.newTable.label">Add Lookup Table</entry>
 <entry key="yukon.web.modules.dr.formula.noAssignments">No assignments</entry>
@@ -627,6 +629,9 @@ Valid inputs include only decimal values. S & W are negative. (e.g. 37&#176;44'5
 <entry key="yukon.web.modules.dr.formula.quadratic">Quadratic</entry>
 <entry key="yukon.web.modules.dr.formula.rangeMax">Range Max</entry>
 <entry key="yukon.web.modules.dr.formula.rangeMin">Range Min</entry>
+<entry key="yukon.web.modules.dr.formula.removeEntry.hoverText">Removes this lookup entry</entry>
+<entry key="yukon.web.modules.dr.formula.removeTable.hoverText">Removes this lookup table</entry>
+<entry key="yukon.web.modules.dr.formula.removeTable.label">Remove Table</entry>
 <entry key="yukon.web.modules.dr.formula.success.created">Formula {0} created successfully.</entry>
 <entry key="yukon.web.modules.dr.formula.success.deleted">Formula deleted successfully.</entry>
 <entry key="yukon.web.modules.dr.formula.success.updated">Formula {0} updated successfully.</entry>

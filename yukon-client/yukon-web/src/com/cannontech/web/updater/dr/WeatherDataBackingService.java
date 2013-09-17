@@ -4,11 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.point.PointQuality;
-import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
-import com.cannontech.database.data.lite.LiteUnitMeasure;
+import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.loadcontrol.weather.WeatherDataService;
 import com.cannontech.user.YukonUserContext;
@@ -19,6 +18,7 @@ public class WeatherDataBackingService implements UpdateBackingService {
     @Autowired private WeatherDataService weatherDataService;
     @Autowired private DynamicDataSource dynamicDataSource;
     @Autowired private YukonUserContextMessageSourceResolver resolver;
+    @Autowired private DateFormattingService dateFormattingService;
 
     @Override
     public String getLatestValue(String identifier, long afterDate, YukonUserContext userContext) {
@@ -36,7 +36,9 @@ public class WeatherDataBackingService implements UpdateBackingService {
                 } else if(isHumidityField(identifier)) {
                     value += " " + messageAccessor.getMessage("yukon.web.modules.dr.estimatedLoad.weatherInput.humidityUnit");
                 }
-                value += " - " + pointValue.getPointDataTimeStamp();
+                value += " - " + dateFormattingService.format(pointValue.getPointDataTimeStamp(),
+                                                               DateFormattingService.DateFormatEnum.BOTH,
+                                                               userContext);
             }
         } catch(DynamicDataAccessException e) {
             value = messageAccessor.getMessage("yukon.web.defaults.na");

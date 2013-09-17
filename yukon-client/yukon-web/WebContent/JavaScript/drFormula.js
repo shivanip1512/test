@@ -376,7 +376,7 @@ Yukon.DrFormula = (function() {
                 jQuery(this).html(data);
                 if (jQuery("#dialogState").val() == 'done') {
                     jQuery("#weatherStationDialog").dialog('close');
-                    jQuery("#weatherLocations").load("wetherLocationsTableAjax");
+                    jQuery("#weatherLocations").load("weatherLocationsTableAjax");
                 } else {
                     jQuery(this).fadeIn(50);
                 }
@@ -422,7 +422,7 @@ Yukon.DrFormula = (function() {
             jQuery("#newWeatherLocationBtn")
                 .click(_newWeatherLocationBtnClick);
             jQuery("#weatherLocations")
-                .load("wetherLocationsTableAjax");
+                .load("weatherLocationsTableAjax");
 
             _initialized = true;
         },

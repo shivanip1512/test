@@ -57,6 +57,8 @@ public class YukonConfigurationController {
     @Autowired private GlobalSettingUpdateDao globalSettingUpdateDao;
     @Autowired private YukonUserContextMessageSourceResolver resolver;
     
+    private GlobalSettingValidator globalSettingValidator = new GlobalSettingValidator();
+    
     private LoadingCache<GlobalSettingSubCategory, MappedPropertiesHelper<GlobalSetting>> helperLookup;
     private Map<GlobalSettingSubCategory, String> iconMap;
     
@@ -206,6 +208,7 @@ public class YukonConfigurationController {
                        ModelMap map, 
                        FlashScope flashScope) throws Exception {
         
+        globalSettingValidator.doValidation(command, result);
         GlobalSettingSubCategory category = command.getCategory();
         if (result.hasErrors()) {
             setupModelMap(context, map, category);

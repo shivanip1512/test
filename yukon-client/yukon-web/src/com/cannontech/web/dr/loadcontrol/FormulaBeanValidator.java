@@ -28,7 +28,7 @@ public class FormulaBeanValidator extends SimpleValidator<FormulaBean> {
 
         if (bean.getCalculationType() == Formula.CalculationType.FUNCTION) {
             
-            YukonValidationUtils.checkIsValidDouble(errors, "functionIntercept", bean.getFunctionIntercept());
+            YukonValidationUtils.checkIsValidDouble(errors, "functionIntercept", bean.getFunctionIntercept().doubleValue());
             List<FunctionBean> functions = bean.getFunctions();
             for (int i=0; i<functions.size();i++) {
                 FunctionBean function = functions.get(i);

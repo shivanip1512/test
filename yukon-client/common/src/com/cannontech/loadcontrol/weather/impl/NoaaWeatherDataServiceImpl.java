@@ -41,6 +41,8 @@ import com.cannontech.loadcontrol.weather.NoaaWeatherDataService;
 import com.cannontech.loadcontrol.weather.NoaaWeatherDataServiceException;
 import com.cannontech.loadcontrol.weather.WeatherObservation;
 import com.cannontech.loadcontrol.weather.WeatherStation;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 
 public class NoaaWeatherDataServiceImpl implements NoaaWeatherDataService {
 
@@ -55,6 +57,7 @@ public class NoaaWeatherDataServiceImpl implements NoaaWeatherDataService {
     @Autowired private PaoPersistenceService paoPersistenceService;
     @Autowired private AttributeService attributeService;
     @Autowired private ConfigurationSource configurationSource;
+    @Autowired private GlobalSettingDao globalSettingDao;
 
     /**
      * Tries to query the NOAA web service. If any error occurs this method will throw.
@@ -71,18 +74,14 @@ public class NoaaWeatherDataServiceImpl implements NoaaWeatherDataService {
 
             HttpMethod method = new GetMethod(stationIndexUrl);
 
-            String proxyHost = configurationSource.getString("HTTP_PROXY_HOST");
-            int proxyPort = configurationSource.getInteger("HTTP_PROXY_PORT", 80);
-
-            if (proxyHost != null) {
-                client.getHostConfiguration().setProxy(proxyHost, proxyPort);
-            }
+            setProxySettings(client, stationIndexUrl);
 
             int status = client.executeMethod(method);
             if (status != 200) {
                 throw new NoaaWeatherDataServiceException("Failed to retrieve current weather"
                             + " observation from NOAA webservice. HTTP Status: " + status
-                            + " for url: " + stationIndexUrl);
+                            + " for url: " + stationIndexUrl
+                            + ". This may be caused by invalid Proxy settings (Http Proxy Yukon configuration setting)");
             }
 
             DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
@@ -161,13 +160,9 @@ public class NoaaWeatherDataServiceImpl implements NoaaWeatherDataService {
         }
 
         lastRefresh = new Instant();
+
         weatherStationMap = newWeatherStationMap;
         return weatherStationMap;
-    }
-
-    @Override
-    public WeatherStation getClosestWeatherStation(GeographicCoordinate coordinate) {
-        return getWeatherStationsByDistance(coordinate).get(0);
     }
 
     @Override
@@ -195,12 +190,7 @@ public class NoaaWeatherDataServiceImpl implements NoaaWeatherDataService {
             HttpClient client = new HttpClient();
             HttpMethod method = new GetMethod(weatherStation.getNoaaUrl());
 
-            String proxyHost = configurationSource.getString("HTTP_PROXY_HOST");
-            String proxyPort = configurationSource.getString("HTTP_PROXY_PORT", "80");
-
-            if (proxyHost != null) {
-                client.getHostConfiguration().setProxy(proxyHost, Integer.parseInt(proxyPort));
-            }
+            setProxySettings(client, weatherStation.getNoaaUrl());
 
             int status = client.executeMethod(method);
             if (status != 200) {
@@ -220,20 +210,25 @@ public class NoaaWeatherDataServiceImpl implements NoaaWeatherDataService {
             // These are not guaranteed to exist. 
             // Need to check for null when accessing these from weather observation
             Double tempInF = template.evaluateAsDouble("temp_f");
+            if (tempInF == null) {
+                log.info("NOAA Weather Station " + weatherStation.getStationId() + " is missing temperature data and will not be included in requested weather observation.");
+            }
             Double relHum = template.evaluateAsDouble("relative_humidity");
-
+            if (relHum == null) {
+                log.info("NOAA Weather Station " + weatherStation.getStationId() + " is missing humidity data and will not be included in requested weather observation.");
+            }
+            
             Instant timestamp = Instant.now();
             String ts = template.evaluateAsString("observation_time_rfc822");
             SimpleDateFormat inputDF = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
             try {
                 timestamp = new Instant(inputDF.parse(ts));
             } catch (ParseException e) {
-                log.warn("Caught exception in getCurrentWeatherObservation: ", e);
+                log.warn("Unable to use timestamp provided by NOAA weather observation. Using now time. ", e);
             }
-            
-            fullObservation = new WeatherObservation(weatherStation.getStationId(),
-                                  tempInF, timestamp,
-                                  relHum, timestamp);
+
+            fullObservation = new WeatherObservation(weatherStation.getStationId(), tempInF, relHum, timestamp);
+
             method.releaseConnection();
         } catch (IOException | SAXException | ParserConfigurationException e) {
             throw new NoaaWeatherDataServiceException("Unable to get current weather observation", e);
@@ -244,5 +239,32 @@ public class NoaaWeatherDataServiceImpl implements NoaaWeatherDataService {
         }
 
         return fullObservation;
+    }
+
+    /**
+     * If HTTP_PROXY global setting is set to ip:port, this method will set this value on the HttpClient,
+     * otherwise this method will not set up a proxy. 
+     */
+    private void setProxySettings(HttpClient client, String url) {
+        String httpProxy = globalSettingDao.getString(GlobalSettingType.HTTP_PROXY);
+
+        if (!httpProxy.equals("none")) {
+            String [] hostAndPort = httpProxy.split(":");
+            if(hostAndPort.length != 2) {
+                log.warn("GlobalSettingType = HTTP_PROXY has an invalid value: "
+                         + httpProxy
+                         + ". Unable to setup proxy settings for NOAA weather data service");
+            } else {
+                String host = httpProxy.split(":")[0];
+                try {
+                    int port = Integer.parseInt(httpProxy.split(":")[1]);
+                    client.getHostConfiguration().setProxy(host, port);
+                } catch(NumberFormatException e) {
+                    log.warn("GlobalSettingType = HTTP_PROXY has an invalid value: "
+                            + hostAndPort
+                            + ". Unable to setup proxy settings for NOAA weather data service", e);
+                }
+            }
+        }
     }
 }

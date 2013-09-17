@@ -173,7 +173,7 @@
                     <h4>
                         <i:inline key=".entries"/>
                         <cti:displayForPageEditModes modes="EDIT">
-                            <cti:button nameKey="remove" icon="icon-cross"
+                            <cti:button nameKey="removeTable" icon="icon-cross"
                                  classes="fr f-drFormula-remove"/>
                          </cti:displayForPageEditModes>
                     </h4>
@@ -227,7 +227,8 @@
                 </div>
                 <div class="actionArea stacked">
                     <cti:button classes="f-drFormula-newEntryButton"
-                        icon="icon-plus-green" nameKey="newEntry"
+                        icon="icon-plus-green"
+                        nameKey="newEntry"
                         data-table-id="${tableIndex}"
                         data-entry-id-next="${dummyRow ? '0' : formulaBean.tables[tableIndex].numberOfEntries}"/>
                 </div>

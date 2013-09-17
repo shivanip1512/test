@@ -276,6 +276,7 @@
 
     <!-- Scheduled RPH Duplicate Deletion Execution Job Definition -->
     <bean id="scheduledRphDuplicateDeletionExecutionJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
+        <qualifier value="rphDuplicateDeletion"/>
         <property name="taskName">
             <idref local="scheduledRphDuplicateDeletionExecutionTask"/>
         </property>
@@ -291,6 +292,7 @@
 
     <!-- Scheduled RPH Dangling Entries Deletion Job Definition -->
     <bean id="scheduledRphDanglingEntriesDeletionExecutionJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
+        <qualifier value="rphDanglingDeletion"/>
         <property name="taskName">
             <idref local="scheduledRphDanglingEntriesDeletionExecutionTask"/>
         </property>
@@ -306,6 +308,7 @@
 
     <!-- Scheduled System Log Dangling Entries Deletion Job Definition -->
     <bean id="scheduledSystemLogDanglingEntriesDeletionExecutionJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
+        <qualifier value="systemLogDanglingDeletion"/>
         <property name="taskName">
             <idref local="scheduledSystemLogDanglingEntriesDeletionExecutionTask"/>
         </property>
@@ -321,6 +324,7 @@
     
     <!-- Scheduled Weather Data updated -->
     <bean id="scheduledWeatherDataUpdateExecutionJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
+        <qualifier value="weatherData"/>
         <property name="taskName">
             <idref local="scheduledWeatherDataUpdateExecutionTask"/>
         </property>

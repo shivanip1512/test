@@ -10,17 +10,19 @@ import org.springframework.dao.DataAccessException;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.SystemEventLogService;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoInfo;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.exception.DispatchNotConnectedException;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.db.pao.dao.StaticPaoInfoDao;
-import com.cannontech.database.db.point.Point;
 import com.cannontech.jobs.support.YukonTaskBase;
 import com.cannontech.loadcontrol.weather.NoaaWeatherDataService;
 import com.cannontech.loadcontrol.weather.NoaaWeatherDataServiceException;
@@ -40,6 +42,7 @@ public class ScheduledWeatherDataUpdateExecutionTask extends YukonTaskBase {
     @Autowired SystemEventLogService systemEventLogService;
     @Autowired WeatherDataService weatherService;
     @Autowired NoaaWeatherDataService noaaWeatherService;
+    @Autowired AttributeService attributeService;
 
     @Override
     public void start() {
@@ -49,16 +52,42 @@ public class ScheduledWeatherDataUpdateExecutionTask extends YukonTaskBase {
         Map<String, WeatherStation> weatherStationMap = noaaWeatherService.getAllWeatherStations();
 
         for (LiteYukonPAObject weatherLocation : weatherLocations) {
-            int singlePaoId = weatherLocation.getLiteID();
+            int singlePaoId = weatherLocation.getPaoIdentifier().getPaoId();
 
             String weatherStationId = "";
             try {
                 weatherStationId = staticPaoInfoDao.getValue(PaoInfo.WEATHER_LOCATION_STATIONID, singlePaoId);
-                WeatherStation weatherStation = weatherStationMap.get(weatherStationId);
-                WeatherObservation currentObservation = noaaWeatherService.getCurrentWeatherObservation(weatherStation);
+                if (weatherStationMap.containsKey(weatherStationId)) {
+                    WeatherStation weatherStation = weatherStationMap.get(weatherStationId);
+                    WeatherObservation currentObservation = noaaWeatherService.getCurrentWeatherObservation(weatherStation);
 
-                List<PointBase> points = pointDao.getPointsForPao(singlePaoId);
-                updatePointDataForObservation(points, currentObservation);
+                    PaoIdentifier weatherPao = new PaoIdentifier(singlePaoId, PaoType.WEATHER_LOCATION);
+
+                    if (currentObservation.getHumidity() != null) {
+                        LitePoint humidityPoint = attributeService.getPointForAttribute(weatherPao, BuiltInAttribute.HUMIDITY);
+                        PointData newData = new PointData();
+                        newData.setId(humidityPoint.getPointID());
+                        newData.setPointQuality(PointQuality.Normal);
+                        newData.setType(humidityPoint.getLiteType());
+                        newData.setValue(currentObservation.getHumidity());
+                        newData.setTime(currentObservation.getTimestamp().toDate());
+                        dynamicDataSource.putValue(newData);
+                    }
+
+                    if (currentObservation.getTemperature() != null) {
+                        LitePoint temperaturePoint = attributeService.getPointForAttribute(weatherPao, BuiltInAttribute.TEMPERATURE);
+                        PointData newData = new PointData();
+                        newData.setId(temperaturePoint.getPointID());
+                        newData.setPointQuality(PointQuality.Normal);
+                        newData.setType(temperaturePoint.getLiteType());
+                        newData.setValue(currentObservation.getTemperature());
+                        newData.setTime(currentObservation.getTimestamp().toDate());
+                        dynamicDataSource.putValue(newData);
+                    }
+                    log.debug("Updated weather station " + weatherStationId);
+                } else {
+                    log.warn("Unable to update weather observation for station: " + weatherStationId + ". NOAA weather service did not return information for this station.");
+                }
             } catch (DispatchNotConnectedException e) {
                 log.warn("Unable to update weather observation for station: " + weatherStationId + ". Dispatch not connected.");
             } catch (NoaaWeatherDataServiceException e) {
@@ -70,32 +99,5 @@ public class ScheduledWeatherDataUpdateExecutionTask extends YukonTaskBase {
         Instant finish = new Instant();
 
         systemEventLogService.systemLogWeatherDataUpdate(weatherLocations.size(), start, finish);
-    }
-
-    private void updatePointDataForObservation(List<PointBase> points, WeatherObservation observation) {
-        for (PointBase pointBase : points) {
-            Point point = pointBase.getPoint();
-            Double pointValue = null;
-            Instant ts = Instant.now();
-            if (point.getPointName().equals("Temperature")) {
-                pointValue = observation.getTemperature();
-                ts = observation.getTemperatureTimestamp();
-            } else if (point.getPointName().equals("Relative Humidity")) {
-                pointValue = observation.getHumidity();
-                ts = observation.getHumidityTimestamp();
-            }
-            if (pointValue == null) {
-                log.warn("Unable to obtain "+point.getPointName()+" data for station "+observation.getStationId()+".");
-            } else {
-                PointData newData = new PointData();
-                newData.setId(point.getPointID());
-                newData.setPointQuality(PointQuality.Normal);
-                newData.setType(pointDao.getLitePoint(point.getPointID()).getLiteType());
-                newData.setValue(pointValue);
-                newData.setTime(ts.toDate());
-    
-                dynamicDataSource.putValue(newData);
-            }
-        }
     }
 }

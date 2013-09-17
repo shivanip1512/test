@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoInfo;
@@ -34,6 +36,7 @@ public class WeatherDataServiceImpl implements WeatherDataService {
     @Autowired private PaoPersistenceService paoPersistenceService;
     @Autowired private AttributeService attributeService;
     @Autowired private DynamicDataSource dynamicDataSource;
+    private DecimalFormat doubleFormat = new DecimalFormat("#.#####");
 
     @Override
     public WeatherLocation getWeatherLocationForStationId(String weatherStationId) {
@@ -48,29 +51,30 @@ public class WeatherDataServiceImpl implements WeatherDataService {
 
         WeatherLocation weatherLocation = getWeatherLocationForStationId(weatherStationId);
 
-        PointValueQualityHolder tempValue = dynamicDataSource.getPointValue(weatherLocation.getTempPoint().getLiteID());
+        PointValueQualityHolder tempertureValue = dynamicDataSource.getPointValue(weatherLocation.getTempPoint().getLiteID());
         PointValueQualityHolder humidityValue = dynamicDataSource.getPointValue(weatherLocation.getHumidityPoint().getLiteID());
 
-        Instant tempTimestamp = new Instant(tempValue.getPointDataTimeStamp());
+        Double temperature = tempertureValue.getValue();
+        Double humidity = humidityValue.getValue();
 
-        if (tempValue.getPointQuality() != PointQuality.Normal) {
-            tempTimestamp = new Instant(0);
+        Instant timestamp = new Instant(tempertureValue.getPointDataTimeStamp());
+
+        if (tempertureValue.getPointQuality() != PointQuality.Normal) {
+            temperature = null;
         }
 
-        Instant humidityTimestamp = new Instant(humidityValue.getPointDataTimeStamp());
-
         if (humidityValue.getPointQuality() != PointQuality.Normal) {
-            humidityTimestamp = new Instant(0);
+            humidity = null;
         }
 
         return new WeatherObservation(weatherLocation.getStationId(),
-                                      tempValue.getValue(),
-                                      tempTimestamp,
-                                      humidityValue.getValue(),
-                                      humidityTimestamp);
+                                      temperature,
+                                      humidity,
+                                      timestamp);
     }
 
     @Override
+    @Transactional(propagation=Propagation.SUPPORTS)
     public List<WeatherLocation> getAllWeatherLocations() {
       List<LiteYukonPAObject> paos = paoDao.getLiteYukonPAObjectByType(DeviceTypes.WEATHER_LOCATION);
       List<WeatherLocation> weatherDevices = new ArrayList<>();
@@ -89,7 +93,6 @@ public class WeatherDataServiceImpl implements WeatherDataService {
 
     @Override
     public void createWeatherLocation(WeatherLocation weatherLocation) {
-        DecimalFormat doubleFormat = new DecimalFormat("#"); // we don't want Double.toString since this prints scientific notation
 
         CompleteYukonPao weatherPao = new CompleteYukonPao();
         weatherPao.setPaoName(weatherLocation.getName());

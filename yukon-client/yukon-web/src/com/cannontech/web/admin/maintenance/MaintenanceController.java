@@ -3,11 +3,11 @@ package com.cannontech.web.admin.maintenance;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.annotation.Resource;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -45,10 +45,14 @@ public class MaintenanceController {
     @Autowired private JobManager jobManager;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
-    private YukonJobDefinition<ScheduledRphDuplicateDeletionExecutionTask> rphDuplicateJobDef;
-    private YukonJobDefinition<ScheduledRphDanglingEntriesDeletionExecutionTask> rphDanglingEntriesJobDef;
-    private YukonJobDefinition<ScheduledSystemLogDanglingEntriesDeletionExecutionTask> systemLogDanglingEntriesJobDef;
-    private YukonJobDefinition<ScheduledWeatherDataUpdateExecutionTask> weatherDataJobDef;
+    @Autowired @Qualifier("rphDuplicateDeletion")
+        private YukonJobDefinition<ScheduledRphDuplicateDeletionExecutionTask> rphDuplicateJobDef;
+    @Autowired @Qualifier("rphDanglingDeletion")
+        private YukonJobDefinition<ScheduledRphDanglingEntriesDeletionExecutionTask> rphDanglingEntriesJobDef;
+    @Autowired @Qualifier("systemLogDanglingDeletion")
+        private YukonJobDefinition<ScheduledSystemLogDanglingEntriesDeletionExecutionTask> systemLogDanglingEntriesJobDef;
+    @Autowired @Qualifier("weatherData")
+        private YukonJobDefinition<ScheduledWeatherDataUpdateExecutionTask> weatherDataJobDef;
 
     private final static String RPH_DUPLICATE_CRON = "0 0 21 ? * *"; // every night at 9:00pm
     private final static String RPH_DANGLING_CRON = "0 15 21 ? * *"; // every night at 9:15pm
@@ -155,23 +159,4 @@ public class MaintenanceController {
         return job;
     }
 
-    @Resource(name = "scheduledRphDuplicateDeletionExecutionJobDefinition")
-    public void setScheduledRphDuplicateDeletionExecutionJobDefinition(YukonJobDefinition<ScheduledRphDuplicateDeletionExecutionTask> rphDuplicateJobDef) {
-        this.rphDuplicateJobDef = rphDuplicateJobDef;
-    }
-
-    @Resource(name = "scheduledRphDanglingEntriesDeletionExecutionJobDefinition")
-    public void setScheduledRphDanglingEntriesDeletionExecutionJobDefinition(YukonJobDefinition<ScheduledRphDanglingEntriesDeletionExecutionTask> rphDanglingEntriesJobDef) {
-        this.rphDanglingEntriesJobDef = rphDanglingEntriesJobDef;
-    }
-
-    @Resource(name = "scheduledSystemLogDanglingEntriesDeletionExecutionJobDefinition")
-    public void setScheduledSystemLogDanglingEntriesDeletionExecutionJobDefinition(YukonJobDefinition<ScheduledSystemLogDanglingEntriesDeletionExecutionTask> systemLogDanglingEntriesJobDef) {
-        this.systemLogDanglingEntriesJobDef = systemLogDanglingEntriesJobDef;
-    }
-
-    @Resource(name = "scheduledWeatherDataUpdateExecutionJobDefinition")
-    public void setScheduledWeatherDataUpdateExecutionJobDefinition(YukonJobDefinition<ScheduledWeatherDataUpdateExecutionTask> weatherDataJobDef) {
-        this.weatherDataJobDef = weatherDataJobDef;
-    }
 }
