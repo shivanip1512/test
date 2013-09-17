@@ -198,6 +198,9 @@
                 <cti:checkGlobalRolesAndProperties value="DEVELOPMENT_MODE">
                     <li><a href="/support/development/main">Development</a></li>
                 </cti:checkGlobalRolesAndProperties>
+                <c:if test="${showNM}">
+                    <li><a href="${nmUrl}" target="_blank"><i:inline key="yukon.common.networkManager"/></a></li>
+                </c:if>
             </ul>
         </nav>
     </div>

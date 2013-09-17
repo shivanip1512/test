@@ -63,7 +63,7 @@ public class MeterReadingArchiveRequestListener extends ArchiveRequestListenerBa
             
             /* Converting went well which means the device exist, we can queue the corresponding calculator now. 
              * We only need to do this if we found any channel data that we use to calculate other data, also we 
-             * we only do this for interval readings for now since we are just generating per interval values and
+             * only do this for interval readings for now since we are just generating per interval values and
              * load profile. 
              * 
              * Order is important: we update the producers cache BEFORE we queue the calculator thread so the data

@@ -40,6 +40,8 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.JsLibrary;
@@ -59,16 +61,17 @@ import com.google.common.collect.ImmutableList.Builder;
 @Controller
 public class LayoutController {
 	
-    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private RolePropertyDao rpDao;
     @Autowired private CommonModuleBuilder moduleBuilder;
-    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private YukonUserContextMessageSourceResolver resolver;
     @Autowired private PageDetailProducer pageDetailProducer;
-    @Autowired private ConfigurationSource configurationSource;
-    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
-    @Autowired private YukonUserDao yukonUserDao;
+    @Autowired private ConfigurationSource configSource;
+    @Autowired private YukonEnergyCompanyService yecService;
+    @Autowired private YukonUserDao userDao;
     @Autowired private StandardMenuRenderer stdMenuRender;
     @Autowired private SearchRenderer searchRenderer;
-    @Autowired private HttpExpressionLanguageResolver expressionLanguageResolver;
+    @Autowired private HttpExpressionLanguageResolver elResolver;
+    @Autowired private GlobalSettingDao gsDao;
     
     private List<String> layoutScriptFiles;
     
@@ -92,7 +95,7 @@ public class LayoutController {
     	builder.add(JsLibrary.YUKON_UI.getPath());
     	builder.add(JsLibrary.YUKON_ALERTS.getPath());
         builder.add("/JavaScript/yukonGeneral.js");
-        if (configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)) {
+        if (configSource.getBoolean(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)) {
             builder.add("/JavaScript/basicLogger.js");
         } else {
             builder.add("/JavaScript/basicLoggerStub.js");
@@ -127,7 +130,7 @@ public class LayoutController {
         map.addAttribute("info", tagInfo);
         
         final YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        final MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        final MessageSourceAccessor messageSourceAccessor = resolver.getMessageSourceAccessor(userContext);
         
         //used for determining page title etc...
         final ModuleBase moduleBase = getModuleBase(tagInfo.getModuleName());
@@ -139,7 +142,7 @@ public class LayoutController {
         PageDetail pageDetailTemp;
         if (pageInfo != null) {
             map.addAttribute("canFavorite", ! pageInfo.isHideFavorite());
-            List<String> resolvedLabelArgs = expressionLanguageResolver.resolveElExpressions(pageInfo.getLabelArgumentExpressions(), request);
+            List<String> resolvedLabelArgs = elResolver.resolveElExpressions(pageInfo.getLabelArgumentExpressions(), request);
             String labelArgs = com.cannontech.common.util.StringUtils.listAsJsSafeString(resolvedLabelArgs);
             map.addAttribute("labelArgs", labelArgs);
             pageDetailTemp = pageDetailProducer.render(pageInfo, request, messageSourceAccessor);
@@ -176,7 +179,7 @@ public class LayoutController {
         map.addAttribute("innerContentCss", innerContentCssList);
         
         LiteYukonUser user = ServletUtil.getYukonUser(request);
-        String cssLocations = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.STD_PAGE_STYLE_SHEET, user);
+        String cssLocations = rpDao.getPropertyStringValue(YukonRoleProperty.STD_PAGE_STYLE_SHEET, user);
         cssLocations = StringUtils.defaultString(cssLocations,"");
         String[] cssLocationArray = cssLocations.split("\\s*,\\s*");
         List<String> loginGroupCssList = new ArrayList<String>(Arrays.asList(cssLocationArray));
@@ -219,7 +222,7 @@ public class LayoutController {
             
             if (showMenu) {
 	            
-	        	final LeftSideMenuRenderer menuRenderer = new LeftSideMenuRenderer(request, moduleBase, messageSourceResolver);
+	        	final LeftSideMenuRenderer menuRenderer = new LeftSideMenuRenderer(request, moduleBase, resolver);
 	            menuRenderer.setMenuSelection(menuSelection);
 	            // if bread crumbs were specified within the JSP, use them (old style)
 	            String breadCrumbs = tagInfo.getBreadCrumbs();
@@ -273,7 +276,7 @@ public class LayoutController {
         String energyCompanyName = null;
         
         try {
-            YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(yukonUser);
+            YukonEnergyCompany energyCompany = yecService.getEnergyCompanyByOperator(yukonUser);
             energyCompanyName = energyCompany.getName();
         } catch (EnergyCompanyNotFoundException e) {
            //The user does not need an Energy Company just to log in.
@@ -282,7 +285,7 @@ public class LayoutController {
         map.addAttribute("energyCompanyName", energyCompanyName);
         map.addAttribute("username", username);
         
-    	map.addAttribute("displayName", buildDisplayName(yukonUserDao.getLiteContact(yukonUser.getLiteID()), yukonUser));
+    	map.addAttribute("displayName", buildDisplayName(userDao.getLiteContact(yukonUser.getLiteID()), yukonUser));
         
         boolean showContextualNavigation = pageInfo != null && pageInfo.isShowContextualNavigation();
         map.addAttribute("showContextualNavigation", showContextualNavigation);
@@ -326,9 +329,20 @@ public class LayoutController {
     public String getYukonVersion() {
         return VersionTools.getYUKON_VERSION();
     }
+	
+	@ModelAttribute("showNM")
+	public boolean showNetworkManagerLink(ModelMap model, LiteYukonUser user) {
+
+	    boolean showNM = rpDao.checkProperty(YukonRoleProperty.ADMIN_NM_ACCESS, user);
+	    if (showNM) {
+	        String url = gsDao.getString(GlobalSettingType.NETWORK_MANAGER_ADDRESS);
+	        model.addAttribute("nmUrl", url);
+	    }
+        return showNM;
+	}
     
     @ModelAttribute("buildInfo")
-    public String getyukonBuild() {
+    public String getYukonBuild() {
         Map<String, String> buildInfo = VersionTools.getBuildInfo();
         if (buildInfo.containsKey("JOB_NAME") && buildInfo.containsKey("BUILD_NUMBER")) {
             return "<a href=\"http://swbuild.cooperpowereas.net/job/" + buildInfo.get("JOB_NAME") + "/" 
