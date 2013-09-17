@@ -240,6 +240,7 @@ public enum PaoType implements DatabaseRepresentationSource {
     private final static ImmutableSet<PaoType> rtuTypes;
     private final static ImmutableSet<PaoType> portTypes;
     private final static ImmutableSet<PaoType> lmProgramTypes;
+    private final static ImmutableSet<PaoType> twoWayLcrTypes;
     
     public final static int INVALID = -1;
 
@@ -436,6 +437,11 @@ public enum PaoType implements DatabaseRepresentationSource {
             TSERVER_DIALUP,
             LOCAL_DIALBACK,
             DIALOUT_POOL);
+        
+        twoWayLcrTypes = ImmutableSet.of(
+            LCR3102,
+            LCR6200_RFN,
+            LCR6600_RFN);
     }
     
     /**
@@ -492,6 +498,16 @@ public enum PaoType implements DatabaseRepresentationSource {
     
     public boolean isRfn() {
         return this.paoClass == PaoClass.RFMESH;
+    }
+    
+    public boolean isTwoWayRfnLcr() {
+        return twoWayLcrTypes.contains(this) 
+                && this.isRfn();
+    }
+    
+    public boolean isTwoWayPlcLcr() {
+        return twoWayLcrTypes.contains(this) 
+                && paoClass == PaoClass.CARRIER;
     }
     
     public boolean isTransmitter() {

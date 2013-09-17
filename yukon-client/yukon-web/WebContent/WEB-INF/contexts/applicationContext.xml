@@ -815,6 +815,9 @@
                 <entry key="WEATHER_STATION">
                     <ref local="weatherDataBackingService"/>
                 </entry>
+                <entry key="ASSET_AVAILABILITY_READ">
+                    <ref local="assetAvailabilityReadBackingService"/>
+                </entry>
             </map>
         </property>
     </bean>
@@ -2015,6 +2018,16 @@
     
     <bean id="controlAuditResultsCache" class="com.cannontech.common.util.RecentResultsCache"/>
     <bean class="com.cannontech.web.stars.dr.operator.inventory.service.impl.ControlAuditServiceImpl"/>
+    
+    <bean id="assetAvailabilityReadBackingService" class="com.cannontech.web.updater.assetAvailability.AssetAvailabilityReadBackingService"/>
+    <bean class="com.cannontech.common.util.RecentResultsCache">
+        <qualifier value="assetAvailabilityReads"/>
+    </bean>
+    <bean class="com.cannontech.dr.assetavailability.service.impl.AssetAvailabilityPingServiceImpl"/>
+    <bean class="com.cannontech.dr.assetavailability.ping.AssetAvailabilityRfnPingStrategy"/>
+    <bean class="com.cannontech.dr.assetavailability.ping.AssetAvailabilityPlcPingStrategy"/>
+    <bean class="com.cannontech.dr.assetavailability.service.impl.AssetAvailabilityPlcPingServiceImpl"/>
+    <bean class="com.cannontech.dr.assetavailability.service.impl.AssetAvailabilityRfnPingServiceImpl"/>
     
     <!-- Contextual Menu Beans (start) -->
     <bean id="meterMenuDecider" class="com.cannontech.web.contextualMenu.MeterMenuDecider"/>

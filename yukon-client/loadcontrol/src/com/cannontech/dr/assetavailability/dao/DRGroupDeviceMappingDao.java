@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.YukonPao;
 
 /**
  * Dao for determining hierarchy of dr control areas, scenarios, programs and load groups, and
@@ -21,6 +22,12 @@ public interface DRGroupDeviceMappingDao {
      * control area.
      */
     public Set<Integer> getDeviceIdsForGrouping(PaoIdentifier paoIdentifier);
+    
+    /**
+     * @return A set of all YukonPaos associated with the specified load group, program scenario or 
+     * control area.
+     */
+    public Set<YukonPao> getDevicesForGrouping(PaoIdentifier paoIdentifier);
     
     /**
      * @return A set of ids for the load groups in control area, scenario, load program, or load group

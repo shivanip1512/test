@@ -40,5 +40,6 @@ public enum DataType {
     INVENTORY_TASK,
     LM_REPORTED_ADDRESS,
     WEATHER_STATION,
+    ASSET_AVAILABILITY_READ,
     ;
 }

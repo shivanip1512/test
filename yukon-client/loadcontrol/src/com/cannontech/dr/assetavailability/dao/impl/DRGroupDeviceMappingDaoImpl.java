@@ -10,8 +10,10 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.Pair;
 import com.cannontech.common.util.SqlFragmentGenerator;
@@ -45,6 +47,32 @@ public class DRGroupDeviceMappingDaoImpl implements DRGroupDeviceMappingDao {
         Collection<Integer> loadGroupIds = getLoadGroupIdsForDrGroup(paoIdentifier);
         Set<Integer> deviceIds = Sets.newHashSet(getInventoryAndDeviceIdsForLoadGroups(loadGroupIds).values());
         return deviceIds;
+    }
+    
+    public Set<YukonPao> getDevicesForGrouping(PaoIdentifier paoIdentifier) {
+        Collection<Integer> loadGroupIds = getLoadGroupIdsForDrGroup(paoIdentifier);
+        
+        SqlFragmentGenerator<Integer> sqlFragmentGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT PaObjectId, Type");
+                sql.append("FROM YukonPAObject ypo");
+                sql.append("JOIN InventoryBase ib ON ib.DeviceId = ypo.PaObjectId");
+                sql.append("JOIN LMHardwareConfiguration lmhc ON lmhc.InventoryId = ib.InventoryId");
+                sql.append("WHERE lmhc.AddressingGroupId").in(subList);
+                sql.append("AND PaObjectId").gt(0);
+                return sql;
+            }
+        };
+        List<YukonPao> resultsList = chunkingSqlTemplate.query(sqlFragmentGenerator, loadGroupIds, new YukonRowMapper<YukonPao>() {
+            public YukonPao mapRow(YukonResultSet rs) throws SQLException {
+                int paoId = rs.getInt("PaObjectId");
+                PaoType paoType = rs.getEnum("Type", PaoType.class);
+                return new SimpleDevice(paoId, paoType);
+            }
+        });
+        return Sets.newHashSet(resultsList);
     }
     
     @Override
