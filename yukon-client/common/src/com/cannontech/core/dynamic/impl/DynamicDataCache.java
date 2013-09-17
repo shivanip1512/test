@@ -1,6 +1,8 @@
 package com.cannontech.core.dynamic.impl;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.cannontech.message.dispatch.message.Multi;
@@ -112,6 +114,10 @@ class DynamicDataCache implements MessageListener {
     }
     
     private void handleSignal(Signal signal) {
+        PointData pointData = getPointData(signal.getPointID());
+        if(pointData != null){
+            pointData.setTags(signal.getTags());
+        }
         int pointId = signal.getPointID();
         int categoryId = (int)signal.getCategoryID();
         

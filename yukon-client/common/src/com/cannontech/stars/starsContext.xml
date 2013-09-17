@@ -287,4 +287,9 @@
     <bean id="defaultRouteService" class="com.cannontech.stars.service.impl.DefaultRouteServiceImpl"/>
     
     <bean id="energyCompanyService" class="com.cannontech.stars.service.impl.EnergyCompanyServiceImpl"/>
+
+    <bean id="displayDao" class="com.cannontech.common.tdc.impl.DisplayDaoImpl" />
+    <bean id="commandService" class="com.cannontech.message.dispatch.command.service.impl.CommandServiceImpl">
+        <property name="dispatchConnection" ref="dispatchConnection" />
+    </bean>        
 </beans>

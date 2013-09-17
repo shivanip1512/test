@@ -1,182 +1,84 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="flot" tagdir="/WEB-INF/tags/flotChart"%>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="ct" tagdir="/WEB-INF/tags"%>
 
 <cti:standardPage module="tools" page="tdc.home">
 
-<cti:includeScript link="JQUERY_COOKIE"/>
+    <cti:includeScript link="JQUERY_COOKIE" />
+    <cti:includeScript link="/JavaScript/yukon/yukon.tdc.js" />
 
-<script type="text/javascript">
-jQuery(function() {
-    jQuery('#display_tabs').tabs({'class': 'section', 'cookie' : {}});
-    
-    jQuery('#b_mute, #b_unmute').click (function(e) {
-        if (e.currentTarget.id == 'b_mute') {
-            jQuery('#b_mute').hide();
-            jQuery('#b_unmute').show();
-        } else {
-            jQuery('#b_mute').show();
-            jQuery('#b_unmute').hide();
-        }
-    });
-});
-</script>
-
-<style type="text/css">
-.display-list li {padding: 2px;}
-.display-list .divider {padding:none; margin:2px; list-style: none;}
-</style>
-
-<div class="column_8_16">
-    <div class="column one">
-        
-        <div id="display_tabs" class="section">
-            <ul>
-                <li><a href="#custom_displays">Custom Displays</a></li>
-                <li><a href="#events_displays">Event Displays</a></li>
-            </ul>
-            
-            <div id="events_displays" class="clearfix scrollingContainer_large liteContainer">
-                <ul class="simple-list display-list">
-                    <li><a href="#">All Alarms</a></li>
-                    <li><a href="#">Event Viewer</a></li>
-                    <li><a href="#">SOE Log</a></li>
-                    <li><a href="#">TAG Log</a></li>
+    <div class="column_8_16">
+        <div class="column one">
+            <div id="display_tabs" class="section">
+                <ul>
+                    <li><a href="#custom_displays"><i:inline key=".display.custom" /></a></li>
+                    <li><a href="#events_displays"><i:inline key=".display.event" /></a></li>
                 </ul>
-                <hr>
-                <ul class="simple-list display-list">
-                    <li><a href="#">Alarm</a></li>
-                    <li><a href="#">Load Control Status</a></li>
-                    <li><a href="#">Category 3</a></li>
-                    <li><a href="#">Category 4</a></li>
-                    <li><a href="#">Category 5</a></li>
-                    <li><a href="#">Category 6</a></li>
-                    <li><a href="#">Category 7</a></li>
-                    <li><a href="#">Category 8</a></li>
-                    <li><a href="#">Category 9</a></li>
-                    <li><a href="#">Category 10</a></li>
-                    <li><a href="#">Category 11</a></li>
-                    <li><a href="#">Category 12</a></li>
-                    <li><a href="#">Category 13</a></li>
-                    <li><a href="#">Category 14</a></li>
-                    <li><a href="#">Category 15</a></li>
-                    <li><a href="#">Category 16</a></li>
-                    <li><a href="#">Category 17</a></li>
-                    <li><a href="#">Category 18</a></li>
-                    <li><a href="#">Category 19</a></li>
-                    <li><a href="#">Category 20</a></li>
-                    <li><a href="#">Category 21</a></li>
-                    <li><a href="#">Category 22</a></li>
-                    <li><a href="#">Category 23</a></li>
-                    <li><a href="#">Category 24</a></li>
-                    <li><a href="#">Category 25</a></li>
-                    <li><a href="#">Category 26</a></li>
-                    <li><a href="#">Category 27</a></li>
-                    <li><a href="#">Category 28</a></li>
-                    <li><a href="#">Category 29</a></li>
-                    <li><a href="#">Category 30</a></li>
-                    <li><a href="#">Category 31</a></li>
-                    <li><a href="#">Category 32</a></li>
-                    <li><a href="#">Category 33</a></li>
-                </ul>
+                <div id="events_displays" class="clearfix scrollingContainer_large liteContainer">
+                    <ul class="simple-list display-list">
+                        <c:forEach var="topEvent" items="${topEvents}">
+                            <cti:url var="view" value="/tdc/${topEvent.displayId}" />
+                            <li><c:choose>
+                                    <c:when test="${fn:length(topEvent.columns) > 0}">
+                                        <a href="${view}">${fn:escapeXml(topEvent.name)}</a>
+                                    </c:when>
+                                    <c:otherwise>
+                                       ${fn:escapeXml(topEvent.name)}
+                                    </c:otherwise>
+                                </c:choose></li>
+                        </c:forEach>
+                    </ul>
+                    <hr>
+                    <ul class="simple-list display-list">
+                        <c:forEach var="event" items="${events}">
+                            <cti:url var="view" value="/tdc/${event.displayId}" />
+                            <li><c:choose>
+                                    <c:when test="${fn:length(event.columns) > 0}">
+                                        <a href="${view}">${fn:escapeXml(event.name)}</a>
+                                    </c:when>
+                                    <c:otherwise>
+                                       ${fn:escapeXml(event.name)}
+                                    </c:otherwise>
+                                </c:choose></li>
+                        </c:forEach>
+                    </ul>
+                </div>
+
+                <div id="custom_displays" class="clearfix scrollingContainer_large">
+                    <ul class="display-list simple-list">
+                        <c:forEach var="customEvent" items="${customEvents}">
+                            <cti:url var="view" value="/tdc/${customEvent.displayId}" />
+                            <li><c:choose>
+                                    <c:when test="${fn:length(customEvent.columns) > 0}">
+                                        <a href="${view}">${fn:escapeXml(customEvent.name)}</a>
+                                    </c:when>
+                                    <c:otherwise>
+                                       ${fn:escapeXml(customEvent.name)}
+                                    </c:otherwise>
+                                </c:choose></li>
+                        </c:forEach>
+                    </ul>
+                </div>
             </div>
-            
-            <div id="custom_displays" class="clearfix scrollingContainer_large">
-                <ul class="display-list simple-list">
-                    <li><a href="#">109129453</a></li>
-                    <li><a href="#">88638107 RFN-420 CL</a></li>
-                    <li><a href="#">Fairmont PUC Data</a></li>
-                    <li><a href="#">Lift Station Gallons</a></li>
-                </ul>
-            </div>
-        
         </div>
-        
+        <div class="column two nogutter" id="latestData"></div>
     </div>
-    <div class="column two nogutter">
-        
-        <tags:sectionContainer title="Active Alarms (2)">
-            <table class="compactResultsTable alarm-table has-actions">
-                <thead></thead>
-                <tfoot></tfoot>
-                <tbody>
-                    <tr>
-                        <td class="alarm-text"><a href="#" title="88638107 RFN-420 CL">Limit 1 Exceeded High. 140.000 > 130.000</a></td>
-                        <td>
-                            <span class="error">Unacknowledged</span>
-                            <cm:dropdown containerCssClass="fr">
-                                <li><a class="clearfix"><cti:icon icon="icon-tick"/><span>Acknowledge</span></a></li>
-                                <li class="divider"></li>
-                                <li><a class="clearfix"><cti:icon icon="icon-pencil"/><span>Manual Entry</span></a></li>
-                                <li><a class="clearfix"><cti:icon icon="icon-wrench"/><span>Manual Control</span></a></li>
-                                <li class="divider"></li>
-                                <li><a class="clearfix"><cti:icon icon="icon-tag-blue"/><span>Tags...</span></a></li>
-                                <li><a class="clearfix"><cti:icon icon="icon-accept"/><span>Enable/Disable...</span></a></li>
-                                <li><a class="clearfix"><cti:icon icon="icon-chart-line"/><span>Trend</span></a></li>
-                                <li><a class="clearfix"><cti:icon icon="icon-transmit-blue"/><span>Force Alt Scan</span></a></li>
-                            </cm:dropdown>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="alarm-text"><a href="#" title="Sub Alexandria Voltage">Limit 1 Exceeded High. 1540.000 > 1200.000</a></td>
-                        <td>
-                            <span>Acknowledged</span>
-                            <cm:dropdown containerCssClass="fr">
-                                <li><a class="clearfix"><cti:icon icon="icon-pencil"/><span>Manual Entry</span></a></li>
-                                <li><a class="clearfix"><cti:icon icon="icon-wrench"/><span>Manual Control</span></a></li>
-                                <li class="divider"></li>
-                                <li><a class="clearfix"><cti:icon icon="icon-tag-blue"/><span>Tags...</span></a></li>
-                                <li><a class="clearfix"><cti:icon icon="icon-accept"/><span>Enable/Disable...</span></a></li>
-                                <li><a class="clearfix"><cti:icon icon="icon-chart-line"/><span>Trend</span></a></li>
-                                <li><a class="clearfix"><cti:icon icon="icon-transmit-blue"/><span>Force Alt Scan</span></a></li>
-                            </cm:dropdown>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="alarm-text"><a href="#" title="Sub Vila Voltage">Limit 1 Exceeded High. 1540.000 > 1200.000</a></td>
-                        <td>
-                            <span>Acknowledged</span>
-                            <cm:dropdown containerCssClass="fr">
-                                <li><a class="clearfix"><cti:icon icon="icon-pencil"/><span>Manual Entry</span></a></li>
-                                <li><a class="clearfix"><cti:icon icon="icon-wrench"/><span>Manual Control</span></a></li>
-                                <li class="divider"></li>
-                                <li><a class="clearfix"><cti:icon icon="icon-tag-blue"/><span>Tags...</span></a></li>
-                                <li><a class="clearfix"><cti:icon icon="icon-accept"/><span>Enable/Disable...</span></a></li>
-                                <li><a class="clearfix"><cti:icon icon="icon-chart-line"/><span>Trend</span></a></li>
-                                <li><a class="clearfix"><cti:icon icon="icon-transmit-blue"/><span>Force Alt Scan</span></a></li>
-                            </cm:dropdown>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="alarm-text"><a href="#" title="Sub Bob Voltage">Limit 1 Exceeded High. 1540.000 > 1200.000</a></td>
-                        <td>
-                            <span>Acknowledged</span>
-                            <cm:dropdown containerCssClass="fr">
-                                <li><a class="clearfix"><cti:icon icon="icon-pencil"/><span>Manual Entry</span></a></li>
-                                <li><a class="clearfix"><cti:icon icon="icon-wrench"/><span>Manual Control</span></a></li>
-                                <li class="divider"></li>
-                                <li><a class="clearfix"><cti:icon icon="icon-tag-blue"/><span>Tags...</span></a></li>
-                                <li><a class="clearfix"><cti:icon icon="icon-accept"/><span>Enable/Disable...</span></a></li>
-                                <li><a class="clearfix"><cti:icon icon="icon-chart-line"/><span>Trend</span></a></li>
-                                <li><a class="clearfix"><cti:icon icon="icon-transmit-blue"/><span>Force Alt Scan</span></a></li>
-                            </cm:dropdown>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-            <hr>
-            <div id="f-page-buttons" class="dn">
-                <cti:button id="b_mute" nameKey="mute" icon="icon-sound-mute" classes="dn" renderMode="buttonImage"/>
-                <cti:button id="b_unmute" nameKey="unmute" icon="icon-sound" renderMode="buttonImage"/>
-            </div>
-        </tags:sectionContainer>
-        
-        </div>
-        
+    <div id="f-page-buttons" class="dn">
+        <tags:dynamicChoose updaterString="TDC/ALARM" suffix="${display.displayId}">
+            <tags:dynamicChooseOption optionId="MULT_ALARMS">
+                <cti:button nameKey="tdc.alarm.acknowledgeAll" icon="icon-tick" classes="f-ack-all" />
+            </tags:dynamicChooseOption>
+            <tags:dynamicChooseOption optionId="NONE">
+                <cti:button nameKey="tdc.alarm.acknowledgeAll" icon="icon-tick" classes="f-ack-all dn" />
+            </tags:dynamicChooseOption>
+        </tags:dynamicChoose>
+        <cti:button id="b_mute" nameKey="mute" icon="icon-sound-mute" classes="dn" renderMode="buttonImage" />
+        <cti:button id="b_unmute" nameKey="unmute" icon="icon-sound" renderMode="buttonImage" />
     </div>
-</div>
-
 </cti:standardPage>

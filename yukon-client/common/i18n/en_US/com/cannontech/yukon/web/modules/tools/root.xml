@@ -3,19 +3,86 @@
 <properties>
 
     <entry key="yukon.web.modules.tools.moduleName">Tools</entry>
-    
+
     <!-- module wide key -->
     <entry key="yukon.web.modules.tools.options.title">Options</entry>
     <entry key="yukon.web.modules.tools.instructions.title">Instructions</entry>
-    
+
     <!-- TDC -->
     <entry key="yukon.web.modules.tools.tdc.displays">Displays</entry>
-    
-    <entry key="yukon.web.modules.tools.tdc.home.pageName">Tabular Data Console</entry>
-    <entry key="yukon.web.modules.tools.tdc.home.contextualPageName">TDC</entry>
+
+    <entry key="yukon.web.modules.tools.tdc.home.pageName">Data Viewer</entry>
+    <entry key="yukon.web.modules.tools.tdc.home.contextualPageName">Data Viewer</entry>
     <entry key="yukon.web.modules.tools.tdc.display.VIEW.pageName">Display</entry>
     <entry key="yukon.web.modules.tools.tdc.display.VIEW.pageDescription">{0}</entry>
     <entry key="yukon.web.modules.tools.tdc.display.EDIT.pageName">Edit</entry>
     <entry key="yukon.web.modules.tools.tdc.display.CREATE.pageName">Create Display</entry>
+
+    <entry key="yukon.web.modules.tools.tdc.display.custom">Custom Displays</entry>
+    <entry key="yukon.web.modules.tools.tdc.display.event">Event Displays</entry>
+
+    <entry key="yukon.web.modules.tools.tdc.tags.title">Tags</entry>
+    <entry key="yukon.web.modules.tools.tdc.tags.controlOnPointButton.label">Control On Point</entry>
+    <entry key="yukon.web.modules.tools.tdc.tags.controlOnDeviceButton.label">Control On Device</entry>
+    <entry key="yukon.web.modules.tools.tdc.tags.newTagButton.label">New Tag</entry>
+    <entry key="yukon.web.modules.tools.tdc.tags.editTagButton.label">Edit Tag</entry>
+    <entry key="yukon.web.modules.tools.tdc.tags.deleteTagButton.label">Edit Tag</entry>
+    <entry key="yukon.web.modules.tools.tdc.tags.cntrDisabledOnDevice">Disable control on device</entry>
+    <entry key="yukon.web.modules.tools.tdc.tags.group">Tag Group</entry>
+    <entry key="yukon.web.modules.tools.tdc.tags.description">Description</entry>
+    <entry key="yukon.web.modules.tools.tdc.tags.timestamp">Timestamp</entry>
+    <entry key="yukon.web.modules.tools.tdc.tags.taggedBy">Tagged By</entry>
     
+    <entry key="yukon.web.modules.tools.tdc.manualEntry.title">Manual Entry</entry>
+    <entry key="yukon.web.modules.tools.tdc.manualEntry.state">Current State</entry>
+    <entry key="yukon.web.modules.tools.tdc.manualEntry.value">Value</entry>
+    <entry key="yukon.web.modules.tools.tdc.popupTitle">{0} ({1} : {2})</entry>
+       
+    <entry key="yukon.web.modules.tools.tdc.manualControl">Manual Control</entry>
+    <entry key="yukon.web.modules.tools.tdc.manualControl.title">Manual Control</entry>
+    <entry key="yukon.web.modules.tools.tdc.manualControl.control">Control</entry>
+
+    <entry key="yukon.web.modules.tools.tdc.enableDisable.title">Enable/Disable</entry>
+    <entry key="yukon.web.modules.tools.tdc.enableDisable.pointStatus">Point Status</entry>
+    <entry key="yukon.web.modules.tools.tdc.enableDisable.deviceStatus">Device Status</entry>
+    <entry key="yukon.web.modules.tools.tdc.enableDisable.cntrPoint">Control On Point</entry>
+    <entry key="yukon.web.modules.tools.tdc.enableDisable.cntrDevice">Control On Device</entry>
+
+    <entry key="yukon.web.modules.tools.tdc.altScan.title">Force Alternate Scan Rate</entry>
+    <entry key="yukon.web.modules.tools.tdc.altScan.duration">Duration</entry>
+
+    <entry key="yukon.web.modules.tools.tdc.alarm.unacknowledged">Unacknowledged</entry>
+    <entry key="yukon.web.modules.tools.tdc.alarm.acknowledge">Acknowledge</entry>
+    <entry key="yukon.web.modules.tools.tdc.alarm.acknowledge.label">Acknowledge</entry>
+    <entry key="yukon.web.modules.tools.tdc.activeAlarms.title">Active Alarms ({0})</entry>
+    <entry key="yukon.web.modules.tools.tdc.alarm.acknowledgeAll.label">Acknowledge All</entry>
+    <entry key="yukon.web.modules.tools.tdc.trend.title">Trend</entry>
+    <entry key="yukon.web.modules.tools.tdc.trend.description">30 Day Trend Snapshot for {0}</entry>
+    <entry key="yukon.web.modules.tools.tdc.altScan.title">Alternate Scan Rate</entry>
+    <entry key="yukon.web.modules.tools.tdc.unack.title">Acknowledge Alarms for {0} : {1}</entry>
+    <entry key="yukon.web.modules.tools.tdc.ack.success">Acknowledged {0} alarms</entry>
+    <entry key="yukon.web.modules.tools.tdc.deviceNamePointName">{0} : {1}</entry>
+
+    <entry key="yukon.web.modules.tools.tdc.point.enabled.true">Enabled</entry>
+    <entry key="yukon.web.modules.tools.tdc.point.enabled.false">Disabled</entry>
+
+    <entry key="yukon.web.modules.tools.tdc.altScanRateEnum.ONCE">(Only Once)</entry>
+    <entry key="yukon.web.modules.tools.tdc.altScanRateEnum.MIN1">1 minute</entry>
+    <entry key="yukon.web.modules.tools.tdc.altScanRateEnum.MIN2">2 minutes</entry>
+    <entry key="yukon.web.modules.tools.tdc.altScanRateEnum.MIN3">3 minutes</entry>
+    <entry key="yukon.web.modules.tools.tdc.altScanRateEnum.MIN4">4 minutes</entry>
+    <entry key="yukon.web.modules.tools.tdc.altScanRateEnum.MIN5">5 minutes</entry>
+    <entry key="yukon.web.modules.tools.tdc.altScanRateEnum.MIN10">10 minutes</entry>
+    <entry key="yukon.web.modules.tools.tdc.altScanRateEnum.MIN15">15 minutes</entry>
+    <entry key="yukon.web.modules.tools.tdc.altScanRateEnum.MIN30">30 minutes</entry>
+    <entry key="yukon.web.modules.tools.tdc.altScanRateEnum.HOUR1">1 hour</entry>
+    <entry key="yukon.web.modules.tools.tdc.altScanRateEnum.HOURS2">2 hours</entry>
+    <entry key="yukon.web.modules.tools.tdc.altScanRateEnum.HOURS4">8 hours</entry>
+    <entry key="yukon.web.modules.tools.tdc.altScanRateEnum.HOURS16">16 hours</entry>
+    <entry key="yukon.web.modules.tools.tdc.altScanRateEnum.DAY1">1 day</entry>
+    <entry key="yukon.web.modules.tools.tdc.altScanRateEnum.DAYS2">2 days</entry>
+    <entry key="yukon.web.modules.tools.tdc.altScanRateEnum.DAYS5">5 days</entry>
+    
+    <entry key="yukon.web.modules.tools.tdc.enableDisableEnum.ENABLED">Enabled</entry>
+    <entry key="yukon.web.modules.tools.tdc.enableDisableEnum.DISABLED">Disabled</entry>
 </properties>

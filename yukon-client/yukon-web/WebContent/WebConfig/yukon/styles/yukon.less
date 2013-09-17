@@ -139,6 +139,7 @@ table.nowrap th, table.nowrap td {white-space: nowrap;}
 .compactResultsTable td > .icon {margin-left: 0;}
 .compactResultsTable td > .naked .icon {margin-right: 5px;}
 .compactResultsTable.with-footer {border-bottom: 1px solid #ccc}
+.compactResultsTable.separated tr:not(:last-child) {border-bottom: 1px dashed #ccc;}
 .compactResultsPaging {border-top: 1px solid #ccc;}
 .compactResultsPaging .pagingArea {float: right;margin: -1px 50px 0 0;border: 1px solid #ccc;border-style: none solid solid solid;padding: 5px 10px;background-color: white;}
 .compactResultsPaging span {line-height: 16px;}
@@ -399,6 +400,7 @@ hr.dashed, .divider.dashed {border-style: dashed none none none;}
 .stateBox {width: 14px;height: 14px;border: 1px solid #888;display: inline-block !important;margin: 1px 0 0 0;}
 .front {z-index: 9999;}
 .with-form-controls {line-height: 26px;}
+.with-form-controls td button.naked, .with-form-controls td .button.naked {margin-top: 5px;}
 
  /* DATE/TIME PICKERS */
 .datetimeEntry_wrap {display: inline-block; overflow: hidden; background: #ccc; -webkit-border-radius: 2px; -moz-border-radius: 2px; border-radius: 2px; float: left; margin-right: 5px;border: 1px solid #aaa;height: 22px;}
@@ -423,8 +425,8 @@ input.dateTimePicker {margin: 0;}
 .dropdown-container > a > .icon:first-child {margin-right: 0;}
 .dropdown-container > a > .icon:nth-child(2) {margin-left: 0;}
 
-.has-actions .dropdown-container {visibility: hidden;}
-.has-actions tr:hover .dropdown-container, .has-actions li:hover .dropdown-container, .has-actions .dropdown-container.menu-open {visibility: visible;}
+.has-actions .dropdown-container, .show-on-hover {visibility: hidden;}
+.has-actions tr:hover .dropdown-container, .has-actions li:hover .dropdown-container, .has-actions .dropdown-container.menu-open, .tr:hover .show-on-hover, li:hover .show-on-hover {visibility: visible;}
 .has-actions .action-column {width:56px;} /* only use when you need the action icon to have it's own column, ie: you don't know which column would be the last column */
 
 .ui-datepicker::before,

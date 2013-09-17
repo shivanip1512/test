@@ -4,6 +4,7 @@
 package com.cannontech.core.dao.impl;
 
 import java.util.Iterator;
+import java.util.List;
 
 import com.cannontech.core.dao.TagDao;
 import com.cannontech.database.data.lite.LiteTag;
@@ -17,10 +18,15 @@ public final class TagDaoImpl implements TagDao {
 	
     private IDatabaseCache databaseCache;
     
+    @Override
+    public List<LiteTag> getAllTags(){
+        return databaseCache.getAllTags();
+    }
 	/* (non-Javadoc)
      * @see com.cannontech.core.dao.TagDao#getLiteTag(int)
      */
-	public LiteTag getLiteTag(int tagID) {
+	@Override
+    public LiteTag getLiteTag(int tagID) {
 		synchronized(databaseCache) {
 			Iterator iter = databaseCache.getAllTags().iterator();
 			while(iter.hasNext()) {
@@ -33,6 +39,7 @@ public final class TagDaoImpl implements TagDao {
 		return null;
 	}
     
+    @Override
     public LiteTag getLiteTag(String tagName) {
         synchronized(databaseCache) {
             Iterator iter = databaseCache.getAllTags().iterator();

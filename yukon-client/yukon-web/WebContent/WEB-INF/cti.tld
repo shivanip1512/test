@@ -1584,7 +1584,7 @@
             <rtexprvalue>true</rtexprvalue>
             <description>
                 'renderMode' is to describe how the button should look.
-                Possible values for renderMode are 'image', 'labeledImage', 'imageButton', and 'button' (default).
+                Possible values for renderMode are 'image', 'labeledImage', 'buttonImage', and 'button' (default).
             </description>
         </attribute>
         <attribute>

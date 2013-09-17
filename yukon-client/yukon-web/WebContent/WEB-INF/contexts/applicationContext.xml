@@ -690,6 +690,8 @@
         </property>
     </bean>
     
+   <bean id="tdcBackingService" class="com.cannontech.web.updater.tdc.TdcBackingService"/>
+        
     <!-- Update Service -->
     <bean id="dataUpdaterService" class="com.cannontech.web.updater.DefaultDataUpdaterService"
         abstract="false" lazy-init="default" autowire="default">
@@ -817,6 +819,9 @@
                 </entry>
                 <entry key="ASSET_AVAILABILITY_READ">
                     <ref local="assetAvailabilityReadBackingService"/>
+                </entry>
+                <entry key="TDC">
+                    <ref local="tdcBackingService" />
                 </entry>
             </map>
         </property>
@@ -2208,5 +2213,7 @@
 	<bean class="com.cannontech.web.scheduledFileExport.service.impl.ScheduledFileExportServiceImpl"/>
 	<bean class="com.cannontech.web.scheduledFileExport.service.impl.ScheduledFileExportJobsTagServiceImpl"/>
     <bean class="com.cannontech.web.scheduledFileExport.ScheduledFileExportHelper"/>
-	
+    
+    <bean id="tdcService" class="com.cannontech.common.tdc.service.impl.TdcServiceImpl" />
+    <bean id="tagService" class="com.cannontech.common.tag.service.impl.TagServiceImpl" /> 	
 </beans>

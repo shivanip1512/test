@@ -1,20 +1,30 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ tag body-content="empty" trimDirectiveWhitespaces="true" %>
 
-<%@ tag body-content="empty"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 
-<%@ attribute name="yukonPao" required="true" type="java.lang.Object"%>
+<%@ attribute name="yukonPao" required="true" type="com.cannontech.common.pao.YukonPao" %>
+<%@ attribute name="showLink" %>
+
+<cti:default var="showLink" value="true"/>
 
 <c:choose>
-	<c:when test="${empty yukonPao.paoType}">
+	<c:when test="${empty yukonPao.paoIdentifier.paoType}">
 		<cti:paoTypeIcon yukonPao="${yukonPao}"/>&nbsp;
 	</c:when>
 	<c:otherwise>
 		<cti:url var="meterSearchUrl" value="/meter/search">
-			<cti:param name="deviceType">${yukonPao.paoType.dbString}</cti:param>
+			<cti:param name="deviceType">${yukonPao.paoIdentifier.paoType.paoTypeName}</cti:param>
 		</cti:url>
-		<a href="${meterSearchUrl}">
-            <cti:paoTypeIcon yukonPao="${yukonPao}"/>&nbsp;${yukonPao.paoType.dbString}
-        </a>
+        <c:choose>
+            <c:when test="${showLink == 'true' }">
+        		<a href="${meterSearchUrl}">
+                    <cti:paoTypeIcon yukonPao="${yukonPao}"/>&nbsp;${yukonPao.paoIdentifier.paoType.paoTypeName}
+                </a>
+            </c:when>
+            <c:otherwise>
+                <cti:paoTypeIcon yukonPao="${yukonPao}"/>&nbsp;${yukonPao.paoIdentifier.paoType.paoTypeName}
+            </c:otherwise>
+        </c:choose>
     </c:otherwise>
 </c:choose>

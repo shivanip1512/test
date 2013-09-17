@@ -32,7 +32,6 @@ import com.cannontech.tdc.alarms.gui.AlarmingRowVector;
 import com.cannontech.tdc.alarms.gui.RowBlinker;
 import com.cannontech.tdc.custom.CustomDisplay;
 import com.cannontech.tdc.data.Display;
-import com.cannontech.tdc.data.IDisplay;
 import com.cannontech.tdc.filter.ITDCFilter;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
 import com.cannontech.tdc.utils.DataBaseInteraction;

@@ -2,7 +2,7 @@ package com.cannontech.loadcontrol.displays;
 
 import javax.swing.table.TableModel;
 
-import com.cannontech.tdc.data.IDisplay;
+import com.cannontech.common.tdc.model.IDisplay;
 
 /**
  * @author rneuharth
@@ -43,7 +43,8 @@ public class LCDisplayItem implements IDisplay
 	}
 
 
-	public String toString()
+	@Override
+    public String toString()
 	{
 		return getName();
 	}

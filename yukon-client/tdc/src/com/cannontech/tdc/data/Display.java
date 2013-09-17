@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.tdc.model.IDisplay;
 import com.cannontech.tdc.filter.DefaultTDCFilter;
 import com.cannontech.tdc.filter.ITDCFilter;
 
@@ -50,6 +51,7 @@ public Display() {
  * @return boolean
  * @param o java.lang.Object
  */
+@Override
 public boolean equals(Object o) 
 {
 	return ( (o != null) &&
@@ -342,6 +344,7 @@ public void setType(java.lang.String newType) {
  * Creation date: (10/3/00 3:35:06 PM)
  * @return java.lang.String
  */
+@Override
 public String toString() 
 {
 	//return getType() + ":" + getName();

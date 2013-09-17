@@ -301,6 +301,10 @@ table.nowrap th,table.nowrap td {
 	border-bottom: 1px solid #cccccc;
 }
 
+.compactResultsTable.separated tr:not(:last-child) {
+    border-bottom: 1px dashed #ccc;
+}
+
 .compactResultsPaging {
 	border-top: 1px solid #ccc;
 }
@@ -1336,6 +1340,11 @@ hr.dashed,.divider.dashed {
 .with-form-controls {
 	line-height: 26px;
 }
+.with-form-controls td button.naked, 
+.with-form-controls td .button.naked {
+    margin-top: 5px;
+}
+
 
 /* DATE/TIME PICKERS */
 .datetimeEntry_wrap {
