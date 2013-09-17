@@ -37,8 +37,9 @@ public:
 
     DeviceConfig( const long ID, const std::string & name );
 
-    boost::optional<bool> findBoolValueForKey( const std::string & key ) const;
-    boost::optional<long> findLongValueForKey( const std::string & key ) const;
+    boost::optional<std::string> findValueForKey( const std::string & key ) const;
+    boost::optional<bool>   findBoolValueForKey( const std::string & key ) const;
+    boost::optional<long>   findLongValueForKey( const std::string & key ) const;
 
     std::string getValueFromKey( const std::string & key ) const;
     bool        getLongValue( const std::string & key, long & value ) const;

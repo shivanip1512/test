@@ -74,6 +74,12 @@ std::string DeviceConfig::getValueFromKey( const std::string & key ) const
 }
 
 
+boost::optional<std::string> DeviceConfig::findValueForKey( const std::string & key ) const
+{
+    return lookup( key );
+}
+
+
 boost::optional<bool> DeviceConfig::findBoolValueForKey( const std::string & key ) const
 {
     boost::optional<std::string> value = lookup( key );

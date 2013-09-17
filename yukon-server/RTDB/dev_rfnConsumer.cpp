@@ -511,7 +511,7 @@ int RfnConsumerDevice::executePutConfigInstallTou( CtiRequestMsg     * pReq,
     schedule_to_send._dayTable[7] = deviceConfig->getValueFromKey( RfnStrings::HolidaySchedule   );
 
     // default rate
-    schedule_to_send._defaultRate = deviceConfig->getLongValueFromKey( RfnStrings::DefaultTouRate );
+    schedule_to_send._defaultRate = deviceConfig->getValueFromKey( RfnStrings::DefaultTouRate );
 
     // switch rates
     RfnTouScheduleConfigurationCommand::DailyRates schedule1_rates(6),
@@ -676,7 +676,7 @@ bool RfnConsumerDevice::isTouConfigurationCurrent()
     {
         string dynamicInfo;
 
-        if( ! getDynamicInfo( p.first, dynamicInfo ) || dynamicInfo != deviceConfig->getValueFromKey( p.second ))
+        if( ! getDynamicInfo( p.first, dynamicInfo ) || deviceConfig->findValueForKey( p.second ) != dynamicInfo )
         {
             return false;
         }
@@ -725,7 +725,9 @@ void RfnConsumerDevice::handleResult( const Commands::RfnTouScheduleConfiguratio
 {
     using Commands::RfnTouScheduleConfigurationCommand;
 
-    if( ! cmd.getTouScheduleReceived() )
+    boost::optional<RfnTouScheduleConfigurationCommand::Schedule> schedule_received = cmd.getTouScheduleReceived();
+
+    if( ! schedule_received )
     {
         return;
     }
@@ -733,26 +735,26 @@ void RfnConsumerDevice::handleResult( const Commands::RfnTouScheduleConfiguratio
     //
     // Day table
     //
-    if( cmd.getTouScheduleReceived()->_dayTable.size() == 8 )
+    if( schedule_received->_dayTable.size() == 8 )
     {
         const std::string prefix = "schedule ";
 
-        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_MondaySchedule,    prefix + cmd.getTouScheduleReceived()->_dayTable[0] );
-        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_TuesdaySchedule,   prefix + cmd.getTouScheduleReceived()->_dayTable[1] );
-        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_WednesdaySchedule, prefix + cmd.getTouScheduleReceived()->_dayTable[2] );
-        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ThursdaySchedule,  prefix + cmd.getTouScheduleReceived()->_dayTable[3] );
-        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_FridaySchedule,    prefix + cmd.getTouScheduleReceived()->_dayTable[4] );
-        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_SaturdaySchedule,  prefix + cmd.getTouScheduleReceived()->_dayTable[5] );
-        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_SundaySchedule,    prefix + cmd.getTouScheduleReceived()->_dayTable[6] );
-        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_HolidaySchedule,   prefix + cmd.getTouScheduleReceived()->_dayTable[7] );
+        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_MondaySchedule,    prefix + schedule_received->_dayTable[0] );
+        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_TuesdaySchedule,   prefix + schedule_received->_dayTable[1] );
+        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_WednesdaySchedule, prefix + schedule_received->_dayTable[2] );
+        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ThursdaySchedule,  prefix + schedule_received->_dayTable[3] );
+        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_FridaySchedule,    prefix + schedule_received->_dayTable[4] );
+        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_SaturdaySchedule,  prefix + schedule_received->_dayTable[5] );
+        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_SundaySchedule,    prefix + schedule_received->_dayTable[6] );
+        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_HolidaySchedule,   prefix + schedule_received->_dayTable[7] );
     }
 
     //
     // Default rate
     //
-    if( ! cmd.getTouScheduleReceived()->_defaultRate.empty() )
+    if( ! schedule_received->_defaultRate.empty() )
     {
-        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DefaultTOURate, cmd.getTouScheduleReceived()->_defaultRate );
+        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DefaultTOURate, schedule_received->_defaultRate );
     }
 
     //
@@ -763,7 +765,7 @@ void RfnConsumerDevice::handleResult( const Commands::RfnTouScheduleConfiguratio
         const int rateNbr = 6;
 
         // schedule 1
-        rates = mapFind( cmd.getTouScheduleReceived()->_rates, RfnTouScheduleConfigurationCommand::Schedule1);
+        rates = mapFind( schedule_received->_rates, RfnTouScheduleConfigurationCommand::Schedule1);
         if( rates && rates->size() == rateNbr )
         {
             setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule1MidnightRate, (*rates)[0] );
@@ -775,7 +777,7 @@ void RfnConsumerDevice::handleResult( const Commands::RfnTouScheduleConfiguratio
         }
 
         // schedule 2
-        rates = mapFind( cmd.getTouScheduleReceived()->_rates, RfnTouScheduleConfigurationCommand::Schedule2);
+        rates = mapFind( schedule_received->_rates, RfnTouScheduleConfigurationCommand::Schedule2);
         if( rates && rates->size() == rateNbr )
         {
             setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule2MidnightRate, (*rates)[0] );
@@ -787,7 +789,7 @@ void RfnConsumerDevice::handleResult( const Commands::RfnTouScheduleConfiguratio
         }
 
         // schedule 3
-        rates = mapFind( cmd.getTouScheduleReceived()->_rates, RfnTouScheduleConfigurationCommand::Schedule3);
+        rates = mapFind( schedule_received->_rates, RfnTouScheduleConfigurationCommand::Schedule3);
         if( rates && rates->size() == rateNbr )
         {
             setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule3MidnightRate, (*rates)[0] );
@@ -799,7 +801,7 @@ void RfnConsumerDevice::handleResult( const Commands::RfnTouScheduleConfiguratio
         }
 
         // schedule 3
-        rates = mapFind( cmd.getTouScheduleReceived()->_rates, RfnTouScheduleConfigurationCommand::Schedule4);
+        rates = mapFind( schedule_received->_rates, RfnTouScheduleConfigurationCommand::Schedule4);
         if( rates && rates->size() == rateNbr )
         {
             setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule4MidnightRate, (*rates)[0] );
@@ -819,7 +821,7 @@ void RfnConsumerDevice::handleResult( const Commands::RfnTouScheduleConfiguratio
         const int timeNbr = 6; // times[0] is midnight, theres no paoinfo for it
 
         // schedule 1
-        times = mapFind( cmd.getTouScheduleReceived()->_times, RfnTouScheduleConfigurationCommand::Schedule1);
+        times = mapFind( schedule_received->_times, RfnTouScheduleConfigurationCommand::Schedule1);
         if( times && times->size() == timeNbr )
         {
             setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time1, (*times)[1] );
@@ -830,7 +832,7 @@ void RfnConsumerDevice::handleResult( const Commands::RfnTouScheduleConfiguratio
         }
 
         // schedule 2
-        times = mapFind( cmd.getTouScheduleReceived()->_times, RfnTouScheduleConfigurationCommand::Schedule2);
+        times = mapFind( schedule_received->_times, RfnTouScheduleConfigurationCommand::Schedule2);
         if( times && times->size() == timeNbr )
         {
             setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Time1, (*times)[1] );
@@ -841,7 +843,7 @@ void RfnConsumerDevice::handleResult( const Commands::RfnTouScheduleConfiguratio
         }
 
         // schedule 3
-        times = mapFind( cmd.getTouScheduleReceived()->_times, RfnTouScheduleConfigurationCommand::Schedule3);
+        times = mapFind( schedule_received->_times, RfnTouScheduleConfigurationCommand::Schedule3);
         if( times && times->size() == timeNbr )
         {
             setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Time1, (*times)[1] );
@@ -852,7 +854,7 @@ void RfnConsumerDevice::handleResult( const Commands::RfnTouScheduleConfiguratio
         }
 
         // schedule 4
-        times = mapFind( cmd.getTouScheduleReceived()->_times, RfnTouScheduleConfigurationCommand::Schedule4);
+        times = mapFind( schedule_received->_times, RfnTouScheduleConfigurationCommand::Schedule4);
         if( times && times->size() == timeNbr )
         {
             setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Time1, (*times)[1] );
@@ -867,14 +869,18 @@ void RfnConsumerDevice::handleResult( const Commands::RfnTouScheduleConfiguratio
 
 void RfnConsumerDevice::handleResult( const Commands::RfnTouHolidayConfigurationCommand & cmd )
 {
-    if( ! cmd.getHolidaysReceived() )
+    using Commands::RfnTouHolidayConfigurationCommand;
+
+    boost::optional<RfnTouHolidayConfigurationCommand::Holidays> holidays_received = cmd.getHolidaysReceived();
+
+    if( ! holidays_received )
     {
         return;
     }
 
-    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Holiday1, (*cmd.getHolidaysReceived())[0].asStringUSFormat() );
-    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Holiday2, (*cmd.getHolidaysReceived())[1].asStringUSFormat() );
-    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Holiday3, (*cmd.getHolidaysReceived())[2].asStringUSFormat() );
+    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Holiday1, (*holidays_received)[0].asStringUSFormat() );
+    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Holiday2, (*holidays_received)[1].asStringUSFormat() );
+    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Holiday3, (*holidays_received)[2].asStringUSFormat() );
 }
 
 
