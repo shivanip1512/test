@@ -15,6 +15,9 @@ public final class TimeZoneInput implements DeviceConfigurationInputEnumeration 
     private static final List<DisplayableValue> inputs;
     
     public enum Zone {
+        NORONHA("-2", ".noronha"),
+        SAO_PAULO("-3", ".saoPaulo"),
+        MANAUS("-4", ".manaus"),
         EST("-5", ".newYork"),
         CST("-6", ".chicago"),
         MST("-7", ".denver"),
