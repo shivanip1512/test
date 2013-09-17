@@ -13,7 +13,6 @@ import javax.swing.event.CaretListener;
 import javax.swing.text.JTextComponent;
 
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
-import com.cannontech.common.device.config.model.DeviceConfigCategory;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.device.config.model.jaxb.CategoryType;
 import com.cannontech.common.device.groups.service.FixedDeviceGroupingHack;
@@ -82,6 +81,7 @@ public DeviceMeterGroupEditorPanel() {
  * Method to handle events for the ActionListener interface.
  * @param e java.awt.event.ActionEvent
  */
+@Override
 public void actionPerformed(java.awt.event.ActionEvent e) {
 	if (e.getSource() == getCycleGroupComboBox() || 
 	    e.getSource() == getAlternateGroupComboBox() || 
@@ -103,6 +103,7 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
  * Method to handle events for the ItemListener interface.
  * @param e java.awt.event.ItemEvent
  */
+@Override
 public void itemStateChanged(java.awt.event.ItemEvent e) {
     if (e.getSource() == getLastIntervalDemandRateComboBox()) {
         fireInputUpdate();
@@ -112,18 +113,21 @@ public void itemStateChanged(java.awt.event.ItemEvent e) {
  * Method to handle events for the KeyListener interface.
  * @param e java.awt.event.KeyEvent
  */
+@Override
 public void keyPressed(java.awt.event.KeyEvent e) {
 }
 /**
  * Method to handle events for the KeyListener interface.
  * @param e java.awt.event.KeyEvent
  */
+@Override
 public void keyReleased(java.awt.event.KeyEvent e) {
 }
 /**
  * Method to handle events for the KeyListener interface.
  * @param e java.awt.event.KeyEvent
  */
+@Override
 public void keyTyped(java.awt.event.KeyEvent e) {
     if (e.getSource() == getCycleGroupComboBox().getEditor().getEditorComponent() ||
             e.getSource() == getAlternateGroupComboBox().getEditor().getEditorComponent() ||
@@ -137,6 +141,7 @@ public void keyTyped(java.awt.event.KeyEvent e) {
  * Method to handle events for the CaretListener interface.
  * @param e javax.swing.event.CaretEvent
  */
+@Override
 public void caretUpdate(javax.swing.event.CaretEvent e) {
     if (e.getSource() == getMeterNumberTextField()) {
         fireInputUpdate();
@@ -824,6 +829,7 @@ private javax.swing.JTextField getMeterNumberTextField()
  * @return java.lang.Object
  * @param val java.lang.Object
  */
+@Override
 @SuppressWarnings("deprecation")
 public Object getValue(Object val) 
 {
@@ -986,6 +992,7 @@ private void initialize() {
  * This method was created in VisualAge.
  * @return boolean
  */
+@Override
 public boolean isInputValid() 
 {
     return this.checkMeterNumber(getMeterNumberTextField().getText());
@@ -1018,6 +1025,7 @@ public static void main(java.lang.String[] args) {
  * This method was created in VisualAge.
  * @param val java.lang.Object
  */
+@Override
 @SuppressWarnings("deprecation")
 public void setValue(Object val) 
 {
@@ -1210,26 +1218,28 @@ public void setValue(Object val)
  */
 private boolean checkMeterNumber( String meterNumber )
 {
-    int deviceId = ((YukonPAObject) ((DeviceEditorPanel) this.getParent().getParent()).getOriginalObjectToEdit()).getPAObjectID();
-    List<String> devices = DeviceMeterGroup.checkMeterNumber(meterNumber, deviceId);
-
-    if (devices.size() > 0) {
-
-        String message = "The meter number '"
-            + meterNumber
-            + "' is already used by the following devices,\n"
-            + "are you sure you want to use it again?\n";
-
-        int response = DatabaseEditorOptionPane.showAlreadyUsedConfirmDialog(this,
-                                                                             message,
-                                                                             "Meter Number Already Used",
-                                                                             devices);
-        if (response == JOptionPane.NO_OPTION) {
-            setErrorString(null);
-            return false;
+    // Only check for existing meter number if the meter number field is visible (aka if the panel meter number is _in_, is visible).
+    if (getDataCollectionPanel().isVisible()) {
+        int deviceId = ((YukonPAObject) ((DeviceEditorPanel) this.getParent().getParent()).getOriginalObjectToEdit()).getPAObjectID();
+        List<String> devices = DeviceMeterGroup.checkMeterNumber(meterNumber, deviceId);
+    
+        if (devices.size() > 0) {
+    
+            String message = "The meter number '"
+                + meterNumber
+                + "' is already used by the following devices,\n"
+                + "are you sure you want to use it again?\n";
+    
+            int response = DatabaseEditorOptionPane.showAlreadyUsedConfirmDialog(this,
+                                                                                 message,
+                                                                                 "Meter Number Already Used",
+                                                                                 devices);
+            if (response == JOptionPane.NO_OPTION) {
+                setErrorString(null);
+                return false;
+            }
         }
     }
-
     return true;
 }
 }

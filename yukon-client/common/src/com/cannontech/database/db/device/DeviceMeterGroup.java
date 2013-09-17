@@ -3,10 +3,12 @@ package com.cannontech.database.db.device;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.SqlRowSetResultSetExtractor;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.db.pao.YukonPAObject;
 
@@ -43,7 +45,8 @@ public class DeviceMeterGroup extends com.cannontech.database.db.DBPersistent
 	/**
 	 * add method comment.
 	 */
-	public void add() throws java.sql.SQLException 
+	@Override
+    public void add() throws java.sql.SQLException 
 	{
 		Object addValues[] = { getDeviceID(), getMeterNumber() };
 	
@@ -53,7 +56,8 @@ public class DeviceMeterGroup extends com.cannontech.database.db.DBPersistent
 	/**
 	 * delete method comment.
 	 */
-	public void delete() throws java.sql.SQLException {
+	@Override
+    public void delete() throws java.sql.SQLException {
 	
 		Object values [] = {getDeviceID()};
 		
@@ -79,7 +83,8 @@ public class DeviceMeterGroup extends com.cannontech.database.db.DBPersistent
     /**
 	 * retrieve method comment.
 	 */
-	public void retrieve() throws java.sql.SQLException 
+	@Override
+    public void retrieve() throws java.sql.SQLException 
 	{
 	
 		Object constraintValues[] = { getDeviceID() };
@@ -101,6 +106,7 @@ public class DeviceMeterGroup extends com.cannontech.database.db.DBPersistent
 		this.meterNumber = newValue;
 	}
 
+    @Override
     public void update() throws java.sql.SQLException 
 	{
 		Object setValues[] = { getMeterNumber() };
@@ -120,7 +126,7 @@ public class DeviceMeterGroup extends com.cannontech.database.db.DBPersistent
         
         List<String> deviceNameList = new ArrayList<String>();
 
-        if(!"Default".equalsIgnoreCase(meterNumber)){
+        if(StringUtils.isNotBlank(meterNumber) && !StringUtils.equalsIgnoreCase(meterNumber, CtiUtilities.STRING_DEFAULT)) {
 
             String exclude = "";
             Object[] parameters = new Object[] { meterNumber };
@@ -133,7 +139,7 @@ public class DeviceMeterGroup extends com.cannontech.database.db.DBPersistent
             String sql = "SELECT ypo.paoname FROM " + TABLE_NAME + " dmg, " + YukonPAObject.TABLE_NAME
                     + " ypo WHERE ypo.paobjectid=dmg.deviceid AND dmg.meternumber = ?" + exclude;
     
-            SqlRowSet rowSet = (SqlRowSet) jdbcOps.query(sql,
+            SqlRowSet rowSet = jdbcOps.query(sql,
                                                          parameters,
                                                          new SqlRowSetResultSetExtractor());
             while (rowSet.next()) {
