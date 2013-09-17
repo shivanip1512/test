@@ -27,8 +27,6 @@ Yukon.modules.FieldHelper = function (mod) {
             //trigger a blur event on each element -> performs an initial render
             jQuery('.focusableFieldHolder select, .focusableFieldHolder input').trigger('blur');
             _initialized = true;
-        } else {
-            return;
         }
     };
 

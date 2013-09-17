@@ -58,7 +58,9 @@
         try {
             ${id} = new Picker('${okText}', '${cancelText}', '${type}', '${pageScope.destinationFieldName}', '${id}', '${pageScope.extraDestinationFields}', ${containerDivArg});
         } catch(pickerException) {
-            alert('pickerDialog.tag: new Picker failed: ' + pickerException);
+            if (console) {
+                console.log('pickerDialog.tag: new Picker failed: ' + pickerException);
+            }
         }
         <c:if test="${pageScope.multiSelectMode}">
             ${id}.multiSelectMode = true;
@@ -95,7 +97,9 @@
             ${id}.useInitialIdsIfEmpty = true;
         </c:if>
     } catch (pickerEx) {
-        alert("Could not create Picker: " + pickerEx);
+        if (console) {
+            console.log("Could not create Picker: " + pickerEx);
+        }
     }
 </script>
 
