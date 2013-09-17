@@ -30,7 +30,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     AUTH_METHOD(GlobalSettingSubCategory.AUTHENTICATION, stringType(), null),
     AUTHENTICATION_MODE(GlobalSettingSubCategory.AUTHENTICATION, stringType(), "Yukon"),
     AUTH_TIMEOUT(GlobalSettingSubCategory.AUTHENTICATION, integerType(), 30),
-    
+
     // Authentication > LDAP (only enabled when DEFAULT_AUTH_TYPE = LDAP)
     LDAP_DN(GlobalSettingSubCategory.AUTHENTICATION, stringType(), "dc=example,dc=com"),
     LDAP_USER_SUFFIX(GlobalSettingSubCategory.AUTHENTICATION, stringType(), "ou=users"),
@@ -38,7 +38,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     LDAP_SERVER_ADDRESS(GlobalSettingSubCategory.AUTHENTICATION, stringType(), "127.0.0.1"),
     LDAP_SERVER_PORT(GlobalSettingSubCategory.AUTHENTICATION, integerType(), 389),
     LDAP_SERVER_TIMEOUT(GlobalSettingSubCategory.AUTHENTICATION, integerType(), 30),
-    
+
     // Authentication > Active Directory (only enabled when DEFAULT_AUTH_TYPE = AD)
     AD_SERVER_ADDRESS(GlobalSettingSubCategory.AUTHENTICATION, stringType(), "127.0.0.1"),
     AD_SERVER_PORT(GlobalSettingSubCategory.AUTHENTICATION, integerType(), 389),
@@ -49,12 +49,12 @@ public enum GlobalSettingType implements DisplayableEnum {
     ENABLE_PASSWORD_RECOVERY(GlobalSettingSubCategory.AUTHENTICATION, booleanType(), true),
     ENABLE_CAPTCHAS(GlobalSettingSubCategory.AUTHENTICATION, booleanType(), true),
     // END Authentication 
-    
+
     // Calc Historical
     INTERVAL(GlobalSettingSubCategory.CALC_HISTORICAL, integerType(), 900),
     BASELINE_CALCTIME(GlobalSettingSubCategory.CALC_HISTORICAL, integerType(), 4),
     DAYS_PREVIOUS_TO_COLLECT(GlobalSettingSubCategory.CALC_HISTORICAL, integerType(), 30),
-    
+
     // Multispeak
     MSP_PAONAME_ALIAS(GlobalSettingSubCategory.MULTISPEAK, InputTypeFactory.enumType(MspPaoNameAliasEnum.class), MspPaoNameAliasEnum.METER_NUMBER),
     MSP_PAONAME_EXTENSION(GlobalSettingSubCategory.MULTISPEAK, stringType(), null),
@@ -62,7 +62,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     MSP_BILLING_CYCLE_PARENT_DEVICEGROUP(GlobalSettingSubCategory.MULTISPEAK, stringType(), "/Meters/Billing/"),
     MSP_LM_MAPPING_SETUP(GlobalSettingSubCategory.MULTISPEAK, booleanType(), false),
     MSP_METER_LOOKUP_FIELD(GlobalSettingSubCategory.MULTISPEAK, InputTypeFactory.enumType(MultispeakMeterLookupFieldEnum.class), MultispeakMeterLookupFieldEnum.AUTO_METER_NUMBER_FIRST),
-    
+
     // OpenADR
     OADR_REQUEST_INTERVAL(GlobalSettingSubCategory.OPEN_ADR, integerType(), 60000),
     OADR_VEN_ID(GlobalSettingSubCategory.OPEN_ADR, stringType(), "VEN"),
@@ -76,7 +76,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     OADR_VTN_THUMBPRINT(GlobalSettingSubCategory.OPEN_ADR, stringType(), null),
     OADR_YUKON_USER(GlobalSettingSubCategory.OPEN_ADR, userType(), null),
     OADR_OPEN_ENDED_CONTROL_DURATION(GlobalSettingSubCategory.OPEN_ADR, stringType(), null),
-    
+
     // Yukon Services
     SMTP_HOST(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), "127.0.0.1"),
     SMTP_PORT(GlobalSettingSubCategory.YUKON_SERVICES, integerType(), null),
@@ -84,7 +84,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     SMTP_PASSWORD(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), null),
     MAIL_FROM_ADDRESS(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), "yukon@cannontech.com"),
     NETWORK_MANAGER_ADDRESS(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), "http://127.0.0.1:8081/nmclient/"),
-    
+
     // DR
     BATCHED_SWITCH_COMMAND_TOGGLE(GlobalSettingSubCategory.DR, stringType(), "auto"),
     STARS_PRELOAD_DATA(GlobalSettingSubCategory.DR, booleanType(), true),
@@ -92,12 +92,12 @@ public enum GlobalSettingType implements DisplayableEnum {
     OPT_OUTS_COUNT(GlobalSettingSubCategory.DR, booleanType(), true),
     LAST_COMMUNICATION_HOURS(GlobalSettingSubCategory.DR, integerType(), 60),
     LAST_RUNTIME_HOURS(GlobalSettingSubCategory.DR, integerType(), 168),
-    
+
     // Web Server
     GOOGLE_ANALYTICS_ENABLED(GlobalSettingSubCategory.WEB_SERVER, booleanType(), true),
     GOOGLE_ANALYTICS_TRACKING_IDS(GlobalSettingSubCategory.WEB_SERVER, stringType(), null),
     WEB_LOGO_URL(GlobalSettingSubCategory.WEB_SERVER, stringType(), "CannonLogo.gif"),
-    
+
     // Data Export (previously Billing)
     WIZ_ACTIVATE(GlobalSettingSubCategory.DATA_EXPORT, booleanType(), false),
     INPUT_FILE(GlobalSettingSubCategory.DATA_EXPORT, stringType(), "c:\\yukon\\client\\bin\\BillingIn.txt"),
@@ -111,27 +111,28 @@ public enum GlobalSettingType implements DisplayableEnum {
     SCHEDULE_PARAMETERS_AVAILABLE_FILE_EXTENSIONS(GlobalSettingSubCategory.DATA_EXPORT, stringType(), ".csv,.dat,.txt"),
     // Defaulting to directory specified by CTIUtilities.getExportDirPath(), typically C:\Yukon\Client\Export.
     SCHEDULE_PARAMETERS_EXPORT_PATH(GlobalSettingSubCategory.DATA_EXPORT, stringType(), CtiUtilities.getExportDirPath()),
-    
+
     // AMI  (may fit better for future under Misc.?)
     DEVICE_DISPLAY_TEMPLATE(GlobalSettingSubCategory.AMI, InputTypeFactory.enumType(MeterDisplayFieldEnum.class), MeterDisplayFieldEnum.DEVICE_NAME),
     // This may eventually be a "Device" setting, just just "AMR", This is to disable "route lookup" during the OLD bulk importer process; reduces comms
     BULK_IMPORTER_COMMUNICATIONS_ENABLED(GlobalSettingSubCategory.AMI, booleanType(), true),
-    
+
     // Misc.
     SYSTEM_TIMEZONE(GlobalSettingSubCategory.MISC, stringType(), null),
     ALERT_TIMEOUT_HOURS(GlobalSettingSubCategory.MISC, integerType(), 168),
     DATABASE_MIGRATION_FILE_LOCATION(GlobalSettingSubCategory.MISC, stringType(), "/Server/Export/"),
     TEMP_DEVICE_GROUP_DELETION_IN_DAYS(GlobalSettingSubCategory.MISC, integerType(), 7),
-    
+    HTTP_PROXY(GlobalSettingSubCategory.MISC, stringType(), "none"),
+
     // Voice Server
     CALL_RESPONSE_TIMEOUT(GlobalSettingSubCategory.VOICE, integerType(), 240),
     CALL_PREFIX(GlobalSettingSubCategory.VOICE, stringType(), null),
-    
+
     // Web Graph
-    HOME_DIRECTORY(GlobalSettingSubCategory.GRAPHING, stringType(), "c:\\yukon\\client\\webgraphs\\"),  
+    HOME_DIRECTORY(GlobalSettingSubCategory.GRAPHING, stringType(), "c:\\yukon\\client\\webgraphs\\"),
     RUN_INTERVAL(GlobalSettingSubCategory.GRAPHING, integerType(), 900),
     ;
-    
+
     private static final ImmutableSetMultimap<GlobalSettingSubCategory, GlobalSettingType> categoryMapping;
     private final InputType<?> type;
     private final  Object defaultValue;
@@ -144,7 +145,7 @@ public enum GlobalSettingType implements DisplayableEnum {
         }
         categoryMapping = b.build();
     }
-    
+
     private GlobalSettingType(GlobalSettingSubCategory category, InputType<?> type, Object defaultValue) {
         this.type = type;
         this.category = category;
@@ -158,7 +159,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     public Object getDefaultValue() {
         return defaultValue;
     }
-    
+
     public GlobalSettingSubCategory getCategory() {
         return category;
     }
@@ -167,13 +168,13 @@ public enum GlobalSettingType implements DisplayableEnum {
     public String getFormatKey() {
         return "yukon.common.setting." + name();
     }
-    
+
     public String getDescriptionKey() {
         return getFormatKey() + ".description";
     }
-    
+
     public static Set<GlobalSettingType> getSettingsForCategory(GlobalSettingSubCategory category) {
         return categoryMapping.get(category);
     }
-    
+
 }
