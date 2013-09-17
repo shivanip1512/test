@@ -6,8 +6,11 @@ import java.util.List;
 
 /**
  * Class to represent pairs of objects.
- * @author alauinger
+ * 
+ * @deprecated Unless you're rolling dice, write a small model object with appropriately named
+ *             properties or consider putting your two properties in another model object.
  */
+@Deprecated
 public class Pair<K,V> {
 	public K first;
 	public V second;
@@ -51,11 +54,11 @@ public class Pair<K,V> {
 	
 	@SuppressWarnings("unchecked")
 	public static final <E> Collection<E> removePair(Collection<?> c, Class<E> requiredType) {
-	    List<E> list = new ArrayList<E>(c.size());
+	    List<E> list = new ArrayList<>(c.size());
 	    for (final Object o : c) {
 	        Object element = o;
 	        if (o instanceof Pair) {
-	            element = ((Pair) o).getFirst();
+	            element = ((Pair<?, ?>) o).getFirst();
 	        }
 	        
 	        if (!requiredType.isAssignableFrom(element.getClass())) {
@@ -83,7 +86,7 @@ public class Pair<K,V> {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        Pair other = (Pair) obj;
+        Pair<?, ?> other = (Pair<?, ?>) obj;
         if (first == null) {
             if (other.first != null)
                 return false;
