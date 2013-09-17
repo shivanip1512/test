@@ -36,7 +36,7 @@ public class AssetAvailabilityChartServiceImpl implements AssetAvailabilityChart
         labelDataColorMap.put(optedOutStr, new FlotPieDatas(aaSummary.getOptedOutSize(), "#888")); // .disabled
         labelDataColorMap.put(unavailableStr, new FlotPieDatas(aaSummary.getUnavailableSize(), "#d14836")); // .error
 
-        JSONObject pieJSONData = flotChartService.getPieGraphDataWithColor(labelDataColorMap);
+        JSONObject pieJSONData = flotChartService.getPieGraphDataWithColor(labelDataColorMap, false, false, 0.9);
         return pieJSONData;
     }
 }

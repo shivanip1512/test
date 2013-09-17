@@ -105,6 +105,7 @@ public class FlotChartServiceImpl implements FlotChartService {
         }
     }
     
+    @Deprecated /* use getPieGraphDataWithColor(Map<String, FlotPieDatas> labelValueMap) */
     @Override
     public JSONObject getPieGraphData(Map<String, Integer> labelValueMap) {
         JSONObject dataAndOptions = new JSONObject();
@@ -123,7 +124,7 @@ public class FlotChartServiceImpl implements FlotChartService {
     }
 
     @Override
-    public JSONObject getPieGraphDataWithColor(Map<String, FlotPieDatas> labelValueMap) {
+    public JSONObject getPieGraphDataWithColor(Map<String, FlotPieDatas> labelValueMap, boolean showLegend, boolean showLabels, double radiusPercent) {
         JSONObject dataAndOptions = new JSONObject();
         JSONArray jsonDataContainer = new JSONArray();
         for (Entry<String, FlotPieDatas> labelValue : labelValueMap.entrySet()) {
@@ -142,18 +143,18 @@ public class FlotChartServiceImpl implements FlotChartService {
         dataAndOptions.put("datas", jsonDataContainer);
         dataAndOptions.put("type", GraphType.PIE.getFlotType());
         
-        /* Hide the labels and legend, and set the radius to 90% */
+        /* Hide/show the labels and legend, and set the radius */
         JSONObject pie = new JSONObject();
-        pie.put("radius", 0.9);
+        pie.put("radius", radiusPercent);
         JSONObject label = new JSONObject();
-        label.put("show", false);
+        label.put("show", showLabels);
         pie.put("label", label);
         
         JSONObject series = new JSONObject();
         series.put("pie", pie);
         
         JSONObject legend = new JSONObject();
-        legend.put("show", false);
+        legend.put("show", showLegend);
         
         JSONObject options = new JSONObject();
         options.put("series", series);

@@ -39,6 +39,7 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.common.chart.model.FlotPieDatas;
 import com.cannontech.web.common.chart.service.FlotChartService;
 import com.cannontech.web.common.collection.InventoryCollectionFactoryImpl;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -236,15 +237,23 @@ public class ControlAuditController {
     }
     
     @RequestMapping
-    public @ResponseBody JSONObject chart(String auditId) {
-        ControlAuditResult result = resultsCache.getResult(auditId);
-        Map<String, Integer> labelValueMap = Maps.newHashMapWithExpectedSize(4);
-        labelValueMap.put("controlled", result.getControlled().getCount());
-        labelValueMap.put("uncontrolled", result.getUncontrolled().getCount());
-        labelValueMap.put("unknown", result.getUnknown().getCount());
-        labelValueMap.put("unsupported", result.getUnsupported().getCount());
+    public @ResponseBody JSONObject chart(String auditId, YukonUserContext userContext) {
+
+        MessageSourceAccessor msa = resolver.getMessageSourceAccessor(userContext);
+        String controlledStr = msa.getMessage("yukon.web.modules.operator.controlAudit.controlled");
+        String uncontrolledStr = msa.getMessage("yukon.web.modules.operator.controlAudit.uncontrolled");
+        String unknownStr = msa.getMessage("yukon.web.modules.operator.controlAudit.unknown");
+        String unsupportedStr = msa.getMessage("yukon.web.modules.operator.controlAudit.unsupported");
         
-        JSONObject pieJSONData = flotChartService.getPieGraphData(labelValueMap);
+        ControlAuditResult result = resultsCache.getResult(auditId);
+        
+        Map<String, FlotPieDatas> labelDataColorMap = Maps.newHashMapWithExpectedSize(4);
+        labelDataColorMap.put(controlledStr, new FlotPieDatas(result.getControlled().getCount(), "#009933")); // .controlled green
+        labelDataColorMap.put(uncontrolledStr, new FlotPieDatas(result.getUncontrolled().getCount(), "#fb8521")); // .uncontrolled orange (or ffac00?)
+        labelDataColorMap.put(unknownStr, new FlotPieDatas(result.getUnknown().getCount(), "#4d90fe")); // .unknown blue
+        labelDataColorMap.put(unsupportedStr, new FlotPieDatas(result.getUnsupported().getCount(), "#888888")); // .unsupported gray
+
+        JSONObject pieJSONData = flotChartService.getPieGraphDataWithColor(labelDataColorMap, true, false, 1.0);
         return pieJSONData;
     }
 

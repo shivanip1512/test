@@ -140,6 +140,8 @@ public interface FlotChartService {
      * This method returns a JSONObject to be consumed by yukon.flot.js (our implementation of FlotCharts.js)
      * The format of this object is as follows:
      * 
+     * radiusPercent is a decimal between 0 and 1.
+     * 
      * (if the format of this is changed, please update this comment)
      * 
      * {
@@ -160,5 +162,5 @@ public interface FlotChartService {
      * 
      * @return JSONObject
      */
-    JSONObject getPieGraphDataWithColor(Map<String, FlotPieDatas> labelValueMap);
+    JSONObject getPieGraphDataWithColor(Map<String, FlotPieDatas> labelValueMap, boolean showLegend, boolean showLabels, double radiusPercent);
 }
