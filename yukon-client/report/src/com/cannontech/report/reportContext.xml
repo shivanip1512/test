@@ -72,9 +72,7 @@
     </bean>
 
     <!-- MCT Config Model -->
-   <bean id="mctConfigModel" class="com.cannontech.analysis.tablemodel.MCTConfigModel" scope="prototype">
-        <property name="jdbcOps" ref="jdbcTemplate"/>
-    </bean>
+   <bean id="mctConfigModel" class="com.cannontech.analysis.tablemodel.MCTConfigModel" scope="prototype"/>
     
     <!-- Device Readings Model -->
    <bean id="deviceReadingsModel" class="com.cannontech.analysis.tablemodel.DeviceReadingsModel" scope="prototype"/>

@@ -6,27 +6,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowCallbackHandler;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.SqlStatementBuilder;
 
-
 public class MCTConfigModel extends BareReportModelBase<MCTConfigModel.ModelRow> {
-    
     private Logger log = YukonLogManager.getLogger(MCTConfigModel.class);
     
-    // dependencies
-    private JdbcOperations jdbcOps;
+    @Autowired private JdbcOperations jdbcOps;
     
-    // member variables
     private List<ModelRow> data = new ArrayList<ModelRow>();
 
-    public MCTConfigModel() {
-    }
-    
     static public class ModelRow {
         public String mctName;
         public String type;
@@ -56,29 +49,39 @@ public class MCTConfigModel extends BareReportModelBase<MCTConfigModel.ModelRow>
     }
 
     public void doLoadData() {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT YP.PAOName AS MctName, YP.Type, DLP.LastIntervalDemandRate AS DemandRate, ");
+        sql.append("   DLP.LoadProfileDemandRate AS ProfileRate, DC.Name AS ConfigName, ");
+        sql.append("   DCI.ItemValue AS ConfigDemandRate, DCI2.ItemValue AS ConfigProfileRate");
+        sql.append("FROM YukonPaObject YP");
+        sql.append("   JOIN DeviceLoadProfile DLP ON YP.PaObjectId = DLP.DeviceId");
+        sql.append("      AND (YP.Type LIKE 'MCT-430%' OR YP.Type LIKE 'MCT-470%')");
+        sql.append("   LEFT JOIN DeviceConfigurationDeviceMap DCM ON DCM.DeviceId = YP.PaObjectId");
+        sql.append("   LEFT JOIN DeviceConfiguration DC ON DC.DeviceConfigurationId = DCM.DeviceConfigurationId");
+        sql.append("   LEFT JOIN DeviceConfigCategoryMap CM ON CM.DeviceConfigurationId = DC.DeviceConfigurationId");
+        sql.append("   LEFT JOIN DeviceConfigCategoryItem DCI ON DCI.DeviceConfigCategoryId = CM.DeviceConfigCategoryId");
+        sql.append("      AND DCI.ItemName = 'demandInterval'");
+        sql.append("   LEFT JOIN DeviceConfigCategoryItem DCI2 ON DCI2.DeviceConfigCategoryId = CM.DeviceConfigCategoryId");
+        sql.append("      AND DCI2.ItemName = 'loadProfileInterval1'");
         
-            
-        String sql = buildSQLStatement();
-        
-        jdbcOps.query(sql, new RowCallbackHandler() {
+        jdbcOps.query(sql.getSql(), new RowCallbackHandler() {
             public void processRow(ResultSet rs) throws SQLException {
-                
                 MCTConfigModel.ModelRow row = new MCTConfigModel.ModelRow();
 
-                row.mctName = rs.getString("mctName");
-                row.type = rs.getString("type");
+                row.mctName = rs.getString("MctName");
+                row.type = rs.getString("Type");
                 
-                int demandRate = rs.getInt("demandRate");
+                int demandRate = rs.getInt("DemandRate");
                 Integer demandRateMinutes = demandRate / 60; 
                 row.demandRate = demandRateMinutes.toString();
                 
-                int profileRate = rs.getInt("profileRate");
+                int profileRate = rs.getInt("ProfileRate");
                 Integer profileRateMinutes = profileRate / 60; 
                 row.profileRate = profileRateMinutes.toString();
                 
-                row.configName = rs.getString("configName");
-                row.configDemandRate = rs.getString("configDemandRate");
-                row.configProfileRate = rs.getString("configProfileRate");
+                row.configName = rs.getString("ConfigName");
+                row.configDemandRate = rs.getString("ConfigDemandRate");
+                row.configProfileRate = rs.getString("ConfigProfileRate");
                 
                 data.add(row);
             }
@@ -86,32 +89,4 @@ public class MCTConfigModel extends BareReportModelBase<MCTConfigModel.ModelRow>
             
         log.info("Report Records Collected from Database: " + data.size());
     }
-    
-    public String buildSQLStatement() {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select");
-        sql.append("yp.paoname as mctName");
-        sql.append(", yp.type");
-        sql.append(", dlp.LASTINTERVALDEMANDRATE as demandRate");
-        sql.append(", dlp.LOADPROFILEDEMANDRATE as profileRate");
-        sql.append(", dc.Name as configName");
-        sql.append(", dci.Value as configDemandRate");
-        sql.append(", dci2.value as configProfileRate");
-        sql.append("from YukonPAObject yp");
-        sql.append("join dEVICELOADPROFILE dlp on yp.PAObjectID = dlp.DEVICEID and (yp.Type like 'MCT-430%' or yp.Type like 'MCT-470%')");
-        sql.append("left join DEVICECONFIGURATIONDEVICEMAP dcm on dcm.DeviceId = yp.paobjectid");
-        sql.append("left join DEVICECONFIGURATION dc on dc.DeviceConfigurationID = dcm.DeviceConfigurationId");
-        sql.append("left join DEVICECONFIGURATIONITEM dci on dc.DeviceConfigurationID = dci.DeviceConfigurationID");
-        sql.append("and dci.FieldName = 'Demand Interval'");
-        sql.append("left outer join DEVICECONFIGURATIONITEM dci2 on dc.DeviceConfigurationID = dci2.DeviceConfigurationID");
-        sql.append("and dci2.FieldName = 'Load Profile Interval 1'");
-        
-        return sql.toString();
-    }
-
-    @Required
-    public void setJdbcOps(JdbcOperations jdbcOps) {
-        this.jdbcOps = jdbcOps;
-    }
-
 }
