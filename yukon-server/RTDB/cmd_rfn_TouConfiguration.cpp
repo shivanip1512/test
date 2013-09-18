@@ -327,10 +327,12 @@ RfnCommand::Bytes RfnTouScheduleConfigurationCommand::createCommandData( const S
     {
         boost::optional<DailyTimes> times = mapFind( schedule_to_send._times, (ScheduleNbr)schedule_nbr );
 
+        const string scheduleName = "schedule " + CtiNumStr(schedule_nbr+1);
+
         if( times )
         {
             validateCondition( times->size() == 6,
-                               BADPARAM, "Invalid number of switch time - (" + CtiNumStr(times->size()) + ", expected 6)");
+                               BADPARAM, "Invalid number of switch time for " + scheduleName + " - (" + CtiNumStr(times->size()) + ", expected 6)");
 
             TypeLengthValue tlv( Type_Schedule1_SwitchTimes + schedule_nbr );
             tlv.value.resize(10, 0);
@@ -348,20 +350,22 @@ RfnCommand::Bytes RfnTouScheduleConfigurationCommand::createCommandData( const S
                 iss >> hour >> sep >> minute;
 
                 validateCondition( hour >= 0 && hour < 24 && minute >= 0 && minute < 60,
-                                   BADPARAM, "Invalid switch time - (" + time_str + ")");
+                                   BADPARAM, "Invalid switch time for " + scheduleName + " - (" + time_str + ")");
 
                 if( time_nbr == 0 )
                 {
                     validateCondition( hour == 0  && minute == 0,
-                                       BADPARAM, "Invalid switch time for midnight - (" + time_str + ")");
+                                       BADPARAM, "Invalid midnight time for " + scheduleName + " - (" + time_str + ", expected 00:00)");
 
                     continue;
                 }
 
                 const unsigned switchTime = hour * 60 + minute;
 
+                const string & prev_time_str = (*times)[time_nbr-1];
+
                 validateCondition( switchTime >= prevSwitchTime,
-                                   BADPARAM, "Invalid switch time - (" + time_str + ")");
+                                   BADPARAM, "Invalid switch time for " + scheduleName + " - (" + time_str + ", expected > " + prev_time_str + ")");
 
                 const unsigned duration = switchTime - prevSwitchTime;
 
@@ -379,10 +383,12 @@ RfnCommand::Bytes RfnTouScheduleConfigurationCommand::createCommandData( const S
     {
         boost::optional<DailyRates> rates = mapFind( schedule_to_send._rates, (ScheduleNbr)schedule_nbr );
 
+        const string scheduleName = "schedule " + CtiNumStr(schedule_nbr+1);
+
         if( rates )
         {
             validateCondition( rates->size() == 6,
-                               BADPARAM, "Invalid number of rates - (" + CtiNumStr(rates->size()) + ", expected 6)");
+                               BADPARAM, "Invalid number of rates for " + scheduleName + " - (" + CtiNumStr(rates->size()) + ", expected 6)");
 
             TypeLengthValue tlv( Type_Schedule1_Rates + schedule_nbr );
             tlv.value.resize(3, 0);
@@ -394,7 +400,7 @@ RfnCommand::Bytes RfnTouScheduleConfigurationCommand::createCommandData( const S
                 boost::optional<Rate> rate = Cti::mapFind( rateResolver, rate_str );
 
                 validateCondition( rate,
-                                   BADPARAM, "Invalid switch time - (" + rate_str + ")");
+                                   BADPARAM, "Invalid rate for " + scheduleName + " - (" + rate_str + ")");
 
                 setBits_lEndian(tlv.value, rate_nbr*3, 3, *rate);
             }
@@ -662,7 +668,7 @@ RfnTouScheduleConfigurationCommand::ScheduleNbr RfnTouScheduleConfigurationComma
     boost::optional<ScheduleNbr> schedule_nbr = Cti::mapFind( scheduleResolver, boost::to_lower_copy( schedule_name ));
 
     validateCondition( schedule_nbr,
-                       BADPARAM, "Invalid schedule number - (" + schedule_name + ")");
+                       BADPARAM, "Invalid schedule - (" + schedule_name + ")");
 
     return *schedule_nbr;
 }

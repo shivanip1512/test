@@ -354,8 +354,8 @@ int RfnConsumerDevice::executePutConfigTou( CtiRequestMsg     * pReq,
     //
     if( ! parse.isKeyValid("tou_days") )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Device \"" << getName() << "\" - Missing day table. " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+        logInfo("Missing day table.",
+                __FUNCTION__, __FILE__, __LINE__ );
 
         return BADPARAM;
     }
@@ -364,7 +364,7 @@ int RfnConsumerDevice::executePutConfigTou( CtiRequestMsg     * pReq,
 
     for( int day_nbr = 0; day_nbr < dayTableStr.length(); day_nbr++ )
     {
-        schedule._dayTable.push_back( dayTableStr.substr(day_nbr,1) );
+        schedule._dayTable.push_back( "schedule " + dayTableStr.substr(day_nbr,1) );
     }
 
     //
@@ -372,8 +372,8 @@ int RfnConsumerDevice::executePutConfigTou( CtiRequestMsg     * pReq,
     //
     if( ! parse.isKeyValid("tou_default") )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Device \"" << getName() << "\" - Missing TOU default rate. " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+        logInfo("Missing TOU default rate.",
+                __FUNCTION__, __FILE__, __LINE__ );
 
         return BADPARAM;
     }
@@ -402,8 +402,8 @@ int RfnConsumerDevice::executePutConfigTou( CtiRequestMsg     * pReq,
         {
             if( change_nbr > rates.size() )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Device \"" << getName() << "\" - Schedule " << schedule_nbr << " has an invalid rate change. " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+                logInfo("Schedule " + CtiNumStr(schedule_nbr) + " has an invalid rate change.",
+                        __FUNCTION__, __FILE__, __LINE__ );
 
                 return BADPARAM;
             }
@@ -481,8 +481,8 @@ int RfnConsumerDevice::executePutConfigHoliday( CtiRequestMsg     * pReq,
 
         if( holiday_nbr >= holidays.size() )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Device \"" << getName() << "\" - Holiday " << holiday_str << " specified. " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+            logInfo("Holiday " + holiday_str + " specified.",
+                    __FUNCTION__, __FILE__, __LINE__ );
 
             return BADPARAM;
         }

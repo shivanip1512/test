@@ -94,7 +94,7 @@ int RfnDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, Ct
     {
         return executePutConfigTou(pReq, parse, retList, rfnRequests);
     }
-    if( parse.isKeyValid("holiday") )
+    if( parse.isKeyValid("holiday_date0") || parse.isKeyValid("holiday_set_active") || parse.isKeyValid("holiday_cancel_active"))
     {
         return executePutConfigHoliday(pReq, parse, retList, rfnRequests);
     }
@@ -151,26 +151,41 @@ int RfnDevice::executeConfigInstall(CtiRequestMsg *pReq, CtiCommandParser &parse
 
     if( *installValue == "all" )
     {
-        int nRet = NoMethod;
+        if( installMap.empty() )
+        {
+            return NoMethod;
+        }
 
         for each( const std::pair<std::string, InstallMethod> & p in installMap )
         {
             executeConfigInstallSingle( pReq, parse, retList, rfnRequests, p.first, p.second );
+        }
+    }
+    else
+    {
+        boost::optional<InstallMethod> installMethod = mapFind( installMap, *installValue );
 
-            nRet = NoError;
+        if( ! installMethod )
+        {
+            return NoMethod;
         }
 
-        return nRet;
+        executeConfigInstallSingle( pReq, parse, retList, rfnRequests, *installValue, *installMethod );
     }
 
-    if( boost::optional<InstallMethod> func = mapFind( installMap, *installValue ))
+    // Set ExpectMore on all messages.
+    // In the case of verify we need to let the Last expect more flag remain to false
+    for( CtiMessageList::iterator itr = retList.begin(); itr != retList.end(); )
     {
-        executeConfigInstallSingle( pReq, parse, retList, rfnRequests, *installValue, *func );
+        CtiReturnMsg *retMsg = static_cast<CtiReturnMsg *>(*itr);
 
-        return NoError;
+        if( ++itr != retList.end() || ! parse.isKeyValid("verify") )
+        {
+            retMsg->setExpectMore(true);
+        }
     }
 
-    return NoMethod;
+    return NoError;
 }
 
 /**
@@ -237,11 +252,6 @@ void RfnDevice::executeConfigInstallSingle(CtiRequestMsg *pReq, CtiCommandParser
                         pReq->GroupMessageId(),
                         pReq->UserMessageId()));
 
-        if( nRet != NoError )
-        {
-            retMsg->setExpectMore(true);
-        }
-
         retList.push_back( retMsg.release() );
     }
 }
@@ -302,25 +312,13 @@ void RfnDevice::logInfo( const std::string &note,
                          const char* file,
                          int line ) const
 {
+    std::string functionName = (function) ? " " + std::string(function)  : "",
+                fileName     = (file)     ? " " + std::string(file)      : "",
+                lineNumber   = (line > 0) ? " (" + CtiNumStr(line) + ")" : "";
+
     CtiLockGuard<CtiLogger> doubt_guard(dout);
-    dout << CtiTime() << " Device \"" << getName() << "\" - " << note;
 
-    if( function )
-    {
-        dout << " " << function;
-    }
-
-    if( file )
-    {
-        dout << " " << file;
-    }
-
-    if( line )
-    {
-        dout << " (" << line << ")";
-    }
-
-    dout << std::endl;
+    dout << CtiTime() << " Device \"" << getName() << "\" - " << note << functionName << fileName << lineNumber << std::endl;
 }
 
 void RfnDevice::logInfo( int debugLevel,
