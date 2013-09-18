@@ -193,7 +193,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfn420centron_putconfig_tou_schedule_badparam )
                                "schedule 4 b/00:00 c/03:01 d/03:02 a/03:03 b/03:04 c/03:05 "
                                "default b");
 
-        string exp = "Invalid switch time for schedule 2 - (01:02, expected > 01:03)";
+        std::string exp = "Invalid switch time for schedule 2 - (01:02, expected > 01:03)";
 
         retList.clear();
         BOOST_CHECK_EQUAL( NoError, centron.ExecuteRequest(&request, parse, retList, rfnRequests) );
@@ -216,7 +216,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfn420centron_putconfig_tou_schedule_badparam )
                                "schedule 4 b/00:00 c/03:01 d/03:02 a/03:03 b/03:04 c/03:05 "
                                "default b");
 
-        string exp = "Invalid midnight time for schedule 3 - (00:01, expected 00:00)";
+        std::string exp = "Invalid midnight time for schedule 3 - (00:01, expected 00:00)";
 
         retList.clear();
         BOOST_CHECK_EQUAL( NoError, centron.ExecuteRequest(&request, parse, retList, rfnRequests) );
@@ -239,7 +239,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfn420centron_putconfig_tou_schedule_badparam )
                                "schedule 4 b/00:00 c/03:01 d/03:60 a/04:03 b/04:04 c/04:05 " // schedule 4 switch time 2 set to 03:60
                                "default b");
 
-        string exp = "Invalid switch time for schedule 4 - (03:60)";
+        std::string exp = "Invalid switch time for schedule 4 - (03:60)";
 
         retList.clear();
         BOOST_CHECK_EQUAL( NoError, centron.ExecuteRequest(&request, parse, retList, rfnRequests) );
@@ -262,7 +262,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfn420centron_putconfig_tou_schedule_badparam )
                                "schedule 4 b/00:00 c/03:01 d/03:02 a/03:03 b/03:04 c/03:05 "
                                "default b");
 
-        string exp = "Invalid rate for schedule 1 - (e)";
+        std::string exp = "Invalid rate for schedule 1 - (e)";
 
         retList.clear();
         BOOST_CHECK_EQUAL( NoError, centron.ExecuteRequest(&request, parse, retList, rfnRequests) );
@@ -279,13 +279,37 @@ BOOST_AUTO_TEST_CASE( test_dev_rfn420centron_putconfig_tou_schedule_badparam )
     {
         // test invalid change number
         CtiCommandParser parse("putconfig tou 12341234 "
-                               "schedule 1 a/00:00 b/00:01 c/00:02 d/00:03 e/00:04 b/00:05 "
+                               "schedule 1 a/00:00 b/00:01 c/00:02 d/00:03 a/00:04 b/00:05 "
                                "schedule 2 d/00:00 a/01:01 b/01:02 c/01:03 d/01:04 a/01:05 b/01:06 " // schedule 2 changes == 7
                                "schedule 3 c/00:00 d/02:02 a/02:02 b/02:03 c/02:04 d/02:05 "
                                "schedule 4 b/00:00 c/03:01 d/03:02 a/03:03 b/03:04 c/03:05 "
                                "default b");
 
-        string exp = "Invalid number of switch time for schedule 2 - (7, expected 6)";
+        std::string exp = "Invalid number of switch time for schedule 2 - (7, expected 6)";
+
+        retList.clear();
+        BOOST_CHECK_EQUAL( NoError, centron.ExecuteRequest(&request, parse, retList, rfnRequests) );
+
+        BOOST_CHECK_EQUAL( 0, rfnRequests.size() );
+        BOOST_REQUIRE_EQUAL( 1, retList.size() );
+
+        CtiReturnMsg *retMsg = static_cast<CtiReturnMsg *>( retList.front() );
+
+        BOOST_CHECK_EQUAL( retMsg->Status(),       BADPARAM );
+        BOOST_CHECK_EQUAL( retMsg->ResultString(), exp );
+    }
+
+    {
+        // test unexpected schedule
+        CtiCommandParser parse("putconfig tou 12341234 "
+                               "schedule 1 a/00:00 b/00:01 c/00:02 d/00:03 a/00:04 b/00:05 "
+                               "schedule 2 d/00:00 a/01:01 b/01:02 c/01:03 d/01:04 a/01:05 "
+                               "schedule 3 c/00:00 d/02:02 a/02:02 b/02:03 c/02:04 d/02:05 "
+                               "schedule 4 b/00:00 c/03:01 d/03:02 a/03:03 b/03:04 c/03:05 "
+                               "schedule 5 a/00:00 b/04:01 c/04:02 d/04:03 a/04:04 b/04:05 " // unexpected schedule 5
+                               "default b");
+
+        std::string exp = "Invalid schedule - (schedule 5)";
 
         retList.clear();
         BOOST_CHECK_EQUAL( NoError, centron.ExecuteRequest(&request, parse, retList, rfnRequests) );
