@@ -23,14 +23,10 @@ public class PointData extends com.cannontech.message.util.Message implements Po
     private long millis;
 
     //Tags from yukon-server common/include/pointdefs.h
-    public static final long TAG_POINT_DO_NOT_REPORT = 0x00000200;        // Do not route this pointData onto others	
-    public static final long TAG_POINT_MOA_REPORT = 0x00000400;        // This point data message is the result of a registration
-    public static final long TAG_POINT_DELAYED_UPDATE = 0x00000800;        // Dispatch delay this point data until the time specified in the message!
-    public static final long TAG_POINT_FORCE_UPDATE = 0x00001000;        // Dispatch will no matter what copy this into his RT memory
-    public static final long TAG_POINT_MUST_ARCHIVE = 0x00002000;        // This data will archive no matter how the point is set up
-    public static final long TAG_POINT_MAY_BE_EXEMPTED = 0x00004000;        // This data may be exempted from propagation if the value element has not changed
-    public static final long TAG_POINT_LOAD_PROFILE_DATA = 0x00008000;        // This data will archive to raw point history
-    public static final long TAG_POINT_OLD_TIMESTAMP = 0x00100000;
+    private static final long TAG_POINT_DO_NOT_REPORT = 0x00000200;        // Do not route this pointData onto others	
+    private static final long TAG_POINT_MUST_ARCHIVE = 0x00002000;        // This data will archive no matter how the point is set up
+    private static final long TAG_POINT_LOAD_PROFILE_DATA = 0x00008000;        // This data will archive to raw point history
+    private static final long TAG_POINT_OLD_TIMESTAMP = 0x00100000;
 
     // Point Types
     /* DEFINED IN com.cannontech.database.data.point.PointTypes */
@@ -74,6 +70,10 @@ public class PointData extends com.cannontech.message.util.Message implements Po
         return tags;
     }
 
+    public boolean getTagsOldTimestamp() {
+        return (tags & TAG_POINT_OLD_TIMESTAMP) != 0;
+    }
+
     public int getType() {
         return type;
     }
@@ -107,6 +107,12 @@ public class PointData extends com.cannontech.message.util.Message implements Po
         str = newStr;
     }
 
+    /***
+     * This should not generally be used.
+     * You are probably looking for the setTags* family of methods, such as
+     * setTagsLoadProfileData() and 
+     * @param newTags
+     */
     public void setTags(long newTags) {
         tags = newTags;
     }

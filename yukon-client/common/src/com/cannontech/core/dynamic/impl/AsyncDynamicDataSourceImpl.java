@@ -290,7 +290,7 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
         
         // make sure we release the lock before calling the listeners
         for (PointDataListener listener : listeners) {
-            boolean newData = (pointData.getTags() & PointData.TAG_POINT_OLD_TIMESTAMP) == 0;
+            boolean newData = !pointData.getTagsOldTimestamp();
             boolean listenerWantsAll = listener instanceof AllPointDataListener;
             if (newData || listenerWantsAll ) {
                 listener.pointDataReceived(pointData);
