@@ -70,10 +70,20 @@ protected:
                                  CtiMessageList    & retList,
                                  RfnCommandList    & rfnRequests );
 
-    int executePutConfigInstallTou( CtiRequestMsg     * pReq,
-                                    CtiCommandParser  & parse,
-                                    CtiMessageList    & retList,
-                                    RfnCommandList    & rfnRequests );
+    static const InstallMap _putConfigInstallMap;
+    static const InstallMap _getConfigInstallMap;
+
+    static const InstallMap initPutConfigInstallMap();
+    static const InstallMap initGetConfigInstallMap();
+
+    virtual InstallMap getPutConfigInstallMap() const;
+    virtual InstallMap getGetConfigInstallMap() const;
+
+    // execute putconfig install
+    virtual int executePutConfigInstallFreezeDay                (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
+    virtual int executePutConfigInstallVoltageAveragingInterval (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
+    virtual int executePutConfigInstallTou                      (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
+    virtual int executePutConfigInstallDisplay                  (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
 
     void handleResult( const Commands::RfnVoltageProfileConfigurationCommand & cmd );
     void handleResult( const Commands::RfnLoadProfileRecordingCommand & cmd );

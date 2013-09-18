@@ -88,7 +88,7 @@ int RfnDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, Ct
 {
     if( parse.isKeyValid("install") )
     {
-        return executeConfigInstall(pReq, parse, retList, rfnRequests, getPutConfigInstallMethods());
+        return executeConfigInstall(pReq, parse, retList, rfnRequests, getPutConfigInstallMap());
     }
     if( parse.isKeyValid("tou") )
     {
@@ -107,7 +107,7 @@ int RfnDevice::executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, Ct
 {
     if( parse.isKeyValid("install") )
     {
-        return executeConfigInstall(pReq, parse, retList, rfnRequests, getGetConfigInstallMethods());
+        return executeConfigInstall(pReq, parse, retList, rfnRequests, getGetConfigInstallMap());
     }
     if( parse.isKeyValid("tou") )
     {
@@ -124,33 +124,23 @@ int RfnDevice::executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, Ct
 /**
  *
  */
-RfnDevice::InstallLookup RfnDevice::getPutConfigInstallMethods() const
+RfnDevice::InstallMap RfnDevice::getPutConfigInstallMap() const
 {
-    const InstallLookup methods = boost::assign::map_list_of
-        ("display",          &RfnDevice::executePutConfigInstallDisplay)
-        ("freezeday",        &RfnDevice::executePutConfigInstallFreezeDay)
-        ("tou",              &RfnDevice::executePutConfigInstallTou)
-        ("voltageaveraging", &RfnDevice::executePutConfigInstallVoltageAveragingInterval);
-
-    return methods;
+    return InstallMap();
 }
 
 /**
  *
  */
-RfnDevice::InstallLookup RfnDevice::getGetConfigInstallMethods() const
+RfnDevice::InstallMap RfnDevice::getGetConfigInstallMap() const
 {
-    const InstallLookup methods;
-
-    // TODO
-
-    return methods;
+    return InstallMap();
 }
 
 /**
  * Execute putconfig/getconfig Install
  */
-int RfnDevice::executeConfigInstall(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests, const InstallLookup & lookup)
+int RfnDevice::executeConfigInstall(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests, const InstallMap &installMap)
 {
     const boost::optional<std::string> installValue = parse.findStringForKey("installvalue");
 
@@ -163,26 +153,109 @@ int RfnDevice::executeConfigInstall(CtiRequestMsg *pReq, CtiCommandParser &parse
     {
         int nRet = NoMethod;
 
-        for each( const std::pair<std::string, InstallMethod> & p in lookup )
+        for each( const std::pair<std::string, InstallMethod> & p in installMap )
         {
-            nRet = (this->*p.second)(pReq, parse, retList, rfnRequests);
+            executeConfigInstallSingle( pReq, parse, retList, rfnRequests, p.first, p.second );
 
-            if( nRet != NoError && nRet != ConfigCurrent )
-            {
-                // if we get an error or if the configuration is not current (in the case of putconfig install verify)
-                return nRet;
-            }
+            nRet = NoError;
         }
 
         return nRet;
     }
 
-    if( boost::optional<InstallMethod> func = mapFind( lookup, *installValue ))
+    if( boost::optional<InstallMethod> func = mapFind( installMap, *installValue ))
     {
-        return (this->**func)(pReq, parse, retList, rfnRequests);
+        executeConfigInstallSingle( pReq, parse, retList, rfnRequests, *installValue, *func );
+
+        return NoError;
     }
 
     return NoMethod;
+}
+
+/**
+ * Called by executeConfigInstall() to execute a putconfig/getconfig install for one config part
+ */
+void RfnDevice::executeConfigInstallSingle(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests, const string & installValue, InstallMethod installMethod )
+{
+    int nRet = NoMethod;
+
+    try
+    {
+        nRet = (this->*installMethod)(pReq, parse, retList, rfnRequests);
+    }
+    catch( const Commands::RfnCommand::CommandException &ce )
+    {
+        const string error_description = "ERROR: " + ce.error_description + ". Config name:" + installValue;
+
+        std::auto_ptr<CtiReturnMsg> commandExceptionError(
+                new CtiReturnMsg(
+                        pReq->DeviceId(),
+                        pReq->CommandString(),
+                        error_description,
+                        ce.error_code,
+                        0,
+                        0,
+                        0,
+                        pReq->GroupMessageId(),
+                        pReq->UserMessageId()));
+
+        retList.push_back(commandExceptionError.release());
+
+        logInfo("had a configuration error using config: " + installValue,
+                __FUNCTION__, __FILE__, __LINE__ );
+
+        return;
+    }
+
+    if( nRet != NoError )
+    {
+        string resultString;
+
+        if( nRet == NoConfigData )
+        {
+            resultString = "ERROR: Invalid config data. Config name:" + installValue;
+
+            logInfo("had no configuration for config: " + installValue,
+                    __FUNCTION__, __FILE__, __LINE__ );
+        }
+        else if( nRet == ConfigCurrent )
+        {
+            resultString = "Config " + installValue + " is current.";
+
+            nRet = NoError; //This is an OK return! Note that nRet is no longer propogated!
+        }
+        else if( nRet == ConfigNotCurrent )
+        {
+            resultString = "Config " + installValue + " is NOT current.";
+        }
+        else
+        {
+            resultString = "ERROR: NoMethod or invalid config. Config name:" + installValue;
+
+            logInfo("had a configuration error using config: " + installValue,
+                    __FUNCTION__, __FILE__, __LINE__ );
+        }
+
+        std::auto_ptr<CtiReturnMsg> retMsg(
+                new CtiReturnMsg(
+                        pReq->DeviceId(),
+                        pReq->CommandString(),
+                        resultString,
+                        nRet,
+                        0,
+                        0,
+                        0,
+                        pReq->GroupMessageId(),
+                        pReq->UserMessageId()));
+
+        if( nRet != NoError )
+        {
+            retMsg->setExpectMore(true);
+        }
+
+        retList.push_back( retMsg.release() );
+    }
 }
 
 
@@ -230,31 +303,49 @@ int RfnDevice::executeGetConfigHoliday(CtiRequestMsg *pReq, CtiCommandParser &pa
     return NoMethod;
 }
 
-int RfnDevice::executePutConfigInstallFreezeDay(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests)
-{
-    return NoMethod;
-}
-
-int RfnDevice::executePutConfigInstallVoltageAveragingInterval(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests)
-{
-    return NoMethod;
-}
-
-int RfnDevice::executePutConfigInstallTou(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests)
-{
-    return NoMethod;
-}
-
-int RfnDevice::executePutConfigInstallDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests)
-{
-    return NoMethod;
-}
-
 int RfnDevice::executeGetValue (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests)
 {
     return NoMethod;
 }
 
+
+void RfnDevice::logInfo( const std::string &note,
+                         const char* function,
+                         const char* file,
+                         int line ) const
+{
+    CtiLockGuard<CtiLogger> doubt_guard(dout);
+    dout << CtiTime() << " Device \"" << getName() << "\" - " << note;
+
+    if( function )
+    {
+        dout << " " << function;
+    }
+
+    if( file )
+    {
+        dout << " " << file;
+    }
+
+    if( line )
+    {
+        dout << " (" << line << ")";
+    }
+
+    dout << std::endl;
+}
+
+void RfnDevice::logInfo( int debugLevel,
+                         const std::string &note,
+                         const char* function,
+                         const char* file,
+                         int line ) const
+{
+    if( getDebugLevel() & debugLevel )
+    {
+        logInfo( note, function, file, line );
+    }
+}
 
 }
 }

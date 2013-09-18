@@ -41,22 +41,15 @@ public:
 protected:
 
     typedef int (RfnDevice::*InstallMethod)(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
-    typedef std::map<std::string, InstallMethod> InstallLookup;
+    typedef std::map<std::string, InstallMethod> InstallMap;
 
-    virtual InstallLookup getGetConfigInstallMethods() const;
-    virtual InstallLookup getPutConfigInstallMethods() const;
+    virtual InstallMap getGetConfigInstallMap() const;
+    virtual InstallMap getPutConfigInstallMap() const;
 
     virtual int executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
     virtual int executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
     virtual int executeGetValue (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
     virtual int executePutStatus(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
-
-    int executeConfigInstall(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests, const InstallLookup & lookup );
-
-    virtual int executePutConfigInstallFreezeDay               (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
-    virtual int executePutConfigInstallVoltageAveragingInterval(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
-    virtual int executePutConfigInstallTou                     (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
-    virtual int executePutConfigInstallDisplay                 (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
 
     virtual int executeImmediateDemandFreeze(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
     virtual int executeTouCriticalPeak(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
@@ -67,6 +60,22 @@ protected:
     virtual int executeGetConfigHoliday(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
 
     RfnIdentifier _rfnId;
+
+    void logInfo( const std::string &note,
+                  const char* function,
+                  const char* file,
+                  int line ) const;
+
+    void logInfo( int debugLevel,
+                  const std::string &note,
+                  const char* function,
+                  const char* file,
+                  int line ) const;
+
+private:
+
+    int  executeConfigInstall       (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests, const InstallMap &installMap );
+    void executeConfigInstallSingle (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests, const std::string &installValue, InstallMethod installMethod );
 };
 
 typedef RfnDevice Rfn410Device;

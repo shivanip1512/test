@@ -19,6 +19,41 @@ namespace Devices {
 
 using Config::RfnStrings;
 
+const RfnDevice::InstallMap RfnConsumerDevice::_putConfigInstallMap = initPutConfigInstallMap();
+const RfnDevice::InstallMap RfnConsumerDevice::_getConfigInstallMap = initGetConfigInstallMap();
+
+
+const RfnDevice::InstallMap RfnConsumerDevice::initPutConfigInstallMap()
+{
+    const InstallMap m = boost::assign::map_list_of
+            ("display",          static_cast<InstallMethod>(&RfnConsumerDevice::executePutConfigInstallDisplay))
+            ("freezeday",        static_cast<InstallMethod>(&RfnConsumerDevice::executePutConfigInstallFreezeDay))
+            ("tou",              static_cast<InstallMethod>(&RfnConsumerDevice::executePutConfigInstallTou))
+            ("voltageaveraging", static_cast<InstallMethod>(&RfnConsumerDevice::executePutConfigInstallVoltageAveragingInterval));
+
+    return m;
+}
+
+const RfnDevice::InstallMap RfnConsumerDevice::initGetConfigInstallMap()
+{
+    const InstallMap m;
+
+    // TODO
+
+    return m;
+}
+
+RfnDevice::InstallMap RfnConsumerDevice::getPutConfigInstallMap() const
+{
+    return _putConfigInstallMap;
+}
+
+RfnDevice::InstallMap RfnConsumerDevice::getGetConfigInstallMap() const
+{
+    return _getConfigInstallMap;
+}
+
+
 int RfnConsumerDevice::executePutConfigVoltageAveragingInterval( CtiRequestMsg     * pReq,
                                                                  CtiCommandParser  & parse,
                                                                  CtiMessageList    & retList,
@@ -466,6 +501,23 @@ int RfnConsumerDevice::executePutConfigHoliday( CtiRequestMsg     * pReq,
     rfnRequests.push_back( boost::make_shared<RfnTouHolidayConfigurationCommand>( holidays ));
 
     return NoError;
+}
+
+
+
+int RfnConsumerDevice::executePutConfigInstallFreezeDay(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests)
+{
+    return NoMethod;
+}
+
+int RfnConsumerDevice::executePutConfigInstallVoltageAveragingInterval(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests)
+{
+    return NoMethod;
+}
+
+int RfnConsumerDevice::executePutConfigInstallDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests)
+{
+    return NoMethod;
 }
 
 /**
