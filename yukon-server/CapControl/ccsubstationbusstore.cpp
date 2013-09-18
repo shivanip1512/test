@@ -6979,162 +6979,111 @@ void CtiCCSubstationBusStore::reloadMonitorPointsFromDatabase(long subBusId, Pao
     {
         std::set< std::pair<long, int> >    requiredPointResponses;
 
-        CtiTime currentDateTime;
         {
-            //LOADING OF MONITOR POINTS.
-            static const string sqlCapBankNoID =  "SELECT YP.type, MB.deviceid, MB.pointid, MB.displayorder, MB.scannable, MB.ninavg, "
-                                               "MB.upperbandwidth, MB.lowerbandwidth, MB.Phase, MB.OverrideStrategy, FS.substationbusid "
-                                           "FROM ccmonitorbanklist MB, yukonpaobject YP, ccfeederbanklist FB, ccfeedersubassignment FS "
-                                           "WHERE MB.deviceid = FB.deviceid "
-                                           "AND FB.feederid = FS.feederid "
-                                           "AND YP.paobjectid = MB.deviceid ";
+            static const std::string sql =
+                "SELECT "
+                    "YP.Type, "
+                    "X.SubstationBusID, "
+                    "MB.DeviceId, "
+                    "MB.PointId, "
+                    "MB.DisplayOrder, "
+                    "MB.Scannable, "
+                    "MB.NINAvg, "
+                    "MB.UpperBandwidth, "
+                    "MB.LowerBandwidth, "
+                    "MB.Phase, "
+                    "MB.OverrideStrategy, "
+                    "MBH.Value, "
+                    "MBH.DateTime, "
+                    "MBH.ScanInProgress "
+                "FROM ( "
+                    "SELECT "
+                        "FB.DeviceID AS PAObjectID, FS.SubstationBusId "
+                    "FROM "
+                        "CCFeederBankList FB "
+                        "JOIN CCFeederSubAssignment FS ON FB.FeederID = FS.FeederID "
+                    "UNION "
+                    "SELECT "
+                        "RTZ.RegulatorId AS PAObjectID, Z.SubstationBusId "
+                    "FROM "
+                        "RegulatorToZoneMapping RTZ "
+                        "JOIN Zone Z ON RTZ.ZoneId = Z.ZoneId "
+                    "UNION "
+                    "SELECT "
+                        "P.PAObjectID AS PAObjectID, Z.SubstationBusId "
+                    "FROM "
+                        "POINT P "
+                        "JOIN PointToZoneMapping PTZ ON P.POINTID = PTZ.PointId "
+                        "JOIN Zone Z ON PTZ.ZoneId = Z.ZoneId "
+                    ") X "
+                "JOIN YukonPAObject YP ON X.PAObjectID = YP.PAObjectID "
+                "JOIN CCMonitorBankList MB ON YP.PAObjectID = MB.DeviceId "
+                "LEFT OUTER JOIN DynamicCCMonitorBankHistory MBH ON MB.DeviceId = MBH.DeviceId AND MB.PointID = MBH.PointID";
 
-             static const string sqlRegulatorNoID =  "SELECT YP.type, MB.deviceid, MB.pointid, MB.displayorder, MB.scannable, MB.ninavg, "
-                                               "MB.upperbandwidth, MB.lowerbandwidth, MB.Phase, MB.OverrideStrategy, Z.substationbusid "
-                                           "FROM ccmonitorbanklist MB, yukonpaobject YP, regulatortozonemapping RTZ, zone Z "
-                                           "WHERE MB.deviceid = RTZ.regulatorid "
-                                           "AND RTZ.zoneid = Z.zoneid "
-                                           "AND YP.paobjectid = MB.deviceid ";
+            static const std::string where_sql =
+                " WHERE "
+                    "X.SubstationBusID = ?";
 
-              static const string sqlAdditionalNoID =  "SELECT YP.type, MB.deviceid, MB.pointid, MB.displayorder, MB.scannable, MB.ninavg, "
-                                               "MB.upperbandwidth, MB.lowerbandwidth, MB.Phase, MB.OverrideStrategy, Z.substationbusid "
-                                           "FROM ccmonitorbanklist MB, yukonpaobject YP, pointtozonemapping PTZ, zone Z, point P "
-                                           "WHERE MB.deviceid = YP.paobjectid "
-                                           "AND PTZ.pointid = P.pointid "
-                                           "AND P.paobjectid = YP.paobjectid "
-                                           "AND PTZ.zoneid = Z.zoneid ";
 
-            Cti::Database::DatabaseConnection connection;
-            Cti::Database::DatabaseReader rdr(connection);
+            Cti::Database::DatabaseConnection   connection;
+            Cti::Database::DatabaseReader       rdr(connection);
 
-            if(subBusId > 0)
+            if ( subBusId > 0 )
             {
-                static const string sqlUnionID = string(sqlCapBankNoID + " AND FS.substationbusid = ?") +
-                                            string(" UNION " + sqlRegulatorNoID + " AND Z.substationbusid = ?") +
-                                            string(" UNION " + sqlAdditionalNoID + " AND Z.substationbusid = ?");
-                rdr.setCommandText(sqlUnionID);
-                rdr << subBusId << subBusId << subBusId;
+                rdr.setCommandText( sql + where_sql );
+
+                rdr << subBusId;
             }
             else
             {
-                static const string sqlUnion = string(sqlCapBankNoID) + " UNION " + sqlRegulatorNoID + " UNION " + sqlAdditionalNoID;
-                rdr.setCommandText(sqlUnion);
+                rdr.setCommandText( sql );
             }
 
             rdr.execute();
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                string loggedSQLstring = rdr.asString();
+                std::string loggedSQLstring = rdr.asString();
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
+                    dout << CtiTime() << " - " << loggedSQLstring << std::endl;
                 }
             }
 
             while ( rdr() )
             {
-                string devType;
-                long currentBankId, currentPointId, currentBusId;
-                rdr["type"] >> devType;
-                rdr["deviceid"] >> currentBankId;
-                rdr["pointid"] >> currentPointId;
-                rdr["substationbusid"] >> currentBusId;
+                std::string devType;
+                long        currentBankId,
+                            currentPointId,
+                            currentBusId;
 
-                CtiCCMonitorPointPtr currentMonPoint = CtiCCMonitorPointPtr(new CtiCCMonitorPoint(rdr));
-                if (stringContainsIgnoreCase(devType, "cap bank"))
+                rdr["Type"]             >> devType;
+                rdr["DeviceId"]         >> currentBankId;
+                rdr["PointId"]          >> currentPointId;
+                rdr["SubstationBusID"]  >> currentBusId;
+
+                CtiCCMonitorPointPtr currentMonPoint = CtiCCMonitorPointPtr( new CtiCCMonitorPoint(rdr) );
+
+                if ( stringContainsIgnoreCase( devType, "CAP BANK" ) )
                 {
-                    if (!loadCapBankMonitorPoint(currentMonPoint, requiredPointResponses, paobject_capbank_map, paobject_feeder_map, paobject_subbus_map, pointid_capbank_map))
+                    if ( ! loadCapBankMonitorPoint( currentMonPoint, requiredPointResponses,
+                                                    paobject_capbank_map, paobject_feeder_map, paobject_subbus_map, pointid_capbank_map))
                     {
-                        currentMonPoint.reset();
-                        continue;
+                        continue;   // can't load... bail out!
                     }
                 }
+
                 //Get all banks on SubBus all Feeders.
-                CtiCCSubstationBusPtr subBusPtr = findInMap(currentBusId, paobject_subbus_map);
-                if (subBusPtr == NULL)
+                
+                if ( CtiCCSubstationBusPtr subBusPtr = findInMap( currentBusId, paobject_subbus_map ) )
                 {
-                    continue;
+                    if ( subBusPtr->addMonitorPoint( currentPointId, currentMonPoint ) )
+                    {
+                        subBusPtr->addDefaultPointResponses( requiredPointResponses );
+                        pointid_subbus_map->insert( std::make_pair( currentMonPoint->getPointId(), subBusPtr ) );
+                        subBusPtr->addPointId( currentPointId );
+                    }
                 }
-
-
-                if (!subBusPtr->addMonitorPoint(currentPointId, currentMonPoint))
-                {
-                    currentMonPoint.reset();
-                    continue;
-                }
-                subBusPtr->addDefaultPointResponses( requiredPointResponses );
-                pointid_subbus_map->insert(make_pair(currentMonPoint->getPointId(),subBusPtr));
-                subBusPtr->addPointId(currentPointId);
-
-            }
-        }
-
-        {
-            static const string sqlCapBankNoID = "SELECT MBH.deviceid, MBH.pointid, MBH.value, MBH.datetime, MBH.scaninprogress, FS.substationbusid "
-                                          "FROM dynamicccmonitorbankhistory MBH, yukonpaobject YP, ccfeederbanklist FB, ccfeedersubassignment FS "
-                                           "WHERE MBH.deviceid = FB.deviceid "
-                                           "AND FB.feederid = FS.feederid "
-                                           "AND YP.paobjectid = MBH.deviceid ";
-
-             static const string sqlRegulatorNoID =  "SELECT MBH.deviceid, MBH.pointid, MBH.value, MBH.datetime, MBH.scaninprogress, Z.substationbusid "
-                                          "FROM dynamicccmonitorbankhistory MBH, yukonpaobject YP, regulatortozonemapping RTZ, zone Z "
-                                           "WHERE MBH.deviceid = RTZ.regulatorid "
-                                           "AND RTZ.zoneid = Z.zoneid "
-                                           "AND YP.paobjectid = MBH.deviceid ";
-
-              static const string sqlAdditionalNoID =  "SELECT MBH.deviceid, MBH.pointid, MBH.value, MBH.datetime, MBH.scaninprogress, Z.substationbusid  "
-                                          "FROM dynamicccmonitorbankhistory MBH, yukonpaobject YP, pointtozonemapping PTZ, zone Z, point P "
-                                           "WHERE MBH.deviceid = YP.paobjectid "
-                                           "AND PTZ.pointid = P.pointid "
-                                           "AND P.paobjectid = YP.paobjectid "
-                                           "AND PTZ.zoneid = Z.zoneid ";
-
-            Cti::Database::DatabaseConnection connection;
-            Cti::Database::DatabaseReader rdr(connection);
-
-            if(subBusId > 0)
-            {
-                static const string sqlUnionID = string(sqlCapBankNoID + " AND FS.substationbusid = ?") +
-                                            string(" UNION " + sqlRegulatorNoID + " AND Z.substationbusid = ?") +
-                                            string(" UNION " + sqlAdditionalNoID + " AND Z.substationbusid = ?");
-                rdr.setCommandText(sqlUnionID);
-                rdr << subBusId << subBusId << subBusId;
-            }
-            else
-            {
-                static const string sqlUnion = string(sqlCapBankNoID) + " UNION " + sqlRegulatorNoID + " UNION " + sqlAdditionalNoID;
-                rdr.setCommandText(sqlUnion);
-            }
-
-            rdr.execute();
-
-            if ( _CC_DEBUG & CC_DEBUG_DATABASE )
-            {
-                string loggedSQLstring = rdr.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
-            }
-
-            while ( rdr() )
-            {
-                long currentDevId, currentPointId, currentBusId;
-                float value;
-                rdr["deviceid"] >> currentDevId;
-                rdr["pointid"] >> currentPointId;
-                rdr["substationbusid"] >> currentBusId;
-
-                CtiCCSubstationBusPtr bus = findInMap(currentBusId, paobject_subbus_map);
-                if ( bus == NULL)
-                {
-                    continue;
-                }
-                CtiCCMonitorPointPtr currentMonPoint = bus->getMonitorPoint(currentPointId);
-                if (currentMonPoint != NULL)
-                    currentMonPoint->setDynamicData(rdr);
-
             }
         }
 
@@ -7170,20 +7119,15 @@ void CtiCCSubstationBusStore::reloadMonitorPointsFromDatabase(long subBusId, Pao
             }
             for each ( std::pair<long, int>  thePair in requiredPointResponses )
             {
-                long busId = findSubBusIDbyCapBankID(thePair.second);
-                if (busId == NULL)
+                if ( long busId = findSubBusIDbyCapBankID(thePair.second) )
                 {
-                    continue;
-                }
-
-                PointResponse defaultPointResponse(thePair.first, thePair.second, 0, _IVVC_DEFAULT_DELTA, false, busId);
-                if (CtiCCCapBankPtr bank = findInMap(thePair.second, paobject_capbank_map))
-                {
-                    bank->addPointResponse(defaultPointResponse);
+                    PointResponse defaultPointResponse(thePair.first, thePair.second, 0, _IVVC_DEFAULT_DELTA, false, busId);
+                    if ( CtiCCCapBankPtr bank = findInMap(thePair.second, paobject_capbank_map) )
+                    {
+                        bank->addPointResponse(defaultPointResponse);
+                    }
                 }
             }
-
-
         }
     }
     catch(...)
@@ -10502,20 +10446,25 @@ void CtiCCSubstationBusStore::handleMonitorPointDBChange(long reloadId, BYTE rel
 {
     if ( reloadAction == ChangeTypeUpdate )
     {
-        static const std::string sql =  "SELECT "
-                                            "DeviceId, "
-                                            "PointID, "
-                                            "DisplayOrder, "
-                                            "Scannable, "
-                                            "NINAvg, "
-                                            "UpperBandwidth, "
-                                            "LowerBandwidth, "
-                                            "Phase, "
-                                            "OverrideStrategy "
-                                        "FROM "
-                                            "ccMonitorBankList "
-                                        "WHERE "
-                                            "PointID = ?";
+        static const std::string sql =
+            "SELECT "
+                "MB.DeviceId, "
+                "MB.PointId, "
+                "MB.DisplayOrder, "
+                "MB.Scannable, "
+                "MB.NINAvg, "
+                "MB.UpperBandwidth, "
+                "MB.LowerBandwidth, "
+                "MB.Phase, "
+                "MB.OverrideStrategy, "
+                "MBH.Value, "
+                "MBH.DateTime, "
+                "MBH.ScanInProgress "
+            "FROM "
+                "CCMonitorBankList MB "
+                "LEFT OUTER JOIN DynamicCCMonitorBankHistory MBH ON MB.DeviceId = MBH.DeviceId AND MB.PointID = MBH.PointID "
+            "WHERE "
+                "MB.PointId = ?";
 
         Cti::Database::DatabaseConnection   connection;
         Cti::Database::DatabaseReader       rdr(connection, sql);

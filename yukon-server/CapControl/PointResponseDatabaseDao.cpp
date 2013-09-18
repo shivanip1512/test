@@ -17,6 +17,43 @@ namespace Cti {
 namespace CapControl {
 namespace Database {
 
+/*  - in the spirit of monitor points...
+ 
+SELECT
+	DMPR.DeviceID,
+	DMPR.PointID,
+	DMPR.PreOpValue,
+	DMPR.Delta,
+	DMPR.StaticDelta,
+    X.SubstationBusID
+FROM (
+    SELECT
+        FB.DeviceID AS PAObjectID, FS.SubstationBusId
+    FROM
+        CCFeederBankList FB
+        JOIN CCFeederSubAssignment FS ON FB.FeederID = FS.FeederID
+    UNION
+    SELECT
+        RTZ.RegulatorId AS PAObjectID, Z.SubstationBusId
+    FROM
+        RegulatorToZoneMapping RTZ
+        JOIN Zone Z ON RTZ.ZoneId = Z.ZoneId
+    UNION
+    SELECT
+        P.PAObjectID AS PAObjectID, Z.SubstationBusId
+    FROM
+        POINT P
+        JOIN PointToZoneMapping PTZ ON P.POINTID = PTZ.PointId
+        JOIN Zone Z ON PTZ.ZoneId = Z.ZoneId
+    ) X
+JOIN DynamicCCMonitorPointResponse DMPR ON X.PAObjectID = DMPR.DeviceId
+ 
+--WHERE X.SubstationBusId = ?
+--WHERE DMPR.DeviceId = ? 
+--WHERE DMPR.PointID = ? 
+ 
+*/
+
 const string PointResponseDatabaseDao::_selectSqlForBanksBySubBus = "select DMPR.DeviceID,DMPR.PointID,DMPR.PreOpValue,DMPR.Delta,DMPR.StaticDelta, FS.SubstationBusId "
                                                             "FROM dynamicccmonitorpointresponse DMPR, ccfeederbanklist FB, ccfeedersubassignment FS "
                                                             "WHERE DMPR.DeviceID = FB.DeviceID "
