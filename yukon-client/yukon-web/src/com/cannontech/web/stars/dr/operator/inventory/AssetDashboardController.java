@@ -131,6 +131,9 @@ public class AssetDashboardController {
             boolean showSearch = rpDao.checkProperty(YukonRoleProperty.INVENTORY_SEARCH, user);
             model.addAttribute("showSearch", showSearch);
             
+            boolean showAccountSearch = rpDao.checkProperty(YukonRoleProperty.OPERATOR_ACCOUNT_SEARCH, user);
+            model.addAttribute("showAccountSearch", showAccountSearch);
+            
             /** Hardware Creation */
             boolean hasAddHardwareByRange = rpDao.getPropertyBooleanValue(YukonRoleProperty.SN_ADD_RANGE, user);
             boolean hasCreateHardware = rpDao.getPropertyBooleanValue(YukonRoleProperty.INVENTORY_CREATE_HARDWARE, user);

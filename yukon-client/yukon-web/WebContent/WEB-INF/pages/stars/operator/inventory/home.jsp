@@ -91,10 +91,10 @@ function showFileUpload() {
         
         <tags:widgetContainer identify="false">
         
-        <div class="column_12_12">
+        <div class="column_14_10">
             <div class="one column">
             
-                <tags:boxContainer2 nameKey="deviceSelection" hideEnabled="false">
+                <tags:sectionContainer2 nameKey="deviceSelection" hideEnabled="false" styleClass="stacked">
                     <table class="inventoryActionsTable">
                         <%-- INVENTORY PICKER--%>
                         <tr>
@@ -138,7 +138,13 @@ function showFileUpload() {
                             <td><i:inline key=".selectFileDescription"/></td>
                         </tr>
                     </table>
-                </tags:boxContainer2>
+                </tags:sectionContainer2> 
+                
+                <c:if test="${showLinks}">
+                    <tags:sectionContainer2 nameKey="links" styleClass="stacked">
+                        <a href="/stars/operator/inventory/zbProblemDevices/view"><i:inline key=".zbProblemDevices" /></a>
+                    </tags:sectionContainer2>
+                </c:if>
                 
                 <%-- DEVICE RECONFIG MONITORS WIDGET --%>
                 <tags:widget bean="deviceReconfigMonitorsWidget"/>
@@ -149,16 +155,17 @@ function showFileUpload() {
             </div>
             
             <div class="two column nogutter">
-                    <%--SEARCH --%>
+                    
+                    <%--ACCOUNT SEARCH --%>
+                    <c:if test="${showAccountSearch}">
+                        <tags:widget bean="operatorAccountSearchWidget" container="section"/>
+                    </c:if>
+                    
+                    <%--INVENTORY SEARCH --%>
                     <c:if test="${showSearch}">
                         <%@ include file="search.jsp" %>
                     </c:if>
                     
-                    <c:if test="${showLinks}">
-                        <tags:boxContainer2 nameKey="links">
-                            <a href="/stars/operator/inventory/zbProblemDevices/view"><i:inline key=".zbProblemDevices" /></a>
-                        </tags:boxContainer2>
-                    </c:if>
                 </div>
             </div>
         </tags:widgetContainer>
