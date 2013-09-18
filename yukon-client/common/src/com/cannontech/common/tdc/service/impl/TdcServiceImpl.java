@@ -247,7 +247,7 @@ public class TdcServiceImpl implements TdcService, IDisplay{
                 int tags = signal.getTags();
                 boolean displayAlarm;
                 if (showActive) {
-                    displayAlarm = TagUtils.isAlarmActive(tags);
+                    displayAlarm = TagUtils.isAlarmActive(tags) || TagUtils.isAlarmUnacked(tags);
                 } else {
                     displayAlarm = TagUtils.isAlarmUnacked(tags);
                 }
