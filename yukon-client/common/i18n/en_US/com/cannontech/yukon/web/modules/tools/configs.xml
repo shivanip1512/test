@@ -462,7 +462,7 @@
     <entry key="yukon.web.modules.tools.configs.config.changeWarning">Any changes made to this configuration will not update device configurations in the field. Configurations must be resent to all devices to apply any configuration changes.</entry>
     <entry key="yukon.web.modules.tools.configs.config.configCategories.description">Choose an existing instance of each of the categories below or create new categories to use for this configuration.</entry>
     <entry key="yukon.web.modules.tools.configs.config.missingCategories">This device configuration is missing selections for the following category types: {0}. Please assign a category for each of these types.</entry>
-    <entry key="yukon.web.modules.tools.configs.config.noneSelected">None selected</entry>
+    <entry key="yukon.web.modules.tools.configs.config.noneSelected">(none selected)</entry>
     <entry key="yukon.web.modules.tools.configs.config.needsSelection">Please use the Create or Select buttons below to select a category for this type.</entry>
     <entry key="yukon.web.modules.tools.configs.config.editAssignedCategory">Edit the {0} category.</entry>
     <entry key="yukon.web.modules.tools.configs.config.createCategory">Create a new {0} category.</entry>

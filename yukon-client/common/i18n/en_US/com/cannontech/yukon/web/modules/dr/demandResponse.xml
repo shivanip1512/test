@@ -549,7 +549,7 @@
 <entry key="yukon.web.modules.dr.estimatedLoad.newFormula.label">New Formula</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.noApplianceCategories">No appliance categories</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.noApplianceCategoriesForUser">No appliance categories available to user</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.noAssignment.label">No assignment</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.noAssignment.label">(no assignment)</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.noFormulas">No formulas</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.noGears">No gears</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.noWeatherLocations">No Weather Locations</entry>

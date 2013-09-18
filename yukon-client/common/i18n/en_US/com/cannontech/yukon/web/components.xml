@@ -66,7 +66,7 @@
 	<entry key="yukon.web.components.image.down.hoverText">Move Down</entry>
 
     <entry key="yukon.web.components.image.selectionPicker.hoverText">Select items</entry>
-    <entry key="yukon.web.components.image.selectionPicker.label">None selected</entry>
+    <entry key="yukon.web.components.image.selectionPicker.label">(none selected)</entry>
 
     <entry key="yukon.web.components.image.zoom.hoverText">View all currently selected items.</entry>
 
@@ -75,7 +75,7 @@
     <entry key="yukon.web.components.picker.close">Close</entry>
     
     <entry key="yukon.web.components.button.selectionPicker.hoverText">Select items</entry>
-    <entry key="yukon.web.components.button.selectionPicker.label">None selected</entry>
+    <entry key="yukon.web.components.button.selectionPicker.label">(none selected)</entry>
 
     <entry key="yukon.web.components.tokenRequest.passwordPrompt">Password</entry>
 

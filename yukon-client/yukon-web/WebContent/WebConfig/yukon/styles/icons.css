@@ -1073,6 +1073,7 @@ License: http://creativecommons.org/licenses/by/3.0/
 .icon-plus-blue{background-position: -480px -400px}
 .icon-add-blue{background-position: -496px -400px}
 .icon-home{background-position: -512px -400px}
+.icon-arrow-join-right{background-position: -544px -400px}
 
 /* 18 pixel icons, icon blocks are 20px by 20px since the stupid sprite builder would 
 not accept 0px as a valid offset */
