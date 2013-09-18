@@ -4,6 +4,7 @@
 #include "ccutil.h"
 
 #include <boost/shared_ptr.hpp>
+#include <boost/noncopyable.hpp>
 
 
 namespace Cti {
@@ -14,7 +15,7 @@ namespace Database {
 }
 
 
-class CtiCCMonitorPoint
+class CtiCCMonitorPoint : private boost::noncopyable
 {
 public:
 

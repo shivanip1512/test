@@ -234,13 +234,13 @@ public:
     bool isControlDeviceTwoWay();
     int getPointIdByAttribute(const PointAttribute & attribute);
 
-    Cti::CapControl::PointResponse getPointResponse(CtiCCMonitorPointPtr point);
+    Cti::CapControl::PointResponse getPointResponse(const CtiCCMonitorPoint & point);
     std::vector<Cti::CapControl::PointResponse> getPointResponses();
     void addPointResponse(Cti::CapControl::PointResponse pointResponse);
     Cti::CapControl::PointResponseManager& getPointResponseManager();
 
     bool handlePointResponseDeltaChange(long pointId, double newDelta, bool staticDelta);
-    bool updatePointResponseDelta(CtiCCMonitorPointPtr point);
+    bool updatePointResponseDelta(const CtiCCMonitorPoint & point);
     bool updatePointResponsePreOpValue(long pointId, double value);
 
     bool isExpresscom();

@@ -5154,7 +5154,7 @@ const string& CtiCCFeeder::getSolution() const
 
 }
 
-bool CtiCCFeeder::voltControlBankSelectProcess(CtiCCMonitorPointPtr point, CtiMultiMsg_vec &pointChanges, EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages)
+bool CtiCCFeeder::voltControlBankSelectProcess(const CtiCCMonitorPoint & point, CtiMultiMsg_vec &pointChanges, EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages)
 {
     bool retVal = false;
     CtiCCCapBank* bestBank = NULL;
@@ -5163,7 +5163,7 @@ bool CtiCCFeeder::voltControlBankSelectProcess(CtiCCMonitorPointPtr point, CtiMu
    //Check for undervoltage condition first.
    try
    {
-        if (point->getValue() < point->getLowerBandwidth())
+        if (point.getValue() < point.getLowerBandwidth())
         {
             CtiCCCapBank* parentBank = NULL;
             double bestDelta = 0;
@@ -5179,9 +5179,9 @@ bool CtiCCFeeder::voltControlBankSelectProcess(CtiCCMonitorPointPtr point, CtiMu
                     {
                         PointResponse pResponse = parentBank->getPointResponse(point);
 
-                        if ( (point->getValue() + pResponse.getDelta() <= point->getUpperBandwidth() &&
-                              point->getValue() + pResponse.getDelta() >= point->getLowerBandwidth() ) ||
-                              point->getValue() + pResponse.getDelta() < point->getUpperBandwidth() )
+                        if ( (point.getValue() + pResponse.getDelta() <= point.getUpperBandwidth() &&
+                              point.getValue() + pResponse.getDelta() >= point.getLowerBandwidth() ) ||
+                              point.getValue() + pResponse.getDelta() < point.getUpperBandwidth() )
                         {
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -5191,11 +5191,11 @@ bool CtiCCFeeder::voltControlBankSelectProcess(CtiCCMonitorPointPtr point, CtiMu
                             if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " MULTIVOLT: MonitorPoint->bankID/pointID: "<<point->getDeviceId()<<"/"<<point->getPointId()<<" Parent CapBank: "<<parentBank->getPaoName() <<" selected to Close" << endl;
+                                dout << CtiTime() << " MULTIVOLT: MonitorPoint->bankID/pointID: "<<point.getDeviceId()<<"/"<<point.getPointId()<<" Parent CapBank: "<<parentBank->getPaoName() <<" selected to Close" << endl;
                             }
 
                             //Check other monitor point responses using this potential capbank
-                            if (areOtherMonitorPointResponsesOk(point->getPointId(), parentBank, CtiCCCapBank::Close))
+                            if (areOtherMonitorPointResponsesOk(point.getPointId(), parentBank, CtiCCCapBank::Close))
                             {
                                 double controlValue = (!ciStringEqual(getStrategy()->getControlUnits(),ControlStrategy::VoltsControlUnit) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
                                 string text = createTextString(getStrategy()->getControlMethod(), CtiCCCapBank::Close, controlValue, getCurrentVarLoadPointValue());
@@ -5217,7 +5217,7 @@ bool CtiCCFeeder::voltControlBankSelectProcess(CtiCCMonitorPointPtr point, CtiMu
                     catch (NotFoundException& e)
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " PointResponse not found. CapBank: "<< parentBank->getPaoName() <<  " pointId: " << point->getPointId() << endl;
+                        dout << CtiTime() << " PointResponse not found. CapBank: "<< parentBank->getPaoName() <<  " pointId: " << point.getPointId() << endl;
                     }
                 }
                 else
@@ -5236,16 +5236,16 @@ bool CtiCCFeeder::voltControlBankSelectProcess(CtiCCMonitorPointPtr point, CtiMu
                         currentCapBank->getControlStatus() == CtiCCCapBank::OpenQuestionable)
                     {
 
-                        if (point->getDeviceId() != currentCapBank->getPaoId())
+                        if (point.getDeviceId() != currentCapBank->getPaoId())
                         {
                             try
                             {
                                 PointResponse pResponse = currentCapBank->getPointResponse(point);
 
-                                if ( (point->getValue() + pResponse.getDelta() <= point->getUpperBandwidth() &&
-                                      point->getValue() + pResponse.getDelta() >= point->getLowerBandwidth() ) ||
+                                if ( (point.getValue() + pResponse.getDelta() <= point.getUpperBandwidth() &&
+                                      point.getValue() + pResponse.getDelta() >= point.getLowerBandwidth() ) ||
                                       pResponse.getDelta() == 0 ||
-                                      point->getValue() + pResponse.getDelta() < point->getUpperBandwidth() )
+                                      point.getValue() + pResponse.getDelta() < point.getUpperBandwidth() )
                                 {
                                     {
                                         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -5255,10 +5255,10 @@ bool CtiCCFeeder::voltControlBankSelectProcess(CtiCCMonitorPointPtr point, CtiMu
                                     if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
                                     {
                                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                                        dout << CtiTime() << " MULTIVOLT: MonitorPoint->bankID/pointID: "<<point->getDeviceId()<<"/"<<point->getPointId()<<" CapBank: "<<currentCapBank->getPaoName() <<" selected to Close" << endl;
+                                        dout << CtiTime() << " MULTIVOLT: MonitorPoint->bankID/pointID: "<<point.getDeviceId()<<"/"<<point.getPointId()<<" CapBank: "<<currentCapBank->getPaoName() <<" selected to Close" << endl;
                                     }
                                     //Check other monitor point responses using this potential capbank
-                                    if (areOtherMonitorPointResponsesOk(point->getPointId(), currentCapBank, CtiCCCapBank::Close))
+                                    if (areOtherMonitorPointResponsesOk(point.getPointId(), currentCapBank, CtiCCCapBank::Close))
                                     {
                                         double controlValue = (!ciStringEqual(getStrategy()->getControlUnits(), ControlStrategy::VoltsControlUnit) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
                                         string text = createTextString(getStrategy()->getControlMethod(), CtiCCCapBank::Close, controlValue, getCurrentVarLoadPointValue());
@@ -5272,7 +5272,7 @@ bool CtiCCFeeder::voltControlBankSelectProcess(CtiCCMonitorPointPtr point, CtiMu
                             catch (NotFoundException& e)
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " PointResponse not found. CapBank: "<< currentCapBank->getPaoName() <<  " pointId: " << point->getPointId() << endl;
+                                dout << CtiTime() << " PointResponse not found. CapBank: "<< currentCapBank->getPaoName() <<  " pointId: " << point.getPointId() << endl;
                             }
                         }
                         if (request != NULL)
@@ -5291,7 +5291,7 @@ bool CtiCCFeeder::voltControlBankSelectProcess(CtiCCMonitorPointPtr point, CtiMu
                 }
             }
         }
-        else if (point->getValue() > point->getUpperBandwidth())
+        else if (point.getValue() > point.getUpperBandwidth())
         {
             CtiCCCapBank* parentBank = NULL;
             double bestDelta = 0;
@@ -5307,10 +5307,10 @@ bool CtiCCFeeder::voltControlBankSelectProcess(CtiCCMonitorPointPtr point, CtiMu
                     {
                         PointResponse pResponse = parentBank->getPointResponse(point);
 
-                        if ( (point->getValue() - pResponse.getDelta() <= point->getUpperBandwidth() &&
-                              point->getValue() - pResponse.getDelta() >= point->getLowerBandwidth() ) ||
+                        if ( (point.getValue() - pResponse.getDelta() <= point.getUpperBandwidth() &&
+                              point.getValue() - pResponse.getDelta() >= point.getLowerBandwidth() ) ||
                               //pRespone.getDelta() == 0 ||
-                              point->getValue() - pResponse.getDelta() > point->getLowerBandwidth() )
+                              point.getValue() - pResponse.getDelta() > point.getLowerBandwidth() )
                         {
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -5320,10 +5320,10 @@ bool CtiCCFeeder::voltControlBankSelectProcess(CtiCCMonitorPointPtr point, CtiMu
                             if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " MULTIVOLT: MonitorPoint->bankID/pointID: "<<point->getDeviceId()<<"/"<<point->getPointId()<<" Parent CapBank: "<<parentBank->getPaoName() <<" selected to Open" << endl;
+                                dout << CtiTime() << " MULTIVOLT: MonitorPoint->bankID/pointID: "<<point.getDeviceId()<<"/"<<point.getPointId()<<" Parent CapBank: "<<parentBank->getPaoName() <<" selected to Open" << endl;
                             }
                             //Check other monitor point responses using this potential capbank
-                            if (areOtherMonitorPointResponsesOk(point->getPointId(), parentBank, CtiCCCapBank::Open))
+                            if (areOtherMonitorPointResponsesOk(point.getPointId(), parentBank, CtiCCCapBank::Open))
                             {
                                 double controlValue = (!ciStringEqual(getStrategy()->getControlUnits(), ControlStrategy::VoltsControlUnit) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
                                 string text = createTextString(getStrategy()->getControlMethod(), CtiCCCapBank::Open, controlValue, getCurrentVarLoadPointValue());
@@ -5341,7 +5341,7 @@ bool CtiCCFeeder::voltControlBankSelectProcess(CtiCCMonitorPointPtr point, CtiMu
                     catch (NotFoundException& e)
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " PointResponse not found. CapBank: "<< parentBank->getPaoName() <<  " pointId: " << point->getPointId() << endl;
+                        dout << CtiTime() << " PointResponse not found. CapBank: "<< parentBank->getPaoName() <<  " pointId: " << point.getPointId() << endl;
                     }
                 }
                 else
@@ -5358,16 +5358,16 @@ bool CtiCCFeeder::voltControlBankSelectProcess(CtiCCMonitorPointPtr point, CtiMu
                         currentCapBank->getControlStatus() == CtiCCCapBank::CloseQuestionable)
                     {
 
-                        if (point->getDeviceId() != currentCapBank->getPaoId())
+                        if (point.getDeviceId() != currentCapBank->getPaoId())
                         {
                             try
                             {
                                 PointResponse pResponse = currentCapBank->getPointResponse(point);
 
-                                if ( (point->getValue() - pResponse.getDelta() <= point->getUpperBandwidth() &&
-                                      point->getValue() - pResponse.getDelta() >= point->getLowerBandwidth() ) ||
+                                if ( (point.getValue() - pResponse.getDelta() <= point.getUpperBandwidth() &&
+                                      point.getValue() - pResponse.getDelta() >= point.getLowerBandwidth() ) ||
                                       pResponse.getDelta() == 0 ||
-                                      point->getValue() - pResponse.getDelta() > point->getLowerBandwidth() )
+                                      point.getValue() - pResponse.getDelta() > point.getLowerBandwidth() )
                                 {
                                     {
                                         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -5377,10 +5377,10 @@ bool CtiCCFeeder::voltControlBankSelectProcess(CtiCCMonitorPointPtr point, CtiMu
                                     if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
                                     {
                                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                                        dout << CtiTime() << " MULTIVOLT: MonitorPoint->bankID/pointID: "<<point->getDeviceId()<<"/"<<point->getPointId()<<" CapBank: "<<currentCapBank->getPaoName() <<" selected to Open" << endl;
+                                        dout << CtiTime() << " MULTIVOLT: MonitorPoint->bankID/pointID: "<<point.getDeviceId()<<"/"<<point.getPointId()<<" CapBank: "<<currentCapBank->getPaoName() <<" selected to Open" << endl;
                                     }
                                     //Check other monitor point responses using this potential capbank
-                                    if (areOtherMonitorPointResponsesOk(point->getPointId(), currentCapBank, CtiCCCapBank::Open))
+                                    if (areOtherMonitorPointResponsesOk(point.getPointId(), currentCapBank, CtiCCCapBank::Open))
                                     {
                                         double controlValue = (!ciStringEqual(getStrategy()->getControlUnits(), ControlStrategy::VoltsControlUnit) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
                                         string text = createTextString(getStrategy()->getControlMethod(), CtiCCCapBank::Open, controlValue, getCurrentVarLoadPointValue());
@@ -5394,7 +5394,7 @@ bool CtiCCFeeder::voltControlBankSelectProcess(CtiCCMonitorPointPtr point, CtiMu
                             catch (NotFoundException& e)
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " PointResponse not found. CapBank: "<< currentCapBank->getPaoName() <<  " pointId: " << point->getPointId() << endl;
+                                dout << CtiTime() << " PointResponse not found. CapBank: "<< currentCapBank->getPaoName() <<  " pointId: " << point.getPointId() << endl;
                             }
                         }
                         if (request != NULL)
@@ -5449,25 +5449,25 @@ bool CtiCCFeeder::areOtherMonitorPointResponsesOk(long mPointID, CtiCCCapBank* p
 
     for (long i = 0; i < _multipleMonitorPoints.size(); i++)
     {
-        CtiCCMonitorPointPtr otherPoint = (CtiCCMonitorPointPtr)_multipleMonitorPoints[i];
-        if (otherPoint->getPointId() != mPointID)
+        const CtiCCMonitorPoint & otherPoint = *_multipleMonitorPoints[i];
+        if (otherPoint.getPointId() != mPointID)
         {
             for each (const PointResponse& pResponse in potentialCap->getPointResponses())
             {
-                if (otherPoint->getPointId() == pResponse.getPointId())
+                if (otherPoint.getPointId() == pResponse.getPointId())
                 {
                     if (action) //CLOSE
                     {
                         if (pResponse.getDelta() != 0)
                         {
-                            if (otherPoint->getValue() + pResponse.getDelta() > otherPoint->getUpperBandwidth() )
-                                //||otherPoint->getValue() + pResponse->getDelta() < otherPoint->getLowerBandwidth())
+                            if (otherPoint.getValue() + pResponse.getDelta() > otherPoint.getUpperBandwidth() )
+                                //||otherPoint.getValue() + pResponse->getDelta() < otherPoint.getLowerBandwidth())
                             {
 
                                 {
                                     CtiLockGuard<CtiLogger> logger_guard(dout);
                                     dout << CtiTime() << " OPERATION CANCELLED: Other Monitor Point Voltages will be overly affected on Feeder: "<<getPaoName()<<" CapBank: "<<potentialCap->getPaoName() << endl;
-                                    dout << CtiTime() << " MULTIVOLT: otherPoint: "<<otherPoint->getPointId()<<" "<<otherPoint->getDeviceId()<<" Value: "<<otherPoint->getValue()<<" Delta: "<<pResponse.getDelta()<<" pResponse: "<<pResponse.getPointId()<<" "<<pResponse.getDeviceId() << endl;
+                                    dout << CtiTime() << " MULTIVOLT: otherPoint: "<<otherPoint.getPointId()<<" "<<otherPoint.getDeviceId()<<" Value: "<<otherPoint.getValue()<<" Delta: "<<pResponse.getDelta()<<" pResponse: "<<pResponse.getPointId()<<" "<<pResponse.getDeviceId() << endl;
                                 }
                                 retVal = false;
                                 break;
@@ -5486,13 +5486,13 @@ bool CtiCCFeeder::areOtherMonitorPointResponsesOk(long mPointID, CtiCCCapBank* p
                     {
                         if (pResponse.getDelta() != 0)
                         {
-                            if (//otherPoint->getValue() - pResponse->getDelta() > otherPoint->getUpperBandwidth() ||
-                                otherPoint->getValue() - pResponse.getDelta() < otherPoint->getLowerBandwidth())
+                            if (//otherPoint.getValue() - pResponse->getDelta() > otherPoint.getUpperBandwidth() ||
+                                otherPoint.getValue() - pResponse.getDelta() < otherPoint.getLowerBandwidth())
                             {
                                 {
                                     CtiLockGuard<CtiLogger> logger_guard(dout);
                                     dout << CtiTime() << " OPERATION CANCELLED: Other Monitor Point Voltages will be overly affected on Feeder: "<<getPaoName()<<" CapBank: "<<potentialCap->getPaoName() << endl;
-                                    dout << CtiTime() << " MULTIVOLT: otherPoint: "<<otherPoint->getPointId()<<" "<<otherPoint->getDeviceId()<<" Value: "<<otherPoint->getValue()<<" Delta: "<<pResponse.getDelta()<<" pResponse: "<<pResponse.getPointId()<<" "<<pResponse.getDeviceId() << endl;
+                                    dout << CtiTime() << " MULTIVOLT: otherPoint: "<<otherPoint.getPointId()<<" "<<otherPoint.getDeviceId()<<" Value: "<<otherPoint.getValue()<<" Delta: "<<pResponse.getDelta()<<" pResponse: "<<pResponse.getPointId()<<" "<<pResponse.getDeviceId() << endl;
                                 }
                                 retVal = false;
                                 break;
@@ -5517,7 +5517,7 @@ bool CtiCCFeeder::areOtherMonitorPointResponsesOk(long mPointID, CtiCCCapBank* p
     return retVal;
 }
 
-bool CtiCCFeeder::areAllMonitorPointsInVoltageRange(CtiCCMonitorPointPtr oorPoint)
+bool CtiCCFeeder::areAllMonitorPointsInVoltageRange(CtiCCMonitorPointPtr & oorPoint)
 {
     bool retVal = false;
     try
@@ -5542,7 +5542,7 @@ bool CtiCCFeeder::areAllMonitorPointsInVoltageRange(CtiCCMonitorPointPtr oorPoin
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << CtiTime() << " ** WARNING ** Monitor Point: "<<point->getPointId()<<" on CapBank: "<<point->getDeviceId()<<" is OUTSIDE limits.  Current value: "<<point->getValue() << endl;
                 }
-                *oorPoint = *point;
+                oorPoint = point;
                 retVal = false;
                 break;
             }
@@ -5566,20 +5566,20 @@ void CtiCCFeeder::updatePointResponsePreOpValues(CtiCCCapBank* capBank)
 
     for (int i = 0; i < _multipleMonitorPoints.size(); i++)
     {
-        CtiCCMonitorPointPtr point = (CtiCCMonitorPointPtr)_multipleMonitorPoints[i];
+        const CtiCCMonitorPoint & point = *_multipleMonitorPoints[i];
 
         try
         {
-            if (capBank->updatePointResponsePreOpValue(point->getPointId(),point->getValue()))
+            if (capBank->updatePointResponsePreOpValue(point.getPointId(),point.getValue()))
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " Device ID: " << capBank->getPaoName() << " Point ID: " << point->getPointId( )<< " Value: " << point->getValue() << endl;
+                dout << CtiTime() << " Device ID: " << capBank->getPaoName() << " Point ID: " << point.getPointId( )<< " Value: " << point.getValue() << endl;
             }
         }
         catch (NotFoundException& e)
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " Error Updating PreOpValue for deltas. PointId not found: " << point->getPointId() << endl;
+            dout << CtiTime() << " Error Updating PreOpValue for deltas. PointId not found: " << point.getPointId() << endl;
         }
     }
 }
@@ -5604,7 +5604,7 @@ void CtiCCFeeder::updatePointResponseDeltas()
                }
                for (int j = 0; j < _multipleMonitorPoints.size(); j++)
                {
-                    CtiCCMonitorPointPtr point = (CtiCCMonitorPointPtr)_multipleMonitorPoints[j];
+                    const CtiCCMonitorPoint & point = *_multipleMonitorPoints[j];
                     try
                     {
                        currentCapBank->updatePointResponseDelta(point);
@@ -5612,7 +5612,7 @@ void CtiCCFeeder::updatePointResponseDeltas()
                     catch (NotFoundException& e)
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " Error Updating delta value. PointId not found: " << point->getPointId() << endl;
+                        dout << CtiTime() << " Error Updating delta value. PointId not found: " << point.getPointId() << endl;
                     }
                }
                break;
@@ -5637,10 +5637,10 @@ bool CtiCCFeeder::areAllMonitorPointsNewEnough(const CtiTime& currentDateTime)
         {
             for (int i = 0; i < _multipleMonitorPoints.size(); i++)
             {
-                CtiCCMonitorPointPtr point = (CtiCCMonitorPointPtr)_multipleMonitorPoints[i];
-                if (point->getScanInProgress())
+                CtiCCMonitorPoint & point = *_multipleMonitorPoints[i];
+                if (point.getScanInProgress())
                 {
-                    point->setScanInProgress(false);
+                    point.setScanInProgress(false);
                 }
             }
             if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
@@ -5654,14 +5654,14 @@ bool CtiCCFeeder::areAllMonitorPointsNewEnough(const CtiTime& currentDateTime)
         {
             for (int i = 0; i < _multipleMonitorPoints.size(); i++)
             {
-                CtiCCMonitorPointPtr point = (CtiCCMonitorPointPtr)_multipleMonitorPoints[i];
-                if (point->getTimeStamp().seconds() > (getLastOperationTime().seconds() - 30) &&
-                    point->getTimeStamp().seconds() + _POINT_AGE <= currentDateTime.seconds())
+                CtiCCMonitorPoint & point = *_multipleMonitorPoints[i];
+                if (point.getTimeStamp().seconds() > (getLastOperationTime().seconds() - 30) &&
+                    point.getTimeStamp().seconds() + _POINT_AGE <= currentDateTime.seconds())
                 {
                     retVal = true;
-                    if (point->getScanInProgress())
+                    if (point.getScanInProgress())
                     {
-                        point->setScanInProgress(false);
+                        point.setScanInProgress(false);
                     }
                 }
                 else
@@ -5680,8 +5680,8 @@ bool CtiCCFeeder::areAllMonitorPointsNewEnough(const CtiTime& currentDateTime)
                 bool scanInProgress = false;
                 for (int i = 0; i < _multipleMonitorPoints.size(); i++)
                 {
-                    CtiCCMonitorPointPtr point = (CtiCCMonitorPointPtr)_multipleMonitorPoints[i];
-                    if (point->getScanInProgress())
+                    const CtiCCMonitorPoint & point = *_multipleMonitorPoints[i];
+                    if (point.getScanInProgress())
                     {
                         scanInProgress = true;
 
@@ -5718,13 +5718,13 @@ bool CtiCCFeeder::scanAllMonitorPoints()
 
         for (int i = 0; i < _multipleMonitorPoints.size(); i++)
         {
-            CtiCCMonitorPointPtr point = (CtiCCMonitorPointPtr)_multipleMonitorPoints[i];
-            if (point->isScannable() && !point->getScanInProgress())
+            CtiCCMonitorPoint & point = *_multipleMonitorPoints[i];
+            if (point.isScannable() && !point.getScanInProgress())
             {
                 for (long j = 0; j < _cccapbanks.size();j++)
                 {
                     CtiCCCapBank* currentCapBank = (CtiCCCapBank*)_cccapbanks[j];
-                    if (currentCapBank->getPaoId() == point->getDeviceId())
+                    if (currentCapBank->getPaoId() == point.getDeviceId())
                     {
                         CtiCommandMsg *pAltRate = CTIDBG_new CtiCommandMsg( CtiCommandMsg::AlternateScanRate );
 
@@ -5744,7 +5744,7 @@ bool CtiCCFeeder::scanAllMonitorPoints()
                                 dout << CtiTime() << " MULTIVOLT: Requesting scans at the alternate scan rate for " << currentCapBank->getPaoName() << endl;
                             }
                             //CtiCapController::getInstance()->sendMessageToDispatch(createPorterRequestMsg(currentCapBank->getControlDeviceId(), "scan general"));
-                            point->setScanInProgress(true);
+                            point.setScanInProgress(true);
                             retVal = true;
                         }
                         break;
@@ -5755,7 +5755,7 @@ bool CtiCCFeeder::scanAllMonitorPoints()
                 if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " MULTIVOLT: monPoint: "<<point->getPointId()<< " Scannable? " << point->isScannable() << "ScanInProgress? "<<point->getScanInProgress() << endl;
+                    dout << CtiTime() << " MULTIVOLT: monPoint: "<<point.getPointId()<< " Scannable? " << point.isScannable() << "ScanInProgress? "<<point.getScanInProgress() << endl;
                 }
             }
         }
@@ -6682,13 +6682,13 @@ string CtiCCFeeder::createTextString(const string& controlMethod, int control, d
 }
 
 
-CtiCCCapBank* CtiCCFeeder::getMonitorPointParentBank(CtiCCMonitorPointPtr point)
+CtiCCCapBank* CtiCCFeeder::getMonitorPointParentBank(const CtiCCMonitorPoint & point)
 {
 
     for (long i = 0; i < _cccapbanks.size(); i++)
     {
         CtiCCCapBankPtr cap = (CtiCCCapBankPtr)_cccapbanks[i];
-        if (point->getDeviceId() == cap->getPaoId())
+        if (point.getDeviceId() == cap->getPaoId())
         {
             return cap;
         }

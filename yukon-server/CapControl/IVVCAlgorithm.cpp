@@ -2176,13 +2176,13 @@ int IVVCAlgorithm::calculateVte(const PointValueMap &voltages, IVVCStrategy* str
 
         if ( iter != _monitorMap.end() )    // monitor point exists - use its bandwidth settings instead
         {
-            CtiCCMonitorPointPtr    monitor = iter->second;
+            const CtiCCMonitorPoint &   monitor = *iter->second;
 
-            if ( monitor->getOverrideStrategy() )
+            if ( monitor.getOverrideStrategy() )
             {
-                Vmax = monitor->getUpperBandwidth();
-                Vmin = monitor->getLowerBandwidth();
-                Vrm  = monitor->getLowerBandwidth() + strategy->getVoltageRegulationMargin(isPeakTime);
+                Vmax = monitor.getUpperBandwidth();
+                Vmin = monitor.getLowerBandwidth();
+                Vrm  = monitor.getLowerBandwidth() + strategy->getVoltageRegulationMargin(isPeakTime);
             }
         }
 
@@ -2284,11 +2284,11 @@ bool IVVCAlgorithm::checkForMultiTapOperation( const PointValueMap & voltages,
 
         if ( iter != _monitorMap.end() )    // monitor point exists - use its bandwidth settings instead
         {
-            CtiCCMonitorPointPtr    monitor = iter->second;
+            const CtiCCMonitorPoint &   monitor = *iter->second;
 
-            if ( monitor->getOverrideStrategy() )
+            if ( monitor.getOverrideStrategy() )
             {
-                Vmax = monitor->getUpperBandwidth();
+                Vmax = monitor.getUpperBandwidth();
             }
         }
 
@@ -2508,11 +2508,11 @@ double IVVCAlgorithm::getVmaxForPoint( const long pointID, CtiCCSubstationBusPtr
 
     if ( iter != monitorMap.end() )    // monitor point exists - use its bandwidth settings instead
     {
-        CtiCCMonitorPointPtr    monitor = iter->second;
+        const CtiCCMonitorPoint &   monitor = *iter->second;
 
-        if ( monitor->getOverrideStrategy() )
+        if ( monitor.getOverrideStrategy() )
         {
-            Vmax = monitor->getUpperBandwidth();
+            Vmax = monitor.getUpperBandwidth();
         }
     }
 

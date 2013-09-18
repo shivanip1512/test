@@ -1610,9 +1610,9 @@ bool CtiCCCapBank::handlePointResponseDeltaChange(long pointId, double newDelta,
     return _pointResponseManager.handlePointResponseDeltaChange(pointId,newDelta,staticDelta);
 }
 
-bool CtiCCCapBank::updatePointResponseDelta(CtiCCMonitorPointPtr point)
+bool CtiCCCapBank::updatePointResponseDelta(const CtiCCMonitorPoint & point)
 {
-    return _pointResponseManager.updatePointResponseDelta(*point);
+    return _pointResponseManager.updatePointResponseDelta(point);
 }
 
 bool CtiCCCapBank::updatePointResponsePreOpValue(long pointId, double value)
@@ -1755,9 +1755,9 @@ CtiCCCapBank& CtiCCCapBank::addAllCapBankPointsToMsg(std::set<long>& pointAddMsg
     return *this;
 }
 
-Cti::CapControl::PointResponse CtiCCCapBank::getPointResponse(CtiCCMonitorPointPtr point)
+Cti::CapControl::PointResponse CtiCCCapBank::getPointResponse(const CtiCCMonitorPoint & point)
 {
-    return _pointResponseManager.getPointResponse(point->getPointId());
+    return _pointResponseManager.getPointResponse(point.getPointId());
 }
 
 std::vector<Cti::CapControl::PointResponse> CtiCCCapBank::getPointResponses()

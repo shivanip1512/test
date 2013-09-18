@@ -300,7 +300,7 @@ public:
     bool attemptToResendControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages, long maxConfirmTime);
     bool checkForAndPerformVerificationSendRetry(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages, long maxConfirmTime, long sendRetries);
     bool checkMaxDailyOpCountExceeded(CtiMultiMsg_vec &pointChanges);
-    bool voltControlBankSelectProcess(CtiCCMonitorPointPtr point, CtiMultiMsg_vec &pointChanges, Cti::CapControl::EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages);
+    bool voltControlBankSelectProcess(const CtiCCMonitorPoint & point, CtiMultiMsg_vec &pointChanges, Cti::CapControl::EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages);
     void updatePointResponsePreOpValues(CtiCCCapBank* capBank);
     void updatePointResponseDeltas();
     bool areAllMonitorPointsNewEnough(const CtiTime& currentDateTime);
@@ -308,7 +308,7 @@ public:
     unsigned long getMonitorPointScanTime();
     bool scanAllMonitorPoints();
     void analyzeMultiVoltFeeder(const CtiTime& currentDateTime, long minConfirmPercent, long failurePercent, long maxConfirmTime, long sendRetries, CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages);
-    bool areAllMonitorPointsInVoltageRange(CtiCCMonitorPointPtr oorPoint);
+    bool areAllMonitorPointsInVoltageRange(CtiCCMonitorPointPtr & oorPoint);
     bool areOtherMonitorPointResponsesOk(long mPointID, CtiCCCapBank* potentialCap, int action);
     double computeRegression( CtiTime time );
     string createTextString(const string& controlMethod, int control, double controlValue, double monitorValue);
@@ -339,7 +339,7 @@ public:
     bool capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents,
                                                  long minConfirmPercent, long failPercent);
     CtiCCFeeder& addAllFeederPointsToMsg(std::set<long>& pointAddMsg);
-    CtiCCCapBank* getMonitorPointParentBank(CtiCCMonitorPointPtr point);
+    CtiCCCapBank* getMonitorPointParentBank(const CtiCCMonitorPoint & point);
 
     bool isDataOldAndFallBackNecessary(string controlUnits);
 
