@@ -23,10 +23,17 @@ public class PointData extends com.cannontech.message.util.Message implements Po
     private long millis;
 
     //Tags from yukon-server common/include/pointdefs.h
-    private static final long TAG_POINT_DO_NOT_REPORT = 0x00000200;        // Do not route this pointData onto others	
-    private static final long TAG_POINT_MUST_ARCHIVE = 0x00002000;        // This data will archive no matter how the point is set up
-    private static final long TAG_POINT_LOAD_PROFILE_DATA = 0x00008000;        // This data will archive to raw point history
-    private static final long TAG_POINT_OLD_TIMESTAMP = 0x00100000;
+  //private static final long TAG_POINT_DATA_TIMESTAMP_VALID = 0x00000100;  // This point data message's timestamp comes from the device! (SOE data)
+  //private static final long TAG_POINT_DATA_UNSOLICITED     = 0x00000200;  // This point data message was an unsolicited report from a device
+  //private static final long TAG_POINT_MOA_REPORT           = 0x00000400;  // This point data message is the result of a registration
+  //private static final long TAG_POINT_DELAYED_UPDATE       = 0x00000800;  // Dispatch delay this point data until the time specified in the message!
+
+  //private static final long TAG_POINT_FORCE_UPDATE         = 0x00001000;  // Dispatch will no matter what copy this into his RT memory
+    private static final long TAG_POINT_MUST_ARCHIVE         = 0x00002000;  // This data will archive no matter how the point is set up
+  //private static final long TAG_POINT_MAY_BE_EXEMPTED      = 0x00004000;  // This data may be exempted from propagation if the value element has not changed
+    private static final long TAG_POINT_LOAD_PROFILE_DATA    = 0x00008000;  // This data will archive to raw point history
+
+    private static final long TAG_POINT_OLD_TIMESTAMP        = 0x00100000;  // The timestamp on this point is older than the most recent timestamp.
 
     // Point Types
     /* DEFINED IN com.cannontech.database.data.point.PointTypes */
@@ -112,7 +119,7 @@ public class PointData extends com.cannontech.message.util.Message implements Po
      * bitfield value, such as when they are received in a message.<br>
      * If you want to set or clear individual tags, such as Load Profile Data or Must Archive, you 
      * should use the setTags...() family of methods instead.
-     * @see setTagsLoadProfileData(), setTagsMustArchive(), setTagsDoNotReport() 
+     * @see setTagsLoadProfileData(), setTagsMustArchive()
      * @param newTags all point tags as a bitfield
      */
     public void setTags(long newTags) {
@@ -162,14 +169,6 @@ public class PointData extends com.cannontech.message.util.Message implements Po
             tags |= TAG_POINT_LOAD_PROFILE_DATA;
         } else {
             tags &= ~TAG_POINT_LOAD_PROFILE_DATA;
-        }
-    }
-
-    public void setTagsDoNotReport(boolean b) {
-        if (b) {
-            tags |= TAG_POINT_DO_NOT_REPORT;
-        } else {
-            tags &= ~TAG_POINT_DO_NOT_REPORT;
         }
     }
 }

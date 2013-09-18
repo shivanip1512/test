@@ -1012,7 +1012,6 @@ public Vector parseAndCalculateRawPointHistories(Vector rawPointHistoryVectorOfV
 				pointDataMsg.setPointQuality(PointQuality.Normal);
 				pointDataMsg.setType(PointTypes.CALCULATED_POINT);
 				pointDataMsg.setTagsLoadProfileData(true);
-				pointDataMsg.setTagsDoNotReport(true);
 				pointDataMsg.setStr("Calc Historical");
 
 				returnVector.addElement(pointDataMsg);
@@ -1031,8 +1030,6 @@ public Vector parseAndCalculateRawPointHistories(Vector rawPointHistoryVectorOfV
 	//DONE HERE>>>>
 	//CTILogger.info("EXIT parseAndCalculateRawPointHistories");
 	//Make the last PointData in the vector have the load profile tag only on it....this should NOW route to all listeners! (Per Corey)
-	if( pointDataMsg != null)
-		pointDataMsg.setTagsDoNotReport(false);
 	
 	for (int i = 0; i < returnVector.size(); i++)
 	{
