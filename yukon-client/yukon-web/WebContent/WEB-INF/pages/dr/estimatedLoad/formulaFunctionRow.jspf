@@ -121,6 +121,11 @@
                         ${fn:escapeXml(pointNames[formulaBean.functions[functionIndex].inputPointId])}
                     </tags:nameValueStacked>
                 </c:if>
+                <c:if test="${formulaBean.functions[functionIndex].tempType or formulaBean.functions[functionIndex].humidityType}">
+                    <tags:nameValueStacked nameKey=".weatherLocation">
+                        ${fn:escapeXml(pointNames[formulaBean.functions[functionIndex].inputPointId])}
+                     </tags:nameValueStacked>
+                </c:if>
             </cti:displayForPageEditModes>
         </div>
         <div class="column two">

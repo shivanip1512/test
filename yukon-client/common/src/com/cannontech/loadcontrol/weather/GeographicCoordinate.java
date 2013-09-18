@@ -12,7 +12,7 @@ public final class GeographicCoordinate {
     }
 
     /**
-     * Calculates distance in km using Haversine formula.
+     * Calculates distance in miles using Haversine formula.
      * 
      * @return distance in miles
      */

@@ -21,9 +21,9 @@
                 pathOrName="tables[${dummyEntryRow ? '' : tableIndex}].entries[${dummyEntryRow ? '' : entryIndex}].key"/>
         </div>
     </div>
-    <div class="column two nogutter fr" style="position:relative">
-        <div style="position:absolute; top:1.65em; left:-2em">
-             <i class="icon icon-arrow-right fl" style="margin-top:.35em"></i>
+    <div class="outputColumnContainer column two nogutter fr">
+        <div class="outputColumn">
+             <i class="inputOutputArrow icon icon-arrow-right fl"></i>
              <div class="fr">
                 <div class="f-drFormula-timeInput_${dummyEntryRow ? '' : tableIndex}"
                     style="${timeInput ? '' : 'display:none'}">
@@ -39,7 +39,7 @@
                 </div>
             </div>
         </div>
-        <div style="position:absolute; top:1.65em; right:0em">
+        <div class="outputColumnRemoveBtn">
             <cti:button nameKey="removeEntry"
                     icon="icon-cross"
                     renderMode="image"

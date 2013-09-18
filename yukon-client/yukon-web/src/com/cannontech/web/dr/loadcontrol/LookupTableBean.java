@@ -2,6 +2,7 @@ package com.cannontech.web.dr.loadcontrol;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.joda.time.LocalTime;
@@ -60,6 +61,11 @@ public class LookupTableBean {
                 beans.add(new LookupTableBean(table));
             }
         }
+        Collections.sort(beans, new Comparator<LookupTableBean>() {
+            @Override public int compare(LookupTableBean f1, LookupTableBean f2) {
+                return f1.getName().compareTo(f2.getName());
+            }
+        });
         return beans;
     }
 

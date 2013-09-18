@@ -1,6 +1,8 @@
 package com.cannontech.web.dr.loadcontrol;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import com.cannontech.dr.estimatedload.FormulaFunction;
@@ -40,6 +42,11 @@ public class FunctionBean {
         for (FormulaFunction function : functions) {
             beans.add(new FunctionBean(function));
         }
+        Collections.sort(beans, new Comparator<FunctionBean>() {
+            @Override public int compare(FunctionBean f1, FunctionBean f2) {
+                return f1.getName().compareTo(f2.getName());
+            }
+        });
         return beans;
     }
 

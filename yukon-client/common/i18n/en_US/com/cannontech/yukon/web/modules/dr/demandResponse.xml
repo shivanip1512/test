@@ -642,7 +642,7 @@ Valid inputs include only decimal values. S & W are negative. (e.g. 37&#176;44'5
 <entry key="yukon.web.modules.dr.formula.value">Value</entry>
 <entry key="yukon.web.modules.dr.formula.VIEW.pageDescription">{0}</entry>
 <entry key="yukon.web.modules.dr.formula.VIEW.pageName">Formula</entry>
-<entry key="yukon.web.modules.dr.formula.weatherLocation">Weather Location</entry>
+<entry key="yukon.web.modules.dr.formula.weatherLocation">Location</entry>
 
 <!-- GearControlMethod.java -->
 <entry key="yukon.web.modules.dr.gearControlMethod.TimeRefresh">Time Refresh</entry>
