@@ -324,6 +324,47 @@ BOOST_AUTO_TEST_CASE( test_dev_rfn420centron_putconfig_tou_schedule_badparam )
     }
 }
 
+BOOST_AUTO_TEST_CASE( test_dev_rfn420centron_putconfig_tou_enable )
+{
+    test_Rfn420CentronDevice centron;
+
+    CtiCommandParser parse("putconfig tou enable");
+
+    BOOST_CHECK_EQUAL( NoError, centron.ExecuteRequest(&request, parse, retList, rfnRequests) );
+    BOOST_CHECK_EQUAL( 0, retList.size() );
+    BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
+
+    Commands::RfnCommandSPtr command = rfnRequests.front();
+
+    Commands::RfnCommand::RfnRequest rcv = command->executeCommand( execute_time );
+
+    std::vector<unsigned char> exp = boost::assign::list_of
+            (0x60)(0x01)(0x00);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
+                                   exp.begin() , exp.end() );
+}
+
+BOOST_AUTO_TEST_CASE( test_dev_rfn420centron_putconfig_tou_disable )
+{
+    test_Rfn420CentronDevice centron;
+
+    CtiCommandParser parse("putconfig tou disable");
+
+    BOOST_CHECK_EQUAL( NoError, centron.ExecuteRequest(&request, parse, retList, rfnRequests) );
+    BOOST_CHECK_EQUAL( 0, retList.size() );
+    BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
+
+    Commands::RfnCommandSPtr command = rfnRequests.front();
+
+    Commands::RfnCommand::RfnRequest rcv = command->executeCommand( execute_time );
+
+    std::vector<unsigned char> exp = boost::assign::list_of
+            (0x60)(0x02)(0x00);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
+                                   exp.begin() , exp.end() );
+}
 
 BOOST_AUTO_TEST_CASE( test_dev_rfn420centron_getconfig_tou_schedule )
 {
