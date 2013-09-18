@@ -75,9 +75,7 @@
     <div class="outer">
         <div class="inner">
             <div class="toolbar">
-                <form accept-charset="ISO-8859-1" enctype="application/x-www-form-urlencoded" method="get" action="/search" class="yukon-search-form">
-                    <input type="text" placeholder="<cti:msg2 key='yukon.common.search.placeholder'/>" role="search" name="q" class="search-field">
-                </form>
+                <cti:outputContent writable="${searchRenderer}"/>
                 <cti:button id="yukon_alert_button" classes="action dn" label="0"/>
                 <cm:dropdown containerCssClass="b-user-menu fl" icon="icon-user" label="${fn:escapeXml(displayName)}" type="button">
                     <cti:checkRolesAndProperties value="ADMIN_SUPER_USER">
