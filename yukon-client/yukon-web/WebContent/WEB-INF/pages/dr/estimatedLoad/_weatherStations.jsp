@@ -46,9 +46,11 @@
         <form:form id="saveWeatherLocationForm" commandName="weatherLocationBean" action="saveWeatherLocation">
             <tags:hidden path="latitude"/>
             <tags:hidden path="longitude"/>
-            <tags:nameValueStacked nameKey=".name">
+            <h4><i:inline key=".name"/></h4>
+            <div class="stacked">
                 <tags:input path="name" size="40"/>
-            </tags:nameValueStacked>
+            </div>
+            <div><i:inline key=".searchResultInfo"/></div>
             <h4><i:inline key=".weatherStations"/></h4>
             <c:forEach varStatus="status" var="station" items="${weatherStationResults}">
                 <c:set var="label" value="${station.stationDesc} - ${distanceToStation[station.stationId]}"/>

@@ -554,6 +554,7 @@
 <entry key="yukon.web.modules.dr.estimatedLoad.noGears">No gears</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.noWeatherLocations">No Weather Locations</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.outdatedData">Outdated or no Data</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.searchResultInfo">Here are the five closest NOAA weather stations available including the distance from requested coordinate.</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.success.removedWeatherLocation">Weather location removed successfully</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.stationDescription">Station Description</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.stationId">Station Id</entry>
