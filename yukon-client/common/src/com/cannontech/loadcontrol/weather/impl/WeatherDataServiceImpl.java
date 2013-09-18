@@ -4,11 +4,14 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoInfo;
 import com.cannontech.common.pao.PaoType;
@@ -31,6 +34,8 @@ import com.cannontech.loadcontrol.weather.WeatherObservation;
 
 public class WeatherDataServiceImpl implements WeatherDataService {
 
+    private Logger log = YukonLogManager.getLogger(WeatherDataServiceImpl.class);
+
     @Autowired private PaoDao paoDao;
     @Autowired private StaticPaoInfoDao staticPaoInfoDao;
     @Autowired private PaoPersistenceService paoPersistenceService;
@@ -39,18 +44,13 @@ public class WeatherDataServiceImpl implements WeatherDataService {
     private DecimalFormat doubleFormat = new DecimalFormat("#.#####");
 
     @Override
-    public WeatherLocation getWeatherLocationForStationId(String weatherStationId) {
-        Integer paoId = staticPaoInfoDao.getPaoIdForKeyValue(PaoInfo.WEATHER_LOCATION_STATIONID, weatherStationId);
+    public WeatherLocation getWeatherLocationForPao(int paoId) {
         LiteYukonPAObject pao = paoDao.getLiteYukonPAO(paoId);
-
         return createWeatherLocationFromPao(pao);
     }
 
     @Override
-    public WeatherObservation getCurrentWeatherObservation(String weatherStationId) {
-
-        WeatherLocation weatherLocation = getWeatherLocationForStationId(weatherStationId);
-
+    public WeatherObservation getCurrentWeatherObservation(WeatherLocation weatherLocation) {
         PointValueQualityHolder tempertureValue = dynamicDataSource.getPointValue(weatherLocation.getTempPoint().getLiteID());
         PointValueQualityHolder humidityValue = dynamicDataSource.getPointValue(weatherLocation.getHumidityPoint().getLiteID());
 
@@ -80,7 +80,13 @@ public class WeatherDataServiceImpl implements WeatherDataService {
       List<WeatherLocation> weatherDevices = new ArrayList<>();
 
       for (LiteYukonPAObject pao : paos) {
-          weatherDevices.add(createWeatherLocationFromPao(pao));
+          WeatherLocation weatherLocation = createWeatherLocationFromPao(pao);
+          if (weatherLocation != null) {
+              weatherDevices.add(weatherLocation);
+          } else {
+              log.error("Pao with id: " + pao.getPaoIdentifier().getPaoId()
+                        + " is missing StationId from StaticPaoInfo. Cannot use this pao WEATHER_LOCATION PaoType.");
+          }
       }
 
       return weatherDevices;
@@ -92,6 +98,7 @@ public class WeatherDataServiceImpl implements WeatherDataService {
     }
 
     @Override
+    @Transactional(propagation=Propagation.SUPPORTS)
     public void createWeatherLocation(WeatherLocation weatherLocation) {
 
         CompleteYukonPao weatherPao = new CompleteYukonPao();
@@ -114,18 +121,32 @@ public class WeatherDataServiceImpl implements WeatherDataService {
     }
 
     private WeatherLocation createWeatherLocationFromPao(LiteYukonPAObject pao) {
+        int paoId = pao.getPaoIdentifier().getPaoId();
+
+        String stationId = null;
+        try {
+            stationId = staticPaoInfoDao.getValue(PaoInfo.WEATHER_LOCATION_STATIONID, paoId);
+        } catch (EmptyResultDataAccessException e) {
+            log.debug("Pao with id: " + paoId + " is not a WEATHER_LOCATION PaoType. Missing StationId from StaticPaoInfo");
+        }
+
+        if (stationId == null) {
+            return null;
+        }
+
         String name = pao.getPaoName();
-        String stationId = staticPaoInfoDao.getValue(PaoInfo.WEATHER_LOCATION_STATIONID, pao.getLiteID());
         String lonStr = staticPaoInfoDao.getValue(PaoInfo.WEATHER_LOCATION_LONGITUDE, pao.getLiteID());
         String latStr = staticPaoInfoDao.getValue(PaoInfo.WEATHER_LOCATION_LATITUDE, pao.getLiteID());
+
         GeographicCoordinate coordinate = new GeographicCoordinate(Double.parseDouble(lonStr), Double.parseDouble(latStr));
 
-        PaoIdentifier paoIdentifier = new PaoIdentifier(pao.getLiteID(), PaoType.WEATHER_LOCATION);
+        PaoIdentifier paoIdentifier = new PaoIdentifier(paoId, PaoType.WEATHER_LOCATION);
 
-        LitePoint tempPoint = attributeService.getPointForAttribute(paoIdentifier, BuiltInAttribute.TEMPERATURE);
+        LitePoint temperaturePoint = attributeService.getPointForAttribute(paoIdentifier, BuiltInAttribute.TEMPERATURE);
         LitePoint humidityPoint = attributeService.getPointForAttribute(paoIdentifier, BuiltInAttribute.HUMIDITY);
 
-        WeatherLocation weatherLocation = new WeatherLocation(tempPoint, humidityPoint, name, stationId, coordinate);
+        WeatherLocation weatherLocation
+            = new WeatherLocation(paoId, temperaturePoint, humidityPoint, name, stationId, coordinate);
 
         return weatherLocation;
     }

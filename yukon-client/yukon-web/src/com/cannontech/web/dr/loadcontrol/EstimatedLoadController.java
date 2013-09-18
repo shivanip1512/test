@@ -158,7 +158,7 @@ public class EstimatedLoadController {
             return "dr/estimatedLoad/_weatherStations.jsp";
         }
 
-        WeatherLocation weatherLocation = new WeatherLocation(null, null,
+        WeatherLocation weatherLocation = new WeatherLocation(0, null, null,
                                                               weatherLocationBean.getName(),
                                                               weatherLocationBean.getStationId(),
                                                               requestedCoordinate);

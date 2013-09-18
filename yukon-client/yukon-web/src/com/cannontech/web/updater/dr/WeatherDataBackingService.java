@@ -1,19 +1,22 @@
 package com.cannontech.web.updater.dr;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dynamic.DynamicDataSource;
-import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.loadcontrol.weather.WeatherDataService;
+import com.cannontech.loadcontrol.weather.WeatherLocation;
+import com.cannontech.loadcontrol.weather.WeatherObservation;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.UpdateBackingService;
 
 public class WeatherDataBackingService implements UpdateBackingService {
+    private Logger log = YukonLogManager.getLogger(WeatherDataBackingService.class);
 
     @Autowired private WeatherDataService weatherDataService;
     @Autowired private DynamicDataSource dynamicDataSource;
@@ -25,22 +28,37 @@ public class WeatherDataBackingService implements UpdateBackingService {
         MessageSourceAccessor messageAccessor = resolver.getMessageSourceAccessor(userContext);
         String value = "";
         try {
-            int pointId = getPointId(identifier);
-            PointValueQualityHolder pointValue = dynamicDataSource.getPointValue(pointId);
-            if (pointValue.getPointQuality() != PointQuality.Normal) {
-                value = messageAccessor.getMessage("yukon.web.modules.dr.estimatedLoad.weatherStation.uninitialized");
+            int paoId = getPaoId(identifier);
+            WeatherLocation weatherLocation = weatherDataService.getWeatherLocationForPao(paoId);
+
+            if (weatherLocation == null) {
+                value = messageAccessor.getMessage("yukon.web.defaults.na");
             } else {
-                value = Double.toString(pointValue.getValue());
-                if (isTempField(identifier)) {
-                    value += " " + messageAccessor.getMessage("yukon.web.modules.dr.estimatedLoad.weatherInput.fahrenheitUnit");
-                } else if(isHumidityField(identifier)) {
-                    value += " " + messageAccessor.getMessage("yukon.web.modules.dr.estimatedLoad.weatherInput.humidityUnit");
+                WeatherObservation weatherObs = weatherDataService.getCurrentWeatherObservation(weatherLocation);
+                String localTimestamp = dateFormattingService.format(weatherObs.getTimestamp(),
+                                            DateFormattingService.DateFormatEnum.BOTH,
+                                            userContext);
+                if (isTemperatureField(identifier)) {
+                    Double temperature = weatherObs.getTemperature();
+                    if (temperature != null) {
+                        value = messageAccessor.getMessage("yukon.web.modules.dr.estimatedLoad.weatherInput.fahrenheit", temperature, localTimestamp);
+                    } else {
+                        value = messageAccessor.getMessage("yukon.web.modules.dr.estimatedLoad.weatherInput.noData", localTimestamp);
+                    }
+                } else if (isHumidityField(identifier)) {
+                    Double humidity = weatherObs.getHumidity();
+                    if (humidity != null) {
+                        value = messageAccessor.getMessage("yukon.web.modules.dr.estimatedLoad.weatherInput.humidity", humidity, localTimestamp);
+                    } else {
+                        value = messageAccessor.getMessage("yukon.web.modules.dr.estimatedLoad.weatherInput.noData", localTimestamp);
+                    }
+                } else {
+                    value = messageAccessor.getMessage("yukon.web.defaults.na");
+                    log.error("Identifier: " + identifier + " is invalid for a WEATHER_STATION data updater");
                 }
-                value += " - " + dateFormattingService.format(pointValue.getPointDataTimeStamp(),
-                                                               DateFormattingService.DateFormatEnum.BOTH,
-                                                               userContext);
             }
         } catch(DynamicDataAccessException e) {
+            // dispatch not connected
             value = messageAccessor.getMessage("yukon.web.defaults.na");
         }
 
@@ -53,15 +71,15 @@ public class WeatherDataBackingService implements UpdateBackingService {
         return true;
     }
 
-    private int getPointId(String identifier) {
+    private int getPaoId(String identifier) {
         return Integer.valueOf(identifier.split("\\/")[0]);
     }
 
-    private boolean isTempField(String identifier) {
-        return "temp".equals(identifier.split("\\/")[1]);
+    private boolean isTemperatureField(String identifier) {
+        return "TEMP".equals(identifier.split("\\/")[1]);
     }
 
     private boolean isHumidityField(String identifier) {
-        return "humidity".equals(identifier.split("\\/")[1]);
+        return "HUMIDITY".equals(identifier.split("\\/")[1]);
     }
 }

@@ -217,14 +217,14 @@ public class NoaaWeatherDataServiceImpl implements NoaaWeatherDataService {
             if (relHum == null) {
                 log.info("NOAA Weather Station " + weatherStation.getStationId() + " is missing humidity data and will not be included in requested weather observation.");
             }
-            
+
             Instant timestamp = Instant.now();
             String ts = template.evaluateAsString("observation_time_rfc822");
             SimpleDateFormat inputDF = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
             try {
                 timestamp = new Instant(inputDF.parse(ts));
             } catch (ParseException e) {
-                log.warn("Unable to use timestamp provided by NOAA weather observation. Using now time. ", e);
+                log.error("Unable to use timestamp provided by NOAA weather observation. Using now time.", e);
             }
 
             fullObservation = new WeatherObservation(weatherStation.getStationId(), tempInF, relHum, timestamp);
@@ -251,7 +251,7 @@ public class NoaaWeatherDataServiceImpl implements NoaaWeatherDataService {
         if (!httpProxy.equals("none")) {
             String [] hostAndPort = httpProxy.split(":");
             if(hostAndPort.length != 2) {
-                log.warn("GlobalSettingType = HTTP_PROXY has an invalid value: "
+                log.error("GlobalSettingType = HTTP_PROXY has an invalid value: "
                          + httpProxy
                          + ". Unable to setup proxy settings for NOAA weather data service");
             } else {
@@ -260,7 +260,7 @@ public class NoaaWeatherDataServiceImpl implements NoaaWeatherDataService {
                     int port = Integer.parseInt(httpProxy.split(":")[1]);
                     client.getHostConfiguration().setProxy(host, port);
                 } catch(NumberFormatException e) {
-                    log.warn("GlobalSettingType = HTTP_PROXY has an invalid value: "
+                    log.error("GlobalSettingType = HTTP_PROXY has an invalid value: "
                             + hostAndPort
                             + ". Unable to setup proxy settings for NOAA weather data service", e);
                 }

@@ -4,14 +4,16 @@ import com.cannontech.database.data.lite.LitePoint;
 
 public final class WeatherLocation {
 
+    private final int paoId;
     private final String name;
     private final String stationId;
     private final GeographicCoordinate geoCoordinate;
     private final LitePoint tempPoint;
     private final LitePoint humidityPoint;
 
-    public WeatherLocation(LitePoint tempPoint, LitePoint humidityPoint, String name,
+    public WeatherLocation(int paoId, LitePoint tempPoint, LitePoint humidityPoint, String name,
                            String stationId, GeographicCoordinate geoCoordinate) {
+        this.paoId = paoId;
         this.tempPoint = tempPoint;
         this.humidityPoint = humidityPoint;
         this.name = name;
@@ -37,5 +39,9 @@ public final class WeatherLocation {
 
     public LitePoint getHumidityPoint() {
         return humidityPoint;
+    }
+
+    public int getPaoId() {
+        return paoId;
     }
 }

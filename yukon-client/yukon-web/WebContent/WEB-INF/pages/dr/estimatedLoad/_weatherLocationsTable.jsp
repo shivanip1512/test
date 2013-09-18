@@ -27,14 +27,14 @@
                         <td>${fn:escapeXml(weatherLocation.stationId)}</td>
                         <td>${fn:escapeXml(weatherStations[weatherLocation.stationId].stationDesc)}</td>
                         <td>
-                            <cti:dataUpdaterValue identifier="${weatherLocation.tempPoint.liteID}/temp" type="WEATHER_STATION"/>
+                            <cti:dataUpdaterValue identifier="${weatherLocation.paoId}/TEMP" type="WEATHER_STATION"/>
                         </td>
                         <td>
-                            <cti:dataUpdaterValue identifier="${weatherLocation.humidityPoint.liteID}/humidity" type="WEATHER_STATION"/>
-                            <cti:button id="deleteWeatherLocation_${fn:escapeXml(weatherLocation.stationId)}"
-                                href="removeWeatherLocation?paoId=${weatherLocation.tempPoint.paobjectID}" nameKey="remove"
+                            <cti:dataUpdaterValue identifier="${weatherLocation.paoId}/HUMIDITY" type="WEATHER_STATION"/>
+                            <cti:button id="deleteWeatherLocation_${weatherLocation.paoId}"
+                                href="removeWeatherLocation?paoId=${weatherLocation.paoId}" nameKey="remove"
                                 renderMode="image" icon="icon-cross" classes="fr"/>
-                            <dialog:confirm on="#deleteWeatherLocation_${fn:escapeXml(weatherLocation.stationId)}"
+                            <dialog:confirm on="#deleteWeatherLocation_${weatherLocation.paoId}"
                                  nameKey="confirmDelete" argument="${fn:escapeXml(weatherLocation.name)}"/>
                         </td>
                     </tr>

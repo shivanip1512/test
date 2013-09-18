@@ -562,10 +562,10 @@
 <entry key="yukon.web.modules.dr.estimatedLoad.program.linkText">Program</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.weatherInputs.title">Weather Data Inputs</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.weatherInputs">Weather Inputs</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.weatherInput.fahrenheitUnit">&#176;F</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.weatherInput.humidityUnit">%</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.weatherInput.fahrenheit">{0} &#176;F - {1}</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.weatherInput.humidity">{0} % - {1}</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.weatherInput.noData">No data - {0}</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.weatherStation.milesUnit">m</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.weatherStation.uninitialized">No data</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.weatherStations">Weather Stations</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.weatherStations.search.label">Search</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.weatherStations.search"><![CDATA[

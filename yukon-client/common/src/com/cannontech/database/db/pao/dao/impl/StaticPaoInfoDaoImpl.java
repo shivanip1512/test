@@ -46,15 +46,4 @@ public class StaticPaoInfoDaoImpl implements StaticPaoInfoDao {
         }
         yukonJdbcTemplate.update(sql);
     }
-
-    @Override
-    public Integer getPaoIdForKeyValue(PaoInfo paoInfoKey, String value) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-
-        sql.append("SELECT PAObjectId FROM").append(tableName);
-        sql.append("WHERE InfoKey").eq(paoInfoKey);
-        sql.append("AND Value").eq(value);
-
-        return yukonJdbcTemplate.queryForInt(sql);
-    }
 }
