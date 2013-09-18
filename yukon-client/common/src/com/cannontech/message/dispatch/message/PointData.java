@@ -110,7 +110,7 @@ public class PointData extends com.cannontech.message.util.Message implements Po
     /***
      * This should not generally be used.
      * You are probably looking for the setTags* family of methods, such as
-     * setTagsLoadProfileData() and 
+     * setTagsLoadProfileData(), setTagsMustArchive(), and setTagsDoNotReport(). 
      * @param newTags
      */
     public void setTags(long newTags) {
