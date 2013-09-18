@@ -108,10 +108,12 @@ public class PointData extends com.cannontech.message.util.Message implements Po
     }
 
     /***
-     * This should not generally be used.
-     * You are probably looking for the setTags* family of methods, such as
-     * setTagsLoadProfileData(), setTagsMustArchive(), and setTagsDoNotReport(). 
-     * @param newTags
+     * This should not generally be used.  It is only to be used for setting ALL tags from a raw 
+     * bitfield value, such as when they are received in a message.<br>
+     * If you want to set or clear individual tags, such as Load Profile Data or Must Archive, you 
+     * should use the setTags...() family of methods instead.
+     * @see setTagsLoadProfileData(), setTagsMustArchive(), setTagsDoNotReport() 
+     * @param newTags all point tags as a bitfield
      */
     public void setTags(long newTags) {
         tags = newTags;
