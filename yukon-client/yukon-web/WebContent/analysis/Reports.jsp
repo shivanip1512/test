@@ -31,7 +31,7 @@
 <%@page import="com.cannontech.message.capcontrol.streamable.StreamableCapObject"%><cti:verifyRolesAndProperties value="REPORTING"/>
 
 <%
-	LiteYukonUser lYukonUser = (LiteYukonUser) session.getAttribute(ServletUtils.ATT_YUKON_USER);
+    LiteYukonUser lYukonUser = (LiteYukonUser) session.getAttribute(ServletUtils.ATT_YUKON_USER);
 %>
 <jsp:useBean id="REPORT_BEAN" class="com.cannontech.analysis.gui.ReportBean" scope="session"/>
 <jsp:setProperty name="REPORT_BEAN" property="energyCompanyID" value="<%=(YukonSpringHook.getBean(EnergyCompanyDao.class).getEnergyCompany(lYukonUser)== null?EnergyCompany.DEFAULT_ENERGY_COMPANY_ID:YukonSpringHook.getBean(EnergyCompanyDao.class).getEnergyCompany(lYukonUser).getEnergyCompanyID())%>"/>
@@ -47,34 +47,34 @@
 
 <% 
     REPORT_BEAN.setUserID(lYukonUser.getUserID());
-	String menuSelection = null;
+    String menuSelection = null;
 
-	Object groupType = request.getParameter("groupType");
-	if (groupType == null) {
-	    REPORT_BEAN.setGroupType(ReportGroup.METERING.name());
-	}
+    Object groupType = request.getParameter("groupType");
+    if (groupType == null) {
+        REPORT_BEAN.setGroupType(ReportGroup.METERING.name());
+    }
     final ReportGroup reportGroup = REPORT_BEAN.getReportGroup();
-	if( reportGroup == ReportGroup.ADMINISTRATIVE)
-	    menuSelection = "reports|administrator";
-	else if (reportGroup == ReportGroup.METERING)
-	    menuSelection = "reports|metering";
-	else if ( reportGroup == ReportGroup.STATISTICAL)
-	    menuSelection = "reports|statistical";
-	else if (reportGroup == ReportGroup.LOAD_MANAGEMENT)
-	    menuSelection = "reports|management";
-	else if (reportGroup == ReportGroup.CAP_CONTROL)
-	    menuSelection = "reports|capcontrol";
-	else if (reportGroup == ReportGroup.DATABASE)
-	    menuSelection = "reports|database";
-	else if (reportGroup == ReportGroup.STARS)
-	    menuSelection = "reports|stars";
-	else if (reportGroup == ReportGroup.CCURT)
-	    menuSelection = "reports|cni";
-	else if (reportGroup == ReportGroup.SETTLEMENT)
-	    menuSelection = "reports|settlement";
-	else
-	    menuSelection = "reports";
-	    
+    if( reportGroup == ReportGroup.ADMINISTRATIVE)
+        menuSelection = "reports|administrator";
+    else if (reportGroup == ReportGroup.METERING)
+        menuSelection = "reports|metering";
+    else if ( reportGroup == ReportGroup.STATISTICAL)
+        menuSelection = "reports|statistical";
+    else if (reportGroup == ReportGroup.LOAD_MANAGEMENT)
+        menuSelection = "reports|management";
+    else if (reportGroup == ReportGroup.CAP_CONTROL)
+        menuSelection = "reports|capcontrol";
+    else if (reportGroup == ReportGroup.DATABASE)
+        menuSelection = "reports|database";
+    else if (reportGroup == ReportGroup.STARS)
+        menuSelection = "reports|stars";
+    else if (reportGroup == ReportGroup.CCURT)
+        menuSelection = "reports|cni";
+    else if (reportGroup == ReportGroup.SETTLEMENT)
+        menuSelection = "reports|settlement";
+    else
+        menuSelection = "reports";
+        
 %>
 
 <cti:standardPage module="reporting" title="Reports">
@@ -152,144 +152,144 @@ Event.observe (window, 'load', makeFirstSelectedFilterValueVisible);
 
 function loadTarget(form)
 {
-	var extGroup = form.ext;
-	for (var i = 0; i < extGroup.length; i++)
-	{
-		if( extGroup[i].checked)
-		{
-			if( extGroup[i].value == 'png')
-			{
-				form.target = '_blank';
-				form.REDIRECT.value = '../analysis/reporting_png.jsp';
-			}
-			else
-			{
-				form.target = "";
-			}
-		}
-	}
+    var extGroup = form.ext;
+    for (var i = 0; i < extGroup.length; i++)
+    {
+        if( extGroup[i].checked)
+        {
+            if( extGroup[i].value == 'png')
+            {
+                form.target = '_blank';
+                form.REDIRECT.value = '../analysis/reporting_png.jsp';
+            }
+            else
+            {
+                form.target = "";
+            }
+        }
+    }
 }
 
 function enableDates(value)
 {
-	if(value) {
-		$('calImg_startCal').show();
-		$('calImg_stopCal').show();
-	} else {
-		$('calImg_startCal').hide();
-		$('calImg_stopCal').hide();
-	}
+    if(value) {
+        $('calImg_startCal').show();
+        $('calImg_stopCal').show();
+    } else {
+        $('calImg_startCal').hide();
+        $('calImg_stopCal').hide();
+    }
 
-	$('startCal').disabled = !value;
-	$('stopCal').disabled = !value;
-	$('stopHourID').disabled = !value;
-	$('stopMinuteID').disabled = !value;
-	$('startHourID').disabled = !value;
-	$('startMinuteID').disabled = !value;
+    $('startCal').disabled = !value;
+    $('stopCal').disabled = !value;
+    $('stopHourID').disabled = !value;
+    $('stopMinuteID').disabled = !value;
+    $('startHourID').disabled = !value;
+    $('startMinuteID').disabled = !value;
 }
 
 function checkDates(){
-	var good = false;
-	var startDate = $F('startCal');
-	var stopDate = $F('stopCal');
-	var myregex = /\d{1,2}\/\d{1,2}\/\d{4}/g;
-	if(startDate.match(myregex) && stopDate.match(myregex)){
-		var p = startDate.split("/");
-		var t = stopDate.split("/");
-		var realStartDate = new Date(p[2], (p[0]-1), p[1]);
-		var realStopDate = new Date(t[2], t[0]-1, t[1]);
-		
-		if (jQuery('#startCal')[0].disabled || jQuery('#stopCal')[0].disabled || realStartDate < realStopDate) {
-			loadTarget(document.reportForm);
-		} else {
-			if($('startHourID')) {    //Check that one of the time fields exists 
-	            if(startDate == stopDate){
-	            	var startHour = Number($F('startHourID')); 
-	                var stopHour = Number($F('stopHourID')); 
-	                if(startHour < stopHour){
-	                	loadTarget(document.reportForm);
-	                }else if(startHour == stopHour){
-	                	var startMinute = Number($F('startMinuteID')); 
-	                	var stopMinute = Number($F('stopMinuteID')); 
-	                	if(startMinute >= stopMinute){
-	                		alert("<cti:msg key="yukon.common.error.time.startBeforeStop"/>");
-	                        $('startCal').focus();
-	                        return false;
-	                	}else{
-	                		loadTarget(document.reportForm);
-	                	}
-	                }else {
-	                	alert("<cti:msg key="yukon.common.error.time.startBeforeStop"/>");
-	                    $('startCal').focus();
-	                    return false;
-	                }
-	            }else{
-	            	alert("<cti:msg key="yukon.common.error.date.startBeforeStop"/>");
-	                $('startCal').focus();
-	                return false;
-	            }
-			} else {
-				alert("<cti:msg key="yukon.common.error.date.startBeforeStop"/>");
-				$('startCal').focus();
-				return false;
-			}
-		}
-	} else {
-		alert("<cti:msg key="yukon.common.error.date.oneInvalid"/>");
-		$('startCal').focus();
-		return false;
-	}
+    var good = false;
+    var startDate = $F('startCal');
+    var stopDate = $F('stopCal');
+    var myregex = /\d{1,2}\/\d{1,2}\/\d{4}/g;
+    if(startDate.match(myregex) && stopDate.match(myregex)){
+        var p = startDate.split("/");
+        var t = stopDate.split("/");
+        var realStartDate = new Date(p[2], (p[0]-1), p[1]);
+        var realStopDate = new Date(t[2], t[0]-1, t[1]);
+        
+        if (jQuery('#startCal')[0].disabled || jQuery('#stopCal')[0].disabled || realStartDate < realStopDate) {
+            loadTarget(document.reportForm);
+        } else {
+            if($('startHourID')) {    //Check that one of the time fields exists 
+                if(startDate == stopDate){
+                    var startHour = Number($F('startHourID')); 
+                    var stopHour = Number($F('stopHourID')); 
+                    if(startHour < stopHour){
+                        loadTarget(document.reportForm);
+                    }else if(startHour == stopHour){
+                        var startMinute = Number($F('startMinuteID')); 
+                        var stopMinute = Number($F('stopMinuteID')); 
+                        if(startMinute >= stopMinute){
+                            alert("<cti:msg key="yukon.common.error.time.startBeforeStop"/>");
+                            $('startCal').focus();
+                            return false;
+                        }else{
+                            loadTarget(document.reportForm);
+                        }
+                    }else {
+                        alert("<cti:msg key="yukon.common.error.time.startBeforeStop"/>");
+                        $('startCal').focus();
+                        return false;
+                    }
+                }else{
+                    alert("<cti:msg key="yukon.common.error.date.startBeforeStop"/>");
+                    $('startCal').focus();
+                    return false;
+                }
+            } else {
+                alert("<cti:msg key="yukon.common.error.date.startBeforeStop"/>");
+                $('startCal').focus();
+                return false;
+            }
+        }
+    } else {
+        alert("<cti:msg key="yukon.common.error.date.oneInvalid"/>");
+        $('startCal').focus();
+        return false;
+    }
 }
 
 function makeFirstSelectedFilterValueVisible() {
-	
-	var listbox = $('selectFilterValues');	
+    
+    var listbox = $('selectFilterValues');    
     if(listbox) {
-    	var selectedOptions = new Array();
-    	y=0;
-    		for (x=0;x<listbox.options.length;x++){
-    		if (listbox.options[x].selected){
-    				selectedOptions[y]=x;
-    				y++;
-    		}
-    		} 
-    	listbox.selectedIndex=0;//this and selected=false prompt the listbox to 'wake up'
-    	if (listbox.options.length > 0) {
+        var selectedOptions = new Array();
+        y=0;
+            for (x=0;x<listbox.options.length;x++){
+            if (listbox.options[x].selected){
+                    selectedOptions[y]=x;
+                    y++;
+            }
+            } 
+        listbox.selectedIndex=0;//this and selected=false prompt the listbox to 'wake up'
+        if (listbox.options.length > 0) {
             listbox.options[0].selected=false; 
-    	}
-    	for (y=selectedOptions.length-1;y>-1;y--){//start from the end and work backwards so first selected item is the one scrolled to. 
-    		listbox.options[selectedOptions[y]].selected=true;//select the options required 
-    	}
+        }
+        for (y=selectedOptions.length-1;y>-1;y--){//start from the end and work backwards so first selected item is the one scrolled to. 
+            listbox.options[selectedOptions[y]].selected=true;//select the options required 
+        }
     }
 }
 
 </script>
 <cti:msg key="yukon.common.dateFormatting.DATE" var="dateFormat"/>
 <%
-	java.text.SimpleDateFormat datePart = new java.text.SimpleDateFormat((String)pageContext.getAttribute("dateFormat"));
-	RolePropertyDao rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
-	String bulletImg = "<img src='../WebConfig/" + rolePropertyDao.getPropertyStringValue(YukonRoleProperty.NAV_BULLET_SELECTED, lYukonUser) + "' width='9' height='9'>";
-	String bulletImgExp = "<img src='../WebConfig/" + rolePropertyDao.getPropertyStringValue(YukonRoleProperty.NAV_BULLET_EXPAND, lYukonUser) + "' width='9' height='9'>";
+    java.text.SimpleDateFormat datePart = new java.text.SimpleDateFormat((String)pageContext.getAttribute("dateFormat"));
+    RolePropertyDao rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
+    String bulletImg = "<img src='../WebConfig/" + rolePropertyDao.getPropertyStringValue(YukonRoleProperty.NAV_BULLET_SELECTED, lYukonUser) + "' width='9' height='9'>";
+    String bulletImgExp = "<img src='../WebConfig/" + rolePropertyDao.getPropertyStringValue(YukonRoleProperty.NAV_BULLET_EXPAND, lYukonUser) + "' width='9' height='9'>";
     String connImgMid = "<img src='../WebConfig/" + rolePropertyDao.getPropertyStringValue(YukonRoleProperty.NAV_CONNECTOR_MIDDLE, lYukonUser) + "' width='10' height='12'>";
     String connImgBtm = "<img src='../WebConfig/" + rolePropertyDao.getPropertyStringValue(YukonRoleProperty.NAV_CONNECTOR_BOTTOM, lYukonUser) + "' width='10' height='12'>";
-	
-	String linkHtml = null;
-	String linkImgExp = null;
-	
-	final ReportModelBase<?> model = REPORT_BEAN.getModel();
+    
+    String linkHtml = null;
+    String linkImgExp = null;
+    
+    final ReportModelBase<?> model = REPORT_BEAN.getModel();
     final ReportController controller = REPORT_BEAN.getReportController();
     boolean supportPdf = controller == null ? true : controller.supportsPdf();
 
     String fromURI = request.getRequestURI() + (groupType == null ? "" : "?groupType="+ groupType);
 %>
 
-	  <form name="reportForm" method="post" action="<%=request.getContextPath()%>/servlet/ReportGenerator?" onSubmit="return checkDates()">
-	  <!-- THE EXTRA INPUT TYPES ARE MAKING THE DOWNLOAD DIALOG APPEAR TWO TIMES -->
-	  <input type="hidden" name="REDIRECT" value="<%= fromURI %>">
-	  <input type="hidden" name="REFERRER" value="<%= fromURI %>">
-	  <input type="hidden" name="ecID" value="<%=REPORT_BEAN.getEnergyCompanyID() %>">
-	  <input type="hidden" name="ACTION" value="DownloadReport">
-	  
+      <form name="reportForm" method="post" action="<%=request.getContextPath()%>/servlet/ReportGenerator?" onSubmit="return checkDates()">
+      <!-- THE EXTRA INPUT TYPES ARE MAKING THE DOWNLOAD DIALOG APPEAR TWO TIMES -->
+      <input type="hidden" name="REDIRECT" value="<%= fromURI %>">
+      <input type="hidden" name="REFERRER" value="<%= fromURI %>">
+      <input type="hidden" name="ecID" value="<%=REPORT_BEAN.getEnergyCompanyID() %>">
+      <input type="hidden" name="ACTION" value="DownloadReport">
+      
       <cti:msg key="yukon.web.reportSelection" var="reportSelectionTitle"/>
     <div class="titledContainer boxContainer">
 
@@ -297,15 +297,15 @@ function makeFirstSelectedFilterValueVisible() {
         <div class="content">
             <table style="width:100%;">
               <tr>
-				<td class="columnHeader"><cti:msg key="yukon.web.reports"/></td>
+                <td class="columnHeader"><cti:msg key="yukon.web.reports"/></td>
                 <td class="columnHeader">&nbsp;</td>
                 <td class="columnHeader"><cti:msg key="yukon.common.date.start"/></td>
                 <td class="columnHeader">&nbsp;</td>
                 <td class="columnHeader"><cti:msg key="yukon.common.date.stop"/></td>
                 <td class="columnHeader">&nbsp;</td>
                 <td class="columnHeader"><cti:msg key="yukon.web.format"/></td>
-			  </tr>
-			  <tr>
+              </tr>
+              <tr>
                 <td class="main">&nbsp;</td>
                 <td class="main">&nbsp;</td>
                 <td class="main">
@@ -326,120 +326,120 @@ function makeFirstSelectedFilterValueVisible() {
                 <td class="main">&nbsp;</td>
                 <td class="main">&nbsp;</td>
               </tr>
-			  <tr>			  
+              <tr>
                 <td class="main" width="25%" valign="top" style="padding-left:5; padding-top:5">
-	              <table width="100%" border="0" cellspacing="0" cellpadding="0">
-	                <%if ( REPORT_BEAN.getReportGroup() != null)
-					  {
+                  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <%if ( REPORT_BEAN.getReportGroup() != null)
+                      {
                         Vector <ReportTypes> rptTypes = REPORT_BEAN.getReportTypes();
-						for (ReportTypes reportType : rptTypes){%>
-				    	<tr>
-						  <td class="main">
-						  <input type="radio" name="type" value="<%=reportType%>" <%=(reportType==REPORT_BEAN.getReportType()?"checked":"")%> onclick='document.reportForm.ACTION.value="LoadParameters";document.reportForm.submit();'><font title="<cti:msg key="<%= reportType.getDescriptionKey() %>"/>"><cti:msg key="<%= reportType.getFormatKey() %>"/></font>
-						  </td>
-						</tr>
-					    <%}
-					  } else {%>
-					    <tr>
-						  <td class="main">&nbsp;
-						  </td>
-						</tr>
-					  <%}%>
-				  </table>
-				</td>
+                        for (ReportTypes reportType : rptTypes){%>
+                        <tr>
+                          <td class="main">
+                          <input type="radio" name="type" value="<%=reportType%>" <%=(reportType==REPORT_BEAN.getReportType()?"checked":"")%> onclick='document.reportForm.ACTION.value="LoadParameters";document.reportForm.submit();'><font title="<cti:msg key="<%= reportType.getDescriptionKey() %>"/>"><cti:msg key="<%= reportType.getFormatKey() %>"/></font>
+                          </td>
+                        </tr>
+                        <%}
+                      } else {%>
+                        <tr>
+                          <td class="main">&nbsp;
+                          </td>
+                        </tr>
+                      <%}%>
+                  </table>
+                </td>
                 <td class="main">&nbsp;</td>
-				<td valign="top" style="padding-left:5; padding-top:5">
-				  <table width="100%" border="0" cellspacing="0" cellpadding="0">				
-				    <tr>
-				      <td valign="bottom">
+                <td valign="top" style="padding-left:5; padding-top:5">
+                  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                      <td valign="bottom">
                         <%if( controller != null && controller.useStartStopTimes() ){%><BR><%}%>
-						<dt:date id="startCal" name="startDate" disabled="<%=(model != null && model.useStartDate() ? false : true)%>" value="${REPORT_BEAN.startDate}" />
-					  </td>
-					  <td valign="bottom">&nbsp</td>
-			   		  <%if( controller != null && controller.useStartStopTimes() ){%>
-					  <td align="center">
+                        <dt:date id="startCal" name="startDate" disabled="<%=(model != null && model.useStartDate() ? false : true)%>" value="${REPORT_BEAN.startDate}" />
+                      </td>
+                      <td valign="bottom">&nbsp</td>
+                         <%if( controller != null && controller.useStartStopTimes() ){%>
+                      <td align="center">
                          <div class="fwb">
                            <cti:msg key="yukon.common.time.hour"/>
                          </div>
-					    <select name="startHour" id="startHourID">
-					    <% for (int i = 0; i < 24; i++) {
-						    String iStr = String.valueOf(i);
-						    if( i < 10)	{ iStr = "0" + iStr;}%>
-						    <option value="<%=i%>"><%=iStr%></option>
-						  <%}%>
-						</select>
-					  </td>
-					  <td width="100%" align="center">
+                        <select name="startHour" id="startHourID">
+                        <% for (int i = 0; i < 24; i++) {
+                            String iStr = String.valueOf(i);
+                            if( i < 10)    { iStr = "0" + iStr;}%>
+                            <option value="<%=i%>"><%=iStr%></option>
+                          <%}%>
+                        </select>
+                      </td>
+                      <td width="100%" align="center">
                         <div class="fwb">
                             <cti:msg key="yukon.common.time.min"/>
                         </div>
-					    <select name="startMinute" id="startMinuteID">
-					    <% for (int i = 0; i < 60; i=i+5) {
-						    String iStr = String.valueOf(i);
-							if( i < 10)	{ iStr = "0" + iStr;}%>
-							<option value="<%=i%>"><%=iStr%></option>
-						  <%}%>			  
-						</select>
-				 	  </td>
-					  <%}%>
-			    	</tr>
-			      </table>
-			    </td>
+                        <select name="startMinute" id="startMinuteID">
+                        <% for (int i = 0; i < 60; i=i+5) {
+                            String iStr = String.valueOf(i);
+                            if( i < 10)    { iStr = "0" + iStr;}%>
+                            <option value="<%=i%>"><%=iStr%></option>
+                          <%}%>
+                        </select>
+                       </td>
+                      <%}%>
+                    </tr>
+                  </table>
+                </td>
                 <td class="main">&nbsp;</td>
-				<td valign="top" style="padding-left:5; padding-top:5">
-				  <table width="100%" border="0" cellspacing="0" cellpadding="0">				
-				    <tr>
-					  <td valign="bottom">		
-                        <%if( controller != null && controller.useStartStopTimes() ){%><BR><%}%>	
-                      	<dt:date id="stopCal" name="stopDate" disabled="<%=(model != null && model.useStopDate() ? false : true)%>" value="${REPORT_BEAN.stopDate}" />
-                	  </td>
-					  <td valign="bottom">&nbsp</td>
-					  <% if( controller != null && controller.useStartStopTimes() ){%>
+                <td valign="top" style="padding-left:5; padding-top:5">
+                  <table width="100%" border="0" cellspacing="0" cellpadding="0">                
+                    <tr>
+                      <td valign="bottom">        
+                        <%if( controller != null && controller.useStartStopTimes() ){%><BR><%}%>    
+                          <dt:date id="stopCal" name="stopDate" disabled="<%=(model != null && model.useStopDate() ? false : true)%>" value="${REPORT_BEAN.stopDate}" />
+                      </td>
+                      <td valign="bottom">&nbsp</td>
+                      <% if( controller != null && controller.useStartStopTimes() ){%>
 
-					  <td align="center">
+                      <td align="center">
                         <div class="fwb">
                            <cti:msg key="yukon.common.time.hour"/>
                         </div>
-					    <select name="stopHour" id="stopHourID">
-					    <% for (int i = 0; i < 24; i++) {
-						    String iStr = String.valueOf(i);
-						    if( i < 10)	{ iStr = "0" + iStr;}%>
-						    <option value="<%=i%>"><%=iStr%></option>
-						  <%}%>
-						</select>
-					  </td>
-					  <td width="100%" align="center">
+                        <select name="stopHour" id="stopHourID">
+                        <% for (int i = 0; i < 24; i++) {
+                            String iStr = String.valueOf(i);
+                            if( i < 10)    { iStr = "0" + iStr;}%>
+                            <option value="<%=i%>"><%=iStr%></option>
+                          <%}%>
+                        </select>
+                      </td>
+                      <td width="100%" align="center">
                         <div class="fwb">
                            <cti:msg key="yukon.common.time.min"/>
                         </div>
-					    <select name="stopMinute" id="stopMinuteID">
-					    <% for (int i = 0; i < 60; i=i+5) {
-						    String iStr = String.valueOf(i);
-							if( i < 10)	{ iStr = "0" + iStr;}%>
-							<option value="<%=i%>"><%=iStr%></option>
-						  <%}%>			  
-						</select>
-				 	  </td>
-					  <%}%>
-			    	</tr>
-			      </table>
-			    </td>
-				<td class="main">&nbsp;</td>
-				<td valign="top" class="main" style="padding-left:5; padding-top:5">
-	              <table width="100%" border="0" cellspacing="0" cellpadding="0">
-				    <tr>
-					  <td class="main">
-  						<input type="radio" name="ext" value="csv" checked="checked"><cti:msg key="yukon.web.csv"/><BR>
-						<input <%=(!supportPdf ? " disabled='disabled' " : "")%> type="radio" name="ext" value="pdf"><cti:msg key="yukon.web.pdf"/>
-					  </td>
-					  <td class="main">
-					    <button id="Generate" name="Generate" border="0" alt="Generate" align="middle" <%=(model == null ? "DISABLED style='cursor:default'":"")%> onclick='document.reportForm.ACTION.value="DownloadReport"; return true;'>
-					    	<cti:msg key="yukon.web.generate"/>
-					    </button>
-					  </td>
-					</tr>
-				  </table>
-				</td>
+                        <select name="stopMinute" id="stopMinuteID">
+                        <% for (int i = 0; i < 60; i=i+5) {
+                            String iStr = String.valueOf(i);
+                            if( i < 10)    { iStr = "0" + iStr;}%>
+                            <option value="<%=i%>"><%=iStr%></option>
+                          <%}%>
+                        </select>
+                       </td>
+                      <%}%>
+                    </tr>
+                  </table>
+                </td>
+                <td class="main">&nbsp;</td>
+                <td valign="top" class="main" style="padding-left:5; padding-top:5">
+                  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                      <td class="main">
+                          <input type="radio" name="ext" value="csv" checked="checked"><cti:msg key="yukon.web.csv"/><BR>
+                        <input <%=(!supportPdf ? " disabled='disabled' " : "")%> type="radio" name="ext" value="pdf"><cti:msg key="yukon.web.pdf"/>
+                      </td>
+                      <td class="main">
+                        <button id="Generate" name="Generate" border="0" alt="Generate" align="middle" <%=(model == null ? "DISABLED style='cursor:default'":"")%> onclick='document.reportForm.ACTION.value="DownloadReport"; return true;'>
+                            <cti:msg key="yukon.web.generate"/>
+                        </button>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
               </tr>
               <tr> 
                 <td colspan="7">&nbsp;</td>
@@ -448,8 +448,8 @@ function makeFirstSelectedFilterValueVisible() {
          </div>
          </div>
          
-	  <br>	  
-	  
+      <br>
+      
         <cti:msg key="yukon.web.options" var="optionsTitle"/>
         <div class="titledContainer boxContainer">
             <div class="title-bar"><h3 class="title">${optionsTitle}</h3></div>
@@ -458,15 +458,15 @@ function makeFirstSelectedFilterValueVisible() {
             </div>
         </div>
       
-	  <%if (REPORT_BEAN.hasFilter())
-	  {%>
-		  <br>	  
-		  
-		  <cti:msg key="yukon.web.options" var="filterTitle"/>
+      <%if (REPORT_BEAN.hasFilter())
+      {%>
+          <br>
+          
+          <cti:msg key="yukon.web.options" var="filterTitle"/>
           <div class="titledContainer boxContainer">
             <div class="title-bar"><h3 class="title">${filterTitle}</h3></div>
             <div class="content">
-			<SCRIPT>
+            <SCRIPT>
 
         function changeFilter(filterBy) {
         <%
@@ -482,17 +482,17 @@ function makeFirstSelectedFilterValueVisible() {
         
         <script type="text/javascript">
 
-			function setPickerSelectedPaoNamesFunction(spanId) {
-	              		
-	        	return function(ids) {
-					var selectedNames = $A();
-      				for (var index = 0; index < ids.length; index++) {
-      					selectedNames.push(ids[index].paoName);
-      				}
-      				$(spanId).innerHTML = selectedNames.join(", ");
-      				return true;
-	            }
-			}
+            function setPickerSelectedPaoNamesFunction(spanId) {
+                          
+                return function(ids) {
+                    var selectedNames = $A();
+                      for (var index = 0; index < ids.length; index++) {
+                          selectedNames.push(ids[index].paoName);
+                      }
+                      $(spanId).innerHTML = selectedNames.join(", ");
+                      return true;
+                }
+            }
 
             function setPickerSelectedAccountNumberNamesFunction(spanId) {
                 
@@ -533,175 +533,175 @@ function makeFirstSelectedFilterValueVisible() {
                 }
             }
             
-	    </script>
+        </script>
 
-		<table width='100%' border='0' cellspacing='0' cellpadding='0' align='center'>
-        	<tr>
-            	<td class='main' style='padding-left:5; padding-top:5'>
-					<div id='DivFilterModelType' style='display:true'>
-					
-						<%
-						ReportFilter selectedReportFilter = null;
-						String selectedReportFilterStr = REPORT_BEAN.getSelectedReportFilter();
-						if (selectedReportFilterStr != null) {
-							try {
-								selectedReportFilter = ReportFilter.valueOf(selectedReportFilterStr);
-							} catch (IllegalArgumentException e) {
-								// not valid ReportFilter, ignore
-							}
-						}
-						REPORT_BEAN.setSelectedReportFilter(null); // don't want to have this value persist in the report bean for other reports. Only used to setup filter defaults based on specific url parameter provided this time.
-						%>
-					
-						<select id='filterModelType' name='filterModelType' onChange='changeFilter(this.value)'>
-							<%for (ReportFilter filter : filterObjectsMap.keySet()) {%>
-                    			<option value='<%=filter%>' 
-                    				<% if (selectedReportFilter != null && selectedReportFilter.equals(filter)){%> selected <%}%>  
-                    			>
-                    			<%=filter.getFilterTitle() %>
-                    			</option>
-        					<% } %>
-                		</select>
-					</div>
-        		</td>
-          	</tr>
-          	<tr><td height='9'></td></tr>
-          	<tr>
-            	<td class='main' valign='top' height='19' style='padding-left:5; padding-top:5'>
-        			<% boolean isFirst = true; %>
-        			<%for(ReportFilter filter: filterObjectsMap.keySet()) {%>
-        			
-        				<%
-        				String displayStyle = "none";
-        				if ((selectedReportFilter != null && selectedReportFilter.equals(filter))
-        					|| (selectedReportFilter == null && isFirst)){
-        					displayStyle = "true";
-        				}
-        				%>
-        			
-            			<%if( filter.equals(ReportFilter.METER ) ){%>
-                    		<div id="Div<%=filter.getFilterTitle()%>" style="display:<%=displayStyle%>">
-                    		<input type='text' name="filterMeterValues" style='width:650px;'/>
-                    		<BR><span class='NavText'><cti:msg key="yukon.common.reports.filterMeterValues"/></span><br></div>
-            			<%} else if( filter.equals(ReportFilter.DEVICE)) {%>
-                    		<div id="Div<%=filter.getFilterTitle()%>" style="display:<%=displayStyle%>">
-		                    <input type='text' name='filterDeviceValues' style='width:650px;'/>
-        		            <BR><span class='NavText'><cti:msg key="yukon.common.reports.filterDeviceValues"/></span><br></div>   
-        		            
-        		        <%-- LM PROGRAM PICKER --%>
-        		        <%} else if( filter.equals(ReportFilter.PROGRAM) || filter.equals(ReportFilter.PROGRAM_SINGLE_SELECT)) {%>
-                    		
+        <table width='100%' border='0' cellspacing='0' cellpadding='0' align='center'>
+            <tr>
+                <td class='main' style='padding-left:5; padding-top:5'>
+                    <div id='DivFilterModelType' style='display:true'>
+                    
+                        <%
+                        ReportFilter selectedReportFilter = null;
+                        String selectedReportFilterStr = REPORT_BEAN.getSelectedReportFilter();
+                        if (selectedReportFilterStr != null) {
+                            try {
+                                selectedReportFilter = ReportFilter.valueOf(selectedReportFilterStr);
+                            } catch (IllegalArgumentException e) {
+                                // not valid ReportFilter, ignore
+                            }
+                        }
+                        REPORT_BEAN.setSelectedReportFilter(null); // don't want to have this value persist in the report bean for other reports. Only used to setup filter defaults based on specific url parameter provided this time.
+                        %>
+                    
+                        <select id='filterModelType' name='filterModelType' onChange='changeFilter(this.value)'>
+                            <%for (ReportFilter filter : filterObjectsMap.keySet()) {%>
+                                <option value='<%=filter%>' 
+                                    <% if (selectedReportFilter != null && selectedReportFilter.equals(filter)){%> selected <%}%>  
+                                >
+                                <%=filter.getFilterTitle() %>
+                                </option>
+                            <% } %>
+                        </select>
+                    </div>
+                </td>
+              </tr>
+              <tr><td height='9'></td></tr>
+              <tr>
+                <td class='main' valign='top' height='19' style='padding-left:5; padding-top:5'>
+                    <% boolean isFirst = true; %>
+                    <%for(ReportFilter filter: filterObjectsMap.keySet()) {%>
+                    
+                        <%
+                        String displayStyle = "none";
+                        if ((selectedReportFilter != null && selectedReportFilter.equals(filter))
+                            || (selectedReportFilter == null && isFirst)){
+                            displayStyle = "true";
+                        }
+                        %>
+                    
+                        <%if( filter.equals(ReportFilter.METER ) ){%>
+                            <div id="Div<%=filter.getFilterTitle()%>" style="display:<%=displayStyle%>">
+                            <input type='text' name="filterMeterValues" style='width:650px;'/>
+                            <BR><span class='NavText'><cti:msg key="yukon.common.reports.filterMeterValues"/></span><br></div>
+                        <%} else if( filter.equals(ReportFilter.DEVICE)) {%>
+                            <div id="Div<%=filter.getFilterTitle()%>" style="display:<%=displayStyle%>">
+                            <input type='text' name='filterDeviceValues' style='width:650px;'/>
+                            <BR><span class='NavText'><cti:msg key="yukon.common.reports.filterDeviceValues"/></span><br></div>   
+                            
+                        <%-- LM PROGRAM PICKER --%>
+                        <%} else if( filter.equals(ReportFilter.PROGRAM) || filter.equals(ReportFilter.PROGRAM_SINGLE_SELECT)) {%>
+                            
                         <div id="Div<%=filter.getFilterTitle()%>" style="display:<%=displayStyle%>">
-                    		<input type="hidden" id="selectedPickerValues" name="filterValues">
-                    		
-                    		<span style="font-size:16px;">
-	                    		<%
-	                    		if(filter.isMultiSelect()) {
-	                    		%>
-	                    			
-	                   			<tags:pickerDialog  type="lmProgramPicker"
-	                   								extraArgs="<%=String.valueOf(REPORT_BEAN.getEnergyCompanyID())%>"
-				                                 	id="programPicker" 
-				                                 	multiSelectMode="true"
-				                                 	destinationFieldId="selectedPickerValues"
-				                                 	styleClass="simpleLink"
-				                                 	endAction="setPickerSelectedPaoNamesFunction('selectedProgramNamesSpan');">
-				             	
+                            <input type="hidden" id="selectedPickerValues" name="filterValues">
+                            
+                            <span style="font-size:16px;">
+                                <%
+                                if(filter.isMultiSelect()) {
+                                %>
+                                    
+                                   <tags:pickerDialog  type="lmProgramPicker"
+                                                       extraArgs="<%=String.valueOf(REPORT_BEAN.getEnergyCompanyID())%>"
+                                                     id="programPicker" 
+                                                     multiSelectMode="true"
+                                                     destinationFieldId="selectedPickerValues"
+                                                     styleClass="simpleLink"
+                                                     endAction="setPickerSelectedPaoNamesFunction('selectedProgramNamesSpan');">
+                                 
                                 <cti:icon icon="icon-add"/>
-				             	<cti:msg key="yukon.web.choosePrograms" />
-	                            </tags:pickerDialog>
-	                    			
-	                    		<%	
-	                    		} else {
-	                    		%>
-	                    			
-	                   			<tags:pickerDialog  type="lmProgramPicker"
-	                   								extraArgs="<%=String.valueOf(REPORT_BEAN.getEnergyCompanyID())%>"
-			                                 		id="programPicker" 
-			                                 		multiSelectMode="false"
-			                                 		destinationFieldId="selectedPickerValues"
-			                                 		styleClass="simpleLink"
-			                                 		endAction="setPickerSelectedPaoNamesFunction('selectedProgramNamesSpan');"
-			                                 		immediateSelectMode="true">
-			                                 		
-				             	<cti:icon icon="icon-add"/>
-								<cti:msg key="yukon.web.chooseProgram" />
-	                            </tags:pickerDialog>
-	                    			
-	                    		<%	
-	                    		}
-	                    		%>
-	                             
-	                            <br>
-	                            <span id="selectedProgramNamesSpan" style="font-weight:bold;font-size:12px;"></span>
+                                 <cti:msg key="yukon.web.choosePrograms" />
+                                </tags:pickerDialog>
+                                    
+                                <%    
+                                } else {
+                                %>
+                                    
+                                   <tags:pickerDialog  type="lmProgramPicker"
+                                                       extraArgs="<%=String.valueOf(REPORT_BEAN.getEnergyCompanyID())%>"
+                                                     id="programPicker" 
+                                                     multiSelectMode="false"
+                                                     destinationFieldId="selectedPickerValues"
+                                                     styleClass="simpleLink"
+                                                     endAction="setPickerSelectedPaoNamesFunction('selectedProgramNamesSpan');"
+                                                     immediateSelectMode="true">
+                                                     
+                                 <cti:icon icon="icon-add"/>
+                                <cti:msg key="yukon.web.chooseProgram" />
+                                </tags:pickerDialog>
+                                    
+                                <%    
+                                }
+                                %>
+                                 
+                                <br>
+                                <span id="selectedProgramNamesSpan" style="font-weight:bold;font-size:12px;"></span>
                              
                             </span>
                         </div>
                         <%-- LM GROUP PICKER --%>
                         <%} else if( filter.equals(ReportFilter.LMGROUP)) {%>
                         <div id="Div<%=filter.getFilterTitle()%>" style="display:<%=displayStyle%>">
-                    		<input type="hidden" id="selectedPickerValues" name="filterValues">
-                    		
-                    		<span style="font-size:16px;">
-	                    			
-	                   			<tags:pickerDialog  type="lmGroupPaoPermissionCheckingPicker"
-				                                 	id="groupPicker" 
-				                                 	multiSelectMode="true"
-				                                 	destinationFieldId="selectedPickerValues"
-				                                 	styleClass="simpleLink"
-				                                 	endAction="setPickerSelectedPaoNamesFunction('selectedGroupNamesSpan');">
-				             	
-				             	<cti:icon icon="icon-add"/>
-								<cti:msg key="yukon.web.chooseGroups" />
-	                             </tags:pickerDialog>
-	                            <br>
-	                            <span id="selectedGroupNamesSpan" style="font-weight:bold;font-size:12px;"></span>
+                            <input type="hidden" id="selectedPickerValues" name="filterValues">
+                            
+                            <span style="font-size:16px;">
+                                    
+                                   <tags:pickerDialog  type="lmGroupPaoPermissionCheckingPicker"
+                                                     id="groupPicker" 
+                                                     multiSelectMode="true"
+                                                     destinationFieldId="selectedPickerValues"
+                                                     styleClass="simpleLink"
+                                                     endAction="setPickerSelectedPaoNamesFunction('selectedGroupNamesSpan');">
+                                 
+                                 <cti:icon icon="icon-add"/>
+                                <cti:msg key="yukon.web.chooseGroups" />
+                                 </tags:pickerDialog>
+                                <br>
+                                <span id="selectedGroupNamesSpan" style="font-weight:bold;font-size:12px;"></span>
                              
                             </span>
                         </div>
                         <%-- LM CONTROL AREA PICKER --%>
                         <%} else if( filter.equals(ReportFilter.LMCONTROLAREA)) {%>
-                    	<div id="Div<%=filter.getFilterTitle()%>" style="display:<%=displayStyle%>">
-                    		<input type="hidden" id="selectedPickerValues" name="filterValues">
-                    		
-                    		<span style="font-size:16px;">
-	                    			
-	                   			<tags:pickerDialog  type="lmControlAreaPaoPermissionCheckingPicker"
-				                                 	id="controlAreaPicker" 
-				                                 	multiSelectMode="true"
-				                                 	destinationFieldId="selectedPickerValues"
-				                                 	styleClass="simpleLink"
-				                                 	endAction="setPickerSelectedPaoNamesFunction('selectedControlAreaNamesSpan');">
-				             	
-				             	<cti:icon icon="icon-add"/>
-								<cti:msg key="yukon.web.chooseControlAreas" />
-	                            </tags:pickerDialog>
-	                             
-	                            <br>
-	                            <span id="selectedControlAreaNamesSpan" style="font-weight:bold;font-size:12px;"></span>
+                        <div id="Div<%=filter.getFilterTitle()%>" style="display:<%=displayStyle%>">
+                            <input type="hidden" id="selectedPickerValues" name="filterValues">
+                            
+                            <span style="font-size:16px;">
+                                    
+                                   <tags:pickerDialog  type="lmControlAreaPaoPermissionCheckingPicker"
+                                                     id="controlAreaPicker" 
+                                                     multiSelectMode="true"
+                                                     destinationFieldId="selectedPickerValues"
+                                                     styleClass="simpleLink"
+                                                     endAction="setPickerSelectedPaoNamesFunction('selectedControlAreaNamesSpan');">
+                                 
+                                 <cti:icon icon="icon-add"/>
+                                <cti:msg key="yukon.web.chooseControlAreas" />
+                                </tags:pickerDialog>
+                                 
+                                <br>
+                                <span id="selectedControlAreaNamesSpan" style="font-weight:bold;font-size:12px;"></span>
                              
                             </span>
                         </div>
                         <%-- LM SCENARIO PICKER --%>
                         <%} else if( filter.equals(ReportFilter.LMSCENARIO)) {%>
-                    	<div id="Div<%=filter.getFilterTitle()%>" style="display:<%=displayStyle%>">
-                    		<input type="hidden" id="selectedPickerValues" name="filterValues">
-                    		
-                    		<span style="font-size:16px;">
-	                    			
-	                   			<tags:pickerDialog  type="lmScenarioPaoPermissionCheckingPicker"
-				                                 	id="scenarioPicker" 
-				                                 	multiSelectMode="true"
-				                                 	destinationFieldId="selectedPickerValues"
-				                                 	styleClass="simpleLink"
-				                                 	endAction="setPickerSelectedPaoNamesFunction('selectedScenarioNamesSpan');">
-				             	
-				             	<cti:icon icon="icon-add"/>
-								<cti:msg key="yukon.web.chooseScenarios" />
-	                            </tags:pickerDialog>
-	                             
-	                            <br>
-	                            <span id="selectedScenarioNamesSpan" style="font-weight:bold;font-size:12px;"></span>
+                        <div id="Div<%=filter.getFilterTitle()%>" style="display:<%=displayStyle%>">
+                            <input type="hidden" id="selectedPickerValues" name="filterValues">
+                            
+                            <span style="font-size:16px;">
+                                    
+                                   <tags:pickerDialog  type="lmScenarioPaoPermissionCheckingPicker"
+                                                     id="scenarioPicker" 
+                                                     multiSelectMode="true"
+                                                     destinationFieldId="selectedPickerValues"
+                                                     styleClass="simpleLink"
+                                                     endAction="setPickerSelectedPaoNamesFunction('selectedScenarioNamesSpan');">
+                                 
+                                 <cti:icon icon="icon-add"/>
+                                <cti:msg key="yukon.web.chooseScenarios" />
+                                </tags:pickerDialog>
+                                 
+                                <br>
+                                <span id="selectedScenarioNamesSpan" style="font-weight:bold;font-size:12px;"></span>
                              
                             </span>
                         </div>
@@ -721,7 +721,7 @@ function makeFirstSelectedFilterValueVisible() {
                                                     endAction="setPickerSelectedAccountNumberNamesFunction('selectedAccountNumberNamesSpan');">
                                 
                                 <cti:icon icon="icon-add"/>
-								<cti:msg key="yukon.web.chooseAccountNumbers" />
+                                <cti:msg key="yukon.web.chooseAccountNumbers" />
                                 </tags:pickerDialog>
                                  
                                 <br>
@@ -746,7 +746,7 @@ function makeFirstSelectedFilterValueVisible() {
                                                     endAction="setPickerSelectedSerialNumberNamesFunction('selectedSerialNumberNamesSpan');">
                                 
                                 <cti:icon icon="icon-add"/>
-								<cti:msg key="yukon.web.chooseSerialNumbers" />
+                                <cti:msg key="yukon.web.chooseSerialNumbers" />
                                 </tags:pickerDialog>
                                  
                                 <br>
@@ -771,7 +771,7 @@ function makeFirstSelectedFilterValueVisible() {
                                                     endAction="setPickerSelectedUserNamesFunction('selectedUserNamesSpan');">
                                 
                                 <cti:icon icon="icon-add"/>
-								<cti:msg key="yukon.web.chooseUsers" />
+                                <cti:msg key="yukon.web.chooseUsers" />
                                 </tags:pickerDialog>
                                  
                                 <br>
@@ -781,87 +781,87 @@ function makeFirstSelectedFilterValueVisible() {
                         </div> 
                         
                         <%-- ALL OTHER FILTER OBJECT TYPES --%>   
-            			<% }else {%>
-            				<div id="Div<%=filter.getFilterTitle()%>" style="display:<%=displayStyle%>">
-            				
-                    		<select id="selectFilterValues" name='filterValues' size='10' <%if(filter.isMultiSelect()) {%>multiple<%}%> style='width:350px;'>
-                			<%List objects = filterObjectsMap.get(filter);%>
-                			<%if (objects != null) {
-                				
-                				List<String> selectedReportFilterValues = REPORT_BEAN.getSelectedReportFilterValuesList();
-                				REPORT_BEAN.setSelectedReportFilterValues(null); // don't want to have this value persist in the report bean for other reports. Only used to setup filter defaults based on specific url parameter provided this time.
-                				
-                    			for (Object object : objects) {
-                    				
-                    				String objectStringVal = "";
-                    				
-                        			if( object instanceof String) {
-                        			
-                        				objectStringVal = object.toString();%>
-                        				
-                                    	<option value='<c:out value="<%=objectStringVal%>" />' <% if (selectedReportFilterValues != null && selectedReportFilterValues.contains(objectStringVal)) {%>selected<%} %>>
-                                    		<c:out value="<%=object.toString()%>" />
-                                    	</option>
-                                    	
-                        			<%}else if (object instanceof LiteYukonPAObject) {
-                        			
-                        				objectStringVal = String.valueOf(((LiteYukonPAObject)object).getYukonID());%>
-                        				
-                                    	<option value='<c:out value="<%=objectStringVal%>" />' <% if (selectedReportFilterValues != null && selectedReportFilterValues.contains(objectStringVal)) {%>selected<%} %>>
-                                    		<c:out value="<%=((LiteYukonPAObject)object).getPaoName()%>" />
-                                    	</option>
-                                    	
-                        			<%}else if (object instanceof LiteDeviceMeterNumber){
-                        			
-                        				objectStringVal = String.valueOf(((LiteDeviceMeterNumber)object).getDeviceID());%>
-                        				
-                                    	<option value='<c:out value="<%=objectStringVal%>" />' <% if (selectedReportFilterValues != null && selectedReportFilterValues.contains(objectStringVal)) {%>selected<%} %>>
-                                    		<c:out value="<%=((LiteDeviceMeterNumber)object).getMeterNumber()%>" />
-                                    	</option>
-                                    	
-                        			<%}else if (object instanceof DeviceReadJobLog){
-                        			
-                        				objectStringVal = String.valueOf(((DeviceReadJobLog)object).getDeviceReadJobLogID());%>
-                        				
-                                    	<option value='<c:out value="<%=objectStringVal%>" />' <% if (selectedReportFilterValues != null && selectedReportFilterValues.contains(objectStringVal)) {%>selected<%} %>>
-                                    		<c:out value="<%=((DeviceReadJobLog)object).toString()%>" />
-                                    	</option>
-                                    	
-                                   	<%}else if (object instanceof LiteCapControlStrategy){
-                                   	
-                                   		objectStringVal = ((LiteCapControlStrategy)object).getStrategyName();%>
-                                   		
-                                   		<option value='<c:out value="<%=((LiteCapControlStrategy)object).getStrategyId()%>" />' <% if (selectedReportFilterValues != null && selectedReportFilterValues.contains(objectStringVal)) {%>selected<%} %>>
-                                   			<c:out value="<%=objectStringVal%>" />
-                                   		</option>
-                                   		
-                                   	<%}else if (object instanceof StreamableCapObject){
-                                   	
-                                   		objectStringVal = String.valueOf(((StreamableCapObject)object).getCcId());%>
-                                   		
-                                   		<option value='<c:out value="<%=((StreamableCapObject)object).getCcId()%>" />' <% if (selectedReportFilterValues != null && selectedReportFilterValues.contains(objectStringVal)) {%>selected<%} %>>
-                                   			<c:out value="<%=((StreamableCapObject)object).toString()%>" />
-                                   		</option>
-                        		<%}
-                    			}
-                			}%>
-                        	</select>
+                        <% }else {%>
+                            <div id="Div<%=filter.getFilterTitle()%>" style="display:<%=displayStyle%>">
+                            
+                            <select id="selectFilterValues" name='filterValues' size='10' <%if(filter.isMultiSelect()) {%>multiple<%}%> style='width:350px;'>
+                            <%List objects = filterObjectsMap.get(filter);%>
+                            <%if (objects != null) {
+                                
+                                List<String> selectedReportFilterValues = REPORT_BEAN.getSelectedReportFilterValuesList();
+                                REPORT_BEAN.setSelectedReportFilterValues(null); // don't want to have this value persist in the report bean for other reports. Only used to setup filter defaults based on specific url parameter provided this time.
+                                
+                                for (Object object : objects) {
+                                    
+                                    String objectStringVal = "";
+                                    
+                                    if( object instanceof String) {
+                                    
+                                        objectStringVal = object.toString();%>
+                                        
+                                        <option value='<c:out value="<%=objectStringVal%>" />' <% if (selectedReportFilterValues != null && selectedReportFilterValues.contains(objectStringVal)) {%>selected<%} %>>
+                                            <c:out value="<%=object.toString()%>" />
+                                        </option>
+                                        
+                                    <%}else if (object instanceof LiteYukonPAObject) {
+                                    
+                                        objectStringVal = String.valueOf(((LiteYukonPAObject)object).getYukonID());%>
+                                        
+                                        <option value='<c:out value="<%=objectStringVal%>" />' <% if (selectedReportFilterValues != null && selectedReportFilterValues.contains(objectStringVal)) {%>selected<%} %>>
+                                            <c:out value="<%=((LiteYukonPAObject)object).getPaoName()%>" />
+                                        </option>
+                                        
+                                    <%}else if (object instanceof LiteDeviceMeterNumber){
+                                    
+                                        objectStringVal = String.valueOf(((LiteDeviceMeterNumber)object).getDeviceID());%>
+                                        
+                                        <option value='<c:out value="<%=objectStringVal%>" />' <% if (selectedReportFilterValues != null && selectedReportFilterValues.contains(objectStringVal)) {%>selected<%} %>>
+                                            <c:out value="<%=((LiteDeviceMeterNumber)object).getMeterNumber()%>" />
+                                        </option>
+                                        
+                                    <%}else if (object instanceof DeviceReadJobLog){
+                                    
+                                        objectStringVal = String.valueOf(((DeviceReadJobLog)object).getDeviceReadJobLogID());%>
+                                        
+                                        <option value='<c:out value="<%=objectStringVal%>" />' <% if (selectedReportFilterValues != null && selectedReportFilterValues.contains(objectStringVal)) {%>selected<%} %>>
+                                            <c:out value="<%=((DeviceReadJobLog)object).toString()%>" />
+                                        </option>
+                                        
+                                       <%}else if (object instanceof LiteCapControlStrategy){
+                                       
+                                           objectStringVal = ((LiteCapControlStrategy)object).getStrategyName();%>
+                                           
+                                           <option value='<c:out value="<%=((LiteCapControlStrategy)object).getStrategyId()%>" />' <% if (selectedReportFilterValues != null && selectedReportFilterValues.contains(objectStringVal)) {%>selected<%} %>>
+                                               <c:out value="<%=objectStringVal%>" />
+                                           </option>
+                                           
+                                       <%}else if (object instanceof StreamableCapObject){
+                                       
+                                           objectStringVal = String.valueOf(((StreamableCapObject)object).getCcId());%>
+                                           
+                                           <option value='<c:out value="<%=((StreamableCapObject)object).getCcId()%>" />' <% if (selectedReportFilterValues != null && selectedReportFilterValues.contains(objectStringVal)) {%>selected<%} %>>
+                                               <c:out value="<%=((StreamableCapObject)object).toString()%>" />
+                                           </option>
+                                <%}
+                                }
+                            }%>
+                            </select>
                             <BR>
                             <%if(filter.isMultiSelect()){ %>
-                    			<span class='NavText'><cti:msg key="yukon.web.help.multiSelect"/></span><br>
-                    			<span class='NavText'><cti:msg key="yukon.web.help.rangeSelect"/></span>
+                                <span class='NavText'><cti:msg key="yukon.web.help.multiSelect"/></span><br>
+                                <span class='NavText'><cti:msg key="yukon.web.help.rangeSelect"/></span>
                             <%} else { %>
                                 <span class='NavText'><cti:msg key="yukon.common.reports.selectFilter"/></span>
                             <%} %>
-                      	</div>
-            			<% } %>
-            			<% isFirst = false; %>
-        			<% }%>
-        		</td>
-        	</tr>
+                          </div>
+                        <% } %>
+                        <% isFirst = false; %>
+                    <% }%>
+                </td>
+            </tr>
         </table>
         </div>
         </div>
-		<%}%>	  	  	  
+        <%}%>
       </form>
 </cti:standardPage>
