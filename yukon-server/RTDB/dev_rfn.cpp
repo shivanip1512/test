@@ -179,6 +179,7 @@ int RfnDevice::executeConfigInstall(CtiRequestMsg *pReq, CtiCommandParser &parse
 void RfnDevice::executeConfigInstallSingle(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests, const string & installValue, InstallMethod installMethod )
 {
     int nRet = NoMethod;
+    string error_description;
 
     try
     {
@@ -186,26 +187,8 @@ void RfnDevice::executeConfigInstallSingle(CtiRequestMsg *pReq, CtiCommandParser
     }
     catch( const Commands::RfnCommand::CommandException &ce )
     {
-        const string error_description = "ERROR: " + ce.error_description + ". Config name:" + installValue;
-
-        std::auto_ptr<CtiReturnMsg> commandExceptionError(
-                new CtiReturnMsg(
-                        pReq->DeviceId(),
-                        pReq->CommandString(),
-                        error_description,
-                        ce.error_code,
-                        0,
-                        0,
-                        0,
-                        pReq->GroupMessageId(),
-                        pReq->UserMessageId()));
-
-        retList.push_back(commandExceptionError.release());
-
-        logInfo("had a configuration error using config: " + installValue,
-                __FUNCTION__, __FILE__, __LINE__ );
-
-        return;
+        error_description = ce.error_description;
+        nRet              = ce.error_code;
     }
 
     if( nRet != NoError )
@@ -231,7 +214,12 @@ void RfnDevice::executeConfigInstallSingle(CtiRequestMsg *pReq, CtiCommandParser
         }
         else
         {
-            resultString = "ERROR: NoMethod or invalid config. Config name:" + installValue;
+            if( error_description.empty() )
+            {
+                error_description = "NoMethod or invalid config";
+            }
+
+            resultString = "ERROR: " + error_description + ". Config name:" + installValue;
 
             logInfo("had a configuration error using config: " + installValue,
                     __FUNCTION__, __FILE__, __LINE__ );
