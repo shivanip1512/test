@@ -78,8 +78,8 @@ public class OptOutAdminController {
         		YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_STATUS,
         		YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CHANGE_ENABLE,
         		YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CHANGE_COUNTS,
-        		YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CANCEL_CURRENT);
-    	        // ADMIN_VIEW_OPT_OUT_EVENTS property is checked in the setupScheduledOptOuts method which loads the events. 
+        		YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CANCEL_CURRENT, 
+        		YukonRoleProperty.ADMIN_VIEW_OPT_OUT_EVENTS); 
     	
     	if(yukonEnergyCompanyService.isEnergyCompanyOperator(user)){
         	LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
