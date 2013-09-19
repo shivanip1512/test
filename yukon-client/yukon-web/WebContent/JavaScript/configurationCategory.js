@@ -43,16 +43,17 @@ Yukon.DeviceConfig = (function () {
     },
     
     _determineScheduleAddButtonVisibility = function(num) {
-        var regex = '^schedule' + num + '_time\\d+$',
-            total = jQuery("td").filter(function() { return this.id.match(regex); }).length,
-            schedule1visibles = jQuery("td").filter(function() { 
-                return this.id.match(regex) && jQuery(this.parentElement).is(':visible'); 
+        var total = jQuery("tr").filter(function() { 
+                return jQuery(this).attr("data-schedule-name") === 'schedule' + num; 
+            }).length,
+            scheduleVisibles = jQuery("tr").filter(function() { 
+                return jQuery(this).attr("data-schedule-name") === 'schedule' + num && jQuery(this).is(':visible'); 
             });
 
-        if (schedule1visibles.length < total) {
+        if (scheduleVisibles.length < total) {
             var btn = jQuery('#showNextDivSchedule' + num);
             btn.show();
-            jQuery('#' + schedule1visibles[schedule1visibles.length - 1].id).parent().append(btn);
+            jQuery(scheduleVisibles[scheduleVisibles.length - 1]).append(btn);
         } else {
             jQuery('#showNextDivSchedule' + num).hide();
         }
@@ -78,12 +79,11 @@ Yukon.DeviceConfig = (function () {
         jQuery(".f-addScheduleBtn").click(function() {
             var button = jQuery(this),
                 num = button.attr('data-add-schedule'),
-                regex = '^schedule' + num + '_time\\d+$',
-                hiddenElems = jQuery("td").filter(function() { 
-                    return this.id.match(regex) && !jQuery(this.parentElement).is(':visible'); 
+                hiddenElems = jQuery("tr").filter(function() { 
+                    return jQuery(this).attr('data-schedule-name') === "schedule" + num && !jQuery(this).is(':visible');
                 });
             
-            jQuery('#' + hiddenElems[0].id).parent().show();
+            jQuery(hiddenElems[0]).show();
             _determineScheduleAddButtonVisibility(num);
         });
     },
