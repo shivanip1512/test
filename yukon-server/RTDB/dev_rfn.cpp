@@ -156,7 +156,7 @@ int RfnDevice::executeConfigInstall(CtiRequestMsg *pReq, CtiCommandParser &parse
             return NoMethod;
         }
 
-        for each( const std::pair<std::string, InstallMethod> & p in installMap )
+        for each( const InstallMap::value_type & p in installMap )
         {
             executeConfigInstallSingle( pReq, parse, retList, rfnRequests, p.first, p.second );
         }

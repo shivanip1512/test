@@ -95,7 +95,7 @@ protected:
 
 private:
 
-    bool isTouConfigurationCurrent();
+    bool isTouConfigCurrent();
 };
 
 
