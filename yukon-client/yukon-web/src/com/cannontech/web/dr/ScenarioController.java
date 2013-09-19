@@ -35,6 +35,7 @@ import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.dr.filter.AuthorizedFilter;
@@ -58,6 +59,7 @@ public class ScenarioController extends DemandResponseControllerBase {
     @Autowired private FavoritesDao favoritesDao;
     @Autowired private PaoAuthorizationService paoAuthorizationService;
     @Autowired private ProgramControllerHelper programControllerHelper;
+    @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private ScenarioDao scenarioDao;
     @Autowired private ScenarioService scenarioService;
 
@@ -138,6 +140,7 @@ public class ScenarioController extends DemandResponseControllerBase {
                                ModelMap model, 
                                YukonUserContext userContext) {
         
+        rolePropertyDao.verifyProperty(YukonRoleProperty.SHOW_ASSET_AVAILABILITY, userContext.getYukonUser());
         DisplayablePao scenario = scenarioService.getScenario(assetId);
 
         List<AssetAvailabilityDetails> resultsList = getResultsList(scenario, userContext, null);

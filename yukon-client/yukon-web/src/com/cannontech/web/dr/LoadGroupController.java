@@ -34,6 +34,7 @@ import com.cannontech.common.validator.YukonMessageCodeResolver;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -57,6 +58,7 @@ public class LoadGroupController extends DemandResponseControllerBase {
     @Autowired private LoadGroupService loadGroupService;
     @Autowired private PaoAuthorizationService paoAuthorizationService;
     @Autowired private ProgramService programService;
+    @Autowired private RolePropertyDao rolePropertyDao;
 
     
     private final static Map<Integer, String> shedTimeOptions;
@@ -127,6 +129,7 @@ public class LoadGroupController extends DemandResponseControllerBase {
                                ModelMap model, 
                                YukonUserContext userContext) {
         
+        rolePropertyDao.verifyProperty(YukonRoleProperty.SHOW_ASSET_AVAILABILITY, userContext.getYukonUser());
         DisplayablePao loadGroup = loadGroupService.getLoadGroup(assetId);
 
         List<AssetAvailabilityDetails> resultsList = getResultsList(loadGroup, userContext, null);

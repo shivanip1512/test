@@ -8,7 +8,6 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="dr" page="${type}.assetDetails">
-<cti:checkRolesAndProperties value="SHOW_ASSET_AVAILABILITY">
 
 <input id="assetId" type="hidden" value="${assetId}"/>
 <input id="assetType" type="hidden" value="${type}"/>
@@ -66,5 +65,4 @@
         <dr:assetDetailsResult result="${result}" type="${type}" assetId="${assetId}" itemsPerPage="${itemsPerPage}"/>
     </div>
 
-</cti:checkRolesAndProperties>
 </cti:standardPage>

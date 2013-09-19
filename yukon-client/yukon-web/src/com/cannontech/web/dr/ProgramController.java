@@ -34,6 +34,7 @@ import com.cannontech.common.util.DatedObject;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -66,6 +67,7 @@ public class ProgramController extends ProgramControllerBase {
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private FavoritesDao favoritesDao;
     @Autowired private LoadGroupControllerHelper loadGroupControllerHelper;
+    @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private ScenarioService scenarioService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
@@ -121,6 +123,7 @@ public class ProgramController extends ProgramControllerBase {
                                ModelMap model, 
                                YukonUserContext userContext) {
         
+        rolePropertyDao.verifyProperty(YukonRoleProperty.SHOW_ASSET_AVAILABILITY, userContext.getYukonUser());
         DisplayablePao program = programService.getProgram(assetId);
 
         List<AssetAvailabilityDetails> resultsList = getResultsList(program, userContext, null);

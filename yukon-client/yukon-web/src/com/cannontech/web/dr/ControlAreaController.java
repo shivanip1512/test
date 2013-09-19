@@ -44,6 +44,7 @@ import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.core.service.DurationFormattingService;
@@ -84,6 +85,7 @@ public class ControlAreaController extends DemandResponseControllerBase {
     @Autowired private FavoritesDao favoritesDao;
     @Autowired private PaoAuthorizationService paoAuthorizationService;
     @Autowired private ProgramControllerHelper programControllerHelper;
+    @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private TriggerFieldService triggerFieldService;
     
     
@@ -253,6 +255,7 @@ public class ControlAreaController extends DemandResponseControllerBase {
                                ModelMap model, 
                                YukonUserContext userContext) {
         
+        rolePropertyDao.verifyProperty(YukonRoleProperty.SHOW_ASSET_AVAILABILITY, userContext.getYukonUser());
         DisplayablePao controlArea = controlAreaService.getControlArea(assetId);
 
         List<AssetAvailabilityDetails> resultsList = getResultsList(controlArea, userContext, null);
