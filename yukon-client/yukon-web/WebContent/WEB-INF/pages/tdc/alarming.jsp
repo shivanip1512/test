@@ -13,15 +13,8 @@
             <tfoot></tfoot>
             <tbody>
                 <c:forEach var="alarm" items="${alarms}">
-                    <c:choose>
-                        <c:when test='${unackAlarms.get(alarm) != null}'>
-                            <c:set var="alert" value="alert" />
-                        </c:when>
-                        <c:otherwise>
-                            <c:set var="alert" value="" />
-                        </c:otherwise>
-                    </c:choose>
-                    <tr class="${alert}">
+                    <tr>
+                        <td><span class="${colorStateBoxes.get(alarm.pointId).get(alarm.condition)}">&nbsp;</span></td>
                         <td class="alarm-text"><a href="${allAlarms}" title="${alarm.device.deviceId} ${fn:escapeXml(alarm.deviceName)} : ${fn:escapeXml(alarm.pointName)}">${fn:escapeXml(alarm.textMessage)}</a></td>
                         <td><c:if test='${unackAlarms.get(alarm) != null}'>
                                 <cti:button nameKey="alarm.acknowledge" icon="icon-tick" classes="fr f-ack" pointId="${alarm.pointId}" condition="${alarm.condition}" renderMode="buttonImage" />

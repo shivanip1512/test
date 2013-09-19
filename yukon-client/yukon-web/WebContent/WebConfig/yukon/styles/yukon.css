@@ -968,6 +968,18 @@ input.error {
 	border-color: #d14836;
 }
 
+.stateBox.green {background-color: green;}
+.stateBox.red {background-color: red;}
+.stateBox.white {background-color: white;}
+.stateBox.yellow {background-color: yellow;}
+.stateBox.blue {background-color: blue;}
+.stateBox.cyan {background-color: cyan;}
+.stateBox.black {background-color: black;}
+.stateBox.orange {background-color: orange;}
+.stateBox.magenta {background-color: magenta;}
+.stateBox.gray {background-color: gray;}
+.stateBox.pink {background-color: pink;}
+
 /* DIALOGS */
 .popUpDiv,.widgetPopup,.ui-dialog {
 	background: white;
@@ -1344,7 +1356,8 @@ hr.dashed,.divider.dashed {
 .with-form-controls td .button.naked {
     margin-top: 5px;
 }
-
+@-webkit-keyframes pulse { from {opacity: 0.3;} to {opacity: 1.0;}}
+.pulse {-webkit-animation-name: pulse;-webkit-animation-duration: 1s;-webkit-animation-iteration-count: infinite;-webkit-animation-timing-function: ease-in-out;-webkit-animation-direction: alternate;}
 
 /* DATE/TIME PICKERS */
 .datetimeEntry_wrap {

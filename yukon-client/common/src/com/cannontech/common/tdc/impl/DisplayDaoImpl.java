@@ -1,6 +1,7 @@
 package com.cannontech.common.tdc.impl;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +15,9 @@ import com.cannontech.common.tdc.model.ColumnTypeEnum;
 import com.cannontech.common.tdc.model.Display;
 import com.cannontech.common.tdc.model.DisplayTypeEnum;
 import com.cannontech.common.tdc.model.IDisplay;
+import com.cannontech.common.util.ChunkingSqlTemplate;
+import com.cannontech.common.util.SqlFragmentGenerator;
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.AlarmCatDao;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -21,6 +25,9 @@ import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.message.dispatch.message.Signal;
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 public class DisplayDaoImpl implements DisplayDao {
 
@@ -34,14 +41,15 @@ public class DisplayDaoImpl implements DisplayDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DISPLAYNUM, NAME, TYPE, TITLE, DESCRIPTION");
         sql.append("FROM DISPLAY");
-        sql.append("WHERE TYPE").eq(type.getDatabaseRepresentation());
+        sql.append("WHERE TYPE").eq_k(type);
         sql.append("ORDER BY DISPLAYNUM");
         List<Display> displays = yukonJdbcTemplate.query(sql, displayRowMapper);
         Map<Integer, String> mappedDisplayIdToAlarmCategoryName = mapDisplayIdToAlarmCategoryName();
+        Map<Integer, List<Column>> displayToColumns = getColumnsByDisplayIds(displays);
         for (Display display : displays) {
             /* Substitute display name with the category name */
             subDisplayNameWithCatName(mappedDisplayIdToAlarmCategoryName, display);
-            List<Column> columns = getColumnsByDisplayId(display);
+            List<Column> columns = displayToColumns.get(display.getDisplayId());
             display.setColumns(columns);
         }
         return displays;
@@ -64,9 +72,7 @@ public class DisplayDaoImpl implements DisplayDao {
     }
 
     /**
-     * Method to substitute display name with category name if applicable
-     * @param mappedDisplayIdToAlarmCategoryName
-     * @param display
+     * Substitutes display name with category name if applicable
      */
     private void subDisplayNameWithCatName(Map<Integer, String> mappedDisplayIdToAlarmCategoryName,
                                            Display display) {
@@ -84,7 +90,6 @@ public class DisplayDaoImpl implements DisplayDao {
 
     /**
      * Method to map display ids to category names.
-     * @return
      */
     private Map<Integer, String> mapDisplayIdToAlarmCategoryName() {
 
@@ -107,9 +112,56 @@ public class DisplayDaoImpl implements DisplayDao {
         sql.append("FROM DISPLAYCOLUMNS");
         sql.append("WHERE DISPLAYNUM").eq(display.getDisplayId());
         sql.append("ORDER BY ORDERING");
-        YukonRowMapper<Column> columnRowMapper = createColumnRowMapper(display.getType());
+        Map<Integer, Display> mappedDisplays =
+            Maps.uniqueIndex(Lists.newArrayList(display), new Function<Display, Integer>() {
+                public Integer apply(Display display) {
+                    return display.getDisplayId();
+                }
+            });
+        YukonRowMapper<Column> columnRowMapper = createColumnRowMapper(mappedDisplays);
 
         return yukonJdbcTemplate.query(sql, columnRowMapper);
+    }
+
+    private Map<Integer, List<Column>> getColumnsByDisplayIds(List<Display> displays) {
+        ChunkingSqlTemplate template = new ChunkingSqlTemplate(yukonJdbcTemplate);
+        final List<Integer> ids = Lists.transform(displays, new Function<Display, Integer>() {
+            @Override
+            public Integer apply(Display display) {
+                return display.getDisplayId();
+            }
+        });
+
+        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            public SqlFragmentSource generate(List<Integer> subList) {
+
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT DISPLAYNUM, TITLE, TYPENUM, ORDERING, WIDTH");
+                sql.append("FROM DISPLAYCOLUMNS");
+                sql.append("WHERE DISPLAYNUM").in(ids);
+                sql.append("ORDER BY ORDERING");
+                return sql;
+            }
+        };
+        Map<Integer, Display> mappedDisplays =
+            Maps.uniqueIndex(displays, new Function<Display, Integer>() {
+                public Integer apply(Display display) {
+                    return display.getDisplayId();
+                }
+            });
+
+        Map<Integer, List<Column>> displayToColumns = new HashMap<Integer, List<Column>>();
+        List<Column> columns =
+            template.query(sqlGenerator, ids, createColumnRowMapper(mappedDisplays));
+        for (Column column : columns) {
+            List<Column> columnForDisplay = displayToColumns.get(column.getDisplayId());
+            if (columnForDisplay == null) {
+                columnForDisplay = new ArrayList<Column>();
+            }
+            columnForDisplay.add(column);
+            displayToColumns.put(column.getDisplayId(), columnForDisplay);
+        }
+        return displayToColumns;
     }
 
     private YukonRowMapper<Display> createDisplayRowMapper() {
@@ -140,7 +192,8 @@ public class DisplayDaoImpl implements DisplayDao {
         return mapper;
     }
 
-    private YukonRowMapper<Column> createColumnRowMapper(final DisplayTypeEnum type) {
+ 
+    private YukonRowMapper<Column> createColumnRowMapper(final Map<Integer, Display> mappedDisplays) {
 
         final YukonRowMapper<Column> mapper = new YukonRowMapper<Column>() {
             @Override
@@ -149,7 +202,7 @@ public class DisplayDaoImpl implements DisplayDao {
                 column.setDisplayId(rs.getInt("DISPLAYNUM"));
                 column.setTitle(rs.getStringSafe("TITLE"));
                 column.setOrder(rs.getInt("ORDERING"));
-                if (type == DisplayTypeEnum.CUSTOM_DISPLAYS) {
+                if (mappedDisplays.get(column.getDisplayId()).getType() == DisplayTypeEnum.CUSTOM_DISPLAYS) {
                     column.setType(ColumnTypeEnum.getByTypeId(rs.getInt("TYPENUM")));
                 } else {
                     column.setType(ColumnTypeEnum.getByName(column.getTitle()));

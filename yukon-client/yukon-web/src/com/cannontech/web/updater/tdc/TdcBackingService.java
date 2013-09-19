@@ -42,18 +42,7 @@ public class TdcBackingService implements UpdateBackingService{
         else if(updaterTypeStr.equals("BG_COLOR_POINT")){
             int pointId = Integer.parseInt(idParts[1]);
             int condition = Integer.parseInt(idParts[2]);
-            int count;
-            if(condition == 0){
-                count = tdcService.getUnackAlarmCountForPoint(pointId);
-            }else{
-                count = tdcService.getUnackAlarmCountForPoint(pointId, condition);
-            }
-            if(count > 0){
-                return "alert";
-            }
-            else{
-                return "";
-            }
+            return tdcService.getUnackAlarmColorStateBox(pointId, condition);
         }
         else if(updaterTypeStr.equals("ALARM_POINT")){
             int pointId = Integer.parseInt(idParts[1]);

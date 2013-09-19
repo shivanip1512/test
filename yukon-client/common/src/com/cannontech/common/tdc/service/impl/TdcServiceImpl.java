@@ -4,9 +4,12 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.annotation.PostConstruct;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
@@ -17,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.tdc.dao.DisplayDao;
 import com.cannontech.common.tdc.model.Cog;
@@ -33,6 +37,7 @@ import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
@@ -42,10 +47,13 @@ import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteState;
+import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointLogicalGroups;
 import com.cannontech.database.data.point.PointType;
+import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.message.dispatch.command.service.CommandService;
 import com.cannontech.message.dispatch.command.service.impl.CommandServiceImpl;
 import com.cannontech.message.dispatch.message.PointData;
@@ -67,6 +75,9 @@ public class TdcServiceImpl implements TdcService, IDisplay{
     @Autowired private CommandService commandService;
     @Autowired private AlarmCatDao alarmCatDao;
     @Autowired private DisplayDao displayDao;
+    @Autowired private StateDao stateDao;
+    
+    private  Map<Integer, String> stateColorMap;
     
     private final YukonRowMapper<DisplayData> createCustomRowMapper =
         createCustomDisplayRowMapper();
@@ -83,7 +94,7 @@ public class TdcServiceImpl implements TdcService, IDisplay{
             return -d1.getDate().compareTo(d2.getDate());
         }
     };
-    
+        
     @Override
     public List<DisplayData> getDisplayData(Display display, DateTimeZone timeZone) {
         List<DisplayData> retVal = null;
@@ -209,7 +220,64 @@ public class TdcServiceImpl implements TdcService, IDisplay{
         }
         return count;
     }
-
+    
+    public String getUnackAlarmColorForPoint(int pointId, int condition) {
+        Set<Signal> signals = dynamicDataSource.getSignals(pointId);
+        for (Signal signal : signals) {
+            if (signal.getCondition() == condition && TagUtils.isAlarmUnacked(signal.getTags())
+                && signal.getTags() != Signal.SIGNAL_COND) {
+                return stateColorMap.get((int)signal.getCategoryID()-1);
+            }
+        }
+        return "";
+    }
+    
+    public String getUnackAlarmColorForPoint(int pointId) {
+        Set<Signal> signals = dynamicDataSource.getSignals(pointId);
+        String color = "";
+        for (Signal signal : signals) {
+            if (TagUtils.isAlarmUnacked(signal.getTags())
+                && signal.getTags() != Signal.SIGNAL_COND) {
+                color = stateColorMap.get((int)signal.getCategoryID()-1);
+            }
+        }
+        return color;
+    }
+    
+    @Override
+    public String getUnackAlarmColorStateBox(int pointId, int condition) {
+        String color = "";
+        if (getUnackAlarmCountForPoint(pointId) > 0) {
+            if (condition == 0) {
+                color = getUnackAlarmColorForPoint(pointId);
+            } else {
+                color = getUnackAlarmColorForPoint(pointId, condition);
+            }
+            if (!color.isEmpty()){
+                String classes = "pulse box stateBox ";
+                color = classes + color.toLowerCase();
+            }
+        }
+        return color;
+    }
+    
+    @Override
+    public Map<Integer, Map<Integer, String>> getUnackAlarmColorStateBoxes(List<DisplayData> displayData) {
+        Map<Integer, Map<Integer, String>> alarmColors = new  HashMap<Integer, Map<Integer, String>>();
+        for(DisplayData data: displayData){
+            Map<Integer, String> mapByCondition = alarmColors.get(data.getPointId());
+            if(mapByCondition == null){
+                mapByCondition = new HashMap<Integer, String>();
+            }
+            String color = "";
+            if(getUnackAlarmCountForPoint(data.getPointId()) > 0){
+               color = getUnackAlarmColorStateBox(data.getPointId(), data.getCondition());
+            }
+            mapByCondition.put(data.getCondition(),  color);
+            alarmColors.put(data.getPointId(), mapByCondition);
+        }
+        return alarmColors;
+    }
 
     @Override
     public int getUnackAlarmCountForDisplay(int displayId) {
@@ -218,7 +286,7 @@ public class TdcServiceImpl implements TdcService, IDisplay{
         List<DisplayData> displayData = getDisplayData(display, null);
         for(DisplayData data :displayData){
             // there might be more then one alarm for a point
-            count += getUnackAlarmCountForPoint(data.getPointId());
+            count += getUnackAlarmCountForPoint(data.getPointId(), data.getCondition());
         }
         return count;
     }
@@ -428,5 +496,21 @@ public class TdcServiceImpl implements TdcService, IDisplay{
             }
         };
         return mapper;
+    }
+    
+    @PostConstruct
+    public void init() {
+        LiteStateGroup states = stateDao.getLiteStateGroup(StateGroupUtils.STATEGROUP_ALARM);
+        stateColorMap = Maps.newHashMap();
+        for (LiteState state : states.getStatesList()) {
+            String colorString;
+            int fgColor = state.getFgColor();
+            if (fgColor == Colors.RED_ID) {
+                colorString = "alert"; // yukon.css 
+            } else {
+                colorString = Colors.getColorString(fgColor);
+            }
+            stateColorMap.put(state.getStateRawState(), colorString);
+        }
     }
 }

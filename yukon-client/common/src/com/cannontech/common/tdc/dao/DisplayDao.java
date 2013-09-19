@@ -8,16 +8,12 @@ import com.cannontech.common.tdc.model.DisplayTypeEnum;
 public interface DisplayDao {
 
     /**
-     * Method to a return a display for display type
-     * @param type
-     * @return 
+     * Returns a display for display type
      */
     public List<Display> getDisplayByType(DisplayTypeEnum type);
 
     /**
-     *  Method to a return a list of displays for display type
-     * @param displayId
-     * @return 
+     * Returns a list of displays for display type
      */
     public Display getDisplayById(int displayId);
 }

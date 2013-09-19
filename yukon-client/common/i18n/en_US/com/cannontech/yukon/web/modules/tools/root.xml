@@ -45,9 +45,7 @@
     <entry key="yukon.web.modules.tools.tdc.enableDisable.title">Enable/Disable</entry>
     <entry key="yukon.web.modules.tools.tdc.enableDisable.pointStatus">Point Status</entry>
     <entry key="yukon.web.modules.tools.tdc.enableDisable.deviceStatus">Device Status</entry>
-    <entry key="yukon.web.modules.tools.tdc.enableDisable.cntrPoint">Control On Point</entry>
-    <entry key="yukon.web.modules.tools.tdc.enableDisable.cntrDevice">Control On Device</entry>
-
+    
     <entry key="yukon.web.modules.tools.tdc.altScan.title">Force Alternate Scan Rate</entry>
     <entry key="yukon.web.modules.tools.tdc.altScan.duration">Duration</entry>
 

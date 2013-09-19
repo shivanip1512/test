@@ -23,14 +23,14 @@ public enum AltScanRateEnum implements Displayable{
     DAYS2(172800),
     DAYS5(432000);
     
-    AltScanRateEnum(int duration) {
-        this.duration = duration;
+    AltScanRateEnum(int durationInSeconds) {
+        this.durationInSeconds = durationInSeconds;
     }
     public int getDuration() {
-        return duration;
+        return durationInSeconds;
     }
 
-    private int duration;
+    private int durationInSeconds;
 
     @Override
     public MessageSourceResolvable getMessage() {

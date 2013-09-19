@@ -111,6 +111,7 @@ public class TdcDisplayController {
         model.addAttribute("displayName", display.getName());
         model.addAttribute("display", display);
         model.addAttribute("backingBean", new DisplayBackingBean());
+        model.addAttribute("colorStateBoxes", tdcService.getUnackAlarmColorStateBoxes(displayData));
         return "display.jsp";
     }
 

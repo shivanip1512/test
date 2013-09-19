@@ -321,6 +321,17 @@ div.message, div.userMessage {border-radius:2px; padding: 2px 30px; border-style
 .userMessage.info {background:lightBlue url(../Icons/information.gif) 5px no-repeat;border-color: @primary-color;}
 .userMessage.warn, .userMessage.WARNING {color:#333;background:#FFFFDA url(../Icons/warning.gif) 5px no-repeat; border-color:@orange;}
 input.error {background: pink;border-color: @red;}
+.stateBox.green {background-color: green;}
+.stateBox.red {background-color: red;}
+.stateBox.white {background-color: white;}
+.stateBox.yellow {background-color: yellow;}
+.stateBox.blue {background-color: blue;}
+.stateBox.cyan {background-color: cyan;}
+.stateBox.black {background-color: black;}
+.stateBox.orange {background-color: orange;}
+.stateBox.magenta {background-color: magenta;}
+.stateBox.gray {background-color: gray;}
+.stateBox.pink {background-color: pink;}
 
 /* DIALOGS */
 .popUpDiv, .widgetPopup, .ui-dialog {background:white;position:fixed;box-shadow:0 10px 30px #444; border:solid 1px #bbb; border-radius:2px; z-index: 1000;} 
@@ -401,6 +412,8 @@ hr.dashed, .divider.dashed {border-style: dashed none none none;}
 .front {z-index: 9999;}
 .with-form-controls {line-height: 26px;}
 .with-form-controls td button.naked, .with-form-controls td .button.naked {margin-top: 5px;}
+@-webkit-keyframes pulse { from {opacity: 0.3;} to {opacity: 1.0;}}
+.pulse {-webkit-animation-name: pulse;-webkit-animation-duration: 1s;-webkit-animation-iteration-count: infinite;-webkit-animation-timing-function: ease-in-out;-webkit-animation-direction: alternate;}
 
  /* DATE/TIME PICKERS */
 .datetimeEntry_wrap {display: inline-block; overflow: hidden; background: #ccc; -webkit-border-radius: 2px; -moz-border-radius: 2px; border-radius: 2px; float: left; margin-right: 5px;border: 1px solid #aaa;height: 22px;}

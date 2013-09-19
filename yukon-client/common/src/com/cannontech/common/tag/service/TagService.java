@@ -8,38 +8,24 @@ import com.cannontech.tags.Tag;
 public interface TagService {
 
     /**
-     * Method to add a tag
-     * @param pointId
-     * @param tagId
-     * @param description
-     * @param user
-     * @throws Exception
+     * Adds a tag
      */
     public void createTag(int pointId, int tagId, String description, LiteYukonUser user)
             throws Exception;
 
     /**
-     * Method to remove a tag
-     * @param pointId
-     * @param instanceId
-     * @param user
-     * @throws Exception
+     * Removes a tag
      */
     public void removeTag(int pointId, int instanceId, LiteYukonUser user) throws Exception;
 
     /**
-     * Method to return update a tag
-     * @param tag
-     * @param user
-     * @throws Exception
+     * Updates a tag
      */
 
     public void updateTag(Tag tag, LiteYukonUser user) throws Exception;
 
     /**
-     * Method to return list of tags for a point id
-     * @param pointId
-     * @return
+     * Returns list of tags for a point id
      */
     public List<Tag> getTags(int pointId);
 }

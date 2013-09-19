@@ -1,6 +1,5 @@
 package com.cannontech.common.tdc.model;
 
-import com.cannontech.database.data.lite.LiteYukonUser;
 
 /**
  * @author rneuharth
@@ -68,4 +67,5 @@ public interface IDisplay
 		"Scheduler Client"
 		//"Energy Exchange"
 	};
+
 }

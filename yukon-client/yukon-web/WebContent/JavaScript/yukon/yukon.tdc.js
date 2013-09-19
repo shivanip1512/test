@@ -247,11 +247,12 @@ Yukon.Tdc = (function () {
                 submitFormViaAjax('tdc-popup', 'tagsForm', '/tdc/tagRemove');
             });
             
-            jQuery(document).on('click', '.f-ack-alarm', function() {                
-                data.pointId = pointId;
-                data.condition = condition;
-                jQuery("#"+condition).hide();
-                jQuery("#"+condition).removeClass("f-ack-alarm");
+            jQuery(document).on('click', '.f-ack-alarm', function() {
+                var data = {};
+                data.pointId = jQuery(this).attr("pointId");
+                data.condition = jQuery(this).attr("condition");
+                jQuery("#"+data.condition).hide();
+                jQuery("#"+data.condition).removeClass("f-ack-alarm");
                 jQuery.post('/tdc/acknowledgeAlarm', data).done(function(json) {
                     if (jQuery('.f-ack-alarm').length === 0) jQuery('.f-ack-alarms-for-point').hide();
                 });

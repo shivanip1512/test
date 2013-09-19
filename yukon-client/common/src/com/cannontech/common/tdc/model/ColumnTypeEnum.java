@@ -1,5 +1,7 @@
 package com.cannontech.common.tdc.model;
 
+import java.util.Map;
+
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
@@ -16,7 +18,7 @@ public enum ColumnTypeEnum {
     DEVICE_ID(8, "Device ID"),
     POINT_VALUE(9, "Point Value"),
     POINT_QUALITY(10, "Point Quality"),
-    POINT_TIME_STAMP(11, "Point Time Stamp"),
+    POINT_TIME_STAMP(11, "Point Timestamp"),
     U_OF_M(12, "UofM"),
     STATE(13, "State"),
     
@@ -28,8 +30,8 @@ public enum ColumnTypeEnum {
     DESCRIPTION(-5, "Description"),
     TAG(-6, "Tag");
     
-    private final static ImmutableMap<String, ColumnTypeEnum> lookupByName;
-    private final static ImmutableMap<Integer, ColumnTypeEnum> lookupByTypeId;
+    private final static Map<String, ColumnTypeEnum> lookupByName;
+    private final static Map<Integer, ColumnTypeEnum> lookupByTypeId;
     static {
         Builder<Integer, ColumnTypeEnum> byTypeIdBuilder =
             ImmutableMap.builder();

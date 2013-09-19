@@ -33,6 +33,7 @@
     <table class="compactResultsTable pointHighlighting has-actions separated">
         <thead>
             <tr>
+                <th></th>
                 <c:forEach var="column" items="${display.columns}">
                     <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnTypeEnum.POINT_VALUE')}">
                         <th></th>
@@ -45,7 +46,14 @@
         <tfoot></tfoot>
         <tbody>
             <c:forEach var="row" items="${displayData}">
-                <tr id="row-${row.pointId}" data-class-updater="TDC/BG_COLOR_POINT/${row.pointId}/${row.condition}">
+                <c:set var="dataVar" value=""/>
+                <c:if test="${display.acknowledge}">
+                    <c:set var="bgColor" value="data-class-updater='TDC/BG_COLOR_POINT/${row.pointId}/${row.condition}'"/>
+                </c:if>
+                <tr id="row-${row.pointId}">
+                    <td>
+                        <span class="${colorStateBoxes.get(row.pointId).get(row.condition)}" ${bgColor}</span>
+                    </td>
                     <c:forEach var="column" items="${display.columns}">
                         <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnTypeEnum.POINT_ID')}">
                             <td>${fn:escapeXml(row.pointId)}</td>

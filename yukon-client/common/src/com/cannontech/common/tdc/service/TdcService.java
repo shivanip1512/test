@@ -1,6 +1,7 @@
 package com.cannontech.common.tdc.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.joda.time.DateTimeZone;
 
@@ -112,4 +113,8 @@ public interface TdcService {
      * @return
      */
     public int getUnackAlarmCountForPoint(int pointId, int condition);
+    
+    public String getUnackAlarmColorStateBox(int pointId, int condition);
+    
+    public Map<Integer, Map<Integer, String>> getUnackAlarmColorStateBoxes(List<DisplayData> displayData);
 }
