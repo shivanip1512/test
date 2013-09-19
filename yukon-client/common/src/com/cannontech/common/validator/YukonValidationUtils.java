@@ -63,9 +63,8 @@ public class YukonValidationUtils extends ValidationUtils {
      */
     public static void checkIsBlankOrExceedsMaxLength(Errors errors, String field, String fieldValue, 
                                                       boolean fieldAllowsNull, int max) {
-        if (!checkIsBlank(errors, field, fieldValue, fieldAllowsNull)) {
-            checkExceedsMaxLength(errors, field, fieldValue, max);
-        }
+        checkIsBlank(errors, field, fieldValue, fieldAllowsNull);
+        checkExceedsMaxLength(errors, field, fieldValue, max);
     }
     
     public static void checkIsPositiveInt(Errors errors, String field, Integer fieldValue) {
