@@ -1,6 +1,14 @@
 package com.cannontech.web.updater.dr;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+import net.sf.json.JSONObject;
+
 import org.apache.log4j.Logger;
+import org.joda.time.Duration;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -17,6 +25,7 @@ import com.cannontech.web.updater.UpdateBackingService;
 
 public class WeatherDataBackingService implements UpdateBackingService {
     private Logger log = YukonLogManager.getLogger(WeatherDataBackingService.class);
+    private String baseKey = "yukon.web.modules.dr.estimatedLoad.weatherInput.";
 
     @Autowired private WeatherDataService weatherDataService;
     @Autowired private DynamicDataSource dynamicDataSource;
@@ -26,40 +35,83 @@ public class WeatherDataBackingService implements UpdateBackingService {
     @Override
     public String getLatestValue(String identifier, long afterDate, YukonUserContext userContext) {
         MessageSourceAccessor messageAccessor = resolver.getMessageSourceAccessor(userContext);
-        String value = "";
-        try {
-            int paoId = getPaoId(identifier);
-            WeatherLocation weatherLocation = weatherDataService.getWeatherLocationForPao(paoId);
 
-            if (weatherLocation == null) {
-                value = messageAccessor.getMessage("yukon.web.defaults.na");
+        int paoId = getPaoId(identifier);
+        WeatherLocation weatherLocation = weatherDataService.findWeatherLocationForPao(paoId);
+
+        if (weatherLocation == null) {
+            if (Field.getFrom(identifier) == Field.JSON_META_DATA) {
+                return JSONObject.fromObject(Collections.singletonMap("invalidPaoError", "true")).toString();
             } else {
-                WeatherObservation weatherObs = weatherDataService.getCurrentWeatherObservation(weatherLocation);
-                String localTimestamp = dateFormattingService.format(weatherObs.getTimestamp(),
-                                            DateFormattingService.DateFormatEnum.BOTH,
-                                            userContext);
-                if (isTemperatureField(identifier)) {
-                    Double temperature = weatherObs.getTemperature();
-                    if (temperature != null) {
-                        value = messageAccessor.getMessage("yukon.web.modules.dr.estimatedLoad.weatherInput.fahrenheit", temperature, localTimestamp);
-                    } else {
-                        value = messageAccessor.getMessage("yukon.web.modules.dr.estimatedLoad.weatherInput.noData", localTimestamp);
-                    }
-                } else if (isHumidityField(identifier)) {
-                    Double humidity = weatherObs.getHumidity();
-                    if (humidity != null) {
-                        value = messageAccessor.getMessage("yukon.web.modules.dr.estimatedLoad.weatherInput.humidity", humidity, localTimestamp);
-                    } else {
-                        value = messageAccessor.getMessage("yukon.web.modules.dr.estimatedLoad.weatherInput.noData", localTimestamp);
-                    }
-                } else {
-                    value = messageAccessor.getMessage("yukon.web.defaults.na");
-                    log.error("Identifier: " + identifier + " is invalid for a WEATHER_STATION data updater");
-                }
+                return messageAccessor.getMessage("yukon.web.defaults.na");
             }
+        }
+
+        WeatherObservation weatherObs;
+        try {
+            weatherObs = weatherDataService.getCurrentWeatherObservation(weatherLocation);
         } catch(DynamicDataAccessException e) {
-            // dispatch not connected
+            if (Field.getFrom(identifier) == Field.JSON_META_DATA) {
+                return JSONObject.fromObject(Collections.singletonMap("dispatchError", "true")).toString();
+            } else {
+                return messageAccessor.getMessage("yukon.web.defaults.na");
+            }
+        }
+
+        String value;
+        switch(Field.getFrom(identifier)) {
+        case HUMIDITY:
+            Double humidity = weatherObs.getHumidity();
+            if (humidity != null) {
+                value = messageAccessor.getMessage(baseKey + "humidity", humidity);
+            } else {
+                value = messageAccessor.getMessage(baseKey + "noData");
+            }
+            break;
+        case TEMPERATURE:
+            Double temperature = weatherObs.getTemperature();
+            if (temperature != null) {
+                value = messageAccessor.getMessage(baseKey + "fahrenheit", temperature);
+            } else {
+                value = messageAccessor.getMessage(baseKey + "noData");
+            }
+            break;
+        case TIMESTAMP:
+            Instant timestamp = weatherObs.getTimestamp();
+            String localTimestamp = dateFormattingService.format(timestamp,
+                                                                 DateFormattingService.DateFormatEnum.BOTH,
+                                                                 userContext);
+            value = messageAccessor.getMessage(baseKey + "timestamp", localTimestamp);
+            break;
+        case JSON_META_DATA:
+            Map<String, String> metaData = new HashMap<>();
+            metaData.put("paoId", Integer.toString(paoId));
+
+            if (weatherObs.getTemperature() == null) {
+                metaData.put("temperature", "nodata");
+            } else {
+                metaData.put("temperature", "valid");
+            }
+
+            if (weatherObs.getHumidity() == null) {
+                metaData.put("humidity", "nodata");
+             } else {
+                 metaData.put("humidity", "valid");
+             }
+
+            if (weatherObs.getTimestamp().isBefore(Instant.now().minus(Duration.standardHours(1)))) {
+                metaData.put("timestamp", "old");
+            } else {
+                metaData.put("timestamp", "valid");
+            }
+
+            value = JSONObject.fromObject(metaData).toString();
+            break;
+        default:
+        case UNKNOWN_FIELD:
             value = messageAccessor.getMessage("yukon.web.defaults.na");
+            log.error("Identifier: " + identifier + " is invalid for a WEATHER_STATION data updater");
+            break;
         }
 
         return value;
@@ -75,11 +127,18 @@ public class WeatherDataBackingService implements UpdateBackingService {
         return Integer.valueOf(identifier.split("\\/")[0]);
     }
 
-    private boolean isTemperatureField(String identifier) {
-        return "TEMP".equals(identifier.split("\\/")[1]);
-    }
-
-    private boolean isHumidityField(String identifier) {
-        return "HUMIDITY".equals(identifier.split("\\/")[1]);
+    static enum Field {
+        TEMPERATURE, HUMIDITY, TIMESTAMP, JSON_META_DATA, UNKNOWN_FIELD
+        ;
+        /** Converts the field part of the identifier to a Field.*/
+        public static Field getFrom(String identifier) {
+            Field field;
+            try {
+                field = Field.valueOf(identifier.split("\\/")[1]);
+            } catch (NullPointerException | IllegalArgumentException e) {
+                field = UNKNOWN_FIELD;
+            }
+            return field;
+        }
     }
 }

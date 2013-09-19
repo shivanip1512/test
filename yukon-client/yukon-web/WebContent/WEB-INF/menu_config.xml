@@ -75,6 +75,9 @@
         <link>/dr/loadGroup/list</link>
       </option>
       <option name="estimatedLoad">
+        <permissions>
+          <masterConfig name="ENABLE_ESTIMATED_LOAD" />
+        </permissions>
         <link>/dr/estimatedLoad/home</link>
       </option>
       <option name="ci">

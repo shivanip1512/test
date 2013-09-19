@@ -491,6 +491,43 @@ Yukon.DrFormula = (function() {
             .done(function(data) {
                 jQuery("#formulaPickerRowGear_"+gearId).html(data).flashYellow(.75);
             });
+        },
+
+        updateWeatherInputFields : function(metaData) {
+            var metaDataObj = JSON.parse(metaData.value);
+            var paoId = metaDataObj.paoId;
+
+            if (metaDataObj.dispatchError) {
+                jQuery("#dispatchError").show();
+                jQuery(".f-drFormula-temperature-field").removeClass("error success").addClass("disabled");
+                jQuery(".f-drFormula-humidity-field").removeClass("error success").addClass("disabled");
+                jQuery(".f-drFormula-timestamp-field").removeClass("error success").addClass("disabled");
+            } else {
+                jQuery("#dispatchError").hide();
+            }
+
+            if (metaDataObj.invalidPaoError) {
+                // A weather location was probably deleted, reload table
+                jQuery("#weatherLocations").load("weatherLocationsTableAjax");
+            }
+
+            if (metaDataObj.humidity !== 'valid') {
+                jQuery("#humidityField_"+paoId).addClass("disabled");
+            } else {
+                jQuery("#humidityField_"+paoId).removeClass("disabled");
+            }
+
+            if (metaDataObj.temperature !== 'valid') {
+                jQuery("#temperatureField_"+paoId).addClass("disabled");
+            } else {
+                jQuery("#temperatureField_"+paoId).removeClass("disabled");
+            }
+
+            if (metaDataObj.timestamp !== 'valid') {
+                jQuery("#timestampField_"+paoId).addClass("error").removeClass("success disabled");
+            } else {
+                jQuery("#timestampField_"+paoId).addClass("success").removeClass("error disabled");
+            }
         }
     };
     return drFormulaModule;

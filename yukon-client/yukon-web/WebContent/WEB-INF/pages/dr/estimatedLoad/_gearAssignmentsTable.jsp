@@ -2,6 +2,7 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <cti:url value="gearAssignmentsPage" var="sortUrl"/>
 
@@ -24,13 +25,13 @@
                 <tbody>
                     <c:forEach var="gearAssignment" items="${pagedGears.resultList}">
                          <tr>
-                             <td width="25%">${gearAssignment.gear.gearName}</td>
+                             <td width="25%">${fn:escapeXml(gearAssignment.gear.gearName)}</td>
                              <td width="25%"><i:inline key="${gearAssignment.gear.controlMethod}"/></td>
                              <td width="25%">
                                 <cti:url var="programUrl" value="/dr/program/detail">
                                     <cti:param name="programId" value="${gearAssignment.gear.deviceId}"/>
                                 </cti:url>
-                                <a href="${programUrl}">${gearPrograms[gearAssignment.gear.deviceId].paoName}</a>
+                                <a href="${programUrl}">${fn:escapeXml(gearPrograms[gearAssignment.gear.deviceId].paoName)}</a>
                              </td>
                              <td width="25%" id="formulaPickerRowGear_${gearAssignment.gear.yukonID}">
                                  <%@ include file="_gearFormulaPicker.jsp" %>

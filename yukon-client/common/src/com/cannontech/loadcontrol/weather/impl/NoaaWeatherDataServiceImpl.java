@@ -78,8 +78,8 @@ public class NoaaWeatherDataServiceImpl implements NoaaWeatherDataService {
 
             int status = client.executeMethod(method);
             if (status != 200) {
-                throw new NoaaWeatherDataServiceException("Failed to retrieve current weather"
-                            + " observation from NOAA webservice. HTTP Status: " + status
+                throw new NoaaWeatherDataServiceException("Failed to retrieve weather station index"
+                            + " from NOAA webservice. HTTP Status: " + status
                             + " for url: " + stationIndexUrl
                             + ". This may be caused by invalid Proxy settings (Http Proxy Yukon configuration setting)");
             }
@@ -89,7 +89,7 @@ public class NoaaWeatherDataServiceImpl implements NoaaWeatherDataService {
             response = documentBuilder.parse(method.getResponseBodyAsStream());
             method.releaseConnection();
         } catch (IOException | ParserConfigurationException | SAXException e) {
-            throw new NoaaWeatherDataServiceException("Unable to populate weather map.", e);
+            throw new NoaaWeatherDataServiceException("Unable to populate weather station map from NOAA HTTP web service.", e);
         } finally {
             if (httpConnection != null) {
                 httpConnection.disconnect();
@@ -102,7 +102,7 @@ public class NoaaWeatherDataServiceImpl implements NoaaWeatherDataService {
     public Map<String, WeatherStation> getAllWeatherStations() {
         // Its rare for NOAA to change station data so reloading the map every 30 days should suffice
         if (!weatherStationMap.isEmpty()
-                && Instant.now().isAfter(lastRefresh.plus(Duration.standardDays(30)))) {
+                && Instant.now().isBefore(lastRefresh.plus(Duration.standardDays(30)))) {
             log.debug("Returning cached weatherStationMap.");
             return weatherStationMap;
         }
@@ -195,8 +195,9 @@ public class NoaaWeatherDataServiceImpl implements NoaaWeatherDataService {
             int status = client.executeMethod(method);
             if (status != 200) {
                 throw new NoaaWeatherDataServiceException("Failed to retrieve current weather"
-                            + " observation from NOAA webservice. HTTP Status: " + status
-                            + " for url: " + weatherStation.getNoaaUrl());
+                        + " observation from NOAA webservice. HTTP Status: " + status
+                        + " for url: " + weatherStation.getNoaaUrl()
+                        + ". This may be caused by invalid Proxy settings (Http Proxy Yukon configuration setting)");
             }
 
             //parse xml response

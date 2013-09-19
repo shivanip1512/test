@@ -9665,6 +9665,8 @@
                 <basicLookup point="Relative Humidity" />
             </attribute>
         </attributes>
+        <tags>
+            <tag name="DB_EDITOR_INCOMPATIBLE"/>
+        </tags>
     </pao>
-    
 </paoDefinitions>

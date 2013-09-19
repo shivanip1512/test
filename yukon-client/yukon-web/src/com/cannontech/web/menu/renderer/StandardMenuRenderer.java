@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.core.io.Resource;
 
+import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -59,7 +60,8 @@ public class StandardMenuRenderer {
 	@Autowired private YukonEnergyCompanyService yecService;
 	@Autowired private GlobalSettingDao gsDao;
 	@Autowired private YukonUserContextMessageSourceResolver resolver;
-	
+    @Autowired private ConfigurationSource configurationSource;
+
 	private Resource menuConfigFile;
 	private final static String messagBase = "yukon.web.menu.";
 	private final static Namespace NS = Namespace.getNamespace("http://yukon.cannontech.com/menus");
@@ -184,7 +186,7 @@ public class StandardMenuRenderer {
     }
     
     /**
-     * Returns true if the element condition is met, element must be one of {@link Permission}.   
+     * Returns true if the element condition is met, element must be one of {@link Permission}.
      */
     private boolean checkPermission(Element permission, LiteYukonUser user) {
 		Permission type = Permission.valueOf(permission.getName());
@@ -195,6 +197,10 @@ public class StandardMenuRenderer {
 			if (rpDao.checkProperty(YukonRoleProperty.valueOf(permission.getAttributeValue("name")), user)) return true;
 		} else if (type == Permission.ecOperator) {
 			if (yecService.isEnergyCompanyOperator(user)) return true;
+		} else if (type == Permission.masterConfig) {
+		    if (configurationSource.getBoolean(permission.getAttributeValue("name"), false)) {
+	              return true;
+		    }
 		} else {
 			/* Not used yet and only supporting booleans, add 'value' to globalSetting element in schema if needed */
 			if (gsDao.getBoolean(GlobalSettingType.valueOf(permission.getAttributeValue("name")))) return true;
@@ -236,6 +242,7 @@ public class StandardMenuRenderer {
     	role,
     	roleProperty,
     	ecOperator,
+    	masterConfig,
     	globalSetting
     }
 }

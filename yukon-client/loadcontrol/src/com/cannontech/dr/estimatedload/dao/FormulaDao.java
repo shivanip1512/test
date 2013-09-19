@@ -43,7 +43,7 @@ public interface FormulaDao {
 
     /** Returns a list of ApplianceCategoryAssignment objects that describe which formula 
      * is assigned to each appliance category id passed in the input parameter list */
-    public List<ApplianceCategoryAssignment> getAssignmentsForApplianceCategories(List<Integer> appCategoryIds);
+    public List<ApplianceCategoryAssignment> getAssignmentsForApplianceCategories(Iterable<Integer> appCategoryIds);
 
     /** Returns an ApplianceCategoryAssignment object that describes which formula is assigned
      * to the given appliance category id. */

@@ -9,8 +9,15 @@
     <c:if test="${empty weatherLocations}">
         <span class="empty-list"><i:inline key=".noWeatherLocations"/></span>
     </c:if>
-
+    <c:if test="${empty weatherStations}">
+        <div class="error">
+            <i:inline key=".error.problemLoadingStationData"/>
+        </div>
+    </c:if>
     <c:if test="${not empty weatherLocations}">
+        <div id="dispatchError" class="error" style="display:none">
+            <i:inline key=".error.dispatchNotConnected"/>
+        </div>
         <table class="compactResultsTable sortable-table">
             <thead>
                 <th><i:inline key=".name"/></th>
@@ -18,6 +25,7 @@
                 <th><i:inline key=".stationDescription"/></th>
                 <th><i:inline key=".temp"/></th>
                 <th><i:inline key=".humidity"/></th>
+                <th><i:inline key=".lastUpdated"/></th>
             </thead>
             <tfoot></tfoot>
             <tbody>
@@ -27,10 +35,23 @@
                         <td>${fn:escapeXml(weatherLocation.stationId)}</td>
                         <td>${fn:escapeXml(weatherStations[weatherLocation.stationId].stationDesc)}</td>
                         <td>
-                            <cti:dataUpdaterValue identifier="${weatherLocation.paoId}/TEMP" type="WEATHER_STATION"/>
+                            <cti:dataUpdaterCallback
+                             function="Yukon.DrFormula.updateWeatherInputFields"
+                             initialize="true"
+                             value="WEATHER_STATION/${weatherLocation.paoId}/JSON_META_DATA" />
+                            <span id="temperatureField_${weatherLocation.paoId}" class="f-drFormula-temperature-field">
+                                <cti:dataUpdaterValue identifier="${weatherLocation.paoId}/TEMPERATURE" type="WEATHER_STATION"/>
+                            </span>
                         </td>
                         <td>
-                            <cti:dataUpdaterValue identifier="${weatherLocation.paoId}/HUMIDITY" type="WEATHER_STATION"/>
+                            <span id="humidityField_${weatherLocation.paoId}" class="f-drFormula-humidity-field">
+                                <cti:dataUpdaterValue identifier="${weatherLocation.paoId}/HUMIDITY" type="WEATHER_STATION"/>
+                            </span>
+                        </td>
+                        <td>
+                            <span id="timestampField_${weatherLocation.paoId}" class="f-drFormula-timestamp-field">
+                               <cti:dataUpdaterValue identifier="${weatherLocation.paoId}/TIMESTAMP" type="WEATHER_STATION"/>
+                            </span>
                             <cti:button id="deleteWeatherLocation_${weatherLocation.paoId}"
                                 href="removeWeatherLocation?paoId=${weatherLocation.paoId}" nameKey="remove"
                                 renderMode="image" icon="icon-cross" classes="fr"/>

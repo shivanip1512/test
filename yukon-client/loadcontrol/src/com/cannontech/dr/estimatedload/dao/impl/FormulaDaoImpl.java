@@ -4,6 +4,7 @@ import java.beans.PropertyEditor;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,8 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.util.ChunkingSqlTemplate;
+import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.LMGearDao;
@@ -66,6 +69,7 @@ public class FormulaDaoImpl implements FormulaDao {
     private static final String lookupTableName = "EstimatedLoadLookupTable";
     private static final String tableEntryTableName = "EstimatedLoadTableEntry";
     private static final String assignmentTableName = "EstimatedLoadFormulaAssignment";
+    private static ChunkingSqlTemplate chunkingTemplate;
 
     @Override
     public List<Formula> getAllFormulas() {
@@ -555,6 +559,7 @@ public class FormulaDaoImpl implements FormulaDao {
                 .setFieldMapper(lookupTableFieldMapper)
                 .setPrimaryKeyField("EstimatedLoadLookupTableId")
                 .setPrimaryKeyValidOver(0);
+        chunkingTemplate = new ChunkingSqlTemplate(yukonJdbcTemplate);
     }
 
     /** Tests for the existence of a given formula by looking for existence of a formula id. */ 
@@ -680,35 +685,39 @@ public class FormulaDaoImpl implements FormulaDao {
             assignmentMap.put(gear.getYukonID(), new GearAssignment(gear, null));
         }
 
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT GearId, EstimatedLoadFormulaId FROM").append(assignmentTableName);
-        sql.append("WHERE GearId").in(gearIds);
-
-        yukonJdbcTemplate.query(sql , new YukonRowCallbackHandler() {
+        chunkingTemplate.query(new SqlFragmentGenerator<Integer>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT GearId, EstimatedLoadFormulaId FROM").append(assignmentTableName);
+                sql.append("WHERE GearId").in(subList);
+                return sql;
+            }
+        },
+        gearIds,
+        new YukonRowCallbackHandler() {
             @Override
             public void processRow(YukonResultSet rs) throws SQLException {
                 int gearId = rs.getInt("GearId");
                 int formulaIdOrNull = rs.getInt("EstimatedLoadFormulaId");
                 Integer formulaId = rs.wasNull() ? null : formulaIdOrNull;
-
                 assignmentMap.put(gearId, new GearAssignment(gears.get(gearId), formulaId));
             }
         });
+
         return new ArrayList<>(assignmentMap.values());
     }
 
     @Override
     public GearAssignment getAssignmentForGear(int gearId) {
-        List<Integer> singleId = new ArrayList<>(1);
-        singleId.add(gearId);
-        return getAssignmentsForGears(singleId).get(0);
+        return getAssignmentsForGears(Collections.singleton(gearId)).get(0);
     }
 
     /**
      * Returns Map&lt;AppCatId, FormulaId(nullable)&gt;
      */
     @Override
-    public List<ApplianceCategoryAssignment> getAssignmentsForApplianceCategories(List<Integer> appCategoryIds) {
+    public List<ApplianceCategoryAssignment> getAssignmentsForApplianceCategories(Iterable<Integer> appCategoryIds) {
         final Map<Integer, ApplianceCategory> appCats = applianceCategoryDao.getByApplianceCategoryIds(appCategoryIds);
 
         final Map<Integer, ApplianceCategoryAssignment> assignmentMap = new HashMap<>();
@@ -716,11 +725,17 @@ public class FormulaDaoImpl implements FormulaDao {
             assignmentMap.put(appCat.getApplianceCategoryId(), new ApplianceCategoryAssignment(appCat, null));
         }
 
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT ApplianceCategoryId, EstimatedLoadFormulaId FROM").append(assignmentTableName);
-        sql.append("WHERE ApplianceCategoryId").in(appCategoryIds);
-
-        yukonJdbcTemplate.query(sql , new YukonRowCallbackHandler() {
+        chunkingTemplate.query(new SqlFragmentGenerator<Integer>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT ApplianceCategoryId, EstimatedLoadFormulaId FROM").append(assignmentTableName);
+                sql.append("WHERE ApplianceCategoryId").in(subList);
+                return sql;
+            }
+        },
+        appCategoryIds,
+        new YukonRowCallbackHandler() {
             @Override
             public void processRow(YukonResultSet rs) throws SQLException {
                 int appCatId = rs.getInt("ApplianceCategoryId");
@@ -730,14 +745,13 @@ public class FormulaDaoImpl implements FormulaDao {
                 assignmentMap.put(appCatId, new ApplianceCategoryAssignment(appCats.get(appCatId), formulaId));
             }
         });
+
         return new ArrayList<>(assignmentMap.values());
     }
 
     @Override
     public ApplianceCategoryAssignment getAssignmentForApplianceCategory(int appCategoryId) {
-        List<Integer> singleId = new ArrayList<>(1);
-        singleId.add(appCategoryId);
-        return getAssignmentsForApplianceCategories(singleId).get(0);
+        return getAssignmentsForApplianceCategories(Collections.singleton(appCategoryId)).get(0);
     }
 
     @Override

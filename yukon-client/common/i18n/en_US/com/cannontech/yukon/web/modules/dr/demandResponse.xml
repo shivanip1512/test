@@ -527,7 +527,8 @@
 <entry key="yukon.web.modules.dr.estimatedLoad.errors.noStationId">You must select a weather station</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.errors.cannotRemoveWeatherLoc">You cannot remove a weather location that is being used in a formula.</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.error.unableToLoadWeaterStations">Unable to load weather stations. Check your logs for more information.</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.error.dispatchNotConnected">Unable to load weather stations. Connection to dispatch is invalid.</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.error.problemLoadingStationData">There is a problem loading weather station data from NOAA. Check your logs for more information.</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.error.dispatchNotConnected">There is a problem connecting to dispatch. Data will not update until connection is established.</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.formula">Formula</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.formula.linkText">Formula</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.formulas">Formulas</entry>
@@ -541,7 +542,8 @@
 <entry key="yukon.web.modules.dr.estimatedLoad.humidity">Humidity</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.kwSavings">{0} kW / {1} kW</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.latitude">Latitude</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.loadAmount">{0} kW</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.lastUpdated">Last Updated</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.loadInKw">{0} kW</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.loadingWeatherLocations">Loading Weather Locations</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.longitude">Longitude</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.name">Name</entry>
@@ -563,9 +565,10 @@
 <entry key="yukon.web.modules.dr.estimatedLoad.program.linkText">Program</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.weatherInputs.title">Weather Data Inputs</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.weatherInputs">Weather Inputs</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.weatherInput.fahrenheit">{0} &#176;F - {1}</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.weatherInput.humidity">{0} % - {1}</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.weatherInput.noData">No data - {0}</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.weatherInput.fahrenheit">{0} &#176;F</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.weatherInput.humidity">{0} %</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.weatherInput.noData">(no data)</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.weatherInput.timestamp">{0}</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.weatherStation.milesUnit">m</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.weatherStations">Weather Stations</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.weatherStations.search.label">Search</entry>
@@ -613,6 +616,7 @@ Valid inputs include only decimal values. S & W are negative. (e.g. 37&#176;44'5
 <entry key="yukon.web.modules.dr.formula.inputRange">Input Range</entry>
 <entry key="yukon.web.modules.dr.formula.key">Key</entry>
 <entry key="yukon.web.modules.dr.formula.linear">Linear</entry>
+<entry key="yukon.web.modules.dr.formula.loadInKw">{0} kW</entry>
 <entry key="yukon.web.modules.dr.formula.lookupTables.title">Lookup Tables</entry>
 <entry key="yukon.web.modules.dr.formula.name">Name</entry>
 <entry key="yukon.web.modules.dr.formula.newEntry.label">Add Entry</entry>

@@ -20,6 +20,7 @@ import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.model.CompleteYukonPao;
 import com.cannontech.common.pao.service.PaoPersistenceService;
 import com.cannontech.common.point.PointQuality;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
@@ -44,8 +45,13 @@ public class WeatherDataServiceImpl implements WeatherDataService {
     private DecimalFormat doubleFormat = new DecimalFormat("#.#####");
 
     @Override
-    public WeatherLocation getWeatherLocationForPao(int paoId) {
-        LiteYukonPAObject pao = paoDao.getLiteYukonPAO(paoId);
+    public WeatherLocation findWeatherLocationForPao(int paoId) {
+        LiteYukonPAObject pao;
+        try {
+            pao = paoDao.getLiteYukonPAO(paoId);
+        } catch(NotFoundException e) {
+            return null;
+        }
         return createWeatherLocationFromPao(pao);
     }
 

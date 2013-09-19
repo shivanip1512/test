@@ -34,10 +34,10 @@
                                     <cti:param name="applianceCategoryId" value="${appCat.applianceCategoryId}"/>
                                     <cti:param name="ecId" value="${energyCompanyIds[appCat.applianceCategoryId]}"/>
                                 </cti:url>
-                                <a href="${appCatUrl}">${appCat.name}</a>
+                                <a href="${appCatUrl}">${fn:escapeXml(appCat.name)}</a>
                              </td>
                              <td width="25%"><i:inline key="${appCat.applianceType}"/></td>
-                             <td width="25%">${appCat.applianceLoad} kW</td>
+                             <td width="25%"><i:inline key=".loadInKw" arguments="${appCat.applianceLoad}"/></td>
                              <td width="25%" id="formulaPickerRowAppCat_${appCat.applianceCategoryId}">
                                 <%@ include file="_appCatFormulaPicker.jsp" %>
                              </td>

@@ -2,6 +2,7 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <cti:url value="listPageAjax" var="sortUrl"/>
 
@@ -17,7 +18,7 @@
             <tbody>
                 <c:forEach var="formula" items="${pagedFormulas.resultList}">
                     <tr>
-                        <td><a href="formula/view?formulaId=${formula.formulaId}">${formula.name}</a></td>
+                        <td><a href="formula/view?formulaId=${formula.formulaId}">${fn:escapeXml(formula.name)}</a></td>
                         <td><i:inline key="${formula.calculationType}"/></td>
                         <td><i:inline key="${formula.formulaType}"/></td>
                     </tr>

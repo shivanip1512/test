@@ -30,5 +30,5 @@ public interface WeatherDataService {
      * 
      * Returns null if this paoId doesn't represent a WeatherLocation
      */
-    WeatherLocation getWeatherLocationForPao(int paoId);
+    WeatherLocation findWeatherLocationForPao(int paoId);
 }

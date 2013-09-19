@@ -1,12 +1,18 @@
 <input id="assignmentInput_${assignmentId}" type="hidden" name="assignments" value="${assignmentId}"/> 
-<div id="assignmentAdd_${assignmentId}" style="${assignmentId eq -1 ? 'display:none' : ''}" class="column_8_8_8 f-drFormula-removeable f-drFormula-show-on-hover-target f-drFormula-appendAssignId clearfix">
-    <div class="column one f-drFormula-name">${assignments[assignmentId].name}</div>
+<div id="assignmentAdd_${assignmentId}" style="${assignmentId eq -1 ? 'display:none' : ''}"
+    class="column_8_8_8 f-drFormula-removeable f-drFormula-show-on-hover-target f-drFormula-appendAssignId clearfix">
+    <div class="column one f-drFormula-name">${fn:escapeXml(assignments[assignmentId].name)}</div>
     <div class="column two f-drFormula-type"><i:inline key="${assignments[assignmentId].applianceType}"/></div>
     <div class="column three nogutter">
-        <span class="f-drFormula-average-load">${assignments[assignmentId].applianceLoad} kW</span>
+        <span class="f-drFormula-average-load">
+            <i:inline key=".loadInKw" arguments="${assignments[assignmentId].applianceLoad}"/>
+        </span>
         <cti:displayForPageEditModes modes="EDIT">
             <div class="f-drFormula-show-on-hover fr" style="display:none">
-                <cti:button data-assign-id="${assignmentId}" nameKey="remove" renderMode="image" icon="icon-cross" classes="f-drFormula-remove"/>
+                <cti:button data-assign-id="${assignmentId}"
+                    nameKey="remove" renderMode="image"
+                    icon="icon-cross"
+                    classes="f-drFormula-remove"/>
             </div>
         </cti:displayForPageEditModes>
     </div>
@@ -14,6 +20,10 @@
 <div id="assignmentRemove_${assignmentId}" class="column_24" style="display:none">
     <div class="column one nogutter">
         <div class="fl undorow"><i:inline key=".appCatWillBeUnassigned"/></div>
-        <div class="fr undorow"><a class="f-drFormula-undo" data-assign-id="${assignmentId}" href="javascript:void(0)"><i:inline key=".undo"/></a></div>
+        <div class="fr undorow">
+            <a class="f-drFormula-undo" data-assign-id="${assignmentId}" href="javascript:void(0)">
+                <i:inline key=".undo"/>
+            </a>
+        </div>
     </div>
 </div>
