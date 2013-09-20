@@ -10,23 +10,27 @@ class IM_EX_DEVDB RfnFocusLcdConfigurationCommand : public RfnCommand
 {
 public:
 
-    struct DisplayMetric
-    {
-        unsigned char indexCode;
-        unsigned char idCode[2];
-    };
-
-    typedef std::vector<DisplayMetric> DisplayMetrics_t;
-
     struct ResultHandler
     {
         virtual void handleResult( const RfnFocusLcdConfigurationCommand &cmd ) = 0;
     };
 
-    RfnFocusLcdConfigurationCommand( const DisplayMetrics_t & display_metrics );  //  write
+    struct DisplayItem
+    {
+        std::string metric;
+        std::string alpha;
+    };
+
+    typedef std::vector<DisplayItem> DisplayItemVector;
+
+    RfnFocusLcdConfigurationCommand();  //  read
+    RfnFocusLcdConfigurationCommand( const DisplayItemVector & displayItems, unsigned char displayItemDuration );  //  write
 
     virtual RfnResult decodeCommand(const CtiTime now, const RfnResponse &response);
-    virtual RfnResult error  (const CtiTime now, const YukonError_t error_code);
+    virtual RfnResult error(const CtiTime now, const YukonError_t error_code);
+
+    boost::optional<DisplayItemVector> getDisplayItemReceived() const;
+    boost::optional<unsigned char>     getDisplayItemDurationReceived() const;
 
 protected:
 
@@ -36,7 +40,12 @@ protected:
 
 private:
 
-    const boost::optional<DisplayMetrics_t> _display_metrics_to_send;
+    const boost::optional<Bytes>        _commandDataToSend;
+
+    boost::optional<DisplayItemVector>  _displayItemsReceived;
+    boost::optional<unsigned char>      _displayItemDurationReceived;
+
+    Bytes createCommandData( const DisplayItemVector & displayItems, unsigned char displayItemDuration );
 };
 
 }
