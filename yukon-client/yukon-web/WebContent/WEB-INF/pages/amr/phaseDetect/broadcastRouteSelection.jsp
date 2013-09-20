@@ -6,24 +6,24 @@
 <cti:standardPage module="amr" page="phaseDetect.routeSelection">
     <script type="text/javascript">
         function checkRoutes(){
-        	var button = $('nextButton');
-			var checkBoxes = $$('input[id^="read_route_"]');
-			var checkedCount = 0;
-			for (i = 0; i < checkBoxes.length; i++) {
-				var checkBox = checkBoxes[i];
-				if(checkBox.checked){
-					checkedCount++;
-				}
-			}
-			if(checkedCount < 1) {
-				button.disable();
-				$('errorDiv').show();
-			} else {
-				$('errorDiv').hide();
-				button.enable();
-			}
+            var button = $('nextButton');
+            var checkBoxes = $$('input[id^="read_route_"]');
+            var checkedCount = 0;
+            for (i = 0; i < checkBoxes.length; i++) {
+                var checkBox = checkBoxes[i];
+                if(checkBox.checked){
+                    checkedCount++;
+                }
+            }
+            if(checkedCount < 1) {
+                button.disable();
+                $('errorDiv').show();
+            } else {
+                $('errorDiv').hide();
+                button.enable();
+            }
         }
-	</script>
+    </script>
     
     <form action="/amr/phaseDetect/saveBroadcastRoutes" method="post">
         <tags:sectionContainer2 nameKey="selectBroadcastRoutes">
@@ -39,7 +39,7 @@
             </table>
             
             <div id="errorDiv" style="display: none;padding-bottom: 5px;">
-		        <span id="errorSpan" class="errorMessage">
+                <span id="errorSpan" class="errorMessage">
                     <i:inline key=".noRouteSelected"/>
                 </span>
             </div>
