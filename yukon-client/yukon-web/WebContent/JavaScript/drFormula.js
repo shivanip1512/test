@@ -423,6 +423,7 @@ Yukon.DrFormula = (function() {
                 .click(_newWeatherLocationBtnClick);
             jQuery("#weatherLocations")
                 .load("weatherLocationsTableAjax");
+            jQuery(document).on("submit", "#saveWeatherLocationForm", function (){return false;});
 
             _initialized = true;
         },

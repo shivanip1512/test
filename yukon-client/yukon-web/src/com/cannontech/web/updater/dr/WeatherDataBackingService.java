@@ -99,7 +99,7 @@ public class WeatherDataBackingService implements UpdateBackingService {
                  metaData.put("humidity", "valid");
              }
 
-            if (weatherObs.getTimestamp().isBefore(Instant.now().minus(Duration.standardHours(1)))) {
+            if (weatherObs.getTimestamp().isBefore(Instant.now().minus(Duration.standardMinutes(90)))) {
                 metaData.put("timestamp", "old");
             } else {
                 metaData.put("timestamp", "valid");

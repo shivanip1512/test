@@ -101,12 +101,12 @@
                     <td><cti:paoDetailUrl yukonPao="${searchResultRow}">
                             <c:choose>
                                 <c:when test="${empty searchResultRow.name}"></c:when>
-                                <c:otherwise>${searchResultRow.name}</c:otherwise>
+                                <c:otherwise>${fn:escapeXml(searchResultRow.name)}</c:otherwise>
                             </c:choose>
                         </cti:paoDetailUrl></td>
                     <td><c:choose>
                             <c:when test="${empty searchResultRow.meterNumber}"></c:when>
-                            <c:otherwise>${searchResultRow.meterNumber}</c:otherwise>
+                            <c:otherwise>${fn:escapeXml(searchResultRow.meterNumber)}</c:otherwise>
                         </c:choose>
                     </td>
                     <td><tags:paoType yukonPao="${searchResultRow}" /></td>

@@ -2,10 +2,11 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <tags:nameValueContainer2>
-	<tags:nameValue2 nameKey=".deviceName">${meter.name}</tags:nameValue2>
-	<tags:nameValue2 nameKey=".meterNumber">${meter.meterNumber}</tags:nameValue2>
+	<tags:nameValue2 nameKey=".deviceName">${fn:escapeXml(meter.name)}</tags:nameValue2>
+	<tags:nameValue2 nameKey=".meterNumber">${fn:escapeXml(meter.meterNumber)}</tags:nameValue2>
 	<tags:nameValue2 nameKey=".type">
        <tags:paoType yukonPao="${meter}"/>
     </tags:nameValue2>
@@ -20,9 +21,9 @@
         </tags:nameValue2>
     </c:if>
     <c:if test="${showRFMeshSettings}">
-        <tags:nameValue2 nameKey=".serialNumber">${rfnMeter.meterIdentifier.sensorSerialNumber}</tags:nameValue2>
-        <tags:nameValue2 nameKey=".model">${rfnMeter.meterIdentifier.sensorModel}</tags:nameValue2>
-        <tags:nameValue2 nameKey=".manufacturer">${rfnMeter.meterIdentifier.sensorManufacturer}</tags:nameValue2>
+        <tags:nameValue2 nameKey=".serialNumber">${fn:escapeXml(rfnMeter.meterIdentifier.sensorSerialNumber)}</tags:nameValue2>
+        <tags:nameValue2 nameKey=".model">${fn:escapeXml(rfnMeter.meterIdentifier.sensorModel)}</tags:nameValue2>
+        <tags:nameValue2 nameKey=".manufacturer">${fn:escapeXml(rfnMeter.meterIdentifier.sensorManufacturer)}</tags:nameValue2>
     </c:if>
 	<tags:nameValue2 nameKey=".status">
 	<c:if test='${meter.disabled}'><span class="fwb error"><i:inline key=".disabled"/></span></c:if>
