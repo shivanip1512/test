@@ -9,57 +9,57 @@
 
     <cti:url var="routesUrl" value="/amr/phaseDetect/routes"/>
 
-	<script type="text/javascript">
+    <script type="text/javascript">
         function selectThisSub() {
-		    var selection = $F('substations');
-		    $("selectedSub").value = selection;
-		    var button = $('nextButton');
-		    var params = {'substationId': selection};
-		    
-		    new Ajax.Updater('routesDiv', '${routesUrl}', {method: 'get', evalScripts: true, parameters: params,
-		    	onComplete: function(resp, json) {
+            var selection = $F('substations');
+            $("selectedSub").value = selection;
+            var button = $('nextButton');
+            var params = {'substationId': selection};
+            
+            new Ajax.Updater('routesDiv', '${routesUrl}', {method: 'get', evalScripts: true, parameters: params,
+                onComplete: function(resp, json) {
                     checkRoutes();
                 }
             });
         }
 
         function checkRoutes(){
-        	var button = $('nextButton');
-			var checkBoxes = $$('input[id^="read_route_"]');
-			var checkedCount = 0;
+            var button = $('nextButton');
+            var checkBoxes = $$('input[id^="read_route_"]');
+            var checkedCount = 0;
 
-			var numOfRoutes = checkBoxes.length;
-			if(numOfRoutes > 0) { 
+            var numOfRoutes = checkBoxes.length;
+            if(numOfRoutes > 0) { 
                 /* Check to see if they have any selected */
-    			for (i = 0; i < checkBoxes.length; i++) {
-    				var checkBox = checkBoxes[i];
-    				if(checkBox.checked){
-    					checkedCount++;
-    				}
-    			}
-    			if(checkedCount < 1) {
-    				button.disable();
-    				$('subWithNoRoutesSelectedErrorDiv').hide();
-    				$('noRouteSelectedErrorDiv').show();
-    			} else {
-    				$('noRouteSelectedErrorDiv').hide();
-    				$('subWithNoRoutesSelectedErrorDiv').hide();
-    				button.enable();
-    			}
-			} else {
-			    /* If they have a sub selected show error msg */
-				button.disable();
+                for (i = 0; i < checkBoxes.length; i++) {
+                    var checkBox = checkBoxes[i];
+                    if(checkBox.checked){
+                        checkedCount++;
+                    }
+                }
+                if(checkedCount < 1) {
+                    button.disable();
+                    $('subWithNoRoutesSelectedErrorDiv').hide();
+                    $('noRouteSelectedErrorDiv').show();
+                } else {
+                    $('noRouteSelectedErrorDiv').hide();
+                    $('subWithNoRoutesSelectedErrorDiv').hide();
+                    button.enable();
+                }
+            } else {
+                /* If they have a sub selected show error msg */
+                button.disable();
                 var selection = $F('substations'); 
                 if(selection == '-1'){
                     $('noRouteSelectedErrorDiv').hide();
                     $('subWithNoRoutesSelectedErrorDiv').hide();
                 } else {
-                	$('noRouteSelectedErrorDiv').hide();
+                    $('noRouteSelectedErrorDiv').hide();
                     $('subWithNoRoutesSelectedErrorDiv').show();
                 }
-			}
+            }
         }
-	</script>
+    </script>
 
     <form action="/amr/phaseDetect/saveSubstationAndReadMethod" method=post>
         <tags:sectionContainer2 nameKey="selectSubstation">
@@ -77,7 +77,7 @@
             
             <%-- Error Divs --%>
             <div id="noRouteSelectedErrorDiv" style="display: none;">
-		        <span id="errorSpan" class="errorMessage">
+                <span id="errorSpan" class="errorMessage">
                     <i:inline key=".noRouteSelected"/>
                 </span>
             </div>
@@ -87,27 +87,27 @@
                 </span>
             </div>
             
-		    <table style="padding-right: 20px;padding-bottom: 10px;">
-		        <tr valign="top">
-		            <td style="padding-top: 3px;">
-		               <tags:nameValueContainer2>
-		                   <tags:nameValue2 nameKey=".substation">
-		                       <select id="substations" onchange="selectThisSub();">
-		                           <option value="-1">(none)</option>
-			                       <c:forEach var="substation" items="${substations}">
-			                           <option value="${substation.id}">${substation.name}</option>
-			                       </c:forEach>
-			                   </select>
-		                   </tags:nameValue2>
-		               </tags:nameValueContainer2>
-		            </td>
-		        </tr>
-		        <tr>
+            <table style="padding-right: 20px;padding-bottom: 10px;">
+                <tr valign="top">
+                    <td style="padding-top: 3px;">
+                       <tags:nameValueContainer2>
+                           <tags:nameValue2 nameKey=".substation">
+                               <select id="substations" onchange="selectThisSub();">
+                                   <option value="-1">(none)</option>
+                                   <c:forEach var="substation" items="${substations}">
+                                       <option value="${substation.id}">${substation.name}</option>
+                                   </c:forEach>
+                               </select>
+                           </tags:nameValue2>
+                       </tags:nameValueContainer2>
+                    </td>
+                </tr>
+                <tr>
                     <td style="padding-top: 3px;">
                         <div id="routesDiv"></div>
                     </td>
-		        </tr>
-		        <tr>
+                </tr>
+                <tr>
                     <td style="padding-top: 3px;">
                         <cti:msg2 key=".readAfterTitle" var="readAfterTitle"/>
                         <input type="radio" name="readPhasesWhen" value="after" 
@@ -116,16 +116,16 @@
                             <i:inline key=".readMetersAfterAllTests"/>
                     </td>
                 </tr>
-		        <tr>
-	                <td style="padding-top: 3px;">
+                <tr>
+                    <td style="padding-top: 3px;">
                         <cti:msg2 key=".readBetweenTitle" var="readBetweenTitle"/>
-	                    <input type="radio" name="readPhasesWhen" value="between" 
+                        <input type="radio" name="readPhasesWhen" value="between" 
                             title="${readBetweenTitle}">
                             <i:inline key=".readMetersBetweenTests"/>
-	                </td>
-		        </tr>
-		    </table>
+                    </td>
+                </tr>
+            </table>
         </tags:sectionContainer2>
         <cti:button id="nextButton" nameKey="next" name="next" type="submit" disabled="true" />
-	</form>
+    </form>
 </cti:standardPage>
