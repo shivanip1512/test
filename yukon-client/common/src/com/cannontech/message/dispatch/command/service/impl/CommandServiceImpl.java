@@ -8,8 +8,8 @@ import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.tdc.model.AltScanRateEnum;
-import com.cannontech.common.tdc.model.IControl;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.db.point.stategroup.ThreeStateStatusState;
 import com.cannontech.message.dispatch.DispatchClientConnection;
 import com.cannontech.message.dispatch.command.service.CommandService;
 import com.cannontech.message.util.Command;
@@ -120,9 +120,9 @@ public class CommandServiceImpl implements CommandService {
         }
         data.add(pointId);
         if (closed) {
-            data.add(IControl.CONTROL_CLOSED);
+            data.add(ThreeStateStatusState.CLOSED.getRawState());
         } else {
-            data.add(IControl.CONTROL_OPENED);
+            data.add(ThreeStateStatusState.OPEN.getRawState());
         }
         Command command = new Command();
         command.setUserName(user.getUsername());
@@ -132,10 +132,10 @@ public class CommandServiceImpl implements CommandService {
         dispatchConnection.queue(command);
         if (closed) {
             log.debug("Sent command for control request deviceId: " + deviceId + "pointId: "
-                      + pointId + "state closed:" + IControl.CONTROL_CLOSED);
+                      + pointId + "state closed:" + ThreeStateStatusState.CLOSED.getRawState());
         } else {
             log.debug("Sent command for control request deviceId: " + deviceId + "pointId: "
-                      + pointId + "state opened:" + IControl.CONTROL_OPENED);
+                      + pointId + "state opened:" +ThreeStateStatusState.OPEN.getRawState());
         }
     }
 

@@ -116,7 +116,7 @@ class DynamicDataCache implements MessageListener {
     private void handleSignal(Signal signal) {
         PointData pointData = getPointData(signal.getPointID());
         if(pointData != null){
-            pointData.setTags(signal.getTags());
+            pointData.setTags((signal.getTags() & ~Signal.MASK_ANY_ALARM) | (pointData.getTags() & Signal.MASK_ANY_ALARM));
         }
         int pointId = signal.getPointID();
         int categoryId = (int)signal.getCategoryID();

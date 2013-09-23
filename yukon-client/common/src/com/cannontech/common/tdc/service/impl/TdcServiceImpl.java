@@ -1,6 +1,10 @@
 package com.cannontech.common.tdc.service.impl;
 
-import java.sql.SQLException;
+import static com.cannontech.common.tdc.model.IDisplay.EVENT_VIEWER_DISPLAY_NUMBER;
+import static com.cannontech.common.tdc.model.IDisplay.GLOBAL_ALARM_DISPLAY;
+import static com.cannontech.common.tdc.model.IDisplay.SOE_LOG_DISPLAY_NUMBER;
+import static com.cannontech.common.tdc.model.IDisplay.TAG_LOG_DISPLAY_NUMBER;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -12,7 +16,6 @@ import java.util.Set;
 import javax.annotation.PostConstruct;
 
 import org.apache.log4j.Logger;
-import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,52 +26,42 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.tdc.dao.DisplayDao;
+import com.cannontech.common.tdc.dao.DisplayDataDao;
 import com.cannontech.common.tdc.model.Cog;
-import com.cannontech.common.tdc.model.ColumnTypeEnum;
 import com.cannontech.common.tdc.model.Display;
 import com.cannontech.common.tdc.model.DisplayData;
 import com.cannontech.common.tdc.model.DisplayTypeEnum;
-import com.cannontech.common.tdc.model.IDisplay;
 import com.cannontech.common.tdc.service.TdcService;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.AlarmCatDao;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateDao;
-import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.YukonJdbcTemplate;
-import com.cannontech.database.YukonResultSet;
-import com.cannontech.database.YukonRowMapper;
-import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.point.PointLogicalGroups;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.message.dispatch.command.service.CommandService;
-import com.cannontech.message.dispatch.command.service.impl.CommandServiceImpl;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.Signal;
-import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 
-public class TdcServiceImpl implements TdcService, IDisplay{
-   
-    private Logger log = YukonLogManager.getLogger(CommandServiceImpl.class);
+public class TdcServiceImpl implements TdcService{
+
+    private Logger log = YukonLogManager.getLogger(TdcServiceImpl.class);
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private DeviceDao deviceDao;
-    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private PointDao pointDao;
     @Autowired private PaoDao paoDao;
     @Autowired private DynamicDataSource dynamicDataSource;
@@ -76,19 +69,11 @@ public class TdcServiceImpl implements TdcService, IDisplay{
     @Autowired private AlarmCatDao alarmCatDao;
     @Autowired private DisplayDao displayDao;
     @Autowired private StateDao stateDao;
+    @Autowired private DisplayDataDao displayDataDao;
     
     private  Map<Integer, String> stateColorMap;
-    
-    private final YukonRowMapper<DisplayData> createCustomRowMapper =
-        createCustomDisplayRowMapper();
-    private final YukonRowMapper<DisplayData> createSoeRowMapper =
-        createRowMapper(SOE_LOG_DISPLAY_NUMBER);
-    private final YukonRowMapper<DisplayData> createTagRowMapper =
-        createRowMapper(TAG_LOG_DISPLAY_NUMBER);
-    private final YukonRowMapper<DisplayData> createEventViewerRowMapper =
-        createRowMapper(EVENT_VIEWER_DISPLAY_NUMBER);
-    
-    Comparator<DisplayData> sortByDate = new Comparator<DisplayData>() {
+        
+    private Comparator<DisplayData> sortByDate = new Comparator<DisplayData>() {
         @Override
         public int compare(DisplayData d1, DisplayData d2) {
             return -d1.getDate().compareTo(d2.getDate());
@@ -100,20 +85,20 @@ public class TdcServiceImpl implements TdcService, IDisplay{
         List<DisplayData> retVal = null;
         switch (display.getDisplayId()) {
         case SOE_LOG_DISPLAY_NUMBER:
-            retVal = getSoeLogDisplayData(timeZone);
+            retVal = displayDataDao.getSoeLogDisplayData(timeZone);
             break;
         case TAG_LOG_DISPLAY_NUMBER:
-            retVal = getTagLogDisplayData(timeZone);
+            retVal = displayDataDao.getTagLogDisplayData(timeZone);
             break;
         case EVENT_VIEWER_DISPLAY_NUMBER:
-            retVal = getEventViewerDisplayData(timeZone);
+            retVal = displayDataDao.getEventViewerDisplayData(timeZone);
             break;
         case GLOBAL_ALARM_DISPLAY:
             retVal = getAlarms(true);
             break;
         default:
             if(display.getType() == DisplayTypeEnum.CUSTOM_DISPLAYS){
-                retVal = getCustomDisplayData(display);
+                retVal = displayDataDao.getCustomDisplayData(display,getAlarms(false));
             }else if(display.getType() == DisplayTypeEnum.ALARMS_AND_EVENTS){
                 retVal = getCustomDisplayDataByAlarmCategory(display);
             }
@@ -141,7 +126,7 @@ public class TdcServiceImpl implements TdcService, IDisplay{
     
     @Override
     public void acknowledgeAlarm(int pointId, int condition, LiteYukonUser user){
-       commandService.sendAcknowledgeAlarm(pointId, condition, user);
+        commandService.sendAcknowledgeAlarm(pointId, condition, user);
     }
     
     @Override
@@ -201,7 +186,8 @@ public class TdcServiceImpl implements TdcService, IDisplay{
         int count = 0;
         Set<Signal> signals = dynamicDataSource.getSignals(pointId);
         for (Signal signal : signals) {
-            if (TagUtils.isAlarmUnacked(signal.getTags()) && signal.getTags() != Signal.SIGNAL_COND) {
+            if (signal.getCondition() != -1 && TagUtils.isAlarmUnacked(signal.getTags())
+                && signal.getTags() != Signal.SIGNAL_COND) {
                 count++;
             }
         }
@@ -220,30 +206,7 @@ public class TdcServiceImpl implements TdcService, IDisplay{
         }
         return count;
     }
-    
-    public String getUnackAlarmColorForPoint(int pointId, int condition) {
-        Set<Signal> signals = dynamicDataSource.getSignals(pointId);
-        for (Signal signal : signals) {
-            if (signal.getCondition() == condition && TagUtils.isAlarmUnacked(signal.getTags())
-                && signal.getTags() != Signal.SIGNAL_COND) {
-                return stateColorMap.get((int)signal.getCategoryID()-1);
-            }
-        }
-        return "";
-    }
-    
-    public String getUnackAlarmColorForPoint(int pointId) {
-        Set<Signal> signals = dynamicDataSource.getSignals(pointId);
-        String color = "";
-        for (Signal signal : signals) {
-            if (TagUtils.isAlarmUnacked(signal.getTags())
-                && signal.getTags() != Signal.SIGNAL_COND) {
-                color = stateColorMap.get((int)signal.getCategoryID()-1);
-            }
-        }
-        return color;
-    }
-    
+        
     @Override
     public String getUnackAlarmColorStateBox(int pointId, int condition) {
         String color = "";
@@ -253,12 +216,54 @@ public class TdcServiceImpl implements TdcService, IDisplay{
             } else {
                 color = getUnackAlarmColorForPoint(pointId, condition);
             }
-            if (!color.isEmpty()){
-                String classes = "pulse box stateBox ";
-                color = classes + color.toLowerCase();
-            }
         }
         return color;
+    }
+    
+    private String getUnackAlarmColorForPoint(int pointId, int condition) {
+        Set<Signal> signals = dynamicDataSource.getSignals(pointId);
+        for (Signal signal : signals) {
+            if (signal.getCondition() == condition
+                && (TagUtils.isAlarmUnacked(signal.getTags()) || TagUtils.isAlarmActive(signal
+                    .getTags()))
+                && signal.getTags() != Signal.SIGNAL_COND) {
+                String color = stateColorMap.get((int) signal.getCategoryID() - 1);
+                return getColorClasses(color, signal.getTags());
+            }
+        }
+        return "";
+    }
+
+    private String getColorClasses(String color, int tags){
+        if (!color.isEmpty()) {
+            StringBuilder classes = new StringBuilder();
+            if(TagUtils.isAlarmUnacked(tags)){
+                classes.append("pulse box");
+            }
+            classes.append(" stateBox ");
+            classes.append(color.toLowerCase());
+            return classes.toString();
+        }
+        return "";
+    }
+    
+    private String getUnackAlarmColorForPoint(int pointId) {
+        List<Signal> signals = Lists.newArrayList(dynamicDataSource.getSignals(pointId));
+        //latest alarm 
+        Collections.sort(signals, new Comparator<Signal>() {
+            @Override public int compare(Signal o1, Signal o2) {
+                return -o1.getTimeStamp().compareTo(o2.getTimeStamp());
+            }
+        });
+        for (Signal signal : signals) {
+            if ((TagUtils.isAlarmUnacked(signal.getTags()) || TagUtils.isAlarmActive(signal
+                .getTags()))
+                && signal.getTags() != Signal.SIGNAL_COND) {
+                String color = stateColorMap.get((int) signal.getCategoryID() - 1);
+                return getColorClasses(color, signal.getTags());
+            }
+        }
+        return "";
     }
     
     @Override
@@ -351,20 +356,6 @@ public class TdcServiceImpl implements TdcService, IDisplay{
         return data;
     }
 
-    private List<DisplayData> getEventViewerDisplayData(DateTimeZone timeZone) {
-        DateTime from = new DateTime(timeZone).toDateMidnight().toDateTime();
-        DateTime to = from.plusDays(1);
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select s.datetime, y.PAOName, y.PAObjectID,  p.pointname, s.description, s.action, s.username, s.pointid, s.soe_tag");
-        sql.append("from SystemLog s, YukonPAObject y, point p");
-        sql.append("where s.pointid=p.pointid and y.PAObjectID=p.PAObjectID");
-        sql.append("and s.datetime").gte(from);
-        sql.append("and s.datetime").lt(to);
-        sql.append("order by s.datetime desc, s.soe_tag");
-        List<DisplayData> displayData = yukonJdbcTemplate.query(sql, createEventViewerRowMapper);
-        return displayData;
-    }
-    
     @Override
     public boolean isManualControlEnabled(int pointId){
         PointValueQualityHolder pointValue = dynamicDataSource.getPointValue(pointId);
@@ -374,130 +365,15 @@ public class TdcServiceImpl implements TdcService, IDisplay{
         }
         return false;
     }
-    
-    private List<DisplayData> getCustomDisplayData(Display display) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select d.pointid, d.deviceid, d.pointtype, d.pointname, d.devicename, d.pointstate, d.devicecurrentstate");
-        sql.append("from display2waydata_view d join display2waydata y on d.pointid = y.pointid");
-        sql.append("where y.displaynum").eq(display.getDisplayId());
-        sql.append("and d.pointid > 0 order by y.ordering");
-        List<DisplayData> displayData = yukonJdbcTemplate.query(sql,  createCustomRowMapper);
-        for (final DisplayData data : displayData) {
-            List<DisplayData> unackAlarms =  getUnacknowledgedAlarms(data.getPointId());
-            int unackCount = getUnacknowledgedAlarms(data.getPointId()).size();
-            if(unackCount == 1){
-                // condition needed to acknowledge the alarm
-                data.setCondition(unackAlarms.get(0).getCondition());
-                data.setPointName(unackAlarms.get(0).getPointName());
-            }
-            Cog cog = new Cog();
-            data.setCog(cog);
-            // status points are not supported by the flot tag
-            cog.setTrend(data.getPointType() != PointType.Status);
-            boolean isValidTypeForManualEntry =
-                data.getPointType() == PointType.Analog
-                        || data.getPointType() == PointType.PulseAccumulator
-                        || data.getPointType() == PointType.DemandAccumulator
-                        || data.getPointType() == PointType.CalcAnalog
-                        || data.getPointType() == PointType.Status
-                        || data.getPointType() == PointType.CalcStatus;
-            PointValueQualityHolder pointValue = dynamicDataSource.getPointValue(data.getPointId());
-            cog.setManualEntry(display.hasColumn(ColumnTypeEnum.POINT_VALUE)
-                               && isValidTypeForManualEntry
-                               && pointValue.getPointQuality() != PointQuality.Constant);
-            cog.setAltScan(DeviceTypesFuncs.hasDeviceScanRate(data.getDevice().getType()));
-            cog.setEnableDisable(true);
-            cog.setTags(true);
-        }
-        return displayData;
-    }
        
     private List<DisplayData> getCustomDisplayDataByAlarmCategory(Display display) {
         int catId = alarmCatDao.getAlarmCategoryId(display.getName());
         Set<Signal> signals = dynamicDataSource.getSignalsByCategory(catId);
         return getDisplayData(signals, true);
     }
-    
-    private List<DisplayData> getSoeLogDisplayData(DateTimeZone timeZone) {
-        DateTime from = new DateTime(timeZone).toDateMidnight().toDateTime();
-        DateTime to = from.plusDays(1);
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select s.datetime, y.PAOName, y.PAObjectID, p.pointname, p.pointid, s.description, s.action, s.pointid, s.millis");
-        sql.append("from SystemLog s, YukonPAObject y, point p");
-        sql.append("where p.LogicalGroup").eq(PointLogicalGroups.LGRP_STRS[PointLogicalGroups.LGRP_SOE]);
-        sql.append("and s.pointid=p.pointid and y.PAObjectID=p.PAObjectID");
-        sql.append("and s.datetime").gte(from);
-        sql.append("and s.datetime").lt(to);
-        sql.append("order by s.datetime, s.millis");
-        List<DisplayData> displayData = yukonJdbcTemplate.query(sql, createSoeRowMapper);
-        return displayData;
-    }
-
-    public List<DisplayData> getTagLogDisplayData(DateTimeZone timeZone) {
-        DateTime from = new DateTime(timeZone).toDateMidnight().toDateTime();
-        DateTime to = from.plusDays(1);
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select s.tagtime, y.PAOName, y.PAObjectID, p.pointname, p.pointid, s.description, s.action, s.username, t.tagname");
-        sql.append("from TagLog s, YukonPAObject y, point p, tags t");
-        sql.append("where s.pointid=p.pointid and y.PAObjectID=p.PAObjectID");
-        sql.append("and t.tagid = s.tagid");
-        sql.append("and s.tagtime").gte(from);
-        sql.append("and s.tagtime").lt(to);
-        sql.append("order by s.tagtime, s.tagid");
-        List<DisplayData> displayData = yukonJdbcTemplate.query(sql, createTagRowMapper);
-        return displayData;
-    }
-    
-    private YukonRowMapper<DisplayData> createCustomDisplayRowMapper() {
-        final YukonRowMapper<DisplayData> mapper = new YukonRowMapper<DisplayData>() {
-            @Override
-            public DisplayData mapRow(YukonResultSet rs) throws SQLException {
-                DisplayData row = new DisplayData();
-                row.setDeviceCurrentState(rs.getStringSafe("devicecurrentstate"));
-                SimpleDevice device = deviceDao.getYukonDevice(rs.getInt("deviceid"));
-                row.setDevice(device);
-                row.setPointId(rs.getInt("pointid"));
-                row.setPointEnabled(!rs.getBoolean("pointstate"));
-                row.setPointType(rs.getEnum("pointtype", PointType.class));
-                row.setPointName(rs.getString("pointname"));
-                row.setDeviceName(rs.getString("devicename"));
-                return row;
-            }
-        };
-        return mapper;
-    }
-
-    private YukonRowMapper<DisplayData> createRowMapper(final Integer displayId) {
-        final YukonRowMapper<DisplayData> mapper = new YukonRowMapper<DisplayData>() {
-            @Override
-            public DisplayData mapRow(YukonResultSet rs) throws SQLException {
-                DisplayData row = new DisplayData();
-                SimpleDevice device = deviceDao.getYukonDevice(rs.getInt("PAObjectID"));
-                row.setDevice(device);
-                row.setDeviceName(rs.getString("PAOName"));
-                row.setPointName(rs.getString("pointname"));
-                row.setDescription(rs.getString("description"));
-                row.setAdditionalInfo(rs.getString("action"));
-                row.setPointId(rs.getInt("pointid"));
-                if (displayId == EVENT_VIEWER_DISPLAY_NUMBER) {
-                    row.setUserName(rs.getString("username"));
-                    row.setDate(rs.getInstant("datetime"));
-                    row.setTextMessage(rs.getString("description"));
-                }
-                else if (displayId == TAG_LOG_DISPLAY_NUMBER) {
-                    row.setUserName(rs.getString("username"));
-                    row.setTagName(rs.getString("tagname"));
-                    row.setDate(rs.getInstant("tagtime"));
-                }
-                else if (displayId == SOE_LOG_DISPLAY_NUMBER) {
-                    row.setDate(rs.getInstant("datetime"));
-                }
-                return row;
-            }
-        };
-        return mapper;
-    }
-    
+       
+  
+  
     @PostConstruct
     public void init() {
         LiteStateGroup states = stateDao.getLiteStateGroup(StateGroupUtils.STATEGROUP_ALARM);

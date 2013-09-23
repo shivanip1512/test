@@ -140,32 +140,28 @@ Yukon.Tdc = (function () {
                 });
             });
             jQuery('.f-display-alarm-ack').click(
-                    function () {
-                        var displayId = jQuery(this).attr("displayId");
-                        var data = {
-                            displayId : displayId
-                        };
-                        jQuery.post('/tdc/acknowledgeAlarmsForDisplay', data)
-                                .done(function (data) {
-                                    Yukon.ui.flashSuccess(data.success);
-                                });
-                    });
-            jQuery('.f-one-alarm-ack')
-                    .click(
-                            function (event) {
-                                var pointId = jQuery(this).parent().attr(
-                                        "pointId");
-                                var condition = jQuery(this).parent().attr(
-                                        "condition");
-                                console.debug(pointId);
-                                var data = {
-                                    pointId : pointId,
-                                    condition : condition
-                                };
-                                jQuery.post('/tdc/acknowledgeAlarm', data)
-                                        .done(function (data) {
-                                        });
-                            });
+				function () {
+	   			 var displayId = jQuery(this).attr("displayId");
+	   			 var data = {
+	        		displayId: displayId
+	    		};
+	    		jQuery.post('/tdc/acknowledgeAlarmsForDisplay', data)
+	        		.done(function (data) {
+	            	Yukon.ui.flashSuccess(data.success);
+	        	});
+			});
+           jQuery('.f-one-alarm-ack').click(function (event) {
+				var pointId = jQuery(this).parent().attr( "pointId");
+				var condition = jQuery(this).parent().attr("condition");
+                   console.debug(pointId);
+                   var data = {
+                       pointId: pointId,
+                       condition: condition
+                   };
+                   jQuery("#dropdown_"+pointId).data('menu').hide();
+                   jQuery("#dropdown_"+pointId).removeClass("menu-open");
+                   jQuery.post('/tdc/acknowledgeAlarm', data).done(function (data) {});
+               });
             
             jQuery(document).on('click', '.f-one-alarm-ack-b', function () {
                 var pointId = jQuery(this).attr("pointId");

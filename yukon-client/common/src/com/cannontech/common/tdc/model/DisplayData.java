@@ -7,6 +7,7 @@ import com.cannontech.database.data.point.PointType;
 
 public class DisplayData {
     private int pointId;
+    private int deviceId;
     private SimpleDevice device;
     private String pointName;
     private String deviceName;
@@ -141,7 +142,14 @@ public class DisplayData {
     public void setTextMessage(String textMessage) {
         this.textMessage = textMessage;
     }
-    
+
+    public int getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(int deviceId) {
+        this.deviceId = deviceId;
+    }
 
     @Override
     public int hashCode() {
@@ -155,6 +163,7 @@ public class DisplayData {
         result = prime * result + ((device == null) ? 0 : device.hashCode());
         result =
             prime * result + ((deviceCurrentState == null) ? 0 : deviceCurrentState.hashCode());
+        result = prime * result + deviceId;
         result = prime * result + ((deviceName == null) ? 0 : deviceName.hashCode());
         result = prime * result + (pointEnabled ? 1231 : 1237);
         result = prime * result + pointId;
@@ -207,6 +216,8 @@ public class DisplayData {
                 return false;
         } else if (!deviceCurrentState.equals(other.deviceCurrentState))
             return false;
+        if (deviceId != other.deviceId)
+            return false;
         if (deviceName == null) {
             if (other.deviceName != null)
                 return false;
@@ -240,5 +251,4 @@ public class DisplayData {
             return false;
         return true;
     }
-
 }

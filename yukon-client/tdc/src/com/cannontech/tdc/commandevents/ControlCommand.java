@@ -8,11 +8,10 @@ package com.cannontech.tdc.commandevents;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.cannontech.common.tdc.model.IControl;
 import com.cannontech.message.util.Command;
 import com.cannontech.tdc.roweditor.SendData;
 
-public class ControlCommand implements IControl
+public class ControlCommand
 {
 /**
  * ControlCommand constructor comment.
@@ -25,30 +24,30 @@ public ControlCommand() {
  * Creation date: (4/10/00 5:32:43 PM)
  * Version: <version>
  */
-public static void send( long deviceID, long pointID, int rawState ) 
-{
-	/*** Start building the Command.opArgList() **************************/
-	List<Integer> data = new ArrayList<Integer>(4);
+    public static void send(long deviceID, long pointID, int rawState)
+    {
+        /*** Start building the Command.opArgList() **************************/
+        List<Integer> data = new ArrayList<Integer>(4);
 
-	data.add(-1);  // this is the ClientRegistrationToken
+        data.add(-1); // this is the ClientRegistrationToken
 
-	if( deviceID > 0 ) {
-		data.add((int)deviceID);
+        if (deviceID > 0) {
+            data.add((int) deviceID);
+        }
+        else {
+            data.add(0);
+        }
+
+        data.add((int) pointID);
+        data.add(rawState);
+        /*** End building the Command.opArgList() ****************************/
+
+        Command cmd = new Command();
+        cmd.setUserName(com.cannontech.common.util.CtiUtilities.getUserName());
+        cmd.setOperation(Command.CONTROL_REQUEST);
+        cmd.setOpArgList(data);
+        cmd.setTimeStamp(new java.util.Date());
+
+        SendData.getInstance().sendCommandMsg(cmd);
     }
-	else {
-		data.add(0);
-    }
-		
-	data.add((int)pointID);
-	data.add(rawState);
-	/*** End building the Command.opArgList() ****************************/
-
-	Command cmd = new Command();
-	cmd.setUserName( com.cannontech.common.util.CtiUtilities.getUserName() );
-	cmd.setOperation( Command.CONTROL_REQUEST );
-	cmd.setOpArgList( data );
-	cmd.setTimeStamp( new java.util.Date() );
-
-	SendData.getInstance().sendCommandMsg( cmd );	
-}
 }

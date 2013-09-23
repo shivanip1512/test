@@ -512,11 +512,13 @@ ul.disc li {
 	list-style: none;
 }
 
-.simple-list,.resultList,.labeledImageStack,.editable-list {
+.simple-list,.resultList,.labeledImageStack,.editable-list,.property-list {
 	padding: 0;
 	margin: 0;
 	list-style: none;
 }
+
+.property-list li {float:left; margin-right: 5px;}
 
 .tree-list li li {
 	margin-left: 15px;

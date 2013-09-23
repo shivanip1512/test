@@ -61,7 +61,6 @@ import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.message.dispatch.command.service.CommandService;
-import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.tags.Tag;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
@@ -194,7 +193,11 @@ public class TdcDisplayController {
     public @ResponseBody
     JSONObject acknowledgeAlarm(YukonUserContext context, ModelMap model, int pointId, int condition) {
 
-        tdcService.acknowledgeAlarm(pointId, condition, context.getYukonUser());
+        if(condition == 0 && tdcService.getUnackAlarmCountForPoint(pointId) == 1){
+            tdcService.acknowledgeAlarmsForPoint(pointId, context.getYukonUser());
+        }else{
+            tdcService.acknowledgeAlarm(pointId, condition, context.getYukonUser());
+        }
         return getJSONSuccess();
     }
 

@@ -192,7 +192,6 @@ public class DisplayDaoImpl implements DisplayDao {
         return mapper;
     }
 
- 
     private YukonRowMapper<Column> createColumnRowMapper(final Map<Integer, Display> mappedDisplays) {
 
         final YukonRowMapper<Column> mapper = new YukonRowMapper<Column>() {

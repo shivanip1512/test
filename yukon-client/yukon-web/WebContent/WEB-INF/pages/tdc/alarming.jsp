@@ -4,6 +4,11 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
+<style>
+.alarm-text .property-list:nth-child(1) {margin-right:10px;}
+.alarm-ack .button, .alarm-ack button {margin-top: 14px;}
+</style>
+
 <cti:url var="allAlarms" value="/tdc/${allAlarmsDislay}" />
 <cti:msgScope paths="modules.tools.tdc">
     <cti:msg2 key="yukon.web.modules.tools.tdc.activeAlarms.title" arguments="${alarms.size()}" var="title" />
@@ -15,14 +20,29 @@
                 <c:forEach var="alarm" items="${alarms}">
                     <tr>
                         <td><span class="${colorStateBoxes.get(alarm.pointId).get(alarm.condition)}">&nbsp;</span></td>
-                        <td class="alarm-text"><a href="${allAlarms}" title="${alarm.device.deviceId} ${fn:escapeXml(alarm.deviceName)} : ${fn:escapeXml(alarm.pointName)}">${fn:escapeXml(alarm.textMessage)}</a></td>
-                        <td><c:if test='${unackAlarms.get(alarm) != null}'>
+                        <td class="alarm-text">
+                            <div class="clearfix">
+                                <ul class="property-list fl">
+                                    <li class="name"><i:inline key="yukon.common.device"/>:</li>
+                                    <li class="value">${alarm.deviceName}</li>
+                                </ul>
+                                <ul class="property-list fl">
+                                    <li class="name"><i:inline key="yukon.common.point"/>:</li>
+                                    <li class="value">${alarm.pointName}</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <a href="${allAlarms}" title="${alarm.device.deviceId} ${fn:escapeXml(alarm.deviceName)} : ${fn:escapeXml(alarm.pointName)}">${fn:escapeXml(alarm.textMessage)}</a>
+                            </div>
+                        </td>
+                        <td class="alarm-ack">
+                            <c:if test='${unackAlarms.get(alarm) != null}'>
                                 <cti:button nameKey="alarm.acknowledge" icon="icon-tick" classes="fr f-ack" pointId="${alarm.pointId}" condition="${alarm.condition}" renderMode="buttonImage" />
-                            </c:if></td>
+                            </c:if>
+                        </td>
                     </tr>
                 </c:forEach>
             </tbody>
         </table>
-        <hr>
     </tags:sectionContainer>
 </cti:msgScope>

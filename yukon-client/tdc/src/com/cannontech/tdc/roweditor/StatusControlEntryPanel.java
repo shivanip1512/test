@@ -2,6 +2,7 @@ package com.cannontech.tdc.roweditor;
 
 import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.common.point.PointQuality;
+import com.cannontech.database.db.point.stategroup.ThreeStateStatusState;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.tdc.TDCMainFrame;
 import com.cannontech.tdc.commandevents.ControlCommand;
@@ -414,14 +415,14 @@ public class StatusControlEntryPanel extends ManualEntryJPanel implements RowEdi
             long ptID = getEditorData().getPointID();
 
             if (buttonPressed.getName().equalsIgnoreCase("JButtonRawState1")) {
-                ControlCommand.send(devID, ptID, ControlCommand.CONTROL_OPENED);
+                ControlCommand.send(devID, ptID, ThreeStateStatusState.OPEN.getRawState());
                 TDCMainFrame.messageLog
                     .addMessage("Control OPEN was sent successfully for the point '" +
                                         getEditorData().getPointName() + "'",
                                 MessageBoxFrame.INFORMATION_MSG);
             } else // must be the button named JButtonRawState2
             {
-                ControlCommand.send(devID, ptID, ControlCommand.CONTROL_CLOSED);
+                ControlCommand.send(devID, ptID, ThreeStateStatusState.CLOSED.getRawState());
                 TDCMainFrame.messageLog
                     .addMessage("Control CLOSE was sent successfully for the point '" +
                                         getEditorData().getPointName() + "'",

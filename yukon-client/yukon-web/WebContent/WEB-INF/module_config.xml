@@ -1007,20 +1007,6 @@
         <skin name="STANDARD" />
         <search bean="operatorAccountSearchProducer" />
         <pages>
-            <page name="workorders" type="BASIC" hideSearch="true">
-                <link>/stars/operator/workorder/list</link>
-                 <pages>
-                    <page name="workorder.VIEW" type="BASIC" hideSearch="true">
-                        <link>/operator/workorder/{orderId}/view</link>
-                    </page>
-                    <page name="workorder.EDIT" type="BASIC" hideSearch="true">
-                        <link>/operator/workorder/{orderId}/edit</link>
-                    </page>
-                    <page name="workorder.CREATE" type="BASIC" hideSearch="true">
-                        <link>/operator/workorder/create</link>
-                    </page>
-                 </pages>
-            </page>
             <page name="home" type="LANDING" hideSearch="true">
                 <link>/stars/operator/home</link>
             </page>

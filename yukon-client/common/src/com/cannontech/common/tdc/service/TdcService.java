@@ -12,109 +12,83 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 public interface TdcService {
     
     /**
-     * Method to get a point state.
-     * @param pointId
-     * @return 
+     * Gets a point state.
      */
     public String getPointState(int pointId);
     /**
-     * Method to acknowledge an active alarm 
-     * @param pointId
-     * @param condition
-     * @return 
+     * Acknowledges an active alarm 
      */
     public void acknowledgeAlarm(int pointId, int condition, LiteYukonUser user);
 
     /**
-     * Method to acknowledge all active alarms for a point
-     * @param pointId
-     * @return 
+     * Acknowledges all active alarms for a point
      */
     public int acknowledgeAlarmsForPoint(int pointId,  LiteYukonUser user);
 
     /**
-     * Method to acknowledge all active alarms
-     * @param user
-     * @return the number of alarms request to acknowledge was send
+     * Acknowledges all active alarms
      */
     public int acknowledgeAllAlarms(LiteYukonUser user);
 
     /**
-     * Method to acknowledge all active alarms for a display
-     * @param display
-     * @param timeZone
-     * @return the number of alarms request to acknowledge was send
+     * Acknowledges all active alarms for a display
      */
     public int acknowledgeAlarmsForDisplay(Display display, LiteYukonUser user);
     
     /**
-     * Method to get display data
-     * @param display
-     * @param timeZone
-     * @return the number of alarms request to acknowledge was send
+     * Get display data
      */
     public List<DisplayData> getDisplayData(Display display, DateTimeZone timeZone);
 
     /**
-     * Method to get unacknowledged alarms for a point
-     * @param pointId
-     * @return
+     * Unacknowledged alarms for a point
      */
     public List<DisplayData> getUnacknowledgedAlarms(int pointId);
 
     /**
-     * Method to get all alarms. If showActive is true the list of all unacknowledged or active
+     * Gets all alarms. If showActive is true the list of all unacknowledged or active
      * alarms will be returned otherwise the list of only unacknowledged alarms will be returned.
-     * @param showActive
-     * @return
      */
     public List<DisplayData> getAlarms(boolean showActive);
     
     /**
-     * Method to send point data.
-     * @param pointId
-     * @param value
-     * @param user
+     * Sends point data.
      */
     public void sendPointData(int pointId, double value, LiteYukonUser user);
     
     /**
      * Returns true if manual control is enabled
-     * @param pointId
-     * @return
      */
     public boolean isManualControlEnabled(int pointId);
     
     /**
-     * Method to get an unacknowledged alarm count for a display 
-     * @param displayId
-     * @return
+     * Gets an unacknowledged alarm count for a display 
      */
     public int getUnackAlarmCountForDisplay(int displayId);
     
     /**
-     * Method to get an unacknowledged alarm count
-     * @return
+     * Gets unacknowledged alarm count
      */
     public int getUnackAlarmCount();
     
     /**
-     * Method to get an unacknowledged alarm count for a point
-     * @param pointId
-     * @return
+     * Gets an unacknowledged alarm count for a point
      */
     public int getUnackAlarmCountForPoint(int pointId);
     
     /**
-     * Method to get an unacknowledged alarm count for a point and condition. Possible return values
+     * Gets an unacknowledged alarm count for a point and condition. Possible return values
      * are one or zero.
-     * @param pointId
-     * @param condition
-     * @return
      */
     public int getUnackAlarmCountForPoint(int pointId, int condition);
     
+    /**
+     * Gets an unacknowledged alarm color state box  for a point and condition.
+     */
     public String getUnackAlarmColorStateBox(int pointId, int condition);
     
+    /**
+     * Gets an unacknowledged alarm color state boxes for a  display data. (<point id ,<condition, color state box string>)
+     **/
     public Map<Integer, Map<Integer, String>> getUnackAlarmColorStateBoxes(List<DisplayData> displayData);
 }
