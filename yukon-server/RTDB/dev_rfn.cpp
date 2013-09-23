@@ -122,26 +122,31 @@ int RfnDevice::executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, Ct
 }
 
 /**
- *
+ * define in inherited device classes
  */
-RfnDevice::InstallMap RfnDevice::getPutConfigInstallMap() const
+boost::optional<const RfnDevice::InstallMap &> RfnDevice::getPutConfigInstallMap() const
 {
-    return InstallMap();
+    return boost::none;
 }
 
 /**
- *
+ * define in inherited device classes
  */
-RfnDevice::InstallMap RfnDevice::getGetConfigInstallMap() const
+boost::optional<const RfnDevice::InstallMap &> RfnDevice::getGetConfigInstallMap() const
 {
-    return InstallMap();
+    return boost::none;
 }
 
 /**
  * Execute putconfig/getconfig Install
  */
-int RfnDevice::executeConfigInstall(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests, const InstallMap &installMap)
+int RfnDevice::executeConfigInstall(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests, const boost::optional<const InstallMap &> &installMap )
 {
+    if( ! installMap || installMap->empty() )
+    {
+        return NoMethod;
+    }
+
     const boost::optional<std::string> installValue = parse.findStringForKey("installvalue");
 
     if( ! installValue )
@@ -151,19 +156,14 @@ int RfnDevice::executeConfigInstall(CtiRequestMsg *pReq, CtiCommandParser &parse
 
     if( *installValue == "all" )
     {
-        if( installMap.empty() )
-        {
-            return NoMethod;
-        }
-
-        for each( const InstallMap::value_type & p in installMap )
+        for each( const InstallMap::value_type & p in *installMap )
         {
             executeConfigInstallSingle( pReq, parse, retList, rfnRequests, p.first, p.second );
         }
     }
     else
     {
-        boost::optional<InstallMethod> installMethod = mapFind( installMap, *installValue );
+        boost::optional<InstallMethod> installMethod = mapFind( *installMap, *installValue );
 
         if( ! installMethod )
         {

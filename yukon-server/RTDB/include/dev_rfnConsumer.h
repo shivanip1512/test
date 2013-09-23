@@ -18,7 +18,16 @@ class IM_EX_DEVDB RfnConsumerDevice
         public Commands::RfnTouScheduleConfigurationCommand::ResultHandler,
         public Commands::RfnTouHolidayConfigurationCommand::ResultHandler
 {
+    static const InstallMap _putConfigInstallMap;
+    static const InstallMap initPutConfigInstallMap();
+
+    static const InstallMap _getConfigInstallMap;
+    static const InstallMap initGetConfigInstallMap();
+
 protected:
+
+    virtual boost::optional<const InstallMap &> getPutConfigInstallMap() const;
+    virtual boost::optional<const InstallMap &> getGetConfigInstallMap() const;
 
     int executePutConfigVoltageAveragingInterval( CtiRequestMsg     * pReq,
                                                   CtiCommandParser  & parse,
@@ -70,15 +79,6 @@ protected:
                                  CtiMessageList    & retList,
                                  RfnCommandList    & rfnRequests );
 
-    static const InstallMap _putConfigInstallMap;
-    static const InstallMap _getConfigInstallMap;
-
-    static const InstallMap initPutConfigInstallMap();
-    static const InstallMap initGetConfigInstallMap();
-
-    virtual InstallMap getPutConfigInstallMap() const;
-    virtual InstallMap getGetConfigInstallMap() const;
-
     // execute putconfig install
     virtual int executePutConfigInstallFreezeDay                (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
     virtual int executePutConfigInstallVoltageAveragingInterval (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
@@ -95,7 +95,7 @@ protected:
 
 private:
 
-    bool isTouConfigCurrent();
+    bool isTouConfigCurrent( const Config::DeviceConfigSPtr &deviceConfig );
 };
 
 
