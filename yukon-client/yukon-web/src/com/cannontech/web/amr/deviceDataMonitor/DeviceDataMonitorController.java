@@ -764,7 +764,7 @@ public class DeviceDataMonitorController {
         String points = "";
         for (PointIdentifier pi : pointIdentifiers) {
             points += points.length() > 0 ? "," : "";
-            points += pi.getType() + "%3A" + pi.getOffset();
+            points += pi.getPointType().getPointTypeId() + "%3A" + pi.getOffset();
         }
         return points;
     }

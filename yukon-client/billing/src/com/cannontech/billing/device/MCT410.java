@@ -29,7 +29,7 @@ public class MCT410 extends BillingDeviceBase {
 
         ReadingType readingType = getReadingType(unitOfMeasure);
 
-        switch (pointIdentifier.getType()) {
+        switch (pointIdentifier.getPointType().getPointTypeId()) {
 
         case PointTypes.PULSE_ACCUMULATOR_POINT:
 
@@ -106,11 +106,11 @@ public class MCT410 extends BillingDeviceBase {
     
     @Override
     public boolean isEnergy(PointIdentifier pointIdentifier) {
-        switch (pointIdentifier.getType()) {
+        switch (pointIdentifier.getPointType().getPointTypeId()) {
 
         case PointTypes.PULSE_ACCUMULATOR_POINT:
 
-            switch (pointIdentifier.getType()) {
+            switch (pointIdentifier.getPointType().getPointTypeId()) {
 
             case 1: // KWh
             case 2: // KWh (Channel 2)
@@ -129,7 +129,7 @@ public class MCT410 extends BillingDeviceBase {
     
     @Override
     public boolean isDemand(PointIdentifier pointIdentifier) {
-        switch (pointIdentifier.getType()) {
+        switch (pointIdentifier.getPointType().getPointTypeId()) {
 
         case PointTypes.DEMAND_ACCUMULATOR_POINT:
 

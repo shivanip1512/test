@@ -273,10 +273,10 @@ public class PaoDefinitionServiceImplTest {
         Set<PointIdentifier> expectedTemplates = new HashSet<PointIdentifier>();
 
         // Pulse Accumulators - "pulse1"
-        expectedTemplates.add(new PointIdentifier(2, 2));
+        expectedTemplates.add(new PointIdentifier(PointType.getForId(2), 2));
 
         // Demand Accumulators - "demand1"
-        expectedTemplates.add(new PointIdentifier(3, 1));
+        expectedTemplates.add(new PointIdentifier(PointType.getForId(3), 1));
 
         Set<PointIdentifier> actualTemplates = service.getPointTemplatesToRemove(device,
                                                                                new PaoDefinitionImpl(PaoType.getForId(1022),

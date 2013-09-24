@@ -30,7 +30,7 @@ public class Focus extends BillingDeviceBase {
 
         ReadingType readingType = getReadingType(unitOfMeasure);
 
-        switch (pointIdentifier.getType()) {
+        switch (pointIdentifier.getPointType().getPointTypeId()) {
 
         case PointTypes.ANALOG_POINT:
 
@@ -317,7 +317,7 @@ public class Focus extends BillingDeviceBase {
     @SuppressWarnings("deprecation")
 	@Override
     public boolean isEnergy(PointIdentifier pointIdentifier) {
-        switch (pointIdentifier.getType()) {
+        switch (pointIdentifier.getPointType().getPointTypeId()) {
 
         case PointTypes.ANALOG_POINT:
 
@@ -367,7 +367,7 @@ public class Focus extends BillingDeviceBase {
     @SuppressWarnings("deprecation")
 	@Override
     public boolean isDemand(PointIdentifier pointIdentifier) {
-        switch (pointIdentifier.getType()) {
+        switch (pointIdentifier.getPointType().getPointTypeId()) {
 
         case PointTypes.ANALOG_POINT:
 

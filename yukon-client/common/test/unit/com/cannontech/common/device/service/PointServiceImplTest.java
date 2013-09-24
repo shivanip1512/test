@@ -15,6 +15,7 @@ import com.cannontech.common.pao.service.PointService;
 import com.cannontech.common.pao.service.impl.PointServiceImpl;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.point.PointType;
 
 public class PointServiceImplTest extends TestCase {
 
@@ -39,13 +40,13 @@ public class PointServiceImplTest extends TestCase {
         // Test for point that exists for the device
         LitePoint expectedPoint = new LitePoint(1, "analog1", 1, 1, 1, 0, 0, 1);
 
-        PointIdentifier testTemplate = new PointIdentifier(1, 0);
+        PointIdentifier testTemplate = new PointIdentifier(PointType.getForId(1), 0);
         LitePoint actualPoint = service.getPointForPao(pao, testTemplate);
 
         this.compareLitePoints("Existing point for device:", expectedPoint, actualPoint);
 
         // Test for point that doesn't exist for the device
-        testTemplate = new PointIdentifier(4, 0);
+        testTemplate = new PointIdentifier(PointType.getForId(4), 0);
         try {
             service.getPointForPao(pao, testTemplate);
         } catch (NotFoundException e) {
@@ -61,11 +62,11 @@ public class PointServiceImplTest extends TestCase {
     public void testPointExistsForDevice() {
 
         // Test for point that exists for the device
-        PointIdentifier testTemplate = new PointIdentifier(1, 0);
+        PointIdentifier testTemplate = new PointIdentifier(PointType.getForId(1), 0);
         assertTrue("The point should exist", service.pointExistsForPao(pao, testTemplate));
 
         // Test for point that doesn't exist for the device
-        testTemplate = new PointIdentifier(4, 0);
+        testTemplate = new PointIdentifier(PointType.getForId(4), 0);
         assertTrue("The point should not exist",
                    !service.pointExistsForPao(pao, testTemplate));
     }

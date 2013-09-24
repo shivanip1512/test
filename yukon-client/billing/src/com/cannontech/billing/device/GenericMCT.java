@@ -29,7 +29,7 @@ public class GenericMCT extends BillingDeviceBase {
 
         ReadingType readingType = getReadingType(unitOfMeasure);
 
-        switch (pointIdentifier.getType()) {
+        switch (pointIdentifier.getPointType().getPointTypeId()) {
 
         case PointTypes.PULSE_ACCUMULATOR_POINT:
 
@@ -48,7 +48,7 @@ public class GenericMCT extends BillingDeviceBase {
     @Override
     public boolean isEnergy(PointIdentifier pointIdentifier) {
 
-        switch (pointIdentifier.getType()) {
+        switch (pointIdentifier.getPointType().getPointTypeId()) {
 
         case PointTypes.PULSE_ACCUMULATOR_POINT:
 

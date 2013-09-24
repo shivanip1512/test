@@ -34,42 +34,14 @@ public class PointTemplate implements Comparable<PointTemplate> {
 
     // Only valid for Calculated points
     private CalcPointInfo calcPointInfo = null;
-    
-    public PointTemplate(PointType type, int offset) {
-        pointIdentifier = new PointIdentifier(type, offset);
-    }
-    
-    /**
-     * @deprecated Use PointType version.
-     */
-    @Deprecated
-    public PointTemplate(int type, int offset) {
-        pointIdentifier = new PointIdentifier(type, offset);
-    }
 
-    public int getOffset() {
-        return pointIdentifier.getOffset();
-    }
-
-    /**
-     * @deprecated Use getPointType version.
-     */
-    @Deprecated
-    public int getType() {
-        return pointIdentifier.getType();
-    }
-    
-    public PointType getPointType() {
-        return pointIdentifier.getPointType();
-    }
-
-    public PointIdentifier getPointIdentifier() {
-        return pointIdentifier;
+    public PointTemplate(PointIdentifier pointIdentifier) {
+        this.pointIdentifier = pointIdentifier;
     }
 
     public PointTemplate(String name, PointType type, int offset, double multiplier,
             int unitOfMeasure, int stateGroupId, int decimalPlaces) {
-        pointIdentifier = new PointIdentifier(type, offset);
+        this.pointIdentifier = new PointIdentifier(type, offset);
         this.name = name;
         this.multiplier = multiplier;
         this.unitOfMeasure = unitOfMeasure;
@@ -85,6 +57,18 @@ public class PointTemplate implements Comparable<PointTemplate> {
         this.unitOfMeasure = unitOfMeasure;
         this.stateGroupId = stateGroupId;
         this.decimalPlaces = decimalPlaces;
+    }
+
+    public int getOffset() {
+        return pointIdentifier.getOffset();
+    }
+
+    public PointType getPointType() {
+        return pointIdentifier.getPointType();
+    }
+
+    public PointIdentifier getPointIdentifier() {
+        return pointIdentifier;
     }
 
     public double getMultiplier() {

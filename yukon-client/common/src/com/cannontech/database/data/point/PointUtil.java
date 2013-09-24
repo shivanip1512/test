@@ -147,9 +147,9 @@ public class PointUtil {
 		int oldType = PointTypes.getType(pointBase.getPoint().getPointType());
 		
 		// actual changing of point type, delete the old point and re-add it with new type
-		if (oldType != newPointTemplate.getType()) {
+		if (oldType != newPointTemplate.getPointType().getPointTypeId()) {
 			
-			pointBase.getPoint().setPointType(PointTypes.getType(newPointTemplate.getType()));
+			pointBase.getPoint().setPointType(PointTypes.getType(newPointTemplate.getPointType().getPointTypeId()));
 			PointAlarming savePointAlarming = pointBase.getPointAlarming();
 			Point savePoint = pointBase.getPoint();
 		
@@ -161,7 +161,7 @@ public class PointUtil {
 			
 			
 			//Create a new point for new point type
-			pointBase = PointFactory.createPoint(newPointTemplate.getType());
+			pointBase = PointFactory.createPoint(newPointTemplate.getPointType().getPointTypeId());
 		
 			//Set old point data that can transfer over to new point
 			pointBase.setPoint(savePoint);
@@ -169,7 +169,7 @@ public class PointUtil {
 			pointBase.setPointID(savePoint.getPointID());
 		
 			//Set new point defaults from template
-			pointBase.getPoint().setPointType(PointTypes.getType(newPointTemplate.getType()));
+			pointBase.getPoint().setPointType(PointTypes.getType(newPointTemplate.getPointType().getPointTypeId()));
 			
 			// Add the updated (partial) point information.
 		    t = Transaction.createTransaction(
@@ -195,8 +195,7 @@ public class PointUtil {
 		
 		int pointType = PointTypes.getType(pointBase.getPoint().getPointType());
 		int pointOffset = pointBase.getPoint().getPointOffset();
-		
-		PointTemplate pointTemplate = new PointTemplate(pointType, pointOffset);
+		PointTemplate pointTemplate = new PointTemplate(new PointIdentifier(PointType.getForId(pointType), pointOffset));
 		pointTemplate.setName(pointBase.getPoint().getPointName());
 		
 		if (pointBase instanceof AnalogPoint) {
@@ -257,7 +256,7 @@ public class PointUtil {
 	
 	public static void applyPointTemplate(PointBase pointBase, PointTemplate pointTemplate) {
 		
-		if (PointTypes.getType(pointBase.getPoint().getPointType()) != pointTemplate.getType()) {
+		if (PointTypes.getType(pointBase.getPoint().getPointType()) != pointTemplate.getPointType().getPointTypeId()) {
 			throw new IllegalArgumentException("Method not intended to be used to change point type.");
 		}
 		

@@ -967,8 +967,8 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
      * @return The point template representing the jaxb point
      */
     private PointTemplate createPointTemplate(Point point) {
-
-        PointTemplate template = new PointTemplate(PointType.getForString(point.getType()), point.getOffset());
+        PointIdentifier pointIdentifier = new PointIdentifier(PointType.getForString(point.getType()), point.getOffset());
+        PointTemplate template = new PointTemplate(pointIdentifier);
 
         template.setName(point.getName());
 

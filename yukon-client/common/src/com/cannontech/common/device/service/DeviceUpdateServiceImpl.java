@@ -388,7 +388,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
         Set<PointTemplate> addTemplates = paoDefinitionService.getPointTemplatesToAdd(yukonDevice, newDefinition);
         for (PointTemplate template : addTemplates) {
         	
-        	log.debug("Add point: deviceId=" + device.getPAObjectID() + " point name=" + template.getName() + " type=" + template.getType() + " offset=" + template.getOffset());
+        	log.debug("Add point: deviceId=" + device.getPAObjectID() + " point name=" + template.getName() + " type=" + template.getPointType().getPointTypeId() + " offset=" + template.getOffset());
         	
             PointBase point = pointCreationService.createPoint(yukonDevice.getPaoIdentifier(), template);
 
@@ -417,9 +417,9 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
         for (PointTemplateTransferPair pair : transferTemplates) {
         	
         	log.debug("Transfer point: deviceId=" + device.getPAObjectID() +
-        			" oldType=" + pair.oldDefinitionTemplate.getType() + 
+        			" oldType=" + pair.oldDefinitionTemplate.getPointType().getPointTypeId() + 
         			" old offset=" + pair.oldDefinitionTemplate.getOffset() + 
-        			" new type=" + pair.newDefinitionTemplate.getType() +
+        			" new type=" + pair.newDefinitionTemplate.getPointType().getPointTypeId() +
         			" new offset=" + pair.newDefinitionTemplate.getOffset());
             
             LitePoint litePoint = pointService.getPointForPao(meter, pair.oldDefinitionTemplate);

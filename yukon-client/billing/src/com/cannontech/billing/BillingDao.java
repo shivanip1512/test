@@ -38,6 +38,7 @@ import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.spring.YukonSpringHook;
 
@@ -164,7 +165,7 @@ public class BillingDao {
                     int address = rset.getInt(13);
 
                     int pointType = PointTypes.getType(ptType);
-                    PointIdentifier pointIdentifier = new PointIdentifier(pointType, ptOffset);
+                    PointIdentifier pointIdentifier = new PointIdentifier(PointType.getForId(pointType), ptOffset);
                     java.util.Date tsDate = new java.util.Date(ts.getTime());
 
                     String accountNumber = (accountNumberMap == null ? paoName : accountNumberMap.get(meterNumber));

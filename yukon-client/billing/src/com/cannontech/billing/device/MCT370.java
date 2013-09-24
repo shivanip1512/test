@@ -29,7 +29,7 @@ public class MCT370 extends BillingDeviceBase {
 
         ReadingType readingType = getReadingType(unitOfMeasure);
 
-        switch (pointIdentifier.getType()) {
+        switch (pointIdentifier.getPointType().getPointTypeId()) {
 
         case PointTypes.ANALOG_POINT:
 
@@ -218,7 +218,7 @@ public class MCT370 extends BillingDeviceBase {
 
     @Override
     public boolean isEnergy(PointIdentifier pointIdentifier) {
-        switch (pointIdentifier.getType()) {
+        switch (pointIdentifier.getPointType().getPointTypeId()) {
 
         case PointTypes.ANALOG_POINT:
 
@@ -267,7 +267,7 @@ public class MCT370 extends BillingDeviceBase {
     
     @Override
     public boolean isDemand(PointIdentifier pointIdentifier) {
-        switch (pointIdentifier.getType()) {
+        switch (pointIdentifier.getPointType().getPointTypeId()) {
 
         case PointTypes.ANALOG_POINT:
 

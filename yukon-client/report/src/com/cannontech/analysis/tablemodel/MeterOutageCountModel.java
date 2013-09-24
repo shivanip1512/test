@@ -244,7 +244,7 @@ public class MeterOutageCountModel extends ReportModelBase<MeterOutageCountModel
                     sql.append(" AND P.PAOBJECTID = PAO.PAOBJECTID ");
 
                     sql.append(" AND P.PointOffset = ").appendArgument(pointIdentifier.getOffset());
-                    sql.append(" AND P.PointType = ").appendArgument(PointTypes.getType(pointIdentifier.getType()));
+                    sql.append(" AND P.PointType = ").appendArgument(PointTypes.getType(pointIdentifier.getPointType().getPointTypeId()));
 
                     // RESTRICT BY DEVICE/METER PAOID (if any)
                     sql.append("  AND PAO.PAObjectID in (").appendArgumentList(subList).append(") ");

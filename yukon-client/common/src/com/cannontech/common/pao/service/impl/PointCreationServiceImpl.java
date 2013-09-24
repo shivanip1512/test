@@ -123,7 +123,7 @@ public class PointCreationServiceImpl implements PointCreationService {
 
     @Override
     public PointBase createPoint(PaoIdentifier paoIdentifier, PointTemplate template) {
-        return this.createPoint(template.getType(),
+        return this.createPoint(template.getPointType().getPointTypeId(),
                                 template.getName(),
                                 paoIdentifier,
                                 template.getOffset(),
