@@ -36,6 +36,21 @@ struct IM_EX_CONFIG RfnStrings
     static const std::string displayMetric25;
     static const std::string displayMetric26;
 
+    // focus alphanumeric display items
+    static const std::string displayAlphameric1;
+    static const std::string displayAlphameric2;
+    static const std::string displayAlphameric3;
+    static const std::string displayAlphameric4;
+    static const std::string displayAlphameric5;
+    static const std::string displayAlphameric6;
+    static const std::string displayAlphameric7;
+    static const std::string displayAlphameric8;
+    static const std::string displayAlphameric9;
+    static const std::string displayAlphameric10;
+
+    // focus display item duration
+    static const std::string displayItemDuration;
+
     static const std::string demandInterval;
     static const std::string loadProfileInterval;
 

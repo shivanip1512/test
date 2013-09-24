@@ -80,7 +80,7 @@ private:
 
 typedef RfnDevice Rfn410Device;
 //typedef RfnDevice Rfn420CentronDevice;
-typedef RfnDevice Rfn420FocusDevice;
+//typedef RfnDevice Rfn420FocusDevice;
 typedef RfnDevice Rfn430Device;
 
 }

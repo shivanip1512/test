@@ -435,6 +435,19 @@ const CtiTableDynamicPaoInfo::key_map_t   CtiTableDynamicPaoInfo::_key_map =
         (Key_DisplayMetric26,
             "display metric 26")
 
+        (Key_DisplayAlphameric1,            "display alphameric 1")
+        (Key_DisplayAlphameric2,            "display alphameric 2")
+        (Key_DisplayAlphameric3,            "display alphameric 3")
+        (Key_DisplayAlphameric4,            "display alphameric 4")
+        (Key_DisplayAlphameric5,            "display alphameric 5")
+        (Key_DisplayAlphameric6,            "display alphameric 6")
+        (Key_DisplayAlphameric7,            "display alphameric 7")
+        (Key_DisplayAlphameric8,            "display alphameric 8")
+        (Key_DisplayAlphameric9,            "display alphameric 9")
+        (Key_DisplayAlphameric10,           "display alphameric 10")
+
+        (Key_DisplayItemDuration,           "display item duration")
+
         (Key_RFN_MondaySchedule,            "rfn monday schedule")
         (Key_RFN_TuesdaySchedule,           "rfn tuesday schedule")
         (Key_RFN_WednesdaySchedule,         "rfn wednesday schedule")

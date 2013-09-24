@@ -226,6 +226,19 @@ public:
         Key_DisplayMetric25,
         Key_DisplayMetric26,
 
+        Key_DisplayAlphameric1,
+        Key_DisplayAlphameric2,
+        Key_DisplayAlphameric3,
+        Key_DisplayAlphameric4,
+        Key_DisplayAlphameric5,
+        Key_DisplayAlphameric6,
+        Key_DisplayAlphameric7,
+        Key_DisplayAlphameric8,
+        Key_DisplayAlphameric9,
+        Key_DisplayAlphameric10,
+
+        Key_DisplayItemDuration,
+
         // RFN keys
 
         Key_RFN_MondaySchedule,

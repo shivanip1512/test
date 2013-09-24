@@ -202,6 +202,21 @@ const string RfnStrings::displayMetric24 = "displayMetric24";
 const string RfnStrings::displayMetric25 = "displayMetric25";
 const string RfnStrings::displayMetric26 = "displayMetric26";
 
+// focus display alphanumeric items
+const string RfnStrings::displayAlphameric1    = "displayAlphameric1";
+const string RfnStrings::displayAlphameric2    = "displayAlphameric2";
+const string RfnStrings::displayAlphameric3    = "displayAlphameric3";
+const string RfnStrings::displayAlphameric4    = "displayAlphameric4";
+const string RfnStrings::displayAlphameric5    = "displayAlphameric5";
+const string RfnStrings::displayAlphameric6    = "displayAlphameric6";
+const string RfnStrings::displayAlphameric7    = "displayAlphameric7";
+const string RfnStrings::displayAlphameric8    = "displayAlphameric8";
+const string RfnStrings::displayAlphameric9    = "displayAlphameric9";
+const string RfnStrings::displayAlphameric10   = "displayAlphameric10";
+
+// focus display item duration
+const string RfnStrings::displayItemDuration   = "displayItemDuration";
+
 const string RfnStrings::demandInterval         = "demandInterval";
 const string RfnStrings::loadProfileInterval    = "loadProfileInterval";
 
