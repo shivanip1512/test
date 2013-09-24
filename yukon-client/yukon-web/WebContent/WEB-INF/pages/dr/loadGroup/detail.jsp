@@ -7,19 +7,6 @@
 
 <cti:standardPage module="dr" page="loadGroupDetail">
 
-<script type="text/javascript">
-jQuery(function() {
-
-    pingUnavailable = function() {
-//     FIXME - placeholder for the Ping Service...
-        alert("Do the Ping Thing here...");
-    }
-
-    jQuery("#pingButton").click(pingUnavailable);
-
-})
-</script>
-
     <tags:simpleDialog id="drDialog"/>
     <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
     <cti:includeScript link="/JavaScript/calendarControl.js"/>
@@ -30,6 +17,9 @@ jQuery(function() {
     <tags:layoutHeadingPrefixPart>
         <dr:favoriteIcon paoId="${loadGroupId}" isFavorite="${isFavorite}"/>
     </tags:layoutHeadingPrefixPart>
+
+    <input id="assetId" type="hidden" value="${loadGroupId}"/>
+    <cti:includeScript link="/JavaScript/drAssetDetails.js"/>
 
     <c:if test="${loadGroup.paoIdentifier.paoType != 'MACRO_GROUP'}">
         <div class="column_12_12">
@@ -85,18 +75,7 @@ jQuery(function() {
                                     <c:otherwise>
                                         <dr:assetAvailabilityStatus assetId="${loadGroupId}"
                                             assetAvailabilitySummary="${assetAvailabilitySummary}" 
-                                            pieJSONData="${pieJSONData}"/>
-                                        <cti:url var="assetsUrl" value="assetDetails">
-                                            <cti:param name="assetId" value="${loadGroupId}"/>
-                                        </cti:url>
-                                        <div><a href="${assetsUrl}">
-                                            <cti:msg2 key="yukon.web.modules.operator.hardware.assetAvailability.viewDetails"/></a>
-                                        </div>
-                                        <%-- Temporarily disable until Ping feature is available.
-                                        <div class="actionArea">
-                                            <cti:button id="pingButton" nameKey="pingDevices" busy="true" classes="f-disableAfterClick"/>
-                                        </div>
-                                        --%>
+                                            pieJSONData="${pieJSONData}" showDetails="true"/>
                                     </c:otherwise>
                                 </c:choose>
                             </c:otherwise>

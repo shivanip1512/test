@@ -51,6 +51,7 @@ import com.cannontech.core.service.DurationFormattingService;
 import com.cannontech.core.service.durationFormatter.DurationFormat;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.DemandResponseBackingField;
+import com.cannontech.dr.assetavailability.service.AssetAvailabilityPingService;
 import com.cannontech.dr.controlarea.filter.PriorityFilter;
 import com.cannontech.dr.controlarea.filter.StateFilter;
 import com.cannontech.dr.controlarea.model.ControlAreaNameField;
@@ -76,6 +77,7 @@ import com.google.common.collect.Ordering;
 @CheckRoleProperty(value={YukonRoleProperty.SHOW_CONTROL_AREAS, YukonRoleProperty.DEMAND_RESPONSE},requireAll=true)
 public class ControlAreaController extends DemandResponseControllerBase {
 
+    @Autowired private AssetAvailabilityPingService assetAvailabilityPingService;
     @Autowired private ControlAreaFieldService controlAreaFieldService;
     @Autowired private ControlAreaNameField controlAreaNameField;
     @Autowired private ControlAreaService controlAreaService;
@@ -336,7 +338,13 @@ public class ControlAreaController extends DemandResponseControllerBase {
             
     }
     
-
+    @RequestMapping("/controlArea/pingDevices")
+    public String pingDevices(String assetId, ModelMap modelMap, HttpServletRequest request) {
+        DisplayablePao controlArea = controlAreaService.getControlArea(Integer.parseInt(assetId));
+        assetAvailabilityPingService.readDevicesInDrGrouping(controlArea.getPaoIdentifier());
+        return "";
+    }
+    
     @RequestMapping("/controlArea/sendEnableConfirm")
     public String sendEnableConfirm(ModelMap modelMap, int controlAreaId, boolean isEnabled,
             YukonUserContext userContext) {

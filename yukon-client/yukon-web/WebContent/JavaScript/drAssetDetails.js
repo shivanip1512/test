@@ -70,6 +70,16 @@ Yukon.DrAssetDetails = (function() {
         return false;
     },
 
+    _pingDevices = function(event) {
+        jQuery('#pingResults').show();
+        var url = "pingDevices?assetId=" + _assetId;
+        jQuery.ajax({
+            url: url,
+            method: 'POST'
+        });
+        return true;
+    },
+    
     drAssetDetailsModule = {
         init: function () {
             if (_initialized) {
@@ -89,9 +99,17 @@ Yukon.DrAssetDetails = (function() {
             
             jQuery("#dd-download")
                 .click(_downloadToCsv);
+            
+            jQuery("#pingButton")
+                .click(_pingDevices);
 
             _initialized = true;
+        },
+        
+        unbusyPingButton: function() {
+            Yukon.ui.unbusy(jQuery('#pingButton'));
         }
+
 
     };
     

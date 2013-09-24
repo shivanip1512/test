@@ -7,19 +7,6 @@
 
 <cti:standardPage module="dr" page="controlAreaDetail">
 
-<script type="text/javascript">
-jQuery(function() {
-
-    pingUnavailable = function() {
-//     FIXME - placeholder for the Ping Service...
-        alert("Do the Ping Thing here...");
-    }
-
-    jQuery("#pingButton").click(pingUnavailable);
-
-})
-</script>
-
     <tags:simpleDialog id="drDialog"/>
     <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
     <cti:includeScript link="/JavaScript/calendarControl.js"/>
@@ -31,6 +18,9 @@ jQuery(function() {
     <tags:layoutHeadingPrefixPart>
         <dr:favoriteIcon paoId="${controlAreaId}" isFavorite="${isFavorite}"/>
     </tags:layoutHeadingPrefixPart>
+
+    <input id="assetId" type="hidden" value="${controlAreaId}"/>
+    <cti:includeScript link="/JavaScript/drAssetDetails.js"/>
 
     <div class="column_12_12">
         <div class="column one">
@@ -107,18 +97,8 @@ jQuery(function() {
                                 </c:when>
                                 <c:otherwise>
                                     <dr:assetAvailabilityStatus assetId="${controlAreaId}"
-                                        assetAvailabilitySummary="${assetAvailabilitySummary}" pieJSONData="${pieJSONData}"/>
-                                    <cti:url var="assetsUrl" value="assetDetails">
-                                        <cti:param name="assetId" value="${controlAreaId}"/>
-                                    </cti:url>
-                                    <div><a href="${assetsUrl}">
-                                        <cti:msg2 key="yukon.web.modules.operator.hardware.assetAvailability.viewDetails"/></a>
-                                    </div>
-                                    <%-- Temporarily disable until Ping feature is available.
-                                    <div class="actionArea">
-                                        <cti:button id="pingButton" nameKey="pingDevices" busy="true" classes="f-disableAfterClick"/>
-                                    </div>
-                                     --%>
+                                        assetAvailabilitySummary="${assetAvailabilitySummary}" 
+                                        pieJSONData="${pieJSONData}" showDetails="true"/>
                                 </c:otherwise>
                             </c:choose>
                         </c:otherwise>

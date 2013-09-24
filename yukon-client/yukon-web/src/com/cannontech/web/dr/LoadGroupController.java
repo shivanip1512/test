@@ -38,6 +38,7 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.assetavailability.service.AssetAvailabilityPingService;
 import com.cannontech.dr.loadgroup.filter.LoadGroupsForMacroLoadGroupFilter;
 import com.cannontech.dr.loadgroup.service.LoadGroupService;
 import com.cannontech.dr.program.service.ProgramService;
@@ -51,6 +52,7 @@ import com.cannontech.web.util.WebFileUtils;
 @CheckRoleProperty(YukonRoleProperty.DEMAND_RESPONSE)
 public class LoadGroupController extends DemandResponseControllerBase {
     
+    @Autowired private AssetAvailabilityPingService assetAvailabilityPingService;
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private DemandResponseEventLogService demandResponseEventLogService;
     @Autowired private FavoritesDao favoritesDao;
@@ -150,6 +152,12 @@ public class LoadGroupController extends DemandResponseControllerBase {
         model.addAttribute("assetDetailsSortDesc", descending);
         
         return "dr/assetDetails.jsp";
+    }
+
+    @RequestMapping("/loadGroup/pingDevices")
+    public void pingDevices(String assetId, ModelMap modelMap) {
+        DisplayablePao controlArea = loadGroupService.getLoadGroup(Integer.parseInt(assetId));
+        assetAvailabilityPingService.readDevicesInDrGrouping(controlArea.getPaoIdentifier());
     }
 
     /**

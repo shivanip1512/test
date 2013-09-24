@@ -38,6 +38,7 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.assetavailability.service.AssetAvailabilityPingService;
 import com.cannontech.dr.loadgroup.filter.LoadGroupsForProgramFilter;
 import com.cannontech.dr.program.filter.ForControlAreaFilter;
 import com.cannontech.dr.program.filter.ForScenarioFilter;
@@ -64,6 +65,7 @@ import com.google.common.collect.Lists;
 @RequestMapping("/program/*")
 public class ProgramController extends ProgramControllerBase {
 
+    @Autowired private AssetAvailabilityPingService assetAvailabilityPingService;
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private FavoritesDao favoritesDao;
     @Autowired private LoadGroupControllerHelper loadGroupControllerHelper;
@@ -144,6 +146,12 @@ public class ProgramController extends ProgramControllerBase {
         model.addAttribute("assetDetailsSortDesc", descending);
         
         return "dr/assetDetails.jsp";
+    }
+
+    @RequestMapping("/program/pingDevices")
+    public void pingDevices(String assetId, ModelMap modelMap) {
+        DisplayablePao controlArea = programService.getProgram(Integer.parseInt(assetId));
+        assetAvailabilityPingService.readDevicesInDrGrouping(controlArea.getPaoIdentifier());
     }
 
     /**
@@ -472,6 +480,7 @@ public class ProgramController extends ProgramControllerBase {
         return "dr/program/sendEnableDisableProgramsConfirm.jsp";
     }
     
+    @SuppressWarnings("null")
     @RequestMapping
     public @ResponseBody JSONObject enableDisablePrograms(HttpServletResponse resp, ModelMap modelMap, HttpServletRequest request, FlashScope flashScope,
                       Boolean supressRestoration, boolean enable) throws IOException {

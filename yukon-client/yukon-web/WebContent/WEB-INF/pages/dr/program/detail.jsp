@@ -7,19 +7,6 @@
 
 <cti:standardPage module="dr" page="programDetail">
 
-<script type="text/javascript">
-jQuery(function() {
-
-    pingUnavailable = function() {
-//     FIXME - placeholder for the Ping Service...
-        alert("Do the Ping Thing here...");
-    }
-
-    jQuery("#pingButton").click(pingUnavailable);
-
-})
-</script>
-
     <tags:simpleDialog id="drDialog"/>
     <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
     <cti:includeScript link="/JavaScript/calendarControl.js"/>
@@ -30,6 +17,9 @@ jQuery(function() {
     <tags:layoutHeadingPrefixPart>
         <dr:favoriteIcon paoId="${programId}" isFavorite="${isFavorite}"/>
     </tags:layoutHeadingPrefixPart>
+
+    <input id="assetId" type="hidden" value="${programId}"/>
+    <cti:includeScript link="/JavaScript/drAssetDetails.js"/>
 
     <div class="column_12_12 clear">
         <div class="column one">
@@ -110,18 +100,7 @@ jQuery(function() {
                                 <c:otherwise>
                                     <dr:assetAvailabilityStatus assetId="${programId}" 
                                         assetAvailabilitySummary="${assetAvailabilitySummary}" 
-                                        pieJSONData="${pieJSONData}"/>
-                                    <cti:url var="assetsUrl" value="assetDetails">
-                                        <cti:param name="assetId" value="${programId}"/>
-                                    </cti:url>
-                                    <div><a href="${assetsUrl}">
-                                        <cti:msg2 key="yukon.web.modules.operator.hardware.assetAvailability.viewDetails"/></a>
-                                    </div>
-                                    <%-- Temporarily disable until Ping feature is available.
-                                    <div class="actionArea">
-                                        <cti:button id="pingButton" nameKey="pingDevices" busy="true" classes="f-disableAfterClick"/>
-                                    </div>
-                                    --%>
+                                        pieJSONData="${pieJSONData}" showDetails="true"/>
                                 </c:otherwise>
                             </c:choose>
                         </c:otherwise>

@@ -139,6 +139,9 @@
     <entry key="yukon.web.modules.operator.hardware.assetAvailability.devices">Devices</entry>
     <entry key="yukon.web.modules.operator.hardware.assetAvailability.viewDetails">View Details</entry>
     <entry key="yukon.web.modules.operator.hardware.assetAvailability.noDevices">No Enrolled Devices</entry>
+    <entry key="yukon.web.modules.operator.hardware.assetAvailability.pingDevices.label">Ping Devices</entry>
+    <entry key="yukon.web.modules.operator.hardware.assetAvailability.pingDevices.labelBusy">Pinging</entry>
+    <entry key="yukon.web.modules.operator.hardware.assetAvailability.pingResults">Ping Results:</entry>
 
     <entry key="yukon.web.modules.operator.hardware.assetAvailability.serialNumber.linkText">Serial Number</entry>
     <entry key="yukon.web.modules.operator.hardware.assetAvailability.type.linkText">Type</entry>

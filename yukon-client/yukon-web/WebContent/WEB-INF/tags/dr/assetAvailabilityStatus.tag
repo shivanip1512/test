@@ -1,6 +1,7 @@
 <%@ attribute name="assetId" required="true" type="java.lang.Integer" %>
 <%@ attribute name="assetAvailabilitySummary" required="true" type="com.cannontech.dr.assetavailability.SimpleAssetAvailabilitySummary" %>
 <%@ attribute name="pieJSONData" required="true" type="net.sf.json.JSONObject" %>
+<%@ attribute name="showDetails" required="true" type="java.lang.Boolean" %>
 <%@ tag body-content="empty" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
@@ -18,7 +19,6 @@
 
 <div class="column_12_12 clearfix">
     <div class="column one">
-
         <tags:nameValueContainer2>
             <tags:nameValue2 nameKey=".running">
                 <cti:msg2 var="numberOfDevices" key=".numberOfDevices" argument="${runningSize}"/>
@@ -40,7 +40,6 @@
                 <span class="error">${unavailableSize} ${numberOfDevices}</span>
             </tags:nameValue2>
         </tags:nameValueContainer2>
-
     </div>
     <div class="column two nogutter">
 
@@ -50,5 +49,34 @@
             </div>
     </div>
 </div>
+
+<div class="column_24 clearfix">
+    <div class="column one nogutter">
+        <c:if test="${showDetails}">
+            <cti:url var="assetsUrl" value="assetDetails">
+                <cti:param name="assetId" value="${assetId}"/>
+            </cti:url>
+            <div><a href="${assetsUrl}">
+                <cti:msg2 key="yukon.web.modules.operator.hardware.assetAvailability.viewDetails"/></a>
+            </div>
+        </c:if>
+        
+        <div class="actionArea">
+            <cti:button id="pingButton" nameKey="pingDevices" busy="true" classes="f-disableAfterClick"/>
+            <span id="pingResults" style="display:none" >
+                <span class="dib fl" style="padding-right:10px">
+                    <i:inline key="yukon.web.modules.operator.hardware.assetAvailability.pingResults"/>
+                </span>
+                <tags:updateableProgressBar 
+                    countKey="ASSET_AVAILABILITY_READ/${assetId}/SUCCESS_COUNT"
+                    totalCountKey="ASSET_AVAILABILITY_READ/${assetId}/TOTAL_COUNT"
+                    failureCountKey="ASSET_AVAILABILITY_READ/${assetId}/FAILED_COUNT" 
+                    hideCount="true" hidePercent="false" containerClasses="dib fl" 
+                    completionCallback="Yukon.DrAssetDetails.unbusyPingButton" />
+            </span>
+        </div>
+    </div>
+</div>
+    
 </cti:msgScope>
 

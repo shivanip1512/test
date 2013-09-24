@@ -445,6 +445,8 @@ background: -webkit-linear-gradient(top, #8c0c10, #8c0c10 10%, #bf0f12, #8c0c10 
 	width: 55px;
 }
 
+.actionArea .progressBar .progressBarBorder, .pageActionArea .progressBar .progressBarBorder {margin-top:6px;}
+
 .result-bar {
 	height: 14px;
 	border: 1px solid #bbb;

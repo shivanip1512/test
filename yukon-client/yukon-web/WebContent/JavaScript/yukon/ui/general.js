@@ -200,7 +200,7 @@ Yukon.modules.ui = function (mod) {
             
             label = btn.children(".label");
             originalText = btn.data("data-original-text");
-            if (label.length > 0 && originalText.length > 0) {
+            if (typeof originalText !== 'undefined' && label.length > 0 && originalText.length > 0) {
                 label.html(originalText);
             }
         }

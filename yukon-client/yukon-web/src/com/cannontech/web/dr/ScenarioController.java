@@ -38,6 +38,7 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
+import com.cannontech.dr.assetavailability.service.AssetAvailabilityPingService;
 import com.cannontech.dr.filter.AuthorizedFilter;
 import com.cannontech.dr.filter.NameFilter;
 import com.cannontech.dr.program.filter.ForScenarioFilter;
@@ -55,6 +56,7 @@ import com.cannontech.web.util.WebFileUtils;
 @CheckRoleProperty(value={YukonRoleProperty.SHOW_SCENARIOS,YukonRoleProperty.DEMAND_RESPONSE}, requireAll=true)
 public class ScenarioController extends DemandResponseControllerBase {
     
+    @Autowired private AssetAvailabilityPingService assetAvailabilityPingService;
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private FavoritesDao favoritesDao;
     @Autowired private PaoAuthorizationService paoAuthorizationService;
@@ -161,6 +163,12 @@ public class ScenarioController extends DemandResponseControllerBase {
         model.addAttribute("assetDetailsSortDesc", descending);
         
         return "dr/assetDetails.jsp";
+    }
+
+    @RequestMapping("/scenario/pingDevices")
+    public void pingDevices(String assetId, ModelMap modelMap) {
+        DisplayablePao controlArea = scenarioService.getScenario(Integer.parseInt(assetId));
+        assetAvailabilityPingService.readDevicesInDrGrouping(controlArea.getPaoIdentifier());
     }
 
     /**

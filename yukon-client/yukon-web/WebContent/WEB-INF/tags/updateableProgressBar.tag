@@ -15,6 +15,7 @@
 <%@ attribute name="barFailureClasses" rtexprvalue="true" description="Use this to override the inner failure progress bar styles. Only applicable for success / failure progress bar."%>
 <%@ attribute name="percentClasses" rtexprvalue="true" description="Use this to override the percent styles."%>
 <%@ attribute name="countClasses" rtexprvalue="true" description="Use this to override the count styles."%>
+<%@ attribute name="containerClasses" rtexprvalue="true" description="Classes on the container"%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
@@ -30,7 +31,7 @@
 	<c:set var="hideCount" value="false"/>
 </c:if>
 
-<div id="progressContainer_${pbarId}" class="progressBar clearfix">
+<div id="progressContainer_${pbarId}" class="progressBar clearfix ${pageScope.containerClasses}">
     <div class="progressBarBorder box fl ${pageScope.borderClasses}">
         <c:choose>
             <c:when test="${empty pageScope.failureCountKey}">
