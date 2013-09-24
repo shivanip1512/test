@@ -83,4 +83,31 @@ public final class Formula {
     public ImmutableList<FormulaLookupTable<LocalTime>> getTimeTables() {
         return timeTables;
     }
+    
+    public FormulaFunction getFunctionById(int functionId) {
+        for (FormulaFunction f : functions) {
+            if (f.getFunctionId() == functionId) {
+                return f;
+            }
+        }
+        throw new RuntimeException("No function with id: " + functionId + " exists for formula: " + getName());
+    }
+
+    public FormulaLookupTable<Double> getTableById(int tableId) {
+        for (FormulaLookupTable<Double> t : tables) {
+            if (t.getLookupTableId() == tableId) {
+                return t;
+            }
+        }
+        throw new RuntimeException("No lookup table with id: " + tableId + " exists for formula: " + getName());
+    }
+
+    public FormulaLookupTable<LocalTime> getTimeTableById(int timeTableId) {
+        for (FormulaLookupTable<LocalTime> t : timeTables) {
+            if (t.getLookupTableId() == timeTableId) {
+                return t;
+            }
+        }
+        throw new RuntimeException("No time-based lookup table with id: " + timeTableId + " exists for formula: " + getName());
+    }
 }

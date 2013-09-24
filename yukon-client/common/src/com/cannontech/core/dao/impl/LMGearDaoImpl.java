@@ -1,6 +1,7 @@
 package com.cannontech.core.dao.impl;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -15,6 +16,7 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.db.device.lm.GearControlMethod;
+import com.cannontech.dr.ThermostatRampRateValues;
 import com.cannontech.loadcontrol.data.LMProgramDirectGear;
 import com.cannontech.loadcontrol.gear.model.BeatThePeakGearContainer;
 import com.google.common.collect.Maps;
@@ -114,6 +116,12 @@ public class LMGearDaoImpl implements LMGearDao {
 
         return gearMap;
     }
+    
+    public LMProgramDirectGear getByGearId(Integer gearId) {
+        List<Integer> singleGearId = new ArrayList<>(1);
+        singleGearId.add(gearId);
+        return getByGearIds(singleGearId).get(gearId);
+    }
 
     private static class LMProgramDirectGearRowMapper extends AbstractRowMapperWithBaseQuery<LMProgramDirectGear> {
         @Override
@@ -156,4 +164,40 @@ public class LMGearDaoImpl implements LMGearDao {
         }
     }
     
+    public ThermostatRampRateValues getThermostatGearRampRateValues(int gearId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT ValueD, ValueTd");
+        sql.append("FROM LMThermoStatGear");
+        sql.append("WHERE GearId").eq(gearId);
+        
+        return yukonJdbcTemplate.queryForLimitedResults(sql, new YukonRowMapper<ThermostatRampRateValues>() {
+            @Override
+            public ThermostatRampRateValues mapRow(YukonResultSet rs) throws SQLException {
+                return new ThermostatRampRateValues(rs.getInt("ValueD"), rs.getInt("ValueTd"));
+            }
+        }, 1).get(0);
+    }
+    
+    public Double getSimpleThermostatGearRampRate(int gearId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT RampRate");
+        sql.append("FROM LMThermoStatGear");
+        sql.append("WHERE GearId").eq(gearId);
+        
+        return yukonJdbcTemplate.queryForLimitedResults(sql, new YukonRowMapper<Double>() {
+            @Override
+            public Double mapRow(YukonResultSet rs) throws SQLException {
+                return rs.getDouble("RampRate");
+            }
+        }, 1).get(0);
+    }
+    
+    public String getGearName(int gearId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT GearName");
+        sql.append("FROM LMProgramDirectGear");
+        sql.append("WHERE GearId").eq(gearId);
+        
+        return yukonJdbcTemplate.queryForString(sql);
+    }
 }

@@ -12,28 +12,17 @@ public final class FormulaInputHolder {
     private final ImmutableMap<Integer, FormulaInput<Double>> tableInputs;
     private final ImmutableMap<Integer, FormulaInput<LocalTime>> timeTableInputs;
 
-    private final ImmutableMap<Integer, Double> functionInputValues;
-    private final ImmutableMap<Integer, Double> tableInputValues;
-    private final ImmutableMap<Integer, LocalTime> timeTableInputValues;
+    private final Map<Integer, Double> functionInputValues;
+    private final Map<Integer, Double> tableInputValues;
+    private final Map<Integer, LocalTime> timeTableInputValues;
 
-    public FormulaInputHolder(ImmutableMap<Integer, FormulaInput<Double>> functionInputs, ImmutableMap<Integer, Double> functionInputValues,
-            ImmutableMap<Integer, FormulaInput<Double>> tableInputs, ImmutableMap<Integer, Double> tableInputValues,
-            ImmutableMap<Integer, FormulaInput<LocalTime>> timeTableInputs, ImmutableMap<Integer, LocalTime> timeTableInputValues) {
-        this.functionInputs = functionInputs;
-        this.functionInputValues = functionInputValues;
-        this.tableInputs = tableInputs;
-        this.tableInputValues = tableInputValues;
-        this.timeTableInputs = timeTableInputs;
-        this.timeTableInputValues = timeTableInputValues;
-    }
-
-    public FormulaInputHolder(Builder b) {
-        this.functionInputs = b.functionInputs.size() == 0 ? null : ImmutableMap.copyOf(b.functionInputs);
-        this.functionInputValues = b.functionInputValues.size() == 0 ? null : ImmutableMap.copyOf(b.functionInputValues);
-        this.tableInputs = b.tableInputs.size() == 0 ? null : ImmutableMap.copyOf(b.tableInputs);
-        this.tableInputValues = b.tableInputValues.size() == 0 ? null : ImmutableMap.copyOf(b.tableInputValues);
-        this.timeTableInputs = b.timeTableInputs.size() == 0 ? null : ImmutableMap.copyOf(b.timeTableInputs);
-        this.timeTableInputValues = b.timeTableInputValues.size() == 0 ? null : ImmutableMap.copyOf(b.timeTableInputValues);
+    private FormulaInputHolder(Builder b) {
+        this.functionInputs = ImmutableMap.copyOf(b.functionInputs);
+        this.functionInputValues = ImmutableMap.copyOf(b.functionInputValues);
+        this.tableInputs = ImmutableMap.copyOf(b.tableInputs);
+        this.tableInputValues = ImmutableMap.copyOf(b.tableInputValues);
+        this.timeTableInputs = ImmutableMap.copyOf(b.timeTableInputs);
+        this.timeTableInputValues = ImmutableMap.copyOf(b.timeTableInputValues);
     }
 
     public Map<Integer, Double> getFunctionInputValues() {

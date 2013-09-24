@@ -1,8 +1,9 @@
 package com.cannontech.dr.estimatedload.service;
 
+import com.cannontech.dr.estimatedload.EstimatedLoadCalculationException;
+import com.cannontech.dr.estimatedload.EstimatedLoadCalculationInfo;
 import com.cannontech.dr.estimatedload.Formula;
 import com.cannontech.dr.estimatedload.FormulaInputHolder;
-import com.cannontech.i18n.YukonMessageSourceResolvable;
 
 
 public interface FormulaService {
@@ -14,10 +15,13 @@ public interface FormulaService {
      * temperature ramp rate.
      * 
      * @param formula The formula for which input values are to be gathered.
+     * @param calcInfo The calculation information gathered to compute formula output.
      * @return The object which holds all of the current input values, as well as the minimum and maximum allowable
      * values for those inputs.
+     * @throws EstimatedLoadCalculationException 
      */
-    public FormulaInputHolder buildFormulaInputHolder(Formula formula);
+    public FormulaInputHolder buildFormulaInputHolder(Formula formula, EstimatedLoadCalculationInfo calcInfo)
+            throws EstimatedLoadCalculationException;
 
     /**
      * Checks that all inputs collected by the FormulaInputHolder object fall within valid input value ranges
@@ -26,10 +30,10 @@ public interface FormulaService {
      * @param formula The estimated load formula object currently being evaluated.
      * @param inputHolder The object which holds all minimum and maximum input values, as well as the current
      * value of all inputs as read from RawPointHistory. 
-     * return Returns a YukonMessageSourceResolvable with appropriate error message if any of the inputs are
-     * not valid.  If all inputs are valid, returns null.
+     * @throws EstimatedLoadCalculationException 
      */
-    public YukonMessageSourceResolvable checkValidity(Formula formula, FormulaInputHolder inputHolder);
+    public void checkAllInputsValid(Formula formula, FormulaInputHolder formulaInputHolder)
+            throws EstimatedLoadCalculationException;
 
     /** 
      * Evaluates the output value of a formula by summing the output of all of the functions and lookup tables.
@@ -40,9 +44,9 @@ public interface FormulaService {
      * 
      * @param formula The estimated load formula whose output is being computed.
      * @param inputHolder The input values being supplied to the functions and lookup tables for the formula.
-     * @return Returns a floating point value of type Double that is between 0.0 and 1.0. 
+     * @return Returns a double floating point value between 0.0 and 1.0. 
      * @throws FormulaCalculationException 
      */
-    public Double calculateFormulaOutput(Formula formula, FormulaInputHolder inputHolder);
+    public double calculateFormulaOutput(Formula formula, FormulaInputHolder inputHolder);
 
 }

@@ -510,10 +510,14 @@
 <entry key="yukon.web.modules.dr.estimatedLoad.applianceCategories.title">Appliance Categories</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.applianceLoad.linkText">Appliance Load</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.assignments">Assignments</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.invalidInput">Formula: {0} has an input value that is not within the valid range.</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.appCatNotFound">Appliance category not found for LM program: {0}</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.noAverageKwLoad">Per-appliance average kW load not found for appliance category: {0}</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.invalidPaoType">Invalid PaoType for pao id: {0}</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.inputOutOfRange">For formula: {0} The function or table: {1} has an input value that is not within the valid range.</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.inputValueNotFound">Can not retrieve an input point value for formula: {0}</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.appCatInfoNotFound">Appliance category info (id, kW load per appliance) not found for LM program: {0}</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.gearNotFound">Gear id not found for LM program: {0}</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.gearFormulaAssignmentNotFound">No formula assigned for gear id: {0}</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.acFormulaAssignmentNotFound">No formula assigned for appliance category id: {0}</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.formulaNotFound">Formula id not found: {0}</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.error">Error</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.calculationType">Calculation Type</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.calculationType.linkText">Calculation Type</entry>

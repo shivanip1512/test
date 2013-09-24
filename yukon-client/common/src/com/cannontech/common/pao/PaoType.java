@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.DatabaseRepresentationSource;
+import com.cannontech.database.data.device.lm.LMProgramDirect;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.database.data.pao.CapControlTypes;
@@ -240,6 +241,7 @@ public enum PaoType implements DatabaseRepresentationSource {
     private final static ImmutableSet<PaoType> rtuTypes;
     private final static ImmutableSet<PaoType> portTypes;
     private final static ImmutableSet<PaoType> lmProgramTypes;
+    private final static ImmutableSet<PaoType> directProgramTypes;
     private final static ImmutableSet<PaoType> twoWayLcrTypes;
     
     public final static int INVALID = -1;
@@ -263,8 +265,11 @@ public enum PaoType implements DatabaseRepresentationSource {
             LM_CURTAIL_PROGRAM,
             LM_DIRECT_PROGRAM,
             LM_ENERGY_EXCHANGE_PROGRAM,
-            LM_SEP_PROGRAM                                 
-        );
+            LM_SEP_PROGRAM);
+        
+        directProgramTypes = ImmutableSet.of(
+            LM_DIRECT_PROGRAM,
+            LM_SEP_PROGRAM);
         
         cbcTypes = ImmutableSet.of(
                 CAPBANKCONTROLLER,
@@ -471,7 +476,11 @@ public enum PaoType implements DatabaseRepresentationSource {
         Validate.notNull(deviceType, dbString);
         return deviceType;
     }
-    
+
+    public boolean isDirectProgram() {
+        return directProgramTypes.contains(this);
+    }
+
     public boolean isLmProgram() {
         return lmProgramTypes.contains(this);
     }

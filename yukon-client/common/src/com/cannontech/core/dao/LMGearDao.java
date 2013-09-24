@@ -2,6 +2,7 @@ package com.cannontech.core.dao;
 
 import java.util.Map;
 
+import com.cannontech.dr.ThermostatRampRateValues;
 import com.cannontech.loadcontrol.data.LMProgramDirectGear;
 import com.cannontech.loadcontrol.gear.model.BeatThePeakGearContainer;
 
@@ -31,8 +32,47 @@ public interface LMGearDao {
      */
     public void deleteBeatThePeakGear(int gearId);
 
+    /**
+     * Retrieves a single LMProgramDirectGear object from the database.
+     * @param gearId The gear id of the requested gear.
+     */
+    public LMProgramDirectGear getByGearId(Integer gearId);
+
+    /**
+     * Retrieves multiple LMProgramDirectGear objects from the database in a map of gear id to gear.
+     * @param gearIds The gear ids of the requested gears.
+     */
     public Map<Integer, LMProgramDirectGear> getByGearIds(Iterable<Integer> gearIds);
 
+    /**
+     * Retrieves all LMProgramDirectGear objects from the database in a map of gear id to gear.
+     */
     public Map<Integer, LMProgramDirectGear> getAllGears();
 
+    /**
+     * Retrieves the Delta D and Td values for a thermostat ramping gear. 
+     * The ramp rate can then be calculated as:
+     * Delta D / Td
+     * It is assumed that the formula assigned to the gear has been constructed with the proper temperature
+     * units in mind for that gear.  No conversion will be done between Fahrenheit and Celsius when retrieving 
+     * input values. 
+     *
+     * @param gearId The gear Id for which values are requested.
+     */
+    public ThermostatRampRateValues getThermostatGearRampRateValues(int gearId);
+
+    /**
+     * Retrieves the ramp rate for a simple thermostat ramping gear.  The value is in degrees F per hour.
+     * 
+     * @param gearId The gear Id for which values are requested.
+     */
+    public Double getSimpleThermostatGearRampRate(int gearId);
+    
+    /**
+     * Retrieves the name of the gear by gear id.
+     * 
+     * @param gearId Id of gear whose name is requested.
+     * @return The name of the gear.
+     */
+    public String getGearName(int gearId);
 }

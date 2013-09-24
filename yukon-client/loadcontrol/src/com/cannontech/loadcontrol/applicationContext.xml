@@ -70,6 +70,7 @@
     <bean id="drProgramConnectedLoadField" class="com.cannontech.dr.program.model.ProgramConnectedLoadField"/>
     <bean id="drProgramDiversifiedLoadField" class="com.cannontech.dr.program.model.ProgramDiversifiedLoadField"/>
     <bean id="drProgramKwSavingsField" class="com.cannontech.dr.program.model.ProgramKwSavingsField"/>
+    <bean id="drProgramEstimatedLoadErrorField" class="com.cannontech.dr.program.model.ProgramEstimatedLoadErrorField"/>
 
     <bean id="drLoadGroupService" class="com.cannontech.dr.loadgroup.service.impl.LoadGroupServiceImpl"/>
     <bean id="drLoadGroupFieldService" class="com.cannontech.dr.loadgroup.service.impl.LoadGroupFieldServiceImpl"/>

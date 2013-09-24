@@ -14,6 +14,7 @@ import javax.annotation.PostConstruct;
 import org.apache.log4j.Logger;
 import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +34,8 @@ import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.dr.estimatedload.ApplianceCategoryAssignment;
+import com.cannontech.dr.estimatedload.EstimatedLoadCalculationException;
+import com.cannontech.dr.estimatedload.EstimatedLoadCalculationException.Type;
 import com.cannontech.dr.estimatedload.Formula;
 import com.cannontech.dr.estimatedload.FormulaFunction;
 import com.cannontech.dr.estimatedload.FormulaInput;
@@ -776,22 +779,30 @@ public class FormulaDaoImpl implements FormulaDao {
     }
 
     @Override
-    public Formula getFormulaForApplianceCategory(int appCategoryId) {
+    public Formula getFormulaForApplianceCategory(int appCategoryId) throws EstimatedLoadCalculationException {
         ApplianceCategoryAssignment assignment = getAssignmentForApplianceCategory(appCategoryId);
         if (assignment.getFormulaId() == null) {
-            return null;
+            throw new EstimatedLoadCalculationException(Type.NO_FORMULA_FOR_APPLIANCE_CATEGORY, appCategoryId);
         } else {
-            return getFormulaById(assignment.getFormulaId());
+            try {
+                return getFormulaById(assignment.getFormulaId());
+            } catch (DataAccessException e) {
+                throw new EstimatedLoadCalculationException(Type.NO_FORMULA_FOR_APPLIANCE_CATEGORY, appCategoryId);
+            }
         }
     }
 
     @Override
-    public Formula getFormulaForGear(int gearId) {
+    public Formula getFormulaForGear(int gearId) throws EstimatedLoadCalculationException {
         GearAssignment assignment = getAssignmentForGear(gearId);
         if (assignment.getFormulaId() == null) {
-            return null;
+            throw new EstimatedLoadCalculationException(Type.NO_FORMULA_FOR_GEAR, gearId);
         } else {
-            return getFormulaById(assignment.getFormulaId());
+            try {
+                return getFormulaById(assignment.getFormulaId());
+            } catch (DataAccessException e) {
+                throw new EstimatedLoadCalculationException(Type.NO_FORMULA_FOR_GEAR, gearId);
+            }
         }
     }
 }

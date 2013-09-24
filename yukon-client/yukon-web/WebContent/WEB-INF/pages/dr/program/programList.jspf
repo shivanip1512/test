@@ -32,6 +32,16 @@
         function clearFilter() {
             window.location = '${clearFilterUrl}';
         }
+        
+        function createToolTip(msg) {
+            console.log(msg);
+            var data = jQuery.parseJSON(msg.value);
+            if (msg.value != "") {
+                jQuery.each(data, function(key, value) {
+                    console.log(key + ':' + value);
+                });
+            }
+        }
     </script>
 
     <%-- Program filtering popup section --%>
@@ -197,8 +207,11 @@
                                 <cti:checkRolesAndProperties value="PROGRAM_REDUCTION">
                                     <td><cti:dataUpdaterValue identifier="${programId}/REDUCTION" type="DR_PROGRAM" /></td>
                                 </cti:checkRolesAndProperties>
-                                <cti:checkRolesAndProperties value="PROGRAM_LOAD_CAPACITY">
-                                    <td><cti:dataUpdaterValue identifier="${programId}/KW_SAVINGS" type="DR_PROGRAM"/></td>
+                                <cti:checkRolesAndProperties value="ENABLE_ESTIMATED_LOAD">
+                                    <td>
+                                        <cti:dataUpdaterValue identifier="${programId}/KW_SAVINGS" type="DR_PROGRAM"/>
+                                        <cti:dataUpdaterCallback function="createToolTip" value="DR_PROGRAM/${programId}/ESTIMATED_LOAD_ERROR"/>
+                                    </td>
                                 </cti:checkRolesAndProperties>
                                 <td><dr:programListActions pao="${program}" /></td>
                             </tr>
