@@ -42,7 +42,11 @@ public class TdcBackingService implements UpdateBackingService{
         else if(updaterTypeStr.equals("BG_COLOR_POINT")){
             int pointId = Integer.parseInt(idParts[1]);
             int condition = Integer.parseInt(idParts[2]);
-            return tdcService.getUnackAlarmColorStateBox(pointId, condition);
+            if(condition == 0){
+                return tdcService.getUnackOrActiveAlarmColor(pointId);
+            }else{
+                return tdcService.getUnackOrActiveAlarmColor(pointId, condition);
+            }
         }
         else if(updaterTypeStr.equals("ALARM_POINT")){
             int pointId = Integer.parseInt(idParts[1]);
@@ -77,9 +81,18 @@ public class TdcBackingService implements UpdateBackingService{
             if(count > 1){
                 return "MULT_ALARMS";
             }
-        }if(updaterTypeStr.equals("MAN_CONTROL")){
+        }else if(updaterTypeStr.equals("MAN_CONTROL")){
             int pointId = Integer.parseInt(idParts[1]);
             if(tdcService.isManualControlEnabled(pointId)){
+                return "TRUE";
+            }else{
+                return "FALSE";
+            }
+        }else if(updaterTypeStr.equals("MAN_ENTRY")){
+            int pointId = Integer.parseInt(idParts[1]);
+            int pointTypeId = Integer.parseInt(idParts[2]);
+            boolean hasPointValueColumn = Boolean.parseBoolean(idParts[3]);
+            if(tdcService.isManualEntryEnabled(pointId, pointTypeId, hasPointValueColumn)){
                 return "TRUE";
             }else{
                 return "FALSE";

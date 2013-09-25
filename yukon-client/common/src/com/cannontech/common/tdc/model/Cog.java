@@ -2,6 +2,7 @@ package com.cannontech.common.tdc.model;
 
 public class Cog {  
     private boolean manualEntry;
+    private boolean manualControl;
     private boolean tags;
     private boolean enableDisable;
     private boolean trend;
@@ -37,13 +38,19 @@ public class Cog {
     public void setManualEntry(boolean manualEntry) {
         this.manualEntry = manualEntry;
     }
-    
+    public boolean isManualControl() {
+        return manualControl;
+    }
+    public void setManualControl(boolean manualControl) {
+        this.manualControl = manualControl;
+    }
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result + (altScan ? 1231 : 1237);
         result = prime * result + (enableDisable ? 1231 : 1237);
+        result = prime * result + (manualControl ? 1231 : 1237);
         result = prime * result + (manualEntry ? 1231 : 1237);
         result = prime * result + (tags ? 1231 : 1237);
         result = prime * result + (trend ? 1231 : 1237);
@@ -62,6 +69,8 @@ public class Cog {
             return false;
         if (enableDisable != other.enableDisable)
             return false;
+        if (manualControl != other.manualControl)
+            return false;
         if (manualEntry != other.manualEntry)
             return false;
         if (tags != other.tags)
@@ -70,4 +79,6 @@ public class Cog {
             return false;
         return true;
     }
+    
+    
 }

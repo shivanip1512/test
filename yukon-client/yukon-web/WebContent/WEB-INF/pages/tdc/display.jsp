@@ -144,11 +144,14 @@
                                         <li class="divider"></li>
                                     </tags:dynamicChooseOption>
                                 </tags:dynamicChoose>
-                                <c:if test="${row.cog.manualEntry}">
+                                <tags:dynamicChoose updaterString="TDC/MAN_ENTRY/${row.pointId}/${row.pointType.pointTypeId}/${hasPointValueColumn}" suffix="${row.pointId}">
                                     <cti:msg2 key=".manualEntry.title" var="title" />
                                     <cti:msg2 key=".popupTitle" arguments="${title},${row.deviceName},${row.pointName}" argumentSeparator="," var="popupTitle" />
-                                    <cm:dropdownOption key=".manualEntry.title" icon="icon-pencil" pointId="${row.pointId}" popupTitle="${popupTitle}" classes="clearfix f-manualEntry" id="manualEntry-${row.pointId}"></cm:dropdownOption>
-                                </c:if>
+                                    <tags:dynamicChooseOption optionId="TRUE">
+                                        <cm:dropdownOption key=".manualEntry.title" icon="icon-pencil" pointId="${row.pointId}" popupTitle="${popupTitle}" classes="clearfix f-manualEntry" id="manualEntry-${row.pointId}"></cm:dropdownOption>
+                                        <li class="divider"></li>
+                                    </tags:dynamicChooseOption>
+                                </tags:dynamicChoose>
                                 <tags:dynamicChoose updaterString="TDC/MAN_CONTROL/${row.pointId}" suffix="${row.pointId}">
                                     <cti:msg2 key=".tdc.manualControl.title" var="title" />
                                     <cti:msg2 key=".tdc.popupTitle" arguments="${title},${row.deviceName},${row.pointName}" argumentSeparator="," var="popupTitle" />
@@ -156,7 +159,6 @@
                                         <cm:dropdownOption key=".manualControl.title" icon="icon-wrench" pointId="${row.pointId}" popupTitle="${popupTitle}" deviceId="${row.device.deviceId}" classes="clearfix f-manualControl" id="manualControl-${row.pointId}"></cm:dropdownOption>
                                     </tags:dynamicChooseOption>
                                 </tags:dynamicChoose>
-                                <li class="divider"></li>
                                 <c:if test="${row.cog.tags}">
                                     <cti:msg2 key=".tags.title" var="title" />
                                     <cti:msg2 key=".popupTitle" arguments="${title},${row.deviceName},${row.pointName}" argumentSeparator="," var="popupTitle" />

@@ -82,7 +82,7 @@ public class TdcHomeController {
                 }
             });
         model.addAttribute("unackAlarms", mappedAlarms);
-        model.addAttribute("colorStateBoxes", tdcService.getUnackAlarmColorStateBoxes(alarms));
+        model.addAttribute("colorStateBoxes", tdcService.getUnackAlarmColorStateBoxes(null, alarms));
         model.addAttribute("allAlarmsDislay", IDisplay.GLOBAL_ALARM_DISPLAY);
         return "alarming.jsp";
     }

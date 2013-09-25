@@ -7,15 +7,14 @@ import static com.cannontech.common.tdc.model.IDisplay.TAG_LOG_DISPLAY_NUMBER;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.tdc.dao.DisplayDataDao;
@@ -25,17 +24,20 @@ import com.cannontech.common.tdc.model.Display;
 import com.cannontech.common.tdc.model.DisplayData;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointLogicalGroups;
 import com.cannontech.database.data.point.PointType;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class DisplayDataDaoImpl implements DisplayDataDao{
@@ -43,6 +45,7 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private DeviceDao deviceDao;
     @Autowired private DynamicDataSource dynamicDataSource;
+    @Autowired private PointDao pointDao;
     
     private final YukonRowMapper<DisplayData> createCustomRowMapper =
         createCustomDisplayRowMapper();
@@ -76,25 +79,7 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
     }
 
     @Override
-    public List<DisplayData> getCustomDisplayData(Display display, List<DisplayData> alarms) {
-        ListIterator<DisplayData> it = alarms.listIterator();
-        //make sure there is only one alarm per point
-        Map<Integer, Integer> points = new HashMap<Integer, Integer>();
-        while(it.hasNext()){
-            DisplayData data = it.next();
-            if(points.get(data.getPointId()) != null){
-                it.remove();
-            }else{
-                points.put(data.getPointId(), data.getPointId());
-            }
-        }
-        
-        Map<Integer, DisplayData> alarmMap =
-            Maps.uniqueIndex(alarms, new Function<DisplayData, Integer>() {
-                public Integer apply(DisplayData data) {
-                    return data.getPointId();
-                }
-            });
+    public List<DisplayData> getCustomDisplayData(Display display) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT d.Pointid, d.Deviceid, d.Pointtype, d.Pointname, d.Devicename, d.Pointstate, d.Devicecurrentstate");
         sql.append("FROM Display2waydata_view d join display2waydata y on d.Pointid = y.pointid");
@@ -102,20 +87,48 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
         sql.append(" AND d.Pointid > 0");
         sql.append("ORDER BY y.Ordering");
         List<DisplayData> displayData = yukonJdbcTemplate.query(sql, createCustomRowMapper);
-        Map<Integer, SimpleDevice> deviceMap = getDeviceMap(displayData);
+        List<Integer> pointIds =
+            Lists.transform(Lists.newArrayList(displayData), new Function<DisplayData, Integer>() {
+                @Override
+                public Integer apply(DisplayData data) {
+                    return data.getPointId();
+                }
+            });
+
+        List<LitePoint> points = pointDao.getLitePoints(pointIds);
+        Map<Integer, LitePoint> pointMap =
+            Maps.uniqueIndex(points, new Function<LitePoint, Integer>() {
+                public Integer apply(LitePoint p) {
+                    return p.getPointID();
+                }
+            });
+
+        Iterable<Integer> deviceIds =
+            ImmutableSet.copyOf(Iterables.transform(displayData,
+                                                    new Function<DisplayData, Integer>() {
+                                                        public Integer apply(DisplayData data) {
+                                                            return data.getDeviceId();
+                                                        }
+                                                    })).asList();
+        List<SimpleDevice> devices = deviceDao.getYukonDeviceObjectByIds(deviceIds);
+        Map<Integer, SimpleDevice> deviceMap =
+            Maps.uniqueIndex(devices, new Function<SimpleDevice, Integer>() {
+                public Integer apply(SimpleDevice device) {
+                    return device.getDeviceId();
+                }
+            });
+
         for (DisplayData data : displayData) {
             data.setDevice(deviceMap.get(data.getDeviceId()));
-            DisplayData alarm = alarmMap.get(data.getPointId());
-            if (alarm != null) {
-                // condition needed to acknowledge the alarm
-                data.setCondition(alarm.getCondition());
-                data.setPointName(alarm.getPointName());
-            }
+            LitePoint point = pointMap.get(data.getPointId());
+            data.setPointName(point.getPointName());
             Cog cog = new Cog();
             data.setCog(cog);
             // status points are not supported by the flot tag
             cog.setTrend(data.getPointType() != PointType.Status);
-            boolean isValidTypeForManualEntry =
+            int tags = dynamicDataSource.getTags(data.getPointId());
+            boolean inService = !TagUtils.isDeviceOutOfService(tags) && !TagUtils.isPointOutOfService(tags);
+            boolean isValidTypeForManualEntry = inService &&
                 data.getPointType() == PointType.Analog
                         || data.getPointType() == PointType.PulseAccumulator
                         || data.getPointType() == PointType.DemandAccumulator
@@ -127,6 +140,9 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
                                && isValidTypeForManualEntry
                                && pointValue.getPointQuality() != PointQuality.Constant);
             cog.setAltScan(DeviceTypesFuncs.hasDeviceScanRate(data.getDevice().getType()));
+            if(pointValue.getPointType() == PointType.Analog || pointValue.getPointType() == PointType.Status){
+                cog.setManualControl(TagUtils.isControllablePoint(tags) && TagUtils.isControlEnabled(tags));
+            }
             cog.setEnableDisable(true);
             cog.setTags(true);
         }
@@ -213,22 +229,4 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
         };
         return mapper;
     }
-
-    private Map<Integer, SimpleDevice> getDeviceMap(List<DisplayData> displayData) {
-        Iterable<Integer> deviceIds =
-            ImmutableSet.copyOf(Iterables.transform(displayData, new Function<DisplayData, Integer>() {
-                                                        public Integer apply(DisplayData data) {
-                                                            return data.getDeviceId();
-                                                        }
-                                                    })).asList();
-        List<SimpleDevice> devices = deviceDao.getYukonDeviceObjectByIds(deviceIds);
-        Map<Integer, SimpleDevice> deviceMap =
-            Maps.uniqueIndex(devices, new Function<SimpleDevice, Integer>() {
-                public Integer apply(SimpleDevice device) {
-                    return device.getDeviceId();
-                }
-            });
-        return deviceMap;
-    }
-
 }

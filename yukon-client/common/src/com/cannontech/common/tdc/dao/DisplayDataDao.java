@@ -17,7 +17,7 @@ public interface DisplayDataDao {
     /**
      * Gets Custom display data
      */
-    public List<DisplayData> getCustomDisplayData(Display display, List<DisplayData> alarms);
+    public List<DisplayData> getCustomDisplayData(Display display);
 
     /**
      * Gets SOE log display data

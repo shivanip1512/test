@@ -83,12 +83,25 @@ public interface TdcService {
     public int getUnackAlarmCountForPoint(int pointId, int condition);
     
     /**
-     * Gets an unacknowledged alarm color state box  for a point and condition.
+     * Gets an unacknowledged or active alarm color state box  for a point and condition.
      */
-    public String getUnackAlarmColorStateBox(int pointId, int condition);
+    public String getUnackOrActiveAlarmColor(int pointId, int condition);
+    
+    /**
+     * Gets an unacknowledged or active alarm color state box  for a point.
+     */
+    public String getUnackOrActiveAlarmColor(int pointId);
     
     /**
      * Gets an unacknowledged alarm color state boxes for a  display data. (<point id ,<condition, color state box string>)
      **/
-    public Map<Integer, Map<Integer, String>> getUnackAlarmColorStateBoxes(List<DisplayData> displayData);
+    public Map<Integer, Map<Integer, String>> getUnackAlarmColorStateBoxes(Display display, List<DisplayData> displayData);
+    
+    /**
+     * Returns true if manual entry is enabled
+     **/
+ 
+    boolean isManualEntryEnabled(int pointId, int pointTypeId, boolean hasPointValueColumn);
+    
+    
 }

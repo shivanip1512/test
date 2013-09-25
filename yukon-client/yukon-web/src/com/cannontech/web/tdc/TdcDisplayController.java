@@ -38,8 +38,10 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.tag.service.TagService;
 import com.cannontech.common.tdc.dao.DisplayDao;
 import com.cannontech.common.tdc.model.AltScanRateEnum;
+import com.cannontech.common.tdc.model.ColumnTypeEnum;
 import com.cannontech.common.tdc.model.Display;
 import com.cannontech.common.tdc.model.DisplayData;
+import com.cannontech.common.tdc.model.DisplayTypeEnum;
 import com.cannontech.common.tdc.model.EnableDisableEnum;
 import com.cannontech.common.tdc.service.TdcService;
 import com.cannontech.common.validator.SimpleValidator;
@@ -110,7 +112,10 @@ public class TdcDisplayController {
         model.addAttribute("displayName", display.getName());
         model.addAttribute("display", display);
         model.addAttribute("backingBean", new DisplayBackingBean());
-        model.addAttribute("colorStateBoxes", tdcService.getUnackAlarmColorStateBoxes(displayData));
+        model.addAttribute("colorStateBoxes", tdcService.getUnackAlarmColorStateBoxes(display, displayData));
+        if(display.getType() == DisplayTypeEnum.CUSTOM_DISPLAYS){
+            model.addAttribute("hasPointValueColumn", display.hasColumn(ColumnTypeEnum.POINT_VALUE));
+        }
         return "display.jsp";
     }
 

@@ -24,6 +24,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.gui.util.Colors;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.tdc.dao.DisplayDao;
 import com.cannontech.common.tdc.dao.DisplayDataDao;
@@ -53,6 +54,9 @@ import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.message.dispatch.command.service.CommandService;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.Signal;
+import com.google.common.base.Function;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -98,7 +102,7 @@ public class TdcServiceImpl implements TdcService{
             break;
         default:
             if(display.getType() == DisplayTypeEnum.CUSTOM_DISPLAYS){
-                retVal = displayDataDao.getCustomDisplayData(display,getAlarms(false));
+                retVal = displayDataDao.getCustomDisplayData(display);
             }else if(display.getType() == DisplayTypeEnum.ALARMS_AND_EVENTS){
                 retVal = getCustomDisplayDataByAlarmCategory(display);
             }
@@ -130,7 +134,7 @@ public class TdcServiceImpl implements TdcService{
     }
     
     @Override
-    public int acknowledgeAlarmsForPoint(final int pointId, LiteYukonUser user){
+    public int acknowledgeAlarmsForPoint(int pointId, LiteYukonUser user){
         List<DisplayData> activeAlarms =  getUnacknowledgedAlarms(pointId);
         for(DisplayData alarm : activeAlarms){
             acknowledgeAlarm(alarm.getPointId(), alarm.getCondition(), user);
@@ -149,10 +153,10 @@ public class TdcServiceImpl implements TdcService{
     
     @Override
     public int acknowledgeAlarmsForDisplay(Display display, LiteYukonUser user){
-        int count = getUnackAlarmCountForDisplay(display.getDisplayId());
+        int count  = 0;
         List<DisplayData> displayData = getDisplayData(display, null);
         for(DisplayData data :displayData){
-            acknowledgeAlarmsForPoint(data.getPointId(), user);
+            count += acknowledgeAlarmsForPoint(data.getPointId(), user);
         }
         return count;
     }
@@ -183,105 +187,119 @@ public class TdcServiceImpl implements TdcService{
 
     @Override
     public int getUnackAlarmCountForPoint(int pointId) {
-        int count = 0;
         Set<Signal> signals = dynamicDataSource.getSignals(pointId);
-        for (Signal signal : signals) {
-            if (signal.getCondition() != -1 && TagUtils.isAlarmUnacked(signal.getTags())
-                && signal.getTags() != Signal.SIGNAL_COND) {
-                count++;
+        List<Signal> unackAlarms = Lists.newArrayList(Iterables.filter(signals, new Predicate<Signal>() {
+            @Override
+            public boolean apply(Signal signal) {
+                return signal.getCondition() != -1 && TagUtils.isAlarmUnacked(signal.getTags())
+                        && signal.getCondition() != Signal.SIGNAL_COND;
             }
-        }
-        return count;
+        }));        
+        return Iterables.size(unackAlarms);
     }
     
     @Override
     public int getUnackAlarmCountForPoint(int pointId, int condition) {
-        int count = 0;
         Set<Signal> signals = dynamicDataSource.getSignals(pointId);
-        for (Signal signal : signals) {
-            if (signal.getCondition() == condition && TagUtils.isAlarmUnacked(signal.getTags())
-                && signal.getTags() != Signal.SIGNAL_COND) {
-                count++;
+        for(Signal signal: signals){
+            if(signal.getCondition() == condition
+                    && TagUtils.isAlarmUnacked(signal.getTags())
+                    && signal.getCondition() != Signal.SIGNAL_COND){
+                return 1;
             }
         }
-        return count;
+        return 0;
     }
-        
+         
     @Override
-    public String getUnackAlarmColorStateBox(int pointId, int condition) {
-        String color = "";
-        if (getUnackAlarmCountForPoint(pointId) > 0) {
-            if (condition == 0) {
-                color = getUnackAlarmColorForPoint(pointId);
-            } else {
-                color = getUnackAlarmColorForPoint(pointId, condition);
-            }
-        }
-        return color;
-    }
-    
-    private String getUnackAlarmColorForPoint(int pointId, int condition) {
+    public String getUnackOrActiveAlarmColor(int pointId, final int condition) {
         Set<Signal> signals = dynamicDataSource.getSignals(pointId);
-        for (Signal signal : signals) {
-            if (signal.getCondition() == condition
-                && (TagUtils.isAlarmUnacked(signal.getTags()) || TagUtils.isAlarmActive(signal
-                    .getTags()))
-                && signal.getTags() != Signal.SIGNAL_COND) {
-                String color = stateColorMap.get((int) signal.getCategoryID() - 1);
-                return getColorClasses(color, signal.getTags());
+        for(Signal signal: signals){
+            if(signal.getCondition() == condition){
+                return getColorClasses(signal);
             }
         }
         return "";
     }
 
-    private String getColorClasses(String color, int tags){
-        if (!color.isEmpty()) {
-            StringBuilder classes = new StringBuilder();
-            if(TagUtils.isAlarmUnacked(tags)){
-                classes.append("pulse box");
-            }
-            classes.append(" stateBox ");
-            classes.append(color.toLowerCase());
-            return classes.toString();
-        }
-        return "";
-    }
-    
-    private String getUnackAlarmColorForPoint(int pointId) {
+    @Override
+    public String getUnackOrActiveAlarmColor(int pointId) {
         List<Signal> signals = Lists.newArrayList(dynamicDataSource.getSignals(pointId));
-        //latest alarm 
-        Collections.sort(signals, new Comparator<Signal>() {
-            @Override public int compare(Signal o1, Signal o2) {
-                return -o1.getTimeStamp().compareTo(o2.getTimeStamp());
+        List<Signal> alarms =
+            Lists.newArrayList(Iterables.filter(signals, new Predicate<Signal>() {
+                @Override
+                public boolean apply(Signal signal) {
+                    return TagUtils.isAlarmUnacked(signal.getTags())
+                           && signal.getCondition() != Signal.SIGNAL_COND;
+                }
+            }));
+
+        if (alarms.isEmpty()) {
+            alarms =
+                Lists.newArrayList(Iterables.filter(signals, new Predicate<Signal>() {
+                    @Override
+                    public boolean apply(Signal signal) {
+                        return TagUtils.isAlarmActive(signal.getTags())
+                               && signal.getCondition() != Signal.SIGNAL_COND;
+                    }
+                }));
+        }
+        // latest alarm
+        Collections.sort(alarms, new Comparator<Signal>() {
+            @Override
+            public int compare(Signal o1, Signal o2) {
+                return o1.getTimeStamp().compareTo(o2.getTimeStamp());
             }
         });
-        for (Signal signal : signals) {
-            if ((TagUtils.isAlarmUnacked(signal.getTags()) || TagUtils.isAlarmActive(signal
-                .getTags()))
-                && signal.getTags() != Signal.SIGNAL_COND) {
-                String color = stateColorMap.get((int) signal.getCategoryID() - 1);
-                return getColorClasses(color, signal.getTags());
-            }
+        if (alarms.isEmpty()) {
+            return "";
         }
-        return "";
+        Signal signal = alarms.get(alarms.size() - 1);
+        return getColorClasses(signal);
     }
     
     @Override
-    public Map<Integer, Map<Integer, String>> getUnackAlarmColorStateBoxes(List<DisplayData> displayData) {
-        Map<Integer, Map<Integer, String>> alarmColors = new  HashMap<Integer, Map<Integer, String>>();
-        for(DisplayData data: displayData){
+    public Map<Integer, Map<Integer, String>> getUnackAlarmColorStateBoxes(Display display, List<DisplayData> displayData) {
+        Map<Integer, Map<Integer, String>> alarmColors =
+            new HashMap<Integer, Map<Integer, String>>();
+        for (DisplayData data : displayData) {
             Map<Integer, String> mapByCondition = alarmColors.get(data.getPointId());
-            if(mapByCondition == null){
+            if (mapByCondition == null) {
                 mapByCondition = new HashMap<Integer, String>();
             }
             String color = "";
-            if(getUnackAlarmCountForPoint(data.getPointId()) > 0){
-               color = getUnackAlarmColorStateBox(data.getPointId(), data.getCondition());
+            if (display == null) {
+                color = getUnackOrActiveAlarmColor(data.getPointId(), data.getCondition());
             }
-            mapByCondition.put(data.getCondition(),  color);
+            else if (display.getType() == DisplayTypeEnum.CUSTOM_DISPLAYS) {
+                color = getUnackOrActiveAlarmColor(data.getPointId());
+            }
+            else if (display.isAcknowledge()) {
+                color = getUnackOrActiveAlarmColor(data.getPointId(), data.getCondition());
+            }
+
+            mapByCondition.put(data.getCondition(), color);
             alarmColors.put(data.getPointId(), mapByCondition);
         }
         return alarmColors;
+    }
+
+    private String getColorClasses(Signal signal) {
+        if ((TagUtils.isAlarmUnacked(signal.getTags()) || TagUtils.isAlarmActive(signal
+            .getTags()))
+            && signal.getCondition() != Signal.SIGNAL_COND) {
+            String color = stateColorMap.get((int) signal.getCategoryID() - 1);
+            if (!color.isEmpty()) {
+                StringBuilder classes = new StringBuilder();
+                if (TagUtils.isAlarmUnacked(signal.getTags())) {
+                    classes.append("pulse box");
+                }
+                classes.append(" stateBox ");
+                classes.append(color.toLowerCase());
+                return classes.toString();
+            }
+        }
+        return "";
     }
 
     @Override
@@ -291,7 +309,7 @@ public class TdcServiceImpl implements TdcService{
         List<DisplayData> displayData = getDisplayData(display, null);
         for(DisplayData data :displayData){
             // there might be more then one alarm for a point
-            count += getUnackAlarmCountForPoint(data.getPointId(), data.getCondition());
+            count += getUnackAlarmCountForPoint(data.getPointId());
         }
         return count;
     }
@@ -305,7 +323,7 @@ public class TdcServiceImpl implements TdcService{
                 dynamicDataSource.getSignalsByCategory(alarmCat.getAlarmStateID());
             for (Signal signal : signals) {
                 if (TagUtils.isAlarmUnacked(signal.getTags())
-                    && signal.getTags() != Signal.SIGNAL_COND) {
+                    && signal.getCondition() != Signal.SIGNAL_COND) {
                     count++;
                 }
             }
@@ -314,6 +332,41 @@ public class TdcServiceImpl implements TdcService{
     }
 
     private List<DisplayData> getDisplayData(Set<Signal> signals, boolean showActive) {
+        List<Integer> pointIds =
+            Lists.transform(Lists.newArrayList(signals), new Function<Signal, Integer>() {
+                @Override
+                public Integer apply(Signal signal) {
+                    return signal.getPointID();
+                }
+            });
+
+        List<LitePoint> points = pointDao.getLitePoints(pointIds);
+        Map<Integer, LitePoint> pointMap =
+            Maps.uniqueIndex(points, new Function<LitePoint, Integer>() {
+                public Integer apply(LitePoint p) {
+                    return p.getPointID();
+                }
+            });
+
+        List<Integer> deviceIds =
+            Lists.transform(points, new Function<LitePoint, Integer>() {
+                @Override
+                public Integer apply(LitePoint point) {
+                    return point.getPaobjectID();
+                }
+            });
+        List<SimpleDevice> devices = deviceDao.getYukonDeviceObjectByIds(deviceIds);
+        Map<Integer, SimpleDevice> deviceMap =
+            Maps.uniqueIndex(devices, new Function<SimpleDevice, Integer>() {
+                public Integer apply(SimpleDevice device) {
+                    return device.getDeviceId();
+                }
+            });
+
+        Map<PaoIdentifier, LiteYukonPAObject> paoIdentifiers =
+            paoDao.getLiteYukonPaosById(Lists.transform(devices,
+                                                        SimpleDevice.PAO_IDENTIFIER_FUNCTION));
+
         List<DisplayData> data = new ArrayList<>();
         for (Signal signal : signals) {
             if (signal.getCondition() != Signal.SIGNAL_COND) {
@@ -327,15 +380,15 @@ public class TdcServiceImpl implements TdcService{
                 if (displayAlarm) {
                     LitePoint litePoint = null;
                     try {
-                        litePoint = pointDao.getLitePoint(signal.getPointID());
+                        litePoint = pointMap.get(signal.getPointID());
                     } catch (NotFoundException nfe) {
                         log.error("The point (pointId:" + signal.getPointID()
                                   + ") for this Alarm might have been deleted!", nfe);
                     }
                     if (litePoint != null) {
-                        SimpleDevice device = deviceDao.getYukonDevice(litePoint.getPaobjectID());
+                        SimpleDevice device = deviceMap.get(litePoint.getPaobjectID());
                         LiteYukonPAObject liteYukonPAO =
-                            paoDao.getLiteYukonPAO(litePoint.getPaobjectID());
+                            paoIdentifiers.get(device.getPaoIdentifier());
                         DisplayData alarm = new DisplayData();
                         alarm.setCog(new Cog());
                         alarm.setDevice(device);
@@ -365,6 +418,25 @@ public class TdcServiceImpl implements TdcService{
         }
         return false;
     }
+    
+    @Override
+    public boolean isManualEntryEnabled(int pointId, int pointTypeId, boolean hasPointValueColumn){
+        if(!hasPointValueColumn){
+            return false;
+        }
+        int tags = dynamicDataSource.getTags(pointId);
+        PointType type = PointType.getForId(pointTypeId);
+        boolean inService = !TagUtils.isDeviceOutOfService(tags) && !TagUtils.isPointOutOfService(tags);
+        boolean isValidTypeForManualEntry = inService &&
+                (type == PointType.Analog
+                    || type == PointType.PulseAccumulator
+                    || type == PointType.DemandAccumulator
+                    || type == PointType.CalcAnalog
+                    || type == PointType.Status
+                    || type == PointType.CalcStatus);
+        PointValueQualityHolder pointValue = dynamicDataSource.getPointValue(pointId);
+        return isValidTypeForManualEntry && pointValue.getPointQuality() != PointQuality.Constant;
+    }
        
     private List<DisplayData> getCustomDisplayDataByAlarmCategory(Display display) {
         int catId = alarmCatDao.getAlarmCategoryId(display.getName());
@@ -372,8 +444,6 @@ public class TdcServiceImpl implements TdcService{
         return getDisplayData(signals, true);
     }
        
-  
-  
     @PostConstruct
     public void init() {
         LiteStateGroup states = stateDao.getLiteStateGroup(StateGroupUtils.STATEGROUP_ALARM);
