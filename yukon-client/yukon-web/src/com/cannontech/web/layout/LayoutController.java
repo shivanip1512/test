@@ -61,17 +61,17 @@ import com.google.common.collect.ImmutableList.Builder;
 @Controller
 public class LayoutController {
 	
-    @Autowired private RolePropertyDao rpDao;
+    @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private CommonModuleBuilder moduleBuilder;
-    @Autowired private YukonUserContextMessageSourceResolver resolver;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private PageDetailProducer pageDetailProducer;
     @Autowired private ConfigurationSource configSource;
-    @Autowired private YukonEnergyCompanyService yecService;
+    @Autowired private YukonEnergyCompanyService ecService;
     @Autowired private YukonUserDao userDao;
     @Autowired private StandardMenuRenderer stdMenuRender;
     @Autowired private SearchRenderer searchRenderer;
-    @Autowired private HttpExpressionLanguageResolver elResolver;
-    @Autowired private GlobalSettingDao gsDao;
+    @Autowired private HttpExpressionLanguageResolver expressionLanguageResolver;
+    @Autowired private GlobalSettingDao globalSettingDao;
     
     private List<String> layoutScriptFiles;
     
@@ -130,7 +130,7 @@ public class LayoutController {
         map.addAttribute("info", tagInfo);
         
         final YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        final MessageSourceAccessor messageSourceAccessor = resolver.getMessageSourceAccessor(userContext);
+        final MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         
         //used for determining page title etc...
         final ModuleBase moduleBase = getModuleBase(tagInfo.getModuleName());
@@ -142,7 +142,7 @@ public class LayoutController {
         PageDetail pageDetailTemp;
         if (pageInfo != null) {
             map.addAttribute("canFavorite", ! pageInfo.isHideFavorite());
-            List<String> resolvedLabelArgs = elResolver.resolveElExpressions(pageInfo.getLabelArgumentExpressions(), request);
+            List<String> resolvedLabelArgs = expressionLanguageResolver.resolveElExpressions(pageInfo.getLabelArgumentExpressions(), request);
             String labelArgs = com.cannontech.common.util.StringUtils.listAsJsSafeString(resolvedLabelArgs);
             map.addAttribute("labelArgs", labelArgs);
             pageDetailTemp = pageDetailProducer.render(pageInfo, request, messageSourceAccessor);
@@ -179,7 +179,7 @@ public class LayoutController {
         map.addAttribute("innerContentCss", innerContentCssList);
         
         LiteYukonUser user = ServletUtil.getYukonUser(request);
-        String cssLocations = rpDao.getPropertyStringValue(YukonRoleProperty.STD_PAGE_STYLE_SHEET, user);
+        String cssLocations = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.STD_PAGE_STYLE_SHEET, user);
         cssLocations = StringUtils.defaultString(cssLocations,"");
         String[] cssLocationArray = cssLocations.split("\\s*,\\s*");
         List<String> loginGroupCssList = new ArrayList<String>(Arrays.asList(cssLocationArray));
@@ -222,7 +222,7 @@ public class LayoutController {
             
             if (showMenu) {
 	            
-	        	final LeftSideMenuRenderer menuRenderer = new LeftSideMenuRenderer(request, moduleBase, resolver);
+	        	final LeftSideMenuRenderer menuRenderer = new LeftSideMenuRenderer(request, moduleBase, messageSourceResolver);
 	            menuRenderer.setMenuSelection(menuSelection);
 	            // if bread crumbs were specified within the JSP, use them (old style)
 	            String breadCrumbs = tagInfo.getBreadCrumbs();
@@ -276,7 +276,7 @@ public class LayoutController {
         String energyCompanyName = null;
         
         try {
-            YukonEnergyCompany energyCompany = yecService.getEnergyCompanyByOperator(yukonUser);
+            YukonEnergyCompany energyCompany = ecService.getEnergyCompanyByOperator(yukonUser);
             energyCompanyName = energyCompany.getName();
         } catch (EnergyCompanyNotFoundException e) {
            //The user does not need an Energy Company just to log in.
@@ -333,9 +333,9 @@ public class LayoutController {
 	@ModelAttribute("showNM")
 	public boolean showNetworkManagerLink(ModelMap model, LiteYukonUser user) {
 
-	    boolean showNM = rpDao.checkProperty(YukonRoleProperty.ADMIN_NM_ACCESS, user);
+	    boolean showNM = rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_NM_ACCESS, user);
 	    if (showNM) {
-	        String url = gsDao.getString(GlobalSettingType.NETWORK_MANAGER_ADDRESS);
+	        String url = globalSettingDao.getString(GlobalSettingType.NETWORK_MANAGER_ADDRESS);
 	        model.addAttribute("nmUrl", url);
 	    }
         return showNM;
