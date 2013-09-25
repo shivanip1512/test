@@ -10,7 +10,7 @@ import com.cannontech.database.data.point.PointType;
 
 public final class PointIdentifier implements Comparable<PointIdentifier>, Serializable, YukonPoint {
 
-    private final  int offset;
+    private final int offset;
     private final PointType type;
 
     public PointIdentifier(PointType type, int offset) {
@@ -24,6 +24,14 @@ public final class PointIdentifier implements Comparable<PointIdentifier>, Seria
 
     public PointType getPointType() {
         return type;
+    }
+
+    /**
+     * @deprecated Use {@link #getPointType()}
+     */
+    @Deprecated
+    public int getType() {
+        return type.getPointTypeId();
     }
 
     @Override
