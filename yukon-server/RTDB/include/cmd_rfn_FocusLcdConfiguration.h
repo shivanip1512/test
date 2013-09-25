@@ -18,7 +18,7 @@ public:
     struct DisplayItem
     {
         std::string metric;
-        std::string alpha;
+        std::string alphamericId;
     };
 
     typedef std::vector<DisplayItem> DisplayItemVector;
@@ -29,7 +29,7 @@ public:
     virtual RfnResult decodeCommand(const CtiTime now, const RfnResponse &response);
     virtual RfnResult error(const CtiTime now, const YukonError_t error_code);
 
-    boost::optional<DisplayItemVector> getDisplayItemReceived() const;
+    boost::optional<DisplayItemVector> getDisplayItemsReceived() const;
     boost::optional<unsigned char>     getDisplayItemDurationReceived() const;
 
 protected:

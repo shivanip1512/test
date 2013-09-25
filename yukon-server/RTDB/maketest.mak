@@ -54,6 +54,7 @@ RTDB_TEST_OBJS=\
 test_main.obj \
 test_cmd_rfn.obj \
 test_cmd_rfn_CentronLcdConfiguration.obj \
+test_cmd_rfn_FocusLcdConfiguration.obj \
 test_cmd_rfn_DemandFreeze.obj \
 test_cmd_rfn_LoadProfile.obj \
 test_cmd_rfn_TouConfiguration.obj \

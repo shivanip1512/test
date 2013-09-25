@@ -70,25 +70,25 @@ struct MetricItem
 
 // this array is use to populate lookup maps
 const MetricItem metricItems[] = {
-    {  0, "Delivered +kWh (6 digit)",       "deliveredKwh6x1",  "deliveredKwh",    "6x1"  },
-    {  1, "Delivered +kWh (5 digit)",       "deliveredKwh5x1",  "deliveredKwh",    "5x1"  },
-    {  2, "Delivered +kWh (4 digit)",       "deliveredKwh4x1",  "deliveredKwh",    "4x1"  },
-    {  3, "Delivered +kWh (4 x 10  digit)", "deliveredKwh4x10", "deliveredKwh"     "4x10" },
-    {  4, "Received +kWh (6 digit)",        "receivedKwh6x1",   "receivedKwh",     "6x1"  },
-    {  5, "Received +kWh (5 digit)",        "receivedKwh5x1",   "receivedKwh",     "5x1"  },
-    {  6, "Received +kWh (4 digit)",        "receivedKwh4x1",   "receivedKwh",     "4x1"  },
-    {  7, "Received +kWh (4 x 10  digit)",  "receivedKwh4x10"   "receivedKwh"      "4x10" },
-    {  8, "Total kWh (6 digit)",            "totalKwh6x1",      "totalKwh",        "6x1"  },
-    {  9, "Total kWh (5 digit)",            "totalKwh5x1",      "totalKwh",        "5x1"  },
-    { 10, "Total kWh (4 digit)",            "totalKwh4x1",      "totalKwh",        "4x1"  },
-    { 11, "Total kWh (4 x 10  digit)",      "totalKwh4x10",     "totalKwh",        "4x10" },
-    { 12, "Net kWh (6 digit)" ,             "netKwh6x1",        "netKwh",          "6x1"  },
-    { 13, "Net kWh (5 digit)" ,             "netKwh5x1",        "netKwh",          "5x1"  },
-    { 14, "Net kWh (4 digit)" ,             "netKwh4x1",        "netKwh",          "4x1"  },
-    { 15, "Net kWh (4 x 10  digit)",        "netKwh4x10",       "netKwh",          "4x10" },
-    { 16, "Diagnostic flags",               "diagnosticFlags",  "diagnosticFlags", ""     },
-    { 17, "All Segments",                   "allSegments",      "allSegments",     ""     },
-    { 18, "Firmware version",               "firmwareVersion",  "firmwareVersion", ""     }};
+    { 0x00, "Delivered +kWh (6 digit)",       "deliveredKwh6x1",  "deliveredKwh",    "6x1"  },
+    { 0x01, "Delivered +kWh (5 digit)",       "deliveredKwh5x1",  "deliveredKwh",    "5x1"  },
+    { 0x02, "Delivered +kWh (4 digit)",       "deliveredKwh4x1",  "deliveredKwh",    "4x1"  },
+    { 0x03, "Delivered +kWh (4 x 10  digit)", "deliveredKwh4x10", "deliveredKwh"     "4x10" },
+    { 0x04, "Received +kWh (6 digit)",        "receivedKwh6x1",   "receivedKwh",     "6x1"  },
+    { 0x05, "Received +kWh (5 digit)",        "receivedKwh5x1",   "receivedKwh",     "5x1"  },
+    { 0x06, "Received +kWh (4 digit)",        "receivedKwh4x1",   "receivedKwh",     "4x1"  },
+    { 0x07, "Received +kWh (4 x 10  digit)",  "receivedKwh4x10"   "receivedKwh"      "4x10" },
+    { 0x08, "Total kWh (6 digit)",            "totalKwh6x1",      "totalKwh",        "6x1"  },
+    { 0x09, "Total kWh (5 digit)",            "totalKwh5x1",      "totalKwh",        "5x1"  },
+    { 0x0a, "Total kWh (4 digit)",            "totalKwh4x1",      "totalKwh",        "4x1"  },
+    { 0x0b, "Total kWh (4 x 10  digit)",      "totalKwh4x10",     "totalKwh",        "4x10" },
+    { 0x0c, "Net kWh (6 digit)" ,             "netKwh6x1",        "netKwh",          "6x1"  },
+    { 0x0d, "Net kWh (5 digit)" ,             "netKwh5x1",        "netKwh",          "5x1"  },
+    { 0x0e, "Net kWh (4 digit)" ,             "netKwh4x1",        "netKwh",          "4x1"  },
+    { 0x0f, "Net kWh (4 x 10  digit)",        "netKwh4x10",       "netKwh",          "4x10" },
+    { 0x10, "Diagnostic flags",               "diagnosticFlags",  "diagnosticFlags", ""     },
+    { 0x11, "All Segments",                   "allSegments",      "allSegments",     ""     },
+    { 0x12, "Firmware version",               "firmwareVersion",  "firmwareVersion", ""     }};
 
 const unsigned totalMetricItems = arraySize( metricItems );
 
@@ -200,23 +200,23 @@ RfnCommand::Bytes RfnFocusLcdConfigurationCommand::createCommandData( const Disp
     command_data.push_back( displayItems.size() );
     command_data.push_back( displayItemDuration );
 
-    boost::optional<const MetricItem*> metric_item;
+    boost::optional<const MetricItem*> metric;
     boost::optional<unsigned char>     alpha_code;
 
-    for each( const DisplayItem & item in displayItems )
+    for each( const DisplayItem & display_item in displayItems )
     {
-        validateCondition( metric_item = mapFind( metricConfigNameLookup, item.metric ),
-                           BADPARAM, "Invalid metric (" + item.metric + ")" );
+        validateCondition( metric = mapFind( metricConfigNameLookup, display_item.metric ),
+                           BADPARAM, "Invalid metric (" + display_item.metric + ")" );
 
-        command_data.push_back( (*metric_item)->code );
+        command_data.push_back( (*metric)->code );
 
-        validateCondition( item.alpha.length() == 2,
-                           BADPARAM, "Invalid alpha display length (" + CtiNumStr(item.alpha.length()) + ", expected 2)" );
+        validateCondition( display_item.alphamericId.length() == 2,
+                           BADPARAM, "Invalid alpha display length (" + CtiNumStr(display_item.alphamericId.length()) + ", expected 2)" );
 
-        for(int alpha_nbr = 0; alpha_nbr < 2; alpha_nbr++)
+        for each( char alpha_char in display_item.alphamericId )
         {
-            validateCondition( alpha_code = mapFind( alphaDisplayReverseLookup, item.alpha[alpha_nbr] ),
-                               BADPARAM, "Invalid alpha character (" + string(1,item.alpha[alpha_nbr]) + ")" );
+            validateCondition( alpha_code = mapFind( alphaDisplayReverseLookup, alpha_char ),
+                               BADPARAM, "Invalid alphanumeric character ('" + string(1,alpha_char) + "')" );
 
             command_data.push_back( *alpha_code );
         }
@@ -269,7 +269,14 @@ RfnCommand::RfnResult RfnFocusLcdConfigurationCommand::decodeCommand(const CtiTi
 
     _displayItemsReceived = DisplayItemVector();
 
-    boost::optional<const MetricItem*> metric_item;
+    if( ! displayItemNbr )
+    {
+        result.description += "No display metrics";
+
+        return result;
+    }
+
+    boost::optional<const MetricItem*> metric;
     boost::optional<char>              alpha_char;
 
     Bytes::const_iterator response_iter = response.begin()+3;
@@ -280,10 +287,10 @@ RfnCommand::RfnResult RfnFocusLcdConfigurationCommand::decodeCommand(const CtiTi
 
         const unsigned char metric_code = *(response_iter++);
 
-        validateCondition( metric_item = mapFind( metricCodeLookup, metric_code ),
+        validateCondition( metric = mapFind( metricCodeLookup, metric_code ),
                            ErrorInvalidData, "Invalid metric code (" + CtiNumStr(metric_code) + ")");
 
-        display_item.metric = (*metric_item)->configName;
+        display_item.metric = (*metric)->configName;
 
         for(int alpha_nbr = 0; alpha_nbr < 2; alpha_nbr++)
         {
@@ -292,15 +299,13 @@ RfnCommand::RfnResult RfnFocusLcdConfigurationCommand::decodeCommand(const CtiTi
             validateCondition( alpha_char = mapFind( alphaDisplayLookup, alpha_code ),
                                ErrorInvalidData, "Invalid alpha display code (" + CtiNumStr(alpha_code) + ")");
 
-            display_item.alpha += *alpha_char;
-
+            display_item.alphamericId += *alpha_char;
         }
 
         _displayItemsReceived->push_back( display_item );
 
-        result.description += "Display item " + CtiNumStr(item_nbr) + " :\n"
-                           + " " + (*metric_item)->description + "\n"
-                           + " \"" + display_item.alpha + "\"\n";
+        result.description += "Display metric " + CtiNumStr(item_nbr+1) + " : " + (*metric)->description + "\n" +
+                              "- ID code : \"" + display_item.alphamericId + "\"\n";
     }
 
     return result;
@@ -354,7 +359,7 @@ RfnCommand::Bytes RfnFocusLcdConfigurationCommand::getCommandData()
  * get the display items received, will contain empty vector is valid response is received with no display items
  * @return
  */
-boost::optional<RfnFocusLcdConfigurationCommand::DisplayItemVector> RfnFocusLcdConfigurationCommand::getDisplayItemReceived() const
+boost::optional<RfnFocusLcdConfigurationCommand::DisplayItemVector> RfnFocusLcdConfigurationCommand::getDisplayItemsReceived() const
 {
     return _displayItemsReceived;
 }

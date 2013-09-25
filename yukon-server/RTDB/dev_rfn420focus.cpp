@@ -153,8 +153,8 @@ int Rfn420FocusDevice::executePutConfigDisplay(CtiRequestMsg *pReq, CtiCommandPa
         {
             Commands::RfnFocusLcdConfigurationCommand::DisplayItem display_item;
 
-            display_item.metric = *config_metric_itr++;
-            display_item.alpha  = *config_alpha_itr++;
+            display_item.metric       = *config_metric_itr++;
+            display_item.alphamericId = *config_alpha_itr++;
 
             config_display_items.push_back( display_item );
         }
@@ -220,7 +220,7 @@ void Rfn420FocusDevice::handleResult(const Commands::RfnFocusLcdConfigurationCom
 {
     typedef Commands::RfnFocusLcdConfigurationCommand::DisplayItemVector DisplayItemVector;
 
-    boost::optional<DisplayItemVector> displayItemsReceived = cmd.getDisplayItemReceived();
+    boost::optional<DisplayItemVector> displayItemsReceived = cmd.getDisplayItemsReceived();
 
     if( displayItemsReceived )
     {
@@ -243,7 +243,7 @@ void Rfn420FocusDevice::handleResult(const Commands::RfnFocusLcdConfigurationCom
         while( received_itr != displayItemsReceived->end() &&
                pao_itr      != displayAlphaPaoKeys.end() )
         {
-            setDynamicInfo( *pao_itr++, (*received_itr++).alpha );
+            setDynamicInfo( *pao_itr++, (*received_itr++).alphamericId );
         }
     }
 
