@@ -228,13 +228,22 @@
                     path="daysPrevious"
                     size="3"/>
                 <tags:nameValue2 nameKey=".filter.onlyLatestEvent" excludeColon="true">
-                    <input type="checkbox" name="onlyLatestEvent" id="onlyLatestEvent">
+                     <c:if test="${backingBean.onlyLatestEvent}">
+                        <c:set var="latestChecked" value=" checked=\"true\""/>
+                    </c:if>
+                    <input type="checkbox" name="onlyLatestEvent" id="onlyLatestEvent"${latestChecked}>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".filter.onlyAbnormalEvents" excludeColon="true">
-                    <input type="checkbox" name="onlyAbnormalEvents" id="onlyAbnormalEvents">
+                    <c:if test="${backingBean.onlyAbnormalEvents}">
+                        <c:set var="abnormalChecked" value=" checked=\"true\""/>
+                    </c:if>
+                    <input type="checkbox" name="onlyAbnormalEvents" id="onlyAbnormalEvents"${abnormalChecked}>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".filter.includeDisabledDevices" excludeColon="true">
-                    <input type="checkbox" name="includeDisabledDevices" id="includeDisabledDevices">
+                    <c:if test="${backingBean.includeDisabledPaos}">
+                        <c:set var="disabledChecked" value=" checked=\"true\""/>
+                    </c:if>
+                    <input type="checkbox" name="includeDisabledDevices" id="includeDisabledDevices"${disabledChecked}>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".filter.eventTypesRow">
                     <cti:msg2 key=".filter.cog.title" var="cogTitle"/>

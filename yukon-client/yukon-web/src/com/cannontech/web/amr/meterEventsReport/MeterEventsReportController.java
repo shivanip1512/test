@@ -190,8 +190,8 @@ public class MeterEventsReportController {
     		ScheduledMeterEventsFileExportTask task = (ScheduledMeterEventsFileExportTask) jobManager.instantiateTask(job);
     		//set schedule parameters
     		model.addAttribute("jobId", jobId);
-    		model.addAttribute("daysPrevious", task.getDaysPrevious());
     		exportData = task.getPartialData();
+            exportData.setDaysPrevious(task.getDaysPrevious());
     		exportData.setScheduleCronString(job.getCronString());
     		cronExpressionTagState = cronExpressionTagService.parse(job.getCronString(), job.getUserContext());
     		//set backing bean parameters
@@ -220,7 +220,7 @@ public class MeterEventsReportController {
 	        }
 	        setupModelMap(backingBean, request, model, bindingResult, flashScope, userContext, attrNames);
     	}
-    	
+
         model.addAttribute("exportData", exportData);
         model.addAttribute("cronExpressionTagState", cronExpressionTagState);
         model.addAttribute("fileExtensionChoices", exportHelper.setupFileExtChoices(exportData));

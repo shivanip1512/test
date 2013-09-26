@@ -203,11 +203,12 @@ public class WaterLeakReportController {
     		backingBean.setFromInstant(backingBean.getToInstant().minus(Duration.standardHours(task.getHoursPrevious())));
     		backingBean.setIncludeDisabledPaos(task.isIncludeDisabledPaos());
     		backingBean.setThreshold(task.getThreshold());
-    		model.addAttribute("hoursPrevious", task.getHoursPrevious());
-    		
+
     		//populate scheduled export data
     		cronTagState = cronExpressionTagService.parse(job.getCronString(), job.getUserContext());
     		exportData = new ScheduledFileExportData();
+    		exportData.setHoursPrevious(task.getHoursPrevious());
+    		exportData.setThreshold(task.getThreshold());
     		exportData.setScheduleName(task.getName());
     		exportData.setExportFileName(task.getExportFileName());
             exportData.setAppendDateToFileName(task.isAppendDateToFileName());
