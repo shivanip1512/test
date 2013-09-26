@@ -2,6 +2,7 @@ package com.cannontech.dr.estimatedload.service.impl;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -14,6 +15,7 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.DatedObject;
 import com.cannontech.core.dao.LMGearDao;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.dr.assetavailability.ApplianceAssetAvailabilitySummary;
 import com.cannontech.dr.assetavailability.dao.DRGroupDeviceMappingDao;
 import com.cannontech.dr.assetavailability.service.AssetAvailabilityService;
@@ -25,14 +27,20 @@ import com.cannontech.dr.estimatedload.EstimatedLoadCalculationInfo;
 import com.cannontech.dr.estimatedload.EstimatedLoadReductionAmount;
 import com.cannontech.dr.estimatedload.Formula;
 import com.cannontech.dr.estimatedload.FormulaInputHolder;
+import com.cannontech.dr.estimatedload.PartialEstimatedLoadReductionAmount;
 import com.cannontech.dr.estimatedload.dao.EstimatedLoadDao;
 import com.cannontech.dr.estimatedload.dao.FormulaDao;
 import com.cannontech.dr.estimatedload.service.EstimatedLoadService;
 import com.cannontech.dr.estimatedload.service.FormulaService;
+import com.cannontech.dr.scenario.dao.ScenarioDao;
+import com.cannontech.dr.scenario.model.ScenarioProgram;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.IGearProgram;
 import com.cannontech.loadcontrol.data.LMProgramBase;
+import com.cannontech.message.util.ConnectionException;
 import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
+import com.google.common.collect.Sets;
+import com.google.common.collect.Sets.SetView;
 
 public class EstimatedLoadServiceImpl implements EstimatedLoadService {
     private final Logger log = YukonLogManager.getLogger(EstimatedLoadServiceImpl.class);
@@ -42,9 +50,10 @@ public class EstimatedLoadServiceImpl implements EstimatedLoadService {
     @Autowired private AssetAvailabilityService assetAvailabilityService;
     @Autowired private ApplianceCategoryDao applianceCategoryDao;
     @Autowired private EstimatedLoadDao estimatedLoadDao;
-    @Autowired private ControlAreaDao controlAreaDao;
-    @Autowired private FormulaDao formulaDao;
     @Autowired private FormulaService formulaService;
+    @Autowired private FormulaDao formulaDao;
+    @Autowired private ControlAreaDao controlAreaDao;
+    @Autowired private ScenarioDao scenarioDao;
     @Autowired private LMGearDao gearDao;
 
     // Time in minutes that estimated load values should be cached.
@@ -67,23 +76,60 @@ public class EstimatedLoadServiceImpl implements EstimatedLoadService {
 
     /** Retrieves the EstimatedLoadReductionAmount object for a given LM program.
      * This includes estimated load fields: connected load, diversified load, and kW savings max/now.
+     * @throws EstimatedLoadCalculationException 
      */
-    private EstimatedLoadReductionAmount retrieveProgramValue(PaoIdentifier paoId) {
+    private EstimatedLoadReductionAmount retrieveProgramValue(PaoIdentifier paoId)
+            throws EstimatedLoadCalculationException {
         return getProgramReductionAmountFromCache(paoId);
     }
 
     /** Retrieves the EstimatedLoadReductionAmount object for a given LM control area.
      * This includes estimated load fields: connected load, diversified load, and kW savings max/now.
+     * @throws EstimatedLoadCalculationException 
      */
-    private EstimatedLoadReductionAmount retrieveControlAreaValue(PaoIdentifier paoId) {
+    private EstimatedLoadReductionAmount retrieveControlAreaValue(PaoIdentifier paoId)
+            throws EstimatedLoadCalculationException {
         Set<Integer> programIdsForControlArea = controlAreaDao.getProgramIdsForControlArea(paoId.getPaoId());
         Set<EstimatedLoadReductionAmount> programAmounts = new HashSet<>();
         Set<EstimatedLoadReductionAmount> errors = new HashSet<>();
         
         for (Integer programId : programIdsForControlArea) {
-            LMProgramBase program = clientConnection.getProgram(programId);
-            programAmounts.add(getProgramReductionAmountFromCache(program.getPaoIdentifier()));
+            LMProgramBase programBase = getLmProgramBase(programId);
+            programAmounts.add(getProgramReductionAmountFromCache(programBase.getPaoIdentifier()));
         }
+        return sumEstimatedLoadAmounts(programAmounts, errors);
+    }
+
+    /** Retrieves the EstimatedLoadReductionAmount object for a given LM scenario.
+     * This includes estimated load fields: connected load, diversified load, and kW savings max/now.
+     * @throws EstimatedLoadCalculationException 
+     */
+    private EstimatedLoadReductionAmount retrieveScenarioValue(PaoIdentifier paoId)
+            throws EstimatedLoadCalculationException {
+        Map<Integer, ScenarioProgram> programsForScenario = scenarioDao.findScenarioProgramsForScenario(
+                paoId.getPaoId());
+        Set<EstimatedLoadReductionAmount> programAmounts = new HashSet<>();
+        Set<EstimatedLoadReductionAmount> errors = new HashSet<>();
+        
+        for (Integer programId : programsForScenario.keySet()) {
+            LMProgramBase programBase = getLmProgramBase(programId);
+            programAmounts.add(getProgramReductionAmountFromCache(programBase.getPaoIdentifier(), 
+                    programsForScenario.get(programId).getStartGear()));
+        }
+        return sumEstimatedLoadAmounts(programAmounts, errors);
+    }
+    
+    /** This method takes a Set of EstimatedLoadReductionAmount objects and sums up each of the four estimated load
+     * values into one object.  Used by retrieveScenarioValue() and retrieveControlAreaValue() methods to add together
+     * the estimated amounts of all of their component programs.
+     * 
+     * @param programAmounts The estimated load amounts for each program in the control area/scenario.
+     * @param errors The list of errors that occurred when evaluating each program.
+     * @return The sum of all EstimatedLoadReductionAmount in the set of programAmounts 
+     * as a single EstimatedLoadReductionAmount.
+     */
+    private EstimatedLoadReductionAmount sumEstimatedLoadAmounts(Set<EstimatedLoadReductionAmount> programAmounts,
+            Set<EstimatedLoadReductionAmount> errors) {
         double sumConnectedLoad = 0.0;
         double sumDiversifiedLoad = 0.0;
         double sumMaxKwSavings = 0.0;
@@ -102,30 +148,43 @@ public class EstimatedLoadServiceImpl implements EstimatedLoadService {
                 false, null);
     }
 
-    /** Retrieves the EstimatedLoadReductionAmount object for a given LM scenario.
-     * This includes estimated load fields: connected load, diversified load, and kW savings max/now.
-     */
-    private EstimatedLoadReductionAmount retrieveScenarioValue(PaoIdentifier paoId) {
-        return null;
-    }
-
     /**
      * This method attempts to retrieve the estimated load reduction amounts for a given program by pao id.
-     * If the program is not found in the cache, or the cached values for the program are too old, they are
+     * Since no gearId is passed in, the method will assume the default gear is to be used unless the 
+     * load control client supplies a different current gear number for the program.
+     * If the estimated load amount is not found in the cache, or the cached values are too old, they are
      * recalculated.  Otherwise, the cached amount is returned.
      * 
      * @param programId The pao id of the program for which values are being requested.
      * @return The estimated load reduction amounts: connected load, diversified load, max kW savings, now kW savings.
      * @throws EstimatedLoadCalculationException 
      */
-    private EstimatedLoadReductionAmount getProgramReductionAmountFromCache(PaoIdentifier programId) {
+    private EstimatedLoadReductionAmount getProgramReductionAmountFromCache(PaoIdentifier programId)
+            throws EstimatedLoadCalculationException {
+        return getProgramReductionAmountFromCache(programId, null);
+    }
+
+    /**
+     * This method attempts to retrieve the estimated load reduction amounts for a given program by pao id.
+     * A gearId can be passed in and will be used to look for reduction amounts within the cache.
+     * If gearId is not supplied, then either the default gear or current gear given by the load control server is used. 
+     * If the estimated load amount is not found in the cache, or the cached values are too old, they are
+     * recalculated.  Otherwise, the cached amount is returned.
+     * 
+     * @param programId The pao id of the program for which values are being requested.
+     * @return The estimated load reduction amounts: connected load, diversified load, max kW savings, now kW savings.
+     * @throws EstimatedLoadCalculationException 
+     */
+    private EstimatedLoadReductionAmount getProgramReductionAmountFromCache(PaoIdentifier programId, Integer gearId)
+            throws EstimatedLoadCalculationException {
         // Look for the gear cache within the program cache.  If not found, create the gear cache map.
         Map<Integer, DatedObject<EstimatedLoadReductionAmount>> gearMap = loadReductionAmountCache.get(programId.getPaoId());
         if (gearMap == null) {
             gearMap = new HashMap<>();
         }
-        
-        int gearId = findCurrentGearId(programId);
+        if (gearId == null) {
+            gearId = findCurrentGearId(programId);
+        }
         DatedObject<EstimatedLoadReductionAmount> datedObject = gearMap.get(gearId);
         // If the cached object is not in cache or older than its time-to-live, recalculate it.
         if (datedObject == null ||
@@ -140,7 +199,6 @@ public class EstimatedLoadServiceImpl implements EstimatedLoadService {
                 return error;
             }
         }
-        
         // The cached object has not exceeded its time-to-live value so return it.
         return datedObject.getObject();
     }
@@ -164,6 +222,35 @@ public class EstimatedLoadServiceImpl implements EstimatedLoadService {
      */
     private EstimatedLoadReductionAmount calculateProgramLoadReductionAmounts(PaoIdentifier program, int gearId)
             throws EstimatedLoadCalculationException {
+
+        ApplianceAssetAvailabilitySummary summary = assetAvailabilityService
+                .getApplianceAssetAvailability(program);
+
+        PartialEstimatedLoadReductionAmount partialReductionAmount = 
+                calculatePartialProgramLoadReductionAmount(program, gearId, summary);
+
+        double kWSavingsNow = calculateKwSavingsNow(program, partialReductionAmount.getMaxKwSavings());
+
+        return new EstimatedLoadReductionAmount(partialReductionAmount.getConnectedLoad(),
+                partialReductionAmount.getDiversifiedLoad(), 
+                partialReductionAmount.getMaxKwSavings(),
+                kWSavingsNow,
+                false, null);
+        
+    }
+
+    /** This method calculates the first three estimated load values: Connected Load, Diversified Load,
+     * and Max kW Savings.  This method exists because these partial values need to be computed for every program
+     * that shares enrolled devices with the LM program passed to calculateProgramLoadReductionAmounts() 
+     * in order to compute kW Savings Now.
+     * 
+     * @param program The program id for which the partial estimated load values are being calculated.
+     * @param gearId The gear id to be used in looking up and calculating the gear formula output. 
+     * @return An object holding the Connected Load, Diversified Load, and Max kW Savings of the LM program.
+     * @throws EstimatedLoadCalculationException
+     */
+    private PartialEstimatedLoadReductionAmount calculatePartialProgramLoadReductionAmount(PaoIdentifier program,
+            int gearId, ApplianceAssetAvailabilitySummary summary) throws EstimatedLoadCalculationException {
         // Look up all information necessary to begin calculation: appliance category id, app cat per-appliance load,
         // and both app cat and gear formulas.
         EstimatedLoadCalculationInfo loadCalcInfo = gatherCalculationInfo(program, gearId);
@@ -187,16 +274,86 @@ public class EstimatedLoadServiceImpl implements EstimatedLoadService {
         
         // Calculate actual ELRA values: connected load, diversified load, max kW savings
         // by multiplying connected load amount with the formula output values.
-        double connectedLoad = calculateConnectedLoad(program, loadCalcInfo.getAverageKwLoad());
+        double connectedLoad = loadCalcInfo.getAverageKwLoad() * summary.getCommunicatingRunningSize();
         double diversifiedLoad = connectedLoad * applianceCategoryFormulaOutput;
         double maxKwSavings = diversifiedLoad * gearFormulaOutput;
-        double kWSavingsNow = calculateKwSavingsNow(program, maxKwSavings);
+        return new PartialEstimatedLoadReductionAmount(connectedLoad, diversifiedLoad, maxKwSavings);
         
-        return new EstimatedLoadReductionAmount(connectedLoad, diversifiedLoad, maxKwSavings, kWSavingsNow, false, null);
     }
 
-    private double calculateKwSavingsNow(PaoIdentifier program, double maxKwSavings) {
-        return 0;  // Needs to be implemented.
+    private double calculateKwSavingsNow(PaoIdentifier program, double maxKwSavings)
+            throws EstimatedLoadCalculationException {
+        double reductionFromControllingPrograms = 0.0;
+        
+        // How many other programs are there that share enrollments with the program being calculated?
+        List<Integer> programsWithSharedInventory = estimatedLoadDao.findOtherEnrolledProgramsForDevicesInProgram(
+                program.getPaoId());
+        if (programsWithSharedInventory.size() > 0) {
+            // Find all of the devices in the program being calculated.
+            Set<Integer> loadGroupsInCalculationProgram = groupDeviceMappingDao.getLoadGroupIdsForDrGroup(program);
+            Set<Integer> inventoryIdsInCalculationProgram = groupDeviceMappingDao.getInventoryAndDeviceIdsForLoadGroups(
+                    loadGroupsInCalculationProgram).keySet();
+            
+            for (Integer controllingProgramId : programsWithSharedInventory) {
+                // Is this shared-enrollment program controlling?
+                LMProgramBase controllingProgramBase = getLmProgramBase(controllingProgramId);
+                if (controllingProgramBase.isActive()) {
+                    // Find which gear the currently controlling program is using.
+                    int gearId = findCurrentGearId(controllingProgramBase.getPaoIdentifier());
+                    
+                    PartialEstimatedLoadReductionAmount controllingProgramPartialAmount;
+                    ApplianceAssetAvailabilitySummary controllingProgramSummary;
+                    try {
+                        // Find asset availability summary for the controlling program.
+                        controllingProgramSummary = assetAvailabilityService
+                                .getApplianceAssetAvailability(controllingProgramBase.getPaoIdentifier());
+                        // Find the controlling program's Max kW Savings.
+                        controllingProgramPartialAmount = calculatePartialProgramLoadReductionAmount(
+                                controllingProgramBase.getPaoIdentifier(), gearId, controllingProgramSummary);
+                    } catch (EstimatedLoadCalculationException e) {
+                        /* There is a problem calculating the partial estimated load values for this currently
+                           controlling program.  Rather than throw out everything for this calculation, we'll skip
+                           any contribution it may have had to kW Savings Now and continue on. */
+                        continue;
+                    }
+                    
+                    //Which devices are in common between the calculating program and the controlling program?
+                    Set<Integer> loadGroupsInControllingProgram = groupDeviceMappingDao
+                            .getLoadGroupIdsForDrGroup(controllingProgramBase.getPaoIdentifier());
+                    Set<Integer> inventoryIdsInControllingProgram = groupDeviceMappingDao
+                            .getInventoryAndDeviceIdsForLoadGroups(loadGroupsInControllingProgram).keySet();
+                    SetView<Integer> inventoryInCommon = Sets.intersection(inventoryIdsInCalculationProgram,
+                            inventoryIdsInControllingProgram);
+                    
+                    // Determine what fraction of the controlling program's Max kW Savings 
+                    // will contribute to the calculation program's kW Savings Now value.
+                    double reductionAmount = controllingProgramPartialAmount.getMaxKwSavings() 
+                            * (new Double(controllingProgramSummary.getCommunicatingRunning().size()) / 
+                                    controllingProgramSummary.getAll().size())
+                            * (inventoryInCommon.size() / inventoryIdsInControllingProgram.size());
+                    reductionFromControllingPrograms += reductionAmount;
+                    
+                    // Remove devices in common from set of deviceIdsInProgram so they are not counted multiple times.
+                    inventoryIdsInCalculationProgram.removeAll(new HashSet<>(inventoryInCommon));
+                }
+            }
+        }
+        return maxKwSavings - reductionFromControllingPrograms;
+    }
+
+    private LMProgramBase getLmProgramBase(int programId) throws EstimatedLoadCalculationException {
+        LMProgramBase programBase = null;
+        try {
+            programBase = clientConnection.getProgramSafe(programId);
+        } catch (ConnectionException e){
+            throw new EstimatedLoadCalculationException(Type.LOAD_MANAGEMENT_SERVER_NOT_CONNECTED);
+        } catch (NotFoundException e) {
+            throw new EstimatedLoadCalculationException(Type.LOAD_MANAGEMENT_DATA_NOT_FOUND);
+        }
+        if (programBase == null) {
+            throw new EstimatedLoadCalculationException(Type.LOAD_MANAGEMENT_DATA_NOT_FOUND);
+        }
+        return programBase;
     }
 
     /** This method handles all of the database work involved in reading in the appliance category id and per-appliance
@@ -214,9 +371,10 @@ public class EstimatedLoadServiceImpl implements EstimatedLoadService {
             acIdAndAverageKwLoadForLmProgram = estimatedLoadDao
                     .getAcIdAndAverageKwLoadForLmProgram(program.getPaoId());
         } catch (EstimatedLoadCalculationException e) {
-            String programName = clientConnection.getProgramSafe(program.getPaoId()).getYukonName();
+            LMProgramBase programBase = getLmProgramBase(program.getPaoId());
             log.debug("Appliance category info not found for LM program: " + program.getPaoId());
-            throw new EstimatedLoadCalculationException(Type.APPLIANCE_CATEGORY_INFO_NOT_FOUND, programName);
+            throw new EstimatedLoadCalculationException(Type.APPLIANCE_CATEGORY_INFO_NOT_FOUND,
+                    programBase.getYukonName());
         }
         Integer applianceCategoryId = acIdAndAverageKwLoadForLmProgram.getApplianceCategoryId();
         Double averageKwLoad = acIdAndAverageKwLoadForLmProgram.getAvgKwLoad();
@@ -243,14 +401,13 @@ public class EstimatedLoadServiceImpl implements EstimatedLoadService {
      * If none is found, the default gear (gear number 1) is used for the id lookup.
      * @throws EstimatedLoadCalculationException 
      */
-    private int findCurrentGearId(PaoIdentifier program) {
-        LMProgramBase programBase = clientConnection.getProgram(program.getPaoId());
+    private int findCurrentGearId(PaoIdentifier program) throws EstimatedLoadCalculationException {
+        LMProgramBase programBase = getLmProgramBase(program.getPaoId());
         int gearNumber;
         if (((IGearProgram) programBase).getCurrentGear() == null) {
             gearNumber = 1;
         } else {
-            //if (programBase.get)
-            gearNumber = ((IGearProgram) programBase).getCurrentGear().getGearNumber();
+            gearNumber = ((IGearProgram) programBase).getCurrentGearNumber();
         }
         return estimatedLoadDao.getCurrentGearIdForProgram(program.getPaoId(), gearNumber);
     }
@@ -263,27 +420,6 @@ public class EstimatedLoadServiceImpl implements EstimatedLoadService {
      */
     private EstimatedLoadReductionAmount createEstimatedLoadAmountError(EstimatedLoadCalculationException e) {
         return new EstimatedLoadReductionAmount(null, null, null, null, true, e);
-    }
-
-    /** 
-     * This method calculates connected load, which is defined as: N * Average Load Per Appliance in kW.
-     * N is the number of connected appliances which are available with non-zero run time and are not opted out.
-     * 
-     * The AssetAvailabilityService is used to find the number of enrolled appliances that are either 
-     * connected to one-way DR devices or to two-way DR devices that meet the following requirements: 
-     * they have communicated with Yukon within the specified Communication Window time frame,
-     * and they have reported non-zero runtime within the specified run-time window time frame. 
-     * 
-     * @param program The LM program for which the amount is being calculated.
-     * @param averageKwLoad The per-appliance average load in kW, specified by the appliance category associated with
-     * the LM program.
-     * @return The amount of connected load in kW.
-     */
-    private double calculateConnectedLoad(PaoIdentifier program, double averageKwLoad) {
-        ApplianceAssetAvailabilitySummary summary = assetAvailabilityService
-                .getApplianceAssetAvailability(program);
-        
-        return averageKwLoad * summary.getCommunicatingRunningSize();
     }
 
     /** Clears the cached values from the load reduction amount cache. */

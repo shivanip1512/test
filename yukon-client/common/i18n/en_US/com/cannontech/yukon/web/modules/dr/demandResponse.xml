@@ -518,7 +518,8 @@
 <entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.gearFormulaAssignmentNotFound">No formula assigned for gear id: {0}</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.acFormulaAssignmentNotFound">No formula assigned for appliance category id: {0}</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.formulaNotFound">Formula id not found: {0}</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.error">Error</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.loadManagementDataNotFound">Could not find program in load management client with id: {0}</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.loadManagementServerNotConnected">Not connected to Load Management server.</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.calculationType">Calculation Type</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.calculationType.linkText">Calculation Type</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.createWeatherLocation.label">New Weather Location</entry>

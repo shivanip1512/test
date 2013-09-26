@@ -26,7 +26,7 @@ public class ProgramEstimatedLoadErrorField extends ProgramBackingFieldBase {
         return "ESTIMATED_LOAD_ERROR";
     }
 
-    private final String EMTPY_STRING = "";
+    private final String EMTPY_STRING = "{}";
 
     @Override
     public Object getProgramValue(LMProgramBase program, YukonUserContext userContext) {
@@ -35,23 +35,27 @@ public class ProgramEstimatedLoadErrorField extends ProgramBackingFieldBase {
             estimatedLoadAmount = estimatedLoadService.retrieveEstimatedLoadValue(
                     program.getPaoIdentifier());
         } catch (EstimatedLoadCalculationException e) {
-            return EMTPY_STRING;
+            return createErrorJson(program, userContext, e);
         }
         if (estimatedLoadAmount.isError()) {
-            Map<String, String> errorTooltipJSON = new HashMap<>();
-            
-            EstimatedLoadCalculationException exception = estimatedLoadAmount.getException();
-            YukonMessageSourceResolvable error = new YukonMessageSourceResolvable(
-                    exception.getResolvableKey(),
-                    exception.getResolvableArgs());
-            MessageSourceAccessor accessor = messageSourceAccessor.getMessageSourceAccessor(userContext);
-            String errorMessage = accessor.getMessage(error);
-            
-            errorTooltipJSON.put("programId", new Integer(program.getPaoIdentifier().getPaoId()).toString());
-            errorTooltipJSON.put("errorMessage", errorMessage);
-            return JSONObject.fromObject(errorTooltipJSON).toString();
+            return createErrorJson(program, userContext, estimatedLoadAmount.getException());
         } else {
             return EMTPY_STRING;
         }
+    }
+
+    private Object createErrorJson(LMProgramBase program, YukonUserContext userContext,
+            EstimatedLoadCalculationException e) {
+        Map<String, String> errorTooltipJSON = new HashMap<>();
+        
+        YukonMessageSourceResolvable error = new YukonMessageSourceResolvable(
+                e.getResolvableKey(),
+                e.getResolvableArgs());
+        MessageSourceAccessor accessor = messageSourceAccessor.getMessageSourceAccessor(userContext);
+        String errorMessage = accessor.getMessage(error);
+        
+        errorTooltipJSON.put("programId", new Integer(program.getPaoIdentifier().getPaoId()).toString());
+        errorTooltipJSON.put("errorMessage", errorMessage);
+        return JSONObject.fromObject(errorTooltipJSON).toString();
     }
 }

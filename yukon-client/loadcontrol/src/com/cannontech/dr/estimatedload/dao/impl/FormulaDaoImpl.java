@@ -782,7 +782,8 @@ public class FormulaDaoImpl implements FormulaDao {
     public Formula getFormulaForApplianceCategory(int appCategoryId) throws EstimatedLoadCalculationException {
         ApplianceCategoryAssignment assignment = getAssignmentForApplianceCategory(appCategoryId);
         if (assignment.getFormulaId() == null) {
-            throw new EstimatedLoadCalculationException(Type.NO_FORMULA_FOR_APPLIANCE_CATEGORY, appCategoryId);
+            String applianceCategoryName = applianceCategoryDao.getById(appCategoryId).getDisplayName();
+            throw new EstimatedLoadCalculationException(Type.NO_FORMULA_FOR_APPLIANCE_CATEGORY, applianceCategoryName);
         } else {
             try {
                 return getFormulaById(assignment.getFormulaId());

@@ -24,9 +24,11 @@ public class EstimatedLoadCalculationException extends Exception {
         INPUT_OUT_OF_RANGE("yukon.web.modules.dr.estimatedLoad.calcErrors.inputOutOfRange"),
         INPUT_VALUE_NOT_FOUND("yukon.web.modules.dr.estimatedLoad.calcErrors.inputValueNotFound"),
         INVALID_PAO_TYPE("yukon.web.modules.dr.estimatedLoad.calcErrors.invalidPaoType"),
+        LOAD_MANAGEMENT_SERVER_NOT_CONNECTED("yukon.web.modules.dr.estimatedLoad.calcErrors.loadManagementServerNotConnected"),
+        LOAD_MANAGEMENT_DATA_NOT_FOUND("yukon.web.modules.dr.estimatedLoad.calcErrors.loadManagementDataNotFound"),
         NO_AVERAGE_KW_LOAD("yukon.web.modules.dr.estimatedLoad.calcErrors.noAverageKwLoad"),
-        NO_FORMULA_FOR_APPLIANCE_CATEGORY("yukon.web.modules.dr.estimatedLoad.calcErrors.error"),
-        NO_FORMULA_FOR_GEAR("yukon.web.modules.dr.estimatedLoad.calcErrors.error"),
+        NO_FORMULA_FOR_APPLIANCE_CATEGORY("yukon.web.modules.dr.estimatedLoad.calcErrors.acFormulaAssignmentNotFound"),
+        NO_FORMULA_FOR_GEAR("yukon.web.modules.dr.estimatedLoad.calcErrors.gearFormulaAssignmentNotFound"),
         ;
         
         private String key;
