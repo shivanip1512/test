@@ -8,7 +8,7 @@ USAGE:  At the command line
 
 PURPOSE: This script outputs 3 files based on the 2 input XMLs, particularly about the RFN devices' point mappings.
          SEE PAO_VS_RFN for more details.
-         IT ALSO has the ability to compare different versions of the same file, but that was disable for the last run (see the flags at the top of the script).
+         IT ALSO has the ability to compare different versions of the same file, BUT THAT WAS DISABLED for the last run (see the flags at the top of the script) because of rfn file structural changes.
 
 PAO_VS_RFN: the paoVSrfnAnalysis.txt file contains a similar format to the other output files in that it shows a list of all points along with which models have those points.
             ADDITIONALLY this file has a key at the top describing what else is compared:
@@ -16,7 +16,7 @@ PAO_VS_RFN: the paoVSrfnAnalysis.txt file contains a similar format to the other
             * if an attribute exists/doesn't exist
             * ...
 
-FUTURE:  The script currently does not check the points' modifiers, multipliers, nor references for accuracy.
+FUTURE:  The script currently does not check the points' modifiers, multipliers, nor references for accuracy between the two files or wrt expected 'normal' (ie. kWh has .001 multiplier)
          It also does not deal with any non-RFN devices - in particular it depends on the list of RFN devices within the script,
             and part of the script currently depends on being able to compare the pao and rfn XML files.
 
