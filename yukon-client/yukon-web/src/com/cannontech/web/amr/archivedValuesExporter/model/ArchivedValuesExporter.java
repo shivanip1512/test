@@ -45,7 +45,7 @@ public class ArchivedValuesExporter {
     	return attributes == null? new Attribute[0] : attributes.toArray(new Attribute[attributes.size()]);
     }
     
-    public void setAttribute(Set<Attribute> attributes) {
+    public void setAttributes(Set<Attribute> attributes) {
         this.attributes = attributes;
     }
 

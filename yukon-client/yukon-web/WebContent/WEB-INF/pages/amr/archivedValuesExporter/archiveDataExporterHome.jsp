@@ -159,9 +159,13 @@ jQuery(function() {
             <form:form id="exporterForm" commandName="archivedValuesExporter" action="${action}">
                 <form:hidden path="archivedValuesExportFormatType"/>
                 <cti:deviceCollection deviceCollection="${archivedValuesExporter.deviceCollection}" />
-        
                 <tags:nameValueContainer2 id="formatContainer" naturalWidth="false">
                     <c:if test="${not empty allFormats}">
+                        <tags:nameValue2 nameKey=".existingFormat">
+                            <form:select path="formatId" cssClass="fl">
+                                <form:options items="${allFormats}" itemValue="formatId" title="formatName" itemLabel="formatName" />
+                            </form:select>
+                        </tags:nameValue2>
                         <tags:nameValue2 nameKey="yukon.web.defaults.devices">
                             <a href="javascript:void(0);" class="selectDevices clearfix fl" title="<cti:msg2 key=".chooseDevices.tooltip"/>">
                                 <c:if test="${empty archivedValuesExporter.deviceCollection.deviceCount}">
@@ -175,24 +179,18 @@ jQuery(function() {
                                 <tags:selectedDevicesPopup deviceCollection="${deviceCollection}"/>
                             </c:if>
                         </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".existingFormat">
-                            <form:select path="formatId" cssClass="fl">
-                                <form:options items="${allFormats}" itemValue="formatId" title="formatName" itemLabel="formatName" />
-                            </form:select>
-                        </tags:nameValue2>
                         <c:if test="${archivedValuesExporter.deviceCollection.deviceCount > 0}">
                             <tags:nameValue2 nameKey="yukon.web.defaults.deviceCount">${archivedValuesExporter.deviceCollection.deviceCount}</tags:nameValue2>
                         </c:if>
                     </c:if>
-                    
                     <tags:nameValue2 nameKey=".attribute" rowId="attributeRow">
                         <tags:attributeSelector attributes="${groupedAttributes}" 
-                            fieldName="attribute"
+                            selectedAttributes="${archivedValuesExporter.attributes}"
+                            fieldName="attributes"
                             multipleSize="8"
                             groupItems="true"/>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
-    
             </form:form>
             <div class="actionArea">
                 <c:if test="${not empty allFormats}">
@@ -215,7 +213,7 @@ jQuery(function() {
                 <cti:button nameKey="create" icon="icon-plus-green" id="b-create"/>
             </div>
         </tags:sectionContainer2>
-    
+
     <%-- Jobs  --%>
         <tags:boxContainer2 nameKey="jobsBox"> 
             <div class="scrollingContainer_small" style="max-height: 249px;">

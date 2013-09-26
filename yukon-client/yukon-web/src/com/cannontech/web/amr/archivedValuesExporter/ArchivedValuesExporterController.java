@@ -194,7 +194,9 @@ public class ArchivedValuesExporterController {
     }
     
     @RequestMapping
-    public String selectDevices(ModelMap model, HttpServletRequest request) {
+    public String selectDevices(ModelMap model, HttpServletRequest request,
+            @ModelAttribute ArchivedValuesExporter archivedValuesExporter) {
+        model.addAttribute("archivedValuesExporter", archivedValuesExporter);
         return "archivedValuesExporter/selectDevices.jsp";
     }
 
