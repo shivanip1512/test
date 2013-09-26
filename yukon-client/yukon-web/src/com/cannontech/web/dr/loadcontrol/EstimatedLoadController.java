@@ -1,6 +1,7 @@
 package com.cannontech.web.dr.loadcontrol;
 
 import java.beans.PropertyEditor;
+import java.text.Collator;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -62,6 +63,7 @@ import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.cannontech.web.security.annotation.AuthorizeByCparm;
 import com.google.common.base.Function;
+import com.google.common.collect.Ordering;
 
 @Controller
 @RequestMapping("/estimatedLoad/*")
@@ -111,7 +113,7 @@ public class EstimatedLoadController {
     }
 
     @RequestMapping
-    public String removeWeatherLocation(ModelMap model, FlashScope flashScope, int paoId, YukonUserContext context) {
+    public String removeWeatherLocation(FlashScope flashScope, int paoId) {
 
         boolean isUsed = formulaDao.hasFormulaInputPoints(paoId);
 
@@ -158,7 +160,7 @@ public class EstimatedLoadController {
             return "dr/estimatedLoad/_weatherStations.jsp";
         }
 
-        WeatherLocation weatherLocation = new WeatherLocation(0, null, null,
+        WeatherLocation weatherLocation = new WeatherLocation(null, null, null,
                                                               weatherLocationBean.getName(),
                                                               weatherLocationBean.getStationId(),
                                                               requestedCoordinate);
@@ -191,7 +193,6 @@ public class EstimatedLoadController {
         }
 
         model.addAttribute("numberWeatherStations", numStations);
-
         model.addAttribute("requestedLat", lat);
         model.addAttribute("requestedLon", lon);
 
@@ -199,13 +200,13 @@ public class EstimatedLoadController {
     }
 
     @RequestMapping
-    public String listPageAjax(ModelMap model, YukonUserContext context,
+    public String listPageAjax(ModelMap model, YukonUserContext userContext,
                        @RequestParam(defaultValue="NAME") SortBy sort, final boolean descending,
                        @RequestParam(defaultValue="10") int itemsPerPage, 
                        @RequestParam(defaultValue="1") int page) {
 
-        List<FormulaBean> allFormulas = FormulaBean.toBeans(formulaDao.getAllFormulas());
-        allFormulas = sortFormulas(allFormulas, sort, descending, context);
+        List<FormulaBean> allFormulas = FormulaBean.toBeans(formulaDao.getAllFormulas(), userContext);
+        allFormulas = sortFormulas(allFormulas, sort, descending, userContext);
         SearchResults<FormulaBean> pagedFormulas
             = SearchResults.pageBasedForWholeList(page, itemsPerPage, allFormulas);
 
@@ -217,11 +218,11 @@ public class EstimatedLoadController {
     }
 
     @RequestMapping("formula/view")
-    public String viewPage(ModelMap model, Integer formulaId) {
+    public String viewPage(ModelMap model, Integer formulaId, YukonUserContext userContext) {
         model.addAttribute("mode", PageEditMode.VIEW);
 
         Formula formula = formulaDao.getFormulaById(formulaId);
-        FormulaBean formulaBean = new FormulaBean(formula);
+        FormulaBean formulaBean = new FormulaBean(formula, userContext);
 
         populateFormulaPageModel(model, formulaBean);
 
@@ -259,11 +260,11 @@ public class EstimatedLoadController {
     }
 
     @RequestMapping(value="formula/edit", method=RequestMethod.GET)
-    public String editPage(ModelMap model, Integer formulaId) {
+    public String editPage(ModelMap model, Integer formulaId, YukonUserContext userContext) {
         model.addAttribute("mode", PageEditMode.EDIT);
 
         Formula formula = formulaDao.getFormulaById(formulaId);
-        FormulaBean formulaBean = new FormulaBean(formula);
+        FormulaBean formulaBean = new FormulaBean(formula, userContext);
 
         populateFormulaPageModel(model, formulaBean);
 
@@ -489,106 +490,61 @@ public class EstimatedLoadController {
 
     private List<GearAssignment> sortGearAssignments(List<GearAssignment> gearAssignments,
             final Map<Integer, LiteYukonPAObject> gearPrograms, SortBy sortBy,
-            final boolean desc, final YukonUserContext context) {
+            final boolean desc, final YukonUserContext userContext) {
         switch(sortBy) {
         default:
         case NAME:
-            Collections.sort(gearAssignments, new Comparator<GearAssignment>() {
-                @Override public int compare(GearAssignment o1, GearAssignment o2) {
-                    int compare = o1.getGear().getGearName().compareToIgnoreCase(o2.getGear().getGearName());
-                    return desc ? -compare : compare;
-                }
-            });
+            Ordering<GearAssignment> ordering
+                = Ordering.from(Collator.getInstance(userContext.getLocale())).onResultOf(gearNameFunction);
+            Collections.sort(gearAssignments, desc ? ordering.reverse() : ordering);
             return gearAssignments;
         case GEAR_CONTROL_METHOD:
-            return objectFormatingService.sortDisplayableValuesWithMapper(gearAssignments, null, null, controlMethodFunction, desc, context);
+            return objectFormatingService.sortDisplayableValuesWithMapper(gearAssignments, null, null, controlMethodFunction, desc, userContext);
         case IS_ASSIGNED:
-            Collections.sort(gearAssignments, new Comparator<GearAssignment>() {
-                @Override public int compare(GearAssignment o1, GearAssignment o2) {
-                    if (o1.getFormulaId() == o2.getFormulaId()) {
-                        return 0;
-                    }
-                    if (o1.getFormulaId() == null) {
-                        return desc ? 1 : -1;
-                    }
-                    return desc ? -1 : 1;
-                }
-            });
+            Collections.sort(gearAssignments, desc ? Collections.reverseOrder(compareGearAssignment) : compareGearAssignment);
             return gearAssignments;
         case PROGRAM_NAME:
-            Collections.sort(gearAssignments, new Comparator<GearAssignment>() {
-                @Override public int compare(GearAssignment o1, GearAssignment o2) {
-                    LiteYukonPAObject program1 = gearPrograms.get(o1.getGear().getDeviceId());
-                    LiteYukonPAObject program2 = gearPrograms.get(o2.getGear().getDeviceId());
-                    if (program1 == program2) {
-                        return 0;
-                    }
-                    if (program1 == null) {
-                        return desc ? 1 : -1;
-                    }
-                    if (program2 == null) {
-                        return desc ? -1 : 1;
-                    }
-                    int compare = program1.getPaoName().compareToIgnoreCase(program2.getPaoName());
-                    return desc ? -compare : compare;
-                }
-            });
+            Collections.sort(gearAssignments, desc ? 
+                      Collections.reverseOrder(new ProgramNameComparator(gearPrograms))
+                    : new ProgramNameComparator(gearPrograms));
             return gearAssignments;
         }
     }
 
-    private List<ApplianceCategoryAssignment> sortAppCatAssignments(List<ApplianceCategoryAssignment> appCatAssignments, SortBy sortBy,final boolean desc, final YukonUserContext context) {
+    private List<ApplianceCategoryAssignment> sortAppCatAssignments(List<ApplianceCategoryAssignment> appCatAssignments,
+                                                                    SortBy sortBy,final boolean desc,
+                                                                    final YukonUserContext userContext) {
         switch(sortBy) {
         default:
         case NAME:
-            Collections.sort(appCatAssignments, new Comparator<ApplianceCategoryAssignment>() {
-                @Override public int compare(ApplianceCategoryAssignment o1, ApplianceCategoryAssignment o2) {
-                    int compare = o1.getApplianceCategory().getName().compareToIgnoreCase(o2.getApplianceCategory().getName());
-                    return desc ? -compare : compare;
-                }
-            });
+            Ordering<ApplianceCategoryAssignment> ordering
+                = Ordering.from(Collator.getInstance(userContext.getLocale())).onResultOf(appCatNameFunction);
+            Collections.sort(appCatAssignments, desc ? ordering.reverse() : ordering);
             return appCatAssignments;
         case TYPE:
-            return objectFormatingService.sortDisplayableValuesWithMapper(appCatAssignments, null, null, applianceTypeFunction, desc, context);
+            return objectFormatingService.sortDisplayableValuesWithMapper(appCatAssignments, null, null, applianceTypeFunction, desc, userContext);
         case APP_CAT_AVERAGE_LOAD:
-            Collections.sort(appCatAssignments, new Comparator<ApplianceCategoryAssignment>() {
-                @Override public int compare(ApplianceCategoryAssignment o1, ApplianceCategoryAssignment o2) {
-                    int compare = Double.compare(o1.getApplianceCategory().getApplianceLoad(), o2.getApplianceCategory().getApplianceLoad());
-                    return desc ? -compare : compare;
-                }
-            });
+            Collections.sort(appCatAssignments, desc ? Collections.reverseOrder(compareAverageLoad) : compareAverageLoad);
             return appCatAssignments;
         case IS_ASSIGNED:
-            Collections.sort(appCatAssignments, new Comparator<ApplianceCategoryAssignment>() {
-                @Override public int compare(ApplianceCategoryAssignment o1, ApplianceCategoryAssignment o2) {
-                    if (o1.getFormulaId() == o2.getFormulaId()) {
-                        return 0;
-                    }
-                    if (o1.getFormulaId() == null) {
-                        return desc ? 1 : -1;
-                    }
-                    return desc ? -1 : 1;
-                }
-            });
+            Collections.sort(appCatAssignments, desc ? Collections.reverseOrder(compareAppCatAssignment) : compareAppCatAssignment);
             return appCatAssignments;
         }
     }
 
-    private List<FormulaBean> sortFormulas(List<FormulaBean> appCatAssignments, SortBy sortBy, final boolean desc, final YukonUserContext context) {
+    private List<FormulaBean> sortFormulas(List<FormulaBean> appCatAssignments, SortBy sortBy,
+                                           final boolean desc, final YukonUserContext userContext) {
         switch(sortBy) {
         default:
         case NAME:
-            Collections.sort(appCatAssignments, new Comparator<FormulaBean>() {
-                @Override public int compare(FormulaBean o1, FormulaBean o2) {
-                    int compare = o1.getName().compareToIgnoreCase(o2.getName());
-                    return desc ? -compare : compare;
-                }
-            });
+            Ordering<FormulaBean> ordering
+                = Ordering.from(Collator.getInstance(userContext.getLocale())).onResultOf(formulaNameFunction);
+            Collections.sort(appCatAssignments, desc ? ordering.reverse() : ordering);
             return appCatAssignments;
         case TYPE:
-            return objectFormatingService.sortDisplayableValuesWithMapper(appCatAssignments, null, null, formulaTypeFunction, desc, context);
+            return objectFormatingService.sortDisplayableValuesWithMapper(appCatAssignments, null, null, formulaTypeFunction, desc, userContext);
         case CALCULATION_TYPE:
-            return objectFormatingService.sortDisplayableValuesWithMapper(appCatAssignments, null, null, calculationTypeFunction, desc, context);
+            return objectFormatingService.sortDisplayableValuesWithMapper(appCatAssignments, null, null, calculationTypeFunction, desc, userContext);
         }
     }
 
@@ -653,6 +609,79 @@ public class EstimatedLoadController {
             return from.getCalculationType();
         }
     };
+
+    private final static Function<FormulaBean, String> formulaNameFunction = new Function<FormulaBean, String>() {
+        @Override
+        public String apply(FormulaBean bean) {
+            return bean.getName();
+        }
+    };
+
+    private final static Function<ApplianceCategoryAssignment, String> appCatNameFunction = new Function<ApplianceCategoryAssignment, String>() {
+        @Override public String apply(ApplianceCategoryAssignment from) {
+            return from.getApplianceCategory().getName();
+        }
+    };
+
+    private final static Function<GearAssignment, String> gearNameFunction = new Function<GearAssignment, String>() {
+        @Override public String apply(GearAssignment from) {
+            return from.getGear().getGearName();
+        }
+    };
+
+    private final static Comparator<GearAssignment> compareGearAssignment = new Comparator<GearAssignment>() {
+        @Override public int compare(GearAssignment o1, GearAssignment o2) {
+            if (o1.getFormulaId() == o2.getFormulaId()) {
+                return 0;
+            }
+            if (o1.getFormulaId() == null) {
+                return -1;
+            }
+            return 1;
+        }
+    };
+
+    private final static Comparator<ApplianceCategoryAssignment> compareAppCatAssignment = new Comparator<ApplianceCategoryAssignment>() {
+        @Override public int compare(ApplianceCategoryAssignment o1, ApplianceCategoryAssignment o2) {
+            if (o1.getFormulaId() == o2.getFormulaId()) {
+                return 0;
+            }
+            if (o1.getFormulaId() == null) {
+                return -1;
+            }
+            return 1;
+        }
+    };
+
+    private final static Comparator<ApplianceCategoryAssignment> compareAverageLoad = new Comparator<ApplianceCategoryAssignment>() {
+        @Override public int compare(ApplianceCategoryAssignment o1, ApplianceCategoryAssignment o2) {
+            int compare = Double.compare(o1.getApplianceCategory().getApplianceLoad(), o2.getApplianceCategory().getApplianceLoad());
+            return compare;
+        }
+    };
+
+    private class ProgramNameComparator implements Comparator<GearAssignment> {
+        private Map<Integer, LiteYukonPAObject> gearPrograms;
+        public ProgramNameComparator(Map<Integer, LiteYukonPAObject> gearPrograms) {
+            this.gearPrograms = gearPrograms;
+        }
+        @Override
+        public int compare(GearAssignment o1, GearAssignment o2) {
+            LiteYukonPAObject program1 = gearPrograms.get(o1.getGear().getDeviceId());
+            LiteYukonPAObject program2 = gearPrograms.get(o2.getGear().getDeviceId());
+            if (program1 == program2) {
+                return 0;
+            }
+            if (program1 == null) {
+                return -1;
+            }
+            if (program2 == null) {
+                return 1;
+            }
+            int compare = program1.getPaoName().compareToIgnoreCase(program2.getPaoName());
+            return compare;
+        }
+    }
 
     @InitBinder
     public void initBinder(WebDataBinder webDataBinder, YukonUserContext userContext) {

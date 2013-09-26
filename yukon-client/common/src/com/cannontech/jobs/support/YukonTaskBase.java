@@ -1,30 +1,30 @@
 package com.cannontech.jobs.support;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.jobs.model.JobContext;
+import com.cannontech.jobs.model.YukonJob;
 import com.cannontech.user.YukonUserContext;
 
 public abstract class YukonTaskBase implements YukonTask {
-    
-    private JobContext jobContext;
-    
-    public JobContext getJobContext() {
-        return jobContext;
+
+    private YukonJob job;
+
+    public YukonJob getJob() {
+        return job;
     }
-    
+
     protected LiteYukonUser getYukonUser() {
-        return getJobContext().getJob().getUserContext().getYukonUser();
+        return getJob().getUserContext().getYukonUser();
     }
-    
+
     protected YukonUserContext getUserContext() {
-    	return getJobContext().getJob().getUserContext();
+        return getJob().getUserContext();
     }
-    
+
     @Override
-    public void setJobContext(JobContext jobContext) {
-        this.jobContext = jobContext;
+    public void setJob(YukonJob job) {
+        this.job = job;
     }
-    
+
     @Override
     public void stop() throws UnsupportedOperationException {
         throw new UnsupportedOperationException("Cannot stop this task.");

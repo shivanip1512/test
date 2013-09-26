@@ -8528,6 +8528,30 @@
     </pao>
     <pao id="LM_DIRECT_PROGRAM" inherits="LM_PROGRAM_BASE">
         <displayName>LM DIRECT PROGRAM</displayName>
+        <points>
+            <point type="Analog" offset="1">
+                <init>false</init>
+                <name>Diversified Load</name>
+                <archive>
+                    <type>ON_UPDATE</type>
+                    <interval>ZERO</interval>
+                </archive>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kW"/>
+                <decimalplaces value="1"/>
+            </point>
+            <point type="Analog" offset="2">
+                <init>false</init>
+                <name>Max Load Reduction</name>
+                <archive>
+                    <type>ON_UPDATE</type>
+                    <interval>ZERO</interval>
+                </archive>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kW"/>
+                <decimalplaces value="1"/>
+            </point>
+        </points>
         <tags>
             <tag name="DIRECT_PROGRAM_ENROLLMENT" />
         </tags>
@@ -8542,6 +8566,30 @@
     <!-- LM Scenario -->
     <pao id="LM_SCENARIO">
         <displayName>LM_SCENARIO</displayName>
+        <points>
+            <point type="Analog" offset="1">
+                <init>false</init>
+                <name>Diversified Load</name>
+                <archive>
+                    <type>ON_UPDATE</type>
+                    <interval>ZERO</interval>
+                </archive>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kW"/>
+                <decimalplaces value="1"/>
+            </point>
+            <point type="Analog" offset="2">
+                <init>false</init>
+                <name>Max Load Reduction</name>
+                <archive>
+                    <type>ON_UPDATE</type>
+                    <interval>ZERO</interval>
+                </archive>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kW"/>
+                <decimalplaces value="1"/>
+            </point>
+        </points>
 		<tags>
         	<tag name="LM_SCENARIO" />
         </tags>
@@ -8550,6 +8598,30 @@
     <!-- LM Control Area -->
     <pao id="LM_CONTROL_AREA">
         <displayName>LM_CONTROL_AREA</displayName>
+        <points>
+            <point type="Analog" offset="1">
+                <init>false</init>
+                <name>Diversified Load</name>
+                <archive>
+                    <type>ON_UPDATE</type>
+                    <interval>ZERO</interval>
+                </archive>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kW"/>
+                <decimalplaces value="1"/>
+            </point>
+            <point type="Analog" offset="2">
+                <init>false</init>
+                <name>Max Load Reduction</name>
+                <archive>
+                    <type>ON_UPDATE</type>
+                    <interval>ZERO</interval>
+                </archive>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kW"/>
+                <decimalplaces value="1"/>
+            </point>
+        </points>
 		<tags>
         	<tag name="LM_CONTROL_AREA"/>
         </tags>

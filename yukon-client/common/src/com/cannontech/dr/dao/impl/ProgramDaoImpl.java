@@ -1,4 +1,4 @@
-package com.cannontech.dr.program.dao.impl;
+package com.cannontech.dr.dao.impl;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -13,17 +13,16 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.dao.impl.PaoIdentifierRowMapper;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
-import com.cannontech.dr.program.dao.ProgramDao;
+import com.cannontech.dr.dao.ProgramDao;
 
 public class ProgramDaoImpl implements ProgramDao {
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
-
-    private final static PaoIdentifierRowMapper paoIdentifierRowMapper = new PaoIdentifierRowMapper();
+    @Autowired private PaoDao paoDao;
 
     private final static YukonRowMapper<DisplayablePao> programRowMapper =
         new YukonRowMapper<DisplayablePao>() {
@@ -52,15 +51,7 @@ public class ProgramDaoImpl implements ProgramDao {
 
     @Override
     public List<PaoIdentifier> getAllProgramPaoIdentifiers() {
-        Set<PaoType> paoTypes = paoDefinitionDao.getPaoTypesThatSupportTag(PaoTag.LM_PROGRAM);
-        
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT paObjectId, type FROM yukonPAObject");
-        sql.append("WHERE type").in(paoTypes);
-        
-        List<PaoIdentifier> paoIdentifiers =  yukonJdbcTemplate.query(sql, paoIdentifierRowMapper);
-        
-        return paoIdentifiers;
+        return paoDao.getAllPaoIdentifiersForTags(PaoTag.LM_PROGRAM);
     }
-    
+
 }

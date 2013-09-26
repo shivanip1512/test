@@ -28,7 +28,7 @@
 
     <bean id="drControlAreaDao" class="com.cannontech.dr.controlarea.dao.impl.ControlAreaDaoImpl"/>
     <bean id="drScenarioDao" class="com.cannontech.dr.scenario.dao.impl.ScenarioDaoImpl"/>
-    <bean id="drProgramDao" class="com.cannontech.dr.program.dao.impl.ProgramDaoImpl"/>
+    <bean id="drProgramDao" class="com.cannontech.dr.dao.impl.ProgramDaoImpl"/>
 
     <bean id="drService" class="com.cannontech.dr.service.impl.DemandResponseServiceImpl"/>
 

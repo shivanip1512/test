@@ -13,6 +13,7 @@
     .output-column-container {position:relative;}
     .output-column {position:absolute;top:1.65em;left:-2em;}
     .output-column-remove-btn {position:absolute; top:1.65em; right:0em;}
+    .input-select {width:150px}
 </style>
 
     <tags:setFormEditMode mode="${mode}"/>

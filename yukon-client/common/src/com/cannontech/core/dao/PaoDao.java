@@ -10,6 +10,7 @@ import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.core.service.impl.PaoLoader;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 
@@ -202,4 +203,7 @@ public interface PaoDao {
      * @return
      */
     public int getDisabledDeviceCount(DeviceGroup deviceGroup);
+
+    public List<PaoIdentifier> getAllPaoIdentifiersForTags(PaoTag paoTag, PaoTag...paoTags);
+
 }

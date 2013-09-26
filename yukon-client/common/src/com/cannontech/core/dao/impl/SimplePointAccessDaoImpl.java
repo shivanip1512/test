@@ -15,9 +15,7 @@ import com.cannontech.message.dispatch.message.PointData;
 public class SimplePointAccessDaoImpl implements SimplePointAccessDao {
     private DynamicDataSource dynamicDataSource;
 
-    public SimplePointAccessDaoImpl() {
-    }
-    
+    @Override
     public double getPointValue(LitePoint point) throws PointDataException {
         PointValueHolder pointData = dynamicDataSource.getPointValue(point.getPointID());
         //Validate.notNull(pointData, "No PointData in cache for pointId " + point.getPointID());

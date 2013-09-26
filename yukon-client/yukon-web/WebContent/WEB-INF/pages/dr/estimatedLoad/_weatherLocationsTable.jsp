@@ -32,30 +32,32 @@
                 <c:forEach var="weatherLocation" items="${weatherLocations}">
                     <tr>
                         <td>${fn:escapeXml(weatherLocation.name)}</td>
-                        <td>${fn:escapeXml(weatherLocation.stationId)}</td>
+                        <td>
+                            ${fn:escapeXml(weatherLocation.stationId)}
+                        </td>
                         <td>${fn:escapeXml(weatherStations[weatherLocation.stationId].stationDesc)}</td>
                         <td>
                             <cti:dataUpdaterCallback
                              function="Yukon.DrFormula.updateWeatherInputFields"
                              initialize="true"
-                             value="WEATHER_STATION/${weatherLocation.paoId}/JSON_META_DATA" />
-                            <span id="temperatureField_${weatherLocation.paoId}" class="f-drFormula-temperature-field">
-                                <cti:dataUpdaterValue identifier="${weatherLocation.paoId}/TEMPERATURE" type="WEATHER_STATION"/>
+                             value="WEATHER_STATION/${weatherLocation.paoIdentifier.paoId}/JSON_META_DATA" />
+                            <span id="temperatureField_${weatherLocation.paoIdentifier.paoId}" class="f-drFormula-temperature-field">
+                                <cti:dataUpdaterValue identifier="${weatherLocation.paoIdentifier.paoId}/TEMPERATURE" type="WEATHER_STATION"/>
                             </span>
                         </td>
                         <td>
-                            <span id="humidityField_${weatherLocation.paoId}" class="f-drFormula-humidity-field">
-                                <cti:dataUpdaterValue identifier="${weatherLocation.paoId}/HUMIDITY" type="WEATHER_STATION"/>
+                            <span id="humidityField_${weatherLocation.paoIdentifier.paoId}" class="f-drFormula-humidity-field">
+                                <cti:dataUpdaterValue identifier="${weatherLocation.paoIdentifier.paoId}/HUMIDITY" type="WEATHER_STATION"/>
                             </span>
                         </td>
                         <td>
-                            <span id="timestampField_${weatherLocation.paoId}" class="f-drFormula-timestamp-field">
-                               <cti:dataUpdaterValue identifier="${weatherLocation.paoId}/TIMESTAMP" type="WEATHER_STATION"/>
+                            <span id="timestampField_${weatherLocation.paoIdentifier.paoId}" class="f-drFormula-timestamp-field">
+                               <cti:dataUpdaterValue identifier="${weatherLocation.paoIdentifier.paoId}/TIMESTAMP" type="WEATHER_STATION"/>
                             </span>
-                            <cti:button id="deleteWeatherLocation_${weatherLocation.paoId}"
-                                href="removeWeatherLocation?paoId=${weatherLocation.paoId}" nameKey="remove"
+                            <cti:button id="deleteWeatherLocation_${weatherLocation.paoIdentifier.paoId}"
+                                href="removeWeatherLocation?paoId=${weatherLocation.paoIdentifier.paoId}" nameKey="remove"
                                 renderMode="image" icon="icon-cross" classes="fr"/>
-                            <dialog:confirm on="#deleteWeatherLocation_${weatherLocation.paoId}"
+                            <dialog:confirm on="#deleteWeatherLocation_${weatherLocation.paoIdentifier.paoId}"
                                  nameKey="confirmDelete" argument="${fn:escapeXml(weatherLocation.name)}"/>
                         </td>
                     </tr>

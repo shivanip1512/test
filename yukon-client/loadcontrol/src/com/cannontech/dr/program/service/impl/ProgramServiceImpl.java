@@ -48,7 +48,7 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.dr.program.dao.ProgramDao;
+import com.cannontech.dr.dao.ProgramDao;
 import com.cannontech.dr.program.filter.ForLoadGroupFilter;
 import com.cannontech.dr.program.model.GearAdjustment;
 import com.cannontech.dr.program.service.ConstraintContainer;

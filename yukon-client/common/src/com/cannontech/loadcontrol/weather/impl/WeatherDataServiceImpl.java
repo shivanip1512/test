@@ -104,7 +104,7 @@ public class WeatherDataServiceImpl implements WeatherDataService {
     }
 
     @Override
-    @Transactional(propagation=Propagation.SUPPORTS)
+    @Transactional
     public void createWeatherLocation(WeatherLocation weatherLocation) {
 
         CompleteYukonPao weatherPao = new CompleteYukonPao();
@@ -152,7 +152,7 @@ public class WeatherDataServiceImpl implements WeatherDataService {
         LitePoint humidityPoint = attributeService.getPointForAttribute(paoIdentifier, BuiltInAttribute.HUMIDITY);
 
         WeatherLocation weatherLocation
-            = new WeatherLocation(paoId, temperaturePoint, humidityPoint, name, stationId, coordinate);
+            = new WeatherLocation(paoIdentifier, temperaturePoint, humidityPoint, name, stationId, coordinate);
 
         return weatherLocation;
     }

@@ -17,6 +17,7 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.NotFoundException;
@@ -380,6 +381,11 @@ public class ObjectMapperFactoryImplTest extends TestCase {
 
         @Override
         public int getDisabledDeviceCount(DeviceGroup deviceGroup) {
+            throw new UnsupportedOperationException("Method not implemented");
+        }
+
+        @Override
+        public List<PaoIdentifier> getAllPaoIdentifiersForTags(PaoTag paoTag, PaoTag... paoTags) {
             throw new UnsupportedOperationException("Method not implemented");
         }
     }

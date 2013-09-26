@@ -35,14 +35,14 @@ public class MoveOutTask extends YukonTaskBase {
         logger.info("Starting move out task.");
         MoveOutForm moveOutFormObj = new MoveOutForm();
         moveOutFormObj.setEmailAddress(emailAddress);
-        moveOutFormObj.setUserContext(getJobContext().getJob().getUserContext());
+        moveOutFormObj.setUserContext(getJob().getUserContext());
         moveOutFormObj.setMeter(meter);
         moveOutFormObj.setMoveOutDate(moveOutDate);
         
         MoveOutResult moveOutResult = null;
         
         moveOutResult = moveInMoveOutService.moveOut(moveOutFormObj);
-        moveInMoveOutEmailService.createMoveOutEmail(moveOutResult, getJobContext().getJob().getUserContext());
+        moveInMoveOutEmailService.createMoveOutEmail(moveOutResult, getJob().getUserContext());
     }
 
     // Setters for injected parameters

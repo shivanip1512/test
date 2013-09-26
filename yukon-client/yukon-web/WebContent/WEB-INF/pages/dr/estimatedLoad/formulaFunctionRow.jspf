@@ -32,7 +32,7 @@
                         <div class="column two nogutter">
                             <div id="formulaWeatherStationTemp_"
                                 style="display:none" class="f-drFormula-appendTableId">
-                                 <select name="functions[].inputPointId">
+                                 <select name="functions[].inputPointId" class="input-select">
                                      <c:forEach var="weatherLocation" items="${weatherLocations}">
                                          <option value="${weatherLocation.tempPoint.liteID}">
                                              ${fn:escapeXml(weatherLocation.name)}
@@ -42,7 +42,7 @@
                             </div>
                             <div id="formulaWeatherStationHumidity_"
                                 style="display:none" class="f-drFormula-appendTableId">
-                                 <select name="functions[].inputPointId">
+                                 <select name="functions[].inputPointId" class="input-select">
                                      <c:forEach var="weatherLocation" items="${weatherLocations}">
                                          <option value="${weatherLocation.humidityPoint.liteID}">
                                              ${fn:escapeXml(weatherLocation.name)}
@@ -75,7 +75,7 @@
                         </div>
                         <div class="column two nogutter">
                             <div id="formulaWeatherStationTemp_${functionIndex}" style="${formulaBean.functions[functionIndex].tempType ? '' : 'display:none'}">
-                                 <form:select path="functions[${functionIndex}].inputPointId"> 
+                                 <form:select path="functions[${functionIndex}].inputPointId" cssClass="input-select"> 
                                      <c:forEach var="weatherLocation" items="${weatherLocations}"> 
                                          <form:option value="${weatherLocation.tempPoint.liteID}"> 
                                              ${fn:escapeXml(weatherLocation.name)} 
@@ -84,7 +84,7 @@
                                  </form:select> 
                             </div>
                             <div id="formulaWeatherStationHumidity_${functionIndex}" style="${formulaBean.functions[functionIndex].humidityType ? '' : 'display:none'}">
-                                 <form:select path="functions[${functionIndex}].inputPointId"> 
+                                 <form:select path="functions[${functionIndex}].inputPointId" cssClass="input-select"> 
                                      <c:forEach var="weatherLocation" items="${weatherLocations}"> 
                                          <form:option value="${weatherLocation.humidityPoint.liteID}"> 
                                              ${fn:escapeXml(weatherLocation.name)} 
@@ -149,51 +149,3 @@
         </div>
     </div>
 </div>
-
-<%--     <div id="dummyFunction" class="setting f-drFormula-removeable f-drFormula-function" style="display:none"> --%>
-<%--         <input type="hidden" name="formulaId" value="${formulaBean.formulaId}"/> --%>
-<%--         <input type="hidden" name="dummyFunctionBean.functionId" value=""/> --%>
-<%--         <input type='hidden' id="inputPointId_" name="inputPointId" class="f-drFormula-appendTableId"/> --%>
-<%--         <div class="column_8_8_8 clearfix"> --%>
-<%--             <div class="column one"> --%>
-<%--                 <tags:nameValueStacked nameKey=".name"> --%>
-<%--                     <tags:input path="dummyFunctionBean.name" size="20"/> --%>
-<%--                 </tags:nameValueStacked> --%>
-<%--                 <tags:nameValueStacked nameKey=".input"> --%>
-<%--                     <tags:selectWithItems items="${formulaInputs}" --%>
-<%--                         path="dummyFunctionBean.inputType" --%>
-<%--                         inputClass="f-drFormula-formulaInputSelect f-drFormula-appendTableId"/> --%>
-<%--                     <div id="formulaPointPicker_" style="display:none" --%>
-<%--                         class="f-drFormula-appendTableId"> --%>
-<%--                         <button id="formulaPointPickerBtn_" role="button" --%>
-<%--                             type="button" --%>
-<%--                             class="button naked f-drFormula-pointPicker f-drFormula-appendTableId"> --%>
-<%--                             <span id="formulaPointPickerLbl_" --%>
-<%--                                 class="label f-drFormula-appendTableId"> --%>
-<%--                                 <i:inline key=".noPointSelected"/> --%>
-<%--                             </span> --%>
-<%--                             <i class="icon icon-database-add"></i> --%>
-<%--                         </button> --%>
-<%--                     </div> --%>
-<%--                 </tags:nameValueStacked> --%>
-<%--             </div> --%>
-<%--             <div class="column two"> --%>
-<%--                 <tags:nameValueStacked nameKey=".quadratic"> --%>
-<%--                     <tags:input path="dummyFunctionBean.quadratic"/> --%>
-<%--                 </tags:nameValueStacked> --%>
-<%--                 <tags:nameValueStacked nameKey=".inputMin"> --%>
-<%--                     <tags:input path="dummyFunctionBean.inputMin"/> --%>
-<%--                 </tags:nameValueStacked> --%>
-<%--             </div> --%>
-<%--             <div class="column three nogutter"> --%>
-<%--                 <cti:button nameKey="remove" icon="icon-cross" classes="fr f-drFormula-remove"/> --%>
-<%--                 <tags:nameValueStacked nameKey=".linear"> --%>
-<%--                     <tags:input path="dummyFunctionBean.linear"/> --%>
-<%--                 </tags:nameValueStacked> --%>
-<%--                 <tags:nameValueStacked nameKey=".inputMax"> --%>
-<%--                     <tags:input path="dummyFunctionBean.inputMax"/> --%>
-<%--                 </tags:nameValueStacked> --%>
-<%--             </div> --%>
-<%--         </div> --%>
-<%--     </div> --%>
-

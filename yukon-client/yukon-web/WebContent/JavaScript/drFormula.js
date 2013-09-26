@@ -68,12 +68,14 @@ Yukon.DrFormula = (function() {
 
     _removeAssignmentBtnClick = function() {
         var id = jQuery(this).data("assign-id");
+        jQuery("#assignmentInput_"+id).prop("disabled", true);
         jQuery("#assignmentAdd_"+id).hide();
         jQuery("#assignmentRemove_"+id).show();
     },
 
     _undoBtnClick = function() {
         var id = jQuery(this).data("assign-id");
+        jQuery("#assignmentInput_"+id).prop("disabled", false);
         jQuery("#assignmentAdd_"+id).show();
         jQuery("#assignmentRemove_"+id).hide();
     },
@@ -139,7 +141,7 @@ Yukon.DrFormula = (function() {
             // show all normal inputs
             jQuery(".f-drFormula-timeInput_"+tableId)
                 .prop("disabled", true)
-                .hide()
+                .hide();
             jQuery(".f-drFormula-notTimeInput_"+tableId)
                 .prop("disabled", false)
                 .show();
@@ -500,9 +502,9 @@ Yukon.DrFormula = (function() {
 
             if (metaDataObj.dispatchError) {
                 jQuery("#dispatchError").show();
-                jQuery(".f-drFormula-temperature-field").removeClass("error success").addClass("disabled");
-                jQuery(".f-drFormula-humidity-field").removeClass("error success").addClass("disabled");
-                jQuery(".f-drFormula-timestamp-field").removeClass("error success").addClass("disabled");
+                jQuery(".f-drFormula-temperature-field").removeClass("error").addClass("disabled");
+                jQuery(".f-drFormula-humidity-field").removeClass("error").addClass("disabled");
+                jQuery(".f-drFormula-timestamp-field").removeClass("error").addClass("disabled");
             } else {
                 jQuery("#dispatchError").hide();
             }
@@ -525,9 +527,9 @@ Yukon.DrFormula = (function() {
             }
 
             if (metaDataObj.timestamp !== 'valid') {
-                jQuery("#timestampField_"+paoId).addClass("error").removeClass("success disabled");
+                jQuery("#timestampField_"+paoId).addClass("error").removeClass("disabled");
             } else {
-                jQuery("#timestampField_"+paoId).addClass("success").removeClass("error disabled");
+                jQuery("#timestampField_"+paoId).removeClass("error disabled");
             }
         }
     };

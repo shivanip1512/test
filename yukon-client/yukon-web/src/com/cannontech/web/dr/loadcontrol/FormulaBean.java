@@ -6,6 +6,7 @@ import java.util.List;
 import com.cannontech.common.util.LazyList;
 import com.cannontech.dr.estimatedload.Formula;
 import com.cannontech.dr.estimatedload.Formula.CalculationType;
+import com.cannontech.user.YukonUserContext;
 
 public class FormulaBean {
 
@@ -19,14 +20,14 @@ public class FormulaBean {
     private List<Integer> assignments = LazyList.ofInstance(Integer.class);
 
     public FormulaBean() {}
-    public FormulaBean(Formula formula) {
+    public FormulaBean(Formula formula, YukonUserContext userContext) {
         this.formulaId = formula.getFormulaId();
         this.name = formula.getName();
         this.calculationType = formula.getCalculationType();
         this.formulaType = formula.getType();
         this.functionIntercept = formula.getFunctionIntercept();
-        this.functions = FunctionBean.toBeanMap(formula.getFunctions());
-        this.tables = LookupTableBean.toBeanMap(formula.getTables(), formula.getTimeTables());
+        this.functions = FunctionBean.toBeanMap(formula.getFunctions(), userContext);
+        this.tables = LookupTableBean.toBeanMap(formula.getTables(), formula.getTimeTables(), userContext);
     }
 
     public Formula getFormula() {
@@ -37,10 +38,10 @@ public class FormulaBean {
                            LookupTableBean.toTimeLookupTables(tables));
     }
 
-    public static List<FormulaBean> toBeans(List<Formula> formulas) {
+    public static List<FormulaBean> toBeans(List<Formula> formulas, YukonUserContext userContext) {
         List<FormulaBean> beans = new ArrayList<>();
         for (Formula formula : formulas) {
-            beans.add(new FormulaBean(formula));
+            beans.add(new FormulaBean(formula, userContext));
         }
         return beans;
     }

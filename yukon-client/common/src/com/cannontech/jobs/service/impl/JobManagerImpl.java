@@ -31,7 +31,6 @@ import com.cannontech.jobs.dao.ScheduledOneTimeJobDao;
 import com.cannontech.jobs.dao.ScheduledRepeatingJobDao;
 import com.cannontech.jobs.dao.YukonJobDao;
 import com.cannontech.jobs.dao.impl.JobDisabledStatus;
-import com.cannontech.jobs.model.JobContext;
 import com.cannontech.jobs.model.JobState;
 import com.cannontech.jobs.model.JobStatus;
 import com.cannontech.jobs.model.ScheduledOneTimeJob;
@@ -461,8 +460,7 @@ public class JobManagerImpl implements JobManager {
             InputUtil.applyProperties(inputRoot, task, job.getJobProperties());
         }
 
-        JobContext jobContext = new JobContext(job);
-        task.setJobContext(jobContext);
+        task.setJob(job);
 
         return task;
     }

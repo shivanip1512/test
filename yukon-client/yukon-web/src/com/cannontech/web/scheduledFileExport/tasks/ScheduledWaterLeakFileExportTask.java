@@ -48,7 +48,7 @@ public class ScheduledWaterLeakFileExportTask extends ScheduledFileExportTask {
     private boolean includeDisabledPaos;
 	
     private String[] getHeaderRow() {
-    	YukonUserContext userContext = getJobContext().getJob().getUserContext();
+    	YukonUserContext userContext = getJob().getUserContext();
     	MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
     	String[] headerRow = new String[4];
         headerRow[0] = messageSourceAccessor.getMessage(baseKey + ".tableHeader.deviceName.linkText");
@@ -60,7 +60,7 @@ public class ScheduledWaterLeakFileExportTask extends ScheduledFileExportTask {
     
 	@Override
 	public void start() {
-		YukonUserContext userContext = getJobContext().getJob().getUserContext();
+		YukonUserContext userContext = getJob().getUserContext();
 		
 		Duration timePrevious = Duration.standardHours(hoursPrevious);
 		Instant now = new Instant();

@@ -1,7 +1,6 @@
 package com.cannontech.loadcontrol.weather.impl;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -65,7 +64,6 @@ public class NoaaWeatherDataServiceImpl implements NoaaWeatherDataService {
      */
     private Document queryForWeatherStations() throws NoaaWeatherDataServiceException {
 
-        HttpURLConnection httpConnection = null;
         Document response = null;
         try {
             HttpClient client = new HttpClient();
@@ -74,7 +72,7 @@ public class NoaaWeatherDataServiceImpl implements NoaaWeatherDataService {
 
             HttpMethod method = new GetMethod(stationIndexUrl);
 
-            setProxySettings(client, stationIndexUrl);
+            setProxySettings(client);
 
             int status = client.executeMethod(method);
             if (status != 200) {
@@ -90,11 +88,8 @@ public class NoaaWeatherDataServiceImpl implements NoaaWeatherDataService {
             method.releaseConnection();
         } catch (IOException | ParserConfigurationException | SAXException e) {
             throw new NoaaWeatherDataServiceException("Unable to populate weather station map from NOAA HTTP web service.", e);
-        } finally {
-            if (httpConnection != null) {
-                httpConnection.disconnect();
-            }
         }
+
         return response;
     }
 
@@ -120,7 +115,7 @@ public class NoaaWeatherDataServiceImpl implements NoaaWeatherDataService {
         Element rootNode = response.getDocumentElement();
         YukonXPathTemplate template = YukonXml.getXPathTemplateForNode(rootNode);
         List<Node> stationList = template.evaluateAsNodeList("station");
-        Map<String, WeatherStation> newWeatherStationMap = new HashMap<String, WeatherStation>();
+        Map<String, WeatherStation> newWeatherStationMap = new HashMap<>();
 
         // iterate through stations and build map (key:stationId -> value:WeatherStation)
         for (Node singleStation : stationList) {
@@ -183,14 +178,13 @@ public class NoaaWeatherDataServiceImpl implements NoaaWeatherDataService {
 
     @Override
     public WeatherObservation getCurrentWeatherObservation(WeatherStation weatherStation) throws NoaaWeatherDataServiceException {
-        HttpURLConnection httpConnection = null;
         WeatherObservation fullObservation;
 
         try {
             HttpClient client = new HttpClient();
             HttpMethod method = new GetMethod(weatherStation.getNoaaUrl());
 
-            setProxySettings(client, weatherStation.getNoaaUrl());
+            setProxySettings(client);
 
             int status = client.executeMethod(method);
             if (status != 200) {
@@ -233,10 +227,6 @@ public class NoaaWeatherDataServiceImpl implements NoaaWeatherDataService {
             method.releaseConnection();
         } catch (IOException | SAXException | ParserConfigurationException e) {
             throw new NoaaWeatherDataServiceException("Unable to get current weather observation", e);
-        } finally {
-            if (httpConnection != null) {
-                httpConnection.disconnect();
-            }
         }
 
         return fullObservation;
@@ -246,7 +236,7 @@ public class NoaaWeatherDataServiceImpl implements NoaaWeatherDataService {
      * If HTTP_PROXY global setting is set to ip:port, this method will set this value on the HttpClient,
      * otherwise this method will not set up a proxy. 
      */
-    private void setProxySettings(HttpClient client, String url) {
+    private void setProxySettings(HttpClient client) {
         String httpProxy = globalSettingDao.getString(GlobalSettingType.HTTP_PROXY);
 
         if (!httpProxy.equals("none")) {

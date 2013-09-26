@@ -27,6 +27,8 @@ public class WeatherDataBackingService implements UpdateBackingService {
     private Logger log = YukonLogManager.getLogger(WeatherDataBackingService.class);
     private String baseKey = "yukon.web.modules.dr.estimatedLoad.weatherInput.";
 
+    // data should be less than 1 hour old, this gives us some wiggle room
+    private Duration weatherDataValidDuration = Duration.standardMinutes(90);
     @Autowired private WeatherDataService weatherDataService;
     @Autowired private DynamicDataSource dynamicDataSource;
     @Autowired private YukonUserContextMessageSourceResolver resolver;
@@ -99,7 +101,7 @@ public class WeatherDataBackingService implements UpdateBackingService {
                  metaData.put("humidity", "valid");
              }
 
-            if (weatherObs.getTimestamp().isBefore(Instant.now().minus(Duration.standardMinutes(90)))) {
+            if (weatherObs.getTimestamp().isBefore(Instant.now().minus(weatherDataValidDuration))) {
                 metaData.put("timestamp", "old");
             } else {
                 metaData.put("timestamp", "valid");

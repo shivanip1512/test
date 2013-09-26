@@ -1,14 +1,17 @@
 package com.cannontech.web.dr.loadcontrol;
 
+import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import com.cannontech.dr.estimatedload.FormulaFunction;
 import com.cannontech.dr.estimatedload.FormulaInput;
 import com.cannontech.dr.estimatedload.FormulaInput.InputType;
+import com.cannontech.user.YukonUserContext;
+import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Ordering;
 
 public class FunctionBean {
     private Integer functionId; // null if new
@@ -19,6 +22,13 @@ public class FunctionBean {
     private double inputMin;
     private double inputMax;
     private Integer inputPointId;
+
+    private final static Function<FunctionBean, String> nameFunction = new Function<FunctionBean, String>() {
+        @Override
+        public String apply(FunctionBean bean) {
+            return bean.getName();
+        }
+    };
 
     public FunctionBean() {}
     public FunctionBean(FormulaFunction function) {
@@ -34,7 +44,7 @@ public class FunctionBean {
         this.inputType = function.getInput().getInputType();
     }
 
-    public static List<FunctionBean> toBeanMap(ImmutableList<FormulaFunction> functions) {
+    public static List<FunctionBean> toBeanMap(ImmutableList<FormulaFunction> functions, YukonUserContext userContext) {
         List<FunctionBean> beans = new ArrayList<>();
         if (functions == null) {
             return beans;
@@ -42,11 +52,7 @@ public class FunctionBean {
         for (FormulaFunction function : functions) {
             beans.add(new FunctionBean(function));
         }
-        Collections.sort(beans, new Comparator<FunctionBean>() {
-            @Override public int compare(FunctionBean f1, FunctionBean f2) {
-                return f1.getName().compareTo(f2.getName());
-            }
-        });
+        Collections.sort(beans, Ordering.from(Collator.getInstance(userContext.getLocale())).onResultOf(nameFunction));
         return beans;
     }
 

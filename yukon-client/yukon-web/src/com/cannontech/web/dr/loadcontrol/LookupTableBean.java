@@ -1,8 +1,8 @@
 package com.cannontech.web.dr.loadcontrol;
 
+import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import org.joda.time.LocalTime;
@@ -11,7 +11,10 @@ import com.cannontech.common.util.LazyList;
 import com.cannontech.dr.estimatedload.FormulaInput;
 import com.cannontech.dr.estimatedload.FormulaInput.InputType;
 import com.cannontech.dr.estimatedload.FormulaLookupTable;
+import com.cannontech.user.YukonUserContext;
+import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Ordering;
 
 public class LookupTableBean {
     private Integer lookupTableId;
@@ -24,6 +27,13 @@ public class LookupTableBean {
 
     private LocalTime timeInputMax = LocalTime.MIDNIGHT;
     private List<TimeTableEntryBean> timeEntries = LazyList.ofInstance(TimeTableEntryBean.class);
+
+    private final static Function<LookupTableBean, String> nameFunction = new Function<LookupTableBean, String>() {
+        @Override
+        public String apply(LookupTableBean bean) {
+            return bean.getName();
+        }
+    };
 
     public LookupTableBean() {}
     public LookupTableBean(final FormulaLookupTable<?> table) {
@@ -49,7 +59,7 @@ public class LookupTableBean {
     }
 
     public static List<LookupTableBean> toBeanMap(ImmutableList<FormulaLookupTable<Double>> tables,
-            ImmutableList<FormulaLookupTable<LocalTime>> timeTables) {
+            ImmutableList<FormulaLookupTable<LocalTime>> timeTables, YukonUserContext userContext) {
         List<LookupTableBean> beans = new ArrayList<>();
         if (tables != null) {
             for (FormulaLookupTable<Double> table : tables) {
@@ -61,11 +71,7 @@ public class LookupTableBean {
                 beans.add(new LookupTableBean(table));
             }
         }
-        Collections.sort(beans, new Comparator<LookupTableBean>() {
-            @Override public int compare(LookupTableBean f1, LookupTableBean f2) {
-                return f1.getName().compareTo(f2.getName());
-            }
-        });
+        Collections.sort(beans, Ordering.from(Collator.getInstance(userContext.getLocale())).onResultOf(nameFunction));
         return beans;
     }
 

@@ -23,14 +23,14 @@
                 <cti:displayForPageEditModes modes="EDIT">
                     <c:if test="${not dummyRow}">
                         <tags:selectWithItems id="formulaInputSelect_${tableIndex}"
-                            inputClass="f-drFormula-formulaInputSelect"
+                            inputClass="f-drFormula-formulaInputSelect input-select"
                             items="${formulaInputs}"
                             path="tables[${tableIndex}].inputType"/>
                     </c:if>
                     <c:if test="${dummyRow}">
                         <select name="tables[].inputType"
                             id="formulaInputSelect_"
-                            class="f-drFormula-appendTableId">
+                            class="f-drFormula-appendTableId input-select">
                             <c:forEach var="fInput" items="${formulaInputs}">
                                 <option value="${fInput}"><cti:msg2 key="${fInput}"/></option>
                             </c:forEach>
@@ -72,7 +72,7 @@
                    <div id="formulaWeatherStationTemp_"
                         style="display:none" class="f-drFormula-appendTableId">
                         <tags:nameValueStacked nameKey=".weatherLocation">
-                             <select name="tables[].inputPointId">
+                             <select name="tables[].inputPointId" class="input-select">
                                  <c:forEach var="weatherLocation" items="${weatherLocations}">
                                      <option value="${weatherLocation.tempPoint.liteID}">
                                          ${fn:escapeXml(weatherLocation.name)}
@@ -84,7 +84,7 @@
                     <div id="formulaWeatherStationHumidity_"
                         style="display:none" class="f-drFormula-appendTableId">
                         <tags:nameValueStacked nameKey=".weatherLocation">
-                             <select name="tables[].inputPointId">
+                             <select name="tables[].inputPointId" class="input-select">
                                  <c:forEach var="weatherLocation" items="${weatherLocations}">
                                      <option value="${weatherLocation.humidityPoint.liteID}">
                                          ${fn:escapeXml(weatherLocation.name)}
@@ -98,7 +98,7 @@
                      <div id="formulaWeatherStationTemp_${tableIndex}"
                         style="${formulaBean.tables[tableIndex].tempType ? '' : 'display:none'}">
                         <tags:nameValueStacked nameKey=".weatherLocation">
-                             <form:select path="tables[${tableIndex}].inputPointId">
+                             <form:select path="tables[${tableIndex}].inputPointId" cssClass="input-select">
                                  <c:forEach var="weatherLocation" items="${weatherLocations}">
                                      <form:option value="${weatherLocation.tempPoint.liteID}">
                                          ${fn:escapeXml(weatherLocation.name)}
@@ -110,7 +110,7 @@
                     <div id="formulaWeatherStationHumidity_${tableIndex}"
                         style="${formulaBean.tables[tableIndex].humidityType ? '' : 'display:none'}">
                         <tags:nameValueStacked nameKey=".weatherLocation">
-                             <form:select path="tables[${tableIndex}].inputPointId"> 
+                             <form:select path="tables[${tableIndex}].inputPointId" cssClass="input-select"> 
                                  <c:forEach var="weatherLocation" items="${weatherLocations}"> 
                                      <form:option value="${weatherLocation.humidityPoint.liteID}"> 
                                          ${fn:escapeXml(weatherLocation.name)} 

@@ -29,7 +29,6 @@ import com.cannontech.dr.estimatedload.dao.EstimatedLoadDao;
 import com.cannontech.dr.estimatedload.dao.FormulaDao;
 import com.cannontech.dr.estimatedload.service.EstimatedLoadService;
 import com.cannontech.dr.estimatedload.service.FormulaService;
-import com.cannontech.dr.program.dao.ProgramDao;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.IGearProgram;
 import com.cannontech.loadcontrol.data.LMProgramBase;
@@ -44,7 +43,6 @@ public class EstimatedLoadServiceImpl implements EstimatedLoadService {
     @Autowired private ApplianceCategoryDao applianceCategoryDao;
     @Autowired private EstimatedLoadDao estimatedLoadDao;
     @Autowired private ControlAreaDao controlAreaDao;
-    @Autowired private ProgramDao programDao;
     @Autowired private FormulaDao formulaDao;
     @Autowired private FormulaService formulaService;
     @Autowired private LMGearDao gearDao;

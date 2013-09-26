@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,8 @@ import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
@@ -48,7 +51,6 @@ import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.device.Device;
 import com.cannontech.database.db.device.DeviceCarrierSettings;
@@ -72,6 +74,7 @@ public final class PaoDaoImpl implements PaoDao {
     
     private final ParameterizedRowMapper<PaoIdentifier> yukonPaoRowMapper = new YukonPaoRowMapper();
     private final ParameterizedRowMapper<LiteYukonPAObject> litePaoRowMapper = new LitePaoRowMapper();
+    private final static PaoIdentifierRowMapper paoIdentifierRowMapper = new PaoIdentifierRowMapper();
 
     private JdbcOperations jdbcOps;
     private YukonJdbcOperations yukonJdbcOperations;
@@ -80,7 +83,8 @@ public final class PaoDaoImpl implements PaoDao {
     private NextValueHelper nextValueHelper;
     private AuthDao authDao;
     @Autowired private DeviceGroupService deviceGroupService;
-	
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
+
     /*
      * (non-Javadoc)
      * @see com.cannontech.core.dao.PaoDao#getLiteYukonPAO(int)
@@ -768,4 +772,17 @@ public final class PaoDaoImpl implements PaoDao {
         sql.append("AND").appendFragment(groupSqlWhereClause);
         return yukonJdbcTemplate.queryForInt(sql);
     }
+
+  @Override
+  public List<PaoIdentifier> getAllPaoIdentifiersForTags(PaoTag paoTag, PaoTag... paoTags) {
+      Set<PaoType> paoTypes = paoDefinitionDao.getPaoTypesThatSupportTag(paoTag, paoTags);
+
+      SqlStatementBuilder sql = new SqlStatementBuilder();
+      sql.append("SELECT paObjectId, type FROM yukonPAObject");
+      sql.append("WHERE type").in(paoTypes);
+
+      List<PaoIdentifier> paoIdentifiers =  yukonJdbcTemplate.query(sql, paoIdentifierRowMapper);
+
+      return paoIdentifiers;
+  }
 }

@@ -1,19 +1,20 @@
 package com.cannontech.loadcontrol.weather;
 
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.database.data.lite.LitePoint;
 
 public final class WeatherLocation {
 
-    private final int paoId;
+    private final PaoIdentifier paoIdentifier;
     private final String name;
     private final String stationId;
     private final GeographicCoordinate geoCoordinate;
     private final LitePoint tempPoint;
     private final LitePoint humidityPoint;
 
-    public WeatherLocation(int paoId, LitePoint tempPoint, LitePoint humidityPoint, String name,
+    public WeatherLocation(PaoIdentifier paoIdentifier, LitePoint tempPoint, LitePoint humidityPoint, String name,
                            String stationId, GeographicCoordinate geoCoordinate) {
-        this.paoId = paoId;
+        this.paoIdentifier = paoIdentifier;
         this.tempPoint = tempPoint;
         this.humidityPoint = humidityPoint;
         this.name = name;
@@ -41,7 +42,7 @@ public final class WeatherLocation {
         return humidityPoint;
     }
 
-    public int getPaoId() {
-        return paoId;
+    public PaoIdentifier getPaoIdentifier() {
+        return paoIdentifier;
     }
 }

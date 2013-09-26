@@ -322,11 +322,26 @@
         </property>
     </bean>
     
-    <!-- Scheduled Weather Data updated -->
-    <bean id="scheduledWeatherDataUpdateExecutionJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
+    <!-- Scheduled Estimated Load Data updated -->
+    <bean id="repeatingEstimatedLoadTaskJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
+        <qualifier value="estimatedLoadData"/>
+        <property name="taskName">
+            <idref local="repeatingEstimatedLoadTask"/>
+        </property>
+        <property name="title" value="Scheduled Estimated Load Data Update Execution Job"/>
+        <property name="inputs">
+            <bean class="com.cannontech.web.input.InputRoot">
+                <property name="inputList">
+                    <list></list>
+                </property>
+            </bean>
+        </property>
+    </bean>
+
+    <bean id="repeatingWeatherDataTaskJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
         <qualifier value="weatherData"/>
         <property name="taskName">
-            <idref local="scheduledWeatherDataUpdateExecutionTask"/>
+            <idref local="repeatingWeatherDataTask"/>
         </property>
         <property name="title" value="Scheduled Weather Data Update Execution Job"/>
         <property name="inputs">
@@ -361,9 +376,13 @@
         scope="prototype">
     </bean>
 
-    <!-- Scheduled Weather Data Update Execution task -->
-    <bean id="scheduledWeatherDataUpdateExecutionTask"
-        class="com.cannontech.loadcontrol.scheduledWeatherDataUpdateExecutionTask.tasks.ScheduledWeatherDataUpdateExecutionTask"
+    <!-- Scheduled Estimated Load Data Update Execution task -->
+    <bean id="repeatingEstimatedLoadTask" class="com.cannontech.web.loadcontrol.tasks.RepeatingEstimatedLoadTask"
+        scope="prototype">
+    </bean>
+
+   <!-- Scheduled Weather Data Update Execution task -->
+    <bean id="repeatingWeatherDataTask" class="com.cannontech.web.loadcontrol.tasks.RepeatingWeatherDataTask"
         scope="prototype">
     </bean>
 

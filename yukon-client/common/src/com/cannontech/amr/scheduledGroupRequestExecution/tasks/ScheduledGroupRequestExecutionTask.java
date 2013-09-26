@@ -64,7 +64,7 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
     
     @Override
     public void stop() {
-    	int jobId = getJobContext().getJob().getId();
+    	int jobId = getJob().getId();
     	
     	log.info("Stopping job with id " + jobId);
     	long commandsCancelled = currentExecutor.cancelExecution(currentCallback, getYukonUser());
@@ -128,7 +128,7 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
 	        // create ScheduledGroupRequestExecutionResult record
 	        ScheduledGroupRequestExecutionPair pair = new ScheduledGroupRequestExecutionPair();
 	        pair.setCommandRequestExecutionContextId(executionObjects.getContextId());
-	        pair.setJobId(getJobContext().getJob().getId());
+	        pair.setJobId(getJob().getId());
 	        
 	        scheduledGroupRequestExecutionResultsDao.insert(pair);
 	        

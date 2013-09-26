@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.cannontech.amr.scheduledRphDanglingEntriesDeletionExecutionTask.tasks.ScheduledRphDanglingEntriesDeletionExecutionTask;
 import com.cannontech.amr.scheduledRphDuplicateDeletionExecution.tasks.ScheduledRphDuplicateDeletionExecutionTask;
 import com.cannontech.amr.scheduledSystemLogDanglingEntriesDeletionExecutionTask.tasks.ScheduledSystemLogDanglingEntriesDeletionExecutionTask;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -26,11 +28,12 @@ import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.service.JobManager;
 import com.cannontech.jobs.support.YukonJobDefinition;
 import com.cannontech.jobs.support.YukonTask;
-import com.cannontech.loadcontrol.scheduledWeatherDataUpdateExecutionTask.tasks.ScheduledWeatherDataUpdateExecutionTask;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.loadcontrol.tasks.RepeatingEstimatedLoadTask;
+import com.cannontech.web.loadcontrol.tasks.RepeatingWeatherDataTask;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -44,6 +47,7 @@ public class MaintenanceController {
     @Autowired private CronExpressionTagService cronExpressionTagService;
     @Autowired private JobManager jobManager;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private ConfigurationSource configurationSource;
 
     @Autowired @Qualifier("rphDuplicateDeletion")
         private YukonJobDefinition<ScheduledRphDuplicateDeletionExecutionTask> rphDuplicateJobDef;
@@ -51,13 +55,16 @@ public class MaintenanceController {
         private YukonJobDefinition<ScheduledRphDanglingEntriesDeletionExecutionTask> rphDanglingEntriesJobDef;
     @Autowired @Qualifier("systemLogDanglingDeletion")
         private YukonJobDefinition<ScheduledSystemLogDanglingEntriesDeletionExecutionTask> systemLogDanglingEntriesJobDef;
+    @Autowired @Qualifier("estimatedLoadData")
+        private YukonJobDefinition<RepeatingEstimatedLoadTask> estimatedLoadDataJobDef;
     @Autowired @Qualifier("weatherData")
-        private YukonJobDefinition<ScheduledWeatherDataUpdateExecutionTask> weatherDataJobDef;
+        private YukonJobDefinition<RepeatingWeatherDataTask> weatherDataJobDef;
 
     private final static String RPH_DUPLICATE_CRON = "0 0 21 ? * *"; // every night at 9:00pm
     private final static String RPH_DANGLING_CRON = "0 15 21 ? * *"; // every night at 9:15pm
     private final static String SYSTEM_LOG_DANGLING_CRON = "0 30 21 ? * *"; // every night at 9:30pm
-    private final static String WEATHER_DATA_UPDATE_CRON = "0 20 * * * ? *"; //every hour at 20 minutes after the hour
+    private final static String ESTIMATED_LOAD_UPDATE_CRON = "0 0 * * * ? *"; //every hour
+    private final static String WEATHER_DATA_UPDATE_CRON = "0 0/10 * * * ? *"; //every 10 minutes
 
     @RequestMapping
     public String view(ModelMap model, YukonUserContext userContext) {
@@ -65,7 +72,11 @@ public class MaintenanceController {
         jobs.add(getJob(userContext, rphDuplicateJobDef, RPH_DUPLICATE_CRON));
         jobs.add(getJob(userContext, rphDanglingEntriesJobDef, RPH_DANGLING_CRON));
         jobs.add(getJob(userContext, systemLogDanglingEntriesJobDef, SYSTEM_LOG_DANGLING_CRON));
-        jobs.add(getJob(userContext, weatherDataJobDef, WEATHER_DATA_UPDATE_CRON));
+        if (configurationSource.getBoolean(MasterConfigBooleanKeysEnum.ENABLE_ESTIMATED_LOAD, false)) {
+            jobs.add(getJob(userContext, estimatedLoadDataJobDef, ESTIMATED_LOAD_UPDATE_CRON));
+            jobs.add(getJob(userContext, weatherDataJobDef, WEATHER_DATA_UPDATE_CRON));
+        }
+
         model.addAttribute("jobs", jobs);
         return "maintenance/home.jsp";
     }

@@ -16,7 +16,7 @@ import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.database.YukonJdbcTemplate;
-import com.cannontech.dr.program.dao.ProgramDao;
+import com.cannontech.dr.dao.ProgramDao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.loadcontrol.dao.LoadControlProgramDao;
