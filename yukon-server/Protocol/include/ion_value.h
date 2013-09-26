@@ -51,7 +51,7 @@ protected:
     friend class CtiIONDataStream;
     friend class CtiIONMethod;
 
-    static CtiIONValue *restoreObject( unsigned char *buf, unsigned long len, unsigned long *bytesUsed );
+    static CtiIONValue *restoreObject( const unsigned char *buf, unsigned long len, unsigned long *bytesUsed );
 
 public:
 

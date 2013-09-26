@@ -13,7 +13,7 @@ protected:
 
     friend CtiIONValueFixed;
 
-    CtiIONTime( unsigned char *byteStream, unsigned long streamLength );
+    CtiIONTime( const unsigned char *byteStream, unsigned long streamLength );
 
     unsigned int getSerializedValueLength( void ) const;
     void putSerializedValue( unsigned char *buf ) const;

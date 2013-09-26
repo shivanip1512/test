@@ -19,7 +19,7 @@
 
 using std::endl;
 
-CtiIONBoolean::CtiIONBoolean( unsigned char *byteStream, unsigned long streamLength ) :
+CtiIONBoolean::CtiIONBoolean( const unsigned char *byteStream, unsigned long streamLength ) :
     CtiIONValueVariable(Variable_Boolean),
     _bool(false)
 {

@@ -29,7 +29,7 @@ CtiIONProgram::CtiIONProgram( CtiIONStatement *initial ) :
     addStatement(initial);
 }
 
-CtiIONProgram::CtiIONProgram( unsigned char *buf, unsigned long len ) :
+CtiIONProgram::CtiIONProgram( const unsigned char *buf, unsigned long len ) :
     CtiIONValueVariable(Variable_Program)
 {
     unsigned long pos = 0;
@@ -131,7 +131,7 @@ CtiIONStatement::CtiIONStatement( unsigned int handle, CtiIONMethod *method ) :
 {
 }
 
-CtiIONStatement::CtiIONStatement( unsigned char *buf, unsigned long len, unsigned long *bytesUsed )
+CtiIONStatement::CtiIONStatement( const unsigned char *buf, unsigned long len, unsigned long *bytesUsed )
 {
     unsigned long pos;
     unsigned short tmpHandle;
@@ -282,7 +282,7 @@ int CtiIONMethod::isValid( void )
 }
 
 
-CtiIONMethod::CtiIONMethod( unsigned char *buf, unsigned long len, unsigned long *bytesUsed )
+CtiIONMethod::CtiIONMethod( const unsigned char *buf, unsigned long len, unsigned long *bytesUsed )
 {
     unsigned long pos;
 

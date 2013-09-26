@@ -175,7 +175,7 @@ void CtiIONStructArray::putSerialized( unsigned char *buf ) const
 
 
 CtiIONValue *CtiIONStructArray::restoreStructArray( unsigned char ionClass, unsigned char classDescriptor,
-                                                    unsigned char *buf, unsigned long len, unsigned long *bytesUsed )
+                                                    const unsigned char *buf, unsigned long len, unsigned long *bytesUsed )
 {
     unsigned long pos, itemLength;
 

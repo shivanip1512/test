@@ -192,12 +192,12 @@ int CtiProtocolLMI::sendCommRequest( OUTMESS *&OutMessage, std::list< OUTMESS* >
 }
 
 
-int CtiProtocolLMI::recvCommResult( INMESS *InMessage, std::list< OUTMESS* > &outList )
+int CtiProtocolLMI::recvCommResult( const INMESS *InMessage, std::list< OUTMESS* > &outList )
 {
     int offset = 0;
-    lmi_inmess_struct &lmi_in = *((lmi_inmess_struct *)InMessage->Buffer.InMessage);
+    const lmi_inmess_struct &lmi_in = *((const lmi_inmess_struct *)InMessage->Buffer.InMessage);
     INMESS seriesv_inmess;
-    unsigned char *buf = InMessage->Buffer.InMessage;
+    const unsigned char *buf = InMessage->Buffer.InMessage;
 
     offset += sizeof(lmi_in);
 

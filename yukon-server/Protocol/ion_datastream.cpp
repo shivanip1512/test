@@ -21,12 +21,6 @@
 
 using std::endl;
 
-CtiIONDataStream::CtiIONDataStream( unsigned char *buf, unsigned long len )
-{
-    parseByteStream( buf, len );
-}
-
-
 CtiIONDataStream::CtiIONDataStream( )
 {
 }
@@ -38,7 +32,7 @@ CtiIONDataStream::~CtiIONDataStream( )
 }
 
 
-void CtiIONDataStream::parseByteStream( unsigned char *buf, unsigned long len )
+void CtiIONDataStream::parseByteStream( const unsigned char *buf, unsigned long len )
 {
     unsigned long pos = 0;
 
@@ -63,7 +57,7 @@ void CtiIONDataStream::parseByteStream( unsigned char *buf, unsigned long len )
 }
 
 
-CtiIONDataStream &CtiIONDataStream::initialize( unsigned char *buf, unsigned long len )
+CtiIONDataStream &CtiIONDataStream::initialize( const unsigned char *buf, unsigned long len )
 {
     clearAndDestroy();
 

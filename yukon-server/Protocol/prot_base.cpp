@@ -11,8 +11,8 @@ namespace Protocol {
 int Interface::generate( CtiXfer &xfer )              {   return NoMethod;   }
 int Interface::decode( CtiXfer &xfer, int status )    {   return NoMethod;   }
 
-int Interface::sendCommRequest( OUTMESS *&OutMessage, std::list< OUTMESS* > &outList )   {   return NoMethod;    }
-int Interface::recvCommResult ( INMESS *InMessage,    std::list< OUTMESS* > &outList )   {   return NoMethod;    }
+int Interface::sendCommRequest( OUTMESS *&OutMessage,    std::list< OUTMESS* > &outList )   {   return NoMethod;    }
+int Interface::recvCommResult ( const INMESS *InMessage, std::list< OUTMESS* > &outList )   {   return NoMethod;    }
 
 int Interface::recvCommRequest( OUTMESS  *OutMessage )   {   return NoMethod;    }
 int Interface::sendCommResult ( INMESS   *InMessage  )   {   return NoMethod;    }

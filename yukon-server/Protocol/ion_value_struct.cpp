@@ -192,7 +192,7 @@ CtiIONValue *CtiIONStruct::operator[]( int index )
 
 
 CtiIONValue *CtiIONStruct::restoreStruct( unsigned char ionClass, unsigned char classDescriptor,
-                                          unsigned char *buf, unsigned long len, unsigned long *bytesUsed )
+                                          const unsigned char *buf, unsigned long len, unsigned long *bytesUsed )
 {
     unsigned long pos, itemLength;
 

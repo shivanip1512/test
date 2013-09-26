@@ -40,10 +40,10 @@ protected:
     virtual void putSerializedValue( unsigned char *buf ) const = 0;
     virtual unsigned int getSerializedValueLength( void ) const = 0;
 
-    friend CtiIONValue *CtiIONValue::restoreObject( unsigned char *buf, unsigned long len, unsigned long *bytesUsed );
+    friend CtiIONValue *CtiIONValue::restoreObject( const unsigned char *buf, unsigned long len, unsigned long *bytesUsed );
 
     static CtiIONValue *restoreFixed( unsigned char ionClass, unsigned char classDescriptor,
-                                      unsigned char *buf, unsigned long len, unsigned long *bytesUsed );
+                                      const unsigned char *buf, unsigned long len, unsigned long *bytesUsed );
 
 public:
 

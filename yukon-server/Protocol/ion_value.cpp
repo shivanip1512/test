@@ -174,7 +174,7 @@ CtiIONValue &CtiIONValue::setValid( bool valid )
 }
 
 
-CtiIONValue *CtiIONValue::restoreObject( unsigned char *buf, unsigned long len, unsigned long *bytesUsed )
+CtiIONValue *CtiIONValue::restoreObject( const unsigned char *buf, unsigned long len, unsigned long *bytesUsed )
 {
     unsigned long pos = 0;
 

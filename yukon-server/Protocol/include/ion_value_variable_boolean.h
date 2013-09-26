@@ -16,12 +16,12 @@ protected:
     void putElement( unsigned char *buf ) const;
 
     friend CtiIONValue *CtiIONValueVariable::restoreVariable( unsigned char ionClass, unsigned char classDescriptor,
-                                                              unsigned char *buf, unsigned long len, unsigned long *bytesUsed );
+                                                              const unsigned char *buf, unsigned long len, unsigned long *bytesUsed );
     friend class CtiIONFixedArrayTemplate<CtiIONBoolean>;
 
     unsigned char getVariableClassDescriptor( void ) const;
 
-    CtiIONBoolean( unsigned char *byteStream, unsigned long streamLength );
+    CtiIONBoolean( const unsigned char *byteStream, unsigned long streamLength );
 
     unsigned int getSerializedValueLength( void ) const;
     void putSerializedValue( unsigned char *buf ) const;

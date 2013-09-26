@@ -13,7 +13,7 @@ class CtiIONDataStream : public CtiIONSerializable
 {
 private:
 
-    void parseByteStream( unsigned char *buf, unsigned long len );
+    void parseByteStream( const unsigned char *buf, unsigned long len );
 
     typedef std::vector<CtiIONValue *> DSVector;
     typedef DSVector::iterator       DSIterator;
@@ -23,11 +23,10 @@ private:
 
 public:
 
-    CtiIONDataStream( unsigned char *buf, unsigned long len );
     CtiIONDataStream( );
     virtual ~CtiIONDataStream( );
 
-    CtiIONDataStream &initialize( unsigned char *buf, unsigned long len );
+    CtiIONDataStream &initialize( const unsigned char *buf, unsigned long len );
 
     CtiIONDataStream &push_back( CtiIONValue *toInsert );
 

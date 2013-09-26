@@ -364,7 +364,7 @@ public:
     bool isTransactionComplete( void ) const;
 
     int sendCommRequest( OUTMESS *&OutMessage, std::list< OUTMESS* > &outList );
-    int recvCommResult ( INMESS   *InMessage,  std::list< OUTMESS* > &outList );
+    int recvCommResult ( const INMESS   *InMessage,  std::list< OUTMESS* > &outList );
 
     int recvCommRequest( OUTMESS *OutMessage );
     int sendCommResult ( INMESS  *InMessage  );

@@ -25,7 +25,7 @@ public:
 
     CtiIONProgram( );
     CtiIONProgram( CtiIONStatement *initial );
-    CtiIONProgram( unsigned char *byteStream, unsigned long streamLength );
+    CtiIONProgram( const unsigned char *byteStream, unsigned long streamLength );
 
     virtual ~CtiIONProgram( );
 
@@ -46,7 +46,7 @@ protected:
 
     friend class CtiIONProgram;
 
-    CtiIONStatement( unsigned char *byteStream, unsigned long streamLength, unsigned long *bytesUsed );
+    CtiIONStatement( const unsigned char *byteStream, unsigned long streamLength, unsigned long *bytesUsed );
 
     unsigned int getLength( void ) const;
     void write( unsigned char *buf ) const;
@@ -82,7 +82,7 @@ protected:
 
     friend class CtiIONStatement;
 
-    CtiIONMethod( unsigned char *byteStream, unsigned long streamLength, unsigned long *bytesUsed );
+    CtiIONMethod( const unsigned char *byteStream, unsigned long streamLength, unsigned long *bytesUsed );
 
     unsigned int getLength( void ) const;
     void write( unsigned char *buf ) const;

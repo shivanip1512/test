@@ -3,7 +3,7 @@
 #include "cti_asmc.h"
 
 
-USHORT  IM_EX_CTIBASE CrcCalc_C(BYTE* pStr, ULONG cnt)
+USHORT  IM_EX_CTIBASE CrcCalc_C(const BYTE* pStr, ULONG cnt)
 {
 
    int      i;

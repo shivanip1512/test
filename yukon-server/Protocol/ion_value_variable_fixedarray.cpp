@@ -317,7 +317,7 @@ unsigned char CtiIONFixedArray::getVariableClassDescriptor( void ) const
 }
 
 
-CtiIONValueVariable *CtiIONFixedArray::restoreFixedArray( unsigned char classDescriptor, unsigned char *buf, unsigned long len, unsigned long *bytesUsed )
+CtiIONValueVariable *CtiIONFixedArray::restoreFixedArray( unsigned char classDescriptor, const unsigned char *buf, unsigned long len, unsigned long *bytesUsed )
 {
     unsigned char tmp4b,   //  temp 4 bit value
                   tmp8b;   //  temp 8 bit value

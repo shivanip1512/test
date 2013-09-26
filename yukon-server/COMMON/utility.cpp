@@ -1623,7 +1623,7 @@ ULONG StrToUlong(UCHAR* buffer, ULONG len)
 }
 
 
-ULONG BCDtoBase10(UCHAR* buffer, ULONG len)
+ULONG BCDtoBase10(const UCHAR* buffer, ULONG len)
 {
 
    int i, j;

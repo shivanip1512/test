@@ -75,7 +75,7 @@ protected:
 
     friend class CtiIONValueVariable;
 
-    static CtiIONValueVariable *restoreFixedArray( unsigned char classDescriptor, unsigned char *buf, unsigned long len, unsigned long *bytesUsed );
+    static CtiIONValueVariable *restoreFixedArray( unsigned char classDescriptor, const unsigned char *buf, unsigned long len, unsigned long *bytesUsed );
 
 public:
 
@@ -147,9 +147,9 @@ private:
 
 protected:
 
-    friend CtiIONValueVariable *CtiIONFixedArray::restoreFixedArray( unsigned char classDescriptor, unsigned char *buf, unsigned long len, unsigned long *bytesUsed );
+    friend CtiIONValueVariable *CtiIONFixedArray::restoreFixedArray( unsigned char classDescriptor, const unsigned char *buf, unsigned long len, unsigned long *bytesUsed );
 
-    CtiIONFixedArrayTemplate( unsigned long itemCount, unsigned long itemLength, unsigned char *buf, unsigned long len, unsigned long *bytesUsed )
+    CtiIONFixedArrayTemplate( unsigned long itemCount, unsigned long itemLength, const unsigned char *buf, unsigned long len, unsigned long *bytesUsed )
     {
         CtiIONFixedArrayElement *tmpElement;
         T *tmpValue;

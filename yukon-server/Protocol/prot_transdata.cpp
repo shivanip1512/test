@@ -193,17 +193,17 @@ int CtiProtocolTransdata::sendCommResult( INMESS *InMessage )
 //a vector, pass them back up to the device, and we're done from here down...
 //=====================================================================================================================
 
-vector<CtiTransdataData *> CtiProtocolTransdata::resultDecode( INMESS *InMessage )
+vector<CtiTransdataData *> CtiProtocolTransdata::resultDecode( const INMESS *InMessage )
 {
    CtiTransdataData           *converted = NULL;
-   BYTE                       *ptr = NULL;
-   llp                        *lp = NULL;
+   const BYTE                 *ptr = NULL;
+   const llp                  *lp = NULL;
    vector<CtiTransdataData *> transVector;
 
-   ptr = ( unsigned char*)( InMessage->Buffer.InMessage );
+   ptr = ( const unsigned char*)( InMessage->Buffer.InMessage );
    BYTE *pEND = (BYTE*)( InMessage->Buffer.InMessage ) + sizeof(InMessage->Buffer.InMessage);   // 20060908 Don't decode beyond your DATA!
 
-   lp = ( llp *)ptr;
+   lp = ( const llp *)ptr;
 
    if(_lastLPTime <= lp->lastLP && lp->lastLP <= _lastLPTime.now() + 86400)
    {

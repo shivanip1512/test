@@ -135,7 +135,7 @@ IM_EX_CTIBASE void  GetPseudoPointIDs(std::vector<unsigned long> &pointIDs);
 IM_EX_CTIBASE INT   EstablishOutMessagePriority(CtiOutMessage *Out, INT priority);
 IM_EX_CTIBASE INT   OverrideOutMessagePriority(CtiOutMessage *Out, INT priority);
 
-IM_EX_CTIBASE ULONG   BCDtoBase10(UCHAR* buffer, ULONG len);
+IM_EX_CTIBASE ULONG   BCDtoBase10(const UCHAR* buffer, ULONG len);
 IM_EX_CTIBASE ULONG   StrToUlong(UCHAR* buffer, ULONG len);
 IM_EX_CTIBASE void  convertHexStringToBytes( std::string & stringInput, std::vector< unsigned char > & result );
 
@@ -143,7 +143,7 @@ IM_EX_CTIBASE INT     CheckCCITT16CRC(INT Id,BYTE *InBuffer,ULONG InCount);
 IM_EX_CTIBASE USHORT  CCITT16CRC(INT Id, BYTE* buffer, LONG length, BOOL bAdd);
 
 IM_EX_CTIBASE USHORT  ShortLittleEndian(USHORT *ShortEndianFloat);
-IM_EX_CTIBASE FLOAT   FltLittleEndian(FLOAT  *BigEndianFloat);
+IM_EX_CTIBASE FLOAT   FltLittleEndian(FLOAT *BigEndianFloat);
 
 IM_EX_CTIBASE ULONG   MilliTime (PULONG);
 

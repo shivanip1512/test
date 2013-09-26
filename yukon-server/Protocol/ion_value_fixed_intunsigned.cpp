@@ -21,7 +21,7 @@
 
 using std::endl;
 
-CtiIONUnsignedInt::CtiIONUnsignedInt( unsigned char *byteStream, unsigned long streamLength ) :
+CtiIONUnsignedInt::CtiIONUnsignedInt( const unsigned char *byteStream, unsigned long streamLength ) :
     CtiIONValueFixed(Fixed_UnsignedInt),
     _unsignedInt(0)
 {

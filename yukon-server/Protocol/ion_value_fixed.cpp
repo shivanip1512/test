@@ -203,7 +203,7 @@ unsigned int CtiIONValueFixed::getSerializedHeaderLength( void ) const
 
 
 CtiIONValue *CtiIONValueFixed::restoreFixed( unsigned char ionClass, unsigned char classDescriptor,
-                                             unsigned char *buf, unsigned long len, unsigned long *bytesUsed )
+                                             const unsigned char *buf, unsigned long len, unsigned long *bytesUsed )
 {
     unsigned long pos = 0;
     unsigned long itemLength;

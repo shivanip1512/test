@@ -19,7 +19,7 @@
 
 using std::endl;
 
-CtiIONSignedInt::CtiIONSignedInt( unsigned char *byteStream, unsigned long streamLength ) :
+CtiIONSignedInt::CtiIONSignedInt( const unsigned char *byteStream, unsigned long streamLength ) :
     CtiIONValueFixed(Fixed_SignedInt),
     _signedInt(0)
 {

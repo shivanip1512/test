@@ -7,16 +7,16 @@ class IM_EX_PROT CtiTransdataData
 
 public:
 
-   CtiTransdataData( BYTE *data );
+   CtiTransdataData( const BYTE *data );
    ~CtiTransdataData();
 
-   ULONG stringToInt( BYTE *data, int len );
-   bool isDataNegative( BYTE *str, int len );
+   ULONG stringToInt( const BYTE *data, int len );
+   bool isDataNegative( const BYTE *str, int len );
    void formatData( void );
    void formatTime( ULONG temp );
    bool dataIsTime( int id );
    void init( void );
-   void fillData( BYTE *data );
+   void fillData( const BYTE *data );
 
    int getID( void );
    FLOAT getReading( void );
@@ -37,7 +37,7 @@ private:
       Header_width   = 3,
       Data_width     = 6
    };
-   
+
    unsigned       _year;
    unsigned       _month;
    unsigned       _day;

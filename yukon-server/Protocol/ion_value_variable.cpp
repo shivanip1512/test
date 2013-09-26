@@ -126,7 +126,7 @@ unsigned int CtiIONValueVariable::getSerializedHeaderLength( void ) const
 
 
 CtiIONValue *CtiIONValueVariable::restoreVariable( unsigned char ionClass, unsigned char classDescriptor,
-                                                   unsigned char *buf, unsigned long len, unsigned long *bytesUsed )
+                                                   const unsigned char *buf, unsigned long len, unsigned long *bytesUsed )
 {
     unsigned long pos = 0;
 

@@ -9,7 +9,7 @@
 //=====================================================================================================================
 //=====================================================================================================================
 
-CtiTransdataData::CtiTransdataData( BYTE *data )
+CtiTransdataData::CtiTransdataData( const BYTE *data )
 {
    init();
    fillData( data );
@@ -43,7 +43,7 @@ void CtiTransdataData::init( void )
 //=====================================================================================================================
 //=====================================================================================================================
 
-void CtiTransdataData::fillData( BYTE *data )
+void CtiTransdataData::fillData( const BYTE *data )
 {
    bool     isTime = false;
    ULONG    temp = 0;
@@ -83,7 +83,7 @@ void CtiTransdataData::fillData( BYTE *data )
 //=====================================================================================================================
 //=====================================================================================================================
 
-ULONG CtiTransdataData::stringToInt( BYTE *str, int len )
+ULONG CtiTransdataData::stringToInt( const BYTE *str, int len )
 {
    int            index = 0;
    ULONG          accumulator = 0;
@@ -108,7 +108,7 @@ ULONG CtiTransdataData::stringToInt( BYTE *str, int len )
 //=====================================================================================================================
 //=====================================================================================================================
 
-bool CtiTransdataData::isDataNegative( BYTE *str, int len )
+bool CtiTransdataData::isDataNegative( const BYTE *str, int len )
 {
    bool neg = false;
 

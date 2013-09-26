@@ -27,7 +27,7 @@ CtiIONFloat::CtiIONFloat( float initialValue ) :
 }
 
 
-CtiIONFloat::CtiIONFloat( unsigned char *byteStream, unsigned long streamLength ) :
+CtiIONFloat::CtiIONFloat( const unsigned char *byteStream, unsigned long streamLength ) :
     CtiIONValueFixed(Fixed_Float),
     _float(0.0f)
 {

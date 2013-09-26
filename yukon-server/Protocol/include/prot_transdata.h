@@ -50,7 +50,7 @@ class IM_EX_PROT CtiProtocolTransdata
       bool getDidProcess( void );
       CtiTime getLastLoadProfileTime( void );
 
-      std::vector<CtiTransdataData *> resultDecode( INMESS *InMessage );
+      std::vector<CtiTransdataData *> resultDecode( const INMESS *InMessage );
 
    protected:
 

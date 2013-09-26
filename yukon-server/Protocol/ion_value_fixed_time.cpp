@@ -19,7 +19,7 @@
 
 using std::endl;
 
-CtiIONTime::CtiIONTime( unsigned char *buf, unsigned long len ) :
+CtiIONTime::CtiIONTime( const unsigned char *buf, unsigned long len ) :
     CtiIONValueFixed(Fixed_Time)
 {
     //  all i know about is 8-byte times

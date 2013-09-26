@@ -29,7 +29,7 @@ CtiIONChar::CtiIONChar( unsigned char initialValue ) :
 }
 
 
-CtiIONChar::CtiIONChar( unsigned char *byteStream, unsigned long streamLength ) :
+CtiIONChar::CtiIONChar( const unsigned char *byteStream, unsigned long streamLength ) :
     CtiIONValueFixed(Fixed_Char)
 {
     //  all i know about is 1-byte chars

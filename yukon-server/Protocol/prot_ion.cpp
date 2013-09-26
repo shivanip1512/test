@@ -2238,15 +2238,15 @@ int CtiProtocolION::sendCommRequest( OUTMESS *&OutMessage, list< OUTMESS* > &out
 }
 
 
-int CtiProtocolION::recvCommResult( INMESS *InMessage, list< OUTMESS* > &outList )
+int CtiProtocolION::recvCommResult( const INMESS *InMessage, list< OUTMESS* > &outList )
 {
     int retVal = NoError;
 
-    unsigned char *buf;
+    const unsigned char *buf;
     unsigned long len, offset;
 
     ion_result_descriptor_struct  header;
-    ion_pointdata_struct         *points;
+    const ion_pointdata_struct   *points;
     CtiIONDataStream              tmpDS;
     char *tmpStr;
 
@@ -2273,7 +2273,7 @@ int CtiProtocolION::recvCommResult( INMESS *InMessage, list< OUTMESS* > &outList
             delete [] tmpStr;
             offset += header.resultDescriptorStringLength;
 
-            points = (ion_pointdata_struct *)(buf + offset);
+            points = (const ion_pointdata_struct *)(buf + offset);
 
             for( int i = 0; i < header.numPoints; i++ )
             {

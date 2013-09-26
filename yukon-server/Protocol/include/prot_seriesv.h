@@ -238,7 +238,7 @@ public:
 
     //  client-side (Scanner, PIL) functions
     int sendCommRequest( OUTMESS *&OutMessage, std::list< OUTMESS* > &outList );
-    int recvCommResult ( INMESS   *InMessage,  std::list< OUTMESS* > &outList );
+    int recvCommResult ( const INMESS   *InMessage,  std::list< OUTMESS* > &outList );
 
     bool hasInboundPoints( void );
     void getInboundPoints( std::list< CtiPointDataMsg* > &pointList );

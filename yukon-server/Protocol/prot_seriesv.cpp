@@ -167,7 +167,7 @@ int CtiProtocolSeriesV::sendCommRequest( OUTMESS *&OutMessage, list< OUTMESS* > 
 }
 
 
-int CtiProtocolSeriesV::recvCommResult( INMESS *InMessage, list< OUTMESS* > &outList )
+int CtiProtocolSeriesV::recvCommResult( const INMESS *InMessage, list< OUTMESS* > &outList )
 {
     seriesv_inmess_struct &response = *((seriesv_inmess_struct *)InMessage->Buffer.InMessage);
     seriesv_pointdata *pd = (seriesv_pointdata *)(InMessage->Buffer.InMessage + sizeof(seriesv_inmess_struct));

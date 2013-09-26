@@ -17,13 +17,13 @@ protected:
     void putElement( unsigned char *buf ) const;
 
     friend CtiIONValue *CtiIONValueFixed::restoreFixed( unsigned char ionClass, unsigned char classDescriptor,
-                                                        unsigned char *buf, unsigned long len, unsigned long *bytesUsed );
+                                                        const unsigned char *buf, unsigned long len, unsigned long *bytesUsed );
     friend class CtiIONFixedArrayTemplate<CtiIONChar>;
 
     void putSerializedValue( unsigned char *buf ) const;
     unsigned int getSerializedValueLength( void ) const;
 
-    CtiIONChar( unsigned char *byteStream, unsigned long streamLength );
+    CtiIONChar( const unsigned char *byteStream, unsigned long streamLength );
 
 public:
 
