@@ -35,11 +35,17 @@
 <cti:default var="fieldId" value="${fieldName}"/>
 
 <script>
+    // ignores if present, creates if not
+    Yukon.namespace('Yukon.ui.dialogs');
+    if ('undefined' === typeof Yukon.ui.dialogs.${uniqueId}) {
+        Yukon.namespace('Yukon.ui.dialogs.${uniqueId}');
+    }
+
     jQuery(document).on('click', '#viewSelectedDevices_${uniqueId}', function() {
         var url = '<cti:url value="/bulk/selectedDevicesTableForGroupName"/>' + '?groupName=' + encodeURIComponent(jQuery(document.getElementById("${fieldId}")).val());
         showSelectedDevices('#viewSelectedDevices_${uniqueId}', 'showSelectedDevices_${uniqueId}', url);
     });
-    
+
     jQuery(document).on('click', '.deviceGroupLink_${uniqueId}', function() {
         // ugly? but we can't sumbit a real form since the tag will most likely appear within a form already.
         // this should be safe though, it is the same way that a redirecting ext tree works (ha).
@@ -48,7 +54,67 @@
     });
     
     jQuery(document).on('click', '.chooseGroupIcon_${uniqueId}', function() {
-        jQuery("#window_selectGroupTree_${uniqueId}").dialog('open');
+        var uniqueId = '${uniqueId}',
+            devGroupTree,
+            groupTreeObj,
+            titleBarObj,
+            dialogCont,
+            dialogHeight,
+            offsetTop,
+            buttonPaneObj,
+            treeHelperPane,
+            dialogContOffset,
+            maxHeight,
+            TREE_DIALOG_MAX_WIDTH = 450,
+            // TODO: coalesce this function and put in a separate JavaScript file that can be shared
+            // between this tag file and popupTree.tag
+            calcMaxHeight = function (dialogCont, titleBar, treeHelper, buttonPane) {
+                var paneHeights = titleBar.height() + treeHelper.height() + buttonPane.height(),
+                    maxHeight;
+                // 8-pixel slop addresses top and bottom padding on the elements comprising the popup
+                maxHeight = dialogCont.height() - paneHeights - 8;
+                return maxHeight;
+            };
+
+        if ('undefined' === typeof Yukon.ui.dialogs.${uniqueId}.init) {
+            Yukon.ui.dialogs.${uniqueId}.init = 'inited';
+        } else {
+            // for some reason, this is called multiple times
+            if (true === jQuery('#window_selectGroupTree_${uniqueId}').dialog('isOpen')) {
+                return;
+            }
+        }
+        jQuery('#window_selectGroupTree_${uniqueId}').dialog('open');
+        if (-1 !== uniqueId.indexOf('deviceGroupNameSelectorTag')) {
+            devGroupTree = document.getElementById('window_selectGroupTree_${uniqueId}');
+            groupTreeObj = jQuery(devGroupTree);
+            titleBarObj = groupTreeObj.prev('.ui-dialog-titlebar');
+            dialogCont = groupTreeObj.closest('.ui-dialog');
+            offsetTop = dialogCont.offset().top;
+            treeHelperPane = groupTreeObj.find('.tree_helper_controls');
+            // Store the first value of the top offset of the dialog. Subsequent values vary
+            // considerably and undermine the positioning logic
+            if ('undefined' === typeof Yukon.ui.dialogs.${uniqueId}.offsetTop) {
+                Yukon.ui.dialogs.${uniqueId}.offsetTop = offsetTop;
+            } else {
+                offsetTop = Yukon.ui.dialogs.${uniqueId}.offsetTop;
+            }
+            dialogHeight = window.windowHeight - offsetTop;
+            // height set on dialog. when tree expanded
+            groupTreeObj.dialog('option', 'height', dialogHeight + titleBarObj.height());
+            // make dialog wider so long entries don't force horizontal scrollbars
+            groupTreeObj.dialog('option', 'width', TREE_DIALOG_MAX_WIDTH);
+            // no scrollbars on tree div, prevents double scrollbars
+            groupTreeObj.css('overflow', 'hidden');
+            dialogContOffset = dialogCont.offset();
+            buttonPaneObj = jQuery(groupTreeObj.nextAll('.ui-dialog-buttonpane')[0]);
+            // position dialog
+            dialogCont.offset({'left' : dialogContOffset.left, 'top' : offsetTop - buttonPaneObj.height()});
+            // size tree height so it is fully scrollable
+            maxHeight = calcMaxHeight(dialogCont, titleBarObj, treeHelperPane, buttonPaneObj);
+            // set max height of tree dialog so the scrolling works through all the entries
+            jQuery('#selectGroupTree_${uniqueId}').css('max-height', maxHeight);
+        }
     });
     
 	function setSelectedGroupName_${uniqueId}() {
