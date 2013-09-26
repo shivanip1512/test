@@ -148,116 +148,120 @@
 
 <script>
 
-Event.observe (window, 'load', makeFirstSelectedFilterValueVisible);
-
-function loadTarget(form)
-{
-    var extGroup = form.ext;
-    for (var i = 0; i < extGroup.length; i++)
-    {
-        if( extGroup[i].checked)
-        {
-            if( extGroup[i].value == 'png')
-            {
+jQuery (function () {
+    makeFirstSelectedFilterValueVisible();
+});
+function loadTarget (form) {
+    var extGroup = form.ext,
+        i;
+    for (i = 0; i < extGroup.length; i++) {
+        if ( extGroup[i].checked) {
+            if ( extGroup[i].value == 'png') {
                 form.target = '_blank';
                 form.REDIRECT.value = '../analysis/reporting_png.jsp';
-            }
-            else
-            {
+            } else {
                 form.target = "";
             }
         }
     }
 }
 
-function enableDates(value)
-{
-    if(value) {
-        $('calImg_startCal').show();
-        $('calImg_stopCal').show();
+function enableDates (value) {
+    if (value) {
+        jQuery('#calImg_startCal').show();
+        jQuery('#calImg_stopCal').show();
     } else {
-        $('calImg_startCal').hide();
-        $('calImg_stopCal').hide();
+        jQuery('#calImg_startCal').hide();
+        jQuery('#calImg_stopCal').hide();
     }
 
-    $('startCal').disabled = !value;
-    $('stopCal').disabled = !value;
-    $('stopHourID').disabled = !value;
-    $('stopMinuteID').disabled = !value;
-    $('startHourID').disabled = !value;
-    $('startMinuteID').disabled = !value;
+    document.getElementById('startCal').disabled = !value;
+    document.getElementById('stopCal').disabled = !value;
+    document.getElementById('stopHourID').disabled = !value;
+    document.getElementById('stopMinuteID').disabled = !value;
+    document.getElementById('startHourID').disabled = !value;
+    document.getElementById('startMinuteID').disabled = !value;
 }
 
-function checkDates(){
-    var good = false;
-    var startDate = $F('startCal');
-    var stopDate = $F('stopCal');
-    var myregex = /\d{1,2}\/\d{1,2}\/\d{4}/g;
-    if(startDate.match(myregex) && stopDate.match(myregex)){
-        var p = startDate.split("/");
-        var t = stopDate.split("/");
-        var realStartDate = new Date(p[2], (p[0]-1), p[1]);
-        var realStopDate = new Date(t[2], t[0]-1, t[1]);
-        
+function checkDates () {
+    var good = false,
+        startDate = jQuery('#startCal').val(),
+        stopDate = jQuery('#stopCal').val(),
+        myregex = /\d{1,2}\/\d{1,2}\/\d{4}/g,
+        p,
+        t,
+        realStartDate,
+        realStopDate,
+        startHour,
+        stopHour,
+        startMinute,
+        stopMinute;
+    if (startDate.match(myregex) && stopDate.match(myregex)) {
+        p = startDate.split("/");
+        t = stopDate.split("/");
+        realStartDate = new Date(p[2], (p[0]-1), p[1]);
+        realStopDate = new Date(t[2], t[0]-1, t[1]);
+
         if (jQuery('#startCal')[0].disabled || jQuery('#stopCal')[0].disabled || realStartDate < realStopDate) {
             loadTarget(document.reportForm);
         } else {
-            if($('startHourID')) {    //Check that one of the time fields exists 
-                if(startDate == stopDate){
-                    var startHour = Number($F('startHourID')); 
-                    var stopHour = Number($F('stopHourID')); 
-                    if(startHour < stopHour){
+            if (document.getElementById('startHourID')) {    //Check that one of the time fields exists 
+                if (startDate == stopDate) {
+                    startHour = Number(jQuery('#startHourID').val());
+                    stopHour = Number(jQuery('#stopHourID').val());
+                    if (startHour < stopHour) {
                         loadTarget(document.reportForm);
-                    }else if(startHour == stopHour){
-                        var startMinute = Number($F('startMinuteID')); 
-                        var stopMinute = Number($F('stopMinuteID')); 
-                        if(startMinute >= stopMinute){
+                    } else if (startHour == stopHour) {
+                        startMinute = Number(jQuery('#startMinuteID').val());
+                        stopMinute = Number(jQuery('#stopMinuteID').val());
+                        if (startMinute >= stopMinute) {
                             alert("<cti:msg key="yukon.common.error.time.startBeforeStop"/>");
-                            $('startCal').focus();
+                            document.getElementById('startCal').focus();
                             return false;
-                        }else{
+                        } else {
                             loadTarget(document.reportForm);
                         }
-                    }else {
+                    } else {
                         alert("<cti:msg key="yukon.common.error.time.startBeforeStop"/>");
-                        $('startCal').focus();
+                        document.getElementById('startCal').focus();
                         return false;
                     }
-                }else{
+                } else {
                     alert("<cti:msg key="yukon.common.error.date.startBeforeStop"/>");
-                    $('startCal').focus();
+                    document.getElementById('startCal').focus();
                     return false;
                 }
             } else {
                 alert("<cti:msg key="yukon.common.error.date.startBeforeStop"/>");
-                $('startCal').focus();
+                document.getElementById('startCal').focus();
                 return false;
             }
         }
     } else {
         alert("<cti:msg key="yukon.common.error.date.oneInvalid"/>");
-        $('startCal').focus();
+        document.getElementById('startCal').focus();
         return false;
     }
 }
 
-function makeFirstSelectedFilterValueVisible() {
-    
-    var listbox = $('selectFilterValues');    
-    if(listbox) {
-        var selectedOptions = new Array();
+function makeFirstSelectedFilterValueVisible () {
+    var listbox = document.getElementById('selectFilterValues'),
+        selectedOptions = [],
+        y,
+        x;
+    if (listbox) {
         y=0;
-            for (x=0;x<listbox.options.length;x++){
-            if (listbox.options[x].selected){
+        for (x=0;x<listbox.options.length;x++) {
+            if (listbox.options[x].selected) {
                     selectedOptions[y]=x;
                     y++;
             }
-            } 
+        } 
         listbox.selectedIndex=0;//this and selected=false prompt the listbox to 'wake up'
         if (listbox.options.length > 0) {
             listbox.options[0].selected=false; 
         }
-        for (y=selectedOptions.length-1;y>-1;y--){//start from the end and work backwards so first selected item is the one scrolled to. 
+        for (y=selectedOptions.length-1;y>-1;y--) {//start from the end and work backwards so first selected item is the one scrolled to. 
             listbox.options[selectedOptions[y]].selected=true;//select the options required 
         }
     }
@@ -482,53 +486,53 @@ function makeFirstSelectedFilterValueVisible() {
         
         <script type="text/javascript">
 
-            function setPickerSelectedPaoNamesFunction(spanId) {
-                          
-                return function(ids) {
-                    var selectedNames = $A();
-                      for (var index = 0; index < ids.length; index++) {
+            function setPickerSelectedPaoNamesFunction (spanId) {
+                return function (ids) {
+                      var selectedNames = [],
+                          index;
+                      for (index = 0; index < ids.length; index++) {
                           selectedNames.push(ids[index].paoName);
                       }
-                      $(spanId).innerHTML = selectedNames.join(", ");
+                      document.getElementById(spanId).innerHTML = selectedNames.join(", ");
                       return true;
                 }
             }
 
-            function setPickerSelectedAccountNumberNamesFunction(spanId) {
-                
-                return function(ids) {
-                    var selectedNames = $A();
+            function setPickerSelectedAccountNumberNamesFunction (spanId) {
+                return function (ids) {
+                    var selectedNames = [],
+                        index;
 
-                    for (var index = 0; index < ids.length; index++) {
+                    for (index = 0; index < ids.length; index++) {
                         selectedNames.push(ids[index].accountNumber);
                     }
-                    $(spanId).innerHTML = selectedNames.join(", ");
+                    document.getElementById(spanId).innerHTML = selectedNames.join(", ");
                     return true;
                 }
             }
 
-            function setPickerSelectedSerialNumberNamesFunction(spanId) {
-                
-                return function(ids) {
-                    var selectedNames = $A();
+            function setPickerSelectedSerialNumberNamesFunction (spanId) {
+                return function (ids) {
+                    var selectedNames = [],
+                        index;
 
-                    for (var index = 0; index < ids.length; index++) {
+                    for (index = 0; index < ids.length; index++) {
                         selectedNames.push(ids[index].manufacturerSerialNumber);
                     }
-                    $(spanId).innerHTML = selectedNames.join(", ");
+                    document.getElementById(spanId).innerHTML = selectedNames.join(", ");
                     return true;
                 }
             }
             
-            function setPickerSelectedUserNamesFunction(spanId) {
-                
-                return function(ids) {
-                    var selectedNames = $A();
+            function setPickerSelectedUserNamesFunction (spanId) {
+                return function (ids) {
+                    var selectedNames = [],
+                        index;
 
-                    for (var index = 0; index < ids.length; index++) {
+                    for (index = 0; index < ids.length; index++) {
                         selectedNames.push(ids[index].userName);
                     }
-                    $(spanId).innerHTML = selectedNames.join(", ");
+                    document.getElementById(spanId).innerHTML = selectedNames.join(", ");
                     return true;
                 }
             }

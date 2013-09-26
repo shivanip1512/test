@@ -22,15 +22,17 @@
             
             function removeDesignationCode(event, elem) {
                 event.stopPropagation();
-                jQuery(event.target).parent.get(0).remove();
+                // ul > li > span > a > i event originates with the i element (the red X), we want to remove the li
+                jQuery(event.target).parent().parent().parent().remove();
             }
             
             function addDesignationCode() {
-                var designationCode =  $('newDesignationCode').value;
-                var str = [];
+                var designationCode =  jQuery('#newDesignationCode').val(),
+                    str = [],
+                    curMarkup = jQuery('#designationCodes').html();
                 str.push('<li>');
                     str.push('<span class="remove fr">');
-                        str.push("<a class='f-remove' href='javascript:removeDesignationCode()'><span class='icon icon-cross'></span></a>");
+                    str.push("<a class='f-remove' href='javascript:removeDesignationCode()'><span class='icon icon-cross'></span></a>");
                     str.push('</span>');
                     str.push(designationCode);
                     str.push('<input type="hidden" value="0" name="designationCodes['+ ++DC_INDEX +'].id"/>');
@@ -38,32 +40,32 @@
                     str.push('<input type="hidden" value="${serviceCompany.companyId}" name="designationCodes['+ DC_INDEX +'].serviceCompanyId"/>');
                 str.push('</li>');
                 
-                $('designationCodes').insert(str.join(''));
-                $('newDesignationCode').value = "";
-                $('addDesignationCodeButton').disable();
+                jQuery('#designationCodes').html(curMarkup + str.join(''));
+                jQuery('#newDesignationCode').val('');
+                jQuery('#addDesignationCodeButton').prop({'disabled': true});
             }
             
             jQuery(function() {
                 //get the number of designation codes.  we don't 'really' care about the order,
                 //however spring needs the list to be uniquely indexed
-                DC_INDEX = $$('#designationCodes li').length;
+                DC_INDEX = jQuery('#designationCodes li').length;
                 
-                if($('addDesignationCodeButton')) {
-                    Event.observe($('addDesignationCodeButton'), 'click', function(event) {
-                        Event.stop(event);
+                if (jQuery('#addDesignationCodeButton').length) {
+                    jQuery('#addDesignationCodeButton').on('click', function (event) {
+                        event.stopPropagation();
                         addDesignationCode(event);
                     });
-                    $('addDesignationCodeButton').disable();
+                    jQuery('#addDesignationCodeButton').prop({'disabled': true});
                 }
                 
-                if($('newDesignationCode')) {
-                    Event.observe('newDesignationCode', 'keyup', function(e){
-                        Event.stop(e);
-                        if(this.value.length == 0) {
-                            $('addDesignationCodeButton').disable();
+                if (jQuery('#newDesignationCode').length) {
+                    jQuery('#newDesignationCode').on('keyup', function (e) {
+                        e.stopPropagation();
+                        if (this.value.length == 0) {
+                            jQuery('#addDesignationCodeButton').prop({'disabled': true});
                         } else {
-                            $('addDesignationCodeButton').enable();
-                            if(e.keyCode == 13) {
+                            jQuery('#addDesignationCodeButton').prop({'disabled': false});
+                            if (e.keyCode == 13) {
                                 addDesignationCode();
                             }
                         }
@@ -71,73 +73,73 @@
                     });
                 }
                 
-                
-                Event.observe('findDesignationCode', 'focus', function(){
-                    if(this.hasClassName('default')){
+             // TODO: the classes used below are not declared anywhere
+                jQuery('#findDesignationCode').on('focus', function () {
+                    if (jQuery(this).hasClass('default')) {
                        this.value = "";
                        this.removeClassName('default');
                     }
                 });
                 
-                Event.observe('findDesignationCode', 'blur', function(){
-                    if(this.value.length == 0) {
+                jQuery('#findDesignationCode').on('blur', function () {
+                    if (this.value.length == 0) {
                         this.value = FIND_ZIP_MSG;
                         this.addClassName('default');
-                        this.removeClassName('filtered').removeClassName('found').removeClassName('notFound');
-                        $("designationCodes").removeClassName('filtering');
-                        $$("#designationCodes li").each(function(obj, iter){
-                            obj.removeClassName('filtered');
+                        jQuery(this).removeClass('filtered').removeClass('found').removeClass('notFound');
+                        jQuery('#designationCodes').removeClass('filtering');
+                        jQuery('#designationCodes li').each (function (index, obj) {
+                            jQuery(obj).removeClass('filtered');
                         });
                     }
                  });
                 
-                Event.observe('findDesignationCode', 'keyup', function(){
+                jQuery('#findDesignationCode').on('keyup', function () {
                     //search list for this zip
-                    var find = this.value;
+                    var find = this.value,
+                        found = false;
                     
-                    if(find.length > 0) {
-                        var found = false;
-                        $("designationCodes").addClassName('filtering');
+                    if (find.length > 0) {
+                        jQuery('#designationCodes').addClass('filtering');
                         
-                        $$("#designationCodes li input:hidden[name*=.value]").each(function(obj, iter){
-                            if(obj.value.startsWith(find)) {
+                        jQuery('#designationCodes li input:hidden[name*=".value"]').each(function (index, obj) {
+                            if (0 === jQuery(obj).val().indexOf(find, 0)) {
                                 // add filtered class to parent li
-                                obj.up().addClassName('filtered');
+                                jQuery(obj).parent().addClass('filtered');
                                 found = true;
                             } else {
                                 // remove filtered class from parent li
-                                obj.up().removeClassName('filtered');
+                                jQuery(obj).parent().removeClass('filtered');
                             }
                         });
                         
-                        if(found) {
-                            $("findDesignationCode").addClassName("found");
-                            $("findDesignationCode").removeClassName("notFound");
+                        if (found) {
+                            jQuery('#findDesignationCode').addClass('found');
+                            jQuery('#findDesignationCode').removeClass('notFound');
                         } else {
-                            $("findDesignationCode").removeClassName("found");
-                            $("findDesignationCode").addClassName("notFound");
+                            jQuery('#findDesignationCode').removeClass('found');
+                            jQuery('#findDesignationCode').addClass('notFound');
                         }
                         
                     } else {
-                        $("findDesignationCode").removeClassName("found");
-                        $("findDesignationCode").removeClassName("notFound");
-                        $("designationCodes").removeClassName('filtering');
+                        jQuery('#findDesignationCode').removeClass('found');
+                        jQuery('#findDesignationCode').removeClass('notFound');
+                        jQuery('#designationCodes').removeClass('filtering');
                     }
                  });
                 
                 function preventSubmit(e) {
                     if(e.keyCode == 13) {
-                        Event.stop(e);
+                        e.stopPropagation();
                     }
                 };
                 
-                if($('newDesignationCode')) {
-                    Event.observe('newDesignationCode', 'keydown', preventSubmit);
+                if(jQuery('#newDesignationCode').length) {
+                    jQuery('#newDesignationCode').on('keydown', preventSubmit);
                 }
                 
-                Event.observe('findDesignationCode', 'keydown', preventSubmit);
+                jQuery('findDesignationCode').on('keydown', preventSubmit);
                 
-                jQuery(document).on('click', 'a.f-remove', removeDesignationCode);
+                jQuery(document).on('click', '.remove.fr', removeDesignationCode);
             });
         </script>
 

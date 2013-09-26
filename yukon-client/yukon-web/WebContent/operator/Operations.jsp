@@ -100,7 +100,7 @@
                                         </c:forEach>
                                     </select> <input type="text" name="searchValue" id="accountSearchValue" value="" size="15"> 
                                     <img class="cssicon" src="<cti:url value="/WebConfig/yukon/Icons/clearbits/search.gif"/>" 
-                                         alt="search" onClick="$('accountSearchForm').submit();">
+                                         alt="search" onClick="jQuery('#accountSearchForm')[0].submit();">
                                 </div>
                             </form>
                         </div>

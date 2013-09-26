@@ -11,51 +11,56 @@
 
     <script type="text/javascript">
         function selectThisSub() {
-            var selection = $F('substations');
-            $("selectedSub").value = selection;
-            var button = $('nextButton');
-            var params = {'substationId': selection};
-            
-            new Ajax.Updater('routesDiv', '${routesUrl}', {method: 'get', evalScripts: true, parameters: params,
-                onComplete: function(resp, json) {
-                    checkRoutes();
-                }
+            var selection = jQuery('#substations').val(),
+                params = {'substationId': selection};
+            jQuery('#selectedSub').val(selection);
+            jQuery.ajax({
+                url: '${routesUrl}',
+                type: 'GET',
+                data: params
+            }).done( function (data, textStatus, jqXHR) {
+                jQuery('#routesDiv').html(data);
+                checkRoutes();
             });
         }
 
-        function checkRoutes(){
-            var button = $('nextButton');
-            var checkBoxes = $$('input[id^="read_route_"]');
-            var checkedCount = 0;
+        function checkRoutes () {
+            var button = jQuery('#nextButton'),
+                checkBoxes = jQuery('input[id^="read_route_"]'),
+                checkedCount = 0,
+                numOfRoutes,
+                i,
+                checkBox,
+                selection;
 
-            var numOfRoutes = checkBoxes.length;
-            if(numOfRoutes > 0) { 
+            numOfRoutes = checkBoxes.length;
+            if (numOfRoutes > 0) { 
                 /* Check to see if they have any selected */
-                for (i = 0; i < checkBoxes.length; i++) {
-                    var checkBox = checkBoxes[i];
-                    if(checkBox.checked){
-                        checkedCount++;
+                for (i = 0; i < checkBoxes.length; i += 1) {
+                    checkBox = checkBoxes[i];
+                    if (jQuery(checkBox).prop('checked')) {
+                        checkedCount += 1;
                     }
                 }
-                if(checkedCount < 1) {
-                    button.disable();
-                    $('subWithNoRoutesSelectedErrorDiv').hide();
-                    $('noRouteSelectedErrorDiv').show();
+                if (checkedCount < 1) {
+                    button.prop({'disabled': true});
+                    jQuery('#subWithNoRoutesSelectedErrorDiv').hide();
+                    jQuery('#noRouteSelectedErrorDiv').show();
                 } else {
-                    $('noRouteSelectedErrorDiv').hide();
-                    $('subWithNoRoutesSelectedErrorDiv').hide();
-                    button.enable();
+                    jQuery('#noRouteSelectedErrorDiv').hide();
+                    jQuery('#subWithNoRoutesSelectedErrorDiv').hide();
+                    button.prop({'disabled': false});
                 }
             } else {
                 /* If they have a sub selected show error msg */
-                button.disable();
-                var selection = $F('substations'); 
-                if(selection == '-1'){
-                    $('noRouteSelectedErrorDiv').hide();
-                    $('subWithNoRoutesSelectedErrorDiv').hide();
+                button.prop({'disabled': true});
+                selection = jQuery('#substations').val(); 
+                if (selection == '-1') {
+                    jQuery('#noRouteSelectedErrorDiv').hide();
+                    jQuery('#subWithNoRoutesSelectedErrorDiv').hide();
                 } else {
-                    $('noRouteSelectedErrorDiv').hide();
-                    $('subWithNoRoutesSelectedErrorDiv').show();
+                    jQuery('#noRouteSelectedErrorDiv').hide();
+                    jQuery('#subWithNoRoutesSelectedErrorDiv').show();
                 }
             }
         }

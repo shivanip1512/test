@@ -4,6 +4,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <cti:standardPage module="amr" page="phaseDetect.readBetweenPhaseTest">
+<cti:includeScript link="/JavaScript/bulkDataUpdaterCallbacks.js"/>
 
     <script type="text/javascript">
 
@@ -12,139 +13,157 @@
     var readingMsg = '<cti:msg2 key=".reading" javaScriptEscape="true"/>';
     var errorDetectMsg = '<cti:msg2 key=".errorDetect" javaScriptEscape="true"/>';
     var errorReadMsg = '<cti:msg2 key=".errorRead" javaScriptEscape="true"/>';
-    function sendDetect() {
-            $('sendDetectButton').value = sendingMsg;
-            $('sendDetectButton').disable();
-            $('actionResultDiv').hide();
-            $('spinner').show();
+    function sendDetect () {
+        var params = {'phase': jQuery('#phase').val()};
 
-            var params = {'phase': $F('phase')};
-            
-            new Ajax.Request('/amr/phaseDetect/startTest', {
-                method: 'post',
-                parameters: params,
-                onSuccess: function(resp, json) {
-                    if(json.errorOccurred){
-                        $('spinner').hide();
-                        $('actionResultDiv').innerHTML = errorDetectMessage;
-                        $('actionResultDiv').show();
-                        $('sendDetectButton').value = sendMsg;
-                        $('sendDetectButton').enable();
-                    } else {
-                    	$('sendDetectButton').value = sendMsg;
-                        $(json.phase).show();
-                        $('spinner').hide();
-                        startTimers();
-                    }
-                },
-                onException: function(resp, json) {
-                    $('spinner').hide();
-                    $('actionResultDiv').innerHTML = errorDetectMessage;
-                    $('actionResultDiv').show();
-                    $('sendDetectButton').value = sendMsg;
-                    $('sendDetectButton').enable();
-                }
-            });
+        jQuery('#sendDetectButton').val(sendingMsg);
+        jQuery('#sendDetectButton').prop({'disabled': true});
+        jQuery('#actionResultDiv').hide();
+        jQuery('#spinner').show();
 
-        }
-
-        function startTimers() {
-            $('intervalTimerNote').show();
-            $('intervalTimerFont').color = 'red';
-            $('detectTimerNote').show();
-            $('detectTimerFont').color = 'red';
-            setTimeout('updateTimers()', 1000);
-        }
-
-        function updateTimers(){
-            var intervalTimer = $('intervalTimerSpan').innerHTML;
-            var detectTimer = $('detectTimerSpan').innerHTML;
-            var timeoutSet = false;
-            if(intervalTimer > 0) {
-                intervalTimer = intervalTimer - 1;
-                $('intervalTimerSpan').innerHTML = intervalTimer;
-                setTimeout('updateTimers()', 1000);
-                timeoutSet = true;
+//         new Ajax.Request('/amr/phaseDetect/startTest', {
+//             method: 'post',
+//             parameters: params,
+//             onSuccess: function(resp, json) {
+        jQuery.ajax({
+            url: '/amr/phaseDetect/startTest',
+            data: params,
+            type: 'POST',
+            dataType: 'json'
+        }).done( function (data, textStatus, jqXHR) {
+            var json = Yukon.ui.aux.getHeaderJSON(jqXHR);
+            if (json.errorOccurred) {
+                jQuery('#spinner').hide();
+                jQuery('#actionResultDiv').html(errorDetectMessage);
+                jQuery('#actionResultDiv').show();
+                jQuery('#sendDetectButton').val(sendMsg);
+                jQuery('#sendDetectButton').prop({'disabled': false});
+            } else {
+                jQuery('#sendDetectButton').val(sendMsg);
+                jQuery('#' + json.phase).show();
+                jQuery('#spinner').hide();
+                startTimers();
             }
-            if(detectTimer > 0) {
-                detectTimer = detectTimer - 1;
-                $('detectTimerSpan').innerHTML = detectTimer;
-                if(!timeoutSet) {
-                    setTimeout('updateTimers()', 1000);
+//        },
+//            onException: function(resp, json) {
+        }).fail( function (jqXHR, textStatus) {
+            jQuery('#spinner').hide();
+            jQuery('#actionResultDiv').html(errorDetectMessage);
+            jQuery('#actionResultDiv').show();
+            jQuery('#sendDetectButton').val(sendMsg);
+            jQuery('#sendDetectButton').prop({'disabled': false});
+        });
+//            }
+//        });
+    }
+
+    function startTimers () {
+        jQuery('#intervalTimerNote').show();
+        jQuery('#intervalTimerFont').css('color', 'red');
+        jQuery('#detectTimerNote').show();
+        jQuery('#detectTimerFont').css('color', 'red');
+        setTimeout(updateTimers, 1000);
+    }
+
+    function updateTimers () {
+        var intervalTimer = jQuery('#intervalTimerSpan').html(),
+            detectTimer = jQuery('#detectTimerSpan').html(),
+            timeoutSet = false;
+        if (intervalTimer > 0) {
+            intervalTimer = intervalTimer - 1;
+            jQuery('#intervalTimerSpan').html(intervalTimer);
+            setTimeout(updateTimers, 1000);
+            timeoutSet = true;
+        }
+        if (detectTimer > 0) {
+            detectTimer = detectTimer - 1;
+            jQuery('#detectTimerSpan').html(detectTimer);
+            if (!timeoutSet) {
+                setTimeout(updateTimers(), 1000);
+            }
+        } else {
+            jQuery('#sendDetectButton').hide();
+            jQuery('#readButton').prop({'disabled': false});
+            jQuery('#readButton').show();
+        }
+    }
+
+    function reset () {
+        jQuery('#sendDetectButton').val(sendMsg);
+        jQuery('#sendDetectButton').prop({'disabled': false});
+        jQuery('#sendDetectButton').show();
+        jQuery('#resetButton').hide();
+        jQuery('#actionResultDiv').hide();
+        jQuery('#intervalTimerNote').hide();
+        jQuery('#detectTimerNote').hide();
+        jQuery('#intervalTimerSpan').html('${data.intervalLength}');
+        jQuery('#intervalTimerFont').css('color', 'black');
+        jQuery('#detectTimerSpan').html('${data.intervalLength * data.numIntervals}');
+        jQuery('#detectTimerFont').css('color', 'black');
+    }
+
+    function sendRead () {
+        var params = {'phase': jQuery('#phase').val()};
+        jQuery('#actionResultDiv').show();
+//         new Ajax.Updater('actionResultDiv', '/amr/phaseDetect/readPhase', {method: 'post', parameters:{'phase': jQuery('#phase').val()}, evalScripts: 'true',
+//             onSuccess: function(resp, json) {
+        jQuery.ajax({
+            url: '/amr/phaseDetect/readPhase',
+            type: 'POST',
+            data: params
+        }).done( function (data, textStatus, jqXHR) {
+            var json = Yukon.ui.aux.getHeaderJSON(jqXHR);
+            if (json.success) {
+                jQuery('#read' + json.phase).show();
+                jQuery('#readButton').val(readingMsg);
+                jQuery('#readButton').prop({'disabled': true});
+                jQuery('#actionResultDiv').html(data);
+                if (json.complete) {
+                    jQuery('#complete').val('true');
                 }
             } else {
-                $('sendDetectButton').hide();
-                $('readButton').enable();
-                $('readButton').show();
+                jQuery('#actionResultDiv').show();
+                jQuery('#actionResultDiv').html(errorReadMessage);
             }
-        }
+        }).fail( function (jqXHR, textStatus) {
+//             },
+//             onException: function(resp, json) {
+            jQuery('#actionResultDiv').html(errorReadMessage);
+            jQuery('#actionResultDiv').show();
+        });
+//             }
+//         });
+    }
 
-        function reset(){
-        	$('sendDetectButton').value = sendMsg;
-            $('sendDetectButton').enable();
-            $('sendDetectButton').show();
-            $('resetButton').hide();
-            $('actionResultDiv').hide();
-            $('intervalTimerNote').hide();
-            $('detectTimerNote').hide();
-            $('intervalTimerSpan').innerHTML = '${data.intervalLength}';
-            $('intervalTimerFont').color = 'black';
-            $('detectTimerSpan').innerHTML = '${data.intervalLength * data.numIntervals}';
-            $('detectTimerFont').color = 'black';
-        }
-
-        function sendRead(){
-        	$('actionResultDiv').show();
-            new Ajax.Updater('actionResultDiv', '/amr/phaseDetect/readPhase', {method: 'post', parameters:{'phase': $F('phase')}, evalScripts: 'true',
-            	onSuccess: function(resp, json) {
-                    if(json.success){
-	                    $('read' + json.phase).show();
-	                    $('readButton').value = readingMsg;
-	                    $('readButton').disable();
-                        if(json.complete){
-                        	$('complete').value = 'true';
-                        }
-                    } else {
-                    	$('actionResultDiv').show();
-                    	$('actionResultDiv').innerHTML = errorReadMessage;
-                    }
-	            },
-	            onException: function(resp, json) {
-	                $('actionResultDiv').innerHTML = errorReadMessage;
-	                $('actionResultDiv').show();
-	            }
-            });
-        }
-
-        function sendClearCommand(){
-            $('spinner').show();
-            $('actionResultDiv').innerHTML = '';
-            new Ajax.Updater('actionResultDiv', '/amr/phaseDetect/sendClearFromTestPage', {method: 'get', evalScripts: 'true',
-                onSuccess: function(resp, json) {
-                    $('spinner').hide();
-                    $('actionResultDiv').show();
-                    if(json.success){
-                        $('clearButton').hide();
-                        $('resetButton').show();
-                    }
-                },
-                onException: function(resp, json) {
-                	$('spinner').hide();
-                	$('actionResultDiv').show();
+    function sendClearCommand () {
+        jQuery('#spinner').show();
+        jQuery('#actionResultDiv').html('');
+        new Ajax.Updater('actionResultDiv', '/amr/phaseDetect/sendClearFromTestPage', {method: 'get', evalScripts: 'true',
+            onSuccess: function(resp, json) {
+                jQuery('#spinner').hide();
+                jQuery('#actionResultDiv').show();
+                if (json.success) {
+                    jQuery('#clearButton').hide();
+                    jQuery('#resetButton').show();
                 }
-            });
-        }
-
-        function readFinished() {
-            $('cancelReadButton').disable();
-        	$('readButton').value = '${read}';
-            $('readButton').hide();
-            $('clearButton').enable();
-            $('clearButton').show();
-            if($F('complete') == 'true'){
-                $('resultsButton').enable();
+            },
+            onException: function(resp, json) {
+                jQuery('#spinner').hide();
+                jQuery('#actionResultDiv').show();
             }
+        });
+    }
+
+    function readFinished () {
+        jQuery('#cancelReadButton').prop({'disabled': true});
+        jQuery('#readButton').val('${read}');
+        jQuery('#readButton').hide();
+        jQuery('#clearButton').prop({'disabled': false});
+        jQuery('#clearButton').show();
+        if (jQuery('#complete').val() == 'true') {
+            jQuery('#resultsButton').prop({'disabled': false});
         }
+    }
     </script>
     
     <tags:sectionContainer2 nameKey="section">

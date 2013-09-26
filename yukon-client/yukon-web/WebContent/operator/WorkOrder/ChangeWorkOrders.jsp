@@ -120,7 +120,7 @@
     </div>
     <script>
     	if (!Prototype.Browser.IE) {
-	    $('browserWarning').show();
+	    jQuery('#browserWarning').show();
 	}
 	</script>
     <script language="JavaScript">

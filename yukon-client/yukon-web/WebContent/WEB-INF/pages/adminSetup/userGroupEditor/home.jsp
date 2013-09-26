@@ -21,9 +21,15 @@
                       window[ui.panel.id + "Picker"].show.call(window[ui.panel.id + "Picker"]);
                   }});
         });
-        function editUser() { window.location.href = '${userUrl}?userId=' + $F('userId'); }
-        function editUserGroup() { window.location.href = '${userGroupUrl}?userGroupId=' + $F('userGroupId'); }
-        function editRoleGroup() { window.location.href = '${roleGroupUrl}?roleGroupId=' + $F('roleGroupId'); }
+        function editUser () {
+            window.location.href = '${userUrl}?userId=' + jQuery('#userId').val();
+        }
+        function editUserGroup () {
+            window.location.href = '${userGroupUrl}?userGroupId=' + jQuery('#userGroupId').val();
+        }
+        function editRoleGroup () {
+            window.location.href = '${roleGroupUrl}?roleGroupId=' + jQuery('#roleGroupId').val();
+        }
     </script>
 
     <div id="tabs">

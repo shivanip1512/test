@@ -25,23 +25,25 @@
 		<div id="pointSelectHelp"><jsp:include flush="true" page="include/pointSelectInc.jsp" /></div>
 
         <script type="text/javascript">
-            function closeOrphanedCBCPopup(){
-                $('orphanedCBCContent').hide();
+            function closeOrphanedCBCPopup () {
+                jQuery('#orphanedCBCContent').hide();
             }
 		
-            function showOrphanedCBCPopup(){
-		    
-                new Ajax.Updater('orphanedCBCBody', '${orphanURL}', {
-                    method: 'post'
+            function showOrphanedCBCPopup () {
+                jQuery.ajax({
+                    url: '${orphanURL}',
+                    type: 'POST'
+                }).done( function (data, textStatus, jqXHR) {
+                    jQuery('#orphanedCBCBody').html(data);
                 });
-                $('orphanedCBCContent').show();
+                jQuery('#orphanedCBCContent').show();
             }
 		
-            function setCBC( deviceName, pointId, pointName){
-                var device = $('cbcDevice')
-                device.innerHTML = deviceName;
-                $('ctlPoint').innerHTML = pointName;
-                $('cbc_point').value = pointId;
+            function setCBC (deviceName, pointId, pointName) {
+                var device = jQuery('#cbcDevice')
+                device.html(deviceName);
+                jQuery('#ctlPoint').html(pointName);
+                jQuery('#cbc_point').val(pointId);
             }
         </script>
 

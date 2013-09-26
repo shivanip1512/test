@@ -60,7 +60,7 @@
                     </td>
                     <td width="80%"> 
                       <input id="dateSubmitted" type="text" name="dateSubmitted" maxlength="40" size="24" value='<cti:formatDate value="${purchaseBean.currentInvoice.dateSubmitted}" type="DATE"/>' onchange="setContentChanged(true)">
-                        <a href="javascript:void(0);" onclick="javascript:showCalendarControl($('dateSubmitted'), '${months}', '${days}', '${clear}', '${close}');"
+                        <a href="javascript:void(0);" onclick="javascript:showCalendarControl(jQuery('#dateSubmitted')[0], '${months}', '${days}', '${clear}', '${close}');"
                             onMouseOver="window.status='Date Submitted Calendar';return true;"
                             onMouseOut="window.status='';return true;"> <img src="<%= request.getContextPath() %>/WebConfig/yukon/Icons/StartCalendar.png" width="20" height="15" align="absmiddle" border="0"> 
                         </a>
@@ -98,7 +98,7 @@
                             </c:if>
                         />
                         <input id="datePaid" type="text" name="datePaid" maxlength="40" size="24" value='<cti:formatDate value="${purchaseBean.currentInvoice.datePaid}" type="DATE"/>' onchange="setContentChanged(true)">
-                             <a href="javascript:void(0);" onclick="javascript:showCalendarControl($('datePaid'), '${months}', '${days}', '${clear}', '${close}');"
+                             <a href="javascript:void(0);" onclick="javascript:showCalendarControl(jQuery('#datePaid')[0], '${months}', '${days}', '${clear}', '${close}');"
                             onMouseOver="window.status='Date Paid Calendar';return true;"
                             onMouseOut="window.status='';return true;"> <img src="<%= request.getContextPath() %>/WebConfig/yukon/Icons/StartCalendar.png" width="20" height="15" align="absmiddle" border="0"> 
                         </a>
@@ -182,9 +182,9 @@
     }
     
     function validate (form) {
-        if (form.name.value == "") {
-                alert("Schedule name cannot be empty");
-                return false;
+        if (form.name.value === "") {
+            alert("Schedule name cannot be empty");
+            return false;
         }
         
         return true;
@@ -200,15 +200,19 @@
     }
         
     function addShipment (form) {
-        var assignList = document.getElementById("shipments");
-        var availList = document.getElementById("allShipments");
+        var assignList = document.getElementById("shipments"),
+            availList = document.getElementById("allShipments"),
+            idx,
+            selectedText,
+            selectedID,
+            oOption;
                     
         if (availList.selectedIndex >= 0) {
-            var idx = availList.selectedIndex;
-            var selectedText = availList.options[idx].text;
-            var selectedID = availList.value;
+            idx = availList.selectedIndex;
+            selectedText = availList.options[idx].text;
+            selectedID = availList.value;
 
-            var oOption = document.createElement("OPTION");
+            oOption = document.createElement("OPTION");
             assignList.add(oOption);
             oOption.innerText = selectedText;
             oOption.value = selectedID;
@@ -220,15 +224,19 @@
     }
 
     function removeShipment (form) {
-        var assignList = document.getElementById("shipments");
-        var availList = document.getElementById("allShipments");
+        var assignList = document.getElementById("shipments"),
+            availList = document.getElementById("allShipments"),
+            idx,
+            selectedText,
+            selectedID,
+            oOption;
                     
         if (assignList.selectedIndex >= 0) {
-            var idx = assignList.selectedIndex;
-            var selectedText = assignList.options[idx].text;
-            var selectedID = assignList.value;
+            idx = assignList.selectedIndex;
+            selectedText = assignList.options[idx].text;
+            selectedID = assignList.value;
 
-            var oOption = document.createElement("OPTION");
+            oOption = document.createElement("OPTION");
             availList.add(oOption);
             oOption.innerText = selectedText;
             oOption.value = selectedID;
@@ -244,10 +252,12 @@
     }
     
     function prepareSubmit (form) {
-        var assignedShipments = document.getElementById("shipments").options;
+        var assignedShipments = document.getElementById("shipments").options,
+            idx,
+            html;
         
         for (idx = 0; idx < assignedShipments.length; idx++) {
-            var html = '<input type="hidden" name="shipments" value="' + assignedShipments[idx].value + '">';
+            html = '<input type="hidden" name="shipments" value="' + assignedShipments[idx].value + '">';
             form.insertAdjacentHTML("beforeEnd", html);
         }
         

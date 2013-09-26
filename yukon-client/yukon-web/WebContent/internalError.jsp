@@ -90,9 +90,9 @@ String friendlyExceptionMessage = ErrorHelperFilter.getFriendlyExceptionMessage(
 <cti:includeScript link="PROTOTYPE" force="true"/>
 <script type="text/javascript">
 function showStack( chkBox ) {
-	var elem = $('stackTrace');
+	var elem = document.getElementById('stackTrace');
 	elem.style.display = 'block';
-    $('showMore').style.display = 'none';
+	document.getElementById('showMore').style.display = 'none';
 
 }
 </script>

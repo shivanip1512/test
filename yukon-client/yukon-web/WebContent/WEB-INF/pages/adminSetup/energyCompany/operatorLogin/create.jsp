@@ -11,10 +11,10 @@
     
     <script>
         function generatePassword() {
-            var dataHash = {userGroupName : $('userGroupName').value};
-            var userId = $('userId');
-            if (userId != null && userId.value != 0) {
-                dataHash[ 'userId'] = userId.value;
+            var dataHash = {userGroupName : jQuery('#userGroupName').val()};
+            var userId = jQuery('#userId');
+            if (userId.length && userId.val() != 0) {
+                dataHash[ 'userId'] = userId.val();
             }
 
             jQuery.ajax({

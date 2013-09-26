@@ -25,14 +25,13 @@
 
         function setRedBulletForPoint(pointId) {
             return function(data) {
-                var redBulletSpans = $$('.redBullet_' + pointId);
-                var quality = data.quality;
-
-                redBulletSpans.each(function(redBulletSpan) {
-                    if (quality != 'Normal') {
-                        redBulletSpan.show();
+                var redBulletSpans = jQuery('.redBullet_' + pointId),
+                    quality = data.quality;
+                redBulletSpans.each( function (index, redBulletSpan) {
+                    if (quality !== 'Normal') {
+                        jQuery(redBulletSpan).show();
                     } else {
-                        redBulletSpan.hide();
+                        jQuery(redBulletSpan).hide();
                     }
                 });
             };
@@ -46,18 +45,20 @@
         jQuery(function() {
             var recentEventsUpdaterTimeout = setTimeout(updateRecentEvents, ${updaterDelay});
             if (${hasControlRole}) {
-                $$('tr[id^="tr_cap"]').each(function (row) {
-                    var bankId = row.id.split('_')[2];
-
+                jQuery('tr[id^="tr_cap"]').each(function (index, row) {
+                    var bankId = jQuery(row)[0].id.split('_')[2],
+                        bankName,
+                        bankState;
+                    console.log('row.id=%s bankId=%s jQuery(row)[0].id.split("_")[2]=%s',row.id,bankId,jQuery(row)[0].id.split("_")[2]);
                     // Add menus
-                    var bankName = row.down('button[id^="bankName"]');
-                    bankName.observe('click', function(event) {
+                    bankName = jQuery(row).find('button[id^="bankName"]')[0];
+                    jQuery(bankName).click( function(event) {
                         getCommandMenu(bankId, event);
                         return false;
                     });
 
-                    var bankState = row.down('a[id^="capbankState"]');
-                    bankState.observe('click', function(event) {
+                    bankState = jQuery(row).find('a[id^="capbankState"]');
+                    jQuery(bankState).click( function(event) {
                         getMenuFromURL('/capcontrol/menu/capBankState?id=' + encodeURIComponent(bankId), event);
                         return false;
                     });
@@ -69,44 +70,46 @@
             var params = {
                 'zoneId': ${zoneId},
                 'subBusId': ${subBusId},
-                'mostRecent': $('mostRecentDateTime').value
+                'mostRecent': jQuery('#mostRecentDateTime').value
             };
-            new Ajax.Request('getRecentEvents', { 
-                'method': 'GET', 
-                'parameters': params,
-                onSuccess: function(transport) {
-                    var dummyHolder = document.createElement('div');
-                    dummyHolder.innerHTML = transport.responseText;
-                    var rows = $(dummyHolder).select('tr');
-                    if (typeof(rows[0]) != 'undefined') {
-                    	// assign our hidden td field to mostRecentDateTime for use in future calls
-                        $('mostRecentDateTime').value = rows[0].select('td input[type="hidden"]')[0].value;
+            jQuery.ajax({
+                url: 'getRecentEvents',
+                method: 'GET', 
+                data: params
+            }).done( function (data, textStatus, jqXHR) {
+                    var dummyHolder = document.createElement('div'),
+                        rows,
+                        i,
+                        topRow;
+                    jQuery(dummyHolder).html(data);
+                    rows = jQuery(dummyHolder).find('tr');
+                    console.log('rows.length=%d',rows.length);
+                    if (typeof rows[0] !== 'undefined') {
+                        // assign our hidden td field to mostRecentDateTime for use in future calls
+                        jQuery('#mostRecentDateTime').val(jQuery(rows[0]).find('td input[type="hidden"]')[0].value);
                     }
-                    for (var i = rows.length-1; i >= 0 ; i--) {
-                        var topRow = $('recentEventsHeaderRow').next();
-                        if (topRow.hasClassName('tableCell')) {
-                            rows[i].addClassName('altTableCell');
+                    for (i = rows.length-1; i >= 0 ; i -= 1) {
+                        topRow = jQuery('#recentEventsHeaderRow').nextAll()[0];
+                        if (jQuery(topRow).hasClass('tableCell')) {
+                            jQuery(rows[i]).addClass('altTableCell');
                         } else {
-                            rows[i].addClassName('tableCell');
+                            jQuery(rows[i]).addClass('tableCell');
                         }
-                        $('recentEventsHeaderRow').insert({'after':rows[i]});
+                        jQuery('#recentEventsHeaderRow').after(rows[i]);
                         flashYellow(rows[i]);
                     }
                     // Keep table size <= 20 rows
-                    $$('#recentEventsTable tr:gt(21)').each(function(tr){
+                    jQuery('#recentEventsTable tr:gt(21)').each(function(index, tr){
                         tr.remove();
                     });
-                },
-                onComplete: function() {
-                    recentEventsUpdaterTimeout = setTimeout(updateRecentEvents, ${updaterDelay});
-                }
+                     recentEventsUpdaterTimeout = setTimeout(updateRecentEvents, ${updaterDelay});
             });
         }
         
         jQuery(document).on('click', 'button.commandButton', function(event) {
-            var button = event.findElement('button');
-            var cmdId = button.next('input.cmdId').value;
-            var paoId = button.next('input.paoId').value;
+            var button = jQuery(event.target).closest('button'),
+                cmdId = button.nextAll('input.cmdId')[0].value,
+                paoId = button.nextAll('input.paoId')[0].value;
             doItemCommand(paoId, cmdId, event);
         });
     </script>

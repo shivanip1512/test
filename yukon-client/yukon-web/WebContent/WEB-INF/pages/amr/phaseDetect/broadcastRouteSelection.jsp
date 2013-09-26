@@ -5,22 +5,24 @@
 
 <cti:standardPage module="amr" page="phaseDetect.routeSelection">
     <script type="text/javascript">
-        function checkRoutes(){
-            var button = $('nextButton');
-            var checkBoxes = $$('input[id^="read_route_"]');
-            var checkedCount = 0;
-            for (i = 0; i < checkBoxes.length; i++) {
-                var checkBox = checkBoxes[i];
-                if(checkBox.checked){
-                    checkedCount++;
+        function checkRoutes () {
+            var button = jQuery('#nextButton'),
+                checkBoxes = jQuery('input[id^="read_route_"]'),
+                checkedCount = 0,
+                i,
+                checkBox;
+            for (i = 0; i < checkBoxes.length; i += 1) {
+                checkBox = checkBoxes[i];
+                if (jQuery(checkBox).prop('checked')) {
+                    checkedCount += 1;
                 }
             }
-            if(checkedCount < 1) {
-                button.disable();
-                $('errorDiv').show();
+            if (checkedCount < 1) {
+                button.prop({'disabled': true});
+                jQuery('#errorDiv').show();
             } else {
-                $('errorDiv').hide();
-                button.enable();
+                jQuery('#errorDiv').hide();
+                button.prop({'disabled': false});
             }
         }
     </script>

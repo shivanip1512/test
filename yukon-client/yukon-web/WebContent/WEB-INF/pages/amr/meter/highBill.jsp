@@ -11,66 +11,63 @@
 
 <script type="text/javascript">
 
-	function createLPPoint(url){
-		window.location = url;
-	}
-    
-    function getReport(getReportUrl, redirectUrl) {
-        var retrievingReport = '<cti:msg2 key=".retrievingReport" javaScriptEscape="true"/>';
-        var getReportEscaped = '<cti:msg2  key=".getReport" javaScriptEscape="true"/>';
+    function createLPPoint(url){
+        window.location = url;
+    }
+
+    function getReport (getReportUrl, redirectUrl) {
+        var retrievingReport = '<cti:msg2 key=".retrievingReport" javaScriptEscape="true"/>',
+            getReportEscaped = '<cti:msg2  key=".getReport" javaScriptEscape="true"/>',
+            processingImg = jQuery('#getReportProcessImg'),
+            reportBtn = jQuery('#getReportButton'),
+            meterErrors = jQuery('#meterReadErrors'),
+            getReportStartDate,
+            getReportStopDate,
+            paramObj;
         // prettynessifier
-        $('getReportProcessImg').src = '/WebConfig/yukon/Icons/spinner.gif';
-        $('getReportProcessImg').show();
-        $('getReportButton').value = retrievingReport;
-        $('getReportButton').disable();
-    
+        processingImg[0].src = '/WebConfig/yukon/Icons/spinner.gif';
+        processingImg.show();
+        reportBtn.val(retrievingReport);
+        reportBtn.prop({'disabled': true});
+
         // pluck start and end dates from the page
-        var getReportStartDate = document.getElementsByName('getReportStartDate')[0].value;
-        var getReportStopDate = document.getElementsByName('getReportStopDate')[0].value;
-    
+        getReportStartDate = document.getElementsByName('getReportStartDate')[0].value;
+        getReportStopDate = document.getElementsByName('getReportStopDate')[0].value;
+
         // parameters for the call
-        var paramObj = {
+        paramObj = {
             'deviceId': ${deviceId},
             'getReportStartDate': getReportStartDate,
             'getReportStopDate': getReportStopDate
         };
         // make ajax request to run a profile report
-        new Ajax.Request(getReportUrl, {
-            
-            'parameters': paramObj,
-            
-            'onSuccess': function(transport) {
-                
-                // no errors, redirect back to main hbc page where our fresh report will be waiting for us
-                // throw on a couple parameters to pre-set the date fields
-                if (transport.responseText.strip() == '') {
-                    window.location = redirectUrl + '?analyze=true&deviceId=' + ${deviceId} + '&getReportStartDate=' + getReportStartDate + '&getReportStopDate=' + getReportStopDate;
-                }
-                
-                // errors, make error div visible and fill it with error response html, do not redirect
-                // reset button
-                else {
-                    $('meterReadErrors').show();
-                    $('meterReadErrors').update(transport.responseText);
-                    
-                    $('getReportProcessImg').hide();
-                    $('getReportButton').value = getReportEscaped;
-                    $('getReportButton').enable();
-                }
-            },
-            
-            'onFailure': function(transport) {
-                
-                $('meterReadErrors').show();
-                $('meterReadErrors').update(transport.responseText);
-                
-                $('getReportProcessImg').hide();
-                $('getReportButton').value = getReportEscaped;
-                $('getReportButton').enable();
+        jQuery.ajax({
+            url: getReportUrl,
+            data: paramObj,
+            type: 'POST'
+        }).done( function (data, textStatus, jqXHR) {
+            // no errors, redirect back to main hbc page where our fresh report will be waiting for us
+            // throw on a couple parameters to pre-set the date fields
+            if (jqXHR.responseText.trim() === '') {
+                window.location = redirectUrl + '?analyze=true&deviceId=' + ${deviceId} + '&getReportStartDate=' + getReportStartDate + '&getReportStopDate=' + getReportStopDate;
             }
-            
-          }
-        );
+
+            // errors, make error div visible and fill it with error response html, do not redirect
+            // reset button
+            else {
+                meterErrors.show();
+                meterErrors.html(jqXHR.responseText);
+                processingImg.hide();
+                reportBtn.val(getReportEscaped);
+                reportBtn.prop({'disabled': false});
+            }
+        }).fail( function ( jqXHR, textStatus, errorThrown ) {
+            meterErrors.show();
+            meterErrors.html(jqXHR.responseText);
+            processingImg.hide();
+            reportBtn.val(getReportEscaped);
+            reportBtn.prop({'disabled': false});
+        });
     }
 </script>
 
@@ -99,7 +96,7 @@
             <div class="smallBoldLabel fl" style="display:inline;"><i:inline key=".startDate"/> </div>
             <dt:date name="getReportStartDate" value="${startDate}"  />
             <div class="smallBoldLabel fl" style="display:inline;"><i:inline key=".endDate"/> </div>
-			<dt:date name="getReportStopDate" value="${stopDate}"/>
+            <dt:date name="getReportStopDate" value="${stopDate}"/>
             <c:if test="${readable}">
                 <cti:url var="getReportUrl" value="/meter/highBill/getReport"/>
                 <cti:url var="hbcRedirectUrl" value="/meter/highBill/view"/>
@@ -230,13 +227,13 @@
                     </c:when>
                 </c:choose>
 
-				<flot:trend title="${preChartTitle}"
-					reloadInterval="30" ymin="${yMin}" ymax="${yMax}"
-					pointIds="${pointId}" startDate="${preChartStartDateMillis}"
-					endDate="${preChartStopDateMillis}"
-					interval="${preChartInterval}"
-					converterType="${converterType}" graphType="${graphType}" />
-				<br>
+                <flot:trend title="${preChartTitle}"
+                    reloadInterval="30" ymin="${yMin}" ymax="${yMax}"
+                    pointIds="${pointId}" startDate="${preChartStartDateMillis}"
+                    endDate="${preChartStopDateMillis}"
+                    interval="${preChartInterval}"
+                    converterType="${converterType}" graphType="${graphType}" />
+                <br>
                 
                 <%-- tabular data links --%>
                 <div class="smallBoldLabel" style="display:inline;"><i:inline key=".tabularData"/> </div>
@@ -292,13 +289,13 @@
                     </c:when>
                 </c:choose>
 
-				<flot:trend title="${postChartTitle}"
-					reloadInterval="30" ymin="${yMin}" ymax="${yMax}"
-					pointIds="${pointId}" startDate="${postChartStartDateMillis}"
-					endDate="${postChartStopDateMillis}"
-					interval="${postChartInterval}"
-					converterType="${converterType}" graphType="${graphType}" />
-				<br>
+                <flot:trend title="${postChartTitle}"
+                    reloadInterval="30" ymin="${yMin}" ymax="${yMax}"
+                    pointIds="${pointId}" startDate="${postChartStartDateMillis}"
+                    endDate="${postChartStopDateMillis}"
+                    interval="${postChartInterval}"
+                    converterType="${converterType}" graphType="${graphType}" />
+                <br>
                 
                 <%-- tabular data links --%>
                 <div class="smallBoldLabel" style="display:inline;"><i:inline key=".tabularData"/> </div>
