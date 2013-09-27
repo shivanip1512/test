@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
@@ -165,9 +166,10 @@ public class ScenarioController extends DemandResponseControllerBase {
         return "dr/assetDetails.jsp";
     }
 
+    @ResponseBody
     @RequestMapping("/scenario/pingDevices")
-    public void pingDevices(String assetId, ModelMap modelMap) {
-        DisplayablePao controlArea = scenarioService.getScenario(Integer.parseInt(assetId));
+    public void pingDevices(int assetId) {
+        DisplayablePao controlArea = scenarioService.getScenario(assetId);
         assetAvailabilityPingService.readDevicesInDrGrouping(controlArea.getPaoIdentifier());
     }
 

@@ -148,9 +148,10 @@ public class ProgramController extends ProgramControllerBase {
         return "dr/assetDetails.jsp";
     }
 
+    @ResponseBody
     @RequestMapping("/program/pingDevices")
-    public void pingDevices(String assetId, ModelMap modelMap) {
-        DisplayablePao controlArea = programService.getProgram(Integer.parseInt(assetId));
+    public void pingDevices(int assetId) {
+        DisplayablePao controlArea = programService.getProgram(assetId);
         assetAvailabilityPingService.readDevicesInDrGrouping(controlArea.getPaoIdentifier());
     }
 

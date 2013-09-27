@@ -338,11 +338,11 @@ public class ControlAreaController extends DemandResponseControllerBase {
             
     }
     
+    @ResponseBody
     @RequestMapping("/controlArea/pingDevices")
-    public String pingDevices(String assetId, ModelMap modelMap, HttpServletRequest request) {
-        DisplayablePao controlArea = controlAreaService.getControlArea(Integer.parseInt(assetId));
+    public void pingDevices(int assetId) {
+        DisplayablePao controlArea = controlAreaService.getControlArea(assetId);
         assetAvailabilityPingService.readDevicesInDrGrouping(controlArea.getPaoIdentifier());
-        return "";
     }
     
     @RequestMapping("/controlArea/sendEnableConfirm")

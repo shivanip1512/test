@@ -154,9 +154,10 @@ public class LoadGroupController extends DemandResponseControllerBase {
         return "dr/assetDetails.jsp";
     }
 
+    @ResponseBody
     @RequestMapping("/loadGroup/pingDevices")
-    public void pingDevices(String assetId, ModelMap modelMap) {
-        DisplayablePao controlArea = loadGroupService.getLoadGroup(Integer.parseInt(assetId));
+    public void pingDevices(int assetId) {
+        DisplayablePao controlArea = loadGroupService.getLoadGroup(assetId);
         assetAvailabilityPingService.readDevicesInDrGrouping(controlArea.getPaoIdentifier());
     }
 
