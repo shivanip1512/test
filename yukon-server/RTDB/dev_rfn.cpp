@@ -143,30 +143,25 @@ const RfnDevice::InstallMap & RfnDevice::getGetConfigInstallMap() const
 /**
  * Execute putconfig/getconfig Install
  */
-int RfnDevice::executeConfigInstall(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests, const boost::optional<const InstallMap &> &installMap )
+int RfnDevice::executeConfigInstall(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests, const InstallMap &installMap )
 {
-    if( ! installMap || installMap->empty() )
-    {
-        return NoMethod;
-    }
+    boost::optional<std::string> installValue;
 
-    const boost::optional<std::string> installValue = parse.findStringForKey("installvalue");
-
-    if( ! installValue )
+    if( installMap.empty() || ! (installValue = parse.findStringForKey("installvalue")) )
     {
         return NoMethod;
     }
 
     if( *installValue == "all" )
     {
-        for each( const InstallMap::value_type & p in *installMap )
+        for each( const InstallMap::value_type & p in installMap )
         {
             executeConfigInstallSingle( pReq, parse, retList, rfnRequests, p.first, p.second );
         }
     }
     else
     {
-        boost::optional<InstallMethod> installMethod = mapFind( *installMap, *installValue );
+        boost::optional<InstallMethod> installMethod = mapFind( installMap, *installValue );
 
         if( ! installMethod )
         {
