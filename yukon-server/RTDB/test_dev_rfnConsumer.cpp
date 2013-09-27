@@ -439,7 +439,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnConsumer_putconfig_tou_install )
 
     {
         resetTestState();
-        CtiCommandParser parse("getconfig tou"); // TODO: change to "getconfig install tou"
+        CtiCommandParser parse("getconfig install tou");
 
         BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, retList, rfnRequests) );
         BOOST_CHECK_EQUAL( 0, retList.size() );

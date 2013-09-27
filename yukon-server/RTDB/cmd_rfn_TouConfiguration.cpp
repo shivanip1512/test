@@ -325,7 +325,7 @@ RfnCommand::Bytes RfnTouScheduleConfigurationCommand::createCommandData( const S
     // schedule 1 - 4 times
     for( int schedule_nbr = 0; schedule_nbr < 4; schedule_nbr++ )
     {
-        boost::optional<DailyTimes> times = mapFind( schedule_to_send._times, (ScheduleNbr)schedule_nbr );
+        const boost::optional<DailyTimes> times = mapFind( schedule_to_send._times, (ScheduleNbr)schedule_nbr );
 
         const string scheduleName = "schedule " + CtiNumStr(schedule_nbr+1);
 
@@ -665,7 +665,7 @@ boost::optional<RfnTouScheduleConfigurationCommand::Schedule> RfnTouScheduleConf
  */
 RfnTouScheduleConfigurationCommand::ScheduleNbr RfnTouScheduleConfigurationCommand::resolveScheduleName( const string & schedule_name )
 {
-    boost::optional<ScheduleNbr> schedule_nbr = Cti::mapFind( scheduleResolver, boost::to_lower_copy( schedule_name ));
+    boost::optional<ScheduleNbr> schedule_nbr = Cti::mapFind( scheduleResolver, schedule_name );
 
     validateCondition( schedule_nbr,
                        BADPARAM, "Invalid schedule - (" + schedule_name + ")");

@@ -26,76 +26,36 @@ class IM_EX_DEVDB RfnConsumerDevice
 
 protected:
 
-    virtual boost::optional<const InstallMap &> getPutConfigInstallMap() const;
-    virtual boost::optional<const InstallMap &> getGetConfigInstallMap() const;
+    virtual const InstallMap & getPutConfigInstallMap() const;
+    virtual const InstallMap & getGetConfigInstallMap() const;
 
-    int executePutConfigVoltageAveragingInterval( CtiRequestMsg     * pReq,
-                                                  CtiCommandParser  & parse,
-                                                  CtiMessageList    & retList,
-                                                  RfnCommandList    & rfnRequests );
+    int executeLoadProfileRecording              (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
+    int executeImmediateDemandFreeze             (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
+    int executeTouCriticalPeak                   (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
 
-    int executeLoadProfileRecording( CtiRequestMsg     * pReq,
-                                     CtiCommandParser  & parse,
-                                     CtiMessageList    & retList,
-                                     RfnCommandList    & rfnRequests );
+    int executePutConfigTou                      (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
+    int executePutConfigHoliday                  (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
 
-    int executePutConfigDemandFreezeDay( CtiRequestMsg     * pReq,
-                                         CtiCommandParser  & parse,
-                                         CtiMessageList    & retList,
-                                         RfnCommandList    & rfnRequests );
+    int executeGetConfigTou                      (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
+    int executeGetConfigHoliday                  (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
 
-    int executeImmediateDemandFreeze( CtiRequestMsg     * pReq,
-                                      CtiCommandParser  & parse,
-                                      CtiMessageList    & retList,
-                                      RfnCommandList    & rfnRequests );
+    int executePutConfigDemandFreezeDay          (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
+    int executePutConfigInstallTou               (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
+    int executePutConfigVoltageAveragingInterval (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
 
-    int executeReadDemandFreezeInfo( CtiRequestMsg     * pReq,
-                                     CtiCommandParser  & parse,
-                                     CtiMessageList    & retList,
-                                     RfnCommandList    & rfnRequests );
-
-    int executeTouCriticalPeak( CtiRequestMsg     * pReq,
-                                CtiCommandParser  & parse,
-                                CtiMessageList    & retList,
-                                RfnCommandList    & rfnRequests );
-
-    int executePutConfigTou( CtiRequestMsg     * pReq,
-                             CtiCommandParser  & parse,
-                             CtiMessageList    & retList,
-                             RfnCommandList    & rfnRequests );
-
-    int executeGetConfigTou( CtiRequestMsg     * pReq,
-                             CtiCommandParser  & parse,
-                             CtiMessageList    & retList,
-                             RfnCommandList    & rfnRequests );
-
-    int executePutConfigHoliday( CtiRequestMsg     * pReq,
-                                 CtiCommandParser  & parse,
-                                 CtiMessageList    & retList,
-                                 RfnCommandList    & rfnRequests );
-
-    int executeGetConfigHoliday( CtiRequestMsg     * pReq,
-                                 CtiCommandParser  & parse,
-                                 CtiMessageList    & retList,
-                                 RfnCommandList    & rfnRequests );
-
-    // execute putconfig install
-    virtual int executePutConfigInstallFreezeDay                (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
-    virtual int executePutConfigInstallVoltageAveragingInterval (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
-    virtual int executePutConfigInstallTou                      (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
-    virtual int executePutConfigInstallDisplay                  (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
+    int executeReadDemandFreezeInfo              (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
+    int executeGetConfigInstallTou               (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
+    int executeGetConfigVoltageAveragingInterval (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
 
     void handleResult( const Commands::RfnVoltageProfileConfigurationCommand & cmd );
     void handleResult( const Commands::RfnLoadProfileRecordingCommand & cmd );
-
     void handleResult( const Commands::RfnGetDemandFreezeInfoCommand & cmd );
-
     void handleResult( const Commands::RfnTouScheduleConfigurationCommand & cmd );
     void handleResult( const Commands::RfnTouHolidayConfigurationCommand & cmd );
 
 private:
 
-    bool isTouConfigCurrent( const Config::DeviceConfigSPtr &deviceConfig );
+    bool isTouConfigCurrent( const Config::DeviceConfigSPtr &deviceConfig, std::map<std::string, std::string> &configMap );
 };
 
 

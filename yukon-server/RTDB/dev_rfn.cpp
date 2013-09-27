@@ -121,20 +121,23 @@ int RfnDevice::executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, Ct
     return NoMethod;
 }
 
+
+const RfnDevice::InstallMap RfnDevice::emptyMap;
+
 /**
  * define in inherited device classes
  */
-boost::optional<const RfnDevice::InstallMap &> RfnDevice::getPutConfigInstallMap() const
+const RfnDevice::InstallMap & RfnDevice::getPutConfigInstallMap() const
 {
-    return boost::none;
+    return emptyMap;
 }
 
 /**
  * define in inherited device classes
  */
-boost::optional<const RfnDevice::InstallMap &> RfnDevice::getGetConfigInstallMap() const
+const RfnDevice::InstallMap & RfnDevice::getGetConfigInstallMap() const
 {
-    return boost::none;
+    return emptyMap;
 }
 
 /**

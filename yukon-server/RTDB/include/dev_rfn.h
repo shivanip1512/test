@@ -43,8 +43,10 @@ protected:
     typedef int (RfnDevice::*InstallMethod)(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
     typedef std::map<std::string, InstallMethod> InstallMap;
 
-    virtual boost::optional<const InstallMap &> getGetConfigInstallMap() const;
-    virtual boost::optional<const InstallMap &> getPutConfigInstallMap() const;
+    const static InstallMap emptyMap;
+
+    virtual const InstallMap & getGetConfigInstallMap() const;
+    virtual const InstallMap & getPutConfigInstallMap() const;
 
     virtual int executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
     virtual int executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
