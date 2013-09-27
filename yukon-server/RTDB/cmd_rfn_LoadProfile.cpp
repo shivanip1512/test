@@ -60,17 +60,13 @@ unsigned char RfnLoadProfileCommand::getOperation() const
 
 RfnCommand::Bytes RfnLoadProfileCommand::getCommandData()
 {
-    std::vector< TypeLengthValue >  tlvs;
-
-    populateTlvs( tlvs );
-
-    return getBytesFromTlvs( tlvs );
+    return getBytesFromTlvs( getTlvs() );
 }
 
 
-void RfnLoadProfileCommand::populateTlvs( std::vector< TypeLengthValue > & tlvs )
+RfnLoadProfileCommand::TlvList RfnLoadProfileCommand::getTlvs()
 {
-
+    return TlvList();
 }
 
 
@@ -84,7 +80,7 @@ RfnCommand::RfnResult RfnLoadProfileCommand::error( const CtiTime now,
 RfnCommand::RfnResult RfnLoadProfileCommand::decodeResponseHeader( const CtiTime now,
                                                                    const RfnResponse & response )
 {
-    RfnCommand::RfnResult  result;
+    RfnResult result;
 
     // We need at least 3 bytes
 
@@ -161,7 +157,7 @@ RfnVoltageProfileConfigurationCommand::RfnVoltageProfileConfigurationCommand( Re
 }
 
 
-void RfnVoltageProfileConfigurationCommand::populateTlvs( std::vector< TypeLengthValue > & tlvs )
+RfnVoltageProfileConfigurationCommand::TlvList RfnVoltageProfileConfigurationCommand::getTlvs()
 {
     if ( _operation == Operation_SetConfiguration )
     {
@@ -170,15 +166,17 @@ void RfnVoltageProfileConfigurationCommand::populateTlvs( std::vector< TypeLengt
         tlv.value.push_back( _demandInterval );
         tlv.value.push_back( _loadProfileInterval );
 
-        tlvs.push_back( tlv );
+        return boost::assign::list_of(tlv);
     }
+
+    return TlvList();
 }
 
 
 RfnCommand::RfnResult RfnVoltageProfileConfigurationCommand::decodeCommand( const CtiTime now,
-                                                                     const RfnCommand::RfnResponse & response )
+                                                                            const RfnResponse & response )
 {
-    RfnCommand::RfnResult  result = decodeResponseHeader( now, response );
+    RfnResult result = decodeResponseHeader( now, response );
 
     switch ( _operation )
     {
@@ -215,8 +213,8 @@ RfnCommand::RfnResult RfnVoltageProfileConfigurationCommand::decodeCommand( cons
         }
         default:
         {
-            throw RfnCommand::CommandException( ErrorInvalidData,
-                                                "Missing decode for Operation (" + CtiNumStr(_operation).xhex(2) + ")" );
+            throw CommandException( ErrorInvalidData,
+                                    "Missing decode for Operation (" + CtiNumStr(_operation).xhex(2) + ")" );
         }
     }
 
@@ -258,9 +256,9 @@ RfnLoadProfileRecordingCommand::RfnLoadProfileRecordingCommand( ResultHandler & 
 
 
 RfnCommand::RfnResult RfnLoadProfileRecordingCommand::decodeCommand( const CtiTime now,
-                                                                     const RfnCommand::RfnResponse & response )
+                                                                     const RfnResponse & response )
 {
-    RfnCommand::RfnResult  result = decodeResponseHeader( now, response );
+    RfnResult result = decodeResponseHeader( now, response );
 
     switch ( _operation )
     {
@@ -301,8 +299,8 @@ RfnCommand::RfnResult RfnLoadProfileRecordingCommand::decodeCommand( const CtiTi
         }
         default:
         {
-            throw RfnCommand::CommandException( ErrorInvalidData,
-                                                "Missing decode for Operation (" + CtiNumStr(_operation).xhex(2) + ")" );
+            throw CommandException( ErrorInvalidData,
+                                    "Missing decode for Operation (" + CtiNumStr(_operation).xhex(2) + ")" );
         }
     }
 
@@ -332,28 +330,186 @@ RfnLoadProfileReadPointsCommand::RfnLoadProfileReadPointsCommand( const CtiTime 
 }
 
 
-void RfnLoadProfileReadPointsCommand::populateTlvs( std::vector< TypeLengthValue > & tlvs )
+RfnLoadProfileReadPointsCommand::TlvList RfnLoadProfileReadPointsCommand::getTlvs()
 {
     TypeLengthValue tlv(TlvType_GetProfilePointsRequest);
 
-    setBits_lEndian(tlv.value,  0, 32, CtiTime(_begin).seconds());
-    setBits_lEndian(tlv.value, 32, 32, CtiTime(_end  ).seconds());
+    setBits_bEndian(tlv.value,  0, 32, CtiTime(_begin).seconds());
+    setBits_bEndian(tlv.value, 32, 32, CtiTime(_end  ).seconds());
 
-    tlvs.push_back( tlv );
+    return boost::assign::list_of(tlv);
 }
 
 
 RfnCommand::RfnResult RfnLoadProfileReadPointsCommand::decodeCommand( const CtiTime now,
-                                                                      const RfnCommand::RfnResponse & response )
+                                                                      const RfnResponse & response )
 {
-    RfnCommand::RfnResult result = decodeResponseHeader( now, response );
+    RfnResult result = decodeResponseHeader( now, response );
 
     validateCondition( response.size() >= 4,
                        ErrorInvalidData, "Response too small (" + CtiNumStr(response.size()) + " < 4)" );
 
-    const unsigned tlv_count = response[3];
+    const RfnResponse payload(response.begin() + 3, response.end());
 
+    std::vector<TypeLengthValue> tlvs = getTlvsFromBytes(payload);
 
+    validateCondition( ! tlvs.empty(),
+                       ErrorInvalidData, "No TLVs in payload" );
+
+    const TypeLengthValue &tlv = tlvs[0];
+
+    validateCondition( tlv.type == TlvType_GetProfilePointsResponse,
+                       ErrorInvalidData, "Invalid TLV type received in response (" + CtiNumStr(tlv.type) + " != " + CtiNumStr(TlvType_GetProfilePointsResponse) + ")" );
+
+    const Bytes &lpPointDescriptor = tlv.value;
+
+    unsigned pos = 0;
+
+    validateCondition( lpPointDescriptor.size() >= pos + 4,
+                       ErrorInvalidData, "Response TLV too small (" + CtiNumStr(lpPointDescriptor.size()) + " < " + CtiNumStr(pos + 4) + ")" );
+
+    //const unsigned channel = lpPointDescriptor[pos];  //  unused
+    pos++;
+
+    const unsigned uom = lpPointDescriptor[pos];
+    pos++;
+
+    validateCondition( uom == Uom_Volts,
+                       ErrorInvalidData, "Incorrect UOM returned (" + CtiNumStr(uom) + " != " + CtiNumStr(Uom_Volts) + ")" );
+
+    const UomModifier1 modifier = ntohs(*(reinterpret_cast<const unsigned short *>(&lpPointDescriptor[pos])));
+    pos++;
+    pos++;
+
+    boost::optional<UomModifier2> tmp_modifier2;
+
+    if( modifier.getExtensionBit() )
+    {
+        validateCondition( lpPointDescriptor.size() >= pos + 2,
+                           ErrorInvalidData, "Response TLV too small (" + CtiNumStr(lpPointDescriptor.size()) + " < " + CtiNumStr(pos + 2) + ")" );
+
+        tmp_modifier2 = ntohs(*(reinterpret_cast<const unsigned short *>(&lpPointDescriptor[pos])));
+        pos++;
+        pos++;
+    }
+
+    const boost::optional<UomModifier2> modifier2 = tmp_modifier2;
+
+    validateCondition( lpPointDescriptor.size() >= pos + 2,
+                       ErrorInvalidData, "Response TLV too small (" + CtiNumStr(lpPointDescriptor.size()) + " < " + CtiNumStr(pos + 2) + ")" );
+
+    const unsigned profileInterval = lpPointDescriptor[pos];
+    pos++;
+
+    validateCondition( profileInterval,
+                       ErrorInvalidData, "Zero-length profile interval returned" );
+
+    const unsigned profilePointRecordCount = lpPointDescriptor[pos];
+    pos++;
+
+    for( unsigned record = 0; record < profilePointRecordCount; ++record )
+    {
+        std::vector<unsigned> readings;
+
+        long reading = 0;
+
+        validateCondition( lpPointDescriptor.size() >= pos + 6,
+                           ErrorInvalidData, "Response TLV too small (" + CtiNumStr(lpPointDescriptor.size()) + " < " + CtiNumStr(pos + 6) + ")" );
+
+        const unsigned timestamp = ntohl(*(reinterpret_cast<const unsigned *>(&lpPointDescriptor[pos])));
+        pos++;
+        pos++;
+        pos++;
+        pos++;
+
+        const unsigned pointType = *(reinterpret_cast<const unsigned *>(&lpPointDescriptor[pos]));
+        pos++;
+
+        const unsigned pointCount = *(reinterpret_cast<const unsigned *>(&lpPointDescriptor[pos]));
+        pos++;
+
+        enum PointType
+        {
+            Delta_8Bit,
+            Delta_16Bit,
+            Absolute_32Bit,
+            Absolute_16Bit
+        };
+
+        switch( pointType )
+        {
+            case Delta_8Bit:
+            {
+                validateCondition( lpPointDescriptor.size() >= (pos + pointCount * 1),
+                                   ErrorInvalidData, "Response TLV too small (" + CtiNumStr(lpPointDescriptor.size()) + " < " + CtiNumStr(pos + pointCount * 1) + ")" );
+
+                for( unsigned point = 0; point < pointCount; ++point )
+                {
+                    readings.push_back(
+                        reading += static_cast<char>(lpPointDescriptor[pos]));
+
+                    pos++;
+                }
+
+                break;
+            }
+            case Delta_16Bit:
+            {
+                validateCondition( lpPointDescriptor.size() >= (pos + pointCount * 2),
+                                   ErrorInvalidData, "Response TLV too small (" + CtiNumStr(lpPointDescriptor.size()) + " < " + CtiNumStr(pos + pointCount * 2) + ")" );
+
+                for( unsigned point = 0; point < pointCount; ++point )
+                {
+                    readings.push_back(
+                       reading += ntohs(*(reinterpret_cast<const short *>(&lpPointDescriptor[pos]))));
+
+                    pos++;
+                    pos++;
+                }
+
+                break;
+            }
+            case Absolute_16Bit:
+            {
+                validateCondition( lpPointDescriptor.size() >= (pos + pointCount * 2),
+                                   ErrorInvalidData, "Response TLV too small (" + CtiNumStr(lpPointDescriptor.size()) + " < " + CtiNumStr(pos + pointCount * 2) + ")" );
+
+                for( unsigned point = 0; point < pointCount; ++point )
+                {
+                    readings.push_back(
+                        reading = ntohs(*(reinterpret_cast<const short *>(&lpPointDescriptor[pos]))));
+
+                    pos++;
+                    pos++;
+                }
+
+                break;
+            }
+            case Absolute_32Bit:
+            {
+                validateCondition( lpPointDescriptor.size() >= (pos + pointCount * 4),
+                                   ErrorInvalidData, "Response TLV too small (" + CtiNumStr(lpPointDescriptor.size()) + " < " + CtiNumStr(pos + pointCount * 4) + ")" );
+
+                for( unsigned point = 0; point < pointCount; ++point )
+                {
+                    readings.push_back(
+                        reading = ntohl(*(reinterpret_cast<const long *>(&lpPointDescriptor[pos]))));
+
+                    pos++;
+                    pos++;
+                    pos++;
+                    pos++;
+                }
+
+                break;
+            }
+        }
+
+        for each( unsigned reading in readings )
+        {
+
+        }
+    }
 
     return result;
 }
@@ -362,4 +518,3 @@ RfnCommand::RfnResult RfnLoadProfileReadPointsCommand::decodeCommand( const CtiT
 }
 }
 }
-
