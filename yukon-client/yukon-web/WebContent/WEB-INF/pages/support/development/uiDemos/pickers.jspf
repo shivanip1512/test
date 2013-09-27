@@ -107,7 +107,7 @@ This page should be tested at 1024x768.
     allowEmptySelection="false"
     multiSelectMode="false"
     immediateSelectMode="true">Pick 1</tags:pickerDialog></td>
-  <td><input id="p1_input"></td>
+  <td><input type="text" id="p1_input"></td>
   <td></td>
   <td>false</td>
   <td>false</td>
@@ -122,7 +122,7 @@ This page should be tested at 1024x768.
     allowEmptySelection="false"
     multiSelectMode="false"
     immediateSelectMode="false">Pick 2</tags:pickerDialog></td>
-  <td><input id="p2_input"></td>
+  <td><input type="text" id="p2_input"></td>
   <td></td>
   <td>false</td>
   <td>false</td>
@@ -137,7 +137,7 @@ This page should be tested at 1024x768.
     allowEmptySelection="false"
     multiSelectMode="true"
     immediateSelectMode="false">Pick 3</tags:pickerDialog></td>
-  <td><input id="p3_input"></td>
+  <td><input type="text" id="p3_input"></td>
   <td></td>
   <td>false</td>
   <td>true</td>
@@ -151,7 +151,7 @@ This page should be tested at 1024x768.
     allowEmptySelection="true"
     multiSelectMode="true"
     immediateSelectMode="false">Pick 4</tags:pickerDialog></td>
-  <td><input id="p4_input"></td>
+  <td><input type="text" id="p4_input"></td>
   <td></td>
   <td>true</td>
   <td>true</td>
@@ -167,7 +167,7 @@ This page should be tested at 1024x768.
     multiSelectMode="true"
     immediateSelectMode="false"
     endAction="sampleEndAction">Pick 5</tags:pickerDialog></td>
-  <td><input id="p5_input"></td>
+  <td><input type="text" id="p5_input"></td>
   <td>alert</td>
   <td>true</td>
   <td>true</td>
@@ -215,7 +215,7 @@ This page should be tested at 1024x768.
     immediateSelectMode="false"
     icon="icon-folder-edit"
     endAction="sampleEndAction"/></td>
-  <td><input id="p7_input"></td>
+  <td><input type="text" id="p7_input"></td>
   <td>pick7</td>
   <td>alert</td>
   <td>false</td>
@@ -234,7 +234,7 @@ This page should be tested at 1024x768.
     multiSelectMode="true"
     immediateSelectMode="false"
     endAction="requireEvenNumber"/></td>
-  <td><input id="p8_input"></td>
+  <td><input type="text" id="p8_input"></td>
   <td>pick8</td>
   <td>require even</td>
   <td>false</td>
@@ -251,7 +251,7 @@ This page should be tested at 1024x768.
     allowEmptySelection="false"
     multiSelectMode="false"
     immediateSelectMode="true"/></td>
-  <td><input id="p9_input"></td>
+  <td><input type="text" id="p9_input"></td>
   <td>pick9 (no image)</td>
   <td></td>
   <td>false</td>
@@ -286,7 +286,7 @@ This page should be tested at 1024x768.
     multiSelectMode="false"
     immediateSelectMode="true"
     extraDestinationFields="${itemIdProperty}:p11Span;${itemNameProperty}:p11Input"/></td>
-  <td><input id="p11_input"></td>
+  <td><input type="text" id="p11_input"></td>
   <td>pick11</td>
   <td></td>
   <td>false</td>
@@ -325,7 +325,7 @@ This page should be tested at 1024x768.
     multiSelectMode="false"
     immediateSelectMode="false"
     memoryGroup="group1"/></td>
-  <td><input id="p12_input"></td>
+  <td><input type="text" id="p12_input"></td>
   <td>pick12</td>
   <td>false</td>
   <td>false</td>
@@ -342,7 +342,7 @@ This page should be tested at 1024x768.
     multiSelectMode="true"
     immediateSelectMode="false"
     memoryGroup="group1"/></td>
-  <td><input id="p13_input"></td>
+  <td><input type="text" id="p13_input"></td>
   <td>pick13</td>
   <td>false</td>
   <td>true</td>
@@ -359,7 +359,7 @@ This page should be tested at 1024x768.
     multiSelectMode="false"
     immediateSelectMode="true"
     memoryGroup="group1"/></td>
-  <td><input id="p14_input"></td>
+  <td><input type="text" id="p14_input"></td>
   <td>pick14 (no image)</td>
   <td>false</td>
   <td>false</td>
@@ -387,7 +387,7 @@ This page should be tested at 1024x768.
     destinationFieldId="p15_input"
     linkType="selection"
     selectionProperty="${itemNameProperty}"/></td>
-  <td><input id="p15_input"></td>
+  <td><input type="text" id="p15_input"></td>
   <td>${itemNameProperty}</td>
   <td title="This picker uses the default nameKey (none is specified).  This will probably be the norm.">default</td>
   <td>&nbsp;</td>
@@ -402,7 +402,7 @@ This page should be tested at 1024x768.
     selectionProperty="${itemNameProperty}"
     icon="icon-add"
     nameKey="pick16"/></td>
-  <td><input id="p16_input"></td>
+  <td><input type="text" id="p16_input"></td>
   <td>${itemNameProperty}</td>
   <td>pick2</td>
   <td>&nbsp;</td>
@@ -416,7 +416,7 @@ This page should be tested at 1024x768.
     linkType="selection"
     selectionProperty="${itemNameProperty}"
     allowEmptySelection="true"/></td>
-  <td><input id="p17_input"></td>
+  <td><input type="text" id="p17_input"></td>
   <td>${itemNameProperty}</td>
   <td title="This picker uses the default nameKey (none is specified).  This will probably be the norm.">default</td>
   <td>&nbsp;</td>
@@ -432,7 +432,7 @@ This page should be tested at 1024x768.
     selectionProperty="${itemNameProperty}"
     nameKey="pick18"
     allowEmptySelection="true"/></td>
-  <td><input id="p18_input"></td>
+  <td><input type="text" id="p18_input"></td>
   <td>${itemNameProperty}</td>
   <td>pick4</td>
   <td>&nbsp;</td>
@@ -450,7 +450,7 @@ This page should be tested at 1024x768.
     allowEmptySelection="false"
     multiSelectMode="true"
     immediateSelectMode="false"/></td>
-  <td><input id="p19_input"></td>
+  <td><input type="text" id="p19_input"></td>
   <td>${itemNameProperty}</td>
   <td>pick5</td>
   <td>&nbsp;</td>
@@ -468,7 +468,7 @@ This page should be tested at 1024x768.
     allowEmptySelection="false"
     multiSelectMode="false"
     immediateSelectMode="true"/></td>
-  <td><input id="p20_input"></td>
+  <td><input type="text" id="p20_input"></td>
   <td>${itemIdProperty}</td>
   <td>pick6</td>
   <td>&nbsp;</td>
@@ -497,7 +497,7 @@ This page should be tested at 1024x768.
       allowEmptySelection="true"
       multiSelectMode="true"
       initialIds="${paramValues['rememberingPickerInput']}"/>
-    <input type="submit">
+    <button type="submit">Submit</button>
   </form>
 </tags:sectionContainer2>
 <br>
