@@ -216,6 +216,7 @@ public class MeterEventsReportController {
 	            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
 	            setupBackingBean(backingBean, request, attrNames, userContext);
 	            setupCommonPageAttributes(backingBean, bindingResult, flashScope, userContext, model);
+	            model.addAttribute("exportData", exportData);
 	            return reportJspPath;
 	        }
 	        setupModelMap(backingBean, request, model, bindingResult, flashScope, userContext, attrNames);
