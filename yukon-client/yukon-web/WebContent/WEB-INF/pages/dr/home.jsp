@@ -85,7 +85,7 @@
                     </div>
                     <div class="column two nogutter">
                         <cti:checkRolesAndProperties value="ENABLE_ESTIMATED_LOAD">
-	                        <a href="/dr/estimatedLoad/home"><span class="fl"><i:inline key=".estimatedLoad"/></span>
+	                        <a href="/dr/estimatedLoad/home"><span class="fl"><i:inline key=".estimatedLoad"/></span></a>
                         </cti:checkRolesAndProperties>
                     </div>
                 </div>
