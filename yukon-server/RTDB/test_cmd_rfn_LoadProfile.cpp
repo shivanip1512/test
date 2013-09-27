@@ -472,7 +472,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfileRecording )
 
         RfnCommand::RfnResult rcv = command.decodeCommand( execute_time, response );
 
-        BOOST_CHECK_EQUAL( rcv.description, "Status: Success (0)" 
+        BOOST_CHECK_EQUAL( rcv.description, "Status: Success (0)"
                                               "\nCurrent State: Disabled (0)" );
 
         BOOST_CHECK_EQUAL( RfnLoadProfileRecordingCommand::DisableRecording, command.getRecordingOption() );
@@ -485,7 +485,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfileRecording )
 
         RfnCommand::RfnResult rcv = command.decodeCommand( execute_time, response );
 
-        BOOST_CHECK_EQUAL( rcv.description, "Status: Success (0)" 
+        BOOST_CHECK_EQUAL( rcv.description, "Status: Success (0)"
                                               "\nCurrent State: Enabled (1)" );
 
         BOOST_CHECK_EQUAL( RfnLoadProfileRecordingCommand::EnableRecording, command.getRecordingOption() );
@@ -652,6 +652,20 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfilePoints_invalid_date
     }
 }
 
+
+BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfilePoints )
+{
+    //  begin == end, before today
+    {
+        const CtiTime now  (CtiDate(10, 8, 2013), 8, 23, 0);
+        const CtiDate begin( 7, 7, 2013);
+        const CtiDate end  ( 7, 8, 2013);
+
+        RfnLoadProfileReadPointsCommand command(now, begin, end);
+
+        //command.decodeCommand()
+    }
+}
 
 BOOST_AUTO_TEST_SUITE_END()
 
