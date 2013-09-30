@@ -1554,7 +1554,7 @@ INT CtiDeviceQuantum::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commRet
 }
 
 
-LONG CtiDeviceQuantum::bytesToLong( BYTE *toConvert, INT numBytes )
+LONG CtiDeviceQuantum::bytesToLong( const BYTE *toConvert, INT numBytes )
 {
     INT i;
     LONG result;
@@ -1574,7 +1574,7 @@ LONG CtiDeviceQuantum::bytesToLong( BYTE *toConvert, INT numBytes )
 }
 
 
-FLOAT CtiDeviceQuantum::bytesToFloat( BYTE *toConvert, INT numBytes )
+FLOAT CtiDeviceQuantum::bytesToFloat( const BYTE *toConvert, INT numBytes )
 {
     INT i;
     DOUBLE temp;
@@ -1594,7 +1594,7 @@ FLOAT CtiDeviceQuantum::bytesToFloat( BYTE *toConvert, INT numBytes )
 }
 
 
-FLOAT CtiDeviceQuantum::bcdToFloat( BYTE *toConvert, INT numBytes )
+FLOAT CtiDeviceQuantum::bcdToFloat( const BYTE *toConvert, INT numBytes )
 {
     INT i;
     DOUBLE temp;
@@ -1616,7 +1616,7 @@ FLOAT CtiDeviceQuantum::bcdToFloat( BYTE *toConvert, INT numBytes )
 }
 
 
-FLOAT CtiDeviceQuantum::registerToFloat( BYTE *rawReg, QuantumConfigData_t *translated, INT programmedRegNum )
+FLOAT CtiDeviceQuantum::registerToFloat( const BYTE *rawReg, QuantumConfigData_t *translated, INT programmedRegNum )
 {
     FLOAT result;
     INT   regNum, revision;
@@ -1690,7 +1690,7 @@ FLOAT CtiDeviceQuantum::registerToFloat( BYTE *rawReg, QuantumConfigData_t *tran
 }
 
 
-void CtiDeviceQuantum::translateQuantumConfigData( QuantumRawConfigData_t *rawConfig, QuantumConfigData_t *translated )
+void CtiDeviceQuantum::translateQuantumConfigData( const QuantumRawConfigData_t *rawConfig, QuantumConfigData_t *translated )
 {
     if( translated != NULL )
     {
@@ -1810,7 +1810,7 @@ void CtiDeviceQuantum::translateQuantumConfigData( QuantumRawConfigData_t *rawCo
 }
 
 
-void CtiDeviceQuantum::translateQuantumProgrammedRegisters( QuantumRawScanData_t *rawScan, QuantumConfigData_t *translated, FLOAT *programmedRegisters )
+void CtiDeviceQuantum::translateQuantumProgrammedRegisters( const QuantumRawScanData_t *rawScan, QuantumConfigData_t *translated, FLOAT *programmedRegisters )
 {
     int i, j;
     for( i = 0, j = 0; i < 32; i++ )
@@ -1836,7 +1836,7 @@ void CtiDeviceQuantum::translateQuantumProgrammedRegisters( QuantumRawScanData_t
 }
 
 
-INT CtiDeviceQuantum::decodeResultScan( INMESS *InMessage,
+INT CtiDeviceQuantum::decodeResultScan( const INMESS *InMessage,
                                         CtiTime &TimeNow,
                                         list< CtiMessage* >   &vgList,
                                         list< CtiMessage* > &retList,
@@ -1858,8 +1858,8 @@ INT CtiDeviceQuantum::decodeResultScan( INMESS *InMessage,
     FLOAT    PartHour;
     DOUBLE   PValue;
 
-    DIALUPREQUEST   *DupReq = &InMessage->Buffer.DUPSt.DUPRep.ReqSt;
-    DIALUPREPLY     *DUPRep = &InMessage->Buffer.DUPSt.DUPRep;
+    const DIALUPREQUEST   *DupReq = &InMessage->Buffer.DUPSt.DUPRep.ReqSt;
+    const DIALUPREPLY     *DUPRep = &InMessage->Buffer.DUPSt.DUPRep;
 
     CtiPointDataMsg    *pData         = NULL;
     CtiPointNumericSPtr pNumericPoint;
@@ -1874,7 +1874,7 @@ INT CtiDeviceQuantum::decodeResultScan( INMESS *InMessage,
                                                        InMessage->Return.GrpMsgID,
                                                        InMessage->Return.UserID );
 
-    QuantumRawScanData_t *rawScanData = (QuantumRawScanData_t *)DUPRep->Message;
+    const QuantumRawScanData_t *rawScanData = (const QuantumRawScanData_t *)DUPRep->Message;
     QuantumScanData_t    *processedScanData;
     CtiTime peakTime;
 
@@ -2002,20 +2002,20 @@ INT CtiDeviceQuantum::decodeResultScan( INMESS *InMessage,
 
 
 
-INT CtiDeviceQuantum::decodeResultLoadProfile (INMESS *InMessage,
+INT CtiDeviceQuantum::decodeResultLoadProfile (const INMESS *InMessage,
                                                CtiTime &TimeNow,
                                                list< CtiMessage* >   &vgList,
                                                list< CtiMessage* > &retList,
                                                list< OUTMESS* > &outList)
 {
-    DIALUPREQUEST                 *dupReq = &InMessage->Buffer.DUPSt.DUPRep.ReqSt;
-    DIALUPREPLY                   *dupRep = &InMessage->Buffer.DUPSt.DUPRep;
+    const DIALUPREQUEST         *dupReq = &InMessage->Buffer.DUPSt.DUPRep.ReqSt;
+    const DIALUPREPLY           *dupRep = &InMessage->Buffer.DUPSt.DUPRep;
 
     QuantumConfigData_t         lpCfg;
     //  these pointers clean up a bunch of silly casts
-    QuantumRawConfigData_t      *rawConfig;
-    QuantumLoadProfileMessage_t *lpMess;
-    BYTE                        *mmBuffer;
+    const QuantumRawConfigData_t *rawConfig;
+    const QuantumLoadProfileMessage_t *lpMess;
+    const BYTE                  *mmBuffer;
     INT                         dataOffset;
     INT                         yukonPoints[16];
     LONG                        recordNibblePos,
@@ -2041,7 +2041,7 @@ INT CtiDeviceQuantum::decodeResultLoadProfile (INMESS *InMessage,
     int                         i, j;
 
 
-    lpMess = (QuantumLoadProfileMessage_t *)(dupRep->Message);
+    lpMess = (const QuantumLoadProfileMessage_t *)(dupRep->Message);
 
     rawConfig = &(lpMess->configData);
 

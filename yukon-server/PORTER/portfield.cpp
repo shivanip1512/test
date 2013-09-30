@@ -2641,7 +2641,7 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
     return status;
 }
 
-INT NonWrapDecode(INMESS *InMessage, CtiDeviceSPtr &Device)
+INT NonWrapDecode(const INMESS *InMessage, CtiDeviceSPtr &Device)
 {
     INT status = NORMAL;
 

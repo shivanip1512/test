@@ -2160,7 +2160,7 @@ int Mct4xxDevice::executePutConfigSingle(CtiRequestMsg *pReq,
 }
 
 
-INT Mct4xxDevice::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct4xxDevice::decodePutConfig(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT   status = NoError;
     string resultString;
@@ -2732,11 +2732,11 @@ int Mct4xxDevice::executePutConfigDNP(CtiRequestMsg *pReq,CtiCommandParser &pars
 }
 */
 
-INT Mct4xxDevice::decodeGetConfigTime(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct4xxDevice::decodeGetConfigTime(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 
-    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
     CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiString resultString;
@@ -2797,12 +2797,12 @@ INT Mct4xxDevice::decodeGetConfigTime(INMESS *InMessage, CtiTime &TimeNow, CtiMe
 }
 
 
-INT Mct4xxDevice::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct4xxDevice::decodeGetValueLoadProfile(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 
     INT ErrReturn =  InMessage->EventCode & 0x3fff;
-    DSTRUCT *DSt  = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
     string resultString;
     bool   expectMore = false;
@@ -2968,11 +2968,11 @@ INT Mct4xxDevice::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeNow,
 }
 
 
-INT Mct4xxDevice::decodeGetConfigTOU(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct4xxDevice::decodeGetConfigTOU(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 
-    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
     CtiCommandParser parse(InMessage->Return.CommandStr);
 
@@ -3154,12 +3154,12 @@ bool Mct4xxDevice::isProfileTablePointerCurrent(const unsigned char table_pointe
 }
 
 
-INT Mct4xxDevice::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct4xxDevice::decodeScanLoadProfile(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 
     INT ErrReturn =  InMessage->EventCode & 0x3fff;
-    DSTRUCT *DSt  = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
     string         val_report;
     int            channel, block;
@@ -3289,7 +3289,7 @@ INT Mct4xxDevice::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, Cti
 }
 
 
-INT Mct4xxDevice::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct4xxDevice::decodeGetValuePeakDemand(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     int        status = NORMAL,
                channel,
@@ -3305,7 +3305,7 @@ INT Mct4xxDevice::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNow, 
 
     CtiCommandParser parse(InMessage->Return.CommandStr);
 
-    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
     CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
@@ -3608,19 +3608,14 @@ Mct4xxDevice::DecodeMapping Mct4xxDevice::initDecodeLookup()
 const Mct4xxDevice::DecodeMapping Mct4xxDevice::_decodeMethods = Mct4xxDevice::initDecodeLookup();
 
 
-INT Mct4xxDevice::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct4xxDevice::ModelDecode(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     if( !InMessage )
     {
         return MEMORY;
     }
 
-    typedef Mct4xxDevice self;
-    typedef int (self::*DecodeMethod)(INMESS *, CtiTime &, CtiDeviceBase::CtiMessageList &, CtiDeviceBase::CtiMessageList &, CtiDeviceBase::OutMessageList &);
-
-    typedef std::map<int, DecodeMethod> DecodeLookup;
-
-    DecodeLookup::const_iterator itr = _decodeMethods.find(InMessage->Sequence);
+    DecodeMapping::const_iterator itr = _decodeMethods.find(InMessage->Sequence);
 
     if( itr != _decodeMethods.end() )
     {

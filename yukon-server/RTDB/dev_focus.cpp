@@ -81,10 +81,10 @@ int CtiDeviceFocus::getCommanderTables(ANSI_TABLE_WANTS* table )
 
 
     int sizeOfTable = 0;
-   
+
     for each (ANSI_TABLE_WANTS tableInfo in scanValues)
     {
-        table[sizeOfTable++] = tableInfo; 
+        table[sizeOfTable++] = tableInfo;
     }
     return sizeOfTable;
 }
@@ -119,10 +119,10 @@ int CtiDeviceFocus::getScannerTables(ANSI_TABLE_WANTS* table )
 
 
     int sizeOfTable = 0;
-   
+
     for each (ANSI_TABLE_WANTS tableInfo in scanValues)
     {
-        table[sizeOfTable++] = tableInfo; 
+        table[sizeOfTable++] = tableInfo;
     }
     return sizeOfTable;
 }
@@ -138,7 +138,7 @@ int CtiDeviceFocus::buildScannerTableRequest (BYTE *aMsg, UINT flags)
     ANSI_TABLE_WANTS table[100];
     header.numTablesRequested = getScannerTables(table);
     header.lastLoadProfileTime = 0;
-    header.command = 5; // 
+    header.command = 5; //
     BYTE scanOperation = 0; //0 = general scan
 
     // currently defaulted at billing data only
@@ -175,7 +175,7 @@ int CtiDeviceFocus::buildCommanderTableRequest (BYTE *aMsg, UINT flags)
     ANSI_TABLE_WANTS table[100];
     header.numTablesRequested = getCommanderTables(table);
     header.lastLoadProfileTime = 0;
-    header.command = 5; // 
+    header.command = 5; //
     BYTE scanOperation = 1; //1 = general pil scan
 
     return buildTableRequest (aMsg, table, header, scanOperation, flags);
@@ -188,7 +188,7 @@ int CtiDeviceFocus::buildTableRequest (BYTE *aMsg, ANSI_TABLE_WANTS *table, WANT
     BYTE  password[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
     string pswdTemp = getIED().getPassword();
 
-    BYTE *temp = (BYTE *)pswdTemp.c_str();
+    const BYTE *temp = (const BYTE *)pswdTemp.c_str();
     for (int i = 0; i < pswdTemp.length(); i++)
         password[i] = *(temp + i);
 

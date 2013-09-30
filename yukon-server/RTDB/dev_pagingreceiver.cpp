@@ -52,7 +52,7 @@ CtiDevicePagingReceiver::~CtiDevicePagingReceiver()
 {
 }
 
-INT CtiDevicePagingReceiver::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT CtiDevicePagingReceiver::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     //So far I am doing nothing with the result...
     resetScanFlag();

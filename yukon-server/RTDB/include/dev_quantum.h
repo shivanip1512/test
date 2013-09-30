@@ -177,13 +177,13 @@ private:
     LONG getPreviousRecordLocation( LONG currentRecordAddress );
     LONG getNextRecordLocation( LONG currentRecordAddress );
 
-    void translateQuantumConfigData( QuantumRawConfigData_t *rawScan, QuantumConfigData_t *translated );
-    void translateQuantumProgrammedRegisters( QuantumRawScanData_t *rawScan, QuantumConfigData_t *translated, FLOAT *programmedRegisters );
+    void translateQuantumConfigData( const QuantumRawConfigData_t *rawScan, QuantumConfigData_t *translated );
+    void translateQuantumProgrammedRegisters( const QuantumRawScanData_t *rawScan, QuantumConfigData_t *translated, FLOAT *programmedRegisters );
 
-    LONG  bytesToLong( BYTE *toConvert, INT numBytes );
-    FLOAT bytesToFloat( BYTE *toConvert, INT numBytes );
-    FLOAT bcdToFloat( BYTE *toConvert, INT numBytes );
-    FLOAT registerToFloat( BYTE *rawReg, QuantumConfigData_t *translated, INT programmedRegNum );
+    LONG  bytesToLong( const BYTE *toConvert, INT numBytes );
+    FLOAT bytesToFloat( const BYTE *toConvert, INT numBytes );
+    FLOAT bcdToFloat( const BYTE *toConvert, INT numBytes );
+    FLOAT registerToFloat( const BYTE *rawReg, QuantumConfigData_t *translated, INT programmedRegNum );
 
 protected:
 
@@ -250,13 +250,13 @@ public:
 
    virtual INT allocateDataBins( OUTMESS *outMess );
 
-   virtual INT decodeResultScan( INMESS *InMessage,
+   virtual INT decodeResultScan( const INMESS *InMessage,
                                  CtiTime &TimeNow,
                                  std::list< CtiMessage* > &vgList,
                                  std::list< CtiMessage* > &retList,
                                  std::list< OUTMESS* >    &outList );
 
-   virtual INT decodeResultLoadProfile( INMESS *InMessage,
+   virtual INT decodeResultLoadProfile( const INMESS *InMessage,
                                         CtiTime &TimeNow,
                                         std::list< CtiMessage* > &vgList,
                                         std::list< CtiMessage* > &retList,

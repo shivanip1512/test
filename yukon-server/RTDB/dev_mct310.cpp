@@ -367,7 +367,7 @@ bool Mct310Device::calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS
 }
 
 
-DOUBLE Mct310Device::translateStatusValue (INT PointOffset, INT PointType, INT DeviceType, PBYTE DataValueArray)
+DOUBLE Mct310Device::translateStatusValue (INT PointOffset, INT PointType, INT DeviceType, const BYTE *DataValueArray)
 {
     /* key off the point offset */
     switch(PointOffset)
@@ -554,7 +554,7 @@ DOUBLE Mct310Device::translateStatusValue (INT PointOffset, INT PointType, INT D
  *  would be a child whose decode was identical to the parent, but whose request was done differently..
  *  This MAY be the case for example in an IED scan.
  */
-INT Mct310Device::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct310Device::ModelDecode(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
@@ -650,13 +650,13 @@ INT Mct310Device::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
 }
 
 
-INT Mct310Device::decodePutConfigPeakMode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct310Device::decodePutConfigPeakMode(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
     ULONG i,x;
     string resultString;
 
-    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
     CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
@@ -690,14 +690,14 @@ INT Mct310Device::decodePutConfigPeakMode(INMESS *InMessage, CtiTime &TimeNow, l
 }
 
 
-INT Mct310Device::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct310Device::decodeGetValueKWH(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
     ULONG i,x;
     INT pid;
     string resultString;
 
-    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
     DOUBLE Value;
     CtiPointSPtr         pPoint;
@@ -785,7 +785,7 @@ INT Mct310Device::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list< C
 }
 
 
-INT Mct310Device::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct310Device::decodeGetValueDemand(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     int       status = NORMAL, demand_interval;
     double    Value;
@@ -794,7 +794,7 @@ INT Mct310Device::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, list
     PointQuality_t quality;
     bool bad_data;
 
-    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
     CtiPointSPtr         pPoint;
     CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
@@ -873,13 +873,13 @@ INT Mct310Device::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, list
 }
 
 
-INT Mct310Device::decodeGetValuePeak(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct310Device::decodeGetValuePeak(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     int       status = NORMAL;
     double    Value;
     string resultString;
 
-    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
     CtiPointSPtr         pPoint;
     CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
@@ -954,11 +954,11 @@ INT Mct310Device::decodeGetValuePeak(INMESS *InMessage, CtiTime &TimeNow, list< 
 }
 
 
-INT Mct310Device::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct310Device::decodeScanLoadProfile(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     int status = NORMAL;
 
-    DSTRUCT *DSt  = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
     string val_report, result_string;
 
@@ -1142,7 +1142,7 @@ INT Mct310Device::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, lis
 }
 
 
-void Mct310Device::decodeAccumulators(ULONG result[], INT accum_cnt, BYTE *Data)
+void Mct310Device::decodeAccumulators(ULONG result[], INT accum_cnt, const BYTE *Data)
 {
     int i, j, maxj;
 
@@ -1167,11 +1167,11 @@ void Mct310Device::decodeAccumulators(ULONG result[], INT accum_cnt, BYTE *Data)
 }
 
 
-INT Mct310Device::decodeGetStatusInternal( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT Mct310Device::decodeGetStatusInternal( const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
     INT status = NORMAL;
 
-    unsigned char *geneBuf = InMessage->Buffer.DSt.Message;
+    const unsigned char *geneBuf = InMessage->Buffer.DSt.Message;
 
     string resultString;
 
@@ -1240,11 +1240,11 @@ INT Mct310Device::decodeGetStatusInternal( INMESS *InMessage, CtiTime &TimeNow, 
 }
 
 
-INT Mct310Device::decodeGetStatusLoadProfile( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT Mct310Device::decodeGetStatusLoadProfile( const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
     INT status = NORMAL;
 
-    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
     INT   j;
     ULONG mread = 0;
@@ -1280,11 +1280,11 @@ INT Mct310Device::decodeGetStatusLoadProfile( INMESS *InMessage, CtiTime &TimeNo
 }
 
 
-INT Mct310Device::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct310Device::decodeGetConfigModel(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
-    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
     INT ssp;
     char rev;
@@ -1389,12 +1389,12 @@ INT Mct310Device::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, list
 }
 
 
-INT Mct310Device::decodeGetConfigOptions(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct310Device::decodeGetConfigOptions(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
     INT ErrReturn = InMessage->EventCode & 0x3fff;
-    unsigned char *optBuf  = InMessage->Buffer.DSt.Message;
+    const unsigned char *optBuf  = InMessage->Buffer.DSt.Message;
 
     string options;
 

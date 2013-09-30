@@ -90,7 +90,7 @@ bool Mct2xxDevice::getOperation( const UINT &cmd, BSTRUCT &bst ) const
  *  would be a child whose decode was identical to the parent, but whose request was done differently..
  *  This MAY be the case for example in an IED scan.
  */
-INT Mct2xxDevice::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct2xxDevice::ModelDecode(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
@@ -128,12 +128,12 @@ INT Mct2xxDevice::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
 }
 
 
-INT Mct2xxDevice::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct2xxDevice::decodeGetValueKWH(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
     INT ErrReturn =  InMessage->EventCode & 0x3fff;
-    DSTRUCT *DSt  = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
     if( InMessage->Sequence == EmetconProtocol::Scan_Accum )
     {
@@ -202,12 +202,12 @@ INT Mct2xxDevice::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list< C
 }
 
 
-INT Mct2xxDevice::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct2xxDevice::decodeGetValueDemand(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
     INT ErrReturn =  InMessage->EventCode & 0x3fff;
-    DSTRUCT *DSt  = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
     if( getMCTDebugLevel(DebugLevel_Scanrates) )
     {
@@ -293,14 +293,14 @@ INT Mct2xxDevice::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, list
 }
 
 
-INT Mct2xxDevice::decodeGetStatusInternal( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT Mct2xxDevice::decodeGetStatusInternal( const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
     INT status = NORMAL;
 
     CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg      *pData = NULL;
 
-    unsigned char *geneBuf = InMessage->Buffer.DSt.Message;
+    const unsigned char *geneBuf = InMessage->Buffer.DSt.Message;
 
     ULONG pulseCount = 0;
     string resultString;
@@ -374,11 +374,11 @@ INT Mct2xxDevice::decodeGetStatusInternal( INMESS *InMessage, CtiTime &TimeNow, 
 //  This code handles the decode for all 2XX series model configs..
 //
 
-INT Mct2xxDevice::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct2xxDevice::decodeGetConfigModel(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
-    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
 
     INT ssp;
@@ -458,12 +458,12 @@ INT Mct2xxDevice::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, list
 }
 
 
-INT Mct2xxDevice::decodeGetConfigOptions(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct2xxDevice::decodeGetConfigOptions(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
     INT ErrReturn         = InMessage->EventCode & 0x3fff;
-    unsigned char *optBuf = InMessage->Buffer.DSt.Message;
+    const unsigned char *optBuf = InMessage->Buffer.DSt.Message;
 
     string options;
 

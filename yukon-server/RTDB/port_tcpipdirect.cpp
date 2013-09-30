@@ -180,7 +180,7 @@ INT CtiPortTCPIPDirect::openPort(INT rate, INT bits, INT parity, INT stopbits)
 
         /* Make sure we time out on our writes after 5 seconds */
         const int socketWriteTimeout = gConfigParms.getValueAsInt("PORTER_SOCKET_WRITE_TIMEOUT", 5);
-        if(setsockopt (_socket, SOL_SOCKET, SO_SNDTIMEO, (char *) &socketWriteTimeout, sizeof (socketWriteTimeout)))
+        if(setsockopt (_socket, SOL_SOCKET, SO_SNDTIMEO, (const char *) &socketWriteTimeout, sizeof (socketWriteTimeout)))
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " Error setting KeepAlive Mode for Terminal Server Socket:  " << WSAGetLastError() << " " << getName() << endl;
@@ -188,7 +188,7 @@ INT CtiPortTCPIPDirect::openPort(INT rate, INT bits, INT parity, INT stopbits)
 
         /* Turn on the keepalive timer */
         const int keepaliveTimer = 1;
-        if(setsockopt (_socket, SOL_SOCKET, SO_KEEPALIVE, (char *) &keepaliveTimer, sizeof (keepaliveTimer)))
+        if(setsockopt (_socket, SOL_SOCKET, SO_KEEPALIVE, (const char *) &keepaliveTimer, sizeof (keepaliveTimer)))
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " Error setting KeepAlive Mode for Terminal Server Socket:  " << WSAGetLastError() << " " << getName() << endl;
@@ -198,7 +198,7 @@ INT CtiPortTCPIPDirect::openPort(INT rate, INT bits, INT parity, INT stopbits)
         ling.l_onoff = 1;
         ling.l_linger = 0;
 
-        if(setsockopt (_socket, SOL_SOCKET, SO_LINGER, (char *)&ling, sizeof(ling)))
+        if(setsockopt (_socket, SOL_SOCKET, SO_LINGER, (const char *)&ling, sizeof(ling)))
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " Error setting Linger Mode (Hard) for Terminal Server Socket:  " << WSAGetLastError() << " " << getName() << endl;

@@ -93,7 +93,7 @@ protected:
 
     virtual INT SubmitRetry(const INMESS &InMessage, const CtiTime TimeNow, std::list<CtiMessage *> &vgList, std::list<CtiMessage *> &retList, std::list<OUTMESS *> &outList);
 
-    virtual INT ResultDecode(INMESS *InMessage, CtiTime &TimeNow, std::list<CtiMessage *> &vgList, std::list<CtiMessage *> &retList, std::list<OUTMESS *> &outList);
+    virtual INT ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, std::list<CtiMessage *> &vgList, std::list<CtiMessage *> &retList, std::list<OUTMESS *> &outList);
 
     INT retMsgHandler( std::string commandStr, int status, CtiReturnMsg *retMsg, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, bool expectMore = false ) const;
 
@@ -157,7 +157,7 @@ public:
 
     virtual INT ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
 
-    virtual bool processAdditionalRoutes( INMESS *InMessage ) const;
+    virtual bool processAdditionalRoutes( const INMESS *InMessage, int nRet ) const;
     virtual ULONG selectInitialMacroRouteOffset(LONG routeid = 0) const;
 };
 

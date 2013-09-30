@@ -142,8 +142,8 @@ INT CtiDeviceSentinel::DemandReset( CtiRequestMsg *pReq, CtiCommandParser &parse
     for (int aa = 0; aa < 20; aa++)
         password[aa] = 0;
 
-    BYTE *temp;
-    temp = (BYTE *)pswdTemp.c_str();
+    const BYTE *temp;
+    temp = (const BYTE *)pswdTemp.c_str();
     for (int aa = 0; aa < pswdTemp.length(); aa++)
         password[aa] = *(temp + aa);
 
@@ -319,7 +319,7 @@ INT CtiDeviceSentinel::ExecuteRequest( CtiRequestMsg         *pReq,
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-INT CtiDeviceSentinel::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list < CtiMessage* >&retList,
+INT CtiDeviceSentinel::ResultDecode( const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list < CtiMessage* >&retList,
                                 list< OUTMESS* >    &outList)
 {
     CtiReturnMsg *retMsg = NULL;
@@ -396,8 +396,8 @@ INT CtiDeviceSentinel::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< 
             //if (InMessage->EventCode == NORMAL)
             //if (findStringIgnoreCase(inMsgResultString, "successful"))
             {
-                unsigned long *lastLpTime;
-                lastLpTime =  (unsigned long *)InMessage->Buffer.InMessage;
+                const unsigned long *lastLpTime;
+                lastLpTime =  (const unsigned long *)InMessage->Buffer.InMessage;
 
                 try
                 {
@@ -564,8 +564,8 @@ int CtiDeviceSentinel::buildScannerTableRequest (BYTE *aMsg, UINT flags)
     for (int aa = 0; aa < 20; aa++)
         password[aa] = 0;
 
-    BYTE *temp;
-    temp = (BYTE *)pswdTemp.c_str();
+    const BYTE *temp;
+    temp = (const BYTE *)pswdTemp.c_str();
     for (int aa = 0; aa < pswdTemp.length(); aa++)
         password[aa] = *(temp + aa);
 
@@ -673,8 +673,8 @@ int CtiDeviceSentinel::buildCommanderTableRequest (BYTE *aMsg, UINT flags)
     for (int aa = 0; aa < 20; aa++)
         password[aa] = 0;
 
-    BYTE *temp;
-    temp = (BYTE *)pswdTemp.c_str();
+    const BYTE *temp;
+    temp = (const BYTE *)pswdTemp.c_str();
     for (int aa = 0; aa < pswdTemp.length(); aa++)
         password[aa] = *(temp + aa);
 

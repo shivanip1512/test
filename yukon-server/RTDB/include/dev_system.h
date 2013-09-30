@@ -31,6 +31,6 @@ public:
 
    virtual std::string getDescription(const CtiCommandParser &parse) const;
 
-   virtual INT  ProcessResult(INMESS*, CtiTime&, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
+   virtual INT  ProcessResult(const INMESS*, CtiTime&, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
 
 };

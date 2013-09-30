@@ -15,7 +15,7 @@ INT EstablishConnection(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage
 INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &Device);
 void processPreloads(CtiPortSPtr Port);
 INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMessage, const CtiDeviceSPtr &Device);
-INT NonWrapDecode(INMESS *InMessage, CtiDeviceSPtr &Device);
+INT NonWrapDecode(const INMESS *InMessage, CtiDeviceSPtr &Device);
 INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTMESS *&OutMessage, CtiDeviceSPtr &Device);
 INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDeviceSPtr &Device);
 Cti::Optional<repeater_info> findRepeaterInRouteByAddress(const int routeId, const int macroOffset, const unsigned echo_address);

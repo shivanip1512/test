@@ -61,12 +61,12 @@ public:
    virtual INT   decodeResponseLoadProfile( CtiXfer &Transfer, INT commReturnValue, std::list< CtiMessage* > &traceList ) { return NoDecodeResponseMethod; };
    virtual INT   decodeResponseSelectMeter( CtiXfer &Transfer, INT commReturnValue, std::list< CtiMessage* > &traceList ) { return NoDecodeResponseMethod; };
 
-   virtual INT   decodeResultScan( INMESS                    *InMessage,
+   virtual INT   decodeResultScan( const INMESS               *InMessage,
                                    CtiTime                    &TimeNow,
                                    std::list< CtiMessage* > &vgList,
                                    std::list< CtiMessage* > &retList,
                                    std::list< OUTMESS* >    &outList )         { return NoResultDecodeMethod; };
-   virtual INT   decodeResultLoadProfile( INMESS                    *InMessage,
+   virtual INT   decodeResultLoadProfile( const INMESS               *InMessage,
                                           CtiTime                    &TimeNow,
                                           std::list< CtiMessage* > &vgList,
                                           std::list< CtiMessage* > &retList,

@@ -341,7 +341,7 @@ INT CtiDeviceWelco::IntegrityScan(CtiRequestMsg *pReq,
     return status;
 }
 
-INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* >   &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceWelco::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* >   &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     bool continue_required = false;             // This is not the last report from this device for the previous request.
     bool accums_spill_frame = false;            // The accumulator block spills across this frame into the next one.
@@ -352,7 +352,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
     /* Misc. definitions */
     ULONG i;
     ULONG Pointer;
-    PBYTE MyInMessage, SaveInMessage;
+    const BYTE *MyInMessage, *SaveInMessage;
 
     /* Define the various records */
     CtiPointSPtr          PointRecord;
@@ -1335,7 +1335,7 @@ INT CtiDeviceWelco::WelCoPoll (OUTMESS *OutMessage, INT Priority)
 
 }
 
-INT CtiDeviceWelco::WelCoTimeSync(INMESS *InMessage, list< OUTMESS* > &outList, INT Priority)
+INT CtiDeviceWelco::WelCoTimeSync(const INMESS *InMessage, list< OUTMESS* > &outList, INT Priority)
 {
     INT   status = NORMAL;
 
@@ -1427,7 +1427,7 @@ INT CtiDeviceWelco::WelCoReset(OUTMESS *OutMessage, INT Priority)
 }
 
 
-INT CtiDeviceWelco::WelCoDeadBands(INMESS *InMessage, list< OUTMESS* > &outList, INT Priority)
+INT CtiDeviceWelco::WelCoDeadBands(const INMESS *InMessage, list< OUTMESS* > &outList, INT Priority)
 {
     INT status = NORMAL;
 

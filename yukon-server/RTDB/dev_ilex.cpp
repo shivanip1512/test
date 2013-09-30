@@ -175,7 +175,7 @@ INT CtiDeviceILEX::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, O
 }
 
 
-INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* >   &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceILEX::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* >   &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT             status = NORMAL;
     CtiPointSPtr    PointRecord;
@@ -222,8 +222,10 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
         }
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
+        unsigned char firstByte = InMessage->Buffer.InMessage[0];
+
         /* decode whatever message this is */
-        switch(InMessage->Buffer.InMessage[0] & 0x07)
+        switch(firstByte & 0x07)
         {
         case ILEXFREEZE:
             {
@@ -274,13 +276,8 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
                 {
                     resetScanFlag(ScanRateGeneral);
 
-                    /* update the scan time */
-                    // 04302002 CGP These don't seem to be used anywhere around here...
-                    // DeviceRecord->LastFullScan      = TimeB->time;
-                    // DeviceRecord->LastExceptionScan = TimeB->time;
-
-                    /* The moron's at ILEX can't seem to keep straight the ACK/NACK bit so force it */
-                    InMessage->Buffer.InMessage[0] |= 0x10;
+                    /* ILEX doesn't seem to keep the ACK/NACK bit straight, so force it */
+                    firstByte |= 0x10;
 
                 }
                 else
@@ -303,6 +300,8 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
 
                     char oldfill = dout.fill('0');
 
+                    dout << CtiTime() << " First byte:" << endl;
+                    dout << hex << setw(2) << (int)firstByte << dec << " ";
                     dout << CtiTime() << " Ilex Data:" << endl;
                     for(i=0; i < 64; i++)
                     {
@@ -313,7 +312,7 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
                     dout.fill(oldfill);
                 }
 
-                if((InMessage->Buffer.InMessage[0] & 0x07) == ILEXSCANPARTIAL)
+                if((firstByte & 0x07) == ILEXSCANPARTIAL)
                 {
                     /* do an exception scan */
                     OutMessage = CTIDBG_new OUTMESS;
@@ -322,7 +321,7 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
                     {
                         InEchoToOut(*InMessage, OutMessage);
 
-                        setIlexSequenceNumber( InMessage->Buffer.InMessage[0] & 0x10 );
+                        setIlexSequenceNumber( firstByte & 0x10 );
 
                         if((i = exceptionScan(OutMessage, MAXPRIORITY - 4, outList)) != NORMAL)
                         {
@@ -390,9 +389,9 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
                 /* Now process them in order */
                 if(NumStatusGroups)
                 {
-
                     for(i = 0; i < NumStatusGroups; i++)
                     {
+                        //  offset is nonzero, so we don't need to use firstByte
                         StartStatus = InMessage->Buffer.InMessage[Offset] * 16;
 
                         if(getDebugLevel() & DEBUGLEVEL_ILEX_PROTOCOL)
@@ -464,7 +463,7 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
 
                 if(NumAccum)
                 {
-                    if((InMessage->Buffer.InMessage[0] & 0x07) == ILEXSCAN)
+                    if((firstByte & 0x07) == ILEXSCAN)
                     {
                         if(isScanFlagSet(ScanFrozen) || isScanFlagSet(ScanFreezeFailed))
                         {
@@ -478,7 +477,7 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
                                     InEchoToOut(*InMessage, OutMessage);
 
                                     // CtiCommandParser parse(InMessage->Return.CommandStr);
-                                    setIlexSequenceNumber( InMessage->Buffer.InMessage[0] & 0x10 );
+                                    setIlexSequenceNumber( firstByte & 0x10 );
 
                                     if((i = exceptionScan(OutMessage, MAXPRIORITY - 4, outList)) != NORMAL)
                                     {
@@ -721,7 +720,7 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
         default:
         case ILEXNODATA:
             {
-                if(InMessage->Buffer.InMessage[0] & 0x08)
+                if(firstByte & 0x08)
                 {
                     /* update the accumulator criteria for this Remote */
                     setLastFreezeTime(CtiTime(YUKONEOT));

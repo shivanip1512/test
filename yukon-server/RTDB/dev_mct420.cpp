@@ -668,7 +668,7 @@ DlcBaseDevice::DlcCommandSPtr Mct420Device::makeHourlyReadCommand(const CtiDate 
  * so any decode that is supported by a parent class should be
  * omitted from this function.
  */
-INT Mct420Device::ModelDecode( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+INT Mct420Device::ModelDecode( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     if( !InMessage )
     {
@@ -700,7 +700,7 @@ INT Mct420Device::ModelDecode( INMESS *InMessage, CtiTime &TimeNow, CtiMessageLi
     return status;
 }
 
-int Mct420Device::decodePutConfig( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+int Mct420Device::decodePutConfig( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     int status = NoError;
     string resultString;
@@ -741,7 +741,7 @@ int Mct420Device::decodePutConfig( INMESS *InMessage, CtiTime &TimeNow, CtiMessa
 }
 
 
-int Mct420Device::decodePutConfigChannel2NetMetering( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+int Mct420Device::decodePutConfigChannel2NetMetering( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     // Execute a read to get the configuration data to be stored in dynamic pao info.
     {
@@ -786,9 +786,9 @@ string Mct420Device::decodeDisconnectStatus(const DSTRUCT &DSt) const
 }
 
 
-int Mct420Device::decodeGetConfigMeterParameters(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+int Mct420Device::decodeGetConfigMeterParameters(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
-    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
     string resultString = getName() + " / Meter Parameters:\n";
 
@@ -830,9 +830,9 @@ int Mct420Device::decodeGetConfigMeterParameters(INMESS *InMessage, CtiTime &Tim
 }
 
 
-int Mct420Device::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+int Mct420Device::decodeGetConfigModel(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
-    DSTRUCT &DSt = InMessage->Buffer.DSt;
+    const DSTRUCT &DSt = InMessage->Buffer.DSt;
 
     const unsigned revision = DSt.Message[0];
     const unsigned sspec    = DSt.Message[1] << 8 |
@@ -868,9 +868,9 @@ int Mct420Device::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, list
     return NoError;
 }
 
-int Mct420Device::decodeGetConfigOptions( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+int Mct420Device::decodeGetConfigOptions( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    DSTRUCT &DSt = InMessage->Buffer.DSt;
+    const DSTRUCT &DSt = InMessage->Buffer.DSt;
 
     const unsigned configuration  = DSt.Message[0];
     const unsigned eventMask      = DSt.Message[1] << 8 | DSt.Message[2];

@@ -37,7 +37,7 @@ public:
     MctBroadcastDevice();
     virtual ~MctBroadcastDevice();
 
-    virtual INT ResultDecode( INMESS *InMessage, CtiTime &TimeNow, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList );
+    virtual INT ResultDecode( const INMESS *InMessage, CtiTime &TimeNow, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList );
 
     virtual std::string getSQLCoreStatement() const;
 

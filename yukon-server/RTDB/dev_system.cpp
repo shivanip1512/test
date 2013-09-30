@@ -759,7 +759,7 @@ void CtiDeviceSystem::DecodeDatabaseReader(Cti::RowReader &rdr)
     Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
 }
 
-INT CtiDeviceSystem::ProcessResult(INMESS* InMessage, CtiTime& TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceSystem::ProcessResult(const INMESS* InMessage, CtiTime& TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     string resultString;
     string commandType;

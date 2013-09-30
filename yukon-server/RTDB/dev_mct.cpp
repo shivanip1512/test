@@ -851,7 +851,7 @@ INT MctDevice::LoadProfileScan(CtiRequestMsg *pReq,
 }
 
 
-INT MctDevice::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT MctDevice::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     //  extract the DynamicPaoInfo first so we have it during the decode
     extractDynamicPaoInfo(*InMessage);
@@ -914,7 +914,7 @@ INT MctDevice::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList 
 }
 
 
-INT MctDevice::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT MctDevice::ModelDecode(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 
@@ -2748,7 +2748,7 @@ INT MctDevice::executeControl(CtiRequestMsg *pReq,
 }
 
 
-INT MctDevice::decodeLoopback(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT MctDevice::decodeLoopback(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT   status = NORMAL,
           j;
@@ -2776,11 +2776,11 @@ INT MctDevice::decodeLoopback(INMESS *InMessage, CtiTime &TimeNow, CtiMessageLis
 }
 
 
-INT MctDevice::decodeGetValue(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT MctDevice::decodeGetValue(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 
-    DSTRUCT &DSt = InMessage->Buffer.DSt;
+    const DSTRUCT &DSt = InMessage->Buffer.DSt;
 
     CtiReturnMsg     *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg  *pData     = NULL;
@@ -2841,11 +2841,11 @@ INT MctDevice::decodeGetValue(INMESS *InMessage, CtiTime &TimeNow, CtiMessageLis
 }
 
 
-INT MctDevice::decodeGetConfig(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT MctDevice::decodeGetConfig(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 
-    DSTRUCT &DSt   = InMessage->Buffer.DSt;
+    const DSTRUCT &DSt   = InMessage->Buffer.DSt;
     CtiCommandParser parse(InMessage->Return.CommandStr);
 
     int min, sec, channel;
@@ -3087,11 +3087,11 @@ INT MctDevice::decodeGetConfig(INMESS *InMessage, CtiTime &TimeNow, CtiMessageLi
 }
 
 
-INT MctDevice::decodeGetStatusDisconnect(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT MctDevice::decodeGetStatusDisconnect(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 
-    DSTRUCT &DSt   = InMessage->Buffer.DSt;
+    const DSTRUCT &DSt   = InMessage->Buffer.DSt;
 
     CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg *pData = NULL;
@@ -3218,7 +3218,7 @@ INT MctDevice::decodeGetStatusDisconnect(INMESS *InMessage, CtiTime &TimeNow, Ct
 }
 
 
-INT MctDevice::decodeControl(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT MctDevice::decodeControl(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     std::auto_ptr<CtiReturnMsg> ReturnMsg(
        new CtiReturnMsg(getID(), InMessage->Return.CommandStr));
@@ -3232,7 +3232,7 @@ INT MctDevice::decodeControl(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList
 }
 
 
-INT MctDevice::decodeControlDisconnect(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT MctDevice::decodeControlDisconnect(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     std::auto_ptr<CtiReturnMsg> ReturnMsg(
        new CtiReturnMsg(getID(), InMessage->Return.CommandStr));
@@ -3291,7 +3291,7 @@ bool MctDevice::disconnectRequiresCollar() const
 }
 
 
-INT MctDevice::decodePutValue(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT MctDevice::decodePutValue(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     std::auto_ptr<CtiReturnMsg> ReturnMsg(
         new CtiReturnMsg(getID(), InMessage->Return.CommandStr));
@@ -3307,7 +3307,7 @@ INT MctDevice::decodePutValue(INMESS *InMessage, CtiTime &TimeNow, CtiMessageLis
 }
 
 
-INT MctDevice::decodePutStatus(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT MctDevice::decodePutStatus(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT   status = NORMAL,
           j;
@@ -3335,13 +3335,13 @@ INT MctDevice::decodePutStatus(INMESS *InMessage, CtiTime &TimeNow, CtiMessageLi
 }
 
 
-INT MctDevice::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT MctDevice::decodePutConfig(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT   status = NORMAL;
     ULONG pfCount = 0;
     string resultString;
     OUTMESS *OutTemplate;
-    DSTRUCT &DSt = InMessage->Buffer.DSt;
+    const DSTRUCT &DSt = InMessage->Buffer.DSt;
 
     CtiReturnMsg  *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiRequestMsg *pReq;

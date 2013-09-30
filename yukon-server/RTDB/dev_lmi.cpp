@@ -293,7 +293,7 @@ INT CtiDeviceLMI::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OU
 }
 
 
-INT CtiDeviceLMI::ResultDecode( INMESS *InMessage, CtiTime &Now, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT CtiDeviceLMI::ResultDecode( const INMESS *InMessage, CtiTime &Now, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
     INT ErrReturn = InMessage->EventCode & 0x3fff;
     list<CtiPointDataMsg*> points;
@@ -316,7 +316,7 @@ INT CtiDeviceLMI::ResultDecode( INMESS *InMessage, CtiTime &Now, list< CtiMessag
     return 0;
 }
 
-void CtiDeviceLMI::processInboundData(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, list<CtiPointDataMsg*> &points, string &info )
+void CtiDeviceLMI::processInboundData(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, list<CtiPointDataMsg*> &points, string &info )
 {
     CtiReturnMsg    *retMsg,
                     *vgMsg;

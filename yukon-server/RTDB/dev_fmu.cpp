@@ -329,7 +329,7 @@ INT CtiDeviceFMU::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
 }
 
 
-INT CtiDeviceFMU::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceFMU::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT ErrReturn = InMessage->EventCode & 0x3fff;
 
@@ -339,6 +339,8 @@ INT CtiDeviceFMU::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMes
     {
         string result_string;
 
+        unsigned long length = InMessage->InLength;
+
         //  safety first
         if( InMessage->InLength > sizeof(InMessage->Buffer.InMessage) )
         {
@@ -347,11 +349,11 @@ INT CtiDeviceFMU::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMes
                 dout << CtiTime() << " **** Checkpoint InMessage->InLength > sizeof(InMessage->Buffer.InMessage) for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
-            InMessage->InLength = sizeof(InMessage->Buffer.InMessage);
+            length = sizeof(InMessage->Buffer.InMessage);
         }
-        InMessage->Buffer.InMessage[InMessage->InLength - 1] = 0;
 
-        result_string.assign(reinterpret_cast<char *>(InMessage->Buffer.InMessage), InMessage->InLength);
+        result_string.assign(InMessage->Buffer.InMessage,
+                             InMessage->Buffer.InMessage + length);
 
         retMsg = CTIDBG_new CtiReturnMsg(getID(),
                                          string(InMessage->Return.CommandStr),

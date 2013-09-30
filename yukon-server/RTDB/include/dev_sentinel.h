@@ -36,7 +36,7 @@ public:
                     INT ScanPriority = MAXPRIORITY-4);
 
 
-   virtual INT ResultDecode(INMESS                    *InMessage,
+   virtual INT ResultDecode(const INMESS                    *InMessage,
                             CtiTime                    &TimeNow,
                             std::list< CtiMessage* > &vgList,
                             std::list< CtiMessage* > &retList,

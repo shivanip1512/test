@@ -5,7 +5,6 @@
 #include "prot_emetcon.h"
 #include "numstr.h"
 #include "porter.h"
-#include "portdecl.h"
 #include "mgr_route.h"
 
 #include <boost/bind.hpp>
@@ -132,7 +131,7 @@ INT Ccu721Device::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
 }
 
 
-INT Ccu721Device::ResultDecode( INMESS *InMessage, CtiTime &Now, list<CtiMessage *> &vgList, list<CtiMessage *> &retList, list<OUTMESS *> &outList )
+INT Ccu721Device::ResultDecode( const INMESS *InMessage, CtiTime &Now, list<CtiMessage *> &vgList, list<CtiMessage *> &retList, list<OUTMESS *> &outList )
 {
     INT ErrReturn = InMessage->EventCode & 0x3fff;
 
@@ -140,7 +139,7 @@ INT Ccu721Device::ResultDecode( INMESS *InMessage, CtiTime &Now, list<CtiMessage
     {
         retList.push_back(CTIDBG_new CtiReturnMsg(getID(),
                                                   string(InMessage->Return.CommandStr),
-                                                  string((char *)(InMessage->Buffer.InMessage + InMessage_StringOffset)),
+                                                  string((const char *)(InMessage->Buffer.InMessage + InMessage_StringOffset)),
                                                   InMessage->EventCode & 0x7fff,
                                                   InMessage->Return.RouteID,
                                                   InMessage->Return.MacroOffset,

@@ -158,7 +158,7 @@ INT CtiDeviceMarkV::LoadProfileScan( CtiRequestMsg              *pReq,
 //=====================================================================================================================
 //=====================================================================================================================
 
-INT CtiDeviceMarkV::ResultDecode( INMESS                    *InMessage,
+INT CtiDeviceMarkV::ResultDecode( const INMESS               *InMessage,
                                   CtiTime                    &TimeNow,
                                   list< CtiMessage* > &vgList,
                                   list< CtiMessage* > &retList,
@@ -255,7 +255,7 @@ INT CtiDeviceMarkV::ErrorDecode( const INMESS        &InMessage,
 // point data messages and stick those into the retlist for shipping back to ... dispatch?
 //=====================================================================================================================
 
-int CtiDeviceMarkV::decodeResultScan( INMESS                    *InMessage,
+int CtiDeviceMarkV::decodeResultScan( const INMESS               *InMessage,
                                       CtiTime                    &TimeNow,
                                       list< CtiMessage* > &vgList,
                                       list< CtiMessage* > &retList,

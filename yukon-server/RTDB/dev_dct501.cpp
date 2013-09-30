@@ -326,7 +326,7 @@ bool Dct501Device::calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS
  *  would be a child whose decode was identical to the parent, but whose request was done differently..
  *  This MAY be the case for example in an IED scan.
  */
-INT Dct501Device::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Dct501Device::ModelDecode(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
@@ -370,7 +370,7 @@ INT Dct501Device::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
 }
 
 
-INT Dct501Device::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Dct501Device::decodeGetValueDemand(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
     INT pnt_offset, byte_offset;
@@ -382,7 +382,7 @@ INT Dct501Device::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, list
     string resultString;
 
     INT ErrReturn  = InMessage->EventCode & 0x3fff;
-    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt = &InMessage->Buffer.DSt;
 
     DOUBLE Value;
     CtiPointNumericSPtr   pPoint;
@@ -492,11 +492,11 @@ INT Dct501Device::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, list
 }
 
 
-INT Dct501Device::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Dct501Device::decodeScanLoadProfile(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     int status = NORMAL;
 
-    DSTRUCT *DSt  = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
     string val_report, result_string;
 
@@ -681,12 +681,11 @@ INT Dct501Device::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, lis
 }
 
 
-INT Dct501Device::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Dct501Device::decodeGetConfigModel(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
-    INT ErrReturn  = InMessage->EventCode & 0x3fff;
-    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt = &InMessage->Buffer.DSt;
 
     INT ssp;
     char rev;

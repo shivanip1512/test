@@ -471,7 +471,7 @@ INT Mct31xDevice::executePutValue(CtiRequestMsg *pReq, CtiCommandParser &parse, 
 }
 
 
-INT Mct31xDevice::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct31xDevice::ModelDecode(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 
@@ -572,13 +572,13 @@ INT Mct31xDevice::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, CtiMessageLis
 }
 
 
-INT Mct31xDevice::decodeStatus(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool expectMore)
+INT Mct31xDevice::decodeStatus(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool expectMore)
 {
     INT status = NORMAL;
     USHORT SaveCount;
     string resultString;
 
-    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
     DOUBLE Value;
 
@@ -651,7 +651,7 @@ INT Mct31xDevice::decodeStatus(INMESS *InMessage, CtiTime &TimeNow, CtiMessageLi
 }
 
 
-INT Mct31xDevice::decodeGetStatusIED(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct31xDevice::decodeGetStatusIED(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
     INT pid, rateOffset;
@@ -660,7 +660,7 @@ INT Mct31xDevice::decodeGetStatusIED(INMESS *InMessage, CtiTime &TimeNow, CtiMes
     ULONG lValue;
 
     INT ErrReturn = InMessage->EventCode & 0x3fff;
-    DSTRUCT *DSt  = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
     CtiCommandParser parse( InMessage->Return.CommandStr );
 
@@ -926,26 +926,17 @@ INT Mct31xDevice::decodeGetStatusIED(INMESS *InMessage, CtiTime &TimeNow, CtiMes
 }
 
 
-INT Mct31xDevice::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct31xDevice::decodeGetConfigIED(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
-    INT pid, rateOffset;
-    string resultString, name, ratename;
+    string resultString;
 
-    ULONG lValue;
-
-    INT ErrReturn = InMessage->EventCode & 0x3fff;
-    DSTRUCT *DSt  = &InMessage->Buffer.DSt;
+    std::auto_ptr<DSTRUCT> DSt(
+        new DSTRUCT(InMessage->Buffer.DSt));
 
     CtiCommandParser parse( InMessage->Return.CommandStr );
 
-    DOUBLE demandValue, Value;
-    CtiTime timestamp;
-    CtiDate datestamp;
-    CtiPointSPtr    pPoint;
-    CtiPointSPtr    pDemandPoint;
     CtiReturnMsg    *ReturnMsg    = NULL;    // Message sent to VanGogh, inherits from Multi
-    CtiPointDataMsg *pData        = NULL;
 
     if( getMCTDebugLevel(DebugLevel_Scanrates) )
     {
@@ -1193,7 +1184,7 @@ INT Mct31xDevice::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, CtiMes
 }
 
 
-INT Mct31xDevice::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct31xDevice::decodeGetValueIED(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
     INT pid, rateOffset;
@@ -1201,8 +1192,8 @@ INT Mct31xDevice::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, CtiMess
 
     ULONG lValue;
 
-    INT ErrReturn = InMessage->EventCode & 0x3fff;
-    DSTRUCT *DSt  = &InMessage->Buffer.DSt;
+    std::auto_ptr<DSTRUCT> DSt(
+        new DSTRUCT(InMessage->Buffer.DSt));
 
     CtiCommandParser parse( InMessage->Return.CommandStr );
 
@@ -2031,7 +2022,7 @@ INT Mct31xDevice::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, CtiMess
 }
 
 
-INT Mct31xDevice::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct31xDevice::decodeGetValueKWH(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
     INT pid;
@@ -2040,7 +2031,7 @@ INT Mct31xDevice::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, CtiMess
     ULONG accums[3];
 
     INT ErrReturn = InMessage->EventCode & 0x3fff;
-    DSTRUCT *DSt  = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
     DOUBLE Value;
     CtiPointSPtr    pPoint;
@@ -2117,7 +2108,7 @@ INT Mct31xDevice::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, CtiMess
 }
 
 
-INT Mct31xDevice::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct31xDevice::decodeGetValueDemand(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
     INT pnt_offset, byte_offset;
@@ -2125,7 +2116,7 @@ INT Mct31xDevice::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, CtiM
     INT pid;
     string resultString;
 
-    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
     int demand_rate;
     unsigned long pulses;
@@ -2240,13 +2231,13 @@ INT Mct31xDevice::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, CtiM
 }
 
 
-INT Mct31xDevice::decodeGetValuePeak(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct31xDevice::decodeGetValuePeak(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     int       status = NORMAL;
     double    Value;
     string resultString;
 
-    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
     CtiPointSPtr         pPoint;
     CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
@@ -2321,11 +2312,11 @@ INT Mct31xDevice::decodeGetValuePeak(INMESS *InMessage, CtiTime &TimeNow, CtiMes
 }
 
 
-INT Mct31xDevice::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct31xDevice::decodeScanLoadProfile(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     int status = NORMAL;
 
-    DSTRUCT *DSt  = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
     string val_report, result_string;
 

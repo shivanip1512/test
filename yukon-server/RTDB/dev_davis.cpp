@@ -190,11 +190,11 @@ INT CtiDeviceDavis::generateScan(CtiRequestMsg *pReq, CtiCommandParser &parse, O
 
 
 /* Routine to decode returned Davis message and update database */
-INT CtiDeviceDavis::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* >   &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceDavis::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* >   &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     /* Misc. definitions */
     ULONG i;
-    PCHAR MyInMessage;
+    const char *MyInMessage;
 
     /* Variables for decoding Davis Message */
     DOUBLE PValue;
@@ -220,7 +220,7 @@ INT CtiDeviceDavis::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
     ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
 
-    MyInMessage = (PCHAR)(InMessage->Buffer.InMessage + 2);
+    MyInMessage = (const PCHAR)(InMessage->Buffer.InMessage + 2);
 
     /* Walk through the points and decode them */
     for (i = 1; i <= 8; i++)
@@ -246,42 +246,42 @@ INT CtiDeviceDavis::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
             {
                 case 1:
                     /* Inside Temperature */
-                    PValue = InsideTempF = (DOUBLE) *((PSHORT)(MyInMessage)) / 10.0;
+                    PValue = InsideTempF = (DOUBLE) *((const PSHORT)(MyInMessage)) / 10.0;
                     break;
 
                 case 2:
                     /* Outside Temperature */
-                    PValue = OutsideTempF = (DOUBLE) *((PSHORT)(MyInMessage + 2)) / 10.0;
+                    PValue = OutsideTempF = (DOUBLE) *((const PSHORT)(MyInMessage + 2)) / 10.0;
                     break;
 
                 case 3:
                     /* Wind Speed */
-                    PValue = WindSpeedMPH = (DOUBLE) *((PBYTE)(MyInMessage + 4));
+                    PValue = WindSpeedMPH = (DOUBLE) *((const PBYTE)(MyInMessage + 4));
                     break;
 
                 case 4:
                     /* Wind Direction */
-                    PValue = (DOUBLE) *((PSHORT)(MyInMessage + 5));
+                    PValue = (DOUBLE) *((const PSHORT)(MyInMessage + 5));
                     break;
 
                 case 5:
                     /* Barometer */
-                    PValue = BarometerInches = (DOUBLE) *((PSHORT)(MyInMessage + 7)) / 1000.0;
+                    PValue = BarometerInches = (DOUBLE) *((const PSHORT)(MyInMessage + 7)) / 1000.0;
                     break;
 
                 case 6:
                     /* Inside Humidity */
-                    PValue = InsideHumidity = (DOUBLE) *((PBYTE)(MyInMessage + 9));
+                    PValue = InsideHumidity = (DOUBLE) *((const PBYTE)(MyInMessage + 9));
                     break;
 
                 case 7:
                     /* Outside Humidity */
-                    PValue = OutsideHumidity = (DOUBLE) *((PBYTE)(MyInMessage + 10));
+                    PValue = OutsideHumidity = (DOUBLE) *((const PBYTE)(MyInMessage + 10));
                     break;
 
                 case 8:
                     /* Total Rain */
-                    PValue = (DOUBLE) *((PSHORT)(MyInMessage + 11)) / 100.0;
+                    PValue = (DOUBLE) *((const PSHORT)(MyInMessage + 11)) / 100.0;
                     break;
             }
 

@@ -185,7 +185,7 @@ INT CtiDeviceLCU::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OU
     return( GeneralScan(pReq, parse, OutMessage, vgList, retList, outList, ScanPriority) );
 }
 
-INT CtiDeviceLCU::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceLCU::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     return lcuDecode(InMessage, TimeNow, vgList, retList, outList);
 }
@@ -325,7 +325,7 @@ INT CtiDeviceLCU::lcuScanExternalStatus(OUTMESS *&OutMessage)
     return(status);
 }
 
-INT CtiDeviceLCU::lcuDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceLCU::lcuDecode(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = InMessage->EventCode & 0x7fff;
 
@@ -805,7 +805,7 @@ INT CtiDeviceLCU::lcuLoop(OUTMESS *&OutMessage)
 }
 
 
-CtiReturnMsg* CtiDeviceLCU::lcuDecodeDigitalInputs(INMESS *InMessage)
+CtiReturnMsg* CtiDeviceLCU::lcuDecodeDigitalInputs(const INMESS *InMessage)
 {
     ULONG      i;
     string  resultString;
@@ -955,7 +955,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeDigitalInputs(INMESS *InMessage)
     return pPIL;
 }
 
-CtiReturnMsg* CtiDeviceLCU::lcuDecodeStatus(INMESS *InMessage)
+CtiReturnMsg* CtiDeviceLCU::lcuDecodeStatus(const INMESS *InMessage)
 {
     ULONG      i;
     string  resultString;
@@ -1045,7 +1045,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeStatus(INMESS *InMessage)
     return pPIL;
 }
 
-CtiReturnMsg* CtiDeviceLCU::lcuDecodeAccumulators(INMESS *InMessage, list< OUTMESS* > &outList)
+CtiReturnMsg* CtiDeviceLCU::lcuDecodeAccumulators(const INMESS *InMessage, list< OUTMESS* > &outList)
 {
     ULONG      i;
     string  resultString;
@@ -1182,7 +1182,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeAccumulators(INMESS *InMessage, list< OUTME
     return pPIL;
 }
 
-CtiReturnMsg* CtiDeviceLCU::lcuDecodeAnalogs(INMESS *InMessage)
+CtiReturnMsg* CtiDeviceLCU::lcuDecodeAnalogs(const INMESS *InMessage)
 {
     ULONG      i;
     string  resultString;
@@ -1725,7 +1725,7 @@ CtiDeviceLCU::CtiLCUType_t   CtiDeviceLCU::getLCUType() const
  *  This method could stand some attention.  The behavior should be what was, but was that ever correct?  Will lockout happen on an inhibit?
  *  Does the database care about lockout?
  */
-void CtiDeviceLCU::verifyControlLockoutState(INMESS *InMessage)
+void CtiDeviceLCU::verifyControlLockoutState(const INMESS *InMessage)
 {
     if(_lcuType == LCU_LANDG || _lcuType == LCU_STANDARD)
     {
@@ -1757,7 +1757,7 @@ void CtiDeviceLCU::verifyControlLockoutState(INMESS *InMessage)
     }
 }
 
-bool CtiDeviceLCU::isLCUAlarmed( INMESS *InMessage )
+bool CtiDeviceLCU::isLCUAlarmed( const INMESS *InMessage )
 {
     bool bAlarmed = false;
 
@@ -1809,7 +1809,7 @@ CtiDeviceLCU& CtiDeviceLCU::operator=(const CtiDeviceLCU& aRef)
  *   This is a porter side decode used only when the OutMessage sent was RIPPLE'd and a control!
  *   It makes him pound the LCU into submission!
  */
-INT CtiDeviceLCU::lcuFastScanDecode(OUTMESS *&OutMessage, INMESS *InMessage, CtiLCUResult_t &resultCode, bool globalControlAvailable, list< CtiMessage* >  &vgList)
+INT CtiDeviceLCU::lcuFastScanDecode(OUTMESS *&OutMessage, const INMESS *InMessage, CtiLCUResult_t &resultCode, bool globalControlAvailable, list< CtiMessage* >  &vgList)
 {
     INT status = NORMAL;
     CtiTime now;
@@ -1995,7 +1995,7 @@ bool CtiDeviceLCU::isLCULockedOut( ) const
     return (_lockedOut || getControlInhibit());
 }
 
-bool CtiDeviceLCU::isLCULockedOut( INMESS *InMessage )
+bool CtiDeviceLCU::isLCULockedOut( const INMESS *InMessage )
 {
     if( _lcuType == LCU_LANDG || _lcuType == LCU_STANDARD )
     {

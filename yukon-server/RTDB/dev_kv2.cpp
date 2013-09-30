@@ -154,8 +154,8 @@ INT CtiDeviceKV2::DemandReset( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << "pswdTemp "<<pswdTemp<< endl;
     }
-    BYTE *temp;
-    temp = (BYTE *)pswdTemp.c_str();
+    const BYTE *temp;
+    temp = (const BYTE *)pswdTemp.c_str();
     struct CHexMap
     {
         char c;
@@ -374,7 +374,7 @@ INT CtiDeviceKV2::ExecuteRequest( CtiRequestMsg         *pReq,
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-INT CtiDeviceKV2::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list < CtiMessage* >&retList,
+INT CtiDeviceKV2::ResultDecode( const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list < CtiMessage* >&retList,
                                 list< OUTMESS* >    &outList)
 {
     CtiReturnMsg *retMsg = NULL;
@@ -448,8 +448,8 @@ INT CtiDeviceKV2::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
             //if (InMessage->EventCode == NORMAL)
             //if (findStringIgnoreCase(inMsgResultString, "successful"))
             {
-                unsigned long *lastLpTime;
-                lastLpTime =  (unsigned long *)InMessage->Buffer.InMessage;
+                const unsigned long *lastLpTime;
+                lastLpTime =  (const unsigned long *)InMessage->Buffer.InMessage;
 
                 if (lastLpTime != NULL && *lastLpTime != 0)
                 {
@@ -604,8 +604,8 @@ int CtiDeviceKV2::buildScannerTableRequest (BYTE *aMsg, UINT flags)
     for (int aa = 0; aa < 20; aa++)
         password[aa] = 0;
 
-    BYTE *temp;
-    temp = (BYTE *)pswdTemp.c_str();
+    const BYTE *temp;
+    temp = (const BYTE *)pswdTemp.c_str();
     for (int aa = 0; aa < pswdTemp.length(); aa++)
         password[aa] = *(temp + aa);
 
@@ -698,8 +698,8 @@ int CtiDeviceKV2::buildCommanderTableRequest (BYTE *aMsg, UINT flags)
     for (int aa = 0; aa < 20; aa++)
         password[aa] = 0;
 
-    BYTE *temp;
-    temp = (BYTE *)pswdTemp.c_str();
+    const BYTE *temp;
+    temp = (const BYTE *)pswdTemp.c_str();
     for (int aa = 0; aa < pswdTemp.length(); aa++)
         password[aa] = *(temp + aa);
 

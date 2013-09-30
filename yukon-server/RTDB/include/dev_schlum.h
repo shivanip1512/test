@@ -129,7 +129,7 @@ public:
                            std::list< CtiMessage* > &retList,
                            std::list< OUTMESS* > &outList,
                            INT ScanPriority = MAXPRIORITY - 4);
-   virtual INT ResultDecode(INMESS *InMessage,
+   virtual INT ResultDecode(const INMESS *InMessage,
                             CtiTime &TimeNow,
                             std::list< CtiMessage* >   &vgList,
                             std::list< CtiMessage* > &retList,
@@ -158,8 +158,8 @@ public:
                                        ULONG CA,     // Current Address
                                        ULONG MA,     // Maximum Address
                                        ULONG RS);    // Record Size
-   ULONG    bytesToBase10 (UCHAR* buffer, ULONG len);
-   LONG     nibblesAndBits (BYTE* bptr, INT MaxChannel, INT Channel, INT Interval);
+   ULONG    bytesToBase10 (const UCHAR* buffer, ULONG len);
+   LONG     nibblesAndBits (const unsigned char *bptr, INT MaxChannel, INT Channel, INT Interval);
 
    INT fillUploadTransferObject (CtiXfer  &aTransfer, ULONG aStartAddress, ULONG aStopAddress);
    INT checkReturnMsg(CtiXfer  &Transfer,INT       commReturnValue);

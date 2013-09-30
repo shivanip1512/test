@@ -37,8 +37,8 @@ public:
 
    INT WelCoDeadBands   (OUTMESS *OutMessage, std::list< OUTMESS* > &outList, INT Priority);
 
-   INT WelCoDeadBands   (INMESS  *InMessage,  std::list< OUTMESS* > &outList, INT Priority);
-   INT WelCoTimeSync    (INMESS  *InMessage,  std::list< OUTMESS* > &outList, INT Priority);
+   INT WelCoDeadBands   (const INMESS  *InMessage,  std::list< OUTMESS* > &outList, INT Priority);
+   INT WelCoTimeSync    (const INMESS  *InMessage,  std::list< OUTMESS* > &outList, INT Priority);
 
    bool getDeadbandsSent() const;
    void incDeadbandsSent();
@@ -74,7 +74,7 @@ public:
                            const CtiTime      TimeNow,
                            std::list<CtiMessage*> &retList);
 
-   virtual INT ResultDecode(INMESS*,
+   virtual INT ResultDecode(const INMESS*,
                             CtiTime&,
                             std::list< CtiMessage* >   &vgList,
                             std::list< CtiMessage* > &retList,

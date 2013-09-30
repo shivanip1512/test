@@ -174,8 +174,8 @@ public:
     virtual INT  IntegrityScan  (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority = 11);
     virtual INT  AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority = 12);
     virtual INT  LoadProfileScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority = 6);
-    virtual INT  ResultDecode (INMESS*, CtiTime&, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
-    virtual INT  ProcessResult(INMESS*, CtiTime&, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
+    virtual INT  ResultDecode (const INMESS*, CtiTime&, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
+    virtual INT  ProcessResult(const INMESS*, CtiTime&, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
 
     bool executeBackgroundRequest(const std::string &commandString, const OUTMESS &OutMessageTemplate, OutMessageList &outList);
 
@@ -214,7 +214,41 @@ public:
     {
         return executer.execute(*this);
     }
+/*
+    struct ResultProcessor
+    {
+        CtiMessageList vgList;
+        CtiMessageList retList;
 
+        ResultProcessor(CtiRequestMsg *pReq_, CtiCommandParser &parse_) :
+            pReq (pReq_),
+            parse(parse_)
+        {}
+
+        virtual int process(CtiDeviceBase &dev) = 0;
+        virtual int process(Cti::Devices::RfnDevice &dev) = 0;  //  defined in dev_rfn.h
+    };
+
+    struct InMessageProcessor : virtual ResultProcessor
+    {
+        OutMessageList outList;
+
+        InMessageProcessor(CtiRequestMsg *pReq_, CtiCommandParser &parse_) :
+            InMessage(InMess)
+            ResultProcessor(pReq_, parse_)
+        {}
+
+        virtual int process(CtiDeviceBase &dev)
+        {
+            return dev.ProcessResult(InMessage, now, vgList, retList, outList);
+        }
+    };
+
+    virtual int involeResultProcessor(ResultProcessor &processor)
+    {
+        return processor.process(*this);
+    }
+*/
     // This is a preprocessing method which calls ExecuteRequest.
     INT beginExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
     INT beginExecuteRequestFromTemplate(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, const OUTMESS *OutTemplate);

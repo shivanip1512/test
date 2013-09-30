@@ -490,7 +490,7 @@ INT CtiDeviceAlpha::freeDataBins  ()
 }
 
 
-INT CtiDeviceAlpha::ResultDecode(INMESS *InMessage,
+INT CtiDeviceAlpha::ResultDecode(const INMESS *InMessage,
                                  CtiTime &TimeNow,
                                  list< CtiMessage* >   &vgList,
                                  list< CtiMessage* > &retList,

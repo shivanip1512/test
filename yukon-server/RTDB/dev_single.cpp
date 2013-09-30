@@ -17,6 +17,7 @@
 #include "pt_status.h"
 #include "dllyukon.h"
 #include "exceptions.h"
+#include "prot_base.h"
 
 using namespace std;
 
@@ -776,7 +777,7 @@ std::string CtiDeviceSingle::eWordReport(const ESTRUCT &ESt, Cti::Optional<repea
 }
 
 
-INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
+INT CtiDeviceSingle::ProcessResult(const INMESS *InMessage,
                                    CtiTime &TimeNow,
                                    list< CtiMessage* >   &vgList,
                                    list< CtiMessage* > &retList,
@@ -801,7 +802,7 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
             std::transform(CmdStr.begin(), CmdStr.end(), CmdStr.begin(), ::tolower);
         }
 
-        if( processAdditionalRoutes( InMessage ) )                      // InMessage->Return.MacroOffset != 0)
+        if( processAdditionalRoutes(InMessage, nRet) )
         {
             OUTMESS *OutTemplate = CTIDBG_new OUTMESS;
 
@@ -1817,7 +1818,7 @@ CtiTime CtiDeviceSingle::peekDispatchTime() const
     return dispatchTime;
 }
 
-bool CtiDeviceSingle::processAdditionalRoutes( INMESS *InMessage ) const
+bool CtiDeviceSingle::processAdditionalRoutes( const INMESS *InMessage, int nRet ) const
 {
     return false;
 }

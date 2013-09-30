@@ -598,12 +598,12 @@ INT CtiDeviceBase::LoadProfileScan(CtiRequestMsg *pReq, CtiCommandParser &parse,
     return NoLoadProfileScanMethod;
 }
 
-INT CtiDeviceBase::ResultDecode(INMESS*, CtiTime&, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT CtiDeviceBase::ResultDecode(const INMESS*, CtiTime&, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     return NoResultDecodeMethod;
 }
 
-INT CtiDeviceBase::ProcessResult(INMESS*, CtiTime&, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT CtiDeviceBase::ProcessResult(const INMESS*, CtiTime&, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     return NoProcessResultMethod;
 }

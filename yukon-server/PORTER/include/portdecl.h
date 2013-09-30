@@ -74,6 +74,6 @@ INT IDLCRCont(CtiDeviceSPtr &pDev);
 
 /* Prototypes from RIPPLE.C */
 INT LCUPreSend (OUTMESS *&, CtiDeviceSPtr );
-INT LCUResultDecode (OUTMESS *, INMESS *, CtiDeviceSPtr , ULONG, bool mayqueuescans);
+INT LCUResultDecode (OUTMESS *, const INMESS *, CtiDeviceSPtr , ULONG, bool mayqueuescans);
 INT MPCPointSet( int status, CtiDeviceBase *dev, bool setter );
 

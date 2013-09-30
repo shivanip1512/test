@@ -14,9 +14,15 @@
 #include "tbl_dv_scandata.h"
 #include "tbl_dv_wnd.h"
 #include "connection.h"
-#include "prot_base.h"
+#include "xfer.h"
 
 class CtiVerificationBase;  //  this is so boost_time.h isn't included via verification_objects.h - for now
+
+namespace Cti {
+namespace Protocol {
+    class Interface;
+}
+}
 
 /*
  *  A Single (as opposed to group) device entity which is physical device!
@@ -195,7 +201,7 @@ public:
     virtual void getVerificationObjects(std::queue< CtiVerificationBase * > &work_queue);
     virtual void getQueuedResults(std::vector<queued_result_t> &results);
 
-    virtual INT  ProcessResult(INMESS*,
+    virtual INT  ProcessResult(const INMESS*,
                                CtiTime&,
                                std::list< CtiMessage* > &vgList,
                                std::list< CtiMessage* > &retList,
@@ -245,7 +251,7 @@ public:
 
     virtual bool clearedForScan(int scantype);
     virtual void resetForScan(int scantype);
-    virtual bool processAdditionalRoutes( INMESS *InMessage ) const;
+    virtual bool processAdditionalRoutes( const INMESS *InMessage, int nRet ) const;
     virtual bool hasLongScanRate(const std::string &cmd) const;
 
     CtiTime getNextWindowOpen() const;

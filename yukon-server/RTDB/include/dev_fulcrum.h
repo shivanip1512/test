@@ -251,19 +251,19 @@ public:
 
    virtual INT allocateDataBins (OUTMESS *outMess);
 
-   virtual INT decodeResultScan ( INMESS *InMessage,
+   virtual INT decodeResultScan ( const INMESS *InMessage,
                           CtiTime &TimeNow,
                           std::list< CtiMessage* >   &vgList,
                           std::list< CtiMessage* > &retList,
                           std::list< OUTMESS* > &outList);
 
-   virtual INT decodeResultLoadProfile ( INMESS *InMessage,
+   virtual INT decodeResultLoadProfile ( const INMESS *InMessage,
                                  CtiTime &TimeNow,
                                  std::list< CtiMessage* >   &vgList,
                                  std::list< CtiMessage* > &retList,
                                  std::list< OUTMESS* > &outList);
 
-   BOOL getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, CtiTime &peak,  FulcrumScanData_t *aScanData);
-   INT ResultDisplay (INMESS *InMessage);
+   BOOL getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, CtiTime &peak, const FulcrumScanData_t *aScanData);
+   INT ResultDisplay (const INMESS *InMessage);
 };
 

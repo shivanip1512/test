@@ -302,12 +302,12 @@ public:
    void checkStreamForTimeout(INT protocolreturn, CtiXfer &Transfer);
 
    virtual INT GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList, INT ScanPriority);
-   virtual INT ResultDecode(INMESS *InMessage, CtiTime &TimeNow, std::list< CtiMessage* >   &vgList,  std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
+   virtual INT ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, std::list< CtiMessage* >   &vgList,  std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
    virtual INT ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, std::list< CtiMessage* > &retList);
    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
 
-   INT decodeResultLoadProfile(INMESS *InMessage,CtiTime &TimeNow, std::list< CtiMessage* >   &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
-   INT decodeResultScan(INMESS *InMessage, CtiTime &TimeNow, std::list< CtiMessage* >   &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
+   INT decodeResultLoadProfile(const INMESS *InMessage,CtiTime &TimeNow, std::list< CtiMessage* >   &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
+   INT decodeResultScan(const INMESS *InMessage, CtiTime &TimeNow, std::list< CtiMessage* >   &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
 
 };

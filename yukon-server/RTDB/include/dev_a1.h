@@ -515,7 +515,7 @@ public:
    }
 
    // all routines required by base class dev_meter
-   virtual INT ResultDisplay (INMESS *InMessage);
+   virtual INT ResultDisplay (const INMESS *InMessage);
    virtual INT reformatDataBuffer (BYTE *aInMessBuffer, ULONG &aBytesReceived);
    virtual INT copyLoadProfileData(BYTE *aInMessBuffer, ULONG &aTotalBytes);
    virtual INT allocateDataBins (OUTMESS *outMess);
@@ -533,29 +533,29 @@ public:
    virtual INT decodeResponseScan (CtiXfer  &Transfer, INT commReturnValue, std::list< CtiMessage* > &traceList);
    virtual INT decodeResponseLoadProfile (CtiXfer  &Transfer, INT commReturnValue, std::list< CtiMessage* > &traceList);
 
-   virtual INT decodeResultLoadProfile (INMESS *InMessage, CtiTime &TimeNow, std::list< CtiMessage* >   &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
-   virtual INT decodeResultScan (INMESS *InMessage, CtiTime &TimeNow, std::list< CtiMessage* >   &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
+   virtual INT decodeResultLoadProfile (const INMESS *InMessage, CtiTime &TimeNow, std::list< CtiMessage* >   &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
+   virtual INT decodeResultScan (const INMESS *InMessage, CtiTime &TimeNow, std::list< CtiMessage* >   &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
 
    INT   getA1ClassOffset(UINT Key, void *ptr);
    INT   getA1FuncOffset(UINT Key, void *ptr);
 
-   LONG findLPDataPoint (AlphaLPPointInfo_t &point, USHORT aMapping, AlphaA1Class14Real_t &class14);
+   LONG findLPDataPoint (AlphaLPPointInfo_t &point, USHORT aMapping, const AlphaA1Class14Real_t &class14);
 
-   BOOL getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, CtiTime &peak, AlphaA1ScanData_t *aScanData);
+   BOOL getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, CtiTime &peak, const AlphaA1ScanData_t *aScanData);
 
-   BOOL getRateValueFromBlock (DOUBLE &aValue, USHORT aValueType,USHORT aBlockMapping, USHORT aRate, CtiTime &aPeak,  AlphaA1ScanData_t *data);
-   BOOL getDemandValueFromBlock1 (DOUBLE &aValue, USHORT aRate, CtiTime &aPeak, AlphaA1ScanData_t *aScanData);
-   BOOL getDemandValueFromBlock2 (DOUBLE &aValue, USHORT aRate, CtiTime &aPeak, AlphaA1ScanData_t *aScanData);
-   BOOL getDemandValueFromBlock3 (DOUBLE &aValue, USHORT aRate, CtiTime &aPeak, AlphaA1ScanData_t *aScanData);
-   BOOL getDemandValueFromBlock4 (DOUBLE &aValue, USHORT aRate, CtiTime &aPeak, AlphaA1ScanData_t *aScanData);
-   BOOL getDemandValueFromBlock5 (DOUBLE &aValue, USHORT aRate, CtiTime &aPeak, AlphaA1ScanData_t *aScanData);
-   BOOL getDemandValueFromBlock6 (DOUBLE &aValue, USHORT aRate, CtiTime &aPeak, AlphaA1ScanData_t *aScanData);
-   BOOL getEnergyValueFromBlock1 (DOUBLE &aValue, USHORT aRate, CtiTime &aPeak, AlphaA1ScanData_t *aScanData);
-   BOOL getEnergyValueFromBlock2 (DOUBLE &aValue, USHORT aRate, CtiTime &aPeak, AlphaA1ScanData_t *aScanData);
-   BOOL getEnergyValueFromBlock3 (DOUBLE &aValue, USHORT aRate, CtiTime &aPeak, AlphaA1ScanData_t *aScanData);
-   BOOL getEnergyValueFromBlock4 (DOUBLE &aValue, USHORT aRate, CtiTime &aPeak, AlphaA1ScanData_t *aScanData);
-   BOOL getEnergyValueFromBlock5 (DOUBLE &aValue, USHORT aRate, CtiTime &aPeak, AlphaA1ScanData_t *aScanData);
-   BOOL getEnergyValueFromBlock6 (DOUBLE &aValue, USHORT aRate, CtiTime &aPeak, AlphaA1ScanData_t *aScanData);
+   BOOL getRateValueFromBlock (DOUBLE &aValue, USHORT aValueType,USHORT aBlockMapping, USHORT aRate, CtiTime &aPeak,  const AlphaA1ScanData_t *data);
+   BOOL getDemandValueFromBlock1 (DOUBLE &aValue, USHORT aRate, CtiTime &aPeak, const AlphaA1ScanData_t *aScanData);
+   BOOL getDemandValueFromBlock2 (DOUBLE &aValue, USHORT aRate, CtiTime &aPeak, const AlphaA1ScanData_t *aScanData);
+   BOOL getDemandValueFromBlock3 (DOUBLE &aValue, USHORT aRate, CtiTime &aPeak, const AlphaA1ScanData_t *aScanData);
+   BOOL getDemandValueFromBlock4 (DOUBLE &aValue, USHORT aRate, CtiTime &aPeak, const AlphaA1ScanData_t *aScanData);
+   BOOL getDemandValueFromBlock5 (DOUBLE &aValue, USHORT aRate, CtiTime &aPeak, const AlphaA1ScanData_t *aScanData);
+   BOOL getDemandValueFromBlock6 (DOUBLE &aValue, USHORT aRate, CtiTime &aPeak, const AlphaA1ScanData_t *aScanData);
+   BOOL getEnergyValueFromBlock1 (DOUBLE &aValue, USHORT aRate, CtiTime &aPeak, const AlphaA1ScanData_t *aScanData);
+   BOOL getEnergyValueFromBlock2 (DOUBLE &aValue, USHORT aRate, CtiTime &aPeak, const AlphaA1ScanData_t *aScanData);
+   BOOL getEnergyValueFromBlock3 (DOUBLE &aValue, USHORT aRate, CtiTime &aPeak, const AlphaA1ScanData_t *aScanData);
+   BOOL getEnergyValueFromBlock4 (DOUBLE &aValue, USHORT aRate, CtiTime &aPeak, const AlphaA1ScanData_t *aScanData);
+   BOOL getEnergyValueFromBlock5 (DOUBLE &aValue, USHORT aRate, CtiTime &aPeak, const AlphaA1ScanData_t *aScanData);
+   BOOL getEnergyValueFromBlock6 (DOUBLE &aValue, USHORT aRate, CtiTime &aPeak, const AlphaA1ScanData_t *aScanData);
    USHORT getOffsetMapping (int aOffset);
    USHORT getRate (int aOffset);
    //INT ResultFailureDisplay (INT FailError);  apparently unused  2001-oct-04 mskf

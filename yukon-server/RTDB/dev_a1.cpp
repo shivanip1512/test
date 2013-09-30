@@ -1714,7 +1714,7 @@ INT CtiDeviceAlphaA1::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commRet
 
 
 
-INT CtiDeviceAlphaA1::decodeResultScan   (INMESS *InMessage,
+INT CtiDeviceAlphaA1::decodeResultScan   (const INMESS *InMessage,
                                           CtiTime &TimeNow,
                                           list< CtiMessage* >   &vgList,
                                           list< CtiMessage* > &retList,
@@ -1737,7 +1737,7 @@ INT CtiDeviceAlphaA1::decodeResultScan   (INMESS *InMessage,
     FLOAT    PartHour;
     DOUBLE   PValue;
 
-    DIALUPREPLY        *DUPRep       = &InMessage->Buffer.DUPSt.DUPRep;
+    const DIALUPREPLY  *DUPRep   = &InMessage->Buffer.DUPSt.DUPRep;
 
     CtiPointDataMsg    *pData    = NULL;
     CtiPointNumericSPtr pNumericPoint;
@@ -1751,7 +1751,7 @@ INT CtiDeviceAlphaA1::decodeResultScan   (INMESS *InMessage,
                                             InMessage->Return.Attempt,
                                             InMessage->Return.GrpMsgID,
                                             InMessage->Return.UserID);
-    AlphaA1ScanData_t  *ptr = (AlphaA1ScanData_t *)DUPRep->Message;
+    const AlphaA1ScanData_t *ptr = (const AlphaA1ScanData_t *)DUPRep->Message;
     CtiTime peakTime;
 
     // here is the class we requested
@@ -1891,7 +1891,7 @@ INT CtiDeviceAlphaA1::decodeResultScan   (INMESS *InMessage,
     return(NORMAL);
 }
 
-INT CtiDeviceAlphaA1::decodeResultLoadProfile (INMESS *InMessage,
+INT CtiDeviceAlphaA1::decodeResultLoadProfile (const INMESS *InMessage,
                                                CtiTime &TimeNow,
                                                list< CtiMessage* >   &vgList,
                                                list< CtiMessage* > &retList,
@@ -1899,9 +1899,9 @@ INT CtiDeviceAlphaA1::decodeResultLoadProfile (INMESS *InMessage,
 {
 
     int retCode = NORMAL;
-    DIALUPREPLY *DUPRep = &InMessage->Buffer.DUPSt.DUPRep;
+    const DIALUPREPLY *DUPRep = &InMessage->Buffer.DUPSt.DUPRep;
 
-    AlphaA1LoadProfile_t *ptr = (AlphaA1LoadProfile_t *)DUPRep->Message;
+    const AlphaA1LoadProfile_t *ptr = (const AlphaA1LoadProfile_t *)DUPRep->Message;
 
 
     BYTEUSHORT        flip;
@@ -1930,10 +1930,15 @@ INT CtiDeviceAlphaA1::decodeResultLoadProfile (INMESS *InMessage,
         {0,1.0,-1},
         {0,1.0,-1},
         {0,1.0,-1}};
+    unsigned long dataBytesActual;
     // if this is the last data, intervals only go to actual - 8
     if (ptr->finalDataFlag)
     {
-        ptr->dataBytesActual -= 8;
+        dataBytesActual = ptr->dataBytesActual - 8;
+    }
+    else
+    {
+        dataBytesActual = ptr->dataBytesActual;
     }
     /********************
     *  the A1 gives us the date/time of the last interval recorded at the end of the
@@ -1942,7 +1947,7 @@ INT CtiDeviceAlphaA1::decodeResultLoadProfile (INMESS *InMessage,
     * last load profile time
     *********************
     */
-    for (int x=0; x < ptr->dataBytesActual; x+=2)
+    for (int x=0; x < dataBytesActual; x+=2)
     {
         flip.ch[0] = ptr->loadProfileData[x+1];
         flip.ch[1] = ptr->loadProfileData[x];
@@ -1958,14 +1963,14 @@ INT CtiDeviceAlphaA1::decodeResultLoadProfile (INMESS *InMessage,
         *  in the loadProfile buffer after the data bytes
         ************************
         */
-        CtiDate lastIntervalDate((USHORT)BCDtoBase10(&ptr->loadProfileData[ptr->dataBytesActual+4],1),
-                                (USHORT)BCDtoBase10(&ptr->loadProfileData[ptr->dataBytesActual+3],1),
-                                (USHORT)BCDtoBase10(&ptr->loadProfileData[ptr->dataBytesActual+2],1)+2000);
+        CtiDate lastIntervalDate((USHORT)BCDtoBase10(&ptr->loadProfileData[dataBytesActual+4],1),
+                                (USHORT)BCDtoBase10(&ptr->loadProfileData[dataBytesActual+3],1),
+                                (USHORT)BCDtoBase10(&ptr->loadProfileData[dataBytesActual+2],1)+2000);
 
         CtiTime lastIntervalTS (lastIntervalDate,
-                               (USHORT)BCDtoBase10(&ptr->loadProfileData[ptr->dataBytesActual+5],1),
-                               (USHORT)BCDtoBase10(&ptr->loadProfileData[ptr->dataBytesActual+6],1),
-                               (USHORT)BCDtoBase10(&ptr->loadProfileData[ptr->dataBytesActual+7],1));
+                               (USHORT)BCDtoBase10(&ptr->loadProfileData[dataBytesActual+5],1),
+                               (USHORT)BCDtoBase10(&ptr->loadProfileData[dataBytesActual+6],1),
+                               (USHORT)BCDtoBase10(&ptr->loadProfileData[dataBytesActual+7],1));
 
         /*************************
         * Check the validity of the time received
@@ -2081,10 +2086,10 @@ INT CtiDeviceAlphaA1::decodeResultLoadProfile (INMESS *InMessage,
 }
 
 
-INT CtiDeviceAlphaA1::ResultDisplay(INMESS *InMessage)
+INT CtiDeviceAlphaA1::ResultDisplay(const INMESS *InMessage)
 {
-    DIALUPREPLY        *DUPRep       = &InMessage->Buffer.DUPSt.DUPRep;
-    AlphaA1ScanData_t  *ptr = (AlphaA1ScanData_t *)DUPRep->Message;
+    const DIALUPREPLY *DUPRep = &InMessage->Buffer.DUPSt.DUPRep;
+    const AlphaA1ScanData_t *ptr = (const AlphaA1ScanData_t *)DUPRep->Message;
     CHAR buffer[200];
     /**************************
     * lazy way to do this
@@ -2769,7 +2774,7 @@ INT CtiDeviceAlphaA1::copyLoadProfileData(BYTE *aInMessBuffer, ULONG &aTotalByte
 }
 
 
-LONG CtiDeviceAlphaA1::findLPDataPoint (AlphaLPPointInfo_t &point, USHORT aMapping, AlphaA1Class14Real_t &class14)
+LONG CtiDeviceAlphaA1::findLPDataPoint (AlphaLPPointInfo_t &point, USHORT aMapping, const AlphaA1Class14Real_t &class14)
 {
     LONG retCode = NORMAL;
     CtiPointNumericSPtr   pNumericPoint;
@@ -3272,7 +3277,7 @@ USHORT CtiDeviceAlphaA1::getRate (int aOffset)
 BOOL CtiDeviceAlphaA1::getMeterDataFromScanStruct (int aOffset,
                                                    DOUBLE &aValue,
                                                    CtiTime &peak,
-                                                   AlphaA1ScanData_t *aScanData)
+                                                   const AlphaA1ScanData_t *aScanData)
 {
     BOOL isValidPoint = FALSE;
 
@@ -3366,7 +3371,7 @@ BOOL CtiDeviceAlphaA1::getRateValueFromBlock (DOUBLE &aValue,
                                               USHORT aBlockMapping,
                                               USHORT aRate,
                                               CtiTime &aPeak,
-                                              AlphaA1ScanData_t *data)
+                                              const AlphaA1ScanData_t *data)
 {
     int x;
     BOOL retCode=FALSE;
@@ -3420,7 +3425,7 @@ BOOL CtiDeviceAlphaA1::getRateValueFromBlock (DOUBLE &aValue,
 BOOL CtiDeviceAlphaA1::getDemandValueFromBlock1 (DOUBLE &aValue,
                                                  USHORT aRate,
                                                  CtiTime &aPeak,
-                                                 AlphaA1ScanData_t *aScanData)
+                                                 const AlphaA1ScanData_t *aScanData)
 {
     BOOL retCode = FALSE;
     aValue = 0.0;
@@ -3506,7 +3511,7 @@ BOOL CtiDeviceAlphaA1::getDemandValueFromBlock1 (DOUBLE &aValue,
 BOOL CtiDeviceAlphaA1::getDemandValueFromBlock2 (DOUBLE &aValue,
                                                  USHORT aRate,
                                                  CtiTime &aPeak,
-                                                 AlphaA1ScanData_t *aScanData)
+                                                 const AlphaA1ScanData_t *aScanData)
 {
     BOOL retCode = FALSE;
     aValue = 0.0;
@@ -3593,7 +3598,7 @@ BOOL CtiDeviceAlphaA1::getDemandValueFromBlock2 (DOUBLE &aValue,
 BOOL CtiDeviceAlphaA1::getDemandValueFromBlock3 (DOUBLE &aValue,
                                                  USHORT aRate,
                                                  CtiTime &aPeak,
-                                                 AlphaA1ScanData_t *aScanData)
+                                                 const AlphaA1ScanData_t *aScanData)
 {
     BOOL retCode = FALSE;
     aValue = 0.0;
@@ -3679,7 +3684,7 @@ BOOL CtiDeviceAlphaA1::getDemandValueFromBlock3 (DOUBLE &aValue,
 BOOL CtiDeviceAlphaA1::getDemandValueFromBlock4 (DOUBLE &aValue,
                                                  USHORT aRate,
                                                  CtiTime &aPeak,
-                                                 AlphaA1ScanData_t *aScanData)
+                                                 const AlphaA1ScanData_t *aScanData)
 {
     BOOL retCode = FALSE;
     aValue = 0.0;
@@ -3765,7 +3770,7 @@ BOOL CtiDeviceAlphaA1::getDemandValueFromBlock4 (DOUBLE &aValue,
 BOOL CtiDeviceAlphaA1::getDemandValueFromBlock5 (DOUBLE &aValue,
                                                  USHORT aRate,
                                                  CtiTime &aPeak,
-                                                 AlphaA1ScanData_t *aScanData)
+                                                 const AlphaA1ScanData_t *aScanData)
 {
     BOOL retCode = FALSE;
     aValue = 0.0;
@@ -3851,7 +3856,7 @@ BOOL CtiDeviceAlphaA1::getDemandValueFromBlock5 (DOUBLE &aValue,
 BOOL CtiDeviceAlphaA1::getDemandValueFromBlock6 (DOUBLE &aValue,
                                                  USHORT aRate,
                                                  CtiTime &aPeak,
-                                                 AlphaA1ScanData_t *aScanData)
+                                                 const AlphaA1ScanData_t *aScanData)
 {
     BOOL retCode = FALSE;
     aValue = 0.0;
@@ -3938,7 +3943,7 @@ BOOL CtiDeviceAlphaA1::getDemandValueFromBlock6 (DOUBLE &aValue,
 BOOL CtiDeviceAlphaA1::getEnergyValueFromBlock1 (DOUBLE &aValue,
                                                  USHORT aRate,
                                                  CtiTime &aPeak,
-                                                 AlphaA1ScanData_t *aScanData)
+                                                 const AlphaA1ScanData_t *aScanData)
 {
     BOOL retCode = FALSE;
     aValue = 0.0;
@@ -3986,7 +3991,7 @@ BOOL CtiDeviceAlphaA1::getEnergyValueFromBlock1 (DOUBLE &aValue,
 BOOL CtiDeviceAlphaA1::getEnergyValueFromBlock2 (DOUBLE &aValue,
                                                  USHORT aRate,
                                                  CtiTime &aPeak,
-                                                 AlphaA1ScanData_t *aScanData)
+                                                 const AlphaA1ScanData_t *aScanData)
 {
     BOOL retCode = FALSE;
     aValue = 0.0;
@@ -4034,7 +4039,7 @@ BOOL CtiDeviceAlphaA1::getEnergyValueFromBlock2 (DOUBLE &aValue,
 BOOL CtiDeviceAlphaA1::getEnergyValueFromBlock3 (DOUBLE &aValue,
                                                  USHORT aRate,
                                                  CtiTime &aPeak,
-                                                 AlphaA1ScanData_t *aScanData)
+                                                 const AlphaA1ScanData_t *aScanData)
 {
     BOOL retCode = FALSE;
     aValue = 0.0;
@@ -4082,7 +4087,7 @@ BOOL CtiDeviceAlphaA1::getEnergyValueFromBlock3 (DOUBLE &aValue,
 BOOL CtiDeviceAlphaA1::getEnergyValueFromBlock4 (DOUBLE &aValue,
                                                  USHORT aRate,
                                                  CtiTime &aPeak,
-                                                 AlphaA1ScanData_t *aScanData)
+                                                 const AlphaA1ScanData_t *aScanData)
 {
     BOOL retCode = FALSE;
     aValue = 0.0;
@@ -4130,7 +4135,7 @@ BOOL CtiDeviceAlphaA1::getEnergyValueFromBlock4 (DOUBLE &aValue,
 BOOL CtiDeviceAlphaA1::getEnergyValueFromBlock5 (DOUBLE &aValue,
                                                  USHORT aRate,
                                                  CtiTime &aPeak,
-                                                 AlphaA1ScanData_t *aScanData)
+                                                 const AlphaA1ScanData_t *aScanData)
 {
     BOOL retCode = FALSE;
     aValue = 0.0;
@@ -4179,7 +4184,7 @@ BOOL CtiDeviceAlphaA1::getEnergyValueFromBlock5 (DOUBLE &aValue,
 BOOL CtiDeviceAlphaA1::getEnergyValueFromBlock6 (DOUBLE &aValue,
                                                  USHORT aRate,
                                                  CtiTime &aPeak,
-                                                 AlphaA1ScanData_t *aScanData)
+                                                 const AlphaA1ScanData_t *aScanData)
 {
     BOOL retCode = FALSE;
     aValue = 0.0;

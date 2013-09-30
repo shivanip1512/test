@@ -168,7 +168,7 @@ public:
     CtiDeviceDR87& setLogoffFunction (INT aFunc);
 
 
-    INT ResultDisplay (INMESS *InMessage);
+    INT ResultDisplay (const INMESS *InMessage);
 
     /*
      *  These guys initiate a scan based upon the type requested.
@@ -182,7 +182,7 @@ public:
                             std::list< OUTMESS* > &outList,
                             INT ScanPriority);
 
-    virtual INT ResultDecode(INMESS *InMessage,
+    virtual INT ResultDecode(const INMESS *InMessage,
                              CtiTime &TimeNow,
                              std::list< CtiMessage* >   &vgList,
                              std::list< CtiMessage* > &retList,
@@ -209,13 +209,13 @@ public:
     virtual INT allocateDataBins (OUTMESS *outMess);
     virtual INT freeDataBins ();
 
-    virtual INT   decodeResultScan (INMESS                    *InMessage,
+    virtual INT   decodeResultScan (const INMESS               *InMessage,
                                     CtiTime                    &TimeNow,
                                     std::list< CtiMessage* > &vgList,
                                     std::list< CtiMessage* > &retList,
                                     std::list< OUTMESS* >    &outList);
 
-    virtual INT decodeResultLoadProfile (INMESS                    *InMessage,
+    virtual INT decodeResultLoadProfile (const INMESS               *InMessage,
                                          CtiTime                    &TimeNow,
                                          std::list< CtiMessage* > &vgList,
                                          std::list< CtiMessage* > &retList,
@@ -237,7 +237,7 @@ public:
     INT     getMessageInDataStream (CtiXfer  &Transfer,int aCommValue);
     INT     decodeReceivedMessage ();
     INT     fillUploadTransferObject (CtiXfer  &aTransfer, USHORT aCmd, USHORT aStartAddress, USHORT aOffset, USHORT aBytesToRead);
-    BOOL    getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, CtiTime &peak, DR87ScanData_t *aScanData);
+    BOOL    getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, CtiTime &peak, const DR87ScanData_t *aScanData);
     LONG    findLPDataPoint (DR87LPPointInfo_t &point, USHORT aMetric);
     INT     calculateBlockSize(void);
 };

@@ -118,7 +118,7 @@ INT CtiDeviceTCU::IntegrityScan(CtiRequestMsg *pReq,
 }
 
 
-INT CtiDeviceTCU::ResultDecode(INMESS *InMessage,
+INT CtiDeviceTCU::ResultDecode(const INMESS *InMessage,
                                CtiTime &TimeNow,
                                list< CtiMessage* > &vgList,
                                list< CtiMessage* > &retList,
@@ -159,7 +159,7 @@ INT CtiDeviceTCU::TCUScanAll (OUTMESS* OutMessage)            /* Priority to pla
 }
 
 /* Routine to decode returned TCU message and update database */
-INT CtiDeviceTCU::TCUDecode (INMESS *InMessage, CtiTime &ScanTime, list< CtiMessage* > &retList)
+INT CtiDeviceTCU::TCUDecode (const INMESS *InMessage, CtiTime &ScanTime, list< CtiMessage* > &retList)
 {
    /* Misc. definitions */
    ULONG i;
@@ -482,7 +482,7 @@ INT CtiDeviceTCU::TCULoop(OUTMESS* OutMessage)
 }
 
 
-CtiReturnMsg* CtiDeviceTCU::TCUDecodeStatus(INMESS *InMessage)
+CtiReturnMsg* CtiDeviceTCU::TCUDecodeStatus(const INMESS *InMessage)
 {
    ULONG       i;
    char        temp[80];

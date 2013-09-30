@@ -1729,7 +1729,7 @@ INT CtiDeviceSixnet::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, O
     return status;
 }
 
-INT  CtiDeviceSixnet::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* >   &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT  CtiDeviceSixnet::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* >   &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
@@ -1853,13 +1853,13 @@ void CtiDeviceSixnet::DecodeDatabaseReader(Cti::RowReader &rdr)
 
 
 
-INT CtiDeviceSixnet::decodeResultLoadProfile (INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* >   &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceSixnet::decodeResultLoadProfile (const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* >   &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     int status = NORMAL;
 
 
-    int recCnt = *((int*)&InMessage->Buffer.DUPSt.DUPRep.Message);
-    BYTE *bpcurr = (BYTE *)&InMessage->Buffer.DUPSt.DUPRep.Message;
+    int recCnt = *((const int*)&InMessage->Buffer.DUPSt.DUPRep.Message);
+    const BYTE *bpcurr = (const BYTE *)&InMessage->Buffer.DUPSt.DUPRep.Message;
 
     bpcurr += sizeof(int);  // get past the count.
 
@@ -1881,7 +1881,7 @@ INT CtiDeviceSixnet::decodeResultLoadProfile (INMESS *InMessage, CtiTime &TimeNo
 
     for (int i = 0; i < recCnt; i++)
     {
-        CtiSixnetLPData *pSxnt = (CtiSixnetLPData *)bpcurr;
+        const CtiSixnetLPData *pSxnt = (const CtiSixnetLPData *)bpcurr;
         CtiPointDataMsg *pData    = NULL;
 
         bpcurr += sizeof(CtiSixnetLPData);
@@ -1980,7 +1980,7 @@ INT CtiDeviceSixnet::decodeResultLoadProfile (INMESS *InMessage, CtiTime &TimeNo
 
 
 
-INT CtiDeviceSixnet::decodeResultScan(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* >   &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceSixnet::decodeResultScan(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* >   &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     resetScanFlag(ScanForced);
     resetScanFlag(ScanRateGeneral);

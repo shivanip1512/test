@@ -192,8 +192,8 @@ INT CtiDeviceAnsi::DemandReset( CtiRequestMsg *pReq, CtiCommandParser &parse, OU
     for (int aa = 0; aa < 20; aa++)
         password[aa] = 0;
 
-    BYTE *temp;
-    temp = (BYTE *)pswdTemp.c_str();
+    const BYTE *temp;
+    temp = (const BYTE *)pswdTemp.c_str();
     for (int aa = 0; aa < pswdTemp.length(); aa++)
         password[aa] = *(temp + aa);
 
@@ -322,7 +322,7 @@ INT CtiDeviceAnsi::ExecuteRequest( CtiRequestMsg         *pReq,
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-INT CtiDeviceAnsi::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list < CtiMessage* >&retList,
+INT CtiDeviceAnsi::ResultDecode( const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list < CtiMessage* >&retList,
                                 list< OUTMESS* >    &outList)
 {
     CtiReturnMsg *retMsg = NULL;
@@ -330,7 +330,7 @@ INT CtiDeviceAnsi::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiM
 
     inMsgResultString = string((const char*)InMessage->Buffer.InMessage, InMessage->InLength);
 
-    if (getANSIProtocol().getScanOperation() == CtiProtocolANSI::demandReset || getANSIProtocol().getScanOperation() == CtiProtocolANSI::loopBack) 
+    if (getANSIProtocol().getScanOperation() == CtiProtocolANSI::demandReset || getANSIProtocol().getScanOperation() == CtiProtocolANSI::loopBack)
     {
         string returnString = getName() + " / " + (getANSIProtocol().getScanOperation() == CtiProtocolANSI::demandReset ? "demand reset " : "loopback ");
         if (findStringIgnoreCase(inMsgResultString, "successful"))
@@ -387,7 +387,7 @@ INT CtiDeviceAnsi::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiM
         }
         else if (useScanFlags())
         {
-           unsigned long *lastLpTime =  (unsigned long *)InMessage->Buffer.InMessage;
+           const unsigned long *lastLpTime = (const unsigned long *)InMessage->Buffer.InMessage;
 
            try
            {
@@ -583,7 +583,7 @@ void CtiDeviceAnsi::processDispatchReturnMessage( list< CtiReturnMsg* > &retList
                     case OFFSET_RATE_E_KVA:
                     {
                         gotValue = getANSIProtocol().retrieveDemand( x, &value, &timestamp, archiveFlag & CMD_FLAG_FROZEN );
-                        
+
                         break;
                     }
                     case OFFSET_LOADPROFILE_KW:
@@ -731,10 +731,10 @@ void CtiDeviceAnsi::createPointData(CtiPointAnalogSPtr pPoint, double value, dou
 {
     CtiReturnMsg *msgPtr = CTIDBG_new CtiReturnMsg();
     CtiPointDataMsg *pData = NULL;
-    
+
     value *= (pPoint->getMultiplier() != NULL ? pPoint->getMultiplier() : 1.0);
     value += (pPoint->getDataOffset() != NULL ? pPoint->getDataOffset() : 0.0) ;
-    
+
     _result_string += getName() + " / " + pPoint->getName() + ": " + CtiNumStr(value, boost::static_pointer_cast<CtiPointNumeric>(pPoint)->getPointUnits().getDecimalPlaces()) + "\n";
 
     if( getANSIProtocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )
@@ -782,7 +782,7 @@ void CtiDeviceAnsi::createLoadProfilePointData(CtiPointAnalogSPtr pPoint, list< 
             lpValue = getANSIProtocol().getLPValue(y);
             lpValue *= (ptMultiplier != NULL ? ptMultiplier : 1.0);
             lpValue += (ptOffset != NULL ? ptOffset : 0.0) ;
-            
+
             pData = CTIDBG_new CtiPointDataMsg(pPoint->getID(), lpValue, (int) getANSIProtocol().getLPQuality(y), pPoint->getType());
             pData->setTags( TAG_POINT_LOAD_PROFILE_DATA );
             pData->setTime( CtiTime(getANSIProtocol().getLPTime(y)) );
@@ -813,7 +813,7 @@ void CtiDeviceAnsi::createLoadProfilePointData(CtiPointAnalogSPtr pPoint, list< 
         lastLPIndex = getANSIProtocol().getTotalWantedLPBlockInts()-1;
 
     _lastLPTime = getANSIProtocol().getLPTime(lastLPIndex);
-    
+
     if (pData != NULL)
     {
         delete []pData;

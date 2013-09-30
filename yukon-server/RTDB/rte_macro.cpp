@@ -265,7 +265,7 @@ void CtiRouteMacro::DecodeMacroReader(Cti::RowReader &rdr)
     RouteList.insert(MacroRoute);
 }
 
-bool CtiRouteMacro::processAdditionalRoutes( INMESS *InMessage ) const
+bool CtiRouteMacro::processAdditionalRoutes( const INMESS *InMessage ) const
 {
     bool bret = false;
 

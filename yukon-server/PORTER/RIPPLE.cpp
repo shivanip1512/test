@@ -349,7 +349,7 @@ BOOL Block;
 BOOL OverRetry;
 
 /* Routine to decode result of LCU handshake */
-INT LCUResultDecode (OUTMESS *OutMessage, INMESS *InMessage, CtiDeviceSPtr Dev, ULONG Result, bool mayqueuescans)
+INT LCUResultDecode (OUTMESS *OutMessage, const INMESS *InMessage, CtiDeviceSPtr Dev, ULONG Result, bool mayqueuescans)
 {
     INT status = Result;
 

@@ -1735,7 +1735,7 @@ INT CtiDeviceAlphaPPlus::decodeResponseLoadProfile (CtiXfer  &Transfer, INT comm
     return retCode;
 }
 
-INT CtiDeviceAlphaPPlus::decodeResultScan   (INMESS *InMessage,
+INT CtiDeviceAlphaPPlus::decodeResultScan   (const INMESS *InMessage,
                                              CtiTime &TimeNow,
                                              list< CtiMessage* >   &vgList,
                                              list< CtiMessage* > &retList,
@@ -1757,7 +1757,7 @@ INT CtiDeviceAlphaPPlus::decodeResultScan   (INMESS *InMessage,
     FLOAT    PartHour;
     DOUBLE   PValue;
 
-    DIALUPREPLY        *DUPRep       = &InMessage->Buffer.DUPSt.DUPRep;
+    const DIALUPREPLY *DUPRep   = &InMessage->Buffer.DUPSt.DUPRep;
 
     CtiPointDataMsg   *pData    = NULL;
     CtiPointNumericSPtr pNumericPoint;
@@ -1771,7 +1771,7 @@ INT CtiDeviceAlphaPPlus::decodeResultScan   (INMESS *InMessage,
                                             InMessage->Return.Attempt,
                                             InMessage->Return.GrpMsgID,
                                             InMessage->Return.UserID);
-    AlphaPPlusScanData_t  *ptr = (AlphaPPlusScanData_t *)DUPRep->Message;
+    const AlphaPPlusScanData_t  *ptr = (const AlphaPPlusScanData_t *)DUPRep->Message;
     CtiTime peakTime;
 
     // here is the class we requested
@@ -1910,16 +1910,16 @@ INT CtiDeviceAlphaPPlus::decodeResultScan   (INMESS *InMessage,
     return(NORMAL);
 }
 
-INT CtiDeviceAlphaPPlus::decodeResultLoadProfile (INMESS *InMessage,
+INT CtiDeviceAlphaPPlus::decodeResultLoadProfile (const INMESS *InMessage,
                                                   CtiTime &TimeNow,
                                                   list< CtiMessage* >   &vgList,
                                                   list< CtiMessage* > &retList,
                                                   list< OUTMESS* > &outList)
 {
 
-    DIALUPREPLY *DUPRep = &InMessage->Buffer.DUPSt.DUPRep;
+    const DIALUPREPLY *DUPRep = &InMessage->Buffer.DUPSt.DUPRep;
 
-    AlphaPPlusLoadProfile_t *ptr = (AlphaPPlusLoadProfile_t *)DUPRep->Message;
+    const AlphaPPlusLoadProfile_t *ptr = (const AlphaPPlusLoadProfile_t *)DUPRep->Message;
 
     int     intervalsPerDay = (60 / ptr->class14.intervalLength * 24);
     USHORT  intervalPulses;
@@ -2271,15 +2271,15 @@ INT CtiDeviceAlphaPPlus::copyLoadProfileData(BYTE *aInMessBuffer, ULONG &aTotalB
 }
 
 
-INT CtiDeviceAlphaPPlus::ResultDisplay(INMESS *InMessage)
+INT CtiDeviceAlphaPPlus::ResultDisplay(const INMESS *InMessage)
 {
-    DIALUPREPLY        *DUPRep       = &InMessage->Buffer.DUPSt.DUPRep;
+    const DIALUPREPLY *DUPRep = &InMessage->Buffer.DUPSt.DUPRep;
     /* Misc. definitions */
     ULONG i, j;
     CHAR buffer[200];
 
     // looking for billing data DLS
-    AlphaPPlusScanData_t  *ptr = (AlphaPPlusScanData_t *)DUPRep->Message;
+    const AlphaPPlusScanData_t *ptr = (const AlphaPPlusScanData_t *)DUPRep->Message;
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -2861,7 +2861,7 @@ LONG CtiDeviceAlphaPPlus::findLPDataPoint (AlphaLPPointInfo_t &point, USHORT aMa
     return retCode;
 }
 
-BOOL CtiDeviceAlphaPPlus::getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, CtiTime &peak, AlphaPPlusScanData_t *aScanData)
+BOOL CtiDeviceAlphaPPlus::getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, CtiTime &peak, const AlphaPPlusScanData_t *aScanData)
 {
     BOOL isValidPoint = FALSE;
 
@@ -2964,7 +2964,7 @@ BOOL CtiDeviceAlphaPPlus::getRateValueFromBlock (DOUBLE &aValue,
                                                  USHORT aBlockMapping,
                                                  USHORT aRate,
                                                  CtiTime &aPeak,
-                                                 AlphaPPlusScanData_t *data)
+                                                 const AlphaPPlusScanData_t *data)
 {
     int x;
     BOOL retCode=FALSE;
@@ -2999,7 +2999,7 @@ BOOL CtiDeviceAlphaPPlus::getRateValueFromBlock (DOUBLE &aValue,
 BOOL CtiDeviceAlphaPPlus::getDemandValueFromBlock1 (DOUBLE &aValue,
                                                     USHORT aRate,
                                                     CtiTime &aPeak,
-                                                    AlphaPPlusScanData_t *aScanData)
+                                                    const AlphaPPlusScanData_t *aScanData)
 {
     BOOL retCode = FALSE;
     aValue = 0.0;
@@ -3091,7 +3091,7 @@ BOOL CtiDeviceAlphaPPlus::getDemandValueFromBlock1 (DOUBLE &aValue,
 BOOL CtiDeviceAlphaPPlus::getDemandValueFromBlock2 (DOUBLE &aValue,
                                                     USHORT aRate,
                                                     CtiTime &aPeak,
-                                                    AlphaPPlusScanData_t *aScanData)
+                                                    const AlphaPPlusScanData_t *aScanData)
 {
     BOOL retCode = FALSE;
     aValue = 0.0;
@@ -3183,7 +3183,7 @@ BOOL CtiDeviceAlphaPPlus::getDemandValueFromBlock2 (DOUBLE &aValue,
 BOOL CtiDeviceAlphaPPlus::getEnergyValueFromBlock1 (DOUBLE &aValue,
                                                     USHORT aRate,
                                                     CtiTime &aPeak,
-                                                    AlphaPPlusScanData_t *aScanData)
+                                                    const AlphaPPlusScanData_t *aScanData)
 {
     BOOL retCode = FALSE;
     aValue = 0.0;
@@ -3231,7 +3231,7 @@ BOOL CtiDeviceAlphaPPlus::getEnergyValueFromBlock1 (DOUBLE &aValue,
 BOOL CtiDeviceAlphaPPlus::getEnergyValueFromBlock2 (DOUBLE &aValue,
                                                     USHORT aRate,
                                                     CtiTime &aPeak,
-                                                    AlphaPPlusScanData_t *aScanData)
+                                                    const AlphaPPlusScanData_t *aScanData)
 {
     BOOL retCode = FALSE;
     aValue = 0.0;

@@ -241,7 +241,7 @@ INT DlcBaseDevice::ExecuteRequest( CtiRequestMsg        *pReq,
 }
 
 
-INT DlcBaseDevice::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list<CtiMessage *> &vgList, list<CtiMessage *> &retList, list<OUTMESS *> &outList)
+INT DlcBaseDevice::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list<CtiMessage *> &vgList, list<CtiMessage *> &retList, list<OUTMESS *> &outList)
 try
 {
     int status = findAndDecodeCommand(*InMessage, TimeNow, vgList, retList, outList);
@@ -828,24 +828,29 @@ int DlcBaseDevice::executeOnDLCRoute( CtiRequestMsg              *pReq,
 
 
 
-bool DlcBaseDevice::processAdditionalRoutes( INMESS *InMessage ) const
+bool DlcBaseDevice::processAdditionalRoutes( const INMESS *InMessage, int nRet ) const
 {
-    bool bret = false;
-
-    if(InMessage->Return.MacroOffset != 0)
+    if( InMessage->Return.MacroOffset == 0 )
     {
-        CtiRouteSPtr Route;
-
-        if( (Route = CtiDeviceBase::getRoute( InMessage->Return.RouteID )) )    // This is "this's" route
-        {
-            bret = Route->processAdditionalRoutes(InMessage);
-        }
-        else
-        {
-            bret = true;        // Presume the existence of MacroOffset != 0 indicates a GO status!
-        }
+        return false;
     }
-    return bret;
+
+    if( nRet == ErrorInvalidSSPEC ||
+        nRet == ErrorInvalidTimestamp )
+    {
+        //  we cannot recover from these errors, even if we attempt on additional subroutes
+        return false;
+    }
+
+    CtiRouteSPtr Route = getRoute(InMessage->Return.RouteID);    // This is "this's" route
+
+    if( ! Route )
+    {
+        // Presume the existence of MacroOffset != 0 indicates a GO status!
+        return true;
+    }
+
+    return Route->processAdditionalRoutes(InMessage);
 }
 
 

@@ -28,11 +28,11 @@ public:
                            std::list< OUTMESS* >     &outList,
                            INT                        ScanPriority=MAXPRIORITY-4);
 
-   virtual INT executeLoopback(CtiRequestMsg *pReq, 
-                           CtiCommandParser &parse, 
-                           OUTMESS *&OutMessage, 
-                           std::list<CtiMessage*>&vgList, 
-                           std::list<CtiMessage*>&retList, 
+   virtual INT executeLoopback(CtiRequestMsg *pReq,
+                           CtiCommandParser &parse,
+                           OUTMESS *&OutMessage,
+                           std::list<CtiMessage*>&vgList,
+                           std::list<CtiMessage*>&retList,
                            std::list<OUTMESS*>&outList);
    virtual INT DemandReset( CtiRequestMsg *pReq,
                     CtiCommandParser &parse,
@@ -43,7 +43,7 @@ public:
                     INT ScanPriority = MAXPRIORITY-4);
 
 
-   virtual INT ResultDecode(INMESS                    *InMessage,
+   virtual INT ResultDecode(const INMESS                    *InMessage,
                             CtiTime                    &TimeNow,
                             std::list< CtiMessage* > &vgList,
                             std::list< CtiMessage* > &retList,

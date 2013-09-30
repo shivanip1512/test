@@ -1488,7 +1488,7 @@ INT CtiDeviceDR87::copyLoadProfileData(BYTE *aInMessBuffer, ULONG &aTotalBytes)
 }
 
 
-INT  CtiDeviceDR87::ResultDecode(INMESS *InMessage,
+INT  CtiDeviceDR87::ResultDecode(const INMESS *InMessage,
                                  CtiTime &TimeNow,
                                  list< CtiMessage* >   &vgList,
                                  list< CtiMessage* > &retList,
@@ -1604,7 +1604,7 @@ INT CtiDeviceDR87::ErrorDecode (const INMESS        &InMessage,
 
 
 
-INT CtiDeviceDR87::decodeResultScan (INMESS *InMessage,
+INT CtiDeviceDR87::decodeResultScan (const INMESS *InMessage,
                                      CtiTime &TimeNow,
                                      list< CtiMessage* >   &vgList,
                                      list< CtiMessage* > &retList,
@@ -1629,8 +1629,8 @@ INT CtiDeviceDR87::decodeResultScan (INMESS *InMessage,
     DOUBLE   PValue;
     CtiTime    peakTime;
 
-    DIALUPREQUEST      *DupReq = &InMessage->Buffer.DUPSt.DUPRep.ReqSt;
-    DIALUPREPLY        *DUPRep = &InMessage->Buffer.DUPSt.DUPRep;
+    const DIALUPREQUEST      *DupReq = &InMessage->Buffer.DUPSt.DUPRep.ReqSt;
+    const DIALUPREPLY        *DUPRep = &InMessage->Buffer.DUPSt.DUPRep;
 
 
     CtiPointDataMsg   *pData    = NULL;
@@ -1646,7 +1646,7 @@ INT CtiDeviceDR87::decodeResultScan (INMESS *InMessage,
                                             InMessage->Return.GrpMsgID,
                                             InMessage->Return.UserID);
 
-    DR87ScanData_t  *scanData = (DR87ScanData_t*) DUPRep->Message;
+    const DR87ScanData_t  *scanData = (const DR87ScanData_t*) DUPRep->Message;
 
     if (isScanFlagSet(ScanRateGeneral))
     {
@@ -1731,15 +1731,15 @@ INT CtiDeviceDR87::decodeResultScan (INMESS *InMessage,
 }
 
 
-INT CtiDeviceDR87::decodeResultLoadProfile (INMESS *InMessage,
+INT CtiDeviceDR87::decodeResultLoadProfile (const INMESS *InMessage,
                                             CtiTime &TimeNow,
                                             list< CtiMessage* >   &vgList,
                                             list< CtiMessage* > &retList,
                                             list< OUTMESS* > &outList)
 {
     int retCode = NORMAL;
-    DIALUPREPLY        *DUPRep       = &InMessage->Buffer.DUPSt.DUPRep;
-    DR87LoadProfile_t  *ptr = (DR87LoadProfile_t *)DUPRep->Message;
+    const DIALUPREPLY        *DUPRep       = &InMessage->Buffer.DUPSt.DUPRep;
+    const DR87LoadProfile_t  *ptr = (const DR87LoadProfile_t *)DUPRep->Message;
 
     BYTEUSHORT        flip;
     CtiPointDataMsg   *pData    = NULL;
@@ -1981,7 +1981,7 @@ LONG CtiDeviceDR87::findLPDataPoint (DR87LPPointInfo_t &point, USHORT aChannel)
     return retCode;
 }
 
-BOOL CtiDeviceDR87::getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, CtiTime &peak, DR87ScanData_t *aScanData)
+BOOL CtiDeviceDR87::getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, CtiTime &peak, const DR87ScanData_t *aScanData)
 {
     BOOL isValidPoint = FALSE;
     int channel=-1;
@@ -2090,7 +2090,7 @@ BOOL CtiDeviceDR87::getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, Cti
 }
 
 // Routine to display or print the message
-INT CtiDeviceDR87::ResultDisplay (INMESS *InMessage)
+INT CtiDeviceDR87::ResultDisplay (const INMESS *InMessage)
 
 {
     return NORMAL;

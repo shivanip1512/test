@@ -272,7 +272,7 @@ bool Lmt2Device::calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *
 }
 
 
-INT Lmt2Device::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Lmt2Device::ModelDecode(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
@@ -320,11 +320,11 @@ INT Lmt2Device::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessag
 }
 
 
-INT Lmt2Device::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Lmt2Device::decodeScanLoadProfile(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     int status = NORMAL;
 
-    DSTRUCT *DSt  = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
     string val_report, result_string;
 
@@ -508,14 +508,14 @@ INT Lmt2Device::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, list<
 }
 
 
-INT Lmt2Device::decodeGetStatusInternal( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT Lmt2Device::decodeGetStatusInternal( const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
     INT status = NORMAL;
 
     CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg      *pData = NULL;
 
-    unsigned char *geneBuf = InMessage->Buffer.DSt.Message;
+    const unsigned char *geneBuf = InMessage->Buffer.DSt.Message;
 
     ULONG pulseCount = 0;
     string resultString;
@@ -566,14 +566,14 @@ INT Lmt2Device::decodeGetStatusInternal( INMESS *InMessage, CtiTime &TimeNow, li
 }
 
 
-INT Lmt2Device::decodeGetStatusLoadProfile( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT Lmt2Device::decodeGetStatusLoadProfile( const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
     INT status = NORMAL;
 
     CtiReturnMsg *ReturnMsg = NULL;
     string resultString;
 
-    DSTRUCT *DSt = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt = &InMessage->Buffer.DSt;
 
     if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
     {
@@ -598,11 +598,11 @@ INT Lmt2Device::decodeGetStatusLoadProfile( INMESS *InMessage, CtiTime &TimeNow,
 }
 
 
-INT Lmt2Device::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Lmt2Device::decodeGetConfigModel(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
    INT status = NORMAL;
 
-   DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+   const DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
   INT ssp;
   char rev;

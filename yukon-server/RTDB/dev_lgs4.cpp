@@ -29,10 +29,10 @@ using std::list;
 
 
 void reverseCharacters (UCHAR *source, PCHAR dest);
-DOUBLE S4BCDtoDouble(UCHAR* buffer, ULONG len);
-ULONG S4BCDtoBase10(UCHAR* buffer, ULONG len);
-FLOAT S4Float (UCHAR byteArray[3]);
-USHORT S4UShort (UCHAR byteArray[2]);
+DOUBLE S4BCDtoDouble(const UCHAR* buffer, ULONG len);
+ULONG S4BCDtoBase10(const UCHAR* buffer, ULONG len);
+FLOAT S4Float (const UCHAR byteArray[3]);
+USHORT S4UShort (const UCHAR byteArray[2]);
 INT findImpliedDecimal (UCHAR buffer[2]);
 
 
@@ -1446,7 +1446,7 @@ void reverseCharacters (UCHAR *source, PCHAR dest)
 *
 *****************************************
 */
-DOUBLE S4BCDtoDouble(UCHAR* buffer, ULONG len)
+DOUBLE S4BCDtoDouble(const UCHAR* buffer, ULONG len)
 {
 
     int i;
@@ -1475,7 +1475,7 @@ DOUBLE S4BCDtoDouble(UCHAR* buffer, ULONG len)
 *
 *****************************************
 */
-ULONG S4BCDtoBase10(UCHAR* buffer, ULONG len)
+ULONG S4BCDtoBase10(const UCHAR* buffer, ULONG len)
 {
 
     int i;
@@ -1531,7 +1531,7 @@ ULONG S4BCDtoBase10(UCHAR* buffer, ULONG len)
 ************************************************************************************
 */
 
-FLOAT S4Float (UCHAR byteArray[3])
+FLOAT S4Float (const UCHAR byteArray[3])
 {
     FLOAT tmp = 1.0;
     int i;
@@ -1564,7 +1564,7 @@ FLOAT S4Float (UCHAR byteArray[3])
 }
 
 
-USHORT S4UShort (UCHAR byteArray[2])
+USHORT S4UShort (const UCHAR byteArray[2])
 {
     union
     {
@@ -1818,7 +1818,7 @@ INT CtiDeviceLandisGyrS4::copyLoadProfileData(BYTE *aInMessBuffer, ULONG &aTotal
 }
 
 
-INT  CtiDeviceLandisGyrS4::ResultDecode(INMESS *InMessage,
+INT  CtiDeviceLandisGyrS4::ResultDecode(const INMESS *InMessage,
                                         CtiTime &TimeNow,
                                         list< CtiMessage* >   &vgList,
                                         list< CtiMessage* > &retList,
@@ -1936,7 +1936,7 @@ INT CtiDeviceLandisGyrS4::ErrorDecode (const INMESS        &InMessage,
 
 
 
-INT CtiDeviceLandisGyrS4::decodeResultScan (INMESS *InMessage,
+INT CtiDeviceLandisGyrS4::decodeResultScan (const INMESS *InMessage,
                                             CtiTime &TimeNow,
                                             list< CtiMessage* >   &vgList,
                                             list< CtiMessage* > &retList,
@@ -1960,8 +1960,8 @@ INT CtiDeviceLandisGyrS4::decodeResultScan (INMESS *InMessage,
     DOUBLE   PValue;
     CtiTime    peakTime;
 
-    DIALUPREQUEST      *DupReq = &InMessage->Buffer.DUPSt.DUPRep.ReqSt;
-    DIALUPREPLY        *DUPRep = &InMessage->Buffer.DUPSt.DUPRep;
+    const DIALUPREQUEST      *DupReq = &InMessage->Buffer.DUPSt.DUPRep.ReqSt;
+    const DIALUPREPLY        *DUPRep = &InMessage->Buffer.DUPSt.DUPRep;
 
 
     CtiPointDataMsg   *pData    = NULL;
@@ -1977,7 +1977,7 @@ INT CtiDeviceLandisGyrS4::decodeResultScan (INMESS *InMessage,
                                             InMessage->Return.GrpMsgID,
                                             InMessage->Return.UserID);
 
-    LGS4ScanData_t  *scanData = (LGS4ScanData_t*) DUPRep->Message;
+    const LGS4ScanData_t  *scanData = (const LGS4ScanData_t*) DUPRep->Message;
 
     if (isScanFlagSet(ScanRateGeneral))
     {
@@ -2054,16 +2054,16 @@ INT CtiDeviceLandisGyrS4::decodeResultScan (INMESS *InMessage,
     return NORMAL;
 }
 
-INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
+INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (const INMESS *InMessage,
                                                    CtiTime &TimeNow,
                                                    list< CtiMessage* >   &vgList,
                                                    list< CtiMessage* > &retList,
                                                    list< OUTMESS* > &outList)
 {
-    DIALUPREQUEST     *dupReq = &InMessage->Buffer.DUPSt.DUPRep.ReqSt;
-    DIALUPREPLY       *dupRep = &InMessage->Buffer.DUPSt.DUPRep;
+    const DIALUPREQUEST     *dupReq = &InMessage->Buffer.DUPSt.DUPRep.ReqSt;
+    const DIALUPREPLY       *dupRep = &InMessage->Buffer.DUPSt.DUPRep;
 
-    LGS4LoadProfile_t *localLP = (LGS4LoadProfile_t*)&dupRep->Message;
+    const LGS4LoadProfile_t *localLP = (const LGS4LoadProfile_t*)&dupRep->Message;
 
 
     // power outages tracked by 6 second interval since midnight
@@ -2612,13 +2612,10 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
 }
 
 // Routine to display or print the message
-INT CtiDeviceLandisGyrS4::ResultDisplay (INMESS *InMessage)
+INT CtiDeviceLandisGyrS4::ResultDisplay (const INMESS *InMessage)
 
 {
-    ULONG          i, j;
-    DIALUPREPLY    *DUPRep = &InMessage->Buffer.DUPSt.DUPRep;
-
-    LGS4ScanData_t  *ptr = (LGS4ScanData_t*) InMessage->Buffer.DUPSt.DUPRep.Message;
+    const LGS4ScanData_t  *ptr = (const LGS4ScanData_t*) InMessage->Buffer.DUPSt.DUPRep.Message;
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -2963,7 +2960,7 @@ LONG CtiDeviceLandisGyrS4::findLPDataPoint (LGS4LPPointInfo_t &point, USHORT aMe
 }
 
 DOUBLE CtiDeviceLandisGyrS4::calculateIntervalData (USHORT aInterval,
-                                                    LGS4LoadProfile_t *aLPConfig,
+                                                    const LGS4LoadProfile_t *aLPConfig,
                                                     LGS4LPPointInfo_t aLPPoint)
 {
     DOUBLE constant;
@@ -3041,7 +3038,7 @@ DOUBLE CtiDeviceLandisGyrS4::calculateIntervalData (USHORT aInterval,
 }
 
 
-BOOL CtiDeviceLandisGyrS4::getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, CtiTime &peak, LGS4ScanData_t *aScanData)
+BOOL CtiDeviceLandisGyrS4::getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, CtiTime &peak, const LGS4ScanData_t *aScanData)
 {
     BOOL isValidPoint = FALSE;
 

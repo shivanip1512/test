@@ -55,7 +55,7 @@ INT Lcr3102Device::ErrorDecode( const INMESS &InMessage, const CtiTime TimeNow, 
 }
 
 
-INT Lcr3102Device::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+INT Lcr3102Device::ResultDecode( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NoError;
 
@@ -146,11 +146,11 @@ INT Lcr3102Device::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, CtiMessage
     return status;
 }
 
-INT Lcr3102Device::decodeGetValueTemperature( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+INT Lcr3102Device::decodeGetValueTemperature( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NoError;
 
-    DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
+    const DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
 
     if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
@@ -177,11 +177,11 @@ INT Lcr3102Device::decodeGetValueTemperature( INMESS *InMessage, CtiTime &TimeNo
     return status;
 }
 
-INT Lcr3102Device::decodeGetValueTransmitPower( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+INT Lcr3102Device::decodeGetValueTransmitPower( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NoError;
 
-    DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
+    const DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
 
     if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
@@ -207,11 +207,11 @@ INT Lcr3102Device::decodeGetValueTransmitPower( INMESS *InMessage, CtiTime &Time
     return status;
 }
 
-INT Lcr3102Device::decodeGetValueDutyCycle(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+INT Lcr3102Device::decodeGetValueDutyCycle(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NoError;
 
-    DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
+    const DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
 
     if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
@@ -262,11 +262,11 @@ INT Lcr3102Device::decodeGetValueDutyCycle(INMESS *InMessage, CtiTime &TimeNow, 
     return status;
 }
 
-INT Lcr3102Device::decodeGetValueIntervalLast( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+INT Lcr3102Device::decodeGetValueIntervalLast( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NoError;
 
-    DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
+    const DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
 
     if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
@@ -346,11 +346,11 @@ INT Lcr3102Device::decodeGetValueIntervalLast( INMESS *InMessage, CtiTime &TimeN
 }
 
 //Decodes the getvalue shedtime/runtime read. All points are generated with a end of interval timestamp.
-INT Lcr3102Device::decodeGetValueHistoricalTime( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+INT Lcr3102Device::decodeGetValueHistoricalTime( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NoError;
 
-    DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
+    const DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
 
     if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
@@ -462,11 +462,11 @@ INT Lcr3102Device::decodeGetValueHistoricalTime( INMESS *InMessage, CtiTime &Tim
     return status;
 }
 
-INT Lcr3102Device::decodeGetValueXfmrHistoricalRuntime( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+INT Lcr3102Device::decodeGetValueXfmrHistoricalRuntime( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NoError;
 
-    DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
+    const DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
     BSTRUCT       BSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
 
@@ -541,11 +541,11 @@ INT Lcr3102Device::decodeGetValueXfmrHistoricalRuntime( INMESS *InMessage, CtiTi
     return status;
 }
 
-INT Lcr3102Device::decodeGetValueControlTime( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+INT Lcr3102Device::decodeGetValueControlTime( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NoError;
 
-    DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
+    const DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
 
     if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
@@ -619,11 +619,11 @@ INT Lcr3102Device::decodeGetValueControlTime( INMESS *InMessage, CtiTime &TimeNo
     return status;
 }
 
-INT Lcr3102Device::decodeGetValuePropCount( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+INT Lcr3102Device::decodeGetValuePropCount( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NoError;
 
-    DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
+    const DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
 
     if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
@@ -652,11 +652,11 @@ INT Lcr3102Device::decodeGetValuePropCount( INMESS *InMessage, CtiTime &TimeNow,
     return status;
 }
 
-INT Lcr3102Device::decodePutConfig( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+INT Lcr3102Device::decodePutConfig( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NoError;
 
-    DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
+    const DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
 
     if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
@@ -690,11 +690,11 @@ INT Lcr3102Device::decodePutConfig( INMESS *InMessage, CtiTime &TimeNow, CtiMess
     return status;
 }
 
-INT Lcr3102Device::decodeGetConfigRaw( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+INT Lcr3102Device::decodeGetConfigRaw( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NoError;
 
-    DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
+    const DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
 
     CtiCommandParser parse(InMessage->Return.CommandStr);
@@ -767,11 +767,11 @@ INT Lcr3102Device::decodeGetConfigRaw( INMESS *InMessage, CtiTime &TimeNow, CtiM
     return status;
 }
 
-INT Lcr3102Device::decodeGetConfigSoftspec( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+INT Lcr3102Device::decodeGetConfigSoftspec( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NoError;
 
-    DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
+    const DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
 
     CtiCommandParser parse(InMessage->Return.CommandStr);
@@ -810,11 +810,11 @@ INT Lcr3102Device::decodeGetConfigSoftspec( INMESS *InMessage, CtiTime &TimeNow,
     return status;
 }
 
-INT Lcr3102Device::decodeGetConfigAddressing( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+INT Lcr3102Device::decodeGetConfigAddressing( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NoError;
 
-    DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
+    const DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
 
     CtiCommandParser parse(InMessage->Return.CommandStr);
@@ -887,11 +887,11 @@ INT Lcr3102Device::decodeGetConfigAddressing( INMESS *InMessage, CtiTime &TimeNo
     return status;
 }
 
-INT Lcr3102Device::decodeGetConfigTime( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+INT Lcr3102Device::decodeGetConfigTime( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NoError;
 
-    DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
+    const DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
 
     CtiCommandParser parse(InMessage->Return.CommandStr);
@@ -919,7 +919,7 @@ INT Lcr3102Device::decodeGetConfigTime( INMESS *InMessage, CtiTime &TimeNow, Cti
     return status;
 }
 
-void Lcr3102Device::decodeMessageXfmrHistoricalRuntime( DSTRUCT DSt, std::vector<point_info> &runtimeHours)
+void Lcr3102Device::decodeMessageXfmrHistoricalRuntime( const DSTRUCT DSt, std::vector<point_info> &runtimeHours)
 {
     // The runtimeHours vector will contain the CT historical runtime data in order from the most
     // distant hour to the most recent.
@@ -936,7 +936,7 @@ void Lcr3102Device::decodeMessageXfmrHistoricalRuntime( DSTRUCT DSt, std::vector
     }
 }
 
-void Lcr3102Device::decodeMessageSoftspec( BYTE Message[], int &sspec, int &rev, int &serial, int &spid, int &geo )
+void Lcr3102Device::decodeMessageSoftspec( const BYTE Message[], int &sspec, int &rev, int &serial, int &spid, int &geo )
 {
     sspec  = Message[0] | (Message[4] << 8);
     rev    = Message[1];
@@ -945,7 +945,7 @@ void Lcr3102Device::decodeMessageSoftspec( BYTE Message[], int &sspec, int &rev,
     geo    = (Message[11] << 8) | Message[12];
 }
 
-void Lcr3102Device::decodeMessageAddress( BYTE Message[], int &prgAddr1, int &prgAddr2, int &prgAddr3, int &prgAddr4, int &splAddr1, int &splAddr2, int &splAddr3, int &splAddr4 )
+void Lcr3102Device::decodeMessageAddress( const BYTE Message[], int &prgAddr1, int &prgAddr2, int &prgAddr3, int &prgAddr4, int &splAddr1, int &splAddr2, int &splAddr3, int &splAddr4 )
 {
     prgAddr1 = Message[0];
     prgAddr2 = Message[1];
@@ -957,7 +957,7 @@ void Lcr3102Device::decodeMessageAddress( BYTE Message[], int &prgAddr1, int &pr
     splAddr4 = Message[7];
 }
 
-void Lcr3102Device::decodeMessageSubstation( BYTE Message[], int &substation, int &feeder, int &zip, int &uda )
+void Lcr3102Device::decodeMessageSubstation( const BYTE Message[], int &substation, int &feeder, int &zip, int &uda )
 {
     substation = (Message[0] << 8) | Message[1]; // Substation Address
     feeder = (Message[2] << 8) | Message[3]; // Feeder Address
@@ -965,25 +965,25 @@ void Lcr3102Device::decodeMessageSubstation( BYTE Message[], int &substation, in
     uda = (Message[7] << 8) | Message[8]; // User Defined Address
 }
 
-void Lcr3102Device::decodeMessageTime( BYTE Message[], CtiTime &time )
+void Lcr3102Device::decodeMessageTime( const BYTE Message[], CtiTime &time )
 {
     int utcSeconds = (Message[0] << 24) | (Message[1] << 16) | (Message[2] << 8) | Message[3];
 
     time = CtiTime::fromLocalSeconds(utcSeconds);
 }
 
-void Lcr3102Device::decodeMessageTransmitPower( BYTE Message[], int &transmitPower )
+void Lcr3102Device::decodeMessageTransmitPower( const BYTE Message[], int &transmitPower )
 {
     transmitPower = Message[0];
 }
 
-void Lcr3102Device::decodeMessageTemperature( BYTE Message[], int &txTemp, int &boxTemp )
+void Lcr3102Device::decodeMessageTemperature( const BYTE Message[], int &txTemp, int &boxTemp )
 {
     txTemp = (Message[0] << 8) | Message[1]; // TX Temp
     boxTemp = (Message[2] << 8) | Message[3]; // Box Temp
 }
 
-void Lcr3102Device::decodeMessageDutyCycle( BYTE Message[], int &dutyCycle, int &transformer )
+void Lcr3102Device::decodeMessageDutyCycle( const BYTE Message[], int &dutyCycle, int &transformer )
 {
     transformer = Message[0];
     dutyCycle   = Message[1];
@@ -1624,7 +1624,7 @@ int Lcr3102Device::parsePreviousValue(CtiCommandParser &parse)
 // Parses the buffer as having 6 bit values. 0x3F is considered an error
 // Returns the valuePosition'th 6-bit value from the buffer
 // All position values are 0 based!
-CtiDeviceSingle::point_info Lcr3102Device::getSixBitValueFromBuffer(unsigned char buffer[], unsigned int valuePosition, unsigned int bufferSize)
+CtiDeviceSingle::point_info Lcr3102Device::getSixBitValueFromBuffer(const unsigned char buffer[], unsigned int valuePosition, unsigned int bufferSize)
 {
     point_info retVal;
     retVal.freeze_bit = false;

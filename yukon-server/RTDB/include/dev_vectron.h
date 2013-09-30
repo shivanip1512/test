@@ -364,13 +364,13 @@ public:
 
    virtual INT allocateDataBins (OUTMESS *outMess);
 
-   virtual INT decodeResultScan ( INMESS *InMessage,
+   virtual INT decodeResultScan ( const INMESS *InMessage,
                           CtiTime &TimeNow,
                           std::list< CtiMessage* >   &vgList,
                           std::list< CtiMessage* > &retList,
                           std::list< OUTMESS* > &outList);
 
-   virtual INT decodeResultLoadProfile ( INMESS *InMessage,
+   virtual INT decodeResultLoadProfile ( const INMESS *InMessage,
                                  CtiTime &TimeNow,
                                  std::list< CtiMessage* >   &vgList,
                                  std::list< CtiMessage* > &retList,
@@ -381,12 +381,12 @@ public:
 
    USHORT getRate (int aOffset);
    USHORT getType (int aOffset);
-   BOOL getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, CtiTime &peak, VectronScanData_t *aScanData);
-   BOOL getRateValueFromRegister (DOUBLE &aValue, USHORT aType, USHORT aRate, CtiTime &aPeak, VectronScanData_t *data);
-   BOOL getRateValueFromRegister1 (DOUBLE &aValue, USHORT aRate, CtiTime &aPeak, VectronScanData_t *data);
-   BOOL getRateValueFromRegister2 (DOUBLE &aValue, USHORT aRate, CtiTime &aPeak, VectronScanData_t *data);
-   BOOL getRateValueFromRegister3 (DOUBLE &aValue, USHORT aRate, CtiTime &aPeak, VectronScanData_t *data);
-   BOOL getRateValueFromRegister4 (DOUBLE &aValue, USHORT aRate, CtiTime &aPeak, VectronScanData_t *data);
-   INT ResultDisplay (INMESS *InMessage);
+   BOOL getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, CtiTime &peak, const VectronScanData_t *aScanData);
+   BOOL getRateValueFromRegister (DOUBLE &aValue, USHORT aType, USHORT aRate, CtiTime &aPeak, const VectronScanData_t *data);
+   BOOL getRateValueFromRegister1 (DOUBLE &aValue, USHORT aRate, CtiTime &aPeak, const VectronScanData_t *data);
+   BOOL getRateValueFromRegister2 (DOUBLE &aValue, USHORT aRate, CtiTime &aPeak, const VectronScanData_t *data);
+   BOOL getRateValueFromRegister3 (DOUBLE &aValue, USHORT aRate, CtiTime &aPeak, const VectronScanData_t *data);
+   BOOL getRateValueFromRegister4 (DOUBLE &aValue, USHORT aRate, CtiTime &aPeak, const VectronScanData_t *data);
+   INT ResultDisplay (const INMESS *InMessage);
 
 };

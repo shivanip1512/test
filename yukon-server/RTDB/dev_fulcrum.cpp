@@ -689,8 +689,8 @@ INT CtiDeviceFulcrum::generateCommandLoadProfile (CtiXfer  &Transfer, list< CtiM
                 INT MMCurrentYear = 0;
 
                 // Convert to values we can use here... (little endian)
-                localMMConfig->RecordLength = (USHORT)bytesToBase10((UCHAR*) &(localMMConfig->RecordLength),2);
-                localMMConfig->CurrentRecord = (USHORT)bytesToBase10((UCHAR*) &(localMMConfig->CurrentRecord),2);
+                localMMConfig->RecordLength = (USHORT)bytesToBase10((const UCHAR*) &(localMMConfig->RecordLength),2);
+                localMMConfig->CurrentRecord = (USHORT)bytesToBase10((const UCHAR*) &(localMMConfig->CurrentRecord),2);
 
                 // Number of records which fit in MM
                 MMMaxRecord = (MMStop - MMStart) / localMMConfig->RecordLength;
@@ -1839,7 +1839,7 @@ INT CtiDeviceFulcrum::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commRet
 }
 
 
-INT CtiDeviceFulcrum::decodeResultScan (INMESS *InMessage,
+INT CtiDeviceFulcrum::decodeResultScan (const INMESS *InMessage,
                                         CtiTime &TimeNow,
                                         list< CtiMessage* >   &vgList,
                                         list< CtiMessage* > &retList,
@@ -1861,8 +1861,8 @@ INT CtiDeviceFulcrum::decodeResultScan (INMESS *InMessage,
     FLOAT    PartHour;
     DOUBLE   PValue;
 
-    DIALUPREQUEST      *DupReq = &InMessage->Buffer.DUPSt.DUPRep.ReqSt;
-    DIALUPREPLY        *DUPRep = &InMessage->Buffer.DUPSt.DUPRep;
+    const DIALUPREQUEST      *DupReq = &InMessage->Buffer.DUPSt.DUPRep.ReqSt;
+    const DIALUPREPLY        *DUPRep = &InMessage->Buffer.DUPSt.DUPRep;
 
 
     CtiPointDataMsg     *pData    = NULL;
@@ -1878,7 +1878,7 @@ INT CtiDeviceFulcrum::decodeResultScan (INMESS *InMessage,
                                             InMessage->Return.GrpMsgID,
                                             InMessage->Return.UserID);
 
-    FulcrumScanData_t  *Fsd = (FulcrumScanData_t*) DUPRep->Message;
+    const FulcrumScanData_t  *Fsd = (const FulcrumScanData_t*) DUPRep->Message;
     CtiTime peakTime;
 
 
@@ -1960,18 +1960,18 @@ INT CtiDeviceFulcrum::decodeResultScan (INMESS *InMessage,
 
 
 
-INT CtiDeviceFulcrum::decodeResultLoadProfile (INMESS *InMessage,
+INT CtiDeviceFulcrum::decodeResultLoadProfile (const INMESS *InMessage,
                                                CtiTime &TimeNow,
                                                list< CtiMessage* >   &vgList,
                                                list< CtiMessage* > &retList,
                                                list< OUTMESS* > &outList)
 {
 
-    DIALUPREQUEST                 *dupReq = &InMessage->Buffer.DUPSt.DUPRep.ReqSt;
-    DIALUPREPLY                   *dupRep = &InMessage->Buffer.DUPSt.DUPRep;
+    const DIALUPREQUEST                 *dupReq = &InMessage->Buffer.DUPSt.DUPRep.ReqSt;
+    const DIALUPREPLY                   *dupRep = &InMessage->Buffer.DUPSt.DUPRep;
 
-    FulcrumLoadProfileMessage_t   *fulcrumLProfile = (FulcrumLoadProfileMessage_t*)&dupRep->Message;
-    FulcrumMMConfig_t             *fulcrumMMConfig = (FulcrumMMConfig_t *)&fulcrumLProfile->MMConfig;
+    const FulcrumLoadProfileMessage_t   *fulcrumLProfile = (const FulcrumLoadProfileMessage_t*)&dupRep->Message;
+    const FulcrumMMConfig_t             *fulcrumMMConfig = (const FulcrumMMConfig_t *)&fulcrumLProfile->MMConfig;
 
     INT            numberOfIntervals;
     time_t         currentIntervalTime         = 0;
@@ -1983,8 +1983,8 @@ INT CtiDeviceFulcrum::decodeResultLoadProfile (INMESS *InMessage,
     INT            energyRegister       = -1;
     INT            pulseCount           = -1;
     FLOAT          pulseWeight          = -1.0;
-    BYTE           *pulseData           = NULL;
-    BYTE           *pulseTemp           = NULL;
+    const BYTE     *pulseData           = NULL;
+    const BYTE     *pulseTemp           = NULL;
 
     ULONG          goodPoint = !NORMAL;
     ULONG          lastLPTime;
@@ -2016,7 +2016,7 @@ INT CtiDeviceFulcrum::decodeResultLoadProfile (INMESS *InMessage,
     intervalLength    = (INT)fulcrumMMConfig->IntervalLength;
     recordLength      = (INT)fulcrumMMConfig->RecordLength;
     numActiveChannels = (INT)fulcrumMMConfig->NumberOfChannels;
-    pulseData         = ((BYTE*)(&fulcrumLProfile->MMBuffer)) + (3 + 8 + (6 * numActiveChannels));
+    pulseData         = ((const BYTE *)(&fulcrumLProfile->MMBuffer)) + (3 + 8 + (6 * numActiveChannels));
 
     if ((INT)fulcrumLProfile->MMBuffer[0] == 0)
     {
@@ -2035,7 +2035,7 @@ INT CtiDeviceFulcrum::decodeResultLoadProfile (INMESS *InMessage,
         // needs to be reset each time through the loop
         goodPoint = !NORMAL;
 
-        energyRegister = (INT)bytesToBase10(((BYTE*)&(fulcrumMMConfig->Program[programNumber].EnergyRegisterNumber)), 2);
+        energyRegister = (INT)bytesToBase10(((const BYTE*)&(fulcrumMMConfig->Program[programNumber].EnergyRegisterNumber)), 2);
 
         switch (energyRegister)
         {
@@ -2080,7 +2080,8 @@ INT CtiDeviceFulcrum::decodeResultLoadProfile (INMESS *InMessage,
            )
         {
             pulseTemp      = pulseData;
-            pulseWeight    = FltLittleEndian(&fulcrumMMConfig->Program[programNumber].PulseWeight);
+            pulseWeight    = fulcrumMMConfig->Program[programNumber].PulseWeight;
+            FltLittleEndian(&pulseWeight);
 
             for (i = 0; i < numberOfIntervals; i++)
             {
@@ -2137,12 +2138,12 @@ INT CtiDeviceFulcrum::decodeResultLoadProfile (INMESS *InMessage,
 }
 
 // Routine to display or print the message
-INT CtiDeviceFulcrum::ResultDisplay (INMESS *InMessage)
+INT CtiDeviceFulcrum::ResultDisplay (const INMESS *InMessage)
 
 {
     ULONG          i, j;
-    DIALUPREPLY    *DUPRep = &InMessage->Buffer.DUPSt.DUPRep;
-    FulcrumScanData_t  *Fsd = (FulcrumScanData_t*) InMessage->Buffer.DUPSt.DUPRep.Message;
+    const DIALUPREPLY    *DUPRep = &InMessage->Buffer.DUPSt.DUPRep;
+    const FulcrumScanData_t  *Fsd = (const FulcrumScanData_t*) InMessage->Buffer.DUPSt.DUPRep.Message;
      CHAR buffer[200];
 
      /**************************
@@ -2442,7 +2443,7 @@ INT CtiDeviceFulcrum::copyLoadProfileData(BYTE *aInMessBuffer, ULONG &aTotalByte
     return NORMAL;
 }
 
-BOOL CtiDeviceFulcrum::getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, CtiTime &peak,  FulcrumScanData_t *aScanData)
+BOOL CtiDeviceFulcrum::getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, CtiTime &peak, const FulcrumScanData_t *aScanData)
 {
     BOOL isValidPoint = FALSE;
 

@@ -109,7 +109,7 @@ ULONG CtiDeviceSchlumberger::previousMassMemoryAddress( ULONG SA,     // Startin
     return PA;
 }
 
-ULONG CtiDeviceSchlumberger::bytesToBase10(UCHAR* buffer, ULONG len)
+ULONG CtiDeviceSchlumberger::bytesToBase10(const UCHAR* buffer, ULONG len)
 {
     /*
      *  len is the number of bytes to decode from.
@@ -138,7 +138,7 @@ ULONG CtiDeviceSchlumberger::bytesToBase10(UCHAR* buffer, ULONG len)
 // This is really the only one Fulcrum uses.
 #define BIT_FORMAT_COUNT   12
 
-LONG CtiDeviceSchlumberger::nibblesAndBits(BYTE* bptr, INT MaxChannel, INT Channel, INT Interval)
+LONG CtiDeviceSchlumberger::nibblesAndBits(const unsigned char *bptr, INT MaxChannel, INT Channel, INT Interval)
 {
     LONG           lRet              = 0;
     INT            BitsPerInterval   = MaxChannel * BIT_FORMAT_COUNT;
@@ -464,7 +464,7 @@ BOOL CtiDeviceSchlumberger::insertPointIntoReturnMsg (CtiMessage   *aDataPoint,
     return retCode;
 }
 
-INT CtiDeviceSchlumberger::ResultDecode(INMESS *InMessage,
+INT CtiDeviceSchlumberger::ResultDecode(const INMESS *InMessage,
                                         CtiTime &TimeNow,
                                         list< CtiMessage* >   &vgList,
                                         list< CtiMessage* > &retList,

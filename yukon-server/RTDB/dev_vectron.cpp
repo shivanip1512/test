@@ -1688,7 +1688,7 @@ INT CtiDeviceVectron::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commRet
     return retCode;
 }
 
-INT CtiDeviceVectron::decodeResultScan (INMESS *InMessage,
+INT CtiDeviceVectron::decodeResultScan (const INMESS *InMessage,
                                         CtiTime &TimeNow,
                                         list< CtiMessage* >   &vgList,
                                         list< CtiMessage* > &retList,
@@ -1711,8 +1711,8 @@ INT CtiDeviceVectron::decodeResultScan (INMESS *InMessage,
     FLOAT    PartHour;
     DOUBLE   PValue;
 
-    DIALUPREQUEST      *DupReq = &InMessage->Buffer.DUPSt.DUPRep.ReqSt;
-    DIALUPREPLY        *DUPRep = &InMessage->Buffer.DUPSt.DUPRep;
+    const DIALUPREQUEST      *DupReq = &InMessage->Buffer.DUPSt.DUPRep.ReqSt;
+    const DIALUPREPLY        *DUPRep = &InMessage->Buffer.DUPSt.DUPRep;
 
 
     CtiPointDataMsg     *pData    = NULL;
@@ -1728,7 +1728,7 @@ INT CtiDeviceVectron::decodeResultScan (INMESS *InMessage,
                                             InMessage->Return.GrpMsgID,
                                             InMessage->Return.UserID);
 
-    VectronScanData_t  *vsd = (VectronScanData_t*) DUPRep->Message;
+    const VectronScanData_t  *vsd = (const VectronScanData_t*) DUPRep->Message;
     CtiTime peakTime;
 
 
@@ -1819,18 +1819,18 @@ INT CtiDeviceVectron::decodeResultScan (INMESS *InMessage,
 
 
 
-INT CtiDeviceVectron::decodeResultLoadProfile (INMESS *InMessage,
+INT CtiDeviceVectron::decodeResultLoadProfile (const INMESS *InMessage,
                                                CtiTime &TimeNow,
                                                list< CtiMessage* >   &vgList,
                                                list< CtiMessage* > &retList,
                                                list< OUTMESS* > &outList)
 {
 
-    DIALUPREQUEST                 *dupReq = &InMessage->Buffer.DUPSt.DUPRep.ReqSt;
-    DIALUPREPLY                   *dupRep = &InMessage->Buffer.DUPSt.DUPRep;
+    const DIALUPREQUEST                 *dupReq = &InMessage->Buffer.DUPSt.DUPRep.ReqSt;
+    const DIALUPREPLY                   *dupRep = &InMessage->Buffer.DUPSt.DUPRep;
 
-    VectronLoadProfileMessage_t   *vectronLProfile = (VectronLoadProfileMessage_t*)&dupRep->Message;
-    VectronMMConfig_t             *vectronMMConfig = (VectronMMConfig_t *)&vectronLProfile->MMConfig;
+    const VectronLoadProfileMessage_t   *vectronLProfile = (const VectronLoadProfileMessage_t*)&dupRep->Message;
+    const VectronMMConfig_t             *vectronMMConfig = (const VectronMMConfig_t *)&vectronLProfile->MMConfig;
 
     INT            numberOfIntervals;
     time_t         currentIntervalTime  = 0;
@@ -1842,8 +1842,8 @@ INT CtiDeviceVectron::decodeResultLoadProfile (INMESS *InMessage,
     INT            energyRegister       = -1;
     INT            pulseCount           = -1;
     FLOAT          pulseWeight          = -1.0;
-    BYTE           *pulseData           = NULL;
-    BYTE           *pulseTemp           = NULL;
+    const BYTE     *pulseData           = NULL;
+    const BYTE     *pulseTemp           = NULL;
 
     ULONG          goodPoint = !NORMAL;
     ULONG          lastLPTime;
@@ -1874,7 +1874,7 @@ INT CtiDeviceVectron::decodeResultLoadProfile (INMESS *InMessage,
     intervalLength    = (INT)vectronMMConfig->Real.intervalLength;
     recordLength      = (INT)vectronMMConfig->Real.recordLength;
     numActiveChannels = (INT)vectronMMConfig->Real.numberOfChannels;
-    pulseData         = ((BYTE*)(&vectronLProfile->MMBuffer)) + (3 + 9 + (6 * numActiveChannels));
+    pulseData         = ((const BYTE *)(&vectronLProfile->MMBuffer)) + (3 + 9 + (6 * numActiveChannels));
 
     if ((INT)vectronLProfile->MMBuffer[0] == 0)
     {
@@ -2012,11 +2012,10 @@ INT CtiDeviceVectron::decodeResultLoadProfile (INMESS *InMessage,
 }
 
 // Routine to display or print the message
-INT CtiDeviceVectron::ResultDisplay (INMESS *InMessage)
+INT CtiDeviceVectron::ResultDisplay (const INMESS *InMessage)
 
 {
-    ULONG          i, j;
-    VectronScanData_t  *vsd = (VectronScanData_t*) InMessage->Buffer.DUPSt.DUPRep.Message;
+    const VectronScanData_t  *vsd = (const VectronScanData_t*) InMessage->Buffer.DUPSt.DUPRep.Message;
     CHAR workString[10];
     CHAR buffer[200];
 
@@ -2781,7 +2780,7 @@ USHORT CtiDeviceVectron::getRate (int aOffset)
 }
 
 
-BOOL CtiDeviceVectron::getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, CtiTime &peak, VectronScanData_t *aScanData)
+BOOL CtiDeviceVectron::getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, CtiTime &peak, const VectronScanData_t *aScanData)
 {
     BOOL isValidPoint = FALSE;
 
@@ -2889,7 +2888,7 @@ BOOL CtiDeviceVectron::getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, 
 }
 
 
-BOOL CtiDeviceVectron::getRateValueFromRegister (DOUBLE &aValue, USHORT aType, USHORT aRate, CtiTime &aPeak, VectronScanData_t *data)
+BOOL CtiDeviceVectron::getRateValueFromRegister (DOUBLE &aValue, USHORT aType, USHORT aRate, CtiTime &aPeak, const VectronScanData_t *data)
 {
     int x;
     BOOL retCode=FALSE;
@@ -2924,7 +2923,7 @@ BOOL CtiDeviceVectron::getRateValueFromRegister (DOUBLE &aValue, USHORT aType, U
 BOOL CtiDeviceVectron::getRateValueFromRegister1 (DOUBLE &aValue,
                                                   USHORT aRate,
                                                   CtiTime &aPeak,
-                                                  VectronScanData_t *aScanData)
+                                                  const VectronScanData_t *aScanData)
 {
     BOOL retCode = FALSE;
     aValue = 0.0;
@@ -3028,7 +3027,7 @@ BOOL CtiDeviceVectron::getRateValueFromRegister1 (DOUBLE &aValue,
 BOOL CtiDeviceVectron::getRateValueFromRegister2 (DOUBLE &aValue,
                                                   USHORT aRate,
                                                   CtiTime &aPeak,
-                                                  VectronScanData_t *aScanData)
+                                                  const VectronScanData_t *aScanData)
 {
     BOOL retCode = FALSE;
     aValue = 0.0;
@@ -3140,7 +3139,7 @@ BOOL CtiDeviceVectron::getRateValueFromRegister2 (DOUBLE &aValue,
 BOOL CtiDeviceVectron::getRateValueFromRegister3 (DOUBLE &aValue,
                                                   USHORT aRate,
                                                   CtiTime &aPeak,
-                                                  VectronScanData_t *aScanData)
+                                                  const VectronScanData_t *aScanData)
 {
     BOOL retCode = FALSE;
     aValue = 0.0;
@@ -3187,7 +3186,7 @@ BOOL CtiDeviceVectron::getRateValueFromRegister3 (DOUBLE &aValue,
 BOOL CtiDeviceVectron::getRateValueFromRegister4 (DOUBLE &aValue,
                                                   USHORT aRate,
                                                   CtiTime &aPeak,
-                                                  VectronScanData_t *aScanData)
+                                                  const VectronScanData_t *aScanData)
 {
     BOOL retCode = FALSE;
     aValue = 0.0;

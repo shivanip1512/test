@@ -1441,7 +1441,7 @@ Mct470Device::DecodeMapping Mct470Device::initDecodeLookup()
 const Mct470Device::DecodeMapping Mct470Device::_decodeMethods = Mct470Device::initDecodeLookup();
 
 
-INT Mct470Device::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct470Device::ModelDecode(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     if( !InMessage )
     {
@@ -3677,7 +3677,7 @@ int Mct470Device::sendDNPConfigMessages(int startMCTID, OutMessageList &outList,
     return nRet;
 }
 
-INT Mct470Device::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct470Device::decodeGetValueKWH(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 
@@ -3697,7 +3697,7 @@ INT Mct470Device::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, CtiMess
     ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
     CtiTime pointTime;
-    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
     const unsigned char *freeze_counter = 0;
 
@@ -3798,14 +3798,14 @@ INT Mct470Device::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, CtiMess
 }
 
 
-INT Mct470Device::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct470Device::decodeGetValueDemand(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     int  status = NORMAL, i;
     bool demand_defined = false;
     point_info pi;
 
     INT ErrReturn = InMessage->EventCode & 0x3fff;
-    DSTRUCT *DSt  = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
     CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
@@ -3882,14 +3882,14 @@ INT Mct470Device::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, CtiM
 }
 
 
-INT Mct470Device::decodeGetValueMinMaxDemand(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct470Device::decodeGetValueMinMaxDemand(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     int         status = NORMAL, base_offset;
     point_info  pi, pi_time;
     CtiTime     pointTime;
 
     INT ErrReturn = InMessage->EventCode & 0x3fff;
-    DSTRUCT *DSt  = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
     CtiCommandParser parse(InMessage->Return.CommandStr);
 
@@ -3991,7 +3991,7 @@ void Mct470Device::reportPointData(const CtiPointType_t pointType, const int poi
 }
 
 
-INT Mct470Device::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct470Device::decodeGetValueIED(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     int        status = NORMAL,
                frozen = 0,
@@ -4002,7 +4002,7 @@ INT Mct470Device::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, CtiMess
 
     CtiCommandParser parse(InMessage->Return.CommandStr);
 
-    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
     CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg *pData = NULL;
@@ -4731,7 +4731,7 @@ unsigned long Mct470Device::convertTimestamp(const unsigned long timestamp, cons
 }
 
 
-INT Mct470Device::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct470Device::decodeGetConfigIED(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     int status = NORMAL;
 
@@ -4741,7 +4741,7 @@ INT Mct470Device::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, CtiMes
     CtiCommandParser parse(InMessage->Return.CommandStr);
 
     INT ErrReturn  =  InMessage->EventCode & 0x3fff;
-    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
     CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg *pData     = NULL;
@@ -4974,11 +4974,11 @@ INT Mct470Device::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, CtiMes
 }
 
 
-INT Mct470Device::decodeGetStatusInternal( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+INT Mct470Device::decodeGetStatusInternal( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NORMAL;
 
-    unsigned char *geneBuf = InMessage->Buffer.DSt.Message;
+    const unsigned char *geneBuf = InMessage->Buffer.DSt.Message;
 
     string resultString;
 
@@ -5060,12 +5060,12 @@ INT Mct470Device::decodeGetStatusInternal( INMESS *InMessage, CtiTime &TimeNow, 
 }
 
 
-INT Mct470Device::decodeGetStatusLoadProfile( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+INT Mct470Device::decodeGetStatusLoadProfile( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NORMAL, lp_channel;
 
-    unsigned char *geneBuf = InMessage->Buffer.DSt.Message;
-    DSTRUCT *DSt  = &InMessage->Buffer.DSt;
+    const unsigned char *geneBuf = InMessage->Buffer.DSt.Message;
+    const DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
     CtiCommandParser parse(InMessage->Return.CommandStr);
 
@@ -5119,12 +5119,12 @@ INT Mct470Device::decodeGetStatusLoadProfile( INMESS *InMessage, CtiTime &TimeNo
 }
 
 
-INT Mct470Device::decodeGetStatusDNP( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+INT Mct470Device::decodeGetStatusDNP( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NORMAL, lp_channel;
 
-    unsigned char *geneBuf = InMessage->Buffer.DSt.Message;
-    DSTRUCT *DSt  = &InMessage->Buffer.DSt;
+    const unsigned char *geneBuf = InMessage->Buffer.DSt.Message;
+    const DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
     CtiCommandParser parse(InMessage->Return.CommandStr);
 
@@ -5179,11 +5179,11 @@ INT Mct470Device::decodeGetStatusDNP( INMESS *InMessage, CtiTime &TimeNow, CtiMe
     return status;
 }
 
-INT Mct470Device::decodeGetStatusFreeze( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+INT Mct470Device::decodeGetStatusFreeze( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
      INT status = NORMAL;
 
-     DSTRUCT *DSt  = &InMessage->Buffer.DSt;
+     const DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
      string resultString;
      unsigned long tmpTime;
@@ -5234,11 +5234,11 @@ INT Mct470Device::decodeGetStatusFreeze( INMESS *InMessage, CtiTime &TimeNow, Ct
      return status;
 }
 
-INT Mct470Device::decodeGetConfigIntervals(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct470Device::decodeGetConfigIntervals(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 
-    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
     CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     string resultString;
@@ -5279,11 +5279,11 @@ INT Mct470Device::decodeGetConfigIntervals(INMESS *InMessage, CtiTime &TimeNow, 
 }
 
 
-INT Mct470Device::decodeGetConfigIedDnpAddress(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct470Device::decodeGetConfigIedDnpAddress(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 
-    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
     CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     string resultString;
@@ -5379,11 +5379,11 @@ string Mct470Device::describeChannel(unsigned char channel_config) const
 }
 
 
-INT Mct470Device::decodeGetConfigChannelSetup(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct470Device::decodeGetConfigChannelSetup(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 
-    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
     CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     string result_string, dynamic_info;
@@ -5416,11 +5416,11 @@ INT Mct470Device::decodeGetConfigChannelSetup(INMESS *InMessage, CtiTime &TimeNo
 }
 
 
-INT Mct470Device::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct470Device::decodeGetConfigModel(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 
-    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
     string sspec;
     string options;
@@ -5474,7 +5474,7 @@ INT Mct470Device::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, CtiM
     return status;
 }
 
-INT Mct470Device::decodeGetConfigMultiplier(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct470Device::decodeGetConfigMultiplier(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 
@@ -5482,7 +5482,7 @@ INT Mct470Device::decodeGetConfigMultiplier(INMESS *InMessage, CtiTime &TimeNow,
 
     string descriptor;
 
-    DSTRUCT &DSt   = InMessage->Buffer.DSt;
+    const DSTRUCT &DSt   = InMessage->Buffer.DSt;
 
     CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
 
@@ -5525,7 +5525,7 @@ INT Mct470Device::decodeGetConfigMultiplier(INMESS *InMessage, CtiTime &TimeNow,
 }
 
 //I hate to do this, we must ensure no one ever passes a null buffer into here...
-void Mct470Device::decodeDNPRealTimeRead(BYTE *buffer, int readNumber, string &resultString, CtiReturnMsg *ReturnMsg, INMESS *InMessage)
+void Mct470Device::decodeDNPRealTimeRead(const BYTE *buffer, int readNumber, string &resultString, CtiReturnMsg *ReturnMsg, const INMESS *InMessage)
 {
     point_info   pi;
     CtiPointSPtr tempPoint;
@@ -5626,11 +5626,11 @@ void Mct470Device::decodeDNPRealTimeRead(BYTE *buffer, int readNumber, string &r
 }
 
 
-INT Mct470Device::decodeGetValuePhaseCurrent(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct470Device::decodeGetValuePhaseCurrent(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 
-    DSTRUCT &DSt   = InMessage->Buffer.DSt;
+    const DSTRUCT &DSt   = InMessage->Buffer.DSt;
 
     CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
 
