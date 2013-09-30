@@ -336,7 +336,7 @@ public:
     * extended version of this command.  Note that a maximum of 30 bytes
     * may be sent.
     *-----------------------------------------------------------------*/
-   INT    VersacomDataCommand(BYTE *message, INT len = 6);
+   INT    VersacomDataCommand(const BYTE *message, INT len = 6);
 
    /*-----------------------------------------------------------------*
     * This is the raw VCONFIG command.

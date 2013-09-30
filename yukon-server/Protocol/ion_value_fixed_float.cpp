@@ -68,10 +68,10 @@ unsigned int CtiIONFloat::getSerializedValueLength( void ) const
 
 void CtiIONFloat::putSerializedValue( unsigned char *buf ) const
 {
-    buf[0] = ((unsigned char *)&_float)[3];
-    buf[1] = ((unsigned char *)&_float)[2];
-    buf[2] = ((unsigned char *)&_float)[1];
-    buf[3] = ((unsigned char *)&_float)[0];
+    buf[0] = ((const unsigned char *)&_float)[3];
+    buf[1] = ((const unsigned char *)&_float)[2];
+    buf[2] = ((const unsigned char *)&_float)[1];
+    buf[3] = ((const unsigned char *)&_float)[0];
 }
 
 

@@ -607,11 +607,11 @@ bool CtiTransdataTracker::grabChannels( BYTE *data, int bytes )
    if( bytes < 400 )
    {
       memcpy( fluff, data, bytes );
-      char *ptr = fluff;
+      const char *ptr = fluff;
 
       while( !foundCorrectCommand )
       {
-         char *temp = (char*) strstr( ( const char*)ptr, "DC" );
+         const char *temp = strstr( ptr, "DC" );
 
          if( temp != NULL )
          {
@@ -635,12 +635,12 @@ bool CtiTransdataTracker::grabChannels( BYTE *data, int bytes )
             //
          for( int index = 0; index < 8; index++ )
          {
-            ptr = (char*) strstr( ( const char*)ptr, " " );
+            ptr = strstr( ptr, " " );
 
             if( ptr != NULL )
             {
                ptr++;
-                    _lp->enabledChannels[atoi( ptr )] = true;
+               _lp->enabledChannels[atoi( ptr )] = true;
             }
             else
             {
@@ -664,11 +664,11 @@ bool CtiTransdataTracker::grabFormat( BYTE *data, int bytes )
    if( bytes < 400 )
    {
       memcpy( fluff, data, bytes );
-      char *ptr = fluff;
+      const char *ptr = fluff;
 
       for( ;; )
       {
-         char *temp = (char*) strstr( ( const char*)ptr, "IS" );
+         const char *temp = strstr( ptr, "IS" );
 
          if( temp != NULL )
          {
@@ -685,7 +685,7 @@ bool CtiTransdataTracker::grabFormat( BYTE *data, int bytes )
       {
          for( int index = 0; index < 3; index++ )
          {
-            ptr = (char*) strstr( ( const char*)ptr, "\n" );
+            ptr = strstr( ptr, "\n" );
 
             if( ptr != NULL )
             {
@@ -718,7 +718,7 @@ bool CtiTransdataTracker::grabTime( BYTE *data, int bytes )
    if( bytes < 400 )
    {
       memcpy( fluff, data, bytes );
-      char *ptr = fluff;
+      const char *ptr = fluff;
 
       for( int i = 0; i < 6; i++ )
       {
@@ -729,7 +729,7 @@ bool CtiTransdataTracker::grabTime( BYTE *data, int bytes )
       //make this a general thing and run everybody through it...!
       for( ;; )
       {
-         char *temp = (char*) strstr( ( const char*)ptr, "GT" );
+         const char *temp = strstr( ptr, "GT" );
 
          if( temp != NULL )
          {
@@ -746,7 +746,7 @@ bool CtiTransdataTracker::grabTime( BYTE *data, int bytes )
       {
          for( int index = 0; index < 6; index++ )
          {
-            ptr = (char*) strstr( ( const char*)ptr, "\n" );
+            ptr = strstr( ptr, "\n" );
 
             if( ptr != NULL )
             {

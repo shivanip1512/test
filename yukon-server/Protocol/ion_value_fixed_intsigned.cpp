@@ -80,10 +80,10 @@ unsigned int CtiIONSignedInt::getSerializedValueLength( void ) const
 
 void CtiIONSignedInt::putSerializedValue( unsigned char *buf ) const
 {
-    buf[0] = ((unsigned char *)&_signedInt)[3];
-    buf[1] = ((unsigned char *)&_signedInt)[2];
-    buf[2] = ((unsigned char *)&_signedInt)[1];
-    buf[3] = ((unsigned char *)&_signedInt)[0];
+    buf[0] = ((const unsigned char *)&_signedInt)[3];
+    buf[1] = ((const unsigned char *)&_signedInt)[2];
+    buf[2] = ((const unsigned char *)&_signedInt)[1];
+    buf[3] = ((const unsigned char *)&_signedInt)[0];
 }
 
 

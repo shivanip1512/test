@@ -1224,7 +1224,7 @@ INT    CtiProtocolVersacom::VersacomConfigLEDCommand(BYTE leds)
     return updateVersacomMessage();
 }
 
-INT CtiProtocolVersacom::VersacomDataCommand(BYTE *message, INT len)
+INT CtiProtocolVersacom::VersacomDataCommand(const BYTE *message, INT len)
 {
     int i;
     _vst.back()->CommandType           = ((len > 6) ? EXDATA : VDATA);
@@ -1556,7 +1556,7 @@ INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRU
     {
         primeAndAppend(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
 
-        if(VersacomDataCommand( (BYTE *)parse.getsValue("raw").c_str() ), parse.getsValue("raw").length())
+        if(VersacomDataCommand( (const BYTE *)parse.getsValue("raw").c_str() ), parse.getsValue("raw").length())
             removeLastVStruct();
     }
 

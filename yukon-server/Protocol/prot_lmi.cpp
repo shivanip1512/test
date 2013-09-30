@@ -210,7 +210,7 @@ int CtiProtocolLMI::recvCommResult( const INMESS *InMessage, std::list< OUTMESS*
     //  copy out the codes
     for( int i = 0; i < lmi_in.num_codes; i++ )
     {
-        _returned_codes.push(*((unsigned int *)(buf + offset)));
+        _returned_codes.push(*((const unsigned int *)(buf + offset)));
 
         offset += sizeof(unsigned int);
     }

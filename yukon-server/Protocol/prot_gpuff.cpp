@@ -85,7 +85,7 @@ GpuffProtocol::decoded_packet GpuffProtocol::decode( const unsigned char *p_data
 
                             string device_name;
 
-                            device_name.assign((char *)p_data + pos, 128);
+                            device_name.assign((const char *)p_data + pos, 128);
                             if( device_name.find('\0') != string::npos )
                             {
                                 device_name.erase(device_name.find_first_of('\0'));
@@ -253,7 +253,7 @@ GpuffProtocol::decoded_packet GpuffProtocol::decode( const unsigned char *p_data
 
                             if( (pos + hostname_len) < (len - (crc_included * 2)) )
                             {
-                                hostname.assign((char *)p_data + pos, hostname_len);
+                                hostname.assign((const char *)p_data + pos, hostname_len);
                             }
 
                             {
@@ -705,7 +705,7 @@ GpuffProtocol::decoded_packet GpuffProtocol::decode( const unsigned char *p_data
 
                             string device_name;
 
-                            device_name.assign((char *)p_data + pos, 128);
+                            device_name.assign((const char *)p_data + pos, 128);
                             if( device_name.find('\0') != string::npos )
                             {
                                 device_name.erase(device_name.find_first_of('\0'));
@@ -2761,7 +2761,7 @@ vector<unsigned char> GpuffProtocol::generateAck(decoded_packet p)
 string GpuffProtocol::convertBytesToString( const unsigned char *buf, int &position, int bytes_to_combine )
 {
     string str;
-    str.assign((char *)buf + position, bytes_to_combine);
+    str.assign((const char *)buf + position, bytes_to_combine);
     if( str.find('\0') != string::npos ) str.erase(str.find_first_of('\0'));
     position += bytes_to_combine;
 

@@ -284,7 +284,7 @@ void CtiIONApplicationLayer::putSerialized( unsigned char *buf ) const
     appOutDataLen |= _appOut.header.length.byte0;
 
     //  copy the header data
-    memcpy( buf, (unsigned char *)&_appOut.header, sizeof(_appOut.header) );
+    memcpy( buf, (const unsigned char *)&_appOut.header, sizeof(_appOut.header) );
 
     //  copy the payload data
     memcpy( buf + sizeof(_appOut.header), _appOut.IONData, appOutDataLen );

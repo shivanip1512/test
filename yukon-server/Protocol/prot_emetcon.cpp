@@ -56,8 +56,8 @@ void buildBWordMessage(OUTMESS *&out_result, bool double_message)
        {
            // Nail the CWORDS into the correct location in the current message.
            C_Words((unsigned char *) (out_result->Buffer.OutMessage+PREIDLEN+PREAMLEN+BWORDLEN),
-                   (unsigned char *)  out_template.Buffer.BSt.Message,
-                   (unsigned short)   out_template.Buffer.BSt.Length,
+                   out_template.Buffer.BSt.Message,
+                   out_template.Buffer.BSt.Length,
                    (unsigned int *)  &wordsToWrite);
        }
 

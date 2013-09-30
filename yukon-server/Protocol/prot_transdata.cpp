@@ -226,7 +226,7 @@ vector<CtiTransdataData *> CtiProtocolTransdata::resultDecode( const INMESS *InM
 
           if( ptr != NULL )
           {
-             ptr = ( unsigned char*)strchr(( const char*)ptr, '\n' );
+             ptr = (const unsigned char*)strchr((const char*)ptr, '\n' );
              ptr++;
           }
        }
