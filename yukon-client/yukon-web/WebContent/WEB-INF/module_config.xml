@@ -726,6 +726,8 @@
                                 <link>/adminSetup/config/category</link>
                                 <labelArgument>${categoryName}</labelArgument>
                             </page>
+                            <page name="config.themes" type="BLANK"/>
+                            <page name="config.weather" type="BLANK"/>
                         </pages>
                     </page>
                     

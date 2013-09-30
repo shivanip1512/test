@@ -18,9 +18,8 @@
                         <cti:url value="edit" var="category_url"><cti:param name="category" value="${subcategory.first}"/></cti:url>
                         <a href="${category_url}" class="icon icon-32 fl ${subcategory.second}"></a>
                         <div class="box fl meta">
-                            <a class="title" href="${category_url}"><i:inline key="yukon.common.setting.subcategory.${subcategory.first}"/></a>
-                            <br/>
-                            <span class="detail"><i:inline key="yukon.common.setting.subcategory.${subcategory.first}.description"/></span>
+                            <div><a class="title" href="${category_url}"><i:inline key="yukon.common.setting.subcategory.${subcategory.first}"/></a></div>
+                            <div class="detail"><i:inline key="yukon.common.setting.subcategory.${subcategory.first}.description"/></div>
                         </div>
                     </div>
                 </c:forEach>
@@ -31,9 +30,8 @@
                         <cti:url value="edit" var="category_url"><cti:param name="category" value="${subcategory.first}"/></cti:url>
                         <a href="${category_url}" class="icon icon-32 fl ${subcategory.second}"></a>
                         <div class="box fl meta">
-                            <a class="title" href="${category_url}"><i:inline key="yukon.common.setting.subcategory.${subcategory.first}"/></a>
-                            <br/>
-                            <span class="detail"><i:inline key="yukon.common.setting.subcategory.${subcategory.first}.description"/></span>
+                            <div><a class="title" href="${category_url}"><i:inline key="yukon.common.setting.subcategory.${subcategory.first}"/></a></div>
+                            <div class="detail"><i:inline key="yukon.common.setting.subcategory.${subcategory.first}.description"/></div>
                         </div>
                     </div>
                 </c:forEach>

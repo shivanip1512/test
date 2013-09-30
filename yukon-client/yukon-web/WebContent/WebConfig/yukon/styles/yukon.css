@@ -1,4 +1,4 @@
-/* CONTENTS */
+/* VARIABLES */
 /*
 This file defines the basic look and feel of Yukon.
 This file can be included on consumer pages to reuse container styles.
@@ -302,7 +302,7 @@ table.nowrap th,table.nowrap td {
 }
 
 .compactResultsTable.separated tr:not(:last-child) {
-    border-bottom: 1px dashed #ccc;
+	border-bottom: 1px dashed #ccc;
 }
 
 .compactResultsPaging {
@@ -445,7 +445,9 @@ background: -webkit-linear-gradient(top, #8c0c10, #8c0c10 10%, #bf0f12, #8c0c10 
 	width: 55px;
 }
 
-.actionArea .progressBar .progressBarBorder, .pageActionArea .progressBar .progressBarBorder {margin-top:6px;}
+.actionArea .progressBar .progressBarBorder,.pageActionArea .progressBar .progressBarBorder {
+	margin-top: 6px;
+}
 
 .result-bar {
 	height: 14px;
@@ -520,7 +522,10 @@ ul.disc li {
 	list-style: none;
 }
 
-.property-list li {float:left; margin-right: 5px;}
+.property-list li {
+	float: left;
+	margin-right: 5px;
+}
 
 .tree-list li li {
 	margin-left: 15px;
@@ -972,17 +977,49 @@ input.error {
 	border-color: #d14836;
 }
 
-.stateBox.green {background-color: green;}
-.stateBox.red {background-color: red;}
-.stateBox.white {background-color: white;}
-.stateBox.yellow {background-color: yellow;}
-.stateBox.blue {background-color: blue;}
-.stateBox.cyan {background-color: cyan;}
-.stateBox.black {background-color: black;}
-.stateBox.orange {background-color: orange;}
-.stateBox.magenta {background-color: magenta;}
-.stateBox.gray {background-color: gray;}
-.stateBox.pink {background-color: pink;}
+.stateBox.green {
+	background-color: green;
+}
+
+.stateBox.red {
+	background-color: red;
+}
+
+.stateBox.white {
+	background-color: white;
+}
+
+.stateBox.yellow {
+	background-color: yellow;
+}
+
+.stateBox.blue {
+	background-color: blue;
+}
+
+.stateBox.cyan {
+	background-color: cyan;
+}
+
+.stateBox.black {
+	background-color: black;
+}
+
+.stateBox.orange {
+	background-color: orange;
+}
+
+.stateBox.magenta {
+	background-color: magenta;
+}
+
+.stateBox.gray {
+	background-color: gray;
+}
+
+.stateBox.pink {
+	background-color: pink;
+}
 
 /* DIALOGS */
 .popUpDiv,.widgetPopup,.ui-dialog {
@@ -1141,7 +1178,7 @@ body ::-webkit-scrollbar-button {
 /* CATEGORIES AND SETTINGS  */
 .dashboard .category {
 	width: 440px;
-	margin: 0 30px 30px 0;
+	margin: 0 30px 10px 0;
 	float: left;
 	overflow: hidden;
 }
@@ -1356,12 +1393,96 @@ hr.dashed,.divider.dashed {
 .with-form-controls {
 	line-height: 26px;
 }
-.with-form-controls td button.naked, 
-.with-form-controls td .button.naked {
-    margin-top: 5px;
+
+.with-form-controls td button.naked,.with-form-controls td .button.naked {
+	margin-top: 5px;
 }
-@-webkit-keyframes pulse { from {opacity: 0.3;} to {opacity: 1.0;}}
-.pulse {-webkit-animation-name: pulse;-webkit-animation-duration: 1s;-webkit-animation-iteration-count: infinite;-webkit-animation-timing-function: ease-in-out;-webkit-animation-direction: alternate;}
+
+@keyframes "pulse" {
+ from {
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=30)";
+   	filter: alpha(opacity=30);
+   	opacity: 0.3;
+ }
+ to {
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+   	filter: alpha(opacity=100);
+   	opacity: 1.0;
+ }
+
+}
+
+@-moz-keyframes pulse {
+ from {
+   filter: alpha(opacity=30);
+   opacity: 0.3;
+ }
+ to {
+   filter: alpha(opacity=100);
+   opacity: 1.0;
+ }
+
+}
+
+@-webkit-keyframes "pulse" {
+ from {
+   filter: alpha(opacity=30);
+   opacity: 0.3;
+ }
+ to {
+   filter: alpha(opacity=100);
+   opacity: 1.0;
+ }
+
+}
+
+@-ms-keyframes "pulse" {
+ from {
+   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=30)";
+   filter: alpha(opacity=30);
+   opacity: 0.3;
+ }
+ to {
+   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+   filter: alpha(opacity=100);
+   opacity: 1.0;
+ }
+
+}
+
+@-o-keyframes "pulse" {
+ from {
+   filter: alpha(opacity=30);
+   opacity: 0.3;
+ }
+ to {
+   filter: alpha(opacity=100);
+   opacity: 1.0;
+ }
+
+}
+
+.pulse {
+	-webkit-animation-name: pulse;
+	-moz-animation-name: pulse;
+	-ms-animation-name: pulse;
+	-o-animation-name: pulse;
+	animation-name: pulse;
+	-webkit-animation-duration: 1s;
+
+	-webkit-animation-iteration-count: infinite;
+	-moz-animation-iteration-count: infinite;
+	-ms-animation-iteration-count: infinite;
+	-o-animation-iteration-count: infinite;
+	animation-iteration-count: infinite;
+
+	-webkit-animation-timing-function: ease-in-out;
+	-moz-animation-timing-function: ease-in-out;
+	-ms-animation-timing-function: ease-in-out;
+	-o-animation-timing-function: ease-in-out;
+	animation-timing-function: ease-in-out;
+	-webkit-animation-direction: alternate;
+}
 
 /* DATE/TIME PICKERS */
 .datetimeEntry_wrap {
@@ -1456,11 +1577,11 @@ input.dateTimePicker {
 	margin-left: 0;
 }
 
-.has-actions .dropdown-container {
+.has-actions .dropdown-container,.show-on-hover {
 	visibility: hidden;
 }
 
-.has-actions tr:hover .dropdown-container,.has-actions li:hover .dropdown-container,.has-actions .dropdown-container.menu-open {
+.has-actions tr:hover .dropdown-container,.has-actions li:hover .dropdown-container,.has-actions .dropdown-container.menu-open,.tr:hover .show-on-hover,li:hover .show-on-hover {
 	visibility: visible;
 }
 

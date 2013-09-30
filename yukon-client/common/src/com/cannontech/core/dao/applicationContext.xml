@@ -80,6 +80,8 @@
   <bean id="globalSettingDao" class="com.cannontech.system.dao.impl.GlobalSettingDaoImpl"/>
   <bean class="com.cannontech.system.dao.impl.GlobalSettingEditorDaoImpl"/>
   <bean class="com.cannontech.system.dao.impl.GlobalSettingUpdateDaoImpl"/>
+  
+  <bean class="com.cannontech.system.dao.impl.ThemeDaoImpl"/>
 
   <bean class="com.cannontech.stars.energyCompany.dao.impl.EnergyCompanySettingDaoImpl"/>
 

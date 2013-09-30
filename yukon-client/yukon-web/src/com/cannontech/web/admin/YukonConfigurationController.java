@@ -48,9 +48,9 @@ import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
+@SuppressWarnings("deprecation")
 @Controller
 @CheckRoleProperty(YukonRoleProperty.ADMIN_SUPER_USER)
-@RequestMapping("/config/*")
 public class YukonConfigurationController {
     
     @Autowired private GlobalSettingEditorDao globalSettingEditorDao;
@@ -84,6 +84,8 @@ public class YukonConfigurationController {
         b.put(GlobalSettingSubCategory.VOICE, "icon-32-phone");
         b.put(GlobalSettingSubCategory.OPEN_ADR, "icon-32-openadr");
         b.put(GlobalSettingSubCategory.MISC, "icon-32-folder");
+        b.put(GlobalSettingSubCategory.THEMES, "icon-32-brush");
+        b.put(GlobalSettingSubCategory.WEATHER, "icon-32-cloud2");
         iconMap = b.build();
     }
     
@@ -99,8 +101,9 @@ public class YukonConfigurationController {
         return result;
     }
     
-    @RequestMapping
+    @RequestMapping("/config/view")
     public String view(ModelMap model, final YukonUserContext context) {
+        
         final MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
         
         Comparator<Pair<GlobalSettingSubCategory, String>> sorter = new Comparator<Pair<GlobalSettingSubCategory, String>>() {
@@ -121,6 +124,7 @@ public class YukonConfigurationController {
         systemSetup.add(Pair.of(GlobalSettingSubCategory.DR, iconMap.get(GlobalSettingSubCategory.DR)));
         systemSetup.add(Pair.of(GlobalSettingSubCategory.YUKON_SERVICES, iconMap.get(GlobalSettingSubCategory.YUKON_SERVICES)));
         systemSetup.add(Pair.of(GlobalSettingSubCategory.WEB_SERVER, iconMap.get(GlobalSettingSubCategory.WEB_SERVER)));
+        systemSetup.add(Pair.of(GlobalSettingSubCategory.THEMES, iconMap.get(GlobalSettingSubCategory.THEMES)));
         Collections.sort(systemSetup, sorter);
         
         List<Pair<GlobalSettingSubCategory, String>> application = Lists.newArrayList();
@@ -133,6 +137,7 @@ public class YukonConfigurationController {
         integration.add(Pair.of(GlobalSettingSubCategory.MULTISPEAK, iconMap.get(GlobalSettingSubCategory.MULTISPEAK)));
         integration.add(Pair.of(GlobalSettingSubCategory.VOICE, iconMap.get(GlobalSettingSubCategory.VOICE)));
         integration.add(Pair.of(GlobalSettingSubCategory.OPEN_ADR, iconMap.get(GlobalSettingSubCategory.OPEN_ADR)));
+        integration.add(Pair.of(GlobalSettingSubCategory.WEATHER, iconMap.get(GlobalSettingSubCategory.WEATHER)));
         Collections.sort(integration, sorter);
         
         List<Pair<GlobalSettingSubCategory, String>> other = Lists.newArrayList();
@@ -149,8 +154,16 @@ public class YukonConfigurationController {
         return "config/view.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("/config/edit")
     public String edit(ModelMap model, YukonUserContext context, GlobalSettingSubCategory category) throws ExecutionException {
+        
+        /** Themes have a special editor, redirect there (@link {ThemeController}) */
+        if (category == GlobalSettingSubCategory.THEMES) {
+            return "redirect:/adminSetup/config/theme";
+        } else if (category == GlobalSettingSubCategory.WEATHER) {
+            return "redirect:/adminSetup/config/weather";
+        }
+        
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
         
         model.addAttribute("category", category);
@@ -201,9 +214,9 @@ public class YukonConfigurationController {
         model.addAttribute("category_icon", iconMap.get(category));
     }
     
-    @RequestMapping(value="update", method=RequestMethod.POST, params="save")
+    @RequestMapping(value="/config/update", method=RequestMethod.POST, params="save")
     public String save(HttpServletRequest request, 
-                       @ModelAttribute("command")GlobalSettingsEditorBean command, BindingResult result, 
+                       @ModelAttribute("command") GlobalSettingsEditorBean command, BindingResult result, 
                        YukonUserContext context, 
                        ModelMap map, 
                        FlashScope flashScope) throws Exception {

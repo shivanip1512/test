@@ -122,7 +122,7 @@ function ${widgetParameters.widgetId}_updateDifference() {
 </div>
 
 <%--TODO make this into a tag --%>
-<dialog:inline nameKey="devicePoints" arguments="${deviceName}" okEvent="none" on="#readings_quick_view" options="{'modal' : false, 'width' : 600, 'height' : 500}">
+<i:simplePopup id="poinvalues-quickview" titleKey="yukon.web.components.dialog.devicePoints.title" arguments="${deviceName}" on="#readings_quick_view" options="{'modal' : false, 'width' : 600, 'height' : 500}">
     <table class="compactResultsTable rowHighlighting">
         <thead>
             <tr>
@@ -148,4 +148,4 @@ function ${widgetParameters.widgetId}_updateDifference() {
          </c:forEach>
         </tbody>
     </table>
-</dialog:inline>
+</i:simplePopup>

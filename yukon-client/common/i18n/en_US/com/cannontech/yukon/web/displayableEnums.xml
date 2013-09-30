@@ -133,6 +133,8 @@
     <entry key="yukon.common.setting.subcategory.MISC.description">Everything else</entry>
     <entry key="yukon.common.setting.subcategory.THEMES">Themes</entry>
     <entry key="yukon.common.setting.subcategory.THEMES.description">Change the way Yukon looks</entry>
+    <entry key="yukon.common.setting.subcategory.WEATHER">Weather</entry>
+    <entry key="yukon.common.setting.subcategory.WEATHER.description">Add weather tracking locations to Yukon</entry>
     
     <!-- YukonSettingCategory -->
     <entry key="yukon.common.setting.category.APPLICATION">Application</entry>

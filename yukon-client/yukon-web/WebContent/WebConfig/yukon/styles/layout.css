@@ -1,4 +1,4 @@
-/* CONTENTS */
+/* VARIABLES */
 /* VARIABLES */
 /* default:  988px */
 html {
@@ -181,7 +181,7 @@ nav,header,footer,section,aside,hgroup,section {
 .yukon-header .nav ul .logo a {
 	display: inline-block;
 	min-height: 68px;
-	background: url("/WebConfig/yukon/layout/eaton_logo.png") 0px 17px no-repeat;
+	background: url('/WebConfig/yukon/layout/eaton_logo.png') 0px 17px no-repeat;
 	width: 163px;
 }
 
@@ -274,7 +274,7 @@ nav,header,footer,section,aside,hgroup,section {
 }
 
 .login-content {
-	background: url(/WebConfig/yukon/layout/bg_mountain_1920_420_fade2.jpg) no-repeat scroll center top #e0e0f5;
+	background: url('/WebConfig/yukon/layout/bg_mountain_1920_420_fade2.jpg') no-repeat scroll center top #e0e0f5;
 	min-height: 420px;
 	position: relative;
 }
@@ -344,7 +344,7 @@ nav,header,footer,section,aside,hgroup,section {
 }
 
 .yukon-footer .footer .content .right .branding .footer-logo {
-	background: url("/WebConfig/yukon/layout/powered_by_yukon_white.png") 0 0 no-repeat;
+	background: url('/WebConfig/yukon/layout/powered_by_yukon_white.png') 0 0 no-repeat;
 	display: inline-block;
 	float: right;
 	height: 29px;

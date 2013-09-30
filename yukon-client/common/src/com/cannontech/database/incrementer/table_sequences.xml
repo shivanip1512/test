@@ -335,5 +335,8 @@
       <sequence name="EstimatedLoadFormulaAssignment">
         <table name="EstimatedLoadFormulaAssignment" identitycolumn="FormulaAssignmentId" initsequence="true" />
       </sequence>
+      <sequence name="Theme">
+        <table name="Theme" identitycolumn="ThemeId" initsequence="true" />
+      </sequence>
   </sequencetable>
 </sequencetables>
