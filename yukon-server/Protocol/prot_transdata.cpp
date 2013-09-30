@@ -201,7 +201,7 @@ vector<CtiTransdataData *> CtiProtocolTransdata::resultDecode( const INMESS *InM
    vector<CtiTransdataData *> transVector;
 
    ptr = ( const unsigned char*)( InMessage->Buffer.InMessage );
-   BYTE *pEND = (BYTE*)( InMessage->Buffer.InMessage ) + sizeof(InMessage->Buffer.InMessage);   // 20060908 Don't decode beyond your DATA!
+   const BYTE *pEND = (const BYTE*)( InMessage->Buffer.InMessage ) + sizeof(InMessage->Buffer.InMessage);   // 20060908 Don't decode beyond your DATA!
 
    lp = ( const llp *)ptr;
 
