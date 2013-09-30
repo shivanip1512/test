@@ -46,7 +46,9 @@ protected:
 
     virtual Bytes getCommandData();
 
-    virtual void populateTlvs( std::vector< TypeLengthValue > & tlvs );
+    typedef std::vector< TypeLengthValue > TlvList;
+
+    virtual TlvList getTlvs( void );
 
     const Operation _operation;
 
@@ -70,7 +72,7 @@ class IM_EX_DEVDB RfnVoltageProfileConfigurationCommand : public RfnLoadProfileC
 {
 protected:
 
-    virtual void populateTlvs( std::vector< TypeLengthValue > & tlvs );
+    virtual TlvList getTlvs( void );
 
     enum
     {
@@ -151,7 +153,7 @@ class IM_EX_DEVDB RfnLoadProfileReadPointsCommand : public RfnLoadProfileCommand
 
 protected:
 
-    virtual void populateTlvs( std::vector< TypeLengthValue > & tlvs );
+    virtual TlvList getTlvs( void );
 
 public:
 
