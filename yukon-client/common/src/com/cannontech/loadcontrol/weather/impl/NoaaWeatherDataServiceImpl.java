@@ -133,15 +133,15 @@ public class NoaaWeatherDataServiceImpl implements NoaaWeatherDataService {
             for (int j = 0; j < stationNodeList.getLength(); j++) {
                 Node stationNode = stationNodeList.item(j);
 
-                if (stationNode.getNodeName() == "station_id") {
+                if (stationNode.getNodeName().equals("station_id")) {
                     stationId = stationNode.getTextContent();
-                } else if (stationNode.getNodeName() == "station_name") {
+                } else if (stationNode.getNodeName().equals("station_name")) {
                     stationDesc = stationNode.getTextContent();
-                } else if (stationNode.getNodeName() == "latitude") {
+                } else if (stationNode.getNodeName().equals("latitude")) {
                     latitude = Double.parseDouble(stationNode.getTextContent());
-                } else if (stationNode.getNodeName() == "longitude") {
+                } else if (stationNode.getNodeName().equals("longitude")) {
                     longitude = Double.parseDouble(stationNode.getTextContent());
-                } else if (stationNode.getNodeName() == "xml_url") {
+                } else if (stationNode.getNodeName().equals("xml_url")) {
                     currentObsUrl = stationNode.getTextContent();
                 }
             }

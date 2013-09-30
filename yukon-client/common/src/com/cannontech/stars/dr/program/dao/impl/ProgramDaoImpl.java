@@ -16,14 +16,21 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoClass;
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.ProgramNotFoundException;
+import com.cannontech.core.dao.impl.PaoNameDisplayablePaoRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonRowMapperAdapter;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
@@ -44,11 +51,14 @@ public class ProgramDaoImpl implements ProgramDao {
     private static final String selectSql;
     private final ParameterizedRowMapper<Integer> groupIdRowMapper = createGroupIdRowMapper();
     private final ParameterizedRowMapper<Integer> programIdRowMapper = createProgramIdRowMapper();
+    private final PaoNameDisplayablePaoRowMapper programRowMapper = new PaoNameDisplayablePaoRowMapper();
 
     @Autowired private ApplianceAndProgramDao applianceAndProgramDao;
     @Autowired private ApplianceCategoryDao applianceCategoryDao;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
+    @Autowired private PaoDao paoDao;
     private ChunkingSqlTemplate chunkingSqlTemplate;
     
     @PostConstruct
@@ -351,5 +361,22 @@ public class ProgramDaoImpl implements ProgramDao {
             return loadGroupList.get(0);
         }
         return 0;
+    }
+
+    @Override
+    public DisplayablePao getProgram(int programId) {
+        Set<PaoType> paoTypes = paoDefinitionDao.getPaoTypesThatSupportTag(PaoTag.LM_PROGRAM);
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT paObjectId, paoName, type FROM yukonPAObject");
+        sql.append("WHERE type").in(paoTypes);
+        sql.append("AND paObjectId").eq(programId);
+
+        return yukonJdbcTemplate.queryForObject(sql, programRowMapper);
+    }
+
+    @Override
+    public List<PaoIdentifier> getAllProgramPaoIdentifiers() {
+        return paoDao.getAllPaoIdentifiersForTags(PaoTag.LM_PROGRAM);
     }
 }

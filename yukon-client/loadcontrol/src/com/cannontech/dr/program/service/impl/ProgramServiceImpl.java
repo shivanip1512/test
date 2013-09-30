@@ -48,7 +48,6 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.dr.dao.ProgramDao;
 import com.cannontech.dr.program.filter.ForLoadGroupFilter;
 import com.cannontech.dr.program.model.GearAdjustment;
 import com.cannontech.dr.program.service.ConstraintContainer;
@@ -77,6 +76,7 @@ import com.cannontech.message.util.Message;
 import com.cannontech.message.util.ServerRequest;
 import com.cannontech.message.util.ServerRequestImpl;
 import com.cannontech.message.util.TimeoutException;
+import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 

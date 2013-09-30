@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.stars.dr.appliance.model.Appliance;
 import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
 import com.cannontech.stars.dr.program.model.Program;
@@ -22,22 +24,18 @@ public interface ProgramDao {
     public List<Program> getByProgramIds(Iterable<Integer> programIdList);
     
     /**
-     * Gets a program by its by its program name.  It will through an exception if it Doesn't
-     * find it and will also throw an exception if it finds more than one.
-     * 
-     * @param programName
-     * @param energyCompanyIds
-     * @return
+     * Gets a program by its by its program name.
+     *
+     * Throws an exception if the program isn't found
+     * Throws an exception if more than one program is found
      */
     public Program getByProgramName(String programName, int energyCompanyId);
     
     /**
-     * Gets a program by its by its alternate program name.  It will through an exception if it Doesn't
-     * find it and will also throw an exception if it finds more than one.
-     * 
-     * @param alternateProgramName
-     * @param energyCompanyIds
-     * @return
+     * Gets a program by its by its alternate program name.
+     *
+     * Throws an exception if the program isn't found
+     * Throws an exception if more than one program is found
      */
     public Program getByAlternateProgramName(String alternateProgramName, int energyCompanyId);
     
@@ -66,5 +64,7 @@ public interface ProgramDao {
      * Returns the first load group found assigned to this program.
      */
     public int getLoadGroupIdForProgramId(int programId);
-    
+
+    public DisplayablePao getProgram(int programId);
+    public List<PaoIdentifier> getAllProgramPaoIdentifiers();
 }

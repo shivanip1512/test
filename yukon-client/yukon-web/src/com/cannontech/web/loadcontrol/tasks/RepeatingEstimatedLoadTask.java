@@ -64,10 +64,8 @@ public class RepeatingEstimatedLoadTask extends YukonTaskBase {
         }
 
         log.info("Updating Estimated Load Historical data");
-        List<PaoIdentifier> lmPaos = paoDao.getAllPaoIdentifiersForTags(PaoTag.LM_PROGRAM);
-        // These could use a single dao call except we want the programs calculated first so the
-        // control areas and scenarios use the cached values which is why we add them to the end of the list
-        lmPaos.addAll(paoDao.getAllPaoIdentifiersForTags(PaoTag.LM_CONTROL_AREA, PaoTag.LM_SCENARIO));
+        List<PaoIdentifier> lmPaos
+            = paoDao.getAllPaoIdentifiersForTags(PaoTag.LM_PROGRAM, PaoTag.LM_CONTROL_AREA, PaoTag.LM_SCENARIO);
 
         createPoints(lmPaos);
         populatePointData(lmPaos);
