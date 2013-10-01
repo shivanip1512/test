@@ -25,7 +25,7 @@ import com.cannontech.web.updater.UpdateBackingService;
 
 public class WeatherDataBackingService implements UpdateBackingService {
     private Logger log = YukonLogManager.getLogger(WeatherDataBackingService.class);
-    private String baseKey = "yukon.web.modules.dr.estimatedLoad.weatherInput.";
+    private String baseKey = "yukon.web.modules.adminSetup.config.weather.weatherInput.";
 
     // data should be less than 1 hour old, this gives us some wiggle room
     private Duration weatherDataValidDuration = Duration.standardMinutes(90);
@@ -44,9 +44,8 @@ public class WeatherDataBackingService implements UpdateBackingService {
         if (weatherLocation == null) {
             if (Field.getFrom(identifier) == Field.JSON_META_DATA) {
                 return JSONObject.fromObject(Collections.singletonMap("invalidPaoError", "true")).toString();
-            } else {
-                return messageAccessor.getMessage("yukon.web.defaults.na");
             }
+            return messageAccessor.getMessage("yukon.web.defaults.na");
         }
 
         WeatherObservation weatherObs;
@@ -55,9 +54,8 @@ public class WeatherDataBackingService implements UpdateBackingService {
         } catch(DynamicDataAccessException e) {
             if (Field.getFrom(identifier) == Field.JSON_META_DATA) {
                 return JSONObject.fromObject(Collections.singletonMap("dispatchError", "true")).toString();
-            } else {
-                return messageAccessor.getMessage("yukon.web.defaults.na");
             }
+            return messageAccessor.getMessage("yukon.web.defaults.na");
         }
 
         String value;

@@ -5,7 +5,7 @@
 <%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
-<cti:msgScope paths="modules.dr.estimatedLoad">
+<cti:msgScope paths="modules.adminSetup.config.weather">
     <c:if test="${empty weatherLocations}">
         <span class="empty-list"><i:inline key=".noWeatherLocations"/></span>
     </c:if>
@@ -38,7 +38,7 @@
                         <td>${fn:escapeXml(weatherStations[weatherLocation.stationId].stationDesc)}</td>
                         <td>
                             <cti:dataUpdaterCallback
-                             function="Yukon.DrFormula.updateWeatherInputFields"
+                             function="Yukon.AdminSetupConfig.updateWeatherInputFields"
                              initialize="true"
                              value="WEATHER_STATION/${weatherLocation.paoIdentifier.paoId}/JSON_META_DATA" />
                             <span id="temperatureField_${weatherLocation.paoIdentifier.paoId}" class="f-drFormula-temperature-field">

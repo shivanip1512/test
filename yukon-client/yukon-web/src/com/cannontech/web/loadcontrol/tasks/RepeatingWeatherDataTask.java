@@ -10,8 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.common.events.loggers.SystemEventLogService;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoInfo;
@@ -46,22 +44,10 @@ public class RepeatingWeatherDataTask extends YukonTaskBase {
     @Autowired private AttributeService attributeService;
     @Autowired private SimplePointAccessDao pointAccessDao;
 
-    private final boolean estimatedLoadEnabled;
     private Duration oldWeatherDataDuration = Duration.standardMinutes(59);
-
-    @Autowired 
-    public RepeatingWeatherDataTask(ConfigurationSource configurationSource) {
-        this.estimatedLoadEnabled
-            = configurationSource.getBoolean(MasterConfigBooleanKeysEnum.ENABLE_ESTIMATED_LOAD, false);
-    }
 
     @Override
     public void start() {
-        if (!estimatedLoadEnabled) {
-            log.info("Ignoring job " + this.getJob().getBeanName() + ". This job is not authorized to run on this machine.");
-            return;
-        }
-
         Instant start = new Instant();
         List<LiteYukonPAObject> weatherLocations = paoDao.getLiteYukonPAObjectByType(PaoType.WEATHER_LOCATION.getDeviceTypeId());
         Map<String, WeatherStation> weatherStationMap = noaaWeatherService.getAllWeatherStations();

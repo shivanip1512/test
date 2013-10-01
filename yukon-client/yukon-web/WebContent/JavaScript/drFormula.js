@@ -350,42 +350,6 @@ Yukon.DrFormula = (function() {
         return false;
     },
 
-   _searchWeatherStationsAgainBtnClick = function() {
-        jQuery("#weatherLocationSearchResults").fadeOut(50, function() {
-            jQuery("#weatherLocationSearch").fadeIn(50);
-        });
-    },
-
-    _newWeatherLocationBtnClick = function() {
-        jQuery("#weatherLocationSearch").show();
-        jQuery("#weatherLocationSearchResults").hide();
-        var title = jQuery("#weatherStationSearchTitle").html();
-        jQuery("#weatherStationDialog").dialog({minWidth:500, title:title});
-    },
-
-    _searchWeatherStationsBtnClick = function() {
-        jQuery("#findCloseStationsForm").ajaxSubmit({success: function(data) {
-            jQuery("#weatherStationDialog").fadeOut(50, function () {
-                jQuery(this).html(data).fadeIn(50);
-                Yukon.ui.elementGlass.hide(jQuery("#weatherStationDialog"));
-            });
-        }});
-    },
-
-    _saveWeatherStationBtnClick = function() {
-        jQuery("#saveWeatherLocationForm").ajaxSubmit({success: function(data) {
-            jQuery("#weatherStationDialog").fadeOut(50, function () {
-                jQuery(this).html(data);
-                if (jQuery("#dialogState").val() == 'done') {
-                    jQuery("#weatherStationDialog").dialog('close');
-                    jQuery("#weatherLocations").load("weatherLocationsTableAjax");
-                } else {
-                    jQuery(this).fadeIn(50);
-                }
-            });
-        }});
-    },
-
     drFormulaModule = {
         init: function () {
             if (_initialized) {
@@ -417,15 +381,6 @@ Yukon.DrFormula = (function() {
             jQuery(".f-drFormula-replaceViaAjax")
                 .on('click', '.f-ajaxPaging', _ajaxPagingBtnClick)
                 .on('click', ".f-drFormula-sortLink", _sortBtnClick);
-            jQuery("#weatherStationDialog")
-                .on("click","#searchWeatherStationsAgain", _searchWeatherStationsAgainBtnClick)
-                .on("click","#searchWeatherStations", _searchWeatherStationsBtnClick)
-                .on("click","#saveWeatherStationBtn", _saveWeatherStationBtnClick);
-            jQuery("#newWeatherLocationBtn")
-                .click(_newWeatherLocationBtnClick);
-            jQuery("#weatherLocations")
-                .load("weatherLocationsTableAjax");
-            jQuery(document).on("submit", "#saveWeatherLocationForm", function (){return false;});
 
             _initialized = true;
         },
@@ -495,43 +450,6 @@ Yukon.DrFormula = (function() {
                 jQuery("#formulaPickerRowGear_"+gearId).html(data).flashYellow(.75);
             });
         },
-
-        updateWeatherInputFields : function(metaData) {
-            var metaDataObj = JSON.parse(metaData.value);
-            var paoId = metaDataObj.paoId;
-
-            if (metaDataObj.dispatchError) {
-                jQuery("#dispatchError").show();
-                jQuery(".f-drFormula-temperature-field").removeClass("error").addClass("disabled");
-                jQuery(".f-drFormula-humidity-field").removeClass("error").addClass("disabled");
-                jQuery(".f-drFormula-timestamp-field").removeClass("error").addClass("disabled");
-            } else {
-                jQuery("#dispatchError").hide();
-            }
-
-            if (metaDataObj.invalidPaoError) {
-                // A weather location was probably deleted, reload table
-                jQuery("#weatherLocations").load("weatherLocationsTableAjax");
-            }
-
-            if (metaDataObj.humidity !== 'valid') {
-                jQuery("#humidityField_"+paoId).addClass("disabled");
-            } else {
-                jQuery("#humidityField_"+paoId).removeClass("disabled");
-            }
-
-            if (metaDataObj.temperature !== 'valid') {
-                jQuery("#temperatureField_"+paoId).addClass("disabled");
-            } else {
-                jQuery("#temperatureField_"+paoId).removeClass("disabled");
-            }
-
-            if (metaDataObj.timestamp !== 'valid') {
-                jQuery("#timestampField_"+paoId).addClass("error").removeClass("disabled");
-            } else {
-                jQuery("#timestampField_"+paoId).removeClass("error disabled");
-            }
-        }
     };
     return drFormulaModule;
 }());

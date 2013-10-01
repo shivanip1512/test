@@ -8,22 +8,34 @@
 <%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog"%>
 
 <cti:standardPage module="adminSetup" page="config.weather">
+<cti:includeScript link="/JavaScript/adminSetupConfig.js"/>
+<cti:includeScript link="/JavaScript/yukon/ui/confirm_dialog_manager.js"/>
 
 <div class="box clear dashboard">
-
-        <div class="clearfix box">
-            <div class="category fl">
-                <a href="weather" class="icon icon-32 fl icon-32-cloud2"></a>
-                <div class="box fl meta">
-                    <div><a class="title" href="/adminSetup/config/weather"><i:inline key="yukon.common.setting.subcategory.${category}"/></a></div>
-                    <div class="detail"><i:inline key="yukon.common.setting.subcategory.${category}.description"/></div>
-                </div>
+    <div class="clearfix box">
+        <div class="category fl">
+            <a href="weather" class="icon icon-32 fl icon-32-cloud2"></a>
+            <div class="box fl meta">
+                <div><a class="title" href="/adminSetup/config/weather"><i:inline key="yukon.common.setting.subcategory.WEATHER"/></a></div>
+                <div class="detail"><i:inline key="yukon.common.setting.subcategory.WEATHER.description"/></div>
             </div>
-            
         </div>
-        
-        <div><!-- dans weather stuffs --></div>
-        
+    </div>
+    <div>
+        <div id="weatherStationDialog" style="display:none">
+            <%@ include file="_weatherStations.jsp" %>
+        </div>
+        <div id="weatherLocationsLoading">
+            <img src="<c:url value="/WebConfig/yukon/Icons/spinner.gif"/>" alt="<cti:msg2 key="yukon.web.components.waiting"/>"/>
+            <i:inline key=".loadingWeatherLocations"/>
+        </div>
+        <div id="weatherLocations">
+            <!-- Not loaded initially to increase page load speed -->
+        </div>
+        <div class="actionArea">
+           <cti:button icon="icon-plus-green" nameKey="createWeatherLocation" id="newWeatherLocationBtn"/>
+        </div>
+    </div>
 </div>
 
 </cti:standardPage>

@@ -4,7 +4,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
-<cti:msgScope paths="modules.dr.estimatedLoad">
+<cti:msgScope paths="modules.adminSetup.config.weather">
     <input type='hidden' id='dialogState' value="${dialogState}"/>
     <div id="weatherStationSearchTitle" style="display:none">
         <i:inline key=".weatherStations.searchDialog"/>

@@ -36,7 +36,46 @@
     <entry key="yukon.web.modules.adminSetup.config.error.invalidProxy">Invalid Proxy Setting</entry>
     
     <entry key="yukon.web.modules.adminSetup.config.themes.pageName">Themes</entry>
-        <entry key="yukon.web.modules.adminSetup.config.weather.pageName">Weather</entry>
+
+    <entry key="yukon.web.modules.adminSetup.config.weather.pageName">Weather</entry>
+    <entry key="yukon.web.modules.adminSetup.config.weather.createWeatherLocation.label">New Weather Location</entry>
+    <entry key="yukon.web.modules.adminSetup.config.weather.errors.cannotRemoveWeatherLoc">You cannot remove a weather location that is being used in a formula.</entry>
+    <entry key="yukon.web.modules.adminSetup.config.weather.errors.nameAlreadyUsed">Name is already used</entry>
+    <entry key="yukon.web.modules.adminSetup.config.weather.errors.blankName">Name cannot be blank</entry>
+    <entry key="yukon.web.modules.adminSetup.config.weather.error.unableToLoadWeaterStations">Unable to load weather stations. Check your logs for more information.</entry>
+    <entry key="yukon.web.modules.adminSetup.config.weather.error.dispatchNotConnected">There is a problem connecting to dispatch. Data will not update until connection is established.</entry>
+    <entry key="yukon.web.modules.adminSetup.config.weather.error.problemLoadingStationData">There is a problem loading weather station data from NOAA. Check your logs for more information.</entry>
+    <entry key="yukon.web.modules.adminSetup.config.weather.errors.noStationId">You must select a weather station</entry>
+    <entry key="yukon.web.modules.adminSetup.config.weather.errors.invalidLongitude">Invalid Longitude</entry>
+    <entry key="yukon.web.modules.adminSetup.config.weather.errors.invalidLatitude">Invalid Latitude</entry>
+    <entry key="yukon.web.modules.adminSetup.config.weather.humidity">Humidity</entry>
+    <entry key="yukon.web.modules.adminSetup.config.weather.lastUpdated">Last Updated</entry>
+    <entry key="yukon.web.modules.adminSetup.config.weather.loadingWeatherLocations">Loading Weather Locations</entry>
+    <entry key="yukon.web.modules.adminSetup.config.weather.longitude">Longitude</entry>
+    <entry key="yukon.web.modules.adminSetup.config.weather.latitude">Latitude</entry>
+    <entry key="yukon.web.modules.adminSetup.config.weather.name">Name</entry>
+	<entry key="yukon.web.modules.adminSetup.config.weather.noWeatherLocations">No Weather Locations</entry>
+	<entry key="yukon.web.modules.adminSetup.config.weather.outdatedData">Outdated or no Data</entry>
+	<entry key="yukon.web.modules.adminSetup.config.weather.stationDescription">Station Description</entry>
+	<entry key="yukon.web.modules.adminSetup.config.weather.stationId">Station Id</entry>
+	<entry key="yukon.web.modules.adminSetup.config.weather.temp">Temperature</entry>
+    <entry key="yukon.web.modules.adminSetup.config.weather.searchResultInfo">Here are the five closest NOAA weather stations available including the distance from requested coordinate.</entry>
+    <entry key="yukon.web.modules.adminSetup.config.weather.success.removedWeatherLocation">Weather location removed successfully</entry>
+    <entry key="yukon.web.modules.adminSetup.config.weather.weatherInputs.title">Weather Data Inputs</entry>
+    <entry key="yukon.web.modules.adminSetup.config.weather.weatherInputs">Weather Inputs</entry>
+    <entry key="yukon.web.modules.adminSetup.config.weather.weatherInput.fahrenheit">{0} &#176;F</entry>
+    <entry key="yukon.web.modules.adminSetup.config.weather.weatherInput.humidity">{0} %</entry>
+    <entry key="yukon.web.modules.adminSetup.config.weather.weatherInput.noData">(no data)</entry>
+    <entry key="yukon.web.modules.adminSetup.config.weather.weatherInput.timestamp">{0}</entry>
+    <entry key="yukon.web.modules.adminSetup.config.weather.weatherStation.milesUnit">m</entry>
+    <entry key="yukon.web.modules.adminSetup.config.weather.weatherStations">Weather Stations</entry>
+    <entry key="yukon.web.modules.adminSetup.config.weather.weatherStations.search.label">Search</entry>
+    <entry key="yukon.web.modules.adminSetup.config.weather.weatherStations.search"><![CDATA[
+    We will search the NOAA database and return the closest weather stations.
+    <br>
+    Valid inputs include only decimal values. S & W are negative. (e.g. 37&#176;44'55.49''S = -37.74861)
+    ]]></entry>
+    <entry key="yukon.web.modules.adminSetup.config.weather.weatherStations.searchDialog">New Weather Location</entry>
     
     <entry key="yukon.web.modules.adminSetup.security.pageName">Security</entry>
     <entry key="yukon.web.modules.adminSetup.security.keyBox.title">Encryption Keys</entry>

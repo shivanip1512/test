@@ -522,16 +522,7 @@
 <entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.loadManagementServerNotConnected">Not connected to Load Management server.</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.calculationType">Calculation Type</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.calculationType.linkText">Calculation Type</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.createWeatherLocation.label">New Weather Location</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.errors.blankName">Name cannot be blank</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.errors.invalidLatitude">Invalid Latitude</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.errors.invalidLongitude">Invalid Longitude</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.errors.nameAlreadyUsed">Name is already used</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.errors.noStationId">You must select a weather station</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.errors.cannotRemoveWeatherLoc">You cannot remove a weather location that is being used in a formula.</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.error.unableToLoadWeaterStations">Unable to load weather stations. Check your logs for more information.</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.error.problemLoadingStationData">There is a problem loading weather station data from NOAA. Check your logs for more information.</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.error.dispatchNotConnected">There is a problem connecting to dispatch. Data will not update until connection is established.</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.formula">Formula</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.formula.linkText">Formula</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.formulas">Formulas</entry>
@@ -542,13 +533,9 @@
 <entry key="yukon.web.modules.dr.estimatedLoad.gearControlMethod.linkText">Control Method</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.gearId">Gear Id</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.gears.title">Gears</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.humidity">Humidity</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.kwSavings">{0} kW / {1} kW</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.latitude">Latitude</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.lastUpdated">Last Updated</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.loadInKw">{0} kW</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.loadingWeatherLocations">Loading Weather Locations</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.longitude">Longitude</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.name">Name</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.name.linkText">Name</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.newFormula.label">New Formula</entry>
@@ -557,30 +544,8 @@
 <entry key="yukon.web.modules.dr.estimatedLoad.noAssignment.label">(no assignment)</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.noFormulas">No formulas</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.noGears">No gears</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.noWeatherLocations">No Weather Locations</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.outdatedData">Outdated or no Data</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.searchResultInfo">Here are the five closest NOAA weather stations available including the distance from requested coordinate.</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.success.removedWeatherLocation">Weather location removed successfully</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.stationDescription">Station Description</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.stationId">Station Id</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.temp">Temperature</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.pageName">Estimated Load</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.program.linkText">Program</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.weatherInputs.title">Weather Data Inputs</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.weatherInputs">Weather Inputs</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.weatherInput.fahrenheit">{0} &#176;F</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.weatherInput.humidity">{0} %</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.weatherInput.noData">(no data)</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.weatherInput.timestamp">{0}</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.weatherStation.milesUnit">m</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.weatherStations">Weather Stations</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.weatherStations.search.label">Search</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.weatherStations.search"><![CDATA[
-We will search the NOAA database and return the closest weather stations.
-<br>
-Valid inputs include only decimal values. S & W are negative. (e.g. 37&#176;44'55.49''S = -37.74861)
-]]></entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.weatherStations.searchDialog">New Weather Location</entry>
 
 <entry key="yukon.web.modules.dr.formula.actions">Actions</entry>
 <entry key="yukon.web.modules.dr.formula.addAssignment.label">Add Assignment</entry>

@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -45,11 +44,8 @@ import com.cannontech.dr.estimatedload.GearAssignment;
 import com.cannontech.dr.estimatedload.dao.FormulaDao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.loadcontrol.data.LMProgramDirectGear;
-import com.cannontech.loadcontrol.weather.GeographicCoordinate;
-import com.cannontech.loadcontrol.weather.NoaaWeatherDataService;
 import com.cannontech.loadcontrol.weather.WeatherDataService;
 import com.cannontech.loadcontrol.weather.WeatherLocation;
-import com.cannontech.loadcontrol.weather.WeatherStation;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
 import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
@@ -78,12 +74,10 @@ public class EstimatedLoadController {
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
     @Autowired private ObjectFormattingService objectFormatingService;
     @Autowired private PaoDao paoDao;
-    @Autowired private WeatherDataService weatherDataService;
-    @Autowired private NoaaWeatherDataService noaaWeatherDataService;
     @Autowired private AttributeService attributeService;
+    @Autowired private WeatherDataService weatherDataService;
 
     private String baseKey = "yukon.web.modules.dr.formula.";
-    private static final int numWeatherStationsToReturn = 5;
     private FormulaBeanValidator formulaBeanValidator = new FormulaBeanValidator(baseKey);
     public static enum SortBy {NAME, CALCULATION_TYPE, TYPE, GEAR_CONTROL_METHOD,
                                APP_CAT_AVERAGE_LOAD, IS_ASSIGNED, PROGRAM_NAME}
@@ -94,109 +88,8 @@ public class EstimatedLoadController {
         listPageAjax(model, context, SortBy.NAME, false, 10, 1);
         appCatAssignmentsPage(model, context, SortBy.NAME, false, 10, 1);
         gearAssignmentsPage(model, context, SortBy.NAME, false, 10, 1);
-        model.addAttribute("weatherLocationBean", new WeatherLocationBean());
 
         return "dr/estimatedLoad/home.jsp";
-    }
-
-    @RequestMapping
-    public String weatherLocationsTableAjax(ModelMap model) {
-
-        List<WeatherLocation> weatherLocations = weatherDataService.getAllWeatherLocations();
-        Map<String, WeatherStation> weatherStations = noaaWeatherDataService.getAllWeatherStations();
-
-        model.addAttribute("weatherStations", weatherStations);
-        model.addAttribute("weatherLocations", weatherLocations);
-        model.addAttribute("weatherLocationBean", new WeatherLocationBean());
-
-        return "dr/estimatedLoad/_weatherLocationsTable.jsp";
-    }
-
-    @RequestMapping
-    public String removeWeatherLocation(FlashScope flashScope, int paoId) {
-
-        boolean isUsed = formulaDao.hasFormulaInputPoints(paoId);
-
-        if (isUsed) {
-            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.dr.estimatedLoad.errors.cannotRemoveWeatherLoc"));
-        } else {
-            weatherDataService.deleteWeatherLocation(paoId);
-            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.estimatedLoad.success.removedWeatherLocation"));
-        }
-        return "redirect:home";
-    }
-
-    @RequestMapping
-    public String saveWeatherLocation(ModelMap model, WeatherLocationBean weatherLocationBean, BindingResult bindingResult) {
-
-        validateLatLon(weatherLocationBean.getLatitude(), weatherLocationBean.getLongitude(), bindingResult);
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("dialogState", "searching");
-            return "dr/estimatedLoad/_weatherStations.jsp";
-        }
-
-        double lat = Double.parseDouble(weatherLocationBean.getLatitude());
-        double lon = Double.parseDouble(weatherLocationBean.getLongitude());
-        GeographicCoordinate requestedCoordinate = new GeographicCoordinate(lat, lon);
-
-        if (StringUtils.isBlank(weatherLocationBean.getName())) {
-            bindingResult.rejectValue("name", "yukon.web.modules.dr.estimatedLoad.errors.blankName");
-        } else if (!weatherDataService.isNameAvailableForWeatherLocation(weatherLocationBean.getName())){
-            bindingResult.rejectValue("name", "yukon.web.modules.dr.estimatedLoad.errors.nameAlreadyUsed");
-        }
-        if (StringUtils.isBlank(weatherLocationBean.getStationId())) {
-            bindingResult.rejectValue("stationId", "yukon.web.modules.dr.estimatedLoad.errors.noStationId");
-        }
-
-        if (bindingResult.hasErrors()) {
-            int numStations = addWeatherStationsToModel(model, requestedCoordinate);
-            if (numStations < numWeatherStationsToReturn) {
-                model.addAttribute("dialogState", "searching");
-            } else {
-                model.addAttribute("dialogState", "saving");
-            }
-
-            model.addAttribute("numberWeatherStations", numStations);
-            return "dr/estimatedLoad/_weatherStations.jsp";
-        }
-
-        WeatherLocation weatherLocation = new WeatherLocation(null, null, null,
-                                                              weatherLocationBean.getName(),
-                                                              weatherLocationBean.getStationId(),
-                                                              requestedCoordinate);
-        weatherDataService.createWeatherLocation(weatherLocation);
-
-        model.addAttribute("dialogState", "done");
-        return "dr/estimatedLoad/_weatherStations.jsp";
-    }
-
-    @RequestMapping
-    public String findCloseStations(ModelMap model, WeatherLocationBean wheatherLocationBean, BindingResult bindingResult) {
-
-        validateLatLon(wheatherLocationBean.getLatitude(), wheatherLocationBean.getLongitude(), bindingResult);
-
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("dialogState", "searching");
-            return "dr/estimatedLoad/_weatherStations.jsp";
-        }
-
-        double lat = Double.parseDouble(wheatherLocationBean.getLatitude());
-        double lon = Double.parseDouble(wheatherLocationBean.getLongitude());
-
-        GeographicCoordinate requestedCoordinate = new GeographicCoordinate(lat, lon);
-
-        int numStations = addWeatherStationsToModel(model, requestedCoordinate);
-        if (numStations < numWeatherStationsToReturn) {
-            model.addAttribute("dialogState", "searching");
-        } else {
-            model.addAttribute("dialogState", "saving");
-        }
-
-        model.addAttribute("numberWeatherStations", numStations);
-        model.addAttribute("requestedLat", lat);
-        model.addAttribute("requestedLon", lon);
-
-        return "dr/estimatedLoad/_weatherStations.jsp";
     }
 
     @RequestMapping
@@ -436,42 +329,6 @@ public class EstimatedLoadController {
 
         model.addAttribute("pointNames", getPointNames(formulaBean));
         model.addAttribute("formulaBean", formulaBean);
-    }
-
-    /**
-     * Adds the weather stations found to the model, returns the number of weather stations
-     */
-    private int addWeatherStationsToModel(ModelMap model, GeographicCoordinate requestedCoordinate) {
-        List<WeatherStation> weatherStationResults = noaaWeatherDataService.getWeatherStationsByDistance(requestedCoordinate);
-
-        if (weatherStationResults.size() >= numWeatherStationsToReturn){
-            weatherStationResults = weatherStationResults.subList(0, numWeatherStationsToReturn);
-        }
-
-        Map<String, Integer> distanceToStation = new HashMap<>();
-        for (WeatherStation station : weatherStationResults) {
-            int distance = (int) station.getGeoCoordinate().distanceTo(requestedCoordinate);
-            distanceToStation.put(station.getStationId(), distance);
-        }
-
-        model.addAttribute("weatherStationResults", weatherStationResults);
-        model.addAttribute("distanceToStation", distanceToStation);
-
-        return weatherStationResults.size();
-    }
-
-    private void validateLatLon(String lat, String lon, BindingResult bindingResult) {
-        try {
-            Double.parseDouble(lat);
-        } catch (NullPointerException | NumberFormatException e) {
-            bindingResult.rejectValue("latitude", "yukon.web.modules.dr.estimatedLoad.errors.invalidLatitude");
-        }
-
-        try {
-            Double.parseDouble(lon);
-        } catch (NullPointerException | NumberFormatException e) {
-            bindingResult.rejectValue("longitude", "yukon.web.modules.dr.estimatedLoad.errors.invalidLongitude");
-        }
     }
 
     /**

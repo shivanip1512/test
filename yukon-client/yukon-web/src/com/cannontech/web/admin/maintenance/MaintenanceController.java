@@ -3,7 +3,6 @@ package com.cannontech.web.admin.maintenance;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,15 +71,15 @@ public class MaintenanceController {
         jobs.add(getJob(userContext, rphDuplicateJobDef, RPH_DUPLICATE_CRON));
         jobs.add(getJob(userContext, rphDanglingEntriesJobDef, RPH_DANGLING_CRON));
         jobs.add(getJob(userContext, systemLogDanglingEntriesJobDef, SYSTEM_LOG_DANGLING_CRON));
+        jobs.add(getJob(userContext, weatherDataJobDef, WEATHER_DATA_UPDATE_CRON));
         if (configurationSource.getBoolean(MasterConfigBooleanKeysEnum.ENABLE_ESTIMATED_LOAD, false)) {
             jobs.add(getJob(userContext, estimatedLoadDataJobDef, ESTIMATED_LOAD_UPDATE_CRON));
-            jobs.add(getJob(userContext, weatherDataJobDef, WEATHER_DATA_UPDATE_CRON));
         }
 
         model.addAttribute("jobs", jobs);
         return "maintenance/home.jsp";
     }
-    
+
     @RequestMapping
     public String edit(ModelMap model, YukonUserContext userContext, int jobId) {
         ScheduledRepeatingJob job = scheduledRepeatingJobDao.getById(jobId);
@@ -92,7 +91,6 @@ public class MaintenanceController {
         model.addAttribute("jobNameMsg", crumb);
         return "maintenance/edit.jsp";
     }
-        
 
     @RequestMapping
     public String update(ModelMap model, YukonUserContext userContext, HttpServletRequest request,
@@ -119,19 +117,19 @@ public class MaintenanceController {
         }
         return "redirect:view";
     }
-    
+
     @RequestMapping
-    public String toggleJobEnabled(ModelMap model, int jobId, YukonUserContext userContext) throws ServletException {
-        toggleJobEnabled(jobId);
+    public String toggleJobEnabled(int jobId) {
+        toggle(jobId);
         return "redirect:view";
     }
 
     @RequestMapping
-    public @ResponseBody Boolean toggleJobEnabledAjax(ModelMap model, int jobId, YukonUserContext userContext) throws ServletException {
-        return toggleJobEnabled(jobId);
+    public @ResponseBody Boolean toggleJobEnabledAjax(int jobId) {
+        return toggle(jobId);
     }
-    
-    private boolean toggleJobEnabled(int jobId) throws ServletException {
+
+    private boolean toggle(int jobId) {
         boolean isEnabled = true;
         ScheduledRepeatingJob job = scheduledRepeatingJobDao.getById(jobId);
         if (job.isDisabled()) {
@@ -142,7 +140,7 @@ public class MaintenanceController {
         }
         return isEnabled;
     }
-    
+
     private ScheduledRepeatingJob getJob(YukonUserContext userContext, YukonJobDefinition<? extends YukonTask> jobDefinition, String cronString) {
         List<ScheduledRepeatingJob> jobsNotDeleted = jobManager
                 .getNotDeletedRepeatingJobsByDefinition(jobDefinition);
@@ -156,7 +154,7 @@ public class MaintenanceController {
         }
         return repeatingJob;
     }
-    
+
     private ScheduledRepeatingJob createNewDefaultJob(YukonUserContext userContext, YukonJobDefinition<? extends YukonTask> jobDefinition, String cronString) {
         ScheduledRepeatingJob job = new ScheduledRepeatingJob();
         job.setBeanName(jobDefinition.getName());
