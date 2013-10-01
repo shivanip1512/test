@@ -99,7 +99,7 @@
     <entry key="yukon.web.modules.tools.configs.category.meterParameters.displayDigits">Display Digits</entry>
     <entry key="yukon.web.modules.tools.configs.category.meterParameters.displayDigits.description">The number of kWh digits displayed on the LCD panel.</entry>
     <entry key="yukon.web.modules.tools.configs.category.meterParameters.disconnectDisplayDisabled">Disconnect Display Disabled</entry>
-    <entry key="yukon.web.modules.tools.configs.category.meterParameters.disconnectDisplayDisabled.description">Whether the meter's disconnect display is enabled or disabled.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.meterParameters.disconnectDisplayDisabled.description">When true, enable the meter's disconnect display.</entry>
     
     <entry key="yukon.web.modules.tools.configs.category.displayItems.title">MCT-420 Display Items</entry>
     <entry key="yukon.web.modules.tools.configs.category.displayItems.definition">Items displayed on the front panel LCD of the MCT-420.</entry>
@@ -133,20 +133,20 @@
     <entry key="yukon.web.modules.tools.configs.category.mct440Configuration.title">MCT-440 Configuration</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct440Configuration.definition">DST and time sync configuration for the MCT-440.</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct440Configuration.enableDst">Enable DST</entry>
-    <entry key="yukon.web.modules.tools.configs.category.mct440Configuration.enableDst.description">If this is set, the device will action any DST changes. Clearing this will force the DST Active flag to zero.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct440Configuration.enableDst.description">When true, the device recognizes DST. Else, DST changes will be ignored (flag set to 0).</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct440Configuration.timeAdjustTolerance">Time Adjust Tolerance</entry>
-    <entry key="yukon.web.modules.tools.configs.category.mct440Configuration.timeAdjustTolerance.description">Update the RTC if it is this far away from the incoming time sync</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct440Configuration.timeAdjustTolerance.description">Adjust real time clock when the incoming time sync differs by this many seconds.</entry>
 
     <entry key="yukon.web.modules.tools.configs.category.mct440Addressing.title">MCT-440 Addressing</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct440Addressing.definition">Addressing levels used for the MCT-440.</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct440Addressing.bronzeAddress">Bronze Address</entry>
-    <entry key="yukon.web.modules.tools.configs.category.mct440Addressing.bronzeAddress.description">Bronze Address</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct440Addressing.bronzeAddress.description">Bronze Address.</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct440Addressing.leadAddress">Lead Address</entry>
-    <entry key="yukon.web.modules.tools.configs.category.mct440Addressing.leadAddress.description">Lead Address</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct440Addressing.leadAddress.description">Lead Address.</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct440Addressing.collectionAddress">Collection Address</entry>
-    <entry key="yukon.web.modules.tools.configs.category.mct440Addressing.collectionAddress.description">Collection Address</entry>
-    <entry key="yukon.web.modules.tools.configs.category.mct440Addressing.serviceProviderId">Service Provider ID</entry>
-    <entry key="yukon.web.modules.tools.configs.category.mct440Addressing.serviceProviderId.description">Service Provider ID</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct440Addressing.collectionAddress.description">Collection Address.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct440Addressing.serviceProviderId">Service Provider Id</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct440Addressing.serviceProviderId.description">Service Provider Id.</entry>
 
     <entry key="yukon.web.modules.tools.configs.category.mct440PhaseLoss.title">MCT-440 Phase Loss</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct440PhaseLoss.definition">The phase loss settings for triggering an event for the MCT-440.</entry>
@@ -252,30 +252,30 @@
     <entry key="yukon.web.modules.tools.configs.category.mct470ConfigurationByte.title">MCT-470 Configuration</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct470ConfigurationByte.definition">DST and time sync configuration for the MCT-470.</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct470ConfigurationByte.enableDst">Enable DST</entry>
-    <entry key="yukon.web.modules.tools.configs.category.mct470ConfigurationByte.enableDst.description">If this is set, the device will action any DST changes.  Clearing this will force the DST Active flag to zero.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470ConfigurationByte.enableDst.description">When true, the device recognizes DST. Else, DST changes will be ignored (flag set to 0).</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct470ConfigurationByte.electronicMeter">Electronic Meter</entry>
-    <entry key="yukon.web.modules.tools.configs.category.mct470ConfigurationByte.electronicMeter.description">The type of electronic meter </entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470ConfigurationByte.electronicMeter.description">The type of electronic meter.</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct470ConfigurationByte.timeAdjustTolerance">Time Adjust Tolerance</entry>
-    <entry key="yukon.web.modules.tools.configs.category.mct470ConfigurationByte.timeAdjustTolerance.description">Update the RTC if it is this far away from the incoming time sync</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470ConfigurationByte.timeAdjustTolerance.description">Adjust real time clock when the incoming time sync differs by this many seconds.</entry>
 
     <entry key="yukon.web.modules.tools.configs.category.addressing.title">MCT-430/470 Addressing</entry>
     <entry key="yukon.web.modules.tools.configs.category.addressing.definition">Addressing information for the MCT-430 and MCT-470.</entry>
-    <entry key="yukon.web.modules.tools.configs.category.addressing.serviceProviderId">Service Provider ID</entry>
-    <entry key="yukon.web.modules.tools.configs.category.addressing.serviceProviderId.description">Service Provider ID</entry>
+    <entry key="yukon.web.modules.tools.configs.category.addressing.serviceProviderId">Service Provider Id</entry>
+    <entry key="yukon.web.modules.tools.configs.category.addressing.serviceProviderId.description">Service Provider Id.</entry>
 
     <entry key="yukon.web.modules.tools.configs.category.relays.title">MCT-470 Relays</entry>
     <entry key="yukon.web.modules.tools.configs.category.relays.definition">Relay timer settings for the MCT-470.</entry>
     <entry key="yukon.web.modules.tools.configs.category.relays.relayATimer">Relay A Timer</entry>
-    <entry key="yukon.web.modules.tools.configs.category.relays.relayATimer.description">Time the relay will remain closed in 250ms increments</entry>
+    <entry key="yukon.web.modules.tools.configs.category.relays.relayATimer.description">Time the relay will remain closed in 250ms increments.</entry>
     <entry key="yukon.web.modules.tools.configs.category.relays.relayBTimer">Relay B Timer</entry>
-    <entry key="yukon.web.modules.tools.configs.category.relays.relayBTimer.description">Time the relay will remain closed in 250ms increments</entry>
+    <entry key="yukon.web.modules.tools.configs.category.relays.relayBTimer.description">Time the relay will remain closed in 250ms increments.</entry>
     
     <entry key="yukon.web.modules.tools.configs.category.mct470PrecannedTable.title">MCT-470 Precanned Table</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct470PrecannedTable.definition">The table number and read intervals that the MCT-470 uses to scan any attached IED.</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct470PrecannedTable.tableReadInterval">Table Read Interval</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct470PrecannedTable.tableReadInterval.description">Seconds between each read of the attached IED. In 15 second increments.</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct470PrecannedTable.meterNumber">Meter Number</entry>
-    <entry key="yukon.web.modules.tools.configs.category.mct470PrecannedTable.meterNumber.description">Meter number to be read</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470PrecannedTable.meterNumber.description">Meter number to be read.</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct470PrecannedTable.tableType">Table Type</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct470PrecannedTable.tableType.description">Table to use. Use caution when changing.</entry>
 
@@ -370,7 +370,7 @@
     <entry key="yukon.web.modules.tools.configs.category.disconnectConfiguration.connectMinutes">Connect Minutes</entry>
     <entry key="yukon.web.modules.tools.configs.category.disconnectConfiguration.connectMinutes.description">When a cycling disconnect command is issued to the attached disconnect device, this is the number of minutes that will be from the connected part of the cycle.</entry>
     <entry key="yukon.web.modules.tools.configs.category.disconnectConfiguration.reconnectButton">Reconnect Button</entry>
-    <entry key="yukon.web.modules.tools.configs.category.disconnectConfiguration.reconnectButton.description">If true, the button must be pressed for a reconnect. Otherwise, the disconnect does not require a button to be pressed to reconnect the meter.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.disconnectConfiguration.reconnectButton.description">When true, the button must be pressed to complete a reconnect to the meter. Else, the reconnect is automatically completed.</entry>
     
     <!-- general entries -->
     <entry key="yukon.web.modules.tools.configs.errorsExist">Errors exist in the submitted form. Please correct the problem(s) and submit again.</entry>

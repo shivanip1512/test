@@ -58,7 +58,7 @@ function showSelectedDevices(divId, url) {
                                             <cti:url value="config/view" var="viewUrl">
                                                 <cti:param name="configId" value="${config.configurationId}"/>
                                             </cti:url>
-                                            <a href="${viewUrl}">${config.name}</a>
+                                            <a href="${viewUrl}">${fn:escapeXml(config.name)}</a>
                                         </td>
                                         <td class="contextual-menu">
                                             <c:url var="selectedDevicesTableUrl" value="/bulk/selectedDevicesTableForGroupName">
