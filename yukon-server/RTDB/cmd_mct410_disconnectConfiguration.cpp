@@ -10,14 +10,14 @@ namespace Devices {
 namespace Commands {
 
 Mct410DisconnectConfigurationCommand::Mct410DisconnectConfigurationCommand(const unsigned disconnectAddress, const float disconnectDemandThreshold, const unsigned connectDelay,
-                                                 const unsigned disconnectMinutes, const unsigned connectMinutes, ReconnectButtonState reconnectButtonState,
+                                                 const unsigned disconnectMinutes, const unsigned connectMinutes, ReconnectButtonRequired reconnectButtonRequired,
                                                  const long demandInterval) :
     _disconnectAddress(disconnectAddress),
     _disconnectDemandThreshold(disconnectDemandThreshold),
     _connectDelay(connectDelay),
     _disconnectMinutes(disconnectMinutes),
     _connectMinutes(connectMinutes),
-    _reconnectButtonState(reconnectButtonState),
+    _reconnectButtonRequired(reconnectButtonRequired),
     _demandInterval(demandInterval),
     _executionState(&Mct410DisconnectConfigurationCommand::write)
 {
@@ -54,7 +54,7 @@ Mct410DisconnectConfigurationCommand::Mct410DisconnectConfigurationCommand() :
     _connectDelay(5),
     _disconnectMinutes(5),
     _connectMinutes(5),
-    _reconnectButtonState(Enabled),
+    _reconnectButtonRequired(Yes),
     _demandInterval(300),
     _executionState(&Mct410DisconnectConfigurationCommand::read)
 {
@@ -90,15 +90,23 @@ DlcCommand::request_ptr Mct410DisconnectConfigurationCommand::decodeCommand(cons
                 case 0x1000:  *_returnedDisconnectDemandThreshold /= 10.0;
                 case 0x0000:  *_returnedDisconnectDemandThreshold /= 10.0;
             }
+
+            // adjust for the demand interval
+            *_returnedDisconnectDemandThreshold *= (3600 / _demandInterval);
         }
     }
 
     return doCommand();
 }
 
+void Mct410DisconnectConfigurationCommand::invokeResultHandler(ResultHandler &rh) const
+{
+    rh.handleCommandResult(*this);
+}
+
 boost::optional<float> Mct410DisconnectConfigurationCommand::getDisconnectDemandThreshold() const
 {
-    return _disconnectDemandThreshold;
+    return _returnedDisconnectDemandThreshold;
 }
 
 DlcCommand::request_ptr Mct410DisconnectConfigurationCommand::error(const CtiTime now, const int error_code, std::string &description)
@@ -142,7 +150,7 @@ std::vector<unsigned char> Mct410DisconnectConfigurationCommand::assemblePayload
     // Byte 8 - Configuration Byte - force rev E disconnect true.
     unsigned char configuration = 0x40;
 
-    if( _reconnectButtonState == Disabled )
+    if( _reconnectButtonRequired == No )
     {
         // Enable bit 2.
         configuration |= 0x04;

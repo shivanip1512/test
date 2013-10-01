@@ -1661,8 +1661,8 @@ int Mct410Device::executePutConfigInstallDisconnect(CtiRequestMsg *pReq, CtiComm
             return BADPARAM;
         }
 
-        const boost::optional<bool> reconnectButtonEnabled = deviceConfig->findBoolValueForKey(MCTStrings::ReconnectButton);
-        if( ! reconnectButtonEnabled )
+        const boost::optional<bool> reconnectButtonRequired = deviceConfig->findBoolValueForKey(MCTStrings::ReconnectButton);
+        if( ! reconnectButtonRequired )
         {
             if( getMCTDebugLevel(DebugLevel_Configs) )
             {
@@ -1683,13 +1683,19 @@ int Mct410Device::executePutConfigInstallDisconnect(CtiRequestMsg *pReq, CtiComm
         getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_ConnectMinutes,    dpi_connectMinutes);
         getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration,     dpi_configurationByte);
 
-        bool thresholdMatches = fabs(dpi_demandThreshold - disconnectDemandThreshold) < 1e-6;
+        const bool thresholdMatches = fabs(dpi_demandThreshold - disconnectDemandThreshold) < 1e-2;
+
+        // Bit CLEARED = button must be pressed for reconnect.
+        // Bit ACTIVE  = button doesn't need to be pressed for reconnect.
+        // So if the database value is true, we expect bit two to be clear.
+        const bool bitActive = (dpi_configurationByte >> 2) & 0x01;
+        const bool reconnectButtonMatches = bitActive == ! *reconnectButtonRequired;
 
         if( thresholdMatches &&
+            reconnectButtonMatches &&
             dpi_connectDelay == *disconnectLoadLimitDelay &&
             dpi_disconnectMinutes == *disconnectMinutes &&
-            dpi_connectMinutes == *connectMinutes &&
-            (dpi_configurationByte >> 2) & 0x01 == *reconnectButtonEnabled )
+            dpi_connectMinutes == *connectMinutes )
         {
             if( ! parse.isKeyValid("force") )
             {
@@ -1704,10 +1710,10 @@ int Mct410Device::executePutConfigInstallDisconnect(CtiRequestMsg *pReq, CtiComm
             }
         }
 
-        Mct410DisconnectConfigurationCommand::ReconnectButtonState buttonState =
-            *reconnectButtonEnabled ?
-                Mct410DisconnectConfigurationCommand::Enabled :
-                Mct410DisconnectConfigurationCommand::Disabled;
+        Mct410DisconnectConfigurationCommand::ReconnectButtonRequired buttonRequired =
+            *reconnectButtonRequired ?
+                Mct410DisconnectConfigurationCommand::Yes :
+                Mct410DisconnectConfigurationCommand::No;
 
         disconnectCommand.reset(
            new Mct410DisconnectConfigurationCommand(
@@ -1716,7 +1722,7 @@ int Mct410Device::executePutConfigInstallDisconnect(CtiRequestMsg *pReq, CtiComm
               static_cast<unsigned>(*disconnectLoadLimitDelay),
               static_cast<unsigned>(*disconnectMinutes),
               static_cast<unsigned>(*connectMinutes),
-              buttonState,
+              buttonRequired,
               getDemandInterval()));
     }
     else

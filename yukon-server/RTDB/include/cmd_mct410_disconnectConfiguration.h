@@ -12,15 +12,15 @@ class IM_EX_DEVDB Mct410DisconnectConfigurationCommand : public Mct410Command
 {
 public:
 
-    enum ReconnectButtonState
+    enum ReconnectButtonRequired
     {
-        Enabled,
-        Disabled,
+        Yes,
+        No,
     };
 
     // Write constructor
     Mct410DisconnectConfigurationCommand(const unsigned disconnectAddress, const float disconnectDemandThreshold, const unsigned connectDelay,
-                            const unsigned disconnectMinutes, const unsigned connectMinutes, ReconnectButtonState reconnectButtonState,
+                            const unsigned disconnectMinutes, const unsigned connectMinutes, ReconnectButtonRequired reconnectButtonRequired,
                             const long demandInterval);
 
     // Read constructor
@@ -45,10 +45,12 @@ private:
     unsigned _connectDelay;
     unsigned _disconnectMinutes;
     unsigned _connectMinutes;
-    ReconnectButtonState _reconnectButtonState;
+    ReconnectButtonRequired _reconnectButtonRequired;
     long _demandInterval;
 
     boost::optional<float> _returnedDisconnectDemandThreshold;
+
+    virtual void invokeResultHandler(ResultHandler &rh) const;
 
 protected:
 
