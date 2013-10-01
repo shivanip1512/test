@@ -72,7 +72,7 @@ struct test_Mct420Device : Cti::Devices::Mct420Device
 
         unsigned point_count = 0;
 
-        for each( const std::pair<CtiPointType_t, PointOffsetMap> &p in points )
+        for each( const PointTypeOffsetMap::value_type &p in points )
         {
             point_count += p.second.size();
         }
