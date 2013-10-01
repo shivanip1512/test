@@ -19,12 +19,9 @@ import javax.swing.SpinnerNumberModel;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.util.SwingUtil;
-import com.cannontech.core.dao.RoleDao;
 import com.cannontech.core.roleproperties.YukonRole;
-import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.esub.editor.EditorPrefs;
 import com.cannontech.esub.element.DrawingMetaElement;
-import com.cannontech.spring.YukonSpringHook;
 
 /**
  * Creation date: (12/5/2002 4:16:03 PM)
@@ -40,7 +37,7 @@ public class DrawingMetaElementEditorPanel extends DataInputPanel {
     private JLabel ivjRoleLabel;
     private JLabel ivjWidthLabel;
     private JLabel ivjWidthPixelLabel;
-    private JComboBox<LiteYukonRole> ivjYukonRoleComboBox;
+    private JComboBox<YukonRole> ivjYukonRoleComboBox;
 
     private JSpinner widthSpinner;
     private JSpinner heightSpinner;
@@ -331,13 +328,12 @@ public class DrawingMetaElementEditorPanel extends DataInputPanel {
      * Return the YukonRoleComboBox property value.
      * @return javax.swing.JComboBox
      */
-    private JComboBox<LiteYukonRole> getYukonRoleComboBox() {
+    private JComboBox<YukonRole> getYukonRoleComboBox() {
         if (ivjYukonRoleComboBox == null) {
             try {
-                ivjYukonRoleComboBox = new JComboBox<>();
+                ivjYukonRoleComboBox = new JComboBox<YukonRole>();
                 ivjYukonRoleComboBox.setName("YukonRoleComboBox");
-                LiteYukonRole r = YukonSpringHook.getBean(RoleDao.class).getLiteRole(YukonRole.APPLICATION_ESUBSTATION_EDITOR.getRoleId());
-                ivjYukonRoleComboBox.addItem(r);
+                ivjYukonRoleComboBox.addItem(YukonRole.OPERATOR_ESUBSTATION_DRAWINGS);
             } catch (java.lang.Throwable ivjExc) {
                 handleException(ivjExc);
             }
@@ -431,7 +427,7 @@ public class DrawingMetaElementEditorPanel extends DataInputPanel {
         
         Object selected = getYukonRoleComboBox().getSelectedItem();
         if(selected != null) {
-            e.setRoleID(((LiteYukonRole)selected).getRoleID());
+            e.setRole((YukonRole)selected);
         }
         return e;			
     }
@@ -446,7 +442,7 @@ public class DrawingMetaElementEditorPanel extends DataInputPanel {
         getWidthSpinner().setValue(new Integer(e.getDrawingWidth()));
         getHeightSpinner().setValue(new Integer(e.getDrawingHeight()));
         getColorButton().setBackground(new Color(e.getDrawingRGBColor()));
-        getYukonRoleComboBox().setSelectedItem(YukonSpringHook.getBean(RoleDao.class).getLiteRole(e.getRoleID()));		
+        getYukonRoleComboBox().setSelectedItem(e.getRole());
     }
 
     /**

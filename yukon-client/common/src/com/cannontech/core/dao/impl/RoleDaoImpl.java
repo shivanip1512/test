@@ -49,7 +49,8 @@ public class RoleDaoImpl implements RoleDao {
 	/* (non-Javadoc)
      * @see com.cannontech.core.dao.RoleDao#getRoleProperties(int)
      */
-	public LiteYukonRoleProperty[] getRoleProperties( int roleID_ )
+	@Override
+    public LiteYukonRoleProperty[] getRoleProperties( int roleID_ )
 	{
         ArrayList<LiteYukonRoleProperty> list = new ArrayList<LiteYukonRoleProperty>(64);
         synchronized (databaseCache) {
@@ -66,7 +67,8 @@ public class RoleDaoImpl implements RoleDao {
         return list.toArray(retVal);
     }
 
-	public LiteYukonRoleProperty getRoleProperty(int propid) {
+	@Override
+    public LiteYukonRoleProperty getRoleProperty(int propid) {
         
         synchronized(databaseCache) {
             for(Iterator<LiteYukonRoleProperty> i = databaseCache.getAllYukonRoleProperties().iterator(); i.hasNext();) {
@@ -79,25 +81,7 @@ public class RoleDaoImpl implements RoleDao {
         return null;
     }
 
-    public LiteYukonRole getLiteRole(Integer rolePropID) {
-        List<LiteYukonRoleProperty> roleProps = Collections.emptyList();
-        List<LiteYukonRole> roles = Collections.emptyList();
-        synchronized (databaseCache) {
-            roleProps = databaseCache.getAllYukonRoleProperties();
-            roles = databaseCache.getAllYukonRoles();
-            for (LiteYukonRoleProperty property : roleProps) {
-                if (property.getRolePropertyID() == rolePropID) {
-                    for (LiteYukonRole role : roles) {
-                        if (property.getRoleID() == role.getRoleID()) {
-                            return role;
-                        }
-                    }
-                }
-            }
-        }
-        throw new NotFoundException("Role ID Could not be found");
-    }
-
+    @Override
     @Deprecated
     public String getRolePropValueGroup(LiteYukonGroup group, int rolePropertyID, String defaultValue) {
         synchronized (databaseCache) {
@@ -121,6 +105,7 @@ public class RoleDaoImpl implements RoleDao {
         return defaultValue;
     }
 
+    @Override
     @Deprecated
     public String getRolePropValueGroup(int groupId, int rolePropertyId, String defaultValue) {
         LiteYukonGroup liteYukonGroup = getGroup(groupId);
@@ -129,6 +114,7 @@ public class RoleDaoImpl implements RoleDao {
     }
     
     
+    @Override
     public LiteYukonGroup getGroup(String groupName) {
         
         synchronized (databaseCache) {
@@ -143,6 +129,7 @@ public class RoleDaoImpl implements RoleDao {
         return null;
     }
 
+    @Override
     public LiteYukonGroup getGroup(int grpID_) 
     {
           synchronized (databaseCache) 
@@ -158,6 +145,7 @@ public class RoleDaoImpl implements RoleDao {
           return null;
     }
 
+    @Override
     @Deprecated
     public boolean updateGroupRoleProperty(LiteYukonGroup group, int roleID, int rolePropertyId, String newVal) {
         
@@ -285,6 +273,7 @@ public class RoleDaoImpl implements RoleDao {
     
     private class YukonGroupRoleRowMapper implements ParameterizedRowMapper<YukonGroupRole> {
 
+        @Override
         public YukonGroupRole mapRow(ResultSet rs, int row) throws SQLException {
             YukonGroupRole groupRole = new YukonGroupRole();
             groupRole.setGroupRoleID(rs.getInt("groupRoleId"));

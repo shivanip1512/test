@@ -36,7 +36,8 @@ public class SVGGenerator extends HttpServlet {
 	/**
 	 * @see javax.servlet.http.HttpServlet#doGet(HttpServletRequest, HttpServletResponse)
 	 */
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+	@Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 		throws ServletException, IOException {
 		
 		YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(req);
@@ -82,7 +83,7 @@ public class SVGGenerator extends HttpServlet {
 
 			DrawingMetaElement metaElem = d.getMetaElement();
 			RolePropertyDao rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
-			YukonRole metaElemRole = YukonRole.getForId(metaElem.getRoleID());
+			YukonRole metaElemRole = metaElem.getRole();
 			
 			// User requires the role specific to access this drawing
 			// and also the Esub VIEW role to see it, which should we be using?
@@ -120,7 +121,8 @@ public class SVGGenerator extends HttpServlet {
 	}
 
 
-	public void init(ServletConfig cfg) throws ServletException {		
+	@Override
+    public void init(ServletConfig cfg) throws ServletException {		
 		super.init(cfg);
 	}
 

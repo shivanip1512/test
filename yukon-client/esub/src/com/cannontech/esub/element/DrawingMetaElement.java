@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Properties;
 
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.esub.Drawing;
 import com.cannontech.esub.element.persist.PersistDrawingMetaElement;
 import com.loox.jloox.LxAbstractText;
@@ -27,12 +28,11 @@ public class DrawingMetaElement extends LxAbstractText implements DrawingElement
 	private static final String ELEMENT_ID = "metaElement";
 	
 	private static final int CURRENT_VERSION = 2;
-	public static final int DEFAULT_ROLE_ID = -206;
 	
 	private int drawingWidth;
 	private int drawingHeight;
 	private int drawingRGBColor = Color.BLACK.getRGB();
-	private int roleID = DEFAULT_ROLE_ID;
+	private YukonRole role = YukonRole.OPERATOR_ESUBSTATION_DRAWINGS;
 		
 	private transient Drawing drawing = null;
 	private String linkTo = null;
@@ -96,7 +96,8 @@ public class DrawingMetaElement extends LxAbstractText implements DrawingElement
 	 * Returns the version.
 	 * @return int
 	 */
-	public int getVersion() {
+	@Override
+    public int getVersion() {
 		return version;
 	}
 
@@ -104,21 +105,24 @@ public class DrawingMetaElement extends LxAbstractText implements DrawingElement
 	 * Sets the version.
 	 * @param version The version to set
 	 */
-	public void setVersion(int version) {
+	@Override
+    public void setVersion(int version) {
 		this.version = version;
 	}
 
 	/**
 	 * @see com.cannontech.esub.editor.element.DrawingElement#getDrawing()
 	 */
-	public Drawing getDrawing() {
+	@Override
+    public Drawing getDrawing() {
 		return drawing;
 	}
 
 	/**
 	 * @see com.cannontech.esub.editor.element.DrawingElement#setDrawing(Drawing)
 	 */
-	public void setDrawing(Drawing d) {
+	@Override
+    public void setDrawing(Drawing d) {
 		drawing = d;
 	}
 
@@ -142,7 +146,8 @@ public class DrawingMetaElement extends LxAbstractText implements DrawingElement
 	 * Returns the linkTo.
 	 * @return String
 	 */
-	public String getLinkTo() {
+	@Override
+    public String getLinkTo() {
 		return linkTo;
 	}
 
@@ -150,31 +155,26 @@ public class DrawingMetaElement extends LxAbstractText implements DrawingElement
 	 * Sets the linkTo.
 	 * @param linkTo The linkTo to set
 	 */
-	public void setLinkTo(String linkTo) {
+	@Override
+    public void setLinkTo(String linkTo) {
 		this.linkTo = linkTo;
 	}
 
-	/**
-	 * Returns the roleID.
-	 * @return int
-	 */
-	public int getRoleID() {
-		return roleID;
-	}
-
-	/**
-	 * Sets the roleID.
-	 * @param roleID The roleID to set
-	 */
-	public void setRoleID(int roleID) {
-		this.roleID = roleID;
-	}
+	public YukonRole getRole() {
+        return role;
+    }
 	
-	public boolean isCopyable() {
+	public void setRole(YukonRole role) {
+        this.role = role;
+    }
+	
+	@Override
+    public boolean isCopyable() {
 		return false;
 	}
 	
-	public String getElementID() {
+	@Override
+    public String getElementID() {
 		return ELEMENT_ID;
 	}
 

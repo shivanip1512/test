@@ -5,11 +5,12 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import org.junit.Before;
 import org.junit.Test;
 
 import com.cannontech.core.dao.impl.RoleDaoImpl;
+import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 
@@ -24,14 +25,14 @@ public class RoleDaoImplTest {
             @Override
             public List<LiteYukonRoleProperty> getAllYukonRoleProperties() {
                 LiteYukonRoleProperty roleProp1 = new LiteYukonRoleProperty();
-                roleProp1.setRoleID(1);
-                roleProp1.setRolePropertyID(1);
+                roleProp1.setRoleID(YukonRole.OPERATOR_ADMINISTRATOR.getRoleId());
+                roleProp1.setRolePropertyID(YukonRoleProperty.ADMIN_SUPER_USER.getPropertyId());
                 LiteYukonRoleProperty roleProp2 = new LiteYukonRoleProperty();
-                roleProp2.setRoleID(1);
-                roleProp2.setRolePropertyID(2);
+                roleProp2.setRoleID(YukonRole.OPERATOR_ADMINISTRATOR.getRoleId());
+                roleProp2.setRolePropertyID(YukonRoleProperty.ADMIN_EDIT_ENERGY_COMPANY.getPropertyId());
                 LiteYukonRoleProperty roleProp3 = new LiteYukonRoleProperty();
-                roleProp3.setRoleID(1);
-                roleProp3.setRolePropertyID(3);
+                roleProp3.setRoleID(YukonRole.OPERATOR_ADMINISTRATOR.getRoleId());
+                roleProp3.setRolePropertyID(YukonRoleProperty.ADMIN_MULTISPEAK_SETUP.getPropertyId());
                 List<LiteYukonRoleProperty> rolePropsList = new ArrayList<LiteYukonRoleProperty>();
                 rolePropsList.add(roleProp1);
                 rolePropsList.add(roleProp2);
@@ -42,7 +43,7 @@ public class RoleDaoImplTest {
             @Override
             public List<LiteYukonRole> getAllYukonRoles() {
                 LiteYukonRole role = new LiteYukonRole();
-                role.setRoleID(1);
+                role.setRoleID(YukonRole.OPERATOR_ADMINISTRATOR.getRoleId());
                 List<LiteYukonRole> roles = new ArrayList<LiteYukonRole>();
                 roles.add(role);
                 return roles;
@@ -50,20 +51,5 @@ public class RoleDaoImplTest {
             
         });
         
-    }
-
-    @Test
-    public void testGetRolePropFromRoleID() throws NotFoundException{
-        //our role id is 1:
-        //LiteYukonRole role = new LiteYukonRole();
-        //role.setRoleID(1);
-        LiteYukonRole roleID = roleDao.getLiteRole(3);
-        assertTrue(roleID.getRoleID() == 1);
-    }
-
-    @Test (expected= NotFoundException.class)
-    public void testGetRolePropFromRoleIDNotFound(){
-        //we have role props 1,2,3. do not have 4
-        roleDao.getLiteRole(4);
     }
 }

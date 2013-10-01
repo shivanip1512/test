@@ -26,15 +26,6 @@ public interface RoleDao {
     public LiteYukonRoleProperty getRoleProperty(int propid);
 
     /**
-     * retrieves a role based on the role property id
-     * throws NotFoundException 
-     * @param rolePropID
-     * @return
-     */
-    public LiteYukonRole getLiteRole (Integer rolePropID);
-
-
-    /**
      * Returns the value for a given group and role property.
      * If no value is found then defaultValue is returned for convenience.
      * @param group

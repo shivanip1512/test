@@ -37,7 +37,8 @@ public class HTMLFilter implements Filter {
 	/**
 	 * @see javax.servlet.Filter#init(FilterConfig)
 	 */
-	public void init(FilterConfig fc) throws ServletException {
+	@Override
+    public void init(FilterConfig fc) throws ServletException {
 		config = fc;
 		htmlGenerator.getGenOptions().setStaticHTML(false);
 	}
@@ -45,7 +46,8 @@ public class HTMLFilter implements Filter {
 	/**
 	 * @see javax.servlet.Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
 	 */
-	public void doFilter(
+	@Override
+    public void doFilter(
 		ServletRequest req,
 		ServletResponse resp,
 		FilterChain chain)
@@ -81,7 +83,7 @@ public class HTMLFilter implements Filter {
 			d.setUserContext(userContext);
 			
             LiteYukonUser user = (LiteYukonUser) hreq.getSession(false).getAttribute(LoginController.YUKON_USER);
-            YukonRole yukonRole = YukonRole.getForId(d.getMetaElement().getRoleID());
+            YukonRole yukonRole = d.getMetaElement().getRole();
 
 			d.load(jlxPath);
 		 
@@ -101,7 +103,8 @@ public class HTMLFilter implements Filter {
 	/**
 	 * @see javax.servlet.Filter#destroy()
 	 */
-	public void destroy() {
+	@Override
+    public void destroy() {
 		config = null;
 	}
 

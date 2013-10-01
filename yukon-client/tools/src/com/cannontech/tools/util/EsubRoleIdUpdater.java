@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.login.ClientStartupHelper;
 import com.cannontech.common.util.BootstrapUtils;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.esub.element.DrawingMetaElement;
 import com.google.common.collect.Lists;
 
@@ -103,7 +104,7 @@ public class EsubRoleIdUpdater {
         //Update role id if it is -1 (obsolete 'Yukon' role) to -206 ('Esubstation Drawings' role)
         if (roleId == -1) {
             String fileOut = fileAsString.substring(0, metaStart + relRoleIdStart);
-            fileOut += Integer.toString(DrawingMetaElement.DEFAULT_ROLE_ID);
+            fileOut += Integer.toString(YukonRole.OPERATOR_ESUBSTATION_DRAWINGS.getRoleId());
             fileOut += fileAsString.substring(metaStart + metaLength);
 
             try (FileWriter fw = new FileWriter(filePath)) {

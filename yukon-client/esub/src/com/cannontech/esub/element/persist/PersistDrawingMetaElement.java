@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.esub.element.DrawingElement;
 import com.cannontech.esub.element.DrawingMetaElement;
 import com.loox.jloox.LxSaveUtils;
@@ -36,13 +37,13 @@ public class PersistDrawingMetaElement extends BasePersistElement {
 	            elem.setDrawingWidth(LxSaveUtils.readInt(in));
 	            elem.setDrawingHeight(LxSaveUtils.readInt(in));
 	            elem.setDrawingRgbColor(LxSaveUtils.readInt(in));
-	            elem.setRoleID(LxSaveUtils.readInt(in));
+	            elem.setRole(YukonRole.getForId(LxSaveUtils.readInt(in)));
 	            break;
 	        }
 	        case 1: {
 	            elem.setDrawingWidth(LxSaveUtils.readInt(in));
 	            elem.setDrawingHeight(LxSaveUtils.readInt(in));
-	            elem.setRoleID(LxSaveUtils.readInt(in));
+	            elem.setRole(YukonRole.getForId(LxSaveUtils.readInt(in)));
 	            break;
 	        }
 	        default: throw new IOException("Unknown version: " + version + " in " + elem.getClass().getName());
@@ -59,7 +60,7 @@ public class PersistDrawingMetaElement extends BasePersistElement {
 			LxSaveUtils.writeInt(out, elem.getDrawingWidth());
 			LxSaveUtils.writeInt(out, elem.getDrawingHeight());
 			LxSaveUtils.writeInt(out, elem.getDrawingRGBColor());
-			LxSaveUtils.writeInt(out, elem.getRoleID());	
+			LxSaveUtils.writeInt(out, elem.getRole().getRoleId());	
 		}
 
 }

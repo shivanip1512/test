@@ -25,7 +25,6 @@ public class DrawingMetaElementEditor
 	public DrawingMetaElementEditor() {
 		super();
 		setName("DynamicMetaElementEditor");
-		setPreferredSize(new java.awt.Dimension(300, 300));
 		setSize(300,300);
 		getDrawingMetaElementEditorPanel().addDataInputPanelListener(this);
 		checkValidity();
@@ -34,14 +33,16 @@ public class DrawingMetaElementEditor
 	/**
 	 * @see com.cannontech.common.editor.PropertyPanel#getInputPanels()
 	 */
-	protected DataInputPanel[] getInputPanels() {
+	@Override
+    protected DataInputPanel[] getInputPanels() {
 		return inputPanels;
 	}
 
 	/**
 	 * @see com.cannontech.common.editor.PropertyPanel#getTabNames()
 	 */
-	protected String[] getTabNames() {
+	@Override
+    protected String[] getTabNames() {
 		return tabs;
 	}
 
@@ -49,20 +50,23 @@ public class DrawingMetaElementEditor
 	getPropertyButtonPanel().getOkJButton().setEnabled(isInputValid());
 	}
 	
-	public void inputUpdate(PropertyPanelEvent evt) {
+	@Override
+    public void inputUpdate(PropertyPanelEvent evt) {
 		checkValidity();
 	}
 	/**
 	 * @see com.cannontech.common.gui.util.DataInputPanel#getValue(Object)
 	 */
-	public Object getValue(Object o) {
+	@Override
+    public Object getValue(Object o) {
 		return getDrawingMetaElementEditorPanel().getValue(o);
 	}
 
 	/**
 	 * @see com.cannontech.common.gui.util.DataInputPanel#setValue(Object)
 	 */
-	public void setValue(Object o) {
+	@Override
+    public void setValue(Object o) {
 		super.setValue(o);
 	}
 
