@@ -1,5 +1,7 @@
 #include "precompiled.h"
 
+#include <boost/bimap.hpp>
+
 #include "std_helper.h"
 #include "cmd_rfn_FocusLcdConfiguration.h"
 
@@ -18,24 +20,6 @@ void validateCondition( const bool condition, const int error_code, const string
     {
         throw RfnCommand::CommandException( error_code, error_message );
     }
-}
-
-/**
- * reverse the map key and mapped values to create simple reverse lookup map, (each value must be unique)
- * @param input
- * @return
- */
-template<class MapOut, class MapIn>
-MapOut reverseMap( const MapIn & input )
-{
-    MapOut output;
-
-    for each( const MapIn::value_type & p in input )
-    {
-        output[p.second] = p.first;
-    }
-
-    return output;
 }
 
 /**
@@ -124,36 +108,59 @@ MetricConfigNameMap initMetricConfigNameLookup()
 const MetricCodeMap       metricCodeLookup       = initMetricCodeLookup();
 const MetricConfigNameMap metricConfigNameLookup = initMetricConfigNameLookup();
 
-typedef map<unsigned char, char> AlphaDisplayMap;
-typedef map<char, unsigned char> AlphaDisplayReverseMap;
+typedef boost::bimap<unsigned char, char> AlphaDisplayBimap;
 
-AlphaDisplayMap initAlphaDisplayLookup()
+AlphaDisplayBimap initAlphaDisplayBimap()
 {
-    AlphaDisplayMap m;
+    AlphaDisplayBimap bm;
+
+    typedef AlphaDisplayBimap::value_type bm_value_type;
 
     for(unsigned char code = 0x30; code <= 0x39; code++)
     {
-        m[code] = code;     // 0 – 9   30h - 39h (ASCII Equivalent)
+        bm.insert(bm_value_type(code,code));    // 0 – 9   30h - 39h (ASCII Equivalent)
     }
 
-    m[0x3a] = '$';          // all segments
-    m[0x3b] = '*';          // Star (*)
-    m[0x3c] = ' ';          // Blank
-    m[0x3d] = '=';          // '=' 3Dh (ASCII Equivalent)
-    m[0x3e] = '>';          // '>' 3Dh (ASCII Equivalent)
-    m[0x3f] = '+';          // '+' 3Fh
-    m[0x40] = '-';          // '-' 40h
+    bm.insert(bm_value_type(0x3a,'$'));         // all segments
+    bm.insert(bm_value_type(0x3b,'*'));         // Star (*)
+    bm.insert(bm_value_type(0x3c,' '));         // Blank
+    bm.insert(bm_value_type(0x3d,'='));         // '=' 3Dh (ASCII Equivalent)
+    bm.insert(bm_value_type(0x3e,'>'));         // '>' 3Eh (ASCII Equivalent)
+    bm.insert(bm_value_type(0x3f,'+'));         // '+' 3Fh
+    bm.insert(bm_value_type(0x40,'-'));         // '-' 40h
 
     for(unsigned char code = 0x41; code <= 0x5a; code++)
     {
-        m[code] = code;     // A – Z   41h - 5Ah (ASCII Equivalent)
+        bm.insert(bm_value_type(code,code));    // A – Z   41h - 5Ah (ASCII Equivalent)
     }
 
-    return m;
+    return bm;
 }
 
-const AlphaDisplayMap        alphaDisplayLookup        = initAlphaDisplayLookup();                                 // code to ascii
-const AlphaDisplayReverseMap alphaDisplayReverseLookup = reverseMap<AlphaDisplayReverseMap>( alphaDisplayLookup ); // acsii to code
+const AlphaDisplayBimap alphaDisplayBimap = initAlphaDisplayBimap();
+
+template<typename MappedType, class MapViewType, typename KeyType>
+boost::optional<MappedType> bimapFind( MapViewType mapView, KeyType key )
+{
+    MapViewType::const_iterator itr = mapView.find(key);
+
+    if( itr == mapView.end() )
+    {
+        return boost::none;
+    }
+
+    return itr->second;
+}
+
+boost::optional<char> convertCodeToAscii( unsigned char code )
+{
+    return bimapFind<char>( alphaDisplayBimap.left, code );
+}
+
+boost::optional<unsigned char> convertAsciiToCode( char ascii )
+{
+    return bimapFind<unsigned char>( alphaDisplayBimap.right, ascii );
+}
 
 } // anonymous namespace
 
@@ -215,8 +222,8 @@ RfnCommand::Bytes RfnFocusLcdConfigurationCommand::createCommandData( const Disp
 
         for each( char alpha_char in display_item.alphamericId )
         {
-            validateCondition( alpha_code = mapFind( alphaDisplayReverseLookup, alpha_char ),
-                               BADPARAM, "Invalid alphanumeric character ('" + string(1,alpha_char) + "')" );
+            validateCondition( alpha_code = convertAsciiToCode( alpha_char ),
+                               BADPARAM, "Invalid alphanumeric character ('" + string(1,alpha_char) + "' " + CtiNumStr(alpha_char).xhex(2) + ")" );
 
             command_data.push_back( *alpha_code );
         }
@@ -296,7 +303,7 @@ RfnCommand::RfnResult RfnFocusLcdConfigurationCommand::decodeCommand(const CtiTi
         {
             const unsigned char alpha_code = *(response_iter++);
 
-            validateCondition( alpha_char = mapFind( alphaDisplayLookup, alpha_code ),
+            validateCondition( alpha_char = convertCodeToAscii( alpha_code ),
                                ErrorInvalidData, "Invalid alpha display code (" + CtiNumStr(alpha_code) + ")");
 
             display_item.alphamericId += *alpha_char;

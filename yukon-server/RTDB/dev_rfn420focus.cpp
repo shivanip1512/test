@@ -86,13 +86,6 @@ long getLongConfigValue( const Config::DeviceConfigSPtr & deviceConfig, const st
     return *val;
 }
 
-template<class cont_type >
-bool equal( cont_type cont1, cont_type cont2 )
-{
-    return ( cont1.size() == cont2.size() && std::equal( cont1.begin(), cont1.end(), cont2.begin() ));
-}
-
-
 } // anonymous namespace
 
 int Rfn420FocusDevice::executePutConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests)
@@ -210,8 +203,8 @@ bool Rfn420FocusDevice::isDisplayConfigCurrent( const std::vector<std::string> &
         pao_duration = l_pao_value;
     }
 
-    return ( equal( config_display_metrics,     paoinfo_metrics )     &&
-             equal( config_display_alphamerics, paoinfo_alphamerics ) &&
+    return ( boost::equal( config_display_metrics,     paoinfo_metrics )     &&
+             boost::equal( config_display_alphamerics, paoinfo_alphamerics ) &&
              pao_duration == config_display_duration );
 }
 
