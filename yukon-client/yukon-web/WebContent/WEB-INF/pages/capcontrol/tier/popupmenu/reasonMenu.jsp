@@ -9,7 +9,7 @@
 
 <script type="text/javascript">
 jQuery("#executeCommand").click(function(event) {
-    hideMenu();
+    Yukon.CapControl.hideMenu();
     doItemCommand('${paoId}', '${commandId}', event, jQuery('#commentTextArea').val(), 'true');
 });
 jQuery("#reasonSelect").change(function(event) {

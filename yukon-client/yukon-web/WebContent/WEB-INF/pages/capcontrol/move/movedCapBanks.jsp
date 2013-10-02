@@ -10,7 +10,7 @@
     <script type="text/javascript">
     jQuery(function() {
         $$('a.moveLink').each(function(a) {
-            a.observe('click', function(event) {getMovedBankMenu(a.id, event)});
+            a.observe('click', function(event) {Yukon.CapControl.getMovedBankMenu(a.id, event)});
         });
     });
     </script>

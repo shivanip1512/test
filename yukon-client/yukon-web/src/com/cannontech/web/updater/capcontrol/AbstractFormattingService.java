@@ -8,7 +8,7 @@ import com.cannontech.user.YukonUserContext;
 
 public abstract class AbstractFormattingService<E extends StreamableCapObject> implements CapControlFormattingService<E> {
     protected FilterCacheFactory filterCacheFactory;
-    protected YukonUserContextMessageSourceResolver messageSourceResolver;
+    protected YukonUserContextMessageSourceResolver resolver;
     protected UpdaterHelper updaterHelper;
 
     @Override
@@ -93,7 +93,7 @@ public abstract class AbstractFormattingService<E extends StreamableCapObject> i
             }
             
             case CB_SIZE : {
-                value = getCBSize(latestValue, updaterHelper);
+                value = getCBSize(latestValue, updaterHelper, context);
                 break;
             }
             case CB_PARENT : {
@@ -216,6 +216,11 @@ public abstract class AbstractFormattingService<E extends StreamableCapObject> i
                 break; 
             }
             
+            case LOCAL_FLAG : {
+                value = getLocalFlag(latestValue, updaterHelper, context);
+                break; 
+            }
+            
             case WARNING_FLAG_MESSAGE : {
                 value = getWarningFlagMessage(latestValue, updaterHelper, context);
                 break;     
@@ -324,7 +329,7 @@ public abstract class AbstractFormattingService<E extends StreamableCapObject> i
         throw new UnsupportedOperationException("Not supported at this level");
     }
 
-    protected String getCBSize(E latestValue, UpdaterHelper updaterHelper) {
+    protected String getCBSize(E latestValue, UpdaterHelper updaterHelper, YukonUserContext context) {
         throw new UnsupportedOperationException("Not supported at this level");
     }
 
@@ -428,6 +433,10 @@ public abstract class AbstractFormattingService<E extends StreamableCapObject> i
         throw new UnsupportedOperationException("Not supported at this level");
     }
     
+    protected String getLocalFlag(E latestValue, UpdaterHelper updaterHelper2, YukonUserContext context) {
+        throw new UnsupportedOperationException("Not supported at this level");
+    }
+    
     protected String getWarningFlagMessage(E latestValue, UpdaterHelper updaterHelper, YukonUserContext context) {
         throw new UnsupportedOperationException("Not supported at this level");
     }
@@ -449,7 +458,7 @@ public abstract class AbstractFormattingService<E extends StreamableCapObject> i
     }
     
     public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
-        this.messageSourceResolver = messageSourceResolver;
+        this.resolver = messageSourceResolver;
     }
     
     public void setUpdaterHelper(UpdaterHelper updaterHelper) {

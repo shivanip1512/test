@@ -42,7 +42,6 @@ nav,header,footer,section,aside,hgroup,section {
 	clear: both;
 	margin: 0;
 	padding: 0;
-	overflow: hidden;
 	width: 100%;
 	min-width: 988px;
 	min-height: 500px;

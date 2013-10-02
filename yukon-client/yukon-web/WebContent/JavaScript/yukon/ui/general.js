@@ -412,6 +412,14 @@ Yukon.modules.ui = function (mod) {
             jQuery('#f-page-buttons').remove();
             jQuery('.page-actions').append(html.innerHTML);
         }
+
+        var additionalActions = jQuery('.f-page-additional-actions');
+        additionalActions.each( function(index, html) {
+            if (typeof html !== 'undefined') {
+                jQuery('#b-page-actions .dropdown-menu').append(html.innerHTML);
+                jQuery(html).remove();
+            }
+        });
     };
 
     mod._AUTOFOCUS_TRIES = 0;

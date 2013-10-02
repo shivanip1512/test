@@ -32,6 +32,7 @@ public interface CapControlFormattingService<E> {
         CB_PERCENTCHANGE_TOTAL,
         DATE_TIME,
         WARNING_FLAG,
+        LOCAL_FLAG,
         WARNING_FLAG_MESSAGE,
         TARGET,
         TARGET_PEAKLAG,

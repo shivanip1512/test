@@ -24,7 +24,7 @@
 
 <div class="titledContainer boxContainer ${pageScope.styleClass}" <c:if test="${!empty pageScope.id}">id="${pageScope.id}"</c:if>>
 
-    <div class="title-bar">
+    <div class="title-bar clearfix">
         <c:if test="${!empty pageScope.titleLinkHtml}">${pageScope.titleLinkHtml}</c:if>
         <h3 class="title">
             <c:choose>
@@ -43,7 +43,7 @@
         </c:if>
     </div>
     
-    <div id="${thisId}_content" class="content">
+    <div id="${thisId}_content" class="content clearfix">
         <jsp:doBody/>
     </div>    
                 

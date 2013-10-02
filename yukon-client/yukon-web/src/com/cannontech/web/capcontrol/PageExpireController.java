@@ -1,16 +1,12 @@
 package com.cannontech.web.capcontrol;
 
-import java.io.Writer;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import net.sf.jsonOLD.JSONArray;
+import net.sf.json.JSONObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.clientutils.WebUpdatedDAO;
@@ -18,36 +14,24 @@ import com.cannontech.clientutils.WebUpdatedDAO;
 @Controller
 public class PageExpireController {
     private WebUpdatedDAO<Integer> webUpdatedDAO;
-    
+
     @RequestMapping("/pageExpire")
-    public void pageExpire(HttpServletRequest request, HttpServletResponse response,
-                           @RequestParam("paoIds[]") String[] paoIds) throws Exception {
-        response.setContentType("text/plain");
-        final JSONArray array = new JSONArray(paoIds);
-        
+    public @ResponseBody JSONObject pageExpire( @RequestParam("paoIds[]") String[] paoIds) {
+
         boolean expired = false;
-        
-        for (int x = 0; x < array.length(); x++) {
-            int paoId = array.getInt(x);
-            expired = !webUpdatedDAO.containsKey(paoId);
+
+        for (String strPaoId : paoIds) {
+            int paoId = Integer.parseInt(strPaoId);
+            expired = ! webUpdatedDAO.containsKey(paoId);
             if (expired) break;
         }
-        
-        Writer writer = null;
-        try {
-            writer = response.getWriter();
-            writer.write(Boolean.toString(expired));
-        } finally {
-            if (writer != null) {
-                writer.flush();
-                writer.close();
-            }
-        }
+        JSONObject result = new JSONObject();
+        result.put("expired", expired);
+        return result;
     }
-    
+
     @Autowired
     public void setCapControlCache(CapControlCache cache) {
         webUpdatedDAO = cache.getUpdatedObjMap();
     }
-    
 }

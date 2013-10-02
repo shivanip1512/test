@@ -54,7 +54,6 @@ jQuery(function () {
                     <thead>
                         <tr id="header">
                             <th><i:inline key=".schedule"/></th>
-                            <th><i:inline key=".actions"/></th>
                             <th><i:inline key=".lastRunTime"/></th>
                             <th><i:inline key=".nextRunTime"/></th>
                             <th><i:inline key=".interval"/></th>
@@ -65,22 +64,14 @@ jQuery(function () {
                     <tbody id="tableBody">
                         <c:forEach var="item" items="${scheduleList}">
                             <tr id="s_${item.scheduleID}">
-                                <td class="wsnw">${fn:escapeXml(item.scheduleName)}</td>
-                                
-                                <td>
-                                    <c:choose>
-                                        <c:when test="${hasEditingRole}">
-                                            <form id="scheduleForm_${item.scheduleID}" action="${action}" method="POST">
-                                                <cti:button nameKey="edit" icon="icon-pencil" renderMode="image" href="/editor/cbcBase.jsf?type=3&itemid=${item.scheduleID}"/>
-                                                <cti:button classes="removeSchedule" nameKey="remove" renderMode="image" icon="icon-cross"/>
-                                                <span class="dn confirmDelete"><i:inline key=".confirmDelete" arguments="${item.scheduleName}"/></span>
-                                                <input id="scheduleId_${item.scheduleID}" name="scheduleId" type="hidden" value="${item.scheduleID}">
-                                            </form>
-                                        </c:when>
-                                        <c:otherwise>
-                                            <cti:button nameKey="info" renderMode="image" href="/editor/cbcBase.jsf?type=3&itemid=${item.scheduleID}" icon="icon-information"/>
-                                        </c:otherwise>
-                                    </c:choose>
+                                <td class="wsnw">
+                                    <cti:url var="editUrl" value="/editor/cbcBase.jsf">
+                                        <cti:param name="type" value="3"/>
+                                        <cti:param name="itemid" value="${item.scheduleID}"/>
+                                    </cti:url>
+                                    <a href="${editUrl}">
+                                        ${fn:escapeXml(item.scheduleName)}
+                                    </a>
                                 </td>
                                 
                                 <td>

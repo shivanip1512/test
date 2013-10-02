@@ -53,6 +53,8 @@ a, .vertical_menu a:hover {text-decoration:none;}
 a:hover, a:focus {text-decoration:underline;outline:0;}
 a:link,a:visited {color: @primary-color;text-decoration: none;}
 a.described {margin-right: 10px;}
+a:link.subtle-link, a:visited.subtle-link {color: @primary-font-color;}
+a:link.subtle-link:hover, a:visited.subtle-link:hover {color: @primary-color; cursor: pointer;}
 
 /* COLORS */
 a, .primary_color, .vertical_menu li.selected a, .vertical_menu a:hover, .ui-widget-content a, #subMenu a:visited, .perPageArea a:visited {color:@primary-color;}
@@ -153,6 +155,11 @@ table.nowrap th, table.nowrap td {white-space: nowrap;}
 .aligned_4_actions .first, .aligned_4_actions .middle {width: 30%;}
 .aligned_4_actions .last {width: 10%;}
 
+/*Use the class when there will be elements before the first icon in a row */
+.row-icon, .compactResultsTable tr td:first-child i.icon:first-child {
+margin: 0px;
+}
+
 .two-column-split {width:100%;}
 .two-column-split th, .two-column-split td {width:50%;}
 .removeColumn button, .removeColumn .button {float:right;}
@@ -216,7 +223,7 @@ ul.disc li {list-style-type: disc; margin-left: 25px;}
 .collapsed .content {display: none;}
 .title-bar .title {margin: 0;float: left;}
 .controls .icon {margin: 0;}
-.titledContainer .content {overflow: hidden;padding: 10px;} 
+.titledContainer .content {padding: 10px;} 
 
 .boxContainer, .boxContainerFooter, .pagedBox, .tabbedContainer {margin-bottom: 20px;}
 .pagedBox, .sectionContainer, .boxContainer, .inlineTree, .resultsTable, .liteContainer {border:solid 1px #ccc; border-radius:2px;}
@@ -394,6 +401,7 @@ body ::-webkit-scrollbar-button{display:none}
 .dialog-no-buttons {margin-bottom: 20px;} /* buffer to get content (like scroll bar) from running into drag handle in dialogs with no button bar */
 .detail {color: #777; font-size: .9em;}
 strong, .smallBoldLabel, .groupedList .group {font-weight: bold;}
+
 .notes, .smallBoldLabel {font-size: 12px;}
 .monospace, .code {font-family: Courier,monospace; font-size: 12px;}
 .monospace {white-space: pre;}

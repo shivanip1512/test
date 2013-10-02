@@ -27,7 +27,7 @@
 				<h:commandButton id="addAction" value="Add" styleClass="submenuLink"
                     rendered="#{capControlForm.editingAuthorized}"
 					action="#{capControlForm.addSchedule}"
-					onclick="lockButtonsPerSubmit('hdr_buttons'); lockButtonsPerSubmit('foot_buttons')"
+					onclick="Yukon.CapControl.lockButtonsPerSubmit('hdr_buttons'); Yukon.CapControl.lockButtonsPerSubmit('foot_buttons')"
 					title="Adds an existing schedule to the list below" />
 
 				<h:dataTable id="schedData" var="paoSched" styleClass="fullTable"
@@ -42,7 +42,7 @@
 								title="A schedule use by this object" />
 						</f:facet>
 						<x:selectOneMenu id="sched" value="#{paoSched.scheduleID}"
-							onchange="lockButtonsPerSubmit('hdr_buttons'); lockButtonsPerSubmit('foot_buttons');submit();">
+							onchange="Yukon.CapControl.lockButtonsPerSubmit('hdr_buttons'); Yukon.CapControl.lockButtonsPerSubmit('foot_buttons');submit();">
 							<f:selectItem itemLabel="(none)" itemValue="-1" />
 							<f:selectItems value="#{paoScheduleForm.PAOSchedulesSelItems}" />
 						</x:selectOneMenu>

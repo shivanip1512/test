@@ -170,7 +170,7 @@ public class OnelineCap extends OnelineObject {
         
         /* Choose which warning image to use */
         UpdaterHelper updaterHelper = YukonSpringHook.getBean("updaterHelper", UpdaterHelper.class);
-        String type = (String) updaterHelper.getCapBankValueAt(capBank, UpdaterHelper.UpdaterDataType.CB_WARNING_IMAGE_TEXT, userContext);
+        String type = (String) updaterHelper.getCapBankValueAt(capBank, UpdaterHelper.UpdaterDataType.CB_LOCAL_REMOTE_TEXT, userContext);
         String color = (String) updaterHelper.getCapBankValueAt(capBank, UpdaterHelper.UpdaterDataType.CB_WARNING_IMAGE_COLOR, userContext);
         String image;
         if( color.equalsIgnoreCase("Yellow")) {

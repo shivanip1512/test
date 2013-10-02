@@ -1,5 +1,6 @@
 package com.cannontech.web.updater.capcontrol;
 
+import java.text.NumberFormat;
 import java.util.List;
 
 import com.cannontech.cbc.cache.CapControlCache;
@@ -35,45 +36,49 @@ public abstract class AbstractAreaFormatingService<E extends StreamableCapObject
     @Override
     protected String getChildCount(E latestValue, UpdaterHelper updaterHelper, YukonUserContext context) {
         List<SubStation> areaStations = getAreaStations(latestValue.getCcId(), context.getYukonUser());
-        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(context);
-        return messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.areas.stationCount", areaStations.size());
+        MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
+        return accessor.getMessage("yukon.web.modules.capcontrol.areas.stationCount", areaStations.size());
     }
 
     @Override
     protected String getKVarsAvailable(E latestValue, UpdaterHelper updaterHelper, YukonUserContext context) {
         LiteYukonUser user = context.getYukonUser();
         List<SubStation> areaStations = getAreaStations(latestValue.getCcId(), user);
-        String varsAvailable = CapControlUtils.format(CapControlUtils.calcVarsAvailableForSubStations(areaStations, user));
-        return varsAvailable;
+        String varsAvailable = NumberFormat.getInstance().format(CapControlUtils.calcVarsAvailableForSubStations(areaStations, user));
+        MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
+        return accessor.getMessage("yukon.web.modules.capcontrol.kvarsValue", varsAvailable);
     }
     
     @Override
     protected String getKVarsUnavailable(E latestValue, UpdaterHelper updaterHelper, YukonUserContext context) {
         LiteYukonUser user = context.getYukonUser();
         List<SubStation> areaStations = getAreaStations(latestValue.getCcId(), user);
-        String varsUnavailable =  CapControlUtils.format (CapControlUtils.calcVarsUnavailableForSubStations(areaStations, user) );
-        return varsUnavailable;
+        String varsUnavailable =  NumberFormat.getInstance().format(CapControlUtils.calcVarsUnavailableForSubStations(areaStations, user));
+        MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
+        return accessor.getMessage("yukon.web.modules.capcontrol.kvarsValue", varsUnavailable);
     }
     
     @Override
     protected String getKVarsClosed(E latestValue, UpdaterHelper updaterHelper, YukonUserContext context) {
         LiteYukonUser user = context.getYukonUser();
         List<CapBankDevice> areaCapBanks = getAreaCapBanks(latestValue.getCcId(), user);
-        String closedVars = CapControlUtils.format(CapControlUtils.calcVarsClosedForCapBanks(areaCapBanks, user));
-        return closedVars;
+        String closedVars = NumberFormat.getInstance().format(CapControlUtils.calcVarsClosedForCapBanks(areaCapBanks, user));
+        MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
+        return accessor.getMessage("yukon.web.modules.capcontrol.kvarsValue", closedVars);
     }
     
     @Override
     protected String getKVarsTripped(E latestValue, UpdaterHelper updaterHelper, YukonUserContext context) {
         LiteYukonUser user = context.getYukonUser();
         List<CapBankDevice> areaCapBanks = getAreaCapBanks(latestValue.getCcId(), user);
-        String trippedVars = CapControlUtils.format(CapControlUtils.calcVarsTrippedForCapBanks(areaCapBanks, user));
-        return trippedVars;
+        String trippedVars = NumberFormat.getInstance().format(CapControlUtils.calcVarsTrippedForCapBanks(areaCapBanks, user));
+        MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
+        return accessor.getMessage("yukon.web.modules.capcontrol.kvarsValue", trippedVars);
     }
 
     @Override
     protected String getWarningFlagMessage(E latestValue, UpdaterHelper updaterHelper, YukonUserContext context) {
-        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(context);
+        MessageSourceAccessor messageSourceAccessor = resolver.getMessageSourceAccessor(context);
         return messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.voltReductionActive");
     }
     

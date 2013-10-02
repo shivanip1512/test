@@ -43,7 +43,7 @@
                                     <td>
                                         <i:inline key=".${categoryTemplate.categoryType}.${rate.field}"/>
                                     </td>
-                                    <td>
+                                    <td id="${field.fieldName}_${rate.field}" data-field-name="${field.fieldName}" data-rate="${rate.field}">
                                         <c:choose>
                                             <c:when test="${!isMidnight}">
                                                 <cti:displayForPageEditModes modes="VIEW">

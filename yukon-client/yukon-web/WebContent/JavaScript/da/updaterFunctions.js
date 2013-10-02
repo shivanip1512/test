@@ -8,11 +8,12 @@ function updateStateColorGenerator(id) {
         if (state.indexOf('Pending') != -1) {
             color = '#F09100';
         } else if (state.startsWith('ENABLED')) {
-            color = '#3C8242';
+            color = '#009933';
         } else if (state.startsWith('DISABLED')) {
-            color = '#FF0000';
+            color = '#D14836';
         }
         anchorTag.style.color = color;
+        anchorTag.style.backgroundColor = color;
     };
 }
 
@@ -57,32 +58,15 @@ function updateDualBusImage(id) {
 function updateCapBankWarningImage(id) {
   //assumes data is of type Hash
     return function(data) {
-        var yellowSpan = $(id + '_yellow');
-        var greenSpan = $(id + '_green');
-        var yellowLocalSpan = $(id + '_yellow_local');
-        var greenLocalSpan = $(id + '_green_local');
-        
-        var icon = data.value;
-        
-        if (icon == 'GreenRemote') {
+        var yellowSpan = $(id + '_yellow'),
+            greenSpan = $(id + '_green'),
+            icon = data.value;
+
+        if (icon == 'Green') {
             yellowSpan.hide();
-            yellowLocalSpan.hide();
-            greenLocalSpan.hide();
             greenSpan.show();
-        } else if (icon == 'GreenLocal') {
-            yellowSpan.hide();
-            yellowLocalSpan.hide();
-            greenLocalSpan.show();
-            greenSpan.hide();
-        } else if (icon == 'YellowRemote') {
+        } else if (icon == 'Yellow') {
             yellowSpan.show();
-            yellowLocalSpan.hide();
-            greenLocalSpan.hide();
-            greenSpan.hide();
-        } else if (icon == 'YellowLocal') {
-            yellowSpan.hide();
-            yellowLocalSpan.show();
-            greenLocalSpan.hide();
             greenSpan.hide();
         }
     };

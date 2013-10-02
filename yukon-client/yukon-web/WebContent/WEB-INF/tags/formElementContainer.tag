@@ -19,7 +19,7 @@
 <cti:uniqueIdentifier prefix="formElementContainer_" var="thisId"/>
 
 <div class="titledContainer formElementContainer ${pageScope.styleClass}" <c:if test="${not empty pageScope.id}">id="${pageScope.id}"</c:if>>
-    <div class="title-bar">
+    <div class="title-bar clearfix">
         <c:choose>
             <c:when test="${pageScope.escapeTitle}">
                 <h3 class="title ${h3Class}">${fn:escapeXml(pageScope.title)}</h3>

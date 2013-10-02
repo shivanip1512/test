@@ -493,7 +493,7 @@
   <tag>
     <name>capBankStateColor</name>
     <tag-class>com.cannontech.web.taglib.CapBankStateColorTag</tag-class>
-    <body-content>scriptless</body-content>
+    <body-content>empty</body-content>
     <attribute>
       <name>paoId</name>
       <required>true</required>

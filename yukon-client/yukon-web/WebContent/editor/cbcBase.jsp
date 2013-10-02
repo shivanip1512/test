@@ -20,10 +20,7 @@
 <cti:includeScript link="/JavaScript/tableCreation.js"/>
 <cti:includeScript link="/JavaScript/scrollDiv.js"/>
 <cti:includeScript link="/JavaScript/da/yukon.capcontrol.js"/>
-<cti:includeScript link="/JavaScript/GreyBox/AmiJS.js"/>
-<cti:includeScript link="/JavaScript/GreyBox/greybox.js"/>
 
-<cti:includeCss link="/editor/css/greybox/greybox.css"/>
 <cti:includeCss link="/editor/css/CapcontrolEditorStyles.css"/>
 
 <%
@@ -47,8 +44,8 @@
 
 <f:verbatim>
 <script type="text/JavaScript">
-	addLockButtonForButtonGroup("hdr_buttons");
-	addLockButtonForButtonGroup("foot_buttons");
+	Yukon.CapControl.addLockButtonForButtonGroup("hdr_buttons");
+	Yukon.CapControl.addLockButtonForButtonGroup("foot_buttons");
 </script>
 </f:verbatim>
     <x:panelLayout id="page" styleClass="pageLayout" headerClass="pageHeader" navigationClass="pageNavigation" bodyClass="pageBody" footerClass="pageFooter" >
@@ -79,6 +76,15 @@
                     <x:commandButton id="hdr_reset_button"  value="Reset" action="#{capControlForm.resetForm}" styleClass="stdButton" 
                         title="Resets all the data to the original settings" rendered = "#{capControlForm.editingAuthorized}"/>
                     
+                    <f:verbatim>
+                        <cti:url var="deleteUrl" value="/editor/deleteBasePAO.jsf">
+                            <cti:param name="value" value="${capControlForm.itemId}"/>
+                        </cti:url>
+                        <cti:msgScope paths="capcontrol.cbcBase">
+                           <cti:button nameKey="delete" href="${deleteUrl}"/>
+                        </cti:msgScope>
+                    </f:verbatim>
+
                     <x:commandButton id="hdr_return_button" value="Return" action="none" styleClass="stdButton" immediate="true" 
                         title="Returns to the last module page that was used to enter this editor" >
                     	<f:actionListener type="com.cannontech.web.editor.CtiNavActionListener" />
@@ -185,6 +191,15 @@
                             <x:commandButton id="reset_button" value="Reset" action="#{capControlForm.resetForm}" styleClass="stdButton"  
                                 title="Resets all the data to the original settings" rendered="#{capControlForm.editingAuthorized}"/>
                             
+                            <f:verbatim>
+                                <cti:url var="deleteUrl" value="/editor/deleteBasePAO.jsf">
+                                    <cti:param name="value" value="${capControlForm.itemId}"/>
+                                </cti:url>
+                                <cti:msgScope paths="capcontrol.cbcBase">
+                                   <cti:button nameKey="delete" href="${deleteUrl}"/>
+                                </cti:msgScope>
+                            </f:verbatim>
+
                             <x:commandButton 	id="return_button" value="Return" action="none" styleClass="stdButton" immediate="true" 
                                 title="Returns to the last module page that was used to enter this editor" >
                                 <f:actionListener type="com.cannontech.web.editor.CtiNavActionListener" />

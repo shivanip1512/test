@@ -57,7 +57,7 @@ public class UpdaterHelper {
         CB_SHORT_TIME_STAMP_COLUMN,
         CB_STATUS_POPUP,
         CB_WARNING_IMAGE_COLOR,
-        CB_WARNING_IMAGE_TEXT,
+        CB_LOCAL_REMOTE_TEXT,
         CB_WARNING_POPUP,
         CB_DAILY_MAX_TOTAL_OP_COLUMN,
         CB_PHASEA_BEFORE,
@@ -152,8 +152,8 @@ public class UpdaterHelper {
     private static final Color[] _DEFAULT_COLORS = {
         // Enabled subbus (Green like color)
         new Color(60, 130, 66),
-        // Disabled subbus
-        Color.RED,
+        // Disabled subbus (Red like color)
+        new Color(209,72,54),
         // Pending subbus (Yellow like color)
         new Color(240, 145, 0) 
     };
@@ -297,7 +297,7 @@ public class UpdaterHelper {
             return color;
         }
             
-        case CB_WARNING_IMAGE_TEXT:{
+        case CB_LOCAL_REMOTE_TEXT:{
             if (capBank.getLocalControlFlag()) {
                 return accessor.getMessage("yukon.web.modules.capcontrol.local");
             } else {

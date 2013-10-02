@@ -8,7 +8,7 @@ jQuery(function() {
         jQuery(".dropdown-container").removeClass("menu-open");
         target = jQuery(this);
         
-        menu = target.data('menu');
+        menu = target.find('.dropdown-menu').eq(0);
 
         if (menu.is(":visible")) {
             jQuery("ul.dropdown-menu").hide();
@@ -37,7 +37,7 @@ jQuery(function() {
         //reposition when showing to ensure the menu follows the element even
         //if the page changed since the last time it was shown
         menu.removeAttr("style");
-        menu.css({top: container_offset.top + dropdown_container.height() + 4, right: (jQuery(window).width() - container_offset.left - dropdown_container.width())});
+        menu.css({top: dropdown_container.height() + 7, right: -6});
 
         menu.toggle();
 
@@ -56,7 +56,7 @@ jQuery(function() {
     }
     
     function ajaxMenuOpen(target, e) {
-        var menu = target.data('menu'),
+        var menu = target.find('.dropdown-menu').eq(0),
             params;
         if (typeof(target.data('menu_items')) !== 'undefined') {
             menu.toggle();
@@ -148,9 +148,12 @@ jQuery(function() {
         var menu = container.find('.dropdown-menu'),
             button = container.find('button');
         
-        container.data({'menu': menu});
-        jQuery('body').prepend(menu);
-        menu.data('button', button);
+        menu.find('[href]').each( function(index, link) {
+            link = jQuery(link);
+            link.click( function(){
+                window.location = link.attr('href');
+            });
+        });
         
         if (menu.is('.criteria-menu')) {
             updateCriteriaButton(menu);

@@ -38,25 +38,16 @@ public class CapBankStateColorTag extends YukonTagSupport {
         UpdateValue value = updaterService.getFirstValue(id, getUserContext());
         final String color = value.getValue();
         
-        final StringBuilder beforeBodyBuilder = new StringBuilder();
-        beforeBodyBuilder.append("<span id=\"data-color-updater_" + paoId + "\" style=\"color: ");
-        beforeBodyBuilder.append(color + " !important");
-        beforeBodyBuilder.append(";\" data-color-updater=\"" + StringEscapeUtils.escapeHtml(value.getFullIdentifier()) + "\">");
-        String before = beforeBodyBuilder.toString(); 
-        
-        final StringBuilder afterBodyBuilder = new StringBuilder();
-        afterBodyBuilder.append("</span>\n");
-        afterBodyBuilder.append("<script type=\"text/javascript\" language=\"JavaScript\">\n");
-        afterBodyBuilder.append("   $('data-color-updater_" + paoId + "').childElements().each(function(child) {\n");
-        afterBodyBuilder.append("       child.style.color = '" + color + "';\n");
-        afterBodyBuilder.append("   });\n");
-        afterBodyBuilder.append("</script>\n");
-        String after = afterBodyBuilder.toString();
-        
+        final StringBuilder stateBoxContentBuilder = new StringBuilder();
+        stateBoxContentBuilder.append("<span id=\"data-color-updater_" + paoId + "\" ");
+        stateBoxContentBuilder.append("class=\"box stateBox\" ");
+        stateBoxContentBuilder.append("style=\"background-color: " + color + "\" ");
+        stateBoxContentBuilder.append("data-color-updater=\"" + StringEscapeUtils.escapeHtml(value.getFullIdentifier()) + "\" data-format=\"background\" >");
+        stateBoxContentBuilder.append("</span>\n");
+        String stateBoxContent = stateBoxContentBuilder.toString();
+
         final JspWriter writer = getJspContext().getOut();
-        writer.print(before);
-        getJspBody().invoke(writer);
-        writer.print(after);
+        writer.print(stateBoxContent);
     }
 
     public void setPaoId(int paoId) {

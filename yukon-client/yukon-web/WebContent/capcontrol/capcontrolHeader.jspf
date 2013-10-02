@@ -2,9 +2,10 @@
 <%@page import="java.util.*" %>
 <%@page import="com.cannontech.message.capcontrol.streamable.*" %>
 
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
-<%@ taglib tagdir="/WEB-INF/tags/capcontrol" prefix="capTags"%>
+<%@ taglib prefix="cc" tagdir="/WEB-INF/tags/capcontrol" %>
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <!-- Check CapControl Role Access -->
 <cti:isPropertyFalse property="CAP_CONTROL_ACCESS">
@@ -22,17 +23,6 @@
 <cti:includeScript link="/JavaScript/cconelinepopup.js"/>
 <cti:includeScript link="/JavaScript/simpleDialog.js"/>
 <cti:includeScript link="/JavaScript/validation.js"/>
-<cti:includeScript link="/JavaScript/GreyBox/AmiJS.js"/>
-<cti:includeScript link="/JavaScript/GreyBox/greybox.js"/>
-
-<script type="text/javascript" language="JavaScript">
-    //These two lines are needed in every page to use Greybox.
-    var GB_IMG_DIR = "/editor/css/greybox/";
-    GreyBox.preloadGreyBoxImages();
-</script>
-
-<!-- Included CSS -->
-<cti:includeCss link="/editor/css/greybox/greybox.css"/>     
 
 <!-- Beans -->
 <jsp:useBean id="ccSession" class="com.cannontech.web.capcontrol.CCSessionInfo" type="com.cannontech.web.capcontrol.CCSessionInfo" scope="session"/>
@@ -48,41 +38,21 @@
 
 <!-- Page Dropdown Actions -->
 <div id="f-page-actions" class="dn">
-    <li>
-        <a class="f-cc-create clearfix">
-            <i class="icon icon-plus-green"></i>
-            <span class="fl dib"><cti:msg2 key="yukon.web.components.button.create.label"/></span>
-        </a>
-    </li>
-    <li class="divider"></li>
+    <cm:dropdownOption classes="f-cc-create" icon="icon-plus-green" key="yukon.web.components.button.create.label"/>
     <cti:checkRolesAndProperties value="SYSTEM_WIDE_CONTROLS">
         <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+            <li class="divider"></li>
             <tags:dynamicChoose updaterString="CAPCONTROL/SYSTEM_ENABLE_COMMAND" suffix="">
                 <tags:dynamicChooseOption optionId="enabled">
-                    <li>
-                        <a href="javascript:doSystemCommand('28')" id="systemOn" class="clearfix">
-                            <i class="icon icon-delete"></i>
-                            <span class="fl dib"><cti:msg2 key=".disableSystem.label"/></span>
-                        </a>
-                    </li>
+                    <cm:dropdownOption id="systemOn" icon="icon-delete" href="javascript:doSystemCommand('28')" key=".disableSystem.label"/>
                 </tags:dynamicChooseOption>
                 <tags:dynamicChooseOption optionId="disabled">
-                    <li>
-                        <a href="javascript:doSystemCommand('28')" id="systemOff" class="clearfix">
-                            <i class="icon icon-accept"></i>
-                            <span class="fl dib"><cti:msg2 key=".enableSystem.label"/></span>
-                        </a>
-                    </li>
+                    <cm:dropdownOption id="systemOff" icon="icon-accept" href="javascript:doSystemCommand('28')" key=".enableSystem.label"/>
                 </tags:dynamicChooseOption>
             </tags:dynamicChoose>
-            <li>
-                <a href="javascript:doSystemCommand('16')" id="systemResetOpCountsLink" class="clearfix">
-                    <i class="icon icon-arrow-undo"></i>
-                    <span class="fl dib"><cti:msg2 key=".resetOpCount.label"/></span>
-                </a>
-            </li>
+            <cm:dropdownOption id="systemResetOpCountsLink" icon="icon-arrow-undo" href="javascript:doSystemCommand('16')" key=".resetOpCount.label"/>
         </cti:checkRolesAndProperties>
     </cti:checkRolesAndProperties>
 </div>
 
-<capTags:commandMsgDiv/>
+<cc:commandMsgDiv/>

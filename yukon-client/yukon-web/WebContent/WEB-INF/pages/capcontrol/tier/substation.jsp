@@ -6,6 +6,7 @@
 <%@ taglib prefix="capTags" tagdir="/WEB-INF/tags/capcontrol"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="flot" tagdir="/WEB-INF/tags/flotChart" %>
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 
 <cti:standardPage module="capcontrol" page="substation">
 <%@ include file="/capcontrol/capcontrolHeader.jspf"%>
@@ -21,7 +22,6 @@
 <jsp:setProperty name="CtiNavObject" property="moduleExitPage" value=""/>
 
 <cti:url var="onelineCBCServlet" value="/oneline/OnelineCBCServlet"/>
-<cti:url var="stateMenuUrl" value="/capcontrol/menu/capBankState"/>
 
 <c:set var="substationId" value="${substation.id}"/>
 
@@ -33,224 +33,146 @@
 
 <script type="text/javascript">
 jQuery(function() {
-    checkPageExpire();
+    Yukon.CapControl.checkPageExpire();
+    Yukon.CapControl.initSubstation();
 });
-
-// Filters
-function applySubBusFilter(select) {
-    var rows = $$("tr[id^='tr_sub_']");
-    var subBusIds = new Array();
-    if (select.selectedIndex == 0) {
-        rows.each(function (row) {
-            row.show();
-            subBusIds.push(row.id.split('_')[2]);
-        });
-        $('feederFilter').selectedIndex = 0;
-        applyFeederFilter(subBusIds);
-    } else {
-        var selectedSubBusId = select.options[select.selectedIndex].value;
-        rows.each(function (row) {
-            var subBusId =  row.id.split('_')[2];
-            if (subBusId == selectedSubBusId) {
-                row.show();
-                subBusIds.push(subBusId);
-            } else {
-                row.hide();
-            }
-        });
-        applyFeederFilter(subBusIds);
-    }
-}
-
-function applyFeederSelectFilter(select) {
-    var rows = $$("tr[id^='tr_feeder_']");
-    var feederIds = new Array();
-    if (select.selectedIndex == 0) {
-        rows.each(function (row) {
-            row.show();
-            feederIds.push(row.id.split('_')[2]);
-        });
-        applyCapBankFilter(feederIds);
-    } else {
-        var selectedFeederId = select.options[select.selectedIndex].value;
-        rows.each(function (row) {
-            var feederId =  row.id.split('_')[2];
-            
-            if (feederId == selectedFeederId) {
-                row.show();
-                feederIds.push(feederId);
-            } else {
-                row.hide();
-            }
-        });
-        applyCapBankFilter(feederIds);
-    }
-}
-
-function applyFeederFilter(subBusIds) {
-    var rows = $$("tr[id^='tr_feeder_']");
-    var feederIds = new Array();
-    rows.each(function(row) {
-        var parentId = row.id.split('_')[4];
-        if (subBusIds.indexOf(parentId) != -1) {
-            row.show();
-            feederIds.push(row.id.split('_')[2]);
-        } else {
-            row.hide();
-        }
-    });
-    applyCapBankFilter(feederIds);
-}
-
-function applyCapBankFilter(feederIds) {
-    var rows = $$("tr[id^='tr_cap_']");
-    rows.each(function(row) {
-        var parentId = row.id.split('_')[4];
-        if (feederIds.indexOf(parentId) != -1) {
-            row.show();
-        } else {
-            row.hide();
-        }
-    });
-}
 </script>
 
-    <input type="hidden" id="paoId_${substationId}" value="${substationId}">
-    
-    <c:choose>
-        <c:when test="${hasEditingRole}">
-            <c:set var="editKey" value="edit"/>
-        </c:when>
-        <c:otherwise>
-            <c:set var="editKey" value="info"/>
-        </c:otherwise>
-    </c:choose>
-    <div class="column_12_12">
-        
-        <div class="column one">
-        
-            <tags:boxContainer2 nameKey="infoContainer" styleClass="padBottom" hideEnabled="true" showInitially="true">
-            	<div class="clearfix">
-	                <div class="dib fl" style="margin-right:5px;">
-	                    <tags:nameValueContainer2 tableClass="infoContainer">
-	                        <tags:nameValue2 nameKey=".name">
-	                            <span><spring:escapeBody>${substation.name}</spring:escapeBody></span>
-	                        </tags:nameValue2>
-	                        <tags:nameValue2 nameKey=".geoName">
-	                            <span><spring:escapeBody>${substation.description}</spring:escapeBody></span>
-	                        </tags:nameValue2>
-	                        <tags:nameValue2 nameKey=".area">
-	                            <span>
-	                                <c:choose>
-	                                    <c:when test="${areaId > 0}">
-	                                        <cti:deviceName deviceId="${areaId}"/>
-	                                    </c:when>
-	                                    <c:otherwise><i:inline key="yukon.web.defaults.none"/></c:otherwise>
-	                                </c:choose>
-	                            </span>
-	                        </tags:nameValue2>
-	                    </tags:nameValueContainer2>
-	                    
-	                </div>
-	                <div class="dib fl">
-	                    <tags:nameValueContainer2 tableClass="infoContainer">
-	                        <tags:nameValue2 nameKey=".state" rowClass="wsnw">
-	                            <capTags:warningImg paoId="${substationId}" type="SUBSTATION"/>
-	                                <c:if test="${hasSubstationControl}"><a id="substationState_${substationId}" href="javascript:void(0);"></c:if>
-	                                <c:if test="${!hasSubstationControl}"><span id="substationState_${substationId}"></c:if>
-	                                    <cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="STATE"/>
-	                                <c:if test="${hasSubstationControl}"></a></c:if>
-	                                <c:if test="${!hasSubstationControl}"></span></c:if>
-	                                <cti:dataUpdaterCallback function="updateStateColorGenerator('substationState_${substationId}')" initialize="true" value="SUBSTATION/${substationId}/STATE"/>
-	                        </tags:nameValue2>
-	                        <tags:nameValue2 nameKey=".mapLocationId">
-	                            <span>${substation.mapLocationId}</span>
-	                        </tags:nameValue2>
-	                        <tags:nameValue2 nameKey=".specialArea">
-	                            <span>
-	                                <c:choose>
-	                                    <c:when test="${specialAreaId > 0}">
-	                                        <cti:classUpdater type="SUBSTATION" identifier="${substationId}/SA_ENABLED">
-	                                            <cti:deviceName deviceId="${specialAreaId}"/>: <cti:capControlValue paoId="${specialAreaId}" type="CBCSPECIALAREA" format="STATE"/>
-	                                        </cti:classUpdater>
-	                                    </c:when>
-	                                    <c:otherwise><i:inline key="yukon.web.defaults.none"/></c:otherwise>
-	                                </c:choose>
-	                            </span>
-	                        </tags:nameValue2>
-	                    </tags:nameValueContainer2>
-	                </div>
-                </div>
-                <div class="actionArea">
-                    <cti:button nameKey="location" href="/capcontrol/capbank/capBankLocations?value=${substationId}&amp;specialArea=${isSpecialArea}" icon="icon-interstate" classes="fl"/>
-                    <cti:button nameKey="${editKey}" href="/editor/cbcBase.jsf?type=2&amp;itemid=${substationId}" icon="icon-pencil"/>
-                    <c:if test="${hasEditingRole}">
-                        <cti:button nameKey="remove" href="/editor/deleteBasePAO.jsf?value=${substationId}" icon="icon-cross"/>
-                    </c:if>
-                </div>
-        
-            </tags:boxContainer2>
-            
-        </div>
-        
-        <div class="column two nogutter">
-        
-            <tags:boxContainer2 nameKey="statsContainer" styleClass="padBottom" hideEnabled="true" showInitially="true">
-                <div class="column_12_12">
-                    <div class="column one">
-                        <tags:nameValueContainer2 tableClass="infoContainer">
-                            <tags:nameValue2 nameKey=".availableKvars">
-                                <cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="KVARS_AVAILABLE" />
-                            </tags:nameValue2>
-                            
-                            <tags:nameValue2 nameKey=".unavailableKvars">
-                                <cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="KVARS_UNAVAILABLE" />
-                            </tags:nameValue2>
-                        </tags:nameValueContainer2>
-                    </div>
-                    <div class="column two nogutter">
-                        <tags:nameValueContainer2 tableClass="infoContainer">
-                            <tags:nameValue2 nameKey=".closedKvars">
-                                <cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="KVARS_CLOSED" />
-                            </tags:nameValue2>
-                            
-                            <tags:nameValue2 nameKey=".trippedKvars">
-                                <cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="KVARS_TRIPPED" />
-                            </tags:nameValue2>
-                            
-                        </tags:nameValueContainer2>
-                    </div>
-                </div>
-                <div class="clear">
+<c:choose>
+    <c:when test="${hasEditingRole}">
+        <c:set var="editKey" value="edit"/>
+    </c:when>
+    <c:otherwise>
+        <c:set var="editKey" value="info"/>
+    </c:otherwise>
+</c:choose>
+
+<div class="f-page-additional-actions dn">
+    <li class="divider" />
+    <cti:url var="locationsUrl" value="/capcontrol/capbank/capBankLocations">
+        <cti:param name="value" value="${substationId}" />
+        <cti:param name="specialArea" value="${isSpecialArea}" />
+    </cti:url>
+    <cm:dropdownOption key=".location.label" href="${locationsUrl}" icon="icon-interstate" />
+
+    <c:if test="${showAnalysis}">
+        <i:simplePopup titleKey=".analysisTrends" id="analysisTrendsOptions" on="#analysisTrendsButton">
+            <%@ include file="analysisTrendsOptions.jspf" %>
+        </i:simplePopup>
+        <cm:dropdownOption key=".analysis.label" id="analysisTrendsButton" icon="icon-chart-line" />
+    </c:if>
+
+    <i:simplePopup titleKey=".recentEvents" id="recentEventsOptions" on="#recentEventsButton">
+        <%@ include file="recentEventsOptions.jspf" %>
+    </i:simplePopup>
+    <cm:dropdownOption key=".recentEvents.label" id="recentEventsButton" icon="icon-application-view-columns" />
+
+    <cti:url var="editUrl" value="/editor/cbcBase.jsf">
+        <cti:param name="type" value="2" />
+        <cti:param name="itemid" value="${substationId}" />
+    </cti:url>
+    <cm:dropdownOption  key="components.button.${editKey}.label" icon="icon-pencil" href="${editUrl}" />
+</div>
+
+
+<div class="dn" data-pao-id="${substationId}"></div>
+
+<div class="column_12_12">
+    <div class="column one">
+        <tags:sectionContainer2 nameKey="infoContainer" hideEnabled="true" styleClass="stacked">
+            <div class="clearfix">
+                <div class="dib fl" style="margin-right:5px;">
                     <tags:nameValueContainer2 tableClass="infoContainer">
-                        <tags:nameValue2 nameKey=".pfactorEstimated" rowClass="powerFactor">
-                            <cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="PFACTOR" />
+                        <tags:nameValue2 nameKey=".name">
+                            <span>${fn:escapeXml(substation.name)}</span>
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".geoName">
+                            <span><spring:escapeBody>${substation.description}</spring:escapeBody></span>
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".area">
+                            <span>
+                                <c:choose>
+                                    <c:when test="${areaId > 0}">
+                                        <cti:deviceName deviceId="${areaId}"/>
+                                    </c:when>
+                                    <c:otherwise><i:inline key="yukon.web.defaults.none"/></c:otherwise>
+                                </c:choose>
+                            </span>
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </div>
-                <div class="clear actionArea">
-                    <c:if test="${showAnalysis}">
-                        <i:simplePopup titleKey=".analysisTrends" id="analysisTrendsOptions" on="#analysisTrendsButton">
-                            <%@ include file="analysisTrendsOptions.jspf" %>
-                        </i:simplePopup>
-                    
-                        <cti:button nameKey="analysis" id="analysisTrendsButton" icon="icon-chart-line"/>
-                    </c:if>
-                    
-                    <i:simplePopup titleKey=".recentEvents" id="recentEventsOptions" on="#recentEventsButton">
-                        <%@ include file="recentEventsOptions.jspf" %>
-                    </i:simplePopup>
-                    
-                    <cti:button nameKey="recentEvents" id="recentEventsButton" icon="icon-application-view-columns"/>
+                <div class="dib fl">
+                    <tags:nameValueContainer2 tableClass="infoContainer">
+                        <tags:nameValue2 nameKey=".state" rowClass="wsnw">
+                                <c:if test="${hasSubstationControl}"><a id="substationState_${substationId}" class="subtle-link" href="javascript:void(0);"></c:if>
+                                <c:if test="${not hasSubstationControl}"><span id="substationState_${substationId}"></c:if>
+                                    <span id="substationState_box_${substationId}" class="box stateBox">
+                                        &nbsp;
+                                    </span>
+                                    <cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="STATE"/>
+                                <c:if test="${hasSubstationControl}"></a></c:if>
+                                <c:if test="${not hasSubstationControl}"></span></c:if>
+                                <cti:dataUpdaterCallback function="updateStateColorGenerator('substationState_box_${substationId}')" initialize="true" value="SUBSTATION/${substationId}/STATE"/>
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".mapLocationId">
+                            <span>${substation.mapLocationId}</span>
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".specialArea">
+                            <span>
+                                <c:choose>
+                                    <c:when test="${specialAreaId > 0}">
+                                        <cti:classUpdater type="SUBSTATION" identifier="${substationId}/SA_ENABLED">
+                                            <cti:deviceName deviceId="${specialAreaId}"/>: <cti:capControlValue paoId="${specialAreaId}" type="CBCSPECIALAREA" format="STATE"/>
+                                        </cti:classUpdater>
+                                    </c:when>
+                                    <c:otherwise><i:inline key="yukon.web.defaults.none"/></c:otherwise>
+                                </c:choose>
+                            </span>
+                        </tags:nameValue2>
+                    </tags:nameValueContainer2>
                 </div>
-            </tags:boxContainer2>
-        
-        </div>
-        
+            </div>
+            <capTags:warningImg paoId="${substationId}" type="SUBSTATION" alertBox="true"/>
+        </tags:sectionContainer2>
     </div>
-    
-    <%@ include file="busTier.jspf" %>
-    <%@ include file="feederTier.jspf" %>
-    <%@ include file="bankTier.jspf" %>
-    
+
+    <div class="column two nogutter">
+        <tags:sectionContainer2 nameKey="statsContainer" hideEnabled="true" styleClass="stacked">
+            <div class="column_12_12">
+                <div class="column one">
+                    <tags:nameValueContainer2 tableClass="infoContainer">
+                        <tags:nameValue2 nameKey=".availableKvars">
+                            <cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="KVARS_AVAILABLE" />
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".unavailableKvars">
+                            <cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="KVARS_UNAVAILABLE" />
+                        </tags:nameValue2>
+                    </tags:nameValueContainer2>
+                </div>
+                <div class="column two nogutter">
+                    <tags:nameValueContainer2 tableClass="infoContainer">
+                        <tags:nameValue2 nameKey=".closedKvars">
+                            <cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="KVARS_CLOSED" />
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".trippedKvars">
+                            <cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="KVARS_TRIPPED" />
+                        </tags:nameValue2>
+                    </tags:nameValueContainer2>
+                </div>
+            </div>
+            <div class="clear">
+                <tags:nameValueContainer2 tableClass="infoContainer">
+                    <tags:nameValue2 nameKey=".pfactorEstimated" rowClass="powerFactor">
+                        <cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="PFACTOR" />
+                    </tags:nameValue2>
+                </tags:nameValueContainer2>
+            </div>
+        </tags:sectionContainer2>
+    </div>
+</div>
+
+<%@ include file="busTier.jspf" %>
+<%@ include file="feederTier.jspf" %>
+<%@ include file="bankTier.jspf" %>
+
 </cti:standardPage>

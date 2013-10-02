@@ -85,6 +85,15 @@ a.described {
 	margin-right: 10px;
 }
 
+a:link.subtle-link,a:visited.subtle-link {
+	color: #555555;
+}
+
+a:link.subtle-link:hover,a:visited.subtle-link:hover {
+	color: #0066cc;
+	cursor: pointer;
+}
+
 /* COLORS */
 a,.primary_color,.vertical_menu li.selected a,.vertical_menu a:hover,.ui-widget-content a,#subMenu a:visited,.perPageArea a:visited {
 	color: #0066cc;
@@ -354,6 +363,11 @@ table.nowrap th,table.nowrap td {
 	width: 10%;
 }
 
+/*Use the class when there will be elements before the first icon in a row */
+.row-icon,.compactResultsTable tr td:first-child i.icon:first-child {
+	margin: 0px;
+}
+
 .two-column-split {
 	width: 100%;
 }
@@ -418,7 +432,7 @@ table.nowrap th,table.nowrap td {
 }
 
 .progressBarInnerFailure {
-	background: #D14836;
+	background: #d14836;
 }
 
 .progressBarPercentComplete,.progressBarCompletedCount {
@@ -567,7 +581,6 @@ ul.disc li {
 }
 
 .titledContainer .content {
-	overflow: hidden;
 	padding: 10px;
 }
 

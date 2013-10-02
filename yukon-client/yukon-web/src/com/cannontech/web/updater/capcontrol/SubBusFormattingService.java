@@ -146,7 +146,7 @@ public class SubBusFormattingService extends AbstractFormattingService<SubBus> {
     
     @Override
     protected String getDualBus(SubBus latestValue, UpdaterHelper updaterHelper, YukonUserContext context) {
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
+        MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
         
         String ret = accessor.getMessage("yukon.web.modules.capcontrol.dualBusDisabled");
         
@@ -163,7 +163,7 @@ public class SubBusFormattingService extends AbstractFormattingService<SubBus> {
     
     @Override
     protected String getDualBusMessage(SubBus latestValue, UpdaterHelper updaterHelper, YukonUserContext context) {
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
+        MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
         String ret = "";
         int subbusId = latestValue.getAlternateBusId();
         

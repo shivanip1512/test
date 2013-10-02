@@ -53,13 +53,13 @@
                     // Add menus
                     bankName = jQuery(row).find('button[id^="bankName"]')[0];
                     jQuery(bankName).click( function(event) {
-                        getCommandMenu(bankId, event);
+                        Yukon.CapControl.getCommandMenu(bankId, event);
                         return false;
                     });
 
                     bankState = jQuery(row).find('a[id^="capbankState"]');
                     jQuery(bankState).click( function(event) {
-                        getMenuFromURL('/capcontrol/menu/capBankState?id=' + encodeURIComponent(bankId), event);
+                        Yukon.CapControl.getMenuFromURL('/capcontrol/menu/capBankState?id=' + encodeURIComponent(bankId), event);
                         return false;
                     });
                 });
@@ -506,11 +506,10 @@
                             </td>
                             <td>
                                 <capTags:capBankWarningImg paoId="${bankId}" type="CAPBANK"/>
-                                <cti:capBankStateColor paoId="${bankId}" type="CAPBANK" format="CB_STATUS_COLOR">
-                                    <a id="capbankState_${bankId}" href="#null">
-                                       <cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_STATUS"/>
-                                    </a>
-                                </cti:capBankStateColor>
+                                <cti:capBankStateColor paoId="${bankId}" type="CAPBANK" format="CB_STATUS_COLOR" />
+                                <a id="capbankState_${bankId}" href="#null">
+                                   <cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_STATUS"/>
+                                </a>
                             </td>
                             <td>
                                 <c:choose>

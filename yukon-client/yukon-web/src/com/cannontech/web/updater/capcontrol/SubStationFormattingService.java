@@ -1,10 +1,12 @@
 package com.cannontech.web.updater.capcontrol;
 
+import java.text.NumberFormat;
 import java.util.List;
 
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.util.UpdaterHelper;
 import com.cannontech.cbc.util.CapControlUtils;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.capcontrol.streamable.CapBankDevice;
 import com.cannontech.message.capcontrol.streamable.SubStation;
@@ -37,40 +39,44 @@ public class SubStationFormattingService extends AbstractAreaFormatingService<Su
     }
     
     @Override
+    protected String getWarningFlag(final SubStation latestValue, final UpdaterHelper updaterHelper, YukonUserContext context) {
+        return (String)updaterHelper.getSubstationValueAt(latestValue, UpdaterHelper.UpdaterDataType.SUB_VOLT_REDUCTION, context);
+    }
+    
+    @Override
     protected String getKVarsAvailable(final SubStation latestValue, final UpdaterHelper updaterHelper, YukonUserContext context) {
         LiteYukonUser user = context.getYukonUser();
         SubStation subStation = getSubStation(latestValue.getCcId(), user);
-        String varsAvailable = CapControlUtils.format(CapControlUtils.calcVarsAvailableForSubStation(subStation, user));
-        return varsAvailable;
+        String varsAvailable = NumberFormat.getInstance().format(CapControlUtils.calcVarsAvailableForSubStation(subStation, user));
+        MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
+        return accessor.getMessage("yukon.web.modules.capcontrol.kvarsValue", varsAvailable);
     }
     
     @Override
     protected String getKVarsUnavailable(final SubStation latestValue, final UpdaterHelper updaterHelper, YukonUserContext context) {
         LiteYukonUser user = context.getYukonUser();
         SubStation subStation = getSubStation(latestValue.getCcId(), user);
-        String varsUnavailable =  CapControlUtils.format (CapControlUtils.calcVarsUnavailableForSubStation(subStation, user) );
-        return varsUnavailable;
+        String varsUnavailable =  NumberFormat.getInstance().format(CapControlUtils.calcVarsUnavailableForSubStation(subStation, user) );
+        MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
+        return accessor.getMessage("yukon.web.modules.capcontrol.kvarsValue", varsUnavailable);
     }
     
     @Override
     protected String getKVarsClosed(final SubStation latestValue, final UpdaterHelper updaterHelper, YukonUserContext context) {
         LiteYukonUser user = context.getYukonUser();
         List<CapBankDevice> capBankList = getCapBankList(latestValue.getCcId(), user);
-        String closedVars = CapControlUtils.format(CapControlUtils.calcVarsClosedForCapBanks(capBankList, user));
-        return closedVars;
+        String closedVars = NumberFormat.getInstance().format(CapControlUtils.calcVarsClosedForCapBanks(capBankList, user));
+        MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
+        return accessor.getMessage("yukon.web.modules.capcontrol.kvarsValue", closedVars);
     }
     
     @Override
     protected String getKVarsTripped(final SubStation latestValue, final UpdaterHelper updaterHelper, YukonUserContext context) {
         LiteYukonUser user = context.getYukonUser();
         List<CapBankDevice> capBankList = getCapBankList(latestValue.getCcId(), user);
-        String trippedVars = CapControlUtils.format(CapControlUtils.calcVarsTrippedForCapBanks(capBankList, user));
-        return trippedVars;
-    }
-    
-    @Override
-    protected String getWarningFlag(final SubStation latestValue, final UpdaterHelper updaterHelper, YukonUserContext context) {
-        return (String)updaterHelper.getSubstationValueAt(latestValue, UpdaterHelper.UpdaterDataType.SUB_VOLT_REDUCTION, context);
+        String trippedVars = NumberFormat.getInstance().format(CapControlUtils.calcVarsTrippedForCapBanks(capBankList, user));
+        MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
+        return accessor.getMessage("yukon.web.modules.capcontrol.kvarsValue", trippedVars);
     }
 
     private SubStation getSubStation(final int paoId, final LiteYukonUser user) {

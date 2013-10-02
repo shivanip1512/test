@@ -1,3 +1,16 @@
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="capTags" tagdir="/WEB-INF/tags/capcontrol"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="flot" tagdir="/WEB-INF/tags/flotChart" %>
+
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
+
+
 <c:if test="${hasFeederControl}">
     <script type="text/javascript">
         addCommandMenuBehavior('a[id^="feederState"]');
@@ -8,13 +21,11 @@
     <c:set var="styleClass" value="with_footer"/>
 </c:if>
 <tags:boxContainer2 nameKey="feedersContainer" hideEnabled="true" showInitially="true" styleClass="${styleClass}">
-
-    <table id="fdrTable" class="compactResultsTable rowHighlighting">
-        
+    <table id="fdrTable" class="compactResultsTable rowHighlighting has-actions">
         <thead>
             <tr>
+                <th width="16px">&nbsp;</th>
                 <th><i:inline key=".name"/></th>
-                <th><i:inline key=".actions"/></th>
                 <th><i:inline key=".state"/></th>
                 <th><i:inline key=".target"/></th>
                 <th><i:inline key=".load"/></th>
@@ -24,43 +35,56 @@
                 <th><i:inline key=".dailyMax"/></th>
              </tr>
         </thead>
-        
-        
-        
         <c:forEach var="viewfeeder" items="${feederList}">
             <c:set var="feederId" value="${viewfeeder.feeder.ccId}"/>
             <c:set var="parentId" value="${viewfeeder.feeder.parentID}"/>
-            
-            <tr id="tr_feeder_${feederId}_parent_${parentId}">
-            
+
+            <tr data-feeder-id="${feederId}" data-parent-id="${parentId}" data-pao-id="${feederId}">
                 <%-- Name --%>
+                <td>
+                    <capTags:warningImg paoId="${feederId}" type="FEEDER"/>
+                </td>
                 <td class="wsnw">
-                    <input type="hidden" id="paoId_${feederId}" value="${feederId}">
-                    <span <c:if test="${viewfeeder.movedFeeder}">class="warning"</c:if> >
-                        <spring:escapeBody htmlEscape="true">${viewfeeder.feeder.ccName}</spring:escapeBody>
+                    <c:set var="warning" value=""/>
+                    <c:if test="${viewfeeder.movedFeeder}">
+                        <c:set var="warning" value="warning"/>
+                    </c:if>
+                    <cti:url var="editUrl" value="/editor/cbcBase.jsf">
+                        <cti:param name="type" value="2"/>
+                        <cti:param name="itemid=" value="${feederId}"/>
+                    </cti:url>
+
+                    <span class="${warning}">
+                        <a href="${editUrl}">
+                            ${fn:escapeXml(viewfeeder.feeder.ccName)}
+                        </a>
                     </span>
                 </td>
-                
-                <%-- Actions --%>
-                <td class="wsnw">
-                    <cti:icon nameKey="${editKey}" href="/editor/cbcBase.jsf?type=2&amp;itemid=${feederId}" icon="icon-pencil"/>
-                    <c:if test="${hasEditingRole}">
-                        <cti:icon nameKey="remove" href="/editor/deleteBasePAO.jsf?value=${feederId}" icon="icon-cross"/>
-                    </c:if>
-                    <cti:icon nameKey="location" href="/capcontrol/capbank/capBankLocations?value=${feederId}&amp;specialArea=${isSpecialArea}" icon="icon-interstate"/>
-                </td>
-                
+
                 <%-- State --%>
                 <td class="wsnw">
-                    <capTags:warningImg paoId="${feederId}" type="FEEDER"/>
-                    <c:if test="${hasFeederControl}"><a id="feederState_${feederId}" href="javascript:void(0);"></c:if>
-                    <c:if test="${!hasFeederControl}"><span id="feederState_${feederId}"></c:if>
+                    <c:if test="${hasFeederControl}">
+                        <a id="feederState_${feederId}"  class="subtle-link" href="javascript:void(0);">
+                    </c:if>
+                    <c:if test="${not hasFeederControl}">
+                        <span id="feederState_${feederId}">
+                    </c:if>
+                        <span id="feederState_box_${feederId}" class="box stateBox">
+                            &nbsp;
+                        </span>
+
                         <cti:capControlValue paoId="${feederId}" type="FEEDER" format="STATE"/>
-                    <c:if test="${hasFeederControl}"></a></c:if>
-                    <c:if test="${!hasFeederControl}"></span></c:if>
-                    <cti:dataUpdaterCallback function="updateStateColorGenerator('feederState_${feederId}')" initialize="true" value="FEEDER/${feederId}/STATE"/>
+
+                    <c:if test="${hasFeederControl}">
+                        </a>
+                    </c:if>
+                    <c:if test="${not hasFeederControl}">
+                        </span>
+                    </c:if>
+
+                    <cti:dataUpdaterCallback function="updateStateColorGenerator('feederState_box_${feederId}')" initialize="true" value="FEEDER/${feederId}/STATE"/>
                 </td>
-                
+
                 <%-- Target --%>
                 <td>
                     <c:set var="isPowerFactorControlled" value="${viewfeeder.feeder.powerFactorControlled}"/>
@@ -80,6 +104,7 @@
                                         <cti:capControlValue paoId="${feederId}" type="FEEDER" format="TARGET_PEAKLEAD"/>
                                         <span class="ivvcTargetLabel"><i:inline key=".ivvcLower"/></span>
                                         <cti:capControlValue paoId="${feederId}" type="FEEDER" format="TARGET_PEAKLAG"/>
+                                        <br>
                                         <span class="ivvcTargetLabel"><i:inline key=".ivvcPowerFactor"/></span>
                                         <cti:capControlValue paoId="${feederId}" type="FEEDER" format="TARGET_CLOSEOPENPERCENT"/>
                                     </c:when>
@@ -94,7 +119,6 @@
                         </c:otherwise>
                     </c:choose>
                 </td>
-                
                 <%-- kVAR Load / Est. --%>
                 <td class="wsnw">
                     <c:choose>
@@ -148,25 +172,30 @@
                         </cti:classUpdater>
                     </span>
                 </td>
-                
                 <%-- Daily / Max Ops --%>
                 <td>
+                    <cti:url var="locationUrl" value="/capcontrol/capbank/capBankLocations">
+                        <cti:param name="value" value="${feederId}"/>
+                        <cti:param name="specialArea" value="${isSpecialArea}"/>
+                    </cti:url>
+
                     <span id="dailyMaxOps_${feederId}">
                         <cti:capControlValue paoId="${feederId}" type="FEEDER" format="DAILY_MAX_OPS"/>
                     </span>
+                    <cm:dropdown icon="icon-cog" containerCssClass="fr">
+                       <cm:dropdownOption key=".location.label" icon="icon-interstate" href="${locationUrl}" />
+                    </cm:dropdown>
                 </td>
             </tr>
         </c:forEach>
-
     </table>
-
 </tags:boxContainer2>
 
 <c:if test="${fn:length(feederList) > 1}">
     <tags:boxContainerFooter>
         <i class="icon icon-filter"></i>
-        <select id='feederFilter' onchange='applyFeederSelectFilter(this);'>
-            <option><cti:msg2 key=".allFeeders"/></option>
+        <select id='feederFilter' class="f-feeder-filter">
+            <option value="0"><cti:msg2 key=".allFeeders"/></option>
             <c:forEach var="feeder" items="${feederList}">
                 <option value="${feeder.feeder.ccId}"><spring:escapeBody htmlEscape="true">${feeder.feeder.ccName}</spring:escapeBody></option>
             </c:forEach>

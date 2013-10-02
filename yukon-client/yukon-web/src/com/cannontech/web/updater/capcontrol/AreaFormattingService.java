@@ -17,7 +17,7 @@ public class AreaFormattingService extends AbstractAreaFormatingService<Area> {
             key = prefix + "enabled";
         }
         
-        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(context);
+        MessageSourceAccessor messageSourceAccessor = resolver.getMessageSourceAccessor(context);
         String state = messageSourceAccessor.getMessage(key);
         
         if (latestValue.getOvUvDisabledFlag()) {

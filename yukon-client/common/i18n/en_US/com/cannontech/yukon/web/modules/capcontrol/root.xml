@@ -22,6 +22,7 @@
     <entry key="yukon.web.modules.capcontrol.disabled">DISABLED</entry>
     <entry key="yukon.web.modules.capcontrol.pending">Pending</entry>
     <entry key="yukon.web.modules.capcontrol.local">Local</entry>
+    <entry key="yukon.web.modules.capcontrol.local.flag">-L</entry>
     <entry key="yukon.web.modules.capcontrol.remote">Remote</entry>
     <entry key="yukon.web.modules.capcontrol.ovuvDisabled">-V</entry>
     <entry key="yukon.web.modules.capcontrol.waive">-W</entry>
@@ -43,6 +44,7 @@
     <entry key="yukon.web.modules.capcontrol.cbcPointsTitle">CBC Points: {0}</entry>
     <entry key="yukon.web.modules.capcontrol.addInfoTitle">Cap Bank Additional Information: {0}</entry>
     <entry key="yukon.web.modules.capcontrol.busAddInfoTitle">Sub Bus Additional Information: {0}</entry>
+    <entry key="yukon.web.modules.capcontrol.moveBank">Move Bank</entry>
     
     <entry key="yukon.web.modules.capcontrol.dailyOps">{0} / {1}</entry>
     <entry key="yukon.web.modules.capcontrol.dailyMaxTotalOps">{0} / {1} / {2}</entry>
@@ -72,10 +74,11 @@
     <entry key="yukon.web.modules.capcontrol.lastRunTime">Last Run Time</entry>
     <entry key="yukon.web.modules.capcontrol.nextRunTime">Next Run Time</entry>
     <entry key="yukon.web.modules.capcontrol.interval">Interval</entry>
-    <entry key="yukon.web.modules.capcontrol.availableKvars">Available kVARS</entry>
-    <entry key="yukon.web.modules.capcontrol.unavailableKvars">Unavailable kVARS</entry>
-    <entry key="yukon.web.modules.capcontrol.closedKvars">Closed kVARS</entry>
-    <entry key="yukon.web.modules.capcontrol.trippedKvars">Tripped kVARS</entry>
+    <entry key="yukon.web.modules.capcontrol.kvarsValue">{0} kVARs</entry>
+    <entry key="yukon.web.modules.capcontrol.availableKvars">Available</entry>
+    <entry key="yukon.web.modules.capcontrol.unavailableKvars">Unavailable</entry>
+    <entry key="yukon.web.modules.capcontrol.closedKvars">Closed</entry>
+    <entry key="yukon.web.modules.capcontrol.trippedKvars">Tripped</entry>
     <entry key="yukon.web.modules.capcontrol.pfactorEstimated">PFactor / Est.</entry>
     <entry key="yukon.web.modules.capcontrol.likeDay">Operating in like-day history control.</entry>
     <entry key="yukon.web.modules.capcontrol.voltReduction">Volt reduction is active.</entry>
@@ -268,9 +271,9 @@
     <!-- substationTier.jsp -->
     <entry key="yukon.web.modules.capcontrol.area.pageName">Area</entry>
     <entry key="yukon.web.modules.capcontrol.area.pageDescription">{0}</entry>
-    <entry key="yukon.web.modules.capcontrol.area.infoContainer.title">Area Info</entry>
-    <entry key="yukon.web.modules.capcontrol.area.statsContainer.title">Area Statistics</entry>
-    <entry key="yukon.web.modules.capcontrol.area.substationsContainer.title">Substations In Area: {0}</entry>
+    <entry key="yukon.web.modules.capcontrol.area.infoContainer.title">Info</entry>
+    <entry key="yukon.web.modules.capcontrol.area.statsContainer.title">Statistics</entry>
+    <entry key="yukon.web.modules.capcontrol.area.substationsContainer.title">Substations</entry>
     
     <!-- substation.jsp -->
     <entry key="yukon.web.modules.capcontrol.substation.pageName">Substation</entry>
@@ -312,16 +315,27 @@
     <entry key="yukon.web.modules.capcontrol.substation.varPoint">Var Point</entry>
     <entry key="yukon.web.modules.capcontrol.substation.wattPoint">Watt Point</entry>
     <entry key="yukon.web.modules.capcontrol.substation.voltPoint">Volt Point</entry>
-    <entry key="yukon.web.modules.capcontrol.substation.cbName">CB Name (Order)</entry>
+    <entry key="yukon.web.modules.capcontrol.substation.cbName">Bank Name (Order)</entry>
     <entry key="yukon.web.modules.capcontrol.substation.cbcName">CBC Name</entry>
     <entry key="yukon.web.modules.capcontrol.substation.bankSize">Bank Size</entry>
-    <entry key="yukon.web.modules.capcontrol.substation.parentFeeder">Parent Feeder</entry>
-    <entry key="yukon.web.modules.capcontrol.substation.dailyMaxTotal">Daily / Max / Total Ops</entry>
+    <entry key="yukon.web.modules.capcontrol.substation.parentFeeder">Parent</entry>
+    <entry key="yukon.web.modules.capcontrol.substation.dailyMaxTotal">Day/Max/Total Ops</entry>
     <entry key="yukon.web.modules.capcontrol.substation.allBuses">All Sub Buses</entry>
     <entry key="yukon.web.modules.capcontrol.substation.allFeeders">All Feeders</entry>
-    <entry key="yukon.web.modules.capcontrol.substation.stateInfo.hoverText"><![CDATA[System Commands, those commands that do NOT send out a message to a field device, can be initiated from this column. <br>-V: Auto Volt Control (OV/UV) is Disabled. <br>-U: CBC reported unsolicited state change. <br>-Q: Cap Bank state reflects abnormal data quality. <br>-CF: Communications Failure. <br>-P: Partial - phase imbalance. <br>-S: Significant - questionable var response on all phases.]]></entry>
+    <entry key="yukon.web.modules.capcontrol.substation.busAddInfo.label">Bus Info</entry>
+    <entry key="yukon.web.modules.capcontrol.substation.stateInfo.hoverText"><![CDATA[System Commands, those commands that<br>
+                                                                                        do NOT send out a message to a field device,<br>
+                                                                                        can be initiated from this column.<br><br>
+                                                                                            -V: Auto Volt Control (OV/UV) is Disabled.<br>
+                                                                                            -U: CBC reported unsolicited state change.<br>
+                                                                                            -Q: Cap Bank state reflects abnormal data quality.<br>
+                                                                                            -CF: Communications Failure.<br>
+                                                                                            -P: Partial - phase imbalance.<br>
+                                                                                            -S: Significant - questionable var response on all phases.<br>
+                                                                                            -L: Local Mode]]></entry>
     <entry key="yukon.web.modules.capcontrol.substation.cbOrderInfo.hoverText">Order is the order the Cap Bank will control in. Commands that can be sent to a field device are initiated from this column.</entry>
     <entry key="yukon.web.modules.capcontrol.substation.timestampInfo.hoverText">Click to see the timestamp information for the cap bank controller device.</entry>
+    <entry key="yukon.web.modules.capcontrol.substation.timestampInfo.disabled.hoverText">Timestamp information only available for 2 way devices</entry>
     <entry key="yukon.web.modules.capcontrol.substation.addInfo.hoverText">Click to see additional information for the cap bank.</entry>
     <entry key="yukon.web.modules.capcontrol.substation.busAddInfo.hoverText">Click to see additional information for the bus.</entry>
     <entry key="yukon.web.modules.capcontrol.substation.opCount">Op Count:</entry>
@@ -337,6 +351,10 @@
     <entry key="yukon.web.modules.capcontrol.substation.moveBank">Click here to fully move or temporarily move this Cap Bank from its current parent feeder</entry>
     <entry key="yukon.web.modules.capcontrol.substation.moveBankTitle">Cap Bank Move for {0} (Pick feeder by clicking on name)</entry>
     <entry key="yukon.web.modules.capcontrol.substation.verificationInProgress.hoverText">Currently being used in a Verification schedule</entry>
+    <entry key="yukon.web.modules.capcontrol.substation.capBank.actions">Bank Actions</entry>
+    <entry key="yukon.web.modules.capcontrol.substation.capBank.info">Bank Info</entry>
+    <entry key="yukon.web.modules.capcontrol.substation.cbc.info">CBC Info</entry>
+    <entry key="yukon.web.modules.capcontrol.substation.bankMove">Move Cap Bank</entry>
     
     <entry key="yukon.web.modules.capcontrol.substation.questionableQuality.hoverText">Questionable Quality</entry>
     
@@ -344,6 +362,7 @@
     
     <entry key="yukon.web.modules.capcontrol.substation.location.hoverText">Driving Directions</entry>
     
+    <entry key="yukon.web.modules.capcontrol.substation.ivvc.label">IVVC View</entry>
     <entry key="yukon.web.modules.capcontrol.substation.ivvc.hoverText">Click for IVVC View</entry>
     
     <entry key="yukon.web.modules.capcontrol.substation.filter.hoverUrl">/WebConfig/yukon/Icons/filter.gif</entry>
@@ -552,7 +571,7 @@
     <entry key="yukon.web.modules.capcontrol.import.description.HIERARCHY.Disabled">Whether or not this object should be disabled&lt;br&gt;Options: Y,N</entry>
     <entry key="yukon.web.modules.capcontrol.import.description.HIERARCHY.MapLocationId">Any map location identifier desired for the object</entry>
     <entry key="yukon.web.modules.capcontrol.import.description.HIERARCHY.Operational State">For Cap Banks, the Operational State&lt;br&gt;Options: Fixed, Switched, StandAlone, Uninstalled</entry>
-    <entry key="yukon.web.modules.capcontrol.import.description.HIERARCHY.Capbank Size">For Cap Banks, the size in kVars</entry>
+    <entry key="yukon.web.modules.capcontrol.import.description.HIERARCHY.Capbank Size">For Cap Banks, the size in kVARs</entry>
     <entry key="yukon.web.modules.capcontrol.import.description.REGULATOR.NAME">Name of the Regulator to create</entry>
     <entry key="yukon.web.modules.capcontrol.import.description.REGULATOR.ACTION">Options: Add, Update, or Remove</entry>
     <entry key="yukon.web.modules.capcontrol.import.description.REGULATOR.KEEP ALIVE CONFIG">Time sent to device to stay alive for (in seconds)</entry>

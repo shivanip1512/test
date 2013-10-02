@@ -149,13 +149,14 @@
 						<td><i:inline key=".busDetail.table.state"/>:&nbsp;</td>
                         <%-- State --%>
                         <td class="wsnw">
-                            <capTags:warningImg paoId="${subBusId}" type="SUBBUS"/>
-                            <c:if test="${hasSubBusControl}"><a id="subbusState_${subBusId}" href="javascript:void(0);"></c:if>
+                            <c:if test="${hasSubBusControl}"><a id="subbusState_${subBusId}" href="javascript:void(0);" class="subtle-link"></c:if>
                             <c:if test="${!hasSubBusControl}"><span id="subbusState_${subBusId}"></c:if>
+                                <span id="subbusState_box_${subBusId}" class="box stateBox">&nbsp;</span>
                                 <cti:capControlValue paoId="${subBusId}" type="SUBBUS" format="STATE"/>
                             <c:if test="${hasSubBusControl}"></a></c:if>
                             <c:if test="${!hasSubBusControl}"></span></c:if>
-                            <cti:dataUpdaterCallback function="updateStateColorGenerator('subbusState_${subBusId}')"
+                            <capTags:warningImg paoId="${subBusId}" type="SUBBUS"/>
+                            <cti:dataUpdaterCallback function="updateStateColorGenerator('subbusState_box_${subBusId}')"
                                 initialize="true" value="SUBBUS/${subBusId}/STATE"/>
                         </td>
 					</tr>

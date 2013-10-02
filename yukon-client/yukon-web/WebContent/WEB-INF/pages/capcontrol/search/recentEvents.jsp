@@ -11,9 +11,9 @@
 
     <jsp:setProperty name="CtiNavObject" property="moduleExitPage" value="" />
 
-    <div class="padBottom">
-        <i:inline key=".filterByDate"/>
+    <div class="stacked">
         <form action="/capcontrol/search/recentEvents" id="daysFilterForm">
+            <i:inline key=".filterByDate"/>:
             <input type="hidden" name="value" value="${paoIdString}">
             <select id="rcDateFilter" name="dayCnt" onchange="$('daysFilterForm').submit()">
                 <c:forEach var="i" begin="1" end="7">

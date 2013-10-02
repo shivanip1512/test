@@ -23,7 +23,7 @@
 	    <cti:includeScript link="/JavaScript/da/yukon.capcontrol.js"/>
 		<f:verbatim>
 			<script type="text/JavaScript">
-			    addLockButtonForButtonGroup("buttons");
+			    Yukon.CapControl.addLockButtonForButtonGroup("buttons");
 			</script>
 		</f:verbatim>
 	    <x:panelLayout id="page" styleClass="pageLayout" headerClass="pageHeader" navigationClass="pageNavigation" bodyClass="pageBody" footerClass="pageFooter" >

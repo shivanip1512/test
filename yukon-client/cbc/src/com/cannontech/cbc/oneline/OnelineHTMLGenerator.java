@@ -26,8 +26,6 @@ public class OnelineHTMLGenerator extends HTMLGenerator {
             JsLibrary.JQUERY_UI.getPath(),
             "cc.js",
             "cconelinepopup.js",
-            "GreyBox/AmiJS.js",
-            "GreyBox/greybox.js",
     };
 
     public OnelineHTMLGenerator() {
@@ -41,11 +39,7 @@ public class OnelineHTMLGenerator extends HTMLGenerator {
             sb.append("<script type=\"text/JavaScript\" src=\"" + files[i] + "\"></script>" + NEW_LINE);
         }
 
-        sb.append("<link href=\"/editor/css/greybox/greybox.css\" rel=\"stylesheet\" type=\"text/css\" media=\"all\" />");
-        sb.append(NEW_LINE);
         sb.append("<script type=\"text/javascript\" language=\"JavaScript\">" + NEW_LINE);
-        sb.append("var GB_IMG_DIR = \"/editor/css/greybox/\";");
-        sb.append("GreyBox.preloadGreyBoxImages();");
         sb.append("var x;" + NEW_LINE);
         sb.append("var y;" + NEW_LINE);
         sb.append(NEW_LINE);

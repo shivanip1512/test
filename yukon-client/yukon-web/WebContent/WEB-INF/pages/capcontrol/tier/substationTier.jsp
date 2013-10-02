@@ -9,6 +9,38 @@
 
 <cti:standardPage module="capcontrol" page="area">
     <%@include file="/capcontrol/capcontrolHeader.jspf"%>
+
+     <c:if test="${hasEditingRole}">
+        <c:set var="editKey" value="edit"/>
+    </c:if>
+    <c:if test="${not hasEditingRole}">
+        <c:set var="editKey" value="info"/>
+    </c:if>
+
+    <div class="dn f-page-additional-actions">
+        <li class="divider" />
+        <cti:url var="editUrl" value="/editor/cbcBase.jsf">
+            <cti:param name="type" value="2" />
+            <cti:param name="itemid" value="${bc_areaId}" />
+        </cti:url>
+        <cm:dropdownOption  key="components.button.${editKey}.label" icon="icon-pencil" href="${editUrl}" />
+    </div>
+
+    <div class="dn">
+
+        <c:if test="${showAnalysis}">
+            <i:simplePopup titleKey=".analysisTrends" id="analysisTrendsOptions" on="#analysisTrendsButton">
+                 <%@ include file="analysisTrendsOptions.jspf" %>
+            </i:simplePopup>
+            <cti:button nameKey="analysis" id="analysisTrendsButton" icon="icon-chart-line"/>
+        </c:if>
+
+        <i:simplePopup titleKey=".recentEvents" id="recentEventsOptions" on="#recentEventsButton">
+             <%@ include file="recentEventsOptions.jspf" %>
+        </i:simplePopup>
+        <cti:button nameKey="recentEvents" id="recentEventsButton" icon="icon-application-view-columns"/>
+    </div>
+
     <flot:defaultIncludes/>
 
     <c:if test="${hasSubstationControl}">
@@ -16,7 +48,7 @@
             addCommandMenuBehavior('a[id^="substationState_"]');
         </script>
     </c:if>
-    
+
     <c:if test="${hasAreaControl}">
         <script type="text/javascript">
             addCommandMenuBehavior('a[id^="areaState_"]');
@@ -25,23 +57,16 @@
 
     <jsp:setProperty name="CtiNavObject" property="moduleExitPage" value=""/>
 
-    <c:if test="${hasEditingRole}">
-        <c:set var="editKey" value="edit"/>
-    </c:if>
-    <c:if test="${not hasEditingRole}">
-        <c:set var="editKey" value="info"/>
-    </c:if>
     <c:if test="${isSpecialArea}">
         <c:set var="updaterType" value="CBCSPECIALAREA" />
     </c:if>
     <c:if test="${not isSpecialArea}">
         <c:set var="updaterType" value="CBCAREA" />
     </c:if>
-    
-    
+
     <div class="column_12_12 clearfix">
         <div class="column one">
-            <tags:boxContainer2 nameKey="infoContainer" styleClass="padBottom" hideEnabled="true" showInitially="true">
+            <tags:sectionContainer2 nameKey="infoContainer" hideEnabled="true">
                 <div class="column_12_12 clearfix">
                     <div class="column one">
                         <tags:nameValueContainer2 tableClass="infoContainer">
@@ -56,11 +81,11 @@
                     <div class="column two nogutter">
                         <tags:nameValueContainer2 tableClass="infoContainer">
                             <tags:nameValue2 nameKey=".state" rowClass="wsnw">
-                                <capTags:warningImg paoId="${bc_areaId}" type="${updaterType}"/>
-                                <a id="areaState_${bc_areaId}" href="javascript:void(0);">
+                                <a id="areaState_${bc_areaId}" href="javascript:void(0);" class="subtle-link">
+                                    <span id="areaState_box_${bc_areaId}" class="box stateBox">&nbsp;</span>
                                     <cti:capControlValue paoId="${bc_areaId}" type="${updaterType}" format="STATE" />
                                 </a>
-                                <cti:dataUpdaterCallback function="updateStateColorGenerator('areaState_${bc_areaId}')" initialize="true" value="${updaterType}/${bc_areaId}/STATE"/>
+                                <cti:dataUpdaterCallback function="updateStateColorGenerator('areaState_box_${bc_areaId}')" initialize="true" value="${updaterType}/${bc_areaId}/STATE"/>
                              </tags:nameValue2>
                              <tags:nameValue2 nameKey=".substations">
                                 ${fn:length(subStations)}
@@ -68,14 +93,12 @@
                         </tags:nameValueContainer2>
                     </div>
                 </div>
-                <div class="actionArea">
-                    <cti:button nameKey="${editKey}" href="/editor/cbcBase.jsf?type=2&amp;itemid=${bc_areaId}" icon="icon-pencil"/>
-                </div>
-            </tags:boxContainer2>
+            <capTags:warningImg paoId="${bc_areaId}" type="${updaterType}" alertBox="true"/>
+            </tags:sectionContainer2>
         </div>
-        
+
         <div class="column two nogutter">
-            <tags:boxContainer2 nameKey="statsContainer" styleClass="padBottom" hideEnabled="true" showInitially="true">
+            <tags:sectionContainer2 nameKey="statsContainer" hideEnabled="true">
                 <div class="column_12_12">
                     <div class="column one">
                         <tags:nameValueContainer2 tableClass="infoContainer">
@@ -105,58 +128,40 @@
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </div>
-                <div class="clear actionArea">
-                    <c:if test="${showAnalysis}">
-                        <i:simplePopup titleKey=".analysisTrends" id="analysisTrendsOptions" on="#analysisTrendsButton">
-                             <%@ include file="analysisTrendsOptions.jspf" %>
-                        </i:simplePopup>
-                        <cti:button nameKey="analysis" id="analysisTrendsButton" icon="icon-chart-line"/>
-                    </c:if>
-                
-                    <i:simplePopup titleKey=".recentEvents" id="recentEventsOptions" on="#recentEventsButton">
-                         <%@ include file="recentEventsOptions.jspf" %>
-                    </i:simplePopup>
-                    <cti:button nameKey="recentEvents" id="recentEventsButton" icon="icon-application-view-columns"/>
-                </div>
-            </tags:boxContainer2>
+            </tags:sectionContainer2>
         </div>
     </div>
-    
-    <tags:boxContainer2 hideEnabled="false" nameKey="substationsContainer" arguments="${bc_areaName}">
+
+    <tags:boxContainer2 nameKey="substationsContainer"  arguments="${bc_areaName}">
         
         <table id="subTable" class="compactResultsTable">
             <thead>
                 <tr>
+                    <c:set var="clazz" value="tar" />
+                    <th width="16px">&nbsp;</th>
                     <th><i:inline key=".name"/></th>
-                    <th><i:inline key=".actions"/></th>
                     <th><i:inline key=".state"/></th>
-                    <th><i:inline key=".availableKvars"/></th>
-                    <th><i:inline key=".unavailableKvars"/></th>
-                    <th><i:inline key=".closedKvars"/></th>
-                    <th><i:inline key=".trippedKvars"/></th>
-                    <th><i:inline key=".pfactorEstimated"/></th>
+                    <th class="${clazz}"><i:inline key=".availableKvars"/></th>
+                    <th class="${clazz}"><i:inline key=".unavailableKvars"/></th>
+                    <th class="${clazz}"><i:inline key=".closedKvars"/></th>
+                    <th class="${clazz}"><i:inline key=".trippedKvars"/></th>
+                    <th class="${clazz}"><i:inline key=".pfactorEstimated"/></th>
                 </tr>
             </thead>
     
             <c:forEach var="subStation" items="${subStations}">
             
                 <c:set var="substationId" value="${subStation.ccId}"/>
-                <cti:url var="editUrl" value="/editor/cbcBase.jsf">
-                    <cti:param name="itemid" value="${substationId}"/>
-                    <cti:param name="type" value="2"/>
-                </cti:url>
-                <cti:url var="deleteUrl" value="/editor/deleteBasePAO.jsf">
-                    <cti:param name="value" value="${substationId}"/>
-                </cti:url>
                 <cti:url value="/capcontrol/tier/feeders" var="feederLink">
                     <cti:param name="substationId" value="${substationId}"/>
                     <cti:param name="isSpecialArea" value="${isSpecialArea}"/>
                 </cti:url>
             
-    	        <tr>
-                
+    	        <tr data-pao-id="${substationId}">
+                    <td>
+                        <capTags:warningImg paoId="${substationId}" type="SUBSTATION"/>
+                    </td>
     				<td>
-                        <input type="hidden" id="paoId_${substationId}" value="${substationId}">
     				    <a href="${feederLink}" id="anc_${substationId}">
                             <spring:escapeBody>${subStation.ccName}</spring:escapeBody>
                         </a>
@@ -164,29 +169,22 @@
                             <cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="SA_ENABLED_MSG" />
                         </span>
     				</td>
-                    
-                    <td class="wsnw">
-                        <cti:icon nameKey="${editKey}" href="${editUrl}" icon="icon-pencil"/>
-                        <c:if test="${hasEditingRole}">
-                            <cti:icon nameKey="remove" href="${deleteUrl}"  icon="icon-cross"/>
-                        </c:if>
-                    </td>
-                    
+
     				<td class="wsnw">
-                        <capTags:warningImg paoId="${substationId}" type="SUBSTATION"/>
-                        <c:if test="${hasSubstationControl}"><a id="substationState_${substationId}" href="javascript:void(0);"></c:if>
-                        <c:if test="${!hasSubstationControl}"><span id="substationState_${substationId}"></c:if>
+                        <c:if test="${hasSubstationControl}"><a id="substationState_${substationId}" href="javascript:void(0);" class="subtle-link"></c:if>
+                        <c:if test="${not hasSubstationControl}"><span id="substationState_${substationId}"></c:if>
+                            <span id="substationState_box_${substationId}" class="box stateBox">&nbsp;</span>
                             <cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="STATE" />
                         <c:if test="${hasSubstationControl}"></a></c:if>
-                        <c:if test="${!hasSubstationControl}"></span></c:if>
-                        <cti:dataUpdaterCallback function="updateStateColorGenerator('substationState_${substationId}')" initialize="true" value="SUBSTATION/${substationId}/STATE"/>
+                        <c:if test="${not hasSubstationControl}"></span></c:if>
+                        <cti:dataUpdaterCallback function="updateStateColorGenerator('substationState_box_${substationId}')" initialize="true" value="SUBSTATION/${substationId}/STATE"/>
                 	</td>
-                    
-    				<td><cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="KVARS_AVAILABLE" /></td>
-                    <td><cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="KVARS_UNAVAILABLE" /></td>
-                    <td><cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="KVARS_CLOSED" /></td>
-                    <td><cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="KVARS_TRIPPED" /></td>
-                    <td><cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="PFACTOR" /></td>
+
+    				<td class="tar"><cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="KVARS_AVAILABLE" /></td>
+                    <td class="tar"><cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="KVARS_UNAVAILABLE" /></td>
+                    <td class="tar"><cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="KVARS_CLOSED" /></td>
+                    <td class="tar"><cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="KVARS_TRIPPED" /></td>
+                    <td class="tar"><cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="PFACTOR" /></td>
                 </tr>
             </c:forEach>
     		

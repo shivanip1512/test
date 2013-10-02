@@ -10,32 +10,32 @@
 <script type="text/javascript">
 <c:if test="${showLocalControl}">
 jQuery('#localControlsOption').click(function(event) {
-    hideMenu();
-    getMenuFromURL('/capcontrol/menu/localControl?id=${paoId}', event, {position: "center", modal: true});
+    Yukon.CapControl.hideMenu();
+    Yukon.CapControl.getMenuFromURL('/capcontrol/menu/localControl?id=${paoId}', event, {position: "center", modal: true});
 });
 </c:if>
 <c:if test="${showChangeOpState}">
 jQuery('#changeOpStateOption').click(function(event) {
-    hideMenu();
-    getMenuFromURL('/capcontrol/menu/opStateChange?bankId=${paoId}', event, {position: "center", modal: true});
+    Yukon.CapControl.hideMenu();
+    Yukon.CapControl.getMenuFromURL('/capcontrol/menu/opStateChange?bankId=${paoId}', event, {position: "center", modal: true});
 });
 </c:if>
 <c:if test="${showResetBankOpCount}">
 jQuery('#resetBankOpCountOption').click(function(event) {
-    hideMenu();
-    getMenuFromURL('/capcontrol/menu/resetBankOpCount?bankId=${paoId}', event, {position: "center", modal: true});
+    Yukon.CapControl.hideMenu();
+    Yukon.CapControl.getMenuFromURL('/capcontrol/menu/resetBankOpCount?bankId=${paoId}', event, {position: "center", modal: true});
 });
 </c:if>
 <c:if test="${showRecentCommands}">
 jQuery('#recentEventsOption').click(function(event) {
-    hideMenu();
+    Yukon.CapControl.hideMenu();
     window.location = '/capcontrol/search/recentEvents?value=${paoId}';
 });
 </c:if>
 <c:if test="${showComments}">
 jQuery('#viewCommentsOption').click(function(event) {
-    hideMenu();
-    showDialog(jQuery(event.currentTarget).find('input').val(), '/capcontrol/comments/paoComments?paoId=${paoId}', {}, "#contentPopup" );
+    Yukon.CapControl.hideMenu();
+    Yukon.CapControl.showDialog(jQuery(event.currentTarget).find('input').val(), '/capcontrol/comments/paoComments?paoId=${paoId}', {}, "#contentPopup" );
 });
 </c:if>
 </script>

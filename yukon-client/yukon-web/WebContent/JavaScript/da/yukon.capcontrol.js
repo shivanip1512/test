@@ -1,181 +1,337 @@
-function checkPageExpire() {
-    var paoIds = [];
-    jQuery("input[id^='paoId_']").each(function() {
-        paoIds.push(jQuery(this).val());
-    });
-    
-    jQuery.ajax({
-        url: "/capcontrol/pageExpire",
-        data: {"paoIds": paoIds}
-    }).success(function(data) {
-        var expired = eval(data);
-        if (expired) {
-        jQuery("#updatedWarning").dialog("open");
-            return;    
-        }
-        setTimeout(checkPageExpire, 15000);
-    });
-}
+var Yukon = (function (yukonMod) {
+    return yukonMod;
+})(Yukon || {});
+Yukon.namespace('Yukon.CapControl');
+Yukon.CapControl = (function () {
 
-function getCommandMenu(id, event) {
-    getMenuFromURL('/capcontrol/menu/commandMenu?id=' + id, event);
-}
+    var lock_buttons = function(el_id) {
+            //el_id comes in looking like this: "editorForm:hdr_submit_button_1"
+            jQuery(document.getElementById(el_id)).click(function() {
+                jQuery('input.stdButton').each(function() {
+                    if (this.id != el_id) {
+                        this.disabled = true;
+                    } else {
+                        setTimeout("jQuery(\"[id='" + el_id + "']\")[0].disabled=true;", 1);
+                    }
+                });
+            });
+        },
 
-function showDialog(title, url, options, selector) {
-    var dialogArgs = {'width' : 'auto', 'height': 'auto', 'title': title};
-    jQuery.extend(dialogArgs, options);
-    selector = selector || "<div></div>";
-    
-    var dialog = jQuery(selector);
-    dialog.load(url).dialog(dialogArgs);
-}
+        _hideAlertMessage = function() {
+            jQuery('#alertMessageContainer').hide('fade', {}, 3000);
+        },
 
-function getMovedBankMenu(id, event) {
-    getMenuFromURL('/capcontrol/menu/movedBankMenu?id=' + id, event);
-}
+        capControlMod = {
 
-function getMenuFromURL(url, event, params) {
-    /*
-     *  In IE the event does not pass through the ajax request
-     *  so the attributes of the event need to be set and passed
-     *  as variables.
-     */
-    
-    if (typeof(params) != 'undefined') {
-        if (!("position" in params)) {
-            params.position = [event.pageX, event.pageY];
-        }
-        if (!("modal" in params)) {
-            params.modal = false;
-        }
-    } else {
-        params = {position: [event.clientX, event.clientY], modal: false};
-    }
-    
-    jQuery.ajax({
-        url: url,
-        complete: function(data) {
-            jQuery("#menuPopup").html(data.responseText);
-            showMenuPopup(params);
-        }
-    });
-}
+        init : function() {
+            jQuery(document).on('click', 'div.dynamicTableWrapper .pointAddItem', function(event) {
+                pointPicker.show.call(pointPicker);
+            });
+            jQuery(document).on('click', 'div.dynamicTableWrapper .bankAddItem', function(event) {
+                bankPicker.show.call(bankPicker);
+            });
 
-function showMenuPopup(params) {
-    jQuery("#menuPopup").dialog({
-        resizable: false,
-        closeOnEscape: true,
-        width: "auto",
-        modal: params["modal"],
-        title: jQuery("#menuPopup input[id='dialogTitle']").val(),
-        position: params["position"],
-        dialogClass: "smallDialog"
-    });
-}
+            /* bank move */
+            jQuery(document).on('click', 'li.toggle', function(e) {
+                if (e.target == e.currentTarget) {
+                    var li = jQuery(this);
+                    var subMenu = li.find('ul:first');
+                    if (subMenu[0]) {
+                        subMenu.toggle();
+                        li.toggleClass('minus').toggleClass('plus');
+                    }
+                    return false;
+                }
+                return true;
+            });
 
-function hideMenu() {
-    jQuery('#menuPopup').dialog("close");
-}
+            /* creation menu popup */
+            jQuery('.f-cc-create').click(function() {
+                var content = jQuery('#contentPopup');
+                content.load('/capcontrol/menu/create', function() {
+                    var title = content.find('input.title').val();
+                    content.dialog({title: title});
+                });
+            });
+        },
 
-function hideContentPopup() {
-    jQuery('#contentPopup').dialog("close");
-}
+        initBankTier: function() {
+            var banks = jQuery('[data-bank-id');
+            banks.each( function(index, item){
+                var row = jQuery(item),
+                bankId = row.attr('data-bank-id'),
+                cbcId = row.attr('data-cbc-id'),
+                moveBankTitle = row.attr('data-move-bank-title'),
+                cbcInfoTitle = row.attr('data-cbc-info-title'),
+                bankInfoTitle = row.attr('data-bank-info-title'),
+                moveBankOpener = row.find('.f-move-bank'),
+                bankCommandOpener = row.find('.f-bank-command'),
+                stateMenuOpener = row.find('.f-bank-state'),
+                bankInfoOpener = row.find('.f-bank-info'),
+                cbcInfoOpener = row.find('.f-cbc-info');
 
-function checkAll(allCheckBox, selector) {
-    jQuery(selector).prop("checked", allCheckBox.checked);
-}
+                if( moveBankOpener.is('.warning') ){
+                    moveBankOpener.click( function(event) {
+                        _getMovedBankMenu(bankId, event);
+                    });
+                } else {
+                    moveBankOpener.click( function(event) {
+                        capControlMod.showDialog( moveBankTitle, 
+                                    '/capcontrol/move/bankMove?bankid=' + encodeURIComponent(bankId), 
+                                    {'height': 650, 'width': 650, 'modal': true}, 
+                                    '#contentPopup'); 
+                    });
+                }
+                bankCommandOpener.click( function(event){
+                    capControlMod.getCommandMenu(bankId, event);
+                });
 
-function addLockButtonForButtonGroup (groupId, secs) {
-    jQuery(document).ready(function() {
-        var buttons = jQuery("#" + groupId + " input");
+                bankInfoOpener.click( function(event) {
+                    capControlMod.showDialog(bankInfoTitle, '../addInfo/bank?bankId=' + encodeURIComponent(bankId), {width: 450} );
+                });
 
-        for (var i=0; i<buttons.length; i++) {
-            lock_buttons(buttons[i].id);
-        }
-    });
-    
-}
+                cbcInfoOpener.click( function(event) {
+                    capControlMod.showDialog(cbcInfoTitle, '../capbank/cbcPoints?cbcId=' + encodeURIComponent(cbcId), {width: 600, height: 600} );
+                });
 
-function lock_buttons(el_id) {
-    //el_id comes in looking like this: "editorForm:hdr_submit_button_1"
-    jQuery(document.getElementById(el_id)).click(function() {
-        jQuery("input.stdButton").each(function() {
-            if (this.id != el_id) {
+                stateMenuOpener.click( function(event){
+                    capControlMod.getMenuFromURL('/capcontrol/menu/capBankState?id=' + bankId, event);
+                });
+
+            });
+        },
+
+        initSubstation: function() {
+            var feederFilter = jQuery('.f-feeder-filter').eq(0),
+                busFilter = jQuery('.f-bus-filter').eq(0);
+
+
+            busFilter.change( function(event) {
+                var rows = jQuery("#subBusTable [data-bus-id]");
+                var busIds = new Array();
+                var sel = busFilter.find(':selected');
+                var busId = + sel.val();
+                if (busId === 0) {
+                    rows.each(function (index, item) {
+                        var row = jQuery(item),
+                            rowId = + row.attr('data-bus-id');
+                        busIds.push(rowId);
+                    });
+                } else {
+                    busIds.push(busId);
+                }
+                capControlMod.applyBusFilter(busIds);
+            });
+
+            feederFilter.change( function(event) {
+                var rows = jQuery("#fdrTable [data-feeder-id]"),
+                    feederIds = new Array(),
+                    sel = feederFilter.find(':selected'),
+                    feederId = + sel.val();
+
+                if (feederId === 0) {
+                    rows.each(function (index, item) {
+                        var row = jQuery(item),
+                            rowId = + row.attr('data-feeder-id')
+                        feederIds.push(rowId);
+                    });
+                } else {
+                    feederIds.push(feederId);
+                }
+                capControlMod.applyFeederFilter(feederIds);
+            });
+        },
+
+        applyBusFilter : function(busIds) {
+            var busRows = jQuery('#subBusTable [data-bus-id]');
+                feederRows = jQuery("#fdrTable [data-parent-id]"),
+                feederFilters = jQuery('#feederFilter [value]'),
+                feederIds = new Array();
+
+            busRows.each( function (index, item) {
+                var row = jQuery(item);
+                busId = + row.attr('data-bus-id');
+
+                if (busIds.indexOf(busId) != -1) {
+                    row.show();
+                } else {
+                    row.hide();
+                }
+            });
+
+            feederRows.each(function (index, item) {
+                var row = jQuery(item),
+                busId = + row.attr('data-parent-id'),
+                feederId = + row.attr('data-feeder-id');
+
+                if (busIds.indexOf(busId) != -1) {
+                    feederIds.push( feederId );
+                }
+            });
+
+            jQuery('#feederFilter').find( '[value=0]').attr('selected', true);
+            feederFilters.each( function(index, item) {
+                var option = jQuery(item),
+                optionId = + option.val();
+
+                if (feederIds.indexOf(optionId) !== -1 || optionId === 0) {
+                    option.show();
+                } else {
+                    option.hide();
+                }
+            });
+
+            capControlMod.applyFeederFilter(feederIds);
+        },
+
+        applyFeederFilter : function (feederIds) {
+            var feederRows = jQuery("#fdrTable [data-feeder-id]"),
+                bankRows = jQuery('#capBankTable [data-parent-id]');
+            feederRows.each(function (index, item) {
+                var row = jQuery(item);
+                    feederId = + row.attr('data-feeder-id');
+
+                if (feederIds.indexOf(feederId) != -1) {
+                    row.show();
+                } else {
+                    row.hide();
+                }
+            });
+
+            bankRows.each(function (index, item) {
+                var row = jQuery(item);
+                    feederId = + row.attr('data-parent-id');
+
+                if (feederIds.indexOf(feederId) != -1) {
+                    row.show();
+                } else {
+                    row.hide();
+                }
+            });
+        },
+
+        getCommandMenu : function(id, event) {
+            capControlMod.getMenuFromURL('/capcontrol/menu/commandMenu?id=' + id, event);
+        },
+
+        checkPageExpire : function() {
+            var paoIds = [];
+            jQuery('[data-pao-id]').each(function() {
+                paoIds.push(jQuery(this).attr('data-pao-id'));
+            });
+
+            jQuery.ajax({
+                url: '/capcontrol/pageExpire',
+                data: {'paoIds': paoIds}
+            }).success(function(data) {
+                if (data.expired) {
+                    jQuery('#updatedWarning').dialog('open');
+                } else {
+                    setTimeout(capControlMod.checkPageExpire, 15000);
+                }
+            });
+        },
+
+        hideContentPopup : function() {
+            jQuery('#contentPopup').dialog('close');
+        },
+
+        getMenuFromURL : function (url, event, params) {
+
+            jQuery.ajax(url).done( function(data) {
+                jQuery('#menuPopup').html(data);
+                capControlMod.showMenuPopup(params);
+            });
+        },
+
+        getMovedBankMenu : function(id, event) {
+            capControlMod.getMenuFromURL('/capcontrol/menu/movedBankMenu?id=' + id, event);
+        },
+
+        checkAll: function(allCheckBox, selector) {
+            jQuery(selector).prop('checked', allCheckBox.checked);
+        },
+
+        hideMenu : function () {
+            jQuery('#menuPopup').dialog('close');
+        },
+
+        showDialog : function(title, url, options, selector) {
+            var settings,
+                dialogArgs = { 'title': title,
+                               'width'    : 'auto',
+                               'height'   : 'auto'
+              };
+            settings = jQuery.extend({}, dialogArgs, options);
+            selector = selector || '<div></div>';
+
+            var dialog = jQuery(selector);
+
+            dialog.load(url).dialog(settings);
+        },
+
+        showMenuPopup : function (params) {
+            var settings,
+                defaults = { 'title': jQuery('#menuPopup input[id="dialogTitle"]').val(),
+                             'width'    : 'auto',
+                             'height'   : 'auto',
+                             'resizable': false
+                           };
+            settings = jQuery.extend( {}, defaults, params);
+            jQuery('#menuPopup').dialog(settings);
+        },
+
+        checkAll : function(allCheckBox, selector) {
+            jQuery(selector).prop('checked', allCheckBox.checked);
+        },
+
+        addLockButtonForButtonGroup : function (groupId, secs) {
+            jQuery(document).ready(function() {
+                var buttons = jQuery('#' + groupId + ' input');
+
+                for (var i=0; i<buttons.length; i++) {
+                    lock_buttons(buttons[i].id);
+                }
+            });
+        },
+
+        lockButtonsPerSubmit : function (groupId) {
+            jQuery('#' + groupId + ' input').each(function() {
                 this.disabled = true;
-            } else {
-                setTimeout("jQuery(\"[id='" + el_id + "']\")[0].disabled=true;", 1);
+            });
+        },
+
+        showAlertMessageForAction : function(action, item, result, success) {
+            if (action != '') {
+                action = '"' + action + '"';
             }
-        });
-    });
-}
+            var message = item + ' ' + action + ' ' + result;
+            showAlertMessage(message, success);
+        },
 
-function lockButtonsPerSubmit (groupId) {
-    jQuery("#" + groupId + " input").each(function() {
-        this.disabled = true;
-    });
-}
+        showAlertMessage : function(message, success) {
+            var contents = jQuery('#alertMessageContents');
 
-function showAlertMessageForAction(action, item, result, success) {
-    if (action != '') {
-        action = '"' + action + '"';
-    }
-    var message = item + ' ' + action + ' ' + result;
-    showAlertMessage(message, success);
-}
+            if (success) {
+                contents.addClass('successMessage').removeClass('errorMessage');
+            } else {
+                contents.removeClass('successMessage').addClass('errorMessage');
+            }
+            contents.html(message);
+            jQuery('#alertMessageContainer').show();
+            setTimeout (_hideAlertMessage(), success ? 3000 : 8000);
+        },
 
-function showAlertMessage(message, success) {
-    var contents = jQuery('#alertMessageContents');
-    
-    if (success) {
-        contents.addClass('successMessage').removeClass('errorMessage');
-    } else {
-        contents.removeClass('successMessage').addClass('errorMessage');
-    }
-    contents.html(message);
-    jQuery('#alertMessageContainer').show();
-    setTimeout ('hideAlertMessage()', success ? 3000 : 8000);
-}
+        showMessage : function(message) {
+            jQuery('#alertMessageContents').html(message);
+            jQuery('#alertMessageContainer').show();
+            setTimeout (_hideAlertMessage(), 3000);
+        }
+    };
 
-function showMessage(message) {
-    jQuery('#alertMessageContents').html(message);
-    jQuery('#alertMessageContainer').show();
-    setTimeout ('hideAlertMessage()', 3000);
-}
-
-function hideAlertMessage() {
-    jQuery('#alertMessageContainer').hide("fade", {}, 3000);
-}
+    return capControlMod;
+}());
 
 jQuery(function() {
-    
-    jQuery(document).on('click', 'div.dynamicTableWrapper .pointAddItem', function(event) {
-        pointPicker.show.call(pointPicker);
-    });
-    jQuery(document).on('click', 'div.dynamicTableWrapper .bankAddItem', function(event) {
-        bankPicker.show.call(bankPicker);
-    });
-
-    /* bank move */
-    jQuery(document).on('click', 'li.toggle', function(e) {
-        if (e.target == e.currentTarget) {
-            var li = jQuery(this);
-            var subMenu = li.find('ul:first');
-            if (subMenu[0]) {
-                subMenu.toggle();
-                li.toggleClass("minus").toggleClass("plus");
-            }
-            return false;
-        }
-        return true;
-    });
-    
-    /* creation menu popup */
-    jQuery('.f-cc-create').click(function() {
-        var content = jQuery('#contentPopup');
-        content.load('/capcontrol/menu/create', function() {
-            var title = content.find('input.title').val();
-            content.dialog({title: title});
-        });
-    });
-
+    Yukon.CapControl.init();
 });

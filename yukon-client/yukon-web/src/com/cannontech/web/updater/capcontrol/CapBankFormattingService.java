@@ -1,18 +1,40 @@
 package com.cannontech.web.updater.capcontrol;
 
+import java.text.NumberFormat;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.cannontech.cbc.util.UpdaterHelper;
+import com.cannontech.cbc.util.UpdaterHelper.UpdaterDataType;
+import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.message.capcontrol.streamable.CapBankDevice;
 import com.cannontech.user.YukonUserContext;
 
 public class CapBankFormattingService extends AbstractFormattingService<CapBankDevice> {
+    
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
     @Override
     protected String getWarningFlag(CapBankDevice latestValue, UpdaterHelper updaterHelper, YukonUserContext context) {
-        String color = (String) updaterHelper.getCapBankValueAt(latestValue, UpdaterHelper.UpdaterDataType.CB_WARNING_IMAGE_COLOR, context);
-        String text = (String) updaterHelper.getCapBankValueAt(latestValue, UpdaterHelper.UpdaterDataType.CB_WARNING_IMAGE_TEXT, context);
-        return color + text;
+        String color = (String) updaterHelper.getCapBankValueAt(latestValue, UpdaterDataType.CB_WARNING_IMAGE_COLOR, context);
+        return color;
     }
-    
+
+    @Override
+    protected String getLocalFlag(CapBankDevice latestValue, UpdaterHelper updaterHelper, YukonUserContext context) {
+
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
+
+        String text = (String) updaterHelper.getCapBankValueAt(latestValue, UpdaterDataType.CB_LOCAL_REMOTE_TEXT, context);
+
+        String result = "";
+        if (accessor.getMessage("yukon.web.modules.capcontrol.local").equals(text)) {
+            result = accessor.getMessage("yukon.web.modules.capcontrol.local.flag");
+        }
+        return result;
+    }
+
     @Override
     protected String getWarningFlagMessage(CapBankDevice latestValue, UpdaterHelper updaterHelper, YukonUserContext context) {
         String value = (String) updaterHelper.getCapBankValueAt(latestValue, UpdaterHelper.UpdaterDataType.CB_WARNING_POPUP, context);
@@ -110,9 +132,10 @@ public class CapBankFormattingService extends AbstractFormattingService<CapBankD
     }
     
     @Override
-    protected String getCBSize(CapBankDevice latestValue, UpdaterHelper updaterHelper) {
-        String value = latestValue.getBankSize().toString();
-        return value;
+    protected String getCBSize(CapBankDevice latestValue, UpdaterHelper updaterHelper, YukonUserContext context) {
+        String bankSize = NumberFormat.getInstance().format(latestValue.getBankSize());
+        MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
+        return accessor.getMessage("yukon.web.modules.capcontrol.kvarsValue", bankSize);
     }
     
     @Override

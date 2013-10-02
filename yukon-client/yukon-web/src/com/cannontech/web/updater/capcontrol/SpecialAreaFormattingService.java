@@ -16,7 +16,7 @@ public class SpecialAreaFormattingService extends AbstractAreaFormatingService<S
 
     @Override
     protected String getState(final SpecialArea latestValue, final UpdaterHelper updaterHelper, YukonUserContext context) {
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
+        MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
         String state = "";
         if (latestValue.getDisableFlag()) {
             state = accessor.getMessage("yukon.web.modules.capcontrol.disabled");
@@ -32,7 +32,7 @@ public class SpecialAreaFormattingService extends AbstractAreaFormatingService<S
 
     @Override
     protected String getPFactor(final SpecialArea latestValue, final UpdaterHelper updaterHelper, YukonUserContext context) {
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
+        MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
         int paoId = latestValue.getCcId();
         List<SubStation> areaStations = getAreaStations(paoId, context.getYukonUser());
         String currPF = updaterHelper.getPowerFactorText(CapControlUtils.calcAvgPF(areaStations), true, context.getYukonUser(), accessor);

@@ -1,129 +1,124 @@
-<script type="text/javascript">
-jQuery(function() {
-    jQuery("tr[id^='tr_cap']").each( function(index, row) {
-        var bankId = row.id.split('_')[2];
-        
-        if (${hasCapbankControl}) {
-            var parentFeeder = row.down('a.parentFeeder');
-            
-            // Add move back link
-            if (parentFeeder.hasClassName('warning')) {
-                parentFeeder.observe('click', function(event) {getMovedBankMenu(bankId, event); return false;});
-            } else {
-                // Add move link
-                var title = parentFeeder.down('span.moveBankTitle').innerHTML;
-                parentFeeder.observe('click', function() {showDialog(title, '/capcontrol/move/bankMove?bankid=' + encodeURIComponent(bankId), {'height': 650, 'width': 650, 'modal': true}, "#contentPopup"); return false;});
-            }
-            
-            // Add menus
-            var bankName = row.down('a[id^="bankName"]');
-            bankName.observe('click', function(event) {getCommandMenu(bankId, event); return false;});
-            
-            var bankState = row.down('a[id^="capbankState"]');
-            bankState.observe('click', function(event) {getMenuFromURL('${stateMenuUrl}?id=' + bankId, event); return false;});
-        };
-    });
-});
-</script>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="capTags" tagdir="/WEB-INF/tags/capcontrol"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="flot" tagdir="/WEB-INF/tags/flotChart" %>
 
-<tags:boxContainer2 nameKey="banksContainer" hideEnabled="true" showInitially="true">
-    
-    <table id="capBankTable" class="compactResultsTable rowHighlighting">
-    
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
+
+<style type="text/css">
+.compactResultsTable tr td:first-child i.icon:first-child {
+margin: 0px;
+}
+</style>
+
+<c:if test="${hasCapbankControl}">
+    <script type="text/javascript">
+        jQuery(function() {
+            Yukon.CapControl.initBankTier();
+        });
+    </script>
+</c:if>
+
+    <tags:boxContainer2 nameKey="banksContainer" hideEnabled="true" showInitially="true">
+
+    <table id="capBankTable" class="compactResultsTable rowHighlighting has-actions">
         <thead>
             <tr>
+                <th width="16px"></th>
                 <th><i:inline key=".cbcName"/></th>
-                <th><i:inline key="yukon.web.modules.capcontrol.actions"/></th>
-                <th class="wsnw">
+                <th>
                     <i:inline key=".cbName"/>
                     <cti:icon nameKey="cbOrderInfo" icon="icon-information" classes="M0 fn" />
                 </th>
-                <th><i:inline key=".actions"/></th>
-                <th class="wsnw">
+                <th>
                     <i:inline key=".state"/>
                     <cti:icon nameKey="stateInfo" icon="icon-information" classes="M0 fn" />
                 </th>
                 <th><i:inline key=".timestamp"/></th>
-                <th><i:inline key=".bankSize"/></th>
+                <th class="tar"><i:inline key=".bankSize"/></th>
                 <th><i:inline key=".parentFeeder"/></th>
                 <th><i:inline key=".dailyMaxTotal"/></th>
             </tr>
         </thead>
 
         <c:forEach var="viewableCapBank" items="${capBankList}">
-            
             <c:set var="bankId" value="${viewableCapBank.capBankDevice.ccId}"/>
             <c:set var="parentId" value="${viewableCapBank.capBankDevice.parentID}"/>
-            
-            <tr id="tr_cap_${bankId}_parent_${parentId}">
-                
+            <cti:msg2 var="moveBankTitle" key=".moveBankTitle" arguments="${viewableCapBank.capBankDevice.ccName}"/>
+            <cti:msg2 var="cbcInfoTitle" key=".cbcPointsTitle" arguments="${viewableCapBank.controlDevice.paoName}" javaScriptEscape="true"/>
+            <cti:msg2 var="bankInfoTitle" key=".addInfoTitle" arguments="${viewableCapBank.capBankDevice.ccName}" javaScriptEscape="true"/>
+
+            <tr class="bank"
+                data-bank-id="${bankId}"
+                data-cbc-id="${viewableCapBank.controlDevice.liteID}"
+                data-parent-id="${parentId}" 
+                data-move-bank-title="${moveBankTitle}"
+                data-cbc-info-title="${cbcInfoTitle}"
+                data-bank-info-title="${bankInfoTitle}"
+                id="tr_cap_${bankId}_parent_${parentId}">
+
                 <%-- CBC Name --%>
-                <td class="wsnw">
-                    <input type="hidden" id="paoId_${bankId}" value="${bankId}">
+                <td width="16px">
+                    <capTags:capBankWarningImg paoId="${bankId}" type="CAPBANK"/>
+                </td>
+                <td>
                     <c:choose>
                         <c:when test="${viewableCapBank.capBankDevice.controlDeviceID != 0}">
-                            <spring:escapeBody htmlEscape="true">${viewableCapBank.controlDevice.paoName}</spring:escapeBody>
+                            <cti:url var="editUrl" value="/editor/cbcBase.jsf">
+                                <cti:param name="type" value="2" />
+                                <cti:param name="itemid" value="${viewableCapBank.capBankDevice.controlDeviceID}" />
+                            </cti:url>
+                            <a href="${editUrl}">
+                                ${fn:escapeXml(viewableCapBank.controlDevice.paoName)}
+                            </a> 
                         </c:when>
                         <c:otherwise>
                             <i:inline key="yukon.web.defaults.dashes"/>
                         </c:otherwise>
                     </c:choose>
                 </td>
-                
-                <%-- CBC Actions --%>
-                <td class="wsnw">
-                    <c:if test="${viewableCapBank.capBankDevice.controlDeviceID != 0}">
-                        <cti:icon nameKey="${editKey}" href="/editor/cbcBase.jsf?type=2&amp;itemid=${viewableCapBank.capBankDevice.controlDeviceID}" icon="icon-pencil"/>
-                        <c:if test="${hasEditingRole}">
-                            <cti:icon nameKey="copy" href="/editor/copyBase.jsf?itemid=${viewableCapBank.capBankDevice.controlDeviceID}&amp;type=1>" icon="icon-page-copy"/>
-                        </c:if>
-                    </c:if>
-                    <c:if test="${viewableCapBank.twoWayCbc}">
-                            <cti:msg2 var="cbcPointsTitle" key=".cbcPointsTitle" arguments="${viewableCapBank.controlDevice.paoName}" javaScriptEscape="true"/>
-                            <cti:icon nameKey="timestampInfo" href="javascript:showDialog('${cbcPointsTitle}', '../capbank/cbcPoints?cbcId=${viewableCapBank.controlDevice.liteID}', {'width': 600, 'height': 600})" icon="icon-magnifier"/>
-                    </c:if>
-                </td>
-                
+
                 <%-- Bank Name --%>
                 <td>
-                    <c:if test="${hasCapbankControl}"><a id="bankName_${bankId}" href="javascript:void(0);"></c:if>
+                    <cti:url var="editUrl" value="/editor/cbcBase.jsf">
+                        <cti:param name="type" value="2" />
+                        <cti:param name="itemid" value="${bankId}" />
+                    </cti:url>
+                    <a href="${editUrl}">
                         <cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_NAME"/>
-                    <c:if test="${hasCapbankControl}"></a></c:if>
-                </td>
-                
-                <%-- Bank Actions --%>
-                <td class="wsnw">
-                    <cti:icon nameKey="${editKey}" href="/editor/cbcBase.jsf?type=2&amp;itemid=${bankId}" icon="icon-pencil"/>
-                    <c:if test="${hasEditingRole}">
-                        <cti:icon nameKey="remove" href="/editor/deleteBasePAO.jsf?value=${bankId}" icon="icon-cross"/>
-                    </c:if>
-                    <cti:checkRolesAndProperties value="SHOW_CB_ADDINFO">
-                        <cti:msg2 var="addInfoTitle" key=".addInfoTitle" arguments="${viewableCapBank.capBankDevice.ccName}" javaScriptEscape="true"/>
-                        <cti:icon nameKey="addInfo" href="javascript:showDialog('${addInfoTitle}', '../addInfo/bank?bankId=${bankId}', {'width': 450})" icon="icon-magnifier"/>
-                    </cti:checkRolesAndProperties>
+                    </a>
                 </td>
 
                 <%-- State --%>
-                <td class="wsnw">
-                    <capTags:capBankWarningImg paoId="${bankId}" type="CAPBANK"/>
-                    
-                    <cti:capBankStateColor paoId="${bankId}" type="CAPBANK" format="CB_STATUS_COLOR">
-                        <c:if test="${hasCapbankControl}"><a id="capbankState_${bankId}" href="javascript:void(0);"></c:if>
-                           <cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_STATUS"/>
-                        <c:if test="${hasCapbankControl}"></a></c:if>
-                    </cti:capBankStateColor>
-                    
+                <td>
+                    <c:if test="${hasCapbankControl}">
+                        <a href="javascript:void(0);" class="f-bank-state subtle-link">
+                    </c:if>
+                        <cti:capBankStateColor paoId="${bankId}" type="CAPBANK" format="CB_STATUS_COLOR" />
+                        <%--
+                            Pt:
+                            <cti:pointStatusColor pointId="${mapEntry.value}" styleClass="box stateBox" background="true">&nbsp;</cti:pointStatusColor>
+                         --%>
+                        <cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_STATUS"/>
+                        <cti:capControlValue paoId="${bankId}" type="CAPBANK" format="LOCAL_FLAG"/>
+                    <c:if test="${hasCapbankControl}">
+                        </a>
+                    </c:if>
                 </td>
-                
+
                 <%-- Timestamp --%>
                 <td>
                     <div class="f-tooltip dn">
                         <table class='compactResultsTable'>
                             <tr>
                                 <th><i:inline key=".kvar"/></th>
-                                <th class="wsnw"><i:inline key=".phaseA"/></th>
-                                <th class="wsnw"><i:inline key=".phaseB"/></th>
-                                <th class="wsnw"><i:inline key=".phaseC"/></th>
+                                <th><i:inline key=".phaseA"/></th>
+                                <th><i:inline key=".phaseB"/></th>
+                                <th><i:inline key=".phaseC"/></th>
                                 <th><i:inline key=".total"/></th>
                             </tr>
                             <tr>
@@ -153,31 +148,49 @@ jQuery(function() {
                         <cti:capControlValue paoId="${bankId}" type="CAPBANK" format="DATE_TIME"/> 
                     </span>
                 </td>
-                
+
                 <%-- Bank Size --%>
-                <td><cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_SIZE"/></td>
-                
-                <%-- Parent Feeder --%>
-                <td class="wsnw">
-                     <c:if test="${hasCapbankControl}">
-                        </a>
-                        <span class="f-tooltip dn">
-                            <cti:msg2 key=".moveBank"/>
-                        </span>
-                     </c:if>
-                    <c:if test="${hasCapbankControl}">
-                        <a class="f-has-tooltip parentFeeder" <c:if test="${viewableCapBank.capBankDevice.bankMoved}"> warning</c:if>" >
-                    </c:if>
-                        <span class="dn moveBankTitle"><cti:msg2 key=".moveBankTitle" arguments="${viewableCapBank.capBankDevice.ccName}"/></span>
-                        <cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_PARENT"/>
+                <td class="tar">
+                    <cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_SIZE"/>
                 </td>
-                
+
+                <%-- Parent Feeder --%>
+                <td>
+                    <cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_PARENT"/>
+                </td>
+
                 <%-- Daily/Max/Total Ops --%>
-                <td><cti:capControlValue paoId="${bankId}" type="CAPBANK" format="DAILY_MAX_OPS"/></td>
+                <td>
+                    <cti:capControlValue paoId="${bankId}" type="CAPBANK" format="DAILY_MAX_OPS"/>
+
+                    <cti:url var="collectionsUrl" value="/bulk/collectionActions">
+                        <cti:param name="collectionType" value="group"/>
+                        <cti:param name="group.name" value="/System/Device Configs/${config.name}"/>
+                    </cti:url>
+                    <cm:dropdown icon="icon-cog" containerCssClass="fr">
+                        <c:if test="${hasCapbankControl}">
+                            <cm:dropdownOption id="bankName_${bankId}" key=".capBank.actions" icon="icon-cog" href="javascript:void(0);" classes="f-bank-command" />
+                        </c:if>
+                         <cti:checkRolesAndProperties value="SHOW_CB_ADDINFO">
+                            <cti:msg2 var="addInfoTitle" key=".addInfoTitle" arguments="${viewableCapBank.capBankDevice.ccName}" javaScriptEscape="true"/>
+                            <cm:dropdownOption key=".capBank.info" icon="icon-magnifier" classes="f-bank-info"
+                                href="javascript:void(0);" />
+                        </cti:checkRolesAndProperties>
+                        <c:if test="${viewableCapBank.twoWayCbc}">
+                                <cti:msg2 var="cbcPointsTitle" key=".cbcPointsTitle" arguments="${viewableCapBank.controlDevice.paoName}" javaScriptEscape="true"/>
+                                <cm:dropdownOption key=".cbc.info" icon="icon-magnifier" classes="f-cbc-info" href="javascript:void(0);" />
+                        </c:if>
+                        <c:if test="${hasCapbankControl}">
+                            <c:set var="warning" value=""/>
+                            <c:if test="${viewableCapBank.capBankDevice.bankMoved}">
+                                <c:set var="warning" value="warning"/>
+                            </c:if>
+                            <cm:dropdownOption key=".bankMove" icon="icon-bullet-go" classes="f-move-bank ${warning}" href="javascript:void(0);" />
+                        </c:if>
+                    </cm:dropdown>
+                </td>
             </tr>
-            
         </c:forEach>
-        
     </table>
-        
-</tags:boxContainer2>
+                
+    </tags:boxContainer2>

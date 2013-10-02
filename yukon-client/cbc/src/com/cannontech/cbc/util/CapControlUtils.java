@@ -2,7 +2,6 @@ package com.cannontech.cbc.util;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -311,14 +310,6 @@ public final class CapControlUtils {
             retVal = retVal * (-1);
         }
         return retVal.isNaN() ? 0.0 : retVal.doubleValue();
-    }
-
-    public static String format(int val) {
-        return NumberFormat.getInstance().format(val);
-    }
-
-    public static String format(double val) {
-        return NumberFormat.getInstance().format(val);
     }
 
     public static boolean isTwoWay(int type) {
