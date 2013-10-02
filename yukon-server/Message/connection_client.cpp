@@ -216,22 +216,8 @@ bool CtiClientConnection::establishConnection()
  */
 void CtiClientConnection::endConnection()
 {
-    if( _connection.get() )
-    {
-        // Close the connection as well as any child session, consumer, producer
-        _connection->close();
-    }
-}
-
-/**
- * clean up consumer, producer, destinations, sessions and the cms connection
- */
-void CtiClientConnection::deleteResources()
-{
-    CtiConnection::deleteResources();
-
-    // Close and delete the connection
-    _connection.reset();
+    // Close the connection as well as any child session, consumer, producer
+    _connection->close();
 }
 
 /**

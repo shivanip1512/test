@@ -98,14 +98,3 @@ bool CtiServerConnection::establishConnection()
         throw;
     }
 }
-
-/**
- * clean up consumer, producer, destinations, sessions and the connection
- */
-void CtiServerConnection::deleteResources()
-{
-    CtiConnection::deleteResources();
-
-    // delete the shared connection object
-    _connection.reset();
-}

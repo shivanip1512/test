@@ -6,11 +6,10 @@
 class IM_EX_MSG CtiServerConnection : public CtiConnection
 {
     virtual bool establishConnection ();
-    virtual void deleteResources     ();
 
     static volatile long _serverConnectionCount;
 
-    boost::shared_ptr<Cti::Messaging::ActiveMQ::ManagedConnection> _connection;
+    const boost::shared_ptr<Cti::Messaging::ActiveMQ::ManagedConnection> _connection;
 
     const std::auto_ptr<cms::Destination> _replyDest;
 
