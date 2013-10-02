@@ -9,6 +9,7 @@
     <entry key="yukon.web.modules.adminSetup.operatorLogin.password">Password</entry>
     <entry key="yukon.web.modules.adminSetup.operatorLogin.confirmPassword">Confirm Password</entry>
     <entry key="yukon.web.modules.adminSetup.operatorLogin.operatorGroup">Operator Group</entry>
+    <entry key="yukon.web.modules.adminSetup.operatorLogin.currentGroup">Current Group</entry>
     <entry key="yukon.web.modules.adminSetup.operatorLogin.loginEnabled">Status</entry>
     <entry key="yukon.web.modules.adminSetup.operatorLogin.newPassword">New Password</entry>
     <entry key="yukon.web.modules.adminSetup.operatorLogin.generatePassword">Generate Password</entry>
@@ -17,18 +18,20 @@
 
 
     <!-- UI Elements -->
-    <entry key="yukon.web.modules.adminSetup.operatorLogin.create.label">Create</entry>
     <entry key="yukon.web.modules.adminSetup.operatorLogin.loginEnabled.label">Login Enabled</entry>
 
     <!--  Validation -->
     <entry key="yukon.web.modules.adminSetup.operatorLogin.unableToDeleteCurrentUser">You cannot disable the logged in user.</entry>
 
     <!--  Generic success/fail messages -->
+    <entry key="yukon.web.modules.adminSetup.operatorLogin.operatorLoginAdded">Successfully added the user.</entry>
     <entry key="yukon.web.modules.adminSetup.operatorLogin.operatorLoginCreated">Successfully created the user.</entry>
     <entry key="yukon.web.modules.adminSetup.operatorLogin.operatorLoginUpdated">Successfully updated the user.</entry>
     <entry key="yukon.web.modules.adminSetup.operatorLogin.operatorLoginDeleted">Successfully deleted the user.</entry>
     <entry key="yukon.web.modules.adminSetup.operatorLogin.operatorLoginStatusEnabled">The user is now enabled.</entry>
     <entry key="yukon.web.modules.adminSetup.operatorLogin.operatorLoginStatusDisabled">The user is now disabled.</entry>
+    <entry key="yukon.web.modules.adminSetup.operatorLogin.incorrectGroupEdit">Operator Group is set incorrectly, please edit.</entry>
+    <entry key="yukon.web.modules.adminSetup.operatorLogin.incorrectGroup">Your Current Group is invalid.</entry>
     
     <!-- home.jsp -->
     <entry key="yukon.web.modules.adminSetup.operatorLogin.home.pageName">Operator Users</entry>

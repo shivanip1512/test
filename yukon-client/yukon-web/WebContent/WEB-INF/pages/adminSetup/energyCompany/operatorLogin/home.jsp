@@ -8,82 +8,114 @@
 
 <cti:standardPage module="adminSetup" page="operatorLogin.home">
 
-<script>
-    jQuery(function() {
-        jQuery("a.toggle_status").click(function(event) {
-            event.preventDefault();// We don't want the anchor href to submit a GET request
-            var anchor = jQuery(event.currentTarget);
-            var icon = anchor.find('.icon');
-            var originalClasses = icon.attr('class');
-            icon.addClass("icon-spinner");
-            jQuery.ajax({
-                type: "POST",
-                url: anchor.attr("href"),
-                datatype: "json",
-                success: function(jsonResponse) {
-                    icon.removeClass("icon-accept");
-                    icon.removeClass("icon-delete");
-                    icon.removeClass("icon-spinner");
-                    icon.addClass(jsonResponse.icon);
-                    icon.attr("title",jsonResponse.loginStatus);
-                },
-                error: function() {
-                    icon.removeClass("icon-spinner");
-                    icon.attr("class", originalClasses);
-                }
+    <script>
+        function addUser(selectedItems, picker) {
+            jQuery('#userId').value = selectedItems[0][picker.idFieldName];
+            jQuery('#operatorLoginAddForm').submit();
+        }
+    
+        jQuery(document).on('click', '.f-remove', function() {                
+             var userId = jQuery(this).attr("userId");
+             var ecId = jQuery(this).attr("ecId");
+             var data = {};
+             data.userId = userId;
+             data.ecId = ecId;
+             jQuery.post('/adminSetup/energyCompany/operatorLogin/remove', data).done(function(data) {  
+                 jQuery("#"+userId).hide();
+           });
+        });
+        
+        jQuery(function() {
+            jQuery("a.toggle_status").click(function(event) {
+                event.preventDefault();// We don't want the anchor href to submit a GET request
+                var anchor = jQuery(event.currentTarget);
+                var icon = anchor.find('.icon');
+                var originalClasses = icon.attr('class');
+                icon.addClass("icon-spinner");
+                jQuery.ajax({
+                    type: "POST",
+                    url: anchor.attr("href"),
+                    datatype: "json",
+                    success: function(jsonResponse) {
+                        icon.removeClass("icon-accept");
+                        icon.removeClass("icon-delete");
+                        icon.removeClass("icon-spinner");
+                        icon.addClass(jsonResponse.icon);
+                        icon.attr("title",jsonResponse.loginStatus);
+                    },
+                    error: function() {
+                        icon.removeClass("icon-spinner");
+                        icon.attr("class", originalClasses);
+                    }
+                });
             });
         });
-    });
 </script>
-
-    <div style="min-width:400px;" class="fl">
-    <tags:boxContainer2 nameKey="pageName" styleClass="operatorLogins">
-        <div id="operatorLoginList" class="scroll_y">
-            <table class="compactResultsTable rowHighlighting">
-                <th><i:inline key=".username" /></th>
-                <th class="removeColumn"><i:inline key=".loginEnabled" /></th>
-                <c:forEach items="${operatorLogins}" var="login">
-                    <tr>
-                        <td>
-                            <cti:url var="operatorLoginViewUrl" value="${baseUrl}/view">
-                                <cti:param name="ecId" value="${ecId}"/>
-                                <cti:param name="operatorLoginId" value="${login.userID}"/>
-                            </cti:url>
-                            <b><a href="${operatorLoginViewUrl}"><spring:escapeBody htmlEscape="true">${login}</spring:escapeBody></a></b>
-                        </td>
-                        <td class="removeColumn">
-                        <div class="dib">
-                            <cti:url var="operatorLoginUpdateUrl" value="${baseUrl}/toggleOperatorLoginStatus">
-                                <cti:param name="ecId" value="${ecId}"/>
-                                <cti:param name="operatorLoginId" value="${login.userID}"/>
-                            </cti:url>
-                            <c:if test="${currentUserId != login.userID}">
+    <div style="min-width: 400px;" class="fl">
+            <div id="operatorLoginList" class="scrollingContainer_large">
+                <table class="compactResultsTable rowHighlighting with-form-controls">
+                    <thead>
+                    <th><i:inline key=".username" /></th>
+                    <th><i:inline key=".loginEnabled" /></th>
+                    <th></th>
+                    </thead>
+                    <tfoot></tfoot>
+                    <tbody>
+                    <c:forEach items="${operatorLogins}" var="login">
+                        <tr id="${login.userID}">
+                            <td>
+                                <cti:url var="operatorLoginViewUrl" value="${baseUrl}/view">
+                                    <cti:param name="ecId" value="${ecId}" />
+                                    <cti:param name="operatorLoginId" value="${login.userID}" />
+                                </cti:url>
+                                <a href="${operatorLoginViewUrl}">${fn:escapeXml(login)}</a></td>
+                            <td>
+                                <cti:url var="operatorLoginUpdateUrl" value="${baseUrl}/toggleOperatorLoginStatus">
+                                    <cti:param name="ecId" value="${ecId}" />
+                                    <cti:param name="operatorLoginId" value="${login.userID}" />
+                                </cti:url>
+                                <c:if test="${currentUserId != login.userID}">
+                                    <c:choose>
+                                        <c:when test="${login.loginStatus == 'DISABLED'}">
+                                            <c:set var="cssClass" value="icon-delete" />
+                                        </c:when>
+                                        <c:otherwise>
+                                            <c:set var="cssClass" value="icon-accept" />
+                                        </c:otherwise>
+                                    </c:choose>
+                                    <a href="${operatorLoginUpdateUrl}" class="button toggle_status" title="${login.loginStatus}"><i class="icon ${cssClass}"></i></a>
+                                </c:if>
+                                <c:if test="${currentUserId == login.userID}">
+                                    <a class="button" disabled="disabled" title="<i:inline key=".unableToDeleteCurrentUser"/>"><i class="icon icon-accept"></i></a>
+                                </c:if>
+                            </td>
+                            <td>
                                 <c:choose>
-	                                <c:when test="${login.loginStatus == 'DISABLED'}">
-	                                    <c:set var="cssClass" value="icon-delete"/>
-	                                </c:when>
-	                                <c:otherwise>
-	                                   <c:set var="cssClass" value="icon-accept"/>
-	                                </c:otherwise>
+                                    <c:when test="${currentUserId == login.userID}">
+                                        <c:set var="disabled" value="true" />
+                                    </c:when>
+                                    <c:otherwise>
+                                        <c:set var="disabled" value="false" />
+                                    </c:otherwise>
                                 </c:choose>
-                                <a href="${operatorLoginUpdateUrl}" class="button naked toggle_status" title="${login.loginStatus}"><i class="icon ${cssClass}"></i></a>
-                            </c:if>
-                            <c:if test="${currentUserId == login.userID}">
-                                <a class="button naked" disabled="disabled" title="<i:inline key=".unableToDeleteCurrentUser"/>"><i class="icon icon-accept"></i></a>
-                            </c:if>
-                        </div>
-                        </td>
-                    </tr>
-                </c:forEach>
-            </table>
-        </div>
-        <cti:url var="operatorLoginCreateUrl" value="${baseUrl}/new">
-            <cti:param name="ecId" value="${ecId}"/>
-        </cti:url>
-        <div class="actionArea">
-            <cti:button nameKey="create" icon="icon-plus-green" href="${operatorLoginCreateUrl}"/>
-        </div>
-    </tags:boxContainer2>
+                                <cti:button id="remove_${login.userID}" name="remove" ecId="${ecId}" userId="${login.userID}" renderMode="buttonImage" icon="icon-cross" classes="fr f-remove" disabled="${disabled}" />
+                            </td>
+                        </tr>
+                    </c:forEach>
+                    </tbody>
+                </table>
+            </div>
+            <cti:url var="operatorLoginCreateUrl" value="${baseUrl}/new">
+                <cti:param name="ecId" value="${ecId}" />
+            </cti:url>
+            <cti:url var="operatorLoginAddUrl" value="${baseUrl}/add" />
+            <div class="actionArea">
+                <form id="operatorLoginAddForm" action="${operatorLoginAddUrl}">
+                    <input type="hidden" name="ecId" value="${ecId}" /> <input type="hidden" name="userId" id="userId" />
+                    <tags:pickerDialog type="ecOperatorCandidatePicker" id="ecOperatorCandidatePicker" destinationFieldId="userId" linkType="button" nameKey="add" icon="icon-add" endAction="addUser" immediateSelectMode="true" />
+                </form>
+                <cti:button nameKey="create" icon="icon-plus-green" href="${operatorLoginCreateUrl}" />
+            </div>
     </div>
-    
+
 </cti:standardPage>

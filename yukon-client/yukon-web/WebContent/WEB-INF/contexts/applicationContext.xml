@@ -1937,6 +1937,8 @@
 	<bean name="lmHardwareBasePicker" class="com.cannontech.web.picker.v2.LmHardwareBasePicker"/>
 
     <bean name="categoryPicker" class="com.cannontech.web.picker.v2.ConfigurationCategoryPicker"/>
+    
+    <bean name="ecOperatorCandidatePicker" class="com.cannontech.web.picker.v2.ECOperatorCandidatePicker"/>
 
     <bean class="com.cannontech.web.layout.impl.HttpExpressionLanguageResolverImpl"/>
     

@@ -149,6 +149,16 @@ public class ECMappingDaoImpl implements ECMappingDao {
         
         yukonJdbcTemplate.update(sql);
     }
+    
+    @Override
+    public void deleteEnergyCompanyOperatorLoginListMapping(int userId, int energyCompanyId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE EnergyCompanyOperatorLoginList");
+        sql.append("WHERE OperatorLoginID").eq(userId);
+        sql.append("AND EnergyCompanyID").eq(energyCompanyId);
+        
+        yukonJdbcTemplate.update(sql);
+    }
 
     
     @Override

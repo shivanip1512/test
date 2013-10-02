@@ -1,4 +1,5 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
@@ -51,21 +52,24 @@
             
         <tags:nameValueContainer2>
             <tags:hidden path="userId"/>
-            <c:choose>
-                <c:when test="${showOperatorGroupSelect}">
-                    <tags:selectNameValue nameKey=".operatorGroup" items="${assignableGroups}" path="userGroupName" id="userGroupName"/>
-                </c:when>
-                <c:otherwise>
-                    <tags:hidden path="userGroupName"/>
-                    <tags:nameValue2 nameKey=".operatorGroup">
-                        <spring:escapeBody htmlEscape="true">${operatorLogin.userGroupName}</spring:escapeBody>
+            <cti:displayForPageEditModes modes="EDIT,CREATE">
+                <tags:selectNameValue nameKey=".operatorGroup" items="${assignableGroups}" path="userGroupName" id="userGroupName"/>
+            </cti:displayForPageEditModes>
+            <cti:displayForPageEditModes modes="EDIT">
+                <c:if test="${!isOperatorInOperatorUserGroup}">
+                    <tags:nameValue2 nameKey=".currentGroup">
+                        ${fn:escapeXml(operatorLogin.userGroupName)}
                     </tags:nameValue2>
-                </c:otherwise>
-            </c:choose>
-            <c:if test="${currentUserId != operatorLogin.userId}">
+                </c:if>
+            </cti:displayForPageEditModes>
+            <cti:displayForPageEditModes modes="VIEW">
+                    <tags:nameValue2 nameKey=".operatorGroup">
+                        ${fn:escapeXml(operatorLogin.userGroupName)}
+                    </tags:nameValue2>
+            </cti:displayForPageEditModes>
+            <c:if test="${!add && currentUserId != operatorLogin.userId}">
                 <tags:checkboxNameValue  checkBoxDescriptionNameKey=".loginEnabled.label" nameKey=".loginEnabled" path="loginEnabled"></tags:checkboxNameValue>
             </c:if>
-
             <c:if test="${currentUserId == operatorLogin.userId}">
                 <form:hidden path="loginEnabled" value="true"/>
                 <tags:nameValue2 nameKey=".loginEnabled">
@@ -73,8 +77,17 @@
                     <label for="enableCheckbox"> <i:inline key=".loginEnabled.label"/> </label>
                 </tags:nameValue2>
             </c:if>
-
-            <tags:inputNameValue nameKey=".username" path="username" size="50" maxlength="60"/>
+            <c:choose>
+                <c:when test="${add}">
+                    <form:hidden path="username" value="${username}"/>
+                    <tags:nameValue2 nameKey=".username">
+                        ${fn:escapeXml(operatorLogin.username)}
+                    </tags:nameValue2>
+                </c:when>
+                <c:otherwise>
+                   <tags:inputNameValue nameKey=".username" path="username" size="50" maxlength="60"/>
+                </c:otherwise>
+            </c:choose>
             
             <!-- Password Fields -->
             <cti:displayForPageEditModes modes="CREATE,EDIT">
@@ -101,7 +114,15 @@
         <div class="pageActionArea">
             <!-- Save/Update -->
             <cti:displayForPageEditModes modes="CREATE">
-                <cti:button nameKey="save" name="save" type="submit" classes="primary action"/>
+                <c:choose>
+                    <c:when test="${add}">
+                        <c:set var="name" value="add" />
+                    </c:when>
+                    <c:otherwise>
+                        <c:set var="name" value="save" />
+                    </c:otherwise>
+                </c:choose>
+                <cti:button nameKey="save" name="${name}" type="submit" classes="primary action"/>
             </cti:displayForPageEditModes>
             
             <cti:displayForPageEditModes modes="EDIT">
