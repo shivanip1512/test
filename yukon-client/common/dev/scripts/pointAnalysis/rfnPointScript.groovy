@@ -67,6 +67,9 @@ paoDefinition.xml vs rfnPointMapping.xml
         21T    RFN440_2131T                 21D    RFN440_2131TD
         22T    RFN440_2132T                 22D    RFN440_2132TD
         23T    RFN440_2133T                 23D    RFN440_2133TD
+        SL0    RFN430SL0                    SL1    RFN430SL1
+        SL2    RFN430SL2                    SL3    RFN430SL3
+        SL4    RFN430SL4
 
     UoM : Unit of Measure Abbreviations
 """+
@@ -144,6 +147,10 @@ String _modelCols_Elster2 = "A3R KV A3K A3T A3D"
 String _modelIds_ELO = "RFN440_2131T RFN440_2131TD RFN440_2132T RFN440_2132TD RFN440_2133T RFN440_2133TD"
 String _modelCols_ELO = "21T 21D 22T 22D 23T 23D"
 
+// Adding Itron Sentinel meters
+String _modelIds_Sentinel = "RFN430SL0 RFN430SL1 RFN430SL2 RFN430SL3 RFN430SL4"
+String _modelCols_Sentinel = "SL0 SL1 SL2 SL3 SL4"
+
 /** ORIG vs NEW for comparison script **/
 //String[] _modelIds_ORIG  = "RFN430A3 RFN430KV RFN420CL RFN420CD RFN420FL RFN420FX RFN420FD RFN410FL RFN410FX RFN410FD".split(" ")
 //String[] _modelCols_ORIG = "A3 KV CL2 CD2 FL2 FX2 FD2 FL1 FX1 FD1".split(" ")
@@ -152,8 +159,8 @@ String _modelCols_ELO = "21T 21D 22T 22D 23T 23D"
 //String[] _modelCols_NEW  = "A3R KV A3K A3T A3D CL2 CD2 FL2 FX2 FD2 FL1 FX1 FD1".split(" ")
 //String[] _modelIds_NEW   = (_modelIds_Elster2 +" "+ _modelIds_Centron +" "+ _modelIds_Focus2).split(" ")
 //String[] _modelCols_NEW  = (_modelCols_Elster2 +" "+ _modelCols_Centron +" "+ _modelCols_Focus2).split(" ")
-String[] _modelIds_NEW   = (_modelIds_Elster2 +" "+ _modelIds_Centron +" "+ _modelIds_Focus2 +" "+ _modelIds_ELO).split(" ")
-String[] _modelCols_NEW  = (_modelCols_Elster2 +" "+ _modelCols_Centron +" "+ _modelCols_Focus2 +" "+ _modelCols_ELO).split(" ")
+String[] _modelIds_NEW   = (_modelIds_Elster2 +" "+ _modelIds_Centron +" "+ _modelIds_Focus2 +" "+ _modelIds_ELO +" "+ _modelIds_Sentinel).split(" ")
+String[] _modelCols_NEW  = (_modelCols_Elster2 +" "+ _modelCols_Centron +" "+ _modelCols_Focus2 +" "+ _modelCols_ELO +" "+ _modelCols_Sentinel).split(" ")
 
 //String[] _modelIds_COMBO = "RFN430A3R RFN430KV RFN430A3K RFN430A3T RFN430A3D RFN430A3 RFN420CL RFN420CD RFN420FL RFN420FX RFN420FD RFN410FL RFN410FX RFN410FD".split(" ")
 //String[] _modelCols_COMBO= "A3R KV A3K A3T A3D A3 CL2 CD2 FL2 FX2 FD2 FL1 FX1 FD1".split(" ")
@@ -314,7 +321,7 @@ extractPaoData = { fileId, paoTagIterId, modelId ->    // fileId, id, modelId - 
 
 /*************   printPao  ************/
 //String PAO_HEADER_FULL    = '%48s  offset     <<<<models>>>>    offset     <<<<models>>>>     offset  ** Point Name **\n'
-String PAO_HEADER_FULL    = '* UoM| Modifiers  | %48s offset             <<<<models>>>>%79soffset\n'
+String PAO_HEADER_FULL    = '* UoM| Modifiers  | %48s offset             <<<<models>>>>%103soffset\n'
 String PAO_HEADER_MIN    = '%48s  offset             <<<<models>>>>\n'
 String PAO_HEADER        = PAO_HEADER_MIN
 
@@ -551,7 +558,7 @@ def processRfnFile = { inputFile, outputFile ->
 
 
 /****    print the comparison between RFN and PAO files   ****/
-int CHARS_WIDE = 187;
+int CHARS_WIDE = 211;
 def printComparisonHeader = { out -> 
     out << ('-'*CHARS_WIDE) << "\n"
     out.printf PAO_HEADER_FULL, "** Point Name **", ' '

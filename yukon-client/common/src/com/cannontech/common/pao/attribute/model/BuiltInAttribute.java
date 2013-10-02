@@ -148,6 +148,17 @@ public enum BuiltInAttribute implements Attribute {
     SUM_KVA_LOAD_PROFILE("Sum kVA Load Profile"),
     SUM_KVAR_LOAD_PROFILE("Sum kVAr Load Profile"),
 
+    NET_DELIVERED_KVARH("Net Delivered kVARh"),
+    RATE_A_NET_DELIVERED_KVARH("Rate A Net Delivered kVARh"),
+    RATE_B_NET_DELIVERED_KVARH("Rate B Net Delivered kVARh"),
+    RATE_C_NET_DELIVERED_KVARH("Rate C Net Delivered kVARh"),
+    RATE_D_NET_DELIVERED_KVARH("Rate D Net Delivered kVARh"),
+    NET_RECEIVED_KVARH("Net Received kVARh"),
+    RATE_A_NET_RECEIVED_KVARH("Rate A Net Received kVARh"),
+    RATE_B_NET_RECEIVED_KVARH("Rate B Net Received kVARh"),
+    RATE_C_NET_RECEIVED_KVARH("Rate C Net Received kVARh"),
+    RATE_D_NET_RECEIVED_KVARH("Rate D Net Received kVARh"),
+    
     // Rfn Events that map to Event Status points (this list must be kept in sync with both 
     // our rfn set below AND its version in RfnConditionType.java. Outages and restores are
     // the only exception to this rule (as in the names don't exactly match))

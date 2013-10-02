@@ -223,5 +223,16 @@
     <entry key="yukon.common.attribute.builtInAttribute.REVERSE_INDUCTIVE_KVARH_PER_INTERVAL">Reverse Inductive kVARh per Interval</entry>
     <entry key="yukon.common.attribute.builtInAttribute.REVERSE_CAPACITIVE_KVARH_PER_INTERVAL">Reverse Capacitive kVARh per Interval</entry>
     
+    <entry key="yukon.common.attribute.builtInAttribute.NET_DELIVERED_KVARH">Net Delivered kVARh</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RATE_A_NET_DELIVERED_KVARH">Rate A Net Delivered kVARh</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RATE_B_NET_DELIVERED_KVARH">Rate B Net Delivered kVARh</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RATE_C_NET_DELIVERED_KVARH">Rate C Net Delivered kVARh</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RATE_D_NET_DELIVERED_KVARH">Rate D Net Delivered kVARh</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.NET_RECEIVED_KVARH">Net Received kVARh</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RATE_A_NET_RECEIVED_KVARH">Rate A Net Received kVARh</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RATE_B_NET_RECEIVED_KVARH">Rate B Net Received kVARh</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RATE_C_NET_RECEIVED_KVARH">Rate C Net Received kVARh</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RATE_D_NET_RECEIVED_KVARH">Rate D Net Received kVARh</entry>
+
     <!-- BuiltInAttribute see note above about changing values-->
 </properties>

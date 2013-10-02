@@ -6,7 +6,6 @@ import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.DatabaseRepresentationSource;
-import com.cannontech.database.data.device.lm.LMProgramDirect;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.database.data.pao.CapControlTypes;
@@ -120,6 +119,12 @@ public enum PaoType implements DatabaseRepresentationSource {
     RFN430A3K(DeviceTypes.RFN430A3K, "RFN-430A3K", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFN430A3R(DeviceTypes.RFN430A3R, "RFN-430A3R", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFN430KV(DeviceTypes.RFN430KV, "RFN-430KV", PaoCategory.DEVICE, PaoClass.RFMESH),
+
+    RFN430SL0(DeviceTypes.RFN430SL0, "RFN-430SL0", PaoCategory.DEVICE, PaoClass.RFMESH),
+    RFN430SL1(DeviceTypes.RFN430SL1, "RFN-430SL1", PaoCategory.DEVICE, PaoClass.RFMESH),
+    RFN430SL2(DeviceTypes.RFN430SL2, "RFN-430SL2", PaoCategory.DEVICE, PaoClass.RFMESH),
+    RFN430SL3(DeviceTypes.RFN430SL3, "RFN-430SL3", PaoCategory.DEVICE, PaoClass.RFMESH),
+    RFN430SL4(DeviceTypes.RFN430SL4, "RFN-430SL4", PaoCategory.DEVICE, PaoClass.RFMESH),
     
 //    RFN440_2131T(DeviceTypes.RFN440_2131T, "RFN-440-2131T", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFN440_2131TD(DeviceTypes.RFN440_2131TD, "RFN-440-2131TD", PaoCategory.DEVICE, PaoClass.RFMESH),
@@ -350,6 +355,11 @@ public enum PaoType implements DatabaseRepresentationSource {
                 RFN430A3R,
                 RFN430A3T,
                 RFN430KV,
+                RFN430SL0,
+                RFN430SL1,
+                RFN430SL2,
+                RFN430SL3,
+                RFN430SL4,
 //                RFN440_2131T,
                 RFN440_2131TD,
 //                RFN440_2132T,

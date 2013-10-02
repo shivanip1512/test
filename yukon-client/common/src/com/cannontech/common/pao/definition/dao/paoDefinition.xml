@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <?xml-stylesheet type="text/xsl" href="paoDefinition.xsl"?>
-<!--  RF Devices: highest Analog OFFSET=228 @ 2014-07-17W -->
+<!--  RF Devices: highest Analog OFFSET=238 @ 2014-07-17W -->
 <!--  RF Devices: highest Status OFFSET=62  @ 2014-04-30T -->
 <!--
     This file contains default pao and point information for all of the pao's in Yukon.
@@ -5824,8 +5824,6 @@
         </attributes>
     </pao>
 
-
-
 <!-- ###################################  RFN_COMMON  ################################### -->
 <pao id="RFN_COMMON" abstract="true" inherits="OUTAGE_STATUS_BASE, RFN_EVENTS, SUPPORTS_OUTAGE_TAG, RFN_PTCALC__ALL">
 	<displayGroup>RFMESH</displayGroup>
@@ -6758,8 +6756,8 @@
                 <unitofmeasure value="kWh"/>
                 <decimalplaces value="3"/>
             </point>
-		</points>
-		<attributes>
+        </points>
+        <attributes>
             <attribute name="TOU_RATE_A_USAGE">
                 <basicLookup point="Rate A kWh" />
             </attribute>
@@ -8057,6 +8055,399 @@
             </attribute>
         </attributes>
     </pao>
+
+
+    <pao id="RFN_L0_SENTINEL" abstract="true">
+        <displayGroup>RFMESH</displayGroup>
+        <changeGroup>rfn</changeGroup>
+        <points>
+            <point type="Analog" offset="1">
+                <init>true</init>
+                <name>Delivered kWh</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWH"/>
+                <decimalplaces value="3"/>
+            </point>
+        </points>
+        <attributes>
+            <attribute name="USAGE">
+                <basicLookup point="Delivered kWh" />
+            </attribute>
+        </attributes>
+    </pao>
+
+    <!-- FIXME: The init values in RFN_TOU_FOR_ALL_EXCEPT_A3D are different than Stacey specified in 
+         supplied spreadsheet:  which is correct? -->
+    <pao id="RFN_L1_SENTINEL" abstract="true" inherits="RFN_L0_SENTINEL, RFN_TOU_FOR_ALL_EXCEPT_A3D">
+        <points>
+            <point type="Analog" offset="2">
+                <init>true</init>
+                <name>Received kWh</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWH"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="4">
+                <init>true</init>
+                <name>Net kWh</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWh"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="3">
+                <init>true</init>
+                <name>Sum kWh</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWH"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="105">
+                <init>true</init>
+                <name>Peak kW</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kW"/>
+                <decimalplaces value="3"/>
+            </point>
+
+            <point type="Analog" offset="125">
+                <name>Received kWh (Rate A kWh)</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWH"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="126">
+                <name>Received kWh (Rate B kWh)</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWH"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="127">
+                <name>Received kWh (Rate C kWh)</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWH"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="128">
+                <name>Received kWh (Rate D kWh)</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWH"/>
+                <decimalplaces value="4"/>
+            </point>
+
+            <point type="Analog" offset="120">
+                <init>true</init>
+                <name>Sum kWh (Rate A kWh)</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWH"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="121">
+                <name>Sum kWh (Rate B kWh)</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWH"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="122">
+                <name>Sum kWh (Rate C kWh)</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWH"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="123">
+                <name>Sum kWh (Rate D kWh)</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWH"/>
+                <decimalplaces value="4"/>
+            </point>
+
+            <point type="Analog" offset="70">
+                <init>true</init>
+                <name>Volts Phase A</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="1"/>
+            </point>
+            <point type="Analog" offset="71">
+                <init>true</init>
+                <name>Volts Phase B</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="1"/>
+            </point>
+            <point type="Analog" offset="72">
+                <init>true</init>
+                <name>Volts Phase C</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="1"/>
+            </point>
+
+            <point type="Analog" offset="73">
+                <init>true</init>
+                <name>Amps Phase A</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Amps"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="74">
+                <init>true</init>
+                <name>Amps Phase B</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Amps"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="75">
+                <init>true</init>
+                <name>Amps Phase C</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Amps"/>
+                <decimalplaces value="3"/>
+            </point>
+
+            <point type="Analog" offset="133">
+                <name>Avg Power Factor</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="PF"/>
+                <decimalplaces value="4"/>
+            </point>
+        </points>
+        <attributes>
+            <attribute name="ENERGY_GENERATED">
+                <basicLookup point="Received kWh"/>
+            </attribute>
+            <attribute name="NET_KWH">
+                <basicLookup point="Net kWh"/>
+            </attribute>
+            <attribute name="SUM_KWH">
+                <basicLookup point="Sum kWh"/>
+            </attribute>
+            <attribute name="PEAK_DEMAND">
+                <basicLookup point="Peak kW" />
+            </attribute>
+            <attribute name="TOU_RATE_A_ENERGY_GENERATED">
+                <basicLookup point="Received kWh (Rate A kWh)" />
+            </attribute>
+            <attribute name="TOU_RATE_B_ENERGY_GENERATED">
+                <basicLookup point="Received kWh (Rate B kWh)" />
+            </attribute>
+            <attribute name="TOU_RATE_C_ENERGY_GENERATED">
+                <basicLookup point="Received kWh (Rate C kWh)" />
+            </attribute>
+            <attribute name="TOU_RATE_D_ENERGY_GENERATED">
+                <basicLookup point="Received kWh (Rate D kWh)" />
+            </attribute>
+            <!-- TODO: Missing attributes for: Sum kWh (Rate X kWh) -->
+            <attribute name="VOLTAGE_PHASE_A">
+                <basicLookup point="Volts Phase A" />
+            </attribute>
+            <attribute name="VOLTAGE_PHASE_B">
+                <basicLookup point="Volts Phase B" />
+            </attribute>
+            <attribute name="VOLTAGE_PHASE_C">
+                <basicLookup point="Volts Phase C" />
+            </attribute>
+            <attribute name="CURRENT_PHASE_A">
+                <basicLookup point="Amps Phase A"/>
+            </attribute>
+            <attribute name="CURRENT_PHASE_B">
+                <basicLookup point="Amps Phase B"/>
+            </attribute>
+            <attribute name="CURRENT_PHASE_C">
+                <basicLookup point="Amps Phase C"/>
+            </attribute>
+            <!-- TODO: Missing attribute for: Avg Power Factor -->
+        </attributes>
+    </pao>
+
+    <pao id="RFN_L2_SENTINEL" abstract="true" inherits="RFN_L1_SENTINEL">
+        <points>
+            <point type="Analog" offset="50">
+                <init>true</init>
+                <name>Delivered kVArh</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kVArh"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="161">
+                <init>true</init>
+                <name>Delivered Rate A kVArh</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kVArh"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="162">
+                <name>Delivered Rate B kVArh</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kVArh"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="163">
+                <name>Delivered Rate C kVArh</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kVArh"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="164">
+                <name>Delivered Rate D kVArh</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kVArh"/>
+                <decimalplaces value="3"/>
+            </point>
+
+            <point type="Analog" offset="7">
+                <init>true</init>
+                <name>Received kVArh</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kVArh"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="202">
+                <init>true</init>
+                <name>Received Rate A kVArh</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kVArh"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="203">
+                <name>Received Rate B kVArh</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kVArh"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="204">
+                <name>Received Rate C kVArh</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kVArh"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="205">
+                <name>Received Rate D kVArh</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kVArh"/>
+                <decimalplaces value="3"/>
+            </point>
+        </points>
+        <attributes>
+            <attribute name="KVARH">
+                <basicLookup point="Delivered kVArh" />
+            </attribute>
+          <!-- TODO: Missing attributes for:  Delivered Rate X kVArh -->
+          <!-- TODO: Missing attribute for:  Received kVArh -->
+          <!-- TODO: Missing attributes for:  Received Rate X kVArh -->
+        </attributes>
+    </pao>
+
+    <pao id="RFN_L3_SENTINEL" abstract="true" inherits="RFN_L2_SENTINEL">
+    </pao>
+
+    <pao id="RFN_L4_SENTINEL" abstract="true" inherits="RFN_L3_SENTINEL">
+        <points>
+            <point type="Analog" offset="229">
+                <name>Net Delivered kVARh</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kVArh"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="230">
+                <name>Rate A Net Delivered kVARh</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kVArh"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="231">
+                <name>Rate B Net Delivered kVARh</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kVArh"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="232">
+                <name>Rate C Net Delivered kVARh</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kVArh"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="233">
+                <name>Rate D Net Delivered kVARh</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kVArh"/>
+                <decimalplaces value="3"/>
+            </point>
+
+            <point type="Analog" offset="234">
+                <name>Net Received kVARh</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kVArh"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="235">
+                <name>Rate A Net Received kVARh</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kVArh"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="236">
+                <name>Rate B Net Received kVARh</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kVArh"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="237">
+                <name>Rate C Net Received kVARh</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kVArh"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="238">
+                <name>Rate D Net Received kVARh</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kVArh"/>
+                <decimalplaces value="3"/>
+            </point>
+        </points>
+        <attributes>
+            <attribute name="NET_DELIVERED_KVARH">
+                <basicLookup point="Net Delivered kVARh" />
+            </attribute>
+            <attribute name="RATE_A_NET_DELIVERED_KVARH">
+                <basicLookup point="Rate A Net Delivered kVARh" />
+            </attribute>
+            <attribute name="RATE_B_NET_DELIVERED_KVARH">
+                <basicLookup point="Rate B Net Delivered kVARh" />
+            </attribute>
+            <attribute name="RATE_C_NET_DELIVERED_KVARH">
+                <basicLookup point="Rate C Net Delivered kVARh" />
+            </attribute>
+            <attribute name="RATE_D_NET_DELIVERED_KVARH">
+                <basicLookup point="Rate D Net Delivered kVARh" />
+            </attribute>
+            <attribute name="NET_RECEIVED_KVARH">
+                <basicLookup point="Net Received kVARh" />
+            </attribute>
+            <attribute name="RATE_A_NET_RECEIVED_KVARH">
+                <basicLookup point="Rate A Net Received kVARh" />
+            </attribute>
+            <attribute name="RATE_B_NET_RECEIVED_KVARH">
+                <basicLookup point="Rate B Net Received kVARh" />
+            </attribute>
+            <attribute name="RATE_C_NET_RECEIVED_KVARH">
+                <basicLookup point="Rate C Net Received kVARh" />
+            </attribute>
+            <attribute name="RATE_D_NET_RECEIVED_KVARH">
+                <basicLookup point="Rate D Net Received kVARh" />
+            </attribute>
+        </attributes>
+    </pao>
+
+    <pao id="RFN430SL0" inherits="RFN_L0_SENTINEL">
+        <displayName>RFN-430SL0</displayName></pao>
+    <pao id="RFN430SL1" inherits="RFN_L1_SENTINEL">
+        <displayName>RFN-430SL1</displayName></pao>
+    <pao id="RFN430SL2" inherits="RFN_L2_SENTINEL">
+        <displayName>RFN-430SL2</displayName></pao>
+    <pao id="RFN430SL3" inherits="RFN_L3_SENTINEL">
+        <displayName>RFN-430SL3</displayName></pao>
+    <pao id="RFN430SL4" inherits="RFN_L4_SENTINEL">
+        <displayName>RFN-430SL4</displayName></pao>
 
 
     <pao id="RFN_POINT_CALCULATION_WATER" abstract="true">

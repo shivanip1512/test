@@ -47,7 +47,8 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
             PAOGroups.MCT420FL, PAOGroups.MCT420FD, PAOGroups.MCT420CL, PAOGroups.MCT420CD,
             PAOGroups.MCT440_2131B, PAOGroups.MCT440_2132B, PAOGroups.MCT440_2133B,  
             PAOGroups.RFWMETER,
-            PAOGroups.IPC410FL, PAOGroups.IPC420FD, PAOGroups.IPC430S4E, PAOGroups.IPC430SL
+            PAOGroups.IPC410FL, PAOGroups.IPC420FD, PAOGroups.IPC430S4E, PAOGroups.IPC430SL,
+            PAOGroups.RFN430SL0, PAOGroups.RFN430SL1, PAOGroups.RFN430SL2, PAOGroups.RFN430SL3, PAOGroups.RFN430SL4
 		},
 		{ 	//1 - DeviceMeterGroupEditorPanel
 			PAOGroups.ALPHA_A1, PAOGroups.ALPHA_PPLUS, PAOGroups.FULCRUM, PAOGroups.VECTRON, PAOGroups.QUANTUM, 
@@ -67,7 +68,8 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
             PAOGroups.MCT420FL, PAOGroups.MCT420FD, PAOGroups.MCT420CL, PAOGroups.MCT420CD,
             PAOGroups.MCT440_2131B, PAOGroups.MCT440_2132B, PAOGroups.MCT440_2133B,
             PAOGroups.RFWMETER,
-            PAOGroups.IPC410FL, PAOGroups.IPC420FD, PAOGroups.IPC430S4E, PAOGroups.IPC430SL
+            PAOGroups.IPC410FL, PAOGroups.IPC420FD, PAOGroups.IPC430S4E, PAOGroups.IPC430SL,
+            PAOGroups.RFN430SL0, PAOGroups.RFN430SL1, PAOGroups.RFN430SL2, PAOGroups.RFN430SL3, PAOGroups.RFN430SL4
 		},
       	{   //2 - CapBankController
          PAOGroups.CAPBANKCONTROLLER, PAOGroups.CBC_FP_2800, PAOGroups.DNP_CBC_6510, PAOGroups.CBC_EXPRESSCOM,

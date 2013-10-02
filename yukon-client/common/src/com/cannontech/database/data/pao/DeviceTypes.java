@@ -213,6 +213,12 @@ public interface DeviceTypes extends TypeBase
     
     public final static int WEATHER_LOCATION = DEVICE_OFFSET + 161;
 
+    public final static int RFN430SL0 = DEVICE_OFFSET + 162;
+    public final static int RFN430SL1 = DEVICE_OFFSET + 163;
+    public final static int RFN430SL2 = DEVICE_OFFSET + 164;
+    public final static int RFN430SL3 = DEVICE_OFFSET + 165;
+    public final static int RFN430SL4 = DEVICE_OFFSET + 166;
+
 	//all the possible text representation of each device type.
 	//If you want the string of any type, just access the zeroth element, example: STRING_CCU_710[0]
 	public static final String[] STRING_CCU_710 = {"CCU-710A", "CCU710A"};
