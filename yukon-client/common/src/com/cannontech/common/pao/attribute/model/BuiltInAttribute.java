@@ -336,7 +336,17 @@ public enum BuiltInAttribute implements Attribute {
                 POWER_FACTOR_PHASE_A,
                 POWER_FACTOR_PHASE_B,
                 POWER_FACTOR_PHASE_C,
-                SUM_KVARH_PER_INTERVAL
+                SUM_KVARH_PER_INTERVAL,
+                NET_DELIVERED_KVARH,
+                RATE_A_NET_DELIVERED_KVARH,
+                RATE_B_NET_DELIVERED_KVARH,
+                RATE_C_NET_DELIVERED_KVARH,
+                RATE_D_NET_DELIVERED_KVARH,
+                NET_RECEIVED_KVARH,
+                RATE_A_NET_RECEIVED_KVARH,
+                RATE_B_NET_RECEIVED_KVARH,
+                RATE_C_NET_RECEIVED_KVARH,
+                RATE_D_NET_RECEIVED_KVARH
                 );
         
         otherAttributes = ImmutableSet.of(
