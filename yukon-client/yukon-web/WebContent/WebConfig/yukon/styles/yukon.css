@@ -414,27 +414,11 @@ table.nowrap th,table.nowrap td {
 }
 
 .progressBarInner,div.progressBarInnerSuccess {
-	background: #3A7448;
-	filter: progid:dximagetransform.microsoft.gradient(startColorstr='#529252', endColorstr='#3A7448'); /*for IE */
-background: -webkit-gradient(linear, left top, left bottom, from(#3a7448), color-stop(0.1, #529252), color-stop(0.5, #3a7448), color-stop(0.9, #529252), to(#3a7448)); /* for webkit browsers */
-background: -webkit-linear-gradient(top, #3a7448, #3a7448 10%, #529252, #3a7448 50%, #529252 90%, #3a7448);
-
-	background: -moz-linear-gradient(top, #3a7448, #3a7448 10%, #529252, #3a7448 50%, #529252 90%, #3a7448);
-	background: -o-linear-gradient(top, #3a7448, #3a7448 10%, #529252, #3a7448 50%, #529252 90%, #3a7448);
-	background: -ms-linear-gradient(top, #3a7448, #3a7448 10%, #529252, #3a7448 50%, #529252 90%, #3a7448);
-	background: linear-gradient(top, #3a7448, #3a7448 10%, #529252, #3a7448 50%, #529252 90%, #3a7448); /* for firefox 3.6+ */
+	background: #009933;
 }
 
 .progressBarInnerFailure {
-	background: #8C0C10;
-	filter: progid:dximagetransform.microsoft.gradient(startColorstr='#BF0F12', endColorstr='#8C0C10'); /*for IE*/
-background: -webkit-gradient(linear, left top, left bottom, from(#8c0c10), color-stop(0.1, #bf0f12), color-stop(0.5, #8c0c10), color-stop(0.9, #bf0f12), to(#8c0c10)); /* for webkit browsers */
-background: -webkit-linear-gradient(top, #8c0c10, #8c0c10 10%, #bf0f12, #8c0c10 50%, #bf0f12 90%, #8c0c10);
-
-	background: -moz-linear-gradient(top, #8c0c10, #8c0c10 10%, #bf0f12, #8c0c10 50%, #bf0f12 90%, #8c0c10);
-	background: -o-linear-gradient(top, #8c0c10, #8c0c10 10%, #bf0f12, #8c0c10 50%, #bf0f12 90%, #8c0c10);
-	background: -ms-linear-gradient(top, #8c0c10, #8c0c10 10%, #bf0f12, #8c0c10 50%, #bf0f12 90%, #8c0c10);
-	background: linear-gradient(top, #8c0c10, #8c0c10 10%, #bf0f12, #8c0c10 50%, #bf0f12 90%, #8c0c10); /* for firefox 3.6+ */
+	background: #D14836;
 }
 
 .progressBarPercentComplete,.progressBarCompletedCount {

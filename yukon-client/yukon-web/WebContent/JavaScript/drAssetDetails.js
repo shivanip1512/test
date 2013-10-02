@@ -72,6 +72,8 @@ Yukon.DrAssetDetails = (function() {
 
     _pingDevices = function(event) {
         jQuery('#pingResults').show();
+        jQuery('.progressBarPercentComplete').text("0%");
+        jQuery('.progressBarInnerFailure,.progressBarInnerSuccess').width(0);
         var url = "pingDevices?assetId=" + _assetId;
         jQuery.ajax({
             url: url,
