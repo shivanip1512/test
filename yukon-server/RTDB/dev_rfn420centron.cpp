@@ -103,7 +103,7 @@ int Rfn420CentronDevice::executePutConfigDisplay(CtiRequestMsg *pReq, CtiCommand
                 dout << CtiTime() << " Device \"" << getName() << "\" - Invalid value (" << *configValue << ") for config key \"" << configKey << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
             }
 
-            return NoConfigData;
+            return ErrorInvalidConfigData;
         }
 
         config_display_metrics.push_back(*configValue);

@@ -374,6 +374,8 @@ enum YukonError_t
 
     ErrorDataMissing,
 
+    ErrorInvalidConfigData,
+
     FinalError
 };
 

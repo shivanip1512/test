@@ -210,6 +210,7 @@ static const ErrorLookup CtiErrors = boost::assign::map_list_of
     (ErrorPointLookupFailed,        error_info(ERRTYPESYSTEM,   "Failed to find a point for the given device."))
     (ErrorNeedsDateRangeReset,      error_info(ERRTYPESYSTEM,   "The device's date range must be reset to continue."))
     (ErrorDataMissing,              error_info(ERRTYPESYSTEM,   "Not enough data received from the device."))
+    (ErrorInvalidConfigData,        error_info(ERRTYPESYSTEM,   "Configuration data is invalid."))
     (UnknownError,                  error_info(ERRTYPESYSTEM,   "Unknown Error"))
     ;
 }

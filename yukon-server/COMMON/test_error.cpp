@@ -213,7 +213,8 @@ const std::vector<std::string> ErrorStrings = boost::assign::list_of
     ("Failed to find a point for the given device.")
     ("The device's date range must be reset to continue.")
     ("Not enough data received from the device.")
-    .repeat(66, "Unknown Error");
+    ("Configuration data is invalid.")
+    .repeat(65, "Unknown Error");
 
 BOOST_AUTO_TEST_CASE(test_GetErrorString)
 {

@@ -138,7 +138,7 @@ int RfnConsumerDevice::executePutConfigVoltageAveragingInterval( CtiRequestMsg  
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " Device \"" << getName() << "\" - Invalid value (" << *configValue << ") for config key \"" << configKey << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
 
-            return NoConfigData;
+            return ErrorInvalidConfigData;
         }
 
         configSettings.demandInterval = static_cast<unsigned>( *configValue );
@@ -161,7 +161,7 @@ int RfnConsumerDevice::executePutConfigVoltageAveragingInterval( CtiRequestMsg  
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " Device \"" << getName() << "\" - Invalid value (" << *configValue << ") for config key \"" << configKey << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
 
-            return NoConfigData;
+            return ErrorInvalidConfigData;
         }
 
         configSettings.loadProfileInterval = static_cast<unsigned>( *configValue );
@@ -273,7 +273,7 @@ int RfnConsumerDevice::executePutConfigDemandFreezeDay( CtiRequestMsg     * pReq
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " Device \"" << getName() << "\" - Invalid value (" << *configValue << ") for config key \"" << configKey << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
 
-            return NoConfigData;
+            return ErrorInvalidConfigData;
         }
 
         configFreezeDay = static_cast<unsigned>( *configValue );
