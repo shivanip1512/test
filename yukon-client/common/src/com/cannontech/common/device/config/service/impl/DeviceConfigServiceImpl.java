@@ -195,7 +195,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     
     @Override
     public CommandResultHolder sendConfig(YukonDevice device, LiteYukonUser user) throws Exception {
-        String commandString = "putconfig emetcon install all force";
+        String commandString = "putconfig emetcon install all";
         CommandResultHolder resultHolder = commandRequestExecutor.execute(device, commandString, DeviceRequestType.GROUP_DEVICE_CONFIG_SEND, user);
         return resultHolder;
     }
