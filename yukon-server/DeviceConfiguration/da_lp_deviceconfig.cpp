@@ -11,9 +11,11 @@ using std::endl;
 
 const int SecondsPerMinute = 60;
 
-DeviceConfigurationLoadProfileData::DeviceConfigurationLoadProfileData()
+DeviceConfigurationLoadProfileData::DeviceConfigurationLoadProfileData(Cti::Config::DeviceConfigSPtr deviceConfig,
+                                                                       boost::shared_ptr<DataAccessLoadProfile> table)
+    :   _deviceConfig(deviceConfig),
+        _lpTable(table)
 {
-
 }
 
 int DeviceConfigurationLoadProfileData::getLastIntervalDemandRate() const
@@ -65,12 +67,3 @@ bool DeviceConfigurationLoadProfileData::isChannelValid(int channel) const
     return _lpTable->isChannelValid(channel);
 }
 
-void DeviceConfigurationLoadProfileData::setDeviceConfig(DeviceConfigSPtr deviceConfig)
-{
-    _deviceConfig = deviceConfig;
-}
-
-void DeviceConfigurationLoadProfileData::setLpTable(boost::shared_ptr<DataAccessLoadProfile> lpTable)
-{
-    _lpTable = lpTable;
-}

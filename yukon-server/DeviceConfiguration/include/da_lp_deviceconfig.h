@@ -17,7 +17,8 @@ class IM_EX_CONFIG DeviceConfigurationLoadProfileData : public DataAccessLoadPro
         boost::shared_ptr<DataAccessLoadProfile> _lpTable;
 
     public:
-        DeviceConfigurationLoadProfileData();
+        DeviceConfigurationLoadProfileData(Cti::Config::DeviceConfigSPtr deviceConfig,
+                                           boost::shared_ptr<DataAccessLoadProfile> table);
 
         /* Interface functions */
         virtual int  getLastIntervalDemandRate() const;
@@ -25,9 +26,6 @@ class IM_EX_CONFIG DeviceConfigurationLoadProfileData : public DataAccessLoadPro
         virtual int  getVoltageDemandInterval() const;
         virtual int  getVoltageProfileRate() const;
         virtual bool isChannelValid(int channel) const;
-
-        void setDeviceConfig(Cti::Config::DeviceConfigSPtr deviceConfig);
-        void setLpTable(boost::shared_ptr<DataAccessLoadProfile> table);
 };
 
 }

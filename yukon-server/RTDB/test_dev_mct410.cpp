@@ -7,6 +7,7 @@
 #include "pt_accum.h"
 #include "pt_status.h"
 #include "devicetypes.h"
+#include "mgr_config.h"
 
 #include "boost_test_helpers.h"
 
@@ -16,6 +17,26 @@ using namespace Cti::Protocols;
 using std::string;
 using std::list;
 using std::vector;
+
+
+class test_ConfigManager : public CtiConfigManager
+{
+    Cti::Config::DeviceConfigSPtr   _config;
+
+public:
+
+    test_ConfigManager( Cti::Config::DeviceConfigSPtr config )
+        :   CtiConfigManager( config ),
+            _config( config )
+    {
+        // empty
+    }
+
+    virtual Cti::Config::DeviceConfigSPtr   fetchConfig( const long deviceID, const DeviceTypes deviceType )
+    {
+        return _config;
+    }
+};
 
 struct test_CtiDeviceCCU : CtiDeviceCCU
 {
@@ -2308,13 +2329,15 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
         test_DeviceConfig config;
 
-        mct410.changeDeviceConfig(Cti::Config::DeviceConfigSPtr(&config, null_deleter()));  //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
         config.insertValue("disconnectDemandThreshold", "2.71");
         config.insertValue("disconnectLoadLimitConnectDelay", "4");
         config.insertValue("disconnectMinutes", "7");
         config.insertValue("connectMinutes", "17");
         config.insertValue("reconnectButton", "true");
+
+        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&config, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+        mct410.setConfigManager(&cfgMgr);   // attach config manager to the deice so it can find the config
 
         CtiCommandParser parse("putconfig install all");
 
@@ -2353,13 +2376,15 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
         test_DeviceConfig config;
 
-        mct410.changeDeviceConfig(Cti::Config::DeviceConfigSPtr(&config, null_deleter()));  //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
         config.insertValue("disconnectDemandThreshold", "4.71");
         config.insertValue("disconnectLoadLimitConnectDelay", "3");
         config.insertValue("disconnectMinutes", "6");
         config.insertValue("connectMinutes", "18");
         config.insertValue("reconnectButton", "false");
+
+        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&config, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+        mct410.setConfigManager(&cfgMgr);   // attach config manager to the deice so it can find the config
 
         CtiCommandParser parse("putconfig install all");
 

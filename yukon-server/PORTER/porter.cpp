@@ -1408,7 +1408,7 @@ INT RefreshPorterRTDB(const CtiDBChangeMsg *pChg)
 
             DeviceManager.apply(attachRouteManagerToDevice, &RouteManager);
             DeviceManager.apply(attachPointManagerToDevice, &PorterPointManager);
-            ConfigManager.initialize(DeviceManager);
+            DeviceManager.apply(attachConfigManagerToDevice, &ConfigManager);
             DeviceManager.refreshGroupHierarchy();
             DeviceManager.apply(applyQueuedDevicePortMatchup, &PortManager);
         }
@@ -1417,12 +1417,12 @@ INT RefreshPorterRTDB(const CtiDBChangeMsg *pChg)
             const long chgid = pChg->getId();
 
             DeviceManager.refreshDeviceByID(chgid, pChg->getCategory(), pChg->getObjectType());
-            ConfigManager.refreshConfigForDeviceId(chgid);
 
             if( CtiDeviceSPtr pDev = DeviceManager.getDeviceByID(chgid) )
             {
                 pDev->setRouteManager(&RouteManager);
                 pDev->setPointManager(&PorterPointManager);
+                pDev->setConfigManager(&ConfigManager);
 
                 if( pDev->isGroup() ) //Doing this call here saves us a tiny bit of time! yay!
                 {

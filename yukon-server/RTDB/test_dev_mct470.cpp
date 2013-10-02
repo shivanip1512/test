@@ -4,6 +4,7 @@
 #include "devicetypes.h"
 #include "config_device.h"
 #include "boostutil.h"
+#include "mgr_config.h"
 
 #include <boost/assign/list_of.hpp>
 
@@ -640,6 +641,25 @@ struct test_DeviceConfig : public Cti::Config::DeviceConfig
     using DeviceConfig::insertValue;
 };
 
+class test_ConfigManager : public CtiConfigManager
+{
+    Cti::Config::DeviceConfigSPtr   _config;
+
+public:
+
+    test_ConfigManager( Cti::Config::DeviceConfigSPtr config )
+        :   CtiConfigManager( config ),
+            _config( config )
+    {
+        // empty
+    }
+
+    virtual Cti::Config::DeviceConfigSPtr   fetchConfig( const long deviceID, const DeviceTypes deviceType )
+    {
+        return _config;
+    }
+};
+
 
 BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 //{  Brace matching for BOOST_FIXTURE_TEST_SUITE
@@ -649,11 +669,13 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         test_DeviceConfig config;
 
-        mct.changeDeviceConfig(Cti::Config::DeviceConfigSPtr(&config, null_deleter()));  //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
         config.insertValue("tableReadInterval", "7");
         config.insertValue("tableType", "9");
         config.insertValue("serviceProviderId", "17");
+
+        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&config, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+        mct.setConfigManager(&cfgMgr);  // attach config manager to the deice so it can find the config
 
         CtiCommandParser parse("putconfig install precannedtable");
 
@@ -677,12 +699,14 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         test_DeviceConfig config;
 
-        mct.changeDeviceConfig(Cti::Config::DeviceConfigSPtr(&config, null_deleter()));  //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
         config.insertValue("tableReadInterval", "7");
         config.insertValue("tableType", "9");
         config.insertValue("serviceProviderId", "17");
         config.insertValue("meterNumber", "3");
+
+        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&config, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+        mct.setConfigManager(&cfgMgr);  // attach config manager to the deice so it can find the config
 
         CtiCommandParser parse("putconfig install precannedtable");
 
@@ -737,11 +761,13 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         test_DeviceConfig config;
 
-        mct.changeDeviceConfig(Cti::Config::DeviceConfigSPtr(&config, null_deleter()));  //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
         config.insertValue("tableReadInterval", "7");
         config.insertValue("tableType", "9");
         config.insertValue("serviceProviderId", "17");
+
+        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&config, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+        mct.setConfigManager(&cfgMgr);  // attach config manager to the deice so it can find the config
 
         CtiCommandParser parse("putconfig install precannedtable");
 
@@ -797,12 +823,14 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         test_DeviceConfig config;
 
-        mct.changeDeviceConfig(Cti::Config::DeviceConfigSPtr(&config, null_deleter()));  //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
         config.insertValue("tableReadInterval", "7");
         config.insertValue("tableType", "9");
         config.insertValue("serviceProviderId", "17");
         config.insertValue("meterNumber", "3");
+
+        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&config, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+        mct.setConfigManager(&cfgMgr);  // attach config manager to the deice so it can find the config
 
         CtiCommandParser parse("putconfig install precannedtable");
 
@@ -857,9 +885,11 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         test_DeviceConfig config;
 
-        mct.changeDeviceConfig(Cti::Config::DeviceConfigSPtr(&config, null_deleter()));  //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
         config.insertValue("enableDst", "true");
+
+        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&config, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+        mct.setConfigManager(&cfgMgr);  // attach config manager to the deice so it can find the config
 
         CtiCommandParser parse("putconfig install configbyte");
 
@@ -882,10 +912,12 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         test_DeviceConfig config;
 
-        mct.changeDeviceConfig(Cti::Config::DeviceConfigSPtr(&config, null_deleter()));  //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
         config.insertValue("enableDst", "true");
         config.insertValue("electronicMeter", "5");
+
+        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&config, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+        mct.setConfigManager(&cfgMgr);  // attach config manager to the deice so it can find the config
 
         mct.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration, 0x51);
 
@@ -910,10 +942,12 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         test_DeviceConfig config;
 
-        mct.changeDeviceConfig(Cti::Config::DeviceConfigSPtr(&config, null_deleter()));  //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
         config.insertValue("enableDst", "true");
         config.insertValue("electronicMeter", "5");
+
+        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&config, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+        mct.setConfigManager(&cfgMgr);  // attach config manager to the deice so it can find the config
 
         CtiCommandParser parse("putconfig install configbyte");
 
@@ -959,10 +993,12 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         test_DeviceConfig config;
 
-        mct.changeDeviceConfig(Cti::Config::DeviceConfigSPtr(&config, null_deleter()));  //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
         config.insertValue("enableDst", "true");
         config.insertValue("electronicMeter", "5");
+
+        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&config, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+        mct.setConfigManager(&cfgMgr);  // attach config manager to the deice so it can find the config
 
         mct.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration, 0x40);
 
@@ -1010,9 +1046,11 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         test_DeviceConfig config;
 
-        mct.changeDeviceConfig(Cti::Config::DeviceConfigSPtr(&config, null_deleter()));  //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
         config.insertValue("enableDst", "true");
+
+        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&config, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+        mct.setConfigManager(&cfgMgr);  // attach config manager to the deice so it can find the config
 
         mct.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration, 0x51);
 
@@ -1037,9 +1075,11 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         test_DeviceConfig config;
 
-        mct.changeDeviceConfig(Cti::Config::DeviceConfigSPtr(&config, null_deleter()));  //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
         config.insertValue("enableDst", "true");
+
+        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&config, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+        mct.setConfigManager(&cfgMgr);  // attach config manager to the deice so it can find the config
 
         CtiCommandParser parse("putconfig install configbyte");
 
@@ -1085,9 +1125,11 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         test_DeviceConfig config;
 
-        mct.changeDeviceConfig(Cti::Config::DeviceConfigSPtr(&config, null_deleter()));  //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
         config.insertValue("enableDst", "true");
+
+        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&config, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+        mct.setConfigManager(&cfgMgr);  // attach config manager to the deice so it can find the config
 
         mct.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration, 0x40);
 
@@ -1164,7 +1206,9 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         config.insertValue("enableDst", "false");
         config.insertValue("electronicMeter", "3");
 
-        mct.changeDeviceConfig(Cti::Config::DeviceConfigSPtr(&config, null_deleter()));  //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&config, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+        mct.setConfigManager(&cfgMgr);  // attach config manager to the deice so it can find the config
 
         CtiCommandParser parse("putvalue ied reset");
 
@@ -1278,7 +1322,9 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         config.insertValue("enableDst", "false");
         config.insertValue("electronicMeter", "1");
 
-        mct.changeDeviceConfig(Cti::Config::DeviceConfigSPtr(&config, null_deleter()));  //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&config, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+        mct.setConfigManager(&cfgMgr);  // attach config manager to the deice so it can find the config
 
         CtiCommandParser parse("putvalue ied reset");
 
@@ -1392,7 +1438,9 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         config.insertValue("enableDst", "false");
         config.insertValue("electronicMeter", "2");
 
-        mct.changeDeviceConfig(Cti::Config::DeviceConfigSPtr(&config, null_deleter()));  //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&config, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+        mct.setConfigManager(&cfgMgr);  // attach config manager to the deice so it can find the config
 
         CtiCommandParser parse("putvalue ied reset");
 
@@ -1506,7 +1554,9 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         config.insertValue("enableDst", "false");
         config.insertValue("electronicMeter", "8");
 
-        mct.changeDeviceConfig(Cti::Config::DeviceConfigSPtr(&config, null_deleter()));  //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&config, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+        mct.setConfigManager(&cfgMgr);  // attach config manager to the deice so it can find the config
 
         CtiCommandParser parse("putvalue ied reset");
 
@@ -1594,7 +1644,9 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         config.insertValue("enableDst", "false");
         config.insertValue("electronicMeter", "5");
 
-        mct.changeDeviceConfig(Cti::Config::DeviceConfigSPtr(&config, null_deleter()));  //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&config, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+        mct.setConfigManager(&cfgMgr);  // attach config manager to the deice so it can find the config
 
         CtiCommandParser parse("putvalue ied reset");
 
@@ -1682,7 +1734,9 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         config.insertValue("enableDst", "false");
         config.insertValue("electronicMeter", "4");
 
-        mct.changeDeviceConfig(Cti::Config::DeviceConfigSPtr(&config, null_deleter()));  //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&config, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+        mct.setConfigManager(&cfgMgr);  // attach config manager to the deice so it can find the config
 
         CtiCommandParser parse("putvalue ied reset");
 
@@ -1770,7 +1824,9 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         config.insertValue("enableDst", "false");
         config.insertValue("electronicMeter", "6");
 
-        mct.changeDeviceConfig(Cti::Config::DeviceConfigSPtr(&config, null_deleter()));  //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&config, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+        mct.setConfigManager(&cfgMgr);  // attach config manager to the deice so it can find the config
 
         CtiCommandParser parse("putvalue ied reset");
 

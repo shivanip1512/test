@@ -53,9 +53,6 @@ private:
 
     CtiTime _iedTime;
 
-    boost::shared_ptr<Cti::DataAccessLoadProfile> _deviceConfigLp;
-    boost::shared_ptr<Cti::DataAccessLoadProfile> getDeviceConfigLp(Config::DeviceConfigSPtr deviceConfig);
-
     enum ChannelConfiguration
     {
         NotUsed,
@@ -544,7 +541,6 @@ public:
     Mct470Device &operator=( const Mct470Device &aRef );
 
     virtual ULONG calcNextLPScanTime( void );
-    virtual void changeDeviceConfig(Config::DeviceConfigSPtr config);
 
     static point_info decodePulseAccumulator(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter);
 };

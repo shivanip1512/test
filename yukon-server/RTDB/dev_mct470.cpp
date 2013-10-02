@@ -17,6 +17,7 @@
 #include <string>
 
 #include <boost/assign/list_of.hpp>
+#include <boost/make_shared.hpp>
 
 using namespace Cti::Protocols;
 using namespace Cti::Config;
@@ -707,40 +708,15 @@ void Mct470Device::sendBackground(const OUTMESS &TemplateOutMessage, OutMessageL
 
 boost::shared_ptr<DataAccessLoadProfile> Mct470Device::getLoadProfile()
 {
-    boost::shared_ptr<DataAccessLoadProfile> lp;
+    boost::shared_ptr<DataAccessLoadProfile> lp = Inherited::getLoadProfile();
     Cti::Config::DeviceConfigSPtr deviceConfig = getDeviceConfig();
 
     if (deviceConfig)
     {
-        lp = getDeviceConfigLp(deviceConfig);
-    }
-    else
-    {
-        lp = Inherited::getLoadProfile();
+        return boost::make_shared<DeviceConfigurationLoadProfileData>(deviceConfig, lp);
     }
 
     return lp;
-}
-
-boost::shared_ptr<DataAccessLoadProfile> Mct470Device::getDeviceConfigLp(Cti::Config::DeviceConfigSPtr deviceConfig)
-{
-    if (!_deviceConfigLp)
-    {
-        DeviceConfigurationLoadProfileData* loadProfileData = new DeviceConfigurationLoadProfileData();
-        loadProfileData->setDeviceConfig(deviceConfig);
-        loadProfileData->setLpTable(Inherited::getLoadProfile());
-
-        _deviceConfigLp = boost::shared_ptr<DataAccessLoadProfile>(loadProfileData);
-    }
-
-    return _deviceConfigLp;
-}
-
-void Mct470Device::changeDeviceConfig(Cti::Config::DeviceConfigSPtr config)
-{
-    //clear it out to be reloaded on the next getter call.
-    _deviceConfigLp = boost::shared_ptr<DataAccessLoadProfile>();
-    setDeviceConfig(config);
 }
 
 //  zero-based channel offset, returns interval length in seconds

@@ -2,11 +2,9 @@
 
 #include "dllbase.h"
 #include "config_device.h"
+#include "devicetypes.h"
 
 #include <boost/ptr_container/ptr_map.hpp>
-
-
-class CtiDeviceManager;
 
 
 
@@ -16,14 +14,14 @@ private:
 
     typedef boost::ptr_map<long, Cti::Config::Configuration>            ConfigurationMap;
     typedef boost::ptr_map<long, Cti::Config::ConfigurationCategory>    CategoryMap;
+    typedef std::map<long, long>                                        DeviceAssignmentMap;
 
-    bool                isInitialized;
-    CtiDeviceManager  * _devMgr;
+    typedef std::map<long, std::map<DeviceTypes, Cti::Config::DeviceConfigSPtr> >   DeviceConfigCache;
 
     ConfigurationMap    _configurations;
     CategoryMap         _categories;
-
-    void setDeviceManager( CtiDeviceManager & mgr );
+    DeviceAssignmentMap _deviceAssignments;
+    DeviceConfigCache   _cache;
 
     void loadAllConfigs();
     void loadConfig( const long configID );
@@ -31,26 +29,28 @@ private:
 
     void loadAllCategoryItems();
     void loadCategoryItems( const long categoryID );
-    void executeLoadItems ( const std::string & sql );
+    void executeLoadItems( const std::string & sql );
 
-    void assignAllConfigsToDevices();
-    void updateDevicesAssignedToConfig( const long configID );
-    void updateConfigsContainingCategory( const long categoryID );
-    void updateConfigForDevice( const long deviceID );
-    void updateDeviceConfigurationAssignment( const long configID, const long deviceID );
+    void loadAllDeviceAssignments();
+    void loadDeviceAssignment( const long deviceID );
+    void executeLoadDeviceAssignments( const std::string & sql );
+
+    Cti::Config::DeviceConfigSPtr   buildConfig( const long configID, const DeviceTypes deviceType );
+
+protected:
+
+    CtiConfigManager( Cti::Config::DeviceConfigSPtr config );
 
 public:
 
     CtiConfigManager();
     ~CtiConfigManager();
 
-    void initialize( CtiDeviceManager & mgr );
-
     void processDBUpdate( const long            ID,
                           const std::string &   category,
                           const std::string &   objectType,
                           const int             updateType);
 
-    void refreshConfigForDeviceId( const long deviceid );
+    virtual Cti::Config::DeviceConfigSPtr   fetchConfig( const long deviceID, const DeviceTypes deviceType );
 };
 

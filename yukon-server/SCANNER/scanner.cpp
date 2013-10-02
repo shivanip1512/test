@@ -1219,8 +1219,6 @@ void LoadScannableDevices(void *ptr)
                 ScannerDeviceManager.refreshAllDevices();
             }
 
-            ConfigManager.initialize(ScannerDeviceManager);
-
             stop = stop.now();
 
             if(stop.seconds() - start.seconds() > 5 || ScannerDebugLevel & SCANNER_DEBUG_DBRELOAD)
@@ -1254,12 +1252,14 @@ void LoadScannableDevices(void *ptr)
                 }
 
                 pBase->setPointManager(&ScannerPointManager);
+                pBase->setConfigManager(&ConfigManager);
             }
         }
         else
         {
             ScannerDeviceManager.apply(applyValidateScanTimes, (void*)bforce);
             ScannerDeviceManager.apply(attachPointManagerToDevice, &ScannerPointManager);
+            ScannerDeviceManager.apply(attachConfigManagerToDevice, &ConfigManager);
         }
     }
 

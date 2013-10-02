@@ -7,6 +7,7 @@
 #include "pt_status.h"
 #include "utility.h"  //  for delete_container
 #include "config_device.h"
+#include "mgr_config.h"
 #include "boost_test_helpers.h"
 
 #include <boost/assign/list_of.hpp>
@@ -15,6 +16,26 @@ using namespace Cti::Protocols;
 
 using std::string;
 using std::vector;
+
+
+class test_ConfigManager : public CtiConfigManager
+{
+    Cti::Config::DeviceConfigSPtr   _config;
+
+public:
+
+    test_ConfigManager( Cti::Config::DeviceConfigSPtr config )
+        :   CtiConfigManager( config ),
+            _config( config )
+    {
+        // empty
+    }
+
+    virtual Cti::Config::DeviceConfigSPtr   fetchConfig( const long deviceID, const DeviceTypes deviceType )
+    {
+        return _config;
+    }
+};
 
 struct test_Mct440_213xBDevice : Cti::Devices::Mct440_213xBDevice
 {
@@ -3177,9 +3198,11 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
 
         test_cfg.insertValue("defaultRate", "A");
 
+        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&test_cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
         test_Mct440_213xB test_dev;
 
-        test_dev.changeDeviceConfig(Cti::Config::DeviceConfigSPtr(&test_cfg, null_deleter())); // null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+        test_dev.setConfigManager(&cfgMgr);   // attach config manager to the deice so it can find the config
 
         CtiCommandParser parse("installvalue tou force");
         CtiOutMessage *outMessage = CTIDBG_new OUTMESS;

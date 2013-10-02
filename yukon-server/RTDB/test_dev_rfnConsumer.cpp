@@ -4,6 +4,7 @@
 #include "dev_rfnConsumer.h"
 #include "cmd_rfn.h"
 #include "config_data_rfn.h"
+#include "mgr_config.h"
 #include "boost_test_helpers.h"
 
 using namespace Cti::Devices;
@@ -46,6 +47,24 @@ struct test_DeviceConfig : public DeviceConfig
     using DeviceConfig::insertValue;
 };
 
+class test_ConfigManager : public CtiConfigManager
+{
+    Cti::Config::DeviceConfigSPtr   _config;
+
+public:
+
+    test_ConfigManager( Cti::Config::DeviceConfigSPtr config )
+        :   CtiConfigManager( config ),
+            _config( config )
+    {
+        // empty
+    }
+
+    virtual Cti::Config::DeviceConfigSPtr   fetchConfig( const long deviceID, const DeviceTypes deviceType )
+    {
+        return _config;
+    }
+};
 
 const CtiTime execute_time( CtiDate( 27, 8, 2013 ) , 15 );
 const CtiTime decode_time ( CtiDate( 27, 8, 2013 ) , 16 );
@@ -382,7 +401,9 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnConsumer_putconfig_tou_install )
     // default rate
     cfg.insertValue( RfnStrings::DefaultTouRate,        "B" );
 
-    dut.changeDeviceConfig(Cti::Config::DeviceConfigSPtr(&cfg, null_deleter())); // null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+    test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+    dut.setConfigManager(&cfgMgr);  // attach config manager to the deice so it can find the config
 
     {
         CtiCommandParser parse("putconfig install tou");
