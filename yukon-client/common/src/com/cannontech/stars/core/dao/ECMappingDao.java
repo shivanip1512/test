@@ -252,7 +252,7 @@ public interface ECMappingDao {
     public List<Integer> getItemIdsForEnergyCompanyAndCategory(int energycompanyId, EcMappingCategory category);
 
     /**
-     * Removed the user from operator login list.
+     * Removes the user from operator login list.
      */
     public void deleteEnergyCompanyOperatorLoginListMapping(int userId, int energyCompanyId);
 }
