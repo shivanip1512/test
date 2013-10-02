@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     9/19/2013 5:05:00 PM                         */
+/* Created on:     10/2/2013 12:18:20 PM                        */
 /*==============================================================*/
 
 
@@ -5608,7 +5608,7 @@ create table JOBPROPERTY (
    JobPropertyID        numeric              not null,
    JobID                int                  not null,
    name                 varchar(100)         not null,
-   value                varchar(1000)        not null,
+   value                varchar(4000)        not null,
    constraint PK_JOBPROPERTY primary key (JobPropertyID)
 )
 go

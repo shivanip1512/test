@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     9/19/2013 5:04:08 PM                         */
+/* Created on:     10/2/2013 12:16:40 PM                        */
 /*==============================================================*/
 
 
@@ -5316,7 +5316,7 @@ create table JOBPROPERTY  (
    JobPropertyID        NUMBER                          not null,
    JobID                INTEGER                         not null,
    name                 VARCHAR2(100)                   not null,
-   value                VARCHAR2(1000)                  not null,
+   value                VARCHAR2(4000)                  not null,
    constraint PK_JOBPROPERTY primary key (JobPropertyID)
 );
 

@@ -10,6 +10,11 @@ INSERT INTO YukonRoleProperty VALUES (-90044,-900,'Asset Availability','false','
 INSERT INTO YukonRoleProperty VALUES(-20020,-200,'Network Manager Access','false','Controls access to Network Manager.');
 /* End YUK-12484*/
 
+/* Start YUK-12305 */
+ALTER TABLE JobProperty
+ALTER COLUMN Value VARCHAR(4000) NOT NULL;
+/* End YUK-12305 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
