@@ -45,9 +45,9 @@ public enum RfnManufacturerModel {
     
     RFN_430SL0(PaoType.RFN430SL0, "ITRN", "SENTINEL-L0"),
     RFN_430SL1(PaoType.RFN430SL1, "ITRN", "SENTINEL-L1"),
-    RFN_430SL2(PaoType.RFN430SL1, "ITRN", "SENTINEL-L2"),
-    RFN_430SL3(PaoType.RFN430SL1, "ITRN", "SENTINEL-L3"),
-    RFN_430SL4(PaoType.RFN430SL1, "ITRN", "SENTINEL-L4"),
+    RFN_430SL2(PaoType.RFN430SL2, "ITRN", "SENTINEL-L2"),
+    RFN_430SL3(PaoType.RFN430SL3, "ITRN", "SENTINEL-L3"),
+    RFN_430SL4(PaoType.RFN430SL4, "ITRN", "SENTINEL-L4"),
     ;
     
     private PaoType type;
