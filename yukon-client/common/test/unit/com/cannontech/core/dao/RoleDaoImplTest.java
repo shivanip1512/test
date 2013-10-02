@@ -1,12 +1,10 @@
 package com.cannontech.core.dao;
 
-import static org.junit.Assert.assertTrue;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.Ignore;
 
 import com.cannontech.core.dao.impl.RoleDaoImpl;
 import com.cannontech.core.roleproperties.YukonRole;
@@ -14,6 +12,7 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 
+@Ignore
 public class RoleDaoImplTest {
 
     private RoleDaoImpl roleDao;
