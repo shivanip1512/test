@@ -2047,9 +2047,32 @@ INT Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
     }
     else if( parse.isKeyValid(str_daily_read) )
     {
+        if( parse.isKeyValid("daily_read_cancel") )
+        {
+            std::auto_ptr<CtiReturnMsg> ReturnMsg(
+                new CtiReturnMsg(getID(), OutMessage->Request.CommandStr));
+
+            ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
+
+            if( InterlockedExchange( &_daily_read_info.request.in_progress, false) )
+            {
+                ReturnMsg->setResultString(getName() + " / Daily read request cancelled\n");
+            }
+            else
+            {
+                ReturnMsg->setResultString(getName() + " / No active daily read requests to cancel\n");
+            }
+
+            retMsgHandler( OutMessage->Request.CommandStr, NoError, ReturnMsg.release(), vgList, retList );
+
+            delete OutMessage;
+            OutMessage = 0;
+
+            return NoError;
+        }
         //  if a request is already in progress and we're not submitting a continuation/retry
-        if( InterlockedCompareExchange( &_daily_read_info.request.in_progress, true, false) &&
-            _daily_read_info.request.user_id != pReq->UserMessageId() )
+        else if( InterlockedCompareExchange( &_daily_read_info.request.in_progress, true, false)
+                 && _daily_read_info.request.user_id != pReq->UserMessageId() )
         {
             string temp = getName() + " / Daily read request already in progress\n";
 
@@ -3399,125 +3422,133 @@ INT Mct410Device::decodeGetValueDailyRead(const INMESS *InMessage, CtiTime &Time
 
         if( _daily_read_info.request.type == daily_read_info_t::Request_MultiDay )
         {
-            boost::optional<point_info> kwh;
-            unsigned channel = 0;
-
-            //  I have to process the readings newest-to-oldest, but I want to send them oldest-to-newest
-            std::stack<point_info> daily_readings;
-
-            for( unsigned day = 0; day < 6; ++day )
+            if( ! InterlockedCompareExchange(&_daily_read_info.request.in_progress, false, false)
+                || _daily_read_info.request.user_id != InMessage->Return.UserID )
             {
-                const unsigned char * const pos = DSt->Message + (day * 2) + (kwh ? 1 : 0);
+                resultString = getName() + " / Daily read request cancelled\n";
+            }
+            else
+            {
+                boost::optional<point_info> kwh;
+                unsigned channel = 0;
 
-                bool bad_delta = ((pos[0] & 0x3f == 0x3f) && pos[1] == 0xfa);
+                //  I have to process the readings newest-to-oldest, but I want to send them oldest-to-newest
+                std::stack<point_info> daily_readings;
 
-                if( kwh || bad_delta )
+                for( unsigned day = 0; day < 6; ++day )
                 {
-                    //  Read the channel out of the high bits of the delta if we haven't already
-                    if( !channel )
+                    const unsigned char * const pos = DSt->Message + (day * 2) + (kwh ? 1 : 0);
+
+                    bool bad_delta = ((pos[0] & 0x3f == 0x3f) && pos[1] == 0xfa);
+
+                    if( kwh || bad_delta )
                     {
-                        channel = 1 + ((*pos & 0xc0) >> 6);
+                        //  Read the channel out of the high bits of the delta if we haven't already
+                        if( !channel )
+                        {
+                            channel = 1 + ((*pos & 0xc0) >> 6);
 
-                        setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DailyReadInterestChannel, channel);
-                    }
+                            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DailyReadInterestChannel, channel);
+                        }
 
-                    point_info delta = getData(pos, 2, ValueType_AccumulatorDelta);
+                        point_info delta = getData(pos, 2, ValueType_AccumulatorDelta);
 
-                    if( ! kwh || delta.quality != NormalQuality )
-                    {
-                        //  This is a bad delta - put it on the list unmodified
-                        daily_readings.push(delta);
+                        if( ! kwh || delta.quality != NormalQuality )
+                        {
+                            //  This is a bad delta - put it on the list unmodified
+                            daily_readings.push(delta);
+                        }
+                        else
+                        {
+                            if( kwh->quality == NormalQuality )
+                            {
+                                if( kwh->value < delta.value  )
+                                {
+                                    kwh->value = 0;
+                                    kwh->quality = OverflowQuality;
+                                    kwh->description = "Underflow";
+                                }
+                                else
+                                {
+                                    kwh->value -= delta.value;
+                                }
+                            }
+
+                            daily_readings.push(*kwh);
+                        }
                     }
                     else
                     {
-                        if( kwh->quality == NormalQuality )
-                        {
-                            if( kwh->value < delta.value  )
-                            {
-                                kwh->value = 0;
-                                kwh->quality = OverflowQuality;
-                                kwh->description = "Underflow";
-                            }
-                            else
-                            {
-                                kwh->value -= delta.value;
-                            }
-                        }
+                        //  get the un-rounded data, we'll round it when we send the pointdata
+                        kwh = Mct4xxDevice::decodePulseAccumulator(pos, 3, 0);
 
                         daily_readings.push(*kwh);
                     }
                 }
+
+                if( channel != _daily_read_info.request.channel )
+                {
+                    resultString  = getName() + " / Invalid channel returned by daily read ";
+                    resultString += "(" + CtiNumStr(channel) + ", expecting " + CtiNumStr(_daily_read_info.request.channel) + ")";
+
+                    status = ErrorInvalidChannel;
+                }
                 else
                 {
-                    //  get the un-rounded data, we'll round it when we send the pointdata
-                    kwh = Mct4xxDevice::decodePulseAccumulator(pos, 3, 0);
+                    //  we reset the retry count any time there's a success
+                    _daily_read_info.request.multi_day_retries = -1;
 
-                    daily_readings.push(*kwh);
-                }
-            }
-
-            if( channel != _daily_read_info.request.channel )
-            {
-                resultString  = getName() + " / Invalid channel returned by daily read ";
-                resultString += "(" + CtiNumStr(channel) + ", expecting " + CtiNumStr(_daily_read_info.request.channel) + ")";
-
-                status = ErrorInvalidChannel;
-            }
-            else
-            {
-                //  we reset the retry count any time there's a success
-                _daily_read_info.request.multi_day_retries = -1;
-
-                while( !daily_readings.empty() )
-                {
-                    point_info pi = daily_readings.top();
-
-                    if( isMct410(getType()) )
+                    while( !daily_readings.empty() )
                     {
-                        //  round down to make this match the MCT-410's normal kWh readings
-                        pi.value -= static_cast<long>(pi.value) % 2;
+                        point_info pi = daily_readings.top();
+
+                        if( isMct410(getType()) )
+                        {
+                            //  round down to make this match the MCT-410's normal kWh readings
+                            pi.value -= static_cast<long>(pi.value) % 2;
+                        }
+
+                        insertPointDataReport(PulseAccumulatorPointType, _daily_read_info.request.channel, ReturnMsg,
+                                              pi, consumption_pointname, CtiTime(_daily_read_info.request.begin + 1),  //  add on 24 hours - end of day
+                                              0.1, TAG_POINT_MUST_ARCHIVE);
+
+                        ++_daily_read_info.request.begin;
+
+                        daily_readings.pop();
                     }
 
-                    insertPointDataReport(PulseAccumulatorPointType, _daily_read_info.request.channel, ReturnMsg,
-                                          pi, consumption_pointname, CtiTime(_daily_read_info.request.begin + 1),  //  add on 24 hours - end of day
-                                          0.1, TAG_POINT_MUST_ARCHIVE);
+                    if( _daily_read_info.request.begin < _daily_read_info.request.end )
+                    {
+                        string request_str = "getvalue daily read ";
 
-                    ++_daily_read_info.request.begin;
+                        request_str += "channel " + CtiNumStr(_daily_read_info.request.channel)
+                                            + " " + printDate(_daily_read_info.request.begin + 1)
+                                            + " " + printDate(_daily_read_info.request.end);
 
-                    daily_readings.pop();
-                }
+                        if( strstr(InMessage->Return.CommandStr, " noqueue") )  request_str += " noqueue";
 
-                if( _daily_read_info.request.begin < _daily_read_info.request.end )
-                {
-                    string request_str = "getvalue daily read ";
+                        expectMore = true;
+                        CtiRequestMsg newReq(getID(),
+                                             request_str,
+                                             InMessage->Return.UserID,
+                                             InMessage->Return.GrpMsgID,
+                                             InMessage->Return.RouteID,
+                                             selectInitialMacroRouteOffset(InMessage->Return.RouteID),
+                                             0,
+                                             0,
+                                             InMessage->Priority);
 
-                    request_str += "channel " + CtiNumStr(_daily_read_info.request.channel)
-                                        + " " + printDate(_daily_read_info.request.begin + 1)
-                                        + " " + printDate(_daily_read_info.request.end);
+                        newReq.setConnectionHandle((void *)InMessage->Return.Connection);
 
-                    if( strstr(InMessage->Return.CommandStr, " noqueue") )  request_str += " noqueue";
+                        //  same UserMessageID, no need to reset the in_progress flag
+                        beginExecuteRequest(&newReq, CtiCommandParser(newReq.CommandString()), vgList, retList, outList);
+                    }
+                    else
+                    {
+                        resultString += "Multi-day daily read request complete\n";
 
-                    expectMore = true;
-                    CtiRequestMsg newReq(getID(),
-                                         request_str,
-                                         InMessage->Return.UserID,
-                                         InMessage->Return.GrpMsgID,
-                                         InMessage->Return.RouteID,
-                                         selectInitialMacroRouteOffset(InMessage->Return.RouteID),
-                                         0,
-                                         0,
-                                         InMessage->Priority);
-
-                    newReq.setConnectionHandle((void *)InMessage->Return.Connection);
-
-                    //  same UserMessageID, no need to reset the in_progress flag
-                    beginExecuteRequest(&newReq, CtiCommandParser(newReq.CommandString()), vgList, retList, outList);
-                }
-                else
-                {
-                    resultString += "Multi-day daily read request complete\n";
-
-                    InterlockedExchange(&_daily_read_info.request.in_progress, false);
+                        InterlockedExchange(&_daily_read_info.request.in_progress, false);
+                    }
                 }
             }
         }

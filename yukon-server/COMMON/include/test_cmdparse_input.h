@@ -182,14 +182,15 @@ std::string inputStrings[] = {
 "getvalue daily read detail channel 3",
 "getvalue daily read",
 "getvalue daily reads",
+"getvalue daily read cancel",
 "getvalue daily reads 12/27/2009 12/27/2011",
 "getconfig centron",
 "getconfig centron ratio",
 "getconfig centron parameters",
 "putconfig emetcon centron display 5x1 test 0s errors disable",
 "putconfig emetcon centron ratio 40 display 5x1 test 0s errors disable",
-"putconfig emetcon centron display 4x1 test 1s errors enable",
 //  170
+"putconfig emetcon centron display 4x1 test 1s errors enable",
 "putconfig emetcon centron ratio 60 display 4x1 test 1s errors enable",
 "putconfig emetcon centron display 4x10 test 7s errors enable",
 "putconfig emetcon centron ratio 200 display 4x10 test 7s errors enable",
@@ -199,8 +200,8 @@ std::string inputStrings[] = {
 "putconfig emetcon centron ratio 40 display 5x1 test 3s errors disable",
 "putconfig emetcon centron ratio 400 display 5x1 test 0s errors disable",
 "putconfig emetcon centron display 5x1 test 0s",
-"putconfig emetcon centron display 5x1 errors enable",
 //  180
+"putconfig emetcon centron display 5x1 errors enable",
 "putconfig emetcon centron test 0 errors enable",
 "putconfig emetcon centron ratio 40",
 "putconfig emetcon centron ratio 10 display 4x5 test 5 errors disable",
@@ -211,8 +212,8 @@ std::string inputStrings[] = {
 "getconfig meter ratio",
 "getconfig meter parameters",
 "putconfig emetcon parameters display 5x1 test 0s errors disable",
-"putconfig emetcon parameters ratio 40 display 5x1 test 0s errors disable",
 //  190
+"putconfig emetcon parameters ratio 40 display 5x1 test 0s errors disable",
 "putconfig emetcon parameters display 4x1 test 1s errors enable",
 "putconfig emetcon parameters ratio 60 display 4x1 test 1s errors enable",
 "putconfig emetcon parameters display 4x10 test 7s errors enable",
@@ -222,8 +223,8 @@ std::string inputStrings[] = {
 "putconfig emetcon parameters display 5x1 test 3s errors disable",
 "putconfig emetcon parameters ratio 40 display 5x1 test 3s errors disable",
 "putconfig emetcon parameters ratio 400 display 5x1 test 0s errors disable",
-"putconfig emetcon parameters display 5x1 test 0s",
 //  200
+"putconfig emetcon parameters display 5x1 test 0s",
 "putconfig emetcon parameters display 5x1 errors enable",
 "putconfig emetcon parameters test 0 errors enable",
 "putconfig emetcon parameters ratio 40",
@@ -233,8 +234,8 @@ std::string inputStrings[] = {
 "putconfig emetcon parameters ratio 25 display 6x1 test 10 errors disable",
 "putconfig emetcon autoreconnect enable",
 "putconfig emetcon autoreconnect disable",
-"getvalue kwh update timeout 1800 select group '/Meters/Collection/'Test Group''",
 //  210
+"getvalue kwh update timeout 1800 select group '/Meters/Collection/'Test Group''",
 "control sa305 shed 30m update",
 "control sa205 shed 30m update",
 "putconfig emetcon parameters ratio 25 lcd cycle time 13 disconnect display disable",
@@ -244,8 +245,8 @@ std::string inputStrings[] = {
 "putconfig emetcon parameters lcd cycle time 13 disconnect display enable lcd display digits 5x1",
 "putconfig emetcon parameters lcd cycle time 13 disconnect display enable lcd display digits 6x1",
 "putconfig emetcon parameters lcd cycle time 13 disconnect display enable lcd display digits 7x1",
-"getconfig configuration",
 //  220
+"getconfig configuration",
 "putconfig xcom data 'Offpeak rate:6.5*CENTSSIGN*/kWh' msgpriority 7 timeout 150 min",
 "putconfig xcom data 'Offpeak rate:6.5*C*/kWh' msgpriority 7 timeout 150 min",
 };

@@ -434,9 +434,10 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
     //  getvalue daily read channel n 12/12/2007 12/27/2007
     //  getvalue daily read detail 12/12/2007
     //  getvalue daily read detail channel n 12/12/2007
+    //  getvalue daily read cancel
     //  getvalue daily reads
     //  getvalue daily reads 12/12/2007 12/27/2007
-    static const boost::regex  re_daily_read(CtiString("daily read(s)?( detail)?( channel ") + str_num + CtiString(")?") + CtiString("( ") + str_daterange + CtiString(")?"));
+    static const boost::regex  re_daily_read(CtiString("daily read(s)?( cancel| detail)?( channel ") + str_num + CtiString(")?") + CtiString("( ") + str_daterange + CtiString(")?"));
 
     //  getvalue hourly read
     //  getvalue hourly read 12/12/2007
@@ -712,10 +713,16 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
                 //  getvalue daily read channel n 12/12/2007 12/27/2007
                 //  getvalue daily read detail 12/12/2007
                 //  getvalue daily read detail channel n 12/12/2007
+                //  getvalue daily read cancel
                 //  getvalue daily reads
                 //  getvalue daily reads 12/12/2007 12/27/2007
 
                 _cmd["daily_read"] = true;
+
+                if( !temp.match(" cancel").empty() )
+                {
+                    _cmd["daily_read_cancel"] = true;
+                }
 
                 if( !temp.match(" reads").empty() )
                 {

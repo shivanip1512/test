@@ -182,14 +182,15 @@ std::string parse_asString[] = {
 "command=1:flags=0::channel=(none),3,3.000:daily_read=(none),1,1.000:daily_read_detail=(none),1,1.000:type=versacom,0,0.000",
 "command=1:flags=0::daily_read=(none),1,1.000:type=versacom,0,0.000",
 "command=1:flags=0::daily_read=(none),1,1.000:daily_reads=(none),1,1.000:type=versacom,0,0.000",
+"command=1:flags=0::daily_read=(none),1,1.000:daily_read_cancel=(none),1,1.000:type=versacom,0,0.000",
 "command=1:flags=0::daily_read=(none),1,1.000:daily_read_date_begin=12/27/2009,-2147483648,0.000:daily_read_date_end=12/27/2011,-2147483648,0.000:daily_reads=(none),1,1.000:type=versacom,0,0.000",
 "command=5:flags=0::type=versacom,0,0.000",
 "command=5:flags=0::centron_parameters=(none),1,1.000:transformer_ratio=(none),1,1.000:type=versacom,0,0.000",
 "command=5:flags=0::centron_parameters=(none),1,1.000:meter_parameters=(none),1,1.000:type=versacom,0,0.000",
 "command=6:flags=0::display_resolution=5x1,-2147483648,0.000:display_test_duration=(none),0,0.000:type=emetcon,7,7.000",
 "command=6:flags=0::display_resolution=5x1,-2147483648,0.000:display_test_duration=(none),0,0.000:transformer_ratio=(none),40,40.000:type=emetcon,7,7.000",
-"command=6:flags=0::display_errors=(none),1,1.000:display_resolution=4x1,-2147483648,0.000:display_test_duration=(none),1,1.000:type=emetcon,7,7.000",
 //  170
+"command=6:flags=0::display_errors=(none),1,1.000:display_resolution=4x1,-2147483648,0.000:display_test_duration=(none),1,1.000:type=emetcon,7,7.000",
 "command=6:flags=0::display_errors=(none),1,1.000:display_resolution=4x1,-2147483648,0.000:display_test_duration=(none),1,1.000:transformer_ratio=(none),60,60.000:type=emetcon,7,7.000",
 "command=6:flags=0::display_errors=(none),1,1.000:display_resolution=4x10,-2147483648,0.000:display_test_duration=(none),7,7.000:type=emetcon,7,7.000",
 "command=6:flags=0::display_errors=(none),1,1.000:display_resolution=4x10,-2147483648,0.000:display_test_duration=(none),7,7.000:transformer_ratio=(none),200,200.000:type=emetcon,7,7.000",
@@ -199,8 +200,8 @@ std::string parse_asString[] = {
 "command=6:flags=0::display_resolution=5x1,-2147483648,0.000:display_test_duration=(none),3,3.000:transformer_ratio=(none),40,40.000:type=emetcon,7,7.000",
 "command=6:flags=0::display_resolution=5x1,-2147483648,0.000:display_test_duration=(none),0,0.000:transformer_ratio=(none),400,400.000:type=emetcon,7,7.000",
 "command=6:flags=0::type=emetcon,7,7.000",
-"command=6:flags=0::type=emetcon,7,7.000",
 //  180
+"command=6:flags=0::type=emetcon,7,7.000",
 "command=6:flags=0::type=emetcon,7,7.000",
 "command=6:flags=0::type=emetcon,7,7.000",
 "command=6:flags=0::display_resolution=4x5,-2147483648,0.000:display_test_duration=(none),5,5.000:transformer_ratio=(none),10,10.000:type=emetcon,7,7.000",
@@ -210,8 +211,8 @@ std::string parse_asString[] = {
 "command=5:flags=0::transformer_ratio=(none),1,1.000:type=versacom,0,0.000",
 "command=5:flags=0::meter_parameters=(none),1,1.000:type=versacom,0,0.000",
 "command=6:flags=0::display_resolution=5x1,-2147483648,0.000:display_test_duration=(none),0,0.000:type=emetcon,7,7.000",
-"command=6:flags=0::display_resolution=5x1,-2147483648,0.000:display_test_duration=(none),0,0.000:transformer_ratio=(none),40,40.000:type=emetcon,7,7.000",
 //  190
+"command=6:flags=0::display_resolution=5x1,-2147483648,0.000:display_test_duration=(none),0,0.000:transformer_ratio=(none),40,40.000:type=emetcon,7,7.000",
 "command=6:flags=0::display_errors=(none),1,1.000:display_resolution=4x1,-2147483648,0.000:display_test_duration=(none),1,1.000:type=emetcon,7,7.000",
 "command=6:flags=0::display_errors=(none),1,1.000:display_resolution=4x1,-2147483648,0.000:display_test_duration=(none),1,1.000:transformer_ratio=(none),60,60.000:type=emetcon,7,7.000",
 "command=6:flags=0::display_errors=(none),1,1.000:display_resolution=4x10,-2147483648,0.000:display_test_duration=(none),7,7.000:type=emetcon,7,7.000",
@@ -221,8 +222,8 @@ std::string parse_asString[] = {
 "command=6:flags=0::display_resolution=5x1,-2147483648,0.000:display_test_duration=(none),3,3.000:type=emetcon,7,7.000",
 "command=6:flags=0::display_resolution=5x1,-2147483648,0.000:display_test_duration=(none),3,3.000:transformer_ratio=(none),40,40.000:type=emetcon,7,7.000",
 "command=6:flags=0::display_resolution=5x1,-2147483648,0.000:display_test_duration=(none),0,0.000:transformer_ratio=(none),400,400.000:type=emetcon,7,7.000",
-"command=6:flags=0::type=emetcon,7,7.000",
 //  200
+"command=6:flags=0::type=emetcon,7,7.000",
 "command=6:flags=0::type=emetcon,7,7.000",
 "command=6:flags=0::type=emetcon,7,7.000",
 "command=6:flags=0::type=emetcon,7,7.000",
@@ -232,8 +233,8 @@ std::string parse_asString[] = {
 "command=6:flags=0::display_resolution=6x1,-2147483648,0.000:display_test_duration=(none),10,10.000:transformer_ratio=(none),25,25.000:type=emetcon,7,7.000",
 "command=6:flags=0::autoreconnect_enable=(none),1,1.000:type=emetcon,7,7.000",
 "command=6:flags=0::autoreconnect_enable=(none),0,0.000:type=emetcon,7,7.000",
-"command=1:flags=2147483680::group=/Meters/Collection/'Test Group',-1,-1.000:type=versacom,0,0.000",
 //  210
+"command=1:flags=2147483680::group=/Meters/Collection/'Test Group',-1,-1.000:type=versacom,0,0.000",
 "command=8:flags=2147484672::sa_dlc_mode=(none),1,1.000:sa_f0bit=(none),0,0.000:sa_f1bit=(none),0,0.000:shed=(none),1800,1800.000:type=sa305,6,6.000",
 "command=8:flags=2147484672::sa_dlc_mode=(none),1,1.000:sa_f0bit=(none),0,0.000:sa_f1bit=(none),0,0.000:shed=(none),1800,1800.000:type=sa205,5,5.000",
 "command=6:flags=0::disconnect=(none),1,1.000:disconnect_display_disabled=(none),1,1.000:lcd_cycle_time=(none),13,13.000:transformer_ratio=(none),25,25.000:type=emetcon,7,7.000",
@@ -243,8 +244,8 @@ std::string parse_asString[] = {
 "command=6:flags=0::disconnect=(none),1,1.000:lcd display digits=5x1,-2147483648,0.000:lcd_cycle_time=(none),13,13.000:type=emetcon,7,7.000",
 "command=6:flags=0::disconnect=(none),1,1.000:lcd display digits=6x1,-2147483648,0.000:lcd_cycle_time=(none),13,13.000:type=emetcon,7,7.000",
 "command=6:flags=0::disconnect=(none),1,1.000:lcd_cycle_time=(none),13,13.000:type=emetcon,7,7.000",
-"command=5:flags=0::configuration=(none),1,1.000:type=versacom,0,0.000",
 //  220
+"command=5:flags=0::configuration=(none),1,1.000:type=versacom,0,0.000",
 "command=6:flags=0::type=expresscom,8,8.000:xcascii=(none),1,1.000:xcdata=Offpeak rate:6.5*CENTSSIGN*/kWh,-2147483648,0.000:xcdatapriority=(none),7,7.000:xcdatatimeout=(none),150,150.000",
 "command=6:flags=0::type=expresscom,8,8.000:xcascii=(none),1,1.000:xcdata=Offpeak rate:6.5*C*/kWh,-2147483648,0.000:xcdatapriority=(none),7,7.000:xcdatatimeout=(none),150,150.000",
 };
