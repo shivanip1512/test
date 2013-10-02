@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     10/2/2013 12:16:40 PM                        */
+/* Created on:     10/2/2013 1:14:48 PM                         */
 /*==============================================================*/
 
 
@@ -6576,15 +6576,6 @@ create unique index Indx_PAOExclus on PAOExclusion (
 );
 
 /*==============================================================*/
-/* Table: PAOFavorites                                          */
-/*==============================================================*/
-create table PAOFavorites  (
-   UserId               NUMBER                          not null,
-   PAObjectId           NUMBER                          not null,
-   constraint PK_PAOFavorites primary key (UserId, PAObjectId)
-);
-
-/*==============================================================*/
 /* Table: PAOProperty                                           */
 /*==============================================================*/
 create table PAOProperty  (
@@ -6592,22 +6583,6 @@ create table PAOProperty  (
    PropertyName         VARCHAR2(50)                    not null,
    PropertyValue        VARCHAR2(100)                   not null,
    constraint PK_PAOProperty primary key (PAObjectId, PropertyName)
-);
-
-/*==============================================================*/
-/* Table: PAORecentViews                                        */
-/*==============================================================*/
-create table PAORecentViews  (
-   PAObjectId           NUMBER                          not null,
-   WhenViewed           DATE                            not null,
-   constraint PK_PAORecentViews primary key (PAObjectId)
-);
-
-/*==============================================================*/
-/* Index: INDX_WhenViewed                                       */
-/*==============================================================*/
-create index INDX_WhenViewed on PAORecentViews (
-   WhenViewed ASC
 );
 
 /*==============================================================*/
@@ -11895,23 +11870,8 @@ alter table PAOExclusion
    add constraint FK_PAOEXCLU_REF_PAOEX_YUKONPAO foreign key (ExcludedPaoID)
       references YukonPAObject (PAObjectID);
 
-alter table PAOFavorites
-   add constraint FK_PAOFav_YukonPAO foreign key (PAObjectId)
-      references YukonPAObject (PAObjectID)
-      on delete cascade;
-
-alter table PAOFavorites
-   add constraint FK_PAOFav_YukonUser foreign key (UserId)
-      references YukonUser (UserID)
-      on delete cascade;
-
 alter table PAOProperty
    add constraint FK_PAOProp_YukonPAO foreign key (PAObjectId)
-      references YukonPAObject (PAObjectID)
-      on delete cascade;
-
-alter table PAORecentViews
-   add constraint FK_PAORecentViews_YukonPAO foreign key (PAObjectId)
       references YukonPAObject (PAObjectID)
       on delete cascade;
 

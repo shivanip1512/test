@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     10/2/2013 12:18:20 PM                        */
+/* Created on:     10/2/2013 12:35:47 PM                        */
 /*==============================================================*/
 
 
@@ -6972,16 +6972,6 @@ ExcludedPaoID ASC
 go
 
 /*==============================================================*/
-/* Table: PAOFavorites                                          */
-/*==============================================================*/
-create table PAOFavorites (
-   UserId               numeric              not null,
-   PAObjectId           numeric              not null,
-   constraint PK_PAOFavorites primary key (UserId, PAObjectId)
-)
-go
-
-/*==============================================================*/
 /* Table: PAOProperty                                           */
 /*==============================================================*/
 create table PAOProperty (
@@ -6989,24 +6979,6 @@ create table PAOProperty (
    PropertyName         varchar(50)          not null,
    PropertyValue        varchar(100)         not null,
    constraint PK_PAOProperty primary key (PAObjectId, PropertyName)
-)
-go
-
-/*==============================================================*/
-/* Table: PAORecentViews                                        */
-/*==============================================================*/
-create table PAORecentViews (
-   PAObjectId           numeric              not null,
-   WhenViewed           datetime             not null,
-   constraint PK_PAORecentViews primary key (PAObjectId)
-)
-go
-
-/*==============================================================*/
-/* Index: INDX_WhenViewed                                       */
-/*==============================================================*/
-create index INDX_WhenViewed on PAORecentViews (
-WhenViewed ASC
 )
 go
 
@@ -12925,26 +12897,8 @@ alter table PAOExclusion
       references YukonPAObject (PAObjectID)
 go
 
-alter table PAOFavorites
-   add constraint FK_PAOFav_YukonPAO foreign key (PAObjectId)
-      references YukonPAObject (PAObjectID)
-         on delete cascade
-go
-
-alter table PAOFavorites
-   add constraint FK_PAOFav_YukonUser foreign key (UserId)
-      references YukonUser (UserID)
-         on delete cascade
-go
-
 alter table PAOProperty
    add constraint FK_PAOProp_YukonPAO foreign key (PAObjectId)
-      references YukonPAObject (PAObjectID)
-         on delete cascade
-go
-
-alter table PAORecentViews
-   add constraint FK_PAORecentViews_YukonPAO foreign key (PAObjectId)
       references YukonPAObject (PAObjectID)
          on delete cascade
 go
