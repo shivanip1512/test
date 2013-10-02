@@ -19,7 +19,7 @@ class IM_EX_MSG CtiClientConnection : public CtiConnection
 
     virtual bool establishConnection ();
     virtual void endConnection       ();
-    virtual void cleanUp             ();
+    virtual void deleteResources     ();
 
     std::auto_ptr<cms::ExceptionListener> _exceptionListener;
 

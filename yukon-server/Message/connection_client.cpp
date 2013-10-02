@@ -71,36 +71,41 @@ bool CtiClientConnection::establishConnection()
 
     long messageCount = 0;
 
+    auto_ptr<QueueProducer> handshakeProducer;
+
     try
     {
         while( !_valid && !_dontReconnect )
         {
             try
             {
-                if( !initialized )
+                if( ! initialized )
                 {
                     logStatus( __FUNCTION__, "connecting to \"" + _serverQueueName + "\"" );
 
-                    // Create and start connection to broker
-                    _connection->start(); // throws ConnectionException
+                    // clean up activemq objects before resetting the connection
+                    handshakeProducer.reset();
+                    CtiConnection::deleteResources();
 
-                    // Create sessions
+                    // reset and start connection to the broker, throws ConnectionException
+                    _connection->start();
+
+                    logDebug( __FUNCTION__, "connected to the broker" );
+
                     _sessionIn.reset( _connection->createSession() );
                     _sessionOut.reset( _connection->createSession() );
+
+                    // create a temporary producer to initiate talk with the server`s listener connection
+                    handshakeProducer.reset( new QueueProducer(*_sessionOut, _sessionOut->createQueue( _serverQueueName )));
+                    handshakeProducer->setTimeToLive( timeToLiveMillis );
 
                     messageCount = 0;
 
                     initialized = true;
-
-                    logDebug( __FUNCTION__, "connected to the broker" );
                 }
 
                 // Create consumer for inbound traffic
                 _consumer.reset( createTempQueueConsumer( *_sessionIn ));
-
-                // create a temporary producer to initiate talk with the server`s listener connection
-                QueueProducer tempProducer( *_sessionOut, _sessionOut->createQueue( _serverQueueName ) );
-                tempProducer.setTimeToLive( timeToLiveMillis );
 
                 // create an empty message for handshake
                 auto_ptr<cms::Message> outMessage( _sessionOut->createMessage() );
@@ -108,8 +113,7 @@ bool CtiClientConnection::establishConnection()
                 outMessage->setCMSReplyTo( _consumer->getDestination() );
                 outMessage->setCMSType( MessageType::clientInit );
 
-                // send message to request a new connection
-                tempProducer.send( outMessage.get() );
+                handshakeProducer->send( outMessage.get() );
 
                 if( messageCount == 0 )
                 {
@@ -127,7 +131,7 @@ bool CtiClientConnection::establishConnection()
 
                         logStatus( __FUNCTION__, "unexpected message: \"" + inMessage->getCMSType() + "\"" );
                     }
-                    else if( !inMessage->getCMSReplyTo() )
+                    else if( ! inMessage->getCMSReplyTo() )
                     {
                         initialized = false; // something went wrong?
 
@@ -222,9 +226,9 @@ void CtiClientConnection::endConnection()
 /**
  * clean up consumer, producer, destinations, sessions and the cms connection
  */
-void CtiClientConnection::cleanUp()
+void CtiClientConnection::deleteResources()
 {
-    CtiConnection::cleanUp();
+    CtiConnection::deleteResources();
 
     // Close and delete the connection
     _connection.reset();

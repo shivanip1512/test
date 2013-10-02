@@ -8,7 +8,7 @@ class IM_EX_MSG CtiListenerConnection
 {
     const std::string _serverQueueName;
 
-    std::auto_ptr<Cti::Messaging::ActiveMQ::ManagedConnection> _connection;
+    boost::shared_ptr<Cti::Messaging::ActiveMQ::ManagedConnection> _connection;
 
     std::auto_ptr<cms::Session>                            _session;
     std::auto_ptr<cms::Destination>                        _clientReplyDest;
@@ -25,6 +25,8 @@ class IM_EX_MSG CtiListenerConnection
     void logDebug     ( std::string funcName, std::string note ) const;
     void logException ( std::string fileName, int line, std::string exceptionName = "", std::string note = "" ) const;
 
+    void deleteResources();
+
 public:
 
     CtiListenerConnection( const std::string &serverQueueName );
@@ -36,8 +38,9 @@ public:
     bool verifyConnection();
     bool acceptClient();
 
-    std::auto_ptr<cms::Destination> getClientReplyDest();
-    std::auto_ptr<cms::Session>     createSession();
+    boost::shared_ptr<Cti::Messaging::ActiveMQ::ManagedConnection> getConnection() const;
+
+    std::auto_ptr<cms::Destination> getClientReplyDest() const;
 
     std::string who() const;
     std::string getServerQueueName() const;

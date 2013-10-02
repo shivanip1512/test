@@ -99,7 +99,7 @@ protected:
 
     virtual bool establishConnection         () = 0;
     virtual void endConnection               ();
-    virtual void cleanUp                     ();
+    virtual void deleteResources             ();
     virtual void writeIncomingMessageToQueue ( CtiMessage* msg );
     virtual void messagePeek                 ( const CtiMessage& msg );
 

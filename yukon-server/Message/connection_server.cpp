@@ -17,15 +17,13 @@ volatile long CtiServerConnection::_serverConnectionCount = 0;
  * @param inQ queue containing messages received. if NULL, connection allocate its own queue
  * @param tt number of 1 sec iteration to allow the connection to send remaining messages
  */
-CtiServerConnection::CtiServerConnection( CtiListenerConnection& listenerConnection,
+CtiServerConnection::CtiServerConnection( const CtiListenerConnection &listenerConnection,
                                           Que_t *inQ,
                                           INT tt ) :
     CtiConnection( string( "Server Connection " ) + CtiNumStr( InterlockedIncrement( &_serverConnectionCount )), inQ, tt ),
+    _connection( listenerConnection.getConnection() ),
     _replyDest( listenerConnection.getClientReplyDest() )
 {
-    _sessionIn  = listenerConnection.createSession();
-    _sessionOut = listenerConnection.createSession();
-
     setName( listenerConnection.getServerQueueName() );
 
     _valid = true;
@@ -56,6 +54,9 @@ bool CtiServerConnection::establishConnection()
     try
     {
         _dontReconnect = true;
+
+        _sessionIn.reset( _connection->createSession() );
+        _sessionOut.reset( _connection->createSession() );
 
         // Create consumer for inbound traffic
         _consumer.reset( createTempQueueConsumer( *_sessionIn ));
@@ -96,4 +97,15 @@ bool CtiServerConnection::establishConnection()
 
         throw;
     }
+}
+
+/**
+ * clean up consumer, producer, destinations, sessions and the connection
+ */
+void CtiServerConnection::deleteResources()
+{
+    CtiConnection::deleteResources();
+
+    // delete the shared connection object
+    _connection.reset();
 }

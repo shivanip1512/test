@@ -21,8 +21,7 @@ CtiListenerConnection::CtiListenerConnection( const string &serverQueueName ) :
     _closed( false ),
     _valid( false ),
     _serverQueueName( serverQueueName ),
-    _title( "Listener Connection " + CtiNumStr( InterlockedIncrement( &_listenerConnectionCount ))),
-    _connection( new ManagedConnection( Broker::flowControlURI ))
+    _title( "Listener Connection " + CtiNumStr( InterlockedIncrement( &_listenerConnectionCount )))
 {
 }
 
@@ -57,8 +56,17 @@ void CtiListenerConnection::start()
         {
             logDebug( __FUNCTION__, "connecting to the broker." );
 
-            // Create and start connection to broker
-            _connection->start(); // throws ConnectionException
+            if( _connection )
+            {
+                // Close the connection as well as any child session, consumer, producer, destinations
+                _connection->close();
+            }
+
+            deleteResources();
+
+            // Create and start connection to broker, throws ConnectionException
+            _connection.reset( new ManagedConnection( Broker::flowControlURI ));
+            _connection->start();
 
             // Create a Session
             _session.reset( _connection->createSession() );
@@ -99,11 +107,13 @@ void CtiListenerConnection::close()
     _closed = true;
     _valid  = false;
 
-    if( _connection.get() )
+    if( _connection )
     {
         // Close the connection as well as any child session, consumer, producer, destinations
         _connection->close();
     }
+
+    deleteResources();
 }
 
 /**
@@ -112,7 +122,7 @@ void CtiListenerConnection::close()
  */
 bool CtiListenerConnection::verifyConnection()
 {
-    if( !_connection.get() || !_connection->verifyConnection() )
+    if( ! _connection || ! _connection->verifyConnection() )
     {
         _valid = false;
     }
@@ -160,16 +170,16 @@ bool CtiListenerConnection::acceptClient()
  * Creates a new session that is a child of the CMS Connection
  * @return a pointer to the new connection created
  */
-auto_ptr<cms::Session> CtiListenerConnection::createSession()
+boost::shared_ptr<ManagedConnection> CtiListenerConnection::getConnection() const
 {
-    return auto_ptr<cms::Session>( _connection->createSession() );
+    return _connection;
 }
 
 /**
  * Return the accepted client reply destination
  * @return a pointer to a clone of the client reply destination
  */
-auto_ptr<cms::Destination> CtiListenerConnection::getClientReplyDest()
+auto_ptr<cms::Destination> CtiListenerConnection::getClientReplyDest() const
 {
     auto_ptr<cms::Destination> clone;
 
@@ -248,5 +258,15 @@ void CtiListenerConnection::logException( string fileName, int line, string exce
 
         dout << endl;
     }
+}
+
+/**
+ * cleans up consumer, producer, sessions
+ */
+void CtiListenerConnection::deleteResources()
+{
+    _consumer.reset();
+    _session.reset();
+    _connection.reset(); // release the shared_ptr (child server connection may still be sharing this)
 }
 

@@ -91,7 +91,7 @@ ManagedConnection::ManagedConnection( const string &brokerUri ) :
 {
 }
 
-ManagedConnection::~ManagedConnection ()
+ManagedConnection::~ManagedConnection()
 {
 }
 
@@ -107,7 +107,7 @@ void ManagedConnection::start()
     {
         try
         {
-            boost::lock_guard<boost::mutex> guard(_mutex);
+            WriterGuard guard( _lock );
 
             if( _closed )
             {
@@ -139,19 +139,19 @@ void ManagedConnection::start()
 
 void ManagedConnection::close()
 {
-     boost::lock_guard<boost::mutex> guard(_mutex);
+    ReaderGuard guard( _lock );
 
-     _closed = true;
+    _closed = true;
 
-     if( _connection )
-     {
-         _connection->close();
-     }
+    if( _connection )
+    {
+        _connection->close();
+    }
 }
 
 void ManagedConnection::setExceptionListener( cms::ExceptionListener *listener )
 {
-    boost::lock_guard<boost::mutex> guard(_mutex);
+    ReaderGuard guard( _lock );
 
     if( !_connection )
     {
@@ -163,7 +163,7 @@ void ManagedConnection::setExceptionListener( cms::ExceptionListener *listener )
 
 cms::Session* ManagedConnection::createSession()
 {
-    boost::lock_guard<boost::mutex> guard(_mutex);
+    ReaderGuard guard( _lock );
 
     if( !_connection )
     {
@@ -173,9 +173,9 @@ cms::Session* ManagedConnection::createSession()
     return _connection->createSession();
 }
 
-bool ManagedConnection::verifyConnection ()
+bool ManagedConnection::verifyConnection() const
 {
-    boost::lock_guard<boost::mutex> guard(_mutex);
+    ReaderGuard guard( _lock );
 
     const activemq::core::ActiveMQConnection* conn = dynamic_cast<const activemq::core::ActiveMQConnection*>( _connection.get() );
 

@@ -17,6 +17,63 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 using namespace Cti::Messaging::Serialization;
 using namespace Cti::Messaging::ActiveMQ;
 
+namespace { // anomymous namespace
+
+/**
+ * The ScopedMessage is a workaround for handling a cms::BytesMessage life cycle. ActiveMQBytesMessage destructor
+ * can actually throw a cms::Exception that cannot be handle by the sendMessage() nor receiveAllMessages() if the
+ * cause the destructor call is a from a preceding exception.
+ *
+ * (From activemq-cpp release 3.8.0)
+ *
+ * ActiveMQBytesMessage destructor is as follow :
+ * ActiveMQBytesMessage::~ActiveMQBytesMessage() throw() {
+ *   this->reset();
+ * }
+ *
+ * and should probably be :
+ * ActiveMQBytesMessage::~ActiveMQBytesMessage() throw() {
+ *   try {
+ *      this->reset();
+ *   }
+ *   AMQ_CATCHALL_NOTHROW()
+ * }
+ */
+template< typename T >
+class ScopedMessage
+{
+    boost::scoped_ptr<T> _msg;
+
+public:
+    ScopedMessage( T * msg ) : _msg( msg )
+    {
+    }
+
+    ~ScopedMessage()
+    {
+        try
+        {
+            _msg.reset();
+        }
+        catch(...)
+        {
+            // catch all, no throw
+        }
+    }
+
+    T * operator->() const
+    {
+        return _msg.get();
+    }
+
+    T * get() const
+    {
+        return _msg.get();
+    }
+};
+
+} // anomymous namespace
+
 
 /**
  * class constructor
@@ -198,8 +255,6 @@ void CtiConnection::OutThread()
 
     forceTermination();
 
-    cleanUp();
-
     logDebug( __FUNCTION__, "is terminating...." );
 }
 
@@ -221,7 +276,7 @@ void CtiConnection::sendMessage( const CtiMessage& msg )
     }
 
     // create a new cms bytes message
-    auto_ptr<cms::BytesMessage> bytes_msg( _sessionOut->createBytesMessage() );
+    ScopedMessage<cms::BytesMessage> bytes_msg( _sessionOut->createBytesMessage() );
 
     bytes_msg->writeBytes( obytes );
     bytes_msg->setCMSType( msgType );
@@ -253,7 +308,7 @@ void CtiConnection::receiveAllMessages()
 
         while( ! timer.isExpired() )
         {
-            auto_ptr<cms::Message> msg( tmpConsumer->receive( timer.getRemaining() ));
+            ScopedMessage<cms::Message> msg( tmpConsumer->receive( timer.getRemaining() ));
 
             if( ! msg.get() )
             {
@@ -398,6 +453,8 @@ void CtiConnection::cleanConnection()
     {
         logException( __FILE__, __LINE__, "", "error cleaning the outbound queue for connection." );
     }
+
+    deleteResources();
 }
 
 /**
@@ -468,10 +525,21 @@ void CtiConnection::close()
             if( outthread.requestCancellation(2000) == RW_THR_TIMEOUT )
             {
                 logStatus( __FUNCTION__, "OutThread refuses to cancel after 2 seconds." );
+
+                forceTermination();
             }
             if( outthread.join(2000) == RW_THR_TIMEOUT )
             {
                 logStatus( __FUNCTION__, "OutThread refuses to join after 2 seconds." );
+
+                try
+                {
+                    outthread.terminate();
+                }
+                catch(...)
+                {
+                    logException( __FILE__, __LINE__ );
+                }
             }
         }
 
@@ -906,7 +974,7 @@ void CtiConnection::endConnection()
 /**
  * cleans up consumer, producer, destinations, sessions
  */
-void CtiConnection::cleanUp()
+void CtiConnection::deleteResources()
 {
     _consumer.reset();
     _producer.reset();

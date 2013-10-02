@@ -107,22 +107,26 @@ class IM_EX_MSG ManagedConnection
 
     boost::scoped_ptr<cms::Connection> _connection;
 
-    boost::mutex _mutex;
+    typedef Cti::readers_writer_lock_t Lock;
+    typedef Lock::reader_lock_guard_t  ReaderGuard;
+    typedef Lock::writer_lock_guard_t  WriterGuard;
+
+    mutable Lock _lock;
 
 public:
-    ManagedConnection ( const std::string& brokerUri );
+    ManagedConnection( const std::string& brokerUri );
 
-    virtual ~ManagedConnection ();
+    virtual ~ManagedConnection();
 
-    void start ();
+    void start();
 
-    void close ();
+    void close();
 
-    void setExceptionListener ( cms::ExceptionListener *listener );
+    void setExceptionListener( cms::ExceptionListener *listener );
 
-    cms::Session* createSession ();
+    cms::Session* createSession();
 
-    bool verifyConnection ();
+    bool verifyConnection() const;
 };
 
 
