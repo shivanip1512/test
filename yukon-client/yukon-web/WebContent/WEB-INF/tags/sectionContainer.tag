@@ -24,7 +24,7 @@
 
 <cti:uniqueIdentifier prefix="sectionContainer_" var="thisId"/>
 
-<div class="titledContainer sectionContainer ${collapsed} ${pageScope.styleClass}" <c:if test="${not empty pageScope.id}">id="${pageScope.id}"</c:if>>
+<div class="titledContainer sectionContainer clearfix ${collapsed} ${pageScope.styleClass}" <c:if test="${not empty pageScope.id}">id="${pageScope.id}"</c:if>>
     
     <div class="title-bar clearfix">
         
