@@ -50,7 +50,7 @@ paoDefinition.xml vs rfnPointMapping.xml
         Out# = Outage Count
         Rst# = Restore Count
         OBk# = Outage Blink Count
-        OBk# = Restore Blink Count
+        RBk# = Restore Blink Count
         Olog = Outage Log
 
     Symbols appearing after model #:
@@ -177,7 +177,7 @@ DATE: 2013-09-25-W
 
  Rst#|      (none)|                             Outage Restore Count |023|  A3R> KV> A3K> A3T> A3D> CL2> CD2> FL2> FX2> FD2> FL1> FX1> FD1> FRX> FRD>      21D       22D       23D                            |023|
  OBk#|      (none)|                                      Blink Count |020|  A3R> KV> A3K> A3T> A3D> CL2> CD2> FL2> FX2> FD2> FL1> FX1> FD1> FRX> FRD>      21D       22D       23D                            |020|
- OBk#|      (none)|                              Blink Restore Count |021|  A3R> KV> A3K> A3T> A3D> CL2> CD2> FL2> FX2> FD2> FL1> FX1> FD1> FRX> FRD>      21D       22D       23D                            |021|
+ RBk#|      (none)|                              Blink Restore Count |021|  A3R> KV> A3K> A3T> A3D> CL2> CD2> FL2> FX2> FD2> FL1> FX1> FD1> FRX> FRD>      21D       22D       23D                            |021|
 
     s|       -----|                                          Outages |100|  A3R> KV> A3K> A3T> A3D> CL2> CD2> FL2> FX2> FD2> FL1> FX1> FD1> FRX> FRD>                                                         |100|
     V|       -----|                            Over Voltage Measured |216|  A3R> KV> A3K> A3T> A3D> CL2> CD2> FL2> FX2> FD2> FL1> FX1> FD1> FRX> FRD>                                                         |216|

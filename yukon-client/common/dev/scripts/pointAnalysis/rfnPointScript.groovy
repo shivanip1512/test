@@ -46,7 +46,7 @@ def __MODIFIERS_TO_ABBRV = ['Quadrant 1':'Q1', 'Quadrant 2':'Q2', 'Quadrant 3':'
                             'Phase A':'Pa',    'Phase B':'Pb',    'Phase C':'Pc',    'Primary':'1^',    'Secondary':'2^',
                             'Avg':'Av',        'Max':'mx',        'Min':'mn',        'Net Flow':'Nf',   'Cumulative':'Cu', 'Harmonic':'Hc']
 def __UOM_TO_ABBRV = ['Counts':'#', 'Seconds':'s', 'Volts':'V', 'V degree':'Vdgr', 'A degree':'Adgr', 'PF degree':'PFdg',
-                        'Outage Count':'Out#', 'Restore Count':'Rst#', 'Outage Blink Count':'OBk#', 'Restore Blink Count':'OBk#', 'Outage Log':'Olog']
+                        'Outage Count':'Out#', 'Restore Count':'Rst#', 'Outage Blink Count':'OBk#', 'Restore Blink Count':'RBk#', 'Outage Log':'Olog']
 
 
 // TODO: change the mapping outputs to multiple columns so this listing is shorter
@@ -164,8 +164,8 @@ String[] _modelCols_NEW  = (_modelCols_Elster2 +" "+ _modelCols_Centron +" "+ _m
 
 //String[] _modelIds_COMBO = "RFN430A3R RFN430KV RFN430A3K RFN430A3T RFN430A3D RFN430A3 RFN420CL RFN420CD RFN420FL RFN420FX RFN420FD RFN410FL RFN410FX RFN410FD".split(" ")
 //String[] _modelCols_COMBO= "A3R KV A3K A3T A3D A3 CL2 CD2 FL2 FX2 FD2 FL1 FX1 FD1".split(" ")
-String[] _modelIds_COMBO = (_modelIds_Elster2 +" "+ _modelIds_Elster1 +" "+ _modelIds_Centron +" "+ _modelIds_Focus2 +" "+ _modelIds_ELO).split(" ")
-String[] _modelCols_COMBO= (_modelCols_Elster2 +" "+ _modelCols_Elster1 +" "+ _modelCols_Centron +" "+ _modelCols_Focus2 +" "+ _modelCols_ELO).split(" ")
+String[] _modelIds_COMBO = (_modelIds_Elster2 +" "+ _modelIds_Elster1 +" "+ _modelIds_Centron +" "+ _modelIds_Focus2 +" "+ _modelIds_ELO +" "+ _modelIds_Sentinel).split(" ")
+String[] _modelCols_COMBO= (_modelCols_Elster2 +" "+ _modelCols_Elster1 +" "+ _modelCols_Centron +" "+ _modelCols_Focus2 +" "+ _modelCols_ELO +" "+ _modelCols_Sentinel).split(" ")
 
 _modelIds  = _modelIds_NEW
 _modelCols = _modelCols_NEW
