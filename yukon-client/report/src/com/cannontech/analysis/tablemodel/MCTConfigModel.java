@@ -7,16 +7,16 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowCallbackHandler;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.YukonJdbcTemplate;
 
 public class MCTConfigModel extends BareReportModelBase<MCTConfigModel.ModelRow> {
     private Logger log = YukonLogManager.getLogger(MCTConfigModel.class);
     
-    @Autowired private JdbcOperations jdbcOps;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
     
     private List<ModelRow> data = new ArrayList<ModelRow>();
 
@@ -64,7 +64,7 @@ public class MCTConfigModel extends BareReportModelBase<MCTConfigModel.ModelRow>
         sql.append("   LEFT JOIN DeviceConfigCategoryItem DCI2 ON DCI2.DeviceConfigCategoryId = CM.DeviceConfigCategoryId");
         sql.append("      AND DCI2.ItemName = 'loadProfileInterval1'");
         
-        jdbcOps.query(sql.getSql(), new RowCallbackHandler() {
+        jdbcTemplate.query(sql, new RowCallbackHandler() {
             public void processRow(ResultSet rs) throws SQLException {
                 MCTConfigModel.ModelRow row = new MCTConfigModel.ModelRow();
 
