@@ -1,4 +1,4 @@
-var Yukon = (function(yukonMod) {
+var Yukon = (function (yukonMod) {
     return yukonMod;
 })(Yukon || {});
 
@@ -8,7 +8,7 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
      * Reset things that need to be reset when first popping up the picker
      * or when clearing it.
      */
-    var resetSearchFields = function() {
+    var resetSearchFields = function () {
         this.currentSearch = '';
         this.inSearch = false;
         this.previousIndex = -1;
@@ -78,20 +78,20 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
         this.inline = (containerDiv === null || typeof containerDiv === 'undefined') ? false : true;
     },
 
-    block = function() {
+    block = function () {
         Yukon.ui.elementGlass.show(document.getElementById(this.pickerId + ' .f-block_this'));
     },
 
-    unblock = function() {
+    unblock = function () {
         Yukon.ui.elementGlass.hide(document.getElementById(this.pickerId + ' .f-block_this'));
     },
 
-    updateSelectAllCheckbox = function() {
+    updateSelectAllCheckbox = function () {
         if (!this.multiSelectMode) {
             return;
         }
         var allSelected = this.allLinks.length > 0;
-        this.allLinks.forEach(function(hitRow, index, arr) {
+        this.allLinks.forEach(function (hitRow, index, arr) {
             if (! jQuery(hitRow.link.parentNode.parentNode).hasClass('highlighted')) {
                 allSelected = false;
             }
@@ -103,7 +103,7 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
         this.entireSelectionCleared.hide();
     },
 
-    okPressed = function() {
+    okPressed = function () {
         var fieldName,
             pickerThis,
             destinationFieldElem,
@@ -116,14 +116,14 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
                 fieldName = this.idFieldName;
                 destinationFieldElem = document.getElementById(this.destinationFieldId);
                 jQuery(destinationFieldElem).val(
-                    jQuery.map(this.selectedItems, function(val, index) {
+                    jQuery.map(this.selectedItems, function (val, index) {
                         return val[fieldName];
                     }).join(',')
                 );
             } else {
                 pickerThis = this;
                 this.inputAreaDiv.innerHTML = '';
-                jQuery.each(this.selectedItems, function(key, selectedItem) {
+                jQuery.each(this.selectedItems, function (key, selectedItem) {
                     var inputElement = document.createElement('input');
                     inputElement.type = 'hidden';
                     inputElement.value = selectedItem[pickerThis.idFieldName];
@@ -144,7 +144,7 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
     /**
      * This method called when the user clicks on a row for selection. 
      */
-    selectThisItem = function(hit, link) {
+    selectThisItem = function (hit, link) {
         var parentRow,
             rows,
             index;
@@ -185,17 +185,17 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
     /**
      * Render the table portion of the search results.
      */
-    renderTableResults = function(json) {
+    renderTableResults = function (json) {
         var hitList = json.hits.resultList,
             resultArea = document.createElement('div'),
             resultAreaFixed = document.createElement('div'),
             pickerThis = this,
-            createItemLink = function(hit, link) {
+            createItemLink = function (hit, link) {
                 if (pickerThis.excludeIds.indexOf(hit[pickerThis.idFieldName]) !== -1) {
                     return null;
                 } else {
                     pickerThis.allLinks.push({'hit' : hit, 'link' : link});
-                    return function() {
+                    return function () {
                         selectThisItem.call(pickerThis, hit, link);
                     };
                 }
@@ -206,7 +206,7 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
                     jQuery(rowElement).addClass('disabled');
                     jQuery(rowElement).attr('title', Picker.alreadySelectedHoverMessage);
                 } else {
-                    pickerThis.selectedItems.forEach(function(item, index, arr){
+                    pickerThis.selectedItems.forEach(function (item, index, arr){
                         if (rowObject[pickerThis.idFieldName] === item[pickerThis.idFieldName]) {
                             jQuery(rowElement).addClass('highlighted');
                         }
@@ -222,7 +222,7 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
         if (hitList && hitList.length && hitList.length > 0) {
             this.noResultsDiv.hide();
             this.resultsDiv.show();
-            this.outputColumns.forEach(function(outputColumn, index, arr) {
+            this.outputColumns.forEach(function (outputColumn, index, arr) {
                 var translatedColumn = {
                      'title': outputColumn.title,
                      'field': outputColumn.field,
@@ -251,7 +251,7 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
     /**
      * Update the paging area of the form for the current search results.
      */
-    updatePagingArea = function(json) {
+    updatePagingArea = function (json) {
         var pickerDiv = document.getElementById(this.pickerId);
         this.previousIndex = -1;
         this.nextIndex = -1;
@@ -283,7 +283,7 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
      * renderTalbeResults to update the table itself and then updates the
      * previous and next buttons appropriately.
      */
-    updateSearchResults = function(transport) {
+    updateSearchResults = function (transport) {
         var json = JSON.parse(transport.responseText),
             newResultArea = renderTableResults.call(this, json),
             oldResultArea,
@@ -315,7 +315,7 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
         }
     },
 
-    ajaxError = function(transport, textStatus, errorThrown) {
+    ajaxError = function (transport, textStatus, errorThrown) {
         this.inSearch = false;
         this.unblock();
         this.resultsDiv.innerHTML = '';
@@ -332,7 +332,7 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
      * 
      * - start is the index of the first result to show.
      */
-    doSearch = function(start, count, onComplete, endCallback) {
+    doSearch = function (start, count, onComplete, endCallback) {
         var ss,
             parameters = {},
             onFailure = null;
@@ -383,15 +383,15 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
             dataType: "json",
             url: '/picker/v2/search',
             data: parameters
-        }).done(function(data, status, xhrobj) {
+        }).done(function (data, status, xhrobj) {
             doOnComplete(xhrobj);
-        }).fail(function(xhrobj, textStatus, errorThrown) {
+        }).fail(function (xhrobj, textStatus, errorThrown) {
             onFailure(xhrobj, textStatus, errorThrown);
         });
 
     },
 
-    updateOutsideFields = function(isInitial) {
+    updateOutsideFields = function (isInitial) {
         var hit,
             labelMsg,
             index,
@@ -447,7 +447,7 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
         return true;
     },
 
-    onIdSearchComplete = function(transport) {
+    onIdSearchComplete = function (transport) {
         var json = JSON.parse(transport.responseText);
         if (json && json.hits && json.hits.resultList) {
             this.selectedItems = json.hits.resultList;
@@ -456,7 +456,7 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
         updateOutsideFields.call(this, true);
     },
 
-    doIdSearch = function(selectedIds) {
+    doIdSearch = function (selectedIds) {
         if (selectedIds && selectedIds.length > 0) {
             var idx,
                 initialIdsObj = '',
@@ -491,9 +491,9 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
                 dataType: "json",
                 url: '/picker/v2/idSearch',
                 data: parameters
-            }).done(function(data, status, xhrobj) {
+            }).done(function (data, status, xhrobj) {
                 onIdSearchCompleteFunc(xhrobj);
-            }).fail(function(xhrobj, textStatus, errorThrown) {
+            }).fail(function (xhrobj, textStatus, errorThrown) {
                 onFailure(xhrobj, textStatus, errorThrown);
             });
 
@@ -503,7 +503,7 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
     /**
      * Cancel the current picker and pop it down.
      */
-    cancel = function() {
+    cancel = function () {
         this.selectedItems = this.lastSelectedItems;
         if (!this.containerDiv) {
             jQuery(document.getElementById(this.pickerId)).dialog('close');
@@ -513,7 +513,7 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
         }
     },
 
-    doShow = function(skipFocus) {
+    doShow = function (skipFocus) {
         var that;
         if (this.memoryGroup && Yukon.protoPicker.rememberedSearches && Yukon.protoPicker.rememberedSearches[this.memoryGroup]) {
             this.ssInput.value = Yukon.protoPicker.rememberedSearches[this.memoryGroup];
@@ -525,11 +525,11 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
             this.ssInput.focus();
         }
         that = this;
-        doSearch.call(this, false, false, null, function() {
+        doSearch.call(this, false, false, null, function () {
             var buttons;
             if (!this.containerDiv) {
-                buttons = [{'text' : that.cancelText, 'click' : function() {cancel.call(that);}},
-                           {'text' : that.okText, 'click' : function() {okPressed.call(that);}, 'class': 'primary action'}];
+                buttons = [{'text' : that.cancelText, 'click' : function () {cancel.call(that);}},
+                           {'text' : that.okText, 'click' : function () {okPressed.call(that);}, 'class': 'primary action'}];
                 if (!that.inline) {
                     jQuery(document.getElementById(that.pickerId)).dialog({buttons : buttons, width : 600, height : 'auto'});
                 }
@@ -537,7 +537,7 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
         });
     },
 
-    onPrimeComplete = function(showPicker, initialIds, skipFocus, data, textStatus, xhr) {
+    onPrimeComplete = function (showPicker, initialIds, skipFocus, data, textStatus, xhr) {
         // handles gross errors from the server and assumes the string 'error'
         // is the 4th argument. Better than silently failing.
         if (arguments.length > 4 && 'undefined' !== typeof textStatus && "error" === textStatus) {
@@ -576,7 +576,7 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
      * it doesn't need to be done until the picker is first used (which may
      * never happen).
      */
-    prime = function(showPicker, initialIds, skipFocus) {
+    prime = function (showPicker, initialIds, skipFocus) {
         var bodyElem = document.documentElement.getElementsByTagName('body')[0],
             pickerDialogDivContainer,
             parameters = {
@@ -607,7 +607,7 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
     /**
      * Clear any old search results (used when the dialog is first popped up).
      */
-    clearSearchResults = function() {
+    clearSearchResults = function () {
         var oldResultArea,
             resultHolder;
         if (!this.resultsDiv) {
@@ -622,7 +622,7 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
         }
     },
 
-    removeFromSelectedItems = function(hit) {
+    removeFromSelectedItems = function (hit) {
         var oldSelectedItems = this.selectedItems,
             index;
         this.selectedItems = [];
@@ -661,11 +661,11 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
     /**
      * Attached to the onkeyup event of the search text input field.
      */
-    Yukon.protoPicker.prototype.doKeyUp = function() {
+    Yukon.protoPicker.prototype.doKeyUp = function () {
         var quietDelay = 300,
             ss,
             pickerThis = this,
-            timerFunction = function() {
+            timerFunction = function () {
                 var ss = pickerThis.ssInput.value;
                 // Don't do the search if it hasn't changed.  This could be
                 // because they type a character and deleted it.
@@ -684,7 +684,7 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
     };
 
     // invoked from jsp
-    Yukon.protoPicker.prototype.showAll = function() {
+    Yukon.protoPicker.prototype.showAll = function () {
         if (this.memoryGroup) {
             Yukon.protoPicker.rememberedSearches[this.memoryGroup] = '';
         }
@@ -693,7 +693,7 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
         doSearch.call(this);
     };
 
-    Yukon.protoPicker.prototype.previous = function() {
+    Yukon.protoPicker.prototype.previous = function () {
         if (this.previousIndex === -1) {
             return;
         }
@@ -701,7 +701,7 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
         doSearch.call(this, this.previousIndex);
     };
 
-    Yukon.protoPicker.prototype.next = function() {
+    Yukon.protoPicker.prototype.next = function () {
         if (this.nextIndex === -1) {
             return;
         }
@@ -709,10 +709,10 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
         doSearch.call(this, this.nextIndex);
     };
 
-    Yukon.protoPicker.prototype.selectAll = function() {
+    Yukon.protoPicker.prototype.selectAll = function () {
         var pickerThis = this,
             numSelectedBefore = this.selectedItems.length;
-        this.allLinks.forEach(function(hitRow, index, arr) {
+        this.allLinks.forEach(function (hitRow, index, arr) {
             // hitRow IS an element, so we don't need any jQuery sugar around it
             var parentRow = hitRow.link.parentNode.parentNode;
             if (pickerThis.selectAllCheckBox.checked) {
@@ -741,7 +741,7 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
         this.ssInput.focus();
     };
 
-    Yukon.protoPicker.prototype.selectAllOnComplete = function(transport) {
+    Yukon.protoPicker.prototype.selectAllOnComplete = function (transport) {
         var json =  JSON.parse(transport.responseText),
             hitList = json.hits.resultList,
             pickerThis;
@@ -749,7 +749,7 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
         if (this.excludeIds && this.excludeIds.length > 0) {
             this.selectedItems = [];
             pickerThis = this;
-            hitList.forEach(function(hit, index, arr) {
+            hitList.forEach(function (hit, index, arr) {
                 if (pickerThis.excludeIds.indexOf(hit[pickerThis.idFieldName]) === -1) {
                     pickerThis.selectedItems.push(hit);
                 }
@@ -765,22 +765,22 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
         this.unblock();
     };
 
-    Yukon.protoPicker.prototype.selectAllPages = function() {
+    Yukon.protoPicker.prototype.selectAllPages = function () {
         doSearch.call(this, 0, -1, Yukon.doBind(this.selectAllOnComplete, this));
     };
 
-    Yukon.protoPicker.prototype.clearEntireSelection = function() {
+    Yukon.protoPicker.prototype.clearEntireSelection = function () {
         this.selectedItems = [];
         this.allPagesSelected.parentNode.hide();
         this.clearEntireSelectionLink.parentNode.hide();
         this.entireSelectionCleared.show();
-        this.allLinks.forEach(function(hitRow, index, arr) {
+        this.allLinks.forEach(function (hitRow, index, arr) {
             jQuery(hitRow.link.parentNode.parentNode).removeClass('highlighted');
         });
         this.selectAllCheckBox.checked = false;
     };
 
-    Yukon.protoPicker.prototype.clearSelected = function() {
+    Yukon.protoPicker.prototype.clearSelected = function () {
         if (this.destinationFieldId) {
             jQuery(document.getElementById(this.destinationFieldId)).val('');
         } else {
@@ -797,10 +797,10 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
      * If this is a multi-select picker, an array will be returned, 
      * but in single select mode a single selected item will be returned.
      */
-    Yukon.protoPicker.prototype.getSelected = function() { // called from zoneWizardDetails.js
+    Yukon.protoPicker.prototype.getSelected = function () { // called from zoneWizardDetails.js
         var retVal = this.destinationFieldId
             ? jQuery(document.getElementById(this.destinationFieldId)).val().split(',')
-            : jQuery.map(jQuery(':input', this.inputAreaDiv), function(val, index) {
+            : jQuery.map(jQuery(':input', this.inputAreaDiv), function (val, index) {
                 return val.value;
             });
         return this.multiSelectMode ? retVal : retVal[0];
@@ -839,7 +839,7 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
                 initialIds = jQuery(document.getElementById(destFieldSelector)).val().split(',');
             }
         } else {
-            initialIds = jQuery.map(jQuery(':input', this.inputAreaDiv), function(val, index) {
+            initialIds = jQuery.map(jQuery(':input', this.inputAreaDiv), function (val, index) {
                 return val.value;
             });
         }
@@ -855,10 +855,10 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
         }
     };
 
-    Yukon.protoPicker.prototype.showSelected = function() {
+    Yukon.protoPicker.prototype.showSelected = function () {
         var outputColumns = [],
             resultTable;
-        this.outputColumns.forEach(function(outputColumn, index, arr) {
+        this.outputColumns.forEach(function (outputColumn, index, arr) {
             var translatedColumn = {
                 'title': outputColumn.title,
                 'field': outputColumn.field,
