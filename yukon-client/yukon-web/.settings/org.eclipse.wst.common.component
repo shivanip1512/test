@@ -92,7 +92,7 @@
         <dependent-module archiveName="jfreereport.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/jfreereport.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="tomahawk-1.1.2.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/yukon-web/WebContent/WEB-INF/lib/tomahawk-1.1.2.jar">
+        <dependent-module archiveName="tomahawk-1.1.14.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/yukon-web/WebContent/WEB-INF/lib/tomahawk-1.1.14.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="castor-xml.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/castor-xml.jar">
