@@ -72,6 +72,9 @@
 <entry key="yukon.web.picker.user.userId">User Id</entry>
 <entry key="yukon.web.picker.userPicker.dialogTitle">Select User</entry>
 
+<!-- Operator Candidate Picker -->
+<entry key="yukon.web.picker.ecOperatorCandidatePicker.dialogTitle">Select User</entry>
+
 <!-- User Picker -->
 <entry key="yukon.web.picker.userGroup.name">User Group Name</entry>
 <entry key="yukon.web.picker.userGroup.userGroupId">User Group Id</entry>
