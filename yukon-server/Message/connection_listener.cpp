@@ -56,10 +56,13 @@ void CtiListenerConnection::start()
         {
             logDebug( __FUNCTION__, "connecting to the broker." );
 
-            if( _connection )
+            try
             {
-                // Close the connection as well as any child session, consumer, producer, destinations
-                _connection->close();
+                closeConnection();
+            }
+            catch(...)
+            {
+                // catch all exception, no throw
             }
 
             deleteResources();
@@ -107,10 +110,13 @@ void CtiListenerConnection::close()
     _closed = true;
     _valid  = false;
 
-    if( _connection )
+    try
     {
-        // Close the connection as well as any child session, consumer, producer, destinations
-        _connection->close();
+        closeConnection();
+    }
+    catch(...)
+    {
+        // catch all exception, no throw
     }
 
     deleteResources();
@@ -270,3 +276,14 @@ void CtiListenerConnection::deleteResources()
     _connection.reset(); // release the shared_ptr (child server connection may still be sharing this)
 }
 
+/**
+ * close the underlying cms connection if it exist
+ */
+void CtiListenerConnection::closeConnection()
+{
+    if( _connection )
+    {
+        // Close the connection as well as any child session, consumer, producer, destinations
+        _connection->close();
+    }
+}

@@ -26,6 +26,7 @@ class IM_EX_MSG CtiListenerConnection
     void logException ( std::string fileName, int line, std::string exceptionName = "", std::string note = "" ) const;
 
     void deleteResources();
+    void closeConnection();
 
 public:
 
