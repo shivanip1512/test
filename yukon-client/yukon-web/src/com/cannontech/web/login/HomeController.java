@@ -204,9 +204,9 @@ public class HomeController {
     }
 
     private UserPageWrapper buildWrapperForPage(UserPage page, YukonUserContext context) {
-        Module moduleBase = moduleBuilder.getModule(page.getModule());
+        Module module = moduleBuilder.getModule(page.getModule());
 
-        PageInfo thisPage = moduleBase.getPageInfo(page.getName());
+        PageInfo thisPage = module.getPageInfo(page.getName());
         if (thisPage == null) {
             // This shouldn't _normally_ happen but can in a development environment when switching workspaces
             // where one workspace has a new page the other doesn't.  (The new page will be in the user history
