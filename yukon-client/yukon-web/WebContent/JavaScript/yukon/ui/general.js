@@ -222,12 +222,12 @@ Yukon.modules.ui = function (mod) {
         //   attaches tooltip handlers to all elements with a class of f-has-tooltip
         //   or a title attribute
         jQuery (function () {
-            var tooltipTargets = ['.f-has-tooltip', '[title]'],
+            var tooltipTargets = ['.f-has-tooltip'],// use browser-native tooltips for all but the fancy HTML ones
                 resetTipsyInner = function () {
                     // voodoo so inner div has full height of its container
                     setTimeout ( function () {
                         jQuery('.tipsy-inner').addClass('clearfix');
-                    }, 300);
+                    }, 100);
                 };
             // some pages do not include the tipsy libary
             if ('undefined' === typeof jQuery.fn.tipsy) {
@@ -248,21 +248,11 @@ Yukon.modules.ui = function (mod) {
                             if (0 < tip.length) { // if a .f-tooltip was found...
                                 resetTipsyInner();
                                 return tip.html();
-                            } else {
-                                    tip = elem.attr('original-title'); // tipsy stashes it here
-                                    resetTipsyInner();
-                                    return tip;
                             }
-                        } else {
-                            // in theory, we should never get here, but you never know
-                            tip = elem.attr('original-title');
-                            if ('undefined' === typeof tip || '' === tip) {
-                                tip = '';
-                            }
-                            resetTipsyInner();
-                            return tip;
                         }
-                    }
+                    },
+                    delayIn: 500,
+                    fade: true
                 });
             });
         });
