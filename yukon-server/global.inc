@@ -58,7 +58,7 @@ BOOST_INCLUDE   = $(CPP_LIBRARIES)\boost\1.49.0\include\boost-1_49
 
 SQLAPI          = $(CPP_LIBRARIES)\sqlapi\4.0.1
 
-ACTIVEMQ        = $(CPP_LIBRARIES)\apache\activemq-cpp\3.8.0
+ACTIVEMQ        = $(CPP_LIBRARIES)\apache\activemq-cpp\3.8.1
 ACTIVEMQ_INCLUDE= $(ACTIVEMQ)\include
 !IFDEF DEBUG
 ACTIVEMQ_LIB    = $(ACTIVEMQ)\lib\activemq-cppd.lib
