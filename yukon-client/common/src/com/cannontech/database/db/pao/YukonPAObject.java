@@ -268,14 +268,18 @@ public void setType(java.lang.String newType) {
  */
 public void update() throws java.sql.SQLException 
 {
+    String paoName = getPaoName().length() <= 60 ? getPaoName() : getPaoName().substring(0,60);
 	Object setValues[] = { getCategory(),
 					getPaoClass(), 
-					(getPaoName().length() <= 60 ? getPaoName() : getPaoName().substring(0,60) ),
+					paoName,
 					getType(), 
 					getDescription(), getDisableFlag(), getPaoStatistics() };
 					
 	Object constraintValues[] = { getPaObjectID() };
 
 	update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
+	
+    UserPageDao userPageDao = YukonSpringHook.getBean(UserPageDao.class);
+    userPageDao.updatePagesForPao(new PaoIdentifier(paObjectID, PaoType.getForDbString(type)), paoName);
 }
 }

@@ -65,7 +65,7 @@ public final class UserPage {
         if (mappedModuleNames.containsKey(moduleName)) {
             moduleName = mappedModuleNames.get(moduleName);
         }
-        moduleName = moduleName.toUpperCase();
+        moduleName = moduleName.toUpperCase(Locale.US);
 
         Module temp = Module.UNKNOWN;
         try {
@@ -141,6 +141,14 @@ public final class UserPage {
             return this;
         } else {
             return new UserPage(this.userId, this.path, this.favorite, this.module, this.name, this.arguments, lastAccessedDate, this.id);
+        }
+    }
+
+    public UserPage withArguments(List<String> arguments) {
+        if (this.arguments == arguments) {
+            return this;
+        } else {
+            return new UserPage(this.userId, this.path, this.favorite, this.module, this.name, arguments, this.lastAccess, this.id);
         }
     }
 }

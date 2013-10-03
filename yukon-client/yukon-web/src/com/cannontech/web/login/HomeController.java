@@ -88,12 +88,10 @@ public class HomeController {
             }
         }
 
-        Collections.sort(history, byDateDesc);
-
         if (history.size() > UserPageDao.MAX_HISTORY ) {
             history = history.subList(0, UserPageDao.MAX_HISTORY);
         }
-        
+
         return history;
     }
 

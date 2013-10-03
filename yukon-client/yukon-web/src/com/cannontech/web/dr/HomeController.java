@@ -11,24 +11,21 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.cannontech.common.bulk.filter.UiFilter;
-import com.cannontech.common.bulk.filter.service.UiFilterList;
 import com.cannontech.common.favorites.dao.FavoritesDao;
 import com.cannontech.common.favorites.service.FavoritesService;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.DisplayablePaoComparator;
+import com.cannontech.common.userpage.dao.UserPageDao;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.dr.filter.AuthorizedFilter;
 import com.cannontech.dr.service.DemandResponseService;
 import com.cannontech.dr.service.DemandResponseService.CombinedSortableField;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.JsonView;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 
 @Controller
@@ -39,6 +36,7 @@ public class HomeController {
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private PaoAuthorizationService paoAuthorizationService;
     @Autowired private DemandResponseService demandResponseService;
+    @Autowired private UserPageDao userPageDao;
 
     @RequestMapping("/home")
     public String home(ModelMap model, YukonUserContext userContext,
@@ -46,13 +44,11 @@ public class HomeController {
             Boolean rvDescending) {
         LiteYukonUser user = userContext.getYukonUser();
 
-        List<UiFilter<DisplayablePao>> filters = Lists.newArrayList();
-        filters.add(new AuthorizedFilter<DisplayablePao>(paoAuthorizationService, user, Permission.LM_VISIBLE));
+        List<DisplayablePao> favorites = userPageDao.getDrFavorites(user);
 
-        UiFilter<DisplayablePao> filter = UiFilterList.wrap(filters);
+        favorites = paoAuthorizationService.filterAuthorized(user, favorites, Permission.LM_VISIBLE);
 
-        List<DisplayablePao> favorites = favoritesService.getFavorites(user, filter);
-        Comparator<DisplayablePao> sorter = null;
+        Comparator<DisplayablePao> sorter = new DisplayablePaoComparator();
         if (favSort != null) {
             CombinedSortableField sortField = CombinedSortableField.valueOf(favSort);
             sorter = demandResponseService.getSorter(sortField, userContext);
@@ -60,13 +56,13 @@ public class HomeController {
                 sorter = Ordering.from(sorter).reverse();
             }
         }
-        if (sorter == null) {
-            sorter = new DisplayablePaoComparator();
-        }
+
         Collections.sort(favorites, sorter);
         model.addAttribute("favorites", favorites);
 
-        List<DisplayablePao> recentlyViewed = favoritesService.getRecentlyViewed(user, 20, filter);
+        List<DisplayablePao> recentlyViewed = userPageDao.getDrRecentViewed(user);
+
+        recentlyViewed = paoAuthorizationService.filterAuthorized(user, recentlyViewed, Permission.LM_VISIBLE);
         sorter = null;
         if (rvSort != null) {
             CombinedSortableField sortField = CombinedSortableField.valueOf(rvSort);
