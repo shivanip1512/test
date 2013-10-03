@@ -15,7 +15,7 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.menu.ModuleBase;
+import com.cannontech.web.menu.Module;
 import com.cannontech.web.menu.option.producer.SearchFormData;
 import com.cannontech.web.menu.option.producer.SearchProducer;
 import com.cannontech.web.menu.option.producer.SearchType;
@@ -24,7 +24,7 @@ public class SearchRenderer {
     
     @Autowired private YukonUserContextMessageSourceResolver resolver;
 
-    public void render(ModuleBase module,HttpServletRequest req, Writer writer) throws IOException {
+    public void render(Module module, HttpServletRequest req, Writer writer) throws IOException {
         Elements elems = new Elements();
         YukonUserContext context = YukonUserContextUtils.getYukonUserContext(req);
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);

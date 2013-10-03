@@ -50,7 +50,7 @@ public class CommonModuleBuilder implements ModuleBuilder {
     @Autowired private EnergyCompanyService energyCompanyService;
     @Autowired private RoleAndPropertyDescriptionService roleAndPropertyDescriptionService;
 
-    private final Map<String, ModuleBase> moduleMap = new TreeMap<String, ModuleBase>();
+    private final Map<String, Module> moduleMap = new TreeMap<String, Module>();
     private MenuOptionProducerFactory menuOptionProducerFactory;
     private SearchProducerFactory searchProducerFactory;
     private final Resource moduleConfigFile;
@@ -83,7 +83,7 @@ public class CommonModuleBuilder implements ModuleBuilder {
 
     private void buildModule(Element moduleElement) throws ModuleConfigException {
         String moduleName = moduleElement.getAttributeValue("name");
-        ModuleBase moduleBase = new ModuleBase(moduleName);
+        Module module = new Module(moduleName);
         
         // TODO: REMOVE when able: Only consumer pages uses "menu" now and hopefully not for long
         Element topMenu = moduleElement.getChild("menu", ns);
@@ -95,41 +95,41 @@ public class CommonModuleBuilder implements ModuleBuilder {
             topLevelOptions = Collections.emptyList();
         }
         MenuBase menuBase = new MenuBase(topLevelOptions);
-        moduleBase.setMenuBase(menuBase);
+        module.setMenuBase(menuBase);
         
         Element searchElement = moduleElement.getChild("search", ns);
         if (searchElement != null) {
         	String beanName = searchElement.getAttributeValue("bean");
         	SearchProducer searchProducer = searchProducerFactory.getSearchProducer(beanName);
-        	moduleBase.setSearchProducer(searchProducer);
+        	module.setSearchProducer(searchProducer);
         }
         
         Element skinElement = moduleElement.getChild("skin", ns);
         if (skinElement != null) {
             String skinName = skinElement.getAttributeValue("name");
             LayoutSkinEnum skin = LayoutSkinEnum.valueOf(skinName);
-            moduleBase.setSkin(skin);
+            module.setSkin(skin);
         }
         
         List<?> cssElements = moduleElement.getChildren("css", ns);
         for (Iterator<?> iter = cssElements.iterator(); iter.hasNext();) {
             Element cssElement = (Element) iter.next();
-            moduleBase.addCssFiles(cssElement.getAttributeValue("file"));
+            module.addCssFiles(cssElement.getAttributeValue("file"));
         }
         
         List<?> scriptElements = moduleElement.getChildren("script", ns);
         for (Iterator<?> iter = scriptElements.iterator(); iter.hasNext();) {
             Element scriptElement = (Element) iter.next();
-            moduleBase.addScriptFiles(scriptElement.getAttributeValue("file"));
+            module.addScriptFiles(scriptElement.getAttributeValue("file"));
         }
         
         Element crumbs = moduleElement.getChild("pages", ns);
         Iterable<PageInfo> pageInfos = processPages(crumbs, moduleName, null);
         for (PageInfo pageInfo : pageInfos) {
-            moduleBase.addPageInfo(pageInfo);
+            module.addPageInfo(pageInfo);
         }
 
-        moduleMap.put(moduleBase.getModuleName(), moduleBase);
+        moduleMap.put(module.getModuleName(), module);
     }
 
     private List<PageInfo> processPages(Element parentOfPages, String moduleName, PageInfo parent) {
@@ -316,13 +316,13 @@ public class CommonModuleBuilder implements ModuleBuilder {
     }
     
     @Override
-    public ModuleBase getModuleBase(String moduleName) {
+    public Module getModule(String moduleName) {
         
         refreshModules();
         
-        ModuleBase moduleBase = moduleMap.get(moduleName);
-        Validate.notNull(moduleBase, "Unknown module name \"" + moduleName + "\" (check module_config.xml).");
-        return moduleBase;
+        Module module = moduleMap.get(moduleName);
+        Validate.notNull(module, "Unknown module name \"" + moduleName + "\" (check module_config.xml).");
+        return module;
     }
 
     // Refresh the modules for development mode
@@ -335,7 +335,7 @@ public class CommonModuleBuilder implements ModuleBuilder {
     }
     
     @Override
-    public List<ModuleBase> getAllModules() {
+    public List<Module> getAllModules() {
         refreshModules();
         
         return Lists.newArrayList(moduleMap.values());

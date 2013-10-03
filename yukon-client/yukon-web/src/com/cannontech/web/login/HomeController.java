@@ -19,7 +19,6 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.userpage.dao.UserPageDao;
 import com.cannontech.common.userpage.dao.UserSubscriptionDao;
 import com.cannontech.common.userpage.model.UserPage;
-import com.cannontech.common.userpage.model.UserPage.Module;
 import com.cannontech.common.userpage.model.UserSubscription;
 import com.cannontech.common.userpage.model.UserSubscription.SubscriptionType;
 import com.cannontech.common.util.CtiUtilities;
@@ -32,8 +31,8 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.layout.PageDetailProducer;
 import com.cannontech.web.layout.PageDetailProducer.PageContext;
-import com.cannontech.web.menu.CommonModuleBuilder;
-import com.cannontech.web.menu.ModuleBase;
+import com.cannontech.web.menu.Module;
+import com.cannontech.web.menu.ModuleBuilder;
 import com.cannontech.web.menu.PageInfo;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Lists;
@@ -48,7 +47,7 @@ public class HomeController {
     @Autowired private UserSubscriptionDao userSubscriptionDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private PageDetailProducer pageDetailProducer;
-    @Autowired private CommonModuleBuilder moduleBuilder;
+    @Autowired private ModuleBuilder moduleBuilder;
 
     @RequestMapping({"/home", "/index.jsp"})
     public String home(HttpServletRequest req) {
@@ -65,7 +64,7 @@ public class HomeController {
         List<UserPage> pages = userPageDao.getPagesForUser(context.getYukonUser());
 
         List<UserPageWrapper> history = setupDisplayableHistory(pages, context);
-        Multimap<Module, UserPageWrapper> favoritesMap = setupDisplayableFavorites(pages, context);
+        Multimap<UserPage.Module, UserPageWrapper> favoritesMap = setupDisplayableFavorites(pages, context);
 
         model.put("history", history);
         model.put("favorites", favoritesMap.asMap());
@@ -95,8 +94,8 @@ public class HomeController {
         return history;
     }
 
-    private Multimap<Module, UserPageWrapper> setupDisplayableFavorites( List<UserPage> pages, YukonUserContext context) {
-
+    private Multimap<UserPage.Module, UserPageWrapper> setupDisplayableFavorites(List<UserPage> pages,
+            YukonUserContext context) {
         List<UserPage> rawFavorites = Lists.newArrayList();
         for (UserPage page : pages) {
             if (page.isFavorite()) {
@@ -116,7 +115,7 @@ public class HomeController {
         Collections.sort(favorites, byNameAsc);
         Collections.sort(favorites, byModuleAsc);
 
-        Multimap<Module, UserPageWrapper> favoritesMap = LinkedListMultimap.create();
+        Multimap<UserPage.Module, UserPageWrapper> favoritesMap = LinkedListMultimap.create();
         for (UserPageWrapper page : favorites) {
             favoritesMap.put(page.getPage().getModuleEnum(), page);
         }
@@ -205,7 +204,7 @@ public class HomeController {
     }
 
     private UserPageWrapper buildWrapperForPage(UserPage page, YukonUserContext context) {
-        ModuleBase moduleBase = moduleBuilder.getModuleBase(page.getModule());
+        Module moduleBase = moduleBuilder.getModule(page.getModule());
 
         PageInfo thisPage = moduleBase.getPageInfo(page.getName());
         if (thisPage == null) {

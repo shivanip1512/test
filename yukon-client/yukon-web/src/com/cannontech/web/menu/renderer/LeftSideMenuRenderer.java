@@ -21,7 +21,7 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.menu.MenuBase;
 import com.cannontech.web.menu.MenuFeatureSet;
-import com.cannontech.web.menu.ModuleBase;
+import com.cannontech.web.menu.Module;
 import com.cannontech.web.menu.option.MenuOption;
 import com.cannontech.web.menu.option.SimpleMenuOption;
 import com.cannontech.web.menu.option.SubMenuOption;
@@ -33,7 +33,7 @@ import com.cannontech.web.menu.option.producer.MenuOptionProducer;
 public class LeftSideMenuRenderer implements MenuRenderer {
 
     private final HttpServletRequest httpServletRequest;
-    private final ModuleBase moduleBase;
+    private final Module module;
     private final MessageSourceAccessor messageSource;
     private YukonUserContext userContext;
     private MenuFeatureSet features = new MenuFeatureSet();
@@ -47,13 +47,12 @@ public class LeftSideMenuRenderer implements MenuRenderer {
      * The ServletRequest is required so that absolute URLs can be adjusted` for
      * the context path.
      * @param request the current request object
-     * @param moduleBase the menu base of the current module
+     * @param module the menu base of the current module
      */
-    public LeftSideMenuRenderer(HttpServletRequest request,
-            ModuleBase moduleBase,
+    public LeftSideMenuRenderer(HttpServletRequest request, Module module,
             YukonUserContextMessageSourceResolver messageSourceResolver) {
         this.httpServletRequest = request;
-        this.moduleBase = moduleBase;
+        this.module = module;
         this.userContext = YukonUserContextUtils.getYukonUserContext(request);
         this.messageSource = messageSourceResolver.getMessageSourceAccessor(userContext);
     }
@@ -66,7 +65,7 @@ public class LeftSideMenuRenderer implements MenuRenderer {
     @Override
     public void renderMenu(Writer out) throws IOException {
 
-        MenuBase menuBase = this.moduleBase.getMenuBase();
+        MenuBase menuBase = this.module.getMenuBase();
         Div menuDiv = this.buildMenu(menuBase);
         menuDiv.output(out);
 

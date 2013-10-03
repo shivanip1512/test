@@ -8,7 +8,11 @@ import org.apache.commons.lang.builder.CompareToBuilder;
 import com.cannontech.user.checker.UserChecker;
 import com.google.common.collect.Lists;
 
-// corresponds with a <page> in module_config.xml
+/**
+ * A representation of basic configuration information for a web page.
+ * 
+ * An instance of this class corresponds to a &lt;page&gt; element in module_config.xml.
+ */
 public class PageInfo implements Comparable<PageInfo> {
     private String name;
     private String moduleName;
@@ -215,7 +219,4 @@ public class PageInfo implements Comparable<PageInfo> {
             return false;
         return true;
     }
-
-
-    
 }

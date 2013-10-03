@@ -48,7 +48,7 @@ import com.cannontech.web.JsLibrary;
 import com.cannontech.web.Writable;
 import com.cannontech.web.menu.CommonModuleBuilder;
 import com.cannontech.web.menu.LayoutSkinEnum;
-import com.cannontech.web.menu.ModuleBase;
+import com.cannontech.web.menu.Module;
 import com.cannontech.web.menu.PageInfo;
 import com.cannontech.web.menu.renderer.LeftSideMenuRenderer;
 import com.cannontech.web.menu.renderer.SearchRenderer;
@@ -133,7 +133,7 @@ public class LayoutController {
         final MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         
         //used for determining page title etc...
-        final ModuleBase moduleBase = getModuleBase(tagInfo.getModuleName());
+        final Module moduleBase = getModuleBase(tagInfo.getModuleName());
         map.addAttribute("module", moduleBase);
         
         //parse the module_config.xml and figure out our hierarchy for menus etc...
@@ -352,8 +352,8 @@ public class LayoutController {
         }
     }
     
-    private ModuleBase getModuleBase(String moduleName) throws JspException {
-        ModuleBase moduleBase = moduleBuilder.getModuleBase(moduleName);
+    private Module getModuleBase(String moduleName) throws JspException {
+        Module moduleBase = moduleBuilder.getModule(moduleName);
 
         return moduleBase;
     }

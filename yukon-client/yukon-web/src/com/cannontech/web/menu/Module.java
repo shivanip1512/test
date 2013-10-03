@@ -8,14 +8,11 @@ import com.cannontech.web.menu.option.producer.SearchProducer;
 import com.google.common.collect.Maps;
 
 /**
- * Represents the logical base of the menu for a given module. The main components are
- * the top level options (which usually have sub option), the search path for the search
- * form, and the quicklinks that are used in the drop down. When actually building the
- * menu, the getValid*() methods should be used to ensure that the user only sees links
- * to content they have permission to see.
+ * A representation of a module from module_config.xml.
+ * 
+ * An instance of this class corresponds to a &lt;module&gt; element in module_config.xml.
  */
-public class ModuleBase {
-	
+public class Module {
     private String moduleName;
     private SearchProducer searchProducer;
     private MenuBase portalLinks;
@@ -25,7 +22,7 @@ public class ModuleBase {
     private LayoutSkinEnum skin;
     private MenuBase menuBase;
     
-    public ModuleBase(String moduleName) {
+    public Module(String moduleName) {
         this.moduleName = moduleName;
     }
     
@@ -92,5 +89,4 @@ public class ModuleBase {
     public void addScriptFiles(String scriptFile) {
         scriptFiles.add(scriptFile);
     }
-    
 }
