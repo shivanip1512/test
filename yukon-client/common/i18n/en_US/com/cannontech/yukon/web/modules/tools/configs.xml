@@ -192,7 +192,7 @@
     <entry key="yukon.web.modules.tools.configs.category.dnp.enableUnsolicitedMessages.description">When true, allow sending of unsolicited messages following a device restart, else disallow. Default: true.</entry>
 
     <entry key="yukon.web.modules.tools.configs.category.mct470DemandLoadProfile.title">MCT-470 Demand and Profile</entry>
-    <entry key="yukon.web.modules.tools.configs.category.mct470DemandLoadProfile.definition">General demand and load profile settings for the MCT-470.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470DemandLoadProfile.definition">General demand and profile settings for the MCT-470.</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct470DemandLoadProfile.demandInterval">Demand Interval</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct470DemandLoadProfile.demandInterval.description">Interval in minutes over which most recent demand is calculated.</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct470DemandLoadProfile.loadProfileInterval1">Load Profile Interval 1</entry>
@@ -307,7 +307,7 @@
     <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel1Type">Channel #1 Meter Type</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel1Type.description">Used to determine which type of meter will populate profile channel 1.</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel1PhysicalChannel">Channel #1 Physical Channel</entry>
-    <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel1PhysicalChannel.description">The channel of the attached meter.  In the case of a pulse meter, this indicates which physical KYZ channel of the MCT-470’s daughter board the pulse meter is attached to. In the case of an electronic meter, this indicates which load profile channel of that electronic meter to retrieve.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel1PhysicalChannel.description">The channel of the attached meter. In the case of a pulse meter, this indicates which physical KYZ channel of the MCT-470’s daughter board the pulse meter is attached to. In the case of an electronic meter, this indicates which profile channel of that electronic meter to retrieve.</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel1LoadProfileResolution">Channel #1 Profile Resolution</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel1LoadProfileResolution.description">Resolution power for profile data.</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel1PeakKWResolution">Channel #1 Peak KW Resolution</entry>
@@ -317,7 +317,7 @@
     <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel2Type">Channel #2 Meter Type</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel2Type.description">Used to determine which type of meter will populate profile channel 2.</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel2PhysicalChannel">Channel #2 Physical Channel</entry>
-    <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel2PhysicalChannel.description">The channel of the attached meter.  In the case of a pulse meter, this indicates which physical KYZ channel of the MCT-470’s daughter board the pulse meter is attached to. In the case of an electronic meter, this indicates which load profile channel of that electronic meter to retrieve.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel2PhysicalChannel.description">The channel of the attached meter. In the case of a pulse meter, this indicates which physical KYZ channel of the MCT-470’s daughter board the pulse meter is attached to. In the case of an electronic meter, this indicates which profile channel of that electronic meter to retrieve.</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel2LoadProfileResolution">Channel #2 Profile Resolution</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel2LoadProfileResolution.description">Resolution power for profile data.</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel2PeakKWResolution">Channel #2 Peak KW Resolution</entry>
@@ -327,7 +327,7 @@
     <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel3Type">Channel #3 Meter Type</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel3Type.description">Used to determine which type of meter will populate profile channel 3.</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel3PhysicalChannel">Channel #3 Physical Channel</entry>
-    <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel3PhysicalChannel.description">The channel of the attached meter.  In the case of a pulse meter, this indicates which physical KYZ channel of the MCT-470’s daughter board the pulse meter is attached to. In the case of an electronic meter, this indicates which load profile channel of that electronic meter to retrieve.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel3PhysicalChannel.description">The channel of the attached meter. In the case of a pulse meter, this indicates which physical KYZ channel of the MCT-470’s daughter board the pulse meter is attached to. In the case of an electronic meter, this indicates which profile channel of that electronic meter to retrieve.</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel3LoadProfileResolution">Channel #3 Profile Resolution</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel3LoadProfileResolution.description">Resolution power for profile data.</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel3PeakKWResolution">Channel #3 Peak KW Resolution</entry>
@@ -337,7 +337,7 @@
     <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel4Type">Channel #4 Meter Type</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel4Type.description">Used to determine which type of meter will populate profile channel 4.</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel4PhysicalChannel">Channel #4 Physical Channel</entry>
-    <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel4PhysicalChannel.description">The channel of the attached meter.  In the case of a pulse meter, this indicates which physical KYZ channel of the MCT-470’s daughter board the pulse meter is attached to. In the case of an electronic meter, this indicates which load profile channel of that electronic meter to retrieve.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel4PhysicalChannel.description">The channel of the attached meter. In the case of a pulse meter, this indicates which physical KYZ channel of the MCT-470’s daughter board the pulse meter is attached to. In the case of an electronic meter, this indicates which profile channel of that electronic meter to retrieve.</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel4LoadProfileResolution">Channel #4 Profile Resolution</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel4LoadProfileResolution.description">Resolution power for profile data.</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel4PeakKWResolution">Channel #4 Peak KW Resolution</entry>
@@ -348,9 +348,9 @@
     <entry key="yukon.web.modules.tools.configs.category.mct430ConfigurationByte.title">MCT-430 Configuration</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct430ConfigurationByte.definition">DST and time sync configuration for the MCT-430.</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct430ConfigurationByte.enableDst">Enable DST</entry>
-    <entry key="yukon.web.modules.tools.configs.category.mct430ConfigurationByte.enableDst.description">If this is set, the device will action any DST changes.  Clearing this will force the DST Active flag to zero.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430ConfigurationByte.enableDst.description">When true, the device recognizes DST. Else, DST changes will be ignored (flag set to 0).</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct430ConfigurationByte.timeAdjustTolerance">Time Adjust Tolerance</entry>
-    <entry key="yukon.web.modules.tools.configs.category.mct430ConfigurationByte.timeAdjustTolerance.description">Update the RTC if it is this far away from the incoming time sync.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430ConfigurationByte.timeAdjustTolerance.description">Adjust real time clock when the incoming time sync differs by this many seconds.</entry>
 
     <entry key="yukon.web.modules.tools.configs.category.mct430PrecannedTable.title">MCT-430 Precanned Table</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct430PrecannedTable.definition">The table number and read intervals that the MCT-430 uses to scan any attached IED.</entry>
