@@ -14,16 +14,16 @@ namespace Devices {
 namespace {  // anonymous namespace
 
 const std::vector<CtiDeviceBase::PaoInfoKeys> displayMetricPaoKeys = boost::assign::list_of
-    ( CtiTableDynamicPaoInfo::Key_DisplayMetric01 )
-    ( CtiTableDynamicPaoInfo::Key_DisplayMetric02 )
-    ( CtiTableDynamicPaoInfo::Key_DisplayMetric03 )
-    ( CtiTableDynamicPaoInfo::Key_DisplayMetric04 )
-    ( CtiTableDynamicPaoInfo::Key_DisplayMetric05 )
-    ( CtiTableDynamicPaoInfo::Key_DisplayMetric06 )
-    ( CtiTableDynamicPaoInfo::Key_DisplayMetric07 )
-    ( CtiTableDynamicPaoInfo::Key_DisplayMetric08 )
-    ( CtiTableDynamicPaoInfo::Key_DisplayMetric09 )
-    ( CtiTableDynamicPaoInfo::Key_DisplayMetric10 );
+    ( CtiTableDynamicPaoInfo::Key_DisplayItem01 )
+    ( CtiTableDynamicPaoInfo::Key_DisplayItem02 )
+    ( CtiTableDynamicPaoInfo::Key_DisplayItem03 )
+    ( CtiTableDynamicPaoInfo::Key_DisplayItem04 )
+    ( CtiTableDynamicPaoInfo::Key_DisplayItem05 )
+    ( CtiTableDynamicPaoInfo::Key_DisplayItem06 )
+    ( CtiTableDynamicPaoInfo::Key_DisplayItem07 )
+    ( CtiTableDynamicPaoInfo::Key_DisplayItem08 )
+    ( CtiTableDynamicPaoInfo::Key_DisplayItem09 )
+    ( CtiTableDynamicPaoInfo::Key_DisplayItem10 );
 
 const std::vector<CtiDeviceBase::PaoInfoKeys> displayAlphaPaoKeys = boost::assign::list_of
     ( CtiTableDynamicPaoInfo::Key_DisplayAlphameric1 )

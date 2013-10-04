@@ -382,58 +382,58 @@ const CtiTableDynamicPaoInfo::key_map_t   CtiTableDynamicPaoInfo::_key_map =
         (Key_MCT_PhaseLossSeconds,
             "mct phase loss seconds")
 
-        (Key_DisplayMetric01,
-            "display metric 01")
-        (Key_DisplayMetric02,
-            "display metric 02")
-        (Key_DisplayMetric03,
-            "display metric 03")
-        (Key_DisplayMetric04,
-            "display metric 04")
-        (Key_DisplayMetric05,
-            "display metric 05")
-        (Key_DisplayMetric06,
-            "display metric 06")
-        (Key_DisplayMetric07,
-            "display metric 07")
-        (Key_DisplayMetric08,
-            "display metric 08")
-        (Key_DisplayMetric09,
-            "display metric 09")
-        (Key_DisplayMetric10,
-            "display metric 10")
-        (Key_DisplayMetric11,
-            "display metric 11")
-        (Key_DisplayMetric12,
-            "display metric 12")
-        (Key_DisplayMetric13,
-            "display metric 13")
-        (Key_DisplayMetric14,
-            "display metric 14")
-        (Key_DisplayMetric15,
-            "display metric 15")
-        (Key_DisplayMetric16,
-            "display metric 16")
-        (Key_DisplayMetric17,
-            "display metric 17")
-        (Key_DisplayMetric18,
-            "display metric 18")
-        (Key_DisplayMetric19,
-            "display metric 19")
-        (Key_DisplayMetric20,
-            "display metric 20")
-        (Key_DisplayMetric21,
-            "display metric 21")
-        (Key_DisplayMetric22,
-            "display metric 22")
-        (Key_DisplayMetric23,
-            "display metric 23")
-        (Key_DisplayMetric24,
-            "display metric 24")
-        (Key_DisplayMetric25,
-            "display metric 25")
-        (Key_DisplayMetric26,
-            "display metric 26")
+        (Key_DisplayItem01,
+            "display item 01")
+        (Key_DisplayItem02,
+            "display item 02")
+        (Key_DisplayItem03,
+            "display item 03")
+        (Key_DisplayItem04,
+            "display item 04")
+        (Key_DisplayItem05,
+            "display item 05")
+        (Key_DisplayItem06,
+            "display item 06")
+        (Key_DisplayItem07,
+            "display item 07")
+        (Key_DisplayItem08,
+            "display item 08")
+        (Key_DisplayItem09,
+            "display item 09")
+        (Key_DisplayItem10,
+            "display item 10")
+        (Key_DisplayItem11,
+            "display item 11")
+        (Key_DisplayItem12,
+            "display item 12")
+        (Key_DisplayItem13,
+            "display item 13")
+        (Key_DisplayItem14,
+            "display item 14")
+        (Key_DisplayItem15,
+            "display item 15")
+        (Key_DisplayItem16,
+            "display item 16")
+        (Key_DisplayItem17,
+            "display item 17")
+        (Key_DisplayItem18,
+            "display item 18")
+        (Key_DisplayItem19,
+            "display item 19")
+        (Key_DisplayItem20,
+            "display item 20")
+        (Key_DisplayItem21,
+            "display item 21")
+        (Key_DisplayItem22,
+            "display item 22")
+        (Key_DisplayItem23,
+            "display item 23")
+        (Key_DisplayItem24,
+            "display item 24")
+        (Key_DisplayItem25,
+            "display item 25")
+        (Key_DisplayItem26,
+            "display item 26")
 
         (Key_DisplayAlphameric1,     "display alphameric 1")
         (Key_DisplayAlphameric2,     "display alphameric 2")
