@@ -57,7 +57,6 @@
     jQuery(document).ready(function(){
         var offsetTop,
             dialogHeight,
-            groupTreeDiv,
             titleBarObj,
             groupTreeObj,
             dialogCont,
@@ -105,8 +104,7 @@
 
         window_${id} = jQuery(document.getElementById("window_${id}")).dialog(args);
 
-        groupTreeDiv = document.getElementById('window_${id}');
-        groupTreeObj = jQuery(groupTreeDiv);
+        groupTreeObj = jQuery('#' + 'window_${id}');
         titleBarObj = groupTreeObj.prev('.ui-dialog-titlebar');
         buttonPaneObj = jQuery(groupTreeObj.nextAll('.ui-dialog-buttonpane')[0]);
         dialogCont = groupTreeObj.closest('.ui-dialog');
