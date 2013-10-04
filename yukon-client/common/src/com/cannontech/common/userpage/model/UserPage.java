@@ -14,7 +14,6 @@ import com.cannontech.common.i18n.DisplayableEnum;
 import com.google.common.collect.ImmutableMap;
 
 public final class UserPage {
-
     private final Integer id;
     private final Integer userId;
     private final String path;
@@ -25,7 +24,7 @@ public final class UserPage {
     private final Instant lastAccess;
     private final static Logger log = YukonLogManager.getLogger(UserPage.class);
 
-    public enum Module implements DisplayableEnum, Comparable<Module> {
+    public enum Module implements DisplayableEnum {
         AMI(1),
         DR(2),
         VV(3),
@@ -37,9 +36,9 @@ public final class UserPage {
         UNKNOWN(999),
         ;
 
-        int order;
+        final int order;
 
-        Module(int order){
+        Module(int order) {
             this.order = order;
         }
 
@@ -48,7 +47,8 @@ public final class UserPage {
                 @Override
                 public int compare(Module left, Module right) {
                     return Integer.compare(left.order, right.order);
-                }};
+                }
+            };
         }
 
         @Override
@@ -58,9 +58,9 @@ public final class UserPage {
     }
 
     private final static Map<String, String> mappedModuleNames = ImmutableMap.of("capcontrol", "vv", "amr", "ami",
-            "adminSetup", "admin", "operator", "assets", "survey", "assets");
+        "adminSetup", "admin", "operator", "assets", "survey", "assets");
 
-    public  Module getModuleEnum() {
+    public Module getModuleEnum() {
         String moduleName = module;
         if (mappedModuleNames.containsKey(moduleName)) {
             moduleName = mappedModuleNames.get(moduleName);
@@ -77,14 +77,16 @@ public final class UserPage {
     }
 
     public UserPage(Integer userId, String path, boolean isFavorite) {
-        this(userId, path, isFavorite, null, null, new ArrayList<String>(), new Instant(), null);   
+        this(userId, path, isFavorite, null, null, new ArrayList<String>(), new Instant(), null);
     }
 
-    public UserPage(Integer userId, String path, boolean category, String moduleName, String name, List<String> arguments) {
-     this(userId, path, category, moduleName, name, arguments, new Instant(), null);   
+    public UserPage(Integer userId, String path, boolean category, String moduleName, String name,
+            List<String> arguments) {
+        this(userId, path, category, moduleName, name, arguments, new Instant(), null);
     }
 
-    public UserPage(Integer userId, String path, boolean isFavorite,  String module, String name, List<String> arguments, Instant lastAccess, Integer id) {
+    public UserPage(Integer userId, String path, boolean isFavorite, String module, String name,
+            List<String> arguments, Instant lastAccess, Integer id) {
         this.id = id;
         this.userId = userId;
         this.path = path;
@@ -98,57 +100,60 @@ public final class UserPage {
     public Integer getId() {
         return id;
     }
-    public final Integer getUserId() {
+
+    public Integer getUserId() {
         return userId;
     }
-    public final String getPath() {
+
+    public String getPath() {
         return path;
     }
-    public final String getModule() {
+
+    public String getModule() {
         return module;
     }
-    public final String getName() {
+
+    public String getName() {
         return name;
     }
-    public final List<String> getArguments() {
+
+    public List<String> getArguments() {
         return arguments;
     }
-    public final boolean isFavorite() {
+
+    public boolean isFavorite() {
         return favorite;
     }
+
     public Instant getLastAccess() {
         return lastAccess;
     }
 
-    public UserPage withId(Integer id) {
-        if (this.id == id) {
+    public UserPage withId(Integer newId) {
+        if (id == newId) {
             return this;
-        } else {
-            return new UserPage(this.userId, this.path, this.favorite, this.module, this.name, this.arguments, this.lastAccess, id);
         }
+        return new UserPage(userId, path, favorite, module, name, arguments, lastAccess, newId);
     }
 
-    public UserPage withFavorite(boolean isFavorite) {
-        if (this.favorite == isFavorite) {
+    public UserPage withFavorite(boolean newFavorite) {
+        if (favorite == newFavorite) {
             return this;
-        } else {
-            return new UserPage(this.userId, this.path, isFavorite, this.module, this.name, this.arguments, this.lastAccess, this.id);
         }
+        return new UserPage(userId, path, newFavorite, module, name, arguments, lastAccess, id);
     }
 
-    public UserPage withLastAccess(Instant lastAccessedDate) {
-        if (this.lastAccess == lastAccessedDate) {
+    public UserPage withLastAccess(Instant newLastAccess) {
+        if (lastAccess == newLastAccess) {
             return this;
-        } else {
-            return new UserPage(this.userId, this.path, this.favorite, this.module, this.name, this.arguments, lastAccessedDate, this.id);
         }
+        return new UserPage(userId, path, favorite, module, name, arguments, newLastAccess, id);
     }
 
-    public UserPage withArguments(List<String> arguments) {
-        if (this.arguments == arguments) {
+    public UserPage withArguments(List<String> newArguments) {
+        if (arguments == newArguments) {
             return this;
-        } else {
-            return new UserPage(this.userId, this.path, this.favorite, this.module, this.name, arguments, this.lastAccess, this.id);
         }
+        return new UserPage(userId, path, favorite, module, name, newArguments, lastAccess, id);
     }
 }
