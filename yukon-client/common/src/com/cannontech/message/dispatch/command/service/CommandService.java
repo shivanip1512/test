@@ -1,6 +1,6 @@
 package com.cannontech.message.dispatch.command.service;
 
-import com.cannontech.common.tdc.model.AltScanRateEnum;
+import com.cannontech.common.tdc.model.AltScanRate;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 public interface CommandService {
@@ -20,7 +20,7 @@ public interface CommandService {
     /**
      * Sends alt scan rate command to the device
      */
-    public void sendAltScanRate(int deviceId, AltScanRateEnum scanRate, LiteYukonUser user);
+    public void sendAltScanRate(int deviceId, AltScanRate scanRate, LiteYukonUser user);
 
     /**
      * Sends acknowledge alarm command to the device

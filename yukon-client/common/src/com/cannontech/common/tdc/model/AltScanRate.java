@@ -5,7 +5,7 @@ import org.springframework.context.MessageSourceResolvable;
 import com.cannontech.common.i18n.Displayable;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 
-public enum AltScanRateEnum implements Displayable{            
+public enum AltScanRate implements Displayable{            
     ONCE(0),
     MIN1(60),
     MIN2(120),
@@ -23,7 +23,7 @@ public enum AltScanRateEnum implements Displayable{
     DAYS2(172800),
     DAYS5(432000);
     
-    AltScanRateEnum(int durationInSeconds) {
+    AltScanRate(int durationInSeconds) {
         this.durationInSeconds = durationInSeconds;
     }
     public int getDuration() {

@@ -3,27 +3,27 @@ package com.cannontech.web.tdc;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.cannontech.common.tdc.model.AltScanRateEnum;
-import com.cannontech.common.tdc.model.EnableDisableEnum;
+import com.cannontech.common.tdc.model.AltScanRate;
+import com.cannontech.common.util.EnabledStatus;
 import com.cannontech.tags.Tag;
 
 public class DisplayBackingBean {
     private int deviceId;
     private int pointId;
-    private AltScanRateEnum altScanRate;
-    private EnableDisableEnum pointEnableDisable = EnableDisableEnum.ENABLED;
-    private EnableDisableEnum deviceEnableDisable = EnableDisableEnum.ENABLED;
+    private AltScanRate altScanRate;
+    private EnabledStatus pointEnabledStatus = EnabledStatus.ENABLED;
+    private EnabledStatus deviceEnabledStatus = EnabledStatus.ENABLED;
     private Double value;
     private int stateId;
     private List<Tag> tags = new ArrayList<>();
     private boolean deviceControlInhibited;
     private int rowIndex;
         
-    public AltScanRateEnum getAltScanRate() {
+    public AltScanRate getAltScanRate() {
         return altScanRate;
     }
 
-    public void setAltScanRate(AltScanRateEnum altScanRate) {
+    public void setAltScanRate(AltScanRate altScanRate) {
         this.altScanRate = altScanRate;
     }
     
@@ -33,22 +33,6 @@ public class DisplayBackingBean {
 
     public void setDeviceId(int deviceId) {
         this.deviceId = deviceId;
-    }
-
-    public EnableDisableEnum getPointEnableDisable() {
-        return pointEnableDisable;
-    }
-
-    public void setPointEnableDisable(EnableDisableEnum pointEnableDisable) {
-        this.pointEnableDisable = pointEnableDisable;
-    }
-
-    public EnableDisableEnum getDeviceEnableDisable() {
-        return deviceEnableDisable;
-    }
-
-    public void setDeviceEnableDisable(EnableDisableEnum deviceEnableDisable) {
-        this.deviceEnableDisable = deviceEnableDisable;
     }
 
     public int getPointId() {
@@ -97,5 +81,21 @@ public class DisplayBackingBean {
 
     public void setRowIndex(int rowIndex) {
         this.rowIndex = rowIndex;
+    }
+
+    public EnabledStatus getPointEnabledStatus() {
+        return pointEnabledStatus;
+    }
+
+    public void setPointEnabledStatus(EnabledStatus pointEnabledStatus) {
+        this.pointEnabledStatus = pointEnabledStatus;
+    }
+
+    public EnabledStatus getDeviceEnabledStatus() {
+        return deviceEnabledStatus;
+    }
+
+    public void setDeviceEnabledStatus(EnabledStatus deviceEnabledStatus) {
+        this.deviceEnabledStatus = deviceEnabledStatus;
     }
 }

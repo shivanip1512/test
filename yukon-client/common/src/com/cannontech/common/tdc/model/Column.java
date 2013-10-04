@@ -3,7 +3,7 @@ package com.cannontech.common.tdc.model;
 public class Column {
     private int displayId;
     private String title;
-    private ColumnTypeEnum type;
+    private ColumnType type;
     private int order;
     private int width;
 
@@ -39,11 +39,11 @@ public class Column {
         this.width = width;
     }
 
-    public ColumnTypeEnum getType() {
+    public ColumnType getType() {
         return type;
     }
 
-    public void setType(ColumnTypeEnum type) {
+    public void setType(ColumnType type) {
         this.type = type;
     }
 }

@@ -9,11 +9,11 @@ import com.google.common.collect.Iterables;
 public class Display {
     private int displayId;
     private String name;
-    private DisplayTypeEnum type;
+    private DisplayType type;
     private String title;
     private String description;
     private List<Column> columns;
-    private boolean acknowledge;
+    private boolean acknowledgable;
         
     public int getDisplayId() {
         return displayId;
@@ -27,10 +27,10 @@ public class Display {
     public void setName(String name) {
         this.name = name;
     }
-    public DisplayTypeEnum getType() {
+    public DisplayType getType() {
         return type;
     }
-    public void setType(DisplayTypeEnum type) {
+    public void setType(DisplayType type) {
         this.type = type;
     }
     public String getTitle() {
@@ -51,14 +51,14 @@ public class Display {
     public void setColumns(List<Column> columns) {
         this.columns = columns;
     }
-    public boolean isAcknowledge() {
-        return acknowledge;
+    public boolean isAcknowledgable() {
+        return acknowledgable;
     }
-    public void setAcknowledge(boolean acknowledge) {
-        this.acknowledge = acknowledge;
+    public void setAcknowledgable(boolean acknowledge) {
+        this.acknowledgable = acknowledge;
     }
     
-    public boolean hasColumn(final ColumnTypeEnum type) {
+    public boolean hasColumn(final ColumnType type) {
         Column column = Iterables.find(columns, new Predicate<Column>() {
             @Override
             public boolean apply(Column c) {

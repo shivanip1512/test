@@ -16,15 +16,14 @@ Yukon.Tdc = (function () {
                 'cookie' : {}
             });
        
-            jQuery('#b_mute, #b_unmute').click(function (e) {
-                if (e.currentTarget.id == 'b_mute') {
-                    jQuery('#b_mute').hide();
-                    jQuery('#b_unmute').show();
-                } else {
+            jQuery('#b_mute').click(function (e) {
+                jQuery('#b_mute').hide();
+                jQuery('#b_unmute').show();
+            });
 
-                    jQuery('#b_mute').show();
-                    jQuery('#b_unmute').hide();
-                }
+            jQuery('#b_unmute').click(function (e) {
+                jQuery('#b_mute').show();
+                jQuery('#b_unmute').hide();
             });
             
             jQuery('.f-ack-all').click(function () {
@@ -153,12 +152,11 @@ Yukon.Tdc = (function () {
            jQuery('.f-one-alarm-ack').click(function (event) {
 				var pointId = jQuery(this).parent().attr( "pointId");
 				var condition = jQuery(this).parent().attr("condition");
-                   console.debug(pointId);
                    var data = {
                        pointId: pointId,
                        condition: condition
                    };
-                   jQuery("#dropdown_"+pointId).data('menu').hide();
+                   jQuery("#dropdown_"+pointId).find("ul").hide();
                    jQuery("#dropdown_"+pointId).removeClass("menu-open");
                    jQuery.post('/tdc/acknowledgeAlarm', data).done(function (data) {});
                });

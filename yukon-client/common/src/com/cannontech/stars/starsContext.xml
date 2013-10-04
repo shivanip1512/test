@@ -288,9 +288,12 @@
     
     <bean id="energyCompanyService" class="com.cannontech.stars.service.impl.EnergyCompanyServiceImpl"/>
 
-    <bean id="displayDao" class="com.cannontech.common.tdc.impl.DisplayDaoImpl" />
-    <bean id="displayDataDao" class="com.cannontech.common.tdc.impl.DisplayDataDaoImpl" />
+    <bean id="displayDao" class="com.cannontech.common.tdc.dao.impl.DisplayDaoImpl"/>
+    <bean id="displayDataDao" class="com.cannontech.common.tdc.dao.impl.DisplayDataDaoImpl"/>
     <bean id="commandService" class="com.cannontech.message.dispatch.command.service.impl.CommandServiceImpl">
         <property name="dispatchConnection" ref="dispatchConnection" />
     </bean>        
+
+    <bean class="com.cannontech.common.tdc.service.impl.TdcServiceImpl"/>
+    <bean class="com.cannontech.common.tag.service.impl.TagServiceImpl"/>   
 </beans>

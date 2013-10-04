@@ -8,6 +8,7 @@ import java.util.Map;
 import net.sf.json.JSONObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,7 +19,7 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.tdc.dao.DisplayDao;
 import com.cannontech.common.tdc.model.Display;
 import com.cannontech.common.tdc.model.DisplayData;
-import com.cannontech.common.tdc.model.DisplayTypeEnum;
+import com.cannontech.common.tdc.model.DisplayType;
 import com.cannontech.common.tdc.model.IDisplay;
 import com.cannontech.common.tdc.service.TdcService;
 import com.cannontech.core.roleproperties.YukonRole;
@@ -45,8 +46,8 @@ public class TdcHomeController {
     @RequestMapping("/tdc")
     public String home(ModelMap model, YukonUserContext context) {
         
-       List<Display> custom = displayDao.getDisplayByType(DisplayTypeEnum.CUSTOM_DISPLAYS);
-       List<Display> events = displayDao.getDisplayByType(DisplayTypeEnum.ALARMS_AND_EVENTS);
+       List<Display> custom = displayDao.getDisplayByType(DisplayType.CUSTOM_DISPLAYS);
+       List<Display> events = displayDao.getDisplayByType(DisplayType.ALARMS_AND_EVENTS);
        List<Display> topEvents = new ArrayList<>();
        ListIterator<Display> it =  events.listIterator();
         while (it.hasNext()) {
@@ -93,7 +94,7 @@ public class TdcHomeController {
         
         int alarms = tdcService.acknowledgeAllAlarms(context.getYukonUser());
         JSONObject result = new JSONObject();
-        YukonMessageSourceResolvable successMsg =
+        MessageSourceResolvable successMsg =
                 new YukonMessageSourceResolvable("yukon.web.modules.tools.tdc.ack.success", alarms);
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
         result.put("success", accessor.getMessage(successMsg));

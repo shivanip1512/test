@@ -1,4 +1,4 @@
-package com.cannontech.common.tdc.impl;
+package com.cannontech.common.tdc.dao.impl;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -11,9 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.tdc.dao.DisplayDao;
 import com.cannontech.common.tdc.model.Column;
-import com.cannontech.common.tdc.model.ColumnTypeEnum;
+import com.cannontech.common.tdc.model.ColumnType;
 import com.cannontech.common.tdc.model.Display;
-import com.cannontech.common.tdc.model.DisplayTypeEnum;
+import com.cannontech.common.tdc.model.DisplayType;
 import com.cannontech.common.tdc.model.IDisplay;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
@@ -36,7 +36,7 @@ public class DisplayDaoImpl implements DisplayDao {
     private final YukonRowMapper<Display> displayRowMapper = createDisplayRowMapper();
 
     @Override
-    public List<Display> getDisplayByType(DisplayTypeEnum type) {
+    public List<Display> getDisplayByType(DisplayType type) {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DISPLAYNUM, NAME, TYPE, TITLE, DESCRIPTION");
@@ -76,7 +76,7 @@ public class DisplayDaoImpl implements DisplayDao {
      */
     private void subDisplayNameWithCatName(Map<Integer, String> mappedDisplayIdToAlarmCategoryName,
                                            Display display) {
-        if (display.getType() == DisplayTypeEnum.ALARMS_AND_EVENTS
+        if (display.getType() == DisplayType.ALARMS_AND_EVENTS
             && display.getDisplayId() != IDisplay.SOE_LOG_DISPLAY_NUMBER
             && display.getDisplayId() != IDisplay.TAG_LOG_DISPLAY_NUMBER
             && display.getDisplayId() != IDisplay.EVENT_VIEWER_DISPLAY_NUMBER
@@ -138,7 +138,7 @@ public class DisplayDaoImpl implements DisplayDao {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
                 sql.append("SELECT DISPLAYNUM, TITLE, TYPENUM, ORDERING, WIDTH");
                 sql.append("FROM DISPLAYCOLUMNS");
-                sql.append("WHERE DISPLAYNUM").in(ids);
+                sql.append("WHERE DISPLAYNUM").in(subList);
                 sql.append("ORDER BY ORDERING");
                 return sql;
             }
@@ -172,7 +172,7 @@ public class DisplayDaoImpl implements DisplayDao {
                 final Display display = new Display();
                 display.setDisplayId(rs.getInt("DISPLAYNUM"));
                 display.setName(rs.getStringSafe("NAME"));
-                display.setType(rs.getEnum("TYPE", DisplayTypeEnum.class));
+                display.setType(rs.getEnum("TYPE", DisplayType.class));
                 display.setTitle(rs.getStringSafe("TITLE"));
                 display.setDescription(rs.getStringSafe("DESCRIPTION"));
                 /*
@@ -180,12 +180,12 @@ public class DisplayDaoImpl implements DisplayDao {
                  * displayed on the page
                  */
                 display
-                    .setAcknowledge((display.getDisplayId() == IDisplay.GLOBAL_ALARM_DISPLAY
-                                     || (display.getType() == DisplayTypeEnum.ALARMS_AND_EVENTS
+                    .setAcknowledgable((display.getDisplayId() == IDisplay.GLOBAL_ALARM_DISPLAY
+                                     || (display.getType() == DisplayType.ALARMS_AND_EVENTS
                                          && display.getDisplayId() != IDisplay.SOE_LOG_DISPLAY_NUMBER
                                          && display.getDisplayId() != IDisplay.TAG_LOG_DISPLAY_NUMBER
                                          && display.getDisplayId() != IDisplay.EVENT_VIEWER_DISPLAY_NUMBER)
-                                     || display.getType() == DisplayTypeEnum.CUSTOM_DISPLAYS));
+                                     || display.getType() == DisplayType.CUSTOM_DISPLAYS));
                 return display;
             }
         };
@@ -201,10 +201,10 @@ public class DisplayDaoImpl implements DisplayDao {
                 column.setDisplayId(rs.getInt("DISPLAYNUM"));
                 column.setTitle(rs.getStringSafe("TITLE"));
                 column.setOrder(rs.getInt("ORDERING"));
-                if (mappedDisplays.get(column.getDisplayId()).getType() == DisplayTypeEnum.CUSTOM_DISPLAYS) {
-                    column.setType(ColumnTypeEnum.getByTypeId(rs.getInt("TYPENUM")));
+                if (mappedDisplays.get(column.getDisplayId()).getType() == DisplayType.CUSTOM_DISPLAYS) {
+                    column.setType(ColumnType.getByTypeId(rs.getInt("TYPENUM")));
                 } else {
-                    column.setType(ColumnTypeEnum.getByName(column.getTitle()));
+                    column.setType(ColumnType.getByName(column.getTitle()));
                 }
                 column.setWidth(rs.getInt("WIDTH"));
                 return column;

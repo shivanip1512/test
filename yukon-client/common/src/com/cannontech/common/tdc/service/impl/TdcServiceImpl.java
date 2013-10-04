@@ -31,7 +31,7 @@ import com.cannontech.common.tdc.dao.DisplayDataDao;
 import com.cannontech.common.tdc.model.Cog;
 import com.cannontech.common.tdc.model.Display;
 import com.cannontech.common.tdc.model.DisplayData;
-import com.cannontech.common.tdc.model.DisplayTypeEnum;
+import com.cannontech.common.tdc.model.DisplayType;
 import com.cannontech.common.tdc.service.TdcService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.AlarmCatDao;
@@ -101,9 +101,9 @@ public class TdcServiceImpl implements TdcService{
             retVal = getAlarms(true);
             break;
         default:
-            if(display.getType() == DisplayTypeEnum.CUSTOM_DISPLAYS){
+            if(display.getType() == DisplayType.CUSTOM_DISPLAYS){
                 retVal = displayDataDao.getCustomDisplayData(display);
-            }else if(display.getType() == DisplayTypeEnum.ALARMS_AND_EVENTS){
+            }else if(display.getType() == DisplayType.ALARMS_AND_EVENTS){
                 retVal = getCustomDisplayDataByAlarmCategory(display);
             }
         }
@@ -271,10 +271,10 @@ public class TdcServiceImpl implements TdcService{
             if (display == null) {
                 color = getUnackOrActiveAlarmColor(data.getPointId(), data.getCondition());
             }
-            else if (display.getType() == DisplayTypeEnum.CUSTOM_DISPLAYS) {
+            else if (display.getType() == DisplayType.CUSTOM_DISPLAYS) {
                 color = getUnackOrActiveAlarmColor(data.getPointId());
             }
-            else if (display.isAcknowledge()) {
+            else if (display.isAcknowledgable()) {
                 color = getUnackOrActiveAlarmColor(data.getPointId(), data.getCondition());
             }
 

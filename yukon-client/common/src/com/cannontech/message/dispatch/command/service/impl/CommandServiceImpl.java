@@ -7,12 +7,13 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.tdc.model.AltScanRateEnum;
+import com.cannontech.common.tdc.model.AltScanRate;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.point.stategroup.ThreeStateStatusState;
 import com.cannontech.message.dispatch.DispatchClientConnection;
 import com.cannontech.message.dispatch.command.service.CommandService;
 import com.cannontech.message.util.Command;
+import com.google.common.collect.ImmutableList;
 
 public class CommandServiceImpl implements CommandService {
     private Logger log = YukonLogManager.getLogger(CommandServiceImpl.class);
@@ -21,10 +22,7 @@ public class CommandServiceImpl implements CommandService {
     @Override
     public void sendAcknowledgeAlarm(int pointId, int condition, LiteYukonUser user) {
 
-        final List<Integer> data = new ArrayList<Integer>(2);
-        data.add(-1);
-        data.add(pointId);
-        data.add(condition);
+        List<Integer> data = ImmutableList.of(-1, pointId, condition);
 
         final Command command = new Command();
         command.setUserName(user.getUsername());
@@ -76,7 +74,6 @@ public class CommandServiceImpl implements CommandService {
         } else {
             data.add(Command.ABLEMENT_ENABLE);
         }
-        ;
         Command command = new Command();
         command.setUserName(user.getUsername());
         command.setOperation(Command.ABLEMENT_TOGGLE);
@@ -91,7 +88,7 @@ public class CommandServiceImpl implements CommandService {
     }
 
     @Override
-    public void sendAltScanRate(int deviceId, AltScanRateEnum scanRate, LiteYukonUser user) {
+    public void sendAltScanRate(int deviceId, AltScanRate scanRate, LiteYukonUser user) {
 
         Command command = new Command();
         command.setOperation(Command.ALTERNATE_SCAN_RATE);

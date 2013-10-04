@@ -364,5 +364,9 @@
     <entry key="yukon.common.tzDisplayOption.LOCAL">Local</entry>
     <entry key="yukon.common.tzDisplayOption.LOCAL_NO_DST">Standard (no DST)</entry>
     <entry key="yukon.common.tzDisplayOption.UTC">UTC (GMT)</entry>
+    
+    <!-- EnabledStatus enum-->
+    <entry key="yukon.common.enabledStatus.ENABLED">Enabled</entry>
+    <entry key="yukon.common.enabledStatus.DISABLED">Disabled</entry>
 
 </properties>

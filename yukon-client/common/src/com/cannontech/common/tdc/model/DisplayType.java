@@ -2,7 +2,7 @@ package com.cannontech.common.tdc.model;
 
 import com.cannontech.common.util.DatabaseRepresentationSource;
 
-public enum DisplayTypeEnum implements DatabaseRepresentationSource{
+public enum DisplayType implements DatabaseRepresentationSource{
     LOAD_MANAGEMENT_CLIENT("Load Management Client"),
     SCHEDULER_CLIENT("Scheduler Client"),
     ALARMS_AND_EVENTS("Alarms and Events"),
@@ -10,7 +10,7 @@ public enum DisplayTypeEnum implements DatabaseRepresentationSource{
 
     private String dbString;
 
-    DisplayTypeEnum(String dbString) {
+    DisplayType(String dbString) {
         this.dbString = dbString;
     }
 

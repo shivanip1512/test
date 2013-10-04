@@ -37,13 +37,13 @@ import com.cannontech.common.chart.model.GraphType;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.tag.service.TagService;
 import com.cannontech.common.tdc.dao.DisplayDao;
-import com.cannontech.common.tdc.model.AltScanRateEnum;
-import com.cannontech.common.tdc.model.ColumnTypeEnum;
+import com.cannontech.common.tdc.model.AltScanRate;
+import com.cannontech.common.tdc.model.ColumnType;
 import com.cannontech.common.tdc.model.Display;
 import com.cannontech.common.tdc.model.DisplayData;
-import com.cannontech.common.tdc.model.DisplayTypeEnum;
-import com.cannontech.common.tdc.model.EnableDisableEnum;
+import com.cannontech.common.tdc.model.DisplayType;
 import com.cannontech.common.tdc.service.TdcService;
+import com.cannontech.common.util.EnabledStatus;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.DeviceDao;
@@ -113,8 +113,8 @@ public class TdcDisplayController {
         model.addAttribute("display", display);
         model.addAttribute("backingBean", new DisplayBackingBean());
         model.addAttribute("colorStateBoxes", tdcService.getUnackAlarmColorStateBoxes(display, displayData));
-        if(display.getType() == DisplayTypeEnum.CUSTOM_DISPLAYS){
-            model.addAttribute("hasPointValueColumn", display.hasColumn(ColumnTypeEnum.POINT_VALUE));
+        if(display.getType() == DisplayType.CUSTOM_DISPLAYS){
+            model.addAttribute("hasPointValueColumn", display.hasColumn(ColumnType.POINT_VALUE));
         }
         return "display.jsp";
     }
@@ -125,14 +125,14 @@ public class TdcDisplayController {
         DisplayBackingBean backingBean = new DisplayBackingBean();
         backingBean.setPointId(pointId);
         model.addAttribute("backingBean", backingBean);
-        model.addAttribute("enableDisable", EnableDisableEnum.values());
+        model.addAttribute("enableDisable", EnabledStatus.values());
         int tags = dynamicDataSource.getTags(pointId);
 
         if (TagUtils.isDeviceOutOfService(tags)) {
-            backingBean.setDeviceEnableDisable(EnableDisableEnum.DISABLED);
+            backingBean.setDeviceEnabledStatus(EnabledStatus.DISABLED);
         }
         if (TagUtils.isPointOutOfService(tags)) {
-            backingBean.setPointEnableDisable(EnableDisableEnum.DISABLED);
+            backingBean.setPointEnabledStatus(EnabledStatus.DISABLED);
         }
         LitePoint litePoint = pointDao.getLitePoint(backingBean.getPointId());
         LiteYukonPAObject liteYukonPAO = paoDao.getLiteYukonPAO(litePoint.getPaobjectID());
@@ -151,22 +151,22 @@ public class TdcDisplayController {
         int deviceId = liteYukonPAO.getPaoIdentifier().getPaoId();
 
         if (TagUtils.isDeviceOutOfService(tags)) {
-            if (backingBean.getDeviceEnableDisable() == EnableDisableEnum.ENABLED) {
+            if (backingBean.getDeviceEnabledStatus() == EnabledStatus.ENABLED) {
                 commandService.toggleDeviceEnablement(deviceId, false, context.getYukonUser());
             }
         } else {
-            if (backingBean.getDeviceEnableDisable() == EnableDisableEnum.DISABLED) {
+            if (backingBean.getDeviceEnabledStatus() == EnabledStatus.DISABLED) {
                 commandService.toggleDeviceEnablement(deviceId, true, context.getYukonUser());
             }
         }
         if (TagUtils.isPointOutOfService(tags)) {
-            if (backingBean.getPointEnableDisable() == EnableDisableEnum.ENABLED) {
+            if (backingBean.getPointEnabledStatus() == EnabledStatus.ENABLED) {
                 commandService.togglePointEnablement(backingBean.getPointId(),
                                                  false,
                                                  context.getYukonUser());
             }
         } else {
-            if (backingBean.getPointEnableDisable() == EnableDisableEnum.DISABLED) {
+            if (backingBean.getPointEnabledStatus() == EnabledStatus.DISABLED) {
                 commandService.togglePointEnablement(backingBean.getPointId(),
                                                  true,
                                                  context.getYukonUser());
@@ -186,7 +186,7 @@ public class TdcDisplayController {
         LitePoint litePoint = pointDao.getLitePoint(pointId);
         LiteYukonPAObject liteYukonPAO = paoDao.getLiteYukonPAO(litePoint.getPaobjectID());
 
-        YukonMessageSourceResolvable title =
+        MessageSourceResolvable title =
             new YukonMessageSourceResolvable("yukon.web.modules.tools.tdc.unack.title",
                                              liteYukonPAO.getPaoName(), litePoint.getPointName());
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
@@ -212,7 +212,7 @@ public class TdcDisplayController {
 
         Display display = displayDao.getDisplayById(displayId);
         int alarms = tdcService.acknowledgeAlarmsForDisplay(display, context.getYukonUser());
-        YukonMessageSourceResolvable successMsg =
+        MessageSourceResolvable successMsg =
             new YukonMessageSourceResolvable("yukon.web.modules.tools.tdc.ack.success", alarms);
         return getJSONSuccess(successMsg, context);
     }
@@ -393,7 +393,7 @@ public class TdcDisplayController {
         backingBean.setDeviceId(deviceId);
         model.addAttribute("backingBean", backingBean);
         model.addAttribute("deviceName", deviceName);
-        model.addAttribute("altScanRates", AltScanRateEnum.values());
+        model.addAttribute("altScanRates", AltScanRate.values());
         return "altScanRatePopup.jsp";
     }
 
@@ -540,13 +540,13 @@ public class TdcDisplayController {
 
     @InitBinder
     public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
-        binder.registerCustomEditor(AltScanRateEnum.class,
-                                    new EnumPropertyEditor<>(AltScanRateEnum.class));
-        binder.registerCustomEditor(EnableDisableEnum.class,
-                                    new EnumPropertyEditor<>(EnableDisableEnum.class));
+        binder.registerCustomEditor(AltScanRate.class,
+                                    new EnumPropertyEditor<>(AltScanRate.class));
+        binder.registerCustomEditor(EnabledStatus.class,
+                                    new EnumPropertyEditor<>(EnabledStatus.class));
     }
 
-    private JSONObject getJSONSuccess(YukonMessageSourceResolvable successMsg,
+    private JSONObject getJSONSuccess(MessageSourceResolvable successMsg,
                                       YukonUserContext context) {
         JSONObject result = new JSONObject();
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);

@@ -46,7 +46,7 @@
                             </td>
                             <td><form:input path="tags[${row.index}].descriptionStr" maxlength="120" cssClass="fl" /></td>
                             <td><cti:formatDate value="${tags.tagTime}" type="BOTH" /></td>
-                            <td>${tags.username} &nbsp;<cti:button nameKey="tags.deleteTagButton" icon="icon-cross" rowIndex="${row.index}" renderMode="image" classes="fr show-on-hover f-tags-remove" /></td>
+                            <td>${fn:escapeXml(tags.username)}&nbsp;<cti:button nameKey="tags.deleteTagButton" icon="icon-cross" rowIndex="${row.index}" renderMode="image" classes="fr show-on-hover f-tags-remove" /></td>
                         </tr>
                     </c:forEach>
                 </tbody>

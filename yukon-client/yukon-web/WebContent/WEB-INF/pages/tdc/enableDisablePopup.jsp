@@ -12,7 +12,7 @@
            <tags:nameValue2 nameKey="yukon.common.device">${fn:escapeXml(deviceName)}</tags:nameValue2>
            <tags:nameValue2 nameKey="yukon.common.point">${fn:escapeXml(pointName)}</tags:nameValue2>
             <tags:nameValue2 nameKey=".enableDisable.pointStatus">
-                <form:select path="pointEnableDisable">
+                <form:select path="pointEnabledStatus">
                     <c:forEach var="enableDisable" items="${enableDisable}">
                         <form:option value="${enableDisable}">
                             <cti:msg2 key="${enableDisable}" />
@@ -21,7 +21,7 @@
                 </form:select>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".enableDisable.deviceStatus">
-                <form:select path="deviceEnableDisable">
+                <form:select path="deviceEnabledStatus">
                     <c:forEach var="enableDisable" items="${enableDisable}">
                         <form:option value="${enableDisable}">
                             <cti:msg2 key="${enableDisable}" />

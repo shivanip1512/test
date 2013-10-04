@@ -16,7 +16,7 @@
     <flot:defaultIncludes />
 
     <div id="f-page-buttons" class="dn">
-        <c:if test="${display.acknowledge}">
+        <c:if test="${display.acknowledgable}">
             <tags:dynamicChoose updaterString="TDC/ALARM_DISPLAY/${display.displayId}" suffix="${display.displayId}">
                 <tags:dynamicChooseOption optionId="MULT_ALARMS">
                     <cti:button nameKey="tdc.alarm.acknowledgeAll" displayId="${display.displayId}" icon="icon-tick" classes="f-display-alarm-ack" />
@@ -35,7 +35,7 @@
             <tr>
                 <th></th>
                 <c:forEach var="column" items="${display.columns}">
-                    <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnTypeEnum.POINT_VALUE')}">
+                    <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.POINT_VALUE')}">
                         <th></th>
                     </c:if>
                     <th>${fn:escapeXml(column.title)}</th>
@@ -47,9 +47,9 @@
         <tbody>
             <c:forEach var="row" items="${displayData}">
                 <c:set var="dataVar" value=""/>
-                <c:if test="${display.acknowledge}">
+                <c:if test="${display.acknowledgable}">
                     <c:choose>
-                        <c:when test="${display.type == cti:constantValue('com.cannontech.common.tdc.model.DisplayTypeEnum.CUSTOM_DISPLAYS')}">
+                        <c:when test="${display.type == cti:constantValue('com.cannontech.common.tdc.model.DisplayType.CUSTOM_DISPLAYS')}">
                             <c:set var="bgColor" value="data-class-updater='TDC/BG_COLOR_POINT/${row.pointId}/0'" />
                         </c:when>
                         <c:otherwise>
@@ -58,80 +58,81 @@
                     </c:choose>
                 </c:if>
                 <tr id="row-${row.pointId}">
-                    <td><c:if test="${display.acknowledge}">
+                    <td><c:if test="${display.acknowledgable}">
                             <span class="${colorStateBoxes.get(row.pointId).get(row.condition)}" ${bgColor}</span>
                         </c:if></td>
                     <c:forEach var="column" items="${display.columns}">
-                        <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnTypeEnum.POINT_ID')}">
+                        <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.POINT_ID')}">
                             <td>${fn:escapeXml(row.pointId)}</td>
                         </c:if>
-                        <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnTypeEnum.POINT_NAME')}">
+                        <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.POINT_NAME')}">
                             <td>${fn:escapeXml(row.pointName)}</td>
                         </c:if>
-                        <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnTypeEnum.POINT_TYPE')}">
+                        <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.POINT_TYPE')}">
                             <td><i:inline key="${row.pointType}" /></td>
                         </c:if>
-                        <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnTypeEnum.POINT_STATE')}">
+                        <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.POINT_STATE')}">
                             <td><i:inline key=".point.enabled.${row.pointEnabled}" /></td>
                         </c:if>
-                        <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnTypeEnum.DEVICE_NAME')}">
+                        <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.DEVICE_NAME')}">
                             <td>${fn:escapeXml(row.deviceName)}</td>
                         </c:if>
-                        <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnTypeEnum.DEVICE_TYPE')}">
+                        <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.DEVICE_TYPE')}">
                             <td><tags:paoType yukonPao="${row.device}" showLink="false" /></td>
                         </c:if>
-                        <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnTypeEnum.DEVICE_CURRENT_STATE')}">
+                        <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.DEVICE_CURRENT_STATE')}">
                             <td>${fn:escapeXml(row.deviceCurrentState)}</td>
                         </c:if>
-                        <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnTypeEnum.DEVICE_ID')}">
+                        <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.DEVICE_ID')}">
                             <td>${row.device.deviceId}</td>
                         </c:if>
-                        <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnTypeEnum.POINT_VALUE')}">
+                        <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.POINT_VALUE')}">
                             <td class="state-indicator tar"><c:if test="${row.pointType.status}">
                                     <cti:pointStatusColor pointId="${row.pointId}" styleClass="box stateBox" background="true">&nbsp;</cti:pointStatusColor>
                                 </c:if></td>
                             <td><cti:pointValue pointId="${row.pointId}" format="VALUE_UNIT" /></td>
                         </c:if>
-                        <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnTypeEnum.POINT_QUALITY')}">
+                        <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.POINT_QUALITY')}">
                             <td><cti:pointValue pointId="${row.pointId}" format="{quality}" /></td>
                         </c:if>
-                        <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnTypeEnum.POINT_TIME_STAMP')}">
+                        <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.POINT_TIME_STAMP')}">
                             <td><tags:historicalValue device="${row.device}" pointId="${row.pointId}" /></td>
                         </c:if>
-                        <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnTypeEnum.TIME_STAMP')}">
+                        <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.TIME_STAMP')}">
                             <td><cti:formatDate value="${row.date}" type="BOTH" /></td>
                         </c:if>
-                        <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnTypeEnum.TEXT_MESSAGE')}">
+                        <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.TEXT_MESSAGE')}">
                             <td>${fn:escapeXml(row.textMessage)}</td>
                         </c:if>
-                        <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnTypeEnum.ADDITIONAL_INFO')}">
+                        <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.ADDITIONAL_INFO')}">
                             <td>${fn:escapeXml(row.additionalInfo)}</td>
                         </c:if>
-                        <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnTypeEnum.DESCRIPTION')}">
+                        <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.DESCRIPTION')}">
                             <td>${fn:escapeXml(row.description)}</td>
                         </c:if>
-                        <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnTypeEnum.USERNAME')}">
+                        <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.USERNAME')}">
                             <td>${fn:escapeXml(row.userName)}</td>
                         </c:if>
-                        <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnTypeEnum.STATE')}">
+                        <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.STATE')}">
                             <td><cti:dataUpdaterValue type="TDC" identifier="STATE/${row.pointId}" /></td>
                         </c:if>
-                        <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnTypeEnum.TAG')}">
+                        <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.TAG')}">
                             <td>${fn:escapeXml(row.tagName)}</td>
                         </c:if>
-                        <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnTypeEnum.U_OF_M')}">
+                        <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.U_OF_M')}">
                             <td><cti:pointValue pointId="${row.pointId}" format="UNIT" /></td>
                         </c:if>
                     </c:forEach>
-                    <c:if test="${display.acknowledge && display.type != cti:constantValue('com.cannontech.common.tdc.model.DisplayTypeEnum.CUSTOM_DISPLAYS')}">
+                    <c:if test="${display.acknowledgable && display.type != cti:constantValue('com.cannontech.common.tdc.model.DisplayType.CUSTOM_DISPLAYS')}">
                         <td><tags:dynamicChoose updaterString="TDC/ALARM_POINT_CONDITION/${row.pointId}/${row.condition}" suffix="${row.pointId}">
                                 <tags:dynamicChooseOption optionId="ONE_ALARM">
                                     <cti:button nameKey="alarm.acknowledge" icon="icon-tick" pointId="${row.pointId}" condition="${row.condition}" classes="f-one-alarm-ack-b fr" renderMode="buttonImage" />
                                 </tags:dynamicChooseOption>
                             </tags:dynamicChoose></td>
                     </c:if>
-                    <c:if test="${display.type == cti:constantValue('com.cannontech.common.tdc.model.DisplayTypeEnum.CUSTOM_DISPLAYS')}">
-                        <td style="width: 56px;"><cm:dropdown id="dropdown_${row.pointId}" containerCssClass="fr vh">
+                    <c:if test="${display.type == cti:constantValue('com.cannontech.common.tdc.model.DisplayType.CUSTOM_DISPLAYS')}">
+                        <td style="width: 56px;">
+                            <cm:dropdown id="dropdown_${row.pointId}" containerCssClass="fr vh">
                                 <tags:dynamicChoose updaterString="TDC/ALARM_COUNT_POINT/${row.pointId}" suffix="${row.pointId}">
                                     <tags:dynamicChooseOption optionId="ONE_ALARM">
                                         <cm:dropdownOption key=".alarm.acknowledge" icon="icon-tick" pointId="${row.pointId}" condition="${row.condition}" classes="clearfix f-one-alarm-ack"></cm:dropdownOption>

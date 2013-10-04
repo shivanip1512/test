@@ -24,15 +24,16 @@
                             <div class="clearfix">
                                 <ul class="property-list fl">
                                     <li class="name"><i:inline key="yukon.common.device"/>:</li>
-                                    <li class="value">${alarm.deviceName}</li>
+                                    <li class="value">${fn:escapeXml(alarm.deviceName)}</li>
                                 </ul>
                                 <ul class="property-list fl">
                                     <li class="name"><i:inline key="yukon.common.point"/>:</li>
-                                    <li class="value">${alarm.pointName}</li>
+                                    <li class="value">${fn:escapeXml(alarm.pointName)}</li>
                                 </ul>
                             </div>
                             <div>
-                                <a href="${allAlarms}" title="${alarm.device.deviceId} ${fn:escapeXml(alarm.deviceName)} : ${fn:escapeXml(alarm.pointName)}">${fn:escapeXml(alarm.textMessage)}</a>
+                                <cti:msg2 key=".title" arguments="${alarm.device.deviceId},${alarm.deviceName},${alarm.pointName}" argumentSeparator="," var="title" />
+                                <a href="${allAlarms}" title="${title}">${fn:escapeXml(alarm.textMessage)}</a>
                             </div>
                         </td>
                         <td class="alarm-ack">

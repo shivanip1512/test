@@ -1,4 +1,4 @@
-package com.cannontech.common.tdc.impl;
+package com.cannontech.common.tdc.dao.impl;
 
 import static com.cannontech.common.tdc.model.IDisplay.EVENT_VIEWER_DISPLAY_NUMBER;
 import static com.cannontech.common.tdc.model.IDisplay.SOE_LOG_DISPLAY_NUMBER;
@@ -19,7 +19,7 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.tdc.dao.DisplayDataDao;
 import com.cannontech.common.tdc.model.Cog;
-import com.cannontech.common.tdc.model.ColumnTypeEnum;
+import com.cannontech.common.tdc.model.ColumnType;
 import com.cannontech.common.tdc.model.Display;
 import com.cannontech.common.tdc.model.DisplayData;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -136,7 +136,7 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
                         || data.getPointType() == PointType.Status
                         || data.getPointType() == PointType.CalcStatus;
             PointValueQualityHolder pointValue = dynamicDataSource.getPointValue(data.getPointId());
-            cog.setManualEntry(display.hasColumn(ColumnTypeEnum.POINT_VALUE)
+            cog.setManualEntry(display.hasColumn(ColumnType.POINT_VALUE)
                                && isValidTypeForManualEntry
                                && pointValue.getPointQuality() != PointQuality.Constant);
             cog.setAltScan(DeviceTypesFuncs.hasDeviceScanRate(data.getDevice().getType()));

@@ -5,7 +5,7 @@ import java.util.Map;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
-public enum ColumnTypeEnum {
+public enum ColumnType {
     
     //select * from columntype;
     POINT_ID(1, "Point ID"),
@@ -30,37 +30,37 @@ public enum ColumnTypeEnum {
     DESCRIPTION(-5, "Description"),
     TAG(-6, "Tag");
     
-    private final static Map<String, ColumnTypeEnum> lookupByName;
-    private final static Map<Integer, ColumnTypeEnum> lookupByTypeId;
+    private final static Map<String, ColumnType> lookupByName;
+    private final static Map<Integer, ColumnType> lookupByTypeId;
     static {
-        Builder<Integer, ColumnTypeEnum> byTypeIdBuilder =
+        Builder<Integer, ColumnType> byTypeIdBuilder =
             ImmutableMap.builder();
 
-        for (ColumnTypeEnum columnType : values()) {
+        for (ColumnType columnType : values()) {
             byTypeIdBuilder.put(columnType.getTypeId(), columnType);
         }
         lookupByTypeId = byTypeIdBuilder.build();
-        Builder<String, ColumnTypeEnum> lookupByNameBuilder =
+        Builder<String, ColumnType> lookupByNameBuilder =
             ImmutableMap.builder();
 
-        for (ColumnTypeEnum columnType : values()) {
+        for (ColumnType columnType : values()) {
             lookupByNameBuilder.put(columnType.getColumnName(), columnType);
         }
         lookupByName = lookupByNameBuilder.build();
     }
 
-    public static ColumnTypeEnum getByTypeId(Integer typeId) {
+    public static ColumnType getByTypeId(Integer typeId) {
         return lookupByTypeId.get(typeId);
     }
     
-    public static ColumnTypeEnum getByName(String name) {
+    public static ColumnType getByName(String name) {
         return lookupByName.get(name);
     }
 
     private int typeId;
     private String name;
 
-    ColumnTypeEnum(int typeId, String name) {
+    ColumnType(int typeId, String name) {
         this.typeId = typeId;
         this.name = name;
     }

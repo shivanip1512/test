@@ -60,6 +60,7 @@
     <entry key="yukon.web.modules.tools.tdc.unack.title">Acknowledge Alarms for {0} : {1}</entry>
     <entry key="yukon.web.modules.tools.tdc.ack.success">Acknowledged {0} alarms</entry>
     <entry key="yukon.web.modules.tools.tdc.deviceNamePointName">{0} : {1}</entry>
+    <entry key="yukon.web.modules.tools.tdc.title">{0} {1} : {2}</entry>
 
     <entry key="yukon.web.modules.tools.tdc.point.enabled.true">Enabled</entry>
     <entry key="yukon.web.modules.tools.tdc.point.enabled.false">Disabled</entry>
@@ -80,7 +81,5 @@
     <entry key="yukon.web.modules.tools.tdc.altScanRateEnum.DAY1">1 day</entry>
     <entry key="yukon.web.modules.tools.tdc.altScanRateEnum.DAYS2">2 days</entry>
     <entry key="yukon.web.modules.tools.tdc.altScanRateEnum.DAYS5">5 days</entry>
-    
-    <entry key="yukon.web.modules.tools.tdc.enableDisableEnum.ENABLED">Enabled</entry>
-    <entry key="yukon.web.modules.tools.tdc.enableDisableEnum.DISABLED">Disabled</entry>
+
 </properties>
