@@ -83,31 +83,49 @@ public final class Formula {
     public ImmutableList<FormulaLookupTable<LocalTime>> getTimeTables() {
         return timeTables;
     }
-    
+
+    /**
+     * This method returns the FormulaFunction with a given EstimatedLoadFunctionId contained in a Formula.
+     * Returns null if the requested function id is not contained in the formula.
+     * 
+     * @param functionId The FormulaFunction object id being requested.
+     */
     public FormulaFunction getFunctionById(int functionId) {
         for (FormulaFunction f : functions) {
             if (f.getFunctionId() == functionId) {
                 return f;
             }
         }
-        throw new RuntimeException("No function with id: " + functionId + " exists for formula: " + getName());
+        return null;
     }
 
+    /**
+     * This method returns the FormulaLookupTable<Double> with a given EstimatedLoadFunctionId contained in a Formula.
+     * Returns null if the requested table id is not contained in the formula.
+     * 
+     * @param functionId The FormulaLookupTable object id being requested.
+     */
     public FormulaLookupTable<Double> getTableById(int tableId) {
         for (FormulaLookupTable<Double> t : tables) {
             if (t.getLookupTableId() == tableId) {
                 return t;
             }
         }
-        throw new RuntimeException("No lookup table with id: " + tableId + " exists for formula: " + getName());
+        return null;
     }
 
+    /**
+     * This method returns the FormulaLookupTable<LocalTime> with a given EstimatedLoadFunctionId contained in a Formula.
+     * Returns null if the requested time table id is not contained in the formula.
+     * 
+     * @param functionId The FormulaLookupTable object id being requested.
+     */
     public FormulaLookupTable<LocalTime> getTimeTableById(int timeTableId) {
         for (FormulaLookupTable<LocalTime> t : timeTables) {
             if (t.getLookupTableId() == timeTableId) {
                 return t;
             }
         }
-        throw new RuntimeException("No time-based lookup table with id: " + timeTableId + " exists for formula: " + getName());
+        return null;
     }
 }

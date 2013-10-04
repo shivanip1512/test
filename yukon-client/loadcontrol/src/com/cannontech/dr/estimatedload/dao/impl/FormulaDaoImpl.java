@@ -797,12 +797,12 @@ public class FormulaDaoImpl implements FormulaDao {
     public Formula getFormulaForGear(int gearId) throws EstimatedLoadCalculationException {
         GearAssignment assignment = getAssignmentForGear(gearId);
         if (assignment.getFormulaId() == null) {
-            throw new EstimatedLoadCalculationException(Type.NO_FORMULA_FOR_GEAR, gearId);
+            throw new EstimatedLoadCalculationException(Type.NO_FORMULA_FOR_GEAR, gearDao.getGearName(gearId));
         } else {
             try {
                 return getFormulaById(assignment.getFormulaId());
             } catch (DataAccessException e) {
-                throw new EstimatedLoadCalculationException(Type.NO_FORMULA_FOR_GEAR, gearId);
+                throw new EstimatedLoadCalculationException(Type.NO_FORMULA_FOR_GEAR, gearDao.getGearName(gearId));
             }
         }
     }

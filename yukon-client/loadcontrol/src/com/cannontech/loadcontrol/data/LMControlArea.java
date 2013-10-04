@@ -2,9 +2,11 @@ package com.cannontech.loadcontrol.data;
 
 import java.util.Vector;
 
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonPao;
 
-public class LMControlArea implements ILMData, Cloneable {
+public class LMControlArea implements ILMData, Cloneable, YukonPao {
 	
 	public static final int INVALID_INT = -1;
 
@@ -342,4 +344,10 @@ public class LMControlArea implements ILMData, Cloneable {
 	public String oldtoString() {
 		return getYukonName();
 	}
+
+	@Override
+    public PaoIdentifier getPaoIdentifier() {
+        return new PaoIdentifier(yukonID, yukonType);
+    }
+	
 }

@@ -12,9 +12,9 @@ public interface EstimatedLoadDao {
     public EstimatedLoadApplianceCategoryInfo getAcIdAndAverageKwLoadForLmProgram(int lmProgramId)
             throws EstimatedLoadCalculationException;
 
-    /** Returns the gear id of the currently selected gear for the given LM program 
+    /** Returns the gear id of a specific gear number for an LM program. 
      * @throws EstimatedLoadCalculationException */
-    public Integer getCurrentGearIdForProgram(int lmProgramId, int gearNumber);
+    public Integer getCurrentGearIdForProgram(int lmProgramId, int gearNumber) throws EstimatedLoadCalculationException;
 
     /** This method finds the LM program ids of any LM program that also has devices which are enrolled
      * enrolled in the LM program id passed in.  The intention of the method is to find all LM programs that

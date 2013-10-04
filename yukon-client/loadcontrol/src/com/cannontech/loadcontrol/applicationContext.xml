@@ -41,8 +41,12 @@
     <bean id="drControlAreaPriorityField" class="com.cannontech.dr.controlarea.model.ControlAreaPriorityField"/>
     <bean id="drControlAreaStartField" class="com.cannontech.dr.controlarea.model.ControlAreaStartField"/>
     <bean id="drControlAreaStopField" class="com.cannontech.dr.controlarea.model.ControlAreaStopField"/>
-    <bean id="drControlAreaLoadCapacityField" class="com.cannontech.dr.controlarea.model.ControlAreaLoadCapacityField"/>
     <bean id="drControlAreaShowActionField" class="com.cannontech.dr.controlarea.model.ControlAreaShowActionField"/>
+    <bean id="drControlAreaConnectedLoadField" class="com.cannontech.dr.controlarea.model.ControlAreaConnectedLoadField"/>
+    <bean id="drControlAreaDiversifiedLoadField" class="com.cannontech.dr.controlarea.model.ControlAreaDiversifiedLoadField"/>
+    <bean id="drControlAreaKwSavingsField" class="com.cannontech.dr.controlarea.model.ControlAreaKwSavingsField"/>
+    <bean id="drControlAreaEstimatedLoadErrorField" class="com.cannontech.dr.controlarea.model.ControlAreaEstimatedLoadErrorField"/>
+    
 
     <bean id="drTriggerFieldService" class="com.cannontech.dr.controlarea.service.impl.TriggerFieldServiceImpl"/>
     <bean id="drTriggerValueThresholdField" class="com.cannontech.dr.controlarea.model.TriggerValueThresholdField"/>
@@ -52,6 +56,10 @@
     <bean id="drScenarioService" class="com.cannontech.dr.scenario.service.impl.ScenarioServiceImpl"/>
     <bean id="drScenarioFieldService" class="com.cannontech.dr.scenario.service.impl.ScenarioFieldServiceImpl"/>
     <bean id="drScenarioShowActionField" class="com.cannontech.dr.scenario.model.ScenarioShowActionField"/>
+    <bean id="drScenarioConnectedLoadField" class="com.cannontech.dr.scenario.model.ScenarioConnectedLoadField"/>
+    <bean id="drScenarioDiversifiedLoadField" class="com.cannontech.dr.scenario.model.ScenarioDiversifiedLoadField"/>
+    <bean id="drScenarioKwSavingsField" class="com.cannontech.dr.scenario.model.ScenarioKwSavingsField"/>
+    <bean id="drScenarioEstimatedLoadErrorField" class="com.cannontech.dr.scenario.model.ScenarioEstimatedLoadEerrorField"/>
 
     <bean id="drProgramService" class="com.cannontech.dr.program.service.impl.ProgramServiceImpl"/>
     <bean id="drProgramFieldService" class="com.cannontech.dr.program.service.impl.ProgramFieldServiceImpl"/>

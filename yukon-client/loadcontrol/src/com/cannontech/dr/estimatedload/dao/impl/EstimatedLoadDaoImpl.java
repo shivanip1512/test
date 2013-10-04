@@ -47,36 +47,36 @@ public class EstimatedLoadDaoImpl implements EstimatedLoadDao{
         
         try {
             return yukonJdbcTemplate.queryForLimitedResults(sql, rowMapper, 1).get(0);
-        } catch (IndexOutOfBoundsException | DataAccessException e) {
+        } catch (IndexOutOfBoundsException | DataAccessException | NullPointerException e) {
             // No AverageKwLoad value was found which means that it was either NULL in the table, or the LmProgram 
             // requested was never assigned to an appliance category that the AverageKwLoad value can be grabbed from.
             log.debug("No appliance category id or average kw load value was found when attempting to look up " +
                     "this info for program id: " + lmProgramId);
-            LMProgramBase programBase;
-            try {
-                programBase = loadControlClient.getProgramSafe(lmProgramId);
-            } catch (ConnectionException e2){
-                throw new EstimatedLoadCalculationException(Type.LOAD_MANAGEMENT_SERVER_NOT_CONNECTED);
-            } catch (NotFoundException e2) {
-                throw new EstimatedLoadCalculationException(Type.LOAD_MANAGEMENT_DATA_NOT_FOUND);
-            }
-            if (programBase == null) {
-                throw new EstimatedLoadCalculationException(Type.LOAD_MANAGEMENT_DATA_NOT_FOUND);
-            }
+            LMProgramBase programBase = getLmProgramBase(lmProgramId);
             throw new EstimatedLoadCalculationException(Type.APPLIANCE_CATEGORY_INFO_NOT_FOUND,
                     programBase.getYukonName());
         }
     }
 
+
+
     @Override
-    public Integer getCurrentGearIdForProgram(int lmProgramId, int gearNumber) {
-         SqlStatementBuilder sql = new SqlStatementBuilder();
-         sql.append("SELECT GearId");
-         sql.append("FROM LmProgramDirectGear");
-         sql.append("WHERE DeviceId").eq(lmProgramId);
-         sql.append("AND GearNumber").eq(gearNumber);
-         
-         return yukonJdbcTemplate.queryForInt(sql);
+    public Integer getCurrentGearIdForProgram(int lmProgramId, int gearNumber) throws EstimatedLoadCalculationException {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT GearId");
+        sql.append("FROM LmProgramDirectGear");
+        sql.append("WHERE DeviceId").eq(lmProgramId);
+        sql.append("AND GearNumber").eq(gearNumber);
+        
+        try {
+            return yukonJdbcTemplate.queryForInt(sql);
+        } catch(DataAccessException e) {
+            LMProgramBase programBase = getLmProgramBase(lmProgramId);
+            log.debug("Gear not found for LM Program: " + programBase.getYukonName()
+                    + " with gear number: " + gearNumber);
+            throw new EstimatedLoadCalculationException(Type.GEAR_NUMBER_NOT_FOUND, programBase.getYukonName(),
+                    gearNumber);
+        }
     }
 
     @Override
@@ -94,9 +94,22 @@ public class EstimatedLoadDaoImpl implements EstimatedLoadDao{
         sql.append("      AND  LMPWP.DeviceId").eq(programId).append(")");
         sql.append("  AND  Type = 1");
         sql.append("  AND  GroupEnrollStop IS NULL");
-        //sql.append("  AND  LMPWP.DeviceId").neq(programId);
-
         
         return yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
+    }
+
+    private LMProgramBase getLmProgramBase(int lmProgramId) throws EstimatedLoadCalculationException {
+        LMProgramBase programBase;
+        try {
+            programBase = loadControlClient.getProgramSafe(lmProgramId);
+        } catch (ConnectionException e2){
+            throw new EstimatedLoadCalculationException(Type.LOAD_MANAGEMENT_SERVER_NOT_CONNECTED);
+        } catch (NotFoundException e2) {
+            throw new EstimatedLoadCalculationException(Type.LOAD_MANAGEMENT_DATA_NOT_FOUND);
+        }
+        if (programBase == null) {
+            throw new EstimatedLoadCalculationException(Type.LOAD_MANAGEMENT_DATA_NOT_FOUND);
+        }
+        return programBase;
     }
 }

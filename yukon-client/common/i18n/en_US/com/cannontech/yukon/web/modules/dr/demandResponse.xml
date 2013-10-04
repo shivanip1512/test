@@ -455,13 +455,14 @@
 <entry key="yukon.web.modules.dr.scenarioList.filter.submit">Filter</entry>
 <entry key="yukon.web.modules.dr.scenarioList.filter.clear">Show All</entry>
 <entry key="yukon.web.modules.dr.scenarioList.heading.name.linkText">Name</entry>
+<entry key="yukon.web.modules.dr.scenarioList.heading.kwSavings">kW Savings (Max/Now)</entry>
 <entry key="yukon.web.modules.dr.scenarioList.heading.actions">Actions</entry>
 
 
 <!-- Scenario Detail -->
 <entry key="yukon.web.modules.dr.scenarioDetail.pageTitle">Scenario {0}</entry>
 <entry key="yukon.web.modules.dr.scenarioDetail.scenario">Scenario {0}</entry>
-<entry key="yukon.web.modules.dr.scenarioDetail.heading.info">Info</entry>
+<entry key="yukon.web.modules.dr.scenarioDetail.heading.info.title">Info</entry>
 <entry key="yukon.web.modules.dr.scenarioDetail.heading.actions">Actions</entry>
 <entry key="yukon.web.modules.dr.scenarioDetail.noControl">You do not have permission to control this scenario</entry>
 <entry key="yukon.web.modules.dr.scenarioDetail.noAssignedPrograms">There are currently no programs assigned to this scenario.</entry>
@@ -501,6 +502,7 @@
 <entry key="yukon.web.modules.dr.controlAreaList.heading.atku.linkText">ATKU</entry>
 <entry key="yukon.web.modules.dr.controlAreaList.heading.priority.linkText">Priority</entry>
 <entry key="yukon.web.modules.dr.controlAreaList.heading.timeWindow.linkText">Time Window</entry>
+<entry key="yukon.web.modules.dr.controlAreaList.heading.kwSavings.linkText">kW Savings (Max/Now)</entry>
 
 <!-- Estimated Load -->
 <entry key="yukon.web.modules.dr.estimatedLoad.actions">Actions</entry>
@@ -510,16 +512,18 @@
 <entry key="yukon.web.modules.dr.estimatedLoad.applianceCategories.title">Appliance Categories</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.applianceLoad.linkText">Appliance Load</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.assignments">Assignments</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.invalidPaoType">Invalid PaoType for pao id: {0}</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.inputOutOfRange">For formula: {0} The function or table: {1} has an input value that is not within the valid range.</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.inputValueNotFound">Can not retrieve an input point value for formula: {0}</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.appCatInfoNotFound">Appliance category info (id, kW load per appliance) not found for LM program: {0}</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.gearNotFound">Gear id not found for LM program: {0}</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.gearFormulaAssignmentNotFound">No formula assigned for gear id: {0}</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.acFormulaAssignmentNotFound">No formula assigned for appliance category id: {0}</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.formulaNotFound">Formula id not found: {0}</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.loadManagementDataNotFound">Could not find program in load management client with id: {0}</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.acFormulaAssignmentNotFound">No Formula assigned to Appliance Category: {0}.</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.appCatInfoNotFound">Appliance Category not found for LM Program: {0}.</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.controlAreaHasErrors">Estimated load reduction amounts for one or more of the programs in this control area cannot be calculated.  See detail page to find the program(s) in error.</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.gearFormulaAssignmentNotFound">No Formula assigned to Gear: {0}.</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.gearNumberNotFound">Gear number {0} not found for LM program: {1}.</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.inputOutOfRange">Formula: {0} Function or table: {1} has an input value that is not within the valid range.</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.inputValueNotFound">Can not retrieve an input point value for Formula: {0}.</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.invalidPaoType">Estimated load reduction values cannot be calculated for object ID: {0.}</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.loadManagementDataNotFound">Could not find LM Program in Load Management server with ID: {0}.</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.loadManagementServerNotConnected">Not connected to Load Management server.</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.noContributingPrograms">No programs are contributing to the estimated load reduction amount. See detail page to find the program(s) in error.</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.scenarioHasErrors">Estimated load reduction amounts for one or more of the programs in this scenario cannot be calculated.  See detail page to find the program(s) in error.</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.calculationType">Calculation Type</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.calculationType.linkText">Calculation Type</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.errors.blankName">Name cannot be blank</entry>
@@ -534,6 +538,7 @@
 <entry key="yukon.web.modules.dr.estimatedLoad.gearId">Gear Id</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.gears.title">Gears</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.kwSavings">{0} kW / {1} kW</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.kwSavingsWarn">!! {0} kW / {1} kW !!</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.lastUpdated">Last Updated</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.loadInKw">{0} kW</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.name">Name</entry>
@@ -546,6 +551,9 @@
 <entry key="yukon.web.modules.dr.estimatedLoad.noGears">No gears</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.pageName">Estimated Load</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.program.linkText">Program</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.info.connectedLoad">Connected Load</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.info.diversifiedLoad">Diversified Load</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.info.kwSavings">kW Savings (Max/Now)</entry>
 
 <entry key="yukon.web.modules.dr.formula.actions">Actions</entry>
 <entry key="yukon.web.modules.dr.formula.addAssignment.label">Add Assignment</entry>
@@ -719,9 +727,6 @@
 <entry key="yukon.web.modules.dr.programDetail.info.currentGear">Current Gear</entry>
 <entry key="yukon.web.modules.dr.programDetail.info.priority">Priority</entry>
 <entry key="yukon.web.modules.dr.programDetail.info.reduction">Reduction</entry>
-<entry key="yukon.web.modules.dr.programDetail.info.connectedLoad">Connected Load</entry>
-<entry key="yukon.web.modules.dr.programDetail.info.diversifiedLoad">Diversified Load</entry>
-<entry key="yukon.web.modules.dr.programDetail.info.kwSavings">kW Savings (Max/Now)</entry>
 
 <entry key="yukon.web.modules.dr.programDetail.heading.actions.title">Actions</entry>
 <entry key="yukon.web.modules.dr.programDetail.noControl">You do not have permission to control this program</entry>

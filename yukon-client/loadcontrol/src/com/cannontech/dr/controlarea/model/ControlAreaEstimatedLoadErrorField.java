@@ -1,4 +1,4 @@
-package com.cannontech.dr.program.model;
+package com.cannontech.dr.controlarea.model;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -14,10 +14,10 @@ import com.cannontech.dr.estimatedload.EstimatedLoadReductionAmount;
 import com.cannontech.dr.estimatedload.service.EstimatedLoadService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.loadcontrol.data.LMProgramBase;
+import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.user.YukonUserContext;
 
-public class ProgramEstimatedLoadErrorField extends ProgramBackingFieldBase {
+public class ControlAreaEstimatedLoadErrorField extends ControlAreaBackingFieldBase {
 
     @Autowired private EstimatedLoadService estimatedLoadService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceAccessor;
@@ -28,22 +28,21 @@ public class ProgramEstimatedLoadErrorField extends ProgramBackingFieldBase {
     }
 
     @Override
-    public Object getProgramValue(LMProgramBase program, YukonUserContext userContext) {
+    public Object getControlAreaValue(LMControlArea controlArea, YukonUserContext userContext) {
         EstimatedLoadReductionAmount estimatedLoadAmount;
         try {
             estimatedLoadAmount = estimatedLoadService.retrieveEstimatedLoadValue(
-                    program.getPaoIdentifier());
+                    controlArea.getPaoIdentifier());
         } catch (EstimatedLoadCalculationException e) {
-            return createErrorJson(program, userContext, e);
+            return createErrorJson(controlArea, userContext, e);
         }
         if (estimatedLoadAmount.isError()) {
-            return createErrorJson(program, userContext, estimatedLoadAmount.getException());
-        } else {
-            return createSuccessJson(program);
+            return createErrorJson(controlArea, userContext, estimatedLoadAmount.getException());
         }
+        return createSuccessJson(controlArea);
     }
 
-    private Object createErrorJson(LMProgramBase program, YukonUserContext userContext,
+    private Object createErrorJson(LMControlArea controlArea, YukonUserContext userContext,
             EstimatedLoadCalculationException e) {
         Map<String, String> errorTooltipJSON = new HashMap<>();
         
@@ -53,13 +52,13 @@ public class ProgramEstimatedLoadErrorField extends ProgramBackingFieldBase {
         MessageSourceAccessor accessor = messageSourceAccessor.getMessageSourceAccessor(userContext);
         String errorMessage = accessor.getMessage(error);
         
-        errorTooltipJSON.put("paoId", String.valueOf(program.getPaoIdentifier().getPaoId()));
+        errorTooltipJSON.put("paoId", String.valueOf(controlArea.getPaoIdentifier().getPaoId()));
         errorTooltipJSON.put("errorMessage", errorMessage);
         return JSONObject.fromObject(errorTooltipJSON).toString();
     }
-    
-    private Object createSuccessJson(LMProgramBase program) {
-        return JSONObject.fromObject(Collections.singletonMap("paoId", 
-                String.valueOf(program.getPaoIdentifier().getPaoId()))).toString();
+
+    private Object createSuccessJson(LMControlArea controlArea) {
+        return JSONObject.fromObject(Collections.singletonMap("paoId",
+                String.valueOf(controlArea.getPaoIdentifier().getPaoId()))).toString();
     }
 }
