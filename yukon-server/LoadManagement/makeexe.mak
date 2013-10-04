@@ -121,7 +121,7 @@ loadmanagement.exe: $(LOADMANAGEMENT_FULLBUILD) $(BASEOBJS) Makefile $(OBJ)\load
 $(BASEOBJS) -link $(LIBS) $(RWLIBS) $(BOOST_LIBS) $(LINKFLAGS) loadmanagement.res
               @echo:
               -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-              mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
+              $(MANIFEST_TOOL) -manifest ..\$@.manifest -outputresource:..\$@;1
               -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
               @%cd $(CWD)
               @echo Done building Target ..\$@

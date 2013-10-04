@@ -85,7 +85,7 @@ scanner.exe:    $(SCANNER_EXE_FULLBUILD) $(BASEOBJS) makeexe.mak $(OBJ)\scanner.
                 $(RWCPPINVOKE) $(CFLAGS) $(BASEOBJS) id_scanner.obj $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ -link $(LIBS) $(RWLIBS) $(SCANNERLIBS) $(BOOST_LIBS) scanner.res
                 @echo:
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-               mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
+               $(MANIFEST_TOOL) -manifest ..\$@.manifest -outputresource:..\$@;1
                -@copy ..\$@ $(YUKONOUTPUT)
                 @echo Done building Target ..\$@
                 @echo:
@@ -98,7 +98,7 @@ killscan.exe:   poker.obj makeexe.mak $(OBJ)\killscan.res
                 $(RWCPPINVOKE) $(CFLAGS) poker.obj $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ -link $(LIBS) $(RWLIBS) $(SCANNERLIBS) killscan.res
                 @echo:
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-               mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
+               $(MANIFEST_TOOL) -manifest ..\$@.manifest -outputresource:..\$@;1
                -@copy ..\$@ $(YUKONOUTPUT)
                 @echo Done building Target ..\$@
                 @echo:

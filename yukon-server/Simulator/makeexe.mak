@@ -98,7 +98,7 @@ ccu_simulator.exe:      $(SIMULATOR_FULLBUILD) $(CCU_SIMULATOR_OBJS) makeexe.mak
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(CFLAGS) $(RWLINKFLAGS) $(INCLPATHS) /Fe..\$@ $(CCU_SIMULATOR_OBJS) -link $(CCU_SIMULATOR_LIBS) $(RWLIBS) $(BOOST_LIBS) ccu_simulator.res
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-                mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
+                $(MANIFEST_TOOL) -manifest ..\$@.manifest -outputresource:..\$@;1
                 -@copy ..\$@ $(YUKONOUTPUT)
                 @echo:
                 @echo Done building Target ..\$@

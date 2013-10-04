@@ -76,7 +76,7 @@ test_calc.exe:    $(CALC_TEST_FULLBUILD) $(CALC_TEST_OBJS)  Makefile
 	@%cd ..
 
         -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-	mt.exe -manifest $(BIN)\$(_TargetF).manifest -outputresource:$(BIN)\$(_TargetF);1
+	$(MANIFEST_TOOL) -manifest $(BIN)\$(_TargetF).manifest -outputresource:$(BIN)\$(_TargetF);1
         -copy $(BIN)\$(_TargetF) $(YUKONOUTPUT)
         @%cd $(CWD)
         @echo.

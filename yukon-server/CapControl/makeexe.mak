@@ -155,7 +155,7 @@ capcontrol.exe: $(CAPCONTROL_FULLBUILD) $(BASEOBJS) Makefile $(OBJ)\capcontrol.r
               $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
 $(BASEOBJS) -link $(LIBS) $(RWLIBS) $(BOOST_LIBS) $(LINKFLAGS) capcontrol.res
               @echo:
-	      mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
+	      $(MANIFEST_TOOL) -manifest ..\$@.manifest -outputresource:..\$@;1
               -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
               -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
               @%cd $(CWD)

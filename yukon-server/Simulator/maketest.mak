@@ -89,7 +89,7 @@ test_simulator.exe:    $(SIMULATOR_TEST_FULLBUILD) $(SIMULATOR_TEST_OBJS) Makefi
 	@%cd ..
 
 	-@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-	mt.exe -manifest $(BIN)\$(@B).exe.manifest -outputresource:$(BIN)\$(@B).exe;1
+	$(MANIFEST_TOOL) -manifest $(BIN)\$(@B).exe.manifest -outputresource:$(BIN)\$(@B).exe;1
 	-copy $(BIN)\$(@B).exe $(YUKONOUTPUT)
 	-@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
 	-if exist $(BIN)\$(@B).lib copy $(BIN)\$(@B).lib $(COMPILEBASE)\lib

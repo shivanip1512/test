@@ -53,7 +53,7 @@ sigsend.exe:    $(BASEOBJS) $(OBJ)\sigsend.res
 $(BASEOBJS) -link $(LIBS) $(RWLIBS) $(BOOST_LIBS) $(TABLETESTLIBS) sigsend.res
                 @echo:
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-               mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
+               $(MANIFEST_TOOL) -manifest ..\$@.manifest -outputresource:..\$@;1
                -@copy ..\$@ $(YUKONOUTPUT)
                 @echo Done building Target ..\$@
                 @%cd $(CWD)

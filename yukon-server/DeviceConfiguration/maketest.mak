@@ -59,7 +59,7 @@ test_deviceconfig.exe:	$(DEVICECONFIG_TEST_FULLBUILD) $(DEVICECONFIG_TEST_OBJS) 
 	$(DEVICECONFIG_TEST_OBJS) -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOST_LIBS) $(BOOST_TEST_LIBS) $(RWLIBS) $(LIBS) $(LINKFLAGS)
 	@%cd ..
 	-@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-	mt.exe -manifest $(BIN)\$(@B).exe.manifest -outputresource:$(BIN)\$(@B).exe;1
+	$(MANIFEST_TOOL) -manifest $(BIN)\$(@B).exe.manifest -outputresource:$(BIN)\$(@B).exe;1
 	-copy $(BIN)\$(@B).exe $(YUKONOUTPUT)
 	-@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
 	-if exist $(BIN)\$(@B).lib copy $(BIN)\$(@B).lib $(COMPILEBASE)\lib

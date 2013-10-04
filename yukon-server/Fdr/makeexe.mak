@@ -65,7 +65,7 @@ fdr.exe:    $(FDROBJS) makeexe.mak $(OBJ)\fdr.res
         $(RWCPPINVOKE) /Fm $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
         $(FDROBJS) -link $(RWLIBS) $(BOOST_LIBS) $(FDRLIBS) fdr.res
            -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-           mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
+           $(MANIFEST_TOOL) -manifest ..\$@.manifest -outputresource:..\$@;1
            -copy ..\$@ $(YUKONOUTPUT)
         @%cd $(CWD)
 

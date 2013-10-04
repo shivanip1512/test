@@ -69,7 +69,7 @@ test_message.exe:    $(MESSAGE_TEST_FULLBUILD) $(MESSAGE_TEST_OBJS)  Makefile
 	@%cd ..
 
         -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-	mt.exe -manifest $(BIN)\$(_TargetF).manifest -outputresource:$(BIN)\$(_TargetF);1
+	$(MANIFEST_TOOL) -manifest $(BIN)\$(_TargetF).manifest -outputresource:$(BIN)\$(_TargetF);1
         -copy $(BIN)\$(_TargetF) $(YUKONOUTPUT)
         @%cd $(CWD)
         @echo.
@@ -84,7 +84,7 @@ server_client_serialization_test.exe:    $(MESSAGE_TEST_FULLBUILD) server_client
 	@%cd ..
 
         -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-	mt.exe -manifest $(BIN)\$(_TargetF).manifest -outputresource:$(BIN)\$(_TargetF);1
+	$(MANIFEST_TOOL) -manifest $(BIN)\$(_TargetF).manifest -outputresource:$(BIN)\$(_TargetF);1
         -copy $(BIN)\$(_TargetF) $(YUKONOUTPUT)
         @%cd $(CWD)
         @echo.

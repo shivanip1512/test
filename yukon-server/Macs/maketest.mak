@@ -97,11 +97,11 @@ test_macs.exe:    $(MACS_TEST_FULLBUILD) $(MACS_TEST_OBJS)  Makefile
 	@%cd ..
 
         -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-	mt.exe -manifest $(BIN)\$(_TargetF).manifest -outputresource:$(BIN)\$(_TargetF);1
+	$(MANIFEST_TOOL) -manifest $(BIN)\$(_TargetF).manifest -outputresource:$(BIN)\$(_TargetF);1
         -copy $(BIN)\$(_TargetF) $(YUKONOUTPUT)
         @%cd $(CWD)
         @echo.
-        
+
 mc_server_client_serialization_test.exe:    $(MACS_TEST_FULLBUILD) mc_server_client_serialization_test.obj  Makefile
         @echo:
 	@echo Creating Executable $(BIN)\$(_TargetF)
@@ -112,7 +112,7 @@ mc_server_client_serialization_test.exe:    $(MACS_TEST_FULLBUILD) mc_server_cli
 	@%cd ..
 
         -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-	mt.exe -manifest $(BIN)\$(_TargetF).manifest -outputresource:$(BIN)\$(_TargetF);1
+	$(MANIFEST_TOOL) -manifest $(BIN)\$(_TargetF).manifest -outputresource:$(BIN)\$(_TargetF);1
         -copy $(BIN)\$(_TargetF) $(YUKONOUTPUT)
         @%cd $(CWD)
         @echo.

@@ -166,7 +166,7 @@ test_capcontrol.exe:  $(CAPCONTROL_TEST_FULLBUILD) $(CAPCTRLTESTOBJS) Makefile
 	@%cd ..
 
 	-@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-	mt.exe -manifest $(BIN)\$(_TargetF).manifest -outputresource:$(BIN)\$(_TargetF);1
+	$(MANIFEST_TOOL) -manifest $(BIN)\$(_TargetF).manifest -outputresource:$(BIN)\$(_TargetF);1
         -copy $(BIN)\$(_TargetF) $(YUKONOUTPUT)
 	@%cd $(CWD)
 	@echo.
@@ -181,7 +181,7 @@ cc_server_client_serialization_test.exe:  $(CAPCONTROL_TEST_FULLBUILD) cc_server
 	@%cd ..
 
 	-@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-	mt.exe -manifest $(BIN)\$(_TargetF).manifest -outputresource:$(BIN)\$(_TargetF);1
+	$(MANIFEST_TOOL) -manifest $(BIN)\$(_TargetF).manifest -outputresource:$(BIN)\$(_TargetF);1
         -copy $(BIN)\$(_TargetF) $(YUKONOUTPUT)
 	@%cd $(CWD)
 	@echo.

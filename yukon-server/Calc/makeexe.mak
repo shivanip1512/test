@@ -112,7 +112,7 @@ calc_logic.exe:  $(CALC_FULLBUILD) $(CALCOBJS) makeexe.mak $(OBJ)\calc_logic.res
         @%cd $(OBJ)
         $(RWCPPINVOKE) /Fm $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ $(CALCOBJS) -link $(RWLIBS) $(BOOST_LIBS) $(CALCLIBS) $(LINKFLAGS) calc_logic.res
 	   -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-           mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
+           $(MANIFEST_TOOL) -manifest ..\$@.manifest -outputresource:..\$@;1
            -copy ..\$@ $(YUKONOUTPUT)
         @%cd $(CWD)
 #--  START TEST APPLICATIONS
@@ -122,7 +122,7 @@ lurk.exe:       $(LURKOBJS) makeexe.mak $(OBJ)\lurk.res
         @%cd $(OBJ)
         $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ $(LURKOBJS) -link $(RWLIBS) $(BOOST_LIBS) $(TESTLIBS) lurk.res
 	-@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-           mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
+           $(MANIFEST_TOOL) -manifest ..\$@.manifest -outputresource:..\$@;1
            -copy ..\$@ $(YUKONOUTPUT)
         @%cd $(CWD)
 
@@ -132,7 +132,7 @@ log.exe:        $(LOGOBJS) makeexe.mak $(OBJ)\log.res
         @%cd $(OBJ)
         $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ $(LOGOBJS) -link $(RWLIBS) $(BOOST_LIBS) $(TESTLIBS) log.res
 	   -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-           mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
+           $(MANIFEST_TOOL) -manifest ..\$@.manifest -outputresource:..\$@;1
            -copy ..\$@ $(YUKONOUTPUT)
         @%cd $(CWD)
 
@@ -142,7 +142,7 @@ newval.exe:     $(NEWVALOBJS) makeexe.mak $(OBJ)\newval.res
         @%cd $(OBJ)
         $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ $(NEWVALOBJS) -link $(RWLIBS) $(BOOST_LIBS) $(TESTLIBS) newval.res
 	-@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-           mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
+           $(MANIFEST_TOOL) -manifest ..\$@.manifest -outputresource:..\$@;1
            -copy ..\$@ $(YUKONOUTPUT)
         @%cd $(CWD)
 
@@ -152,7 +152,7 @@ newvalrng.exe:     $(NEWVALRNGOBJS) makeexe.mak $(OBJ)\newvalrng.res
         @%cd $(OBJ)
         $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ $(NEWVALRNGOBJS) -link $(RWLIBS) $(BOOST_LIBS) $(TESTLIBS) newvalrng.res
 	-@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-           mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
+           $(MANIFEST_TOOL) -manifest ..\$@.manifest -outputresource:..\$@;1
            -copy ..\$@ $(YUKONOUTPUT)
         @%cd $(CWD)
 #--  END TEST APPLICATIONS

@@ -95,7 +95,7 @@ macs.exe:     $(MACS_EXE_FULLBUILD) $(BASEOBJS) Makefile $(OBJ)\macs.res
 $(BASEOBJS) -link $(LIBS) $(RWLIBS) $(BOOST_LIBS) $(LINKFLAGS) macs.res
               @echo:
               -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-              mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
+              $(MANIFEST_TOOL) -manifest ..\$@.manifest -outputresource:..\$@;1
               -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
               -if exist ..\tcl\*.* copy ..\tcl\*.* $(YUKONOUTPUT)
               @%cd $(CWD)

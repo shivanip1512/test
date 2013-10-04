@@ -69,7 +69,7 @@ test_common.exe:    $(COMMON_TEST_FULLBUILD) $(COMMON_TEST_OBJS)  Makefile
 	@%cd ..
 
         -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-	mt.exe -manifest $(BIN)\$(_TargetF).manifest -outputresource:$(BIN)\$(_TargetF);1
+	$(MANIFEST_TOOL) -manifest $(BIN)\$(_TargetF).manifest -outputresource:$(BIN)\$(_TargetF);1
         -copy $(BIN)\$(_TargetF) $(YUKONOUTPUT)
         @%cd $(CWD)
         @echo.
@@ -82,7 +82,7 @@ cmdparsetestgenerator.exe: cmdparsetestgenerator.obj
         $(OBJ)\$(@B).obj -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(LINKFLAGS)
 
         -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-	mt.exe -manifest $(BIN)\$(@B).exe.manifest -outputresource:$(BIN)\$(@B).exe;1
+	$(MANIFEST_TOOL) -manifest $(BIN)\$(@B).exe.manifest -outputresource:$(BIN)\$(@B).exe;1
         -copy $(BIN)\$(@B).exe $(YUKONOUTPUT)
         -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
         -if exist $(BIN)\$(@B).lib copy $(BIN)\$(@B).lib $(COMPILEBASE)\lib

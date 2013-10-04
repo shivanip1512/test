@@ -113,6 +113,8 @@ $(BOOST)\lib\libboost_system-$(BOOST_VERSION).lib
 BOOST_TEST_LIBS = \
 $(BOOST)\lib\libboost_unit_test_framework-$(BOOST_VERSION).lib
 
+MANIFEST_TOOL = mt.exe
+
 
 %IF( "$(BUILD_VERSION)" != "" )
 

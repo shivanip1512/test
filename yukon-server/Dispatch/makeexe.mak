@@ -93,7 +93,7 @@ dispatch.exe:   $(VGOBJS) makeexe.mak $(OBJ)\dispatch.res
                 $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
 $(VGOBJS) id_vg.obj -link $(RWLIBS) $(BOOST_LIBS) $(VGLIBS) dispatch.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-                mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
+                $(MANIFEST_TOOL) -manifest ..\$@.manifest -outputresource:..\$@;1
                -copy ..\$@ $(YUKONOUTPUT)
                 @%cd $(CWD)
 
@@ -105,7 +105,7 @@ sigsinktest.exe: $(SIGTESTOBJS) makeexe.mak $(OBJ)\sigsinktest.res
                 $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
 $(SIGTESTOBJS) -link $(RWLIBS) $(BOOST_LIBS) $(TESTLIBS) sigsinktest.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-               mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
+               $(MANIFEST_TOOL) -manifest ..\$@.manifest -outputresource:..\$@;1
                -copy ..\$@ $(YUKONOUTPUT)
                 @%cd $(CWD)
 
@@ -116,7 +116,7 @@ poker.exe: $(PORTERPOKE) makeexe.mak $(OBJ)\poker.res
                 $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
 $(PORTERPOKE) -link $(RWLIBS) $(BOOST_LIBS) $(TESTLIBS) poker.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-               mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
+               $(MANIFEST_TOOL) -manifest ..\$@.manifest -outputresource:..\$@;1
                -copy ..\$@ $(YUKONOUTPUT)
                 @%cd $(CWD)
 
@@ -128,7 +128,7 @@ sigsrctest.exe: $(SIGSRCTESTOBJS) makeexe.mak $(OBJ)\sigsrctest.res
                 $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
 $(SIGSRCTESTOBJS) -link $(RWLIBS) $(BOOST_LIBS) $(TESTLIBS) sigsrctest.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-               mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
+               $(MANIFEST_TOOL) -manifest ..\$@.manifest -outputresource:..\$@;1
                -copy ..\$@ $(YUKONOUTPUT)
                 @%cd $(CWD)
 
