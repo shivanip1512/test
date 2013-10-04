@@ -906,6 +906,18 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
     }
 
     initialize.call(this, okText, cancelText, pickerType, destinationFieldName, pickerId, extraDestinationFields, containerDiv);
+
+    // circumvent default processing of ctrl-left-click and shift-left-click events
+    jQuery(document).on('click', '#' + this.pickerId, function (ev) {
+        if ( ev.ctrlKey ) {
+            ev.preventDefault();
+        } else {
+            if ( ev.shiftKey ) {
+                ev.preventDefault();
+            }
+        }
+    });
+
 };
 
 // constructor for Picker
