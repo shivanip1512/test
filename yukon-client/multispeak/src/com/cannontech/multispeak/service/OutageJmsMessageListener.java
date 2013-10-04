@@ -21,6 +21,7 @@ import com.cannontech.amr.statusPointMonitoring.model.OutageActionType;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.OutageEventLogService;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
@@ -33,6 +34,7 @@ import com.cannontech.multispeak.deploy.service.OA_ServerSoap_BindingStub;
 import com.cannontech.multispeak.deploy.service.OutageDetectDeviceType;
 import com.cannontech.multispeak.deploy.service.OutageDetectionEvent;
 import com.cannontech.multispeak.deploy.service.OutageEventType;
+import com.cannontech.multispeak.deploy.service.OutageLocation;
 import com.cannontech.multispeak.deploy.service.impl.MultispeakPortFactory;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -164,6 +166,16 @@ public class OutageJmsMessageListener implements MessageListener {
         outageDetectionEvent.setOutageDetectDeviceType(getOutageDetectDeviceType(paoIdentifier));
         outageDetectionEvent.setObjectID(objectId);
         
+        if (PaoType.getMeterTypes().contains(paoIdentifier.getPaoType())) {
+            //This is kind of cheating, we're assuming that if we have a "meter" paoType, then objectId is a MeterNumber.
+            OutageLocation outageLocation = new OutageLocation();
+            outageLocation.setObjectID(objectId);
+            outageLocation.setMeterNo(objectId);    //MeterNumber
+            outageDetectionEvent.setOutageLocation(outageLocation);
+            
+            outageDetectionEvent.setOutageDetectDeviceID(objectId); //MeterNumber
+        }
+
         outageEventLogService.outageEventGenerated(outageDetectionEvent.getOutageEventType().getValue(), 
                                                    outageDetectionEvent.getEventTime().getTime(), 
                                                    outageDetectionEvent.getOutageDetectDeviceType().getValue(), 
