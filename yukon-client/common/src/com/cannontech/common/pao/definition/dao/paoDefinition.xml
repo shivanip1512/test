@@ -941,16 +941,23 @@
         	<attribute name="PEAK_DEMAND">
          		<basicLookup point="Peak kW (Rate A kW)" />
         	</attribute>
+        	<attribute name="PEAK_DEMAND_FROZEN">
+         		<basicLookup point="Peak kW Frozen (Rate A kW)" />
+        	</attribute>
         	<attribute name="DEMAND">
         		<basicLookup point="Last Interval kW" />
         	</attribute>
-            <!-- Peak kVAr (Rate A kVar) is mapped to both PEAK_KVAR and KVAR attributes because this device type does not have a dedicated Peak KVar point (like the RFN types do). Using Rate A to represent peak kVAr. -->
+        	<!--  PEAK_KVAR is also mapped to Peak kVAr (Rate A kVAr) because there is no general Peak kVAr point -->
             <attribute name="PEAK_KVAR">
                 <basicLookup point="Peak kVAr (Rate A kVAr)" />
             </attribute>
+            <attribute name="PEAK_KVAR_COIN">
+                <basicLookup point="Peak kM (Coincidental)" />
+            </attribute>
         	<attribute name="KVAR">
-        		<basicLookup point="Peak kVAr (Rate A kVAr)" />
+        		<basicLookup point="Last Interval kVAr" />
         	</attribute>
+        	<!--  KVARH is also mapped to Rate A kVArh because there is no general kVArh point -->
         	<attribute name="KVARH">
         		<basicLookup point="Rate A kVArh" />
         	</attribute>
@@ -969,33 +976,67 @@
         	<attribute name="BLINK_COUNT">
         		<basicLookup point="IED Blink Count" />
         	</attribute>
-        	<attribute name="TOU_RATE_A_USAGE">
+        	<attribute name="USAGE_FROZEN">
+        		<basicLookup point="Rate A kWh Frozen" />
+        	</attribute>
+        	<attribute name="USAGE_RATE_A">
         		<basicLookup point="Rate A kWh"/>
         	</attribute>
-        	<attribute name="TOU_RATE_B_USAGE">
+        	<attribute name="USAGE_RATE_B">
         		<basicLookup point="Rate B kWh"/>
         	</attribute>
-        	<attribute name="TOU_RATE_C_USAGE">
+        	<attribute name="USAGE_RATE_C">
         		<basicLookup point="Rate C kWh"/>
         	</attribute>
-        	<attribute name="TOU_RATE_D_USAGE">
+        	<attribute name="USAGE_RATE_D">
         		<basicLookup point="Rate D kWh"/>
         	</attribute>
-        	<attribute name="TOU_RATE_A_PEAK_DEMAND">
+        	<attribute name="PEAK_DEMAND_RATE_A">
         		<basicLookup point="Peak kW (Rate A kW)"/>
         	</attribute>
-        	<attribute name="TOU_RATE_B_PEAK_DEMAND">
+        	<attribute name="PEAK_DEMAND_RATE_B">
         		<basicLookup point="Peak kW (Rate B kW)"/>
         	</attribute>
-        	<attribute name="TOU_RATE_C_PEAK_DEMAND">
+        	<attribute name="PEAK_DEMAND_RATE_C">
         		<basicLookup point="Peak kW (Rate C kW)"/>
         	</attribute>
-        	<attribute name="TOU_RATE_D_PEAK_DEMAND">
+        	<attribute name="PEAK_DEMAND_RATE_D">
         		<basicLookup point="Peak kW (Rate D kW)"/>
         	</attribute>
+        	<attribute name="PEAK_KVAR_RATE_A">
+        		<basicLookup point="Peak kVAr (Rate A kVAr)"/>
+        	</attribute>
+        	<attribute name="PEAK_KVAR_RATE_B">
+        		<basicLookup point="Peak kVAr (Rate B kVAr)"/>
+        	</attribute>
+        	<attribute name="PEAK_KVAR_RATE_C">
+        		<basicLookup point="Peak kVAr (Rate C kVAr)"/>
+        	</attribute>
+        	<attribute name="PEAK_KVAR_RATE_D">
+        		<basicLookup point="Peak kVAr (Rate D kVAr)"/>
+        	</attribute>
+        	<attribute name="KVARH_RATE_A">
+        		<basicLookup point="Rate A kVArh" />
+        	</attribute>
+        	<attribute name="KVARH_RATE_B">
+        		<basicLookup point="Rate B kVArh" />
+        	</attribute>
+        	<attribute name="KVARH_RATE_C">
+        		<basicLookup point="Rate C kVArh" />
+        	</attribute>
+        	<attribute name="KVARH_RATE_D">
+        		<basicLookup point="Rate D kVArh" />
+        	</attribute>
+
             <!-- Should this just be DEMAND_RESET_COUNT?? -->
             <attribute name="IED_DEMAND_RESET_COUNT">
                 <basicLookup point="IED Demand Reset Count"/>
+            </attribute>
+            <attribute name="COMM_STATUS">
+                <basicLookup point="Comm Status"/>
+            </attribute>
+            <attribute name="POWER_FACTOR">
+                <basicLookup point="Average Power Factor"/>
             </attribute>
         </attributes>
         <tags>
@@ -1356,21 +1397,53 @@
         	<attribute name="USAGE">
         		<basicLookup point="Total kWh"/>
         	</attribute>
+        	<attribute name="USAGE_FROZEN">
+        		<basicLookup point="Rate A kWh Frozen"/>
+        	</attribute>
+        	<!--  PEAK_DEMAND is also mapped to Peak kW (Rate A) because there is no general Peak kW point -->
         	<attribute name="PEAK_DEMAND">
          		<basicLookup point="Peak kW (Rate A kW)"/>
+        	</attribute>
+        	<attribute name="PEAK_DEMAND_FROZEN">
+         		<basicLookup point="Peak kW Frozen (Rate A kW)"/>
         	</attribute>
         	<attribute name="DEMAND">
         		<basicLookup point="Last Interval kW" />
         	</attribute>
-            <!-- Peak kVAr (Rate A kVar) is mapped to both PEAK_KVAR and KVAR attributes because this device type does not have a dedicated Peak KVar point (like the RFN types do). Using Rate A to represent peak kVAr. -->
+        	<!--  PEAK_KVAR is also mapped to Peak kVAr (Rate A kVAr) because there is no general Peak kVAr point -->
             <attribute name="PEAK_KVAR">
                 <basicLookup point="Peak kVAr (Rate A kVAr)" />
             </attribute>
+            <attribute name="PEAK_KVAR_RATE_A">
+                <basicLookup point="Peak kVAr (Rate A kVAr)" />
+            </attribute>
+            <attribute name="PEAK_KVAR_RATE_B">
+                <basicLookup point="Peak kVAr (Rate B kVAr)" />
+            </attribute>
+            <attribute name="PEAK_KVAR_RATE_C">
+                <basicLookup point="Peak kVAr (Rate C kVAr)" />
+            </attribute>
+            <attribute name="PEAK_KVAR_RATE_D">
+                <basicLookup point="Peak kVAr (Rate D kVAr)" />
+            </attribute>            
         	<attribute name="KVAR">
-        		<basicLookup point="Peak kVAr (Rate A kVAr)" />
+        		<basicLookup point="Last Interval kVAr" />
         	</attribute>
+        	<!--  KVARH is also mapped to Rate A kVArh because there is no general kVArh point -->
         	<attribute name="KVARH">
         		<basicLookup point="Rate A kVArh" />
+        	</attribute>
+        	<attribute name="KVARH_RATE_A">
+        		<basicLookup point="Rate A kVArh" />
+        	</attribute>
+        	<attribute name="KVARH_RATE_B">
+        		<basicLookup point="Rate B kVArh" />
+        	</attribute>
+        	<attribute name="KVARH_RATE_C">
+        		<basicLookup point="Rate C kVArh" />
+        	</attribute>
+        	<attribute name="KVARH_RATE_D">
+        		<basicLookup point="Rate D kVArh" />
         	</attribute>
         	<attribute name="LOAD_PROFILE">
         		<basicLookup point="kW-LP" />
@@ -1387,33 +1460,44 @@
         	<attribute name="BLINK_COUNT">
         		<basicLookup point="IED Blink Count" />
         	</attribute>
-			<attribute name="TOU_RATE_A_USAGE">
+			<attribute name="USAGE_RATE_A">
         		<basicLookup point="Rate A kWh" />
         	</attribute>
-        	<attribute name="TOU_RATE_B_USAGE">
+        	<attribute name="USAGE_RATE_B">
         		<basicLookup point="Rate B kWh" />
         	</attribute>
-        	<attribute name="TOU_RATE_C_USAGE">
+        	<attribute name="USAGE_RATE_C">
         		<basicLookup point="Rate C kWh" />
         	</attribute>
-        	<attribute name="TOU_RATE_D_USAGE">
+        	<attribute name="USAGE_RATE_D">
         		<basicLookup point="Rate D kWh" />
         	</attribute>
-        	<attribute name="TOU_RATE_A_PEAK_DEMAND">
+        	<attribute name="PEAK_DEMAND_RATE_A">
         		<basicLookup point="Peak kW (Rate A kW)" />
         	</attribute>
-        	<attribute name="TOU_RATE_B_PEAK_DEMAND">
+        	<attribute name="PEAK_DEMAND_RATE_B">
         		<basicLookup point="Peak kW (Rate B kW)" />
         	</attribute>
-        	<attribute name="TOU_RATE_C_PEAK_DEMAND">
+        	<attribute name="PEAK_DEMAND_RATE_C">
         		<basicLookup point="Peak kW (Rate C kW)" />
         	</attribute>
-        	<attribute name="TOU_RATE_D_PEAK_DEMAND">
+        	<attribute name="PEAK_DEMAND_RATE_D">
         		<basicLookup point="Peak kW (Rate D kW)" />
         	</attribute>
         	<attribute name="IED_DEMAND_RESET_COUNT">
         		<basicLookup point="IED Demand Reset Count" />
         	</attribute>
+        	<attribute name="POWER_FACTOR">
+        		<basicLookup point="Average Power Factor" />
+        	</attribute>
+        	<attribute name="PEAK_KVAR_COIN">
+        		<basicLookup point="Peak kM (Coincidental)" />
+        	</attribute>
+        	<!--  Peak kM (Coincidental) may be kVArh instead of kVAr
+        	<attribute name="PEAK_KVARH_COIN">
+        		<basicLookup point="Peak kM (Coincidental)" />
+        	</attribute> -->
+        	
         </attributes>
         <tags>
             <tag name="DLC_ADDRESS_RANGE">
@@ -1558,7 +1642,7 @@
             </point>
             <point type="PulseAccumulator" offset="3">
                 <init>true</init>
-                <name>Forward Inductive kVARh</name>
+                <name>Forward Inductive kVArh</name>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kWH"/>
                 <decimalplaces value="3"/>
@@ -1733,7 +1817,7 @@
             </point>
             <point type="Status" offset="35">
                 <init>true</init>
-                <name>Clock error</name>
+                <name>Clock Error</name>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="40">
@@ -1789,14 +1873,15 @@
                 <cmd text="getvalue usage"/>
                 <pointRef name="Delivered kWh"/>
                 <pointRef name="Received kWh"/>
-                <pointRef name="Forward Inductive kVARh"/>
+                <pointRef name="Forward Inductive kVArh"/>
             </command>
+            <!--  Fisher? - Should we be using the "Frozen" points here? -->
             <command id="READ_USAGE_FROZEN" enabled="false">
                 <name>Read Usage (Frozen)</name>
                 <cmd text="getvalue usage frozen"/>
-                <pointRef name="Delivered kWh"/>
-                <pointRef name="Received kWh"/>
-                <pointRef name="Forward Inductive kVARh"/>
+                <pointRef name="Delivered kWh"/> <!-- Frozen kWh ? -->
+                <pointRef name="Received kWh"/>  <!--  Frozen Reverse kWh ? -->
+                <pointRef name="Forward Inductive kVArh"/>
             </command>
             <command id="READ_BLINK_COUNT">
                 <name>Read Blink Count</name>
@@ -1865,14 +1950,17 @@
             <attribute name="USAGE">
                 <basicLookup point="Delivered kWh" />
             </attribute>
-            <attribute name="ENERGY_GENERATED">
-                <basicLookup point="Received kWh" />
+            <attribute name="USAGE_FROZEN">
+                <basicLookup point="Frozen kWh" />
             </attribute>
             <attribute name="RECEIVED_KWH">
                 <basicLookup point="Received kWh" />
             </attribute>
+            <attribute name="RECEIVED_KWH_FROZEN">
+                <basicLookup point="Frozen Reverse kWh" />
+            </attribute>
             <attribute name="FORWARD_INDUCTIVE_KVARH">
-                <basicLookup point="Forward Inductive kVARh" />
+                <basicLookup point="Forward Inductive kVArh" />
             </attribute>
             <attribute name="OUTAGE_LOG">
                 <basicLookup point="Outage Log" />
@@ -1880,28 +1968,40 @@
             <attribute name="BLINK_COUNT">
                 <basicLookup point="Blink Count" />
             </attribute>
-            <attribute name="TOU_RATE_A_USAGE">
+            <attribute name="MAXIMUM_VOLTAGE">
+                <basicLookup point="Max Volts" />
+            </attribute>
+            <attribute name="MAXIMUM_VOLTAGE_FROZEN">
+                <basicLookup point="Frozen Max Volts"/>
+            </attribute>
+            <attribute name="MINIMUM_VOLTAGE">
+                <basicLookup point="Min Volts" />
+            </attribute>
+            <attribute name="MINIMUM_VOLTAGE_FROZEN">
+                <basicLookup point="Frozen Min Volts"/>
+            </attribute>
+            <attribute name="USAGE_RATE_A">
                 <basicLookup point="Rate A kWh" />
             </attribute>
-            <attribute name="TOU_RATE_B_USAGE">
+            <attribute name="USAGE_RATE_B">
                 <basicLookup point="Rate B kWh" />
             </attribute>
-            <attribute name="TOU_RATE_C_USAGE">
+            <attribute name="USAGE_RATE_C">
                 <basicLookup point="Rate C kWh" />
             </attribute>
-            <attribute name="TOU_RATE_D_USAGE">
+            <attribute name="USAGE_RATE_D">
                 <basicLookup point="Rate D kWh" />
             </attribute>
-            <attribute name="TOU_RATE_A_ENERGY_GENERATED">
+            <attribute name="RECEIVED_KWH_RATE_A">
                 <basicLookup point="Received kWh (Rate A kWh)" />
             </attribute>
-            <attribute name="TOU_RATE_B_ENERGY_GENERATED">
+            <attribute name="RECEIVED_KWH_RATE_B">
                 <basicLookup point="Received kWh (Rate B kWh)" />
             </attribute>
-            <attribute name="TOU_RATE_C_ENERGY_GENERATED">
+            <attribute name="RECEIVED_KWH_RATE_C">
                 <basicLookup point="Received kWh (Rate C kWh)" />
             </attribute>
-            <attribute name="TOU_RATE_D_ENERGY_GENERATED">
+            <attribute name="RECEIVED_KWH_RATE_D">
                 <basicLookup point="Received kWh (Rate D kWh)" />
             </attribute>
             <attribute name="GENERAL_ALARM_FLAG">
@@ -1936,6 +2036,12 @@
             </attribute>
             <attribute name="TAMPER_FLAG">
                 <basicLookup point="Tamper Flag Set" />
+            </attribute>
+            <attribute name="CLOCK_ERROR">
+                <basicLookup point="Clock Error"/>
+            </attribute>
+            <attribute name="TERMINAL_BLOCK_COVER_REMOVAL_FLAG">
+                <basicLookup point="Terminal Block Cover Removal"/>
             </attribute>
         </attributes>
     </pao>
@@ -2562,6 +2668,9 @@
         	<attribute name="PEAK_DEMAND">
         		<basicLookup point="Peak kW" />
         	</attribute>
+        	<attribute name="PEAK_DEMAND_FROZEN">
+        		<basicLookup point="Frozen Peak Demand" />
+        	</attribute>
         	<attribute name="DEMAND">
         		<basicLookup point="kW" />
         	</attribute>
@@ -2586,35 +2695,41 @@
         	<attribute name="BLINK_COUNT">
         		<basicLookup point="Blink Count" />
         	</attribute>
-			<attribute name="TOU_RATE_A_USAGE">
+			<attribute name="USAGE_RATE_A">
         		<basicLookup point="Rate A kWh" />
         	</attribute>
-        	<attribute name="TOU_RATE_B_USAGE">
+        	<attribute name="USAGE_RATE_B">
         		<basicLookup point="Rate B kWh" />
         	</attribute>
-        	<attribute name="TOU_RATE_C_USAGE">
+        	<attribute name="USAGE_RATE_C">
         		<basicLookup point="Rate C kWh" />
         	</attribute>
-        	<attribute name="TOU_RATE_D_USAGE">
+        	<attribute name="USAGE_RATE_D">
         		<basicLookup point="Rate D kWh" />
         	</attribute>
-        	<attribute name="TOU_RATE_A_PEAK_DEMAND">
+        	<attribute name="PEAK_DEMAND_RATE_A">
         		<basicLookup point="Peak kW (Rate A kW)" />
         	</attribute>
-        	<attribute name="TOU_RATE_B_PEAK_DEMAND">
+        	<attribute name="PEAK_DEMAND_RATE_B">
         		<basicLookup point="Peak kW (Rate B kW)" />
         	</attribute>
-        	<attribute name="TOU_RATE_C_PEAK_DEMAND">
+        	<attribute name="PEAK_DEMAND_RATE_C">
         		<basicLookup point="Peak kW (Rate C kW)" />
         	</attribute>
-        	<attribute name="TOU_RATE_D_PEAK_DEMAND">
+        	<attribute name="PEAK_DEMAND_RATE_D">
         		<basicLookup point="Peak kW (Rate D kW)" />
         	</attribute>
             <attribute name="MINIMUM_VOLTAGE">
                 <basicLookup point="Min Volts" />
             </attribute>
+            <attribute name="MINIMUM_VOLTAGE_FROZEN">
+                <basicLookup point="Frozen Min Volts" />
+            </attribute>
             <attribute name="MAXIMUM_VOLTAGE">
                 <basicLookup point="Max Volts" />
+            </attribute>
+            <attribute name="MAXIMUM_VOLTAGE_FROZEN">
+                <basicLookup point="Frozen Max Volts" />
             </attribute>
             <attribute name="PHASE">
                 <basicLookup point="Phase" />
@@ -2634,6 +2749,9 @@
             <attribute name="REVERSE_POWER_FLAG">
                 <basicLookup point="Reverse Power"/>
             </attribute>
+        	<attribute name="COMM_STATUS">
+        		<basicLookup point="Comm Status"/>
+        	</attribute>
         </attributes>
 	</pao>
         
@@ -2958,6 +3076,12 @@
         	<attribute name="DEMAND">
         		<basicLookup point="Last Interval kW" />
         	</attribute>
+        	<attribute name="COMM_STATUS">
+        		<basicLookup point="Comm Status" />
+        	</attribute>
+        	<attribute name="KVAR">
+        		<basicLookup point="Last Interval kVAr" />
+        	</attribute>
         </attributes>
     </pao>
     
@@ -3214,12 +3338,6 @@
                 <unitofmeasure value="kVArh"/>
                 <decimalplaces value="3"/>
             </point>
-            <point type="Analog" offset="20">
-                <name>Last Interval kVAr</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="kVAr"/>
-                <decimalplaces value="3"/>
-            </point>
         </points>
     </pao>
     
@@ -3406,6 +3524,9 @@
         	<attribute name="PEAK_DEMAND">
         		<basicLookup point="Max OR Off Peak Demand (Pulse Input 1)" />
         	</attribute>
+        	<attribute name="COMM_STATUS">
+        		<basicLookup point="Comm Status" />
+        	</attribute>
       	</attributes>
     </pao>
     
@@ -3521,6 +3642,9 @@
         	</attribute>
         	<attribute name="BLINK_COUNT">
         		<basicLookup point="Blink Count" />
+        	</attribute>
+        	<attribute name="COMM_STATUS">
+        		<basicLookup point="Comm Status" />
         	</attribute>
        	</attributes>
     </pao>
@@ -4708,6 +4832,11 @@
                 <stategroup value="Comm Status State"/>
             </point>
         </points>
+        <attributes>
+            <attribute name="COMM_STATUS">
+                <basicLookup point="Comm Status"/>
+            </attribute>
+        </attributes>
     </pao>
     
     <pao id="TRANSMITTER_BASE" abstract="true" inherits="SIGNAL_TRANSMITTER_BASE">
@@ -6406,9 +6535,6 @@
             <attribute name="USAGE">
             	<basicLookup point="Delivered kWh" />
 			</attribute>
-            <attribute name="ENERGY_GENERATED">
-            	<basicLookup point="Received kWh"/>
-            </attribute>
             <attribute name="DELIVERED_KWH">
             	<basicLookup point="Delivered kWh" />
 			</attribute>
@@ -6756,31 +6882,43 @@
                 <unitofmeasure value="kWh"/>
                 <decimalplaces value="3"/>
             </point>
-        </points>
-        <attributes>
-            <attribute name="TOU_RATE_A_USAGE">
+		</points>
+		<attributes>
+            <attribute name="USAGE_RATE_A">
                 <basicLookup point="Rate A kWh" />
             </attribute>
-            <attribute name="TOU_RATE_B_USAGE">
+            <attribute name="USAGE_RATE_B">
                 <basicLookup point="Rate B kWh" />
             </attribute>
-            <attribute name="TOU_RATE_C_USAGE">
+            <attribute name="USAGE_RATE_C">
                 <basicLookup point="Rate C kWh" />
             </attribute>
-            <attribute name="TOU_RATE_D_USAGE">
+            <attribute name="USAGE_RATE_D">
                 <basicLookup point="Rate D kWh" />
             </attribute>
-            <attribute name="TOU_RATE_A_PEAK_DEMAND">
+            <attribute name="PEAK_DEMAND_RATE_A">
                 <basicLookup point="Peak kW (Rate A kW)"/>
             </attribute>
-            <attribute name="TOU_RATE_B_PEAK_DEMAND">
+            <attribute name="PEAK_DEMAND_RATE_B">
                 <basicLookup point="Peak kW (Rate B kW)"/>
             </attribute>
-            <attribute name="TOU_RATE_C_PEAK_DEMAND">
+            <attribute name="PEAK_DEMAND_RATE_C">
                 <basicLookup point="Peak kW (Rate C kW)"/>
             </attribute>
-            <attribute name="TOU_RATE_D_PEAK_DEMAND">
+            <attribute name="PEAK_DEMAND_RATE_D">
                 <basicLookup point="Peak kW (Rate D kW)"/>
+            </attribute>
+            <attribute name="NET_KWH_RATE_A">
+                <basicLookup point="Net kWh (Rate A kWh)"/>
+            </attribute>
+            <attribute name="NET_KWH_RATE_B">
+                <basicLookup point="Net kWh (Rate B kWh)"/>
+            </attribute>
+            <attribute name="NET_KWH_RATE_C">
+                <basicLookup point="Net kWh (Rate C kWh)"/>
+            </attribute>
+            <attribute name="NET_KWH_RATE_D">
+                <basicLookup point="Net kWh (Rate D kWh)"/>
             </attribute>
         </attributes>
         <tags>
@@ -6851,6 +6989,30 @@
         <attributes>
             <attribute name="DEMAND">
                 <basicLookup point="Delivered kW" />
+            </attribute>
+            <attribute name="RECEIVED_KWH_RATE_A">
+                <basicLookup point="Received kWh (Rate A kWh)"/>
+            </attribute>
+            <attribute name="RECEIVED_KWH_RATE_B">
+                <basicLookup point="Received kWh (Rate B kWh)"/>
+            </attribute>
+            <attribute name="RECEIVED_KWH_RATE_C">
+                <basicLookup point="Received kWh (Rate C kWh)"/>
+            </attribute>
+            <attribute name="RECEIVED_KWH_RATE_D">
+                <basicLookup point="Received kWh (Rate D kWh)"/>
+            </attribute>
+            <attribute name="SUM_KWH_RATE_A">
+                <basicLookup point="Sum kWh (Rate A kWh)"/>
+            </attribute>
+            <attribute name="SUM_KWH_RATE_B">
+                <basicLookup point="Sum kWh (Rate B kWh)"/>
+            </attribute>
+            <attribute name="SUM_KWH_RATE_C">
+                <basicLookup point="Sum kWh (Rate C kWh)"/>
+            </attribute>
+            <attribute name="SUM_KWH_RATE_D">
+                <basicLookup point="Sum kWh (Rate D kWh)"/>
             </attribute>
         </attributes>
     </pao>
@@ -6990,6 +7152,20 @@
                 <decimalplaces value="1"/>
             </point>
         </points>
+        <attributes>
+            <attribute name="NET_KWH_RATE_E">
+                <basicLookup point="Net kWh (Rate E kWh)"/>
+            </attribute>
+			<attribute name="PEAK_DEMAND_RATE_E">
+                <basicLookup point="Peak kW (Rate E kW)"/>
+            </attribute>
+			<attribute name="USAGE_RATE_E">
+                <basicLookup point="Rate E kWh"/>
+            </attribute>
+			<attribute name="RECEIVED_KWH_RATE_E">
+                <basicLookup point="Received kWh (Rate E kWh)"/>
+            </attribute>
+        </attributes>
     </pao>
     <pao id="RFN_L1_ELSTER_AND_FX_FD" abstract="true">
         <points>
@@ -7378,6 +7554,18 @@
             <attribute name="SUM_KVAH">
                 <basicLookup point="kVAh Sum"/>
             </attribute>
+            <attribute name="POWER_FACTOR">
+                <basicLookup point="Avg Power Factor"/>
+            </attribute>
+            <attribute name="POWER_FACTOR_PHASE_A">
+                <basicLookup point="Phase A Power Factor"/>
+            </attribute>
+            <attribute name="POWER_FACTOR_PHASE_B">
+                <basicLookup point="Phase B Power Factor"/>
+            </attribute>
+            <attribute name="POWER_FACTOR_PHASE_C">
+                <basicLookup point="Phase C Power Factor"/>
+            </attribute>
         </attributes>
     </pao>
 
@@ -7568,6 +7756,30 @@
             <attribute name="KVARH">
                 <basicLookup point="Delivered kVArh" />
             </attribute>
+            <attribute name="PEAK_KVAR_RATE_A">
+                <basicLookup point="Rate A Peak kVAr" />
+            </attribute>
+            <attribute name="PEAK_KVAR_RATE_B">
+                <basicLookup point="Rate B Peak kVAr" />
+            </attribute>
+            <attribute name="PEAK_KVAR_RATE_C">
+                <basicLookup point="Rate C Peak kVAr" />
+            </attribute>
+            <attribute name="PEAK_KVAR_RATE_D">
+                <basicLookup point="Rate D Peak kVAr" />
+            </attribute>
+            <attribute name="RECEIVED_KVARH_RATE_A">
+                <basicLookup point="Received Rate A kVArh" />
+            </attribute>
+            <attribute name="RECEIVED_KVARH_RATE_B">
+                <basicLookup point="Received Rate B kVArh" />
+            </attribute>
+            <attribute name="RECEIVED_KVARH_RATE_C">
+                <basicLookup point="Received Rate C kVArh" />
+            </attribute>
+            <attribute name="RECEIVED_KVARH_RATE_D">
+                <basicLookup point="Received Rate D kVArh" />
+            </attribute>
         </attributes>
     </pao>
 
@@ -7586,6 +7798,11 @@
                 <decimalplaces value="4"/>
             </point>
         </points>
+        <attributes>
+        	<attribute name="RECEIVED_KVARH">
+                <basicLookup point="Received kVArh" />
+            </attribute>
+        </attributes>
     </pao>
 
     <!-- FOCUS RFN METERS -->
@@ -7783,42 +8000,42 @@
             </point>
             <point type="Analog" offset="220">
                 <init>true</init>
-                <name>Forward Inductive kVARh</name>
+                <name>Forward Inductive kVArh</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="221">
                 <init>true</init>
-                <name>Reverse Inductive kVARh</name>
+                <name>Reverse Inductive kVArh</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="222">
                 <init>true</init>
-                <name>Forward Inductive kVARh per Interval</name>
+                <name>Forward Inductive kVArh per Interval</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="223">
                 <init>true</init>
-                <name>Forward Capacitive kVARh per Interval</name>
+                <name>Forward Capacitive kVArh per Interval</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="224">
                 <init>true</init>
-                <name>Reverse Inductive kVARh per Interval</name>
+                <name>Reverse Inductive kVArh per Interval</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="225">
                 <init>true</init>
-                <name>Reverse Capacitive kVARh per Interval</name>
+                <name>Reverse Capacitive kVArh per Interval</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
                 <decimalplaces value="3"/>
@@ -7855,7 +8072,7 @@
             <attribute name="USAGE">
                 <basicLookup point="Delivered kWh" />
             </attribute>
-            <attribute name="ENERGY_GENERATED">
+            <attribute name="RECEIVED_KWH">
                 <basicLookup point="Received kWh" />
             </attribute>
             <attribute name="DEMAND">
@@ -7880,16 +8097,16 @@
                 <basicLookup point="Outage Log" />
             </attribute>
 
-            <attribute name="TOU_RATE_A_USAGE">
+            <attribute name="USAGE_RATE_A">
                 <basicLookup point="Rate A kWh" />
             </attribute>
-            <attribute name="TOU_RATE_B_USAGE">
+            <attribute name="USAGE_RATE_B">
                 <basicLookup point="Rate B kWh" />
             </attribute>
-            <attribute name="TOU_RATE_C_USAGE">
+            <attribute name="USAGE_RATE_C">
                 <basicLookup point="Rate C kWh" />
             </attribute>
-            <attribute name="TOU_RATE_D_USAGE">
+            <attribute name="USAGE_RATE_D">
                 <basicLookup point="Rate D kWh" />
             </attribute>
             <attribute name="PEAK_DEMAND">
@@ -7899,26 +8116,26 @@
             <attribute name="USAGE_PER_INTERVAL">
                 <basicLookup point="Delivered kWh per Interval" />
             </attribute>
-            <attribute name="GENERATED_KWH_PER_INTERVAL">
+            <attribute name="RECEIVED_KWH_PER_INTERVAL">
                 <basicLookup point="Received kWh per Interval" />
             </attribute>
             <attribute name="FORWARD_INDUCTIVE_KVARH">
-                <basicLookup point="Forward Inductive kVARh" />
+                <basicLookup point="Forward Inductive kVArh" />
             </attribute>
             <attribute name="REVERSE_INDUCTIVE_KVARH">
-                <basicLookup point="Reverse Inductive kVARh" />
+                <basicLookup point="Reverse Inductive kVArh" />
             </attribute>
             <attribute name="FORWARD_INDUCTIVE_KVARH_PER_INTERVAL">
-                <basicLookup point="Forward Inductive kVARh per Interval" />
+                <basicLookup point="Forward Inductive kVArh per Interval" />
             </attribute>
             <attribute name="FORWARD_CAPACITIVE_KVARH_PER_INTERVAL">
-                <basicLookup point="Forward Capacitive kVARh per Interval" />
+                <basicLookup point="Forward Capacitive kVArh per Interval" />
             </attribute>
             <attribute name="REVERSE_INDUCTIVE_KVARH_PER_INTERVAL">
-                <basicLookup point="Reverse Inductive kVARh per Interval" />
+                <basicLookup point="Reverse Inductive kVArh per Interval" />
             </attribute>
             <attribute name="REVERSE_CAPACITIVE_KVARH_PER_INTERVAL">
-                <basicLookup point="Reverse Capacitive kVARh per Interval" />
+                <basicLookup point="Reverse Capacitive kVArh per Interval" />
             </attribute>
 
             <attribute name="CURRENT_PHASE_A">
@@ -8073,11 +8290,12 @@
             <attribute name="USAGE">
                 <basicLookup point="Delivered kWh" />
             </attribute>
+            <attribute name="DELIVERED_KWH">
+                <basicLookup point="Delivered kWh" />
+            </attribute>
         </attributes>
     </pao>
 
-    <!-- FIXME: The init values in RFN_TOU_FOR_ALL_EXCEPT_A3D are different than Stacey specified in 
-         supplied spreadsheet:  which is correct? -->
     <pao id="RFN_L1_SENTINEL" abstract="true" inherits="RFN_L0_SENTINEL, RFN_TOU_FOR_ALL_EXCEPT_A3D">
         <points>
             <point type="Analog" offset="2">
@@ -8212,7 +8430,7 @@
             </point>
         </points>
         <attributes>
-            <attribute name="ENERGY_GENERATED">
+            <attribute name="RECEIVED_KWH">
                 <basicLookup point="Received kWh"/>
             </attribute>
             <attribute name="NET_KWH">
@@ -8224,19 +8442,30 @@
             <attribute name="PEAK_DEMAND">
                 <basicLookup point="Peak kW" />
             </attribute>
-            <attribute name="TOU_RATE_A_ENERGY_GENERATED">
+            <attribute name="RECEIVED_KWH_RATE_A">
                 <basicLookup point="Received kWh (Rate A kWh)" />
             </attribute>
-            <attribute name="TOU_RATE_B_ENERGY_GENERATED">
+            <attribute name="RECEIVED_KWH_RATE_B">
                 <basicLookup point="Received kWh (Rate B kWh)" />
             </attribute>
-            <attribute name="TOU_RATE_C_ENERGY_GENERATED">
+            <attribute name="RECEIVED_KWH_RATE_C">
                 <basicLookup point="Received kWh (Rate C kWh)" />
             </attribute>
-            <attribute name="TOU_RATE_D_ENERGY_GENERATED">
+            <attribute name="RECEIVED_KWH_RATE_D">
                 <basicLookup point="Received kWh (Rate D kWh)" />
             </attribute>
-            <!-- TODO: Missing attributes for: Sum kWh (Rate X kWh) -->
+            <attribute name="SUM_KWH_RATE_A">
+                <basicLookup point="Sum kWh (Rate A kWh)"/>
+            </attribute>
+            <attribute name="SUM_KWH_RATE_B">
+                <basicLookup point="Sum kWh (Rate B kWh)"/>
+            </attribute>
+            <attribute name="SUM_KWH_RATE_C">
+                <basicLookup point="Sum kWh (Rate C kWh)"/>
+            </attribute>
+            <attribute name="SUM_KWH_RATE_D">
+                <basicLookup point="Sum kWh (Rate D kWh)"/>
+            </attribute>            
             <attribute name="VOLTAGE_PHASE_A">
                 <basicLookup point="Volts Phase A" />
             </attribute>
@@ -8255,7 +8484,9 @@
             <attribute name="CURRENT_PHASE_C">
                 <basicLookup point="Amps Phase C"/>
             </attribute>
-            <!-- TODO: Missing attribute for: Avg Power Factor -->
+            <attribute name="POWER_FACTOR">
+                <basicLookup point="Avg Power Factor"/>
+            </attribute>
         </attributes>
     </pao>
 
@@ -8328,12 +8559,37 @@
             </point>
         </points>
         <attributes>
+        	<!-- Using KVARH attributes for "Delivered kVArh". May need separate attributes in the futre -->
             <attribute name="KVARH">
                 <basicLookup point="Delivered kVArh" />
             </attribute>
-          <!-- TODO: Missing attributes for:  Delivered Rate X kVArh -->
-          <!-- TODO: Missing attribute for:  Received kVArh -->
-          <!-- TODO: Missing attributes for:  Received Rate X kVArh -->
+            <attribute name="KVARH_RATE_A">
+                <basicLookup point="Delivered Rate A kVArh" />
+            </attribute>
+            <attribute name="KVARH_RATE_B">
+                <basicLookup point="Delivered Rate B kVArh" />
+            </attribute>
+            <attribute name="KVARH_RATE_C">
+                <basicLookup point="Delivered Rate C kVArh" />
+            </attribute>
+            <attribute name="KVARH_RATE_D">
+                <basicLookup point="Delivered Rate D kVArh" />
+            </attribute>
+            <attribute name="RECEIVED_KVARH">
+                <basicLookup point="Received kVArh" />
+            </attribute>
+            <attribute name="RECEIVED_KVARH_RATE_A">
+                <basicLookup point="Received Rate A kVArh" />
+            </attribute>
+            <attribute name="RECEIVED_KVARH_RATE_B">
+                <basicLookup point="Received Rate B kVArh" />
+            </attribute>
+            <attribute name="RECEIVED_KVARH_RATE_C">
+                <basicLookup point="Received Rate C kVArh" />
+            </attribute>
+            <attribute name="RECEIVED_KVARH_RATE_D">
+                <basicLookup point="Received Rate D kVArh" />
+            </attribute>
         </attributes>
     </pao>
 
@@ -8343,62 +8599,62 @@
     <pao id="RFN_L4_SENTINEL" abstract="true" inherits="RFN_L3_SENTINEL">
         <points>
             <point type="Analog" offset="229">
-                <name>Net Delivered kVARh</name>
+                <name>Net Delivered kVArh</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="230">
-                <name>Rate A Net Delivered kVARh</name>
+                <name>Rate A Net Delivered kVArh</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="231">
-                <name>Rate B Net Delivered kVARh</name>
+                <name>Rate B Net Delivered kVArh</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="232">
-                <name>Rate C Net Delivered kVARh</name>
+                <name>Rate C Net Delivered kVArh</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="233">
-                <name>Rate D Net Delivered kVARh</name>
+                <name>Rate D Net Delivered kVArh</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
                 <decimalplaces value="3"/>
             </point>
 
             <point type="Analog" offset="234">
-                <name>Net Received kVARh</name>
+                <name>Net Received kVArh</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="235">
-                <name>Rate A Net Received kVARh</name>
+                <name>Rate A Net Received kVArh</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="236">
-                <name>Rate B Net Received kVARh</name>
+                <name>Rate B Net Received kVArh</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="237">
-                <name>Rate C Net Received kVARh</name>
+                <name>Rate C Net Received kVArh</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="238">
-                <name>Rate D Net Received kVARh</name>
+                <name>Rate D Net Received kVArh</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
                 <decimalplaces value="3"/>
@@ -8406,34 +8662,34 @@
         </points>
         <attributes>
             <attribute name="NET_DELIVERED_KVARH">
-                <basicLookup point="Net Delivered kVARh" />
+                <basicLookup point="Net Delivered kVArh" />
             </attribute>
-            <attribute name="RATE_A_NET_DELIVERED_KVARH">
-                <basicLookup point="Rate A Net Delivered kVARh" />
+            <attribute name="NET_DELIVERED_KVARH_RATE_A">
+                <basicLookup point="Rate A Net Delivered kVArh" />
             </attribute>
-            <attribute name="RATE_B_NET_DELIVERED_KVARH">
-                <basicLookup point="Rate B Net Delivered kVARh" />
+            <attribute name="NET_DELIVERED_KVARH_RATE_B">
+                <basicLookup point="Rate B Net Delivered kVArh" />
             </attribute>
-            <attribute name="RATE_C_NET_DELIVERED_KVARH">
-                <basicLookup point="Rate C Net Delivered kVARh" />
+            <attribute name="NET_DELIVERED_KVARH_RATE_C">
+                <basicLookup point="Rate C Net Delivered kVArh" />
             </attribute>
-            <attribute name="RATE_D_NET_DELIVERED_KVARH">
-                <basicLookup point="Rate D Net Delivered kVARh" />
+            <attribute name="NET_DELIVERED_KVARH_RATE_D">
+                <basicLookup point="Rate D Net Delivered kVArh" />
             </attribute>
             <attribute name="NET_RECEIVED_KVARH">
-                <basicLookup point="Net Received kVARh" />
+                <basicLookup point="Net Received kVArh" />
             </attribute>
-            <attribute name="RATE_A_NET_RECEIVED_KVARH">
-                <basicLookup point="Rate A Net Received kVARh" />
+            <attribute name="NET_RECEIVED_KVARH_RATE_A">
+                <basicLookup point="Rate A Net Received kVArh" />
             </attribute>
-            <attribute name="RATE_B_NET_RECEIVED_KVARH">
-                <basicLookup point="Rate B Net Received kVARh" />
+            <attribute name="NET_RECEIVED_KVARH_RATE_B">
+                <basicLookup point="Rate B Net Received kVArh" />
             </attribute>
-            <attribute name="RATE_C_NET_RECEIVED_KVARH">
-                <basicLookup point="Rate C Net Received kVARh" />
+            <attribute name="NET_RECEIVED_KVARH_RATE_C">
+                <basicLookup point="Rate C Net Received kVArh" />
             </attribute>
-            <attribute name="RATE_D_NET_RECEIVED_KVARH">
-                <basicLookup point="Rate D Net Received kVARh" />
+            <attribute name="NET_RECEIVED_KVARH_RATE_D">
+                <basicLookup point="Rate D Net Received kVArh" />
             </attribute>
         </attributes>
     </pao>

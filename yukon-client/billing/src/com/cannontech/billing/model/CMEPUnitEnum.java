@@ -21,7 +21,7 @@ public enum CMEPUnitEnum {
     GKW(null), // Kilowatt generation, received from customer, usually expressed as peak value in time interval. Used when customer is generating power. 
     GKVA(null), // Kilovolt-Ampere generation received from customer, usually expressed as peak value in time interval. Used when customer is generating power. 
     GKVAR(null), // Kilovolt-Ampere Reactive generation received from customer, usually expressed as peak value in time interval. Used when customer is generating power. Values may be positive or negative depending upon power  factor. See KVAR above for further notes. 
-    GKWH(BuiltInAttribute.ENERGY_GENERATED), // Kilowatt hours received from customer. Used when customer is generating power. 
+    GKWH(BuiltInAttribute.RECEIVED_KWH), // Kilowatt hours received from customer. Used when customer is generating power. 
     GKVAH(null), // Kilovolt-Ampere hours received from customer. Used when customer is generating power.
     GKVARH(null), // Kilovolt-Ampere Reactive hours received from customer. Used when customer is generating power. Values may be positive or negative depending upon power factor. See KVAR above for further notes. 
     VOLTS(null), // Volts. 
