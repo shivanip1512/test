@@ -333,73 +333,73 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnConsumer_putconfig_tou_install )
     test_DeviceConfig cfg;
 
     // Schedule 1
-    cfg.insertValue( RfnStrings::Schedule1Time1,        "00:01" );
-    cfg.insertValue( RfnStrings::Schedule1Time2,        "10:06" );
-    cfg.insertValue( RfnStrings::Schedule1Time3,        "12:22" );
-    cfg.insertValue( RfnStrings::Schedule1Time4,        "23:33" );
-    cfg.insertValue( RfnStrings::Schedule1Time5,        "23:44" );
+    cfg.insertValue( RfnStrings::Schedule1Time1, "00:01" );
+    cfg.insertValue( RfnStrings::Schedule1Time2, "10:06" );
+    cfg.insertValue( RfnStrings::Schedule1Time3, "12:22" );
+    cfg.insertValue( RfnStrings::Schedule1Time4, "23:33" );
+    cfg.insertValue( RfnStrings::Schedule1Time5, "23:44" );
 
-    cfg.insertValue( RfnStrings::Schedule1MidnightRate, "A" );
-    cfg.insertValue( RfnStrings::Schedule1Rate1,        "B" );
-    cfg.insertValue( RfnStrings::Schedule1Rate2,        "C" );
-    cfg.insertValue( RfnStrings::Schedule1Rate3,        "D" );
-    cfg.insertValue( RfnStrings::Schedule1Rate4,        "A" );
-    cfg.insertValue( RfnStrings::Schedule1Rate5,        "B" );
+    cfg.insertValue( RfnStrings::Schedule1Rate0, "A" );
+    cfg.insertValue( RfnStrings::Schedule1Rate1, "B" );
+    cfg.insertValue( RfnStrings::Schedule1Rate2, "C" );
+    cfg.insertValue( RfnStrings::Schedule1Rate3, "D" );
+    cfg.insertValue( RfnStrings::Schedule1Rate4, "A" );
+    cfg.insertValue( RfnStrings::Schedule1Rate5, "B" );
 
     // Schedule 2
-    cfg.insertValue( RfnStrings::Schedule2Time1,        "01:23" );
-    cfg.insertValue( RfnStrings::Schedule2Time2,        "03:12" );
-    cfg.insertValue( RfnStrings::Schedule2Time3,        "04:01" );
-    cfg.insertValue( RfnStrings::Schedule2Time4,        "05:23" );
-    cfg.insertValue( RfnStrings::Schedule2Time5,        "16:28" );
+    cfg.insertValue( RfnStrings::Schedule2Time1, "01:23" );
+    cfg.insertValue( RfnStrings::Schedule2Time2, "03:12" );
+    cfg.insertValue( RfnStrings::Schedule2Time3, "04:01" );
+    cfg.insertValue( RfnStrings::Schedule2Time4, "05:23" );
+    cfg.insertValue( RfnStrings::Schedule2Time5, "16:28" );
 
-    cfg.insertValue( RfnStrings::Schedule2MidnightRate, "D" );
-    cfg.insertValue( RfnStrings::Schedule2Rate1,        "A" );
-    cfg.insertValue( RfnStrings::Schedule2Rate2,        "B" );
-    cfg.insertValue( RfnStrings::Schedule2Rate3,        "C" );
-    cfg.insertValue( RfnStrings::Schedule2Rate4,        "D" );
-    cfg.insertValue( RfnStrings::Schedule2Rate5,        "A" );
+    cfg.insertValue( RfnStrings::Schedule2Rate0, "D" );
+    cfg.insertValue( RfnStrings::Schedule2Rate1, "A" );
+    cfg.insertValue( RfnStrings::Schedule2Rate2, "B" );
+    cfg.insertValue( RfnStrings::Schedule2Rate3, "C" );
+    cfg.insertValue( RfnStrings::Schedule2Rate4, "D" );
+    cfg.insertValue( RfnStrings::Schedule2Rate5, "A" );
 
     // Schedule 3
-    cfg.insertValue( RfnStrings::Schedule3Time1,        "01:02" );
-    cfg.insertValue( RfnStrings::Schedule3Time2,        "02:03" );
-    cfg.insertValue( RfnStrings::Schedule3Time3,        "04:05" );
-    cfg.insertValue( RfnStrings::Schedule3Time4,        "05:06" );
-    cfg.insertValue( RfnStrings::Schedule3Time5,        "06:07" );
+    cfg.insertValue( RfnStrings::Schedule3Time1, "01:02" );
+    cfg.insertValue( RfnStrings::Schedule3Time2, "02:03" );
+    cfg.insertValue( RfnStrings::Schedule3Time3, "04:05" );
+    cfg.insertValue( RfnStrings::Schedule3Time4, "05:06" );
+    cfg.insertValue( RfnStrings::Schedule3Time5, "06:07" );
 
-    cfg.insertValue( RfnStrings::Schedule3MidnightRate, "C" );
-    cfg.insertValue( RfnStrings::Schedule3Rate1,        "D" );
-    cfg.insertValue( RfnStrings::Schedule3Rate2,        "A" );
-    cfg.insertValue( RfnStrings::Schedule3Rate3,        "B" );
-    cfg.insertValue( RfnStrings::Schedule3Rate4,        "C" );
-    cfg.insertValue( RfnStrings::Schedule3Rate5,        "D" );
+    cfg.insertValue( RfnStrings::Schedule3Rate0, "C" );
+    cfg.insertValue( RfnStrings::Schedule3Rate1, "D" );
+    cfg.insertValue( RfnStrings::Schedule3Rate2, "A" );
+    cfg.insertValue( RfnStrings::Schedule3Rate3, "B" );
+    cfg.insertValue( RfnStrings::Schedule3Rate4, "C" );
+    cfg.insertValue( RfnStrings::Schedule3Rate5, "D" );
 
     // Schedule 4
-    cfg.insertValue( RfnStrings::Schedule4Time1,        "00:01" );
-    cfg.insertValue( RfnStrings::Schedule4Time2,        "08:59" );
-    cfg.insertValue( RfnStrings::Schedule4Time3,        "12:12" );
-    cfg.insertValue( RfnStrings::Schedule4Time4,        "23:01" );
-    cfg.insertValue( RfnStrings::Schedule4Time5,        "23:55" );
+    cfg.insertValue( RfnStrings::Schedule4Time1, "00:01" );
+    cfg.insertValue( RfnStrings::Schedule4Time2, "08:59" );
+    cfg.insertValue( RfnStrings::Schedule4Time3, "12:12" );
+    cfg.insertValue( RfnStrings::Schedule4Time4, "23:01" );
+    cfg.insertValue( RfnStrings::Schedule4Time5, "23:55" );
 
-    cfg.insertValue( RfnStrings::Schedule4MidnightRate, "B" );
-    cfg.insertValue( RfnStrings::Schedule4Rate1,        "C" );
-    cfg.insertValue( RfnStrings::Schedule4Rate2,        "D" );
-    cfg.insertValue( RfnStrings::Schedule4Rate3,        "A" );
-    cfg.insertValue( RfnStrings::Schedule4Rate4,        "B" );
-    cfg.insertValue( RfnStrings::Schedule4Rate5,        "C" );
+    cfg.insertValue( RfnStrings::Schedule4Rate0, "B" );
+    cfg.insertValue( RfnStrings::Schedule4Rate1, "C" );
+    cfg.insertValue( RfnStrings::Schedule4Rate2, "D" );
+    cfg.insertValue( RfnStrings::Schedule4Rate3, "A" );
+    cfg.insertValue( RfnStrings::Schedule4Rate4, "B" );
+    cfg.insertValue( RfnStrings::Schedule4Rate5, "C" );
 
     // day table
-    cfg.insertValue( RfnStrings::MondaySchedule,        "schedule 1" );
-    cfg.insertValue( RfnStrings::TuesdaySchedule,       "schedule 3" );
-    cfg.insertValue( RfnStrings::WednesdaySchedule,     "schedule 2" );
-    cfg.insertValue( RfnStrings::ThursdaySchedule,      "schedule 4" );
-    cfg.insertValue( RfnStrings::FridaySchedule,        "schedule 2" );
-    cfg.insertValue( RfnStrings::SaturdaySchedule,      "schedule 3" );
-    cfg.insertValue( RfnStrings::SundaySchedule,        "schedule 1" );
-    cfg.insertValue( RfnStrings::HolidaySchedule,       "schedule 3" );
+    cfg.insertValue( RfnStrings::MondaySchedule,    "schedule 1" );
+    cfg.insertValue( RfnStrings::TuesdaySchedule,   "schedule 3" );
+    cfg.insertValue( RfnStrings::WednesdaySchedule, "schedule 2" );
+    cfg.insertValue( RfnStrings::ThursdaySchedule,  "schedule 4" );
+    cfg.insertValue( RfnStrings::FridaySchedule,    "schedule 2" );
+    cfg.insertValue( RfnStrings::SaturdaySchedule,  "schedule 3" );
+    cfg.insertValue( RfnStrings::SundaySchedule,    "schedule 1" );
+    cfg.insertValue( RfnStrings::HolidaySchedule,   "schedule 3" );
 
     // default rate
-    cfg.insertValue( RfnStrings::DefaultTouRate,        "B" );
+    cfg.insertValue( RfnStrings::DefaultTouRate, "B" );
 
     test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
 
