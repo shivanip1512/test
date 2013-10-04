@@ -1578,7 +1578,7 @@ input.dateTimePicker {
 	visibility: hidden;
 }
 
-.has-actions tr:hover .dropdown-container,.has-actions li:hover .dropdown-container,.has-actions .dropdown-container.menu-open,.tr:hover .show-on-hover,li:hover .show-on-hover {
+.has-actions tr:hover .dropdown-container,.has-actions li:hover .dropdown-container,.has-actions .dropdown-container.menu-open, tr:hover .show-on-hover,li:hover .show-on-hover {
 	visibility: visible;
 }
 
