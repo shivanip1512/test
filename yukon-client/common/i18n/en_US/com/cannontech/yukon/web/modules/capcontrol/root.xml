@@ -323,8 +323,8 @@
     <entry key="yukon.web.modules.capcontrol.substation.allBuses">All Sub Buses</entry>
     <entry key="yukon.web.modules.capcontrol.substation.allFeeders">All Feeders</entry>
     <entry key="yukon.web.modules.capcontrol.substation.busAddInfo.label">Bus Info</entry>
-    <entry key="yukon.web.modules.capcontrol.substation.stateInfo.hoverText"><![CDATA[System Commands, those commands that<br>
-                                                                                        do NOT send out a message to a field device,<br>
+    <entry key="yukon.web.modules.capcontrol.substation.stateInfoToolTip"><![CDATA[System Commands, those commands that
+                                                                                        do NOT send out<br>a message to a field device,
                                                                                         can be initiated from this column.<br><br>
                                                                                             -V: Auto Volt Control (OV/UV) is Disabled.<br>
                                                                                             -U: CBC reported unsolicited state change.<br>

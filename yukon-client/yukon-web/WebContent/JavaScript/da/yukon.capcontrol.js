@@ -56,7 +56,7 @@ Yukon.CapControl = (function () {
         },
 
         initBankTier: function() {
-            var banks = jQuery('[data-bank-id');
+            var banks = jQuery('[data-bank-id]');
             banks.each( function(index, item){
                 var row = jQuery(item),
                 bankId = row.attr('data-bank-id'),

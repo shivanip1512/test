@@ -36,7 +36,10 @@ margin: 0px;
                 </th>
                 <th>
                     <i:inline key=".state"/>
-                    <cti:icon nameKey="stateInfo" icon="icon-information" classes="M0 fn" />
+                    <div class="dn f-tooltip">
+                        <cti:msg2 key=".stateInfoToolTip"/>
+                    </div>
+                    <cti:icon nameKey="stateInfo" icon="icon-information" classes="M0 fn f-has-tooltip" />
                 </th>
                 <th><i:inline key=".timestamp"/></th>
                 <th class="tar"><i:inline key=".bankSize"/></th>
