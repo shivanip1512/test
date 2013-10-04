@@ -243,7 +243,7 @@
     <entry key="yukon.web.modules.tools.configs.category.mct470LoadProfileChannels.channel4Multiplier">Channel #4 KYZ Multiplier</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct470LoadProfileChannels.channel4Multiplier.description">Metering Ratio and K-Value.</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct470LoadProfileChannels.channel4LoadProfileResolution">Channel #4 Profile Resolution</entry>
-    <entry key="yukon.web.modules.tools.configs.category.mct470LoadProfileChannels.channel4LoadProfileResolution.description">Resolution power for profile data.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470LoadProfileChannels.channel4LoadProfileResolution.description">Resolution power for profile.</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct470LoadProfileChannels.channel4PeakKWResolution">Channel #4 Peak KW Resolution</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct470LoadProfileChannels.channel4PeakKWResolution.description">Resolution power for peak KW.</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct470LoadProfileChannels.channel4LastIntervalDemandResolution">Channel #4 Last Interval Demand Resolution</entry>
@@ -302,8 +302,8 @@
     <entry key="yukon.web.modules.tools.configs.category.tou.saturday">Saturday</entry>
     <entry key="yukon.web.modules.tools.configs.category.tou.sunday">Sunday</entry>
 
-    <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.title">MCT-430 Load Profile Channels</entry>
-    <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.definition">Load profile settings for the individual channels of the MCT-430.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.title">MCT-430 Profile Channels</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.definition">Profile settings for the individual channels of the MCT-430.</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel1Type">Channel #1 Meter Type</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel1Type.description">Used to determine which type of meter will populate profile channel 1.</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel1PhysicalChannel">Channel #1 Physical Channel</entry>
