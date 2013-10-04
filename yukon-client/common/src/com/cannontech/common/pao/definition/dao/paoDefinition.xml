@@ -8682,6 +8682,14 @@
                 <basicLookup point="Unprogrammed"/>
             </attribute>
         </attributes>
+        <tags>
+            <tag name="DEVICE_ICON_TYPE">
+                <value>electric_meter</value>
+            </tag>
+            <tag name="METER_DETAIL_DISPLAYABLE"/>
+            <tag name="NETWORK_MANAGER_ATTRIBUTE_READS"/>
+            <tag name="USES_METER_NUMBER_FOR_MSP"/>
+		</tags>
     </pao>
     
     <pao id="RFN_L0_SENTINEL" abstract="true" inherits="RFN_COMMON_SENTINEL">
