@@ -147,14 +147,14 @@ public class UserPageDaoImpl implements UserPageDao {
         sql.append("  WHERE T.RowNumber").lte(MAX_HISTORY);
         sql.append("  OR T.Favorite").eq(true);
         sql.append("  UNION");
-        sql.append("  SELECT T.UserPageId FROM (");
-        sql.append("    SELECT ROW_NUMBER() OVER (ORDER BY LastAccess DESC) RowNumber, UP.UserPageId, UP.Favorite");
+        sql.append("  SELECT T2.UserPageId FROM (");
+        sql.append("    SELECT ROW_NUMBER() OVER (ORDER BY LastAccess DESC) RowNumber, UP.UserPageId");
         sql.append("    FROM UserPage UP");
         sql.append("    WHERE UP.UserId").eq(userId);
         sql.append("    AND UP.Module").eq("dr");
         sql.append("    AND UP.PageName").contains("Detail");
-        sql.append("  ) T");
-        sql.append("  WHERE T.RowNumber").lte(MAX_DR_RECENT_VIEWED);
+        sql.append("  ) T2");
+        sql.append("  WHERE T2.RowNumber").lte(MAX_DR_RECENT_VIEWED);
         sql.append(")");
         yukonJdbcTemplate.update(sql);
     }
