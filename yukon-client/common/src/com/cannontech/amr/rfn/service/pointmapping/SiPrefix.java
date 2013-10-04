@@ -20,7 +20,7 @@ public enum SiPrefix {
     micro(-6),
     milli(-3),
     centi(-2),
-    deci(-1),
+    deci(-1, "tenths"),
     deca(1),
     hecto(2),
     kilo(3, "Kilo"),

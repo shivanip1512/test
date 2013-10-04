@@ -5,5 +5,6 @@ public enum RfnMeterReadingType {
     BILLING,
     INTERVAL,
     STATUS,
+    PROFILE,
     ;
 }
