@@ -21,6 +21,7 @@ public class ServerEmbeddedBroker {
 	
     private final String name;
     private final String listenerString;
+    private static final String DEFAULT_CONNECTOR = "tcp://localhost:61616"; 
     
     private long memoryUsageLimit = DEFAULT_MEMORY_USAGE_LIMIT;
     private long tempQueueMemoryUsageLimit = DEFAULT_TEMPQUEUE_MEMORY_USAGE_LIMIT;
@@ -56,11 +57,11 @@ public class ServerEmbeddedBroker {
         try {
             BrokerService broker = new BrokerService();
             broker.setBrokerName(name);
-            broker.addConnector(listenerString);
+            broker.addConnector(DEFAULT_CONNECTOR);  //  always listen on localhost
+            if (!listenerString.equals(DEFAULT_CONNECTOR)) {
+                broker.addConnector(listenerString);
+            }
             broker.setUseJmx(true);
-            
-            //@todo remove this line, no longer needed as of AMQ 5.4.2
-            broker.setSchedulerSupport(false); // https://issues.apache.org/activemq/browse/AMQ-2935
             
             broker.getSystemUsage().getMemoryUsage().setLimit(memoryUsageLimit);            
             PolicyEntry policyEntry= new PolicyEntry(); 

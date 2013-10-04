@@ -27,64 +27,86 @@ public class YukonJmsConnectionFactory implements FactoryBean<ConnectionFactory>
 
     @Override
     public ConnectionFactory getObject() throws Exception {
+        String serverAddress =
+                configurationSource.getString("JMS_BROKER_HOST", 
+                                              "localhost");
         String serverListenConnection =
-                configurationSource.getString("JMS_SERVER_BROKER_LISTEN_CONNECTION", "tcp://localhost:61616");
-        ConnectionFactory delegate;
+                configurationSource.getString("JMS_SERVER_BROKER_LISTEN_CONNECTION", 
+                                              "tcp://" + serverAddress + ":61616");
 
-        if (connectionType == ConnectionType.REMOTE_SERVICES) {
-            String clientConnection = configurationSource.getString("JMS_REMOTE_SERVICES_CONNECTION",
-                serverListenConnection);
-            // Create a ConnectionFactory
-            ConnectionFactory factory = new ActiveMQConnectionFactory(clientConnection);
+        switch (connectionType) {
+            case REMOTE_SERVICES: {
+                String clientConnection = 
+                        configurationSource.getString("JMS_REMOTE_SERVICES_CONNECTION",
+                                                      serverListenConnection);
+                // Create a ConnectionFactory
+                ConnectionFactory factory = new ActiveMQConnectionFactory(clientConnection);
+    
+                // if using Spring, create a CachingConnectionFactory
+                CachingConnectionFactory cachingFactory = new CachingConnectionFactory();
+                cachingFactory.setTargetConnectionFactory(factory);
+                log.debug("created remote services connectionFactory at " + clientConnection);
+                return cachingFactory;
+            }
+            case INTERNAL_MESSAGING: {
+                final String applicationName = BootstrapUtils.getApplicationName();
+                String connectionBase = serverListenConnection;
 
-            // if using Spring, create a CachingConnectionFactory
-            CachingConnectionFactory cachingFactory = new CachingConnectionFactory();
-            cachingFactory.setTargetConnectionFactory(factory);
-            delegate = cachingFactory;
-            log.debug("created remote services connectionFactory at " + clientConnection);
-        } else if (connectionType == ConnectionType.INTERNAL_MESSAGING) {
-            String internalMessageConnectionDefault = "failover:(tcp://localhost:61616)"
-                                                      + "?useExponentialBackOff=true"
-                                                      + "&initialReconnectDelay=1000"
-                                                      + "&maxReconnectDelay=30000" 
-                                                      + "&startupMaxReconnectAttempts=120" 
-                                                      + "&maxReconnectAttempts=0";
-            
-            String InternalConnectionString =
-                configurationSource.getString("JMS_INTERNAL_MESSAGING_CONNECTION", internalMessageConnectionDefault);
-            delegate = new ActiveMQConnectionFactory(InternalConnectionString);
-        } else {
-            final String applicationName = BootstrapUtils.getApplicationName();
-
-            if (applicationName.equals("ServiceManager")) {
-                ServerEmbeddedBroker serverEmbeddedBroker =
-                        new ServerEmbeddedBroker(applicationName, serverListenConnection);
-                serverEmbeddedBroker.start();
-                delegate = serverEmbeddedBroker.getConnectionFactory();
-                log.debug("created ServiceManager ConnectionFactory at " + serverListenConnection);
-            } else if (!CtiUtilities.isRunningAsClient()) {
-                String clientBrokerConnection = configurationSource.getString("JMS_CLIENT_BROKER_CONNECTION",
-                    serverListenConnection);
-                ClientEmbeddedBroker clientEmbeddedBroker =
-                        new ClientEmbeddedBroker(applicationName, clientBrokerConnection);
-                clientEmbeddedBroker.start();
-                delegate = clientEmbeddedBroker.getConnectionFactory();
-                log.debug("created Server ConnectionFactory at " + clientBrokerConnection);
-            } else {
+                if (applicationName.equals("ServiceManager")) {
+                    connectionBase = "vm://ServiceManager?create=false";
+                }
+                
+                String internalMessageConnectionDefault = 
+                        "failover:(" + connectionBase + ")"
+                        + "?useExponentialBackOff=true"
+                        + "&initialReconnectDelay=1000"
+                        + "&maxReconnectDelay=30000" 
+                        + "&startupMaxReconnectAttempts=120" 
+                        + "&maxReconnectAttempts=0";
+    
+                String InternalConnectionString = internalMessageConnectionDefault;
+                
+                if (!applicationName.equals("ServiceManager")) {
+                    InternalConnectionString =
+                            configurationSource.getString("JMS_INTERNAL_MESSAGING_CONNECTION", 
+                                                          internalMessageConnectionDefault);
+                }
+                return new ActiveMQConnectionFactory(InternalConnectionString);
+            }
+            default: 
+            case NORMAL: {
+                final String applicationName = BootstrapUtils.getApplicationName();
+    
+                if (applicationName.equals("ServiceManager")) {
+                    ServerEmbeddedBroker serverEmbeddedBroker =
+                            new ServerEmbeddedBroker(applicationName, serverListenConnection);
+                    serverEmbeddedBroker.start();
+                    log.debug("created ServiceManager ConnectionFactory at " + serverListenConnection);
+                    return serverEmbeddedBroker.getConnectionFactory();
+                } 
+                if (!CtiUtilities.isRunningAsClient()) {
+                    String clientBrokerConnection = 
+                            configurationSource.getString("JMS_CLIENT_BROKER_CONNECTION",
+                                                          serverListenConnection);
+                    ClientEmbeddedBroker clientEmbeddedBroker =
+                            new ClientEmbeddedBroker(applicationName, clientBrokerConnection);
+                    clientEmbeddedBroker.start();
+                    log.debug("created Server ConnectionFactory at " + clientBrokerConnection);
+                    return clientEmbeddedBroker.getConnectionFactory();
+                } 
                 String clientConnection =
-                        configurationSource.getString("JMS_CLIENT_CONNECTION", serverListenConnection);
+                        configurationSource.getString("JMS_CLIENT_CONNECTION", 
+                                                      serverListenConnection);
                 // Create a ConnectionFactory
                 ConnectionFactory factory = new ActiveMQConnectionFactory(clientConnection);
 
                 // if using Spring, create a CachingConnectionFactory
                 CachingConnectionFactory cachingFactory = new CachingConnectionFactory();
                 cachingFactory.setTargetConnectionFactory(factory);
-                delegate = cachingFactory;
                 log.debug("created Client ConnectionFactory at " + clientConnection);
+                return cachingFactory;
             }
         }
-
-        return delegate;
     }
 
     public void setConnectionType(ConnectionType connectionType) {
