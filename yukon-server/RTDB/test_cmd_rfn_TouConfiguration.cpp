@@ -7,6 +7,7 @@
 #include "cmd_rfn_TouConfiguration.h"
 
 using Cti::Devices::Commands::RfnCommand;
+using Cti::Devices::Commands::RfnCommandResult;
 using Cti::Devices::Commands::RfnTouConfigurationCommand;
 using Cti::Devices::Commands::RfnTouScheduleConfigurationCommand;
 using Cti::Devices::Commands::RfnTouHolidayConfigurationCommand;
@@ -147,7 +148,7 @@ BOOST_AUTO_TEST_CASE( test_RfnTouScheduleConfigurationCommand )
     {
         RfnTouScheduleConfigurationCommand cmd( sched );
 
-        RfnCommand::RfnRequest rcv = cmd.executeCommand( execute_time );
+        RfnCommand::RfnRequestPayload rcv = cmd.executeCommand( execute_time );
 
         std::vector<unsigned char> exp = boost::assign::list_of
                 (0x60)(0x04)
@@ -182,7 +183,7 @@ BOOST_AUTO_TEST_CASE( test_RfnTouScheduleConfigurationCommand )
     {
         RfnTouScheduleConfigurationCommand cmd;
 
-        RfnCommand::RfnRequest rcv = cmd.executeCommand( execute_time );
+        RfnCommand::RfnRequestPayload rcv = cmd.executeCommand( execute_time );
 
         std::vector<unsigned char> exp = boost::assign::list_of
                 (0x60)(0x05)(0x00);
@@ -220,7 +221,7 @@ BOOST_AUTO_TEST_CASE( test_RfnTouScheduleConfigurationCommand )
                 (0x0A)(0x01) // default TOU rate
                 (0x01);
 
-        RfnCommand::RfnResult rcv = cmd.decodeCommand(execute_time, response);
+        RfnCommandResult rcv = cmd.decodeCommand(execute_time, response);
 
         std::string desc_exp =
                 "Status : Success\n"
@@ -338,7 +339,7 @@ BOOST_AUTO_TEST_CASE( test_RfnTouHolidayConfigurationCommand )
     {
         RfnTouHolidayConfigurationCommand cmd( holidays );
 
-        RfnCommand::RfnRequest rcv = cmd.executeCommand( execute_time );
+        RfnCommand::RfnRequestPayload rcv = cmd.executeCommand( execute_time );
 
         std::vector<unsigned char> exp = boost::assign::list_of
                 (0x60)(0x06)
@@ -358,7 +359,7 @@ BOOST_AUTO_TEST_CASE( test_RfnTouHolidayConfigurationCommand )
     {
         RfnTouHolidayConfigurationCommand cmd;
 
-        RfnCommand::RfnRequest rcv = cmd.executeCommand( execute_time );
+        RfnCommand::RfnRequestPayload rcv = cmd.executeCommand( execute_time );
 
         std::vector<unsigned char> exp = boost::assign::list_of
                 (0x60)(0x07)
@@ -382,7 +383,7 @@ BOOST_AUTO_TEST_CASE( test_RfnTouHolidayConfigurationCommand )
         response.insert( response.end(), holiday2.begin(), holiday2.end() );
         response.insert( response.end(), holiday3.begin(), holiday3.end() );
 
-        RfnCommand::RfnResult rcv = cmd.decodeCommand(execute_time, response);
+        RfnCommandResult rcv = cmd.decodeCommand(execute_time, response);
 
         std::string desc_exp =
             "Status : Success\n"
@@ -411,7 +412,7 @@ BOOST_AUTO_TEST_CASE( test_RfnTouStateConfigurationCommand )
     {
         RfnTouStateConfigurationCommand cmd( RfnTouConfigurationCommand::TouEnable );
 
-        RfnCommand::RfnRequest rcv = cmd.executeCommand( execute_time );
+        RfnCommand::RfnRequestPayload rcv = cmd.executeCommand( execute_time );
 
         std::vector<unsigned char> exp = boost::assign::list_of
                 (0x60)(0x01)
@@ -426,7 +427,7 @@ BOOST_AUTO_TEST_CASE( test_RfnTouStateConfigurationCommand )
     {
         RfnTouStateConfigurationCommand cmd( RfnTouConfigurationCommand::TouDisable );
 
-        RfnCommand::RfnRequest rcv = cmd.executeCommand( execute_time );
+        RfnCommand::RfnRequestPayload rcv = cmd.executeCommand( execute_time );
 
         std::vector<unsigned char> exp = boost::assign::list_of
                 (0x60)(0x02)
@@ -441,7 +442,7 @@ BOOST_AUTO_TEST_CASE( test_RfnTouStateConfigurationCommand )
     {
         RfnTouStateConfigurationCommand cmd;
 
-        RfnCommand::RfnRequest rcv = cmd.executeCommand( execute_time );
+        RfnCommand::RfnRequestPayload rcv = cmd.executeCommand( execute_time );
 
         std::vector<unsigned char> exp = boost::assign::list_of
                 (0x60)(0x03)
@@ -460,7 +461,7 @@ BOOST_AUTO_TEST_CASE( test_RfnTouStateConfigurationCommand )
                 (0x61)(0x00)(0x00)(0x00)(0x01)
                 (0x00);
 
-        RfnCommand::RfnResult rcv = cmd.decodeCommand(execute_time, response);
+        RfnCommandResult rcv = cmd.decodeCommand(execute_time, response);
 
         std::string desc_exp =
             "Status : Success\n"
@@ -485,7 +486,7 @@ BOOST_AUTO_TEST_CASE( test_RfnTouStateConfigurationCommand )
                 (0x61)(0x00)(0x00)(0x00)(0x00)
                 (0x00);
 
-        RfnCommand::RfnResult rcv = cmd.decodeCommand(execute_time, response);
+        RfnCommandResult rcv = cmd.decodeCommand(execute_time, response);
 
         std::string desc_exp =
             "Status : Success\n"
@@ -508,7 +509,7 @@ BOOST_AUTO_TEST_CASE( test_RfnTouSetHolidayActiveCommand )
     {
         RfnTouSetHolidayActiveCommand cmd;
 
-        RfnCommand::RfnRequest rcv = cmd.executeCommand( execute_time );
+        RfnCommand::RfnRequestPayload rcv = cmd.executeCommand( execute_time );
 
         std::vector<unsigned char> exp = boost::assign::list_of
                 (0x60)(0x0C)
@@ -526,7 +527,7 @@ BOOST_AUTO_TEST_CASE( test_RfnTouCancelHolidayActiveCommand )
     {
         RfnTouCancelHolidayActiveCommand cmd;
 
-        RfnCommand::RfnRequest rcv = cmd.executeCommand( execute_time );
+        RfnCommand::RfnRequestPayload rcv = cmd.executeCommand( execute_time );
 
         std::vector<unsigned char> exp = boost::assign::list_of
                 (0x60)(0x0D)

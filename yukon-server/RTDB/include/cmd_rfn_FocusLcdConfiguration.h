@@ -26,8 +26,8 @@ public:
     RfnFocusLcdConfigurationCommand();  //  read
     RfnFocusLcdConfigurationCommand( const DisplayItemVector & displayItems, unsigned char displayItemDuration );  //  write
 
-    virtual RfnResult decodeCommand(const CtiTime now, const RfnResponse &response);
-    virtual RfnResult error(const CtiTime now, const YukonError_t error_code);
+    virtual RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload &response);
+    virtual RfnCommandResult error(const CtiTime now, const YukonError_t error_code);
 
     boost::optional<DisplayItemVector> getDisplayItemsReceived() const;
     boost::optional<unsigned char>     getDisplayItemDurationReceived() const;

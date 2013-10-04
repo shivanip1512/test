@@ -90,7 +90,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_schedule )
 
     Commands::RfnCommandSPtr command = rfnRequests.front();
 
-    Commands::RfnCommand::RfnRequest rcv = command->executeCommand( execute_time );
+    Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 
     std::vector<unsigned char> exp = boost::assign::list_of
             (0x60)(0x04)
@@ -275,7 +275,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_enable )
 
     Commands::RfnCommandSPtr command = rfnRequests.front();
 
-    Commands::RfnCommand::RfnRequest rcv = command->executeCommand( execute_time );
+    Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 
     std::vector<unsigned char> exp = boost::assign::list_of
             (0x60)(0x01)(0x00);
@@ -296,7 +296,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_disable )
 
     Commands::RfnCommandSPtr command = rfnRequests.front();
 
-    Commands::RfnCommand::RfnRequest rcv = command->executeCommand( execute_time );
+    Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 
     std::vector<unsigned char> exp = boost::assign::list_of
             (0x60)(0x02)(0x00);
@@ -317,7 +317,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_getconfig_tou_schedule )
 
     Commands::RfnCommandSPtr command = rfnRequests.front();
 
-    Commands::RfnCommand::RfnRequest rcv = command->executeCommand( execute_time );
+    Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 
     std::vector<unsigned char> exp = boost::assign::list_of
             (0x60)(0x05)(0x00);
@@ -414,7 +414,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_install )
 
         Commands::RfnCommandSPtr command = rfnRequests.front();
 
-        Commands::RfnCommand::RfnRequest rcv = command->executeCommand( execute_time );
+        Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 
         std::vector<unsigned char> exp = boost::assign::list_of
                 (0x60)(0x04)
@@ -468,7 +468,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_install )
 
         Commands::RfnCommandSPtr command = rfnRequests.front();
 
-        Commands::RfnCommand::RfnRequest request_rcv = command->executeCommand( execute_time );
+        Commands::RfnCommand::RfnRequestPayload request_rcv = command->executeCommand( execute_time );
 
         std::vector<unsigned char> request_exp = boost::assign::list_of
                 (0x60)(0x05)(0x00);
@@ -547,7 +547,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_install )
 
         Commands::RfnCommandSPtr command = rfnRequests.front();
 
-        Commands::RfnCommand::RfnRequest rcv = command->executeCommand( execute_time );
+        Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 
         std::vector<unsigned char> exp = boost::assign::list_of
                 (0x60)(0x04)
@@ -592,7 +592,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_holiday )
 
     Commands::RfnCommandSPtr command = rfnRequests.front();
 
-    Commands::RfnCommand::RfnRequest rcv = command->executeCommand( execute_time );
+    Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 
     std::vector<unsigned char> exp = boost::assign::list_of
             (0x60)(0x06)
@@ -618,7 +618,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_holiday_active )
 
     Commands::RfnCommandSPtr command = rfnRequests.front();
 
-    Commands::RfnCommand::RfnRequest rcv = command->executeCommand( execute_time );
+    Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 
     const std::vector< unsigned char > exp = boost::assign::list_of
             (0x60)(0x0C)(0x00);
@@ -639,7 +639,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_holiday_cancel )
 
     Commands::RfnCommandSPtr command = rfnRequests.front();
 
-    Commands::RfnCommand::RfnRequest rcv = command->executeCommand( execute_time );
+    Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 
     const std::vector< unsigned char > exp = boost::assign::list_of
             (0x60)(0x0D)(0x00);
@@ -661,7 +661,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_getconfig_tou_holiday )
 
     Commands::RfnCommandSPtr command = rfnRequests.front();
 
-    Commands::RfnCommand::RfnRequest rcv = command->executeCommand( execute_time );
+    Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 
     std::vector<unsigned char> exp = boost::assign::list_of
             (0x60)(0x07)(0x00);

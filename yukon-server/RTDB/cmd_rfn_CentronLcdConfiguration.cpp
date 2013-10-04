@@ -78,9 +78,9 @@ RfnCentronLcdConfigurationCommand::RfnCentronLcdConfigurationCommand(ResultHandl
 }
 
 //  Decode a Lcd configuration response
-RfnCommand::RfnResult RfnCentronLcdConfigurationCommand::decodeCommand(const CtiTime now, const RfnResponse &response)
+RfnCommandResult RfnCentronLcdConfigurationCommand::decodeCommand(const CtiTime now, const RfnResponsePayload &response)
 {
-    RfnResult result;
+    RfnCommandResult result;
 
     if( response.size() < 2 )
     {
@@ -142,7 +142,7 @@ RfnCommand::RfnResult RfnCentronLcdConfigurationCommand::decodeCommand(const Cti
 }
 
 //  throws CommandException
-RfnCommand::RfnResult RfnCentronLcdConfigurationCommand::error(const CtiTime now, const YukonError_t error_code)
+RfnCommandResult RfnCentronLcdConfigurationCommand::error(const CtiTime now, const YukonError_t error_code)
 {
     //  This should probably be the default for all commands unless specified otherwise.
     throw CommandException(error_code, GetErrorString(error_code));

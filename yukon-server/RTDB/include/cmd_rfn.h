@@ -9,22 +9,22 @@ namespace Cti {
 namespace Devices {
 namespace Commands {
 
+struct RfnCommandResult
+{
+    std::string description;
+    std::vector<DeviceCommand::point_data> points;
+};
+
 class IM_EX_DEVDB RfnCommand : public DeviceCommand
 {
 public:
 
-    typedef Bytes RfnRequest;
-    typedef Bytes RfnResponse;
+    typedef Bytes RfnRequestPayload;
+    typedef Bytes RfnResponsePayload;
 
-    struct RfnResult
-    {
-        std::string description;
-        std::vector<point_data> points;
-    };
-
-    RfnRequest executeCommand(const CtiTime now);
-    virtual RfnResult decodeCommand(const CtiTime now, const RfnResponse &response) = 0;
-    virtual RfnResult error  (const CtiTime now, const YukonError_t error_code) = 0;
+    RfnRequestPayload executeCommand(const CtiTime now);
+    virtual RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload &response) = 0;
+    virtual RfnCommandResult error  (const CtiTime now, const YukonError_t error_code) = 0;
 
 protected:
 

@@ -7,9 +7,9 @@ namespace Devices {
 namespace Commands {
 
 // Construct a byte vector request
-RfnCommand::RfnRequest RfnCommand::executeCommand(const CtiTime now)
+RfnCommand::RfnRequestPayload RfnCommand::executeCommand(const CtiTime now)
 {
-    RfnRequest req;
+    RfnRequestPayload req;
 
     prepareCommandData(now);
 

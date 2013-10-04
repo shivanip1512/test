@@ -161,9 +161,9 @@ unsigned char RfnTouConfigurationCommand::getCommandCode() const
  * @param response byte vector containing the response
  * @return rfn result struct
  */
-RfnCommand::RfnResult RfnTouConfigurationCommand::decodeCommand(const CtiTime now, const RfnResponse &response)
+RfnCommandResult RfnTouConfigurationCommand::decodeCommand(const CtiTime now, const RfnResponsePayload &response)
 {
-    RfnResult result;
+    RfnCommandResult result;
 
     // check size
 
@@ -230,7 +230,7 @@ RfnCommand::RfnResult RfnTouConfigurationCommand::decodeCommand(const CtiTime no
  * @param error_code code of the error to throw with exception
  * @return may return a result if function is overloaded in child class
  */
-RfnCommand::RfnResult RfnTouConfigurationCommand::error(const CtiTime now, const YukonError_t error_code)
+RfnCommandResult RfnTouConfigurationCommand::error(const CtiTime now, const YukonError_t error_code)
 {
     // This should probably be the default for all commands unless specified otherwise.
     throw CommandException(error_code, GetErrorString(error_code));
@@ -432,7 +432,7 @@ RfnCommand::Bytes RfnTouScheduleConfigurationCommand::createCommandData( const S
  * @param result
  * @param tlv
  */
-void RfnTouScheduleConfigurationCommand::decodeTlv( RfnResult& result,  const TypeLengthValue& tlv )
+void RfnTouScheduleConfigurationCommand::decodeTlv( RfnCommandResult& result,  const TypeLengthValue& tlv )
 {
     switch( tlv.type )
     {
@@ -476,7 +476,7 @@ void RfnTouScheduleConfigurationCommand::decodeTlv( RfnResult& result,  const Ty
  * @param result append description to the result
  * @param value byte vector containing the tlv value
  */
-void RfnTouScheduleConfigurationCommand::decodeDayTable( RfnResult& result, const Bytes& value )
+void RfnTouScheduleConfigurationCommand::decodeDayTable( RfnCommandResult& result, const Bytes& value )
 {
     validateCondition( value.size() == 3,
                        ErrorInvalidData, "Invalid day table data size - (" + CtiNumStr(value.size()) + ", expecting 3-byte)");
@@ -528,7 +528,7 @@ void RfnTouScheduleConfigurationCommand::decodeDayTable( RfnResult& result, cons
  * @param value byte vector containing the tlv value
  * @param schedule_nbr schedule number <=> [0,3]
  */
-void RfnTouScheduleConfigurationCommand::decodeScheduleSwitchTimes( RfnResult& result, const Bytes& value, const ScheduleNbr schedule_nbr )
+void RfnTouScheduleConfigurationCommand::decodeScheduleSwitchTimes( RfnCommandResult& result, const Bytes& value, const ScheduleNbr schedule_nbr )
 {
     validateCondition( value.size() == 10,
                        ErrorInvalidData, "Invalid schedule switch times data size - (" + CtiNumStr(value.size()) + ", expecting 10-byte)" );
@@ -577,7 +577,7 @@ void RfnTouScheduleConfigurationCommand::decodeScheduleSwitchTimes( RfnResult& r
  * @param value byte vector containing the tlv value
  * @param schedule_nbr schedule number <=> [0,3]
  */
-void RfnTouScheduleConfigurationCommand::decodeScheduleRates( RfnResult& result, const Bytes& value, const ScheduleNbr schedule_nbr )
+void RfnTouScheduleConfigurationCommand::decodeScheduleRates( RfnCommandResult& result, const Bytes& value, const ScheduleNbr schedule_nbr )
 {
     validateCondition( value.size() == 3,
                        ErrorInvalidData, "Invalid schedule rate data size - (" + CtiNumStr(value.size()) + ", expecting 3-byte)");
@@ -625,7 +625,7 @@ void RfnTouScheduleConfigurationCommand::decodeScheduleRates( RfnResult& result,
  * @param result append description to the result
  * @param value byte vector containing the tlv value
  */
-void RfnTouScheduleConfigurationCommand::decodeDefaultTouRate( RfnResult& result, const Bytes& value )
+void RfnTouScheduleConfigurationCommand::decodeDefaultTouRate( RfnCommandResult& result, const Bytes& value )
 {
     validateCondition( value.size() == 1,
                        ErrorInvalidData, "Invalid default rate data size - (" + CtiNumStr(value.size()) + ", expecting 1-byte)");
@@ -741,7 +741,7 @@ RfnCommand::Bytes RfnTouHolidayConfigurationCommand::getCommandData()
  * @param result append description to the result
  * @param tlv item to decode
  */
-void RfnTouHolidayConfigurationCommand::decodeTlv( RfnResult& result, const TypeLengthValue& tlv )
+void RfnTouHolidayConfigurationCommand::decodeTlv( RfnCommandResult& result, const TypeLengthValue& tlv )
 {
     validateCondition( tlv.type == Type_Holiday,
                        ErrorInvalidData, "Unexpected tlv - (type " + CtiNumStr(tlv.type) + ")");
@@ -754,7 +754,7 @@ void RfnTouHolidayConfigurationCommand::decodeTlv( RfnResult& result, const Type
  * @param result append description to the result
  * @param value byte vector containing the tlv value
  */
-void RfnTouHolidayConfigurationCommand::decodeHoliday( RfnResult& result, const Bytes& value )
+void RfnTouHolidayConfigurationCommand::decodeHoliday( RfnCommandResult& result, const Bytes& value )
 {
     validateCondition( value.size() == 12,
                        ErrorInvalidData, "Invalid holiday data size - (" + CtiNumStr(value.size()) + ", expecting 12-byte)");
@@ -842,7 +842,7 @@ RfnCommand::Bytes RfnTouStateConfigurationCommand::getCommandData()
  * @param result
  * @param tlv
  */
-void RfnTouStateConfigurationCommand::decodeTlv( RfnResult& result, const TypeLengthValue& tlv )
+void RfnTouStateConfigurationCommand::decodeTlv( RfnCommandResult& result, const TypeLengthValue& tlv )
 {
     throw RfnCommand::CommandException( ErrorInvalidData, "Unexpected tlv - (type " + CtiNumStr(tlv.type) + ")");
 }
@@ -882,7 +882,7 @@ RfnCommand::Bytes RfnTouSetHolidayActiveCommand::getCommandData()
  * @param result
  * @param tlv
  */
-void RfnTouSetHolidayActiveCommand::decodeTlv( RfnResult& result, const TypeLengthValue& tlv )
+void RfnTouSetHolidayActiveCommand::decodeTlv( RfnCommandResult& result, const TypeLengthValue& tlv )
 {
     throw RfnCommand::CommandException( ErrorInvalidData, "Unexpected tlv - (type " + CtiNumStr(tlv.type) + ")");
 }
@@ -922,7 +922,7 @@ RfnCommand::Bytes RfnTouCancelHolidayActiveCommand::getCommandData()
  * @param result
  * @param tlv
  */
-void RfnTouCancelHolidayActiveCommand::decodeTlv( RfnResult& result, const TypeLengthValue& tlv )
+void RfnTouCancelHolidayActiveCommand::decodeTlv( RfnCommandResult& result, const TypeLengthValue& tlv )
 {
     throw RfnCommand::CommandException( ErrorInvalidData, "Unexpected tlv - (type " + CtiNumStr(tlv.type) + ")");
 }
@@ -983,7 +983,7 @@ RfnCommand::Bytes RfnTouCriticalPeakCommand::getCommandData()
  * @param result
  * @param tlv
  */
-void RfnTouCriticalPeakCommand::decodeTlv( RfnResult& result, const TypeLengthValue& tlv )
+void RfnTouCriticalPeakCommand::decodeTlv( RfnCommandResult& result, const TypeLengthValue& tlv )
 {
     throw RfnCommand::CommandException( ErrorInvalidData, "Unexpected tlv - (type " + CtiNumStr(tlv.type) + ")");
 }
@@ -1013,7 +1013,7 @@ RfnCommand::Bytes RfnTouCancelCriticalPeakCommand::getCommandData()
  * @param result
  * @param tlv
  */
-void RfnTouCancelCriticalPeakCommand::decodeTlv( RfnResult& result, const TypeLengthValue& tlv )
+void RfnTouCancelCriticalPeakCommand::decodeTlv( RfnCommandResult& result, const TypeLengthValue& tlv )
 {
     throw RfnCommand::CommandException( ErrorInvalidData, "Unexpected tlv - (type " + CtiNumStr(tlv.type) + ")");
 }

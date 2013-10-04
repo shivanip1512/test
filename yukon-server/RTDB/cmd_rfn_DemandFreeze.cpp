@@ -90,17 +90,17 @@ RfnCommand::Bytes RfnDemandFreezeCommand::getCommandData()
 }
 
 
-RfnCommand::RfnResult RfnDemandFreezeCommand::error( const CtiTime now,
+RfnCommandResult RfnDemandFreezeCommand::error( const CtiTime now,
                                                      const YukonError_t error_code )
 {
     throw CommandException( error_code, GetErrorString( error_code ));
 }
 
 
-RfnCommand::RfnResult RfnDemandFreezeCommand::decodeResponseHeader( const CtiTime now,
-                                                                    const RfnResponse & response )
+RfnCommandResult RfnDemandFreezeCommand::decodeResponseHeader( const CtiTime now,
+                                                                    const RfnResponsePayload & response )
 {
-    RfnCommand::RfnResult  result;
+    RfnCommandResult  result;
 
     // We need at least 4 bytes
 
@@ -165,10 +165,10 @@ RfnCommand::Bytes RfnDemandFreezeConfigurationCommand::getCommandData()
 }
 
 
-RfnCommand::RfnResult RfnDemandFreezeConfigurationCommand::decodeCommand( const CtiTime now,
-                                                                   const RfnCommand::RfnResponse & response )
+RfnCommandResult RfnDemandFreezeConfigurationCommand::decodeCommand( const CtiTime now,
+                                                                   const RfnCommand::RfnResponsePayload & response )
 {
-    RfnCommand::RfnResult  result = decodeResponseHeader( now, response );
+    RfnCommandResult  result = decodeResponseHeader( now, response );
 
     validateCondition( response.size() == 5,
                        ErrorInvalidData, "Invalid Response length (" + CtiNumStr(response.size()) + ")" );
@@ -190,10 +190,10 @@ RfnImmediateDemandFreezeCommand::RfnImmediateDemandFreezeCommand()
 }
 
 
-RfnCommand::RfnResult RfnImmediateDemandFreezeCommand::decodeCommand( const CtiTime now,
-                                                               const RfnCommand::RfnResponse & response )
+RfnCommandResult RfnImmediateDemandFreezeCommand::decodeCommand( const CtiTime now,
+                                                               const RfnCommand::RfnResponsePayload & response )
 {
-    RfnCommand::RfnResult  result = decodeResponseHeader( now, response );
+    RfnCommandResult  result = decodeResponseHeader( now, response );
 
     validateCondition( response.size() == 5,
                        ErrorInvalidData, "Invalid Response length (" + CtiNumStr(response.size()) + ")" );
@@ -222,8 +222,8 @@ RfnGetDemandFreezeInfoCommand::DemandFreezeData RfnGetDemandFreezeInfoCommand::g
 }
 
 
-RfnCommand::RfnResult RfnGetDemandFreezeInfoCommand::decodeCommand( const CtiTime now,
-                                                                    const RfnCommand::RfnResponse & response )
+RfnCommandResult RfnGetDemandFreezeInfoCommand::decodeCommand( const CtiTime now,
+                                                                    const RfnCommand::RfnResponsePayload & response )
 {
     struct Accumulator
     {
@@ -233,7 +233,7 @@ RfnCommand::RfnResult RfnGetDemandFreezeInfoCommand::decodeCommand( const CtiTim
         }
     };
 
-    RfnCommand::RfnResult  result = decodeResponseHeader( now, response );
+    RfnCommandResult  result = decodeResponseHeader( now, response );
 
     validateCondition( response.size() >= 5,
                        ErrorInvalidData, "Invalid Response length (" + CtiNumStr(response.size()) + ")" );
@@ -241,7 +241,7 @@ RfnCommand::RfnResult RfnGetDemandFreezeInfoCommand::decodeCommand( const CtiTim
     unsigned tlvCount   = 0;
     unsigned totalBytes = 5;
 
-    for ( RfnCommand::RfnResponse::const_iterator current = response.begin() + 5;
+    for ( RfnCommand::RfnResponsePayload::const_iterator current = response.begin() + 5;
           current <= response.end() - 2;
           ++tlvCount )
     {

@@ -238,9 +238,9 @@ RfnCommand::Bytes RfnFocusLcdConfigurationCommand::createCommandData( const Disp
  * @param response
  * @return
  */
-RfnCommand::RfnResult RfnFocusLcdConfigurationCommand::decodeCommand(const CtiTime now, const RfnResponse &response)
+RfnCommandResult RfnFocusLcdConfigurationCommand::decodeCommand(const CtiTime now, const RfnResponsePayload &response)
 {
-    RfnResult result;
+    RfnCommandResult result;
 
     /*
      *  Length (Bytes)  Field Description
@@ -324,7 +324,7 @@ RfnCommand::RfnResult RfnFocusLcdConfigurationCommand::decodeCommand(const CtiTi
  * @param error_code
  * @return
  */
-RfnCommand::RfnResult RfnFocusLcdConfigurationCommand::error(const CtiTime now, const YukonError_t error_code)
+RfnCommandResult RfnFocusLcdConfigurationCommand::error(const CtiTime now, const YukonError_t error_code)
 {
     //  This should probably be the default for all commands unless specified otherwise.
     throw CommandException(error_code, GetErrorString(error_code));

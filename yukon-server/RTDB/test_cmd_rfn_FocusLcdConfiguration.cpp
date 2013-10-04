@@ -6,6 +6,7 @@
 #include "cmd_rfn_FocusLcdConfiguration.h"
 
 using Cti::Devices::Commands::RfnCommand;
+using Cti::Devices::Commands::RfnCommandResult;
 using Cti::Devices::Commands::RfnFocusLcdConfigurationCommand;
 
 typedef RfnFocusLcdConfigurationCommand::DisplayItem       DisplayItem;
@@ -47,7 +48,7 @@ BOOST_AUTO_TEST_CASE(test_no_items)
 
     // execute
     {
-        RfnCommand::RfnRequest rcv = lcdConfiguration.executeCommand(execute_time);
+        RfnCommand::RfnRequestPayload rcv = lcdConfiguration.executeCommand(execute_time);
 
         std::vector<unsigned char> exp = boost::assign::list_of
                 (0x60)(0x00) // command code - operation
@@ -66,7 +67,7 @@ BOOST_AUTO_TEST_CASE(test_no_items)
                 (0x00)       // nbr of items
                 (0x0a);      // duration
 
-        RfnCommand::RfnResult rcv = lcdConfiguration.decodeCommand(execute_time, response);
+        RfnCommandResult rcv = lcdConfiguration.decodeCommand(execute_time, response);
 
         std::string exp = "Display item duration : 10 seconds\n"
                           "No display metrics";
@@ -96,7 +97,7 @@ BOOST_AUTO_TEST_CASE(test_3_items)
 
     // execute
     {
-        RfnCommand::RfnRequest rcv = lcdConfiguration.executeCommand(execute_time);
+        RfnCommand::RfnRequestPayload rcv = lcdConfiguration.executeCommand(execute_time);
 
         std::vector<unsigned char> exp = boost::assign::list_of
                 (0x60)(0x00)        // command code - operation
@@ -121,7 +122,7 @@ BOOST_AUTO_TEST_CASE(test_3_items)
                 (0x01)(0x43)(0x44)  // item 2
                 (0x02)(0x45)(0x46); // item 3
 
-        RfnCommand::RfnResult rcv = lcdConfiguration.decodeCommand(execute_time, response);
+        RfnCommandResult rcv = lcdConfiguration.decodeCommand(execute_time, response);
 
         std::string exp = "Display item duration : 21 seconds\n"
                           "Display metric 1 : Delivered +kWh (6 digit)\n"
@@ -150,7 +151,7 @@ BOOST_AUTO_TEST_CASE(test_3_items_readonly)
 
     // execute
     {
-        RfnCommand::RfnRequest rcv = lcdConfiguration.executeCommand(execute_time);
+        RfnCommand::RfnRequestPayload rcv = lcdConfiguration.executeCommand(execute_time);
 
         std::vector<unsigned char> exp = boost::assign::list_of
                 (0x60)(0x01);
@@ -176,7 +177,7 @@ BOOST_AUTO_TEST_CASE(test_3_items_readonly)
                 (0x01)(0x43)(0x44)  // item 2
                 (0x02)(0x45)(0x46); // item 3
 
-        RfnCommand::RfnResult rcv = lcdConfiguration.decodeCommand(execute_time, response);
+        RfnCommandResult rcv = lcdConfiguration.decodeCommand(execute_time, response);
 
         std::string exp = "Display item duration : 21 seconds\n"
                           "Display metric 1 : Delivered +kWh (6 digit)\n"
@@ -218,7 +219,7 @@ BOOST_AUTO_TEST_CASE(test_10_items)
 
     // execute
     {
-        RfnCommand::RfnRequest rcv = lcdConfiguration.executeCommand(execute_time);
+        RfnCommand::RfnRequestPayload rcv = lcdConfiguration.executeCommand(execute_time);
 
         std::vector<unsigned char> exp = boost::assign::list_of
                 (0x60)(0x00)           // command code - operation
@@ -257,7 +258,7 @@ BOOST_AUTO_TEST_CASE(test_10_items)
                 (0x10)(0x54)(0x38)     // item 9
                 (0x11)(0x59)(0x5a);    // item 10
 
-        RfnCommand::RfnResult rcv = lcdConfiguration.decodeCommand(execute_time, response);
+        RfnCommandResult rcv = lcdConfiguration.decodeCommand(execute_time, response);
 
         std::string exp = "Display item duration : 7 seconds\n"
                           "Display metric 1 : Firmware version\n"

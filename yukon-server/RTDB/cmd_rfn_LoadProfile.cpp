@@ -72,17 +72,17 @@ RfnLoadProfileCommand::TlvList RfnLoadProfileCommand::getTlvs()
 }
 
 
-RfnCommand::RfnResult RfnLoadProfileCommand::error( const CtiTime now,
-                                                    const YukonError_t error_code )
+RfnCommandResult RfnLoadProfileCommand::error( const CtiTime now,
+                                               const YukonError_t error_code )
 {
     throw CommandException( error_code, GetErrorString( error_code ));
 }
 
 
-RfnCommand::RfnResult RfnLoadProfileCommand::decodeResponseHeader( const CtiTime now,
-                                                                   const RfnResponse & response )
+RfnCommandResult RfnLoadProfileCommand::decodeResponseHeader( const CtiTime now,
+                                                              const RfnResponsePayload & response )
 {
-    RfnResult result;
+    RfnCommandResult result;
 
     // We need at least 3 bytes
 
@@ -135,10 +135,10 @@ RfnVoltageProfileGetConfigurationCommand::RfnVoltageProfileGetConfigurationComma
 }
 
 
-RfnCommand::RfnResult RfnVoltageProfileGetConfigurationCommand::decodeCommand( const CtiTime now,
-                                                                               const RfnResponse & response )
+RfnCommandResult RfnVoltageProfileGetConfigurationCommand::decodeCommand( const CtiTime now,
+                                                                          const RfnResponsePayload & response )
 {
-    RfnResult result = decodeResponseHeader( now, response );
+    RfnCommandResult result = decodeResponseHeader( now, response );
 
     validateCondition( response.size() == 8,
                        ErrorInvalidData, "Invalid Response length (" + CtiNumStr(response.size()) + ")" );
@@ -179,7 +179,7 @@ unsigned RfnVoltageProfileGetConfigurationCommand::getLoadProfileIntervalMinutes
 //
 
 RfnVoltageProfileSetConfigurationCommand::RfnVoltageProfileSetConfigurationCommand( const unsigned demand_interval_seconds,
-                                                                                    const unsigned load_profile_interval_minutes )
+                                                                              const unsigned load_profile_interval_minutes )
     :   RfnVoltageProfileConfigurationCommand( Operation_SetConfiguration ),
         _demandInterval( demand_interval_seconds / SecondsPerInterval ),
         _loadProfileInterval( load_profile_interval_minutes )
@@ -207,24 +207,25 @@ RfnVoltageProfileSetConfigurationCommand::RfnVoltageProfileSetConfigurationComma
 
 RfnLoadProfileCommand::TlvList RfnVoltageProfileSetConfigurationCommand::getTlvs()
 {
-    TypeLengthValue tlv(TlvType_VoltageProfileConfiguration);
+        TypeLengthValue tlv(TlvType_VoltageProfileConfiguration);
 
-    tlv.value.push_back( _demandInterval );
-    tlv.value.push_back( _loadProfileInterval );
+        tlv.value.push_back( _demandInterval );
+        tlv.value.push_back( _loadProfileInterval );
 
-    return boost::assign::list_of(tlv);
+        return boost::assign::list_of(tlv);
 }
 
-RfnCommand::RfnResult RfnVoltageProfileSetConfigurationCommand::decodeCommand( const CtiTime now,
-                                                                               const RfnResponse & response )
+
+RfnCommandResult RfnVoltageProfileSetConfigurationCommand::decodeCommand( const CtiTime now,
+                                                                          const RfnResponsePayload & response )
 {
-    RfnResult result = decodeResponseHeader( now, response );
+    RfnCommandResult result = decodeResponseHeader( now, response );
 
-    validateCondition( response.size() == 4,
-                       ErrorInvalidData, "Invalid Response length (" + CtiNumStr(response.size()) + ")" );
+            validateCondition( response.size() == 4,
+                               ErrorInvalidData, "Invalid Response length (" + CtiNumStr(response.size()) + ")" );
 
-    validateCondition( response[3] == 0,
-                       ErrorInvalidData, "Invalid TLV count (" + CtiNumStr(response[3]) + ")" );
+            validateCondition( response[3] == 0,
+                               ErrorInvalidData, "Invalid TLV count (" + CtiNumStr(response[3]) + ")" );
 
     return result;
 }
@@ -250,22 +251,22 @@ RfnLoadProfileGetRecordingCommand::RfnLoadProfileGetRecordingCommand()
 }
 
 
-RfnCommand::RfnResult RfnLoadProfileGetRecordingCommand::decodeCommand( const CtiTime now,
-                                                                        const RfnResponse & response )
+RfnCommandResult RfnLoadProfileGetRecordingCommand::decodeCommand( const CtiTime now,
+                                                                   const RfnResponsePayload & response )
 {
-    RfnResult result = decodeResponseHeader( now, response );
+    RfnCommandResult result = decodeResponseHeader( now, response );
 
     validateCondition( response.size() == 7,
-                       ErrorInvalidData, "Invalid Response length (" + CtiNumStr(response.size()) + ")" );
+                               ErrorInvalidData, "Invalid Response length (" + CtiNumStr(response.size()) + ")" );
 
-    validateCondition( response[3] == 1,
-                       ErrorInvalidData, "Invalid TLV count (" + CtiNumStr(response[3]) + ")" );
+            validateCondition( response[3] == 1,
+                               ErrorInvalidData, "Invalid TLV count (" + CtiNumStr(response[3]) + ")" );
 
     validateCondition( response[4] == 0x02,
-                       ErrorInvalidData, "Invalid TLV type (" + CtiNumStr(response[4]) + ")" );
+                               ErrorInvalidData, "Invalid TLV type (" + CtiNumStr(response[4]) + ")" );
 
     validateCondition( response[5] == 1,
-                       ErrorInvalidData, "Invalid TLV length (" + CtiNumStr(response[5]) + ")" );
+                           ErrorInvalidData, "Invalid TLV length (" + CtiNumStr(response[5]) + ")" );
 
     boost::optional<std::string> state = Cti::mapFind( stateResolver, response[6] );
 
@@ -298,10 +299,10 @@ RfnLoadProfileSetRecordingCommand::RfnLoadProfileSetRecordingCommand( const Reco
 }
 
 
-RfnCommand::RfnResult RfnLoadProfileSetRecordingCommand::decodeCommand( const CtiTime now,
-                                                                        const RfnResponse & response )
+RfnCommandResult RfnLoadProfileSetRecordingCommand::decodeCommand( const CtiTime now,
+                                                                   const RfnResponsePayload & response )
 {
-    RfnResult result = decodeResponseHeader( now, response );
+    RfnCommandResult result = decodeResponseHeader( now, response );
 
     validateCondition( response.size() == 4,
                        ErrorInvalidData, "Invalid Response length (" + CtiNumStr(response.size()) + ")" );
@@ -327,7 +328,7 @@ unsigned getDataFromBytes( const RfnCommand::Bytes & data, const unsigned offset
     for( unsigned pos = offset+1; pos < end; pos++ )
     {
         val = (val << 8) | data[pos];
-    }
+        }
 
     return val;
 }
@@ -373,8 +374,8 @@ struct PointStatusDesc
     PointStatusDesc( const std::string & description, PointQuality_t quality )
         :   _description(description),
             _quality(quality)
-    {
-    }
+        {
+        }
 };
 
 const std::map<unsigned, PointTypeDesc> pointTypeDescriptionMap = boost::assign::map_list_of
@@ -396,7 +397,7 @@ RfnLoadProfileReadPointsCommand::RfnLoadProfileReadPointsCommand( const CtiTime 
                                                                   const CtiDate begin,
                                                                   const CtiDate end )
     :   RfnLoadProfileCommand( Operation_GetLoadProfilePoints ),
-        _begin(begin),
+    _begin(begin),
         _end(end),
         _uomModifier1(0),
         _uomModifier2(0)
@@ -420,15 +421,15 @@ RfnLoadProfileReadPointsCommand::TlvList RfnLoadProfileReadPointsCommand::getTlv
 }
 
 
-RfnCommand::RfnResult RfnLoadProfileReadPointsCommand::decodeCommand( const CtiTime now,
-                                                                      const RfnResponse & response )
+RfnCommandResult RfnLoadProfileReadPointsCommand::decodeCommand( const CtiTime now,
+                                                                      const RfnResponsePayload & response )
 {
-    RfnResult result = decodeResponseHeader( now, response );
+    RfnCommandResult result = decodeResponseHeader( now, response );
 
     validateCondition( response.size() >= 4,
                        ErrorInvalidData, "Response too small (" + CtiNumStr(response.size()) + " < 4)" );
 
-    const RfnResponse payload(response.begin() + 3, response.end());
+    const RfnResponsePayload payload(response.begin() + 3, response.end());
 
     std::vector<TypeLengthValue> tlvs = getTlvsFromBytes(payload);
 
@@ -459,7 +460,7 @@ RfnCommand::RfnResult RfnLoadProfileReadPointsCommand::decodeCommand( const CtiT
 }
 
 
-unsigned RfnLoadProfileReadPointsCommand::decodePointsReportHeader( RfnResult & result,
+unsigned RfnLoadProfileReadPointsCommand::decodePointsReportHeader( RfnCommandResult & result,
                                                                     const Bytes & lpPointDescriptor,
                                                                     unsigned & pointRecordCount )
 {
@@ -520,7 +521,7 @@ unsigned RfnLoadProfileReadPointsCommand::decodePointsReportHeader( RfnResult & 
 }
 
 
-unsigned RfnLoadProfileReadPointsCommand::decodePointRecord( RfnResult & result,
+unsigned RfnLoadProfileReadPointsCommand::decodePointRecord( RfnCommandResult & result,
                                                              const Bytes & lpPointDescriptor,
                                                              const unsigned offset )
 {
@@ -546,8 +547,8 @@ unsigned RfnLoadProfileReadPointsCommand::decodePointRecord( RfnResult & result,
 
     unsigned pos = offset;
 
-    validateCondition( lpPointDescriptor.size() >= pos + 6,
-                       ErrorInvalidData, "Response TLV too small (" + CtiNumStr(lpPointDescriptor.size()) + " < " + CtiNumStr(pos + 6) + ")" );
+        validateCondition( lpPointDescriptor.size() >= pos + 6,
+                           ErrorInvalidData, "Response TLV too small (" + CtiNumStr(lpPointDescriptor.size()) + " < " + CtiNumStr(pos + 6) + ")" );
 
     // Timestamp
 
@@ -572,7 +573,7 @@ unsigned RfnLoadProfileReadPointsCommand::decodePointRecord( RfnResult & result,
     // Array of points
 
     for(int point_nbr=0; point_nbr < pointCount; point_nbr++)
-    {
+            {
         validateCondition( lpPointDescriptor.size() >= pos + value_size + 1,
                            ErrorInvalidData, "Response TLV too small (" + CtiNumStr(lpPointDescriptor.size()) + " < " + CtiNumStr(pos + value_size + 1) + ")" );
 
@@ -605,7 +606,7 @@ unsigned RfnLoadProfileReadPointsCommand::decodePointRecord( RfnResult & result,
         result.points.push_back( point );
 
         timestamp += _profileInterval;
-    }
+        }
 
     return (pos - offset); // return the size of the point record
 }

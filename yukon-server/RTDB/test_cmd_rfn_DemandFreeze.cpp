@@ -6,6 +6,7 @@
 
 
 using Cti::Devices::Commands::RfnCommand;
+using Cti::Devices::Commands::RfnCommandResult;
 using Cti::Devices::Commands::RfnDemandFreezeConfigurationCommand;
 using Cti::Devices::Commands::RfnImmediateDemandFreezeCommand;
 using Cti::Devices::Commands::RfnGetDemandFreezeInfoCommand;
@@ -52,7 +53,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandFreeze_SetFreezeDay )
         const std::vector< unsigned char > exp = boost::assign::list_of
             ( 0x55 )( 0x02 )( 0x0a );
 
-        RfnCommand::RfnRequest rcv = command.executeCommand( execute_time );
+        RfnCommand::RfnRequestPayload rcv = command.executeCommand( execute_time );
 
         BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
                                        exp.begin() , exp.end() );
@@ -63,7 +64,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandFreeze_SetFreezeDay )
         const std::vector< unsigned char > response = boost::assign::list_of
             ( 0x56 )( 0x00 )( 0x00 )( 0x00 )( 0x00 );
 
-        RfnCommand::RfnResult rcv = command.decodeCommand( execute_time, response );
+        RfnCommandResult rcv = command.decodeCommand( execute_time, response );
 
         BOOST_CHECK_EQUAL( rcv.description, "Status: Success (0x00)"
                                             "\nAdditional Status: NO ADDITIONAL STATUS (ASC: 0x00, ASCQ: 0x00)" );
@@ -73,7 +74,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandFreeze_SetFreezeDay )
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandFreeze_SetFreezeDay_decoding_exceptions )
 {
-    const std::vector< RfnCommand::RfnResponse >   responses = list_of
+    const std::vector< RfnCommand::RfnResponsePayload >   responses = list_of
         ( list_of( 0x57 )( 0x00 )( 0x00 )( 0x00 )( 0x00 ) )
         ( list_of( 0x56 )( 0x00 )( 0x00 )( 0x00 )( 0x01 ) )
         ( list_of( 0x56 )( 0x00 )( 0x00 )( 0x00 ) )
@@ -89,13 +90,13 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandFreeze_SetFreezeDay_decoding_exceptions
 
     RfnDemandFreezeConfigurationCommand command( 10 );
 
-    for each ( const RfnCommand::RfnResponse & response in responses )
+    for each ( const RfnCommand::RfnResponsePayload & response in responses )
     {
         BOOST_CHECK_THROW( command.decodeCommand( execute_time, response ), RfnCommand::CommandException );
 
         try
         {
-            RfnCommand::RfnResult rcv = command.decodeCommand( execute_time, response );
+            RfnCommandResult rcv = command.decodeCommand( execute_time, response );
         }
         catch ( const RfnCommand::CommandException & ex )
         {
@@ -110,7 +111,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandFreeze_SetFreezeDay_decoding_exceptions
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandFreeze_SetFreezeDay_status_exceptions )
 {
-    const std::vector< RfnCommand::RfnResponse >   responses = list_of
+    const std::vector< RfnCommand::RfnResponsePayload >   responses = list_of
         ( list_of( 0x56 )( 0x01 )( 0x00 )( 0x00 )( 0x00 ) )
         ( list_of( 0x56 )( 0x02 )( 0x00 )( 0x00 )( 0x00 ) )
         ( list_of( 0x56 )( 0x03 )( 0x00 )( 0x00 )( 0x00 ) )
@@ -170,13 +171,13 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandFreeze_SetFreezeDay_status_exceptions )
 
     RfnDemandFreezeConfigurationCommand command( 10 );
 
-    for each ( const RfnCommand::RfnResponse & response in responses )
+    for each ( const RfnCommand::RfnResponsePayload & response in responses )
     {
         BOOST_CHECK_THROW( command.decodeCommand( execute_time, response ), RfnCommand::CommandException );
 
         try
         {
-            RfnCommand::RfnResult rcv = command.decodeCommand( execute_time, response );
+            RfnCommandResult rcv = command.decodeCommand( execute_time, response );
         }
         catch ( const RfnCommand::CommandException & ex )
         {
@@ -198,7 +199,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandFreeze_ImmediateFreeze )
         const std::vector< unsigned char > exp = boost::assign::list_of
             ( 0x55 )( 0x01 );
 
-        RfnCommand::RfnRequest rcv = command.executeCommand( execute_time );
+        RfnCommand::RfnRequestPayload rcv = command.executeCommand( execute_time );
 
         BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
                                        exp.begin() , exp.end() );
@@ -209,7 +210,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandFreeze_ImmediateFreeze )
         const std::vector< unsigned char > response = boost::assign::list_of
             ( 0x56 )( 0x00 )( 0x00 )( 0x00 )( 0x00 );
 
-        RfnCommand::RfnResult rcv = command.decodeCommand( execute_time, response );
+        RfnCommandResult rcv = command.decodeCommand( execute_time, response );
 
         BOOST_CHECK_EQUAL( rcv.description, "Status: Success (0x00)"
                                             "\nAdditional Status: NO ADDITIONAL STATUS (ASC: 0x00, ASCQ: 0x00)" );
@@ -228,7 +229,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandFreeze_GetFreezeInfo_full )
         const std::vector< unsigned char > exp = boost::assign::list_of
             ( 0x55 )( 0x03 );
 
-        RfnCommand::RfnRequest rcv = command.executeCommand( execute_time );
+        RfnCommand::RfnRequestPayload rcv = command.executeCommand( execute_time );
 
         BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
                                        exp.begin() , exp.end() );
@@ -255,7 +256,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandFreeze_GetFreezeInfo_full )
             ( 0x0d )( 0x04 )( 0x2e )( 0x2f )( 0x30 )( 0x31 )
             ( 0x0e )( 0x04 )( 0x32 )( 0x33 )( 0x34 )( 0x35 );
 
-        RfnCommand::RfnResult rcv = command.decodeCommand( execute_time, response );
+        RfnCommandResult rcv = command.decodeCommand( execute_time, response );
 
         BOOST_CHECK_EQUAL( rcv.description, "Status: Success (0x00)"
                                             "\nAdditional Status: NO ADDITIONAL STATUS (ASC: 0x00, ASCQ: 0x00)" );
@@ -291,7 +292,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandFreeze_GetFreezeInfo_supplied_case_1 )
         const std::vector< unsigned char > exp = boost::assign::list_of
             ( 0x55 )( 0x03 );
 
-        RfnCommand::RfnRequest rcv = command.executeCommand( execute_time );
+        RfnCommand::RfnRequestPayload rcv = command.executeCommand( execute_time );
 
         BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
                                        exp.begin() , exp.end() );
@@ -316,7 +317,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandFreeze_GetFreezeInfo_supplied_case_1 )
             ( 0x0b )( 0x04 )( 0x00 )( 0x00 )( 0x00 )( 0x00 )
             ( 0x0c )( 0x04 )( 0x00 )( 0x00 )( 0x00 )( 0x00 );
 
-        RfnCommand::RfnResult rcv = command.decodeCommand( execute_time, response );
+        RfnCommandResult rcv = command.decodeCommand( execute_time, response );
 
         BOOST_CHECK_EQUAL( rcv.description, "Status: Success (0x00)"
                                             "\nAdditional Status: NO ADDITIONAL STATUS (ASC: 0x00, ASCQ: 0x00)" );
@@ -350,7 +351,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandFreeze_GetFreezeInfo_supplied_case_2 )
         const std::vector< unsigned char > exp = boost::assign::list_of
             ( 0x55 )( 0x03 );
 
-        RfnCommand::RfnRequest rcv = command.executeCommand( execute_time );
+        RfnCommand::RfnRequestPayload rcv = command.executeCommand( execute_time );
 
         BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
                                        exp.begin() , exp.end() );
@@ -375,7 +376,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandFreeze_GetFreezeInfo_supplied_case_2 )
             ( 0x0b )( 0x04 )( 0x00 )( 0x00 )( 0x00 )( 0x48 )
             ( 0x0c )( 0x04 )( 0x51 )( 0x53 )( 0xbf )( 0x14 );
 
-        RfnCommand::RfnResult rcv = command.decodeCommand( execute_time, response );
+        RfnCommandResult rcv = command.decodeCommand( execute_time, response );
 
         BOOST_CHECK_EQUAL( rcv.description, "Status: Success (0x00)"
                                             "\nAdditional Status: NO ADDITIONAL STATUS (ASC: 0x00, ASCQ: 0x00)" );
@@ -400,7 +401,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandFreeze_GetFreezeInfo_supplied_case_2 )
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandFreeze_GetFreezeInfo_decode_exceptions )
 {
-    const std::vector< RfnCommand::RfnResponse >   responses = list_of
+    const std::vector< RfnCommand::RfnResponsePayload >   responses = list_of
         ( list_of ( 0x56 )
                   ( 0x00 )( 0x00 )( 0x00 )
                   ( 0x02 )
@@ -473,13 +474,13 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandFreeze_GetFreezeInfo_decode_exceptions 
 
     RfnGetDemandFreezeInfoCommand   command( rh );
 
-    for each ( const RfnCommand::RfnResponse & response in responses )
+    for each ( const RfnCommand::RfnResponsePayload & response in responses )
     {
         BOOST_CHECK_THROW( command.decodeCommand( execute_time, response ), RfnCommand::CommandException );
 
         try
         {
-            RfnCommand::RfnResult rcv = command.decodeCommand( execute_time, response );
+            RfnCommandResult rcv = command.decodeCommand( execute_time, response );
         }
         catch ( const RfnCommand::CommandException & ex )
         {

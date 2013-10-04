@@ -54,16 +54,16 @@ protected:
 
     const Operation _operation;
 
-    RfnResult decodeResponseHeader( const CtiTime now,
-                                    const RfnResponse & response );
+    RfnCommandResult decodeResponseHeader( const CtiTime now,
+                                           const RfnResponsePayload & response );
 
 public:
 
-    virtual RfnResult decodeCommand( const CtiTime now,
-                                     const RfnResponse & response ) = 0;
+    virtual RfnCommandResult decodeCommand( const CtiTime now,
+                                            const RfnResponsePayload & response ) = 0;
 
-    virtual RfnResult error( const CtiTime now,
-                             const YukonError_t error_code );
+    virtual RfnCommandResult error( const CtiTime now,
+                                    const YukonError_t error_code );
 };
 
 
@@ -99,8 +99,8 @@ public:
 
     RfnVoltageProfileGetConfigurationCommand();
 
-    virtual RfnResult decodeCommand( const CtiTime now,
-                                     const RfnResponse & response );
+    virtual RfnCommandResult decodeCommand( const CtiTime now,
+                                            const RfnResponsePayload & response );
 
     unsigned getDemandIntervalSeconds() const;
     unsigned getLoadProfileIntervalMinutes() const;
@@ -122,8 +122,8 @@ public:
     RfnVoltageProfileSetConfigurationCommand( const unsigned demand_interval_seconds,
                                               const unsigned load_profile_interval_minutes );
 
-    virtual RfnResult decodeCommand( const CtiTime now,
-                                     const RfnResponse & response );
+    virtual RfnCommandResult decodeCommand( const CtiTime now,
+                                            const RfnResponsePayload & response );
 
 protected:
 
@@ -169,8 +169,8 @@ public:
 
     RfnLoadProfileGetRecordingCommand();
 
-    virtual RfnResult decodeCommand( const CtiTime now,
-                                     const RfnResponse & response );
+    virtual RfnCommandResult decodeCommand( const CtiTime now,
+                                            const RfnResponsePayload & response );
 
     RecordingOption getRecordingOption() const;
 
@@ -189,8 +189,8 @@ public:
 
     RfnLoadProfileSetRecordingCommand( const RecordingOption option );
 
-    virtual RfnResult decodeCommand( const CtiTime now,
-                                     const RfnResponse & response );
+    virtual RfnCommandResult decodeCommand( const CtiTime now,
+                                            const RfnResponsePayload & response );
 };
 
 
@@ -205,8 +205,8 @@ public:
                                      const CtiDate begin,
                                      const CtiDate end );
 
-    virtual RfnResult decodeCommand( const CtiTime now,
-                                     const RfnResponse & response );
+    virtual RfnCommandResult decodeCommand( const CtiTime now,
+                                            const RfnResponsePayload & response );
 
 protected:
 
@@ -221,11 +221,11 @@ private:
     UomModifier2  _uomModifier2;
     unsigned      _profileInterval;
 
-    unsigned decodePointsReportHeader( RfnResult & result,
+    unsigned decodePointsReportHeader( RfnCommandResult & result,
                                        const Bytes & lpPointDescriptor,
                                        unsigned & pointRecordCount );
 
-    unsigned decodePointRecord( RfnResult & result,
+    unsigned decodePointRecord( RfnCommandResult & result,
                                 const Bytes & lpPointDescriptor,
                                 const unsigned offset );
 };

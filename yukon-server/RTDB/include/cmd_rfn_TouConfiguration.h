@@ -16,8 +16,8 @@ class IM_EX_DEVDB RfnTouConfigurationCommand : public RfnCommand
 {
 public:
 
-    virtual RfnResult decodeCommand(const CtiTime now, const RfnResponse &response);
-    virtual RfnResult error(const CtiTime now, const YukonError_t error_code);
+    virtual RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload &response);
+    virtual RfnCommandResult error(const CtiTime now, const YukonError_t error_code);
 
     enum Rate
     {
@@ -45,7 +45,7 @@ protected:
     virtual unsigned char getOperation() const = 0;
     virtual Bytes         getCommandData() = 0;
 
-    virtual void decodeTlv( RfnResult& result, const TypeLengthValue& tlv ) = 0;
+    virtual void decodeTlv( RfnCommandResult& result, const TypeLengthValue& tlv ) = 0;
 
     boost::optional<TouState> _touState_received;
 };
@@ -97,12 +97,12 @@ protected:
     virtual unsigned char getOperation() const;
     virtual Bytes         getCommandData();
 
-    virtual void decodeTlv( RfnResult& result, const TypeLengthValue& tlv );
+    virtual void decodeTlv( RfnCommandResult& result, const TypeLengthValue& tlv );
 
-    void decodeDayTable            ( RfnResult& result, const Bytes& value );
-    void decodeDefaultTouRate      ( RfnResult& result, const Bytes& value );
-    void decodeScheduleSwitchTimes ( RfnResult& result, const Bytes& value, const ScheduleNbr schedule_nbr );
-    void decodeScheduleRates       ( RfnResult& result, const Bytes& value, const ScheduleNbr schedule_nbr );
+    void decodeDayTable            ( RfnCommandResult& result, const Bytes& value );
+    void decodeDefaultTouRate      ( RfnCommandResult& result, const Bytes& value );
+    void decodeScheduleSwitchTimes ( RfnCommandResult& result, const Bytes& value, const ScheduleNbr schedule_nbr );
+    void decodeScheduleRates       ( RfnCommandResult& result, const Bytes& value, const ScheduleNbr schedule_nbr );
 
 private:
 
@@ -136,9 +136,9 @@ protected:
     virtual unsigned char getOperation() const;
     virtual Bytes         getCommandData();
 
-    virtual void decodeTlv( RfnResult& result, const TypeLengthValue& tlv );
+    virtual void decodeTlv( RfnCommandResult& result, const TypeLengthValue& tlv );
 
-    void decodeHoliday( RfnResult& result, const Bytes& value );
+    void decodeHoliday( RfnCommandResult& result, const Bytes& value );
 
 private:
 
@@ -161,7 +161,7 @@ protected:
     virtual unsigned char getOperation() const;
     virtual Bytes         getCommandData();
 
-    virtual void decodeTlv( RfnResult& result, const TypeLengthValue& tlv );
+    virtual void decodeTlv( RfnCommandResult& result, const TypeLengthValue& tlv );
 
 private:
 
@@ -182,7 +182,7 @@ protected:
     virtual unsigned char getOperation() const;
     virtual Bytes         getCommandData();
 
-    virtual void decodeTlv( RfnResult& result, const TypeLengthValue& tlv );
+    virtual void decodeTlv( RfnCommandResult& result, const TypeLengthValue& tlv );
 };
 
 /**
@@ -199,7 +199,7 @@ protected:
     virtual unsigned char getOperation() const;
     virtual Bytes         getCommandData();
 
-    virtual void decodeTlv( RfnResult& result, const TypeLengthValue& tlv );
+    virtual void decodeTlv( RfnCommandResult& result, const TypeLengthValue& tlv );
 };
 
 /**
@@ -218,7 +218,7 @@ protected:
     virtual unsigned char getOperation() const;
     virtual Bytes         getCommandData();
 
-    virtual void decodeTlv( RfnResult& result, const TypeLengthValue& tlv );
+    virtual void decodeTlv( RfnCommandResult& result, const TypeLengthValue& tlv );
 
 private:
 
@@ -242,7 +242,7 @@ protected:
     virtual unsigned char getOperation() const;
     virtual Bytes         getCommandData();
 
-    virtual void decodeTlv( RfnResult& result, const TypeLengthValue& tlv );
+    virtual void decodeTlv( RfnCommandResult& result, const TypeLengthValue& tlv );
 
 };
 

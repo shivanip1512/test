@@ -7,6 +7,7 @@
 
 
 using Cti::Devices::Commands::RfnCommand;
+using Cti::Devices::Commands::RfnCommandResult;
 using Cti::Devices::Commands::RfnVoltageProfileGetConfigurationCommand;
 using Cti::Devices::Commands::RfnVoltageProfileSetConfigurationCommand;
 using Cti::Devices::Commands::RfnLoadProfileRecordingCommand;
@@ -47,7 +48,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_SetConfiguration )
         const std::vector< unsigned char > exp = boost::assign::list_of
             ( 0x68 )( 0x00 )( 0x01 )( 0x01 )( 0x02 )( 0x11 )( 0x22 );
 
-        RfnCommand::RfnRequest rcv = command.executeCommand( execute_time );
+        RfnCommand::RfnRequestPayload rcv = command.executeCommand( execute_time );
 
         BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
                                        exp.begin() , exp.end() );
@@ -58,7 +59,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_SetConfiguration )
         const std::vector< unsigned char > response = boost::assign::list_of
             ( 0x69 )( 0x00 )( 0x00 )( 0x00 );
 
-        RfnCommand::RfnResult rcv = command.decodeCommand( execute_time, response );
+        RfnCommandResult rcv = command.decodeCommand( execute_time, response );
 
         BOOST_CHECK_EQUAL( rcv.description, "Status: Success (0)" );
     }
@@ -72,7 +73,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_SetConfiguration )
 
         try
         {
-            RfnCommand::RfnResult rcv = command.decodeCommand( execute_time, response );
+            RfnCommandResult rcv = command.decodeCommand( execute_time, response );
         }
         catch ( const RfnCommand::CommandException & ex )
         {
@@ -120,7 +121,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_SetConfiguration_constructor_exce
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_SetConfiguration_decoding_exceptions )
 {
-    const std::vector< RfnCommand::RfnResponse >   responses = list_of
+    const std::vector< RfnCommand::RfnResponsePayload >   responses = list_of
         ( list_of( 0x6f )( 0x00 )( 0x00 )( 0x00 ) )
         ( list_of( 0x69 )( 0x01 )( 0x00 )( 0x00 ) )
         ( list_of( 0x69 )( 0x00 )( 0x02 )( 0x00 ) )
@@ -142,13 +143,13 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_SetConfiguration_decoding_excepti
 
     RfnVoltageProfileSetConfigurationCommand command( 300, 15 );
 
-    for each ( const RfnCommand::RfnResponse & response in responses )
+    for each ( const RfnCommand::RfnResponsePayload & response in responses )
     {
         BOOST_CHECK_THROW( command.decodeCommand( execute_time, response ), RfnCommand::CommandException );
 
         try
         {
-            RfnCommand::RfnResult rcv = command.decodeCommand( execute_time, response );
+            RfnCommandResult rcv = command.decodeCommand( execute_time, response );
         }
         catch ( const RfnCommand::CommandException & ex )
         {
@@ -170,7 +171,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetConfiguration )
         const std::vector< unsigned char > exp = boost::assign::list_of
             ( 0x68 )( 0x01 )( 0x00 );
 
-        RfnCommand::RfnRequest rcv = command.executeCommand( execute_time );
+        RfnCommand::RfnRequestPayload rcv = command.executeCommand( execute_time );
 
         BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
                                        exp.begin() , exp.end() );
@@ -184,12 +185,12 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetConfiguration )
         BOOST_CHECK_EQUAL( 0, command.getDemandIntervalSeconds() );
         BOOST_CHECK_EQUAL( 0, command.getLoadProfileIntervalMinutes() );
 
-        RfnCommand::RfnResult rcv = command.decodeCommand( execute_time, response );
+        RfnCommandResult rcv = command.decodeCommand( execute_time, response );
 
         BOOST_CHECK_EQUAL( rcv.description,
-                           "Status: Success (0)"
-                           "\nVoltage Demand interval: 60 seconds"
-                           "\nLoad Profile Demand interval: 6 minutes" );
+                                 "Status: Success (0)"
+                                 "\nVoltage Demand interval: 60 seconds"
+                                 "\nLoad Profile Demand interval: 6 minutes" );
 
         BOOST_CHECK_EQUAL( 60, command.getDemandIntervalSeconds() );
         BOOST_CHECK_EQUAL(  6, command.getLoadProfileIntervalMinutes() );
@@ -204,7 +205,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetConfiguration )
 
         try
         {
-            RfnCommand::RfnResult rcv = command.decodeCommand( execute_time, response );
+            RfnCommandResult rcv = command.decodeCommand( execute_time, response );
         }
         catch ( const RfnCommand::CommandException & ex )
         {
@@ -217,7 +218,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetConfiguration )
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetConfiguration_decoding_exceptions )
 {
-    const std::vector< RfnCommand::RfnResponse >   responses = list_of
+    const std::vector< RfnCommand::RfnResponsePayload >   responses = list_of
         ( list_of( 0x69 )( 0x01 )( 0x00 )( 0x02 )( 0x01 )( 0x02 )( 0x04 )( 0x06 ) )
         ( list_of( 0x69 )( 0x01 )( 0x00 )( 0x01 )( 0x02 )( 0x02 )( 0x04 )( 0x06 ) )
         ( list_of( 0x69 )( 0x01 )( 0x00 )( 0x01 )( 0x01 )( 0x01 )( 0x04 )( 0x06 ) )
@@ -235,13 +236,13 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetConfiguration_decoding_excepti
 
     RfnVoltageProfileGetConfigurationCommand  command;
 
-    for each ( const RfnCommand::RfnResponse & response in responses )
+    for each ( const RfnCommand::RfnResponsePayload & response in responses )
     {
         BOOST_CHECK_THROW( command.decodeCommand( execute_time, response ), RfnCommand::CommandException );
 
         try
         {
-            RfnCommand::RfnResult rcv = command.decodeCommand( execute_time, response );
+            RfnCommandResult rcv = command.decodeCommand( execute_time, response );
         }
         catch ( const RfnCommand::CommandException & ex )
         {
@@ -263,7 +264,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_DisableLoadProfileRecording )
         const std::vector< unsigned char > exp = boost::assign::list_of
             ( 0x68 )( 0x02 )( 0x00 );
 
-        RfnCommand::RfnRequest rcv = command.executeCommand( execute_time );
+        RfnCommand::RfnRequestPayload rcv = command.executeCommand( execute_time );
 
         BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
                                        exp.begin() , exp.end() );
@@ -274,7 +275,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_DisableLoadProfileRecording )
         const std::vector< unsigned char > response = boost::assign::list_of
             ( 0x69 )( 0x02 )( 0x00 )( 0x00 );
 
-        RfnCommand::RfnResult rcv = command.decodeCommand( execute_time, response );
+        RfnCommandResult rcv = command.decodeCommand( execute_time, response );
 
         BOOST_CHECK_EQUAL( rcv.description, "Status: Success (0)" );
     }
@@ -288,7 +289,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_DisableLoadProfileRecording )
 
         try
         {
-            RfnCommand::RfnResult rcv = command.decodeCommand( execute_time, response );
+            RfnCommandResult rcv = command.decodeCommand( execute_time, response );
         }
         catch ( const RfnCommand::CommandException & ex )
         {
@@ -301,7 +302,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_DisableLoadProfileRecording )
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_DisableLoadProfileRecording_decoding_exceptions )
 {
-    const std::vector< RfnCommand::RfnResponse >   responses = list_of
+    const std::vector< RfnCommand::RfnResponsePayload >   responses = list_of
         ( list_of( 0x69 )( 0x02 )( 0x00 )( 0x01 ) )
         ( list_of( 0x69 )( 0x02 )( 0x00 ) )
         ( list_of( 0x69 )( 0x02 )( 0x00 )( 0x01 )( 0x00 ) );
@@ -315,13 +316,13 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_DisableLoadProfileRecording_decod
 
     RfnLoadProfileSetRecordingCommand  command( RfnLoadProfileRecordingCommand::DisableRecording );
 
-    for each ( const RfnCommand::RfnResponse & response in responses )
+    for each ( const RfnCommand::RfnResponsePayload & response in responses )
     {
         BOOST_CHECK_THROW( command.decodeCommand( execute_time, response ), RfnCommand::CommandException );
 
         try
         {
-            RfnCommand::RfnResult rcv = command.decodeCommand( execute_time, response );
+            RfnCommandResult rcv = command.decodeCommand( execute_time, response );
         }
         catch ( const RfnCommand::CommandException & ex )
         {
@@ -343,7 +344,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_EnableLoadProfileRecording )
         const std::vector< unsigned char > exp = boost::assign::list_of
             ( 0x68 )( 0x03 )( 0x00 );
 
-        RfnCommand::RfnRequest rcv = command.executeCommand( execute_time );
+        RfnCommand::RfnRequestPayload rcv = command.executeCommand( execute_time );
 
         BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
                                        exp.begin() , exp.end() );
@@ -354,7 +355,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_EnableLoadProfileRecording )
         const std::vector< unsigned char > response = boost::assign::list_of
             ( 0x69 )( 0x03 )( 0x00 )( 0x00 );
 
-        RfnCommand::RfnResult rcv = command.decodeCommand( execute_time, response );
+        RfnCommandResult rcv = command.decodeCommand( execute_time, response );
 
         BOOST_CHECK_EQUAL( rcv.description, "Status: Success (0)" );
     }
@@ -368,7 +369,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_EnableLoadProfileRecording )
 
         try
         {
-            RfnCommand::RfnResult rcv = command.decodeCommand( execute_time, response );
+            RfnCommandResult rcv = command.decodeCommand( execute_time, response );
         }
         catch ( const RfnCommand::CommandException & ex )
         {
@@ -381,7 +382,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_EnableLoadProfileRecording )
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_EnableLoadProfileRecording_decoding_exceptions )
 {
-    const std::vector< RfnCommand::RfnResponse >   responses = list_of
+    const std::vector< RfnCommand::RfnResponsePayload >   responses = list_of
         ( list_of( 0x69 )( 0x03 )( 0x00 )( 0x01 ) )
         ( list_of( 0x69 )( 0x03 )( 0x00 ) )
         ( list_of( 0x69 )( 0x03 )( 0x00 )( 0x01 )( 0x00 ) );
@@ -395,13 +396,13 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_EnableLoadProfileRecording_decodi
 
     RfnLoadProfileSetRecordingCommand  command( RfnLoadProfileRecordingCommand::EnableRecording );
 
-    for each ( const RfnCommand::RfnResponse & response in responses )
+    for each ( const RfnCommand::RfnResponsePayload & response in responses )
     {
         BOOST_CHECK_THROW( command.decodeCommand( execute_time, response ), RfnCommand::CommandException );
 
         try
         {
-            RfnCommand::RfnResult rcv = command.decodeCommand( execute_time, response );
+            RfnCommandResult rcv = command.decodeCommand( execute_time, response );
         }
         catch ( const RfnCommand::CommandException & ex )
         {
@@ -423,7 +424,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfileRecording )
         const std::vector< unsigned char > exp = boost::assign::list_of
             ( 0x68 )( 0x04 )( 0x00 );
 
-        RfnCommand::RfnRequest rcv = command.executeCommand( execute_time );
+        RfnCommand::RfnRequestPayload rcv = command.executeCommand( execute_time );
 
         BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
                                        exp.begin() , exp.end() );
@@ -434,7 +435,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfileRecording )
         const std::vector< unsigned char > response = boost::assign::list_of
             ( 0x69 )( 0x04 )( 0x00 )( 0x01 )( 0x02 )( 0x01 )( 0x00 );
 
-        RfnCommand::RfnResult rcv = command.decodeCommand( execute_time, response );
+        RfnCommandResult rcv = command.decodeCommand( execute_time, response );
 
         BOOST_CHECK_EQUAL( rcv.description, "Status: Success (0)"
                                               "\nCurrent State: Disabled (0)" );
@@ -447,7 +448,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfileRecording )
         const std::vector< unsigned char > response = boost::assign::list_of
             ( 0x69 )( 0x04 )( 0x00 )( 0x01 )( 0x02 )( 0x01 )( 0x01 );
 
-        RfnCommand::RfnResult rcv = command.decodeCommand( execute_time, response );
+        RfnCommandResult rcv = command.decodeCommand( execute_time, response );
 
         BOOST_CHECK_EQUAL( rcv.description, "Status: Success (0)"
                                               "\nCurrent State: Enabled (1)" );
@@ -464,7 +465,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfileRecording )
 
         try
         {
-            RfnCommand::RfnResult rcv = command.decodeCommand( execute_time, response );
+            RfnCommandResult rcv = command.decodeCommand( execute_time, response );
         }
         catch ( const RfnCommand::CommandException & ex )
         {
@@ -477,7 +478,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfileRecording )
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfileRecording_decoding_exceptions )
 {
-    const std::vector< RfnCommand::RfnResponse >   responses = list_of
+    const std::vector< RfnCommand::RfnResponsePayload >   responses = list_of
         ( list_of( 0x69 )( 0x04 )( 0x00 )( 0x02 )( 0x02 )( 0x01 )( 0x00 ) )
         ( list_of( 0x69 )( 0x04 )( 0x00 )( 0x01 )( 0x01 )( 0x01 )( 0x00 ) )
         ( list_of( 0x69 )( 0x04 )( 0x00 )( 0x01 )( 0x02 )( 0x02 )( 0x00 ) )
@@ -497,13 +498,13 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfileRecording_decoding_
 
     RfnLoadProfileGetRecordingCommand  command;
 
-    for each ( const RfnCommand::RfnResponse & response in responses )
+    for each ( const RfnCommand::RfnResponsePayload & response in responses )
     {
         BOOST_CHECK_THROW( command.decodeCommand( execute_time, response ), RfnCommand::CommandException );
 
         try
         {
-            RfnCommand::RfnResult rcv = command.decodeCommand( execute_time, response );
+            RfnCommandResult rcv = command.decodeCommand( execute_time, response );
         }
         catch ( const RfnCommand::CommandException & ex )
         {
@@ -648,11 +649,11 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfilePoints )
                     ( 0x51 )( 0xd8 )( 0xf5 )( 0xd0 )  // start timestamp
                     ( 0x52 )( 0x01 )( 0xd4 )( 0x50 ); // end timestamp
 
-            RfnCommand::RfnRequest rcv = command.executeCommand( execute_time );
+            RfnCommand::RfnRequestPayload rcv = command.executeCommand( execute_time );
 
             BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
                                            exp.begin() , exp.end() );
-        }
+    }
 
         // decode
         {
@@ -694,7 +695,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfilePoints )
                    ( 0x31 )( 0x32 )( 0x02 )
                    ( 0x41 )( 0x42 )( 0x03 );
 
-            RfnCommand::RfnResult rcv = command.decodeCommand( execute_time, response );
+            RfnCommandResult rcv = command.decodeCommand( execute_time, response );
 
             BOOST_CHECK_EQUAL( rcv.description, "Status: Success (0)" );
 

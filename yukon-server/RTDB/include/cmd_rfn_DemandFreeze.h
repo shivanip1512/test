@@ -56,16 +56,16 @@ protected:
 
     const Operation _operation;
 
-    RfnResult decodeResponseHeader( const CtiTime now,
-                                    const RfnResponse & response );
+    RfnCommandResult decodeResponseHeader( const CtiTime now,
+                                           const RfnResponsePayload & response );
 
 public:
 
-    virtual RfnResult decodeCommand( const CtiTime now,
-                                     const RfnResponse & response ) = 0;
+    virtual RfnCommandResult decodeCommand( const CtiTime now,
+                                            const RfnResponsePayload & response ) = 0;
 
-    virtual RfnResult error( const CtiTime now,
-                             const YukonError_t error_code );
+    virtual RfnCommandResult error( const CtiTime now,
+                                    const YukonError_t error_code );
 };
 
 
@@ -84,8 +84,8 @@ public:
 
     RfnDemandFreezeConfigurationCommand( const unsigned char day_of_freeze );
 
-    virtual RfnResult decodeCommand( const CtiTime now,
-                                     const RfnResponse & response );
+    virtual RfnCommandResult decodeCommand( const CtiTime now,
+                                            const RfnResponsePayload & response );
 
 };
 
@@ -99,8 +99,8 @@ public:
 
     RfnImmediateDemandFreezeCommand();
 
-    virtual RfnResult decodeCommand( const CtiTime now,
-                                     const RfnResponse & response );
+    virtual RfnCommandResult decodeCommand( const CtiTime now,
+                                            const RfnResponsePayload & response );
 
 };
 
@@ -143,8 +143,8 @@ public:
 
     RfnGetDemandFreezeInfoCommand( ResultHandler & rh );
 
-    virtual RfnResult decodeCommand( const CtiTime now,
-                                     const RfnResponse & response );
+    virtual RfnCommandResult decodeCommand( const CtiTime now,
+                                            const RfnResponsePayload & response );
 
     DemandFreezeData getDemandFreezeData() const;
 
