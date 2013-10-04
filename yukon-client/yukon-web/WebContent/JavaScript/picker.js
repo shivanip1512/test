@@ -909,12 +909,8 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
 
     // circumvent default processing of ctrl-left-click and shift-left-click events
     jQuery(document).on('click', '#' + this.pickerId, function (ev) {
-        if ( ev.ctrlKey ) {
+        if (ev.ctrlKey || ev.shiftKey) {
             ev.preventDefault();
-        } else {
-            if ( ev.shiftKey ) {
-                ev.preventDefault();
-            }
         }
     });
 
