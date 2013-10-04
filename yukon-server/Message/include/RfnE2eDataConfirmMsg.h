@@ -1,12 +1,13 @@
 #pragma once
 
 #include "rfn_identifier.h"
+#include "RfnE2eMsg.h"
 
 namespace Cti {
 namespace Messaging {
 namespace Rfn {
 
-struct RfnE2eDataConfirmMsg
+struct /*IM_EX_MSG*/ RfnE2eDataConfirmMsg : RfnE2eMsg  //  no methods, does not need to be exported
 {
     //  TODO - convert to a strongly-typed enum when we convert to VS2012
     struct ReplyType
@@ -24,7 +25,8 @@ struct RfnE2eDataConfirmMsg
         };
     };
 
-    std::string applicationServiceId;
+    Protocol protocol;
+    unsigned char applicationServiceId;
     Devices::RfnIdentifier rfnIdentifier;
     ReplyType::type replyType;
 };

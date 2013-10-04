@@ -16,6 +16,25 @@
 
 namespace Cti { namespace Messaging { namespace Serialization { namespace Thrift {
 
+struct RfnE2eProtocol {
+  enum type {
+    APPLICATION = 0,
+    NETWORK = 1,
+    LINK = 2
+  };
+};
+
+extern const std::map<int, const char*> _RfnE2eProtocol_VALUES_TO_NAMES;
+
+struct RfnE2eMessagePriority {
+  enum type {
+    APP_LO = 0,
+    APP_HI = 1
+  };
+};
+
+extern const std::map<int, const char*> _RfnE2eMessagePriority_VALUES_TO_NAMES;
+
 struct RfnE2eDataReplyType {
   enum type {
     OK = 0,
@@ -25,7 +44,8 @@ struct RfnE2eDataReplyType {
     E2E_PROTOCOL_TYPE_NOT_SUPPORTED = 4,
     NETWORK_SERVER_IDENTIFIER_INVALID = 5,
     APPLICATION_SERVICE_IDENTIFIER_INVALID = 6,
-    NETWORK_LOAD_CONTROL = 7
+    NETWORK_LOAD_CONTROL = 7,
+    NETWORK_SERVICE_FAILURE = 8
   };
 };
 
@@ -90,23 +110,28 @@ typedef struct _RfnE2eDataRequest__isset {
 class RfnE2eDataRequest {
  public:
 
-  static const char* ascii_fingerprint; // = "8F9A568700F2805EC763F9126369F787";
-  static const uint8_t binary_fingerprint[16]; // = {0x8F,0x9A,0x56,0x87,0x00,0xF2,0x80,0x5E,0xC7,0x63,0xF9,0x12,0x63,0x69,0xF7,0x87};
+  static const char* ascii_fingerprint; // = "8566E586DC91E3EDB6D1BCD87B3E26BD";
+  static const uint8_t binary_fingerprint[16]; // = {0x85,0x66,0xE5,0x86,0xDC,0x91,0xE3,0xED,0xB6,0xD1,0xBC,0xD8,0x7B,0x3E,0x26,0xBD};
 
-  RfnE2eDataRequest() : applicationServiceId(), priority(0), security(), payload() {
+  RfnE2eDataRequest() : e2eProtocol((RfnE2eProtocol::type)0), applicationServiceId(0), priority((RfnE2eMessagePriority::type)0), security(), payload() {
   }
 
   virtual ~RfnE2eDataRequest() throw() {}
 
-  std::string applicationServiceId;
+  RfnE2eProtocol::type e2eProtocol;
+  int8_t applicationServiceId;
   RfnIdentifier rfnIdentifier;
-  int32_t priority;
+  RfnE2eMessagePriority::type priority;
   std::string security;
   std::string payload;
 
   _RfnE2eDataRequest__isset __isset;
 
-  void __set_applicationServiceId(const std::string& val) {
+  void __set_e2eProtocol(const RfnE2eProtocol::type val) {
+    e2eProtocol = val;
+  }
+
+  void __set_applicationServiceId(const int8_t val) {
     applicationServiceId = val;
   }
 
@@ -114,7 +139,7 @@ class RfnE2eDataRequest {
     rfnIdentifier = val;
   }
 
-  void __set_priority(const int32_t val) {
+  void __set_priority(const RfnE2eMessagePriority::type val) {
     priority = val;
   }
 
@@ -129,6 +154,8 @@ class RfnE2eDataRequest {
 
   bool operator == (const RfnE2eDataRequest & rhs) const
   {
+    if (!(e2eProtocol == rhs.e2eProtocol))
+      return false;
     if (!(applicationServiceId == rhs.applicationServiceId))
       return false;
     if (!(rfnIdentifier == rhs.rfnIdentifier))
@@ -164,23 +191,28 @@ typedef struct _RfnE2eDataIndication__isset {
 class RfnE2eDataIndication {
  public:
 
-  static const char* ascii_fingerprint; // = "8F9A568700F2805EC763F9126369F787";
-  static const uint8_t binary_fingerprint[16]; // = {0x8F,0x9A,0x56,0x87,0x00,0xF2,0x80,0x5E,0xC7,0x63,0xF9,0x12,0x63,0x69,0xF7,0x87};
+  static const char* ascii_fingerprint; // = "8566E586DC91E3EDB6D1BCD87B3E26BD";
+  static const uint8_t binary_fingerprint[16]; // = {0x85,0x66,0xE5,0x86,0xDC,0x91,0xE3,0xED,0xB6,0xD1,0xBC,0xD8,0x7B,0x3E,0x26,0xBD};
 
-  RfnE2eDataIndication() : applicationServiceId(), priority(0), security(), payload() {
+  RfnE2eDataIndication() : e2eProtocol((RfnE2eProtocol::type)0), applicationServiceId(0), priority((RfnE2eMessagePriority::type)0), security(), payload() {
   }
 
   virtual ~RfnE2eDataIndication() throw() {}
 
-  std::string applicationServiceId;
+  RfnE2eProtocol::type e2eProtocol;
+  int8_t applicationServiceId;
   RfnIdentifier rfnIdentifier;
-  int32_t priority;
+  RfnE2eMessagePriority::type priority;
   std::string security;
   std::string payload;
 
   _RfnE2eDataIndication__isset __isset;
 
-  void __set_applicationServiceId(const std::string& val) {
+  void __set_e2eProtocol(const RfnE2eProtocol::type val) {
+    e2eProtocol = val;
+  }
+
+  void __set_applicationServiceId(const int8_t val) {
     applicationServiceId = val;
   }
 
@@ -188,7 +220,7 @@ class RfnE2eDataIndication {
     rfnIdentifier = val;
   }
 
-  void __set_priority(const int32_t val) {
+  void __set_priority(const RfnE2eMessagePriority::type val) {
     priority = val;
   }
 
@@ -203,6 +235,8 @@ class RfnE2eDataIndication {
 
   bool operator == (const RfnE2eDataIndication & rhs) const
   {
+    if (!(e2eProtocol == rhs.e2eProtocol))
+      return false;
     if (!(applicationServiceId == rhs.applicationServiceId))
       return false;
     if (!(rfnIdentifier == rhs.rfnIdentifier))
@@ -234,19 +268,24 @@ void swap(RfnE2eDataIndication &a, RfnE2eDataIndication &b);
 class RfnE2eDataConfirm {
  public:
 
-  static const char* ascii_fingerprint; // = "92BF0274A7FE9537DDD55F98A8818200";
-  static const uint8_t binary_fingerprint[16]; // = {0x92,0xBF,0x02,0x74,0xA7,0xFE,0x95,0x37,0xDD,0xD5,0x5F,0x98,0xA8,0x81,0x82,0x00};
+  static const char* ascii_fingerprint; // = "F41C7A57730C1F3FDF1957261326625D";
+  static const uint8_t binary_fingerprint[16]; // = {0xF4,0x1C,0x7A,0x57,0x73,0x0C,0x1F,0x3F,0xDF,0x19,0x57,0x26,0x13,0x26,0x62,0x5D};
 
-  RfnE2eDataConfirm() : applicationServiceId(), replyType((RfnE2eDataReplyType::type)0) {
+  RfnE2eDataConfirm() : e2eProtocol((RfnE2eProtocol::type)0), applicationServiceId(0), replyType((RfnE2eDataReplyType::type)0) {
   }
 
   virtual ~RfnE2eDataConfirm() throw() {}
 
-  std::string applicationServiceId;
+  RfnE2eProtocol::type e2eProtocol;
+  int8_t applicationServiceId;
   RfnIdentifier rfnIdentifier;
   RfnE2eDataReplyType::type replyType;
 
-  void __set_applicationServiceId(const std::string& val) {
+  void __set_e2eProtocol(const RfnE2eProtocol::type val) {
+    e2eProtocol = val;
+  }
+
+  void __set_applicationServiceId(const int8_t val) {
     applicationServiceId = val;
   }
 
@@ -260,6 +299,8 @@ class RfnE2eDataConfirm {
 
   bool operator == (const RfnE2eDataConfirm & rhs) const
   {
+    if (!(e2eProtocol == rhs.e2eProtocol))
+      return false;
     if (!(applicationServiceId == rhs.applicationServiceId))
       return false;
     if (!(rfnIdentifier == rhs.rfnIdentifier))

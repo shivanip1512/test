@@ -86,7 +86,7 @@ public:
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "**** Thrift EXCEPTION **** while serializing object type \"" << typeid(imsg).name() << "\" " << __FILE__ << " (" << __LINE__ << ")" << e.what() << endl;
+                    dout << "**** Thrift EXCEPTION **** while serializing object type \"" << typeid(imsg).name() << "\" " << __FILE__ << " (" << __LINE__ << ")" << e.what() << std::endl;
                 }
             }
         }
@@ -111,7 +111,7 @@ public:
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "**** Thrift EXCEPTION **** while deserializing message type \"" << msgType << "\" " << __FILE__ << " (" << __LINE__ << ")" << e.what() << endl;
+                    dout << "**** Thrift EXCEPTION **** while deserializing message type \"" << msgType << "\" " << __FILE__ << " (" << __LINE__ << ")" << e.what() << std::endl;
                 }
             }
         }

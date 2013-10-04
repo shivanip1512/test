@@ -1,6 +1,9 @@
 #pragma once
 
 #include "rfn_identifier.h"
+#include "RfnE2eMsg.h"
+
+#include <boost/optional.hpp>
 
 #include <string>
 
@@ -8,12 +11,13 @@ namespace Cti {
 namespace Messaging {
 namespace Rfn {
 
-struct IM_EX_MSG RfnE2eDataIndicationMsg
+struct /*IM_EX_MSG*/ RfnE2eDataIndicationMsg : RfnE2eMsg  //  no methods, does not need to be exported
 {
-    std::string applicationServiceId;
+    Protocol protocol;
+    unsigned char applicationServiceId;
     Devices::RfnIdentifier rfnIdentifier;
-    int priority;
-    std::string security;
+    bool high_priority;
+    boost::optional<std::string> security;
     std::vector<unsigned char> payload;
 };
 

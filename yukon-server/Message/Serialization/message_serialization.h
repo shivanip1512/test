@@ -23,9 +23,6 @@
 #include "msg_signal.h"
 #include "msg_tag.h"
 #include "msg_trace.h"
-#include "RfnE2eDataRequestMsg.h"
-#include "RfnE2eDataConfirmMsg.h"
-#include "RfnE2eDataIndicationMsg.h"
 
 #include "Thrift/Message_types.h"
 #include "Thrift/Command_types.h"
@@ -43,7 +40,6 @@
 #include "Thrift/Registration_types.h"
 #include "Thrift/RequestCancel_types.h"
 #include "Thrift/Return_types.h"
-#include "Thrift/RfnE2eData_types.h"
 #include "Thrift/ServerRequest_types.h"
 #include "Thrift/ServerResponse_types.h"
 #include "Thrift/Signal_types.h"
@@ -101,15 +97,6 @@ IM_EX_MSG MessagePtr<::CtiRegistrationMsg>::type          deserialize ( const Th
 
 IM_EX_MSG MessagePtr<Thrift::RequestCancel>::type         serialize   ( const ::CtiRequestCancelMsg& imsg );
 IM_EX_MSG MessagePtr<::CtiRequestCancelMsg>::type         deserialize ( const Thrift::RequestCancel& imsg );
-
-IM_EX_MSG MessagePtr<Thrift::RfnE2eDataRequest>::type     serialize   ( const Rfn::RfnE2eDataRequestMsg& imsg );
-IM_EX_MSG MessagePtr<Rfn::RfnE2eDataRequestMsg>::type     deserialize ( const Thrift::RfnE2eDataRequest& imsg );
-
-IM_EX_MSG MessagePtr<Thrift::RfnE2eDataConfirm>::type     serialize   ( const Rfn::RfnE2eDataConfirmMsg& imsg );
-IM_EX_MSG MessagePtr<Rfn::RfnE2eDataConfirmMsg>::type     deserialize ( const Thrift::RfnE2eDataConfirm& imsg );
-
-IM_EX_MSG MessagePtr<Thrift::RfnE2eDataIndication>::type  serialize   ( const Rfn::RfnE2eDataIndicationMsg& imsg );
-IM_EX_MSG MessagePtr<Rfn::RfnE2eDataIndicationMsg>::type  deserialize ( const Thrift::RfnE2eDataIndication& imsg );
 
 IM_EX_MSG MessagePtr<Thrift::ServerRequest>::type         serialize   ( const ::CtiServerRequestMsg& imsg );
 IM_EX_MSG MessagePtr<::CtiServerRequestMsg>::type         deserialize ( const Thrift::ServerRequest& imsg );
