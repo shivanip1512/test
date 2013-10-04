@@ -128,7 +128,7 @@ dev_repeater850.obj \
 dev_rfn.obj \
 dev_rfn420centron.obj \
 dev_rfn420focus.obj \
-dev_rfnConsumer.obj \
+dev_rfnResidential.obj \
 dev_rtc.obj \
 dev_rtm.obj \
 dev_rds.obj \

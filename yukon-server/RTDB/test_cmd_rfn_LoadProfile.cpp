@@ -3,11 +3,15 @@
 
 #include "ctidate.h"
 #include "cmd_rfn_LoadProfile.h"
+#include "boost_test_helpers.h"
 
 
 using Cti::Devices::Commands::RfnCommand;
-using Cti::Devices::Commands::RfnVoltageProfileConfigurationCommand;
+using Cti::Devices::Commands::RfnVoltageProfileGetConfigurationCommand;
+using Cti::Devices::Commands::RfnVoltageProfileSetConfigurationCommand;
 using Cti::Devices::Commands::RfnLoadProfileRecordingCommand;
+using Cti::Devices::Commands::RfnLoadProfileGetRecordingCommand;
+using Cti::Devices::Commands::RfnLoadProfileSetRecordingCommand;
 using Cti::Devices::Commands::RfnLoadProfileReadPointsCommand;
 
 using boost::assign::list_of;
@@ -34,31 +38,9 @@ BOOST_AUTO_TEST_SUITE( test_cmd_rfn_LoadProfile )
 const CtiTime execute_time( CtiDate( 29, 7, 2013 ) , 11 );
 
 
-struct test_ConfigResultHandler : RfnVoltageProfileConfigurationCommand::ResultHandler
-{
-    void handleResult(const RfnVoltageProfileConfigurationCommand &cmd)
-    {
-        //  This is temporarily marked BOOST_FAIL - the unit test should eventually exercise this.
-        BOOST_FAIL("Should not reach this code!");
-    }
-};
-
-
-struct test_RecordingResultHandler : RfnLoadProfileRecordingCommand::ResultHandler
-{
-    void handleResult(const RfnLoadProfileRecordingCommand &cmd)
-    {
-        //  This is temporarily marked BOOST_FAIL - the unit test should eventually exercise this.
-        BOOST_FAIL("Should not reach this code!");
-    }
-};
-
-
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_SetConfiguration )
 {
-    test_ConfigResultHandler rh;
-
-    RfnVoltageProfileConfigurationCommand  command( rh, 255, 34 );
+    RfnVoltageProfileSetConfigurationCommand  command( 255, 34 );
 
     // execute
     {
@@ -123,9 +105,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_SetConfiguration_constructor_exce
     {
         try
         {
-            test_ConfigResultHandler rh;
-
-            RfnVoltageProfileConfigurationCommand  command( rh, input.first, input.second );
+            RfnVoltageProfileSetConfigurationCommand command( input.first, input.second );
         }
         catch ( const RfnCommand::CommandException & ex )
         {
@@ -160,9 +140,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_SetConfiguration_decoding_excepti
 
     std::vector< RfnCommand::CommandException > actual;
 
-    test_ConfigResultHandler rh;
-
-    RfnVoltageProfileConfigurationCommand  command( rh, 300, 15 );
+    RfnVoltageProfileSetConfigurationCommand command( 300, 15 );
 
     for each ( const RfnCommand::RfnResponse & response in responses )
     {
@@ -185,9 +163,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_SetConfiguration_decoding_excepti
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetConfiguration )
 {
-    test_ConfigResultHandler rh;
-
-    RfnVoltageProfileConfigurationCommand  command( rh );
+    RfnVoltageProfileGetConfigurationCommand command;
 
     // execute
     {
@@ -211,9 +187,9 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetConfiguration )
         RfnCommand::RfnResult rcv = command.decodeCommand( execute_time, response );
 
         BOOST_CHECK_EQUAL( rcv.description,
-                                 "Status: Success (0)"
-                                 "\nVoltage Demand interval: 60 seconds"
-                                 "\nLoad Profile Demand interval: 6 minutes" );
+                           "Status: Success (0)"
+                           "\nVoltage Demand interval: 60 seconds"
+                           "\nLoad Profile Demand interval: 6 minutes" );
 
         BOOST_CHECK_EQUAL( 60, command.getDemandIntervalSeconds() );
         BOOST_CHECK_EQUAL(  6, command.getLoadProfileIntervalMinutes() );
@@ -257,9 +233,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetConfiguration_decoding_excepti
 
     std::vector< RfnCommand::CommandException > actual;
 
-    test_ConfigResultHandler rh;
-
-    RfnVoltageProfileConfigurationCommand  command( rh );
+    RfnVoltageProfileGetConfigurationCommand  command;
 
     for each ( const RfnCommand::RfnResponse & response in responses )
     {
@@ -282,9 +256,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetConfiguration_decoding_excepti
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_DisableLoadProfileRecording )
 {
-    test_RecordingResultHandler rh;
-
-    RfnLoadProfileRecordingCommand  command( rh, RfnLoadProfileRecordingCommand::DisableRecording );
+    RfnLoadProfileSetRecordingCommand  command( RfnLoadProfileRecordingCommand::DisableRecording );
 
     // execute
     {
@@ -341,9 +313,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_DisableLoadProfileRecording_decod
 
     std::vector< RfnCommand::CommandException > actual;
 
-    test_RecordingResultHandler rh;
-
-    RfnLoadProfileRecordingCommand  command( rh, RfnLoadProfileRecordingCommand::DisableRecording );
+    RfnLoadProfileSetRecordingCommand  command( RfnLoadProfileRecordingCommand::DisableRecording );
 
     for each ( const RfnCommand::RfnResponse & response in responses )
     {
@@ -366,9 +336,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_DisableLoadProfileRecording_decod
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_EnableLoadProfileRecording )
 {
-    test_RecordingResultHandler rh;
-
-    RfnLoadProfileRecordingCommand  command( rh, RfnLoadProfileRecordingCommand::EnableRecording );
+    RfnLoadProfileSetRecordingCommand  command( RfnLoadProfileRecordingCommand::EnableRecording );
 
     // execute
     {
@@ -425,9 +393,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_EnableLoadProfileRecording_decodi
 
     std::vector< RfnCommand::CommandException > actual;
 
-    test_RecordingResultHandler rh;
-
-    RfnLoadProfileRecordingCommand  command( rh, RfnLoadProfileRecordingCommand::EnableRecording );
+    RfnLoadProfileSetRecordingCommand  command( RfnLoadProfileRecordingCommand::EnableRecording );
 
     for each ( const RfnCommand::RfnResponse & response in responses )
     {
@@ -450,9 +416,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_EnableLoadProfileRecording_decodi
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfileRecording )
 {
-    test_RecordingResultHandler rh;
-
-    RfnLoadProfileRecordingCommand  command( rh );
+    RfnLoadProfileGetRecordingCommand  command;
 
     // execute
     {
@@ -531,9 +495,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfileRecording_decoding_
 
     std::vector< RfnCommand::CommandException > actual;
 
-    test_RecordingResultHandler rh;
-
-    RfnLoadProfileRecordingCommand  command( rh );
+    RfnLoadProfileGetRecordingCommand  command;
 
     for each ( const RfnCommand::RfnResponse & response in responses )
     {
@@ -652,9 +614,23 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfilePoints_invalid_date
     }
 }
 
+void printData( std::vector< unsigned char > data )
+{
+    printf("data :\n");
+
+    for each ( unsigned char val in data  )
+    {
+        printf("( 0x%02x )\n", val);
+    }
+}
+
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfilePoints )
 {
+    using Cti::Devices::Commands::RfnCommand;
+
+    Cti::Test::set_to_central_timezone();
+
     //  begin == end, before today
     {
         const CtiTime now  (CtiDate(10, 8, 2013), 8, 23, 0);
@@ -663,7 +639,127 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfilePoints )
 
         RfnLoadProfileReadPointsCommand command(now, begin, end);
 
-        //command.decodeCommand()
+        // execute
+        {
+            const std::vector< unsigned char > exp = boost::assign::list_of
+                    ( 0x68 )( 0x05 )( 0x01 )
+                    ( 0x04 )
+                    ( 0x08 ) // 8 bytes
+                    ( 0x51 )( 0xd8 )( 0xf5 )( 0xd0 )  // start timestamp
+                    ( 0x52 )( 0x01 )( 0xd4 )( 0x50 ); // end timestamp
+
+            RfnCommand::RfnRequest rcv = command.executeCommand( execute_time );
+
+            BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
+                                           exp.begin() , exp.end() );
+        }
+
+        // decode
+        {
+           const std::vector< unsigned char > response = boost::assign::list_of
+                   ( 0x69 )( 0x05 )( 0x00 )( 0x01 )
+                   ( 0x03 )
+                   ( 0x43 ) // tlv size = 67-byte
+                   // report header
+                   ( 0x00 ) // channel number
+                   ( 0x10 ) // uom
+                   ( 0x80 )( 0x00 ) // uom modifier 1
+                   ( 0x00 )( 0x00 ) // uom modifier 1
+                   ( 0x45 ) // profile interval
+                   ( 0x04 ) // Number of profile point records
+                   // record 1
+                   ( 0x51 )( 0xd8 )( 0xf5 )( 0xd0 )
+                   ( 0x00 ) // 8-bit delta
+                   ( 0x01 )
+                   ( 0x11 )( 0x00 )
+                   // record 2
+                   ( 0x51 )( 0xd8 )( 0xf5 )( 0xd1 )
+                   ( 0x01 ) // 16-bit delta
+                   ( 0x02 )
+                   ( 0x11 )( 0x12 )( 0x00 )
+                   ( 0x21 )( 0x22 )( 0x01 )
+                   // record 3
+                   ( 0x51 )( 0xd8 )( 0xf5 )( 0xd2 )
+                   ( 0x02 ) // 32-bit absolute
+                   ( 0x03 )
+                   ( 0x11 )( 0x12 )( 0x13 )( 0x14 )( 0x00 )
+                   ( 0x21 )( 0x22 )( 0x23 )( 0x24 )( 0x01 )
+                   ( 0x31 )( 0x32 )( 0x33 )( 0x34 )( 0x02 )
+                   // record 4
+                   ( 0x51 )( 0xd8 )( 0xf5 )( 0xd3 )
+                   ( 0x03 ) // 16-bit absolute
+                   ( 0x04 )
+                   ( 0x11 )( 0x12 )( 0x00 )
+                   ( 0x21 )( 0x22 )( 0x01 )
+                   ( 0x31 )( 0x32 )( 0x02 )
+                   ( 0x41 )( 0x42 )( 0x03 );
+
+            RfnCommand::RfnResult rcv = command.decodeCommand( execute_time, response );
+
+            BOOST_CHECK_EQUAL( rcv.description, "Status: Success (0)" );
+
+            BOOST_REQUIRE_EQUAL( rcv.points.size(), 10 );
+
+            const unsigned expected_offset = 214;
+
+            // record 1
+
+            BOOST_CHECK_EQUAL( rcv.points[0].value,     0x11 );
+            BOOST_CHECK_EQUAL( rcv.points[0].type,      AnalogPointType );
+            BOOST_CHECK_EQUAL( rcv.points[0].quality,   NormalQuality );
+            BOOST_CHECK_EQUAL( rcv.points[0].offset,    expected_offset );
+
+            // record 2
+
+            BOOST_CHECK_EQUAL( rcv.points[1].value,     0x1112 );
+            BOOST_CHECK_EQUAL( rcv.points[1].type,      AnalogPointType );
+            BOOST_CHECK_EQUAL( rcv.points[1].quality,   NormalQuality );
+            BOOST_CHECK_EQUAL( rcv.points[1].offset,    expected_offset );
+
+            BOOST_CHECK_EQUAL( rcv.points[2].value,     0x2122 );
+            BOOST_CHECK_EQUAL( rcv.points[2].type,      AnalogPointType );
+            BOOST_CHECK_EQUAL( rcv.points[2].quality,   InvalidQuality );
+            BOOST_CHECK_EQUAL( rcv.points[2].offset,    expected_offset );
+
+            // record 3
+
+            BOOST_CHECK_EQUAL( rcv.points[3].value,     0x11121314 );
+            BOOST_CHECK_EQUAL( rcv.points[3].type,      AnalogPointType );
+            BOOST_CHECK_EQUAL( rcv.points[3].quality,   NormalQuality );
+            BOOST_CHECK_EQUAL( rcv.points[3].offset,    expected_offset );
+
+            BOOST_CHECK_EQUAL( rcv.points[4].value,     0x21222324 );
+            BOOST_CHECK_EQUAL( rcv.points[4].type,      AnalogPointType );
+            BOOST_CHECK_EQUAL( rcv.points[4].quality,   InvalidQuality );
+            BOOST_CHECK_EQUAL( rcv.points[4].offset,    expected_offset );
+
+            BOOST_CHECK_EQUAL( rcv.points[5].value,     0x31323334 );
+            BOOST_CHECK_EQUAL( rcv.points[5].type,      AnalogPointType );
+            BOOST_CHECK_EQUAL( rcv.points[5].quality,   InvalidQuality );
+            BOOST_CHECK_EQUAL( rcv.points[5].offset,    expected_offset );
+
+            // record 4
+
+            BOOST_CHECK_EQUAL( rcv.points[6].value,     0x1112 );
+            BOOST_CHECK_EQUAL( rcv.points[6].type,      AnalogPointType );
+            BOOST_CHECK_EQUAL( rcv.points[6].quality,   NormalQuality );
+            BOOST_CHECK_EQUAL( rcv.points[6].offset,    expected_offset );
+
+            BOOST_CHECK_EQUAL( rcv.points[7].value,     0x2122 );
+            BOOST_CHECK_EQUAL( rcv.points[7].type,      AnalogPointType );
+            BOOST_CHECK_EQUAL( rcv.points[7].quality,   InvalidQuality );
+            BOOST_CHECK_EQUAL( rcv.points[7].offset,    expected_offset );
+
+            BOOST_CHECK_EQUAL( rcv.points[8].value,     0x3132 );
+            BOOST_CHECK_EQUAL( rcv.points[8].type,      AnalogPointType );
+            BOOST_CHECK_EQUAL( rcv.points[8].quality,   InvalidQuality );
+            BOOST_CHECK_EQUAL( rcv.points[8].offset,    expected_offset );
+
+            BOOST_CHECK_EQUAL( rcv.points[9].value,     0x4142 );
+            BOOST_CHECK_EQUAL( rcv.points[9].type,      AnalogPointType );
+            BOOST_CHECK_EQUAL( rcv.points[9].quality,   InvalidQuality );
+            BOOST_CHECK_EQUAL( rcv.points[9].offset,    expected_offset );
+        }
     }
 }
 

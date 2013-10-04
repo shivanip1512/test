@@ -4,7 +4,7 @@
 #include "config_data_rfn.h"
 #include "config_device.h"
 #include "MissingConfigDataException.h"
-#include "dev_rfnConsumer.h"
+#include "dev_rfnResidential.h"
 
 #include <boost/optional.hpp>
 #include <boost/make_shared.hpp>
@@ -20,18 +20,18 @@ namespace Devices {
 
 using Config::RfnStrings;
 
-const RfnDevice::InstallMap RfnConsumerDevice::_putConfigInstallMap = initPutConfigInstallMap();
-const RfnDevice::InstallMap RfnConsumerDevice::_getConfigInstallMap = initGetConfigInstallMap();
+const RfnDevice::InstallMap RfnResidentialDevice::_putConfigInstallMap = initPutConfigInstallMap();
+const RfnDevice::InstallMap RfnResidentialDevice::_getConfigInstallMap = initGetConfigInstallMap();
 
 /**
  * initialize  static variable _putConfigInstallMap
  */
-const RfnDevice::InstallMap RfnConsumerDevice::initPutConfigInstallMap()
+const RfnDevice::InstallMap RfnResidentialDevice::initPutConfigInstallMap()
 {
     const InstallMap m = boost::assign::map_list_of
-            ("freezeday",        static_cast<InstallMethod>(&RfnConsumerDevice::executePutConfigDemandFreezeDay))
-            ("tou",              static_cast<InstallMethod>(&RfnConsumerDevice::executePutConfigInstallTou))
-            ("voltageaveraging", static_cast<InstallMethod>(&RfnConsumerDevice::executePutConfigVoltageAveragingInterval));
+            ("freezeday",        static_cast<InstallMethod>(&RfnResidentialDevice::executePutConfigDemandFreezeDay))
+            ("tou",              static_cast<InstallMethod>(&RfnResidentialDevice::executePutConfigInstallTou))
+            ("voltageaveraging", static_cast<InstallMethod>(&RfnResidentialDevice::executePutConfigVoltageAveragingInterval));
 
     return m;
 }
@@ -39,22 +39,22 @@ const RfnDevice::InstallMap RfnConsumerDevice::initPutConfigInstallMap()
 /**
  * initialize  static variable _getConfigInstallMap
  */
-const RfnDevice::InstallMap RfnConsumerDevice::initGetConfigInstallMap()
+const RfnDevice::InstallMap RfnResidentialDevice::initGetConfigInstallMap()
 {
     const InstallMap m = boost::assign::map_list_of
-            ("freezeday",        static_cast<InstallMethod>(&RfnConsumerDevice::executeReadDemandFreezeInfo))
-            ("tou",              static_cast<InstallMethod>(&RfnConsumerDevice::executeGetConfigInstallTou))
-            ("voltageaveraging", static_cast<InstallMethod>(&RfnConsumerDevice::executeGetConfigVoltageAveragingInterval));
+            ("freezeday",        static_cast<InstallMethod>(&RfnResidentialDevice::executeReadDemandFreezeInfo))
+            ("tou",              static_cast<InstallMethod>(&RfnResidentialDevice::executeGetConfigInstallTou))
+            ("voltageaveraging", static_cast<InstallMethod>(&RfnResidentialDevice::executeGetConfigVoltageAveragingInterval));
 
     return m;
 }
 
-const RfnDevice::InstallMap & RfnConsumerDevice::getPutConfigInstallMap() const
+const RfnDevice::InstallMap & RfnResidentialDevice::getPutConfigInstallMap() const
 {
     return _putConfigInstallMap;
 }
 
-const RfnDevice::InstallMap & RfnConsumerDevice::getGetConfigInstallMap() const
+const RfnDevice::InstallMap & RfnResidentialDevice::getGetConfigInstallMap() const
 {
     return _getConfigInstallMap;
 }
@@ -94,7 +94,7 @@ typename Map::mapped_type getConfigData( const Map & configMap, const std::strin
 
 } // anonymous namespace
 
-int RfnConsumerDevice::executePutConfigVoltageAveragingInterval( CtiRequestMsg     * pReq,
+int RfnResidentialDevice::executePutConfigVoltageAveragingInterval( CtiRequestMsg     * pReq,
                                                                  CtiCommandParser  & parse,
                                                                  CtiMessageList    & retList,
                                                                  RfnCommandList    & rfnRequests )
@@ -196,27 +196,25 @@ int RfnConsumerDevice::executePutConfigVoltageAveragingInterval( CtiRequestMsg  
         }
     }
 
-    rfnRequests.push_back(
-        boost::make_shared<Commands::RfnVoltageProfileConfigurationCommand>( boost::ref(*this),
-                                                                             *configSettings.demandInterval,
-                                                                             *configSettings.loadProfileInterval ) );
+    rfnRequests.push_back( boost::make_shared<Commands::RfnVoltageProfileSetConfigurationCommand>( *configSettings.demandInterval,
+                                                                                                   *configSettings.loadProfileInterval ) );
 
     return NoError;
 }
 
 
-int RfnConsumerDevice::executeGetConfigVoltageAveragingInterval( CtiRequestMsg     * pReq,
+int RfnResidentialDevice::executeGetConfigVoltageAveragingInterval( CtiRequestMsg     * pReq,
                                                                  CtiCommandParser  & parse,
                                                                  CtiMessageList    & retList,
                                                                  RfnCommandList    & rfnRequests )
 {
-    // TODO
+    rfnRequests.push_back( boost::make_shared<Commands::RfnVoltageProfileGetConfigurationCommand>() );
 
-    return NoMethod;
+    return NoError;
 }
 
 
-int RfnConsumerDevice::executeLoadProfileRecording( CtiRequestMsg     * pReq,
+int RfnResidentialDevice::executeLoadProfileRecording( CtiRequestMsg     * pReq,
                                                     CtiCommandParser  & parse,
                                                     CtiMessageList    & retList,
                                                     RfnCommandList    & rfnRequests )
@@ -228,18 +226,18 @@ int RfnConsumerDevice::executeLoadProfileRecording( CtiRequestMsg     * pReq,
         Commands::RfnLoadProfileRecordingCommand::RecordingOption option =
             Commands::RfnLoadProfileRecordingCommand::DisableRecording;  // get from parse...
 
-        rfnRequests.push_back( boost::make_shared<Commands::RfnLoadProfileRecordingCommand>( boost::ref(*this), option ) );
+        rfnRequests.push_back( boost::make_shared<Commands::RfnLoadProfileSetRecordingCommand>( option ) );
     }
     else    // reading the state of recording from the device
     {
-        rfnRequests.push_back( boost::make_shared<Commands::RfnLoadProfileRecordingCommand>( boost::ref(*this) ) );
+        rfnRequests.push_back( boost::make_shared<Commands::RfnLoadProfileGetRecordingCommand>() );
     }
 
     return NoError;
 }
 
 
-int RfnConsumerDevice::executePutConfigDemandFreezeDay( CtiRequestMsg     * pReq,
+int RfnResidentialDevice::executePutConfigDemandFreezeDay( CtiRequestMsg     * pReq,
                                                         CtiCommandParser  & parse,
                                                         CtiMessageList    & retList,
                                                         RfnCommandList    & rfnRequests )
@@ -309,7 +307,7 @@ int RfnConsumerDevice::executePutConfigDemandFreezeDay( CtiRequestMsg     * pReq
 }
 
 
-int RfnConsumerDevice::executeImmediateDemandFreeze( CtiRequestMsg     * pReq,
+int RfnResidentialDevice::executeImmediateDemandFreeze( CtiRequestMsg     * pReq,
                                                      CtiCommandParser  & parse,
                                                      CtiMessageList    & retList,
                                                      RfnCommandList    & rfnRequests )
@@ -320,7 +318,7 @@ int RfnConsumerDevice::executeImmediateDemandFreeze( CtiRequestMsg     * pReq,
 }
 
 
-int RfnConsumerDevice::executeReadDemandFreezeInfo( CtiRequestMsg     * pReq,
+int RfnResidentialDevice::executeReadDemandFreezeInfo( CtiRequestMsg     * pReq,
                                                     CtiCommandParser  & parse,
                                                     CtiMessageList    & retList,
                                                     RfnCommandList    & rfnRequests )
@@ -331,7 +329,7 @@ int RfnConsumerDevice::executeReadDemandFreezeInfo( CtiRequestMsg     * pReq,
 }
 
 
-int RfnConsumerDevice::executeTouCriticalPeak( CtiRequestMsg     * pReq,
+int RfnResidentialDevice::executeTouCriticalPeak( CtiRequestMsg     * pReq,
                                                CtiCommandParser  & parse,
                                                CtiMessageList    & retList,
                                                RfnCommandList    & rfnRequests )
@@ -375,7 +373,7 @@ int RfnConsumerDevice::executeTouCriticalPeak( CtiRequestMsg     * pReq,
 /**
  * Execute putconfig tou schedule
  */
-int RfnConsumerDevice::executePutConfigTou( CtiRequestMsg     * pReq,
+int RfnResidentialDevice::executePutConfigTou( CtiRequestMsg     * pReq,
                                             CtiCommandParser  & parse,
                                             CtiMessageList    & retList,
                                             RfnCommandList    & rfnRequests )
@@ -486,7 +484,7 @@ int RfnConsumerDevice::executePutConfigTou( CtiRequestMsg     * pReq,
 /**
  * Execute getconfig schedule
  */
-int RfnConsumerDevice::executeGetConfigTou( CtiRequestMsg     * pReq,
+int RfnResidentialDevice::executeGetConfigTou( CtiRequestMsg     * pReq,
                                             CtiCommandParser  & parse,
                                             CtiMessageList    & retList,
                                             RfnCommandList    & rfnRequests )
@@ -499,7 +497,7 @@ int RfnConsumerDevice::executeGetConfigTou( CtiRequestMsg     * pReq,
 /**
  * Execute putconfig holiday
  */
-int RfnConsumerDevice::executePutConfigHoliday( CtiRequestMsg     * pReq,
+int RfnResidentialDevice::executePutConfigHoliday( CtiRequestMsg     * pReq,
                                                 CtiCommandParser  & parse,
                                                 CtiMessageList    & retList,
                                                 RfnCommandList    & rfnRequests )
@@ -557,7 +555,7 @@ int RfnConsumerDevice::executePutConfigHoliday( CtiRequestMsg     * pReq,
 /**
  * Execute putconfig install tou
  */
-int RfnConsumerDevice::executePutConfigInstallTou( CtiRequestMsg     * pReq,
+int RfnResidentialDevice::executePutConfigInstallTou( CtiRequestMsg     * pReq,
                                                    CtiCommandParser  & parse,
                                                    CtiMessageList    & retList,
                                                    RfnCommandList    & rfnRequests )
@@ -774,7 +772,7 @@ const TouScheduleCompareKeysMap touScheduleCompareKeys = boost::assign::map_list
  * Check if the tou schedule from the config equals the dynamic info.
  * Throws MissingConfigDataException() if no config data exist
  */
-bool RfnConsumerDevice::isTouConfigCurrent( const Config::DeviceConfigSPtr &deviceConfig, std::map<std::string, std::string> &configMap )
+bool RfnResidentialDevice::isTouConfigCurrent( const Config::DeviceConfigSPtr &deviceConfig, std::map<std::string, std::string> &configMap )
 {
     bool bConfigCurrent = true;
 
@@ -796,7 +794,7 @@ bool RfnConsumerDevice::isTouConfigCurrent( const Config::DeviceConfigSPtr &devi
     return bConfigCurrent;
 }
 
-int RfnConsumerDevice::executeGetConfigInstallTou( CtiRequestMsg     * pReq,
+int RfnResidentialDevice::executeGetConfigInstallTou( CtiRequestMsg     * pReq,
                                                    CtiCommandParser  & parse,
                                                    CtiMessageList    & retList,
                                                    RfnCommandList    & rfnRequests )
@@ -810,7 +808,7 @@ int RfnConsumerDevice::executeGetConfigInstallTou( CtiRequestMsg     * pReq,
 /**
  * Execute getconfig holiday
  */
-int RfnConsumerDevice::executeGetConfigHoliday( CtiRequestMsg     * pReq,
+int RfnResidentialDevice::executeGetConfigHoliday( CtiRequestMsg     * pReq,
                                                 CtiCommandParser  & parse,
                                                 CtiMessageList    & retList,
                                                 RfnCommandList    & rfnRequests )
@@ -820,14 +818,14 @@ int RfnConsumerDevice::executeGetConfigHoliday( CtiRequestMsg     * pReq,
     return NoError;
 }
 
-void RfnConsumerDevice::handleResult( const Commands::RfnVoltageProfileConfigurationCommand & cmd )
+void RfnResidentialDevice::handleResult( const Commands::RfnVoltageProfileGetConfigurationCommand & cmd )
 {
     setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DemandInterval,      cmd.getDemandIntervalSeconds() );
     setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_LoadProfileInterval, cmd.getLoadProfileIntervalMinutes() );
 }
 
 
-void RfnConsumerDevice::handleResult( const Commands::RfnLoadProfileRecordingCommand & cmd )
+void RfnResidentialDevice::handleResult( const Commands::RfnLoadProfileGetRecordingCommand & cmd )
 {
     // TBD
 
@@ -835,7 +833,7 @@ void RfnConsumerDevice::handleResult( const Commands::RfnLoadProfileRecordingCom
 }
 
 
-void RfnConsumerDevice::handleResult( const Commands::RfnGetDemandFreezeInfoCommand & cmd )
+void RfnResidentialDevice::handleResult( const Commands::RfnGetDemandFreezeInfoCommand & cmd )
 {
     // TBD
 
@@ -843,7 +841,7 @@ void RfnConsumerDevice::handleResult( const Commands::RfnGetDemandFreezeInfoComm
 }
 
 
-void RfnConsumerDevice::handleResult( const Commands::RfnTouScheduleConfigurationCommand & cmd )
+void RfnResidentialDevice::handleResult( const Commands::RfnTouScheduleConfigurationCommand & cmd )
 {
     using Commands::RfnTouScheduleConfigurationCommand;
 
@@ -985,7 +983,7 @@ void RfnConsumerDevice::handleResult( const Commands::RfnTouScheduleConfiguratio
 }
 
 
-void RfnConsumerDevice::handleResult( const Commands::RfnTouHolidayConfigurationCommand & cmd )
+void RfnResidentialDevice::handleResult( const Commands::RfnTouHolidayConfigurationCommand & cmd )
 {
     using Commands::RfnTouHolidayConfigurationCommand;
 

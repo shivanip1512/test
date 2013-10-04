@@ -13,7 +13,7 @@ namespace Devices    {
 namespace Commands   {
 
 
-namespace   {
+namespace   { // anonymous namespace
 
 const std::map<unsigned char, std::string>  statusResolver = boost::assign::map_list_of
     ( 0, "Success")
@@ -29,20 +29,22 @@ void validateCondition( const bool condition,
                         const int error_code,
                         const std::string & error_message )
 {
-    if ( ! condition )
+    if( ! condition )
     {
         throw RfnCommand::CommandException( error_code, error_message );
     }
 }
 
+} // anonymous namespace
 
-}
 
+//
+// Load Profile Command Base Class
+//
 
 RfnLoadProfileCommand::RfnLoadProfileCommand( const Operation operation )
-    : _operation( operation )
+    :   _operation( operation )
 {
-
 }
 
 
@@ -111,26 +113,76 @@ RfnCommand::RfnResult RfnLoadProfileCommand::decodeResponseHeader( const CtiTime
 }
 
 
-////
+//
+// Voltage Profile Configuration Base Class
+//
 
-
-RfnVoltageProfileConfigurationCommand::RfnVoltageProfileConfigurationCommand( ResultHandler & rh )
-    :   RfnLoadProfileCommand( Operation_GetConfiguration ),
-        _rh( rh ),
-        _demandInterval( 0x00 ),
-        _loadProfileInterval( 0x00 )
+RfnVoltageProfileConfigurationCommand::RfnVoltageProfileConfigurationCommand( const Operation op )
+    :   RfnLoadProfileCommand(op)
 {
-
 }
 
 
-RfnVoltageProfileConfigurationCommand::RfnVoltageProfileConfigurationCommand( ResultHandler & rh,
-                                                                              const unsigned demand_interval_seconds,
-                                                                              const unsigned load_profile_interval_minutes )
-    :   RfnLoadProfileCommand( Operation_SetConfiguration ),
-        _rh( rh ),
+//
+// Voltage Profile Get Configuration
+//
+
+RfnVoltageProfileGetConfigurationCommand::RfnVoltageProfileGetConfigurationCommand()
+    :   RfnVoltageProfileConfigurationCommand( Operation_GetConfiguration ),
         _demandInterval( 0x00 ),
         _loadProfileInterval( 0x00 )
+{
+}
+
+
+RfnCommand::RfnResult RfnVoltageProfileGetConfigurationCommand::decodeCommand( const CtiTime now,
+                                                                               const RfnResponse & response )
+{
+    RfnResult result = decodeResponseHeader( now, response );
+
+    validateCondition( response.size() == 8,
+                       ErrorInvalidData, "Invalid Response length (" + CtiNumStr(response.size()) + ")" );
+
+    validateCondition( response[3] == 1,
+                       ErrorInvalidData, "Invalid TLV count (" + CtiNumStr(response[3]) + ")" );
+
+    validateCondition( response[4] == 0x01,
+                       ErrorInvalidData, "Invalid TLV type (" + CtiNumStr(response[4]) + ")" );
+
+    validateCondition( response[5] == 2,
+                       ErrorInvalidData, "Invalid TLV length (" + CtiNumStr(response[5]) + ")" );
+
+    _demandInterval      = response[6];
+    _loadProfileInterval = response[7];
+
+    result.description += "\nVoltage Demand interval: " + CtiNumStr(getDemandIntervalSeconds()) + " seconds";
+    result.description += "\nLoad Profile Demand interval: " + CtiNumStr(getLoadProfileIntervalMinutes()) + " minutes";
+
+    return result;
+}
+
+
+unsigned RfnVoltageProfileGetConfigurationCommand::getDemandIntervalSeconds() const
+{
+    return SecondsPerInterval * _demandInterval;
+}
+
+
+unsigned RfnVoltageProfileGetConfigurationCommand::getLoadProfileIntervalMinutes() const
+{
+    return _loadProfileInterval;
+}
+
+
+//
+// Voltage profile set configuration
+//
+
+RfnVoltageProfileSetConfigurationCommand::RfnVoltageProfileSetConfigurationCommand( const unsigned demand_interval_seconds,
+                                                                                    const unsigned load_profile_interval_minutes )
+    :   RfnVoltageProfileConfigurationCommand( Operation_SetConfiguration ),
+        _demandInterval( demand_interval_seconds / SecondsPerInterval ),
+        _loadProfileInterval( load_profile_interval_minutes )
 {
     validateCondition( demand_interval_seconds >= (1 * SecondsPerInterval),
                        BADPARAM, "Invalid Voltage Demand Interval: (" + CtiNumStr(demand_interval_seconds) +
@@ -151,176 +203,203 @@ RfnVoltageProfileConfigurationCommand::RfnVoltageProfileConfigurationCommand( Re
     validateCondition( load_profile_interval_minutes <= 255,
                        BADPARAM, "Invalid Load Profile Demand Interval: (" + CtiNumStr(load_profile_interval_minutes) +
                                     ") overflow (maximum: 255)" );
-
-    _demandInterval      = demand_interval_seconds / SecondsPerInterval;
-    _loadProfileInterval = load_profile_interval_minutes;
 }
 
-
-RfnVoltageProfileConfigurationCommand::TlvList RfnVoltageProfileConfigurationCommand::getTlvs()
+RfnLoadProfileCommand::TlvList RfnVoltageProfileSetConfigurationCommand::getTlvs()
 {
-    if ( _operation == Operation_SetConfiguration )
-    {
-        TypeLengthValue tlv(TlvType_VoltageProfileConfiguration);
+    TypeLengthValue tlv(TlvType_VoltageProfileConfiguration);
 
-        tlv.value.push_back( _demandInterval );
-        tlv.value.push_back( _loadProfileInterval );
+    tlv.value.push_back( _demandInterval );
+    tlv.value.push_back( _loadProfileInterval );
 
-        return boost::assign::list_of(tlv);
-    }
-
-    return TlvList();
+    return boost::assign::list_of(tlv);
 }
 
-
-RfnCommand::RfnResult RfnVoltageProfileConfigurationCommand::decodeCommand( const CtiTime now,
-                                                                            const RfnResponse & response )
+RfnCommand::RfnResult RfnVoltageProfileSetConfigurationCommand::decodeCommand( const CtiTime now,
+                                                                               const RfnResponse & response )
 {
     RfnResult result = decodeResponseHeader( now, response );
 
-    switch ( _operation )
-    {
-        case Operation_SetConfiguration:
-        {
-            validateCondition( response.size() == 4,
-                               ErrorInvalidData, "Invalid Response length (" + CtiNumStr(response.size()) + ")" );
+    validateCondition( response.size() == 4,
+                       ErrorInvalidData, "Invalid Response length (" + CtiNumStr(response.size()) + ")" );
 
-            validateCondition( response[3] == 0,
-                               ErrorInvalidData, "Invalid TLV count (" + CtiNumStr(response[3]) + ")" );
-            break;
-        }
-        case Operation_GetConfiguration:
-        {
-            validateCondition( response.size() == 8,
-                               ErrorInvalidData, "Invalid Response length (" + CtiNumStr(response.size()) + ")" );
-
-            validateCondition( response[3] == 1,
-                               ErrorInvalidData, "Invalid TLV count (" + CtiNumStr(response[3]) + ")" );
-
-            validateCondition( response[4] == 0x01,
-                               ErrorInvalidData, "Invalid TLV type (" + CtiNumStr(response[4]) + ")" );
-
-            validateCondition( response[5] == 2,
-                           ErrorInvalidData, "Invalid TLV length (" + CtiNumStr(response[5]) + ")" );
-
-            _demandInterval      = response[6];
-            _loadProfileInterval = response[7];
-
-            result.description += "\nVoltage Demand interval: " + CtiNumStr(getDemandIntervalSeconds()) + " seconds";
-            result.description += "\nLoad Profile Demand interval: " + CtiNumStr(getLoadProfileIntervalMinutes()) + " minutes";
-
-            break;
-        }
-        default:
-        {
-            throw CommandException( ErrorInvalidData,
-                                    "Missing decode for Operation (" + CtiNumStr(_operation).xhex(2) + ")" );
-        }
-    }
+    validateCondition( response[3] == 0,
+                       ErrorInvalidData, "Invalid TLV count (" + CtiNumStr(response[3]) + ")" );
 
     return result;
 }
 
 
-unsigned RfnVoltageProfileConfigurationCommand::getDemandIntervalSeconds() const
+//
+// Recording State Base Class
+//
+
+RfnLoadProfileRecordingCommand::RfnLoadProfileRecordingCommand( const Operation operation )
+    :   RfnLoadProfileCommand( operation )
 {
-    return SecondsPerInterval * _demandInterval;
 }
 
 
-unsigned RfnVoltageProfileConfigurationCommand::getLoadProfileIntervalMinutes() const
+//
+// Load Profile Get Recording State
+//
+
+RfnLoadProfileGetRecordingCommand::RfnLoadProfileGetRecordingCommand()
+    :   RfnLoadProfileRecordingCommand( Operation_GetLoadProfileRecordingState )
 {
-    return _loadProfileInterval;
 }
 
 
-////
-
-
-RfnLoadProfileRecordingCommand::RfnLoadProfileRecordingCommand( ResultHandler & rh )
-    :   RfnLoadProfileCommand( Operation_GetLoadProfileRecordingState ),
-        _rh( rh )
-{
-
-}
-
-
-RfnLoadProfileRecordingCommand::RfnLoadProfileRecordingCommand( ResultHandler & rh, const RecordingOption option )
-    :   RfnLoadProfileCommand( option == EnableRecording
-                               ? Operation_EnableLoadProfileRecording
-                               : Operation_DisableLoadProfileRecording ),
-        _rh( rh )
-{
-
-}
-
-
-RfnCommand::RfnResult RfnLoadProfileRecordingCommand::decodeCommand( const CtiTime now,
-                                                                     const RfnResponse & response )
+RfnCommand::RfnResult RfnLoadProfileGetRecordingCommand::decodeCommand( const CtiTime now,
+                                                                        const RfnResponse & response )
 {
     RfnResult result = decodeResponseHeader( now, response );
 
-    switch ( _operation )
-    {
-        case Operation_EnableLoadProfileRecording:
-        case Operation_DisableLoadProfileRecording:
-        {
-            validateCondition( response.size() == 4,
-                               ErrorInvalidData, "Invalid Response length (" + CtiNumStr(response.size()) + ")" );
+    validateCondition( response.size() == 7,
+                       ErrorInvalidData, "Invalid Response length (" + CtiNumStr(response.size()) + ")" );
 
-            validateCondition( response[3] == 0,
-                               ErrorInvalidData, "Invalid TLV count (" + CtiNumStr(response[3]) + ")" );
-            break;
-        }
-        case Operation_GetLoadProfileRecordingState:
-        {
-            validateCondition( response.size() == 7,
-                               ErrorInvalidData, "Invalid Response length (" + CtiNumStr(response.size()) + ")" );
+    validateCondition( response[3] == 1,
+                       ErrorInvalidData, "Invalid TLV count (" + CtiNumStr(response[3]) + ")" );
 
-            validateCondition( response[3] == 1,
-                               ErrorInvalidData, "Invalid TLV count (" + CtiNumStr(response[3]) + ")" );
+    validateCondition( response[4] == 0x02,
+                       ErrorInvalidData, "Invalid TLV type (" + CtiNumStr(response[4]) + ")" );
 
-            validateCondition( response[4] == 0x02,
-                               ErrorInvalidData, "Invalid TLV type (" + CtiNumStr(response[4]) + ")" );
+    validateCondition( response[5] == 1,
+                       ErrorInvalidData, "Invalid TLV length (" + CtiNumStr(response[5]) + ")" );
 
-            validateCondition( response[5] == 1,
-                               ErrorInvalidData, "Invalid TLV length (" + CtiNumStr(response[5]) + ")" );
+    boost::optional<std::string> state = Cti::mapFind( stateResolver, response[6] );
 
-            boost::optional<std::string> state = Cti::mapFind( stateResolver, response[6] );
+    validateCondition( state,
+                       ErrorInvalidData, "Invalid State (" + CtiNumStr(response[6]) + ")" );
 
-            validateCondition( state,
-                               ErrorInvalidData, "Invalid State (" + CtiNumStr(response[6]) + ")" );
+    _option = response[6] ? EnableRecording : DisableRecording;
 
-            _option = response[6] ? EnableRecording : DisableRecording;
-
-            result.description += "\nCurrent State: " + *state + " (" + CtiNumStr(response[6]) + ")";
-
-            break;
-        }
-        default:
-        {
-            throw CommandException( ErrorInvalidData,
-                                    "Missing decode for Operation (" + CtiNumStr(_operation).xhex(2) + ")" );
-        }
-    }
+    result.description += "\nCurrent State: " + *state + " (" + CtiNumStr(response[6]) + ")";
 
     return result;
 }
 
 
-RfnLoadProfileRecordingCommand::RecordingOption RfnLoadProfileRecordingCommand::getRecordingOption() const
+RfnLoadProfileRecordingCommand::RecordingOption RfnLoadProfileGetRecordingCommand::getRecordingOption() const
 {
     return _option;
 }
-////
+
+
+//
+// Load Profile Set Recording State
+//
+
+RfnLoadProfileSetRecordingCommand::RfnLoadProfileSetRecordingCommand( const RecordingOption option )
+    :   RfnLoadProfileRecordingCommand( option == EnableRecording
+                                                  ? Operation_EnableLoadProfileRecording
+                                                  : Operation_DisableLoadProfileRecording )
+{
+}
+
+
+RfnCommand::RfnResult RfnLoadProfileSetRecordingCommand::decodeCommand( const CtiTime now,
+                                                                        const RfnResponse & response )
+{
+    RfnResult result = decodeResponseHeader( now, response );
+
+    validateCondition( response.size() == 4,
+                       ErrorInvalidData, "Invalid Response length (" + CtiNumStr(response.size()) + ")" );
+
+    validateCondition( response[3] == 0,
+                       ErrorInvalidData, "Invalid TLV count (" + CtiNumStr(response[3]) + ")" );
+
+    return result;
+}
+
+
+//
+// Load Profile Read Points
+//
+
+namespace { // anonymous
+
+unsigned getDataFromBytes( const RfnCommand::Bytes & data, const unsigned offset, const unsigned size )
+{
+    unsigned const end = offset + size;
+    unsigned       val = data[offset];
+
+    for( unsigned pos = offset+1; pos < end; pos++ )
+    {
+        val = (val << 8) | data[pos];
+    }
+
+    return val;
+}
+
+enum PointOffset
+{
+    PointOffset_Analog = 214
+};
+
+enum PointStatus
+{
+    Ok = 0,
+    Long,
+    Failure,
+    Timeout
+};
+
+enum PointType
+{
+    Delta_8Bit = 0,
+    Delta_16Bit,
+    Absolute_32Bit,
+    Absolute_16Bit
+};
+
+struct PointTypeDesc
+{
+    std::string _description;
+    unsigned    _size;
+
+    PointTypeDesc( const std::string & description, const unsigned size )
+        :   _description(description),
+            _size(size)
+    {
+    }
+};
+
+struct PointStatusDesc
+{
+    std::string    _description;
+    PointQuality_t _quality;
+
+    PointStatusDesc( const std::string & description, PointQuality_t quality )
+        :   _description(description),
+            _quality(quality)
+    {
+    }
+};
+
+const std::map<unsigned, PointTypeDesc> pointTypeDescriptionMap = boost::assign::map_list_of
+    ( Delta_8Bit,     PointTypeDesc( "8-bit delta",     1 ))
+    ( Delta_16Bit,    PointTypeDesc( "16-bit delta",    2 ))
+    ( Absolute_32Bit, PointTypeDesc( "32-bit absolute", 4 ))
+    ( Absolute_16Bit, PointTypeDesc( "16-bit absolute", 2 ));
+
+const std::map<unsigned, PointStatusDesc> pointStatusDescriptionMap = boost::assign::map_list_of
+    ( Ok,      PointStatusDesc( "Ok",      NormalQuality  ))
+    ( Long,    PointStatusDesc( "Long",    InvalidQuality ))
+    ( Failure, PointStatusDesc( "Failure", InvalidQuality ))
+    ( Timeout, PointStatusDesc( "Timeout", InvalidQuality ));
+
+} // anonymous
 
 
 RfnLoadProfileReadPointsCommand::RfnLoadProfileReadPointsCommand( const CtiTime &now,
                                                                   const CtiDate begin,
-                                                                  const CtiDate end ) :
-    RfnLoadProfileCommand( Operation_GetLoadProfilePoints ),
-    _begin(begin),
-    _end(end)
+                                                                  const CtiDate end )
+    :   RfnLoadProfileCommand( Operation_GetLoadProfilePoints ),
+        _begin(begin),
+        _end(end),
+        _uomModifier1(0),
+        _uomModifier2(0)
 {
     validateCondition( _begin < _end,
                        BADPARAM, "End date must be before begin date (begin = " + _begin.asStringUSFormat() + ", end = " + _end.asStringUSFormat() + ")" );
@@ -356,162 +435,179 @@ RfnCommand::RfnResult RfnLoadProfileReadPointsCommand::decodeCommand( const CtiT
     validateCondition( ! tlvs.empty(),
                        ErrorInvalidData, "No TLVs in payload" );
 
-    const TypeLengthValue &tlv = tlvs[0];
+    const TypeLengthValue & tlv = tlvs[0];
 
     validateCondition( tlv.type == TlvType_GetProfilePointsResponse,
                        ErrorInvalidData, "Invalid TLV type received in response (" + CtiNumStr(tlv.type) + " != " + CtiNumStr(TlvType_GetProfilePointsResponse) + ")" );
 
-    const Bytes &lpPointDescriptor = tlv.value;
+    const Bytes & lpPointDescriptor = tlv.value;
+
+    unsigned pos = 0;
+    unsigned pointRecordCount = 0;
+
+    pos += decodePointsReportHeader( result, lpPointDescriptor, pointRecordCount);
+
+    for( int record_nbr=0 ; record_nbr< pointRecordCount; record_nbr++ )
+    {
+        pos += decodePointRecord( result, lpPointDescriptor, pos );
+    }
+
+    validateCondition( pos == lpPointDescriptor.size(),
+                       ErrorInvalidData, "Response TLV does not match expected size (" + CtiNumStr(lpPointDescriptor.size()) + ", expected " + CtiNumStr(pos) + ")" );
+
+    return result;
+}
+
+
+unsigned RfnLoadProfileReadPointsCommand::decodePointsReportHeader( RfnResult & result,
+                                                                    const Bytes & lpPointDescriptor,
+                                                                    unsigned & pointRecordCount )
+{
+    /*
+     * Load Profile Data Points report header
+     *
+     * Byte(1)      Channel Number
+     * Byte(1)      Unit of measure
+     * Byte(4 or 6) UOM modifiers (2 or 3 modifiers) ? is this a mistake : assuming Byte(4) UOM modifiers (2 modifiers)
+     * Byte(1)      Profile interval (minutes)
+     * Byte(1)      Number of profile point records
+     */
 
     unsigned pos = 0;
 
-    validateCondition( lpPointDescriptor.size() >= pos + 4,
-                       ErrorInvalidData, "Response TLV too small (" + CtiNumStr(lpPointDescriptor.size()) + " < " + CtiNumStr(pos + 4) + ")" );
+    validateCondition( lpPointDescriptor.size() >= 8,
+                       ErrorInvalidData, "Response TLV too small (" + CtiNumStr(lpPointDescriptor.size()) + " < 8)" );
 
-    //const unsigned channel = lpPointDescriptor[pos];  //  unused
-    pos++;
+    // Channel number
 
-    const unsigned uom = lpPointDescriptor[pos];
-    pos++;
+    pos++;  // unused
+
+    // Unit of measure
+
+    const unsigned uom = lpPointDescriptor[pos++];
 
     validateCondition( uom == Uom_Volts,
                        ErrorInvalidData, "Incorrect UOM returned (" + CtiNumStr(uom) + " != " + CtiNumStr(Uom_Volts) + ")" );
 
-    const UomModifier1 modifier = ntohs(*(reinterpret_cast<const unsigned short *>(&lpPointDescriptor[pos])));
-    pos++;
-    pos++;
+    // Uom modifier 1
 
-    boost::optional<UomModifier2> tmp_modifier2;
+    _uomModifier1 = (unsigned short)getDataFromBytes( lpPointDescriptor, pos, 2 );
+    pos += 2;
 
-    if( modifier.getExtensionBit() )
-    {
-        validateCondition( lpPointDescriptor.size() >= pos + 2,
-                           ErrorInvalidData, "Response TLV too small (" + CtiNumStr(lpPointDescriptor.size()) + " < " + CtiNumStr(pos + 2) + ")" );
+    validateCondition( _uomModifier1.getExtensionBit(),
+                       ErrorInvalidData, "Incorrect number of UOM modifiers (1, expecting 2)");
 
-        tmp_modifier2 = ntohs(*(reinterpret_cast<const unsigned short *>(&lpPointDescriptor[pos])));
-        pos++;
-        pos++;
-    }
+    // Uom modifier 2
 
-    const boost::optional<UomModifier2> modifier2 = tmp_modifier2;
+    _uomModifier2 = (unsigned short)getDataFromBytes( lpPointDescriptor, pos, 2 );
+    pos += 2;
 
-    validateCondition( lpPointDescriptor.size() >= pos + 2,
-                       ErrorInvalidData, "Response TLV too small (" + CtiNumStr(lpPointDescriptor.size()) + " < " + CtiNumStr(pos + 2) + ")" );
+    validateCondition( ! _uomModifier2.getExtensionBit(),
+                       ErrorInvalidData, "Incorrect number of UOM modifiers (>2, expecting 2)");
 
-    const unsigned profileInterval = lpPointDescriptor[pos];
-    pos++;
+    // Profile interval
 
-    validateCondition( profileInterval,
+    _profileInterval = lpPointDescriptor[pos++];
+
+    validateCondition( _profileInterval,
                        ErrorInvalidData, "Zero-length profile interval returned" );
 
-    const unsigned profilePointRecordCount = lpPointDescriptor[pos];
-    pos++;
+    // Number of profile point records
 
-    for( unsigned record = 0; record < profilePointRecordCount; ++record )
+    pointRecordCount = lpPointDescriptor[pos++];
+
+    return pos; // return the size of the point report header
+}
+
+
+unsigned RfnLoadProfileReadPointsCommand::decodePointRecord( RfnResult & result,
+                                                             const Bytes & lpPointDescriptor,
+                                                             const unsigned offset )
+{
+    /*
+     * Load Profile  Point Record
+     *
+     * Byte[0..3]    Timestamp of first point
+     * Byte[4]       Point type
+     *                 0 – 8 bit delta
+     *                 1 – 16 bit delta
+     *                 2 – 32 bit absolute
+     *                 3 – 16 bit absolute
+     *
+     * Byte[5]       # of points in this record
+     * Byte[6..N]    Array of point values status points
+     *               (1, 2 or 4 byte)  Point value
+     *               (1 byte)Point Status
+     *                 0 – OK
+     *                 1 – Long
+     *                 2 – Failure
+     *                 3 - Timeout
+     */
+
+    unsigned pos = offset;
+
+    validateCondition( lpPointDescriptor.size() >= pos + 6,
+                       ErrorInvalidData, "Response TLV too small (" + CtiNumStr(lpPointDescriptor.size()) + " < " + CtiNumStr(pos + 6) + ")" );
+
+    // Timestamp
+
+    unsigned long timestamp = getDataFromBytes( lpPointDescriptor, pos, 4 );
+    pos += 4;
+
+    // Point type
+
+    const unsigned pointType = lpPointDescriptor[pos++];
+
+    boost::optional<PointTypeDesc> pointTypeDesc = mapFind( pointTypeDescriptionMap, pointType );
+
+    validateCondition( pointTypeDesc,
+                       ErrorInvalidData, "Invalid point type (" + CtiNumStr(pointType) + ")" );
+
+    const unsigned value_size = pointTypeDesc->_size;
+
+    // Number of points in the record
+
+    const unsigned pointCount = lpPointDescriptor[pos++];
+
+    // Array of points
+
+    for(int point_nbr=0; point_nbr < pointCount; point_nbr++)
     {
-        std::vector<unsigned> readings;
+        validateCondition( lpPointDescriptor.size() >= pos + value_size + 1,
+                           ErrorInvalidData, "Response TLV too small (" + CtiNumStr(lpPointDescriptor.size()) + " < " + CtiNumStr(pos + value_size + 1) + ")" );
 
-        long reading = 0;
+        // Point value
 
-        validateCondition( lpPointDescriptor.size() >= pos + 6,
-                           ErrorInvalidData, "Response TLV too small (" + CtiNumStr(lpPointDescriptor.size()) + " < " + CtiNumStr(pos + 6) + ")" );
+        double value = getDataFromBytes( lpPointDescriptor, pos, value_size );
+        pos += value_size;
 
-        const unsigned timestamp = ntohl(*(reinterpret_cast<const unsigned *>(&lpPointDescriptor[pos])));
-        pos++;
-        pos++;
-        pos++;
-        pos++;
+        // Point status
 
-        const unsigned pointType = *(reinterpret_cast<const unsigned *>(&lpPointDescriptor[pos]));
-        pos++;
+        const unsigned status = lpPointDescriptor[pos++];
 
-        const unsigned pointCount = *(reinterpret_cast<const unsigned *>(&lpPointDescriptor[pos]));
-        pos++;
+        boost::optional<PointStatusDesc> pointStatusDesc = mapFind(pointStatusDescriptionMap, status);
 
-        enum PointType
-        {
-            Delta_8Bit,
-            Delta_16Bit,
-            Absolute_32Bit,
-            Absolute_16Bit
-        };
+        validateCondition( pointStatusDesc,
+                           ErrorInvalidData, "Invalid point status (" + CtiNumStr(status) + ")" );
 
-        switch( pointType )
-        {
-            case Delta_8Bit:
-            {
-                validateCondition( lpPointDescriptor.size() >= (pos + pointCount * 1),
-                                   ErrorInvalidData, "Response TLV too small (" + CtiNumStr(lpPointDescriptor.size()) + " < " + CtiNumStr(pos + pointCount * 1) + ")" );
+        point_data point;
 
-                for( unsigned point = 0; point < pointCount; ++point )
-                {
-                    readings.push_back(
-                        reading += static_cast<char>(lpPointDescriptor[pos]));
+        point.value       = value;
+        point.quality     = pointStatusDesc->_quality;
+        point.freeze_bit  = false;
+        point.description = "";
 
-                    pos++;
-                }
+        point.type        = AnalogPointType;
+        point.offset      = PointOffset_Analog;
+        point.name        = "";
+        point.time        = CtiTime( timestamp );
 
-                break;
-            }
-            case Delta_16Bit:
-            {
-                validateCondition( lpPointDescriptor.size() >= (pos + pointCount * 2),
-                                   ErrorInvalidData, "Response TLV too small (" + CtiNumStr(lpPointDescriptor.size()) + " < " + CtiNumStr(pos + pointCount * 2) + ")" );
+        result.points.push_back( point );
 
-                for( unsigned point = 0; point < pointCount; ++point )
-                {
-                    readings.push_back(
-                       reading += ntohs(*(reinterpret_cast<const short *>(&lpPointDescriptor[pos]))));
-
-                    pos++;
-                    pos++;
-                }
-
-                break;
-            }
-            case Absolute_16Bit:
-            {
-                validateCondition( lpPointDescriptor.size() >= (pos + pointCount * 2),
-                                   ErrorInvalidData, "Response TLV too small (" + CtiNumStr(lpPointDescriptor.size()) + " < " + CtiNumStr(pos + pointCount * 2) + ")" );
-
-                for( unsigned point = 0; point < pointCount; ++point )
-                {
-                    readings.push_back(
-                        reading = ntohs(*(reinterpret_cast<const short *>(&lpPointDescriptor[pos]))));
-
-                    pos++;
-                    pos++;
-                }
-
-                break;
-            }
-            case Absolute_32Bit:
-            {
-                validateCondition( lpPointDescriptor.size() >= (pos + pointCount * 4),
-                                   ErrorInvalidData, "Response TLV too small (" + CtiNumStr(lpPointDescriptor.size()) + " < " + CtiNumStr(pos + pointCount * 4) + ")" );
-
-                for( unsigned point = 0; point < pointCount; ++point )
-                {
-                    readings.push_back(
-                        reading = ntohl(*(reinterpret_cast<const long *>(&lpPointDescriptor[pos]))));
-
-                    pos++;
-                    pos++;
-                    pos++;
-                    pos++;
-                }
-
-                break;
-            }
-        }
-
-        for each( unsigned reading in readings )
-        {
-
-        }
+        timestamp += _profileInterval;
     }
 
-    return result;
+    return (pos - offset); // return the size of the point record
 }
 
 

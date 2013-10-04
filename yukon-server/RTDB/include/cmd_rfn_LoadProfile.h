@@ -9,7 +9,9 @@ namespace Devices    {
 namespace Commands   {
 
 
-
+/**
+ * Load Profile Command Base Class
+ */
 class IM_EX_DEVDB RfnLoadProfileCommand : public RfnCommand
 {
 protected:
@@ -48,7 +50,7 @@ protected:
 
     typedef std::vector< TypeLengthValue > TlvList;
 
-    virtual TlvList getTlvs( void );
+    virtual TlvList getTlvs();
 
     const Operation _operation;
 
@@ -65,32 +67,37 @@ public:
 };
 
 
-////
-
-
+/**
+ * Voltage Profile Configuration Base Class
+ */
 class IM_EX_DEVDB RfnVoltageProfileConfigurationCommand : public RfnLoadProfileCommand
 {
-protected:
-
-    virtual TlvList getTlvs( void );
+public:
 
     enum
     {
         SecondsPerInterval = 15
     };
 
+protected:
+
+    RfnVoltageProfileConfigurationCommand( const Operation operation );
+};
+
+
+/**
+ * Voltage Profile Get Configuration
+ */
+class IM_EX_DEVDB RfnVoltageProfileGetConfigurationCommand : public RfnVoltageProfileConfigurationCommand
+{
 public:
 
     struct ResultHandler
     {
-        virtual void handleResult( const RfnVoltageProfileConfigurationCommand & cmd ) = 0;
+        virtual void handleResult( const RfnVoltageProfileGetConfigurationCommand & cmd ) = 0;
     };
 
-    RfnVoltageProfileConfigurationCommand( ResultHandler & rh );
-
-    RfnVoltageProfileConfigurationCommand( ResultHandler & rh,
-                                           const unsigned demand_interval_seconds,
-                                           const unsigned load_profile_interval_minutes );
+    RfnVoltageProfileGetConfigurationCommand();
 
     virtual RfnResult decodeCommand( const CtiTime now,
                                      const RfnResponse & response );
@@ -100,19 +107,40 @@ public:
 
 private:
 
-    ResultHandler & _rh;
-
-    unsigned char _demandInterval,
-                  _loadProfileInterval;
+    unsigned _demandInterval,
+             _loadProfileInterval;
 };
 
 
-////
+/**
+ * Voltage Profile Set Configuration
+ */
+class IM_EX_DEVDB RfnVoltageProfileSetConfigurationCommand : public RfnVoltageProfileConfigurationCommand
+{
+public:
+
+    RfnVoltageProfileSetConfigurationCommand( const unsigned demand_interval_seconds,
+                                              const unsigned load_profile_interval_minutes );
+
+    virtual RfnResult decodeCommand( const CtiTime now,
+                                     const RfnResponse & response );
+
+protected:
+
+    virtual TlvList getTlvs();
+
+private:
+
+    const unsigned _demandInterval,
+                   _loadProfileInterval;
+};
 
 
+/**
+ * Recording State Base Class
+ */
 class IM_EX_DEVDB RfnLoadProfileRecordingCommand : public RfnLoadProfileCommand
 {
-
 public:
 
     enum RecordingOption
@@ -121,14 +149,25 @@ public:
         EnableRecording
     };
 
+protected:
+
+    RfnLoadProfileRecordingCommand( const Operation operation );
+};
+
+
+/**
+ * Load Profile Recording Get State
+ */
+class IM_EX_DEVDB RfnLoadProfileGetRecordingCommand : public RfnLoadProfileRecordingCommand
+{
+public:
+
     struct ResultHandler
     {
-        virtual void handleResult( const RfnLoadProfileRecordingCommand & cmd ) = 0;
+        virtual void handleResult( const RfnLoadProfileGetRecordingCommand & cmd ) = 0;
     };
 
-    RfnLoadProfileRecordingCommand( ResultHandler & rh );
-
-    RfnLoadProfileRecordingCommand( ResultHandler & rh, const RecordingOption option );
+    RfnLoadProfileGetRecordingCommand();
 
     virtual RfnResult decodeCommand( const CtiTime now,
                                      const RfnResponse & response );
@@ -137,24 +176,29 @@ public:
 
 private:
 
-    ResultHandler & _rh;
-
     RecordingOption _option;
 };
 
 
-////
+/**
+ * Load Profile Recording Set State
+ */
+class IM_EX_DEVDB RfnLoadProfileSetRecordingCommand : public RfnLoadProfileRecordingCommand
+{
+public:
+
+    RfnLoadProfileSetRecordingCommand( const RecordingOption option );
+
+    virtual RfnResult decodeCommand( const CtiTime now,
+                                     const RfnResponse & response );
+};
 
 
+/**
+ * Load Profile Read Points
+ */
 class IM_EX_DEVDB RfnLoadProfileReadPointsCommand : public RfnLoadProfileCommand
 {
-    const CtiDate _begin;
-    const CtiDate _end;
-
-protected:
-
-    virtual TlvList getTlvs( void );
-
 public:
 
     RfnLoadProfileReadPointsCommand( const CtiTime &now,
@@ -163,6 +207,27 @@ public:
 
     virtual RfnResult decodeCommand( const CtiTime now,
                                      const RfnResponse & response );
+
+protected:
+
+    virtual TlvList getTlvs();
+
+private:
+
+    const CtiDate _begin;
+    const CtiDate _end;
+
+    UomModifier1  _uomModifier1;
+    UomModifier2  _uomModifier2;
+    unsigned      _profileInterval;
+
+    unsigned decodePointsReportHeader( RfnResult & result,
+                                       const Bytes & lpPointDescriptor,
+                                       unsigned & pointRecordCount );
+
+    unsigned decodePointRecord( RfnResult & result,
+                                const Bytes & lpPointDescriptor,
+                                const unsigned offset );
 };
 
 

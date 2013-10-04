@@ -1,7 +1,7 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/assign/list_of.hpp>
 
-#include "dev_rfnConsumer.h"
+#include "dev_rfnResidential.h"
 #include "cmd_rfn.h"
 #include "config_data_rfn.h"
 #include "mgr_config.h"
@@ -10,9 +10,9 @@
 using namespace Cti::Devices;
 using namespace Cti::Config;
 
-struct test_RfnConsumerDevice : RfnConsumerDevice
+struct test_RfnResidentialDevice : RfnResidentialDevice
 {
-    using RfnConsumerDevice::handleResult;
+    using RfnResidentialDevice::handleResult;
 };
 
 struct test_state_rfnConsumer
@@ -70,11 +70,11 @@ const CtiTime execute_time( CtiDate( 27, 8, 2013 ) , 15 );
 const CtiTime decode_time ( CtiDate( 27, 8, 2013 ) , 16 );
 
 
-BOOST_FIXTURE_TEST_SUITE( test_dev_rfnConsumer, test_state_rfnConsumer )
+BOOST_FIXTURE_TEST_SUITE( test_dev_rfnResidential, test_state_rfnConsumer )
 
-BOOST_AUTO_TEST_CASE( test_dev_rfnConsumer_putconfig_tou_schedule )
+BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_schedule )
 {
-    test_RfnConsumerDevice dut;
+    test_RfnResidentialDevice dut;
 
     CtiCommandParser parse("putconfig tou 13242313 "
                            "schedule 1 a/00:00 b/00:01 c/10:06 d/12:22 a/23:33 b/23:44 "
@@ -120,9 +120,9 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnConsumer_putconfig_tou_schedule )
                                    exp.begin() , exp.end() );
 }
 
-BOOST_AUTO_TEST_CASE( test_dev_rfnConsumer_putconfig_tou_schedule_badparam )
+BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_schedule_badparam )
 {
-    test_RfnConsumerDevice dut;
+    test_RfnResidentialDevice dut;
 
     // test wrong switch time order
     {
@@ -263,9 +263,9 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnConsumer_putconfig_tou_schedule_badparam )
     }
 }
 
-BOOST_AUTO_TEST_CASE( test_dev_rfnConsumer_putconfig_tou_enable )
+BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_enable )
 {
-    test_RfnConsumerDevice dut;
+    test_RfnResidentialDevice dut;
 
     CtiCommandParser parse("putconfig tou enable");
 
@@ -284,9 +284,9 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnConsumer_putconfig_tou_enable )
                                    exp.begin() , exp.end() );
 }
 
-BOOST_AUTO_TEST_CASE( test_dev_rfnConsumer_putconfig_tou_disable )
+BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_disable )
 {
-    test_RfnConsumerDevice dut;
+    test_RfnResidentialDevice dut;
 
     CtiCommandParser parse("putconfig tou disable");
 
@@ -305,9 +305,9 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnConsumer_putconfig_tou_disable )
                                    exp.begin() , exp.end() );
 }
 
-BOOST_AUTO_TEST_CASE( test_dev_rfnConsumer_getconfig_tou_schedule )
+BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_getconfig_tou_schedule )
 {
-    test_RfnConsumerDevice dut;
+    test_RfnResidentialDevice dut;
 
     CtiCommandParser parse("getconfig tou");
 
@@ -326,9 +326,9 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnConsumer_getconfig_tou_schedule )
                                    exp.begin() , exp.end() );
 }
 
-BOOST_AUTO_TEST_CASE( test_dev_rfnConsumer_putconfig_tou_install )
+BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_install )
 {
-    test_RfnConsumerDevice dut;
+    test_RfnResidentialDevice dut;
 
     test_DeviceConfig cfg;
 
@@ -578,11 +578,11 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnConsumer_putconfig_tou_install )
     }
 }
 
-BOOST_AUTO_TEST_CASE( test_dev_rfnConsumer_putconfig_tou_holiday )
+BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_holiday )
 {
     Cti::Test::set_to_central_timezone();
 
-    test_RfnConsumerDevice dut;
+    test_RfnResidentialDevice dut;
 
     CtiCommandParser parse("putconfig emetcon holiday 02/01/2025 06/14/2036 12/30/2050");
 
@@ -606,9 +606,9 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnConsumer_putconfig_tou_holiday )
                                    exp.begin() , exp.end() );
 }
 
-BOOST_AUTO_TEST_CASE( test_dev_rfnConsumer_putconfig_tou_holiday_active )
+BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_holiday_active )
 {
-    test_RfnConsumerDevice dut;
+    test_RfnResidentialDevice dut;
 
     CtiCommandParser parse("putconfig emetcon holiday active");
 
@@ -627,9 +627,9 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnConsumer_putconfig_tou_holiday_active )
                                    exp.begin() , exp.end() );
 }
 
-BOOST_AUTO_TEST_CASE( test_dev_rfnConsumer_putconfig_tou_holiday_cancel )
+BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_holiday_cancel )
 {
-    test_RfnConsumerDevice dut;
+    test_RfnResidentialDevice dut;
 
     CtiCommandParser parse("putconfig emetcon holiday cancel");
 
@@ -649,9 +649,9 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnConsumer_putconfig_tou_holiday_cancel )
 
 }
 
-BOOST_AUTO_TEST_CASE( test_dev_rfnConsumer_getconfig_tou_holiday )
+BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_getconfig_tou_holiday )
 {
-    test_RfnConsumerDevice dut;
+    test_RfnResidentialDevice dut;
 
     CtiCommandParser parse("getconfig emetcon holiday");
 

@@ -10,10 +10,10 @@ namespace Cti       {
 namespace Devices   {
 
 
-class IM_EX_DEVDB RfnConsumerDevice
+class IM_EX_DEVDB RfnResidentialDevice
     :   public RfnDevice,
-        public Commands::RfnVoltageProfileConfigurationCommand::ResultHandler,
-        public Commands::RfnLoadProfileRecordingCommand::ResultHandler,
+        public Commands::RfnVoltageProfileGetConfigurationCommand::ResultHandler,
+        public Commands::RfnLoadProfileGetRecordingCommand::ResultHandler,
         public Commands::RfnGetDemandFreezeInfoCommand::ResultHandler,
         public Commands::RfnTouScheduleConfigurationCommand::ResultHandler,
         public Commands::RfnTouHolidayConfigurationCommand::ResultHandler
@@ -47,8 +47,8 @@ protected:
     int executeGetConfigInstallTou               (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
     int executeGetConfigVoltageAveragingInterval (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
 
-    void handleResult( const Commands::RfnVoltageProfileConfigurationCommand & cmd );
-    void handleResult( const Commands::RfnLoadProfileRecordingCommand & cmd );
+    void handleResult( const Commands::RfnVoltageProfileGetConfigurationCommand & cmd );
+    void handleResult( const Commands::RfnLoadProfileGetRecordingCommand & cmd );
     void handleResult( const Commands::RfnGetDemandFreezeInfoCommand & cmd );
     void handleResult( const Commands::RfnTouScheduleConfigurationCommand & cmd );
     void handleResult( const Commands::RfnTouHolidayConfigurationCommand & cmd );

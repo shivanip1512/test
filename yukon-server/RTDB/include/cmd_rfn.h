@@ -107,6 +107,11 @@ protected:
         {
         }
 
+        bool getExtensionBit() const
+        {
+            return _uomModifier2 & 0x8000;
+        }
+
         double getScalingFactor() const
         {
             switch( (_uomModifier2 & 0x1c0) >> 6 )

@@ -88,7 +88,7 @@ test_dev_mct440_213xb.obj \
 test_dev_mct440_2131b.obj \
 test_dev_mct440_2132b.obj \
 test_dev_mct440_2133b.obj \
-test_dev_rfnConsumer.obj \
+test_dev_rfnResidential.obj \
 test_dev_rfn420centron.obj \
 test_dev_rtm.obj \
 test_dev_rds.obj \
