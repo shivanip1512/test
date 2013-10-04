@@ -9,32 +9,32 @@ namespace Config {
 
 struct IM_EX_CONFIG RfnStrings
 {
-    static const std::string displayMetric01;
-    static const std::string displayMetric02;
-    static const std::string displayMetric03;
-    static const std::string displayMetric04;
-    static const std::string displayMetric05;
-    static const std::string displayMetric06;
-    static const std::string displayMetric07;
-    static const std::string displayMetric08;
-    static const std::string displayMetric09;
-    static const std::string displayMetric10;
-    static const std::string displayMetric11;
-    static const std::string displayMetric12;
-    static const std::string displayMetric13;
-    static const std::string displayMetric14;
-    static const std::string displayMetric15;
-    static const std::string displayMetric16;
-    static const std::string displayMetric17;
-    static const std::string displayMetric18;
-    static const std::string displayMetric19;
-    static const std::string displayMetric20;
-    static const std::string displayMetric21;
-    static const std::string displayMetric22;
-    static const std::string displayMetric23;
-    static const std::string displayMetric24;
-    static const std::string displayMetric25;
-    static const std::string displayMetric26;
+    static const std::string displayItem01;
+    static const std::string displayItem02;
+    static const std::string displayItem03;
+    static const std::string displayItem04;
+    static const std::string displayItem05;
+    static const std::string displayItem06;
+    static const std::string displayItem07;
+    static const std::string displayItem08;
+    static const std::string displayItem09;
+    static const std::string displayItem10;
+    static const std::string displayItem11;
+    static const std::string displayItem12;
+    static const std::string displayItem13;
+    static const std::string displayItem14;
+    static const std::string displayItem15;
+    static const std::string displayItem16;
+    static const std::string displayItem17;
+    static const std::string displayItem18;
+    static const std::string displayItem19;
+    static const std::string displayItem20;
+    static const std::string displayItem21;
+    static const std::string displayItem22;
+    static const std::string displayItem23;
+    static const std::string displayItem24;
+    static const std::string displayItem25;
+    static const std::string displayItem26;
 
     // focus alphanumeric display items
     static const std::string displayAlphameric1;
@@ -70,7 +70,7 @@ struct IM_EX_CONFIG RfnStrings
     static const std::string DefaultTouRate;
 
     // schedule 1
-    static const std::string Schedule1MidnightRate;
+    static const std::string Schedule1Rate0;
     static const std::string Schedule1Time1;
     static const std::string Schedule1Rate1;
     static const std::string Schedule1Time2;
@@ -83,7 +83,7 @@ struct IM_EX_CONFIG RfnStrings
     static const std::string Schedule1Rate5;
 
     // schedule 2
-    static const std::string Schedule2MidnightRate;
+    static const std::string Schedule2Rate0;
     static const std::string Schedule2Time1;
     static const std::string Schedule2Rate1;
     static const std::string Schedule2Time2;
@@ -96,7 +96,7 @@ struct IM_EX_CONFIG RfnStrings
     static const std::string Schedule2Rate5;
 
     // schedule 3
-    static const std::string Schedule3MidnightRate;
+    static const std::string Schedule3Rate0;
     static const std::string Schedule3Time1;
     static const std::string Schedule3Rate1;
     static const std::string Schedule3Time2;
@@ -109,7 +109,7 @@ struct IM_EX_CONFIG RfnStrings
     static const std::string Schedule3Rate5;
 
     // schedule 4
-    static const std::string Schedule4MidnightRate;
+    static const std::string Schedule4Rate0;
     static const std::string Schedule4Time1;
     static const std::string Schedule4Rate1;
     static const std::string Schedule4Time2;

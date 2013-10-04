@@ -175,32 +175,32 @@ const string DNPStrings::enableDnpTimesyncs = "enableDnpTimesyncs";
 const string DNPStrings::useLocalTime = "localTime";
 
 /* RFN */
-const string RfnStrings::displayMetric01 = "displayMetric1";
-const string RfnStrings::displayMetric02 = "displayMetric2";
-const string RfnStrings::displayMetric03 = "displayMetric3";
-const string RfnStrings::displayMetric04 = "displayMetric4";
-const string RfnStrings::displayMetric05 = "displayMetric5";
-const string RfnStrings::displayMetric06 = "displayMetric6";
-const string RfnStrings::displayMetric07 = "displayMetric7";
-const string RfnStrings::displayMetric08 = "displayMetric8";
-const string RfnStrings::displayMetric09 = "displayMetric9";
-const string RfnStrings::displayMetric10 = "displayMetric10";
-const string RfnStrings::displayMetric11 = "displayMetric11";
-const string RfnStrings::displayMetric12 = "displayMetric12";
-const string RfnStrings::displayMetric13 = "displayMetric13";
-const string RfnStrings::displayMetric14 = "displayMetric14";
-const string RfnStrings::displayMetric15 = "displayMetric15";
-const string RfnStrings::displayMetric16 = "displayMetric16";
-const string RfnStrings::displayMetric17 = "displayMetric17";
-const string RfnStrings::displayMetric18 = "displayMetric18";
-const string RfnStrings::displayMetric19 = "displayMetric19";
-const string RfnStrings::displayMetric20 = "displayMetric20";
-const string RfnStrings::displayMetric21 = "displayMetric21";
-const string RfnStrings::displayMetric22 = "displayMetric22";
-const string RfnStrings::displayMetric23 = "displayMetric23";
-const string RfnStrings::displayMetric24 = "displayMetric24";
-const string RfnStrings::displayMetric25 = "displayMetric25";
-const string RfnStrings::displayMetric26 = "displayMetric26";
+const string RfnStrings::displayItem01 = "displayItem1";
+const string RfnStrings::displayItem02 = "displayItem2";
+const string RfnStrings::displayItem03 = "displayItem3";
+const string RfnStrings::displayItem04 = "displayItem4";
+const string RfnStrings::displayItem05 = "displayItem5";
+const string RfnStrings::displayItem06 = "displayItem6";
+const string RfnStrings::displayItem07 = "displayItem7";
+const string RfnStrings::displayItem08 = "displayItem8";
+const string RfnStrings::displayItem09 = "displayItem9";
+const string RfnStrings::displayItem10 = "displayItem10";
+const string RfnStrings::displayItem11 = "displayItem11";
+const string RfnStrings::displayItem12 = "displayItem12";
+const string RfnStrings::displayItem13 = "displayItem13";
+const string RfnStrings::displayItem14 = "displayItem14";
+const string RfnStrings::displayItem15 = "displayItem15";
+const string RfnStrings::displayItem16 = "displayItem16";
+const string RfnStrings::displayItem17 = "displayItem17";
+const string RfnStrings::displayItem18 = "displayItem18";
+const string RfnStrings::displayItem19 = "displayItem19";
+const string RfnStrings::displayItem20 = "displayItem20";
+const string RfnStrings::displayItem21 = "displayItem21";
+const string RfnStrings::displayItem22 = "displayItem22";
+const string RfnStrings::displayItem23 = "displayItem23";
+const string RfnStrings::displayItem24 = "displayItem24";
+const string RfnStrings::displayItem25 = "displayItem25";
+const string RfnStrings::displayItem26 = "displayItem26";
 
 // focus display alphanumeric items
 const string RfnStrings::displayAlphameric1    = "displayAlphameric1";
@@ -218,7 +218,7 @@ const string RfnStrings::displayAlphameric10   = "displayAlphameric10";
 const string RfnStrings::displayItemDuration   = "displayItemDuration";
 
 const string RfnStrings::demandInterval         = "demandInterval";
-const string RfnStrings::loadProfileInterval    = "loadProfileInterval";
+const string RfnStrings::loadProfileInterval    = "loadProfileInterval1";
 
 const string RfnStrings::demandFreezeDay    = "demandFreezeDay";
 
@@ -236,7 +236,7 @@ const string RfnStrings::HolidaySchedule       = "holiday";
 const string RfnStrings::DefaultTouRate        = "defaultRate";
 
 // schedule 1
-const string RfnStrings::Schedule1MidnightRate = "schedule1MidnightRate";
+const string RfnStrings::Schedule1Rate0        = "schedule1Rate0";
 const string RfnStrings::Schedule1Time1        = "schedule1Time1";
 const string RfnStrings::Schedule1Rate1        = "schedule1Rate1";
 const string RfnStrings::Schedule1Time2        = "schedule1Time2";
@@ -249,7 +249,7 @@ const string RfnStrings::Schedule1Time5        = "schedule1Time5";
 const string RfnStrings::Schedule1Rate5        = "schedule1Rate5";
 
 // schedule 2
-const string RfnStrings::Schedule2MidnightRate = "schedule2MidnightRate";
+const string RfnStrings::Schedule2Rate0        = "schedule2Rate0";
 const string RfnStrings::Schedule2Time1        = "schedule2Time1";
 const string RfnStrings::Schedule2Rate1        = "schedule2Rate1";
 const string RfnStrings::Schedule2Time2        = "schedule2Time2";
@@ -262,7 +262,7 @@ const string RfnStrings::Schedule2Time5        = "schedule2Time5";
 const string RfnStrings::Schedule2Rate5        = "schedule2Rate5";
 
 // schedule 3
-const string RfnStrings::Schedule3MidnightRate = "schedule3MidnightRate";
+const string RfnStrings::Schedule3Rate0        = "schedule3Rate0";
 const string RfnStrings::Schedule3Time1        = "schedule3Time1";
 const string RfnStrings::Schedule3Rate1        = "schedule3Rate1";
 const string RfnStrings::Schedule3Time2        = "schedule3Time2";
@@ -275,7 +275,7 @@ const string RfnStrings::Schedule3Time5        = "schedule3Time5";
 const string RfnStrings::Schedule3Rate5        = "schedule3Rate5";
 
 // schedule 4
-const string RfnStrings::Schedule4MidnightRate = "schedule4MidnightRate";
+const string RfnStrings::Schedule4Rate0        = "schedule4Rate0";
 const string RfnStrings::Schedule4Time1        = "schedule4Time1";
 const string RfnStrings::Schedule4Rate1        = "schedule4Rate1";
 const string RfnStrings::Schedule4Time2        = "schedule4Time2";

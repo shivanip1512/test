@@ -38,16 +38,16 @@ const std::vector<CtiDeviceBase::PaoInfoKeys> displayAlphaPaoKeys = boost::assig
     ( CtiTableDynamicPaoInfo::Key_DisplayAlphameric10 );
 
 const std::vector<std::string> displayMetricConfigKeys = boost::assign::list_of
-    ( Config::RfnStrings::displayMetric01 )
-    ( Config::RfnStrings::displayMetric02 )
-    ( Config::RfnStrings::displayMetric03 )
-    ( Config::RfnStrings::displayMetric04 )
-    ( Config::RfnStrings::displayMetric05 )
-    ( Config::RfnStrings::displayMetric06 )
-    ( Config::RfnStrings::displayMetric07 )
-    ( Config::RfnStrings::displayMetric08 )
-    ( Config::RfnStrings::displayMetric09 )
-    ( Config::RfnStrings::displayMetric10 );
+    ( Config::RfnStrings::displayItem01 )
+    ( Config::RfnStrings::displayItem02 )
+    ( Config::RfnStrings::displayItem03 )
+    ( Config::RfnStrings::displayItem04 )
+    ( Config::RfnStrings::displayItem05 )
+    ( Config::RfnStrings::displayItem06 )
+    ( Config::RfnStrings::displayItem07 )
+    ( Config::RfnStrings::displayItem08 )
+    ( Config::RfnStrings::displayItem09 )
+    ( Config::RfnStrings::displayItem10 );
 
 const std::vector<std::string> displayAlphamericConfigKeys = boost::assign::list_of
     ( Config::RfnStrings::displayAlphameric1 )

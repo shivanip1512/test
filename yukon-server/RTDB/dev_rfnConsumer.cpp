@@ -614,33 +614,33 @@ int RfnConsumerDevice::executePutConfigInstallTou( CtiRequestMsg     * pReq,
                                                        schedule3_rates(6),
                                                        schedule4_rates(6);
 
-        schedule1_rates[0] = getConfigData( configMap, RfnStrings::Schedule1MidnightRate );
-        schedule1_rates[1] = getConfigData( configMap, RfnStrings::Schedule1Rate1        );
-        schedule1_rates[2] = getConfigData( configMap, RfnStrings::Schedule1Rate2        );
-        schedule1_rates[3] = getConfigData( configMap, RfnStrings::Schedule1Rate3        );
-        schedule1_rates[4] = getConfigData( configMap, RfnStrings::Schedule1Rate4        );
-        schedule1_rates[5] = getConfigData( configMap, RfnStrings::Schedule1Rate5        );
+        schedule1_rates[0] = getConfigData( configMap, RfnStrings::Schedule1Rate0 );
+        schedule1_rates[1] = getConfigData( configMap, RfnStrings::Schedule1Rate1 );
+        schedule1_rates[2] = getConfigData( configMap, RfnStrings::Schedule1Rate2 );
+        schedule1_rates[3] = getConfigData( configMap, RfnStrings::Schedule1Rate3 );
+        schedule1_rates[4] = getConfigData( configMap, RfnStrings::Schedule1Rate4 );
+        schedule1_rates[5] = getConfigData( configMap, RfnStrings::Schedule1Rate5 );
 
-        schedule2_rates[0] = getConfigData( configMap, RfnStrings::Schedule2MidnightRate );
-        schedule2_rates[1] = getConfigData( configMap, RfnStrings::Schedule2Rate1        );
-        schedule2_rates[2] = getConfigData( configMap, RfnStrings::Schedule2Rate2        );
-        schedule2_rates[3] = getConfigData( configMap, RfnStrings::Schedule2Rate3        );
-        schedule2_rates[4] = getConfigData( configMap, RfnStrings::Schedule2Rate4        );
-        schedule2_rates[5] = getConfigData( configMap, RfnStrings::Schedule2Rate5        );
+        schedule2_rates[0] = getConfigData( configMap, RfnStrings::Schedule2Rate0 );
+        schedule2_rates[1] = getConfigData( configMap, RfnStrings::Schedule2Rate1 );
+        schedule2_rates[2] = getConfigData( configMap, RfnStrings::Schedule2Rate2 );
+        schedule2_rates[3] = getConfigData( configMap, RfnStrings::Schedule2Rate3 );
+        schedule2_rates[4] = getConfigData( configMap, RfnStrings::Schedule2Rate4 );
+        schedule2_rates[5] = getConfigData( configMap, RfnStrings::Schedule2Rate5 );
 
-        schedule3_rates[0] = getConfigData( configMap, RfnStrings::Schedule3MidnightRate );
-        schedule3_rates[1] = getConfigData( configMap, RfnStrings::Schedule3Rate1        );
-        schedule3_rates[2] = getConfigData( configMap, RfnStrings::Schedule3Rate2        );
-        schedule3_rates[3] = getConfigData( configMap, RfnStrings::Schedule3Rate3        );
-        schedule3_rates[4] = getConfigData( configMap, RfnStrings::Schedule3Rate4        );
-        schedule3_rates[5] = getConfigData( configMap, RfnStrings::Schedule3Rate5        );
+        schedule3_rates[0] = getConfigData( configMap, RfnStrings::Schedule3Rate0 );
+        schedule3_rates[1] = getConfigData( configMap, RfnStrings::Schedule3Rate1 );
+        schedule3_rates[2] = getConfigData( configMap, RfnStrings::Schedule3Rate2 );
+        schedule3_rates[3] = getConfigData( configMap, RfnStrings::Schedule3Rate3 );
+        schedule3_rates[4] = getConfigData( configMap, RfnStrings::Schedule3Rate4 );
+        schedule3_rates[5] = getConfigData( configMap, RfnStrings::Schedule3Rate5 );
 
-        schedule4_rates[0] = getConfigData( configMap, RfnStrings::Schedule4MidnightRate );
-        schedule4_rates[1] = getConfigData( configMap, RfnStrings::Schedule4Rate1        );
-        schedule4_rates[2] = getConfigData( configMap, RfnStrings::Schedule4Rate2        );
-        schedule4_rates[3] = getConfigData( configMap, RfnStrings::Schedule4Rate3        );
-        schedule4_rates[4] = getConfigData( configMap, RfnStrings::Schedule4Rate4        );
-        schedule4_rates[5] = getConfigData( configMap, RfnStrings::Schedule4Rate5        );
+        schedule4_rates[0] = getConfigData( configMap, RfnStrings::Schedule4Rate0 );
+        schedule4_rates[1] = getConfigData( configMap, RfnStrings::Schedule4Rate1 );
+        schedule4_rates[2] = getConfigData( configMap, RfnStrings::Schedule4Rate2 );
+        schedule4_rates[3] = getConfigData( configMap, RfnStrings::Schedule4Rate3 );
+        schedule4_rates[4] = getConfigData( configMap, RfnStrings::Schedule4Rate4 );
+        schedule4_rates[5] = getConfigData( configMap, RfnStrings::Schedule4Rate5 );
 
         schedule_to_send._rates[RfnTouScheduleConfigurationCommand::Schedule1] = schedule1_rates;
         schedule_to_send._rates[RfnTouScheduleConfigurationCommand::Schedule2] = schedule2_rates;
@@ -718,55 +718,55 @@ const TouScheduleCompareKeysMap touScheduleCompareKeys = boost::assign::map_list
     ( CtiTableDynamicPaoInfo::Key_RFN_SundaySchedule,        RfnStrings::SundaySchedule        )
     ( CtiTableDynamicPaoInfo::Key_RFN_HolidaySchedule,       RfnStrings::HolidaySchedule       )
     // default rate
-    ( CtiTableDynamicPaoInfo::Key_RFN_DefaultTOURate,        RfnStrings::DefaultTouRate        )
+    ( CtiTableDynamicPaoInfo::Key_RFN_DefaultTOURate, RfnStrings::DefaultTouRate )
     // schedule 1
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1MidnightRate, RfnStrings::Schedule1MidnightRate )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time1,        RfnStrings::Schedule1Time1        )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate1,        RfnStrings::Schedule1Rate1        )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time2,        RfnStrings::Schedule1Time2        )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate2,        RfnStrings::Schedule1Rate2        )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time3,        RfnStrings::Schedule1Time3        )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate3,        RfnStrings::Schedule1Rate3        )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time4,        RfnStrings::Schedule1Time4        )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate4,        RfnStrings::Schedule1Rate4        )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time5,        RfnStrings::Schedule1Time5        )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate5,        RfnStrings::Schedule1Rate5        )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate0, RfnStrings::Schedule1Rate0 )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time1, RfnStrings::Schedule1Time1 )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate1, RfnStrings::Schedule1Rate1 )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time2, RfnStrings::Schedule1Time2 )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate2, RfnStrings::Schedule1Rate2 )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time3, RfnStrings::Schedule1Time3 )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate3, RfnStrings::Schedule1Rate3 )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time4, RfnStrings::Schedule1Time4 )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate4, RfnStrings::Schedule1Rate4 )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time5, RfnStrings::Schedule1Time5 )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate5, RfnStrings::Schedule1Rate5 )
     // schedule 2
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2MidnightRate, RfnStrings::Schedule2MidnightRate )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Time1,        RfnStrings::Schedule2Time1        )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate1,        RfnStrings::Schedule2Rate1        )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Time2,        RfnStrings::Schedule2Time2        )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate2,        RfnStrings::Schedule2Rate2        )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Time3,        RfnStrings::Schedule2Time3        )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate3,        RfnStrings::Schedule2Rate3        )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Time4,        RfnStrings::Schedule2Time4        )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate4,        RfnStrings::Schedule2Rate4        )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Time5,        RfnStrings::Schedule2Time5        )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate5,        RfnStrings::Schedule2Rate5        )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate0, RfnStrings::Schedule2Rate0 )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Time1, RfnStrings::Schedule2Time1 )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate1, RfnStrings::Schedule2Rate1 )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Time2, RfnStrings::Schedule2Time2 )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate2, RfnStrings::Schedule2Rate2 )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Time3, RfnStrings::Schedule2Time3 )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate3, RfnStrings::Schedule2Rate3 )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Time4, RfnStrings::Schedule2Time4 )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate4, RfnStrings::Schedule2Rate4 )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Time5, RfnStrings::Schedule2Time5 )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate5, RfnStrings::Schedule2Rate5 )
     // schedule 3
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3MidnightRate, RfnStrings::Schedule3MidnightRate )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Time1,        RfnStrings::Schedule3Time1        )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate1,        RfnStrings::Schedule3Rate1        )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Time2,        RfnStrings::Schedule3Time2        )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate2,        RfnStrings::Schedule3Rate2        )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Time3,        RfnStrings::Schedule3Time3        )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate3,        RfnStrings::Schedule3Rate3        )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Time4,        RfnStrings::Schedule3Time4        )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate4,        RfnStrings::Schedule3Rate4        )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Time5,        RfnStrings::Schedule3Time5        )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate5,        RfnStrings::Schedule3Rate5        )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate0, RfnStrings::Schedule3Rate0 )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Time1, RfnStrings::Schedule3Time1 )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate1, RfnStrings::Schedule3Rate1 )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Time2, RfnStrings::Schedule3Time2 )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate2, RfnStrings::Schedule3Rate2 )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Time3, RfnStrings::Schedule3Time3 )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate3, RfnStrings::Schedule3Rate3 )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Time4, RfnStrings::Schedule3Time4 )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate4, RfnStrings::Schedule3Rate4 )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Time5, RfnStrings::Schedule3Time5 )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate5, RfnStrings::Schedule3Rate5 )
     // schedule 4
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4MidnightRate, RfnStrings::Schedule4MidnightRate )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Time1,        RfnStrings::Schedule4Time1        )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate1,        RfnStrings::Schedule4Rate1        )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Time2,        RfnStrings::Schedule4Time2        )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate2,        RfnStrings::Schedule4Rate2        )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Time3,        RfnStrings::Schedule4Time3        )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate3,        RfnStrings::Schedule4Rate3        )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Time4,        RfnStrings::Schedule4Time4        )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate4,        RfnStrings::Schedule4Rate4        )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Time5,        RfnStrings::Schedule4Time5        )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate5,        RfnStrings::Schedule4Rate5        );
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate0, RfnStrings::Schedule4Rate0 )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Time1, RfnStrings::Schedule4Time1 )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate1, RfnStrings::Schedule4Rate1 )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Time2, RfnStrings::Schedule4Time2 )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate2, RfnStrings::Schedule4Rate2 )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Time3, RfnStrings::Schedule4Time3 )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate3, RfnStrings::Schedule4Rate3 )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Time4, RfnStrings::Schedule4Time4 )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate4, RfnStrings::Schedule4Rate4 )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Time5, RfnStrings::Schedule4Time5 )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate5, RfnStrings::Schedule4Rate5 );
 
 } // anonymous namespace
 
@@ -887,48 +887,48 @@ void RfnConsumerDevice::handleResult( const Commands::RfnTouScheduleConfiguratio
         rates = mapFind( schedule_received->_rates, RfnTouScheduleConfigurationCommand::Schedule1);
         if( rates && rates->size() == 6 )
         {
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule1MidnightRate, (*rates)[0] );
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate1,        (*rates)[1] );
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate2,        (*rates)[2] );
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate3,        (*rates)[3] );
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate4,        (*rates)[4] );
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate5,        (*rates)[5] );
+            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate0, (*rates)[0] );
+            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate1, (*rates)[1] );
+            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate2, (*rates)[2] );
+            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate3, (*rates)[3] );
+            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate4, (*rates)[4] );
+            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate5, (*rates)[5] );
         }
 
         // schedule 2
         rates = mapFind( schedule_received->_rates, RfnTouScheduleConfigurationCommand::Schedule2);
         if( rates && rates->size() == 6 )
         {
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule2MidnightRate, (*rates)[0] );
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate1,        (*rates)[1] );
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate2,        (*rates)[2] );
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate3,        (*rates)[3] );
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate4,        (*rates)[4] );
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate5,        (*rates)[5] );
+            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate0, (*rates)[0] );
+            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate1, (*rates)[1] );
+            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate2, (*rates)[2] );
+            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate3, (*rates)[3] );
+            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate4, (*rates)[4] );
+            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate5, (*rates)[5] );
         }
 
         // schedule 3
         rates = mapFind( schedule_received->_rates, RfnTouScheduleConfigurationCommand::Schedule3);
         if( rates && rates->size() == 6 )
         {
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule3MidnightRate, (*rates)[0] );
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate1,        (*rates)[1] );
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate2,        (*rates)[2] );
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate3,        (*rates)[3] );
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate4,        (*rates)[4] );
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate5,        (*rates)[5] );
+            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate0, (*rates)[0] );
+            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate1, (*rates)[1] );
+            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate2, (*rates)[2] );
+            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate3, (*rates)[3] );
+            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate4, (*rates)[4] );
+            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate5, (*rates)[5] );
         }
 
         // schedule 3
         rates = mapFind( schedule_received->_rates, RfnTouScheduleConfigurationCommand::Schedule4);
         if( rates && rates->size() == 6 )
         {
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule4MidnightRate, (*rates)[0] );
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate1,        (*rates)[1] );
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate2,        (*rates)[2] );
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate3,        (*rates)[3] );
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate4,        (*rates)[4] );
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate5,        (*rates)[5] );
+            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate0, (*rates)[0] );
+            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate1, (*rates)[1] );
+            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate2, (*rates)[2] );
+            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate3, (*rates)[3] );
+            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate4, (*rates)[4] );
+            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate5, (*rates)[5] );
         }
     }
 

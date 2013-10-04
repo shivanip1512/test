@@ -252,7 +252,7 @@ public:
 
         Key_RFN_DefaultTOURate,
 
-        Key_RFN_Schedule1MidnightRate,
+        Key_RFN_Schedule1Rate0,
         Key_RFN_Schedule1Time1,
         Key_RFN_Schedule1Rate1,
         Key_RFN_Schedule1Time2,
@@ -264,7 +264,7 @@ public:
         Key_RFN_Schedule1Time5,
         Key_RFN_Schedule1Rate5,
 
-        Key_RFN_Schedule2MidnightRate,
+        Key_RFN_Schedule2Rate0,
         Key_RFN_Schedule2Time1,
         Key_RFN_Schedule2Rate1,
         Key_RFN_Schedule2Time2,
@@ -276,7 +276,7 @@ public:
         Key_RFN_Schedule2Time5,
         Key_RFN_Schedule2Rate5,
 
-        Key_RFN_Schedule3MidnightRate,
+        Key_RFN_Schedule3Rate0,
         Key_RFN_Schedule3Time1,
         Key_RFN_Schedule3Rate1,
         Key_RFN_Schedule3Time2,
@@ -288,7 +288,7 @@ public:
         Key_RFN_Schedule3Time5,
         Key_RFN_Schedule3Rate5,
 
-        Key_RFN_Schedule4MidnightRate,
+        Key_RFN_Schedule4Rate0,
         Key_RFN_Schedule4Time1,
         Key_RFN_Schedule4Rate1,
         Key_RFN_Schedule4Time2,
