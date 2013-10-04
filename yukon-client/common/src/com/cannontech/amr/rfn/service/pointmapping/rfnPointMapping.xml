@@ -1961,6 +1961,23 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
+        
+        <point name="Outage Count">
+            <uom>Outage Count</uom>
+            <modifiers match="equal"/> 
+        </point>
+        <point name="Outage Restore Count">
+            <uom>Restore Count</uom>
+            <modifiers match="equal"/> 
+        </point>
+        <point name="Blink Count">
+            <uom>Outage Blink Count</uom>
+            <modifiers match="equal"/> 
+        </point>
+        <point name="Blink Restore Count">
+            <uom>Restore Blink Count</uom>
+            <modifiers match="equal"/> 
+        </point>
     </pointGroup>
     
     <!-- ITRON SENTINEL LEVEL 1 -->
