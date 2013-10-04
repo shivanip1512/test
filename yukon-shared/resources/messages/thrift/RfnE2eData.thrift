@@ -7,20 +7,35 @@ struct RfnIdentifier {
     3: required string sensorSerialNumber;
 }
 
+enum RfnE2eProtocol {
+    APPLICATION = 0x00,
+    NETWORK = 0x01,
+    LINK = 0x02,
+    //...
+}
+
+enum RfnE2eMessagePriority {
+    APP_LO = 0x00,
+    APP_HI = 0x01,
+    //...
+}
+
 struct RfnE2eDataRequest {
-    1: required     string        applicationServiceId;
-    2: required     RfnIdentifier rfnIdentifier;
-    3: required     i32           priority;
-    4: optional     string        security;
-    5: required     binary        payload;
+    1: required     RfnE2eProtocol        e2eProtocol;
+    2: required     byte                  applicationServiceId;
+    3: required     RfnIdentifier         rfnIdentifier;
+    4: required     RfnE2eMessagePriority priority;
+    5: optional     string                security;
+    6: required     binary                payload;
 }
 
 struct RfnE2eDataIndication {
-    1: required     string        applicationServiceId;
-    2: required     RfnIdentifier rfnIdentifier;
-    3: required     i32           priority;
-    4: optional     string        security;
-    5: required     binary        payload;
+    1: required     RfnE2eProtocol        e2eProtocol;
+    2: required     byte                  applicationServiceId;
+    3: required     RfnIdentifier         rfnIdentifier;
+    4: required     RfnE2eMessagePriority priority;
+    5: optional     string                security;
+    6: required     binary                payload;
 }
 
 enum RfnE2eDataReplyType {
@@ -31,12 +46,14 @@ enum RfnE2eDataReplyType {
     E2E_PROTOCOL_TYPE_NOT_SUPPORTED        = 0x04,
     NETWORK_SERVER_IDENTIFIER_INVALID      = 0x05,
     APPLICATION_SERVICE_IDENTIFIER_INVALID = 0x06,
-    NETWORK_LOAD_CONTROL = 0x07,
+    NETWORK_LOAD_CONTROL                   = 0x07,
+    NETWORK_SERVICE_FAILURE                = 0x08,
     //...
 }
 
 struct RfnE2eDataConfirm {
-    1: required     string              applicationServiceId;
-    2: required     RfnIdentifier       rfnIdentifier;
-    3: required     RfnE2eDataReplyType replyType;
+    1: required     RfnE2eProtocol        e2eProtocol;
+    2: required     byte                  applicationServiceId;
+    3: required     RfnIdentifier         rfnIdentifier;
+    4: required     RfnE2eDataReplyType   replyType;
 }
