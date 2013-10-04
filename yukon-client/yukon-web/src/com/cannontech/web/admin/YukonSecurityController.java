@@ -49,7 +49,6 @@ import com.cannontech.web.util.WebFileUtils;
 
 @Controller
 @CheckRoleProperty(YukonRoleProperty.ADMIN_SUPER_USER)
-@RequestMapping("/security/*")
 public class YukonSecurityController {
     
     @Autowired private EncryptedRouteDao encryptedRouteDao;
@@ -139,14 +138,14 @@ public class YukonSecurityController {
         }
     };
 
-    @RequestMapping("view")
+    @RequestMapping("/config/security/view")
     public String view(HttpServletRequest request, ModelMap model, 
                        FlashScope flashScope, YukonUserContext userContext) {
         model.addAttribute("showDialog", "");
         return view(request, model, new EncryptedRoute(), new EncryptionKey(), new FileImportBindingBean(), flashScope, userContext);
     }
 
-    public String view(HttpServletRequest request, ModelMap model, 
+    private String view(HttpServletRequest request, ModelMap model, 
                        EncryptedRoute encryptedRoute, EncryptionKey encryptionKey, 
                        FileImportBindingBean fileImportBindingBean, FlashScope flashScope,
                        YukonUserContext userContext) {
@@ -192,7 +191,7 @@ public class YukonSecurityController {
         return "security/view.jsp";
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "saveNewKey")
+    @RequestMapping(method = RequestMethod.POST, value = "/config/security/saveNewKey")
     public String saveNewKey(HttpServletRequest request, ModelMap model,
                              EncryptionKey encryptionKey, BindingResult bindingResult,
                              FlashScope flashScope, YukonUserContext userContext) throws IOException, CryptoException, JDOMException, DecoderException {
@@ -215,7 +214,7 @@ public class YukonSecurityController {
         return "redirect:view";
     }
 
-    @RequestMapping("remove")
+    @RequestMapping("/config/security/remove")
     public String remove(HttpServletRequest request, ModelMap model, EncryptedRoute encryptedRoute,
                          BindingResult bindingResult, FlashScope flashScope,
                          YukonUserContext userContext) {
@@ -240,13 +239,13 @@ public class YukonSecurityController {
         return "redirect:view";
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "add")
+    @RequestMapping(method = RequestMethod.GET, value = "/config/security/add")
     public String getRedirect(HttpServletRequest request, ModelMap model, EncryptedRoute encryptedRoute,
                               BindingResult bindingResult, FlashScope flashScope) {
         return "redirect:view";
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "add")
+    @RequestMapping(method = RequestMethod.POST, value = "/config/security/add")
     public String add(HttpServletRequest request, ModelMap model, EncryptedRoute encryptedRoute,
                       BindingResult bindingResult, FlashScope flashScope,
                       YukonUserContext userContext) {
@@ -276,7 +275,7 @@ public class YukonSecurityController {
     }
 
 
-    @RequestMapping(method = RequestMethod.POST, value = "deleteKey")
+    @RequestMapping(method = RequestMethod.POST, value = "/config/security/deleteKey")
     public String deleteKey(HttpServletRequest request, ModelMap model, 
                             FlashScope flashScope, Integer encryptionKeyId,
                             YukonUserContext userContext) {
@@ -295,7 +294,7 @@ public class YukonSecurityController {
         return "redirect:view";
     }
 
-    @RequestMapping(value = "getPublicKey")
+    @RequestMapping(value = "/config/security/getPublicKey")
     @ResponseBody 
     public String getPublicKey(HttpServletRequest request, ModelMap model, FlashScope flashScope, YukonUserContext userContext) 
                                        throws CryptoException, ServletRequestBindingException {
@@ -323,7 +322,7 @@ public class YukonSecurityController {
         return publicKeyJsonObj.toString();
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "importKeyFile")
+    @RequestMapping(method = RequestMethod.POST, value = "/config/security/importKeyFile")
     public String importKeyFile(HttpServletRequest request, ModelMap model, FileImportBindingBean fileImportBindingBean,
                                 BindingResult bindingResult, FlashScope flashScope, 
                                 YukonUserContext userContext) {

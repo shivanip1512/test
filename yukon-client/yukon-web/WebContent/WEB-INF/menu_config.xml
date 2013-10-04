@@ -214,9 +214,6 @@
         </permissions>
         <link>/deviceConfiguration/home</link>
       </option>
-      <option name="deviceDefinitions">
-        <link>/common/deviceDefinition.xml</link>
-      </option>
       <option name="deviceGroups">
         <permissions>
           <roleProperty name="ADMIN_VIEW_CONFIG" />
@@ -277,12 +274,6 @@
           <roleProperty name="ADMIN_MULTISPEAK_SETUP" />
         </permissions>
         <link>/multispeak/setup/home</link>
-      </option>
-      <option name="security">
-        <permissions>
-          <roleProperty name="ADMIN_SUPER_USER" />
-        </permissions>
-        <link>/adminSetup/security/view</link>
       </option>
       <option name="substations">
         <link>/adminSetup/substations/routeMapping/view</link>

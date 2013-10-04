@@ -86,6 +86,7 @@ public class YukonConfigurationController {
         b.put(GlobalSettingSubCategory.MISC, "icon-32-folder");
         b.put(GlobalSettingSubCategory.THEMES, "icon-32-brush");
         b.put(GlobalSettingSubCategory.WEATHER, "icon-32-cloud2");
+        b.put(GlobalSettingSubCategory.SECURITY, "icon-32-key");
         iconMap = b.build();
     }
     
@@ -142,6 +143,7 @@ public class YukonConfigurationController {
         
         List<Pair<GlobalSettingSubCategory, String>> other = Lists.newArrayList();
         other.add(Pair.of(GlobalSettingSubCategory.MISC, iconMap.get(GlobalSettingSubCategory.MISC)));
+        other.add(Pair.of(GlobalSettingSubCategory.SECURITY, iconMap.get(GlobalSettingSubCategory.SECURITY)));
         
         List<Pair<GlobalSettingCategory, List<Pair<GlobalSettingSubCategory, String>>>> categories = Lists.newArrayList();
         categories.add(Pair.of(GlobalSettingCategory.SYSTEM_SETUP, systemSetup));
@@ -162,6 +164,8 @@ public class YukonConfigurationController {
             return "redirect:/adminSetup/config/theme";
         } else if (category == GlobalSettingSubCategory.WEATHER) {
             return "redirect:/adminSetup/config/weather";
+        } else if (category == GlobalSettingSubCategory.SECURITY) {
+            return "redirect:/adminSetup/config/security/view";
         }
         
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);

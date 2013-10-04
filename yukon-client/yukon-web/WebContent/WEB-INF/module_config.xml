@@ -717,8 +717,6 @@
                 <requireRoleProperty value="OPERATOR_ADMINISTRATOR" />
                 <link>/adminSetup/systemAdmin</link>
                 <pages>
-                    <page name="security" type="BASIC">
-                    </page>
                     <page name="config" type="BASIC">
                         <link>/adminSetup/config/view</link>
                         <pages>
@@ -728,6 +726,7 @@
                             </page>
                             <page name="config.themes" type="BLANK"/>
                             <page name="config.weather" type="BLANK"/>
+		                    <page name="security" type="BLANK" />
                         </pages>
                     </page>
                     

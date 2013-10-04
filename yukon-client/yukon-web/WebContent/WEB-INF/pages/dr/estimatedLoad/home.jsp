@@ -5,24 +5,22 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="dr" page="estimatedLoad">
-    <cti:includeScript link="JQUERY_COOKIE"/>
     <cti:includeScript link="/JavaScript/drFormula.js"/>
     <cti:includeScript link="/JavaScript/yukon/ui/confirm_dialog_manager.js"/>
 
-    <div id="display_tabs" style="display:none">
-        <ul>
-            <li><a href="#formulasTab"><cti:msg2 key='.formulas'/></a></li>
-            <li><a href="#assignmentsTab"><cti:msg2 key='.assignments'/></a></li>
-        </ul>
-        <div id="formulasTab">
+    <cti:tabbedContentSelector mode="section">
+        <cti:msg2 var="formulasTab" key='.formulas'/>
+        <cti:tabbedContentSelectorContent selectorName="${formulasTab}">
             <div class="f-drFormula-replaceViaAjax clearfix">
                <%@ include file="_formulasTable.jsp" %>
             </div>
             <div class="actionArea">
                <cti:button icon="icon-plus-green" nameKey="newFormula" href="formula/create"/>
             </div>
-        </div>
-        <div id="assignmentsTab">
+        </cti:tabbedContentSelectorContent>
+
+        <cti:msg2 var="assignmentsTab" key='.assignments'/>
+        <cti:tabbedContentSelectorContent selectorName="${assignmentsTab}">
            <tags:formElementContainer nameKey="applianceCategories">
                 <div class="f-drFormula-replaceViaAjax">
                    <%@ include file="_appCatAssignmentsTable.jsp" %>
@@ -33,7 +31,6 @@
                    <%@ include file="_gearAssignmentsTable.jsp" %>
                 </div>
             </tags:formElementContainer>
-        </div>
-    </div>
-        
+        </cti:tabbedContentSelectorContent>
+    </cti:tabbedContentSelector>
 </cti:standardPage>

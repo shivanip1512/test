@@ -28,6 +28,6 @@
 		<cti:button id="pauseBtn" type="button" nameKey="pause" />
 		<cti:button id="startBtn" type="button" nameKey="resume" />
 	</div>
-	<div id="logOutput" class="monospace liteContainer"></div>
+	<div id="logOutput" class="monospace liteContainer" style="overflow:scroll;"></div>
 
 </cti:standardPage>

@@ -58,7 +58,6 @@
 <entry key="yukon.web.menu.tools.commander">Commander</entry>
 <entry key="yukon.web.menu.tools.dataExport">Data Export</entry>
 <entry key="yukon.web.menu.tools.deviceConfiguration">Device Configuration</entry>
-<entry key="yukon.web.menu.tools.deviceDefinitions">Device Definitions</entry>
 <entry key="yukon.web.menu.tools.deviceGroups">Device Groups</entry>
 <entry key="yukon.web.menu.tools.schedules">Schedules</entry>
 <entry key="yukon.web.menu.tools.scripts">Scripts</entry>
@@ -350,7 +349,6 @@
 <entry key="yukon.web.menu.config.adminSetup.multispeak.synchronization">Synchronization</entry>
 <entry key="yukon.web.menu.config.adminSetup.usersEditor">Users</entry>
 <entry key="yukon.web.menu.config.adminSetup.system">System</entry>
-<entry key="yukon.web.menu.config.adminSetup.system.security">Security</entry>
 <entry key="yukon.web.menu.config.adminSetup.system.config">Configuration</entry>
 <entry key="yukon.web.menu.config.adminSetup.maintenance">Maintenance</entry>
 

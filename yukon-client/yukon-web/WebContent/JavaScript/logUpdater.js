@@ -35,9 +35,10 @@ jQuery(function() {
 
 				// This part of the function updates the log contents shown on the screen
 				logLines.each(function(newLogLine) {
-					var newDiv = jQuery("<div class='logLine'>" + newLogLine +"\n</div>").hide();
+					var newDiv = jQuery("<div class='logLine'>" + newLogLine +"\n</div>");
 					jQuery("#logOutput").append(newDiv);
-					newDiv.slideDown(200);
+					//This animation sets overflow:hidden at the end. This prevents us from scrolling left-right.
+					//newDiv.slideDown(200);
 				});
 				// remove extra lines but do not reload page if numLines is more than we currently have
 				removeExtraLines(false);

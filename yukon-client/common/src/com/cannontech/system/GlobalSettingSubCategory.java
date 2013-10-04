@@ -14,6 +14,7 @@ public enum GlobalSettingSubCategory implements DisplayableEnum {
     WEATHER(GlobalSettingCategory.INTEGRATION),
     
     MISC(GlobalSettingCategory.OTHER),
+    SECURITY(GlobalSettingCategory.OTHER),
     
     AMI(GlobalSettingCategory.SYSTEM_SETUP),
     AUTHENTICATION(GlobalSettingCategory.SYSTEM_SETUP),

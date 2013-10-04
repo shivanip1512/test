@@ -135,6 +135,8 @@
     <entry key="yukon.common.setting.subcategory.THEMES.description">Change the way Yukon looks</entry>
     <entry key="yukon.common.setting.subcategory.WEATHER">Weather</entry>
     <entry key="yukon.common.setting.subcategory.WEATHER.description">Add weather tracking locations to Yukon</entry>
+    <entry key="yukon.common.setting.subcategory.SECURITY">Security</entry>
+    <entry key="yukon.common.setting.subcategory.SECURITY.description">Demand Response Encrypted Routes and Keys</entry>
     
     <!-- YukonSettingCategory -->
     <entry key="yukon.common.setting.category.APPLICATION">Application</entry>

@@ -349,8 +349,6 @@ public class SiteMapHelper {
                 MatchStyle.all, YukonRoleProperty.ARCHIVED_DATA_EXPORT),
         DEVICE_CONFIGURATION(SiteMapCategory.TOOLS, "yukon.web.menu.portal.administration.deviceConfiguration", "/deviceConfiguration/home", 
                 MatchStyle.all, YukonRoleProperty.ADMIN_VIEW_CONFIG),
-        DEVICE_DEFINITIONS(SiteMapCategory.TOOLS, "yukon.web.menu.config.support.information.deviceDef", "/common/deviceDefinition.xml", 
-                MatchStyle.all),
         DEVICE_GROUPS(SiteMapCategory.TOOLS, "yukon.web.menu.config.amr.devicegroups", "/group/editor/home", 
                 MatchStyle.all, YukonRoleProperty.ADMIN_VIEW_CONFIG),
         DEVICE_UPLOAD(SiteMapCategory.TOOLS, "yukon.web.menu.tools.deviceGroupUpload", "/group/updater/upload", 
@@ -393,6 +391,8 @@ public class SiteMapHelper {
         THREAD_DUMP(SiteMapCategory.SUPPORT, "yukon.web.modules.support.threadDump.pageName", "/support/threadDump", 
                 MatchStyle.all),
         ROUTE_USAGE(SiteMapCategory.SUPPORT, "yukon.web.modules.support.routeUsage.pageName", "/support/routeUsage", 
+                MatchStyle.all),
+        DEVICE_DEFINITIONS(SiteMapCategory.SUPPORT, "yukon.web.menu.config.support.information.deviceDef", "/common/deviceDefinition.xml", 
                 MatchStyle.all),
 
         DEVELOPMENT(SiteMapCategory.DEVELOPMENT, "yukon.web.modules.support.development.pageName", "/support/development/main", 

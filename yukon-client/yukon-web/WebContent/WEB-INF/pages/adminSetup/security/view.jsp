@@ -8,6 +8,16 @@
 
 <cti:standardPage module="adminSetup" page="security">
 
+    <div class="clearfix box">
+        <div class="category fl">
+            <a href="weather" class="icon icon-32 fl icon-32-key"></a>
+            <div class="box fl meta">
+                <div><a class="title" href="/adminSetup/config/security/view"><i:inline key="yukon.common.setting.subcategory.SECURITY"/></a></div>
+                <div class="detail"><i:inline key="yukon.common.setting.subcategory.SECURITY.description"/></div>
+            </div>
+        </div>
+    </div>
+
     <dialog:inline nameKey="addKeyDialog" okEvent="addKeyFormSubmit" on="#addNewKeyBtn">
         <tags:nameValueContainer2>
             <form:form method="POST" commandName="encryptionKey" action="saveNewKey" autocomplete="off">
