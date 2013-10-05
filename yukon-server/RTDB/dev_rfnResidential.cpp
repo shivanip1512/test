@@ -31,7 +31,8 @@ const RfnDevice::InstallMap RfnResidentialDevice::initPutConfigInstallMap()
     const InstallMap m = boost::assign::map_list_of
             ("freezeday",        static_cast<InstallMethod>(&RfnResidentialDevice::executePutConfigDemandFreezeDay))
             ("tou",              static_cast<InstallMethod>(&RfnResidentialDevice::executePutConfigInstallTou))
-            ("voltageaveraging", static_cast<InstallMethod>(&RfnResidentialDevice::executePutConfigVoltageAveragingInterval));
+            ("voltageaveraging", static_cast<InstallMethod>(&RfnResidentialDevice::executePutConfigVoltageAveragingInterval))
+            ("display",          static_cast<InstallMethod>(&RfnResidentialDevice::executePutConfigDisplay));
 
     return m;
 }
@@ -92,12 +93,159 @@ typename Map::mapped_type getConfigData( const Map & configMap, const std::strin
     return *val;
 }
 
+/**
+ * create CtiDate object from string "mm/dd/yyyy"
+ */
+CtiDate getDateFromString( std::string date )
+{
+    int month, day, year;
+    char sep1, sep2;
+
+    std::istringstream ss(date);
+    ss >> month >> sep1 >> day >> sep2 >> year;
+
+    return CtiDate(day, month, year);
+}
+
 } // anonymous namespace
 
+
+int RfnResidentialDevice::executePutConfigVoltageProfile( CtiRequestMsg     * pReq,
+                                                          CtiCommandParser  & parse,
+                                                          CtiMessageList    & retList,
+                                                          RfnCommandList    & rfnRequests )
+{
+    // putconfig voltage profile demandinterval 1234 lpinterval 123
+    // putconfig voltage profile enable|disable
+
+    using Commands::RfnLoadProfileSetRecordingCommand;
+    using Commands::RfnVoltageProfileSetConfigurationCommand;
+
+    //
+    // enable|disable recording
+    //
+
+    if( parse.isKeyValid("voltage_profile_enable") )
+    {
+        RfnLoadProfileSetRecordingCommand::RecordingOption option = (parse.getiValue("voltage_profile_enable")) ? RfnLoadProfileSetRecordingCommand::EnableRecording
+                                                                                                                : RfnLoadProfileSetRecordingCommand::DisableRecording;
+
+        rfnRequests.push_back( boost::make_shared<RfnLoadProfileSetRecordingCommand>( option ));
+
+        return NoError;
+    }
+
+    //
+    // demand interval
+    //
+
+    const int demand_interval_seconds = parse.getiValue("demand_interval_seconds");
+
+    if( demand_interval_seconds < 0 )
+    {
+        logInfo("Missing \"demandinterval\" parameter.",
+                __FUNCTION__, __FILE__, __LINE__ );
+
+        return MISPARAM;
+    }
+
+    //
+    // load profile interval
+    //
+
+    const int load_profile_interval_minutes = parse.getiValue("load_profile_interval_minutes");
+
+    if( load_profile_interval_minutes < 0 )
+    {
+        logInfo("Missing \"lpinterval\" parameter.",
+                __FUNCTION__, __FILE__, __LINE__ );
+
+        return MISPARAM;
+    }
+
+    rfnRequests.push_back( boost::make_shared<RfnVoltageProfileSetConfigurationCommand>( demand_interval_seconds,
+                                                                                         load_profile_interval_minutes ));
+
+    return NoError;
+}
+
+int RfnResidentialDevice::executeGetConfigVoltageProfile( CtiRequestMsg     * pReq,
+                                                          CtiCommandParser  & parse,
+                                                          CtiMessageList    & retList,
+                                                          RfnCommandList    & rfnRequests )
+{
+    // getconfig voltage profile
+    // getconfig voltage profile state
+
+    using Commands::RfnLoadProfileGetRecordingCommand;
+    using Commands::RfnVoltageProfileGetConfigurationCommand;
+
+    if( parse.isKeyValid("voltage_profile_state") )
+    {
+        rfnRequests.push_back( boost::make_shared<RfnLoadProfileGetRecordingCommand>());
+
+        return NoError;
+    }
+
+    rfnRequests.push_back( boost::make_shared<RfnVoltageProfileGetConfigurationCommand>());
+
+    return NoError;
+}
+
+
+int RfnResidentialDevice::executeGetValueVoltageProfile( CtiRequestMsg     * pReq,
+                                                         CtiCommandParser  & parse,
+                                                         CtiMessageList    & retList,
+                                                         RfnCommandList    & rfnRequests )
+{
+    // getvalue voltage profile 12/13/2005 12/15/2005
+
+    using Commands::RfnLoadProfileReadPointsCommand;
+
+    //
+    // date begin
+    //
+
+    boost::optional<std::string> date_begin = parse.findStringForKey("read_points_date_begin");
+
+    if( ! date_begin )
+    {
+        logInfo("Missing voltage profile start date.",
+                __FUNCTION__, __FILE__, __LINE__ );
+
+        return MISPARAM;
+    }
+
+    CtiDate begin = getDateFromString( *date_begin );
+
+    //
+    // date end
+    //
+
+    boost::optional<std::string> date_end = parse.findStringForKey("read_points_date_end");
+
+    if( ! date_end )
+    {
+        logInfo("Missing voltage profile end date.",
+                __FUNCTION__, __FILE__, __LINE__ );
+
+        return MISPARAM;
+    }
+
+    CtiDate end = getDateFromString( *date_end );
+
+    rfnRequests.push_back( boost::make_shared<RfnLoadProfileReadPointsCommand>( CtiTime::now(),
+                                                                                begin,
+                                                                                end ));
+
+    return NoError;
+}
+
+
 int RfnResidentialDevice::executePutConfigVoltageAveragingInterval( CtiRequestMsg     * pReq,
-                                                                 CtiCommandParser  & parse,
-                                                                 CtiMessageList    & retList,
-                                                                 RfnCommandList    & rfnRequests )
+                                                                    CtiCommandParser  & parse,
+                                                                    CtiMessageList    & retList,
+                                                                    RfnCommandList    & rfnRequests )
 {
     Config::DeviceConfigSPtr deviceConfig = getDeviceConfig();
 
@@ -204,9 +352,9 @@ int RfnResidentialDevice::executePutConfigVoltageAveragingInterval( CtiRequestMs
 
 
 int RfnResidentialDevice::executeGetConfigVoltageAveragingInterval( CtiRequestMsg     * pReq,
-                                                                 CtiCommandParser  & parse,
-                                                                 CtiMessageList    & retList,
-                                                                 RfnCommandList    & rfnRequests )
+                                                                    CtiCommandParser  & parse,
+                                                                    CtiMessageList    & retList,
+                                                                    RfnCommandList    & rfnRequests )
 {
     rfnRequests.push_back( boost::make_shared<Commands::RfnVoltageProfileGetConfigurationCommand>() );
 
@@ -214,27 +362,27 @@ int RfnResidentialDevice::executeGetConfigVoltageAveragingInterval( CtiRequestMs
 }
 
 
-int RfnResidentialDevice::executeLoadProfileRecording( CtiRequestMsg     * pReq,
-                                                    CtiCommandParser  & parse,
-                                                    CtiMessageList    & retList,
-                                                    RfnCommandList    & rfnRequests )
-{
-    // TBD
-
-    if ( 0 /* parse says enable or disable recording -- TBD */ )
-    {
-        Commands::RfnLoadProfileRecordingCommand::RecordingOption option =
-            Commands::RfnLoadProfileRecordingCommand::DisableRecording;  // get from parse...
-
-        rfnRequests.push_back( boost::make_shared<Commands::RfnLoadProfileSetRecordingCommand>( option ) );
-    }
-    else    // reading the state of recording from the device
-    {
-        rfnRequests.push_back( boost::make_shared<Commands::RfnLoadProfileGetRecordingCommand>() );
-    }
-
-    return NoError;
-}
+//int RfnResidentialDevice::executeLoadProfileRecording( CtiRequestMsg     * pReq,
+//                                                       CtiCommandParser  & parse,
+//                                                       CtiMessageList    & retList,
+//                                                       RfnCommandList    & rfnRequests )
+//{
+//    // TBD
+//
+//    if ( 0 /* parse says enable or disable recording -- TBD */ )
+//    {
+//        Commands::RfnLoadProfileRecordingCommand::RecordingOption option =
+//            Commands::RfnLoadProfileRecordingCommand::DisableRecording;  // get from parse...
+//
+//        rfnRequests.push_back( boost::make_shared<Commands::RfnLoadProfileSetRecordingCommand>( option ) );
+//    }
+//    else    // reading the state of recording from the device
+//    {
+//        rfnRequests.push_back( boost::make_shared<Commands::RfnLoadProfileGetRecordingCommand>() );
+//    }
+//
+//    return NoError;
+//}
 
 
 int RfnResidentialDevice::executePutConfigDemandFreezeDay( CtiRequestMsg     * pReq,
@@ -795,9 +943,9 @@ bool RfnResidentialDevice::isTouConfigCurrent( const Config::DeviceConfigSPtr &d
 }
 
 int RfnResidentialDevice::executeGetConfigInstallTou( CtiRequestMsg     * pReq,
-                                                   CtiCommandParser  & parse,
-                                                   CtiMessageList    & retList,
-                                                   RfnCommandList    & rfnRequests )
+                                                      CtiCommandParser  & parse,
+                                                      CtiMessageList    & retList,
+                                                      RfnCommandList    & rfnRequests )
 {
     rfnRequests.push_back( boost::make_shared<Commands::RfnTouScheduleConfigurationCommand>());
 
@@ -809,14 +957,23 @@ int RfnResidentialDevice::executeGetConfigInstallTou( CtiRequestMsg     * pReq,
  * Execute getconfig holiday
  */
 int RfnResidentialDevice::executeGetConfigHoliday( CtiRequestMsg     * pReq,
-                                                CtiCommandParser  & parse,
-                                                CtiMessageList    & retList,
-                                                RfnCommandList    & rfnRequests )
+                                                   CtiCommandParser  & parse,
+                                                   CtiMessageList    & retList,
+                                                   RfnCommandList    & rfnRequests )
 {
     rfnRequests.push_back( boost::make_shared<Commands::RfnTouHolidayConfigurationCommand>());
 
     return NoError;
 }
+
+int RfnResidentialDevice::executePutConfigDisplay( CtiRequestMsg     * pReq,
+                                                   CtiCommandParser  & parse,
+                                                   CtiMessageList    & retList,
+                                                   RfnCommandList    & rfnRequests )
+{
+    return NoMethod;
+}
+
 
 void RfnResidentialDevice::handleResult( const Commands::RfnVoltageProfileGetConfigurationCommand & cmd )
 {

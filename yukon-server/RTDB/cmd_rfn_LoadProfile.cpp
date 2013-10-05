@@ -146,7 +146,7 @@ RfnCommandResult RfnVoltageProfileGetConfigurationCommand::decodeCommand( const 
     validateCondition( response[3] == 1,
                        ErrorInvalidData, "Invalid TLV count (" + CtiNumStr(response[3]) + ")" );
 
-    validateCondition( response[4] == 0x01,
+    validateCondition( response[4] == TlvType_VoltageProfileConfiguration,
                        ErrorInvalidData, "Invalid TLV type (" + CtiNumStr(response[4]) + ")" );
 
     validateCondition( response[5] == 2,
@@ -262,7 +262,7 @@ RfnCommandResult RfnLoadProfileGetRecordingCommand::decodeCommand( const CtiTime
             validateCondition( response[3] == 1,
                                ErrorInvalidData, "Invalid TLV count (" + CtiNumStr(response[3]) + ")" );
 
-    validateCondition( response[4] == 0x02,
+    validateCondition( response[4] == TlvType_LoadProfileState,
                                ErrorInvalidData, "Invalid TLV type (" + CtiNumStr(response[4]) + ")" );
 
     validateCondition( response[5] == 1,
@@ -605,7 +605,7 @@ unsigned RfnLoadProfileReadPointsCommand::decodePointRecord( RfnCommandResult & 
 
         result.points.push_back( point );
 
-        timestamp += _profileInterval;
+        timestamp += (_profileInterval * 60);
         }
 
     return (pos - offset); // return the size of the point record

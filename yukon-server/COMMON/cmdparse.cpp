@@ -428,6 +428,9 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
     //  getvalue lp peak hour channel 3 10-15-2003 15
     static const boost::regex  re_lp_peak(CtiString("lp peak (day|hour|interval) channel ") + str_num + CtiString(" ") + str_date + CtiString(" ") + str_num);
 
+    //  getvalue voltage profile 12/13/2005 12/15/2005
+    static const boost::regex  re_voltage_profile(CtiString("voltage profile ") +  str_date + CtiString(" ") + str_date);
+
     //  getvalue daily read
     //  getvalue daily read 12/12/2007
     //  getvalue daily read 12/12/2007 12/27/2007
@@ -876,6 +879,20 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
         else if(CmdStr.contains(" instant line data"))
         {
             _cmd["instantlinedata"] = CtiParseValue(TRUE);
+        }
+        else if(!(token = CmdStr.match(re_voltage_profile)).empty())
+        {
+            // getvalue voltage profile 12/13/2005 12/15/2005
+
+            _cmd["voltage_profile"] = true;
+
+            CtiTokenizer cmdtok(token);
+
+            cmdtok(); // voltage
+            cmdtok(); // profile
+
+            _cmd["read_points_date_begin"] = cmdtok();
+            _cmd["read_points_date_end"]   = cmdtok();
         }
         else
         {
@@ -1928,6 +1945,20 @@ void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
         {
             _cmd["alarm_mask"] = CtiParseValue("TRUE");
         }
+
+        if( ! CmdStr.match(" voltage profile( state)?").empty() )
+        {
+            // getconfig voltage profile
+            // getconfig voltage profile state
+
+            _cmd["voltage_profile"] = true;
+
+            if( CmdStr.contains(" state") )
+            {
+                _cmd["voltage_profile_state"] = true;
+            }
+        }
+
         setFlags(flag);
     }
     else
@@ -2096,6 +2127,37 @@ void  CtiCommandParser::doParsePutConfig(const string &_CmdStr)
             if( CmdStr.contains(" disable") )
             {
                 _cmd["tou_disable"] = CtiParseValue(true);
+            }
+        }
+        else if( !(token = CmdStr.match("voltage profile (enable|disable|demandinterval [0-9]+ lpinterval [0-9]+)")).empty())
+        {
+            // putconfig voltage profile demandinterval 1234 loadinterval 123
+            // putconfig voltage profile enable|disable
+
+            _cmd["voltage_profile"] = true;
+
+            CtiTokenizer cmdtok(token);
+
+            cmdtok(); // voltage
+            cmdtok(); // profile
+
+            if( CmdStr.contains(" enable") )
+            {
+                _cmd["voltage_profile_enable"] = true;
+            }
+            else if( CmdStr.contains(" disable") )
+            {
+                _cmd["voltage_profile_enable"] = false;
+            }
+            else
+            {
+                cmdtok(); // demandinterval
+
+                _cmd["demand_interval_seconds"] = atoi(cmdtok().c_str());
+
+                cmdtok(); // lpinterval
+
+                _cmd["load_profile_interval_minutes"] = atoi(cmdtok().c_str());
             }
         }
 

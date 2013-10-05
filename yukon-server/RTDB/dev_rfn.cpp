@@ -98,6 +98,10 @@ int RfnDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, Ct
     {
         return executePutConfigHoliday(pReq, parse, retList, rfnRequests);
     }
+    if( parse.isKeyValid("voltage_profile") )
+    {
+        return executePutConfigVoltageProfile(pReq, parse, retList, rfnRequests);
+    }
 
     return NoMethod;
 }
@@ -116,6 +120,10 @@ int RfnDevice::executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, Ct
     if( parse.isKeyValid("holiday") )
     {
         return executeGetConfigHoliday(pReq, parse, retList, rfnRequests);
+    }
+    if( parse.isKeyValid("voltage_profile") )
+    {
+        return executeGetConfigVoltageProfile(pReq, parse, retList, rfnRequests);
     }
 
     return NoMethod;
@@ -299,8 +307,28 @@ int RfnDevice::executeGetConfigHoliday(CtiRequestMsg *pReq, CtiCommandParser &pa
     return NoMethod;
 }
 
+int RfnDevice::executeGetConfigVoltageProfile(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests)
+{
+    return NoMethod;
+}
+
+int RfnDevice::executePutConfigVoltageProfile(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests)
+{
+    return NoMethod;
+}
+
+int RfnDevice::executeGetValueVoltageProfile(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests)
+{
+    return NoMethod;
+}
+
 int RfnDevice::executeGetValue (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests)
 {
+    if( parse.isKeyValid("voltage_profile") )
+    {
+        return executeGetValueVoltageProfile(pReq, parse, retList, rfnRequests);
+    }
+
     return NoMethod;
 }
 

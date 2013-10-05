@@ -29,7 +29,7 @@ protected:
     virtual const InstallMap & getPutConfigInstallMap() const;
     virtual const InstallMap & getGetConfigInstallMap() const;
 
-    int executeLoadProfileRecording              (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
+    //int executeLoadProfileRecording              (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
     int executeImmediateDemandFreeze             (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
     int executeTouCriticalPeak                   (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
 
@@ -46,6 +46,12 @@ protected:
     int executeReadDemandFreezeInfo              (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
     int executeGetConfigInstallTou               (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
     int executeGetConfigVoltageAveragingInterval (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
+
+    int executeGetConfigVoltageProfile           (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
+    int executePutConfigVoltageProfile           (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
+    int executeGetValueVoltageProfile            (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
+
+    virtual int executePutConfigDisplay          (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
 
     void handleResult( const Commands::RfnVoltageProfileGetConfigurationCommand & cmd );
     void handleResult( const Commands::RfnLoadProfileGetRecordingCommand & cmd );

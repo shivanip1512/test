@@ -15,17 +15,17 @@ struct test_RfnResidentialDevice : RfnResidentialDevice
     using RfnResidentialDevice::handleResult;
 };
 
-struct test_state_rfnConsumer
+struct test_state_rfnResidential
 {
     std::auto_ptr<CtiRequestMsg> request;
     RfnDevice::CtiMessageList    retList;
     RfnDevice::RfnCommandList    rfnRequests;
 
-    test_state_rfnConsumer() : request( new CtiRequestMsg )
+    test_state_rfnResidential() : request( new CtiRequestMsg )
     {
     }
 
-    ~test_state_rfnConsumer()
+    ~test_state_rfnResidential()
     {
         delete_container(retList);
     }
@@ -70,7 +70,7 @@ const CtiTime execute_time( CtiDate( 27, 8, 2013 ) , 15 );
 const CtiTime decode_time ( CtiDate( 27, 8, 2013 ) , 16 );
 
 
-BOOST_FIXTURE_TEST_SUITE( test_dev_rfnResidential, test_state_rfnConsumer )
+BOOST_FIXTURE_TEST_SUITE( test_dev_rfnResidential, test_state_rfnResidential )
 
 BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_schedule )
 {
@@ -665,6 +665,111 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_getconfig_tou_holiday )
 
     std::vector<unsigned char> exp = boost::assign::list_of
             (0x60)(0x07)(0x00);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
+                                   exp.begin() , exp.end() );
+}
+
+BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_voltage_profile )
+{
+    test_RfnResidentialDevice dut;
+
+    CtiCommandParser parse("putconfig emetcon voltage profile demandinterval 255 lpinterval 34");
+
+    BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, retList, rfnRequests) );
+    BOOST_CHECK_EQUAL( 0, retList.size() );
+    BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
+
+    Commands::RfnCommandSPtr command = rfnRequests.front();
+
+    Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
+
+    std::vector<unsigned char> exp = boost::assign::list_of
+            ( 0x68 )( 0x00 )( 0x01 )( 0x01 )( 0x02 )( 0x11 )( 0x22 );
+
+    BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
+                                   exp.begin() , exp.end() );
+}
+
+BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_voltage_profile_enable )
+{
+    test_RfnResidentialDevice dut;
+
+    CtiCommandParser parse("putconfig emetcon voltage profile enable");
+
+    BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, retList, rfnRequests) );
+    BOOST_CHECK_EQUAL( 0, retList.size() );
+    BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
+
+    Commands::RfnCommandSPtr command = rfnRequests.front();
+
+    Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
+
+    std::vector<unsigned char> exp = boost::assign::list_of
+            ( 0x68 )( 0x03 )( 0x00 );
+
+    BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
+                                   exp.begin() , exp.end() );
+}
+
+BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_voltage_profile_disable )
+{
+    test_RfnResidentialDevice dut;
+
+    CtiCommandParser parse("putconfig emetcon voltage profile disable");
+
+    BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, retList, rfnRequests) );
+    BOOST_CHECK_EQUAL( 0, retList.size() );
+    BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
+
+    Commands::RfnCommandSPtr command = rfnRequests.front();
+
+    Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
+
+    std::vector<unsigned char> exp = boost::assign::list_of
+            ( 0x68 )( 0x02 )( 0x00 );
+
+    BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
+                                   exp.begin() , exp.end() );
+}
+
+BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_getconfig_voltage_profile )
+{
+    test_RfnResidentialDevice dut;
+
+    CtiCommandParser parse("getconfig voltage profile");
+
+    BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, retList, rfnRequests) );
+    BOOST_CHECK_EQUAL( 0, retList.size() );
+    BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
+
+    Commands::RfnCommandSPtr command = rfnRequests.front();
+
+    Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
+
+    std::vector<unsigned char> exp = boost::assign::list_of
+            ( 0x68 )( 0x01 )( 0x00 );
+
+    BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
+                                   exp.begin() , exp.end() );
+}
+
+BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_getvalue_voltage_profile_state )
+{
+    test_RfnResidentialDevice dut;
+
+    CtiCommandParser parse("getconfig voltage profile state");
+
+    BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, retList, rfnRequests) );
+    BOOST_CHECK_EQUAL( 0, retList.size() );
+    BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
+
+    Commands::RfnCommandSPtr command = rfnRequests.front();
+
+    Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
+
+    std::vector<unsigned char> exp = boost::assign::list_of
+            ( 0x68 )( 0x04 )( 0x00 );
 
     BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
                                    exp.begin() , exp.end() );

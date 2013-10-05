@@ -615,16 +615,6 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfilePoints_invalid_date
     }
 }
 
-void printData( std::vector< unsigned char > data )
-{
-    printf("data :\n");
-
-    for each ( unsigned char val in data  )
-    {
-        printf("( 0x%02x )\n", val);
-    }
-}
-
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfilePoints )
 {
@@ -657,7 +647,9 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfilePoints )
 
         // decode
         {
-           const std::vector< unsigned char > response = boost::assign::list_of
+            const unsigned interval_minutes = 0x12;
+
+            const std::vector< unsigned char > response = boost::assign::list_of
                    ( 0x69 )( 0x05 )( 0x00 )( 0x01 )
                    ( 0x03 )
                    ( 0x43 ) // tlv size = 67-byte
@@ -666,7 +658,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfilePoints )
                    ( 0x10 ) // uom
                    ( 0x80 )( 0x00 ) // uom modifier 1
                    ( 0x00 )( 0x00 ) // uom modifier 1
-                   ( 0x45 ) // profile interval
+                   ( interval_minutes )
                    ( 0x04 ) // Number of profile point records
                    // record 1
                    ( 0x51 )( 0xd8 )( 0xf5 )( 0xd0 )
@@ -701,65 +693,88 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfilePoints )
 
             BOOST_REQUIRE_EQUAL( rcv.points.size(), 10 );
 
-            const unsigned expected_offset = 214;
+            const unsigned expected_offset  = 214;
+            const unsigned interval_seconds = interval_minutes * 60;
 
             // record 1
+            {
+                const unsigned timestamp = 0x51d8f5d0;
 
-            BOOST_CHECK_EQUAL( rcv.points[0].value,     0x11 );
-            BOOST_CHECK_EQUAL( rcv.points[0].type,      AnalogPointType );
-            BOOST_CHECK_EQUAL( rcv.points[0].quality,   NormalQuality );
-            BOOST_CHECK_EQUAL( rcv.points[0].offset,    expected_offset );
+                BOOST_CHECK_EQUAL( rcv.points[0].value,             0x11 );
+                BOOST_CHECK_EQUAL( rcv.points[0].type,              AnalogPointType );
+                BOOST_CHECK_EQUAL( rcv.points[0].quality,           NormalQuality );
+                BOOST_CHECK_EQUAL( rcv.points[0].offset,            expected_offset );
+                BOOST_CHECK_EQUAL( rcv.points[0].time.seconds(),    timestamp + interval_seconds*0 );
+            }
 
             // record 2
+            {
+                const unsigned timestamp = 0x51d8f5d1;
 
-            BOOST_CHECK_EQUAL( rcv.points[1].value,     0x1112 );
-            BOOST_CHECK_EQUAL( rcv.points[1].type,      AnalogPointType );
-            BOOST_CHECK_EQUAL( rcv.points[1].quality,   NormalQuality );
-            BOOST_CHECK_EQUAL( rcv.points[1].offset,    expected_offset );
+                BOOST_CHECK_EQUAL( rcv.points[1].value,             0x1112 );
+                BOOST_CHECK_EQUAL( rcv.points[1].type,              AnalogPointType );
+                BOOST_CHECK_EQUAL( rcv.points[1].quality,           NormalQuality );
+                BOOST_CHECK_EQUAL( rcv.points[1].offset,            expected_offset );
+                BOOST_CHECK_EQUAL( rcv.points[1].time.seconds(),    timestamp + interval_seconds*0 );
 
-            BOOST_CHECK_EQUAL( rcv.points[2].value,     0x2122 );
-            BOOST_CHECK_EQUAL( rcv.points[2].type,      AnalogPointType );
-            BOOST_CHECK_EQUAL( rcv.points[2].quality,   InvalidQuality );
-            BOOST_CHECK_EQUAL( rcv.points[2].offset,    expected_offset );
+                BOOST_CHECK_EQUAL( rcv.points[2].value,             0x2122 );
+                BOOST_CHECK_EQUAL( rcv.points[2].type,              AnalogPointType );
+                BOOST_CHECK_EQUAL( rcv.points[2].quality,           InvalidQuality );
+                BOOST_CHECK_EQUAL( rcv.points[2].offset,            expected_offset );
+                BOOST_CHECK_EQUAL( rcv.points[2].time.seconds(),    timestamp + interval_seconds*1 );
+            }
 
             // record 3
+            {
+                const unsigned timestamp = 0x51d8f5d2;
 
-            BOOST_CHECK_EQUAL( rcv.points[3].value,     0x11121314 );
-            BOOST_CHECK_EQUAL( rcv.points[3].type,      AnalogPointType );
-            BOOST_CHECK_EQUAL( rcv.points[3].quality,   NormalQuality );
-            BOOST_CHECK_EQUAL( rcv.points[3].offset,    expected_offset );
+                BOOST_CHECK_EQUAL( rcv.points[3].value,             0x11121314 );
+                BOOST_CHECK_EQUAL( rcv.points[3].type,              AnalogPointType );
+                BOOST_CHECK_EQUAL( rcv.points[3].quality,           NormalQuality );
+                BOOST_CHECK_EQUAL( rcv.points[3].offset,            expected_offset );
+                BOOST_CHECK_EQUAL( rcv.points[3].time.seconds(),    timestamp + interval_seconds*0 );
 
-            BOOST_CHECK_EQUAL( rcv.points[4].value,     0x21222324 );
-            BOOST_CHECK_EQUAL( rcv.points[4].type,      AnalogPointType );
-            BOOST_CHECK_EQUAL( rcv.points[4].quality,   InvalidQuality );
-            BOOST_CHECK_EQUAL( rcv.points[4].offset,    expected_offset );
+                BOOST_CHECK_EQUAL( rcv.points[4].value,             0x21222324 );
+                BOOST_CHECK_EQUAL( rcv.points[4].type,              AnalogPointType );
+                BOOST_CHECK_EQUAL( rcv.points[4].quality,           InvalidQuality );
+                BOOST_CHECK_EQUAL( rcv.points[4].offset,            expected_offset );
+                BOOST_CHECK_EQUAL( rcv.points[4].time.seconds(),    timestamp + interval_seconds*1 );
 
-            BOOST_CHECK_EQUAL( rcv.points[5].value,     0x31323334 );
-            BOOST_CHECK_EQUAL( rcv.points[5].type,      AnalogPointType );
-            BOOST_CHECK_EQUAL( rcv.points[5].quality,   InvalidQuality );
-            BOOST_CHECK_EQUAL( rcv.points[5].offset,    expected_offset );
+                BOOST_CHECK_EQUAL( rcv.points[5].value,             0x31323334 );
+                BOOST_CHECK_EQUAL( rcv.points[5].type,              AnalogPointType );
+                BOOST_CHECK_EQUAL( rcv.points[5].quality,           InvalidQuality );
+                BOOST_CHECK_EQUAL( rcv.points[5].offset,            expected_offset );
+                BOOST_CHECK_EQUAL( rcv.points[5].time.seconds(),    timestamp + interval_seconds*2 );
+            }
 
             // record 4
+            {
+                const unsigned timestamp = 0x51d8f5d3;
 
-            BOOST_CHECK_EQUAL( rcv.points[6].value,     0x1112 );
-            BOOST_CHECK_EQUAL( rcv.points[6].type,      AnalogPointType );
-            BOOST_CHECK_EQUAL( rcv.points[6].quality,   NormalQuality );
-            BOOST_CHECK_EQUAL( rcv.points[6].offset,    expected_offset );
+                BOOST_CHECK_EQUAL( rcv.points[6].value,             0x1112 );
+                BOOST_CHECK_EQUAL( rcv.points[6].type,              AnalogPointType );
+                BOOST_CHECK_EQUAL( rcv.points[6].quality,           NormalQuality );
+                BOOST_CHECK_EQUAL( rcv.points[6].offset,            expected_offset );
+                BOOST_CHECK_EQUAL( rcv.points[6].time.seconds(),    timestamp + interval_seconds*0 );
 
-            BOOST_CHECK_EQUAL( rcv.points[7].value,     0x2122 );
-            BOOST_CHECK_EQUAL( rcv.points[7].type,      AnalogPointType );
-            BOOST_CHECK_EQUAL( rcv.points[7].quality,   InvalidQuality );
-            BOOST_CHECK_EQUAL( rcv.points[7].offset,    expected_offset );
+                BOOST_CHECK_EQUAL( rcv.points[7].value,             0x2122 );
+                BOOST_CHECK_EQUAL( rcv.points[7].type,              AnalogPointType );
+                BOOST_CHECK_EQUAL( rcv.points[7].quality,           InvalidQuality );
+                BOOST_CHECK_EQUAL( rcv.points[7].offset,            expected_offset );
+                BOOST_CHECK_EQUAL( rcv.points[7].time.seconds(),    timestamp + interval_seconds*1 );
 
-            BOOST_CHECK_EQUAL( rcv.points[8].value,     0x3132 );
-            BOOST_CHECK_EQUAL( rcv.points[8].type,      AnalogPointType );
-            BOOST_CHECK_EQUAL( rcv.points[8].quality,   InvalidQuality );
-            BOOST_CHECK_EQUAL( rcv.points[8].offset,    expected_offset );
+                BOOST_CHECK_EQUAL( rcv.points[8].value,             0x3132 );
+                BOOST_CHECK_EQUAL( rcv.points[8].type,              AnalogPointType );
+                BOOST_CHECK_EQUAL( rcv.points[8].quality,           InvalidQuality );
+                BOOST_CHECK_EQUAL( rcv.points[8].offset,            expected_offset );
+                BOOST_CHECK_EQUAL( rcv.points[8].time.seconds(),    timestamp + interval_seconds*2 );
 
-            BOOST_CHECK_EQUAL( rcv.points[9].value,     0x4142 );
-            BOOST_CHECK_EQUAL( rcv.points[9].type,      AnalogPointType );
-            BOOST_CHECK_EQUAL( rcv.points[9].quality,   InvalidQuality );
-            BOOST_CHECK_EQUAL( rcv.points[9].offset,    expected_offset );
+                BOOST_CHECK_EQUAL( rcv.points[9].value,             0x4142 );
+                BOOST_CHECK_EQUAL( rcv.points[9].type,              AnalogPointType );
+                BOOST_CHECK_EQUAL( rcv.points[9].quality,           InvalidQuality );
+                BOOST_CHECK_EQUAL( rcv.points[9].offset,            expected_offset );
+                BOOST_CHECK_EQUAL( rcv.points[9].time.seconds(),    timestamp + interval_seconds*3 );
+            }
         }
     }
 }
