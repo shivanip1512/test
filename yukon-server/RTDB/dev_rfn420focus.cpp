@@ -119,7 +119,7 @@ int Rfn420FocusDevice::executePutConfigDisplay(CtiRequestMsg *pReq, CtiCommandPa
             logInfo( "display item duration is out of range (" + CtiNumStr(config_display_duration) + ", expected [0..255])",
                      __FUNCTION__, __FILE__, __LINE__ );
 
-            return NoConfigData;
+            return ErrorInvalidConfigData;
         }
 
         // check if the dynamic info has the current configuration
