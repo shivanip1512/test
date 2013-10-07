@@ -19,11 +19,11 @@ import com.cannontech.user.YukonUserContext;
  * @param <T> - Type of DatedObject this service handles
  */
 public abstract class UpdateBackingServiceBase<T> implements UpdateBackingService {
-
-    private YukonUserContextMessageSourceResolver messageSourceResolver = null;
-    private TemplateProcessorFactory templateProcessorFactory;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private TemplateProcessorFactory templateProcessorFactory;
 
     public abstract DatedObject<T> getDatedObject(int objectId);
+
     /**
      * Method to get the current value from the datedObject
      * @param object - New version of the dated object
@@ -31,33 +31,29 @@ public abstract class UpdateBackingServiceBase<T> implements UpdateBackingServic
      * @param userContext - current userContext
      * @return Value from datedObject
      */
-    public abstract Object getValue(DatedObject<T> object, String[] idBits, 
-                                    YukonUserContext userContext);
-    
+    public abstract Object getValue(DatedObject<T> object, String[] idBits, YukonUserContext userContext);
+
     @Override
     public String getLatestValue(String identifier, long afterDateLong, YukonUserContext userContext) {
-
         String[] idBits = identifier.split("\\/");
         int objectId = Integer.parseInt(idBits[0]);
-        
+
         DatedObject<T> datedObject = getDatedObject(objectId);
-        
+
         Date afterDate = new Date(afterDateLong);
-        
+
         if (datedObject == null || !datedObject.getDate().before(afterDate)) {
             Object value = getValue(datedObject, idBits, userContext);
-        
+
             if (value != null) {
-                if(value instanceof String) {
-                    return (String)value;
+                if (value instanceof String) {
+                    return (String) value;
                 } else if (value instanceof MessageSourceResolvable) {
-                    MessageSourceAccessor messageSourceAccessor = 
+                    MessageSourceAccessor messageSourceAccessor =
                         messageSourceResolver.getMessageSourceAccessor(userContext);
                     return messageSourceAccessor.getMessage((MessageSourceResolvable) value);
                 } else if (value instanceof ResolvableTemplate) {
-                    return templateProcessorFactory
-                                        .processResolvableTemplate((ResolvableTemplate) value, 
-                                                                   userContext);
+                    return templateProcessorFactory.processResolvableTemplate((ResolvableTemplate) value, userContext);
                 }
             }
         }
@@ -66,23 +62,8 @@ public abstract class UpdateBackingServiceBase<T> implements UpdateBackingServic
     }
 
     @Override
-    public boolean isValueAvailableImmediately(String fullIdentifier,
-                                               long afterDate,
-                                               YukonUserContext userContext) {
+    public boolean isValueAvailableImmediately(String fullIdentifier, long afterDate, YukonUserContext userContext) {
         // Default implementation assumes data is available now
         return true;
     }
-    
-    @Autowired
-    public void setMessageSourceResolver(
-                                         YukonUserContextMessageSourceResolver messageSourceResolver) {
-        this.messageSourceResolver = messageSourceResolver;
-    }
-    
-    @Autowired
-    public void setTemplateProcessorFactory(
-                                            TemplateProcessorFactory templateProcessorFactory) {
-        this.templateProcessorFactory = templateProcessorFactory;
-    }
-
 }
