@@ -74,7 +74,7 @@
     <entry key="yukon.web.modules.capcontrol.lastRunTime">Last Run Time</entry>
     <entry key="yukon.web.modules.capcontrol.nextRunTime">Next Run Time</entry>
     <entry key="yukon.web.modules.capcontrol.interval">Interval</entry>
-    <entry key="yukon.web.modules.capcontrol.kvarsValue">{0} kVARs</entry>
+    <entry key="yukon.web.modules.capcontrol.kvarsValue">{0} kVArs</entry>
     <entry key="yukon.web.modules.capcontrol.availableKvars">Available</entry>
     <entry key="yukon.web.modules.capcontrol.unavailableKvars">Unavailable</entry>
     <entry key="yukon.web.modules.capcontrol.closedKvars">Closed</entry>
@@ -285,7 +285,7 @@
     <entry key="yukon.web.modules.capcontrol.banksContainer.title">Capacitor Banks</entry>
     <entry key="yukon.web.modules.capcontrol.geoName">Geo Name</entry>
     <entry key="yukon.web.modules.capcontrol.substation.mapLocationId">Map Location</entry>
-    <entry key="yukon.web.modules.capcontrol.substation.load">kVAR Load / Est.</entry>
+    <entry key="yukon.web.modules.capcontrol.substation.load">kVAr Load / Est.</entry>
     <entry key="yukon.web.modules.capcontrol.substation.timestamp">Date/Time</entry>
     <entry key="yukon.web.modules.capcontrol.substation.kwVolts">kW / Volts</entry>
     <entry key="yukon.web.modules.capcontrol.substation.dailyMax">Daily / Max Ops</entry>
@@ -305,9 +305,9 @@
     <entry key="yukon.web.modules.capcontrol.selectAllBanks">Select All Banks</entry>
     <entry key="yukon.web.modules.capcontrol.analysisTrends">Analysis Trends</entry>
     <entry key="yukon.web.modules.capcontrol.analysis.label">Trends</entry>
-    <entry key="yukon.web.modules.capcontrol.analysis.hoverText">View graphs for kVAR/Watt or Power Factor for selected items.</entry>
-    <entry key="yukon.web.modules.capcontrol.todayKvarWatt.label">Today kVAR/Watt</entry>
-    <entry key="yukon.web.modules.capcontrol.thirtyDayKvarWatt.label">30 Day kVAR/Watt</entry>
+    <entry key="yukon.web.modules.capcontrol.analysis.hoverText">View graphs for kVAr/Watt or Power Factor for selected items.</entry>
+    <entry key="yukon.web.modules.capcontrol.todayKvarWatt.label">Today kVAr/Watt</entry>
+    <entry key="yukon.web.modules.capcontrol.thirtyDayKvarWatt.label">30 Day kVAr/Watt</entry>
     <entry key="yukon.web.modules.capcontrol.todayPf.label">Today PF</entry>
     <entry key="yukon.web.modules.capcontrol.thirtyDayPf.label">30 Day PF</entry>
     <entry key="yukon.web.modules.capcontrol.substation.substationArea">Area: </entry>
@@ -340,7 +340,7 @@
     <entry key="yukon.web.modules.capcontrol.substation.busAddInfo.hoverText">Click to see additional information for the bus.</entry>
     <entry key="yukon.web.modules.capcontrol.substation.opCount">Op Count:</entry>
     <entry key="yukon.web.modules.capcontrol.substation.reset">Reset</entry>
-    <entry key="yukon.web.modules.capcontrol.substation.kvar">kVAR</entry>
+    <entry key="yukon.web.modules.capcontrol.substation.kvar">kVAr</entry>
     <entry key="yukon.web.modules.capcontrol.substation.phaseA">Phase A</entry>
     <entry key="yukon.web.modules.capcontrol.substation.phaseB">Phase B</entry>
     <entry key="yukon.web.modules.capcontrol.substation.phaseC">Phase C</entry>
@@ -354,7 +354,7 @@
     <entry key="yukon.web.modules.capcontrol.substation.capBank.actions">Bank Actions</entry>
     <entry key="yukon.web.modules.capcontrol.substation.capBank.info">Bank Info</entry>
     <entry key="yukon.web.modules.capcontrol.substation.cbc.info">CBC Info</entry>
-    <entry key="yukon.web.modules.capcontrol.substation.bankMove">Move Cap Bank</entry>
+    <entry key="yukon.web.modules.capcontrol.substation.bankMove">Move Bank</entry>
     
     <entry key="yukon.web.modules.capcontrol.substation.questionableQuality.hoverText">Questionable Quality</entry>
     
@@ -571,7 +571,7 @@
     <entry key="yukon.web.modules.capcontrol.import.description.HIERARCHY.Disabled">Whether or not this object should be disabled&lt;br&gt;Options: Y,N</entry>
     <entry key="yukon.web.modules.capcontrol.import.description.HIERARCHY.MapLocationId">Any map location identifier desired for the object</entry>
     <entry key="yukon.web.modules.capcontrol.import.description.HIERARCHY.Operational State">For Cap Banks, the Operational State&lt;br&gt;Options: Fixed, Switched, StandAlone, Uninstalled</entry>
-    <entry key="yukon.web.modules.capcontrol.import.description.HIERARCHY.Capbank Size">For Cap Banks, the size in kVARs</entry>
+    <entry key="yukon.web.modules.capcontrol.import.description.HIERARCHY.Capbank Size">For Cap Banks, the size in kVArs</entry>
     <entry key="yukon.web.modules.capcontrol.import.description.REGULATOR.NAME">Name of the Regulator to create</entry>
     <entry key="yukon.web.modules.capcontrol.import.description.REGULATOR.ACTION">Options: Add, Update, or Remove</entry>
     <entry key="yukon.web.modules.capcontrol.import.description.REGULATOR.KEEP ALIVE CONFIG">Time sent to device to stay alive for (in seconds)</entry>

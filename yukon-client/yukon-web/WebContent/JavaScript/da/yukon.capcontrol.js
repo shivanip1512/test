@@ -8,10 +8,14 @@ Yukon.CapControl = (function () {
             //el_id comes in looking like this: "editorForm:hdr_submit_button_1"
             jQuery(document.getElementById(el_id)).click(function() {
                 jQuery('input.stdButton').each(function() {
-                    if (this.id != el_id) {
+                    var elseCallBack = function() {
+                        jQuery('[id=' + el_id + ']')[0].disabled=true;
+                    };
+
+                    if (this.id !== el_id) {
                         this.disabled = true;
                     } else {
-                        setTimeout("jQuery(\"[id='" + el_id + "']\")[0].disabled=true;", 1);
+                        setTimeout( elseCallBack, 1000);
                     }
                 });
             });
@@ -33,7 +37,7 @@ Yukon.CapControl = (function () {
 
             /* bank move */
             jQuery(document).on('click', 'li.toggle', function(e) {
-                if (e.target == e.currentTarget) {
+                if (e.target === e.currentTarget) {
                     var li = jQuery(this);
                     var subMenu = li.find('ul:first');
                     if (subMenu[0]) {
@@ -59,16 +63,16 @@ Yukon.CapControl = (function () {
             var banks = jQuery('[data-bank-id]');
             banks.each( function(index, item){
                 var row = jQuery(item),
-                bankId = row.attr('data-bank-id'),
-                cbcId = row.attr('data-cbc-id'),
-                moveBankTitle = row.attr('data-move-bank-title'),
-                cbcInfoTitle = row.attr('data-cbc-info-title'),
-                bankInfoTitle = row.attr('data-bank-info-title'),
-                moveBankOpener = row.find('.f-move-bank'),
-                bankCommandOpener = row.find('.f-bank-command'),
-                stateMenuOpener = row.find('.f-bank-state'),
-                bankInfoOpener = row.find('.f-bank-info'),
-                cbcInfoOpener = row.find('.f-cbc-info');
+                    bankId = row.attr('data-bank-id'),
+                    cbcId = row.attr('data-cbc-id'),
+                    moveBankTitle = row.attr('data-move-bank-title'),
+                    cbcInfoTitle = row.attr('data-cbc-info-title'),
+                    bankInfoTitle = row.attr('data-bank-info-title'),
+                    moveBankOpener = row.find('.f-move-bank'),
+                    bankCommandOpener = row.find('.f-bank-command'),
+                    stateMenuOpener = row.find('.f-bank-state'),
+                    bankInfoOpener = row.find('.f-bank-info'),
+                    cbcInfoOpener = row.find('.f-cbc-info');
 
                 if( moveBankOpener.is('.warning') ){
                     moveBankOpener.click( function(event) {
@@ -107,10 +111,11 @@ Yukon.CapControl = (function () {
 
 
             busFilter.change( function(event) {
-                var rows = jQuery("#subBusTable [data-bus-id]");
-                var busIds = new Array();
-                var sel = busFilter.find(':selected');
-                var busId = + sel.val();
+                var rows = jQuery("#subBusTable [data-bus-id]"),
+                    busIds = new Array(),
+                    sel = busFilter.find(':selected'),
+                    busId = + sel.val();
+                
                 if (busId === 0) {
                     rows.each(function (index, item) {
                         var row = jQuery(item),
@@ -132,7 +137,7 @@ Yukon.CapControl = (function () {
                 if (feederId === 0) {
                     rows.each(function (index, item) {
                         var row = jQuery(item),
-                            rowId = + row.attr('data-feeder-id')
+                            rowId = + row.attr('data-feeder-id');
                         feederIds.push(rowId);
                     });
                 } else {
@@ -143,16 +148,16 @@ Yukon.CapControl = (function () {
         },
 
         applyBusFilter : function(busIds) {
-            var busRows = jQuery('#subBusTable [data-bus-id]');
+            var busRows = jQuery('#subBusTable [data-bus-id]'),
                 feederRows = jQuery("#fdrTable [data-parent-id]"),
                 feederFilters = jQuery('#feederFilter [value]'),
                 feederIds = new Array();
 
             busRows.each( function (index, item) {
-                var row = jQuery(item);
-                busId = + row.attr('data-bus-id');
+                var row = jQuery(item),
+                    busId = + row.attr('data-bus-id');
 
-                if (busIds.indexOf(busId) != -1) {
+                if (busIds.indexOf(busId) !== -1) {
                     row.show();
                 } else {
                     row.hide();
@@ -161,10 +166,10 @@ Yukon.CapControl = (function () {
 
             feederRows.each(function (index, item) {
                 var row = jQuery(item),
-                busId = + row.attr('data-parent-id'),
-                feederId = + row.attr('data-feeder-id');
+                    busId = + row.attr('data-parent-id'),
+                    feederId = + row.attr('data-feeder-id');
 
-                if (busIds.indexOf(busId) != -1) {
+                if (busIds.indexOf(busId) !== -1) {
                     feederIds.push( feederId );
                 }
             });
@@ -172,7 +177,7 @@ Yukon.CapControl = (function () {
             jQuery('#feederFilter').find( '[value=0]').attr('selected', true);
             feederFilters.each( function(index, item) {
                 var option = jQuery(item),
-                optionId = + option.val();
+                    optionId = + option.val();
 
                 if (feederIds.indexOf(optionId) !== -1 || optionId === 0) {
                     option.show();
@@ -187,11 +192,12 @@ Yukon.CapControl = (function () {
         applyFeederFilter : function (feederIds) {
             var feederRows = jQuery("#fdrTable [data-feeder-id]"),
                 bankRows = jQuery('#capBankTable [data-parent-id]');
+
             feederRows.each(function (index, item) {
                 var row = jQuery(item);
                     feederId = + row.attr('data-feeder-id');
 
-                if (feederIds.indexOf(feederId) != -1) {
+                if (feederIds.indexOf(feederId) !== -1) {
                     row.show();
                 } else {
                     row.hide();
@@ -199,10 +205,10 @@ Yukon.CapControl = (function () {
             });
 
             bankRows.each(function (index, item) {
-                var row = jQuery(item);
+                var row = jQuery(item),
                     feederId = + row.attr('data-parent-id');
 
-                if (feederIds.indexOf(feederId) != -1) {
+                if (feederIds.indexOf(feederId) !== -1) {
                     row.show();
                 } else {
                     row.hide();
@@ -216,6 +222,7 @@ Yukon.CapControl = (function () {
 
         checkPageExpire : function() {
             var paoIds = [];
+
             jQuery('[data-pao-id]').each(function() {
                 paoIds.push(jQuery(this).attr('data-pao-id'));
             });
@@ -257,28 +264,26 @@ Yukon.CapControl = (function () {
         },
 
         showDialog : function(title, url, options, selector) {
-            var settings,
-                dialogArgs = { 'title': title,
+            var dialogArgs = { 'title': title,
                                'width'    : 'auto',
                                'height'   : 'auto'
-              };
-            settings = jQuery.extend({}, dialogArgs, options);
-            selector = selector || '<div></div>';
+                  },
+                selector = selector || '<div></div>',
+                dialog = jQuery(selector);
 
-            var dialog = jQuery(selector);
-
-            dialog.load(url).dialog(settings);
+            jQuery.extend( dialogArgs, options);
+            dialog.load(url).dialog(dialogArgs);
         },
 
         showMenuPopup : function (params) {
-            var settings,
-                defaults = { 'title': jQuery('#menuPopup input[id="dialogTitle"]').val(),
+            var dialogArgs = { 'title': jQuery('#menuPopup input[id="dialogTitle"]').val(),
                              'width'    : 'auto',
                              'height'   : 'auto',
                              'resizable': false
-                           };
-            settings = jQuery.extend( {}, defaults, params);
-            jQuery('#menuPopup').dialog(settings);
+            };
+
+            jQuery.extend(dialogArgs, params);
+            jQuery('#menuPopup').dialog(dialogArgs);
         },
 
         checkAll : function(allCheckBox, selector) {
@@ -287,9 +292,10 @@ Yukon.CapControl = (function () {
 
         addLockButtonForButtonGroup : function (groupId, secs) {
             jQuery(document).ready(function() {
-                var buttons = jQuery('#' + groupId + ' input');
+                var buttons = jQuery('#' + groupId + ' input'),
+                i;
 
-                for (var i=0; i<buttons.length; i++) {
+                for (i=0; i<buttons.length; i++) {
                     lock_buttons(buttons[i].id);
                 }
             });
@@ -302,7 +308,7 @@ Yukon.CapControl = (function () {
         },
 
         showAlertMessageForAction : function(action, item, result, success) {
-            if (action != '') {
+            if (action !== '') {
                 action = '"' + action + '"';
             }
             var message = item + ' ' + action + ' ' + result;
@@ -319,13 +325,13 @@ Yukon.CapControl = (function () {
             }
             contents.html(message);
             jQuery('#alertMessageContainer').show();
-            setTimeout (_hideAlertMessage(), success ? 3000 : 8000);
+            setTimeout (_hideAlertMessage, success ? 3000 : 8000);
         },
 
         showMessage : function(message) {
             jQuery('#alertMessageContents').html(message);
             jQuery('#alertMessageContainer').show();
-            setTimeout (_hideAlertMessage(), 3000);
+            setTimeout (_hideAlertMessage, 3000);
         }
     };
 
