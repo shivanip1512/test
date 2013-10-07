@@ -3,6 +3,8 @@
 
 <properties>
 
+<entry key="yukon.common.copyof">Copy of {0}</entry>
+
 <entry key="yukon.common.search">Search</entry>
 <entry key="yukon.common.search.placeholder">search</entry>
 
@@ -13,6 +15,7 @@
 <entry key="yukon.common.address">Address</entry>
 
 <entry key="yukon.common.okButton">OK</entry>
+<entry key="yukon.common.choose">Choose</entry>
 <entry key="yukon.common.disable">Disable</entry>
 <entry key="yukon.common.enable">Enable</entry>
 <entry key="yukon.common.disabled">Disabled</entry>

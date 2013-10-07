@@ -159,9 +159,9 @@ public class YukonConfigurationController {
     @RequestMapping("/config/edit")
     public String edit(ModelMap model, YukonUserContext context, GlobalSettingSubCategory category) throws ExecutionException {
         
-        /** Themes have a special editor, redirect there (@link {ThemeController}) */
+        /** Themes and Weather have a special editors */
         if (category == GlobalSettingSubCategory.THEMES) {
-            return "redirect:/adminSetup/config/theme";
+            return "redirect:/adminSetup/config/themes";
         } else if (category == GlobalSettingSubCategory.WEATHER) {
             return "redirect:/adminSetup/config/weather";
         } else if (category == GlobalSettingSubCategory.SECURITY) {

@@ -1,8 +1,8 @@
-package com.cannontech.system.dao;
+package com.cannontech.web.admin.theme.dao;
 
 import java.util.List;
 
-import com.cannontech.system.model.Theme;
+import com.cannontech.web.admin.theme.model.Theme;
 
 public interface ThemeDao {
 
@@ -18,11 +18,8 @@ public interface ThemeDao {
     
     public void deleteTheme(int themeId);
 
-    /**
-     * Returns a list of the default themes (Yukon Grey and Yukon Blue)
-     */
-    public List<Theme> getDefaultThemes();
+    public List<Theme> getThemes();
 
-    public List<Theme> getNonDefaultThemes();
+    public Theme getCurrentTheme();
     
 }

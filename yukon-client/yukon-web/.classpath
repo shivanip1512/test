@@ -45,7 +45,7 @@
 	<classpathentry kind="lib" path="/third-party/log4j-1.2.17.jar" sourcepath="/third-party/linked-sources/logging-log4j-1.2.14.zip"/>
 	<classpathentry kind="lib" path="/third-party/commons-beanutils-1.7.0.jar"/>
 	<classpathentry kind="lib" path="/third-party/commons-fileupload-1.2.1.jar"/>
-	<classpathentry kind="lib" path="/third-party/commons-io-1.3.2.jar"/>
+	<classpathentry kind="lib" path="/third-party/commons-io-2.4.jar"/>
 	<classpathentry kind="lib" path="/third-party/ecs-1.4.2.jar"/>
 	<classpathentry kind="lib" path="/third-party/jopcbridge.jar"/>
 	<classpathentry kind="lib" path="/third-party/dom4j-1.6.1.jar"/>
@@ -64,7 +64,32 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="/third-party/commons-validator-1.4.0.jar"/>
+	<classpathentry kind="lib" path="/third-party/commons-lang-2.3.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/commons-lang3-3.1.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="/third-party/wro4j-core-1.6.3.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/wro4j-extensions-1.6.3.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/wro4j-runner-1.6.3-jar-with-dependencies.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/js.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>

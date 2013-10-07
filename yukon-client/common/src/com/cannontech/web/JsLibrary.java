@@ -9,13 +9,10 @@ package com.cannontech.web;
  * 
  * Each Enumeration is defined as follows:
  * 
- *  JSLibrary(path, component)
+ *  JSLibrary(path)
  *  
  *  @param path         String      Relative path to the location of the library - DO NOT include any
  *                                  file names in this path
- *  @param component    String      The default component of the library.  Refer to your library's
- *                                  documentation to determine the single file include.
- *  
  */
 public enum JsLibrary {
     //if updating jquery be sure to include the noconflict call at the end of the file if prototype
@@ -35,6 +32,10 @@ public enum JsLibrary {
     JQUERY_UI_ACTION_WHEN("/JavaScript/lib/jQuery/plugins/actionWhen/jquery.actionwhen.js"), //in-house
     JQUERY_TRAVERSABLE("/JavaScript/lib/jQuery/plugins/traversable/jquery.traversable.js"), //https://github.com/adelegard/jquery-traverse
     JQUERY_TIPSY("/JavaScript/lib/jQuery/plugins/tipsy/javascripts/jquery.tipsy.js"), //https://github.com/jaz303/tipsy
+    JQUERY_SPECTRUM("/JavaScript/lib/jQuery/plugins/spectrum/spectrum.js"), //http://bgrins.github.io/spectrum/
+    JQUERY_UI_WIDGET("/JavaScript/lib/jQuery/plugins/fileupload/jquery.ui.widget.js"), //https://github.com/blueimp/jQuery-File-Upload/wiki/Basic-plugin
+    JQUERY_IFRAME_TRANSPORT("/JavaScript/lib/jQuery/plugins/fileupload/jquery.iframe-transport.js"), //https://github.com/blueimp/jQuery-File-Upload/wiki/Basic-plugin
+    JQUERY_FILE_UPLOAD("/JavaScript/lib/jQuery/plugins/fileupload/jquery.fileupload.js"), //https://github.com/blueimp/jQuery-File-Upload/wiki/Basic-plugin
 
     YUKON_FLOTCHARTS("/JavaScript/yukon.flot.js"), //in-house
     JQUERY_FLOTCHARTS("/JavaScript/lib/jQuery/plugins/flotcharts/jquery.flot.js"), //http://www.flotcharts.org/

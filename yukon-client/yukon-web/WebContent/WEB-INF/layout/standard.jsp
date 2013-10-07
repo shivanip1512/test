@@ -23,6 +23,7 @@
         <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/icons.css"/>" >
         <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/lib/jQuery/yukon/jquery-ui-1.9.2.custom.css"/>" >
         <link rel="stylesheet" type="text/css" href="<cti:url value="/JavaScript/lib/jQuery/plugins/tipsy/stylesheets/tipsy.css"/>" >
+        <link rel="stylesheet" type="text/css" href="<cti:url value="/JavaScript/lib/jQuery/plugins/spectrum/spectrum.css"/>" >
         
         <c:set var="browser" value="${header['User-Agent']}" scope="session"/>
         

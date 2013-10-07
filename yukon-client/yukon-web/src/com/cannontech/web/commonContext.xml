@@ -14,5 +14,7 @@
     <context:component-scan base-package="com.cannontech.web.util"/>
 
     <bean class="com.cannontech.web.user.service.impl.UserPreferenceServiceImpl" />
+    <bean class="com.cannontech.web.admin.theme.dao.ThemeDaoImpl"/>
+    <bean class="com.cannontech.web.common.resources.ResourceCache"/>
 
 </beans>

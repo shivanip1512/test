@@ -1,100 +1,108 @@
-package com.cannontech.system.dao.impl;
+package com.cannontech.web.admin.theme.dao;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.SqlParameterSink;
+import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
-import com.cannontech.system.dao.ThemeDao;
-import com.cannontech.system.model.Theme;
-import com.cannontech.system.model.ThemeProperty;
-import com.cannontech.system.model.ThemePropertyType;
+import com.cannontech.web.admin.theme.model.Theme;
+import com.cannontech.web.admin.theme.model.ThemePropertyType;
 
 public class ThemeDaoImpl implements ThemeDao {
     
     @Autowired private YukonJdbcTemplate template;
     @Autowired private NextValueHelper nvh;
     
-    private final static YukonRowMapper<ThemeProperty> PROPERTYMAPPER_MAPPER = new YukonRowMapper<ThemeProperty>() {
-        @Override
-        public ThemeProperty mapRow(YukonResultSet rs) throws SQLException {
-            ThemeProperty property = new ThemeProperty();
-            property.setType(rs.getEnum("Property", ThemePropertyType.class));
-            property.setValue(rs.getString("Value"));
-            return property;
-        }
-    };
-    
     private final static YukonRowMapper<Theme> THEME_MAPPER = new YukonRowMapper<Theme>() {
         @Override
         public Theme mapRow(YukonResultSet rs) throws SQLException {
             Theme theme = new Theme();
-            theme.setThemeId(rs.getInt("ThemeId"));
+            int themeId = rs.getInt("ThemeId");
+            theme.setThemeId(themeId);
             theme.setName(rs.getString("Name"));
+            theme.setEditable(themeId >= 0); /* default themes have negative id's */
+            theme.setCurrentTheme(rs.getBoolean("CurrentTheme"));
             return theme;
         }
     };
-
-    @Override
-    public Theme getTheme(final int themeId) {
+    
+    public Theme getTheme(SqlFragmentSource where) {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select ThemeId, Name");
+        sql.append("select ThemeId, Name, CurrentTheme");
         sql.append("from Theme");
-        sql.append("where ThemeId").eq(themeId);
+        sql.appendFragment(where);
         
-        Theme theme = template.queryForObject(sql, THEME_MAPPER);
+        final Theme theme = template.queryForObject(sql, THEME_MAPPER);
         
         sql = new SqlStatementBuilder();
         sql.append("select Property, Value");
         sql.append("from ThemeProperty");
-        sql.append("where ThemeId").eq(themeId);
+        sql.append("where ThemeId").eq(theme.getThemeId());
         
-        List<ThemeProperty> properties = template.query(sql, PROPERTYMAPPER_MAPPER);
-        
-        theme.setProperties(properties);
+        template.query(sql, new YukonRowCallbackHandler() {
+            @Override
+            public void processRow(YukonResultSet rs) throws SQLException {
+                ThemePropertyType type = rs.getEnum("Property", ThemePropertyType.class);
+                String value = rs.getString("Value");
+                theme.getProperties().put(type, value);
+            }
+        });
         
         return theme;
     }
-    
-    @Override
-    public List<Theme> getDefaultThemes() {
-        
-        List<Theme> defaults = new ArrayList<>();
-        
-        /* TODO add yukon blue later */
-        defaults.add(getTheme(-1));
-        
-        return defaults;
-    }
 
     @Override
-    public List<Theme> getNonDefaultThemes() {
+    public Theme getTheme(final int themeId) {
+        
+        SqlStatementBuilder where = new SqlStatementBuilder();
+        where.append("where ThemeId").eq(themeId);
+        
+        return getTheme(where);
+    }
+    
+    @Override
+    public Theme getCurrentTheme() {
+        
+        SqlStatementBuilder where = new SqlStatementBuilder();
+        where.append("where CurrentTheme").eq(YNBoolean.YES);
+        
+        return getTheme(where);
+    }
+    
+    @Override
+    public List<Theme> getThemes() {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select ThemeId, Name");
+        sql.append("select ThemeId, Name, CurrentTheme");
         sql.append("from Theme");
-        sql.append("where ThemeId").gte(0);
         
         List<Theme> themes = template.query(sql, THEME_MAPPER);
         
-        for (Theme theme : themes) {
+        for (final Theme theme : themes) {
             sql = new SqlStatementBuilder();
             sql.append("select Property, Value");
             sql.append("from ThemeProperty");
             sql.append("where ThemeId").eq(theme.getThemeId());
             
-            List<ThemeProperty> properties = template.query(sql, PROPERTYMAPPER_MAPPER);
-            
-            theme.setProperties(properties);
+            template.query(sql, new YukonRowCallbackHandler() {
+                @Override
+                public void processRow(YukonResultSet rs) throws SQLException {
+                    ThemePropertyType type = rs.getEnum("Property", ThemePropertyType.class);
+                    String value = rs.getString("Value");
+                    theme.getProperties().put(type, value);
+                }
+            });
         }
         
         return themes;
@@ -117,6 +125,7 @@ public class ThemeDaoImpl implements ThemeDao {
             SqlParameterSink values = sql.insertInto("Theme");
             values.addValue("ThemeId", themeId);
             values.addValue("Name", theme.getName());
+            values.addValue("CurrentTheme", YNBoolean.valueOf(theme.isCurrentTheme()));
             
             template.update(sql);
             theme.setThemeId(themeId);
@@ -125,6 +134,7 @@ public class ThemeDaoImpl implements ThemeDao {
             /** update existing theme */
             SqlParameterSink values = sql.update("Theme");
             values.addValue("Name", theme.getName());
+            values.addValue("CurrentTheme", YNBoolean.valueOf(theme.isCurrentTheme()));
             sql.append("where ThemeId").eq(theme.getThemeId());
             
             template.update(sql);
@@ -135,13 +145,13 @@ public class ThemeDaoImpl implements ThemeDao {
         sql.append("delete from ThemeProperty where ThemeId").eq(theme.getThemeId());
         template.update(sql);
         
-        for (ThemeProperty property : theme.getProperties()) {
+        for (ThemePropertyType property : theme.getProperties().keySet()) {
             
             sql = new SqlStatementBuilder();
             SqlParameterSink values = sql.insertInto("ThemeProperty");
             values.addValue("ThemeId", theme.getThemeId());
-            values.addValue("Property", property.getType());
-            values.addValue("Value", property.getValue());
+            values.addValue("Property", property);
+            values.addValue("Value", theme.getProperties().get(property));
             template.update(sql);
             
         }
@@ -158,6 +168,7 @@ public class ThemeDaoImpl implements ThemeDao {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("delete from Theme where ThemeId").eq(themeId);
+        template.update(sql);
     }
 
 }

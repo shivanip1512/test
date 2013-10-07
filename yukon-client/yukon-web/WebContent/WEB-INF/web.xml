@@ -864,6 +864,8 @@
     <servlet-mapping>
         <servlet-name>common</servlet-name>
         <url-pattern>/common/*</url-pattern>
+        <url-pattern>/WebConfig/yukon/styles/layout.css</url-pattern>
+        <url-pattern>/WebConfig/yukon/styles/yukon.css</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
@@ -1175,7 +1177,7 @@
         <servlet-name>adminSetup</servlet-name>
         <url-pattern>/adminSetup/*</url-pattern>
     </servlet-mapping>
-    
+
     <servlet-mapping>
         <servlet-name>user</servlet-name>
         <url-pattern>/user/*</url-pattern>

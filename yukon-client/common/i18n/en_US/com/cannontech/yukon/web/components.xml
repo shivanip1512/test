@@ -143,23 +143,18 @@
     <entry key="yukon.web.components.button.next.label">Next</entry>
     <entry key="yukon.web.components.button.previous.label">Previous</entry>
     
-    <entry key="yukon.web.components.button.remove.hoverText">Remove</entry>
     <entry key="yukon.web.components.button.remove.label">Remove</entry>
 
     <entry key="yukon.web.components.button.disabledRemove.label">Remove</entry>
 
-    <entry key="yukon.web.components.button.add.hoverText">Add</entry>
     <entry key="yukon.web.components.button.add.label">Add</entry>
     
     <entry key="yukon.web.components.button.edit.label">Edit</entry>
     
-    <entry key="yukon.web.components.button.info.hoverText">Info</entry>
     <entry key="yukon.web.components.button.info.label">Info</entry>
     
-    <entry key="yukon.web.components.button.copy.hoverText">Copy</entry>
     <entry key="yukon.web.components.button.copy.label">Copy</entry>
     
-    <entry key="yukon.web.components.button.disabledEdit.hoverText">Edit</entry>
     <entry key="yukon.web.components.button.disabledEdit.label">Edit</entry>
 
     <entry key="yukon.web.components.button.meterDetail.label">Meter Detail</entry>

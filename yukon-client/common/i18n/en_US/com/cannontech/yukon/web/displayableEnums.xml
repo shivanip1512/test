@@ -15,6 +15,20 @@
 <entry key="yukon.web.mspFilterBy.FACILITY_ID">Facility ID</entry>
 <entry key="yukon.web.mspFilterBy.SERVICE_LOCATION">Service Location</entry>
 
+<!-- Theme Property Type -->
+<entry key="yukon.common.themePropertyType.PAGE_BACKGROUND">Background Color</entry>
+<entry key="yukon.common.themePropertyType.PAGE_BACKGROUND_FONT_COLOR">Background Font Color</entry>
+<entry key="yukon.common.themePropertyType.PAGE_BACKGROUND_SHADOW">Background Shadow</entry>
+<entry key="yukon.common.themePropertyType.PRIMARY_COLOR">Primary Color</entry>
+<entry key="yukon.common.themePropertyType.LOGIN_BACKGROUND_URL">Login Page Background</entry>
+<entry key="yukon.common.themePropertyType.LOGIN_FONT_COLOR">Login Page Font Color</entry>
+<entry key="yukon.common.themePropertyType.LOGIN_FONT_SHADOW">Login Page Font Shadow</entry>
+<entry key="yukon.common.themePropertyType.LOGIN_TAGLINE_MARGIN">Login Page Tagline Margin</entry>
+<entry key="yukon.common.themePropertyType.LOGO_URL">Logo</entry>
+<entry key="yukon.common.themePropertyType.LOGO_LEFT">Logo Left</entry>
+<entry key="yukon.common.themePropertyType.LOGO_TOP">Logo Top</entry>
+<entry key="yukon.common.themePropertyType.LOGO_WIDTH">Logo Width</entry>
+
 <!-- Chart Period -->
 <entry key="yukon.common.chartPeriod.DAY">Day</entry>
 <entry key="yukon.common.chartPeriod.WEEK">Week</entry>
@@ -364,7 +378,7 @@
     <entry key="yukon.common.tzDisplayOption.LOCAL">Local</entry>
     <entry key="yukon.common.tzDisplayOption.LOCAL_NO_DST">Standard (no DST)</entry>
     <entry key="yukon.common.tzDisplayOption.UTC">UTC (GMT)</entry>
-    
+
     <!-- EnabledStatus enum-->
     <entry key="yukon.common.enabledStatus.ENABLED">Enabled</entry>
     <entry key="yukon.common.enabledStatus.DISABLED">Disabled</entry>
