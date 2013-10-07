@@ -96,6 +96,8 @@ public:
     long        getId() const;
     std::string getName() const;
 
+    bool hasCategory( const long category ) const;
+
     const_iterator begin() const;
     const_iterator end() const;
 };

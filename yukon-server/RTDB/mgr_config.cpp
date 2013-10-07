@@ -8,19 +8,10 @@
 #include "debug_timer.h"
 
 #include <boost/tuple/tuple.hpp>
-#include <algorithm>
 
 
 
 CtiConfigManager::CtiConfigManager()
-{
-    loadAllConfigs();
-    loadAllCategoryItems();
-    loadAllDeviceAssignments();
-}
-
-// This guy is here to bypass the database for unit testing
-CtiConfigManager::CtiConfigManager( Cti::Config::DeviceConfigSPtr config )
 {
     // empty
 }
@@ -29,6 +20,14 @@ CtiConfigManager::CtiConfigManager( Cti::Config::DeviceConfigSPtr config )
 CtiConfigManager::~CtiConfigManager()
 {
     // empty
+}
+
+
+void CtiConfigManager::initialize()
+{
+    loadAllConfigs();
+    loadAllCategoryItems();
+    loadAllDeviceAssignments();
 }
 
 
@@ -265,7 +264,7 @@ void CtiConfigManager::processDBUpdate( const long          ID,
             {
                 const Cti::Config::Configuration & config = *configIter.second;
 
-                if ( std::find( config.begin(), config.end(), ID ) != config.end() )    // found (category)ID in config
+                if ( config.hasCategory( ID ) )     // found (category)ID in config
                 {
                     _cache.erase( config.getId() );
                 }
@@ -356,7 +355,7 @@ Cti::Config::DeviceConfigSPtr   CtiConfigManager::fetchConfig( const long device
 {
     // lookup config ID from DeviceID
 
-    DeviceAssignmentMap::const_iterator configIDSearch = _deviceAssignments.find( deviceID );
+    DeviceToConfigAssignmentMap::const_iterator configIDSearch = _deviceAssignments.find( deviceID );
 
     if ( configIDSearch != _deviceAssignments.end() )
     {

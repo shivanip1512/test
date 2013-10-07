@@ -204,6 +204,12 @@ std::string Configuration::getName() const
 }
 
 
+bool Configuration::hasCategory( const long category ) const
+{
+    return _categoryIDs.end() != _categoryIDs.find( category );
+}
+
+
 Configuration::const_iterator Configuration::begin() const
 {
     return _categoryIDs.begin();

@@ -1219,6 +1219,8 @@ void LoadScannableDevices(void *ptr)
                 ScannerDeviceManager.refreshAllDevices();
             }
 
+            ConfigManager.initialize();
+
             stop = stop.now();
 
             if(stop.seconds() - start.seconds() > 5 || ScannerDebugLevel & SCANNER_DEBUG_DBRELOAD)

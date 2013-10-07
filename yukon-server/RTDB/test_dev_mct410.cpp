@@ -26,8 +26,7 @@ class test_ConfigManager : public CtiConfigManager
 public:
 
     test_ConfigManager( Cti::Config::DeviceConfigSPtr config )
-        :   CtiConfigManager( config ),
-            _config( config )
+        :   _config( config )
     {
         // empty
     }

@@ -1409,6 +1409,7 @@ INT RefreshPorterRTDB(const CtiDBChangeMsg *pChg)
             DeviceManager.apply(attachRouteManagerToDevice, &RouteManager);
             DeviceManager.apply(attachPointManagerToDevice, &PorterPointManager);
             DeviceManager.apply(attachConfigManagerToDevice, &ConfigManager);
+            ConfigManager.initialize();
             DeviceManager.refreshGroupHierarchy();
             DeviceManager.apply(applyQueuedDevicePortMatchup, &PortManager);
         }
