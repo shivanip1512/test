@@ -74,6 +74,162 @@ DROP TABLE PAOFavorites;
 DROP TABLE PAORecentViews;
 /* End YUK-12525 */
 
+/* Start YUK-12602 */
+UPDATE DeviceDataMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate A Peak', '/Peak Demand Rate A') WHERE GroupName LIKE '%/Tou Rate A Peak';
+UPDATE DeviceDataMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate B Peak', '/Peak Demand Rate B') WHERE GroupName LIKE '%/Tou Rate B Peak';
+UPDATE DeviceDataMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate C Peak', '/Peak Demand Rate C') WHERE GroupName LIKE '%/Tou Rate C Peak';
+UPDATE DeviceDataMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate D Peak', '/Peak Demand Rate D') WHERE GroupName LIKE '%/Tou Rate D Peak';
+ 
+UPDATE DeviceDataMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate A Usage', '/Usage Rate A') WHERE GroupName LIKE '%/Tou Rate A Usage';
+UPDATE DeviceDataMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate B Usage', '/Usage Rate B') WHERE GroupName LIKE '%/Tou Rate B Usage';
+UPDATE DeviceDataMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate C Usage', '/Usage Rate C') WHERE GroupName LIKE '%/Tou Rate C Usage';
+UPDATE DeviceDataMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate D Usage', '/Usage Rate D') WHERE GroupName LIKE '%/Tou Rate D Usage';
+ 
+UPDATE DeviceDataMonitor SET GroupName = REPLACE(GroupName, '/Energy Generated', '/Received kWh') WHERE GroupName LIKE '%/Energy Generated';
+UPDATE DeviceDataMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate A Energy Generated', '/Received kWh Rate A') WHERE GroupName LIKE '%/Tou Rate A Energy Generated';
+UPDATE DeviceDataMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate B Energy Generated', '/Received kWh Rate B') WHERE GroupName LIKE '%/Tou Rate B Energy Generated';
+UPDATE DeviceDataMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate C Energy Generated', '/Received kWh Rate C') WHERE GroupName LIKE '%/Tou Rate C Energy Generated';
+UPDATE DeviceDataMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate D Energy Generated', '/Received kWh Rate D') WHERE GroupName LIKE '%/Tou Rate D Energy Generated';
+ 
+UPDATE DeviceGroupComposedGroup SET GroupName = REPLACE(GroupName, '/Tou Rate A Peak', '/Peak Demand Rate A') WHERE GroupName LIKE '%/Tou Rate A Peak';
+UPDATE DeviceGroupComposedGroup SET GroupName = REPLACE(GroupName, '/Tou Rate B Peak', '/Peak Demand Rate B') WHERE GroupName LIKE '%/Tou Rate B Peak';
+UPDATE DeviceGroupComposedGroup SET GroupName = REPLACE(GroupName, '/Tou Rate C Peak', '/Peak Demand Rate C') WHERE GroupName LIKE '%/Tou Rate C Peak';
+UPDATE DeviceGroupComposedGroup SET GroupName = REPLACE(GroupName, '/Tou Rate D Peak', '/Peak Demand Rate D') WHERE GroupName LIKE '%/Tou Rate D Peak';
+ 
+UPDATE DeviceGroupComposedGroup SET GroupName = REPLACE(GroupName, '/Tou Rate A Usage', '/Usage Rate A') WHERE GroupName LIKE '%/Tou Rate A Usage';
+UPDATE DeviceGroupComposedGroup SET GroupName = REPLACE(GroupName, '/Tou Rate B Usage', '/Usage Rate B') WHERE GroupName LIKE '%/Tou Rate B Usage';
+UPDATE DeviceGroupComposedGroup SET GroupName = REPLACE(GroupName, '/Tou Rate C Usage', '/Usage Rate C') WHERE GroupName LIKE '%/Tou Rate C Usage';
+UPDATE DeviceGroupComposedGroup SET GroupName = REPLACE(GroupName, '/Tou Rate D Usage', '/Usage Rate D') WHERE GroupName LIKE '%/Tou Rate D Usage';
+ 
+UPDATE DeviceGroupComposedGroup SET GroupName = REPLACE(GroupName, '/Energy Generated', '/Received kWh') WHERE GroupName LIKE '%/Energy Generated';
+UPDATE DeviceGroupComposedGroup SET GroupName = REPLACE(GroupName, '/Tou Rate A Energy Generated', '/Received kWh Rate A') WHERE GroupName LIKE '%/Tou Rate A Energy Generated';
+UPDATE DeviceGroupComposedGroup SET GroupName = REPLACE(GroupName, '/Tou Rate B Energy Generated', '/Received kWh Rate B') WHERE GroupName LIKE '%/Tou Rate B Energy Generated';
+UPDATE DeviceGroupComposedGroup SET GroupName = REPLACE(GroupName, '/Tou Rate C Energy Generated', '/Received kWh Rate C') WHERE GroupName LIKE '%/Tou Rate C Energy Generated';
+UPDATE DeviceGroupComposedGroup SET GroupName = REPLACE(GroupName, '/Tou Rate D Energy Generated', '/Received kWh Rate D') WHERE GroupName LIKE '%/Tou Rate D Energy Generated';
+ 
+UPDATE OutageMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate A Peak', '/Peak Demand Rate A') WHERE GroupName LIKE '%/Tou Rate A Peak';
+UPDATE OutageMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate B Peak', '/Peak Demand Rate B') WHERE GroupName LIKE '%/Tou Rate B Peak';
+UPDATE OutageMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate C Peak', '/Peak Demand Rate C') WHERE GroupName LIKE '%/Tou Rate C Peak';
+UPDATE OutageMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate D Peak', '/Peak Demand Rate D') WHERE GroupName LIKE '%/Tou Rate D Peak';
+ 
+UPDATE OutageMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate A Usage', '/Usage Rate A') WHERE GroupName LIKE '%/Tou Rate A Usage';
+UPDATE OutageMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate B Usage', '/Usage Rate B') WHERE GroupName LIKE '%/Tou Rate B Usage';
+UPDATE OutageMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate C Usage', '/Usage Rate C') WHERE GroupName LIKE '%/Tou Rate C Usage';
+UPDATE OutageMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate D Usage', '/Usage Rate D') WHERE GroupName LIKE '%/Tou Rate D Usage';
+ 
+UPDATE OutageMonitor SET GroupName = REPLACE(GroupName, '/Energy Generated', '/Received kWh') WHERE GroupName LIKE '%/Energy Generated';
+UPDATE OutageMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate A Energy Generated', '/Received kWh Rate A') WHERE GroupName LIKE '%/Tou Rate A Energy Generated';
+UPDATE OutageMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate B Energy Generated', '/Received kWh Rate B') WHERE GroupName LIKE '%/Tou Rate B Energy Generated';
+UPDATE OutageMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate C Energy Generated', '/Received kWh Rate C') WHERE GroupName LIKE '%/Tou Rate C Energy Generated';
+UPDATE OutageMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate D Energy Generated', '/Received kWh Rate D') WHERE GroupName LIKE '%/Tou Rate D Energy Generated';
+ 
+UPDATE PorterResponseMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate A Peak', '/Peak Demand Rate A') WHERE GroupName LIKE '%/Tou Rate A Peak';
+UPDATE PorterResponseMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate B Peak', '/Peak Demand Rate B') WHERE GroupName LIKE '%/Tou Rate B Peak';
+UPDATE PorterResponseMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate C Peak', '/Peak Demand Rate C') WHERE GroupName LIKE '%/Tou Rate C Peak';
+UPDATE PorterResponseMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate D Peak', '/Peak Demand Rate D') WHERE GroupName LIKE '%/Tou Rate D Peak';
+ 
+UPDATE PorterResponseMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate A Usage', '/Usage Rate A') WHERE GroupName LIKE '%/Tou Rate A Usage';
+UPDATE PorterResponseMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate B Usage', '/Usage Rate B') WHERE GroupName LIKE '%/Tou Rate B Usage';
+UPDATE PorterResponseMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate C Usage', '/Usage Rate C') WHERE GroupName LIKE '%/Tou Rate C Usage';
+UPDATE PorterResponseMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate D Usage', '/Usage Rate D') WHERE GroupName LIKE '%/Tou Rate D Usage';
+ 
+UPDATE PorterResponseMonitor SET GroupName = REPLACE(GroupName, '/Energy Generated', '/Received kWh') WHERE GroupName LIKE '%/Energy Generated';
+UPDATE PorterResponseMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate A Energy Generated', '/Received kWh Rate A') WHERE GroupName LIKE '%/Tou Rate A Energy Generated';
+UPDATE PorterResponseMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate B Energy Generated', '/Received kWh Rate B') WHERE GroupName LIKE '%/Tou Rate B Energy Generated';
+UPDATE PorterResponseMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate C Energy Generated', '/Received kWh Rate C') WHERE GroupName LIKE '%/Tou Rate C Energy Generated';
+UPDATE PorterResponseMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate D Energy Generated', '/Received kWh Rate D') WHERE GroupName LIKE '%/Tou Rate D Energy Generated';
+ 
+UPDATE StatusPointMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate A Peak', '/Peak Demand Rate A') WHERE GroupName LIKE '%/Tou Rate A Peak';
+UPDATE StatusPointMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate B Peak', '/Peak Demand Rate B') WHERE GroupName LIKE '%/Tou Rate B Peak';
+UPDATE StatusPointMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate C Peak', '/Peak Demand Rate C') WHERE GroupName LIKE '%/Tou Rate C Peak';
+UPDATE StatusPointMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate D Peak', '/Peak Demand Rate D') WHERE GroupName LIKE '%/Tou Rate D Peak';
+ 
+UPDATE StatusPointMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate A Usage', '/Usage Rate A') WHERE GroupName LIKE '%/Tou Rate A Usage';
+UPDATE StatusPointMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate B Usage', '/Usage Rate B') WHERE GroupName LIKE '%/Tou Rate B Usage';
+UPDATE StatusPointMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate C Usage', '/Usage Rate C') WHERE GroupName LIKE '%/Tou Rate C Usage';
+UPDATE StatusPointMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate D Usage', '/Usage Rate D') WHERE GroupName LIKE '%/Tou Rate D Usage';
+ 
+UPDATE StatusPointMonitor SET GroupName = REPLACE(GroupName, '/Energy Generated', '/Received kWh') WHERE GroupName LIKE '%/Energy Generated';
+UPDATE StatusPointMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate A Energy Generated', '/Received kWh Rate A') WHERE GroupName LIKE '%/Tou Rate A Energy Generated';
+UPDATE StatusPointMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate B Energy Generated', '/Received kWh Rate B') WHERE GroupName LIKE '%/Tou Rate B Energy Generated';
+UPDATE StatusPointMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate C Energy Generated', '/Received kWh Rate C') WHERE GroupName LIKE '%/Tou Rate C Energy Generated';
+UPDATE StatusPointMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate D Energy Generated', '/Received kWh Rate D') WHERE GroupName LIKE '%/Tou Rate D Energy Generated';
+ 
+UPDATE TamperFlagMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate A Peak', '/Peak Demand Rate A') WHERE GroupName LIKE '%/Tou Rate A Peak';
+UPDATE TamperFlagMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate B Peak', '/Peak Demand Rate B') WHERE GroupName LIKE '%/Tou Rate B Peak';
+UPDATE TamperFlagMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate C Peak', '/Peak Demand Rate C') WHERE GroupName LIKE '%/Tou Rate C Peak';
+UPDATE TamperFlagMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate D Peak', '/Peak Demand Rate D') WHERE GroupName LIKE '%/Tou Rate D Peak';
+ 
+UPDATE TamperFlagMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate A Usage', '/Usage Rate A') WHERE GroupName LIKE '%/Tou Rate A Usage';
+UPDATE TamperFlagMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate B Usage', '/Usage Rate B') WHERE GroupName LIKE '%/Tou Rate B Usage';
+UPDATE TamperFlagMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate C Usage', '/Usage Rate C') WHERE GroupName LIKE '%/Tou Rate C Usage';
+UPDATE TamperFlagMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate D Usage', '/Usage Rate D') WHERE GroupName LIKE '%/Tou Rate D Usage';
+ 
+UPDATE TamperFlagMonitor SET GroupName = REPLACE(GroupName, '/Energy Generated', '/Received kWh') WHERE GroupName LIKE '%/Energy Generated';
+UPDATE TamperFlagMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate A Energy Generated', '/Received kWh Rate A') WHERE GroupName LIKE '%/Tou Rate A Energy Generated';
+UPDATE TamperFlagMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate B Energy Generated', '/Received kWh Rate B') WHERE GroupName LIKE '%/Tou Rate B Energy Generated';
+UPDATE TamperFlagMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate C Energy Generated', '/Received kWh Rate C') WHERE GroupName LIKE '%/Tou Rate C Energy Generated';
+UPDATE TamperFlagMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate D Energy Generated', '/Received kWh Rate D') WHERE GroupName LIKE '%/Tou Rate D Energy Generated';
+ 
+UPDATE ValidationMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate A Peak', '/Peak Demand Rate A') WHERE GroupName LIKE '%/Tou Rate A Peak';
+UPDATE ValidationMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate B Peak', '/Peak Demand Rate B') WHERE GroupName LIKE '%/Tou Rate B Peak';
+UPDATE ValidationMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate C Peak', '/Peak Demand Rate C') WHERE GroupName LIKE '%/Tou Rate C Peak';
+UPDATE ValidationMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate D Peak', '/Peak Demand Rate D') WHERE GroupName LIKE '%/Tou Rate D Peak';
+ 
+UPDATE ValidationMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate A Usage', '/Usage Rate A') WHERE GroupName LIKE '%/Tou Rate A Usage';
+UPDATE ValidationMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate B Usage', '/Usage Rate B') WHERE GroupName LIKE '%/Tou Rate B Usage';
+UPDATE ValidationMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate C Usage', '/Usage Rate C') WHERE GroupName LIKE '%/Tou Rate C Usage';
+UPDATE ValidationMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate D Usage', '/Usage Rate D') WHERE GroupName LIKE '%/Tou Rate D Usage';
+ 
+UPDATE ValidationMonitor SET GroupName = REPLACE(GroupName, '/Energy Generated', '/Received kWh') WHERE GroupName LIKE '%/Energy Generated';
+UPDATE ValidationMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate A Energy Generated', '/Received kWh Rate A') WHERE GroupName LIKE '%/Tou Rate A Energy Generated';
+UPDATE ValidationMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate B Energy Generated', '/Received kWh Rate B') WHERE GroupName LIKE '%/Tou Rate B Energy Generated';
+UPDATE ValidationMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate C Energy Generated', '/Received kWh Rate C') WHERE GroupName LIKE '%/Tou Rate C Energy Generated';
+UPDATE ValidationMonitor SET GroupName = REPLACE(GroupName, '/Tou Rate D Energy Generated', '/Received kWh Rate D') WHERE GroupName LIKE '%/Tou Rate D Energy Generated';
+ 
+UPDATE JobProperty SET Value = REPLACE(Value, 'TOU_RATE_A_PEAK_DEMAND', 'PEAK_DEMAND_RATE_A') WHERE Name = 'attributes' AND Value LIKE '%TOU_RATE_A_PEAK_DEMAND%';
+UPDATE JobProperty SET Value = REPLACE(Value, '/Tou Rate A Peak', '/Peak Demand Rate A') WHERE Name = 'deviceGroup' AND Value LIKE '%/Tou Rate A Peak%';
+UPDATE JobProperty SET Value = REPLACE(Value, '/Tou Rate A Peak', '/Peak Demand Rate A') WHERE Name = 'deviceGroupNames' AND Value LIKE '%/Tou Rate A Peak%';
+UPDATE JobProperty SET Value = REPLACE(Value, 'TOU_RATE_B_PEAK_DEMAND', 'PEAK_DEMAND_RATE_B') WHERE Name = 'attributes' AND Value LIKE '%TOU_RATE_B_PEAK_DEMAND%';
+UPDATE JobProperty SET Value = REPLACE(Value, '/Tou Rate B Peak', '/Peak Demand Rate B') WHERE Name = 'deviceGroup' AND Value LIKE '%/Tou Rate B Peak%';
+UPDATE JobProperty SET Value = REPLACE(Value, '/Tou Rate B Peak', '/Peak Demand Rate B') WHERE Name = 'deviceGroupNames' AND Value LIKE '%/Tou Rate B Peak%';
+UPDATE JobProperty SET Value = REPLACE(Value, 'TOU_RATE_C_PEAK_DEMAND', 'PEAK_DEMAND_RATE_C') WHERE Name = 'attributes' AND Value LIKE '%TOU_RATE_C_PEAK_DEMAND%';
+UPDATE JobProperty SET Value = REPLACE(Value, '/Tou Rate C Peak', '/Peak Demand Rate C') WHERE Name = 'deviceGroup' AND Value LIKE '%/Tou Rate C Peak%';
+UPDATE JobProperty SET Value = REPLACE(Value, '/Tou Rate C Peak', '/Peak Demand Rate C') WHERE Name = 'deviceGroupNames' AND Value LIKE '%/Tou Rate C Peak%';
+UPDATE JobProperty SET Value = REPLACE(Value, 'TOU_RATE_D_PEAK_DEMAND', 'PEAK_DEMAND_RATE_D') WHERE Name = 'attributes' AND Value LIKE '%TOU_RATE_D_PEAK_DEMAND%';
+UPDATE JobProperty SET Value = REPLACE(Value, '/Tou Rate D Peak', '/Peak Demand Rate D') WHERE Name = 'deviceGroup' AND Value LIKE '%/Tou Rate D Peak%';
+UPDATE JobProperty SET Value = REPLACE(Value, '/Tou Rate D Peak', '/Peak Demand Rate D') WHERE Name = 'deviceGroupNames' AND Value LIKE '%/Tou Rate D Peak%';
+ 
+UPDATE JobProperty SET Value = REPLACE(Value, 'TOU_RATE_A_USAGE', 'USAGE_RATE_A') WHERE Name = 'attributes' AND Value LIKE '%TOU_RATE_A_USAGE%';
+UPDATE JobProperty SET Value = REPLACE(Value, '/Tou Rate A Usage', '/Usage Rate A') WHERE Name = 'deviceGroup' AND Value LIKE '%/Tou Rate A Usage%';
+UPDATE JobProperty SET Value = REPLACE(Value, '/Tou Rate A Usage', '/Usage Rate A') WHERE Name = 'deviceGroupNames' AND Value LIKE '%/Tou Rate A Usage%';
+UPDATE JobProperty SET Value = REPLACE(Value, 'TOU_RATE_B_USAGE', 'USAGE_RATE_B') WHERE Name = 'attributes' AND Value LIKE '%TOU_RATE_B_USAGE%';
+UPDATE JobProperty SET Value = REPLACE(Value, '/Tou Rate B Usage', '/Usage Rate B') WHERE Name = 'deviceGroup' AND Value LIKE '%/Tou Rate B Usage%';
+UPDATE JobProperty SET Value = REPLACE(Value, '/Tou Rate B Usage', '/Usage Rate B') WHERE Name = 'deviceGroupNames' AND Value LIKE '%/Tou Rate B Usage%';
+UPDATE JobProperty SET Value = REPLACE(Value, 'TOU_RATE_C_USAGE', 'USAGE_RATE_C') WHERE Name = 'attributes' AND Value LIKE '%TOU_RATE_C_USAGE%';
+UPDATE JobProperty SET Value = REPLACE(Value, '/Tou Rate C Usage', '/Usage Rate C') WHERE Name = 'deviceGroup' AND Value LIKE '%/Tou Rate C Usage%';
+UPDATE JobProperty SET Value = REPLACE(Value, '/Tou Rate C Usage', '/Usage Rate C') WHERE Name = 'deviceGroupNames' AND Value LIKE '%/Tou Rate C Usage%';
+UPDATE JobProperty SET Value = REPLACE(Value, 'TOU_RATE_D_USAGE', 'USAGE_RATE_D') WHERE Name = 'attributes' AND Value LIKE '%TOU_RATE_D_USAGE%';
+UPDATE JobProperty SET Value = REPLACE(Value, '/Tou Rate D Usage', '/Usage Rate D') WHERE Name = 'deviceGroup' AND Value LIKE '%/Tou Rate D Usage%';
+UPDATE JobProperty SET Value = REPLACE(Value, '/Tou Rate D Usage', '/Usage Rate D') WHERE Name = 'deviceGroupNames' AND Value LIKE '%/Tou Rate D Usage%';
+ 
+UPDATE JobProperty SET Value = REPLACE(Value, 'ENERGY_GENERATED', 'RECEIVED_KWH') WHERE Name = 'attributes' AND Value LIKE '%ENERGY_GENERATED%';
+UPDATE JobProperty SET Value = REPLACE(Value, '/Energy Generated', '/Received kWh') WHERE Name = 'deviceGroup' AND Value LIKE '%/Energy Generated%';
+UPDATE JobProperty SET Value = REPLACE(Value, '/Energy Generated', '/Received kWh') WHERE Name = 'deviceGroupNames' AND Value LIKE '%/Energy Generated%';
+UPDATE JobProperty SET Value = REPLACE(Value, 'TOU_RATE_A_ENERGY_GENERATED', 'RECEIVED_KWH_RATE_A') WHERE Name = 'attributes' AND Value LIKE '%TOU_RATE_A_ENERGY_GENERATED%';
+UPDATE JobProperty SET Value = REPLACE(Value, '/Tou Rate A Energy Generated', '/Received kWh Rate A') WHERE Name = 'deviceGroup' AND Value LIKE '%/Tou Rate A Energy Generated%';
+UPDATE JobProperty SET Value = REPLACE(Value, '/Tou Rate A Energy Generated', '/Received kWh Rate A') WHERE Name = 'deviceGroupNames' AND Value LIKE '%/Tou Rate A Energy Generated%';
+UPDATE JobProperty SET Value = REPLACE(Value, 'TOU_RATE_B_ENERGY_GENERATED', 'RECEIVED_KWH_RATE_B') WHERE Name = 'attributes' AND Value LIKE '%TOU_RATE_B_ENERGY_GENERATED%';
+UPDATE JobProperty SET Value = REPLACE(Value, '/Tou Rate B Energy Generated', '/Received kWh Rate B') WHERE Name = 'deviceGroup' AND Value LIKE '%/Tou Rate B Energy Generated%';
+UPDATE JobProperty SET Value = REPLACE(Value, '/Tou Rate B Energy Generated', '/Received kWh Rate B') WHERE Name = 'deviceGroupNames' AND Value LIKE '%/Tou Rate B Energy Generated%';
+UPDATE JobProperty SET Value = REPLACE(Value, 'TOU_RATE_C_ENERGY_GENERATED', 'RECEIVED_KWH_C') WHERE Name = 'attributes' AND Value LIKE '%TOU_RATE_C_ENERGY_GENERATED%';
+UPDATE JobProperty SET Value = REPLACE(Value, '/Tou Rate C Energy Generated', '/Received kWh Rate C') WHERE Name = 'deviceGroup' AND Value LIKE '%/Tou Rate C Energy Generated%';
+UPDATE JobProperty SET Value = REPLACE(Value, '/Tou Rate C Energy Generated', '/Received kWh Rate C') WHERE Name = 'deviceGroupNames' AND Value LIKE '%/Tou Rate C Energy Generated%';
+UPDATE JobProperty SET Value = REPLACE(Value, 'TOU_RATE_D_ENERGY_GENERATED', 'RECEIVED_KWH_D') WHERE Name = 'attributes' AND Value LIKE '%TOU_RATE_D_ENERGY_GENERATED%';
+UPDATE JobProperty SET Value = REPLACE(Value, '/Tou Rate D Energy Generated', '/Received kWh Rate D') WHERE Name = 'deviceGroup' AND Value LIKE '%/Tou Rate D Energy Generated%';
+UPDATE JobProperty SET Value = REPLACE(Value, '/Tou Rate D Energy Generated', '/Received kWh Rate D') WHERE Name = 'deviceGroupNames' AND Value LIKE '%/Tou Rate D Energy Generated%';
+/* End YUK-12602 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
