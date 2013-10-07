@@ -37,6 +37,15 @@
                         };
                     jQuery.each(thing, buildArr);
                     return arr;
+                },
+                isInIds = function (thermostatId) {
+                    var isPresent = false;
+                    currentIds.forEach ( function(el, ind, arr) {
+                        if (el === thermostatId) {
+                            isPresent = true;
+                        }
+                    });
+                    return isPresent;
                 };
             if (currentIds === '') {
                 currentIds = [];
@@ -45,7 +54,7 @@
             }
 
             // add or remove from currentIds array
-            if (this_cb.checked) {
+            if (this_cb.checked && !isInIds(this_thermostatId)) {
                 currentIds.push(this_thermostatId);
             } else {
                 currentIds = currentIds.removeByVal(this_thermostatId);
@@ -69,6 +78,16 @@
             });
         }
     
+    jQuery( function () {
+        var thermos = jQuery('input[id*="THERMOSTATCHECKBOX"]');
+        // if we check a box, press schedule, then return to this page, clear all checkboxes
+        // Chrome "remembers" previous selections, IE and Firefox do not
+        jQuery.each(thermos, function (index, cb) {
+            cb.checked = false;
+            cb.disabled = false;
+        })
+        jQuery('#thermostatIds').val('');
+    });
     </script>
 
        <form id="themostatSelectForm" method="post" action="/stars/operator/thermostatSelect/selectRedirect">
