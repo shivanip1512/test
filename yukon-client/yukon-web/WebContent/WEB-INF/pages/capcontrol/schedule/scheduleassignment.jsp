@@ -61,9 +61,7 @@ jQuery(function() {
         var row = jQuery(event.currentTarget).closest('tr');
         
         var deviceName = row.children('td[name=deviceName]').html();
-        var deviceId = jQuery(event.currentTarget).attr('name').always(function() {
-            
-        });
+        var deviceId = jQuery(event.currentTarget).attr('name');
         
         jQuery.getJSON("/capcontrol/schedule/stopSchedule", {
             'deviceId': deviceId, 

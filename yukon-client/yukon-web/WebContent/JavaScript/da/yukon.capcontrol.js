@@ -306,7 +306,7 @@ Yukon.CapControl = (function () {
                 action = '"' + action + '"';
             }
             var message = item + ' ' + action + ' ' + result;
-            showAlertMessage(message, success);
+            capControlMod.showAlertMessage(message, success);
         },
 
         showAlertMessage : function(message, success) {
