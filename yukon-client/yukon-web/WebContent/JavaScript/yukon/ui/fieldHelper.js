@@ -75,9 +75,6 @@ Yukon.modules.FieldHelper = function (mod) {
         if (!defaultField.length) {
             return;
         }
-        if (inputField.val() == defaultField.val()) {
-            inputField.val("");
-        }
     };
 
     mod.showTooltip = function (event) {
