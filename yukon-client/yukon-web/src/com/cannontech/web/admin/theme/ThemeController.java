@@ -1,5 +1,6 @@
 package com.cannontech.web.admin.theme;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -29,6 +30,7 @@ import com.cannontech.web.admin.theme.dao.ThemeDao;
 import com.cannontech.web.admin.theme.model.Theme;
 import com.cannontech.web.admin.theme.model.ThemePropertyType;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.common.resources.ResourceCache;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.support.MappedPropertiesHelper;
 import com.google.common.collect.ImmutableMap;
@@ -37,6 +39,7 @@ import com.google.common.collect.ImmutableMap;
 @CheckRoleProperty(YukonRoleProperty.ADMIN_SUPER_USER)
 public class ThemeController {
 
+    @Autowired private ResourceCache resourceCache;
     @Autowired private ThemeDao themeDao;
     @Autowired private YukonUserContextMessageSourceResolver resolver;
     @Autowired private ResourceLoader loader;
@@ -126,7 +129,7 @@ public class ThemeController {
                          YukonUserContext context,
                          @ModelAttribute("command") Theme theme,
                          BindingResult result,
-                         FlashScope flash) {
+                         FlashScope flash) throws IOException {
         
         validator.validate(theme, result);
         if (result.hasErrors()) {
@@ -134,6 +137,9 @@ public class ThemeController {
         }
         
         themeDao.saveTheme(theme);
+        if (theme.isCurrentTheme()) {
+            resourceCache.reloadAll();
+        }
         flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.config.themes.updated", theme.getName()));
         return "redirect:/adminSetup/config/themes/" + theme.getThemeId();
     }
@@ -151,8 +157,10 @@ public class ThemeController {
     }
     
     @RequestMapping(value="/config/themes/{id}/use", method=RequestMethod.GET)
-    public String use(ModelMap model, YukonUserContext context, @PathVariable int id) {
-        // TODO 
+    public String use(ModelMap model, YukonUserContext context, @PathVariable int id) throws IOException {
+        
+        themeDao.setCurrentTheme(id);
+        resourceCache.reloadAll();
         
         return "redirect:/adminSetup/config/themes/" + id;
     }

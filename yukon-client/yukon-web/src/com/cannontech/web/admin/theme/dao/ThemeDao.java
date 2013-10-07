@@ -21,5 +21,10 @@ public interface ThemeDao {
     public List<Theme> getThemes();
 
     public Theme getCurrentTheme();
+
+    /**
+     * Set the theme with the id as the currently selected theme.
+     */
+    public void setCurrentTheme(int id);
     
 }

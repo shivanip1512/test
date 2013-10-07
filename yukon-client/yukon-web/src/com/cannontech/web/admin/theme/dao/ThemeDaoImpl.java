@@ -171,4 +171,21 @@ public class ThemeDaoImpl implements ThemeDao {
         template.update(sql);
     }
 
+    @Override
+    @Transactional
+    public void setCurrentTheme(int id) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("update Theme");
+        sql.append("set CurrentTheme").eq_k(YNBoolean.NO);
+        
+        template.update(sql);
+        
+        sql = new SqlStatementBuilder();
+        sql.append("update Theme");
+        sql.append("set CurrentTheme").eq_k(YNBoolean.YES);
+        sql.append("where ThemeId").eq(id);
+        
+        template.update(sql);
+    }
+
 }

@@ -26,6 +26,8 @@ import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.web.admin.theme.dao.ThemeDao;
 import com.cannontech.web.admin.theme.model.Theme;
 import com.cannontech.web.admin.theme.model.ThemePropertyType;
+import com.cannontech.web.input.type.ImageType;
+import com.cannontech.web.input.type.PixelType;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
@@ -50,15 +52,19 @@ public class ResourceCache {
     
     @PostConstruct
     private void init() throws IOException {
+        reloadAll();
+    }
+
+    public void reloadAll() throws IOException {
         for (CachedResource resource : CachedResource.values()) {
             cache.put(resource, load(resource));
         }
     }
     
-    private String load(CachedResource resource) throws IOException {
+    public String load(CachedResource resource) throws IOException {
         
         String regexPrefix = "(?<=@";
-        String regexSuffix = ":\\s{0,5})[^;](?=;)";
+        String regexSuffix = ":\\s{0,5}+)[^;]+?(?=;)";
         
         Resource layout = loader.getResource(resource.getPath());
         Theme theme = themeDao.getCurrentTheme();
@@ -71,9 +77,15 @@ public class ResourceCache {
         while (line != null) {
             for (ThemePropertyType type : theme.getProperties().keySet()) {
                 String regex = regexPrefix + type.getVarName() + regexSuffix;
-                line = line.replaceAll(regex, (String)theme.getProperties().get(type));
+                String replacement = (String)theme.getProperties().get(type);
+                if (type.getInputType() instanceof ImageType) {
+                    replacement = "'" +  replacement + "'";
+                } else if (type.getInputType() instanceof PixelType) {
+                    replacement = replacement + "px";
+                }
+                line = line.replaceAll(regex, replacement);
             }
-            newLess.append(line);
+            newLess.append(line).append("\n");
             
             line = br.readLine();
         }
@@ -82,18 +94,18 @@ public class ResourceCache {
         WroConfiguration wroConfig = new WroConfiguration();
         Context.set(Context.standaloneContext(), wroConfig);
         try {
-          //Create injector which will inject all dependencies of the processor
-          Injector injector = new InjectorBuilder().build();
+            //Create injector which will inject all dependencies of the processor
+            Injector injector = new InjectorBuilder().build();
 
-          LessCssProcessor processor = new LessCssProcessor();
+            LessCssProcessor processor = new LessCssProcessor();
           
-          //this will inject all required fields, after this point it is safe to use processor outside of wro4j context.
-          injector.inject(processor);
+            //this will inject all required fields, after this point it is safe to use processor outside of wro4j context.
+            injector.inject(processor);
 
-          //Do the actual processing
-          processor.process(new StringReader(newLess.toString()), newCss);
+            //Do the actual processing
+            processor.process(new StringReader(newLess.toString()), newCss);
         } finally {
-          Context.unset();
+            Context.unset();
         }
         
         boolean devMode = config.getBoolean(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE);
