@@ -70,6 +70,7 @@ public class ThemeController {
     public String edit(ModelMap model, YukonUserContext context, @PathVariable int id) {
         
         buildModel(model, context, themeDao.getTheme(id), PageEditMode.EDIT);
+        model.addAttribute("cancelId", id);
         return "config/themes.jsp";
     }
     
