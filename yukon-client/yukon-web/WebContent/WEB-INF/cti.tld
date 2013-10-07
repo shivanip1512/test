@@ -1300,6 +1300,21 @@
             <rtexprvalue>false</rtexprvalue>
         </attribute>
     </tag>
+
+    <tag>
+        <name>pageName</name>
+        <tag-class>com.cannontech.web.i18n.PageNameTag</tag-class>
+        <body-content>empty</body-content>
+        <description>
+            Given a UserPage object, display the localized name of it.
+        </description>
+        <attribute>
+            <name>userPage</name> <!-- renamed to works as 'message' or 'code' -->
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>The UserPage object to display the name of.</description>
+        </attribute>
+    </tag>
     
     <tag>
         <name>theme</name>
@@ -2156,6 +2171,23 @@
     <description>
         If tabHref is blank, the body content of this tag is used as the href if it is also not blank/whitespace.
     </description>
+  </tag>
+
+  <tag>
+    <name>searchTerm</name>
+    <tag-class>com.cannontech.web.taglib.HighlightSearchTermTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+        <name>term</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+        <name>asLuceneTerms</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+        <description>When set to 'true' the tag will separate 'term' into words and replace each of those separately.  DEFAULT: false</description>
+    </attribute>
   </tag>
 
   <function>

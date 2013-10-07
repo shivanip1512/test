@@ -75,7 +75,7 @@
       <property name="timer" ref="globalScheduledExecutor"/>
     </bean>
     
-    <bean id="menuBuilder" class="com.cannontech.web.menu.CommonModuleBuilder">
+    <bean id="moduleBuilder" class="com.cannontech.web.menu.CommonModuleBuilder">
         <constructor-arg value="/WEB-INF/module_config.xml"/>
         <property name="menuOptionProducerFactory">
             <bean class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean">
@@ -1127,11 +1127,13 @@
     <bean id="checkPaoAuthorizationTagPrototype" class="com.cannontech.web.taglib.CheckPaoAuthorizationTag">
         <property name="paoAuthorizationService" ref="paoAuthorizationService"/>
     </bean>
-    
+
     <bean id="msg2TagPrototype" class="com.cannontech.web.i18n.Msg2Tag">
         <property name="objectFormattingService" ref="objectFormattingService"/>
     </bean>
-    
+
+    <bean id="pageNameTagPrototype" class="com.cannontech.web.i18n.PageNameTag"/>
+
     <bean id="getCsrfTokenTagPrototype" class="com.cannontech.web.taglib.GetCsrfTokenTag">
         <property name="tokenService" ref="csrfTokenService"/>
     </bean>
@@ -1615,11 +1617,10 @@
 
     <bean id="displayableApplianceService" class="com.cannontech.web.stars.dr.operator.service.impl.DisplayableApplianceServiceImpl"/>
     <bean id="starsApplianceService" class="com.cannontech.stars.dr.appliance.service.impl.StarsApplianceServiceImpl"/>
-    
-    <bean class="com.cannontech.web.layout.PageDetailProducer"/>
 
-    <bean id="abstractPaoPicker" class="com.cannontech.web.picker.v2.PaoPicker"
-          abstract="true">
+    <bean id="pageDetailProducer" class="com.cannontech.web.layout.PageDetailProducer"/>
+
+    <bean id="abstractPaoPicker" class="com.cannontech.web.picker.v2.PaoPicker" abstract="true">
         <property name="searcher" ref="paoTypeSearcherLucene"/>
     </bean>
     <bean name="paoPicker" parent="abstractPaoPicker"
@@ -2215,4 +2216,5 @@
 	<bean class="com.cannontech.web.scheduledFileExport.service.impl.ScheduledFileExportServiceImpl"/>
 	<bean class="com.cannontech.web.scheduledFileExport.service.impl.ScheduledFileExportJobsTagServiceImpl"/>
     <bean class="com.cannontech.web.scheduledFileExport.ScheduledFileExportHelper"/>
+    <bean id="userPageService" class="com.cannontech.web.common.userpage.service.impl.UserPageServiceImpl"/>
 </beans>

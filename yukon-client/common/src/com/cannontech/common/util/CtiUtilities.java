@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
@@ -53,6 +54,8 @@ import com.cannontech.common.version.VersionTools;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Ordering;
 
 public final class CtiUtilities {
     private static final String YUKON_HELP_PREFIX = "com/cannontech/help/";
@@ -1010,4 +1013,51 @@ public final class CtiUtilities {
         }
     };
 
+    /**
+     * Private class for use in {@link CtiUtilities#smartTranslatedSort(List, Function, Comparator)}.
+     */
+    private static final class Translated<T, U> {
+        final T item;
+        final U translated;
+
+        Translated(T item, U translated) {
+            this.item = item;
+            this.translated = translated;
+        }
+    }
+    
+    /**
+     * Sort the given list using the natural sort order on the results of calling the function. As a
+     * rule, this would be better done using Guava's Ordering class but this method promises to only
+     * call the function once for each item in the list so it can be used where that call may be not
+     * so super cheap.
+     * 
+     * @param toSort The list to sort.
+     * @param translator A function to translate the item in the list to the value that it is sorted
+     *            on. If this is is just a simple translator that does no work, consider using
+     *            Guava's Ordering class instead. The list will be sorted on the natural sorting
+     *            order of the results of this function.
+     */
+    public final static <T, U extends Comparable<? super U>> List<T> smartTranslatedSort(List<T> items,
+            Function<T, U> translator) {
+        // The comparator could be a parameter for more flexibility (but we don't need that right now).
+        final Comparator<U> comparator = Ordering.natural();
+        List<Translated<T, U>> itemsWithTranslations = new ArrayList<>();
+        for (T item : items) {
+            itemsWithTranslations.add(new Translated<T, U>(item, translator.apply(item)));
+        }
+        Comparator<Translated<T, U>> translatedComparator = new Comparator<Translated<T, U>>() {
+            @Override
+            public int compare(Translated<T, U> translated1, Translated<T, U> translated2) {
+                return comparator.compare(translated1.translated, translated2.translated);
+            }};
+        Collections.sort(itemsWithTranslations, translatedComparator);
+        Function<Translated<T, U>, T> itemOutFunction = new Function<Translated<T, U>, T>() {
+            @Override
+            public T apply(Translated<T, U> translated) {
+                return translated.item;
+            }
+        };
+        return Lists.transform(itemsWithTranslations, itemOutFunction);
+    }
 }

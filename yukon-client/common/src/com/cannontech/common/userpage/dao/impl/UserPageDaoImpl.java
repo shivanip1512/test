@@ -197,9 +197,10 @@ public class UserPageDaoImpl implements UserPageDao {
     private YukonRowMapper<UserPage> userPageRowMapper = 
             new YukonRowMapper<UserPage>() {
 
+        @Override
         public UserPage mapRow(YukonResultSet rs) throws SQLException {
-            Integer id = rs.getInt("UserPageId");
-            Integer userId = rs.getInt("UserId");
+            int id = rs.getInt("UserPageId");
+            int userId = rs.getInt("UserId");
             String pagePath = rs.getString("PagePath");
             String pageName = rs.getString("PageName");
             String module = rs.getString("Module");
@@ -216,6 +217,7 @@ public class UserPageDaoImpl implements UserPageDao {
 
     private static AdvancedFieldMapper<UserPage> userPageMapper = new AdvancedFieldMapper<UserPage>() {
 
+        @Override
         public void extractValues(SqlParameterChildSink p, UserPage page) {
             p.addValue("UserId", page.getUserId());
             p.addValue("PagePath", page.getPath());
@@ -224,9 +226,11 @@ public class UserPageDaoImpl implements UserPageDao {
             p.addValue("Favorite", page.isFavorite());
             p.addValue("LastAccess", page.getLastAccess());
         }
+        @Override
         public Number getPrimaryKey(UserPage page) {
             return page.getId();
         }
+        @Override
         public void setPrimaryKey(UserPage page, int value) {
             //Immutable object
         }
@@ -234,14 +238,17 @@ public class UserPageDaoImpl implements UserPageDao {
 
     private static AdvancedFieldMapper<UserPageParameterEntry> userPageParamMapper = new AdvancedFieldMapper<UserPageParameterEntry>() {
 
+        @Override
         public void extractValues(SqlParameterChildSink p, UserPageParameterEntry paramEntry) {
             p.addValue("UserPageId", paramEntry.getUserPageId());
             p.addValue("ParamNumber", paramEntry.getParamNumber());
             p.addValue("Parameter", paramEntry.getParameter());
         }
+        @Override
         public Number getPrimaryKey(UserPageParameterEntry page) {
             return page.getId();
         }
+        @Override
         public void setPrimaryKey(UserPageParameterEntry page, int value) {
             //Immutable object
         }

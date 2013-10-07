@@ -23,16 +23,16 @@
                                         </c:if>
                                         <ul class="simple-list stacked favorites" data-undo-text="${undoText}">
                                             <c:forEach items="${module.value}" var="favorite">
-                                                <cti:msg2 var="removedText" key=".favorites.removed" argument="${fn:escapeXml(favorite.header)}"/>
+                                            	<c:set var="favoritePageName"><cti:pageName userPage="${favorite}"/></c:set>
+                                                <cti:msg2 var="removedText" key=".favorites.removed" argument="${favoritePageName}"/>
                                                 <li class="favorite" data-removed-text="${removedText}">
-
                                                     <cti:button classes="b-favorite remove" nameKey="favorite" renderMode="image" icon="icon-star" 
                                                         data-name="${favorite.name}" 
                                                         data-module="${favorite.module}" 
                                                         data-path="${favorite.path}" 
-                                                        data-label-args="${favorite.labelArgs}"/>
+                                                        data-label-args="${com.cannontech.common.util.StringUtils.listAsJsSafeString(favorite.arguments)}"/>
 
-                                                    <a href="${favorite.page.path}">${fn:escapeXml(favorite.header)}</a>
+                                                    <a href="${favorite.path}">${fn:escapeXml(favoritePageName)}</a>
                                                 </li>
                                             </c:forEach>
                                         </ul>
@@ -46,8 +46,8 @@
                     </c:if>
                     <c:if test="${not empty history}">
                         <ol class="simple-list">
-                            <c:forEach items="${history}" var="historyElem">
-                                <li><a href="${historyElem.path}">${fn:escapeXml(historyElem.header)}</a></li>
+                            <c:forEach var="historyItem" items="${history}">
+                                <li><a href="${historyItem.path}"><cti:pageName userPage="${historyItem}"/></a></li>
                             </c:forEach>
                         </ol>
                     </c:if>

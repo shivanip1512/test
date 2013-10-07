@@ -1,5 +1,6 @@
 package com.cannontech.web.login;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -8,14 +9,12 @@ import javax.servlet.http.HttpServletRequest;
 
 import net.sf.json.JSONObject;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.userpage.dao.UserPageDao;
 import com.cannontech.common.userpage.dao.UserSubscriptionDao;
 import com.cannontech.common.userpage.model.UserPage;
@@ -26,99 +25,73 @@ import com.cannontech.common.util.StringUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
-import com.cannontech.web.layout.PageDetailProducer;
-import com.cannontech.web.layout.PageDetailProducer.PageContext;
-import com.cannontech.web.menu.Module;
-import com.cannontech.web.menu.ModuleBuilder;
-import com.cannontech.web.menu.PageInfo;
+import com.cannontech.web.common.userpage.service.UserPageService;
+import com.google.common.base.Function;
 import com.google.common.collect.LinkedListMultimap;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
 @Controller
 public class HomeController {
-    private final static Logger log = YukonLogManager.getLogger(HomeController.class);
-
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private UserPageDao userPageDao;
     @Autowired private UserSubscriptionDao userSubscriptionDao;
-    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
-    @Autowired private PageDetailProducer pageDetailProducer;
-    @Autowired private ModuleBuilder moduleBuilder;
+    @Autowired private UserPageService userPageService;
 
     @RequestMapping({"/home", "/index.jsp"})
     public String home(HttpServletRequest req) {
 
         final LiteYukonUser user = ServletUtil.getYukonUser(req);
-        String homeUrl = ServletUtil.createSafeUrl(req, rolePropertyDao.getPropertyStringValue(YukonRoleProperty.HOME_URL, user));
+        String homeUrl = ServletUtil.createSafeUrl(req,
+            rolePropertyDao.getPropertyStringValue(YukonRoleProperty.HOME_URL, user));
 
         return "redirect:" + homeUrl;
     }
 
     @RequestMapping("/dashboard")
     public String dashboard(ModelMap model, YukonUserContext context) {
-
         List<UserPage> pages = userPageDao.getPagesForUser(context.getYukonUser());
 
-        List<UserPageWrapper> history = setupDisplayableHistory(pages, context);
-        Multimap<UserPage.Module, UserPageWrapper> favoritesMap = setupDisplayableFavorites(pages, context);
-
+        List<UserPage> history = pages;//setupDisplayableHistory(pages, context);
+        if (history.size() > UserPageDao.MAX_HISTORY ) {
+            history = history.subList(0, UserPageDao.MAX_HISTORY);
+        }
         model.put("history", history);
+
+        Multimap<UserPage.Module, UserPage> favoritesMap = setupDisplayableFavorites(pages, context);
         model.put("favorites", favoritesMap.asMap());
+
         model.addAttribute("jreInstaller", CtiUtilities.getJREInstaller());
 
         return "dashboard.jsp";
     }
 
-    private List<UserPageWrapper> setupDisplayableHistory( List<UserPage> pages, YukonUserContext context) {
-
-        List<UserPage> rawHistory = Lists.newArrayList(pages);
-
-        List<UserPageWrapper> history = Lists.newArrayList();
-        for (UserPage page : rawHistory) {
-            UserPageWrapper wrapper = buildWrapperForPage(page, context);
-            if (wrapper != null) {
-                history.add(wrapper);
-            } else {
-                log.error("bad page found in history list: " + page.getName());
-            }
-        }
-
-        if (history.size() > UserPageDao.MAX_HISTORY ) {
-            history = history.subList(0, UserPageDao.MAX_HISTORY);
-        }
-
-        return history;
-    }
-
-    private Multimap<UserPage.Module, UserPageWrapper> setupDisplayableFavorites(List<UserPage> pages,
-            YukonUserContext context) {
-        List<UserPage> rawFavorites = Lists.newArrayList();
+    private Multimap<UserPage.Module, UserPage> setupDisplayableFavorites(List<UserPage> pages,
+            final YukonUserContext userContext) {
+        List<UserPage> favorites = new ArrayList<>();
         for (UserPage page : pages) {
             if (page.isFavorite()) {
-                rawFavorites.add(page);
+                favorites.add(page);
             }
         }
 
-        List<UserPageWrapper> favorites = Lists.newArrayList();
-        for (UserPage page : rawFavorites) {
-            UserPageWrapper wrapper = buildWrapperForPage(page, context);
-            if (wrapper != null) {
-                favorites.add(wrapper);
-            } else {
-                log.error("bad page found in favorites list: " + page.getName());
-            }
-        }
-        Collections.sort(favorites, byNameAsc);
         Collections.sort(favorites, byModuleAsc);
 
-        Multimap<UserPage.Module, UserPageWrapper> favoritesMap = LinkedListMultimap.create();
-        for (UserPageWrapper page : favorites) {
-            favoritesMap.put(page.getPage().getModuleEnum(), page);
+        // Sort on the localized name.
+        Function<UserPage, String> translator = new Function<UserPage, String>() {
+            @Override
+            public String apply(UserPage userPage) {
+                return userPageService.getLocalizePageName(userPage, userContext);
+            }
+        };
+        favorites = CtiUtilities.smartTranslatedSort(favorites, translator);
+
+        Multimap<UserPage.Module, UserPage> favoritesMap = LinkedListMultimap.create();
+        for (UserPage page : favorites) {
+            favoritesMap.put(page.getModuleEnum(), page);
         }
+
         return favoritesMap;
     }
 
@@ -176,8 +149,8 @@ public class HomeController {
 
     @RequestMapping("/toggleSubscribed")
     public @ResponseBody JSONObject toggleSubscribed(String subscriptionType, Integer refId, YukonUserContext context) {
-
-        UserSubscription monitor = new UserSubscription (context.getYukonUser().getUserID(), SubscriptionType.valueOf(subscriptionType), refId, null);
+        UserSubscription monitor = new UserSubscription (context.getYukonUser().getUserID(),
+            SubscriptionType.valueOf(subscriptionType), refId, null);
 
         boolean isSubscribed = userSubscriptionDao.contains(monitor);
         if( isSubscribed ) {
@@ -193,8 +166,8 @@ public class HomeController {
 
     @RequestMapping("/isSubscribed")
     public @ResponseBody JSONObject isSubscribed(String subscriptionType, Integer refId, YukonUserContext context) {
-
-        UserSubscription monitor = new UserSubscription (context.getYukonUser().getUserID(), SubscriptionType.valueOf(subscriptionType), refId, null);
+        UserSubscription monitor = new UserSubscription (context.getYukonUser().getUserID(),
+            SubscriptionType.valueOf(subscriptionType), refId, null);
 
         boolean isSubscribed = userSubscriptionDao.contains(monitor);
 
@@ -203,76 +176,10 @@ public class HomeController {
         return result;
     }
 
-    private UserPageWrapper buildWrapperForPage(UserPage page, YukonUserContext context) {
-        Module module = moduleBuilder.getModule(page.getModule());
-
-        PageInfo thisPage = module.getPageInfo(page.getName());
-        if (thisPage == null) {
-            // This shouldn't _normally_ happen but can in a development environment when switching workspaces
-            // where one workspace has a new page the other doesn't.  (The new page will be in the user history
-            // and trigger this.)
-            return null;
-        }
-
-        PageContext pc = new PageContext();
-        pc.pageInfo = thisPage;
-        pc.labelArguments = page.getArguments();
-
-        pageDetailProducer.fillInPageLabels(pc, messageSourceResolver.getMessageSourceAccessor(context));
-
-        String result = pageDetailProducer.getPagePart("pageHeading", pc, messageSourceResolver.getMessageSourceAccessor(context));
-
-        return new UserPageWrapper(page, result);
-    }
-
-    public static class UserPageWrapper {
-        private final UserPage page;
-        private final String header;
-
-        private UserPageWrapper(UserPage page, String header) {
-            this.page = page;
-            this.header = header;
-        }
-
-        public UserPage getPage() {
-            return page;
-        }
-        public String getHeader() {
-            return header;
-        }
-        public String getPath() {
-            return page.getPath();
-        }
-        public String getName() {
-            return page.getName();
-        }
-        public String getModule() {
-            return page.getModule();
-        }
-        public String getLabelArgs() {
-            String result = StringUtils.listAsJsSafeString(page.getArguments());
-            return result;
-        }
-    }
-
-    private static Comparator<UserPageWrapper> byDateDesc = new Comparator<UserPageWrapper>() {
+    private static Comparator<UserPage> byModuleAsc = new Comparator<UserPage>() {
         @Override
-        public int compare(UserPageWrapper left, UserPageWrapper right) {
-            return - (left.getPage().getLastAccess().compareTo(right.getPage().getLastAccess()));
-        }
-    };
-
-    private static Comparator<UserPageWrapper> byNameAsc = new Comparator<UserPageWrapper>() {
-        @Override
-        public int compare(UserPageWrapper left, UserPageWrapper right) {
-            return left.getHeader().compareTo(right.getHeader());
-        }
-    };
-
-    private static Comparator<UserPageWrapper> byModuleAsc = new Comparator<UserPageWrapper>() {
-        @Override
-        public int compare(UserPageWrapper left, UserPageWrapper right) {
-            return left.getPage().getModuleEnum().compareTo(right.getPage().getModuleEnum());
+        public int compare(UserPage left, UserPage right) {
+            return left.getModuleEnum().compareTo(right.getModuleEnum());
         }
     };
 }

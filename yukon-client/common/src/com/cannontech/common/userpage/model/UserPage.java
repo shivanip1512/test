@@ -15,7 +15,7 @@ import com.google.common.collect.ImmutableMap;
 
 public final class UserPage {
     private final Integer id;
-    private final Integer userId;
+    private final int userId;
     private final String path;
     private final String module;
     private final String name;
@@ -76,16 +76,16 @@ public final class UserPage {
         return temp;
     }
 
-    public UserPage(Integer userId, String path, boolean isFavorite) {
+    public UserPage(int userId, String path, boolean isFavorite) {
         this(userId, path, isFavorite, null, null, new ArrayList<String>(), new Instant(), null);
     }
 
-    public UserPage(Integer userId, String path, boolean category, String moduleName, String name,
+    public UserPage(int userId, String path, boolean category, String moduleName, String name,
             List<String> arguments) {
         this(userId, path, category, moduleName, name, arguments, new Instant(), null);
     }
 
-    public UserPage(Integer userId, String path, boolean isFavorite, String module, String name,
+    public UserPage(int userId, String path, boolean isFavorite, String module, String name,
             List<String> arguments, Instant lastAccess, Integer id) {
         this.id = id;
         this.userId = userId;
@@ -101,7 +101,7 @@ public final class UserPage {
         return id;
     }
 
-    public Integer getUserId() {
+    public int getUserId() {
         return userId;
     }
 
