@@ -67,7 +67,7 @@ public final class CtiUtilities {
     public static final double INVALID_MIN_DOUBLE = -1E30;
     public static final double INVALID_MAX_DOUBLE = 1E30;
 
-    public static final String COPYRIGHT = "Copyright (C)1999-2013 Cooper Industries plc.";
+    public static final String COPYRIGHT = "Copyright (C)1999-2013, Cooper Power Systems by Eaton.";
 
     public static final String USER_DIR = System.getProperty("user.home")
                                           + System.getProperty("file.separator");
