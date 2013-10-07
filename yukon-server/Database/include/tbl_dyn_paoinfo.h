@@ -308,6 +308,13 @@ public:
         Key_RFN_LoadProfileInterval,
 
         Key_RFN_DemandFreezeDay,
+
+        Key_RFN_OvUvEnabled,
+        Key_RFN_OvThreshold,
+        Key_RFN_UvThreshold,
+        Key_RFN_OvUvAlarmReportingInterval,
+        Key_RFN_OvUvAlarmRepeatInterval,
+        Key_RFN_OvUvRepeatCount,
     };
 
 protected:

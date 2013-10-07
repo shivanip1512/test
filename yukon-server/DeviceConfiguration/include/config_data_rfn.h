@@ -120,6 +120,14 @@ struct IM_EX_CONFIG RfnStrings
     static const std::string Schedule4Rate4;
     static const std::string Schedule4Time5;
     static const std::string Schedule4Rate5;
+
+    // OV/UV Configuration
+    static const std::string OvUvEnabled;
+    static const std::string OvThreshold;
+    static const std::string UvThreshold;
+    static const std::string OvUvAlarmReportingInterval;
+    static const std::string OvUvAlarmRepeatInterval;
+    static const std::string OvUvRepeatCount;
 };
 
 }

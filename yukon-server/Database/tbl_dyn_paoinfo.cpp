@@ -515,6 +515,13 @@ const CtiTableDynamicPaoInfo::key_map_t   CtiTableDynamicPaoInfo::_key_map =
         (Key_RFN_LoadProfileInterval,"rfn load profile interval")
 
         (Key_RFN_DemandFreezeDay,    "rfn demand freeze day")
+
+        (Key_RFN_OvUvEnabled,                   "rfn ovuv enabled" )
+        (Key_RFN_OvThreshold,                   "rfn ovuv ov threshold" )
+        (Key_RFN_UvThreshold,                   "rfn ovuv uv threshold" )
+        (Key_RFN_OvUvAlarmReportingInterval,    "rfn ovuv alarm reporting interval" )
+        (Key_RFN_OvUvAlarmRepeatInterval,       "rfn ovuv alarm repeating interval" )
+        (Key_RFN_OvUvRepeatCount,               "rfn ovuv alarm repeat count" )
         ;
 
 CtiTableDynamicPaoInfo::CtiTableDynamicPaoInfo() :

@@ -287,6 +287,13 @@ const string RfnStrings::Schedule4Rate4        = "schedule4Rate4";
 const string RfnStrings::Schedule4Time5        = "schedule4Time5";
 const string RfnStrings::Schedule4Rate5        = "schedule4Rate5";
 
+// OV/UV Configuration
+const string RfnStrings::OvUvEnabled                = "ovuvEnabled";
+const string RfnStrings::OvThreshold                = "ovThreshold";
+const string RfnStrings::UvThreshold                = "uvThreshold";
+const string RfnStrings::OvUvAlarmReportingInterval = "alarmReportingInterval";
+const string RfnStrings::OvUvAlarmRepeatInterval    = "alarmRepeatInterval";
+const string RfnStrings::OvUvRepeatCount            = "ovuvRepeats";
 
 
 

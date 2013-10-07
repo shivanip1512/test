@@ -308,6 +308,12 @@ BOOST_AUTO_TEST_CASE(test_getKeyString)
         { CtiTableDynamicPaoInfo::Key_RFN_DemandInterval,                    "rfn demand interval" },
         { CtiTableDynamicPaoInfo::Key_RFN_LoadProfileInterval,               "rfn load profile interval" },
         { CtiTableDynamicPaoInfo::Key_RFN_DemandFreezeDay,                   "rfn demand freeze day" },
+        { CtiTableDynamicPaoInfo::Key_RFN_OvUvEnabled,                       "rfn ovuv enabled" },
+        { CtiTableDynamicPaoInfo::Key_RFN_OvThreshold,                       "rfn ovuv ov threshold" },
+        { CtiTableDynamicPaoInfo::Key_RFN_UvThreshold,                       "rfn ovuv uv threshold" },
+        { CtiTableDynamicPaoInfo::Key_RFN_OvUvAlarmReportingInterval,        "rfn ovuv alarm reporting interval" },
+        { CtiTableDynamicPaoInfo::Key_RFN_OvUvAlarmRepeatInterval,           "rfn ovuv alarm repeating interval" },
+        { CtiTableDynamicPaoInfo::Key_RFN_OvUvRepeatCount,                   "rfn ovuv alarm repeat count" },
     };
 
     std::vector<std::string> expected, results;
