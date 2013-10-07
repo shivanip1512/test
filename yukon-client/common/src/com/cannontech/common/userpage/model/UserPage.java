@@ -1,7 +1,6 @@
 package com.cannontech.common.userpage.model;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -25,31 +24,16 @@ public final class UserPage {
     private final static Logger log = YukonLogManager.getLogger(UserPage.class);
 
     public enum Module implements DisplayableEnum {
-        AMI(1),
-        DR(2),
-        VV(3),
-        ASSETS(4),
-        TOOLS(5),
-        ADMIN(6),
-        SUPPORT(7),
-        DEVELOPMENT(8),
-        UNKNOWN(999),
+        AMI,
+        DR,
+        VV,
+        ASSETS,
+        TOOLS,
+        ADMIN,
+        SUPPORT,
+        DEVELOPMENT,
+        UNKNOWN,
         ;
-
-        final int order;
-
-        Module(int order) {
-            this.order = order;
-        }
-
-        public static Comparator<Module> menuOrder() {
-            return new Comparator<Module>() {
-                @Override
-                public int compare(Module left, Module right) {
-                    return Integer.compare(left.order, right.order);
-                }
-            };
-        }
 
         @Override
         public String getFormatKey() {

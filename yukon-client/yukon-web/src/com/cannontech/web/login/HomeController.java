@@ -31,6 +31,7 @@ import com.cannontech.web.common.userpage.service.UserPageService;
 import com.google.common.base.Function;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Ordering;
 
 @Controller
 public class HomeController {
@@ -176,10 +177,11 @@ public class HomeController {
         return result;
     }
 
-    private static Comparator<UserPage> byModuleAsc = new Comparator<UserPage>() {
-        @Override
-        public int compare(UserPage left, UserPage right) {
-            return left.getModuleEnum().compareTo(right.getModuleEnum());
-        }
-    };
+    private final static Comparator<UserPage> byModuleAsc = Ordering.natural().onResultOf(
+        new Function<UserPage, UserPage.Module>() {
+            @Override
+            public UserPage.Module apply(UserPage userPage) {
+                return userPage.getModuleEnum();
+            }
+        });
 }
