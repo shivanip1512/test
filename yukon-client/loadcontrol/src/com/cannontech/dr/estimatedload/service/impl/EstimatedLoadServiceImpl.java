@@ -211,7 +211,7 @@ public class EstimatedLoadServiceImpl implements EstimatedLoadService {
                 log.debug("Recalculating estimated load for LM program Id: " + programId.getPaoId());
             } 
             try {
-                EstimatedLoadReductionAmount amount = calculateProgramLoadReductionAmounts(programId, gearId);;
+                EstimatedLoadReductionAmount amount = calculateProgramLoadReductionAmounts(programId, gearId);
                 gearMap.put(gearId, new DatedObject<>(amount));
                 loadReductionAmountCache.put(programId.getPaoId(), gearMap);
                 return amount;
@@ -310,7 +310,10 @@ public class EstimatedLoadServiceImpl implements EstimatedLoadService {
     private double calculateKwSavingsNow(PaoIdentifier program, double maxKwSavings)
             throws EstimatedLoadCalculationException {
         double reductionFromControllingPrograms = 0.0;
-        
+        LMProgramBase calculationProgramBase = getLmProgramBase(program.getPaoId());
+//        if (calculationProgramBase.isActive()) {
+//            return 0.0; // If the calculation program is 
+//        }
         // How many other programs are there that share enrollments with the program being calculated?
         List<Integer> programsWithSharedInventory = estimatedLoadDao.findOtherEnrolledProgramsForDevicesInProgram(
                 program.getPaoId());
