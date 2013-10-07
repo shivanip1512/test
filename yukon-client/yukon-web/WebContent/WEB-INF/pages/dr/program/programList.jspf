@@ -144,7 +144,6 @@
 
                     <thead>
                         <tr>
-                            <th class="favoritesColumn"></th>
                             <th><tags:sortLink nameKey="heading.name" baseUrl="${baseUrl}" fieldName="NAME" /></th>
 
                             <cti:checkRolesAndProperties value="PROGRAM_STATE">
@@ -185,7 +184,6 @@
                                 <c:param name="programId" value="${programId}" />
                             </c:url>
                             <tr id="programRow${programId}">
-                                <td><dr:favoriteIcon paoId="${programId}" isFavorite="${favoritesByPaoId[programId]}" /></td>
                                 <td>
                                     <%-- TODO:  in phase 3, update cti:classUpdater to be able to update the class of the row instead --%> 
                                     <a href="${programURL}">${fn:escapeXml(program.name)}</a>
@@ -210,8 +208,8 @@
                                 </cti:checkRolesAndProperties>
                                 <cti:checkRolesAndProperties value="ENABLE_ESTIMATED_LOAD">
                                     <td class="KW_SAVINGS_${programId}" title="">
-                                        <cti:dataUpdaterValue identifier="${programId}/KW_SAVINGS" type="DR_PROGRAM"/>
-                                        <cti:dataUpdaterCallback function="createToolTip" value="DR_PROGRAM/${programId}/ESTIMATED_LOAD_ERROR"/>
+                                        <%-- <cti:dataUpdaterValue identifier="${programId}/KW_SAVINGS" type="DR_PROGRAM"/> --%>
+                                        <%-- <cti:dataUpdaterCallback function="createToolTip" value="DR_PROGRAM/${programId}/ESTIMATED_LOAD_ERROR"/> --%>
                                     </td>
                                 </cti:checkRolesAndProperties>
                                 <td><dr:programListActions pao="${program}" /></td>

@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.events.loggers.DemandResponseEventLogService;
-import com.cannontech.common.favorites.dao.FavoritesDao;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.validator.YukonMessageCodeResolver;
@@ -55,7 +54,6 @@ public class LoadGroupController extends DemandResponseControllerBase {
     @Autowired private AssetAvailabilityPingService assetAvailabilityPingService;
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private DemandResponseEventLogService demandResponseEventLogService;
-    @Autowired private FavoritesDao favoritesDao;
     @Autowired private LoadGroupControllerHelper loadGroupControllerHelper;
     @Autowired private LoadGroupService loadGroupService;
     @Autowired private PaoAuthorizationService paoAuthorizationService;
@@ -103,10 +101,7 @@ public class LoadGroupController extends DemandResponseControllerBase {
         paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
                                                      loadGroup, 
                                                      Permission.LM_VISIBLE);
-        favoritesDao.detailPageViewed(loadGroupId);
-        boolean isFavorite = favoritesDao.isFavorite(loadGroupId, userContext.getYukonUser());
         model.addAttribute("loadGroup", loadGroup);
-        model.addAttribute("isFavorite", isFavorite);
 
         model.addAttribute("parentPrograms",
                               programService.findProgramsForLoadGroup(loadGroupId, userContext));

@@ -12,9 +12,6 @@
 <entry key="yukon.web.modules.dr.fieldNotInLoadManagement">-</entry>
 <entry key="yukon.web.modules.dr.blankField">N/A</entry>
 
-<entry key="yukon.web.modules.dr.actions.addFavoriteIcon.alt">Add to favorites</entry>
-<entry key="yukon.web.modules.dr.actions.removeFavoriteIcon.alt">Remove from favorites</entry>
-
 <entry key="yukon.web.modules.dr.paoType.LM_SCENARIO">Scenario</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_CONTROL_AREA">Control Area</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_DIRECT_PROGRAM">Program</entry>

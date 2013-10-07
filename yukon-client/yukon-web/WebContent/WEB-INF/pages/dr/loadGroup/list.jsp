@@ -8,7 +8,6 @@
 <cti:standardPage module="dr" page="loadGroupList">
 
     <tags:simpleDialog id="drDialog"/>
-    <dr:favoriteIconSetup/>
 
     <c:set var="baseUrl" value="/dr/loadGroup/list"/>
     <%@ include file="loadGroupList.jspf" %>

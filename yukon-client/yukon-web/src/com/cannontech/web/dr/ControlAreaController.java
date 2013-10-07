@@ -34,7 +34,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
 import com.cannontech.common.events.loggers.DemandResponseEventLogService;
-import com.cannontech.common.favorites.dao.FavoritesDao;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.IntegerRange;
@@ -84,12 +83,10 @@ public class ControlAreaController extends DemandResponseControllerBase {
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private DemandResponseEventLogService demandResponseEventLogService;
     @Autowired private DurationFormattingService durationFormattingService;
-    @Autowired private FavoritesDao favoritesDao;
     @Autowired private PaoAuthorizationService paoAuthorizationService;
     @Autowired private ProgramControllerHelper programControllerHelper;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private TriggerFieldService triggerFieldService;
-    
     
     public static class ControlAreaListBackingBean extends ListBackingBean {
         private String state;
@@ -210,10 +207,6 @@ public class ControlAreaController extends DemandResponseControllerBase {
 
         model.addAttribute("searchResult", searchResult);
         model.addAttribute("controlAreas", searchResult.getResultList());
-        Map<Integer, Boolean> favoritesByPaoId =
-            favoritesDao.favoritesByPao(searchResult.getResultList(),
-                                        userContext.getYukonUser());
-        model.addAttribute("favoritesByPaoId", favoritesByPaoId);
 
         addFilterErrorsToFlashScopeIfNecessary(model, bindingResult, flashScope);
 
@@ -231,11 +224,8 @@ public class ControlAreaController extends DemandResponseControllerBase {
         paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(),
                                                      controlArea,
                                                      Permission.LM_VISIBLE);
-        favoritesDao.detailPageViewed(controlAreaId);
-        boolean isFavorite = favoritesDao.isFavorite(controlAreaId, userContext.getYukonUser());
-        model.addAttribute("controlArea", controlArea);
-        model.addAttribute("isFavorite", isFavorite);
 
+        model.addAttribute("controlArea", controlArea);
         UiFilter<DisplayablePao> detailFilter = new ForControlAreaFilter(controlAreaId);
         programControllerHelper.filterPrograms(model, userContext, backingBean,
                                                bindingResult, detailFilter);

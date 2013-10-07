@@ -4,7 +4,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +17,6 @@ import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.FilterDao;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
-import com.cannontech.common.favorites.dao.FavoritesDao;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.DisplayablePaoBase;
 import com.cannontech.common.pao.DisplayablePaoComparator;
@@ -55,7 +53,6 @@ public class QuickSearchController {
     
     @Autowired private FilterDao filterService;
     @Autowired private RolePropertyDao rolePropertyDao;
-    @Autowired private FavoritesDao favoritesDao;
     @Autowired private PaoDetailUrlHelper paoDetailUrlHelper;
     @Autowired private DemandResponseService demandResponseService;
     @Autowired private PaoAuthorizationService paoAuthorizationService;
@@ -154,10 +151,6 @@ public class QuickSearchController {
         }
 
         modelMap.addAttribute("searchResult", searchResult);
-        Map<Integer, Boolean> favoritesByPaoId =
-            favoritesDao.favoritesByPao(searchResult.getResultList(),
-                                        userContext.getYukonUser());
-        modelMap.addAttribute("favoritesByPaoId", favoritesByPaoId);
 
         return "dr/searchResults.jsp";
     }

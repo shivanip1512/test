@@ -28,7 +28,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
-import com.cannontech.common.favorites.dao.FavoritesDao;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.DisplayablePaoComparator;
 import com.cannontech.common.search.result.SearchResults;
@@ -59,7 +58,6 @@ public class ScenarioController extends DemandResponseControllerBase {
     
     @Autowired private AssetAvailabilityPingService assetAvailabilityPingService;
     @Autowired private DateFormattingService dateFormattingService;
-    @Autowired private FavoritesDao favoritesDao;
     @Autowired private PaoAuthorizationService paoAuthorizationService;
     @Autowired private ProgramControllerHelper programControllerHelper;
     @Autowired private RolePropertyDao rolePropertyDao;
@@ -98,10 +96,6 @@ public class ScenarioController extends DemandResponseControllerBase {
 
         model.addAttribute("searchResult", searchResult);
         model.addAttribute("scenarios", searchResult.getResultList());
-        Map<Integer, Boolean> favoritesByPaoId =
-            favoritesDao.favoritesByPao(searchResult.getResultList(),
-                                        userContext.getYukonUser());
-        model.addAttribute("favoritesByPaoId", favoritesByPaoId);
 
         addFilterErrorsToFlashScopeIfNecessary(model, bindingResult, flashScope);
 
@@ -118,10 +112,7 @@ public class ScenarioController extends DemandResponseControllerBase {
         paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
                                                      scenario, 
                                                      Permission.LM_VISIBLE);
-        favoritesDao.detailPageViewed(scenarioId);
-        boolean isFavorite = favoritesDao.isFavorite(scenarioId, userContext.getYukonUser());
         model.addAttribute("scenario", scenario);
-        model.addAttribute("isFavorite", isFavorite);
 
         UiFilter<DisplayablePao> detailFilter = new ForScenarioFilter(scenarioId);
         programControllerHelper.filterPrograms(model, userContext, backingBean,

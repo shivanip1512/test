@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.common.bulk.filter.UiFilter;
-import com.cannontech.common.favorites.dao.FavoritesDao;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.DisplayablePaoComparator;
@@ -67,7 +66,6 @@ public class ProgramController extends ProgramControllerBase {
 
     @Autowired private AssetAvailabilityPingService assetAvailabilityPingService;
     @Autowired private DateFormattingService dateFormattingService;
-    @Autowired private FavoritesDao favoritesDao;
     @Autowired private LoadGroupControllerHelper loadGroupControllerHelper;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private ScenarioService scenarioService;
@@ -96,10 +94,7 @@ public class ProgramController extends ProgramControllerBase {
         paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
                                                      program, 
                                                      Permission.LM_VISIBLE);
-        favoritesDao.detailPageViewed(programId);
-        boolean isFavorite = favoritesDao.isFavorite(programId, userContext.getYukonUser());
         model.addAttribute("program", program);
-        model.addAttribute("isFavorite", isFavorite);
 
         UiFilter<DisplayablePao> detailFilter = new LoadGroupsForProgramFilter(programId);
         loadGroupControllerHelper.filterGroups(model, userContext, backingBean,

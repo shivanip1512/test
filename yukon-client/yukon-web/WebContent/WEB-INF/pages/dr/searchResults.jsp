@@ -12,7 +12,6 @@
 	<cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css" />
 	<cti:includeScript link="/JavaScript/calendarControl.js" />
 	<cti:includeScript link="/JavaScript/calendarTagFuncs.js" />
-	<dr:favoriteIconSetup />
 
 	<c:set var="baseUrl" value="/dr/search" />
         
@@ -40,7 +39,6 @@
 			<c:otherwise>
 				<table class="compactResultsTable rowHighlighting">
 					<tr>
-						<th></th>
 						<th><tags:sortLink nameKey="nameHeader" baseUrl="${baseUrl}" fieldName="NAME"/></th>
 						<th><tags:sortLink nameKey="typeHeader" baseUrl="${baseUrl}" fieldName="TYPE"/></th>
 						<th><tags:sortLink nameKey="stateHeader" baseUrl="${baseUrl}" fieldName="STATE"/></th>
@@ -49,8 +47,6 @@
 					</tr>
 					<c:forEach var="pao" items="${searchResult.resultList}">
 						<tr>
-							<td><dr:favoriteIcon paoId="${pao.paoIdentifier.paoId}"
-								isFavorite="${favoritesByPaoId[pao.paoIdentifier.paoId]}" /></td>
 							<td><cti:paoDetailUrl yukonPao="${pao}">
 								<spring:escapeBody htmlEscape="true">${pao.name}</spring:escapeBody>
 							</cti:paoDetailUrl></td>

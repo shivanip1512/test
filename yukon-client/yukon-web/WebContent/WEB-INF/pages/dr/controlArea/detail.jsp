@@ -12,12 +12,8 @@
     <cti:includeScript link="/JavaScript/calendarControl.js"/>
     <cti:includeScript link="/JavaScript/calendarTagFuncs.js"/>
     <cti:includeScript link="/JavaScript/hideReveal.js"/>
-    <dr:favoriteIconSetup/>
 
     <c:set var="controlAreaId" value="${controlArea.paoIdentifier.paoId}"/>
-    <tags:layoutHeadingPrefixPart>
-        <dr:favoriteIcon paoId="${controlAreaId}" isFavorite="${isFavorite}"/>
-    </tags:layoutHeadingPrefixPart>
 
     <input id="assetId" type="hidden" value="${controlAreaId}"/>
     <cti:includeScript link="/JavaScript/drAssetDetails.js"/>

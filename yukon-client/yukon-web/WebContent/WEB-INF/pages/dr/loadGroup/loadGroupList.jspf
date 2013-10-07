@@ -102,8 +102,6 @@
             <table id="loadGroupList" class="compactResultsTable rowHighlighting has-actions">
                 <thead>
                     <tr>
-                        <th class="favoritesColumn"></th>
-
                         <th><tags:sortLink nameKey="heading.name" baseUrl="${baseUrl}" fieldName="NAME"/></th>
 
                         <cti:checkRolesAndProperties value="LOAD_GROUP_STATE">
@@ -135,8 +133,6 @@
                             <c:param name="loadGroupId" value="${loadGroupId}" />
                         </c:url>
                         <tr id="loadGroupRow${loadGroupId}">
-                            <td><dr:favoriteIcon paoId="${loadGroupId}"
-                                isFavorite="${favoritesByPaoId[loadGroupId]}" /></td>
 
                             <td><a href="${loadGroupURL}">${fn:escapeXml(loadGroup.name)}</a></td>
                             <%-- TODO:  in phase 3, update cti:classUpdater to be able to

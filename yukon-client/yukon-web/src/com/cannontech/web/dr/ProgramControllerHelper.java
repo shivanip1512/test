@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
@@ -21,7 +20,6 @@ import org.springframework.web.bind.WebDataBinder;
 
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
-import com.cannontech.common.favorites.dao.FavoritesDao;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.DateRange;
@@ -121,7 +119,6 @@ public class ProgramControllerHelper {
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
     @Autowired private ProgramFieldService programFieldService;
     @Autowired private ProgramNameField programNameField;
-    @Autowired private FavoritesDao favoritesDao;
 
     public void initBinder(WebDataBinder binder, YukonUserContext userContext, String page) {
         if (binder.getTarget() != null) {
@@ -232,10 +229,5 @@ public class ProgramControllerHelper {
 
         modelMap.addAttribute("searchResult", searchResult);
         modelMap.addAttribute("programs", searchResult.getResultList());
-        Map<Integer, Boolean> favoritesByPaoId =
-            favoritesDao.favoritesByPao(searchResult.getResultList(),
-                                        userContext.getYukonUser());
-        modelMap.addAttribute("favoritesByPaoId", favoritesByPaoId);
     }
-
 }

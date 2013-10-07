@@ -11,12 +11,8 @@
     <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
     <cti:includeScript link="/JavaScript/calendarTagFuncs.js"/>
     <cti:includeScript link="/JavaScript/hideReveal.js"/>
-    <dr:favoriteIconSetup/>
     
     <c:set var="scenarioId" value="${scenario.paoIdentifier.paoId}"/>
-    <tags:layoutHeadingPrefixPart>
-        <dr:favoriteIcon paoId="${scenarioId}" isFavorite="${isFavorite}"/>
-    </tags:layoutHeadingPrefixPart>
 
     <input id="assetId" type="hidden" value="${scenarioId}"/>
     <cti:includeScript link="/JavaScript/drAssetDetails.js"/>

@@ -11,12 +11,8 @@
     <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
     <cti:includeScript link="/JavaScript/calendarControl.js"/>
     <cti:includeScript link="/JavaScript/calendarTagFuncs.js"/>
-    <dr:favoriteIconSetup/>
 
     <c:set var="programId" value="${program.paoIdentifier.paoId}"/>
-    <tags:layoutHeadingPrefixPart>
-        <dr:favoriteIcon paoId="${programId}" isFavorite="${isFavorite}"/>
-    </tags:layoutHeadingPrefixPart>
 
     <input id="assetId" type="hidden" value="${programId}"/>
     <cti:includeScript link="/JavaScript/drAssetDetails.js"/>
@@ -66,15 +62,15 @@
                         <cti:checkRolesAndProperties value="ENABLE_ESTIMATED_LOAD">
                             <cti:msg var="fieldName" key="yukon.web.modules.dr.programDetail.info.connectedLoad"/>
                             <tags:nameValue name="${fieldName}">
-                                <cti:dataUpdaterValue identifier="${programId}/CONNECTED_LOAD" type="DR_PROGRAM"/>
+                                <%-- <cti:dataUpdaterValue identifier="${programId}/CONNECTED_LOAD" type="DR_PROGRAM"/> --%>
                             </tags:nameValue>
                             <cti:msg var="fieldName" key="yukon.web.modules.dr.programDetail.info.diversifiedLoad"/>
                             <tags:nameValue name="${fieldName}">
-                                <cti:dataUpdaterValue identifier="${programId}/DIVERSIFIED_LOAD" type="DR_PROGRAM"/>
+                                <%-- <cti:dataUpdaterValue identifier="${programId}/DIVERSIFIED_LOAD" type="DR_PROGRAM"/> --%>
                             </tags:nameValue>
                             <cti:msg var="fieldName" key="yukon.web.modules.dr.programDetail.info.kwSavings"/>
                             <tags:nameValue name="${fieldName}">
-                                <cti:dataUpdaterValue identifier="${programId}/KW_SAVINGS" type="DR_PROGRAM"/>
+                               <%--  <cti:dataUpdaterValue identifier="${programId}/KW_SAVINGS" type="DR_PROGRAM"/> --%>
                             </tags:nameValue>
                         </cti:checkRolesAndProperties>
                     </tags:nameValueContainer>

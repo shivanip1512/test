@@ -11,7 +11,6 @@
     <cti:includeScript link="/JavaScript/calendarControl.js"/>
     <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
     <cti:includeScript link="/JavaScript/calendarTagFuncs.js"/>
-    <dr:favoriteIconSetup/>
 
     <div class="column_12_12">
         <div class="column one">
@@ -23,7 +22,6 @@
                     <table class="compactResultsTable rowHighlighting has-actions">
                         <thead>
                         <tr>
-                            <th></th>
                             <th>
                                 <tags:sortLink nameKey="nameHeader" baseUrl="${baseUrl}" fieldName="NAME"
                                     sortParam="favSort" descendingParam="favDescending"/>
@@ -42,9 +40,6 @@
                         <tbody>
                         <c:forEach var="pao" items="${favorites}">
                             <tr>
-                                <td>
-                                    <dr:favoriteIcon paoId="${pao.paoIdentifier.paoId}" isFavorite="true" fromHomePage="true"/>
-                                </td>
                                 <td>
                                     <cti:paoDetailUrl yukonPao="${pao}">
                                         <spring:escapeBody htmlEscape="true">${pao.name}</spring:escapeBody>
@@ -98,7 +93,6 @@
                     <table class="compactResultsTable rowHighlighting has-actions">
                         <thead>
                         <tr>
-                            <th></th>
                             <th>
                                 <tags:sortLink nameKey="nameHeader" baseUrl="${baseUrl}" fieldName="NAME"
                                     sortParam="rvSort" descendingParam="rvDescending"/>
@@ -118,9 +112,6 @@
                         <tbody>
                         <c:forEach var="pao" items="${recents}">
                             <tr>
-                                <td><dr:favoriteIcon paoId="${pao.paoIdentifier.paoId}"
-                                    isFavorite="${favoritesByPaoId[pao.paoIdentifier.paoId]}"
-                                    fromHomePage="true" isRecentlyViewedItem="true"/></td>
                                 <td>
                                     <cti:paoDetailUrl yukonPao="${pao}">
                                         <spring:escapeBody htmlEscape="true">${pao.name}</spring:escapeBody>

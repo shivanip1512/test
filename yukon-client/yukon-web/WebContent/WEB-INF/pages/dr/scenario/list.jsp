@@ -12,7 +12,6 @@
     <cti:includeScript link="/JavaScript/calendarControl.js" />
     <cti:includeScript link="/JavaScript/calendarTagFuncs.js" />
     <cti:includeScript link="/JavaScript/hideReveal.js"/>
-    <dr:favoriteIconSetup />
 
     <c:set var="baseUrl" value="/dr/scenario/list" />
     <cti:url var="submitUrl" value="${baseUrl}" />
@@ -63,7 +62,6 @@ function clearFilter() {
                 <table id="scenarioList" class="compactResultsTable rowHighlighting has-actions">
                     <thead>
                         <tr>
-                            <th class="favoritesColumn"></th>
                             <th><tags:sortLink nameKey="heading.name"
                                 baseUrl="${baseUrl}" fieldName="NAME"/></th>
                             <th class="action-column"></th>
@@ -77,8 +75,6 @@ function clearFilter() {
                                 <c:param name="scenarioId" value="${scenarioId}" />
                             </c:url>
                             <tr>
-                                <td><dr:favoriteIcon paoId="${scenarioId}"
-                                    isFavorite="${favoritesByPaoId[scenarioId]}" /></td>
                                 <td><a href="${scenarioUrl}">${fn:escapeXml(scenario.name)}</a>
                                 </td>
                                 <td><dr:scenarioListActions pao="${scenario}" /></td>

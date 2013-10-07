@@ -11,12 +11,8 @@
     <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
     <cti:includeScript link="/JavaScript/calendarControl.js"/>
     <cti:includeScript link="/JavaScript/calendarTagFuncs.js"/>
-    <dr:favoriteIconSetup/>
 
     <c:set var="loadGroupId" value="${loadGroup.paoIdentifier.paoId}"/>
-    <tags:layoutHeadingPrefixPart>
-        <dr:favoriteIcon paoId="${loadGroupId}" isFavorite="${isFavorite}"/>
-    </tags:layoutHeadingPrefixPart>
 
     <input id="assetId" type="hidden" value="${loadGroupId}"/>
     <cti:includeScript link="/JavaScript/drAssetDetails.js"/>

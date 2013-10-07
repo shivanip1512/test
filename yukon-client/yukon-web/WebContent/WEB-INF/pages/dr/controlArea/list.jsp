@@ -12,7 +12,6 @@
     <cti:includeScript link="/JavaScript/calendarControl.js" />
     <cti:includeScript link="/JavaScript/calendarTagFuncs.js" />
     <cti:includeScript link="/JavaScript/hideReveal.js"/>
-    <dr:favoriteIconSetup />
 
     <c:set var="baseUrl" value="/dr/controlArea/list" />
     <cti:url var="submitUrl" value="${baseUrl}" />
@@ -121,7 +120,6 @@
                     <thead>
                         <tr>
                             <%-- Table headers - columns are hidden/shown based on role props --%>
-                            <th class="favoritesColumn"></th>
                             <th><tags:sortLink nameKey="heading.name"
                                 baseUrl="${baseUrl}" fieldName="CA_NAME" isDefault="true"/></th>
                             <cti:checkRolesAndProperties value="CONTROL_AREA_STATE">
@@ -163,8 +161,6 @@
                                 <c:param name="controlAreaId" value="${controlAreaId}" />
                             </c:url>
                             <tr>
-                                <td><dr:favoriteIcon paoId="${controlAreaId}"
-                                    isFavorite="${favoritesByPaoId[controlAreaId]}" /></td>
                                 <td><a href="${controlAreaUrl}">${fn:escapeXml(controlArea.name)}</a></td>
                                 <cti:checkRolesAndProperties value="CONTROL_AREA_STATE">
                                     <td><dr:controlAreaState controlAreaId="${controlAreaId}" />
