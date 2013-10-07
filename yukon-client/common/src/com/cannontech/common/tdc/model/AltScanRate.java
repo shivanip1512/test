@@ -34,6 +34,6 @@ public enum AltScanRate implements Displayable{
 
     @Override
     public MessageSourceResolvable getMessage() {
-        return new YukonMessageSourceResolvable( "yukon.web.modules.tools.tdc.altScanRateEnum."  + name());
+        return new YukonMessageSourceResolvable( "yukon.web.modules.tools.tdc.altScanRate."  + name());
     }
 }

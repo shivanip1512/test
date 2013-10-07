@@ -60,26 +60,25 @@
     <entry key="yukon.web.modules.tools.tdc.unack.title">Acknowledge Alarms for {0} : {1}</entry>
     <entry key="yukon.web.modules.tools.tdc.ack.success">Acknowledged {0} alarms</entry>
     <entry key="yukon.web.modules.tools.tdc.deviceNamePointName">{0} : {1}</entry>
-    <entry key="yukon.web.modules.tools.tdc.title">{0} {1} : {2}</entry>
 
     <entry key="yukon.web.modules.tools.tdc.point.enabled.true">Enabled</entry>
     <entry key="yukon.web.modules.tools.tdc.point.enabled.false">Disabled</entry>
 
-    <entry key="yukon.web.modules.tools.tdc.altScanRateEnum.ONCE">(Only Once)</entry>
-    <entry key="yukon.web.modules.tools.tdc.altScanRateEnum.MIN1">1 minute</entry>
-    <entry key="yukon.web.modules.tools.tdc.altScanRateEnum.MIN2">2 minutes</entry>
-    <entry key="yukon.web.modules.tools.tdc.altScanRateEnum.MIN3">3 minutes</entry>
-    <entry key="yukon.web.modules.tools.tdc.altScanRateEnum.MIN4">4 minutes</entry>
-    <entry key="yukon.web.modules.tools.tdc.altScanRateEnum.MIN5">5 minutes</entry>
-    <entry key="yukon.web.modules.tools.tdc.altScanRateEnum.MIN10">10 minutes</entry>
-    <entry key="yukon.web.modules.tools.tdc.altScanRateEnum.MIN15">15 minutes</entry>
-    <entry key="yukon.web.modules.tools.tdc.altScanRateEnum.MIN30">30 minutes</entry>
-    <entry key="yukon.web.modules.tools.tdc.altScanRateEnum.HOUR1">1 hour</entry>
-    <entry key="yukon.web.modules.tools.tdc.altScanRateEnum.HOURS2">2 hours</entry>
-    <entry key="yukon.web.modules.tools.tdc.altScanRateEnum.HOURS4">8 hours</entry>
-    <entry key="yukon.web.modules.tools.tdc.altScanRateEnum.HOURS16">16 hours</entry>
-    <entry key="yukon.web.modules.tools.tdc.altScanRateEnum.DAY1">1 day</entry>
-    <entry key="yukon.web.modules.tools.tdc.altScanRateEnum.DAYS2">2 days</entry>
-    <entry key="yukon.web.modules.tools.tdc.altScanRateEnum.DAYS5">5 days</entry>
+    <entry key="yukon.web.modules.tools.tdc.altScanRate.ONCE">(Only Once)</entry>
+    <entry key="yukon.web.modules.tools.tdc.altScanRate.MIN1">1 minute</entry>
+    <entry key="yukon.web.modules.tools.tdc.altScanRate.MIN2">2 minutes</entry>
+    <entry key="yukon.web.modules.tools.tdc.altScanRate.MIN3">3 minutes</entry>
+    <entry key="yukon.web.modules.tools.tdc.altScanRate.MIN4">4 minutes</entry>
+    <entry key="yukon.web.modules.tools.tdc.altScanRate.MIN5">5 minutes</entry>
+    <entry key="yukon.web.modules.tools.tdc.altScanRate.MIN10">10 minutes</entry>
+    <entry key="yukon.web.modules.tools.tdc.altScanRate.MIN15">15 minutes</entry>
+    <entry key="yukon.web.modules.tools.tdc.altScanRate.MIN30">30 minutes</entry>
+    <entry key="yukon.web.modules.tools.tdc.altScanRate.HOUR1">1 hour</entry>
+    <entry key="yukon.web.modules.tools.tdc.altScanRate.HOURS2">2 hours</entry>
+    <entry key="yukon.web.modules.tools.tdc.altScanRate.HOURS4">8 hours</entry>
+    <entry key="yukon.web.modules.tools.tdc.altScanRate.HOURS16">16 hours</entry>
+    <entry key="yukon.web.modules.tools.tdc.altScanRate.DAY1">1 day</entry>
+    <entry key="yukon.web.modules.tools.tdc.altScanRate.DAYS2">2 days</entry>
+    <entry key="yukon.web.modules.tools.tdc.altScanRate.DAYS5">5 days</entry>
 
 </properties>
