@@ -155,9 +155,6 @@
   <bean class="com.cannontech.common.survey.dao.impl.SurveyDaoImpl"/>
   <bean class="com.cannontech.common.survey.service.impl.SurveyServiceImpl"/>
 
-  <bean id="favoritesDao" class="com.cannontech.common.favorites.dao.impl.FavoritesDaoImpl"/>
-  <bean id="favoritesService" class="com.cannontech.common.favorites.service.impl.FavoritesServiceImpl"/>
-  
   <bean id="paoPropertyDao" class="com.cannontech.core.dao.impl.PaoPropertyDaoImpl"/>
   
   <bean id="extraPaoPointAssignmentDao" class="com.cannontech.core.dao.impl.ExtraPaoPointAssignmentDaoImpl"/>
