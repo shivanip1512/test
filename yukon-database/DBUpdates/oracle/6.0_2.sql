@@ -232,6 +232,42 @@ UPDATE JobProperty SET Value = REPLACE(Value, '/Tou Rate D Energy Generated', '/
 UPDATE JobProperty SET Value = REPLACE(Value, '/Tou Rate D Energy Generated', '/Received kWh Rate D') WHERE Name = 'deviceGroupNames' AND Value LIKE '%/Tou Rate D Energy Generated%';
 /* End YUK-12602 */
 
+/* Start YUK-12572 */
+CREATE TABLE Theme  (
+   ThemeId              NUMBER                          NOT NULL,
+   Name                 VARCHAR2(255)                   NOT NULL,
+   CurrentTheme         VARCHAR2(1)                     NOT NULL,
+   CONSTRAINT PK_Theme PRIMARY KEY (ThemeId)
+);
+
+INSERT INTO Theme VALUES (-1, 'Yukon Gray', 'Y');
+
+CREATE TABLE ThemeProperty  (
+   ThemeId              NUMBER                          NOT NULL,
+   Property             VARCHAR2(255)                   NOT NULL,
+   Value                VARCHAR2(2048)                  NOT NULL,
+   CONSTRAINT PK_ThemeProperty PRIMARY KEY (ThemeId, Property)
+);
+
+ALTER TABLE ThemeProperty
+   ADD CONSTRAINT FK_ThemeProperty_Theme FOREIGN KEY (ThemeId)
+      REFERENCES Theme (ThemeId)
+      ON DELETE CASCADE;
+
+INSERT INTO ThemeProperty VALUES (-1, 'PAGE_BACKGROUND', '#6e6d71');
+INSERT INTO ThemeProperty VALUES (-1, 'PAGE_BACKGROUND_FONT_COLOR', '#ffffff');
+INSERT INTO ThemeProperty VALUES (-1, 'PAGE_BACKGROUND_SHADOW', '#5a595d');
+INSERT INTO ThemeProperty VALUES (-1, 'PRIMARY_COLOR', '#0066cc');
+INSERT INTO ThemeProperty VALUES (-1, 'LOGIN_BACKGROUND_URL', '/WebConfig/yukon/layout/bg_mountain_1920_420_fade2.jpg');
+INSERT INTO ThemeProperty VALUES (-1, 'LOGIN_FONT_COLOR', '#ffffff');
+INSERT INTO ThemeProperty VALUES (-1, 'LOGIN_FONT_SHADOW', 'rgba(0,0,0,0.5)');
+INSERT INTO ThemeProperty VALUES (-1, 'LOGIN_TAGLINE_MARGIN', '35');
+INSERT INTO ThemeProperty VALUES (-1, 'LOGO_URL', '/WebConfig/yukon/layout/eaton_logo.png');
+INSERT INTO ThemeProperty VALUES (-1, 'LOGO_LEFT', '0');
+INSERT INTO ThemeProperty VALUES (-1, 'LOGO_TOP', '17');
+INSERT INTO ThemeProperty VALUES (-1, 'LOGO_WIDTH', '163');
+/* End YUK-12572 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

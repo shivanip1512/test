@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     10/2/2013 1:14:48 PM                         */
+/* Created on:     10/7/2013 2:39:24 PM                         */
 /*==============================================================*/
 
 
@@ -7920,6 +7920,41 @@ create table TemplateDisplay  (
 );
 
 /*==============================================================*/
+/* Table: Theme                                                 */
+/*==============================================================*/
+create table Theme  (
+   ThemeId              NUMBER                          not null,
+   Name                 VARCHAR2(255)                   not null,
+   CurrentTheme         VARCHAR2(1)                     not null,
+   constraint PK_Theme primary key (ThemeId)
+);
+
+INSERT INTO Theme VALUES (-1, 'Yukon Gray', 'Y');
+
+/*==============================================================*/
+/* Table: ThemeProperty                                         */
+/*==============================================================*/
+create table ThemeProperty  (
+   ThemeId              NUMBER                          not null,
+   Property             VARCHAR2(255)                   not null,
+   Value                VARCHAR2(2048)                  not null,
+   constraint PK_ThemeProperty primary key (ThemeId, Property)
+);
+
+INSERT INTO ThemeProperty VALUES (-1, 'PAGE_BACKGROUND', '#6e6d71');
+INSERT INTO ThemeProperty VALUES (-1, 'PAGE_BACKGROUND_FONT_COLOR', '#ffffff');
+INSERT INTO ThemeProperty VALUES (-1, 'PAGE_BACKGROUND_SHADOW', '#5a595d');
+INSERT INTO ThemeProperty VALUES (-1, 'PRIMARY_COLOR', '#0066cc');
+INSERT INTO ThemeProperty VALUES (-1, 'LOGIN_BACKGROUND_URL', '/WebConfig/yukon/layout/bg_mountain_1920_420_fade2.jpg');
+INSERT INTO ThemeProperty VALUES (-1, 'LOGIN_FONT_COLOR', '#ffffff');
+INSERT INTO ThemeProperty VALUES (-1, 'LOGIN_FONT_SHADOW', 'rgba(0,0,0,0.5)');
+INSERT INTO ThemeProperty VALUES (-1, 'LOGIN_TAGLINE_MARGIN', '35');
+INSERT INTO ThemeProperty VALUES (-1, 'LOGO_URL', '/WebConfig/yukon/layout/eaton_logo.png');
+INSERT INTO ThemeProperty VALUES (-1, 'LOGO_LEFT', '0');
+INSERT INTO ThemeProperty VALUES (-1, 'LOGO_TOP', '17');
+INSERT INTO ThemeProperty VALUES (-1, 'LOGO_WIDTH', '163');
+
+/*==============================================================*/
 /* Table: ThermostatEventHistory                                */
 /*==============================================================*/
 create table ThermostatEventHistory  (
@@ -12229,6 +12264,11 @@ alter table TemplateDisplay
 alter table TemplateDisplay
    add constraint FK_TemplateDisplay_TEMPLATE foreign key (TemplateNum)
       references TEMPLATE (TEMPLATENUM);
+
+alter table ThemeProperty
+   add constraint FK_ThemeProperty_Theme foreign key (ThemeId)
+      references Theme (ThemeId)
+      on delete cascade;
 
 alter table ThermostatEventHistory
    add constraint FK_ThermEventHist_AcctThermSch foreign key (ScheduleId)
