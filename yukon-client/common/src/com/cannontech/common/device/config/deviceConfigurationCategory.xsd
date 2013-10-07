@@ -24,6 +24,7 @@
             <xs:enumeration value="mct430ConfigurationByte"/>
             <xs:enumeration value="mct430PrecannedTable"/>
             <xs:enumeration value="disconnectConfiguration"/>
+            <xs:enumeration value="rfnOvUv"/>
         </xs:restriction>
     </xs:simpleType>
     

@@ -86,7 +86,7 @@
             <xs:enumeration value="DisconnectLoadLimitConnectDelay"/>
         </xs:restriction>
     </xs:simpleType>
-    
+
     <xs:complexType name="Category">
         <xs:choice minOccurs="1" maxOccurs="unbounded">
             <xs:element name="integer" type="InputInteger"/>

@@ -26,7 +26,7 @@
 	    <xs:attribute name="inherits" type="xs:string" />
 	    <xs:attribute name="creatable" type="xs:boolean" default="true" />
     </xs:attributeGroup>
-    
+
     <xs:complexType name="paoType">
       <xs:annotation>
         <xs:appinfo>

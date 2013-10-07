@@ -294,7 +294,13 @@
             <category type="tou"/>
         </configuration>
     </pao>
-    
+
+    <pao id="RFN_OVUV_CONFIGURATION" abstract="true" inherits="SUPPORTS_DEVICE_CONFIGURATION">
+        <configuration>
+            <category type="rfnOvUv"/>
+        </configuration>
+    </pao>
+
     <pao id="DNP_CONFIGURATION" abstract="true" inherits="SUPPORTS_DEVICE_CONFIGURATION">
         <configuration>
             <category type="dnp"/>
@@ -7830,23 +7836,23 @@
     <!-- FOCUS RFN METERS -->
     <pao id="RFN410FL"  inherits="RFN_L3_FOCUS_410FL">
         <displayName>RFN-410fL</displayName></pao>
-    <pao id="RFN410FX"  inherits="RFN_L3_FOCUS_FX_FD">
+    <pao id="RFN410FX"  inherits="RFN_L3_FOCUS_FX_FD, RFN_OVUV_CONFIGURATION">
         <displayName>RFN-410fX</displayName></pao>
     <pao id="RFN410FD"  inherits="RFN410FX, RFN_DISCONNECT">
         <displayName>RFN-410fD</displayName></pao>
-    <pao id="RFN420FL"  inherits="RFN_L3_FOCUS_420FL">
+    <pao id="RFN420FL"  inherits="RFN_L3_FOCUS_420FL, RFN_OVUV_CONFIGURATION">
         <displayName>RFN-420fL</displayName></pao>
     <pao id="RFN420FX"  inherits="RFN410FX, SUPPORTS_RFN_DEMAND_RESET_TAG, RFN_CENTRON_AND_FOCUS_ADV_VOLTAGE">
         <displayName>RFN-420fX</displayName></pao>
     <pao id="RFN420FD"  inherits="RFN420FX, RFN_DISCONNECT">
         <displayName>RFN-420fD</displayName></pao>
-    <pao id="RFN420FRX"  inherits="RFN_L5_FOCUS_FR_">
+    <pao id="RFN420FRX"  inherits="RFN_L5_FOCUS_FR_, RFN_OVUV_CONFIGURATION">
         <displayName>RFN-420fRX</displayName></pao>
     <pao id="RFN420FRD"  inherits="RFN420FRX, RFN_DISCONNECT">
         <displayName>RFN-420fRD</displayName></pao>
 
     <!-- ITRON RFN METERS -->
-    <pao id="RFN410CL"  inherits="RFN_L3_CENTRON, SUPPORTS_RFN_DEMAND_RESET_TAG">
+    <pao id="RFN410CL"  inherits="RFN_L3_CENTRON, SUPPORTS_RFN_DEMAND_RESET_TAG, RFN_OVUV_CONFIGURATION">
         <displayName>RFN-410cL</displayName></pao>
     <pao id="RFN420CL"  inherits="RFN410CL">
         <displayName>RFN-420cL</displayName></pao>

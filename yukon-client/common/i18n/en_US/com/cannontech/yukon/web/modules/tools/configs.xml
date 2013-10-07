@@ -344,7 +344,7 @@
     <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel4PeakKWResolution.description">Resolution power for peak KW.</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel4LastIntervalDemandResolution">Channel #4 Last Interval Demand Resolution</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel4LastIntervalDemandResolution.description">Resolution power for last interval demand.</entry>
-    
+
     <entry key="yukon.web.modules.tools.configs.category.mct430ConfigurationByte.title">MCT-430 Configuration</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct430ConfigurationByte.definition">DST and time sync configuration for the MCT-430.</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct430ConfigurationByte.enableDst">Enable DST</entry>
@@ -371,7 +371,22 @@
     <entry key="yukon.web.modules.tools.configs.category.disconnectConfiguration.connectMinutes.description">When a cycling disconnect command is issued to the attached disconnect device, this is the number of minutes that will be from the connected part of the cycle.</entry>
     <entry key="yukon.web.modules.tools.configs.category.disconnectConfiguration.reconnectButton">Reconnect Button</entry>
     <entry key="yukon.web.modules.tools.configs.category.disconnectConfiguration.reconnectButton.description">When true, the button must be pressed to complete a reconnect to the meter. Else, the reconnect is automatically completed.</entry>
-    
+
+    <entry key="yukon.web.modules.tools.configs.category.rfnOvUv.title">RFN OV/UV Configuration</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnOvUv.definition">Configuration parameters for the OV/UV metrology features for RFN devices.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnOvUv.ovuvEnabled">OV/UV Enabled</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnOvUv.ovuvEnabled.description">When true, OV/UV alarming is enabled for the RFN device. Else, the OV/UV alarming is disabled.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnOvUv.ovThreshold">Over Voltage Threshold</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnOvUv.ovThreshold.description">Voltages higher than this threshold will trigger an over voltage alarm.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnOvUv.uvThreshold">Under Voltage Threshold</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnOvUv.uvThreshold.description">Voltages lower than this threshold will trigger an under voltage alarm.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnOvUv.alarmReportingInterval">Alarm Reporting Interval</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnOvUv.alarmReportingInterval.description">The interval at which the RFN device reports new alarms (in minutes).</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnOvUv.alarmRepeatInterval">Alarm Repeat Interval</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnOvUv.alarmRepeatInterval.description">Time before repeating an alarm if state didn’t change (in minutes).</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnOvUv.ovuvRepeats">OV/UV Alarm Repeat Count</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnOvUv.ovuvRepeats.description">The number of times the RFN device will report an alarm whose state has not changed.</entry>
+
     <!-- general entries -->
     <entry key="yukon.web.modules.tools.configs.errorsExist">Errors exist in the submitted form. Please correct the problem(s) and submit again.</entry>
     <entry key="yukon.web.modules.tools.configs.noSelectedTypes">At least one device type must be selected.</entry>    

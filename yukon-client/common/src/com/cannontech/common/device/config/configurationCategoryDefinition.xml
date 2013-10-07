@@ -223,7 +223,7 @@
         <enum field="saturday" type="Schedule"/>
         <enum field="sunday" type="Schedule"/>
     </category>
-    
+
     <category type="mct430LoadProfileChannels">
         <!-- Channel 1 Inputs -->
         <enum field="channel1Type" type="Mct430MeterType" default="0"/>
@@ -250,22 +250,31 @@
         <enum field="channel4PeakKWResolution" type="DemandResolution" default="10.0"/>
         <enum field="channel4LastIntervalDemandResolution" type="LastIntervalDemandResolution" default="10.0"/>
     </category>
-    
+
     <category type="mct430ConfigurationByte">
         <boolean field="enableDst" default="true"/>
         <integer field="timeAdjustTolerance" minValue="15" maxValue="255" default="15"/>
     </category>
-    
+
     <category type="mct430PrecannedTable">
         <enum field="tableReadInterval" type="TableReadInterval" default="20"/>
         <integer field="tableType" minValue="1" maxValue="11" default="1"/>
     </category>
-    
+
     <category type="disconnectConfiguration">
         <float field="disconnectDemandThreshold" minValue="0.0" maxValue="400.0" default="0.0"/>
         <enum field="disconnectLoadLimitConnectDelay" type="DisconnectLoadLimitConnectDelay" default="5"/>
         <integer field="disconnectMinutes" minValue="5" maxValue="60" default="5"/>
         <integer field="connectMinutes" minValue="5" maxValue="60" default="5"/>
         <boolean field="reconnectButton" default="true"/>
+    </category>
+
+    <category type="rfnOvUv">
+        <boolean field="ovuvEnabled" default="false"/>
+        <float field="ovThreshold" default="120.0" minValue="100.0" maxValue="1000.0"/>
+        <float field="uvThreshold" default="120.0" minValue="100.0" maxValue="1000.0"/>
+        <integer field="alarmReportingInterval" default="15" minValue="2" maxValue="30"/>
+        <integer field="alarmRepeatInterval" default="60" minValue="60" maxValue="240"/>
+        <integer field="ovuvRepeats" default="2" minValue="1" maxValue="3"/>
     </category>
 </deviceConfigurationCategories>
