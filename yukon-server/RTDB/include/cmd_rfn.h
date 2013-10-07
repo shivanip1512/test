@@ -40,6 +40,9 @@ protected:
     virtual unsigned char getOperation() const = 0;
     virtual Bytes         getCommandData() = 0;
 
+    virtual Bytes         getCommandHeader();
+    virtual unsigned char getApplicationServiceId() const;
+
     virtual void    prepareCommandData(const CtiTime & now) { }
 
     enum UnitOfMeasure

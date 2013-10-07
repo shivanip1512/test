@@ -13,14 +13,32 @@ RfnCommand::RfnRequestPayload RfnCommand::executeCommand(const CtiTime now)
 
     prepareCommandData(now);
 
-    req.push_back(getCommandCode());
-    req.push_back(getOperation());
+    Bytes header = getCommandHeader();
+
+    req.insert(req.end(), header.begin(), header.end());
 
     Bytes data = getCommandData();
 
     req.insert(req.end(), data.begin(), data.end());
 
     return req;
+}
+
+// Default header for RFN messages
+RfnCommand::Bytes RfnCommand::getCommandHeader()
+{
+    Bytes   header;
+
+    header.push_back(getCommandCode());
+    header.push_back(getOperation());
+
+    return header;
+}
+
+// Defaults to Advanced Metrology
+unsigned char RfnCommand::getApplicationServiceId() const
+{
+    return 0x09;
 }
 
 // Convert type-length-value vector to a byte vector

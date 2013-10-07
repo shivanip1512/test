@@ -56,6 +56,7 @@ cmd_rfn_centronLcdConfiguration.obj \
 cmd_rfn_FocusLcdConfiguration.obj \
 cmd_rfn_DemandFreeze.obj \
 cmd_rfn_LoadProfile.obj \
+cmd_rfn_OvUvConfiguration.obj \
 cmd_rfn_TouConfiguration.obj \
 dev_710.obj \
 dev_a1.obj \
