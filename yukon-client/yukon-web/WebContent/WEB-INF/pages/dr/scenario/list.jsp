@@ -12,6 +12,7 @@
     <cti:includeScript link="/JavaScript/calendarControl.js" />
     <cti:includeScript link="/JavaScript/calendarTagFuncs.js" />
     <cti:includeScript link="/JavaScript/hideReveal.js"/>
+    <cti:includeScript link="/JavaScript/drEstimatedLoad.js"/>
 
     <c:set var="baseUrl" value="/dr/scenario/list" />
     <cti:url var="submitUrl" value="${baseUrl}" />
@@ -64,6 +65,10 @@ function clearFilter() {
                         <tr>
                             <th><tags:sortLink nameKey="heading.name"
                                 baseUrl="${baseUrl}" fieldName="NAME"/></th>
+                            <cti:checkRolesAndProperties value="ENABLE_ESTIMATED_LOAD">
+                                <cti:msg2 var="kwSavingsHeading" key=".heading.kwSavings"/>
+                                <th>${kwSavingsHeading}</th>
+                            </cti:checkRolesAndProperties>
                             <th class="action-column"></th>
                         </tr>
                     </thead>
@@ -77,6 +82,17 @@ function clearFilter() {
                             <tr>
                                 <td><a href="${scenarioUrl}">${fn:escapeXml(scenario.name)}</a>
                                 </td>
+                                <cti:checkRolesAndProperties value="ENABLE_ESTIMATED_LOAD">
+                                    <td data-pao="${scenarioId}">
+                                        <cti:icon icon="icon-error" classes="dn"/>
+                                        <cti:dataUpdaterValue
+                                            identifier="${scenarioId}/KW_SAVINGS"
+                                            type="DR_SCENARIO" />
+                                        <cti:dataUpdaterCallback function="Yukon.EstimatedLoad.createToolTip"
+                                            identifier="DR_SCENARIO/${scenarioId}/ESTIMATED_LOAD_ERROR" 
+                                            initialize="true"/>
+                                    </td>
+                                </cti:checkRolesAndProperties>
                                 <td><dr:scenarioListActions pao="${scenario}" /></td>
                             </tr>
                         </c:forEach>

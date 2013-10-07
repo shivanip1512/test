@@ -28,20 +28,11 @@
         </c:if>
     </cti:url>
 
+    <cti:includeScript link="/JavaScript/drEstimatedLoad.js"/>
+
     <script type="text/javascript">
         function clearFilter() {
             window.location = '${clearFilterUrl}';
-        }
-        
-        function createToolTip(msg) {
-            console.log(msg);
-            var data = jQuery.parseJSON(msg.value);
-            if (msg.value != "") {
-                jQuery.each(data, function(key, value) {
-                    console.log(key + ':' + value);
-                });
-            }
-            console.log('.KW_SAVINGS_' + msg.value.programId);
         }
     </script>
 
@@ -171,7 +162,8 @@
                             </cti:checkRolesAndProperties>
 
                             <cti:checkRolesAndProperties value="ENABLE_ESTIMATED_LOAD">
-                                <th><tags:sortLink nameKey="heading.kwSavings" baseUrl="${baseUrl}" fieldName="KW_SAVINGS"/></th>
+                                <cti:msg2 var="kwSavingsHeading" key=".heading.kwSavings"/>
+                                <th>${kwSavingsHeading}</th>
                             </cti:checkRolesAndProperties>
                             <th class="action-column"></th>
                         </tr>
@@ -207,9 +199,13 @@
                                     <td><cti:dataUpdaterValue identifier="${programId}/REDUCTION" type="DR_PROGRAM" /></td>
                                 </cti:checkRolesAndProperties>
                                 <cti:checkRolesAndProperties value="ENABLE_ESTIMATED_LOAD">
-                                    <td class="KW_SAVINGS_${programId}" title="">
-                                        <%-- <cti:dataUpdaterValue identifier="${programId}/KW_SAVINGS" type="DR_PROGRAM"/> --%>
-                                        <%-- <cti:dataUpdaterCallback function="createToolTip" value="DR_PROGRAM/${programId}/ESTIMATED_LOAD_ERROR"/> --%>
+                                    <td data-pao="${programId}">
+                                        <cti:icon icon="icon-error" classes="dn"/>
+                                        <cti:dataUpdaterValue identifier="${programId}/KW_SAVINGS" type="DR_PROGRAM"/>
+                                        <cti:dataUpdaterCallback
+                                            function="Yukon.EstimatedLoad.createToolTip"
+                                            value="DR_PROGRAM/${programId}/ESTIMATED_LOAD_ERROR" 
+                                            initialize="true"/>
                                     </td>
                                 </cti:checkRolesAndProperties>
                                 <td><dr:programListActions pao="${program}" /></td>

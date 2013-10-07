@@ -12,6 +12,7 @@
     <cti:includeScript link="/JavaScript/calendarControl.js" />
     <cti:includeScript link="/JavaScript/calendarTagFuncs.js" />
     <cti:includeScript link="/JavaScript/hideReveal.js"/>
+    <cti:includeScript link="/JavaScript/drEstimatedLoad.js"/>
 
     <c:set var="baseUrl" value="/dr/controlArea/list" />
     <cti:url var="submitUrl" value="${baseUrl}" />
@@ -146,6 +147,10 @@
                                 <th><tags:sortLink nameKey="heading.timeWindow"
                                     baseUrl="${baseUrl}" fieldName="CA_START"/></th>
                             </cti:checkRolesAndProperties>
+                            <cti:checkRolesAndProperties value="ENABLE_ESTIMATED_LOAD">
+                                <cti:msg2 var="kwSavingsHeading" key=".heading.kwSavings"/>
+                                <th>${kwSavingsHeading}</th>
+                            </cti:checkRolesAndProperties>
                             <th class="action-column"></th>
                         </tr>
                     </thead>
@@ -206,6 +211,18 @@
                                         key="yukon.web.modules.dr.controlAreaDetail.info.separator" />
                                     <cti:dataUpdaterValue type="DR_CONTROLAREA"
                                         identifier="${controlAreaId}/STOP" /></td>
+                                </cti:checkRolesAndProperties>
+                                <cti:checkRolesAndProperties value="ENABLE_ESTIMATED_LOAD">
+                                    <td data-pao="${controlAreaId}">
+                                        <cti:icon icon="icon-error" classes="dn"/>
+                                        <cti:dataUpdaterValue
+                                                type="DR_CONTROLAREA"
+                                                identifier="${controlAreaId}/KW_SAVINGS" /></td>
+                                        <cti:dataUpdaterCallback
+                                            function="Yukon.EstimatedLoad.createToolTip"
+                                            value="DR_CONTROLAREA/${controlAreaId}/ESTIMATED_LOAD_ERROR" 
+                                            initialize="true"/>
+                                    </td>
                                 </cti:checkRolesAndProperties>
                                 <td><dr:controlAreaListActions pao="${controlArea}"/></td>
                             </tr>

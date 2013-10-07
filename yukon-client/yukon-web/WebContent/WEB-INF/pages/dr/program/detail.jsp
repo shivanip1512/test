@@ -11,69 +11,75 @@
     <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
     <cti:includeScript link="/JavaScript/calendarControl.js"/>
     <cti:includeScript link="/JavaScript/calendarTagFuncs.js"/>
+    <cti:includeScript link="/JavaScript/drAssetDetails.js"/>
+    <cti:includeScript link="/JavaScript/drEstimatedLoad.js"/>
 
     <c:set var="programId" value="${program.paoIdentifier.paoId}"/>
 
     <input id="assetId" type="hidden" value="${programId}"/>
-    <cti:includeScript link="/JavaScript/drAssetDetails.js"/>
 
     <div class="column_12_12 clear">
         <div class="column one">
 
                 <%-- Program Info section --%>
                 <tags:sectionContainer2 nameKey="heading.info">
-                    <tags:nameValueContainer>
+                    <tags:nameValueContainer2>
                         <cti:checkRolesAndProperties value="PROGRAM_STATE">
-                            <cti:msg var="fieldName" key="yukon.web.modules.dr.programDetail.info.state"/>
-                            <tags:nameValue name="${fieldName}" nameColumnWidth="175px">
+                            <tags:nameValue2 nameKey="yukon.web.modules.dr.programDetail.info.state"
+                                    nameColumnWidth="175px">
                                 <dr:programState programId="${programId}"/>
-                            </tags:nameValue>
+                            </tags:nameValue2>
                         </cti:checkRolesAndProperties>
                         <cti:checkRolesAndProperties value="PROGRAM_START">
-                            <cti:msg var="fieldName" key="yukon.web.modules.dr.programDetail.info.start"/>
-                            <tags:nameValue name="${fieldName}">
+                            <tags:nameValue2 nameKey="yukon.web.modules.dr.programDetail.info.start">
                                 <cti:dataUpdaterValue identifier="${programId}/START" type="DR_PROGRAM"/>
-                            </tags:nameValue>
+                            </tags:nameValue2>
                         </cti:checkRolesAndProperties>
                         <cti:checkRolesAndProperties value="PROGRAM_STOP">
-                            <cti:msg var="fieldName" key="yukon.web.modules.dr.programDetail.info.stop"/>
-                            <tags:nameValue name="${fieldName}">
+                            <tags:nameValue2 nameKey="yukon.web.modules.dr.programDetail.info.stop">
                                 <cti:dataUpdaterValue identifier="${programId}/STOP" type="DR_PROGRAM"/>
-                            </tags:nameValue>
+                            </tags:nameValue2>
                         </cti:checkRolesAndProperties>
                         <cti:checkRolesAndProperties value="PROGRAM_CURRENT_GEAR">
-                            <cti:msg var="fieldName" key="yukon.web.modules.dr.programDetail.info.currentGear"/>
-                            <tags:nameValue name="${fieldName}">
+                            <tags:nameValue2 nameKey="yukon.web.modules.dr.programDetail.info.currentGear">
                                 <cti:dataUpdaterValue identifier="${programId}/CURRENT_GEAR" type="DR_PROGRAM"/>
-                            </tags:nameValue>
+                            </tags:nameValue2>
                         </cti:checkRolesAndProperties>
                         <cti:checkRolesAndProperties value="PROGRAM_PRIORITY">
-                            <cti:msg var="fieldName" key="yukon.web.modules.dr.programDetail.info.priority"/>
-                            <tags:nameValue name="${fieldName}">
+                            <tags:nameValue2 nameKey="yukon.web.modules.dr.programDetail.info.priority">
                                 <cti:dataUpdaterValue identifier="${programId}/PRIORITY" type="DR_PROGRAM"/>
-                            </tags:nameValue>
+                            </tags:nameValue2>
                         </cti:checkRolesAndProperties>
                         <cti:checkRolesAndProperties value="PROGRAM_REDUCTION">
-                            <cti:msg var="fieldName" key="yukon.web.modules.dr.programDetail.info.reduction"/>
-                            <tags:nameValue name="${fieldName}">
+                            <tags:nameValue2 nameKey="yukon.web.modules.dr.programDetail.info.reduction">
                                 <cti:dataUpdaterValue identifier="${programId}/REDUCTION" type="DR_PROGRAM"/>
-                            </tags:nameValue>
+                            </tags:nameValue2>
                         </cti:checkRolesAndProperties>
                         <cti:checkRolesAndProperties value="ENABLE_ESTIMATED_LOAD">
-                            <cti:msg var="fieldName" key="yukon.web.modules.dr.programDetail.info.connectedLoad"/>
-                            <tags:nameValue name="${fieldName}">
-                                <%-- <cti:dataUpdaterValue identifier="${programId}/CONNECTED_LOAD" type="DR_PROGRAM"/> --%>
-                            </tags:nameValue>
-                            <cti:msg var="fieldName" key="yukon.web.modules.dr.programDetail.info.diversifiedLoad"/>
-                            <tags:nameValue name="${fieldName}">
-                                <%-- <cti:dataUpdaterValue identifier="${programId}/DIVERSIFIED_LOAD" type="DR_PROGRAM"/> --%>
-                            </tags:nameValue>
-                            <cti:msg var="fieldName" key="yukon.web.modules.dr.programDetail.info.kwSavings"/>
-                            <tags:nameValue name="${fieldName}">
-                               <%--  <cti:dataUpdaterValue identifier="${programId}/KW_SAVINGS" type="DR_PROGRAM"/> --%>
-                            </tags:nameValue>
+                            <tags:nameValue2 nameKey="yukon.web.modules.dr.estimatedLoad.info.connectedLoad">
+                                <div data-pao="${programId}">
+                                    <cti:icon icon="icon-error" classes="dn"/>
+                                    <cti:dataUpdaterValue identifier="${programId}/CONNECTED_LOAD" type="DR_PROGRAM"/>
+                                </div>
+                            </tags:nameValue2>
+                            <tags:nameValue2 nameKey="yukon.web.modules.dr.estimatedLoad.info.diversifiedLoad">
+                                <div data-pao="${programId}">
+                                    <cti:icon icon="icon-error" classes="dn"/>
+                                    <cti:dataUpdaterValue identifier="${programId}/DIVERSIFIED_LOAD" type="DR_PROGRAM"/>
+                                </div>
+                            </tags:nameValue2>
+                            <tags:nameValue2 nameKey="yukon.web.modules.dr.estimatedLoad.info.kwSavings">
+                                <div data-pao="${programId}">
+                                    <cti:icon icon="icon-error" classes="dn"/>
+                                    <cti:dataUpdaterValue identifier="${programId}/KW_SAVINGS" type="DR_PROGRAM"/>
+                                    <cti:dataUpdaterCallback
+                                                function="Yukon.EstimatedLoad.createToolTip"
+                                                value="DR_PROGRAM/${programId}/ESTIMATED_LOAD_ERROR" 
+                                                initialize="true"/>
+                                </div>
+                            </tags:nameValue2>
                         </cti:checkRolesAndProperties>
-                    </tags:nameValueContainer>
+                    </tags:nameValueContainer2>
                 </tags:sectionContainer2>
         </div>
         <div class="column two nogutter">

@@ -4,13 +4,14 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 
-<cti:standardPage module="dr" page="scenarioDetail" title="${pageTitle}">
+<cti:standardPage module="dr" page="scenarioDetail">
 
     <tags:simpleDialog id="drDialog"/>
     <cti:includeScript link="/JavaScript/calendarControl.js"/>
     <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
     <cti:includeScript link="/JavaScript/calendarTagFuncs.js"/>
     <cti:includeScript link="/JavaScript/hideReveal.js"/>
+    <cti:includeScript link="/JavaScript/drEstimatedLoad.js"/>
     
     <c:set var="scenarioId" value="${scenario.paoIdentifier.paoId}"/>
 
@@ -19,7 +20,34 @@
 
     <div class="column_12_12">
         <div class="column one">
-        <!-- Not Used -->
+        <cti:checkRolesAndProperties value="ENABLE_ESTIMATED_LOAD">
+            <tags:sectionContainer2 nameKey="heading.info">
+                <tags:nameValueContainer2>
+                    <tags:nameValue2 nameKey="yukon.web.modules.dr.estimatedLoad.info.connectedLoad">
+                        <div data-pao="${scenarioId}">
+                            <cti:icon icon="icon-error" classes="dn"/>
+                            <cti:dataUpdaterValue identifier="${scenarioId}/CONNECTED_LOAD" type="DR_SCENARIO"/>
+                        </div>
+                    </tags:nameValue2>
+                    <tags:nameValue2 nameKey="yukon.web.modules.dr.estimatedLoad.info.diversifiedLoad">
+                        <div data-pao="${scenarioId}">
+                            <cti:icon icon="icon-error" classes="dn"/>
+                            <cti:dataUpdaterValue identifier="${scenarioId}/DIVERSIFIED_LOAD" type="DR_SCENARIO"/>
+                        </div>
+                    </tags:nameValue2>
+                    <tags:nameValue2 nameKey="yukon.web.modules.dr.estimatedLoad.info.kwSavings">
+                        <div data-pao="${scenarioId}">
+                            <cti:icon icon="icon-error" classes="dn"/>
+                            <cti:dataUpdaterValue identifier="${scenarioId}/KW_SAVINGS" type="DR_SCENARIO"/>
+                                <cti:dataUpdaterCallback
+                                    function="Yukon.EstimatedLoad.createToolTip"
+                                    identifier="DR_SCENARIO/${scenarioId}/ESTIMATED_LOAD_ERROR"
+                                    initialize="true" />
+                        </div>
+                    </tags:nameValue2>
+                </tags:nameValueContainer2>
+            </tags:sectionContainer2>
+        </cti:checkRolesAndProperties>
         </div>
         
         <div class="fr column two nogutter">
