@@ -4450,6 +4450,9 @@
                 <basicLookup point="Total LUV Event Count" />
             </attribute>
         </attributes>
+        <tags>
+            <tag name="NETWORK_MANAGER_ATTRIBUTE_READS"/>
+        </tags>
     </pao>
     
     <pao id="LCR6600_RFN" inherits="RF_LCR, LCR6200_RFN">
@@ -4822,6 +4825,9 @@
                 <basicLookup point="Relay 4 Remaining Control Time"/>
             </attribute>
         </attributes>
+        <tags>
+            <tag name="PORTER_COMMAND_REQUESTS"/>
+        </tags>
     </pao>
     
     <!-- SIGNAL TRANSMITTERS -->

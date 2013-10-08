@@ -1,6 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 
 <%@ attribute name="argument" required="false" type="java.lang.Object" %>
 <%@ attribute name="excludeColon" required="false" %>
@@ -12,12 +13,14 @@
 <%@ attribute name="rowClass" %>
 <%@ attribute name="rowId" %>
 <%@ attribute name="valueClass" %>
+<%@ attribute name="titleKey" %>
+
 
 <c:choose>
 	<c:when test="${nameValueContainter2}">
         <tr <c:if test="${!empty rowId}"> id="${rowId}"</c:if>
             <c:if test="${!empty rowClass}"> class="${rowClass}"</c:if>>
-			<td class="name <c:if test="${!empty nameClass}"> ${nameClass}</c:if>" style="<c:if test="${not empty pageScope.nameColumnWidth}">width:${pageScope.nameColumnWidth};</c:if>">
+            <td class="name <c:if test="${!empty nameClass}"> ${nameClass}</c:if>" style="<c:if test="${not empty pageScope.nameColumnWidth}">width:${pageScope.nameColumnWidth};</c:if>" title="<c:if test="${!empty titleKey}"><cti:msg2 key="${titleKey}"/></c:if>">
             
 				<c:set var="colonSuffix" value=":"/>
 				<c:if test="${excludeColon == true}">

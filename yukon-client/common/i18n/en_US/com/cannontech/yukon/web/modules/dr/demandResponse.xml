@@ -8,6 +8,7 @@
 <entry key="yukon.web.modules.dr.assetAvailability.pingError">Error Occurred</entry>
 <entry key="yukon.web.modules.dr.assetAvailability.pingInProgress">In Progress</entry>
 <entry key="yukon.web.modules.dr.assetAvailability.progressLabel">Progress</entry>
+<entry key="yukon.web.modules.dr.assetAvailability.pingError.badRelay">Unable to read asset availability on relay {0}</entry>
 
 <entry key="yukon.web.modules.dr.fieldNotInLoadManagement">-</entry>
 <entry key="yukon.web.modules.dr.blankField">N/A</entry>
@@ -43,13 +44,9 @@
 <entry key="yukon.web.modules.dr.loadGroup.assetDetails.pageName">Asset Availability</entry>
 <entry key="yukon.web.modules.dr.loadGroup.assetDetails.pageDescription">{0}</entry>
 <entry key="yukon.web.modules.dr.loadGroup.assetDetails.contextualPageName">Asset Availability</entry>
-<entry key="yukon.web.modules.dr.controlArea.assetDetails.notRunning.label">Not Running</entry>
-<entry key="yukon.web.modules.dr.controlArea.assetDetails.optedOut.label">Opted Out</entry>
-<entry key="yukon.web.modules.dr.controlArea.assetDetails.running.label">Running</entry>
-<entry key="yukon.web.modules.dr.controlArea.assetDetails.unavailable.label">Unavailable</entry>
 
-<entry key="yukon.web.modules.dr.assetDetails.status.RUNNING">Running</entry>
-<entry key="yukon.web.modules.dr.assetDetails.status.NOT_RUNNING">Not Running</entry>
+<entry key="yukon.web.modules.dr.assetDetails.status.RUNNING">Active</entry>
+<entry key="yukon.web.modules.dr.assetDetails.status.NOT_RUNNING">Not Active</entry>
 <entry key="yukon.web.modules.dr.assetDetails.status.UNAVAILABLE">Unavailable</entry>
 <entry key="yukon.web.modules.dr.assetDetails.status.OPTED_OUT">Opted Out</entry>
 

@@ -159,9 +159,9 @@ public class ScenarioController extends DemandResponseControllerBase {
 
     @ResponseBody
     @RequestMapping("/scenario/pingDevices")
-    public void pingDevices(int assetId) {
+    public void pingDevices(int assetId, YukonUserContext userContext) {
         DisplayablePao controlArea = scenarioService.getScenario(assetId);
-        assetAvailabilityPingService.readDevicesInDrGrouping(controlArea.getPaoIdentifier());
+        assetAvailabilityPingService.readDevicesInDrGrouping(controlArea.getPaoIdentifier(), userContext.getYukonUser());
     }
 
     /**

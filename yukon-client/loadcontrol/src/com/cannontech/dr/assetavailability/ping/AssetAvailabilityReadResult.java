@@ -3,40 +3,77 @@ package com.cannontech.dr.assetavailability.ping;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
+import com.cannontech.amr.deviceread.dao.DeviceAttributeReadCallback;
+import com.cannontech.amr.deviceread.dao.DeviceAttributeReadError;
+import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.util.Completable;
+import com.cannontech.core.dynamic.PointValueHolder;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 /**
- * Stores the results of an asset availability "ping" operation.
+ * Stores the results of an asset availability "ping" operation. Also acts as a DeviceAttributeReadCallback, so that
+ * it can directly record results from DeviceAttributeReadService.
  */
-public class AssetAvailabilityReadResult implements Completable {
-    private Set<Integer> validDevices;
-    private Set<Integer> invalidDevices;
+public class AssetAvailabilityReadResult implements DeviceAttributeReadCallback, Completable {
+    private static final Logger log = YukonLogManager.getLogger(AssetAvailabilityReadResult.class);
+    private Set<Integer> devicesToRead;
     private Set<Integer> successDevices = Sets.newHashSet();
     private Set<Integer> failedDevices = Sets.newHashSet();
-    private List<String> errorList = Lists.newArrayList();
+    private List<DeviceAttributeReadError> errorList = Lists.newArrayList();
     
-    public AssetAvailabilityReadResult(Iterable<Integer> validDevices, Iterable<Integer> invalidDevices) {
-        this.validDevices = Sets.newHashSet(validDevices);
-        this.invalidDevices = Sets.newHashSet(invalidDevices);
+    public AssetAvailabilityReadResult(Iterable<Integer> devicesToRead) {
+        this.devicesToRead = Sets.newHashSet(devicesToRead);
     }
     
-    public void commandSucceeded(int paoId) {
-        successDevices.add(paoId);
+    @Override
+    public void receivedValue(PaoIdentifier pao, PointValueHolder value) {
+        int paoId = pao.getPaoId();
+        if(isValidDevice(paoId)) {
+            successDevices.add(paoId);
+            log.debug("Asset availability read received value for paoId " + paoId);
+        } else {
+            log.debug("Asset availability read: received value for invalid paoId " + paoId);
+        }
     }
-    
-    public void commandFailed(int paoId) {
-        failedDevices.add(paoId);
+
+    @Override
+    public void receivedLastValue(PaoIdentifier pao) {
+        log.debug("Asset availability read received last value for paoId " + pao.getPaoId());
     }
-    
-    public void errorOccurred(String error) {
+
+    @Override
+    public void receivedError(PaoIdentifier pao, DeviceAttributeReadError error) {
+        int paoId = pao.getPaoId();
+        if(isValidDevice(pao.getPaoId())) {
+            failedDevices.add(pao.getPaoId());
+            errorList.add(error);
+            log.debug("Asset availability read received " + error.getType() + " error for paoId " + paoId);
+        } else {
+            log.debug("Asset availability read received " + error.getType() + " error for invalid paoId " + paoId);
+        }
+    }
+
+    @Override
+    public void receivedException(DeviceAttributeReadError error) {
         errorList.add(error);
+        log.debug("Asset availability read received " + error.getType() + " error");
+    }
+
+    @Override
+    public void complete() {
+        //Ping is complete - if we haven't heard from some devices, assume we never will and mark as failed.
+        Set<Integer> unsuccessfulDevices = Sets.difference(devicesToRead, successDevices);
+        Set<Integer> incompleteDevices = Sets.difference(unsuccessfulDevices, failedDevices);
+        failedDevices.addAll(incompleteDevices);
     }
     
     @Override
     public boolean isComplete() {
-        return validDevices.size() == getCompletedCount();
+        return devicesToRead.size() == getCompletedCount();
     }
     
     public int getCompletedCount() {
@@ -56,10 +93,10 @@ public class AssetAvailabilityReadResult implements Completable {
     }
     
     public int getTotalCount() {
-        return validDevices.size();
+        return devicesToRead.size();
     }
     
-    public Set<Integer> getInvalidDevices() {
-        return invalidDevices;
+    private boolean isValidDevice(int paoId) {
+        return devicesToRead.contains(paoId);
     }
 }

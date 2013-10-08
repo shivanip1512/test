@@ -1,6 +1,7 @@
 package com.cannontech.dr.assetavailability.service;
 
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.assetavailability.ping.AssetAvailabilityReadResult;
 
 /**
@@ -13,7 +14,7 @@ public interface AssetAvailabilityPingService {
      * Attempt to read asset availability data from all two-way devices in the DR grouping specified by the 
      * paoIdentifier.
      */
-    public void readDevicesInDrGrouping(PaoIdentifier paoIdentifier);
+    public void readDevicesInDrGrouping(PaoIdentifier paoIdentifier, LiteYukonUser user);
     
     /**
      * Get the latest read result for the DR grouping specified by the paoId.

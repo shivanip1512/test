@@ -220,30 +220,42 @@ jQuery(function() { updateServiceCompanyInfo();});
                                     <c:when test="${aaStatus == 'IN_COMMUNICATION_RUNNING'}">
                                         <c:choose>
                                             <c:when test="${isOptedOut}">
-                                                <span><i:inline key=".assetAvailability.optedOutRunning"/></span>
+                                                <span title="<cti:msg2 key=".assetAvailability.optedOutRunning.title"/>">
+                                                    <i:inline key=".assetAvailability.optedOutRunning"/>
+                                                </span>
                                             </c:when>
                                             <c:otherwise>
-                                                <span class="success"><i:inline key=".assetAvailability.running"/></span>
+                                                <span class="success"  title="<cti:msg2 key=".assetAvailability.running.title"/>">
+                                                    <i:inline key=".assetAvailability.running"/>
+                                                </span>
                                             </c:otherwise>
                                         </c:choose>
                                     </c:when>
                                     <c:when test="${aaStatus == 'IN_COMMUNICATION_NOT_RUNNING'}">
                                         <c:choose>
                                             <c:when test="${isOptedOut}">
-                                                <span><i:inline key=".assetAvailability.optedOutNotRunning"/></span>
+                                                <span title="<cti:msg2 key=".assetAvailability.optedOutNotRunning.title"/>">
+                                                    <i:inline key=".assetAvailability.optedOutNotRunning"/>
+                                                </span>
                                             </c:when>
                                             <c:otherwise>
-                                                <span><i:inline key=".assetAvailability.notRunning"/></span>
+                                                <span title="<cti:msg2 key=".assetAvailability.notRunning.title"/>">
+                                                    <i:inline key=".assetAvailability.notRunning"/>
+                                                </span>
                                             </c:otherwise>
                                         </c:choose>
                                     </c:when>
                                     <c:when test="${aaStatus == 'UNAVAILABLE'}">
                                         <c:choose>
                                             <c:when test="${isOptedOut}">
-                                                <span><i:inline key=".assetAvailability.optedOutUnavailable"/></span>
+                                                <span title="<cti:msg2 key=".assetAvailability.optedOutUnavailable.title"/>">
+                                                    <i:inline key=".assetAvailability.optedOutUnavailable"/>
+                                                </span>
                                             </c:when>
                                             <c:otherwise>
-                                                <span><i:inline key=".assetAvailability.unavailable"/></span>
+                                                <span title="<cti:msg2 key=".assetAvailability.unavailable.title"/>">
+                                                    <i:inline key=".assetAvailability.unavailable"/>
+                                                </span>
                                             </c:otherwise>
                                         </c:choose>
                                     </c:when>

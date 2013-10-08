@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.Attribute;
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.Range;
@@ -25,6 +24,7 @@ import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.dr.assetavailability.ApplianceAssetAvailabilitySummary;
 import com.cannontech.dr.assetavailability.ApplianceWithRuntime;
+import com.cannontech.dr.assetavailability.AssetAvailabilityRelays;
 import com.cannontech.dr.assetavailability.InventoryRelayAppliances;
 import com.cannontech.dr.assetavailability.SimpleAssetAvailability;
 import com.cannontech.dr.assetavailability.AssetAvailabilityStatus;
@@ -42,7 +42,6 @@ import com.cannontech.system.dao.GlobalSettingDao;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.HashBiMap;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
@@ -60,12 +59,6 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
     @Autowired private PointDao pointDao;
     @Autowired private AttributeService attributeService;
     @Autowired private GlobalSettingDao globalSettingDao;
-    
-    private static final ImmutableMap<Integer, ? extends Attribute> RELAY_ATTRIBUTES =
-            ImmutableMap.of(1, BuiltInAttribute.RELAY_1_RUN_TIME_DATA_LOG,
-                2, BuiltInAttribute.RELAY_2_RUN_TIME_DATA_LOG,
-                3, BuiltInAttribute.RELAY_3_RUN_TIME_DATA_LOG,
-                4, BuiltInAttribute.RELAY_4_RUN_TIME_DATA_LOG);
     
     @Override
     public SimpleAssetAvailabilitySummary getAssetAvailabilityFromDrGroup(PaoIdentifier drPaoIdentifier) throws DynamicDataAccessException {
@@ -121,20 +114,23 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
         //Get running
         Multimap<Integer, PaoIdentifier> relayToDeviceIdMultiMap = lmHardwareConfigurationDao.getRelayToDeviceMapByLoadGroups(loadGroupIds);
         //do a DB lookup for each of the four runtime attributes
-        for(int relay = 1; relay <= 4; relay++) {
+        for(int relay = 1; relay <= AssetAvailabilityRelays.MAX_RELAY; relay++) {
             Set<PaoIdentifier> relayPaoIdentifiers = Sets.newHashSet(relayToDeviceIdMultiMap.get(relay));
             
             Instant runtimeWindowEnd = Instant.now().minus(Duration.standardHours(globalSettingDao.getInteger(GlobalSettingType.LAST_RUNTIME_HOURS)));
             Range<Instant> runtimeRange = Range.inclusive(runtimeWindowEnd, Instant.now());
             Range<Long> changeIdRange = Range.unbounded();
+            Attribute relayAttribute = AssetAvailabilityRelays.getAttributeForRelay(relay);
             
-            Multimap<PaoIdentifier, PointValueQualityHolder> relayAttributeData = rawPointHistoryDao.getAttributeData(relayPaoIdentifiers, RELAY_ATTRIBUTES.get(relay), runtimeRange, changeIdRange, false, Order.FORWARD, 0.0);
+            Multimap<PaoIdentifier, PointValueQualityHolder> relayAttributeData = 
+                    rawPointHistoryDao.getAttributeData(relayPaoIdentifiers, relayAttribute, runtimeRange, 
+                                                        changeIdRange, false, Order.FORWARD, 0.0);
             
             Set<PaoIdentifier> paosWithRuntime = Sets.newHashSet(relayAttributeData.keys().elementSet());
             
             //attempt to get remaining paos through dispatch
             relayPaoIdentifiers.removeAll(paosWithRuntime);
-            Collection<PaoIdentifier> paosWithDispatchRuntime = getPaoRuntimeFromDispatch(relayPaoIdentifiers, RELAY_ATTRIBUTES.get(relay));
+            Collection<PaoIdentifier> paosWithDispatchRuntime = getPaoRuntimeFromDispatch(relayPaoIdentifiers, relayAttribute);
             paosWithRuntime.addAll(paosWithDispatchRuntime);
             
             Set<Integer> inventoryWithRuntime = getInventoryIdsFromPaoIdentifiers(inventoryAndDevices, paosWithRuntime);
@@ -182,7 +178,7 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
         Multimap<Integer, PaoIdentifier> relayToDeviceIdMultiMap = lmHardwareConfigurationDao.getRelayToDeviceMapByLoadGroups(loadGroupIds);
         Set<PaoIdentifier> allPaosWithRuntime = Sets.newHashSet();
         //do a DB lookup for each of the four runtime attributes
-        for(int relay = 1; relay <= 4; relay++) {
+        for(int relay = 1; relay <= AssetAvailabilityRelays.MAX_RELAY; relay++) {
             Set<PaoIdentifier> relayPaoIdentifiers = Sets.newHashSet(relayToDeviceIdMultiMap.get(relay));
             //remove any that we already found runtime for
             relayPaoIdentifiers = Sets.difference(relayPaoIdentifiers, allPaosWithRuntime);
@@ -191,14 +187,17 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
             Range<Instant> runtimeRange = Range.inclusive(runtimeWindowEnd, Instant.now());
             Range<Long> changeIdRange = Range.unbounded();
             
-            Multimap<PaoIdentifier, PointValueQualityHolder> relayAttributeData = rawPointHistoryDao.getAttributeData(relayPaoIdentifiers, RELAY_ATTRIBUTES.get(relay), runtimeRange, changeIdRange, false, Order.FORWARD, 0.0);
+            Attribute relayAttribute = AssetAvailabilityRelays.getAttributeForRelay(relay);
+            Multimap<PaoIdentifier, PointValueQualityHolder> relayAttributeData = 
+                    rawPointHistoryDao.getAttributeData(relayPaoIdentifiers, relayAttribute, runtimeRange, 
+                                                        changeIdRange, false, Order.FORWARD, 0.0);
             
             Set<PaoIdentifier> paosWithRuntime = relayAttributeData.keys().elementSet();
             allPaosWithRuntime.addAll(paosWithRuntime);
             
             //attempt to get remaining paos through dispatch
             relayPaoIdentifiers.removeAll(allPaosWithRuntime);
-            Collection<PaoIdentifier> paoIdsWithDispatchRuntime = getPaoRuntimeFromDispatch(relayPaoIdentifiers, RELAY_ATTRIBUTES.get(relay));
+            Collection<PaoIdentifier> paoIdsWithDispatchRuntime = getPaoRuntimeFromDispatch(relayPaoIdentifiers, relayAttribute);
             allPaosWithRuntime.addAll(paoIdsWithDispatchRuntime);
             
             Set<Integer> inventoryWithRuntime = getInventoryIdsFromPaoIdentifiers(inventoryAndDevices, paosWithRuntime);
@@ -230,8 +229,8 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
         //Get latest non-zero runtime reported
         PaoRelayRuntimes paoRelayRuntimes = new PaoRelayRuntimes();
         Multimap<Integer, PaoIdentifier> relayToDeviceIdMultiMap = lmHardwareConfigurationDao.getRelayToDeviceMapByDeviceIds(deviceIds);
-        for(int relay = 1; relay <= 4; relay++) {
-            Attribute relayAttribute = RELAY_ATTRIBUTES.get(relay);
+        for(int relay = 1; relay <= AssetAvailabilityRelays.MAX_RELAY; relay++) {
+            Attribute relayAttribute = AssetAvailabilityRelays.getAttributeForRelay(relay);
             Set<PaoIdentifier> relayPaoIdentifiers = Sets.newHashSet(relayToDeviceIdMultiMap.get(relay));
             Map<Integer, Instant> paoRuntimeTimes = getPaoRuntimeTimesFromDispatch(relayPaoIdentifiers, relayAttribute);
             

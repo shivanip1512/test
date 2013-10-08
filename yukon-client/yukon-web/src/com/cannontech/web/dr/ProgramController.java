@@ -145,9 +145,9 @@ public class ProgramController extends ProgramControllerBase {
 
     @ResponseBody
     @RequestMapping("/program/pingDevices")
-    public void pingDevices(int assetId) {
+    public void pingDevices(int assetId, YukonUserContext userContext) {
         DisplayablePao controlArea = programService.getProgram(assetId);
-        assetAvailabilityPingService.readDevicesInDrGrouping(controlArea.getPaoIdentifier());
+        assetAvailabilityPingService.readDevicesInDrGrouping(controlArea.getPaoIdentifier(), userContext.getYukonUser());
     }
 
     /**

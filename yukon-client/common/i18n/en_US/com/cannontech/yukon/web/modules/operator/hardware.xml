@@ -127,13 +127,22 @@
     <entry key="yukon.web.modules.operator.hardware.serialNumber.defaultWarehouse">General Inventory</entry>
 
     <entry key="yukon.web.modules.operator.hardware.assetAvailability.label">Asset Availability</entry>
-    <entry key="yukon.web.modules.operator.hardware.assetAvailability.running">Running</entry>
-    <entry key="yukon.web.modules.operator.hardware.assetAvailability.notRunning">Not Running</entry>
+    <entry key="yukon.web.modules.operator.hardware.assetAvailability.running">Active</entry>
+    <entry key="yukon.web.modules.operator.hardware.assetAvailability.notRunning">Not Active</entry>
     <entry key="yukon.web.modules.operator.hardware.assetAvailability.unavailable">Unavailable</entry>
     <entry key="yukon.web.modules.operator.hardware.assetAvailability.optedOut">Opted Out</entry>
-    <entry key="yukon.web.modules.operator.hardware.assetAvailability.optedOutRunning">Opted Out (Running)</entry>
-    <entry key="yukon.web.modules.operator.hardware.assetAvailability.optedOutNotRunning">Opted Out (Not Running)</entry>
+    <entry key="yukon.web.modules.operator.hardware.assetAvailability.optedOutRunning">Opted Out (Active)</entry>
+    <entry key="yukon.web.modules.operator.hardware.assetAvailability.optedOutNotRunning">Opted Out (Not Active)</entry>
     <entry key="yukon.web.modules.operator.hardware.assetAvailability.optedOutUnavailable">Opted Out (Unavailable)</entry>
+    
+    <entry key="yukon.web.modules.operator.hardware.assetAvailability.running.title">Reported non-zero appliance run time within the configured window.</entry>
+    <entry key="yukon.web.modules.operator.hardware.assetAvailability.notRunning.title">Communicated within the configured window, but did not report non-zero appliance run time.</entry>
+    <entry key="yukon.web.modules.operator.hardware.assetAvailability.unavailable.title">Did not communicate within the configured window.</entry>
+    <entry key="yukon.web.modules.operator.hardware.assetAvailability.optedOut.title">Currently opted-out.</entry>
+    <entry key="yukon.web.modules.operator.hardware.assetAvailability.optedOutRunning.title">Currently opted-out. Reported non-zero appliance run time within the configured window.</entry> 
+    <entry key="yukon.web.modules.operator.hardware.assetAvailability.optedOutNotRunning.title">Currently opted-out. Communicated within the configured window, but did not report non-zero appliance run time.</entry> 
+    <entry key="yukon.web.modules.operator.hardware.assetAvailability.optedOutUnavailable.title">Currently opted-out. Did not communicate within the configured window.</entry> 
+    
     <entry key="yukon.web.modules.operator.hardware.assetAvailability.numberOfDevices">{0, choice, 0#Devices|1#Device|1&lt;Devices}</entry>
     <entry key="yukon.web.modules.operator.hardware.assetAvailability.dispatchDisconnected">Not connected to Dispatch</entry>
     <entry key="yukon.web.modules.operator.hardware.assetAvailability.devices">Devices</entry>

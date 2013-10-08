@@ -330,9 +330,9 @@ public class ControlAreaController extends DemandResponseControllerBase {
     
     @ResponseBody
     @RequestMapping("/controlArea/pingDevices")
-    public void pingDevices(int assetId) {
+    public void pingDevices(int assetId, YukonUserContext userContext) {
         DisplayablePao controlArea = controlAreaService.getControlArea(assetId);
-        assetAvailabilityPingService.readDevicesInDrGrouping(controlArea.getPaoIdentifier());
+        assetAvailabilityPingService.readDevicesInDrGrouping(controlArea.getPaoIdentifier(), userContext.getYukonUser());
     }
     
     @RequestMapping("/controlArea/sendEnableConfirm")

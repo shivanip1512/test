@@ -151,9 +151,9 @@ public class LoadGroupController extends DemandResponseControllerBase {
 
     @ResponseBody
     @RequestMapping("/loadGroup/pingDevices")
-    public void pingDevices(int assetId) {
+    public void pingDevices(int assetId, YukonUserContext userContext) {
         DisplayablePao controlArea = loadGroupService.getLoadGroup(assetId);
-        assetAvailabilityPingService.readDevicesInDrGrouping(controlArea.getPaoIdentifier());
+        assetAvailabilityPingService.readDevicesInDrGrouping(controlArea.getPaoIdentifier(), userContext.getYukonUser());
     }
 
     /**

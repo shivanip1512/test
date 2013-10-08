@@ -3,6 +3,7 @@ package com.cannontech.stars.dr.hardware.dao.impl;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
@@ -43,6 +44,7 @@ import com.cannontech.stars.dr.hardware.dao.StaticLoadGroupMappingDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareConfiguration;
 import com.cannontech.stars.dr.hardware.model.StarsStaticLoadGroupMapping;
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 
 public class LMHardwareConfigurationDaoImpl implements LMHardwareConfigurationDao {
@@ -290,6 +292,37 @@ public class LMHardwareConfigurationDaoImpl implements LMHardwareConfigurationDa
             resultMultiMap.put(pair.getFirst(), pair.getSecond());
         }
         return resultMultiMap;
+    }
+    
+    @Override
+    public Map<Integer, Integer> getDeviceIdToRelayMapByLoadGroups(Iterable<Integer> loadGroupIds) {
+        SqlFragmentGenerator<Integer> sqlFragmentGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT DISTINCT DeviceId, lmhc.LoadNumber AS Relay");
+                sql.append("FROM LMHardwareConfiguration lmhc");
+                sql.append("JOIN LMHardwareControlGroup lmhcg ON lmhcg.InventoryID = lmhc.InventoryId");
+                sql.append("JOIN InventoryBase ib ON ib.InventoryId = lmhc.InventoryId");
+                sql.append("WHERE LmGroupId").in(subList);
+                sql.append("AND DeviceId").gt(0);
+                return sql;
+            }
+        };
+        
+        List<Pair<Integer, Integer>> resultsList = chunkingSqlTemplate.query(sqlFragmentGenerator, loadGroupIds, new YukonRowMapper<Pair<Integer, Integer>>() {
+            public Pair<Integer, Integer> mapRow(YukonResultSet rs) throws SQLException {
+                int deviceId = rs.getInt("DeviceId");
+                int relay = rs.getInt("Relay");
+                return new Pair<Integer, Integer>(deviceId, relay);
+            }
+        });
+        
+        Map<Integer, Integer> resultMap = Maps.newHashMap();
+        for(Pair<Integer, Integer> pair : resultsList) {
+            resultMap.put(pair.getFirst(), pair.getSecond());
+        }
+        return resultMap;
     }
     
     @Override

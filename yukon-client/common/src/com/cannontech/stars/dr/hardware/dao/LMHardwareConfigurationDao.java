@@ -2,6 +2,7 @@ package com.cannontech.stars.dr.hardware.dao;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.dr.assetavailability.DeviceRelayApplianceCategories;
@@ -62,4 +63,9 @@ public interface LMHardwareConfigurationDao {
      * If an inventory has multiple attached appliances in the same applianceCategory, there will be duplicate entries.
      */
     public Multimap<Integer, Integer> getInventoryApplianceMap(Iterable<Integer> inventoryIds);
+
+    /**
+     * Gets a map of deviceId to relayId for inventory in the specified groups.
+     */
+    Map<Integer, Integer> getDeviceIdToRelayMapByLoadGroups(Iterable<Integer> loadGroupIds);
 }

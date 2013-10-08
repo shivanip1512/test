@@ -2032,10 +2032,6 @@
         <qualifier value="assetAvailabilityReads"/>
     </bean>
     <bean class="com.cannontech.dr.assetavailability.service.impl.AssetAvailabilityPingServiceImpl"/>
-    <bean class="com.cannontech.dr.assetavailability.ping.AssetAvailabilityRfnPingStrategy"/>
-    <bean class="com.cannontech.dr.assetavailability.ping.AssetAvailabilityPlcPingStrategy"/>
-    <bean class="com.cannontech.dr.assetavailability.service.impl.AssetAvailabilityPlcPingServiceImpl"/>
-    <bean class="com.cannontech.dr.assetavailability.service.impl.AssetAvailabilityRfnPingServiceImpl"/>
     
     <!-- Contextual Menu Beans (start) -->
     <bean id="meterMenuDecider" class="com.cannontech.web.contextualMenu.MeterMenuDecider"/>
