@@ -44,7 +44,8 @@ public:
     {
         LGFocusAL       = 0x02,
         LGFocusAX       = 0x03,
-        CentronC2SX     = 0x04
+        CentronC2SX     = 0x04,
+        Unspecified     = 0xff
     };
 
     enum EventID
@@ -153,16 +154,37 @@ class IM_EX_DEVDB RfnGetOvUvAlarmConfigurationCommand : public RfnOvUvConfigurat
 {
 public:
 
-    RfnGetOvUvAlarmConfigurationCommand( const MeterID meter_id, const EventID event_id );
+    struct AlarmConfiguration
+    {
+        bool                    ovuvEnabled;
+        unsigned                ovuvAlarmReportingInterval,
+                                ovuvAlarmRepeatInterval,
+                                ovuvAlarmRepeatCount;
+        boost::optional<double> ovThreshold,
+                                uvThreshold;
+    };
+
+    struct ResultHandler
+    {
+        virtual void handleResult( const RfnGetOvUvAlarmConfigurationCommand & cmd ) = 0;
+    };
+
+    RfnGetOvUvAlarmConfigurationCommand( ResultHandler & rh, const MeterID meter_id, const EventID event_id );
 
     virtual RfnCommandResult decodeCommand( const CtiTime now,
                                             const RfnResponsePayload & response );
+
+    AlarmConfiguration  getAlarmConfiguration() const;
 
 protected:
 
     virtual Bytes getCommandData();
 
 private:
+
+    ResultHandler & _rh;
+
+    AlarmConfiguration  _alarmConfig;
 
     MeterID     _meterID;
     EventID     _eventID;

@@ -5,6 +5,7 @@
 #include "config_device.h"
 #include "MissingConfigDataException.h"
 #include "dev_rfnResidential.h"
+#include "devicetypes.h"
 
 #include <boost/optional.hpp>
 #include <boost/make_shared.hpp>
@@ -32,7 +33,8 @@ const RfnDevice::InstallMap RfnResidentialDevice::initPutConfigInstallMap()
             ("freezeday",        static_cast<InstallMethod>(&RfnResidentialDevice::executePutConfigDemandFreezeDay))
             ("tou",              static_cast<InstallMethod>(&RfnResidentialDevice::executePutConfigInstallTou))
             ("voltageaveraging", static_cast<InstallMethod>(&RfnResidentialDevice::executePutConfigVoltageAveragingInterval))
-            ("display",          static_cast<InstallMethod>(&RfnResidentialDevice::executePutConfigDisplay));
+            ("display",          static_cast<InstallMethod>(&RfnResidentialDevice::executePutConfigDisplay))
+            ("ovuv",             static_cast<InstallMethod>(&RfnResidentialDevice::executePutConfigOvUv));
 
     return m;
 }
@@ -45,7 +47,8 @@ const RfnDevice::InstallMap RfnResidentialDevice::initGetConfigInstallMap()
     const InstallMap m = boost::assign::map_list_of
             ("freezeday",        static_cast<InstallMethod>(&RfnResidentialDevice::executeReadDemandFreezeInfo))
             ("tou",              static_cast<InstallMethod>(&RfnResidentialDevice::executeGetConfigInstallTou))
-            ("voltageaveraging", static_cast<InstallMethod>(&RfnResidentialDevice::executeGetConfigVoltageAveragingInterval));
+            ("voltageaveraging", static_cast<InstallMethod>(&RfnResidentialDevice::executeGetConfigVoltageAveragingInterval))
+            ("ovuv",             static_cast<InstallMethod>(&RfnResidentialDevice::executeGetConfigOvUv));
 
     return m;
 }
@@ -972,6 +975,448 @@ int RfnResidentialDevice::executePutConfigDisplay( CtiRequestMsg     * pReq,
                                                    RfnCommandList    & rfnRequests )
 {
     return NoMethod;
+}
+
+int RfnResidentialDevice::executePutConfigOvUv( CtiRequestMsg    * pReq,
+                                                CtiCommandParser & parse,
+                                                CtiMessageList   & retList,
+                                                RfnCommandList   & rfnRequests )
+{
+    Config::DeviceConfigSPtr deviceConfig = getDeviceConfig();
+
+    if( ! deviceConfig )
+    {
+        return NoConfigData;
+    }
+
+    {
+        boost::optional<bool>   configOvUvEnabled,
+                                paoOvUvEnabled;
+        {
+            const std::string           configKey( Config::RfnStrings::OvUvEnabled );
+            const boost::optional<bool> configValue = deviceConfig->findBoolValueForKey( configKey );
+
+            if ( ! configValue  )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Device \"" << getName() << "\" - Missing value for config key \"" << configKey << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+
+                return NoConfigData;
+            }
+
+            configOvUvEnabled = *configValue;
+        }
+        {
+            long pao_value;
+
+            if ( getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_OvUvEnabled, pao_value ) )
+            {
+                paoOvUvEnabled = static_cast<bool>( pao_value );
+            }
+        }
+
+        if( *configOvUvEnabled == *paoOvUvEnabled )  // both exist and are equal
+        {
+            if ( parse.isKeyValid("force") )
+            {
+                Commands::RfnSetOvUvAlarmProcessingStateCommand::AlarmStates state = *configOvUvEnabled
+                    ? Commands::RfnSetOvUvAlarmProcessingStateCommand::EnableOvUv
+                    : Commands::RfnSetOvUvAlarmProcessingStateCommand::DisableOvUv;
+
+                rfnRequests.push_back( boost::make_shared<Commands::RfnSetOvUvAlarmProcessingStateCommand>( state ) );
+            }
+        }
+        else
+        {
+            if( parse.isKeyValid("verify") )
+            {
+                return ConfigNotCurrent;
+            }
+            else
+            {
+                Commands::RfnSetOvUvAlarmProcessingStateCommand::AlarmStates state = *configOvUvEnabled
+                    ? Commands::RfnSetOvUvAlarmProcessingStateCommand::EnableOvUv
+                    : Commands::RfnSetOvUvAlarmProcessingStateCommand::DisableOvUv;
+
+                rfnRequests.push_back( boost::make_shared<Commands::RfnSetOvUvAlarmProcessingStateCommand>( state ) );
+            }
+        }
+    }
+
+    {
+        boost::optional<unsigned>   configOvUvReportingInterval,
+                                    paoOvUvReportingInterval;
+        {
+            const std::string           configKey( Config::RfnStrings::OvUvAlarmReportingInterval );
+            const boost::optional<long> configValue = deviceConfig->findLongValueForKey( configKey );
+
+            if ( ! configValue  )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Device \"" << getName() << "\" - Missing value for config key \"" << configKey << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+
+                return NoConfigData;
+            }
+
+            // Rudimentary check to see that we can coerce the 'long' into an 'unsigned'.
+            //  - the command object will perform further validation of its input.
+            if ( *configValue < 0 || *configValue > std::numeric_limits<unsigned>::max() )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Device \"" << getName() << "\" - Invalid value (" << *configValue << ") for config key \"" << configKey << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+
+                return ErrorInvalidConfigData;
+            }
+
+            configOvUvReportingInterval = static_cast<unsigned>( *configValue );
+        }
+        {
+            long pao_value;
+
+            if ( getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_OvUvAlarmReportingInterval, pao_value ) )
+            {
+                paoOvUvReportingInterval = static_cast<unsigned>( pao_value );
+            }
+        }
+
+        if ( *configOvUvReportingInterval == *paoOvUvReportingInterval )
+        {
+            if ( parse.isKeyValid("force") )
+            {
+                rfnRequests.push_back( boost::make_shared<Commands::RfnSetOvUvNewAlarmReportIntervalCommand>( *configOvUvReportingInterval ) );
+            }
+        }
+        else
+        {
+            if( parse.isKeyValid("verify") )
+            {
+                return ConfigNotCurrent;
+            }
+            else
+            {
+                rfnRequests.push_back( boost::make_shared<Commands::RfnSetOvUvNewAlarmReportIntervalCommand>( *configOvUvReportingInterval ) );
+            }
+        }
+    }
+
+    {
+        boost::optional<unsigned>   configOvUvRepeatInterval,
+                                    paoOvUvRepeatInterval;
+        {
+            const std::string           configKey( Config::RfnStrings::OvUvAlarmRepeatInterval );
+            const boost::optional<long> configValue = deviceConfig->findLongValueForKey( configKey );
+
+            if ( ! configValue  )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Device \"" << getName() << "\" - Missing value for config key \"" << configKey << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+
+                return NoConfigData;
+            }
+
+            // Rudimentary check to see that we can coerce the 'long' into an 'unsigned'.
+            //  - the command object will perform further validation of its input.
+            if ( *configValue < 0 || *configValue > std::numeric_limits<unsigned>::max() )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Device \"" << getName() << "\" - Invalid value (" << *configValue << ") for config key \"" << configKey << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+
+                return ErrorInvalidConfigData;
+            }
+
+            configOvUvRepeatInterval = static_cast<unsigned>( *configValue );
+        }
+        {
+            long pao_value;
+
+            if ( getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_OvUvAlarmRepeatInterval, pao_value ) )
+            {
+                paoOvUvRepeatInterval = static_cast<unsigned>( pao_value );
+            }
+        }
+
+        if ( *configOvUvRepeatInterval == *paoOvUvRepeatInterval )
+        {
+            if ( parse.isKeyValid("force") )
+            {
+                rfnRequests.push_back( boost::make_shared<Commands::RfnSetOvUvAlarmRepeatIntervalCommand>( *configOvUvRepeatInterval ) );
+            }
+        }
+        else
+        {
+            if( parse.isKeyValid("verify") )
+            {
+                return ConfigNotCurrent;
+            }
+            else
+            {
+                rfnRequests.push_back( boost::make_shared<Commands::RfnSetOvUvAlarmRepeatIntervalCommand>( *configOvUvRepeatInterval ) );
+            }
+        }
+    }
+
+    {
+        boost::optional<unsigned>   configOvUvRepeatCount,
+                                    paoOvUvRepeatCount;
+        {
+            const std::string           configKey( Config::RfnStrings::OvUvRepeatCount );
+            const boost::optional<long> configValue = deviceConfig->findLongValueForKey( configKey );
+
+            if ( ! configValue  )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Device \"" << getName() << "\" - Missing value for config key \"" << configKey << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+
+                return NoConfigData;
+            }
+
+            // Rudimentary check to see that we can coerce the 'long' into an 'unsigned'.
+            //  - the command object will perform further validation of its input.
+            if ( *configValue < 0 || *configValue > std::numeric_limits<unsigned>::max() )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Device \"" << getName() << "\" - Invalid value (" << *configValue << ") for config key \"" << configKey << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+
+                return ErrorInvalidConfigData;
+            }
+
+            configOvUvRepeatCount = static_cast<unsigned>( *configValue );
+        }
+        {
+            long pao_value;
+
+            if ( getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_OvUvRepeatCount, pao_value ) )
+            {
+                paoOvUvRepeatCount = static_cast<unsigned>( pao_value );
+            }
+        }
+
+        if ( *configOvUvRepeatCount == *paoOvUvRepeatCount )
+        {
+            if ( parse.isKeyValid("force") )
+            {
+                rfnRequests.push_back( boost::make_shared<Commands::RfnSetOvUvAlarmRepeatCountCommand>( *configOvUvRepeatCount ) );
+            }
+        }
+        else
+        {
+            if( parse.isKeyValid("verify") )
+            {
+                return ConfigNotCurrent;
+            }
+            else
+            {
+                rfnRequests.push_back( boost::make_shared<Commands::RfnSetOvUvAlarmRepeatCountCommand>( *configOvUvRepeatCount ) );
+            }
+        }
+    }
+
+    // get the meter ID
+
+    Commands::RfnOvUvConfigurationCommand::MeterID  meterID = Commands::RfnOvUvConfigurationCommand::Unspecified;
+
+    switch ( getType() )
+    {
+        case TYPE_RFN410CL:
+        case TYPE_RFN420CL:
+        case TYPE_RFN420CD:
+        {
+                meterID = Commands::RfnOvUvConfigurationCommand::CentronC2SX;
+                break;
+        }
+        case TYPE_RFN410FX:
+        case TYPE_RFN410FD:
+        case TYPE_RFN420FX:
+        case TYPE_RFN420FD:
+        case TYPE_RFN420FRX:
+        case TYPE_RFN420FRD:
+        {
+            meterID = Commands::RfnOvUvConfigurationCommand::LGFocusAX;
+            break;
+        }
+        case TYPE_RFN420FL:
+        {
+            meterID = Commands::RfnOvUvConfigurationCommand::LGFocusAL;
+            break;
+        }
+        default:
+        {
+            meterID = Commands::RfnOvUvConfigurationCommand::Unspecified;
+        }
+    }
+
+    {
+        boost::optional<double> configOvThreshold,
+                                paoOvThreshold;
+        {
+            const std::string   configKey( Config::RfnStrings::OvThreshold );
+            const double        configValue = deviceConfig->getFloatValueFromKey( configKey );
+
+            if ( configValue != std::numeric_limits<double>::min() )
+            {
+                configOvThreshold = configValue;
+            }
+            else
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Device \"" << getName() << "\" - Missing value for config key \"" << configKey << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+
+                return NoConfigData;
+            }
+        }
+        {
+            double pao_value;
+
+            if ( getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_OvThreshold, pao_value ) )
+            {
+                paoOvThreshold = pao_value;
+            }
+        }
+
+        Commands::RfnOvUvConfigurationCommand::EventID  eventID = Commands::RfnOvUvConfigurationCommand::OverVoltage;
+
+        if ( *configOvThreshold == *paoOvThreshold )
+        {
+            if ( parse.isKeyValid("force") )
+            {
+                rfnRequests.push_back( boost::make_shared<Commands::RfnSetOvUvSetThresholdCommand>( meterID, eventID, *configOvThreshold ) );
+            }
+        }
+        else
+        {
+            if( parse.isKeyValid("verify") )
+            {
+                return ConfigNotCurrent;
+            }
+            else
+            {
+                rfnRequests.push_back( boost::make_shared<Commands::RfnSetOvUvSetThresholdCommand>( meterID, eventID, *configOvThreshold ) );
+            }
+        }
+    }
+
+    {
+        boost::optional<double> configUvThreshold,
+                                paoUvThreshold;
+        {
+            const std::string   configKey( Config::RfnStrings::UvThreshold );
+            const double        configValue = deviceConfig->getFloatValueFromKey( configKey );
+
+            if ( configValue != std::numeric_limits<double>::min() )
+            {
+                configUvThreshold = configValue;
+            }
+            else
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Device \"" << getName() << "\" - Missing value for config key \"" << configKey << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+
+                return NoConfigData;
+            }
+        }
+        {
+            double pao_value;
+
+            if ( getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_UvThreshold, pao_value ) )
+            {
+                paoUvThreshold = pao_value;
+            }
+        }
+
+        Commands::RfnOvUvConfigurationCommand::EventID  eventID = Commands::RfnOvUvConfigurationCommand::UnderVoltage;
+
+        if ( *configUvThreshold == *paoUvThreshold )
+        {
+            if ( parse.isKeyValid("force") )
+            {
+                rfnRequests.push_back( boost::make_shared<Commands::RfnSetOvUvSetThresholdCommand>( meterID, eventID, *configUvThreshold ) );
+            }
+        }
+        else
+        {
+            if( parse.isKeyValid("verify") )
+            {
+                return ConfigNotCurrent;
+            }
+            else
+            {
+                rfnRequests.push_back( boost::make_shared<Commands::RfnSetOvUvSetThresholdCommand>( meterID, eventID, *configUvThreshold ) );
+            }
+        }
+    }
+
+    if ( ! parse.isKeyValid("force") && rfnRequests.size() == 0 )
+    {
+        return ConfigCurrent;
+    }
+
+    return NoError;
+}
+
+int RfnResidentialDevice::executeGetConfigOvUv( CtiRequestMsg    * pReq,
+                                                CtiCommandParser & parse,
+                                                CtiMessageList   & retList,
+                                                RfnCommandList   & rfnRequests )
+{
+    // get the meter ID
+
+    Commands::RfnOvUvConfigurationCommand::MeterID  meterID = Commands::RfnOvUvConfigurationCommand::Unspecified;
+
+    switch ( getType() )
+    {
+        case TYPE_RFN410CL:
+        case TYPE_RFN420CL:
+        case TYPE_RFN420CD:
+        {
+                meterID = Commands::RfnOvUvConfigurationCommand::CentronC2SX;
+                break;
+        }
+        case TYPE_RFN410FX:
+        case TYPE_RFN410FD:
+        case TYPE_RFN420FX:
+        case TYPE_RFN420FD:
+        case TYPE_RFN420FRX:
+        case TYPE_RFN420FRD:
+        {
+            meterID = Commands::RfnOvUvConfigurationCommand::LGFocusAX;
+            break;
+        }
+        case TYPE_RFN420FL:
+        {
+            meterID = Commands::RfnOvUvConfigurationCommand::LGFocusAL;
+            break;
+        }
+        default:
+        {
+            meterID = Commands::RfnOvUvConfigurationCommand::Unspecified;
+        }
+    }
+
+    rfnRequests.push_back( boost::make_shared<Commands::RfnGetOvUvAlarmConfigurationCommand>( boost::ref(*this), meterID, Commands::RfnOvUvConfigurationCommand::OverVoltage ) );
+    rfnRequests.push_back( boost::make_shared<Commands::RfnGetOvUvAlarmConfigurationCommand>( boost::ref(*this), meterID, Commands::RfnOvUvConfigurationCommand::UnderVoltage ) );
+
+    return NoError;
+}
+
+
+void RfnResidentialDevice::handleResult( const Commands::RfnGetOvUvAlarmConfigurationCommand & cmd )
+{
+    Commands::RfnGetOvUvAlarmConfigurationCommand::AlarmConfiguration   config = cmd.getAlarmConfiguration();
+
+    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_OvUvEnabled,   config.ovuvEnabled );
+
+    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_OvUvAlarmReportingInterval, config.ovuvAlarmReportingInterval );
+    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_OvUvAlarmRepeatInterval,    config.ovuvAlarmRepeatInterval );
+    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_OvUvRepeatCount,            config.ovuvAlarmRepeatCount );
+
+    if ( config.ovThreshold )
+    {
+        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_OvThreshold, *config.ovThreshold );
+    }
+    else
+    {
+        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_UvThreshold, *config.uvThreshold );
+    }
 }
 
 

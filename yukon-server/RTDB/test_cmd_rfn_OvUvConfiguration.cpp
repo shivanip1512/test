@@ -33,6 +33,15 @@ namespace std   {
 // ---
 
 
+struct test_ResultHandler : RfnGetOvUvAlarmConfigurationCommand::ResultHandler
+{
+    void handleResult(const RfnGetOvUvAlarmConfigurationCommand &cmd)
+    {
+        //  This is temporarily marked BOOST_FAIL - the unit test should eventually exercise this.
+        BOOST_FAIL("Should not reach this code!");
+    }
+};
+
 
 BOOST_AUTO_TEST_SUITE( test_cmd_rfn_OvUvConfiguration )
 
@@ -391,7 +400,10 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_OvUvConfiguration_Set_Threshold_FocusAL_OverV
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_OvUvConfiguration_Get_Config_FocusAL_OverVoltage )
 {
-    RfnGetOvUvAlarmConfigurationCommand  command( RfnSetOvUvSetThresholdCommand::LGFocusAL,
+    test_ResultHandler  rh;
+
+    RfnGetOvUvAlarmConfigurationCommand  command( rh,
+                                                  RfnSetOvUvSetThresholdCommand::LGFocusAL,
                                                   RfnSetOvUvSetThresholdCommand::OverVoltage );
 
     // execute
@@ -437,6 +449,18 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_OvUvConfiguration_Get_Config_FocusAL_OverVolt
                                             "\nUoM modifier 1: 0x8000"
                                             "\nUoM modifier 2: 0x01c0" );
     }
+
+    RfnGetOvUvAlarmConfigurationCommand::AlarmConfiguration alarmConfig = command.getAlarmConfiguration();
+
+    BOOST_CHECK_EQUAL( alarmConfig.ovuvEnabled, false );
+
+    BOOST_CHECK_EQUAL( alarmConfig.ovuvAlarmReportingInterval,  15 );
+    BOOST_CHECK_EQUAL( alarmConfig.ovuvAlarmRepeatInterval,     180 );
+    BOOST_CHECK_EQUAL( alarmConfig.ovuvAlarmRepeatCount,        2 );
+
+    BOOST_CHECK( ! alarmConfig.uvThreshold );
+
+    BOOST_CHECK_CLOSE( *alarmConfig.ovThreshold, 119.3, 1e-4 );
 }
 
 

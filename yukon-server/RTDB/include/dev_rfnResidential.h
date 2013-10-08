@@ -4,6 +4,7 @@
 #include "cmd_rfn_LoadProfile.h"
 #include "cmd_rfn_DemandFreeze.h"
 #include "cmd_rfn_TouConfiguration.h"
+#include "cmd_rfn_OvUvConfiguration.h"
 
 
 namespace Cti       {
@@ -16,7 +17,8 @@ class IM_EX_DEVDB RfnResidentialDevice
         public Commands::RfnLoadProfileGetRecordingCommand::ResultHandler,
         public Commands::RfnGetDemandFreezeInfoCommand::ResultHandler,
         public Commands::RfnTouScheduleConfigurationCommand::ResultHandler,
-        public Commands::RfnTouHolidayConfigurationCommand::ResultHandler
+        public Commands::RfnTouHolidayConfigurationCommand::ResultHandler,
+        public Commands::RfnGetOvUvAlarmConfigurationCommand::ResultHandler
 {
     static const InstallMap _putConfigInstallMap;
     static const InstallMap initPutConfigInstallMap();
@@ -42,10 +44,12 @@ protected:
     int executePutConfigDemandFreezeDay          (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
     int executePutConfigInstallTou               (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
     int executePutConfigVoltageAveragingInterval (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
+    int executePutConfigOvUv                     (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
 
     int executeReadDemandFreezeInfo              (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
     int executeGetConfigInstallTou               (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
     int executeGetConfigVoltageAveragingInterval (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
+    int executeGetConfigOvUv                     (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
 
     int executeGetConfigVoltageProfile           (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
     int executePutConfigVoltageProfile           (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
@@ -58,6 +62,7 @@ protected:
     void handleResult( const Commands::RfnGetDemandFreezeInfoCommand & cmd );
     void handleResult( const Commands::RfnTouScheduleConfigurationCommand & cmd );
     void handleResult( const Commands::RfnTouHolidayConfigurationCommand & cmd );
+    void handleResult( const Commands::RfnGetOvUvAlarmConfigurationCommand & cmd );
 
 private:
 

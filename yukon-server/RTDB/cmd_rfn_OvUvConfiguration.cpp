@@ -208,7 +208,9 @@ RfnSetOvUvSetThresholdCommand::RfnSetOvUvSetThresholdCommand( const MeterID mete
         _eventID( event_id ),
         _thresholdValue( threshold_volts * 1000 )
 {
-    // empty
+    validateCondition( meter_id != Unspecified,
+                       BADPARAM,
+                       "Invalid Meter ID: Unspecified (" + CtiNumStr(meter_id) + ")" );
 }
 
 
@@ -247,13 +249,17 @@ RfnCommand::Bytes RfnSetOvUvSetThresholdCommand::getCommandData()
 ///
 
 
-RfnGetOvUvAlarmConfigurationCommand::RfnGetOvUvAlarmConfigurationCommand( const MeterID meter_id,
-                                                                          const EventID event_id )
+RfnGetOvUvAlarmConfigurationCommand::RfnGetOvUvAlarmConfigurationCommand( ResultHandler & rh,
+                                                                          const MeterID   meter_id,
+                                                                          const EventID   event_id )
     :   RfnOvUvConfigurationCommand( Operation_GetOvUvAlarmConfigurationInfo ),
+        _rh( rh ),
         _meterID( meter_id ),
         _eventID( event_id )
 {
-    // empty
+    validateCondition( meter_id != Unspecified,
+                       BADPARAM,
+                       "Invalid Meter ID: Unspecified (" + CtiNumStr(meter_id) + ")" );
 }
 
 
@@ -271,6 +277,12 @@ RfnCommand::Bytes RfnGetOvUvAlarmConfigurationCommand::getCommandData()
 }
 
 
+RfnGetOvUvAlarmConfigurationCommand::AlarmConfiguration  RfnGetOvUvAlarmConfigurationCommand::getAlarmConfiguration() const
+{
+    return _alarmConfig;
+}
+
+
 namespace   {
 
 const std::map<unsigned char, std::string>  meterIdResolver = boost::assign::map_list_of
@@ -285,8 +297,6 @@ const std::map<unsigned, std::string>  eventIdResolver = boost::assign::map_list
 const std::map<unsigned char, std::string>  ovuvStateResolver = boost::assign::map_list_of
     ( 0x00, "OV/UV Disabled" )
     ( 0x01, "OV/UV Enabled" );
-
-
 
 }
 
@@ -373,11 +383,18 @@ RfnCommandResult RfnGetOvUvAlarmConfigurationCommand::decodeCommand( const CtiTi
     result.description += "\nSET Alarm Repeat Count: " + CtiNumStr(response[7]) + " count(s)";
     result.description += "\nCLEAR Alarm Repeat Count: " + CtiNumStr(response[8]) + " count(s)";
 
+    _alarmConfig.ovuvEnabled                = response[4];
+    _alarmConfig.ovuvAlarmReportingInterval = response[5];
+    _alarmConfig.ovuvAlarmRepeatInterval    = response[6];
+    _alarmConfig.ovuvAlarmRepeatCount       = response[7];
+
     const unsigned thresholdValue = (response[9] << 24) + (response[10] << 16) + (response[11] << 8) + response[12];
 
     const double threshold = thresholdValue / 1000.0;
 
     result.description += "\nSet Threshold Value: " + CtiNumStr(threshold) + " volts (" + CtiNumStr(thresholdValue).xhex(8) + ")";
+
+    ( _eventID == OverVoltage ? _alarmConfig.ovThreshold : _alarmConfig.uvThreshold ) = threshold;
 
     result.description += "\nUnit of Measure: Volts (" + CtiNumStr(response[13]).xhex(2) + ")";
     result.description += "\nUoM modifier 1: " + CtiNumStr(uom_modifier1).xhex(4);
