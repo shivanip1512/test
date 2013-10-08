@@ -48,7 +48,7 @@ protected:
 
     virtual Bytes getCommandData();
 
-    typedef std::vector< TypeLengthValue > TlvList;
+    typedef std::vector<TypeLengthValue> TlvList;
 
     virtual TlvList getTlvs();
 
@@ -56,6 +56,10 @@ protected:
 
     RfnCommandResult decodeResponseHeader( const CtiTime now,
                                            const RfnResponsePayload & response );
+
+    TlvList getTlvsFromPayload( const RfnResponsePayload & response );
+
+    static LongTlvList longTlvs;
 
 public:
 

@@ -1,5 +1,6 @@
 #include "precompiled.h"
 
+#include "std_helper.h"
 #include "cmd_rfn.h"
 
 namespace Cti {
@@ -52,29 +53,35 @@ RfnCommand::Bytes RfnCommand::getBytesFromTlvs( const std::vector<TypeLengthValu
     for each( const TypeLengthValue &tlv in tlvs )
     {
         tlvs_bytes.push_back( tlv.type );
-        tlvs_bytes.push_back( tlv.value.size() );
+
+        const unsigned tlv_length  = tlv.value.size();
+
+        if( tlv.isLongTlv )
+        {
+            tlvs_bytes.push_back( tlv_length >> 8 );
+            tlvs_bytes.push_back( tlv_length & 0xff );
+        }
+        else
+        {
+            tlvs_bytes.push_back( tlv_length );
+        }
+
         tlvs_bytes.insert( tlvs_bytes.end(), tlv.value.begin(), tlv.value.end() );
     }
 
     return tlvs_bytes;
 }
 
-// Convert a byte vector to a type-length-value vector
+
 std::vector<RfnCommand::TypeLengthValue> RfnCommand::getTlvsFromBytes( const Bytes &bytes )
 {
-    return getTlvsFromBytesWithLength(1, bytes);
+    LongTlvList emptyList;
+
+    return getTlvsFromBytes( bytes, emptyList );
 }
 
 
-// Convert a byte vector to a type-length-value vector
-std::vector<RfnCommand::TypeLengthValue> RfnCommand::getLongTlvsFromBytes( const Bytes &bytes )
-{
-    return getTlvsFromBytesWithLength(2, bytes);
-}
-
-
-// Convert a byte vector to a type-length-value vector
-std::vector<RfnCommand::TypeLengthValue> RfnCommand::getTlvsFromBytesWithLength( const unsigned length, const Bytes &bytes )
+std::vector<RfnCommand::TypeLengthValue> RfnCommand::getTlvsFromBytes( const Bytes &bytes, const LongTlvList &longTlvs )
 {
     Bytes::const_iterator itr = bytes.begin();
 
@@ -94,26 +101,39 @@ std::vector<RfnCommand::TypeLengthValue> RfnCommand::getTlvsFromBytesWithLength(
             throw CommandException(ErrorInvalidData, "Incomplete data for TLV");
         }
 
+        //
+        // TLV type
+        //
+
         TypeLengthValue tlv(*itr++);
+
+        //
+        // TLV length
+        //
 
         if( itr == bytes.end() )
         {
             throw CommandException(ErrorInvalidData, "Incomplete data for TLV");
         }
 
-        unsigned tlv_length = *itr++;
+        unsigned tlv_length = *itr++; // byte default we expect the tlv length field to be on 1 byte
 
-        if( length == 2 )
+        if( longTlvs.find( tlv.type ) != longTlvs.end() )
         {
             if( itr == bytes.end() )
             {
                 throw CommandException(ErrorInvalidData, "Incomplete data for TLV");
             }
 
-            tlv_length <<= 8;
+            tlv.isLongTlv = true;
 
+            tlv_length <<= 8;
             tlv_length |= *itr++;
         }
+
+        //
+        //  TLV data
+        //
 
         while( tlv_length-- )
         {
@@ -126,6 +146,12 @@ std::vector<RfnCommand::TypeLengthValue> RfnCommand::getTlvsFromBytesWithLength(
         }
 
         tlvs.push_back(tlv);
+    }
+
+    if( itr != bytes.end() )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " - TLVs contains residual bytes. " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
     }
 
     return tlvs;

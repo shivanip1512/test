@@ -125,19 +125,13 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_SetConfiguration_decoding_excepti
         ( list_of( 0x6f )( 0x00 )( 0x00 )( 0x00 ) )
         ( list_of( 0x69 )( 0x01 )( 0x00 )( 0x00 ) )
         ( list_of( 0x69 )( 0x00 )( 0x02 )( 0x00 ) )
-        ( list_of( 0x69 )( 0x00 )( 0x00 )( 0x01 ) )
-        ( list_of( 0x69 )( 0x00 )( 0x00 ) )
-        ( list_of( 0x69 )( 0x00 )( 0x00 )( 0x00 )( 0x00 ) )
-        ( list_of( 0x69 )( 0x00 )( 0x00 )( 0x00 )( 0x00 )( 0x00 )( 0x00 )( 0x00 ) );
+        ( list_of( 0x69 )( 0x00 )( 0x00 )( 0x01 )( 0x00 )( 0x00 ));
 
     const std::vector< RfnCommand::CommandException >   expected = list_of
         ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response Command Code (0x6f)" ) )
         ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Operation Code (0x01)" ) )
         ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Status (2)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV count (1)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response length (3)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response length (5)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response length (8)" ) );
+        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV count (1)" ) );
 
     std::vector< RfnCommand::CommandException > actual;
 
@@ -219,18 +213,16 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetConfiguration )
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetConfiguration_decoding_exceptions )
 {
     const std::vector< RfnCommand::RfnResponsePayload >   responses = list_of
-        ( list_of( 0x69 )( 0x01 )( 0x00 )( 0x02 )( 0x01 )( 0x02 )( 0x04 )( 0x06 ) )
-        ( list_of( 0x69 )( 0x01 )( 0x00 )( 0x01 )( 0x02 )( 0x02 )( 0x04 )( 0x06 ) )
-        ( list_of( 0x69 )( 0x01 )( 0x00 )( 0x01 )( 0x01 )( 0x01 )( 0x04 )( 0x06 ) )
-        ( list_of( 0x69 )( 0x01 )( 0x00 )( 0x01 )( 0x01 )( 0x02 )( 0x04 ) )
-        ( list_of( 0x69 )( 0x01 )( 0x00 )( 0x01 )( 0x01 )( 0x02 )( 0x04 )( 0x06 )( 0x00 ) );
+        ( list_of( 0x69 )( 0x00 )( 0x00 )( 0x01 )( 0x01 )( 0x02 )( 0x04 )( 0x06 ))
+        ( list_of( 0x69 )( 0x01 )( 0x00 )( 0x02 )( 0x00 )( 0x00 )( 0x04 )( 0x00 ) )
+        ( list_of( 0x69 )( 0x01 )( 0x00 )( 0x01 )( 0x04 )( 0x00 ))
+        ( list_of( 0x69 )( 0x01 )( 0x00 )( 0x01 )( 0x01 )( 0x01 )( 0x04 ));
 
     const std::vector< RfnCommand::CommandException >   expected = list_of
+        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Operation Code (0x00)" ) )
         ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV count (2)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV type (2)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV length (1)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response length (7)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response length (9)" ) );
+        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV type (4 != 1)" ) )
+        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV length (1)" ) );
 
     std::vector< RfnCommand::CommandException > actual;
 
@@ -303,14 +295,12 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_DisableLoadProfileRecording )
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_DisableLoadProfileRecording_decoding_exceptions )
 {
     const std::vector< RfnCommand::RfnResponsePayload >   responses = list_of
-        ( list_of( 0x69 )( 0x02 )( 0x00 )( 0x01 ) )
-        ( list_of( 0x69 )( 0x02 )( 0x00 ) )
-        ( list_of( 0x69 )( 0x02 )( 0x00 )( 0x01 )( 0x00 ) );
+        ( list_of( 0x69 )( 0x03 )( 0x00 )( 0x00 ) )
+        ( list_of( 0x69 )( 0x02 )( 0x00 )( 0x01 )( 0x01 )( 0x00 ));
 
     const std::vector< RfnCommand::CommandException >   expected = list_of
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV count (1)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response length (3)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response length (5)" ) );
+        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Operation Code (0x03)" ) )
+        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV count (1)" ) );
 
     std::vector< RfnCommand::CommandException > actual;
 
@@ -383,14 +373,12 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_EnableLoadProfileRecording )
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_EnableLoadProfileRecording_decoding_exceptions )
 {
     const std::vector< RfnCommand::RfnResponsePayload >   responses = list_of
-        ( list_of( 0x69 )( 0x03 )( 0x00 )( 0x01 ) )
-        ( list_of( 0x69 )( 0x03 )( 0x00 ) )
-        ( list_of( 0x69 )( 0x03 )( 0x00 )( 0x01 )( 0x00 ) );
+        ( list_of( 0x69 )( 0x02 )( 0x00 )( 0x00 ) )
+        ( list_of( 0x69 )( 0x03 )( 0x00 )( 0x01 )( 0x01 )( 0x00 ));
 
     const std::vector< RfnCommand::CommandException >   expected = list_of
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV count (1)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response length (3)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response length (5)" ) );
+        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Operation Code (0x02)" ) )
+        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV count (1)" ) );
 
     std::vector< RfnCommand::CommandException > actual;
 
@@ -433,7 +421,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfileRecording )
     // decode -- success response -- disabled
     {
         const std::vector< unsigned char > response = boost::assign::list_of
-            ( 0x69 )( 0x04 )( 0x00 )( 0x01 )( 0x02 )( 0x01 )( 0x00 );
+            ( 0x69 )( 0x04 )( 0x00 )( 0x01 )( 0x02 )( 0x00 )( 0x01 )( 0x00 );
 
         RfnCommandResult rcv = command.decodeCommand( execute_time, response );
 
@@ -446,7 +434,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfileRecording )
     // decode -- success response -- enabled
     {
         const std::vector< unsigned char > response = boost::assign::list_of
-            ( 0x69 )( 0x04 )( 0x00 )( 0x01 )( 0x02 )( 0x01 )( 0x01 );
+            ( 0x69 )( 0x04 )( 0x00 )( 0x01 )( 0x02 )( 0x00 )( 0x01 )( 0x01 );
 
         RfnCommandResult rcv = command.decodeCommand( execute_time, response );
 
@@ -459,7 +447,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfileRecording )
     // decode -- failure response
     {
         const std::vector< unsigned char > response = boost::assign::list_of
-            ( 0x69 )( 0x04 )( 0x01 )( 0x01 )( 0x02 )( 0x01 )( 0x00 );
+            ( 0x69 )( 0x04 )( 0x01 )( 0x01 )( 0x02 )( 0x00 )( 0x01 )( 0x00 );
 
         BOOST_CHECK_THROW( command.decodeCommand( execute_time, response ), RfnCommand::CommandException );
 
@@ -479,20 +467,19 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfileRecording )
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfileRecording_decoding_exceptions )
 {
     const std::vector< RfnCommand::RfnResponsePayload >   responses = list_of
-        ( list_of( 0x69 )( 0x04 )( 0x00 )( 0x02 )( 0x02 )( 0x01 )( 0x00 ) )
+        ( list_of( 0x69 )( 0x02 )( 0x00 )( 0x01 )( 0x02 )( 0x00 )( 0x01 )( 0x00 ) )
+        ( list_of( 0x69 )( 0x04 )( 0x00 )( 0x02 )( 0x00 )( 0x00 )( 0x00 )( 0x00 ) )
         ( list_of( 0x69 )( 0x04 )( 0x00 )( 0x01 )( 0x01 )( 0x01 )( 0x00 ) )
-        ( list_of( 0x69 )( 0x04 )( 0x00 )( 0x01 )( 0x02 )( 0x02 )( 0x00 ) )
-        ( list_of( 0x69 )( 0x04 )( 0x00 )( 0x01 )( 0x02 )( 0x01 )( 0x03 ) )
-        ( list_of( 0x69 )( 0x04 )( 0x00 )( 0x01 )( 0x02 )( 0x01 ) )
-        ( list_of( 0x69 )( 0x04 )( 0x00 )( 0x01 )( 0x02 )( 0x01 )( 0x00 )( 0x00 ) );
+        ( list_of( 0x69 )( 0x04 )( 0x00 )( 0x01 )( 0x02 )( 0x00 )( 0x02 )( 0x00 )( 0x00 ) )
+        ( list_of( 0x69 )( 0x04 )( 0x00 )( 0x01 )( 0x02 )( 0x00 )( 0x01 )( 0x03 ) );
 
     const std::vector< RfnCommand::CommandException >   expected = list_of
+        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Operation Code (0x02)" ) )
         ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV count (2)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV type (1)" ) )
+        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV type (1 != 2)" ) )
         ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV length (2)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid State (3)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response length (6)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response length (8)" ) );
+        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid State (3)" ) );
+
 
     std::vector< RfnCommand::CommandException > actual;
 
@@ -652,12 +639,12 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfilePoints )
             const std::vector< unsigned char > response = boost::assign::list_of
                    ( 0x69 )( 0x05 )( 0x00 )( 0x01 )
                    ( 0x03 )
-                   ( 0x43 ) // tlv size = 67-byte
+                   ( 0x00 )( 0x43 ) // tlv size = 67-byte
                    // report header
                    ( 0x00 ) // channel number
                    ( 0x10 ) // uom
                    ( 0x80 )( 0x00 ) // uom modifier 1
-                   ( 0x00 )( 0x00 ) // uom modifier 1
+                   ( 0x00 )( 0x00 ) // uom modifier 2
                    ( interval_minutes )
                    ( 0x04 ) // Number of profile point records
                    // record 1

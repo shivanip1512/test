@@ -147,20 +147,41 @@ protected:
     struct TypeLengthValue
     {
         unsigned char type;
-        Bytes value;
+        bool          isLongTlv;
+        Bytes         value;
 
-        TypeLengthValue(unsigned char type_) : type(type_)  {}
-        TypeLengthValue(unsigned char type_, Bytes value_) : type(type_), value(value_)  {}
+        TypeLengthValue(unsigned char type_)
+            :   type(type_),
+                isLongTlv(false)
+        {}
+
+        TypeLengthValue(unsigned char type_, const Bytes &value_)
+            :   type(type_),
+                isLongTlv(false),
+                value(value_)
+        {}
+
+        static TypeLengthValue makeLongTlv(unsigned char type_ )
+        {
+            TypeLengthValue tlv(type_);
+            tlv.isLongTlv = true;
+            return tlv;
+        }
+
+        static TypeLengthValue makeLongTlv(unsigned char type_, const Bytes &value_)
+        {
+            TypeLengthValue tlv(type_, value_);
+            tlv.isLongTlv = true;
+            return tlv;
+        }
     };
 
     static Bytes getBytesFromTlvs( const std::vector<TypeLengthValue> &tlvs );
 
+    typedef std::set<unsigned char> LongTlvList;
+
     static std::vector<TypeLengthValue> getTlvsFromBytes( const Bytes &bytes );
-    static std::vector<TypeLengthValue> getLongTlvsFromBytes( const Bytes &bytes );
-
-private:
-
-    static std::vector<TypeLengthValue> getTlvsFromBytesWithLength( const unsigned length, const Bytes &bytes );
+    static std::vector<TypeLengthValue> getTlvsFromBytes( const Bytes &bytes, const LongTlvList &longTlvs );
 };
 
 typedef boost::shared_ptr<RfnCommand> RfnCommandSPtr;
