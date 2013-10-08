@@ -3,7 +3,7 @@
 <%@ attribute name="styleClass" required="false" type="java.lang.String"%>
 <%@ attribute name="id" required="false" type="java.lang.String"%>
 
-<div class="boxContainerFooter ${pageScope.styleClass}" <c:if test="${not empty pageScope.id}">id="${pageScope.id}"</c:if> >
+<div class="boxContainerFooter clearfix ${pageScope.styleClass}" <c:if test="${not empty pageScope.id}">id="${pageScope.id}"</c:if> >
     <div class="footer">
         <jsp:doBody/>
     </div>

@@ -297,7 +297,7 @@ function makeFirstSelectedFilterValueVisible () {
       <cti:msg key="yukon.web.reportSelection" var="reportSelectionTitle"/>
     <div class="titledContainer boxContainer">
 
-        <div class="title-bar"><h3 class="title">${reportSelectionTitle}</h3></div>
+        <div class="title-bar clearfix"><h3 class="title">${reportSelectionTitle}</h3></div>
         <div class="content">
             <table style="width:100%;">
               <tr>
@@ -456,7 +456,7 @@ function makeFirstSelectedFilterValueVisible () {
       
         <cti:msg key="yukon.web.options" var="optionsTitle"/>
         <div class="titledContainer boxContainer">
-            <div class="title-bar"><h3 class="title">${optionsTitle}</h3></div>
+            <div class="title-bar clearfix"><h3 class="title">${optionsTitle}</h3></div>
             <div class="content">
                 <%=REPORT_BEAN.buildOptionsHTML()%>
             </div>
@@ -468,7 +468,7 @@ function makeFirstSelectedFilterValueVisible () {
           
           <cti:msg key="yukon.web.options" var="filterTitle"/>
           <div class="titledContainer boxContainer">
-            <div class="title-bar"><h3 class="title">${filterTitle}</h3></div>
+            <div class="title-bar clearfix"><h3 class="title">${filterTitle}</h3></div>
             <div class="content">
             <SCRIPT>
 

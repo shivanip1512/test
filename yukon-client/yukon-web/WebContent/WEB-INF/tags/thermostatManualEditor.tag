@@ -16,7 +16,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <div class="titledContainer boxContainer manualThermostat box fl">
-    <div class="title-bar">
+    <div class="title-bar clearfix">
         <h3 class="title">
             <c:set var="multipleThermostatsSelected" value="${fn:length(fn:split(thermostatIds, ',')) > 1}"></c:set>
             <c:choose>

@@ -15,7 +15,7 @@
 </c:if>
 
 <div class="titledContainer triangleContainer ${pageScope.styleClass} ${pageScope.collapsed}" <c:if test="${!empty pageScope.id}" >id="${pageScope.id}"</c:if>>
-    <div class="title-bar">
+    <div class="title-bar clearfix">
         <c:choose>
             <c:when test="${pageScope.escapeTitle}"><h3 class="title toggle-title">${fn:escapeXml(pageScope.title)}</h3></c:when>
             <c:otherwise><h3 id="${thisId}_title" class="title toggle-title">${pageScope.title}</h3></c:otherwise>
