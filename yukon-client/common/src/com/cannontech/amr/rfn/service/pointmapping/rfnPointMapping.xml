@@ -133,11 +133,6 @@
             <uom>Restore Blink Count</uom>
             <modifiers match="equal"/> 
         </point>
-        <!-- NEW -->
-        <point name="Outage Log">
-            <uom>Outage Log</uom>
-            <modifiers match="equal"/> 
-        </point>
     </pointGroup>
 
     <pointGroup><!--  213s -->
