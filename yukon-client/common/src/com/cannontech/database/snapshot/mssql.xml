@@ -32822,9 +32822,9 @@
           </com.cariboulake.db.schemacompare.business.domain.db.Column>
           <com.cariboulake.db.schemacompare.business.domain.db.Column>
             <i__table reference="../../.."/>
-            <i__columnName>CurrentTheme</i__columnName>
+            <i__columnName>IsCurrent</i__columnName>
             <i__columnNameDiffers>false</i__columnNameDiffers>
-            <i__typeName>varchar</i__typeName>
+            <i__typeName>char</i__typeName>
             <i__typeNameDiffers>false</i__typeNameDiffers>
             <i__columnSize>1</i__columnSize>
             <i__columnSizeDiffers>false</i__columnSizeDiffers>
