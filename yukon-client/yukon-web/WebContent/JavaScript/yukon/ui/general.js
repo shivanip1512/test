@@ -251,7 +251,7 @@ Yukon.modules.ui = function (mod) {
                             }
                         }
                     },
-                    delayIn: 500,
+                    delayIn: 300,
                     fade: true
                 });
             });
