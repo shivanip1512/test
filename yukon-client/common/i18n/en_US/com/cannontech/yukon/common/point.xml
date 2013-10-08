@@ -135,7 +135,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.RF_DEMAND_RESET_STATUS">RF Demand Reset Status</entry>
     <entry key="yukon.common.attribute.builtInAttribute.ALTERNATE_MODE_ENTRY">Alternate Mode Entry</entry>
     <entry key="yukon.common.attribute.builtInAttribute.ANSI_SECURITY_FAILED">ANSI Security Failed</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.BAD_UPGRADE_SECURITY_PARAM">Bad Upgrade Security Param</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.BAD_UPGRADE_SECURITY_PARAM">Bad Upgrade Security Parameter</entry>
     <entry key="yukon.common.attribute.builtInAttribute.CONFIGURATION_ERROR">Configuration Error</entry>
     <entry key="yukon.common.attribute.builtInAttribute.CLOCK_ERROR">Clock Error</entry>
     <entry key="yukon.common.attribute.builtInAttribute.CONTROL_STATUS">Control Status</entry>

@@ -201,7 +201,7 @@ public enum BuiltInAttribute implements Attribute {
     // the only exception to this rule (as in the names don't exactly match))
     ALTERNATE_MODE_ENTRY("Alternate Mode Entry"),
     ANSI_SECURITY_FAILED("ANSI Security Failed"),
-    BAD_UPGRADE_SECURITY_PARAM("Bad Upgrade Security Param"),
+    BAD_UPGRADE_SECURITY_PARAM("Bad Upgrade Security Parameter"),
     CONFIGURATION_ERROR("Configuration Error"),
     CLOCK_ERROR("Clock Error"),
     CRYSTAL_OSCILLATOR_ERROR("Crystal Oscillator Error"),
