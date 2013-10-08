@@ -367,17 +367,14 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
                 StoredDeviceGroup addedGroup = addGroup(parent, DeviceGroupType.STATIC, groupName);
                 return addedGroup;
             }
-            else {
-                
-                String fullName = parent.getFullName()+"/"+groupName;
-                
-                // throw special exception if the group is child of Hidden group (temp group)
-                if (parent.getParent().isHidden()) {
-                    throw new TemporaryDeviceGroupNotFoundException("Group \"" + fullName + "\" could not be found");
-                }
-                
-                throw new NotFoundException("Group \"" + fullName + "\" could not be found");
+            String fullName = parent.getFullName()+"/"+groupName;
+
+            // throw special exception if the group is child of Hidden group (temp group)
+            if (parent.getParent() != null && parent.getParent().isHidden()) {
+                throw new TemporaryDeviceGroupNotFoundException("Group \"" + fullName + "\" could not be found");
             }
+
+            throw new NotFoundException("Group \"" + fullName + "\" could not be found");
         }
         PartialGroupResolver resolver = new PartialGroupResolver(this, parent);
         StoredDeviceGroup resolvedGroup = resolver.resolvePartial(group);

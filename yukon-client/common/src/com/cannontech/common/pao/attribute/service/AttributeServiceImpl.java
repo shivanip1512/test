@@ -385,7 +385,9 @@ public class AttributeServiceImpl implements AttributeService {
     public List<LiteStateGroup> findListOfStateGroupsForDeviceGroupAndAttributeKey(String groupName,
                                                                                    String attributeKey) {
         DeviceGroup group = deviceGroupService.findGroupName(groupName);
-
+        if (group == null) {
+            return new ArrayList<>(0);
+        }
         Multimap<PaoType, Attribute> allDefinedAttributes = paoDefinitionDao.getPaoTypeAttributesMultiMap();
         Multimap<Attribute, PaoType> dest = HashMultimap.create();
         Collection<PaoType> possiblePaoTypes = new ArrayList<>();
