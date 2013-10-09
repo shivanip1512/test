@@ -137,6 +137,17 @@ jQuery(function() {
 jQuery(document).on('show.spectrum', 'input', function(e) {
     e.preventDefault();
 });
+jQuery(document).on('yukon.image.selected', '[data-image-picker]', function(e) {
+    var imgPicker = jQuery(e.currentTarget),
+        selected = imgPicker.find('.image.selected').data('imageId'),
+        input = jQuery('#' + imgPicker.data('imagePicker')),
+        link = input.next();
+        
+    imgPicker.dialog('close');
+    input.val(selected);
+    link.attr('href', '/adminSetup/config/themes/imagePicker?category=logos&selected=' + selected);
+    link.find('img').attr('alt', selected).attr('src', '/common/images/' + selected);
+});
 </script>
 
 <div class="box clear dashboard">
