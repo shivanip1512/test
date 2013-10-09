@@ -225,18 +225,6 @@ RfnCommandResult RfnTouConfigurationCommand::decodeCommand(const CtiTime now, co
 }
 
 /**
- * throws CommandException
- * @param now time of error
- * @param error_code code of the error to throw with exception
- * @return may return a result if function is overloaded in child class
- */
-RfnCommandResult RfnTouConfigurationCommand::error(const CtiTime now, const YukonError_t error_code)
-{
-    // This should probably be the default for all commands unless specified otherwise.
-    throw CommandException(error_code, GetErrorString(error_code));
-}
-
-/**
  * get the tou state decoded
  * @return the tou state
  */

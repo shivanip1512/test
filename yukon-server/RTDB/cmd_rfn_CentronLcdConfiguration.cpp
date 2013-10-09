@@ -146,13 +146,6 @@ RfnCommandResult RfnCentronLcdConfigurationCommand::decodeCommand(const CtiTime 
     return result;
 }
 
-//  throws CommandException
-RfnCommandResult RfnCentronLcdConfigurationCommand::error(const CtiTime now, const YukonError_t error_code)
-{
-    //  This should probably be the default for all commands unless specified otherwise.
-    throw CommandException(error_code, GetErrorString(error_code));
-}
-
 //  returns the command code
 unsigned char RfnCentronLcdConfigurationCommand::getCommandCode() const
 {

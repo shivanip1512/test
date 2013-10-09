@@ -90,13 +90,6 @@ RfnCommand::Bytes RfnDemandFreezeCommand::getCommandData()
 }
 
 
-RfnCommandResult RfnDemandFreezeCommand::error( const CtiTime now,
-                                                     const YukonError_t error_code )
-{
-    throw CommandException( error_code, GetErrorString( error_code ));
-}
-
-
 RfnCommandResult RfnDemandFreezeCommand::decodeResponseHeader( const CtiTime now,
                                                                     const RfnResponsePayload & response )
 {

@@ -63,9 +63,6 @@ public:
 
     virtual RfnCommandResult decodeCommand( const CtiTime now,
                                             const RfnResponsePayload & response ) = 0;
-
-    virtual RfnCommandResult error( const CtiTime now,
-                                    const YukonError_t error_code );
 };
 
 

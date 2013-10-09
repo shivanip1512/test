@@ -18,7 +18,6 @@ public:
     RfnCentronLcdConfigurationCommand(const metric_vector_t &display_metrics);  //  write
 
     virtual RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload &response);
-    virtual RfnCommandResult error  (const CtiTime now, const YukonError_t error_code);
 
     metric_vector_t getReceivedMetrics() const;
 

@@ -77,13 +77,6 @@ RfnLoadProfileCommand::TlvList RfnLoadProfileCommand::getTlvs()
 }
 
 
-RfnCommandResult RfnLoadProfileCommand::error( const CtiTime now,
-                                               const YukonError_t error_code )
-{
-    throw CommandException( error_code, GetErrorString( error_code ));
-}
-
-
 RfnCommandResult RfnLoadProfileCommand::decodeResponseHeader( const CtiTime now,
                                                               const RfnResponsePayload & response )
 {

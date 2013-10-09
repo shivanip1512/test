@@ -319,18 +319,6 @@ RfnCommandResult RfnFocusLcdConfigurationCommand::decodeCommand(const CtiTime no
 }
 
 /**
- * throws CommandException
- * @param now
- * @param error_code
- * @return
- */
-RfnCommandResult RfnFocusLcdConfigurationCommand::error(const CtiTime now, const YukonError_t error_code)
-{
-    //  This should probably be the default for all commands unless specified otherwise.
-    throw CommandException(error_code, GetErrorString(error_code));
-}
-
-/**
  * returns the request command code
  * @return
  */

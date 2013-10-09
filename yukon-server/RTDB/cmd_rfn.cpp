@@ -31,6 +31,16 @@ RfnCommand::RfnRequestPayload RfnCommand::executeCommand(const CtiTime now)
     return req;
 }
 
+// Construct a byte vector request
+RfnCommandResult RfnCommand::errorCode(const CtiTime now, const YukonError_t errorCode)
+{
+    RfnCommandResult result;
+
+    result.description = GetErrorString(errorCode);
+
+    return result;
+}
+
 // Default header for RFN messages
 RfnCommand::Bytes RfnCommand::getCommandHeader()
 {

@@ -99,13 +99,6 @@ RfnCommandResult RfnOvUvConfigurationCommand::decodeCommand( const CtiTime now,
 }
 
 
-RfnCommandResult RfnOvUvConfigurationCommand::error( const CtiTime now,
-                                                     const YukonError_t error_code )
-{
-    throw CommandException( error_code, GetErrorString( error_code ));
-}
-
-
 ////////////////////////
 ///
 
