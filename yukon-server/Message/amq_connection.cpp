@@ -11,6 +11,10 @@
 #include "logger.h"
 
 #include "amq_util.h"
+#include "std_helper.h"
+
+#include <boost/optional.hpp>
+#include <boost/assign/list_of.hpp>
 
 using std::make_pair;
 using std::auto_ptr;
@@ -22,18 +26,46 @@ namespace Messaging {
 
 extern IM_EX_MSG std::auto_ptr<ActiveMQConnectionManager> gActiveMQConnection;
 
+typedef std::map<ActiveMQ::OutboundQueues::type, std::string> StreamableOutboundQueueNameMap;
+typedef std::map<ActiveMQ::OutboundQueues::type, std::string> ThriftOutboundQueueNameMap;
+typedef std::map<ActiveMQ::InboundQueues::type, std::string> ThriftInboundQueueNameMap;
+
+namespace {
+
+typedef ActiveMQ::OutboundQueues SOQ;
+
+const StreamableOutboundQueueNameMap StreamableOutboundQueueNames = boost::assign::map_list_of
+    (SOQ::PorterResponses,
+        "yukon.notif.stream.amr.PorterResponseMessage")
+    (SOQ::SmartEnergyProfileControl,
+        "yukon.notif.stream.dr.SmartEnergyProfileControlMessage")
+    (SOQ::SmartEnergyProfileRestore,
+        "yukon.notif.stream.dr.SmartEnergyProfileRestoreMessage")
+    (SOQ::HistoryRowAssociationResponse,
+        "yukon.notif.stream.dr.HistoryRowAssociationResponse")
+    (SOQ::IvvcAnalysisMessage,
+        "yukon.notif.stream.cc.IvvcAnalysisMessage")
+    (SOQ::RfnBroadcast,
+        "yukon.qr.obj.dr.rfn.ExpressComBroadcastRequest")
+    (SOQ::CapControlOperationMessage,
+        "yukon.notif.stream.cc.CapControlOperationMessage");
+
+typedef ActiveMQ::OutboundQueues TOQ;
+typedef ActiveMQ::InboundQueues  TIQ;
+
+const ThriftOutboundQueueNameMap ThriftOutboundQueueNames = boost::assign::map_list_of
+    (TOQ::NetworkManagerE2eDataRequest,
+        "yukon.rfn.e2e.data.request");
+
+const ThriftInboundQueueNameMap ThriftInboundQueueNames = boost::assign::map_list_of
+    (TIQ::NetworkManagerE2eDataIndication,
+        "yukon.rfn.e2e.data.indication");
+}
+
 ActiveMQConnectionManager::ActiveMQConnectionManager(const string &broker_uri) :
     _broker_uri(broker_uri),
     _delay(2)
 {
-    _queue_names.insert(make_pair(Queue_PorterResponses, "yukon.notif.stream.amr.PorterResponseMessage"));
-    _queue_names.insert(make_pair(Queue_SmartEnergyProfileControl, "yukon.notif.stream.dr.SmartEnergyProfileControlMessage"));
-    _queue_names.insert(make_pair(Queue_SmartEnergyProfileRestore, "yukon.notif.stream.dr.SmartEnergyProfileRestoreMessage"));
-    _queue_names.insert(make_pair(Queue_HistoryRowAssociationResponse, "yukon.notif.stream.dr.HistoryRowAssociationResponse"));
-    _queue_names.insert(make_pair(Queue_IvvcAnalysisMessage, "yukon.notif.stream.cc.IvvcAnalysisMessage"));
-    _queue_names.insert(make_pair(Queue_RfnBroadcast, "yukon.qr.obj.dr.rfn.ExpressComBroadcastRequest"));
-    _queue_names.insert(make_pair(Queue_CapControlOperationMessage, "yukon.notif.stream.cc.CapControlOperationMessage"));
-    _queue_names.insert(make_pair(Queue_NetworkManagerE2eDataRequest, "yukon.rfn.e2e.data.request"));
 }
 
 
@@ -49,19 +81,6 @@ ActiveMQConnectionManager::~ActiveMQConnectionManager()
 
     _connection.reset();
     _session.reset();
-}
-
-
-std::string ActiveMQConnectionManager::getQueueName(Queues queue) const
-{
-    queue_name_map::const_iterator itr = _queue_names.find(queue);
-
-    if( itr != _queue_names.end() )
-    {
-        return itr->second;
-    }
-
-    return "";
 }
 
 
@@ -192,35 +211,42 @@ catch( std::runtime_error &e )
 }
 
 
-void ActiveMQConnectionManager::enqueueMessage(const Queues queueId, auto_ptr<StreamableMessage> message)
+void ActiveMQConnectionManager::enqueueMessage(const ActiveMQ::OutboundQueues::type queueId, auto_ptr<StreamableMessage> message)
 {
     gActiveMQConnection->enqueueOutgoingMessage(queueId, message);
 }
 
 
-void ActiveMQConnectionManager::enqueueOutgoingMessage(const Queues queueId, auto_ptr<StreamableMessage> message)
+void ActiveMQConnectionManager::enqueueOutgoingMessage(const ActiveMQ::OutboundQueues::type queueId, auto_ptr<StreamableMessage> message)
 {
-    std::string queueName = getQueueName(queueId);
+    if( ! message.get() )
+    {
+        return;
+    }
+
+    boost::optional<std::string> queueName = mapFind(StreamableOutboundQueueNames, queueId);
 
     //  ensure the message is not null
-    if( ! queueName.empty() && message.get() )
+    if( ! queueName || queueName->empty() )
     {
-        envelope *e = new envelope;
+        return;
+    }
 
-        e->queue = queueName;
-        e->message.reset(message.release());
+    envelope *e = new envelope;
 
-        {
-            CtiLockGuard<CtiCriticalSection> lock(_outgoing_message_mux);
+    e->queue = *queueName;
+    e->message.reset(message.release());
 
-            _outgoing_messages.push(e);
-        }
+    {
+        CtiLockGuard<CtiCriticalSection> lock(_outgoing_message_mux);
 
-        if( !isRunning() )
-        {
-            //  starts its thread on first outbound message
-            start();
-        }
+        _outgoing_messages.push(e);
+    }
+
+    if( !isRunning() )
+    {
+        //  starts its thread on first outbound message
+        start();
     }
 }
 

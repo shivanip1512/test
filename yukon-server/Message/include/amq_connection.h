@@ -18,34 +18,51 @@ class MessageProducer;
 namespace Cti {
 namespace Messaging {
 
+namespace ActiveMQ {
+class QueueProducer;
+class ManagedConnection;
+
+struct OutboundQueues
+{
+    enum type  //  standin for strongly-typed enums
+    {
+        PorterResponses,
+        SmartEnergyProfileControl,
+        SmartEnergyProfileRestore,
+        HistoryRowAssociationResponse,
+        IvvcAnalysisMessage,
+        CapControlOperationMessage,
+        RfnBroadcast,
+        NetworkManagerE2eDataRequest,
+    };
+};
+
+struct InboundQueues {
+
+    enum type  //  standin for strongly-typed enums
+    {
+        NetworkManagerE2eDataIndication,
+    };
+};
+
+}
+
 class IM_EX_MSG ActiveMQConnectionManager :
     private CtiThread
 {
 public:
 
-    enum Queues
-    {
-        Queue_PorterResponses,
-        Queue_SmartEnergyProfileControl,
-        Queue_SmartEnergyProfileRestore,
-        Queue_HistoryRowAssociationResponse,
-        Queue_IvvcAnalysisMessage,
-        Queue_CapControlOperationMessage,
-        Queue_RfnBroadcast,
-        Queue_NetworkManagerE2eDataRequest
-    };
-
     ActiveMQConnectionManager(const std::string &broker_uri);
 
     virtual ~ActiveMQConnectionManager();
 
-    static void enqueueMessage(const Queues queueId, std::auto_ptr<StreamableMessage> message);
+    static void enqueueMessage(const ActiveMQ::OutboundQueues::type queueId, std::auto_ptr<StreamableMessage> message);
 
-    static void enqueueMessage(const Queues queueId, std::vector<unsigned char> payload);
+    static void enqueueMessage(const ActiveMQ::OutboundQueues::type queueId, std::vector<unsigned char> payload);
 
 protected:
 
-    virtual void enqueueOutgoingMessage(const Queues queueId, std::auto_ptr<StreamableMessage> message);
+    virtual void enqueueOutgoingMessage(const ActiveMQ::OutboundQueues::type queueId, std::auto_ptr<StreamableMessage> message);
 
 private:
 
@@ -70,8 +87,6 @@ private:
 
     cms::MessageProducer *getProducer(cms::Session &session, const std::string &queue);
 
-    std::string getQueueName(Queues queue) const;
-
     unsigned _delay;
 
     boost::scoped_ptr<cms::Connection> _connection;
@@ -87,10 +102,6 @@ private:
     typedef boost::ptr_map<const std::string, cms::MessageProducer> producer_map;
 
     producer_map _producers;
-
-    typedef std::map<Queues, std::string> queue_name_map;
-
-    queue_name_map _queue_names;
 
     enum
     {

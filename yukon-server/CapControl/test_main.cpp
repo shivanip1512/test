@@ -21,7 +21,7 @@ struct test_ActiveMQConnectionManager : Cti::Messaging::ActiveMQConnectionManage
     {
     }
 
-    void enqueueOutgoingMessage(const Queues queueId, std::auto_ptr<Cti::Messaging::StreamableMessage> message)
+    void enqueueOutgoingMessage(const ActiveMQ::OutboundQueues queueId, std::auto_ptr<Cti::Messaging::StreamableMessage> message)
     {
         //  delete message
     }

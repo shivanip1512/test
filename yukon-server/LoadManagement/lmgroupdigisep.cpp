@@ -90,6 +90,7 @@ bool LMGroupDigiSEP::sendSEPCycleControl(long controlMinutes, long cyclePercent,
 {
     using namespace Cti::Messaging;
     using namespace Cti::Messaging::LoadManagement;
+    using Cti::Messaging::ActiveMQ::OutboundQueues;
 
     std::auto_ptr<StreamableMessage> msg(LMSepControlMessage::createCycleMessage(getPAOId(),
                                                                                  0,
@@ -100,7 +101,7 @@ bool LMGroupDigiSEP::sendSEPCycleControl(long controlMinutes, long cyclePercent,
                                                                                  randomizeStart,
                                                                                  randomizeStop));
 
-    ActiveMQConnectionManager::enqueueMessage(ActiveMQConnectionManager::Queue_SmartEnergyProfileControl, msg);
+    ActiveMQConnectionManager::enqueueMessage(OutboundQueues::SmartEnergyProfileControl, msg);
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
@@ -127,6 +128,7 @@ bool LMGroupDigiSEP::sendSEPTempOffsetControl(long controlMinutes, long heatOffs
 {
     using namespace Cti::Messaging;
     using namespace Cti::Messaging::LoadManagement;
+    using Cti::Messaging::ActiveMQ::OutboundQueues;
 
     unsigned char eventFlags = randomizeStart ? 1 : 0 + randomizeStop ? (1 << 1) : 0;
 
@@ -169,7 +171,7 @@ bool LMGroupDigiSEP::sendSEPTempOffsetControl(long controlMinutes, long heatOffs
                                                                                       randomizeStart,
                                                                                       randomizeStop));
 
-    ActiveMQConnectionManager::enqueueMessage(ActiveMQConnectionManager::Queue_SmartEnergyProfileControl, msg);
+    ActiveMQConnectionManager::enqueueMessage(OutboundQueues::SmartEnergyProfileControl, msg);
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
@@ -196,9 +198,10 @@ bool LMGroupDigiSEP::sendStopControl(bool stopImmediately)
 {
     using namespace Cti::Messaging;
     using namespace Cti::Messaging::LoadManagement;
+    using Cti::Messaging::ActiveMQ::OutboundQueues;
 
     std::auto_ptr<StreamableMessage> msg(new LMSepRestoreMessage(getPAOId(), 0, stopImmediately ? 0 : 1));
-    ActiveMQConnectionManager::enqueueMessage(ActiveMQConnectionManager::Queue_SmartEnergyProfileRestore, msg);
+    ActiveMQConnectionManager::enqueueMessage(OutboundQueues::SmartEnergyProfileRestore, msg);
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
@@ -218,9 +221,10 @@ bool LMGroupDigiSEP::sendShedControl(long controlMinutes)
 {
     using namespace Cti::Messaging;
     using namespace Cti::Messaging::LoadManagement;
+    using Cti::Messaging::ActiveMQ::OutboundQueues;
 
     std::auto_ptr<StreamableMessage> msg(LMSepControlMessage::createSimpleShedMessage(getPAOId(), 0, controlMinutes));
-    ActiveMQConnectionManager::enqueueMessage(ActiveMQConnectionManager::Queue_SmartEnergyProfileControl, msg);
+    ActiveMQConnectionManager::enqueueMessage(OutboundQueues::SmartEnergyProfileControl, msg);
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {

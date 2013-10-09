@@ -2461,9 +2461,10 @@ bool IVVCAlgorithm::hasTapOpsRemaining(const IVVCState::TapOperationZoneMap & ta
 void IVVCAlgorithm::sendIVVCAnalysisMessage( Cti::Messaging::CapControl::IVVCAnalysisMessage * message )
 {
     using namespace Cti::Messaging;
+    using Cti::Messaging::ActiveMQ::OutboundQueues;
 
     std::auto_ptr<StreamableMessage> msg( message );
-    ActiveMQConnectionManager::enqueueMessage( ActiveMQConnectionManager::Queue_IvvcAnalysisMessage, msg );
+    ActiveMQConnectionManager::enqueueMessage( OutboundQueues::IvvcAnalysisMessage, msg );
 }
 
 void IVVCAlgorithm::updateCommsState( const long busCommsPointId, const bool isCommsLost ) const
