@@ -214,7 +214,16 @@ const std::vector<std::string> ErrorStrings = boost::assign::list_of
     ("The device's date range must be reset to continue.")
     ("Not enough data received from the device.")
     ("Configuration data is invalid.")
-    .repeat(65, "Unknown Error");
+    ("Device address is unknown.")
+    ("Network is unavailable.")
+    ("Request packet is too large.")
+    ("Protocol is unsupported.")
+    ("Network server ID is invalid.")
+    ("Application service ID is invalid.")
+    ("Network traffic limiting.")
+    ("Did not receive a response from the device.")
+    ("Did not receive a response from Network Manager.")
+    .repeat(56, "Unknown Error");
 
 BOOST_AUTO_TEST_CASE(test_GetErrorString)
 {

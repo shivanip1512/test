@@ -376,6 +376,16 @@ enum YukonError_t
 
     ErrorInvalidConfigData,
 
+    ErrorUnknownAddress,
+    ErrorNetworkUnavailable,
+    ErrorRequestPacketTooLarge,
+    ErrorProtocolUnsupported,
+    ErrorInvalidNetworkServerId,
+    ErrorInvalidApplicationServiceId,
+    ErrorNetworkLoadControl,
+    ErrorRequestTimeout,
+    ErrorNetworkManagerTimeout,
+
     FinalError
 };
 

@@ -211,6 +211,16 @@ static const ErrorLookup CtiErrors = boost::assign::map_list_of
     (ErrorNeedsDateRangeReset,      error_info(ERRTYPESYSTEM,   "The device's date range must be reset to continue."))
     (ErrorDataMissing,              error_info(ERRTYPESYSTEM,   "Not enough data received from the device."))
     (ErrorInvalidConfigData,        error_info(ERRTYPESYSTEM,   "Configuration data is invalid."))
+    (ErrorUnknownAddress,             error_info(ERRTYPESYSTEM, "Device address is unknown."))
+    (ErrorNetworkUnavailable,         error_info(ERRTYPESYSTEM, "Network is unavailable."))
+    (ErrorRequestPacketTooLarge,      error_info(ERRTYPESYSTEM, "Request packet is too large."))
+    (ErrorProtocolUnsupported,        error_info(ERRTYPESYSTEM, "Protocol is unsupported."))
+    (ErrorInvalidNetworkServerId,     error_info(ERRTYPESYSTEM, "Network server ID is invalid."))
+    (ErrorInvalidApplicationServiceId,error_info(ERRTYPESYSTEM, "Application service ID is invalid."))
+    (ErrorNetworkLoadControl,         error_info(ERRTYPESYSTEM, "Network traffic limiting."))
+    (ErrorRequestTimeout,             error_info(ERRTYPESYSTEM, "Did not receive a response from the device."))
+    (ErrorNetworkManagerTimeout,      error_info(ERRTYPESYSTEM, "Did not receive a response from Network Manager."))
+
     (UnknownError,                  error_info(ERRTYPESYSTEM,   "Unknown Error"))
     ;
 }
