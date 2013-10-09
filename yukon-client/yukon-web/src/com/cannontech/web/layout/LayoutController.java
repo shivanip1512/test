@@ -77,10 +77,17 @@ public class LayoutController {
     
     @PostConstruct
     public void initialize() {
+        
+        boolean devMod = configSource.getBoolean(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE);
+        
         Builder<String> builder = ImmutableList.builder();
         
         //jquery MUST be included before any js library that commandeers the $ var.
-        builder.add(JsLibrary.JQUERY.getPath()); 
+        if (devMod) {
+            builder.add(JsLibrary.JQUERY.getPath());
+        } else {
+            builder.add(JsLibrary.JQUERY_MIN.getPath());
+        }
         builder.add(JsLibrary.JQUERY_UI.getPath());
         builder.add(JsLibrary.JQUERY_UI_DIALOG_HELPER.getPath());
         builder.add(JsLibrary.JQUERY_UI_CHECK_ALL.getPath());
