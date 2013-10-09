@@ -183,7 +183,7 @@
     <cti:msg2 var="updateButton" key=".updateButton"/>
     <cti:msg2 var="cancelButton" key="yukon.web.components.button.cancel.label"/>
     <dialog:inline nameKey="schedulePopup" arguments="${popupTitleArgs}" id="schedulePopup" okEvent="submitSchedule"
-        options="{'modal': false, 
+        options="{'modal': true, 
                   'buttons': 
                     [{
                          text: '${cancelButton}', 
