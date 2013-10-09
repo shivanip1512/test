@@ -469,10 +469,11 @@ void PilServer::connectionThread()
 void PilServer::copyReturnMessageToResponseMonitorQueue(const CtiReturnMsg &returnMsg, void *connectionHandle)
 {
     using namespace Cti::Messaging;
+    using Cti::Messaging::ActiveMQ::OutboundQueues;
 
     std::auto_ptr<StreamableMessage> msg(new PorterResponseMessage(returnMsg, connectionHandle));
 
-    ActiveMQConnectionManager::enqueueMessage(ActiveMQConnectionManager::Queue_PorterResponses, msg);
+    ActiveMQConnectionManager::enqueueMessage(OutboundQueues::PorterResponses, msg);
 }
 
 
