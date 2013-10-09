@@ -32,7 +32,7 @@ RfnCommand::RfnRequestPayload RfnCommand::executeCommand(const CtiTime now)
 }
 
 // Construct a byte vector request
-RfnCommandResult RfnCommand::errorCode(const CtiTime now, const YukonError_t errorCode)
+RfnCommandResult RfnCommand::error(const CtiTime now, const YukonError_t errorCode)
 {
     RfnCommandResult result;
 

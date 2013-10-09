@@ -32,7 +32,7 @@ public:
 
     RfnRequestPayload executeCommand(const CtiTime now);
     virtual RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload &response) = 0;
-    virtual RfnCommandResult error  (const CtiTime now, const YukonError_t errorCode) = 0;
+    virtual RfnCommandResult error  (const CtiTime now, const YukonError_t errorCode);
 
     struct ResultHandler
     {
