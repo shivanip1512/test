@@ -22,6 +22,7 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.database.data.lite.LiteYukonImage;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
@@ -33,6 +34,7 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.resources.ResourceCache;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.support.MappedPropertiesHelper;
+import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.ImmutableMap;
 
 @Controller
@@ -43,6 +45,7 @@ public class ThemeController {
     @Autowired private ThemeDao themeDao;
     @Autowired private YukonUserContextMessageSourceResolver resolver;
     @Autowired private ResourceLoader loader;
+    @Autowired private IDatabaseCache cache;
     
     private SimpleValidator<Theme> validator = new SimpleValidator<Theme>(Theme.class) {
         @Override
@@ -163,6 +166,16 @@ public class ThemeController {
         resourceCache.reloadAll();
         
         return "redirect:/adminSetup/config/themes/" + id;
+    }
+    
+    @RequestMapping("/config/themes/imagePicker")
+    public String imagePicker(ModelMap model, String category, Integer selected) {
+        
+        List<LiteYukonImage> images = cache.getAllYukonImages();
+        model.addAttribute("images", images);
+        model.addAttribute("selected", selected);
+        
+        return "/config/_imagePicker.jsp";
     }
     
     private void buildModel(ModelMap model, YukonUserContext context, Theme theme, PageEditMode mode) {

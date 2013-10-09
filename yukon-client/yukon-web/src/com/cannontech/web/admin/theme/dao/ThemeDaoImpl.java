@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.SqlParameterSink;
-import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
@@ -31,15 +30,15 @@ public class ThemeDaoImpl implements ThemeDao {
             theme.setThemeId(themeId);
             theme.setName(rs.getString("Name"));
             theme.setEditable(themeId >= 0); /* default themes have negative id's */
-            theme.setCurrentTheme(rs.getBoolean("CurrentTheme"));
+            theme.setCurrentTheme(rs.getBoolean("IsCurrent"));
             return theme;
         }
     };
     
-    public Theme getTheme(SqlFragmentSource where) {
+    private Theme getTheme(SqlFragmentSource where) {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select ThemeId, Name, CurrentTheme");
+        sql.append("select ThemeId, Name, IsCurrent");
         sql.append("from Theme");
         sql.appendFragment(where);
         
@@ -75,7 +74,7 @@ public class ThemeDaoImpl implements ThemeDao {
     public Theme getCurrentTheme() {
         
         SqlStatementBuilder where = new SqlStatementBuilder();
-        where.append("where CurrentTheme").eq(YNBoolean.YES);
+        where.append("where IsCurrent").eq(true);
         
         return getTheme(where);
     }
@@ -84,7 +83,7 @@ public class ThemeDaoImpl implements ThemeDao {
     public List<Theme> getThemes() {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select ThemeId, Name, CurrentTheme");
+        sql.append("select ThemeId, Name, IsCurrent");
         sql.append("from Theme");
         
         List<Theme> themes = template.query(sql, THEME_MAPPER);
@@ -125,7 +124,7 @@ public class ThemeDaoImpl implements ThemeDao {
             SqlParameterSink values = sql.insertInto("Theme");
             values.addValue("ThemeId", themeId);
             values.addValue("Name", theme.getName());
-            values.addValue("CurrentTheme", YNBoolean.valueOf(theme.isCurrentTheme()));
+            values.addValue("IsCurrent", theme.isCurrentTheme());
             
             template.update(sql);
             theme.setThemeId(themeId);
@@ -134,7 +133,7 @@ public class ThemeDaoImpl implements ThemeDao {
             /** update existing theme */
             SqlParameterSink values = sql.update("Theme");
             values.addValue("Name", theme.getName());
-            values.addValue("CurrentTheme", YNBoolean.valueOf(theme.isCurrentTheme()));
+            values.addValue("IsCurrent", theme.isCurrentTheme());
             sql.append("where ThemeId").eq(theme.getThemeId());
             
             template.update(sql);
@@ -175,14 +174,12 @@ public class ThemeDaoImpl implements ThemeDao {
     @Transactional
     public void setCurrentTheme(int id) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("update Theme");
-        sql.append("set CurrentTheme").eq_k(YNBoolean.NO);
+        sql.append("update Theme").set("IsCurrent", false);
         
         template.update(sql);
         
         sql = new SqlStatementBuilder();
-        sql.append("update Theme");
-        sql.append("set CurrentTheme").eq_k(YNBoolean.YES);
+        sql.append("update Theme").set("IsCurrent", true);
         sql.append("where ThemeId").eq(id);
         
         template.update(sql);

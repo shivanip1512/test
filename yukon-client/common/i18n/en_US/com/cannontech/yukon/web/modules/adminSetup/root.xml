@@ -40,6 +40,10 @@
     <entry key="yukon.web.modules.adminSetup.config.themes.updated">Theme {0} updated successfully</entry>
     <entry key="yukon.web.modules.adminSetup.config.themes.deleted">Theme deleted successfully</entry>
     <entry key="yukon.web.modules.adminSetup.config.themes.use.label">Use Theme</entry>
+    <entry key="yukon.common.imagePicker.title">Choose Image</entry>
+    <entry key="yukon.common.imagePicker.name">Name</entry>
+    <entry key="yukon.common.imagePicker.category">Category</entry>
+    <entry key="yukon.common.imagePicker.size">Size</entry>
 
     <entry key="yukon.web.modules.adminSetup.config.weather.pageName">Weather</entry>
     <entry key="yukon.web.modules.adminSetup.config.weather.createWeatherLocation.label">New Weather Location</entry>

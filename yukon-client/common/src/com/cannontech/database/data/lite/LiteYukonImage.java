@@ -2,150 +2,103 @@ package com.cannontech.database.data.lite;
 
 import java.sql.Blob;
 
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.SqlStatement;
+import com.cannontech.database.db.state.YukonImage;
+
 /**
  * @author rneuharth
- * Aug 1, 2002 at 3:04:49 PM
- * 
- * A undefined generated comment
+ *         Aug 1, 2002 at 3:04:49 PM
  */
-public class LiteYukonImage extends LiteBase
-{
-   public static final LiteYukonImage NONE_IMAGE = new LiteYukonImage(
-               com.cannontech.database.db.state.YukonImage.NONE_IMAGE_ID,
-               com.cannontech.common.util.CtiUtilities.STRING_NONE,
-               com.cannontech.common.util.CtiUtilities.STRING_NONE,
-               null);
-   
-   private String imageCategory = null;
-   private String imageName = null;
-   private byte[] imageValue = null;
+public class LiteYukonImage extends LiteBase {
+    
+    public static final LiteYukonImage NONE_IMAGE =
+        new LiteYukonImage(com.cannontech.database.db.state.YukonImage.NONE_IMAGE_ID,
+                           com.cannontech.common.util.CtiUtilities.STRING_NONE,
+                           com.cannontech.common.util.CtiUtilities.STRING_NONE,
+                           null);
 
+    private String imageCategory;
+    private String imageName;
+    private byte[] imageValue;
 
-   public LiteYukonImage( int imageID )
-   {
-      super();
-      setImageID(imageID);
-      setLiteType(LiteTypes.STATE_IMAGE);
-   }
+    public LiteYukonImage(int imageId) {
+        super();
+        setImageID(imageId);
+        setLiteType(LiteTypes.STATE_IMAGE);
+    }
 
-   public LiteYukonImage( int imageID, String imgName_  )
-   {
-      this(imageID);
-      setImageName( imgName_ );
-   }
-   /**
-    * LiteDevice
-    */
-   public LiteYukonImage( int imageID, String imageCategory_, String imageName_, byte[] imageValue_ )
-   {
-      this( imageID );
-      setImageName( imageName_ );
-      setImageCategory( imageCategory_ );
-      setImageValue( imageValue_ );
-      setLiteType(LiteTypes.STATE_IMAGE);
-   }
+    public LiteYukonImage(int imageId, String imageName) {
+        this(imageId);
+        setImageName(imageName);
+    }
 
+    public LiteYukonImage(int imageId, String imageCategory, String imageName, byte[] imageValue) {
+        this(imageId);
+        setImageName(imageName);
+        setImageCategory(imageCategory);
+        setImageValue(imageValue);
+        setLiteType(LiteTypes.STATE_IMAGE);
+    }
 
+    public void retrieve(String databaseAlias) {
+        SqlStatement s = new SqlStatement("SELECT ImageCategory,ImageName,ImageValue from "
+                                              + YukonImage.TABLE_NAME
+                                              + " where ImageID = " + getImageID(), CtiUtilities.getDatabaseAlias());
 
-   /**
-    * retrieve method comment.
-    */
-   public void retrieve(String databaseAlias)
-   {
-      com.cannontech.database.SqlStatement s = 
-         new com.cannontech.database.SqlStatement(
-            "SELECT ImageCategory,ImageName,ImageValue from " +
-               com.cannontech.database.db.state.YukonImage.TABLE_NAME +
-               " where ImageID = " + getImageID(),
-            com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-   
-      try 
-      {
-         s.execute();
-   
-         if( s.getRowCount() <= 0 )
-            throw new IllegalStateException("Unable to find YukonImage with imageID = " + getLiteID() );
-   
-   
-         setImageCategory( s.getRow(0)[0].toString() );
-         setImageName( s.getRow(0)[1].toString() );
-         Blob tempBlob = (Blob) s.getRow(0)[2];
-         setImageValue( tempBlob.getBytes(1, (int)tempBlob.length()) );
-      }
-      catch( Exception e )
-      {
-         com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-      }      
-      
-   }   
-   
-	/**
-	 * Returns the imageName.
-	 * @return String
-	 */
-	public String getImageName()
-	{
-		return imageName;
-	}
+        try {
+            s.execute();
 
-	/**
-	 * Sets the imageName.
-	 * @param imageName The imageName to set
-	 */
-	public void setImageName(String imageName)
-	{
-		this.imageName = imageName;
-	}
+            if (s.getRowCount() <= 0) {
+                throw new IllegalStateException("Unable to find YukonImage with imageID = " + getLiteID());
+            }
 
-   public void setImageID(int imageID_) 
-   {
-      setLiteID( imageID_ );
-   }
-   
-   public int getImageID()
-   {
-      return getLiteID();
-   }
-   
-	/**
-	 * Returns the imageCategory.
-	 * @return String
-	 */
-	public String getImageCategory()
-	{
-		return imageCategory;
-	}
+            setImageCategory(s.getRow(0)[0].toString());
+            setImageName(s.getRow(0)[1].toString());
+            Blob tempBlob = (Blob) s.getRow(0)[2];
+            setImageValue(tempBlob.getBytes(1, (int) tempBlob.length()));
+            
+        } catch (Exception e) {
+            CTILogger.error(e.getMessage(), e);
+        }
 
-	/**
-	 * Returns the imageValue.
-	 * @return byte[]
-	 */
-	public byte[] getImageValue()
-	{
-		return imageValue;
-	}
+    }
 
-	/**
-	 * Sets the imageCategory.
-	 * @param imageCategory The imageCategory to set
-	 */
-	public void setImageCategory(String imageCategory)
-	{
-		this.imageCategory = imageCategory;
-	}
+    public String getImageName() {
+        return imageName;
+    }
 
-	/**
-	 * Sets the imageValue.
-	 * @param imageValue The imageValue to set
-	 */
-	public void setImageValue(byte[] imageValue)
-	{
-		this.imageValue = imageValue;
-	}
+    public void setImageName(String imageName) {
+        this.imageName = imageName;
+    }
 
-	public String toString()
-	{
-		return getImageName();
-	}
-	
+    public void setImageID(int imageId) {
+        setLiteID(imageId);
+    }
+
+    public int getImageID() {
+        return getLiteID();
+    }
+
+    public String getImageCategory() {
+        return imageCategory;
+    }
+
+    public byte[] getImageValue() {
+        return imageValue;
+    }
+
+    public void setImageCategory(String imageCategory) {
+        this.imageCategory = imageCategory;
+    }
+
+    public void setImageValue(byte[] imageValue) {
+        this.imageValue = imageValue;
+    }
+
+    public String toString() {
+        return getImageName();
+    }
+
 }

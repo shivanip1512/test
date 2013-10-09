@@ -20,11 +20,11 @@
 <entry key="yukon.common.themePropertyType.PAGE_BACKGROUND_FONT_COLOR">Background Font Color</entry>
 <entry key="yukon.common.themePropertyType.PAGE_BACKGROUND_SHADOW">Background Shadow</entry>
 <entry key="yukon.common.themePropertyType.PRIMARY_COLOR">Primary Color</entry>
-<entry key="yukon.common.themePropertyType.LOGIN_BACKGROUND_URL">Login Page Background</entry>
+<entry key="yukon.common.themePropertyType.LOGIN_BACKGROUND">Login Page Background</entry>
 <entry key="yukon.common.themePropertyType.LOGIN_FONT_COLOR">Login Page Font Color</entry>
 <entry key="yukon.common.themePropertyType.LOGIN_FONT_SHADOW">Login Page Font Shadow</entry>
 <entry key="yukon.common.themePropertyType.LOGIN_TAGLINE_MARGIN">Login Page Tagline Margin</entry>
-<entry key="yukon.common.themePropertyType.LOGO_URL">Logo</entry>
+<entry key="yukon.common.themePropertyType.LOGO">Logo</entry>
 <entry key="yukon.common.themePropertyType.LOGO_LEFT">Logo Left</entry>
 <entry key="yukon.common.themePropertyType.LOGO_TOP">Logo Top</entry>
 <entry key="yukon.common.themePropertyType.LOGO_WIDTH">Logo Width</entry>

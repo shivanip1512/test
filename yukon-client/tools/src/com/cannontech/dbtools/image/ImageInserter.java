@@ -2,12 +2,11 @@ package com.cannontech.dbtools.image;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.ImageFilter;
@@ -83,19 +82,7 @@ public class ImageInserter extends MessageFrameAdaptor
 					String yukName = currFile.getName().substring(currFile.getName().indexOf('-')+1);
 					int id = Integer.parseInt(currFile.getName().substring(0, currFile.getName().indexOf('-')));
 					
-					long len = currFile.length();
-					
-					InputStream in = new FileInputStream(currFile);
-					
-					pstmt = dbConn.prepareStatement(INSERT_SQL);					
-					pstmt.setInt(1, id);
-					
-					//use the directory the image is in for its category name
-	            	pstmt.setString(2, currFile.getParentFile().getName());
-	            	
-	            	pstmt.setString(3, yukName);
-					pstmt.setBinaryStream(4, in, (int) len);
-					pstmt.execute();
+				    insertImage(id, currFile.getParentFile().getName(), yukName, currFile);
 	            
 					getIMessageFrame().addOutput(" (success) Inserted " + yukName + " with id: " + id );
 				}
@@ -117,46 +104,32 @@ public class ImageInserter extends MessageFrameAdaptor
 				
 			}	
 		}
+	}
+	
+	public void insertImage(int id, String category, String name, File file) throws SQLException, FileNotFoundException {
+	    if (dbConn == null) {
+            dbConn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+	    }
 
-		
-		
+	    PreparedStatement pstmt = null;
+        try {
+            long len = file.length();
+            InputStream in = new FileInputStream(file);
+            
+            pstmt = dbConn.prepareStatement(INSERT_SQL);                    
+            pstmt.setInt(1, id);
+            pstmt.setString(2, file.getParentFile().getName());
+            
+            pstmt.setString(3, name);
+            pstmt.setBinaryStream(4, in, (int) len);
+            pstmt.execute();
+        } finally {
+            if( pstmt != null ) pstmt.close();
+            if (dbConn != null) dbConn.close();
+        }
+        
 	}
 		
-	/**
-	 * Returns the max imageid.
-	 * @param conn
-	 * @return int
-	 */
-	private int getMaxID(Connection conn) {
-		int maxID = 0;
-				
-		Statement stmt = null;
-		ResultSet rset = null;
-		try {
-			stmt = conn.createStatement();
-			rset = stmt.executeQuery(MAX_SQL);
-			
-			if( rset.next() ) {
-				maxID = rset.getInt(1);			
-			}			
-		}
-		catch(SQLException e) {
-			e.printStackTrace();
-		}
-		finally {
-			try {
-			if( rset != null ) rset.close();
-			} catch( SQLException e) { e.printStackTrace(); }
-			
-			try {
-			if( stmt != null ) stmt.close();
-			} catch( SQLException e ) { e.printStackTrace(); }
-		}
-		
-		return maxID;
-	}
-	
-	
 	public String getName()
 	{
 		return "Image Inserter";
@@ -180,7 +153,7 @@ public class ImageInserter extends MessageFrameAdaptor
 			getIMessageFrame().addOutput("-------- Started " + getName() + "..." );
 
 
-			if( dbConn == null )
+			if ( dbConn == null )
 				dbConn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
 
 			//Do the Stuff here

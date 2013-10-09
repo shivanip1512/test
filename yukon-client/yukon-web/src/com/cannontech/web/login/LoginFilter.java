@@ -39,6 +39,7 @@ import com.cannontech.web.util.YukonUserContextResolver;
 import com.google.common.collect.ImmutableList;
 
 public class LoginFilter implements Filter {
+    
     private final Logger log = YukonLogManager.getLogger(getClass());
     private final UrlPathHelper urlPathHelper = new UrlPathHelper();
 
@@ -77,6 +78,7 @@ public class LoginFilter implements Filter {
                          "/jws/bc.jnlp",
                          "/jws/client_libs.jnlp",
                          "/remote/**",
+                         "/common/images/*",
                          "/favicon.ico");
 
     private final static ImmutableList<String> excludedRedirectedPaths =

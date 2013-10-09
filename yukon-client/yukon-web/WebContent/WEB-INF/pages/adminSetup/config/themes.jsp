@@ -2,7 +2,6 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
@@ -57,6 +56,8 @@
     text-shadow: 0 1px 0 #fff;
     transition: border-color 0.2s;
 }
+
+.image-picker .image.selected, .image-picker .image:hover {box-shadow: 0 0 8px #06C;cursor: pointer;}
 </style>
 
 <script type="text/javascript">
@@ -106,7 +107,33 @@ jQuery(function() {
         jQuery('input[name=_method]').val('DELETE');
         jQuery('#theme-form').submit();
     });
+    
+    jQuery('a[data-image-picker]').click(function(e) {
+        
+        var link = jQuery(e.currentTarget),
+            href = link.attr('href'),
+            popup = jQuery('div[data-image-picker=' + link.attr('data-image-picker') + ']');
+        
+        popup.load(href, function() {
+            var buttons = [],
+                okButton = {'text' : '<cti:msg2 key="yukon.common.okButton"/>', 'click': function() { popup.trigger('yukon.image.selected'); }, 'class': 'primary'},
+                cancelButton = {'text' : '<cti:msg2 key="yukon.common.cancel"/>', 'click' : function() { jQuery(this).dialog('close'); }};
+            
+            buttons.push(cancelButton);
+            buttons.push(okButton);
+            popup.dialog({ autoOpen: false,
+                           height: 400, 
+                           width:600,
+                           modal : true,
+                           buttons : buttons });
+            popup.dialog('open');
+        });
+        
+        return false;
+    });
 });
+
+//if i don't listen for this event it doesn't work, god knows why
 jQuery(document).on('show.spectrum', 'input', function(e) {
     e.preventDefault();
 });

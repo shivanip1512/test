@@ -644,6 +644,7 @@ body .ui-tooltip { border-width: 2px; }
 
 .ui-dialog .ui-dialog-buttonpane {
     border: none;
+    margin-top: 4px;
 }
 
 .ui-tabs-box .ui-widget-header a, .ui-widget-header li.ui-state-active a:visited {

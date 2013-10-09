@@ -273,7 +273,7 @@ nav,header,footer,section,aside,hgroup,section {
 }
 
 .login-content {
-	background: url('/WebConfig/yukon/layout/bg_mountain_1920_420_fade2.jpg') no-repeat scroll center top #e0e0f5;
+	background: url('/WebConfig/yukon/layout/yukon_background.jpg') no-repeat scroll center top #e0e0f5;
 	min-height: 420px;
 	position: relative;
 }

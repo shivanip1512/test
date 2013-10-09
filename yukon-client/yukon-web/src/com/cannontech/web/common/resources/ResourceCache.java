@@ -76,10 +76,12 @@ public class ResourceCache {
         String line = br.readLine();
         while (line != null) {
             for (ThemePropertyType type : theme.getProperties().keySet()) {
+                
                 String regex = regexPrefix + type.getVarName() + regexSuffix;
                 String replacement = (String)theme.getProperties().get(type);
+                
                 if (type.getInputType() instanceof ImageType) {
-                    replacement = "'" +  replacement + "'";
+                    replacement = "'/common/images/" +  replacement + "'";
                 } else if (type.getInputType() instanceof PixelType) {
                     replacement = replacement + "px";
                 }
