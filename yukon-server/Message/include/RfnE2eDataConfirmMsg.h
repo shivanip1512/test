@@ -7,7 +7,7 @@ namespace Cti {
 namespace Messaging {
 namespace Rfn {
 
-struct /*IM_EX_MSG*/ RfnE2eDataConfirmMsg : RfnE2eMsg  //  no methods, does not need to be exported
+struct /*IM_EX_MSG*/ E2eDataConfirmMsg : E2eMsg  //  no methods, does not need to be exported
 {
     //  TODO - convert to a strongly-typed enum when we convert to VS2012
     struct ReplyType

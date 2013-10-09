@@ -11,7 +11,7 @@ namespace Cti {
 namespace Messaging {
 namespace Rfn {
 
-struct /*IM_EX_MSG*/ RfnE2eDataRequestMsg : RfnE2eMsg  //  no methods, does not need to be exported
+struct /*IM_EX_MSG*/ E2eDataRequestMsg : E2eMsg  //  no methods, does not need to be exported
 {
     Protocol protocol;
     unsigned char applicationServiceId;

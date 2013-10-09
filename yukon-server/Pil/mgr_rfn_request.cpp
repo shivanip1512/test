@@ -28,7 +28,7 @@ void RfnRequestManager::enqueueRequestsForDevice(const CtiDeviceBase &dev, std::
         {
             /*RfnCommand::RfnRequest payload = request->executeCommand(Now);
 
-            Messaging::Rfn::RfnE2eDataRequestMsg msg;
+            Messaging::Rfn::E2eDataRequestMsg msg;
 
             Messaging::ActiveMQConnectionManager::enqueueMessage()
 
