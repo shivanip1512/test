@@ -34,8 +34,6 @@ protected:
 
     virtual Bytes getCommandHeader();
 
-    virtual unsigned char getApplicationServiceId() const;
-
     const Operation _operationCode;
 
 public:
@@ -53,6 +51,8 @@ public:
         OverVoltage     = 2022,
         UnderVoltage    = 2023
     };
+
+    virtual unsigned char getApplicationServiceId() const;
 
     virtual RfnCommandResult decodeCommand( const CtiTime now,
                                             const RfnResponsePayload & response );
@@ -164,12 +164,9 @@ public:
                                 uvThreshold;
     };
 
-    struct ResultHandler
-    {
-        virtual void handleResult( const RfnGetOvUvAlarmConfigurationCommand & cmd ) = 0;
-    };
+    virtual void invokeResultHandler( ResultHandler &rh ) const;
 
-    RfnGetOvUvAlarmConfigurationCommand( ResultHandler & rh, const MeterID meter_id, const EventID event_id );
+    RfnGetOvUvAlarmConfigurationCommand( const MeterID meter_id, const EventID event_id );
 
     virtual RfnCommandResult decodeCommand( const CtiTime now,
                                             const RfnResponsePayload & response );
@@ -181,8 +178,6 @@ protected:
     virtual Bytes getCommandData();
 
 private:
-
-    ResultHandler & _rh;
 
     AlarmConfiguration  _alarmConfig;
 

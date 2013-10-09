@@ -355,9 +355,9 @@ int RfnResidentialDevice::executePutConfigVoltageAveragingInterval( CtiRequestMs
 
 
 int RfnResidentialDevice::executeGetConfigVoltageAveragingInterval( CtiRequestMsg     * pReq,
-                                                                    CtiCommandParser  & parse,
-                                                                    CtiMessageList    & retList,
-                                                                    RfnCommandList    & rfnRequests )
+                                                                 CtiCommandParser  & parse,
+                                                                 CtiMessageList    & retList,
+                                                                 RfnCommandList    & rfnRequests )
 {
     rfnRequests.push_back( boost::make_shared<Commands::RfnVoltageProfileGetConfigurationCommand>() );
 
@@ -474,7 +474,7 @@ int RfnResidentialDevice::executeReadDemandFreezeInfo( CtiRequestMsg     * pReq,
                                                     CtiMessageList    & retList,
                                                     RfnCommandList    & rfnRequests )
 {
-    rfnRequests.push_back( boost::make_shared<Commands::RfnGetDemandFreezeInfoCommand>( boost::ref(*this) ) );
+    rfnRequests.push_back( boost::make_shared<Commands::RfnGetDemandFreezeInfoCommand>() );
 
     return NoError;
 }
@@ -946,9 +946,9 @@ bool RfnResidentialDevice::isTouConfigCurrent( const Config::DeviceConfigSPtr &d
 }
 
 int RfnResidentialDevice::executeGetConfigInstallTou( CtiRequestMsg     * pReq,
-                                                      CtiCommandParser  & parse,
-                                                      CtiMessageList    & retList,
-                                                      RfnCommandList    & rfnRequests )
+                                                   CtiCommandParser  & parse,
+                                                   CtiMessageList    & retList,
+                                                   RfnCommandList    & rfnRequests )
 {
     rfnRequests.push_back( boost::make_shared<Commands::RfnTouScheduleConfigurationCommand>());
 
@@ -960,9 +960,9 @@ int RfnResidentialDevice::executeGetConfigInstallTou( CtiRequestMsg     * pReq,
  * Execute getconfig holiday
  */
 int RfnResidentialDevice::executeGetConfigHoliday( CtiRequestMsg     * pReq,
-                                                   CtiCommandParser  & parse,
-                                                   CtiMessageList    & retList,
-                                                   RfnCommandList    & rfnRequests )
+                                                CtiCommandParser  & parse,
+                                                CtiMessageList    & retList,
+                                                RfnCommandList    & rfnRequests )
 {
     rfnRequests.push_back( boost::make_shared<Commands::RfnTouHolidayConfigurationCommand>());
 
@@ -1368,8 +1368,8 @@ int RfnResidentialDevice::executeGetConfigOvUv( CtiRequestMsg    * pReq,
         case TYPE_RFN420CL:
         case TYPE_RFN420CD:
         {
-                meterID = Commands::RfnOvUvConfigurationCommand::CentronC2SX;
-                break;
+            meterID = Commands::RfnOvUvConfigurationCommand::CentronC2SX;
+            break;
         }
         case TYPE_RFN410FX:
         case TYPE_RFN410FD:
@@ -1392,8 +1392,8 @@ int RfnResidentialDevice::executeGetConfigOvUv( CtiRequestMsg    * pReq,
         }
     }
 
-    rfnRequests.push_back( boost::make_shared<Commands::RfnGetOvUvAlarmConfigurationCommand>( boost::ref(*this), meterID, Commands::RfnOvUvConfigurationCommand::OverVoltage ) );
-    rfnRequests.push_back( boost::make_shared<Commands::RfnGetOvUvAlarmConfigurationCommand>( boost::ref(*this), meterID, Commands::RfnOvUvConfigurationCommand::UnderVoltage ) );
+    rfnRequests.push_back( boost::make_shared<Commands::RfnGetOvUvAlarmConfigurationCommand>( meterID, Commands::RfnOvUvConfigurationCommand::OverVoltage ) );
+    rfnRequests.push_back( boost::make_shared<Commands::RfnGetOvUvAlarmConfigurationCommand>( meterID, Commands::RfnOvUvConfigurationCommand::UnderVoltage ) );
 
     return NoError;
 }

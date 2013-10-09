@@ -7,8 +7,7 @@ namespace Cti {
 namespace Devices {
 
 class IM_EX_DEVDB Rfn420CentronDevice :
-    public RfnResidentialDevice,
-    public Commands::RfnCentronLcdConfigurationCommand::ResultHandler
+    public RfnResidentialDevice
 {
     int executePutConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
 

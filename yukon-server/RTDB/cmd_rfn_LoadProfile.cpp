@@ -151,6 +151,12 @@ RfnVoltageProfileGetConfigurationCommand::RfnVoltageProfileGetConfigurationComma
 }
 
 
+void RfnVoltageProfileGetConfigurationCommand::invokeResultHandler(RfnCommand::ResultHandler &rh) const
+{
+    rh.handleCommandResult(*this);
+}
+
+
 RfnCommandResult RfnVoltageProfileGetConfigurationCommand::decodeCommand( const CtiTime now,
                                                                           const RfnResponsePayload & response )
 {
@@ -225,12 +231,12 @@ RfnVoltageProfileSetConfigurationCommand::RfnVoltageProfileSetConfigurationComma
 
 RfnLoadProfileCommand::TlvList RfnVoltageProfileSetConfigurationCommand::getTlvs()
 {
-    TypeLengthValue tlv(TlvType_VoltageProfileConfiguration);
+        TypeLengthValue tlv(TlvType_VoltageProfileConfiguration);
 
-    tlv.value.push_back( _demandInterval );
-    tlv.value.push_back( _loadProfileInterval );
+        tlv.value.push_back( _demandInterval );
+        tlv.value.push_back( _loadProfileInterval );
 
-    return boost::assign::list_of(tlv);
+        return boost::assign::list_of(tlv);
 }
 
 
@@ -265,6 +271,12 @@ RfnLoadProfileRecordingCommand::RfnLoadProfileRecordingCommand( const Operation 
 RfnLoadProfileGetRecordingCommand::RfnLoadProfileGetRecordingCommand()
     :   RfnLoadProfileRecordingCommand( Operation_GetLoadProfileRecordingState )
 {
+}
+
+
+void RfnLoadProfileGetRecordingCommand::invokeResultHandler(RfnCommand::ResultHandler &rh) const
+{
+    rh.handleCommandResult(*this);
 }
 
 
@@ -415,7 +427,7 @@ RfnLoadProfileReadPointsCommand::RfnLoadProfileReadPointsCommand( const CtiTime 
                                                                   const CtiDate begin,
                                                                   const CtiDate end )
     :   RfnLoadProfileCommand( Operation_GetLoadProfilePoints ),
-        _begin(begin),
+    _begin(begin),
         _end(end),
         _uomModifier1(0),
         _uomModifier2(0)
@@ -440,7 +452,7 @@ RfnLoadProfileReadPointsCommand::TlvList RfnLoadProfileReadPointsCommand::getTlv
 
 
 RfnCommandResult RfnLoadProfileReadPointsCommand::decodeCommand( const CtiTime now,
-                                                                 const RfnResponsePayload & response )
+                                                                      const RfnResponsePayload & response )
 {
     RfnCommandResult result = decodeResponseHeader( now, response );
 
@@ -586,7 +598,7 @@ unsigned RfnLoadProfileReadPointsCommand::decodePointRecord( RfnCommandResult & 
     // Array of points
 
     for(int point_nbr=0; point_nbr < pointCount; point_nbr++)
-    {
+            {
         validateCondition( lpPointDescriptor.size() >= pos + value_size + 1,
                            ErrorInvalidData, "Response TLV too small (" + CtiNumStr(lpPointDescriptor.size()) + " < " + CtiNumStr(pos + value_size + 1) + ")" );
 

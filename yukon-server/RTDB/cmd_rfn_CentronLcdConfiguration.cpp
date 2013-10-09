@@ -66,16 +66,21 @@ std::map<unsigned, std::string> MetricNames = boost::assign::map_list_of
 
 
 //  Class constructor
-RfnCentronLcdConfigurationCommand::RfnCentronLcdConfigurationCommand(ResultHandler &rh, const metric_vector_t &display_metrics) :
-    _rh(rh),
+RfnCentronLcdConfigurationCommand::RfnCentronLcdConfigurationCommand(const metric_vector_t &display_metrics) :
     _display_metrics_to_send(display_metrics)
 {
 }
 
-RfnCentronLcdConfigurationCommand::RfnCentronLcdConfigurationCommand(ResultHandler &rh) :
-    _rh(rh)
+RfnCentronLcdConfigurationCommand::RfnCentronLcdConfigurationCommand()
 {
 }
+
+
+void RfnCentronLcdConfigurationCommand::invokeResultHandler(RfnCommand::ResultHandler &rh) const
+{
+    rh.handleCommandResult(*this);
+}
+
 
 //  Decode a Lcd configuration response
 RfnCommandResult RfnCentronLcdConfigurationCommand::decodeCommand(const CtiTime now, const RfnResponsePayload &response)

@@ -208,11 +208,15 @@ RfnCommandResult RfnImmediateDemandFreezeCommand::decodeCommand( const CtiTime n
 ////
 
 
-RfnGetDemandFreezeInfoCommand::RfnGetDemandFreezeInfoCommand( ResultHandler & rh )
-    :   RfnDemandFreezeCommand( Operation_GetDemandFreezeInfo ),
-        _rh( rh )
+RfnGetDemandFreezeInfoCommand::RfnGetDemandFreezeInfoCommand()
+    :   RfnDemandFreezeCommand( Operation_GetDemandFreezeInfo )
 {
+}
 
+
+void RfnGetDemandFreezeInfoCommand::invokeResultHandler(RfnCommand::ResultHandler &rh) const
+{
+    rh.handleCommandResult(*this);
 }
 
 

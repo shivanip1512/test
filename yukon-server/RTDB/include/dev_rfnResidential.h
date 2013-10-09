@@ -12,13 +12,7 @@ namespace Devices   {
 
 
 class IM_EX_DEVDB RfnResidentialDevice
-    :   public RfnDevice,
-        public Commands::RfnVoltageProfileGetConfigurationCommand::ResultHandler,
-        public Commands::RfnLoadProfileGetRecordingCommand::ResultHandler,
-        public Commands::RfnGetDemandFreezeInfoCommand::ResultHandler,
-        public Commands::RfnTouScheduleConfigurationCommand::ResultHandler,
-        public Commands::RfnTouHolidayConfigurationCommand::ResultHandler,
-        public Commands::RfnGetOvUvAlarmConfigurationCommand::ResultHandler
+    :   public RfnDevice
 {
     static const InstallMap _putConfigInstallMap;
     static const InstallMap initPutConfigInstallMap();

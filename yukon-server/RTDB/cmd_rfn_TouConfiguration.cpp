@@ -269,6 +269,13 @@ RfnTouScheduleConfigurationCommand::RfnTouScheduleConfigurationCommand( const Sc
 {
 }
 
+
+void RfnTouScheduleConfigurationCommand::invokeResultHandler(RfnCommand::ResultHandler &rh) const
+{
+    rh.handleCommandResult(*this);
+}
+
+
 /**
  * Get TOU config schedule operation code
  * @return TOU config schedule operation code
@@ -700,6 +707,13 @@ RfnTouHolidayConfigurationCommand::RfnTouHolidayConfigurationCommand( const Holi
                            BADPARAM, "Invalid holiday date " + CtiNumStr(holiday_nbr + 1));
     }
 }
+
+
+void RfnTouHolidayConfigurationCommand::invokeResultHandler(RfnCommand::ResultHandler &rh) const
+{
+    rh.handleCommandResult(*this);
+}
+
 
 /**
  * Get Operation code for TOU Holiday configuration

@@ -137,7 +137,7 @@ int Rfn420CentronDevice::executePutConfigDisplay(CtiRequestMsg *pReq, CtiCommand
     }
 
     std::auto_ptr<Commands::RfnCommand> displayCommand(
-       new Commands::RfnCentronLcdConfigurationCommand(*this, config_display_metrics));
+       new Commands::RfnCentronLcdConfigurationCommand(config_display_metrics));
 
     rfnRequests.push_back(
        Commands::RfnCommandSPtr(displayCommand.release()));

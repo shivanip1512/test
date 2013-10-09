@@ -136,12 +136,9 @@ public:
         std::map<DemandRates, RateInfo>     demandInfo;
     };
 
-    struct ResultHandler
-    {
-        virtual void handleResult( const RfnGetDemandFreezeInfoCommand & cmd ) = 0;
-    };
+    virtual void invokeResultHandler(RfnCommand::ResultHandler &rh) const;
 
-    RfnGetDemandFreezeInfoCommand( ResultHandler & rh );
+    RfnGetDemandFreezeInfoCommand();
 
     virtual RfnCommandResult decodeCommand( const CtiTime now,
                                             const RfnResponsePayload & response );
@@ -149,8 +146,6 @@ public:
     DemandFreezeData getDemandFreezeData() const;
 
 private:
-
-    ResultHandler & _rh;
 
     DemandFreezeData _freezeData;
 };

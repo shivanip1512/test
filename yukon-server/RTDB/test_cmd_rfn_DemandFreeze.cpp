@@ -34,16 +34,6 @@ BOOST_AUTO_TEST_SUITE( test_cmd_rfn_DemandFreeze )
 const CtiTime execute_time( CtiDate( 29, 7, 2013 ) , 11 );
 
 
-struct test_ResultHandler : RfnGetDemandFreezeInfoCommand::ResultHandler
-{
-    void handleResult(const RfnGetDemandFreezeInfoCommand &cmd)
-    {
-        //  This is temporarily marked BOOST_FAIL - the unit test should eventually exercise this.
-        BOOST_FAIL("Should not reach this code!");
-    }
-};
-
-
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandFreeze_SetFreezeDay )
 {
     RfnDemandFreezeConfigurationCommand command( 10 );
@@ -220,9 +210,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandFreeze_ImmediateFreeze )
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandFreeze_GetFreezeInfo_full )
 {
-    test_ResultHandler  rh;
-
-    RfnGetDemandFreezeInfoCommand   command( rh );
+    RfnGetDemandFreezeInfoCommand   command;
 
     // execute
     {
@@ -283,9 +271,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandFreeze_GetFreezeInfo_full )
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandFreeze_GetFreezeInfo_supplied_case_1 )
 {
-    test_ResultHandler  rh;
-
-    RfnGetDemandFreezeInfoCommand   command( rh );
+    RfnGetDemandFreezeInfoCommand   command;
 
     // execute
     {
@@ -342,10 +328,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandFreeze_GetFreezeInfo_supplied_case_1 )
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandFreeze_GetFreezeInfo_supplied_case_2 )
 {
-    test_ResultHandler  rh;
-
-    RfnGetDemandFreezeInfoCommand   command( rh );
-
+    RfnGetDemandFreezeInfoCommand   command;
     // execute
     {
         const std::vector< unsigned char > exp = boost::assign::list_of
@@ -470,9 +453,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandFreeze_GetFreezeInfo_decode_exceptions 
 
     std::vector< RfnCommand::CommandException > actual;
 
-    test_ResultHandler  rh;
-
-    RfnGetDemandFreezeInfoCommand   command( rh );
+    RfnGetDemandFreezeInfoCommand   command;
 
     for each ( const RfnCommand::RfnResponsePayload & response in responses )
     {

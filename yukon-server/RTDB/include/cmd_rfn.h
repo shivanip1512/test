@@ -9,6 +9,14 @@ namespace Cti {
 namespace Devices {
 namespace Commands {
 
+class RfnCentronLcdConfigurationCommand;
+class RfnGetDemandFreezeInfoCommand;
+class RfnLoadProfileGetRecordingCommand;
+class RfnVoltageProfileGetRecordingCommand;
+class RfnTouConfigurationCommand;
+class RfnTouHolidayConfigurationCommand;
+class RfnGetOvUvAlarmConfigurationCommand;
+
 struct RfnCommandResult
 {
     std::string description;
@@ -26,6 +34,23 @@ public:
     virtual RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload &response) = 0;
     virtual RfnCommandResult error  (const CtiTime now, const YukonError_t error_code) = 0;
 
+    struct ResultHandler
+    {
+        virtual void handleCommandResult(const RfnCommand                           &command)  {}
+        virtual void handleCommandResult(const RfnCentronLcdConfigurationCommand    &command)  {}
+        virtual void handleCommandResult(const RfnGetDemandFreezeInfoCommand        &command)  {}
+        virtual void handleCommandResult(const RfnLoadProfileGetRecordingCommand &command)  {}
+        virtual void handleCommandResult(const RfnVoltageProfileGetRecordingCommand &command)  {}
+        virtual void handleCommandResult(const RfnTouConfigurationCommand           &command)  {}
+        virtual void handleCommandResult(const RfnTouHolidayConfigurationCommand    &command)  {}
+        virtual void handleCommandResult(const RfnGetOvUvAlarmConfigurationCommand  &command)  {}
+    };
+
+    //  to be overridden by children that require a result handler
+    virtual void invokeResultHandler(ResultHandler &rh) const;
+
+    virtual unsigned char getApplicationServiceId() const;
+
 protected:
 
     //
@@ -41,7 +66,6 @@ protected:
     virtual Bytes         getCommandData() = 0;
 
     virtual Bytes         getCommandHeader();
-    virtual unsigned char getApplicationServiceId() const;
 
     virtual void    prepareCommandData(const CtiTime & now) { }
 

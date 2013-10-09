@@ -57,10 +57,7 @@ class IM_EX_DEVDB RfnTouScheduleConfigurationCommand : public RfnTouConfiguratio
 {
 public:
 
-    struct ResultHandler
-    {
-        virtual void handleResult( const RfnTouScheduleConfigurationCommand &cmd ) = 0;
-    };
+    virtual void invokeResultHandler(RfnCommand::ResultHandler &rh) const;
 
     enum ScheduleNbr
     {
@@ -119,10 +116,7 @@ class IM_EX_DEVDB RfnTouHolidayConfigurationCommand : public RfnTouConfiguration
 {
 public:
 
-    struct ResultHandler
-    {
-        virtual void handleResult( const RfnTouHolidayConfigurationCommand &cmd ) = 0;
-    };
+    virtual void invokeResultHandler(RfnCommand::ResultHandler &rh) const;
 
     typedef boost::array<CtiDate, 3> Holidays;
 

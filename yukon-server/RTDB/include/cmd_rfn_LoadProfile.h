@@ -96,10 +96,7 @@ class IM_EX_DEVDB RfnVoltageProfileGetConfigurationCommand : public RfnVoltagePr
 {
 public:
 
-    struct ResultHandler
-    {
-        virtual void handleResult( const RfnVoltageProfileGetConfigurationCommand & cmd ) = 0;
-    };
+    virtual void invokeResultHandler(RfnCommand::ResultHandler &rh) const;
 
     RfnVoltageProfileGetConfigurationCommand();
 
@@ -166,10 +163,7 @@ class IM_EX_DEVDB RfnLoadProfileGetRecordingCommand : public RfnLoadProfileRecor
 {
 public:
 
-    struct ResultHandler
-    {
-        virtual void handleResult( const RfnLoadProfileGetRecordingCommand & cmd ) = 0;
-    };
+    virtual void invokeResultHandler(RfnCommand::ResultHandler &rh) const;
 
     RfnLoadProfileGetRecordingCommand();
 

@@ -12,13 +12,10 @@ public:
 
     typedef std::vector<unsigned char> metric_vector_t;
 
-    struct ResultHandler
-    {
-        virtual void handleResult(const RfnCentronLcdConfigurationCommand &cmd) = 0;
-    };
+    virtual void invokeResultHandler(RfnCommand::ResultHandler &rh) const;
 
-    RfnCentronLcdConfigurationCommand(ResultHandler &rh);  //  read
-    RfnCentronLcdConfigurationCommand(ResultHandler &rh, const metric_vector_t &display_metrics);  //  write
+    RfnCentronLcdConfigurationCommand();  //  read
+    RfnCentronLcdConfigurationCommand(const metric_vector_t &display_metrics);  //  write
 
     virtual RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload &response);
     virtual RfnCommandResult error  (const CtiTime now, const YukonError_t error_code);
@@ -32,8 +29,6 @@ protected:
     virtual Bytes         getCommandData();
 
 private:
-
-    ResultHandler &_rh;
 
     const boost::optional<metric_vector_t> _display_metrics_to_send;
 

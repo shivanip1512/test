@@ -13,22 +13,12 @@ BOOST_AUTO_TEST_SUITE( test_cmd_rfn_CentronLcdConfiguration )
 
 const CtiTime execute_time(CtiDate(17, 2, 2010), 10);
 
-struct test_ResultHandler : RfnCentronLcdConfigurationCommand::ResultHandler
-{
-    void handleResult(const RfnCentronLcdConfigurationCommand &cmd)
-    {
-        //  This is temporarily marked BOOST_FAIL - the unit test should eventually exercise this.
-        BOOST_FAIL("Should not reach this code!");
-    }
-};
 
 BOOST_AUTO_TEST_CASE(test_no_metrics)
 {
     const std::vector<unsigned char> metrics;
 
-    test_ResultHandler rh;
-
-    RfnCentronLcdConfigurationCommand lcdConfiguration(rh, metrics);
+    RfnCentronLcdConfigurationCommand lcdConfiguration(metrics);
 
     // execute
     {
@@ -60,9 +50,7 @@ BOOST_AUTO_TEST_CASE(test_3_items)
     const std::vector<unsigned char> metrics = boost::assign::list_of
             (0x00)(0x01)(0x02);
 
-    test_ResultHandler rh;
-
-    RfnCentronLcdConfigurationCommand lcdConfiguration(rh, metrics);
+    RfnCentronLcdConfigurationCommand lcdConfiguration(metrics);
 
     // execute
     {
@@ -93,9 +81,7 @@ BOOST_AUTO_TEST_CASE(test_3_items)
 
 BOOST_AUTO_TEST_CASE(test_3_items_readonly)
 {
-    test_ResultHandler rh;
-
-    RfnCentronLcdConfigurationCommand lcdConfiguration(rh);
+    RfnCentronLcdConfigurationCommand lcdConfiguration;
 
     // execute
     {
@@ -132,9 +118,7 @@ BOOST_AUTO_TEST_CASE(test_all_items)
             (0x14)(0x15)(0x16)(0x17)(0x18)(0x19)(0x1A)(0x1B)(0x1C)(0x1D)(0x1E)
             (0x1F)(0x20)(0x21)(0x22)(0x23)(0x24);
 
-    test_ResultHandler rh;
-
-    RfnCentronLcdConfigurationCommand lcdConfiguration(rh, metrics);
+    RfnCentronLcdConfigurationCommand lcdConfiguration(metrics);
 
     // execute
     {

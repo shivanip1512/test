@@ -236,7 +236,7 @@ RfnCommand::Bytes RfnSetOvUvSetThresholdCommand::getCommandData()
     // UoM modifier 1 == 0x8000
     bytes.push_back( 0x80 );
     bytes.push_back( 0x00 );
-    
+
     // UoM modifier 2 ==> 0x07 << 6 == 0x01c0   millivolts
     bytes.push_back( 0x01 );
     bytes.push_back( 0xc0 );
@@ -249,17 +249,21 @@ RfnCommand::Bytes RfnSetOvUvSetThresholdCommand::getCommandData()
 ///
 
 
-RfnGetOvUvAlarmConfigurationCommand::RfnGetOvUvAlarmConfigurationCommand( ResultHandler & rh,
-                                                                          const MeterID   meter_id,
+RfnGetOvUvAlarmConfigurationCommand::RfnGetOvUvAlarmConfigurationCommand( const MeterID   meter_id,
                                                                           const EventID   event_id )
     :   RfnOvUvConfigurationCommand( Operation_GetOvUvAlarmConfigurationInfo ),
-        _rh( rh ),
         _meterID( meter_id ),
         _eventID( event_id )
 {
     validateCondition( meter_id != Unspecified,
                        BADPARAM,
                        "Invalid Meter ID: Unspecified (" + CtiNumStr(meter_id) + ")" );
+}
+
+
+void RfnGetOvUvAlarmConfigurationCommand::invokeResultHandler(RfnCommand::ResultHandler &rh) const
+{
+    rh.handleCommandResult(*this);
 }
 
 

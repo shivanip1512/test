@@ -10,11 +10,6 @@ class IM_EX_DEVDB RfnFocusLcdConfigurationCommand : public RfnCommand
 {
 public:
 
-    struct ResultHandler
-    {
-        virtual void handleResult( const RfnFocusLcdConfigurationCommand &cmd ) = 0;
-    };
-
     struct DisplayItem
     {
         std::string metric;

@@ -33,16 +33,6 @@ namespace std   {
 // ---
 
 
-struct test_ResultHandler : RfnGetOvUvAlarmConfigurationCommand::ResultHandler
-{
-    void handleResult(const RfnGetOvUvAlarmConfigurationCommand &cmd)
-    {
-        //  This is temporarily marked BOOST_FAIL - the unit test should eventually exercise this.
-        BOOST_FAIL("Should not reach this code!");
-    }
-};
-
-
 BOOST_AUTO_TEST_SUITE( test_cmd_rfn_OvUvConfiguration )
 
 
@@ -400,10 +390,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_OvUvConfiguration_Set_Threshold_FocusAL_OverV
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_OvUvConfiguration_Get_Config_FocusAL_OverVoltage )
 {
-    test_ResultHandler  rh;
-
-    RfnGetOvUvAlarmConfigurationCommand  command( rh,
-                                                  RfnSetOvUvSetThresholdCommand::LGFocusAL,
+    RfnGetOvUvAlarmConfigurationCommand  command( RfnSetOvUvSetThresholdCommand::LGFocusAL,
                                                   RfnSetOvUvSetThresholdCommand::OverVoltage );
 
     // execute
