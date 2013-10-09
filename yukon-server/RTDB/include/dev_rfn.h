@@ -8,7 +8,10 @@
 namespace Cti {
 namespace Devices {
 
-class IM_EX_DEVDB RfnDevice : public CtiDeviceSingle
+class IM_EX_DEVDB RfnDevice :
+    public CtiDeviceSingle,
+    public boost::noncopyable,
+    public Commands::RfnCommand::ResultHandler  //  default implementation, to be overridden by child classes
 {
 public:
 
@@ -16,27 +19,13 @@ public:
 
     virtual int ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
 
-    struct RfnRequestExecuter : virtual RequestExecuter
-    {
-        RfnCommandList rfnRequests;
-
-        RfnRequestExecuter(CtiRequestMsg *pReq_, CtiCommandParser &parse_) :
-            RequestExecuter(pReq_, parse_)
-        {}
-
-        virtual int execute(RfnDevice &dev)
-        {
-            return dev.ExecuteRequest(pReq, parse, retList, rfnRequests);
-        }
-    };
-
     virtual std::string getSQLCoreStatement() const;
     virtual void DecodeDatabaseReader(RowReader &rdr);
 
-    virtual int invokeRequestExecuter(RequestExecuter &executer)
-    {
-        return executer.execute(*this);
-    }
+    RfnIdentifier getRfnIdentifier() const;
+
+    virtual void extractCommandResult(const Commands::RfnCommand &command);
+    virtual int  invokeDeviceHandler(DeviceHandler &handler);
 
 protected:
 

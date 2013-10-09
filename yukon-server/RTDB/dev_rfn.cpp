@@ -27,6 +27,22 @@ std::string RfnDevice::getSQLCoreStatement() const
 }
 
 
+int RfnDevice::invokeDeviceHandler(DeviceHandler &handler)
+{
+    return handler.execute(*this);
+}
+
+void RfnDevice::extractCommandResult(const Commands::RfnCommand &command)
+{
+    return command.invokeResultHandler(*this);
+}
+
+RfnIdentifier RfnDevice::getRfnIdentifier() const
+{
+    return _rfnId;
+}
+
+
 void RfnDevice::DecodeDatabaseReader(RowReader &rdr)
 {
     RfnIdentifier rfnId;
@@ -178,6 +194,8 @@ int RfnDevice::executeConfigInstall(CtiRequestMsg *pReq, CtiCommandParser &parse
 
         executeConfigInstallSingle( pReq, parse, retList, rfnRequests, *installValue, *installMethod );
     }
+
+    //  TODO:  Increment group message count?  This is important for decode...
 
     // Set ExpectMore on all messages.
     // In the case of verify we need to let the Last expect more flag remain to false

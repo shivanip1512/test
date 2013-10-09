@@ -15,14 +15,14 @@ RfnRequestManager manager;
 }
 
 
-void RfnRequestManager::enqueueRequestsForDevice(const CtiDeviceBase &dev, std::vector<RfnCommandSPtr> &requests)
+void RfnRequestManager::enqueueRequestsForDevice(const CtiDeviceBase &dev, const RfnDeviceRequestList &requests)
 {
     enqueueRequestsForDevice(dev, requests, CtiTime::now());
 }
 
-void RfnRequestManager::enqueueRequestsForDevice(const CtiDeviceBase &dev, std::vector<RfnCommandSPtr> &requests, const CtiTime &Now)
+void RfnRequestManager::enqueueRequestsForDevice(const CtiDeviceBase &dev, const RfnDeviceRequestList &requests, const CtiTime &Now)
 {
-    for each( RfnCommandSPtr request in requests )
+    for each( const RfnDeviceRequest &request in requests )
     {
         try
         {

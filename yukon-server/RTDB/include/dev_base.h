@@ -25,13 +25,14 @@ class CtiPointManager;
 class CtiTransmitterInfo;
 class CtiConfigManager;
 
-namespace Cti       {
-class DeviceQueueInterface;
-namespace Protocol  {
-class Interface;
+namespace Cti {
+    class DeviceQueueInterface;
+namespace Protocol {
+    class Interface;
 }
 namespace Devices {
-class RfnDevice;
+    struct DeviceHandler;
+    class RfnDevice;
 }
 }
 
@@ -180,76 +181,8 @@ public:
 
     bool executeBackgroundRequest(const std::string &commandString, const OUTMESS &OutMessageTemplate, OutMessageList &outList);
 
-    struct RequestExecuter
-    {
-        CtiRequestMsg *pReq;
-        CtiCommandParser &parse;
+    virtual int invokeDeviceHandler(Cti::Devices::DeviceHandler &handler);
 
-        CtiMessageList vgList;
-        CtiMessageList retList;
-
-        RequestExecuter(CtiRequestMsg *pReq_, CtiCommandParser &parse_) :
-            pReq (pReq_),
-            parse(parse_)
-        {}
-
-        virtual int execute(CtiDeviceBase &dev) = 0;
-        virtual int execute(Cti::Devices::RfnDevice &dev) = 0;  //  defined in dev_rfn.h
-    };
-
-    struct OutMessageExecuter : virtual RequestExecuter
-    {
-        OutMessageList outList;
-
-        OutMessageExecuter(CtiRequestMsg *pReq_, CtiCommandParser &parse_) :
-            RequestExecuter(pReq_, parse_)
-        {}
-
-        virtual int execute(CtiDeviceBase &dev)
-        {
-            return dev.beginExecuteRequest(pReq, parse, vgList, retList, outList);
-        }
-    };
-
-    virtual int invokeRequestExecuter(RequestExecuter &executer)
-    {
-        return executer.execute(*this);
-    }
-/*
-    struct ResultProcessor
-    {
-        CtiMessageList vgList;
-        CtiMessageList retList;
-
-        ResultProcessor(CtiRequestMsg *pReq_, CtiCommandParser &parse_) :
-            pReq (pReq_),
-            parse(parse_)
-        {}
-
-        virtual int process(CtiDeviceBase &dev) = 0;
-        virtual int process(Cti::Devices::RfnDevice &dev) = 0;  //  defined in dev_rfn.h
-    };
-
-    struct InMessageProcessor : virtual ResultProcessor
-    {
-        OutMessageList outList;
-
-        InMessageProcessor(CtiRequestMsg *pReq_, CtiCommandParser &parse_) :
-            InMessage(InMess)
-            ResultProcessor(pReq_, parse_)
-        {}
-
-        virtual int process(CtiDeviceBase &dev)
-        {
-            return dev.ProcessResult(InMessage, now, vgList, retList, outList);
-        }
-    };
-
-    virtual int involeResultProcessor(ResultProcessor &processor)
-    {
-        return processor.process(*this);
-    }
-*/
     // This is a preprocessing method which calls ExecuteRequest.
     INT beginExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
     INT beginExecuteRequestFromTemplate(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, const OUTMESS *OutTemplate);
@@ -402,6 +335,20 @@ public:
     virtual bool timeToPerformPeriodicAction(const CtiTime & currentTime)   { return false; }
 
 };
+
+
+namespace Cti {
+namespace Devices {
+
+struct DeviceHandler
+{
+    virtual int execute(CtiDeviceBase &) = 0;
+    virtual int execute(RfnDevice &) = 0;
+};
+
+}
+}
+
 
 inline bool   CtiDeviceBase::isDialup() const                   { return false; }
 inline std::string CtiDeviceBase::getDescription(const CtiCommandParser & parse) const    { return getName();}

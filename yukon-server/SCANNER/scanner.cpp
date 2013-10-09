@@ -42,6 +42,8 @@
 
 #include "millisecond_timer.h"
 
+#include <boost/ptr_container/ptr_deque.hpp>
+
 #define NEXT_SCAN       0
 #define REMOTE_SCAN     1
 #define DLC_LP_SCAN     2
@@ -762,7 +764,7 @@ void ResultThread (void *Arg)
         if(dwWait == 1) ReleaseMutex(hScannerSyncs[S_LOCK_MUTEX]);
         dwWait = 0;
 
-        deque<INMESS *> pendingInQueue;
+        boost::ptr_deque<INMESS> pendingInQueue;
 
         const unsigned int inQueueBlockSize =  50;
         const unsigned int inQueueMaxWait   = 500;  //  500 ms
@@ -800,7 +802,10 @@ void ResultThread (void *Arg)
                 {
                     while( !inmessList.empty() )
                     {
-                        pendingInQueue.push_back(inmessList.front());
+                        if( INMESS *im = inmessList.front() )
+                        {
+                            pendingInQueue.push_back(im);
+                        }
                         inmessList.pop_front();
                     }
                 }
@@ -837,10 +842,7 @@ void ResultThread (void *Arg)
 
             while( !ScannerQuit && !pendingInQueue.empty() )
             {
-                INMESS *InMessage = pendingInQueue.front();
-                pendingInQueue.pop_front();
-
-                if( !InMessage )  continue;
+                boost::ptr_deque<INMESS>::auto_type InMessage = pendingInQueue.pop_front();
 
                 LastPorterInTime = LastPorterInTime.now();
 
@@ -874,7 +876,7 @@ void ResultThread (void *Arg)
                     list< CtiMessage* > vgList;
 
                     // Do some device dependent work on this Inbound message!
-                    pSingle->ProcessResult(InMessage, TimeNow, vgList, retList, outList);
+                    pSingle->ProcessResult(InMessage.get(), TimeNow, vgList, retList, outList);
 
                     // Send any new porter requests to porter
                     if((ScannerDebugLevel & SCANNER_DEBUG_OUTLIST) && outList.size() > 0)
@@ -923,8 +925,6 @@ void ResultThread (void *Arg)
                     dout << " Remote listed as                 : " << InMessage->Remote   << endl;
                     dout << " Target Remote                    : " << InMessage->TargetID   << endl;
                 }
-
-                delete InMessage;
             }
         }
         catch(...)

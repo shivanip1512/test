@@ -91,6 +91,12 @@ void IM_EX_DEVDB attachConfigManagerToDevice(const long id, CtiDeviceSPtr device
 }
 
 
+int CtiDeviceBase::invokeDeviceHandler(Cti::Devices::DeviceHandler &handler)
+{
+    return handler.execute(*this);
+}
+
+
 INT CtiDeviceBase::beginExecuteRequest(CtiRequestMsg *pReq,
                                        CtiCommandParser &parse,
                                        CtiMessageList &vgList,

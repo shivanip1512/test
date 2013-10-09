@@ -30,6 +30,8 @@
 namespace Cti {
 namespace Pil {
 
+class RfnDeviceResult;
+
 class IM_EX_CTIPIL PilServer : public CtiServer
 {
    BOOL                 bServerClosing;
@@ -62,7 +64,12 @@ class IM_EX_CTIPIL PilServer : public CtiServer
    CtiFIFOQueue< CtiOutMessage > _porterOMQueue;    // Queue for items to be sent to Porter!
    bool                          _broken;           // When the PILServer knows he's sick.
 
-   void copyReturnMessageToResponseMonitorQueue(const CtiReturnMsg &returnMsg, void *connectionHandle);
+   static void copyReturnMessageToResponseMonitorQueue(const CtiReturnMsg &returnMsg, void *connectionHandle);
+
+   void handleInMessageResult(const INMESS *InMessage);
+   void handleRfnDeviceResult(const RfnDeviceResult &result);
+
+   void sendResults(CtiDeviceBase::CtiMessageList &vgList, CtiDeviceBase::CtiMessageList &retList, const int priority, void *connectionHandle);
 
 protected:
 

@@ -535,8 +535,13 @@ struct collect_inmess_target_device
 
     collect_inmess_target_device(std::set<long> &c_) : c(c_)  { };
 
-    void operator()(INMESS *im)  {  if( im ) c.insert(im->TargetID?im->TargetID:im->DeviceID);  };
-
+    void operator()(const INMESS &im)
+    {
+        c.insert(
+            im.TargetID
+                ? im.TargetID
+                : im.DeviceID);
+    }
 };
 
 

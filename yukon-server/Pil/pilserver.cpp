@@ -43,6 +43,7 @@
 
 #include "ctistring.h"
 #include "debug_timer.h"
+#include "millisecond_timer.h"
 
 #include "connection_client.h"
 
@@ -58,6 +59,7 @@
 #include <boost/bind.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/assign/list_of.hpp>
+#include <boost/ptr_container/ptr_deque.hpp>
 
 #include <iomanip>
 #include <iostream>
@@ -478,6 +480,16 @@ void PilServer::copyReturnMessageToResponseMonitorQueue(const CtiReturnMsg &retu
 
 
 
+struct collectRfnResultDeviceIds
+{
+    std::set<long> &c;
+
+    collectRfnResultDeviceIds(std::set<long> &c_) : c(c_)  { };
+
+    void operator()(const RfnDeviceResult &result)  {  c.insert(result.request.deviceId);  };
+};
+
+
 void PilServer::resultThread()
 {
     {
@@ -498,26 +510,25 @@ void PilServer::resultThread()
 
             unsigned long start = GetTickCount(), elapsed;
 
-            deque<INMESS*> pendingInQueue;
+            typedef boost::ptr_deque<INMESS> InMessQueue_t;
+            InMessQueue_t pendingInMessages;
 
-            while( pendingInQueue.size() < inQueueBlockSize && (elapsed = (GetTickCount() - start)) < inQueueMaxWait )
+            while( pendingInMessages.size() < inQueueBlockSize && (elapsed = (GetTickCount() - start)) < inQueueMaxWait )
             {
-                INMESS *im = _inQueue.getQueue(inQueueMaxWait - elapsed);
-
-                if( im )
+                if( INMESS *im = _inQueue.getQueue(inQueueMaxWait - elapsed) )
                 {
-                    pendingInQueue.push_back(im);
+                    pendingInMessages.push_back(im);
                 }
             }
 
-            if( !pendingInQueue.empty() )
+            set<long> paoids;
+
+            for_each(pendingInMessages.begin(),
+                     pendingInMessages.end(),
+                     collect_inmess_target_device(paoids));
+
+            if( ! paoids.empty() )
             {
-                set<long> paoids;
-
-                for_each(pendingInQueue.begin(),
-                         pendingInQueue.end(),
-                         collect_inmess_target_device(paoids));
-
                 PointManager->refreshListByPAOIDs(paoids);
             }
 
@@ -533,180 +544,13 @@ void PilServer::resultThread()
                 bServerClosing = true;
             }
 
-            while( !bServerClosing && !pendingInQueue.empty() )
+            while( !bServerClosing && !pendingInMessages.empty() )
             {
-                INMESS *InMessage = pendingInQueue.front();
-                pendingInQueue.pop_front();
+                InMessQueue_t::auto_type InMessage = pendingInMessages.pop_front();
 
-                if( InMessage )
-                {
-                    LONG id = InMessage->TargetID;
-
-                    // Checking the sequence since we will actually want the system device 0 for the Phase Detect cases
-                    if(id == 0 && !(InMessage->Sequence == Cti::Protocols::EmetconProtocol::PutConfig_PhaseDetectClear ||
-                                    InMessage->Sequence == Cti::Protocols::EmetconProtocol::PutConfig_PhaseDetect))
-                    {
-                        id = InMessage->DeviceID;
-                    }
-
-                    // Find the device..
-                    CtiDeviceSPtr DeviceRecord = DeviceManager->getDeviceByID(id);
-
-                    list<OUTMESS*   > outList;
-                    list<CtiMessage*> retList;
-                    list<CtiMessage*> vgList;
-
-                    if(DeviceRecord)
-                    {
-                        if(DebugLevel & DEBUGLEVEL_PIL_RESULTTHREAD)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Pilserver resultThread received an InMessage for " << DeviceRecord->getName();
-                            dout << " at priority " << InMessage->Priority << endl;
-                        }
-
-                        /* get the time for use in the decodes */
-                        CtiTime TimeNow;
-
-                        try
-                        {
-                            // Do some device dependant work on this Inbound message!
-                            DeviceRecord->ProcessResult( InMessage, TimeNow, vgList, retList, outList);
-                        }
-                        catch(...)
-                        {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                dout << CtiTime() << " Process Result FAILED " << DeviceRecord->getName() << endl;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << "InMessage received from unknown device.  Device ID: " << InMessage->DeviceID << endl;
-                            dout << " Port listed as                                   : " << InMessage->Port     << endl;
-                            dout << " Remote listed as                                 : " << InMessage->Remote   << endl;
-                        }
-
-                        CtiReturnMsg *idnf_msg =
-                            new CtiReturnMsg(
-                                    InMessage->DeviceID,
-                                    InMessage->Return.CommandStr,
-                                    "Device unknown, unselected, or DB corrupt. ID = " + CtiNumStr(InMessage->DeviceID),
-                                    IDNF,
-                                    InMessage->Return.RouteID,
-                                    InMessage->Return.MacroOffset,
-                                    InMessage->Return.Attempt,
-                                    InMessage->Return.GrpMsgID,
-                                    InMessage->Return.UserID,
-                                    InMessage->Return.SOE);
-
-                        retList.push_back(idnf_msg);
-                    }
-
-                    try
-                    {
-                        for each( OUTMESS *OutMessage in outList )
-                        {
-                            OutMessage->MessageFlags |= MessageFlag_ApplyExclusionLogic;
-                            _porterOMQueue.putQueue(OutMessage);
-                        }
-                        outList.clear();
-
-                        if( retList.size() > 0 )
-                        {
-                            if((DebugLevel & DEBUGLEVEL_PIL_RESULTTHREAD) && vgList.size())
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Info **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                dout << "   Device " << (DeviceRecord ? DeviceRecord->getName() : "UNKNOWN") << " has generated a dispatch return message.  Data may be duplicated." << endl;
-                            }
-
-                            string cmdstr(InMessage->Return.CommandStr);
-                            CtiCommandParser parse( cmdstr );
-                            if(parse.getFlags() & CMD_FLAG_UPDATE)
-                            {
-                                for each( CtiMessage *pMsg in retList )
-                                {
-                                    if(InMessage->Priority > 0)
-                                    {
-                                        pMsg->setMessagePriority(InMessage->Priority);
-                                    }
-
-                                    if(pMsg->isA() == MSG_PCRETURN || pMsg->isA() == MSG_POINTDATA)
-                                    {
-                                        vgList.push_back(pMsg->replicateMessage());
-                                    }
-                                }
-                            }
-                        }
-
-
-                        for each( CtiMessage *pRet in retList )
-                        {
-                            if(InMessage->Priority > 0)
-                            {
-                                pRet->setMessagePriority(InMessage->Priority);
-                            }
-
-                            if( pRet->isA() == MSG_PCREQUEST )
-                            {
-                                _schedulerQueue.putQueue(pRet);
-                            }
-                            else if( CtiConnection  *Conn = static_cast<CtiConnection *>(InMessage->Return.Connection) )
-                            {
-                                if(DebugLevel & DEBUGLEVEL_PIL_RESULTTHREAD)
-                                {
-                                    pRet->dump();
-                                }
-
-                                if( pRet->isA() == MSG_PCRETURN )
-                                {
-                                    //  Note that this excludes ReturnMsgs that are sent on execute, such as "... commands sent on route"
-
-                                    copyReturnMessageToResponseMonitorQueue(*(static_cast<CtiReturnMsg *>(pRet)), InMessage->Return.Connection);
-                                }
-
-                                //  This sends all ReturnMsgs to the InMessage->Return.Connection REGARDLESS of the ReturnMsg->ConnectionHandle.
-                                Conn->WriteConnQue(pRet);
-                            }
-                            else
-                            {
-                                if(DebugLevel & DEBUGLEVEL_PIL_INTERFACE)
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " Notice: Request message did not indicate return path. " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                    dout << CtiTime() << " Response to client will be discarded." << endl;
-                                }
-                                delete pRet;
-                            }
-                        }
-                        retList.clear();
-
-                        for each( CtiMessage *vgMsg in vgList )
-                        {
-                            VanGoghConnection.WriteConnQue(vgMsg);
-                        }
-                        vgList.clear();
-                    }
-                    catch(...)
-                    {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
-                    }
-
-                    if(InMessage)
-                    {
-                        delete InMessage;
-                        InMessage = 0;
-                    }
-                }
+                handleInMessageResult(InMessage.get());
             }
+
         }
         catch(...)
         {
@@ -726,6 +570,335 @@ void PilServer::resultThread()
 
     _broken = true;
 }
+
+
+struct InMessageResultProcessor : Devices::DeviceHandler
+{
+    CtiDeviceBase::CtiMessageList &vgList;
+    CtiDeviceBase::CtiMessageList &retList;
+    CtiDeviceBase::OutMessageList outList;
+    const INMESS &im;
+
+    InMessageResultProcessor(const INMESS &im_, CtiDeviceBase::CtiMessageList vgList_, CtiDeviceBase::CtiMessageList retList_) :
+        im(im_),
+        vgList(vgList_),
+        retList(retList_)
+    {
+    }
+
+    int execute(CtiDeviceBase &dev)
+    {
+        return dev.ProcessResult(&im, CtiTime::now(), vgList, retList, outList);
+    }
+
+    int execute(Devices::RfnDevice &dev)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " InMessageResultProcessor called on RFN device:" << endl;
+        dout << dev.getName() << " / " << dev.getID() << endl;
+
+        return NoMethod;
+    }
+};
+
+
+void PilServer::handleInMessageResult(const INMESS *InMessage)
+{
+    LONG id = InMessage->TargetID;
+
+    // Checking the sequence since we will actually want the system device 0 for the Phase Detect cases
+    if(id == 0 && !(InMessage->Sequence == Cti::Protocols::EmetconProtocol::PutConfig_PhaseDetectClear ||
+                    InMessage->Sequence == Cti::Protocols::EmetconProtocol::PutConfig_PhaseDetect))
+    {
+        id = InMessage->DeviceID;
+    }
+
+    CtiDeviceBase::CtiMessageList vgList;
+    CtiDeviceBase::CtiMessageList retList;
+
+    // Find the device..
+    CtiDeviceSPtr DeviceRecord = DeviceManager->getDeviceByID(id);
+
+    if( ! DeviceRecord )
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << "InMessage received from unknown device.  Device ID: " << InMessage->DeviceID << endl;
+            dout << " Port listed as                                   : " << InMessage->Port     << endl;
+            dout << " Remote listed as                                 : " << InMessage->Remote   << endl;
+        }
+
+        std::auto_ptr<CtiReturnMsg> idnf_msg(
+            new CtiReturnMsg(
+                    InMessage->DeviceID,
+                    InMessage->Return.CommandStr,
+                    "Device unknown, unselected, or DB corrupt. ID = " + CtiNumStr(InMessage->DeviceID),
+                    IDNF,
+                    InMessage->Return.RouteID,
+                    InMessage->Return.MacroOffset,
+                    InMessage->Return.Attempt,
+                    InMessage->Return.GrpMsgID,
+                    InMessage->Return.UserID,
+                    InMessage->Return.SOE));
+
+        retList.push_back(idnf_msg.release());
+    }
+    else
+    {
+        if(DebugLevel & DEBUGLEVEL_PIL_RESULTTHREAD)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Pilserver resultThread received an InMessage for " << DeviceRecord->getName();
+            dout << " at priority " << InMessage->Priority << endl;
+        }
+
+        InMessageResultProcessor imrp(*InMessage, vgList, retList);
+
+        try
+        {
+            // Do some device dependant work on this Inbound message!
+            DeviceRecord->invokeDeviceHandler(imrp);
+        }
+        catch(...)
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " Process Result FAILED " << DeviceRecord->getName() << endl;
+            }
+        }
+
+        for each( OUTMESS *OutMessage in imrp.outList )
+        {
+            OutMessage->MessageFlags |= MessageFlag_ApplyExclusionLogic;
+            _porterOMQueue.putQueue(OutMessage);
+        }
+        imrp.outList.clear();
+    }
+
+    if( retList.size() > 0 )
+    {
+        if((DebugLevel & DEBUGLEVEL_PIL_RESULTTHREAD) && vgList.size())
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Info **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << "   Device " << (DeviceRecord ? DeviceRecord->getName() : "UNKNOWN") << " has generated a dispatch return message.  Data may be duplicated." << endl;
+        }
+
+        string cmdstr(InMessage->Return.CommandStr);
+        CtiCommandParser parse( cmdstr );
+        if(parse.getFlags() & CMD_FLAG_UPDATE)
+        {
+            for each( CtiMessage *pMsg in retList )
+            {
+                if(InMessage->Priority > 0)
+                {
+                    pMsg->setMessagePriority(InMessage->Priority);
+                }
+
+                if(pMsg->isA() == MSG_PCRETURN || pMsg->isA() == MSG_POINTDATA)
+                {
+                    vgList.push_back(pMsg->replicateMessage());
+                }
+            }
+        }
+    }
+
+    sendResults(vgList, retList, InMessage->Priority, InMessage->Return.Connection);
+}
+
+
+struct RfnDeviceResultProcessor : Devices::DeviceHandler
+{
+    CtiDeviceBase::CtiMessageList &vgList;
+    CtiDeviceBase::CtiMessageList &retList;
+    const RfnDeviceResult &result;
+
+    RfnDeviceResultProcessor(const RfnDeviceResult &result_, CtiDeviceBase::CtiMessageList &vgList_, CtiDeviceBase::CtiMessageList &retList_) :
+        result(result_),
+        vgList(vgList_),
+        retList(retList_)
+    {
+    }
+
+    int execute(CtiDeviceBase &dev)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " RfnDeviceResultProcessor called on non-RFN device:" << endl;
+        dout << dev.getName() << " / " << dev.getID() << endl;
+
+        return NoMethod;
+    }
+
+    int execute(Devices::RfnDevice &dev)
+    {
+        std::auto_ptr<CtiReturnMsg> retMsg(
+                new CtiReturnMsg(
+                        result.request.deviceId,
+                        result.request.commandString,
+                        result.commandResult.description,
+                        result.status));
+
+        for each( const Devices::Commands::DeviceCommand::point_data &pd in result.commandResult.points )
+        {
+            if( const CtiPointSPtr p = dev.getDevicePointOffsetTypeEqual(pd.offset, pd.type) )
+            {
+                retMsg->PointData().push_back(
+                        new CtiPointDataMsg(
+                                p->getID(),
+                                pd.value,
+                                pd.quality,
+                                p->getType(),
+                                pd.description));
+            }
+            else
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Point not found for device " << dev.getName() << " / " << dev.getID()
+                        << ": " << desolvePointType(pd.type) + " " + CtiNumStr(pd.offset) << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+        }
+
+        retList.push_back(retMsg.release());
+
+        dev.extractCommandResult(*result.request.command);
+
+        //  Retries on error?
+
+        //  Note that there is no special error handling - other devices' ErrorDecode() just sends plugged NonUpdated points for scans, which RFN devices don't do.
+
+        dev.decrementGroupMessageCount(result.request.userMessageId, reinterpret_cast<long>(result.request.connectionHandle));
+
+        if( dev.getGroupMessageCount(result.request.userMessageId, reinterpret_cast<long>(result.request.connectionHandle)) )
+        {
+            retMsg->setExpectMore(true);
+        }
+
+        return result.status;
+    }
+};
+
+
+void PilServer::handleRfnDeviceResult(const RfnDeviceResult &result)
+{
+    // Find the device..
+    CtiDeviceSPtr DeviceRecord = DeviceManager->getDeviceByID(result.request.deviceId);
+
+    CtiDeviceBase::CtiMessageList vgList;
+    CtiDeviceBase::CtiMessageList retList;
+
+    if( ! DeviceRecord )
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << "RFN result received from unknown device." << endl;
+            dout << "    Device ID: "     << result.request.deviceId << endl;
+            dout << "    Manufacturer : " << result.request.rfnIdentifier.manufacturer << endl;
+            dout << "    Model  : "       << result.request.rfnIdentifier.model << endl;
+            dout << "    Serial : "       << result.request.rfnIdentifier.serialNumber << endl;
+        }
+
+        std::auto_ptr<CtiReturnMsg> idnf_msg(
+                new CtiReturnMsg(
+                        result.request.deviceId,
+                        result.request.commandString,
+                        "Device lookup failed. ID = " + CtiNumStr(result.request.deviceId),
+                        IDNF));
+
+        idnf_msg->setGroupMessageId(result.request.groupMessageId);
+        idnf_msg->setUserMessageId (result.request.userMessageId);
+
+        retList.push_back(idnf_msg.release());
+    }
+    else
+    {
+        if(DebugLevel & DEBUGLEVEL_PIL_RESULTTHREAD)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Pilserver resultThread received an RfnDeviceResult for " << DeviceRecord->getName();
+            dout << " at priority " << result.request.priority << endl;
+        }
+
+        try
+        {
+            RfnDeviceResultProcessor rp(result, vgList, retList);
+
+            DeviceRecord->invokeDeviceHandler(rp);
+        }
+        catch(...)
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " Process Result FAILED " << DeviceRecord->getName() << endl;
+            }
+        }
+    }
+
+    sendResults(vgList, retList, result.request.priority, result.request.connectionHandle);
+}
+
+
+void PilServer::sendResults(CtiDeviceBase::CtiMessageList &vgList, CtiDeviceBase::CtiMessageList &retList, const int priority, void *connectionHandle)
+{
+    try
+    {
+        for each( CtiMessage *pRet in retList )
+        {
+            if( priority > 0)
+            {
+                pRet->setMessagePriority(priority);
+            }
+
+            if( pRet->isA() == MSG_PCREQUEST )
+            {
+                _schedulerQueue.putQueue(pRet);
+            }
+            else if( CtiConnection  *Conn = static_cast<CtiConnection *>(connectionHandle) )
+            {
+                if(DebugLevel & DEBUGLEVEL_PIL_RESULTTHREAD)
+                {
+                    pRet->dump();
+                }
+
+                if( pRet->isA() == MSG_PCRETURN )
+                {
+                    //  Note that this excludes ReturnMsgs that are sent on execute, such as "... commands sent on route"
+
+                    copyReturnMessageToResponseMonitorQueue(*(static_cast<CtiReturnMsg *>(pRet)), connectionHandle);
+                }
+
+                //  This sends all ReturnMsgs to the connectionHandle, overriding the ReturnMsg->ConnectionHandle (if set).
+                Conn->WriteConnQue(pRet);
+            }
+            else
+            {
+                if(DebugLevel & DEBUGLEVEL_PIL_INTERFACE)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " Notice: Request message did not indicate return path. " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " Response to client will be discarded." << endl;
+                }
+                delete pRet;
+            }
+        }
+        retList.clear();
+
+        for each( CtiMessage *vgMsg in vgList )
+        {
+            VanGoghConnection.WriteConnQue(vgMsg);
+        }
+        vgList.clear();
+    }
+    catch(...)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
+}
+
 
 void PilServer::nexusThread()
 {
@@ -947,6 +1120,53 @@ void PilServer::nexusWriteThread()
 
 }
 
+struct RequestExecuter : Devices::DeviceHandler
+{
+    CtiRequestMsg *pReq;
+    CtiCommandParser &parse;
+
+    CtiDeviceBase::OutMessageList outList;
+    std::vector<RfnDeviceRequest> rfnRequests;
+    CtiDeviceBase::CtiMessageList vgList;
+    CtiDeviceBase::CtiMessageList retList;
+
+    RequestExecuter(CtiRequestMsg *pReq_, CtiCommandParser &parse_) :
+        pReq (pReq_),
+        parse(parse_)
+    {}
+
+    int execute(CtiDeviceBase &dev)
+    {
+        return dev.beginExecuteRequest(pReq, parse, vgList, retList, outList);
+    }
+
+    virtual int execute(Devices::RfnDevice &dev)
+    {
+        Devices::RfnDevice::RfnCommandList commands;
+
+        const int retVal = dev.ExecuteRequest(pReq, parse, retList, commands);
+
+        RfnDeviceRequest req;
+
+        req.deviceId         = dev.getID();
+        req.rfnIdentifier    = dev.getRfnIdentifier();
+        req.commandString    = pReq->CommandString();
+        req.priority         = pReq->getMessagePriority();
+        req.groupMessageId   = pReq->GroupMessageId();
+        req.userMessageId    = pReq->UserMessageId();
+        req.connectionHandle = pReq->getConnectionHandle();
+
+        for each( const Devices::Commands::RfnCommandSPtr &command in commands )
+        {
+            req.command = command;
+
+            rfnRequests.push_back(req);
+        }
+
+        return retVal;
+    }
+};
+
 
 int PilServer::executeRequest(const CtiRequestMsg *pReq)
 {
@@ -1067,28 +1287,18 @@ int PilServer::executeRequest(const CtiRequestMsg *pReq)
                     pExecReq->setSOE( SystemLogIdGen() );  // Get us a new number to deal with
                 }
 
-                struct PilExecuter :
-                    CtiDeviceBase::OutMessageExecuter,
-                    Cti::Devices::RfnDevice::RfnRequestExecuter
-                {
-                    PilExecuter(CtiRequestMsg *pReq_, CtiCommandParser &parse_) :
-                        RequestExecuter(pReq_, parse_),
-                        OutMessageExecuter(pReq_, parse_),
-                        RfnRequestExecuter(pReq_, parse_)
-                    {}
-                }
-                pilExecuter(pExecReq, _currentParse);
+                RequestExecuter executer(pExecReq, _currentParse);
 
                 if(Dev.isGroup())                          // We must indicate any group which is protocol/heirarchy controlled!
                 {
-                    indicateControlOnSubGroups(Dev, _currentParse, pilExecuter.vgList, pilExecuter.retList);
+                    indicateControlOnSubGroups(Dev, _currentParse, executer.vgList, executer.retList);
                 }
 
                 try
                 {
-                    status = Dev.invokeRequestExecuter(pilExecuter);
+                    status = Dev.invokeDeviceHandler(executer);
 
-                    reportClientRequests(Dev, _currentParse, pReq->getUser(), pilExecuter.vgList, pilExecuter.retList);
+                    reportClientRequests(Dev, _currentParse, pReq->getUser(), executer.vgList, executer.retList);
                 }
                 catch(...)
                 {
@@ -1101,11 +1311,11 @@ int PilServer::executeRequest(const CtiRequestMsg *pReq)
                     }
                 }
 
-                outList.splice(outList.end(), pilExecuter.outList);
+                outList.splice(outList.end(), executer.outList);
 
-                Cti::Pil::RfnRequestManager::enqueueRequestsForDevice(Dev, pilExecuter.rfnRequests);
+                Cti::Pil::RfnRequestManager::enqueueRequestsForDevice(Dev, executer.rfnRequests);
 
-                for each( CtiMessage *msg in pilExecuter.retList )
+                for each( CtiMessage *msg in executer.retList )
                 {
                     //  smuggle any request messages back out to the scheduler queue
                     if( msg && msg->isA() == MSG_PCREQUEST )
@@ -1117,9 +1327,9 @@ int PilServer::executeRequest(const CtiRequestMsg *pReq)
                         retList.push_back(msg);
                     }
                 }
-                pilExecuter.retList.clear();
+                executer.retList.clear();
 
-                vgList.splice(vgList.end(), pilExecuter.vgList);
+                vgList.splice(vgList.end(), executer.vgList);
 
                 if(status != NORMAL &&
                    status != DEVICEINHIBITED)
