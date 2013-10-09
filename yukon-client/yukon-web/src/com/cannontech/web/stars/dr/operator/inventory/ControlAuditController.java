@@ -247,7 +247,7 @@ public class ControlAuditController {
         
         ControlAuditResult result = resultsCache.getResult(auditId);
         
-        Map<String, FlotPieDatas> labelDataColorMap = Maps.newHashMapWithExpectedSize(4);
+        Map<String, FlotPieDatas> labelDataColorMap = Maps.newLinkedHashMap();
         labelDataColorMap.put(controlledStr, new FlotPieDatas(result.getControlled().getCount(), "#009933")); // .controlled green
         labelDataColorMap.put(uncontrolledStr, new FlotPieDatas(result.getUncontrolled().getCount(), "#fb8521")); // .uncontrolled orange (or ffac00?)
         labelDataColorMap.put(unknownStr, new FlotPieDatas(result.getUnknown().getCount(), "#4d90fe")); // .unknown blue
