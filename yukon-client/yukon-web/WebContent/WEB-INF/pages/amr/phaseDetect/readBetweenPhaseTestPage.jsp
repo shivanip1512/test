@@ -21,10 +21,6 @@
         jQuery('#actionResultDiv').hide();
         jQuery('#spinner').show();
 
-//         new Ajax.Request('/amr/phaseDetect/startTest', {
-//             method: 'post',
-//             parameters: params,
-//             onSuccess: function(resp, json) {
         jQuery.ajax({
             url: '/amr/phaseDetect/startTest',
             data: params,
@@ -44,8 +40,6 @@
                 jQuery('#spinner').hide();
                 startTimers();
             }
-//        },
-//            onException: function(resp, json) {
         }).fail( function (jqXHR, textStatus) {
             jQuery('#spinner').hide();
             jQuery('#actionResultDiv').html(errorDetectMessage);
@@ -53,8 +47,6 @@
             jQuery('#sendDetectButton').val(sendMsg);
             jQuery('#sendDetectButton').prop({'disabled': false});
         });
-//            }
-//        });
     }
 
     function startTimers () {
@@ -79,7 +71,7 @@
             detectTimer = detectTimer - 1;
             jQuery('#detectTimerSpan').html(detectTimer);
             if (!timeoutSet) {
-                setTimeout(updateTimers(), 1000);
+                setTimeout(updateTimers, 1000);
             }
         } else {
             jQuery('#sendDetectButton').hide();
@@ -105,8 +97,6 @@
     function sendRead () {
         var params = {'phase': jQuery('#phase').val()};
         jQuery('#actionResultDiv').show();
-//         new Ajax.Updater('actionResultDiv', '/amr/phaseDetect/readPhase', {method: 'post', parameters:{'phase': jQuery('#phase').val()}, evalScripts: 'true',
-//             onSuccess: function(resp, json) {
         jQuery.ajax({
             url: '/amr/phaseDetect/readPhase',
             type: 'POST',
@@ -126,31 +116,28 @@
                 jQuery('#actionResultDiv').html(errorReadMessage);
             }
         }).fail( function (jqXHR, textStatus) {
-//             },
-//             onException: function(resp, json) {
             jQuery('#actionResultDiv').html(errorReadMessage);
             jQuery('#actionResultDiv').show();
         });
-//             }
-//         });
     }
 
     function sendClearCommand () {
         jQuery('#spinner').show();
         jQuery('#actionResultDiv').html('');
-        new Ajax.Updater('actionResultDiv', '/amr/phaseDetect/sendClearFromTestPage', {method: 'get', evalScripts: 'true',
-            onSuccess: function(resp, json) {
-                jQuery('#spinner').hide();
-                jQuery('#actionResultDiv').show();
-                if (json.success) {
-                    jQuery('#clearButton').hide();
-                    jQuery('#resetButton').show();
-                }
-            },
-            onException: function(resp, json) {
-                jQuery('#spinner').hide();
-                jQuery('#actionResultDiv').show();
+        jQuery.ajax({
+            url: '/amr/phaseDetect/sendClearFromTestPage',
+            type: 'GET'
+        }).done( function (data, textStatus, jqXHR) {
+            var json = Yukon.ui.aux.getHeaderJSON(jqXHR);
+            jQuery('#spinner').hide();
+            jQuery('#actionResultDiv').show();
+            if (json.success) {
+                jQuery('#clearButton').hide();
+                jQuery('#resetButton').show();
             }
+        }).fail( function (jqXHR, textStatus) {
+            jQuery('#spinner').hide();
+            jQuery('#actionResultDiv').show();
         });
     }
 
