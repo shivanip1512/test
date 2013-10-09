@@ -21,7 +21,6 @@ import com.cannontech.amr.statusPointMonitoring.model.OutageActionType;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.OutageEventLogService;
 import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
@@ -166,7 +165,7 @@ public class OutageJmsMessageListener implements MessageListener {
         outageDetectionEvent.setOutageDetectDeviceType(getOutageDetectDeviceType(paoIdentifier));
         outageDetectionEvent.setObjectID(objectId);
         
-        if (PaoType.getMeterTypes().contains(paoIdentifier.getPaoType())) {
+        if (paoIdentifier.getPaoType().isMeter()) {
             //This is kind of cheating, we're assuming that if we have a "meter" paoType, then objectId is a MeterNumber.
             OutageLocation outageLocation = new OutageLocation();
             outageLocation.setObjectID(objectId);
