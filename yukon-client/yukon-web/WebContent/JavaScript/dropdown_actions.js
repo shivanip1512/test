@@ -7,12 +7,15 @@ jQuery(function() {
             menu;
         jQuery(".dropdown-container").removeClass("menu-open");
         target = jQuery(this);
-        
+
         menu = target.find('.dropdown-menu').eq(0);
 
         if (menu.is(":visible")) {
             jQuery("ul.dropdown-menu").hide();
-            e.stopPropagation();
+
+            if ( jQuery(e.target).is('[href]') ) {
+                return true;
+            }
             return false;
         }
 
@@ -22,22 +25,20 @@ jQuery(function() {
             return false;
         }
         positionDropdownMenu(menu, target);
-        e.stopPropagation();
         return false;
     });
-    
+
     function positionDropdownMenu(menu, dropdown_container) {
-        var container_offset,
-            left,
+        var left,
             menu_offset,
             width;
         dropdown_container.addClass("menu-open");
 
-        container_offset = dropdown_container.offset();
         //reposition when showing to ensure the menu follows the element even
         //if the page changed since the last time it was shown
         menu.removeAttr("style");
-        menu.css({top: dropdown_container.height() + 7, right: -6});
+        var men_opts = {top: dropdown_container.height() + 7, left: dropdown_container.width() - menu.width() + 6};
+        menu.css(men_opts);
 
         menu.toggle();
 
@@ -46,7 +47,7 @@ jQuery(function() {
         width = menu.width();
         if (left >= menu_offset.left) {
             // our menu is spilling off the left side of the screen. Lets fix this by switching it to instead be positioned to the right
-            menu.css({top: container_offset.top + dropdown_container.height() + 4, left: container_offset.left});
+            menu.css({top: dropdown_container.height() + 7, left: 0});
             menu.removeClass("menu-left");
             menu.addClass("menu-right");
         } else {
@@ -89,7 +90,6 @@ jQuery(function() {
                 }
             });
         }
-        e.stopPropagation();
         return false;
     }
     
@@ -145,16 +145,8 @@ jQuery(function() {
     
     jQuery('.dropdown-container').each(function(idx, container) {
         container = jQuery(container);
-        var menu = container.find('.dropdown-menu'),
-            button = container.find('button');
-        
-        menu.find('[href]').each( function(index, link) {
-            link = jQuery(link);
-            link.click( function(){
-                window.location = link.attr('href');
-            });
-        });
-        
+        var menu = container.find('.dropdown-menu');
+
         if (menu.is('.criteria-menu')) {
             updateCriteriaButton(menu);
         }
