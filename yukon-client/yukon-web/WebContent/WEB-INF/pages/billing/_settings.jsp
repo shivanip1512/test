@@ -5,6 +5,7 @@
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 <%@ taglib prefix="jsTree" tagdir="/WEB-INF/tags/jsTree" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <style type="text/css">
 <!--
@@ -15,7 +16,6 @@ div#internalTreeContainer_billingTree.error > div.tree_container > div.treeCanva
 -->
 </style>
 
-
 <input id="in_formatType_itronEvent" type="hidden" value="${TYPE_CURTAILMENT_EVENTS_ITRON}" />
 <p id="txt_selectGroup" class="error dn"><cti:msg key="yukon.web.billing.mustSelectGroup"/></p>
 
@@ -23,7 +23,7 @@ div#internalTreeContainer_billingTree.error > div.tree_container > div.treeCanva
     <c:set var="systemTimezone" value="${tzFormat.format(origEndDate)}"></c:set>
 
     <cti:msg key="yukon.web.settings" var="settingsLabel"/>
-    <tags:boxContainer title="${settingsLabel}" id="billingContainer" hideEnabled="false">
+    <tags:sectionContainer title="${settingsLabel}" id="billingContainer">
 
         <form id="MForm" name="MForm" action="<cti:url value="/servlet/BillingServlet" />" method="post">
     
@@ -62,14 +62,9 @@ div#internalTreeContainer_billingTree.error > div.tree_container > div.treeCanva
                 <tags:nameValue name="${billingGroup}" id="row_billing_group" nameClass="vat">
 
                     <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="dataJson" />
-                    <jsTree:nodeValueSelectingInlineTree fieldId="billGroup"
-                                                        fieldName="billGroup"
-                                                        nodeValueName="groupName"
-                                                        multiSelect="true"
-                                                        id="billingTree"
-                                                        dataJson="${dataJson}"
-                                                        includeControlBar="true"
-                                                        maxHeight="400"/>
+                    <tags:deviceGroupNameSelector fieldName="billGroup"
+                        fieldValue="${billGroup}" dataJson="${dataJson}"/>
+
                 </tags:nameValue>
 
             </tags:nameValueContainer>
@@ -78,4 +73,4 @@ div#internalTreeContainer_billingTree.error > div.tree_container > div.treeCanva
             <input type="button" name="generate" value="${generateLabel}">
             <input type="button" name="schedule" value="${scheduleLabel}">
         </form>
-    </tags:boxContainer>
+    </tags:sectionContainer>

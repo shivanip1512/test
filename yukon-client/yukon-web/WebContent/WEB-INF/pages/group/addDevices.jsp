@@ -31,13 +31,13 @@
 	<div style="width: 700px">
 		
         <cti:msg key="yukon.common.device.group.addMultipleDevices" var="title"/>
-		<tags:boxContainer title="${title}" hideEnabled="false">
+		<tags:sectionContainer title="${title}">
 
             <tags:deviceSelection action="/group/editor/addDevicesByCollection" 
                 groupDataJson="${groupDataJson}"
                 groupName="${groupName}"
                 pickerType="devicePicker"/>
-		</tags:boxContainer>
+		</tags:sectionContainer>
 	
 	</div>
 	

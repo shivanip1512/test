@@ -13,7 +13,7 @@ jQuery(function() {
         if (menu.is(":visible")) {
             jQuery("ul.dropdown-menu").hide();
 
-            if ( jQuery(e.target).is('[href]') ) {
+            if ( jQuery(e.target).closest('[href]').length !== 0 ) {
                 return true;
             }
             return false;

@@ -26,11 +26,13 @@
 
     <cti:msg key="yukon.web.billing.tab.generation.title" var="tabGen" />
     <cti:tabbedContentSelectorContent selectorName="${tabGen}" initiallySelected="${showTabGeneration}">
-        <div id="billing_generation_settings">
+        <div id="billing_generation_settings" class="clearfix stacked">
             <jsp:include page="_settings.jsp"></jsp:include>
         </div>
+        <div id="billing_schedules_jobs">
+            <jsp:include page="../amr/scheduledBilling/_jobs.jsp"></jsp:include>
+        </div>
     </cti:tabbedContentSelectorContent>
-    
     
     <cti:checkRolesAndProperties value="DYNAMIC_BILLING_FILE_SETUP">
         <cti:msg key="yukon.web.billing.tab.setup.title" var="tab_setup" />
@@ -40,13 +42,6 @@
             </div>
         </cti:tabbedContentSelectorContent>
     </cti:checkRolesAndProperties>
-    
-    <cti:msg key="yukon.web.billing.tab.schedules.title" var="tab_sched"/>
-    <cti:tabbedContentSelectorContent selectorName="${tab_sched}" tabId="tab_schedules" initiallySelected="${showTabSchedule}">
-        <div id="billing_schedules_jobs">
-            <jsp:include page="../amr/scheduledBilling/_jobs.jsp"></jsp:include>
-        </div>
-    </cti:tabbedContentSelectorContent>
 </cti:tabbedContentSelector>
 
 </cti:standardPage>

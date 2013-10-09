@@ -8,11 +8,11 @@
 <%@ taglib prefix="jsTree" tagdir="/WEB-INF/tags/jsTree" %>
 
 <cti:standardPage page="meterEventsReport.selectDevices" module="amr">
-	<tags:boxContainer2 nameKey="selectionContainer">
+	<tags:sectionContainer2 nameKey="selectionContainer">
         <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="groupDataJson"/>
         <tags:deviceSelection action="selected"
             groupDataJson="${groupDataJson}"
             pickerType="meterPicker" 
             blockOnSubmit="true"/>
-	</tags:boxContainer2>
+	</tags:sectionContainer2>
 </cti:standardPage>
