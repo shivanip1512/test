@@ -36,7 +36,7 @@ public class UserPageDaoImpl implements UserPageDao {
 
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
-    @Autowired PaoDao paoDao;
+    @Autowired private PaoDao paoDao;
     @Autowired private PaoLoadingService paoLoadingService;
     private static SimpleTableAccessTemplate<UserPage> userPageTemplate;
     private static SimpleTableAccessTemplate<UserPageParameterEntry> userPageParamTemplate;
