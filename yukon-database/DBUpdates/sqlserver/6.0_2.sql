@@ -16,6 +16,7 @@ ALTER COLUMN Value VARCHAR(4000) NOT NULL;
 /* End YUK-12305 */
 
 /* Start YUK-12525 */
+/* @start-block */
 DECLARE @PAObjectId AS NUMERIC;
 DECLARE @PaoName AS VARCHAR(60);
 DECLARE @Type AS VARCHAR(32);
@@ -69,7 +70,8 @@ BEGIN
 END
 CLOSE favorites_curs;
 DEALLOCATE favorites_curs;
- 
+/* @end-block */
+
 DROP TABLE PAOFavorites;
 DROP TABLE PAORecentViews;
 /* End YUK-12525 */

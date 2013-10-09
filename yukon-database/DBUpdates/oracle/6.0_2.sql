@@ -16,6 +16,7 @@ MODIFY Value VARCHAR2(4000);
 /* End YUK-12305 */
 
 /* Start YUK-12525 */
+/* @start-block */
 DECLARE 
     v_PAObjectId NUMBER;
     v_PaoName VARCHAR2(60);
@@ -71,6 +72,7 @@ BEGIN
     END LOOP;
     CLOSE favorites_curs;
 END;
+/* @end-block */
 
 DROP TABLE PAOFavorites;
 DROP TABLE PAORecentViews;
