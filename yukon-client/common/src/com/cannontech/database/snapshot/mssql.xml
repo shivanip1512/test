@@ -32824,7 +32824,7 @@
             <i__table reference="../../.."/>
             <i__columnName>IsCurrent</i__columnName>
             <i__columnNameDiffers>false</i__columnNameDiffers>
-            <i__typeName>char</i__typeName>
+            <i__typeName>bit</i__typeName>
             <i__typeNameDiffers>false</i__typeNameDiffers>
             <i__columnSize>1</i__columnSize>
             <i__columnSizeDiffers>false</i__columnSizeDiffers>
