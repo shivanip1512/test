@@ -65,27 +65,16 @@
     </bean>
     
     <bean id="paoTypeSearcherLucene" class="com.cannontech.common.search.searcher.PaoTypeLuceneSearcher" singleton="true" autowire="byType">
-        <property name="indexManager" ref="paoTypeIndexManager" />
+        <property name="indexManager" ref="paoIndexManager" />
     </bean>
 
     <alias name="paoTypeSearcherLucene" alias="paoTypeSearcher" />
-    
-    <bean id="paoTypeIndexManager" class="com.cannontech.common.search.index.PaoTypeIndexManager" 
+
+    <bean id="paoIndexManager" class="com.cannontech.common.search.index.PaoIndexManager" 
           singleton="true" autowire="default">
         <property name="jdbcTemplate" ref="jdbcTemplate" />
         <property name="asyncDynamicDataSource" ref="asyncDynamicDataSource" />
     </bean>
 
-    <bean id="indexBuilder" class="com.cannontech.common.search.index.IndexBuilder" singleton="true" autowire="default">
-        <property name="managerList">
-            <list>
-                <ref bean="pointDeviceIndexManager" />
-                <ref bean="userIndexManager" />
-                <ref bean="userGroupIndexManager" />
-                <ref bean="customerAccountIndexManager" />
-                <ref bean="loginGroupIndexManager" />
-                <ref bean="paoTypeIndexManager" />
-            </list>
-        </property>
-    </bean>
+    <bean id="indexBuilder" class="com.cannontech.common.search.index.IndexBuilder" singleton="true" autowire="default"/>
 </beans>
