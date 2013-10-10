@@ -10,6 +10,7 @@ import java.util.concurrent.ExecutionException;
 
 import javax.annotation.PostConstruct;
 
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -37,17 +38,26 @@ public class ResourceCache {
     @Autowired private ResourceLoader loader;
     @Autowired private ConfigurationSource config;
     
-    private static Cache<CachedResource, String> cache = CacheBuilder.newBuilder().build();
+    private static Cache<CachedResource, CachedResourceValue> cache = CacheBuilder.newBuilder().build();
     
-    public String getResource(final CachedResource cachedResource) throws ExecutionException {
-        String resource = cache.get(cachedResource, new Callable<String>() {
+    public CachedResourceValue getResource(final CachedResource resource) throws ExecutionException, IOException {
+        
+        CachedResourceValue value = cache.get(resource, new Callable<CachedResourceValue>() {
             @Override
-            public String call() throws Exception {
-                return load(cachedResource);
+            public CachedResourceValue call() throws Exception {
+                return load(resource);
             }
         });
         
-        return resource;
+        if (config.getBoolean(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)) {
+            long lastModified = loader.getResource(resource.getPath()).lastModified();
+            if (value.getTimestamp() < lastModified) {
+                cache.put(resource, load(resource));
+                value = cache.getIfPresent(resource);
+            }
+        }
+        
+        return value;
     }
     
     @PostConstruct
@@ -61,7 +71,7 @@ public class ResourceCache {
         }
     }
     
-    public String load(CachedResource resource) throws IOException {
+    private CachedResourceValue load(CachedResource resource) throws IOException {
         
         String regexPrefix = "(?<=@";
         String regexSuffix = ":\\s{0,5}+)[^;]+?(?=;)";
@@ -116,11 +126,12 @@ public class ResourceCache {
             YUICssCompressorProcessor compressor = new YUICssCompressorProcessor();
             StringWriter minified = new StringWriter();
             compressor.process(new StringReader(newCss.toString()), minified);
-            return minified.toString();
+            
+            return CachedResourceValue.of(minified.toString(), Instant.now().getMillis());
             
         }
         
-        return newCss.toString();
+        return CachedResourceValue.of(newCss.toString(), Instant.now().getMillis());
     }
     
 }

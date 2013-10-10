@@ -17,7 +17,7 @@ public class ResourceCacheController {
     @RequestMapping("/WebConfig/yukon/styles/layout.css")
     public void layout(HttpServletResponse resp) throws ExecutionException, IOException {
         
-        String css = cache.getResource(CachedResource.LAYOUT_CSS);
+        String css = cache.getResource(CachedResource.LAYOUT_CSS).getValue();
         resp.setContentType("text/css");
         resp.setCharacterEncoding("UTF-8");
             
@@ -27,7 +27,17 @@ public class ResourceCacheController {
     @RequestMapping("/WebConfig/yukon/styles/yukon.css")
     public void yukon(HttpServletResponse resp) throws ExecutionException, IOException {
         
-        String css = cache.getResource(CachedResource.YUKON_CSS);
+        String css = cache.getResource(CachedResource.YUKON_CSS).getValue();
+        resp.setContentType("text/css");
+        resp.setCharacterEncoding("UTF-8");
+        
+        resp.getWriter().write(css);
+    }
+    
+    @RequestMapping("/WebConfig/yukon/styles/buttons.css")
+    public void buttons(HttpServletResponse resp) throws ExecutionException, IOException {
+        
+        String css = cache.getResource(CachedResource.BUTTONS_CSS).getValue();
         resp.setContentType("text/css");
         resp.setCharacterEncoding("UTF-8");
         

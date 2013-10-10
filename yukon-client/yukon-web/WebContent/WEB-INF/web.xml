@@ -866,6 +866,7 @@
         <url-pattern>/common/*</url-pattern>
         <url-pattern>/WebConfig/yukon/styles/layout.css</url-pattern>
         <url-pattern>/WebConfig/yukon/styles/yukon.css</url-pattern>
+        <url-pattern>/WebConfig/yukon/styles/buttons.css</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
