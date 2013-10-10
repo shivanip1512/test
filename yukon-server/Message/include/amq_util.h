@@ -39,19 +39,17 @@ IM_EX_MSG extern ConnectionFactory g_connectionFactory;
 /*-----------------------------------------------------------------------------
   Message listener template
 -----------------------------------------------------------------------------*/
-template <class T>
 class MessageListener : public cms::MessageListener
 {
-    typedef void (T::*onMessageFunc) ( const cms::Message* message );
-    onMessageFunc _func;
-    T* _caller;
+    typedef boost::function<void (const cms::Message*)> Callback;
+    Callback _callback;
 
 public:
-    MessageListener ( T* c, onMessageFunc f ) : _caller(c), _func( f ) {}
+    MessageListener ( Callback c ) : _callback( c ) {}
     virtual ~MessageListener () {}
     virtual void onMessage ( const cms::Message* message )
     {
-        (_caller->*_func)( message );
+        _callback( message );
     }
 };
 

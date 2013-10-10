@@ -88,9 +88,13 @@ CtiConnection::CtiConnection( const string& title, Que_t *inQ, INT tt ) :
     _title(title)
 {
     // create message listener and register function and caller
-    _messageListener.reset( new MessageListener<CtiConnection>( this, &CtiConnection::onMessage ));
+    _messageListener.reset(
+            new MessageListener(
+                    boost::bind(&CtiConnection::onMessage, this, _1)));
     // create advisory message listener and register function and caller
-    _advisoryListener.reset( new MessageListener<CtiConnection>( this, &CtiConnection::onAdvisoryMessage ));
+    _advisoryListener.reset(
+            new MessageListener(
+                    boost::bind(&CtiConnection::onAdvisoryMessage, this, _1)));
 }
 
 /**
