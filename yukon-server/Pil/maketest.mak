@@ -4,6 +4,7 @@
 INCLPATHS+= \
 -I$(CAPCONTROL)\include \
 -I$(COMMON)\include \
+-I$(PROT)\include \
 -I$(DATABASE)\include \
 -I$(DEVICECONFIGURATION)\include \
 -I$(PROCLOG)\include \
@@ -99,10 +100,10 @@ test_pilserver.obj:	pilserver.h dsm2.h cticonnect.h yukon.h types.h \
 		words.h optional.h server_b.h con_mgr.h connection_server.h \
 		connection.h exchange.h dllbase.h logger.h thread.h \
 		CtiPCPtrQueue.h string_utility.h message.h collectable.h \
-		rwutil.h database_connection.h dbaccess.h database_reader.h \
-		row_reader.h boost_time.h boostutil.h msg_multi.h msg_pdata.h \
-		pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h queue.h \
-		cparms.h configkey.h configval.h readers_writer_lock.h \
+		msg_multi.h msg_pdata.h pointdefs.h pointtypes.h msg_ptreg.h \
+		msg_reg.h queue.h cparms.h rwutil.h database_connection.h \
+		dbaccess.h database_reader.h row_reader.h boost_time.h \
+		boostutil.h configkey.h configval.h readers_writer_lock.h \
 		critical_section.h connection_listener.h ctibase.h ctinexus.h \
 		smartmap.h msg_pcrequest.h mgr_device.h rtdb.h hashkey.h \
 		hash_functions.h dev_base.h cmdparse.h ctitokenizer.h \
@@ -112,6 +113,9 @@ test_pilserver.obj:	pilserver.h dsm2.h cticonnect.h yukon.h types.h \
 		tbl_static_paoinfo.h encryption.h tbl_base.h tbl_scanrate.h \
 		tbl_dyn_paoinfo.h pt_base.h tbl_pt_base.h slctdev.h \
 		mgr_point.h mgr_route.h repeaterrole.h mgr_config.h \
-		amq_constants.h msg_pcreturn.h
+		devicetypes.h amq_constants.h mgr_rfn_request.h dev_rfn.h \
+		rfn_identifier.h cmd_rfn.h cmd_device.h dev_single.h \
+		msg_pcreturn.h tbl_dv_scandata.h tbl_dv_wnd.h xfer.h \
+		RfnE2eDataConfirmMsg.h RfnE2eMsg.h RfnE2eDataIndicationMsg.h
 #ENDUPDATE#
 

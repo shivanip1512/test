@@ -7,6 +7,8 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "activemq/core/ActiveMQConnection.h"
 #include "amq_util.h"
 
+#include "logger.h"
+
 namespace Cti {
 namespace Messaging {
 namespace ActiveMQ {
@@ -121,6 +123,11 @@ void ManagedConnection::start()
         }
         catch( cms::CMSException& e )
         {
+            {
+                CtiLockGuard<CtiLogger> dout_guard(dout);
+                dout << CtiTime::now() << "Error starting ActiveMQ connection: \"" << e.what() << "\" "<< __FILE__ << " ("<< __LINE__ << ")" << endl;
+            }
+
             // re-throw if the connection is either closed or if we reach the maximum number of attempts
             if( connAttempt >= maxReconnectAttempts )
             {
@@ -368,3 +375,4 @@ const cms::Destination* TempQueueConsumer::getDestination() const
 }
 }
 }
+

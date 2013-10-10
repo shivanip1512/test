@@ -1,6 +1,14 @@
 #pragma once
 
+#include "dlldefs.h"
+#include "prot_e2eDataTransfer.h"
 #include "dev_rfn.h"
+#include "RfnE2eDataConfirmMsg.h"
+#include "RfnE2eDataIndicationMsg.h"
+
+#include <boost/ptr_container/ptr_deque.hpp>
+//#include <boost/multi_index_container.hpp>
+#include <boost/random.hpp>
 
 namespace Cti {
 namespace Pil {
@@ -26,25 +34,99 @@ struct RfnDeviceResult
 {
     RfnDeviceRequest request;
     Devices::Commands::RfnCommandResult commandResult;
-    int status;
+    YukonError_t status;
 };
 
 class IM_EX_CTIPIL RfnRequestManager
 {
 public:
 
+    RfnRequestManager();
+
+    typedef boost::ptr_deque<RfnDeviceResult> ResultQueue;
     typedef std::vector<RfnDeviceRequest> RfnDeviceRequestList;
 
-    static void enqueueRequestsForDevice(const CtiDeviceBase &dev, const RfnDeviceRequestList &requests);
+    void tick();
 
-protected:
+    void submitRequests(const RfnDeviceRequestList &requests);
 
-    static void enqueueRequestsForDevice(const CtiDeviceBase &dev, const RfnDeviceRequestList &requests, const CtiTime &Now);
+    ResultQueue getResults(unsigned max);
+
+    void cancelByGroupMessageId(long groupMessageId);
 
 private:
 
-};
+    typedef std::set<Devices::RfnIdentifier> RfnIdentifierSet;
 
+    RfnIdentifierSet handleConfirms();
+    RfnIdentifierSet handleIndications();
+    RfnIdentifierSet handleTimeouts();
+    void             handleNewRequests(const RfnIdentifierSet &recentCompletions);
+    void             sendMessages(void);
+    void             postResults();
+
+    typedef std::vector<unsigned char> SerializedMessage;
+
+    Protocols::E2eDataTransferProtocol _e2edt;
+
+    void handleRfnE2eDataIndicationMsg(const SerializedMessage &msg);
+    void handleRfnE2eDataConfirmMsg(const SerializedMessage &msg);
+
+    void checkForNewRequest(const Devices::RfnIdentifier &rfnId);
+
+    typedef boost::ptr_deque<Messaging::Rfn::E2eDataIndicationMsg> IndicationQueue;
+    typedef boost::ptr_deque<Messaging::Rfn::E2eDataConfirmMsg> ConfirmQueue;
+    typedef std::map<long, unsigned short> DeviceIdToE2eIdMap;
+    typedef std::priority_queue<RfnDeviceRequest> RequestQueue;
+    typedef std::map<Devices::RfnIdentifier, RequestQueue> RfnIdToRequestQueue;
+
+    boost::random::mt19937 _generator;
+
+    DeviceIdToE2eIdMap   _e2eIds;
+
+    CtiCriticalSection   _indicationMux;
+    IndicationQueue      _indications;
+
+    CtiCriticalSection   _confirmMux;
+    ConfirmQueue         _confirms;
+
+    CtiCriticalSection   _submittedRequestsMux;
+    RfnDeviceRequestList _submittedRequests;
+
+    CtiCriticalSection   _resultsMux;
+    ResultQueue          _results;
+
+    ResultQueue _tickResults;
+
+    RfnIdToRequestQueue  _pendingRequests;
+
+    struct ActiveRfnRequest
+    {
+        RfnDeviceRequest request;
+        SerializedMessage requestMessage;
+        Devices::Commands::RfnCommand::RfnResponsePayload response;
+        time_t timeout;
+        unsigned char retransmits;
+        unsigned short e2eId;
+        enum
+        {
+            Submitted,
+            PendingConfirm,
+            PendingReply,
+        }
+        status;
+    };
+
+    typedef std::map<Devices::RfnIdentifier, ActiveRfnRequest> RfnIdToActiveRequest;
+
+    RfnIdToActiveRequest _activeRequests;
+
+    typedef std::map<time_t, RfnIdentifierSet> ExpirationMap;
+
+    ExpirationMap _upcomingExpirations;
+
+    std::vector<SerializedMessage> _messages;
+};
 
 }
 }

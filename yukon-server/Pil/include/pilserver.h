@@ -20,6 +20,8 @@
 #include "connection_listener.h"
 #include "amq_constants.h"
 
+#include "mgr_rfn_request.h"
+
 #include <boost/thread.hpp>
 #include <boost/ptr_container/ptr_deque.hpp>
 
@@ -52,6 +54,8 @@ class IM_EX_CTIPIL PilServer : public CtiServer
 
    CtiCommandParser     _currentParse;
    long                 _currentUserMessageId;
+
+   RfnRequestManager    _rfnManager;
 
    typedef std::multiset<CtiRequestMsg *, std::greater<CtiMessage *> > group_queue_t;
 

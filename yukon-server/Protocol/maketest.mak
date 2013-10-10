@@ -123,11 +123,10 @@ test_dnp_objects.obj:	dnp_object_internalindications.h dnp_objects.h \
 		dlldefs.h netports.h mutex.h guard.h utility.h ctitime.h \
 		queues.h cticalls.h os2_2w32.h numstr.h dsm2err.h words.h \
 		optional.h msg_pdata.h pointdefs.h pointtypes.h message.h \
-		collectable.h rwutil.h database_connection.h dbaccess.h \
-		database_reader.h row_reader.h boost_time.h boostutil.h \
-		prot_base.h xfer.h dnp_object_analoginput.h dnp_object_time.h \
-		dnp_object_analogoutput.h dnp_object_binaryinput.h \
-		dnp_object_binaryoutput.h dnp_object_counter.h
+		collectable.h prot_base.h xfer.h dnp_object_analoginput.h \
+		dnp_object_time.h dnp_object_analogoutput.h \
+		dnp_object_binaryinput.h dnp_object_binaryoutput.h \
+		dnp_object_counter.h
 test_dnp_transport.obj:	dnp_transport.h dnp_datalink.h xfer.h dsm2.h \
 		cticonnect.h yukon.h types.h ctidbgmem.h dlldefs.h netports.h \
 		mutex.h guard.h utility.h ctitime.h queues.h cticalls.h \
@@ -135,12 +134,10 @@ test_dnp_transport.obj:	dnp_transport.h dnp_datalink.h xfer.h dsm2.h \
 		dnp_datalink_packet.h boostutil.h
 test_prot_dnp.obj:	prot_dnp.h dlldefs.h pointtypes.h prot_base.h \
 		msg_pdata.h yukon.h types.h ctidbgmem.h pointdefs.h message.h \
-		ctitime.h collectable.h rwutil.h database_connection.h \
-		dbaccess.h dllbase.h dsm2.h cticonnect.h netports.h mutex.h \
-		guard.h utility.h queues.h cticalls.h os2_2w32.h numstr.h \
-		dsm2err.h words.h optional.h database_reader.h row_reader.h \
-		boost_time.h boostutil.h xfer.h packet_finder.h \
-		dnp_application.h dnp_objects.h dnp_transport.h \
+		ctitime.h collectable.h xfer.h dsm2.h cticonnect.h netports.h \
+		mutex.h guard.h utility.h queues.h cticalls.h os2_2w32.h \
+		numstr.h dsm2err.h words.h optional.h packet_finder.h \
+		dnp_application.h dnp_objects.h dllbase.h dnp_transport.h \
 		dnp_datalink.h dnp_datalink_packet.h dnp_configuration.h \
 		dnp_object_binaryoutput.h boost_test_helpers.h \
 		millisecond_timer.h
@@ -151,12 +148,10 @@ test_prot_expresscom.obj:	expresscom.h cmdparse.h ctitokenizer.h \
 		words.h optional.h
 test_prot_klondike.obj:	prot_klondike.h prot_wrap.h prot_base.h \
 		msg_pdata.h yukon.h types.h ctidbgmem.h dlldefs.h pointdefs.h \
-		pointtypes.h message.h ctitime.h collectable.h rwutil.h \
-		database_connection.h dbaccess.h dllbase.h dsm2.h \
+		pointtypes.h message.h ctitime.h collectable.h xfer.h dsm2.h \
 		cticonnect.h netports.h mutex.h guard.h utility.h queues.h \
 		cticalls.h os2_2w32.h numstr.h dsm2err.h words.h optional.h \
-		database_reader.h row_reader.h boost_time.h boostutil.h \
-		xfer.h prot_idlc.h critical_section.h boost_test_helpers.h \
+		prot_idlc.h critical_section.h boost_test_helpers.h \
 		millisecond_timer.h
 test_prot_sa305.obj:	prot_sa305.h cmdparse.h ctitokenizer.h dlldefs.h \
 		parsevalue.h dllbase.h dsm2.h cticonnect.h yukon.h types.h \

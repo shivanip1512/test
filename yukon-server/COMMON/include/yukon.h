@@ -376,6 +376,9 @@ enum YukonError_t
 
     ErrorInvalidConfigData,
 
+    //  Errors relating to RFN E2EDT
+    //  http://portal.cooperpowereas.net/sites/Ops/MarylandEngineeringGroup/Shared%20Documents/System/10446%20E2E%20Data%20Transfer%20System%20Specification_R1.2.docx
+    //  see sections 1.3.3, E2E-Data.confirm, 1.3.3.4, Result Codes
     ErrorUnknownAddress,
     ErrorNetworkUnavailable,
     ErrorRequestPacketTooLarge,

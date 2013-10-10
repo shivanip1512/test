@@ -521,11 +521,19 @@ void PilServer::resultThread()
                 }
             }
 
+            typedef boost::ptr_deque<RfnDeviceResult> RfnResultQueue_t;
+            RfnResultQueue_t pendingRfnResultQueue =
+                    _rfnManager.getResults(inQueueBlockSize);
+
             set<long> paoids;
 
             for_each(pendingInMessages.begin(),
                      pendingInMessages.end(),
                      collect_inmess_target_device(paoids));
+
+            for_each(pendingRfnResultQueue.begin(),
+                     pendingRfnResultQueue.end(),
+                     collectRfnResultDeviceIds(paoids));
 
             if( ! paoids.empty() )
             {
@@ -551,6 +559,12 @@ void PilServer::resultThread()
                 handleInMessageResult(InMessage.get());
             }
 
+            while( !bServerClosing && !pendingRfnResultQueue.empty() )
+            {
+                RfnResultQueue_t::auto_type rfnResult = pendingRfnResultQueue.pop_front();
+
+                handleRfnDeviceResult(*rfnResult);
+            }
         }
         catch(...)
         {
@@ -579,7 +593,7 @@ struct InMessageResultProcessor : Devices::DeviceHandler
     CtiDeviceBase::OutMessageList outList;
     const INMESS &im;
 
-    InMessageResultProcessor(const INMESS &im_, CtiDeviceBase::CtiMessageList vgList_, CtiDeviceBase::CtiMessageList retList_) :
+    InMessageResultProcessor(const INMESS &im_, CtiDeviceBase::CtiMessageList &vgList_, CtiDeviceBase::CtiMessageList &retList_) :
         im(im_),
         vgList(vgList_),
         retList(retList_)
@@ -1207,6 +1221,8 @@ int PilServer::executeRequest(const CtiRequestMsg *pReq)
             }
 
             _inQueue.erase_if(boost::bind(inmess_user_message_id_equal, _1, group_message_id));
+
+            _rfnManager.cancelByGroupMessageId(group_message_id);
         }
 
         //  first, count the yet to be processed items
@@ -1313,7 +1329,7 @@ int PilServer::executeRequest(const CtiRequestMsg *pReq)
 
                 outList.splice(outList.end(), executer.outList);
 
-                Cti::Pil::RfnRequestManager::enqueueRequestsForDevice(Dev, executer.rfnRequests);
+                _rfnManager.submitRequests(executer.rfnRequests);
 
                 for each( CtiMessage *msg in executer.retList )
                 {
@@ -2294,10 +2310,24 @@ void PilServer::periodicActionThread()
 
     SetThreadName(-1, "prdActThd");
 
+    Cti::Timing::MillisecondTimer t;
+
     /* perform the wait loop forever */
     for( ; !bServerClosing ; )
     {
-        Sleep(1000);
+        const unsigned elapsed = t.elapsed();
+
+        if( elapsed > 1000 )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " PIL periodicActionThread took " << elapsed << " milliseconds " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+        }
+        else
+        {
+            Sleep(1000 - elapsed);
+        }
+
+        t.reset();
 
         {   // RDS application id
 
@@ -2314,8 +2344,11 @@ void PilServer::periodicActionThread()
             }
         }
 
-        // future periodic stuff...
+        {
+            _rfnManager.tick();
+        }
 
+        //  <Add other periodic events here>
     }
 
     {

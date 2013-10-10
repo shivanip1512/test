@@ -63,8 +63,7 @@ const ThriftInboundQueueNameMap ThriftInboundQueueNames = boost::assign::map_lis
 }
 
 ActiveMQConnectionManager::ActiveMQConnectionManager(const string &broker_uri) :
-    _broker_uri(broker_uri),
-    _delay(2)
+    _broker_uri(broker_uri)
 {
 }
 
@@ -77,51 +76,73 @@ ActiveMQConnectionManager::~ActiveMQConnectionManager()
         join();
     }
 
+    releaseConnectionObjects();
+}
+
+
+void ActiveMQConnectionManager::releaseConnectionObjects()
+{
     _producers.clear();
+    _consumers.clear();
+
+    _producerSession.reset();
+    _consumerSession.reset();
 
     _connection.reset();
-    _session.reset();
 }
 
 
 void ActiveMQConnectionManager::run()
 {
-    while( !isSet(SHUTDOWN) )
+    while( ! isSet(SHUTDOWN) )
     {
-        getOutgoingMessages();
-
-        sendPendingMessages();
-
-        sleep(_delay * 1000);
-    }
-}
-
-
-void Cti::Messaging::ActiveMQConnectionManager::getOutgoingMessages()
-{
-    CtiLockGuard<CtiCriticalSection> lock(_outgoing_message_mux);
-
-    while( !_outgoing_messages.empty() )
-    {
-        //  guarantee that we will not have null pointers in _pending_messages
-        if( _outgoing_messages.front() )
+        try
         {
-            _pending_messages.push(_outgoing_messages.front());
+            verifyConnectionObjects();
+
+            updateCallbacks();
+
+            sendOutgoingMessages();
+
+            dispatchTempQueueReplies();
+
+            dispatchIncomingMessages();
+        }
+        catch( ActiveMQ::ConnectionException &ce )
+        {
+            releaseConnectionObjects();
+
+            {
+                CtiLockGuard<CtiLogger> dout_guard(dout);
+                dout << CtiTime() << " ActiveMQ CMS connection established\n";
+            }
+        }
+        catch( cms::CMSException &ce )
+        {
+            releaseConnectionObjects();
+
+            {
+                CtiLockGuard<CtiLogger> dout_guard(dout);
+                dout << CtiTime() << " ActiveMQ CMS connection established\n";
+            }
         }
 
-        _outgoing_messages.pop();
+        sleep(1000);
     }
 }
 
 
-void ActiveMQConnectionManager::validateSetup()
+void ActiveMQConnectionManager::verifyConnectionObjects()
 {
-    if( ! _connection.get() )
+    if( ! _connection.get() ||
+        ! _connection->verifyConnection() )
     {
-        scoped_ptr<cms::Connection> connection;
-        connection.reset( ActiveMQ::g_connectionFactory.createConnection( _broker_uri ) );
-        connection->start();
-        _connection.swap(connection);
+        boost::scoped_ptr<ActiveMQ::ManagedConnection> tempConnection(
+                new ActiveMQ::ManagedConnection(_broker_uri));
+
+        tempConnection->start();
+
+        _connection.swap(tempConnection);
 
         {
             CtiLockGuard<CtiLogger> dout_guard(dout);
@@ -129,85 +150,164 @@ void ActiveMQConnectionManager::validateSetup()
         }
     }
 
-    if( ! _session.get() )
+    if( ! _producerSession.get() )
     {
-        _session.reset(_connection->createSession());
+        _producerSession.reset(_connection->createSession());
+    }
 
+    if( ! _consumerSession.get() )
+    {
+        _consumerSession.reset(_connection->createSession());
+    }
+
+    for each( const ThriftInboundQueueNameMap::value_type &inboundQueue in ThriftInboundQueueNames )
+    {
+        std::auto_ptr<QueueConsumerWithListener> consumer(new QueueConsumerWithListener);
+
+        consumer->managedConsumer.reset(
+                ActiveMQ::createQueueConsumer(
+                        *_consumerSession,
+                        inboundQueue.second));
+
+        consumer->listener.reset(
+                new ActiveMQ::MessageListener(
+                        boost::bind(&ActiveMQConnectionManager::onInboundMessage, this, inboundQueue.first, _1)));
+
+        _consumers.push_back(consumer);
+    }
+}
+
+
+void ActiveMQConnectionManager::updateCallbacks()
+{
+    CtiLockGuard<CtiCriticalSection> lock(_newCallbackMux);
+
+    _callbacks.insert(
+            _newCallbacks.begin(),
+            _newCallbacks.end());
+
+    _newCallbacks.clear();
+}
+
+
+void ActiveMQConnectionManager::sendOutgoingMessages()
+{
+    EnvelopeQueue messages;
+
+    {
+        CtiLockGuard<CtiCriticalSection> lock(_outgoingMessagesMux);
+
+        messages.transfer(messages.end(), _outgoingMessages);
+    }
+
+    while( ! messages.empty() )
+    {
+        EnvelopeQueue::auto_type e = messages.pop_front();
+
+        std::auto_ptr<cms::Message> message(
+                e->extractMessage(*_producerSession));
+
+        if( const boost::optional<std::string> queueName = mapFind(StreamableOutboundQueueNames, e->queueId) )
         {
-            CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << CtiTime() << " ActiveMQ CMS session established\n";
+            if( e->callback )
+            {
+                std::auto_ptr<TempQueueConsumerWithCallback> tempConsumer(new TempQueueConsumerWithCallback);
+
+                tempConsumer->managedConsumer.reset(
+                        ActiveMQ::createTempQueueConsumer(
+                                *_consumerSession));
+
+                tempConsumer->listener.reset(
+                        new ActiveMQ::MessageListener(
+                                boost::bind(&ActiveMQConnectionManager::onTempQueueReply, this, _1)));
+
+                tempConsumer->callback = *(e->callback);
+
+                _temporaryConsumers.insert(
+                        tempConsumer->managedConsumer->getDestination(),
+                        tempConsumer);
+
+                message->setCMSReplyTo(tempConsumer->managedConsumer->getDestination());
+            }
+
+            ActiveMQ::QueueProducer &queueProducer = getQueueProducer(*_producerSession, *queueName);
+
+            queueProducer.send(message.get());
         }
     }
 }
 
 
-void ActiveMQConnectionManager::purgePendingMessages()
+void ActiveMQConnectionManager::dispatchIncomingMessages()
 {
-    while( ! _pending_messages.empty() )
-    {
-        delete _pending_messages.front();
+    IncomingPerQueue incomingMessages;
 
-        _pending_messages.pop();
+    {
+        CtiLockGuard<CtiCriticalSection> lock(_newIncomingMessagesMux);
+
+        incomingMessages.insert(
+                _newIncomingMessages.begin(),
+                _newIncomingMessages.end());
+
+        _newIncomingMessages.clear();
+    }
+
+    IncomingPerQueue::const_iterator queueMsgs_itr = incomingMessages.begin();
+
+    boost::optional<ActiveMQ::InboundQueues::type> queue;
+    std::pair<CallbacksPerQueue::const_iterator, CallbacksPerQueue::const_iterator> queueCallbacks;
+
+    for( ; queueMsgs_itr != incomingMessages.end(); ++queueMsgs_itr )
+    {
+        if( ! queue || *queue != queueMsgs_itr->first )
+        {
+            queue = queueMsgs_itr->first;
+
+            queueCallbacks = _callbacks.equal_range(*queue);
+        }
+
+        CallbacksPerQueue::const_iterator cb_itr = queueCallbacks.first;
+
+        for each( const SerializedMessage &msg in queueMsgs_itr->second )
+        {
+            for( ; cb_itr != queueCallbacks.second; ++cb_itr )
+            {
+                cb_itr->second(msg);
+            }
+        }
     }
 }
 
 
-void ActiveMQConnectionManager::sendPendingMessages()
-try
+void ActiveMQConnectionManager::dispatchTempQueueReplies()
 {
-    try
-    {
-        validateSetup();
-    }
-    catch( cms::CMSException &e )
-    {
-        //  If there's been an error establishing the connection, purge any pending messages
-        purgePendingMessages();
-
-        throw;
-    }
-
-    while( !_pending_messages.empty() )
-    {
-        envelope *e = _pending_messages.front();
-
-        //  _session must be valid if we passed validateSetup()
-        sendMessage(*_session, *e);
-
-        delete e;
-
-        _pending_messages.pop();
-    }
-
-    //  If successful, reset delay
-    _delay = 2;
-}
-catch( cms::CMSException &e )
-{
-    if( _delay < 5 )
-    {
-        _delay = 5;
-    }
-    else if( _delay < 30 )
-    {
-        _delay += 5;
-    }
+    ReplyPerDestination replies;
 
     {
-        CtiLockGuard<CtiLogger> dout_guard(dout);
+        CtiLockGuard<CtiCriticalSection> lock(_tempQueueRepliesMux);
 
-        dout << CtiTime() << " ActiveMQ CMS error - \"" << trim(string(e.what())) << "\" - delaying " << _delay << " seconds\n";
+        replies = _tempQueueReplies;
+
+        _tempQueueReplies.clear();
     }
 
-    //  Clear all of the connection, session, and producer info
-    _connection.reset();
+    for each( const ReplyPerDestination::value_type &reply in replies )
+    {
+        TemporaryConsumersByDestination::iterator itr =
+                _temporaryConsumers.find(reply.first);
 
-    _session.reset();
+        if( itr == _temporaryConsumers.end() )
+        {
+            CtiLockGuard<CtiLogger> dout_guard(dout);
+            dout << CtiTime() << " Message received for unknown consumer in " << __FUNCTION__ << " @ " << __FILE__ << " (" << __LINE__ << ")";
 
-    _producers.clear();
-}
-catch( std::runtime_error &e )
-{
+            continue;
+        }
+
+        itr->second->callback(reply.second);
+
+        _temporaryConsumers.erase(itr);
+    }
 }
 
 
@@ -217,129 +317,164 @@ void ActiveMQConnectionManager::enqueueMessage(const ActiveMQ::OutboundQueues::t
 }
 
 
+void ActiveMQConnectionManager::enqueueMessages(const ActiveMQ::OutboundQueues::type queueId, const std::vector<SerializedMessage> &messages, MessageCallback callback)
+{
+    for each( const SerializedMessage &message in messages )
+    {
+        //  acquires and releases the mux for each message - we might do better by passing in all or chunks at a time...
+        //    but the critical section should be cheap, so let's not optimize prematurely
+        gActiveMQConnection->enqueueOutgoingMessage(queueId, message, callback);
+    }
+}
+
+
 void ActiveMQConnectionManager::enqueueOutgoingMessage(const ActiveMQ::OutboundQueues::type queueId, auto_ptr<StreamableMessage> message)
 {
+    //  ensure the message is not null
     if( ! message.get() )
     {
         return;
     }
 
-    boost::optional<std::string> queueName = mapFind(StreamableOutboundQueueNames, queueId);
-
-    //  ensure the message is not null
-    if( ! queueName || queueName->empty() )
+    struct StreamableEnvelope : Envelope
     {
-        return;
-    }
+        boost::scoped_ptr<StreamableMessage> message;
 
-    envelope *e = new envelope;
+        cms::Message *extractMessage(cms::Session &session) const
+        {
+            std::auto_ptr<cms::StreamMessage> streamMessage(session.createStreamMessage());
 
-    e->queue = *queueName;
+            message->streamInto(*streamMessage);
+
+            return streamMessage.release();
+        }
+    };
+
+    std::auto_ptr<StreamableEnvelope> e(new StreamableEnvelope);
+
+    e->queueId = queueId;
     e->message.reset(message.release());
 
     {
-        CtiLockGuard<CtiCriticalSection> lock(_outgoing_message_mux);
+        CtiLockGuard<CtiCriticalSection> lock(_outgoingMessagesMux);
 
-        _outgoing_messages.push(e);
+        _outgoingMessages.push_back(e);
     }
 
-    if( !isRunning() )
+    if( ! isRunning() )
     {
-        //  starts its thread on first outbound message
         start();
     }
 }
 
 
-void ActiveMQConnectionManager::sendMessage(cms::Session &session, const envelope &e)
+void ActiveMQConnectionManager::enqueueOutgoingMessage(const ActiveMQ::OutboundQueues::type queueId, const SerializedMessage &message, MessageCallback callback)
 {
-    if( cms::MessageProducer * const producer = getProducer(session, e.queue) )
+    struct BytesEnvelope : Envelope
     {
-        std::auto_ptr<cms::StreamMessage> streamMessage(session.createStreamMessage());
+        SerializedMessage message;
 
-        if( streamMessage.get() )
+        cms::Message *extractMessage(cms::Session &session) const
         {
-            e.message->streamInto(*streamMessage);
+            std::auto_ptr<cms::BytesMessage> bytesMessage(session.createBytesMessage());
 
-            producer->send(streamMessage.get());
-        }
-        else
-        {
-            CtiLockGuard<CtiLogger> dout_guard(dout);
+            bytesMessage->writeBytes(message);
 
-            dout << CtiTime() << " ActiveMQ CMS session error - could not create a stream message \n";
+            return bytesMessage.release();
         }
+    };
+
+    std::auto_ptr<BytesEnvelope> e(new BytesEnvelope);
+
+    e->queueId  = queueId;
+    e->message  = message;
+    e->callback = callback;
+
+    {
+        CtiLockGuard<CtiCriticalSection> lock(_outgoingMessagesMux);
+
+        _outgoingMessages.push_back(e);
     }
-    else
-    {
-        CtiLockGuard<CtiLogger> dout_guard(dout);
 
-        dout << CtiTime() << " ActiveMQ CMS producer error - could not get producer for queue (" << e.queue << ")\n";
+    if( ! isRunning() )
+    {
+        start();
     }
 }
 
 
-cms::MessageProducer *ActiveMQConnectionManager::getProducer(cms::Session &session, const std::string &queueName)
+ActiveMQ::QueueProducer &ActiveMQConnectionManager::getQueueProducer(cms::Session &session, const std::string &queueName)
 {
-    producer_map::iterator itr = _producers.find(queueName);
+    ProducersByQueueName::iterator existingProducer = _producers.find(queueName);
 
-    if( itr != _producers.end() )
+    if( existingProducer != _producers.end() )
     {
-        return itr->second;
-
+        return *(existingProducer->second);
     }
 
     //  if it doesn't exist, try to make one
-    if( const cms::Queue *queue = session.createQueue(queueName) )
+    std::auto_ptr<ActiveMQ::QueueProducer> queueProducer(
+            ActiveMQ::createQueueProducer(session, queueName));
+
     {
-        {
-            CtiLockGuard<CtiLogger> dout_guard(dout);
-
-            dout << CtiTime() << " ActiveMQ CMS queue established (" << queueName << ")\n";
-        }
-
-        if( cms::MessageProducer *producer = session.createProducer(queue) )
-        {
-            {
-                CtiLockGuard<CtiLogger> dout_guard(dout);
-
-                dout << CtiTime() << " ActiveMQ CMS producer established (" << queueName << ")\n";
-            }
-
-            producer->setTimeToLive(DefaultTimeToLive);
-
-            _producers.insert(queueName, producer);
-
-            return producer;
-        }
+        CtiLockGuard<CtiLogger> dout_guard(dout);
+        dout << CtiTime() << " ActiveMQ CMS producer established (" << queueName << ")\n";
     }
 
-    return 0;
+    queueProducer->setTimeToLive(DefaultTimeToLive);
+
+    return *(_producers.insert(queueName, queueProducer).first->second);
 }
 
 
-/*
-void  ActiveMQConnectionManager::receiveMessage()
+void ActiveMQConnectionManager::registerHandler(const ActiveMQ::InboundQueues::type queueId, MessageCallback callback)
 {
-    scoped_ptr<cms::Connection>      consumer_connection (connectionFactory->createConnection());
-    consumer_connection->start();
-    scoped_ptr<cms::Session>         consumer_session    (consumer_connection->createSession());
-    scoped_ptr<cms::Topic>           consumer_topic      (consumer_session->createTopic("EXAMPLE-TOPIC"));
-    scoped_ptr<cms::MessageConsumer> myConsumer          (consumer_session->createConsumer(consumer_topic.get()));
+    gActiveMQConnection->addNewCallback(queueId, callback);
+}
 
 
-    scoped_ptr<cms::Message>     consumed_message(myConsumer->receive());
-    scoped_ptr<cms::TextMessage> consumed_text_message(dynamic_cast<cms::TextMessage *>(consumed_message.get()));
+void ActiveMQConnectionManager::addNewCallback(const ActiveMQ::InboundQueues::type queueId, MessageCallback callback)
+{
+    CtiLockGuard<CtiCriticalSection> lock(_newCallbackMux);
 
-    //  did the dynamic cast work?
-    if( consumed_text_message.get() )
+    _newCallbacks.insert(std::make_pair(queueId, callback));
+}
+
+
+void ActiveMQConnectionManager::onInboundMessage(ActiveMQ::InboundQueues::type queue, const cms::Message *message)
+{
+    if( const cms::BytesMessage *bytesMessage = dynamic_cast<const cms::BytesMessage *>(message) )
     {
-        //  release the base pointer version, we've got an upgrade
-        consumed_message.release();
+        SerializedMessage payload(bytesMessage->getBodyLength());
 
-        cout << consumed_text_message->getText();
+        bytesMessage->readBytes(payload);
+
+        {
+            CtiLockGuard<CtiCriticalSection> lock(_newIncomingMessagesMux);
+
+            _newIncomingMessages[queue].push_back(payload);
+        }
     }
 }
-*/
+
+
+void ActiveMQConnectionManager::onTempQueueReply(const cms::Message *message)
+{
+    if( const cms::BytesMessage *bytesMessage = dynamic_cast<const cms::BytesMessage *>(message) )
+    {
+        SerializedMessage payload(bytesMessage->getBodyLength());
+
+        bytesMessage->readBytes(payload);
+
+        {
+            CtiLockGuard<CtiCriticalSection> lock(_tempQueueRepliesMux);
+
+            _tempQueueReplies[message->getCMSDestination()] = payload;
+        }
+    }
+}
+
+
 }
 }
+

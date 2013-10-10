@@ -94,6 +94,15 @@ OPENSSL_LIBS = \
 $(OPENSSL)\lib\libeay32.lib \
 $(OPENSSL)\lib\ssleay32.lib
 
+LIBCOAP         = $(CPP_LIBRARIES)\libcoap\4.0.1
+LIBCOAP_INCLUDE = $(LIBCOAP)\include
+!IFDEF DEBUG
+LIBCOAP_LIBS = $(LIBCOAP)\lib\libcoapd.lib
+!ELSE
+LIBCOAP_LIBS = $(LIBCOAP)\lib\libcoap.lib
+!ENDIF
+
+
 BOOST_ALL_DYN_LINK = 1
 
 !IFDEF DEBUG
