@@ -31,7 +31,7 @@ RfnCommand::RfnRequestPayload RfnCommand::executeCommand(const CtiTime now)
     return req;
 }
 
-// Construct a byte vector request
+// Return the error description
 RfnCommandResult RfnCommand::error(const CtiTime now, const YukonError_t errorCode)
 {
     RfnCommandResult result;
