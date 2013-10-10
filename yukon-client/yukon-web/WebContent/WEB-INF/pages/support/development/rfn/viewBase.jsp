@@ -29,19 +29,18 @@ jQuery(function() {
 </script>
 <div class="column_8_16">
         <div class="column one">
-            <tags:sectionContainer2 nameKey="tests" styleClass="rfnTestContainer">
-                <div><a href="viewMeterReadArchiveRequest"><i:inline key=".meterReadArchiveRequest.label"/></a></div>
-                <div><a href="viewEventArchiveRequest"><i:inline key=".eventArchiveRequest.label"/></a></div>
-                <div><a href="viewLcrArchiveRequest"><i:inline key=".lcrArchiveRequest.label"/></a></div>
-                <div><a href="viewLcrReadArchiveRequest"><i:inline key=".lcrReadArchiveRequest.label"/></a></div>
-            </tags:sectionContainer2>
+            <ul>
+                <li><a href="viewMeterReadArchiveRequest"><i:inline key=".meterReadArchiveRequest.label"/></a></li>
+                <li><a href="viewEventArchiveRequest"><i:inline key=".eventArchiveRequest.label"/></a></li>
+                <li><a href="viewLcrArchiveRequest"><i:inline key=".lcrArchiveRequest.label"/></a></li>
+                <li><a href="viewLcrReadArchiveRequest"><i:inline key=".lcrReadArchiveRequest.label"/></a></li>
+            </ul>
         </div>
         <div class="column two nogutter">
-            <tags:sectionContainer title="Actions">
-                <div><button id="startupNotif">Resend Startup Notif</button></div>
-                <div><button id="calcStressTest" class="danger">Calc Stress Test</button><span class="error">DO NOT CLICK</span></div>
-                <div><button id="clearCache">Clear Cache</button></div>
-            </tags:sectionContainer>
+            <div class="actionArea">
+                <button id="clearCache">Clear Cache</button>
+                <button id="calcStressTest" class="action red"><span class="label">Calc Stress Test, DO NOT CLICK</span></button>
+                <button id="startupNotif">Resend Startup Notif</button>
         </div>
 </div>
 </cti:standardPage>

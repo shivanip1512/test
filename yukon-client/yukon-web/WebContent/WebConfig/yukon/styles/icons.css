@@ -1485,6 +1485,7 @@ not accept 0px as a valid offset */
 .icon-32-zoom-in{background-position:-448px -160px;}
 .icon-32-zoom-out{background-position:-448px -192px;}
 .icon-32-openadr{background-position:-448px -224px;}
+.icon-32-multispeak{background-position:-448px -256px;}
 
 /* Yukon Application Icons */
 .icon-32-database-editor {background-image: url(/WebConfig/yukon/Icons/32/DatabaseEditor32.gif);}

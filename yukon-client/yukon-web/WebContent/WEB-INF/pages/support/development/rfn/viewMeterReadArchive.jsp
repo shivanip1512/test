@@ -103,6 +103,9 @@ function useRandom() {
                             <td><label><input type="checkbox" id="harmonic"   name="harmonic">Harmonic</label></td>
                             <td><label><input type="checkbox" id="cumulative" name="cumulative">Cumulative</label></td>
                         </tr>
+                        <tr>
+                            <td><label><input type="checkbox" id="tenths" name="tenths">tenths</label></td>
+                        </tr>
                     </table>
                 </tags:nameValue>
                 
@@ -117,11 +120,12 @@ function useRandom() {
                         <option value="BILLING">Billing</option>
                         <option value="CURRENT">Current (on demand)</option>
                         <option value="STATUS">Status</option>
+                        <option value="PROFILE">Profile</option>
                     </select>
                 </tags:nameValue>
                 
             </tags:nameValueContainer>
-            <div clas="actionArea"><cti:button nameKey="send" type="submit" classes="f-blocker"/></div>
+            <div class="actionArea"><cti:button nameKey="send" type="submit" classes="f-blocker"/></div>
         </form>
     </tags:sectionContainer>
 </cti:standardPage>

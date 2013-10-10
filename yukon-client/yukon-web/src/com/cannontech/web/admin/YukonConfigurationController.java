@@ -80,7 +80,7 @@ public class YukonConfigurationController {
         b.put(GlobalSettingSubCategory.DATA_EXPORT, "icon-32-list");
         b.put(GlobalSettingSubCategory.CALC_HISTORICAL, "icon-32-calculator");
         b.put(GlobalSettingSubCategory.GRAPHING, "icon-32-stats-lines");
-        b.put(GlobalSettingSubCategory.MULTISPEAK, "icon-32-access-point");
+        b.put(GlobalSettingSubCategory.MULTISPEAK, "icon-32-multispeak");
         b.put(GlobalSettingSubCategory.VOICE, "icon-32-phone");
         b.put(GlobalSettingSubCategory.OPEN_ADR, "icon-32-openadr");
         b.put(GlobalSettingSubCategory.MISC, "icon-32-folder");
