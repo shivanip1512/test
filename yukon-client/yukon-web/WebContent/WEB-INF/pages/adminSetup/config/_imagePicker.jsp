@@ -6,26 +6,21 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
-<script type="text/javascript">
-jQuery(function() {
-    jQuery('.image-picker .image').click(function(e){
-        e.preventDefault();
-        jQuery('.image-picker .image').removeClass('selected');
-        jQuery(e.currentTarget).addClass('selected');
-    });
-});
-</script>
-
+<cti:msgScope paths="yukon.common.imagePicker">
 <div class="separated-sections image-picker">
+    <div class="section clearfix">
+        <cti:button classes="b-upload" nameKey="upload" icon="icon-bullet-go-up"/>
+        <div class="f-upload-progress"></div>
+    </div>
     <c:forEach var="image" items="${images}">
         <div class="section">
             
             <div class="column_12_12 clearfix image<c:if test="${not empty selected and image.imageID == selected}"> selected</c:if>" data-image-id="${image.imageID}">
                 <div class="column one">
                     <tags:nameValueContainer2>
-                        <tags:nameValue2 nameKey="yukon.common.imagePicker.name">${fn:escapeXml(image.imageName)}</tags:nameValue2>
-                        <tags:nameValue2 nameKey="yukon.common.imagePicker.category">${fn:escapeXml(image.imageCategory)}</tags:nameValue2>
-                        <tags:nameValue2 nameKey="yukon.common.imagePicker.size">
+                        <tags:nameValue2 nameKey=".name" valueClass="f-name-value">${fn:escapeXml(image.imageName)}</tags:nameValue2>
+                        <tags:nameValue2 nameKey=".category" valueClass="f-category-value">${fn:escapeXml(image.imageCategory)}</tags:nameValue2>
+                        <tags:nameValue2 nameKey=".size" valueClass="f-size-value">
                             <i:inline key="yukon.common.prefixedByteValue.kibi" arguments="${fn:length(image.imageValue) * .001}"/>
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
@@ -39,3 +34,4 @@ jQuery(function() {
         </div>
     </c:forEach>
 </div>
+</cti:msgScope>

@@ -97,9 +97,7 @@
       <bean class="com.cannontech.core.dao.impl.UnitMeasureDaoImpl" />
     </property>
   </bean>
-  <bean id="yukonImageDao" class="com.cannontech.core.dao.impl.YukonImageDaoImpl" >
-     <property name="databaseCache" ref="databaseCache"/>      
-  </bean>
+  <bean id="yukonImageDao" class="com.cannontech.core.dao.impl.YukonImageDaoImpl"/>
   <bean id="yukonListDao" class="com.cannontech.core.dao.impl.YukonListDaoImpl" />
   <bean id="yukonUserDao" class="com.cannontech.core.dao.impl.YukonUserDaoImpl" />
 

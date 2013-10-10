@@ -1,34 +1,39 @@
 package com.cannontech.web.common.resources;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
+import java.io.InputStream;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.YukonImageDao;
-import com.cannontech.database.PoolManager;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonImage;
-import com.cannontech.message.DbChangeManager;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.database.data.lite.LiteYukonUser;
 
 @Controller
 public class YukonImageController {
 
     @Autowired YukonImageDao yid;
     @Autowired ResourceLoader loader;
-    @Autowired DbChangeManager dbChangeManager;
+    @Autowired RolePropertyDao rpDao;
 
     @RequestMapping(value="/images/{id}", method=RequestMethod.GET)
     public void image(HttpServletResponse resp, @PathVariable int id) throws IOException, SQLException {
@@ -36,9 +41,15 @@ public class YukonImageController {
         LiteYukonImage image = yid.getLiteYukonImage(id);
         if (image == null) {
             if (id == YukonImage.DEFAULT_LOGO.getId()) {
-                image = loadImage(YukonImage.DEFAULT_LOGO);
+                image = yid.add(YukonImage.DEFAULT_LOGO.getId(), 
+                                YukonImage.DEFAULT_LOGO.getCategory(), 
+                                YukonImage.DEFAULT_LOGO.getName(), 
+                                loader.getResource(YukonImage.DEFAULT_LOGO.getPath()));
             } else if (id == YukonImage.DEFAULT_BACKGROUND.getId()) {
-                image = loadImage(YukonImage.DEFAULT_BACKGROUND);
+                image = yid.add(YukonImage.DEFAULT_BACKGROUND.getId(), 
+                                YukonImage.DEFAULT_BACKGROUND.getCategory(), 
+                                YukonImage.DEFAULT_BACKGROUND.getName(), 
+                                loader.getResource(YukonImage.DEFAULT_BACKGROUND.getPath()));
             }
         }
         
@@ -51,32 +62,47 @@ public class YukonImageController {
         resp.getOutputStream().write(image.getImageValue());
     }
     
-    private LiteYukonImage loadImage(YukonImage image) throws IOException, SQLException {
-            
-        Resource resouce = loader.getResource(image.getPath());
-        Connection connection = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-        PreparedStatement pstmt = null;
+    @RequestMapping(value="/images", method=RequestMethod.POST)
+    public @ResponseBody Map<String, Object> upload(HttpServletRequest request, LiteYukonUser user) {
+        
+        Map<String, Object> json = new HashMap<>();
         
         try {
+            rpDao.verifyProperty(YukonRoleProperty.ADMIN_SUPER_USER, user);
             
-            pstmt = connection.prepareStatement("insert into YukonImage values (?, ?, ?, ?)");                    
-            pstmt.setInt(1, image.getId());
-            pstmt.setString(2, image.getCategory());
-            pstmt.setString(3, image.getName());
-            pstmt.setBinaryStream(4, resouce.getInputStream(), (int) resouce.getFile().length());
-            pstmt.execute();
+            boolean isMultipart = ServletFileUpload.isMultipartContent(request);
+            if (!isMultipart) {
+                throw new IllegalArgumentException("not multipart file");
+            }
             
-            DBChangeMsg dbChange = new DBChangeMsg(image.getId(), DBChangeMsg.CHANGE_YUKON_IMAGE, DBChangeMsg.CAT_STATEGROUP, DBChangeMsg.CAT_STATEGROUP, DbChangeType.ADD);
-            dbChangeManager.processDbChange(dbChange);
+            MultipartHttpServletRequest mRequest = (MultipartHttpServletRequest) request;
+            MultipartFile file = mRequest.getFile("file");
+            if (file == null || StringUtils.isBlank(file.getOriginalFilename())) {
+                throw new IllegalArgumentException("Blank file.");
+            }
             
-        } finally {
-            if (pstmt != null) pstmt.close();
-            if (connection != null) connection.close();
+            if(!file.getContentType().startsWith("image")) {
+                throw new IllegalArgumentException("Only image files are valid.");
+            }
+            
+            InputStream inputStream = file.getInputStream();
+            LiteYukonImage image = yid.add("logos", file.getOriginalFilename(), new InputStreamResource(inputStream));
+            Map<String, Object> imageStats = new HashMap<>(); 
+            imageStats.put("id", image.getImageID());
+            imageStats.put("name", image.getImageName());
+            imageStats.put("category", image.getImageCategory());
+            imageStats.put("size", image.getImageValue().length);
+            json.put("image", imageStats);
+            
+            json.put("status", "success");
+        } catch (Exception e) {
+            json.put("status", "error");
+            json.put("message", e.getMessage());
         }
         
-        return yid.getLiteYukonImage(image.getId());
+        return json;
     }
-
+    
     private enum YukonImage {
         DEFAULT_LOGO (1, "logos", "eaton_logo.png", "classpath:com/cannontech/web/common/resources/eaton_logo.png"),
         DEFAULT_BACKGROUND (2, "backgrounds", "yukon_background.jpg", "classpath:com/cannontech/web/common/resources/yukon_background.jpg");

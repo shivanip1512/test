@@ -153,9 +153,9 @@ private javax.swing.JComboBox getJComboBoxCategory() {
 
          getJComboBoxCategory().addItem( com.cannontech.common.util.CtiUtilities.STRING_NONE );
 
-			String[] cats = YukonSpringHook.getBean(YukonImageDao.class).getAllCategoris();
-			for( int i = 0; i < cats.length; i++ )
-				getJComboBoxCategory().addItem( cats[i] );
+			for (String category : YukonSpringHook.getBean(YukonImageDao.class).getAllCategories()) {
+				getJComboBoxCategory().addItem(category);
+			}
 
 
 			// user code end

@@ -6,6 +6,9 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
 <cti:standardPage module="adminSetup" page="config.themes">
+<cti:includeScript link="JQUERY_UI_WIDGET"/>
+<cti:includeScript link="JQUERY_IFRAME_TRANSPORT"/>
+<cti:includeScript link="JQUERY_FILE_UPLOAD"/>
 <tags:setFormEditMode mode="${mode}"/>
 
 <cti:msg2 key="yukon.common.choose" var="chooseText"/>
@@ -103,11 +106,14 @@ function initColorPickers() {
 
 jQuery(function() {
     initColorPickers();
+    
+    // handle delete
     jQuery('#b-delete').click(function(e){
         jQuery('input[name=_method]').val('DELETE');
         jQuery('#theme-form').submit();
     });
     
+    // open image picker
     jQuery('a[data-image-picker]').click(function(e) {
         
         var link = jQuery(e.currentTarget),
@@ -124,19 +130,66 @@ jQuery(function() {
             popup.dialog({ autoOpen: false,
                            height: 400, 
                            width:600,
-                           modal : true,
+                           modal : false,
                            buttons : buttons });
             popup.dialog('open');
         });
         
         return false;
     });
+    
+    jQuery('#file-upload').fileupload({
+        dataType: 'json',
+        start: function (e) {
+            console.log('starting upload...');
+            jQuery(jQuery('#file-upload input').data('button').next()).progressbar({max:100, value: 0});
+        },
+        done: function (e, data) {
+            if (data.result.status == 'success') {
+                console.log('upload success');
+                var uploadArea = jQuery(jQuery('#file-upload input').data('button')).parent(),
+                    copy = uploadArea.next().clone();
+                copy.find('.image').attr('data-image-id', data.result.image.id);
+                copy.find('.f-name-value').text(data.result.image.name);
+                copy.find('.f-category-value').text(data.result.image.category);
+                copy.find('.f-size-value').text(data.result.image.size);
+                copy.find('.simple-input-image img').attr('alt', data.result.image.name);
+                copy.find('.simple-input-image img').attr('src', '/common/images/' + data.result.image.id);
+                
+                copy.insertAfter(uploadArea);
+            } else {
+                console.log('upload fail: ' + data.result.message);
+            }
+        },
+        progressall: function (e, data) {
+            var progress = parseInt(data.loaded / data.total * 100, 10);
+            jQuery(jQuery('#file-upload input').data('button').next()).progressbar("value", progress);
+            console.log('progress: ' + progress + '%');
+        }
+    });
+    
+});
+
+jQuery(document).on('click', '.b-upload', function(e) {
+    jQuery('#file-upload input').data('button', e.currentTarget);
+    jQuery('#file-upload input').trigger('click');
 });
 
 //if i don't listen for this event it doesn't work, god knows why
 jQuery(document).on('show.spectrum', 'input', function(e) {
     e.preventDefault();
 });
+
+jQuery(document).on('click', '.image-picker .image', function(e) {
+    e.preventDefault();
+    var selected = jQuery(e.currentTarget),
+        imagePicker = selected.closest('.image-picker');
+    
+    imagePicker.find('.image').removeClass('selected');
+    selected.addClass('selected');
+});
+
+
 jQuery(document).on('yukon.image.selected', '[data-image-picker]', function(e) {
     var imgPicker = jQuery(e.currentTarget),
         selected = imgPicker.find('.image.selected').data('imageId'),
@@ -150,17 +203,18 @@ jQuery(document).on('yukon.image.selected', '[data-image-picker]', function(e) {
 });
 </script>
 
-<div class="box clear dashboard">
+<form id="file-upload" class="dn" action="/common/images" method="post">
+    <input type="file" name="file" multiple>
+</form>
 
-    <div class="clearfix box">
+    <div class="clearfix">
         <div class="category fl">
             <a href="theme" class="icon icon-32 fl icon-32-brush"></a>
-            <div class="box fl meta">
+            <div class="fl meta">
                 <div><a class="title" href="/adminSetup/config/theme"><i:inline key="yukon.common.setting.subcategory.THEMES"/></a></div>
                 <div class="detail"><i:inline key="yukon.common.setting.subcategory.THEMES.description"/></div>
             </div>
         </div>
-        
     </div>
     
     <div class="column_6_18">
@@ -263,6 +317,5 @@ jQuery(document).on('yukon.image.selected', '[data-image-picker]', function(e) {
     
     </div>
         
-</div>
 
 </cti:standardPage>

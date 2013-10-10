@@ -338,5 +338,8 @@
       <sequence name="Theme">
         <table name="Theme" identitycolumn="ThemeId" initsequence="true" />
       </sequence>
+      <sequence name="YukonImage">
+        <table name="YukonImage" identitycolumn="ImageId" initsequence="true" />
+      </sequence>
   </sequencetable>
 </sequencetables>
