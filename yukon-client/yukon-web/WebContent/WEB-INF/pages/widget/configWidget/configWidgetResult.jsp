@@ -21,7 +21,7 @@
     </c:when>
     <c:when test="${sendResult != null}">
         <ct:nameValueContainer2>
-            <ct:nameValue2 nameKey=".sendResult">
+            <ct:nameValue2 nameClass="wsnw" nameKey=".sendResult">
                 <cti:msg2 var="sendConfigFail" key=".fail"/>
                 <cti:msg2 var="sendConfigSuccess" key=".sendConfigSuccess"/>
             	<amr:meterReadingsResult result="${sendResult}" errorMsg="${sendConfigFail}" successMsg="${sendConfigSuccess}"/>

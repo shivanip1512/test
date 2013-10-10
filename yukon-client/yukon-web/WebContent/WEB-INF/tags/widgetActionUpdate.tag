@@ -4,6 +4,7 @@
 <%@ attribute name="container" required="true"%>
 <%@ attribute name="nameKey" required="true"%>
 <%@ attribute name="showConfirm" required="false" type="java.lang.String"%>
+<%@ attribute name="waitingTextLocation" description="jQuery selector to put the busy text in when it shouldn't be next to the button/link (ex: link is in a dropdown)"%>
 <%@ attribute name="hide" type="java.lang.Boolean" %>
 <%@ attribute name="type" description="The type of this element. Either 'button' or 'link'. Defaults to 'button'"%>
 
@@ -42,7 +43,7 @@
             jQuery(document.getElementById("${buttonId}")).click(function() {
                 var confirmText = '${cti:escapeJavaScript(pageScope.confirmText)}';
                 var confirmed = true;
-                if (confirmText.strip() != '') {
+                if (confirmText.strip() !== '') {
                     confirmed = confirm(confirmText);
                 }
                 if (confirmed) {
@@ -51,6 +52,7 @@
                         containerID:    '${container}', 
                         buttonID:       '${thisId}', 
                         waitingText:    '${labelBusyText}...',
+                        waitingTextLocation:    '${pageScope.waitingTextLocation}',
                         key:            '${uniqueId}'});
                 }
             });

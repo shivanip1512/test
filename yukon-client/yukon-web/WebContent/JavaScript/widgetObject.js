@@ -123,17 +123,29 @@ function JsWidgetObject(shortName, parameters) {
    * }
    */
   this.doActionUpdate = function(args) {
+      var waitingTextLocationSpecified = typeof args.waitingTextLocation !== 'undefined',
+          defaultButtonText,
+          container = this.container,
+          updateButton = function() {
+              if (waitingTextLocationSpecified) {
+                  jQuery(args.waitingTextLocation).hide();
+              }
+              else {
+                  jQuery('#' + args.buttonID).find('span').text(defaultButtonText);
+                  jQuery('#' + args.buttonID).find('.widgetAction_waiting').hide();
+              }
+              jQuery('#' + container).find('button').removeAttr('disabled');
+          };
       if (args.buttonID) {
-          var defaultButtonText = $(args.buttonID).down('span').innerHTML;
-          $(args.buttonID).down('span').innerHTML = args.waitingText;
-          $(args.buttonID).getElementsBySelector('.widgetAction_waiting').invoke('show');
-          var container = this.container;
-          $(container).getElementsBySelector('button').invoke('disable');
-          var updateButton = function() {
-              $(args.buttonID).down('span').innerHTML = defaultButtonText;
-              $(args.buttonID).getElementsBySelector('.widgetAction_waiting').invoke('hide');
-              $(container).getElementsBySelector('button').invoke('enable');
+          if ( waitingTextLocationSpecified) {
+              jQuery(args.waitingTextLocation).text(args.waitingText);
+              jQuery(args.waitingTextLocation).show();
+          } else {
+              defaultButtonText = jQuery('#' + args.buttonID).find('span').text();
+              jQuery('#' + args.buttonID).find('span').text(args.waitingText);
+              jQuery('#' + args.buttonID).find('.widgetAction_waiting').show();
           }
+          jQuery('#' + container).find('button').attr('disabled', 'disabled');
       }
 
     var oldParams = jQuery.extend(true, this.getWidgetParameters(), this.linkInfo[args.key], args.extraParameters);
@@ -144,7 +156,7 @@ function JsWidgetObject(shortName, parameters) {
     	url: url,
     	data: oldParams,
     	success: function(data) {
-    		if (updateButton) {
+    		if (args.buttonID) {
     		    updateButton();
     		}
     		jQuery(document.getElementById(args.containerID)).html(data);

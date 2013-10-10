@@ -32,20 +32,23 @@
 								    <ct:widgetActionUpdate method="sendConfig"
 										nameKey="send"
 										container="${widgetParameters.widgetId}_config_results"
-										type="link"/>
+										type="link"
+										waitingTextLocation="#${widgetParameters.widgetId}_busy" />
                                 </li>
 								<li>
 								    <ct:widgetActionUpdate method="readConfig"
 										nameKey="read"
 										container="${widgetParameters.widgetId}_config_results"
-										type="link"/>
+										type="link"
+                                        waitingTextLocation="#${widgetParameters.widgetId}_busy" />
                                 </li>
 							</cti:checkRolesAndProperties>
 							<li>
                                 <ct:widgetActionUpdate method="verifyConfig"
 									nameKey="verify"
 									container="${widgetParameters.widgetId}_config_results"
-									type="link"/>
+									type="link" 
+                                    waitingTextLocation="#${widgetParameters.widgetId}_busy" />
                             </li>
 						</cm:dropdown>
                     </c:if>
@@ -70,6 +73,6 @@
                 </tr>
             </cti:checkRolesAndProperties>
         </table>
-        
+        <div id="${widgetParameters.widgetId}_busy" class="stacked"></div>
         <div id="${widgetParameters.widgetId}_config_results"></div>
     </div>
