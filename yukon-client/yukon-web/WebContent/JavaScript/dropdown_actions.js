@@ -12,7 +12,11 @@ jQuery(function() {
 
         if (menu.is(":visible")) {
             jQuery("ul.dropdown-menu").hide();
-
+            /*
+             * We want to propagate the click event if it was on a link.
+             * The target may have been an icon inside that link, 
+             * so  we can't just check if the target has an href.
+             */
             if ( jQuery(e.target).closest('[href]').length !== 0 ) {
                 return true;
             }
