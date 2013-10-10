@@ -67,13 +67,10 @@ jQuery(function() {
     <div class="column two">
         <tags:sectionContainer2 nameKey="manuals">
             <ul class="simple-list stacked">
-                <li><a href="<cti:msg2 key=".manuals.amiAdmin.link"/>"><i:inline key=".manuals.amiAdmin.title"/></a></li>
-                <li><a href="<cti:msg2 key=".manuals.amiUser.link"/>"><i:inline key=".manuals.amiUser.title"/></a></li>
-                <li><a href="<cti:msg2 key=".manuals.csr.link"/>"><i:inline key=".manuals.csr.title"/></a></li>
-                <li><a href="<cti:msg2 key=".manuals.drAdmin.link"/>"><i:inline key=".manuals.drAdmin.title"/></a></li>
-                <li><a href="<cti:msg2 key=".manuals.drUser.link"/>"><i:inline key=".manuals.drUser.title"/></a></li>
-                <li><a href="<cti:msg2 key=".manuals.daAdmin.link"/>"><i:inline key=".manuals.daAdmin.title"/></a></li>
-                <li><a href="<cti:msg2 key=".manuals.daUser.link"/>"><i:inline key=".manuals.daUser.title"/></a></li>
+                <li><a href="<cti:msg2 key=".manuals.release.link"/>"><i:inline key=".manuals.release.title"/></a></li>
+                <li><a href="<cti:msg2 key=".manuals.requirements.link"/>"><i:inline key=".manuals.requirements.title"/></a></li>
+                <li><a href="<cti:msg2 key=".manuals.new.link"/>"><i:inline key=".manuals.new.title"/></a></li>
+                <li><a href="<cti:msg2 key=".manuals.general.link"/>"><i:inline key=".manuals.general.title"/></a></li>
             </ul>
         </tags:sectionContainer2>
     </div>
