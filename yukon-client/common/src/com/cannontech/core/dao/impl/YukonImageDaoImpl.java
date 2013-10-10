@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.PreparedStatementSetter;
@@ -145,6 +146,19 @@ public final class YukonImageDaoImpl implements YukonImageDao {
     @Override
     public LiteYukonImage add(final String category, final String name, final Resource resource) throws IOException {
         return add(nvh.getNextValue("YukonImage"), category, name, resource);
+    }
+
+    @Override
+    public List<LiteYukonImage> getImagesForCategory(String category) {
+        
+        if (StringUtils.isBlank(category)) return cache.getAllYukonImages();
+        
+        List<LiteYukonImage> images = new ArrayList<>();
+        for (LiteYukonImage image : cache.getAllYukonImages()) {
+            if (category.equalsIgnoreCase(image.getImageCategory())) images.add(image);
+        }
+        
+        return images;
     }
     
 }

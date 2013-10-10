@@ -10,7 +10,7 @@
         <div class="edit simple-input-image" <tags:attributeHelper name="id" value="${param.id}"/>>
             <cti:url var="url" value="/adminSetup/config/themes/imagePicker"><!-- TODO: put this somewhere common -->
                 <cti:param name="selected" value="${status.value}" />
-                <cti:param name="category" value="logos" /><!-- TODO: inject category -->
+                <cti:param name="category" value="${inputType.category}" />
             </cti:url>
             <a data-image-picker="${param.id}" href="${url}">
                 <img alt="${status.value}" src="/common/images/${status.value}">

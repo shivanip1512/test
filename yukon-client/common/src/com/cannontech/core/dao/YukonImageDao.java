@@ -47,4 +47,9 @@ public interface YukonImageDao {
      */
     public LiteYukonImage add(String category, String name, Resource resource) throws IOException;
 
+    /**
+     * Returns the images in the provided category.  If category is null, all images are returned.
+     */
+    public List<LiteYukonImage> getImagesForCategory(String category);
+
 }

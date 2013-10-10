@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.core.dao.YukonImageDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonImage;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -45,7 +46,7 @@ public class ThemeController {
     @Autowired private ThemeDao themeDao;
     @Autowired private YukonUserContextMessageSourceResolver resolver;
     @Autowired private ResourceLoader loader;
-    @Autowired private IDatabaseCache cache;
+    @Autowired private YukonImageDao yid;
     
     private SimpleValidator<Theme> validator = new SimpleValidator<Theme>(Theme.class) {
         @Override
@@ -171,7 +172,7 @@ public class ThemeController {
     @RequestMapping("/config/themes/imagePicker")
     public String imagePicker(ModelMap model, String category, Integer selected) {
         
-        List<LiteYukonImage> images = cache.getAllYukonImages();
+        List<LiteYukonImage> images = yid.getImagesForCategory(category);
         model.addAttribute("images", images);
         model.addAttribute("selected", selected);
         
