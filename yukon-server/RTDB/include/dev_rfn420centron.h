@@ -14,5 +14,9 @@ class IM_EX_DEVDB Rfn420CentronDevice :
     void handleResult(const Commands::RfnCentronLcdConfigurationCommand &cmd);
 };
 
+
+typedef Rfn420CentronDevice Rfn420clDevice;
+typedef Rfn420CentronDevice Rfn420cdDevice;
+
 }
 }

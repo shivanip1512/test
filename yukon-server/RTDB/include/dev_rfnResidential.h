@@ -63,6 +63,10 @@ private:
     bool isTouConfigCurrent( const Config::DeviceConfigSPtr &deviceConfig, std::map<std::string, std::string> &configMap );
 };
 
+typedef RfnResidentialDevice Rfn410fxDevice;
+typedef RfnResidentialDevice Rfn410fdDevice;
+
+typedef RfnResidentialDevice Rfn410clDevice;
 
 }
 }

@@ -18,7 +18,7 @@ std::string RfnDevice::getSQLCoreStatement() const
             "RFN.SerialNumber, RFN.Manufacturer, RFN.Model "
         "FROM "
             "YukonPAObject YP "
-            "JOIN Device DV ON YP.YukonPaObjectId = DV.DeviceID "
+            "JOIN Device DV ON YP.PaObjectId = DV.DeviceID "
             "JOIN RFNAddress RFN on DV.DeviceId = RFN.DeviceID "
          "WHERE "
             "1=1 ";  //  Unfortunately, it seems that our selectors require a WHERE clause.
@@ -73,6 +73,18 @@ int RfnDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiM
 
     if( ! executeMethod )
     {
+        retList.push_back(
+                new CtiReturnMsg(
+                        pReq->DeviceId(),
+                        pReq->CommandString(),
+                        "Invalid command.",
+                        NoMethod,
+                        0,
+                        0,
+                        0,
+                        pReq->GroupMessageId(),
+                        pReq->UserMessageId()));
+
         return NoMethod;
     }
 

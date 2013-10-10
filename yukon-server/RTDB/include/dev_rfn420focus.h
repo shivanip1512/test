@@ -18,5 +18,14 @@ class IM_EX_DEVDB Rfn420FocusDevice
                                  const long config_display_duration );
 };
 
+
+typedef Rfn420FocusDevice Rfn420flDevice;
+typedef Rfn420FocusDevice Rfn420fxDevice;
+typedef Rfn420FocusDevice Rfn420fdDevice;
+
+typedef Rfn420FocusDevice Rfn420frxDevice;
+typedef Rfn420FocusDevice Rfn420frdDevice;
+
+
 }
 }

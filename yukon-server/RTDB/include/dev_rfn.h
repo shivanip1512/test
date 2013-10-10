@@ -73,12 +73,13 @@ private:
     void executeConfigInstallSingle (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests, const std::string &installValue, InstallMethod installMethod );
 };
 
-typedef RfnDevice Rfn410Device;
-//typedef RfnDevice Rfn420CentronDevice;
-//typedef RfnDevice Rfn420FocusDevice;
-typedef RfnDevice Rfn430Device;
+typedef RfnDevice Rfn410flDevice;  //  kWh only
+
+typedef RfnDevice Rfn430a3dDevice;
+typedef RfnDevice Rfn430a3tDevice;
+typedef RfnDevice Rfn430a3kDevice;
+typedef RfnDevice Rfn430a3rDevice;
+typedef RfnDevice Rfn430kvDevice;
 
 }
 }
-
-

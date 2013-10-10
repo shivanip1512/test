@@ -22,6 +22,7 @@
 #include "dev_mct410.h"
 #include "dev_modbus.h"
 #include "dev_repeater.h"
+#include "dev_rfn.h"
 #include "dev_rtc.h"
 #include "dev_rtm.h"
 #include "dev_fmu.h"
@@ -735,6 +736,8 @@ void CtiDeviceManager::refreshList(const Cti::Database::id_set &paoids, const LO
                         rowFound |= loadDeviceType(paoid_subset, "Repeater 900 devices",   Devices::DlcBaseDevice(),     "REPEATER");
                         rowFound |= loadDeviceType(paoid_subset, "Repeater 902 devices",   Devices::DlcBaseDevice(),     "REPEATER 902");
                         rowFound |= loadDeviceType(paoid_subset, "Repeater 921 devices",   Devices::DlcBaseDevice(),     "REPEATER 921");
+
+                        rowFound |= loadDeviceType(paoid_subset, "RFN devices",            Devices::RfnDevice());
 
                         rowFound |= loadDeviceType(paoid_subset, "CBC devices",            CtiDeviceCBC());
                         rowFound |= loadDeviceType(paoid_subset, "FMU devices",            CtiDeviceIED(),         "FMU");

@@ -6796,6 +6796,7 @@
             </tag>
             <tag name="METER_DETAIL_DISPLAYABLE"/>
             <tag name="NETWORK_MANAGER_ATTRIBUTE_READS"/>
+            <tag name="PORTER_COMMAND_REQUESTS" />
             <tag name="USES_METER_NUMBER_FOR_MSP"/>
         </tags>
     </pao>
