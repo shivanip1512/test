@@ -236,7 +236,7 @@ public enum BuiltInAttribute implements Attribute {
     PASSWORD_TABLE_CRC_ERROR("Password Table Crc Error"),
     PHASE_ANGLE_DISPLACEMENT("Phase Angle Displacement"),
     PHASE_LOSS("Phase Loss"),
-    POLARITY_CROSS_PHASE_ENERGY_FLOW_DIAG("Polarity, Cross-phase and Energy Flow Diagnostic"),
+    POLARITY_CROSS_PHASE_ENERGY_FLOW_DIAGNOSTIC("Polarity, Cross-phase and Energy Flow Diagnostic"),
     POTENTIAL_INDICATOR_WARNING("Potential Indicator Warning"),
     POWER_FAIL_DATA_SAVE_ERROR("Power Fail Data Save Error"),
     PQM_TEST_FAILURE_WARNING("Pqm Test Failure Warning"),
@@ -301,7 +301,7 @@ public enum BuiltInAttribute implements Attribute {
     private static ImmutableSet<BuiltInAttribute> rfnSoftwareAttributes;
     private static ImmutableSet<BuiltInAttribute> rfnVoltageAttributes;
     private static ImmutableSet<BuiltInAttribute> rfnCurrentAttributes;
-    private static ImmutableSet<BuiltInAttribute> rfnDisconnectAttributes;
+    private static ImmutableSet<BuiltInAttribute> rfnMeteringAttributes;
     private static ImmutableSet<BuiltInAttribute> rfnDemandAttributes;
     private static ImmutableSet<BuiltInAttribute> rfnOtherAttributes;
     private static ImmutableSet<BuiltInAttribute> rfnNonReadableEvents;
@@ -576,7 +576,7 @@ public enum BuiltInAttribute implements Attribute {
                 PASSWORD_TABLE_CRC_ERROR,
                 PHASE_ANGLE_DISPLACEMENT,
                 PHASE_LOSS,
-                POLARITY_CROSS_PHASE_ENERGY_FLOW_DIAG,
+                POLARITY_CROSS_PHASE_ENERGY_FLOW_DIAGNOSTIC,
                 POTENTIAL_INDICATOR_WARNING,
                 POWER_FAIL_DATA_SAVE_ERROR,
                 POWER_FAIL_FLAG,             //[PLC & RFN] Shared
@@ -630,9 +630,9 @@ public enum BuiltInAttribute implements Attribute {
         rfnEventTypes = builder.build();
         
         rfnHardwareAttributes = ImmutableSet.of(
-                CLOCK_ERROR,
                 CRYSTAL_OSCILLATOR_ERROR,
                 EEPROM_ACCESS_ERROR,
+                IMPROPER_METER_ENGINE_OPERATION_WARNING,
                 INTERNAL_COMMUNICATION_ERROR,
                 INTERNAL_ERROR_FLAG,
                 LOW_BATTERY_WARNING,
@@ -641,8 +641,12 @@ public enum BuiltInAttribute implements Attribute {
                 OVER_VOLTAGE,
                 OVER_VOLTAGE_MEASURED,
                 OVER_VOLTAGE_THRESHOLD,
+                POWER_FAIL_DATA_SAVE_ERROR,
                 RAM_ERROR,
                 ROM_ERROR,
+                SERVICE_DISCONNECT_SWITCH_ERROR,
+                SERVICE_DISCONNECT_SWITCH_OPEN,
+                SERVICE_DISCONNECT_SWITCH_SENSOR_ERROR,
                 STUCK_SWITCH,
                 UNDER_VOLTAGE,
                 UNDER_VOLTAGE_MEASURED,
@@ -659,39 +663,41 @@ public enum BuiltInAttribute implements Attribute {
                 FAILED_UPGRADE_SIGNATURE_VERIF,
                 INVALID_SERVICE,
                 MASS_MEMORY_ERROR,
-                MEASUREMENT_ERROR,
                 PASSWORD_TABLE_CRC_ERROR,
-                POWER_FAIL_DATA_SAVE_ERROR,
                 SECURITY_CONFIGURATION_ERROR,
                 SELF_CHECK_ERROR,
                 TABLE_CRC_ERROR,
                 TOU_SCHEDULE_ERROR,
                 UNCONFIGURED,
-                UNPROGRAMMED,
-                USER_PROGRAMMABLE_TEMPERATURE_THRESHOLD_EXCEEDED);
+                UNPROGRAMMED);
         
         rfnVoltageAttributes = ImmutableSet.of(
-                LOAD_SIDE_VOLTAGE_IS_MISSING,
-                VOLTAGE_ALERTS,
                 VOLTAGE_LOSS,
                 VOLTAGE_PHASE_A_OUT,
                 VOLTAGE_PHASE_B_OUT,
-                VOLTAGE_PHASE_C_OUT,
-                VOLTAGE_PHASE_ERROR);
+                VOLTAGE_PHASE_C_OUT);
         
         rfnCurrentAttributes = ImmutableSet.of(
                 CURRENT_LOSS,
                 LOSS_OF_ALL_CURRENT,
                 LOSS_OF_PHASE_A_CURRENT,
-                LOSS_OF_PHASE_C_CURRENT,
+                LOSS_OF_PHASE_C_CURRENT);
+        
+        rfnMeteringAttributes = ImmutableSet.of(
+                ENERGY_ACCUMULATED_WHILE_IN_STANDBY_MODE,
+                LINE_FREQUENCY_WARNING,
+                LOAD_SIDE_VOLTAGE_IS_MISSING,
+                LOW_LOSS_POTENTIAL,
+                MEASUREMENT_ERROR,
+                POTENTIAL_INDICATOR_WARNING,
+                PQM_TEST_FAILURE_WARNING,
                 REVERSED_AGGREGATE,
                 REVERSED_PHASE_A,
-                REVERSED_PHASE_C);
-        
-        rfnDisconnectAttributes = ImmutableSet.of(
-                SERVICE_DISCONNECT_SWITCH_ERROR,
-                SERVICE_DISCONNECT_SWITCH_OPEN,
-                SERVICE_DISCONNECT_SWITCH_SENSOR_ERROR);
+                REVERSED_PHASE_C,
+                SERVICE_CURRENT_TEST_FAILURE_WARNING,
+                USER_PROGRAMMABLE_TEMPERATURE_THRESHOLD_EXCEEDED,
+                VOLTAGE_ALERTS,
+                VOLTAGE_PHASE_ERROR);
         
         rfnDemandAttributes = ImmutableSet.of(
                 DEMAND_OVERLOAD,
@@ -699,22 +705,16 @@ public enum BuiltInAttribute implements Attribute {
                 DEMAND_THRESHOLD_EXCEEDED_WARNING);
         
         rfnOtherAttributes = ImmutableSet.of(
+                CLOCK_ERROR,
                 CURRENT_WAVEFORM_DISTORTION,
                 DISPLAY_LOCKED_BY_WARNING,
-                ENERGY_ACCUMULATED_WHILE_IN_STANDBY_MODE,
-                IMPROPER_METER_ENGINE_OPERATION_WARNING,
                 INACTIVE_PHASE_CURRENT_DIAGNOSTIC_ERROR,
-                LINE_FREQUENCY_WARNING,
-                LOW_LOSS_POTENTIAL,
                 METROLOGY_COMM_FAILURE,
                 PHASE_ANGLE_DISPLACEMENT,
                 PHASE_LOSS,
-                POLARITY_CROSS_PHASE_ENERGY_FLOW_DIAG,
-                POTENTIAL_INDICATOR_WARNING,
-                PQM_TEST_FAILURE_WARNING,
+                POLARITY_CROSS_PHASE_ENERGY_FLOW_DIAGNOSTIC,
                 REGISTER_FULL_SCALE_EXCEEDED,
                 SEASON_CHANGE,
-                SERVICE_CURRENT_TEST_FAILURE_WARNING,
                 SITESCAN_ERROR,
                 TIME_ADJUSTMENT,
                 THD_V_OR_TDD_I_ERROR);
@@ -727,9 +727,9 @@ public enum BuiltInAttribute implements Attribute {
         groupedRfnEventBuilder.put(AttributeGroup.RFN_SOFTWARE_EVENT, rfnSoftwareAttributes);
         groupedRfnEventBuilder.put(AttributeGroup.RFN_VOLTAGE_EVENT, rfnVoltageAttributes);
         groupedRfnEventBuilder.put(AttributeGroup.RFN_CURRENT_EVENT, rfnCurrentAttributes);
-        groupedRfnEventBuilder.put(AttributeGroup.RFN_DISCONNECT_EVENT, rfnDisconnectAttributes);
         groupedRfnEventBuilder.put(AttributeGroup.RFN_DEMAND_EVENT, rfnDemandAttributes);
         groupedRfnEventBuilder.put(AttributeGroup.RFN_OTHER_EVENT, rfnOtherAttributes);
+        groupedRfnEventBuilder.put(AttributeGroup.RFN_METERING_EVENT, rfnMeteringAttributes);
         
         groupedRfnEventAttributes = groupedRfnEventBuilder.build();
         
@@ -769,6 +769,7 @@ public enum BuiltInAttribute implements Attribute {
         ImmutableSet.Builder<BuiltInAttribute> allOtherAttributes = ImmutableSet.builder();
         allOtherAttributes.addAll(otherAttributes);
         allOtherAttributes.addAll(rfnOtherAttributes);
+        allOtherAttributes.addAll(rfnMeteringAttributes);
         allGroupedBuilder.put(AttributeGroup.OTHER, allOtherAttributes.build());
         
         allGroupedBuilder.put(AttributeGroup.BLINK_AND_OUTAGE, blinkAndOutageCounts);
@@ -780,7 +781,6 @@ public enum BuiltInAttribute implements Attribute {
         
         allGroupedBuilder.put(AttributeGroup.RFN_HARDWARE_EVENT, rfnHardwareAttributes);
         allGroupedBuilder.put(AttributeGroup.RFN_SOFTWARE_EVENT, rfnSoftwareAttributes);
-        allGroupedBuilder.put(AttributeGroup.RFN_DISCONNECT_EVENT, rfnDisconnectAttributes);
 
         // The attribute group map that is created can be used in conjunction with 
         // the selectNameValue tag and groupItems="true".
