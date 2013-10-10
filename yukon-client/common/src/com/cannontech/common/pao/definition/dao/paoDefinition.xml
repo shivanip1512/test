@@ -5889,6 +5889,9 @@
             <attribute name="DELIVERED_KW_LOAD_PROFILE">
                 <basicLookup point="Delivered kW Load Profile"/>
             </attribute>
+            <attribute name="LOAD_PROFILE">
+                <basicLookup point="Delivered kW Load Profile"/>
+            </attribute>
             <attribute name="RECEIVED_KWH_PER_INTERVAL">
                 <basicLookup point="Received kWh per Interval"/>
             </attribute>
@@ -8664,7 +8667,7 @@
             <attribute name="PHASE_LOSS">
                 <basicLookup point="Phase Loss"/>
             </attribute>
-            <attribute name="POLARITY_CROSS_PHASE_ENERGY_FLOW_DIAG">
+            <attribute name="POLARITY_CROSS_PHASE_ENERGY_FLOW_DIAGNOSTIC">
                 <basicLookup point="Polarity Cross-phase and Energy Flow Diagnostic"/>
             </attribute>
             <attribute name="RAM_ERROR">
@@ -8740,6 +8743,9 @@
                 <basicLookup point="Delivered kWh per Interval"/>
             </attribute>
             <attribute name="DELIVERED_KW_LOAD_PROFILE">
+                <basicLookup point="Delivered kW Load Profile"/>
+            </attribute>
+            <attribute name="LOAD_PROFILE">
                 <basicLookup point="Delivered kW Load Profile"/>
             </attribute>
         </attributes>
