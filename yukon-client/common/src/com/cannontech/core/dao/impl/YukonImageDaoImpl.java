@@ -14,10 +14,10 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.PreparedStatementSetter;
+import org.springframework.util.FileCopyUtils;
 
 import com.cannontech.core.dao.YukonImageDao;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -115,12 +115,11 @@ public final class YukonImageDaoImpl implements YukonImageDao {
     @SuppressWarnings("deprecation")
     public LiteYukonImage add(final int id, final String category, final String name, final Resource resource) throws IOException {
         
-        final InputStream in = resource.getInputStream();
-        final File temp = new File("/temp/temp.jpg");
+        InputStream in = resource.getInputStream();
+        final File temp = File.createTempFile("yukon_image", ".tmp");
         OutputStream out = new FileOutputStream(temp);
-        IOUtils.copy(in, out);
-        out.close();
-        
+        FileCopyUtils.copy(in, out);
+
         template.getJdbcOperations().update("insert into YukonImage values (?, ?, ?, ?)", new PreparedStatementSetter() {
             @Override
             public void setValues(PreparedStatement ps) throws SQLException {
@@ -128,7 +127,7 @@ public final class YukonImageDaoImpl implements YukonImageDao {
                 ps.setString(2, category);
                 ps.setString(3, name);
                 try {
-                    ps.setBinaryStream(4, new FileInputStream(temp), (int)temp.length());
+                    ps.setBinaryStream(4, new FileInputStream(temp), (int) temp.length());
                 } catch (FileNotFoundException e) {
                     throw new SQLException("file not found");
                 }
