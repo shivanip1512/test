@@ -10,6 +10,18 @@ extern "C" {
 namespace Cti {
 namespace Protocols {
 
+class scoped_pdu_ptr
+{
+    coap_pdu_t *pdu;
+public:
+    scoped_pdu_ptr(coap_pdu_t *pdu_) : pdu(pdu_) {}
+
+    ~scoped_pdu_ptr() { coap_delete_pdu(pdu); }
+
+    operator coap_pdu_t *()  const { return pdu; }
+    coap_pdu_t *operator->() const { return pdu; }
+};
+
 E2eDataTransferProtocol::SendInfo E2eDataTransferProtocol::sendRequest(const std::vector<unsigned char> &payload, const unsigned short id)
 {
     SendInfo si;
@@ -22,15 +34,13 @@ E2eDataTransferProtocol::SendInfo E2eDataTransferProtocol::sendRequest(const std
         return si;
     }
 
-    coap_pdu_t *pdu = coap_pdu_init(COAP_MESSAGE_CON, COAP_REQUEST_GET, id, COAP_MAX_PDU_SIZE);
+    scoped_pdu_ptr pdu(coap_pdu_init(COAP_MESSAGE_CON, COAP_REQUEST_GET, id, COAP_MAX_PDU_SIZE));
 
     coap_add_data(pdu, payload.size(), &payload.front());
 
     const unsigned char *raw_pdu = reinterpret_cast<unsigned char *>(pdu->hdr);
 
     si.message.assign(raw_pdu, raw_pdu + pdu->length);
-
-    coap_delete_pdu(pdu);
 
     return si;
 }
@@ -47,7 +57,7 @@ E2eDataTransferProtocol::EndpointResponse E2eDataTransferProtocol::handleIndicat
         return er;
     }
 
-    coap_pdu_t *pdu = coap_pdu_init(COAP_MESSAGE_NON, COAP_REQUEST_GET, COAP_INVALID_TID, COAP_MAX_PDU_SIZE);
+    scoped_pdu_ptr pdu(coap_pdu_init(COAP_MESSAGE_NON, COAP_REQUEST_GET, COAP_INVALID_TID, COAP_MAX_PDU_SIZE));
 
     std::copy(payload.begin(), payload.end(), reinterpret_cast<unsigned char *>(pdu->hdr));
 
@@ -64,7 +74,7 @@ E2eDataTransferProtocol::EndpointResponse E2eDataTransferProtocol::handleIndicat
     {
         if( block.m )
         {
-            coap_pdu_t *continuation_pdu = coap_pdu_init(COAP_MESSAGE_CON, COAP_REQUEST_GET, pdu->hdr->id, COAP_MAX_PDU_SIZE);
+            scoped_pdu_ptr continuation_pdu = coap_pdu_init(COAP_MESSAGE_CON, COAP_REQUEST_GET, pdu->hdr->id, COAP_MAX_PDU_SIZE);
 
             block.num++;
 
@@ -77,8 +87,6 @@ E2eDataTransferProtocol::EndpointResponse E2eDataTransferProtocol::handleIndicat
             const unsigned char *raw_pdu = reinterpret_cast<unsigned char *>(continuation_pdu->hdr);
 
             er.blockContinuation = std::vector<unsigned char>(raw_pdu, raw_pdu + continuation_pdu->length);
-
-            coap_delete_pdu(continuation_pdu);
         }
     }
 
