@@ -107,10 +107,10 @@ dllyukon.obj:	precompiled.h tbl_route.h dllbase.h dsm2.h cticonnect.h \
 		pointtypes.h db_entry_defines.h desolvers.h logger.h thread.h \
 		CtiPCPtrQueue.h tbl_rtcomm.h ctibase.h ctinexus.h \
 		tbl_rtmacro.h tbl_rtroute.h tbl_rtrepeater.h tbl_rtversacom.h \
-		msg_pcrequest.h message.h collectable.h rwutil.h \
+		msg_pcrequest.h message.h collectable.h pt_base.h \
+		tbl_pt_base.h pointdefs.h tbl_state_grp.h rwutil.h \
 		database_connection.h database_reader.h boost_time.h \
-		boostutil.h pt_base.h tbl_pt_base.h pointdefs.h \
-		tbl_state_grp.h tbl_state.h
+		boostutil.h tbl_state.h
 invalidreaderexception.obj:	precompiled.h InvalidReaderException.h \
 		dlldefs.h database_reader.h database_connection.h dbaccess.h \
 		dllbase.h dsm2.h cticonnect.h yukon.h types.h ctidbgmem.h \

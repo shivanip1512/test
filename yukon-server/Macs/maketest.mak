@@ -150,31 +150,30 @@ test_interp.obj:	interp.h critical_section.h dlldefs.h guard.h \
 		utility.h ctitime.h queues.h cticalls.h os2_2w32.h types.h \
 		numstr.h thread.h mutex.h
 test_mccmd.obj:	mccmd.h msg_pcrequest.h dlldefs.h message.h ctitime.h \
-		ctidbgmem.h collectable.h rwutil.h yukon.h types.h \
-		database_connection.h dbaccess.h dllbase.h dsm2.h \
-		cticonnect.h netports.h mutex.h guard.h utility.h queues.h \
-		cticalls.h os2_2w32.h numstr.h dsm2err.h words.h optional.h \
-		database_reader.h row_reader.h boost_time.h boostutil.h \
-		msg_pcreturn.h msg_multi.h msg_pdata.h pointdefs.h \
-		pointtypes.h logger.h thread.h CtiPCPtrQueue.h ctdpcptrq.h \
-		tbl_meterreadlog.h ctistring.h
+		ctidbgmem.h collectable.h msg_pcreturn.h msg_multi.h \
+		msg_pdata.h yukon.h types.h pointdefs.h pointtypes.h logger.h \
+		thread.h mutex.h guard.h utility.h queues.h cticalls.h \
+		os2_2w32.h numstr.h CtiPCPtrQueue.h ctdpcptrq.h dllBase.h \
+		dsm2.h cticonnect.h netports.h dsm2err.h words.h optional.h \
+		tbl_meterreadlog.h row_reader.h database_connection.h \
+		dbaccess.h boostutil.h ctistring.h
 test_mc_serialization.obj:	message.h ctitime.h dlldefs.h ctidbgmem.h \
-		collectable.h rwutil.h yukon.h types.h database_connection.h \
-		dbaccess.h dllbase.h dsm2.h cticonnect.h netports.h mutex.h \
-		guard.h utility.h queues.h cticalls.h os2_2w32.h numstr.h \
-		dsm2err.h words.h optional.h database_reader.h row_reader.h \
-		boost_time.h boostutil.h msg_cmd.h msg_dbchg.h \
+		collectable.h msg_cmd.h msg_dbchg.h yukon.h types.h \
 		msg_lmcontrolhistory.h pointdefs.h msg_multi.h msg_pdata.h \
 		pointtypes.h msg_notif_alarm.h msg_notif_email.h logger.h \
-		thread.h CtiPCPtrQueue.h msg_notif_lmcontrol.h \
-		msg_pcrequest.h msg_pcreturn.h msg_ptreg.h msg_queuedata.h \
-		Msg_reg.h msg_requestcancel.h msg_server_req.h \
-		msg_server_resp.h msg_signal.h msg_tag.h msg_trace.h mc_msg.h \
-		mc_sched.h mc.h dbmemobject.h tbl_pao.h tbl_mcsched.h \
-		tbl_mcsimpsched.h mc_script.h test_mc_serialization.h \
-		test_serialization.h test_serialization_helper.h \
-		connection_server.h connection.h exchange.h string_utility.h \
-		queue.h cparms.h configkey.h configval.h \
+		thread.h mutex.h guard.h utility.h queues.h cticalls.h \
+		os2_2w32.h numstr.h CtiPCPtrQueue.h dllbase.h dsm2.h \
+		cticonnect.h netports.h dsm2err.h words.h optional.h \
+		msg_notif_lmcontrol.h msg_pcrequest.h msg_pcreturn.h \
+		msg_ptreg.h msg_queuedata.h Msg_reg.h msg_requestcancel.h \
+		msg_server_req.h msg_server_resp.h msg_signal.h msg_tag.h \
+		msg_trace.h mc_msg.h mc_sched.h row_reader.h mc.h \
+		dbmemobject.h tbl_pao.h tbl_mcsched.h tbl_mcsimpsched.h \
+		mc_script.h test_mc_serialization.h test_serialization.h \
+		test_serialization_helper.h connection_server.h connection.h \
+		exchange.h string_utility.h queue.h cparms.h rwutil.h \
+		database_connection.h dbaccess.h database_reader.h \
+		boost_time.h boostutil.h configkey.h configval.h \
 		readers_writer_lock.h critical_section.h \
 		connection_listener.h
 test_scheduletime.obj:	ctitime.h dlldefs.h mc_scheduler.h mc.h \
@@ -182,10 +181,9 @@ test_scheduletime.obj:	ctitime.h dlldefs.h mc_scheduler.h mc.h \
 		cticalls.h os2_2w32.h types.h numstr.h CtiPCPtrQueue.h \
 		mc_sched.h row_reader.h dbmemobject.h tbl_pao.h tbl_mcsched.h \
 		tbl_mcsimpsched.h message.h ctidbgmem.h collectable.h \
-		rwutil.h yukon.h database_connection.h dbaccess.h dllbase.h \
-		dsm2.h cticonnect.h netports.h dsm2err.h words.h optional.h \
-		database_reader.h boost_time.h boostutil.h mgr_mcsched.h \
-		rtdb.h hashkey.h hash_functions.h string_utility.h \
-		mgr_holiday.h ctidate.h
+		mgr_mcsched.h rtdb.h hashkey.h hash_functions.h \
+		string_utility.h dllbase.h dsm2.h cticonnect.h yukon.h \
+		netports.h dsm2err.h words.h optional.h mgr_holiday.h \
+		ctidate.h
 #ENDUPDATE#
 

@@ -110,10 +110,10 @@ test_gen_reply.obj:	trx_711.h trx_info.h logger.h dlldefs.h thread.h \
 		devicetypes.h string_utility.h portdecl.h rte_base.h \
 		boostutil.h dbmemobject.h cmdparse.h ctitokenizer.h \
 		parsevalue.h ctibase.h ctinexus.h dllbase.h message.h \
-		collectable.h rwutil.h database_connection.h dbaccess.h \
-		database_reader.h row_reader.h boost_time.h tbl_pao_lite.h \
-		tbl_rtcomm.h resolvers.h pointtypes.h db_entry_defines.h \
+		collectable.h tbl_pao_lite.h row_reader.h tbl_rtcomm.h \
+		dbaccess.h resolvers.h pointtypes.h db_entry_defines.h \
 		desolvers.h msg_signal.h tbl_static_paoinfo.h pointdefs.h \
+		database_connection.h rwutil.h database_reader.h boost_time.h \
 		encryption.h port_base.h dev_base.h dev_exclusion.h \
 		tbl_paoexclusion.h tbl_base.h tbl_scanrate.h \
 		tbl_dyn_paoinfo.h pt_base.h tbl_pt_base.h tbl_port_base.h \

@@ -164,14 +164,14 @@ test_lmprogram.obj:	lmprogramdirect.h boostutil.h utility.h ctitime.h \
 		dlldefs.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
 		lmprogrambase.h dbmemobject.h observe.h msg_multi.h \
 		collectable.h msg_pdata.h yukon.h ctidbgmem.h pointdefs.h \
-		pointtypes.h message.h rwutil.h database_connection.h \
-		dbaccess.h dllbase.h dsm2.h cticonnect.h netports.h mutex.h \
-		guard.h dsm2err.h words.h optional.h database_reader.h \
-		row_reader.h boost_time.h lmgroupbase.h msg_pcrequest.h \
-		msg_cmd.h lmcontrolareatrigger.h ctidate.h logger.h thread.h \
-		CtiPCPtrQueue.h lmprogramdirectgear.h lmcontrolarea.h \
-		connection.h exchange.h string_utility.h msg_ptreg.h \
-		msg_reg.h queue.h cparms.h configkey.h configval.h \
+		pointtypes.h message.h lmgroupbase.h msg_pcrequest.h \
+		msg_cmd.h row_reader.h database_connection.h dbaccess.h \
+		dllbase.h dsm2.h cticonnect.h netports.h mutex.h guard.h \
+		dsm2err.h words.h optional.h lmcontrolareatrigger.h ctidate.h \
+		logger.h thread.h CtiPCPtrQueue.h lmprogramdirectgear.h \
+		lmcontrolarea.h connection.h exchange.h string_utility.h \
+		msg_ptreg.h msg_reg.h queue.h cparms.h rwutil.h \
+		database_reader.h boost_time.h configkey.h configval.h \
 		readers_writer_lock.h critical_section.h \
 		tbl_lmprogramhistory.h lmprogramcontrolwindow.h lmutility.h \
 		lmconstraint.h lmmessage.h ConstraintViolation.h executor.h \

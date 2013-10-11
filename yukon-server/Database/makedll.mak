@@ -198,9 +198,9 @@ dllyukon.obj:	precompiled.h tbl_route.h dllbase.h dsm2.h cticonnect.h \
 		pointtypes.h db_entry_defines.h desolvers.h logger.h thread.h \
 		CtiPCPtrQueue.h tbl_rtcomm.h ctibase.h ctinexus.h \
 		tbl_rtmacro.h tbl_rtroute.h tbl_rtrepeater.h tbl_rtversacom.h \
-		msg_pcrequest.h message.h collectable.h rwutil.h \
-		database_connection.h database_reader.h boost_time.h \
-		boostutil.h tbl_state_grp.h tbl_state.h
+		msg_pcrequest.h message.h collectable.h tbl_state_grp.h \
+		rwutil.h database_connection.h database_reader.h boost_time.h \
+		boostutil.h tbl_state.h
 invalidreaderexception.obj:	precompiled.h InvalidReaderException.h \
 		dlldefs.h database_reader.h database_connection.h dbaccess.h \
 		dllbase.h dsm2.h cticonnect.h yukon.h types.h ctidbgmem.h \
@@ -451,9 +451,7 @@ tbl_lmg_sasimple.obj:	precompiled.h logger.h dlldefs.h thread.h \
 		optional.h dbaccess.h resolvers.h pointtypes.h \
 		db_entry_defines.h row_reader.h prot_sa3rdparty.h cmdparse.h \
 		ctitokenizer.h parsevalue.h prot_base.h msg_pdata.h \
-		pointdefs.h message.h collectable.h rwutil.h \
-		database_connection.h database_reader.h boost_time.h \
-		boostutil.h xfer.h protocol_sa.h
+		pointdefs.h message.h collectable.h xfer.h protocol_sa.h
 tbl_lmprogramhistory.obj:	precompiled.h row_reader.h ctitime.h \
 		dlldefs.h tbl_lmprogramhistory.h dbmemobject.h dbaccess.h \
 		dllbase.h dsm2.h cticonnect.h yukon.h types.h ctidbgmem.h \

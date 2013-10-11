@@ -231,13 +231,13 @@ mct410.obj:	precompiled.h Mct410.h EmetconWords.h types.h ctitime.h \
 		msg_pcrequest.h msg_pcreturn.h msg_multi.h msg_pdata.h \
 		tbl_dv_scandata.h tbl_dv_wnd.h connection.h exchange.h \
 		msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
-		configval.h readers_writer_lock.h critical_section.h \
-		prot_base.h xfer.h tbl_route.h tbl_carrier.h prot_emetcon.h \
-		cmd_dlc.h cmd_device.h tbl_metergrp.h vcomdefs.h \
-		tbl_loadprofile.h da_load_profile.h tbl_dv_mctiedport.h \
-		pt_numeric.h tbl_pt_unit.h tbl_unitmeasure.h \
-		config_data_mct.h ctidate.h dev_mct410_commands.h \
-		cmd_mct410_hourlyRead.h cmd_mct410.h \
+		configval.h readers_writer_lock.h critical_section.h xfer.h \
+		tbl_route.h tbl_carrier.h prot_emetcon.h cmd_dlc.h \
+		cmd_device.h tbl_metergrp.h vcomdefs.h tbl_loadprofile.h \
+		da_load_profile.h tbl_dv_mctiedport.h pt_numeric.h \
+		tbl_pt_unit.h tbl_unitmeasure.h config_data_mct.h ctidate.h \
+		dev_mct410_commands.h cmd_mct410_hourlyRead.h cmd_mct410.h \
+		cmd_mct410_disconnectConfiguration.h \
 		FrozenReadParityBehavior.h FrozenPeakTimestampBehavior.h \
 		RandomConsumptionBehavior.h
 plcinfrastructure.obj:	precompiled.h plcinfrastructure.h Mct410.h \

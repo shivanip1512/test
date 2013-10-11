@@ -215,14 +215,13 @@ calclogicsvc.obj:	precompiled.h id_calc.h utility.h ctitime.h \
 		dlldefs.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
 		dbaccess.h dllbase.h dsm2.h cticonnect.h yukon.h ctidbgmem.h \
 		netports.h mutex.h guard.h dsm2err.h words.h optional.h \
-		ctinexus.h message.h collectable.h rwutil.h \
-		database_connection.h database_reader.h row_reader.h \
-		boost_time.h boostutil.h msg_multi.h msg_pdata.h pointdefs.h \
-		pointtypes.h msg_cmd.h msg_reg.h msg_signal.h msg_ptreg.h \
-		msg_dbchg.h logger.h thread.h CtiPCPtrQueue.h cparms.h \
-		configkey.h configval.h ThreadStatusKeeper.h \
-		thread_register_data.h thread_monitor.h smartmap.h \
-		readers_writer_lock.h critical_section.h queue.h \
+		ctinexus.h message.h collectable.h msg_multi.h msg_pdata.h \
+		pointdefs.h pointtypes.h msg_cmd.h msg_reg.h msg_signal.h \
+		msg_ptreg.h msg_dbchg.h logger.h thread.h CtiPCPtrQueue.h \
+		cparms.h rwutil.h database_connection.h database_reader.h \
+		row_reader.h boost_time.h boostutil.h configkey.h configval.h \
+		ThreadStatusKeeper.h thread_register_data.h thread_monitor.h \
+		smartmap.h readers_writer_lock.h critical_section.h queue.h \
 		string_utility.h calclogicsvc.h connection_client.h \
 		connection.h exchange.h cservice.h calcthread.h hashkey.h \
 		hash_functions.h calc.h ctiqueues.h calccomponent.h ctidate.h \
@@ -232,11 +231,11 @@ calcthread.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h cticonnect.h \
 		yukon.h types.h ctidbgmem.h dlldefs.h netports.h mutex.h \
 		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
 		numstr.h dsm2err.h words.h optional.h ctibase.h ctinexus.h \
-		pointtypes.h message.h collectable.h rwutil.h \
-		database_connection.h database_reader.h row_reader.h \
-		boost_time.h boostutil.h msg_multi.h msg_pdata.h pointdefs.h \
-		logger.h thread.h CtiPCPtrQueue.h cparms.h configkey.h \
-		configval.h mgr_holiday.h ctidate.h ThreadStatusKeeper.h \
+		pointtypes.h message.h collectable.h msg_multi.h msg_pdata.h \
+		pointdefs.h logger.h thread.h CtiPCPtrQueue.h cparms.h \
+		rwutil.h database_connection.h database_reader.h row_reader.h \
+		boost_time.h boostutil.h configkey.h configval.h \
+		mgr_holiday.h ctidate.h ThreadStatusKeeper.h \
 		thread_register_data.h thread_monitor.h smartmap.h \
 		readers_writer_lock.h critical_section.h queue.h \
 		string_utility.h calcthread.h hashkey.h hash_functions.h \
@@ -264,12 +263,12 @@ log.obj:	precompiled.h connection_client.h connection.h dlldefs.h \
 		ctidbgmem.h netports.h mutex.h guard.h utility.h ctitime.h \
 		queues.h cticalls.h os2_2w32.h numstr.h dsm2err.h words.h \
 		optional.h logger.h thread.h CtiPCPtrQueue.h string_utility.h \
-		message.h collectable.h rwutil.h database_connection.h \
-		dbaccess.h database_reader.h row_reader.h boost_time.h \
-		boostutil.h msg_multi.h msg_pdata.h pointdefs.h pointtypes.h \
-		msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
-		configval.h readers_writer_lock.h critical_section.h \
-		amq_constants.h ctinexus.h msg_cmd.h
+		message.h collectable.h msg_multi.h msg_pdata.h pointdefs.h \
+		pointtypes.h msg_ptreg.h msg_reg.h queue.h cparms.h rwutil.h \
+		database_connection.h dbaccess.h database_reader.h \
+		row_reader.h boost_time.h boostutil.h configkey.h configval.h \
+		readers_writer_lock.h critical_section.h amq_constants.h \
+		ctinexus.h msg_cmd.h
 lurk.obj:	precompiled.h cparms.h dlldefs.h rwutil.h yukon.h types.h \
 		ctidbgmem.h database_connection.h dbaccess.h dllbase.h dsm2.h \
 		cticonnect.h netports.h mutex.h guard.h utility.h ctitime.h \

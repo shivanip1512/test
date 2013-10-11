@@ -220,6 +220,11 @@ pil_conmgr.obj:	precompiled.h collectable.h pil_conmgr.h exchange.h \
 pil_exefct.obj:	precompiled.h executorfactory.h collectable.h \
 		message.h ctitime.h dlldefs.h ctidbgmem.h executor.h \
 		exe_cmd.h exe_reg.h pil_exefct.h exe_pcreq.h
+rfne2emsgserialization.obj:	precompiled.h RfnE2eDataRequestMsg.h \
+		rfn_identifier.h logger.h dlldefs.h thread.h mutex.h guard.h \
+		utility.h ctitime.h queues.h cticalls.h os2_2w32.h types.h \
+		numstr.h CtiPCPtrQueue.h RfnE2eMsg.h RfnE2eDataConfirmMsg.h \
+		RfnE2eDataIndicationMsg.h
 test_pilserver.obj:	pilserver.h dsm2.h cticonnect.h yukon.h types.h \
 		ctidbgmem.h dlldefs.h netports.h mutex.h guard.h utility.h \
 		ctitime.h queues.h cticalls.h os2_2w32.h numstr.h dsm2err.h \

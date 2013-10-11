@@ -2759,8 +2759,9 @@ mgr_device.obj:	precompiled.h mgr_device.h dlldefs.h rtdb.h hashkey.h \
 		dev_mct4xx.h ctidate.h dev_mct410_commands.h \
 		cmd_mct410_hourlyRead.h cmd_mct410.h \
 		cmd_mct410_disconnectConfiguration.h dev_modbus.h \
-		prot_modbus.h dev_repeater.h dev_rtc.h tbl_dv_rtc.h dev_rtm.h \
-		dev_fmu.h dev_tap.h dev_paging.h tbl_dv_tappaging.h \
+		prot_modbus.h dev_repeater.h dev_rfn.h rfn_identifier.h \
+		cmd_rfn.h dev_rtc.h tbl_dv_rtc.h dev_rtm.h dev_fmu.h \
+		dev_tap.h dev_paging.h tbl_dv_tappaging.h \
 		encryption_oneway_message.h dev_snpp.h dev_tnpp.h \
 		tbl_dv_tnpp.h dev_pagingreceiver.h tbl_dv_pagingreceiver.h \
 		dev_grp_emetcon.h tbl_dv_emetcon.h dev_grp_expresscom.h \
