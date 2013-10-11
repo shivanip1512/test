@@ -65,19 +65,6 @@ public class MeterEventStatusTypeGroupings {
         builder.addAll(BuiltInAttribute.getRfnEventGroupedAttributes().get(AttributeGroup.RFN_OTHER_EVENT));
         builder.addAll(BuiltInAttribute.getRfnEventGroupedAttributes().get(AttributeGroup.RFN_SOFTWARE_EVENT));
         
-//        builder.add(BuiltInAttribute.CLOCK_ERROR);
-//        builder.add(BuiltInAttribute.CONFIGURATION_ERROR);
-//        builder.add(BuiltInAttribute.DISPLAY_LOCKED_BY_WARNING);
-//        builder.add(BuiltInAttribute.ENCRYPTION_KEY_TABLE_CRC_ERROR);
-//        builder.add(BuiltInAttribute.END_OF_CALENDAR_WARNING);
-//        builder.add(BuiltInAttribute.INVALID_SERVICE);
-//        builder.add(BuiltInAttribute.PASSWORD_TABLE_CRC_ERROR);
-//        builder.add(BuiltInAttribute.SECURITY_CONFIGURATION_ERROR);
-//        builder.add(BuiltInAttribute.SELF_CHECK_ERROR);
-//        builder.add(BuiltInAttribute.TABLE_CRC_ERROR);
-//        builder.add(BuiltInAttribute.TIME_ADJUSTMENT);
-//        builder.add(BuiltInAttribute.UNCONFIGURED);
-//        builder.add(BuiltInAttribute.UNPROGRAMMED);
         general = builder.build();
     }
     
@@ -86,19 +73,6 @@ public class MeterEventStatusTypeGroupings {
         //RFN
         builder.addAll(BuiltInAttribute.getRfnEventGroupedAttributes().get(AttributeGroup.RFN_HARDWARE_EVENT));
         
-//        builder.add(BuiltInAttribute.CRYSTAL_OSCILLATOR_ERROR);
-//        builder.add(BuiltInAttribute.EEPROM_ACCESS_ERROR);
-//        builder.add(BuiltInAttribute.IMPROPER_METER_ENGINE_OPERATION_WARNING);
-//        builder.add(BuiltInAttribute.INTERNAL_COMMUNICATION_ERROR);
-//        builder.add(BuiltInAttribute.LOW_BATTERY_WARNING);
-//        builder.add(BuiltInAttribute.NON_VOLATILE_MEM_FAILURE);
-//        builder.add(BuiltInAttribute.POWER_FAIL_DATA_SAVE_ERROR);
-//        builder.add(BuiltInAttribute.RAM_ERROR);
-//        builder.add(BuiltInAttribute.ROM_ERROR);
-//        builder.add(BuiltInAttribute.SERVICE_DISCONNECT_SWITCH_ERROR);
-//        builder.add(BuiltInAttribute.SERVICE_DISCONNECT_SWITCH_OPEN);
-//        builder.add(BuiltInAttribute.SERVICE_DISCONNECT_SWITCH_SENSOR_ERROR);
-//        builder.add(BuiltInAttribute.STUCK_SWITCH);
         hardware = builder.build();
     }
     
@@ -123,15 +97,6 @@ public class MeterEventStatusTypeGroupings {
         builder.addAll(BuiltInAttribute.getRfnEventGroupedAttributes().get(AttributeGroup.RFN_CURRENT_EVENT));
         builder.addAll(BuiltInAttribute.getRfnEventGroupedAttributes().get(AttributeGroup.RFN_VOLTAGE_EVENT));
         
-//        builder.add(BuiltInAttribute.CURRENT_LOSS);
-//        builder.add(BuiltInAttribute.LOSS_OF_ALL_CURRENT);
-//        builder.add(BuiltInAttribute.LOSS_OF_PHASE_A_CURRENT);
-//        builder.add(BuiltInAttribute.LOSS_OF_PHASE_C_CURRENT);
-
-//        builder.add(BuiltInAttribute.VOLTAGE_LOSS);
-//        builder.add(BuiltInAttribute.VOLTAGE_PHASE_A_OUT);
-//        builder.add(BuiltInAttribute.VOLTAGE_PHASE_B_OUT);
-//        builder.add(BuiltInAttribute.VOLTAGE_PHASE_C_OUT);
         outage = builder.build();
     }
     
@@ -140,23 +105,6 @@ public class MeterEventStatusTypeGroupings {
         //RFN
         builder.addAll(BuiltInAttribute.getRfnEventGroupedAttributes().get(AttributeGroup.RFN_DEMAND_EVENT));
         builder.addAll(BuiltInAttribute.getRfnEventGroupedAttributes().get(AttributeGroup.RFN_METERING_EVENT));
-//        builder.add(BuiltInAttribute.DEMAND_OVERLOAD);
-//        builder.add(BuiltInAttribute.DEMAND_READS_AND_RESET);
-//        builder.add(BuiltInAttribute.DEMAND_THRESHOLD_EXCEEDED_WARNING);
-//        builder.add(BuiltInAttribute.ENERGY_ACCUMULATED_WHILE_IN_STANDBY_MODE);
-//        builder.add(BuiltInAttribute.LOAD_SIDE_VOLTAGE_IS_MISSING);
-//        builder.add(BuiltInAttribute.LINE_FREQUENCY_WARNING);
-//        builder.add(BuiltInAttribute.LOW_LOSS_POTENTIAL);
-//        builder.add(BuiltInAttribute.MEASUREMENT_ERROR);
-//        builder.add(BuiltInAttribute.POTENTIAL_INDICATOR_WARNING);
-//        builder.add(BuiltInAttribute.PQM_TEST_FAILURE_WARNING);
-//        builder.add(BuiltInAttribute.REVERSED_AGGREGATE);
-//        builder.add(BuiltInAttribute.REVERSED_PHASE_A);
-//        builder.add(BuiltInAttribute.REVERSED_PHASE_C);
-//        builder.add(BuiltInAttribute.SERVICE_CURRENT_TEST_FAILURE_WARNING);
-//        builder.add(BuiltInAttribute.USER_PROGRAMMABLE_TEMPERATURE_THRESHOLD_EXCEEDED);
-//        builder.add(BuiltInAttribute.VOLTAGE_ALERTS);
-//        builder.add(BuiltInAttribute.VOLTAGE_PHASE_ERROR);
         metering = builder.build();
     }
     
