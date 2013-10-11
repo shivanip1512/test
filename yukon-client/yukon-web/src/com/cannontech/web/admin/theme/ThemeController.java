@@ -35,7 +35,6 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.resources.ResourceCache;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.support.MappedPropertiesHelper;
-import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.ImmutableMap;
 
 @Controller
