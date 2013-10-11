@@ -26,42 +26,6 @@ namespace Messaging {
 
 extern IM_EX_MSG std::auto_ptr<ActiveMQConnectionManager> gActiveMQConnection;
 
-typedef std::map<ActiveMQ::OutboundQueues::type, std::string> StreamableOutboundQueueNameMap;
-typedef std::map<ActiveMQ::OutboundQueues::type, std::string> ThriftOutboundQueueNameMap;
-typedef std::map<ActiveMQ::InboundQueues::type, std::string> ThriftInboundQueueNameMap;
-
-namespace {
-
-typedef ActiveMQ::OutboundQueues SOQ;
-
-const StreamableOutboundQueueNameMap StreamableOutboundQueueNames = boost::assign::map_list_of
-    (SOQ::PorterResponses,
-        "yukon.notif.stream.amr.PorterResponseMessage")
-    (SOQ::SmartEnergyProfileControl,
-        "yukon.notif.stream.dr.SmartEnergyProfileControlMessage")
-    (SOQ::SmartEnergyProfileRestore,
-        "yukon.notif.stream.dr.SmartEnergyProfileRestoreMessage")
-    (SOQ::HistoryRowAssociationResponse,
-        "yukon.notif.stream.dr.HistoryRowAssociationResponse")
-    (SOQ::IvvcAnalysisMessage,
-        "yukon.notif.stream.cc.IvvcAnalysisMessage")
-    (SOQ::RfnBroadcast,
-        "yukon.qr.obj.dr.rfn.ExpressComBroadcastRequest")
-    (SOQ::CapControlOperationMessage,
-        "yukon.notif.stream.cc.CapControlOperationMessage");
-
-typedef ActiveMQ::OutboundQueues TOQ;
-typedef ActiveMQ::InboundQueues  TIQ;
-
-const ThriftOutboundQueueNameMap ThriftOutboundQueueNames = boost::assign::map_list_of
-    (TOQ::NetworkManagerE2eDataRequest,
-        "yukon.rfn.e2e.data.request");
-
-const ThriftInboundQueueNameMap ThriftInboundQueueNames = boost::assign::map_list_of
-    (TIQ::NetworkManagerE2eDataIndication,
-        "yukon.rfn.e2e.data.indication");
-}
-
 ActiveMQConnectionManager::ActiveMQConnectionManager(const string &broker_uri) :
     _broker_uri(broker_uri)
 {
@@ -132,6 +96,10 @@ void ActiveMQConnectionManager::run()
 }
 
 
+static const std::set<const ActiveMQ::Queues::InboundQueue *> ThriftInboundQueues = boost::assign::list_of
+    (&ActiveMQ::Queues::InboundQueue::NetworkManagerE2eDataIndication);
+
+
 void ActiveMQConnectionManager::verifyConnectionObjects()
 {
     if( ! _connection.get() ||
@@ -158,22 +126,22 @@ void ActiveMQConnectionManager::verifyConnectionObjects()
     if( ! _consumerSession.get() )
     {
         _consumerSession.reset(_connection->createSession());
-    }
 
-    for each( const ThriftInboundQueueNameMap::value_type &inboundQueue in ThriftInboundQueueNames )
-    {
-        std::auto_ptr<QueueConsumerWithListener> consumer(new QueueConsumerWithListener);
+        for each( const ActiveMQ::Queues::InboundQueue *inboundQueue in ThriftInboundQueues )
+        {
+            std::auto_ptr<QueueConsumerWithListener> consumer(new QueueConsumerWithListener);
 
-        consumer->managedConsumer.reset(
-                ActiveMQ::createQueueConsumer(
-                        *_consumerSession,
-                        inboundQueue.second));
+            consumer->managedConsumer.reset(
+                    ActiveMQ::createQueueConsumer(
+                            *_consumerSession,
+                            inboundQueue->name));
 
-        consumer->listener.reset(
-                new ActiveMQ::MessageListener(
-                        boost::bind(&ActiveMQConnectionManager::onInboundMessage, this, inboundQueue.first, _1)));
+            consumer->listener.reset(
+                    new ActiveMQ::MessageListener(
+                            boost::bind(&ActiveMQConnectionManager::onInboundMessage, this, inboundQueue, _1)));
 
-        _consumers.push_back(consumer);
+            _consumers.push_back(consumer);
+        }
     }
 }
 
@@ -207,33 +175,30 @@ void ActiveMQConnectionManager::sendOutgoingMessages()
         std::auto_ptr<cms::Message> message(
                 e->extractMessage(*_producerSession));
 
-        if( const boost::optional<std::string> queueName = mapFind(StreamableOutboundQueueNames, e->queueId) )
+        if( e->callback )
         {
-            if( e->callback )
-            {
-                std::auto_ptr<TempQueueConsumerWithCallback> tempConsumer(new TempQueueConsumerWithCallback);
+            std::auto_ptr<TempQueueConsumerWithCallback> tempConsumer(new TempQueueConsumerWithCallback);
 
-                tempConsumer->managedConsumer.reset(
-                        ActiveMQ::createTempQueueConsumer(
-                                *_consumerSession));
+            tempConsumer->managedConsumer.reset(
+                    ActiveMQ::createTempQueueConsumer(
+                            *_consumerSession));
 
-                tempConsumer->listener.reset(
-                        new ActiveMQ::MessageListener(
-                                boost::bind(&ActiveMQConnectionManager::onTempQueueReply, this, _1)));
+            tempConsumer->listener.reset(
+                    new ActiveMQ::MessageListener(
+                            boost::bind(&ActiveMQConnectionManager::onTempQueueReply, this, _1)));
 
-                tempConsumer->callback = *(e->callback);
+            tempConsumer->callback = *(e->callback);
 
-                _temporaryConsumers.insert(
-                        tempConsumer->managedConsumer->getDestination(),
-                        tempConsumer);
+            _temporaryConsumers.insert(
+                    tempConsumer->managedConsumer->getDestination(),
+                    tempConsumer);
 
-                message->setCMSReplyTo(tempConsumer->managedConsumer->getDestination());
-            }
-
-            ActiveMQ::QueueProducer &queueProducer = getQueueProducer(*_producerSession, *queueName);
-
-            queueProducer.send(message.get());
+            message->setCMSReplyTo(tempConsumer->managedConsumer->getDestination());
         }
+
+        ActiveMQ::QueueProducer &queueProducer = getQueueProducer(*_producerSession, e->queue->name);
+
+        queueProducer.send(message.get());
     }
 }
 
@@ -254,16 +219,17 @@ void ActiveMQConnectionManager::dispatchIncomingMessages()
 
     IncomingPerQueue::const_iterator queueMsgs_itr = incomingMessages.begin();
 
-    boost::optional<ActiveMQ::InboundQueues::type> queue;
+    const ActiveMQ::Queues::InboundQueue *queue = 0;
     std::pair<CallbacksPerQueue::const_iterator, CallbacksPerQueue::const_iterator> queueCallbacks;
 
     for( ; queueMsgs_itr != incomingMessages.end(); ++queueMsgs_itr )
     {
-        if( ! queue || *queue != queueMsgs_itr->first )
+        //  we should only look up the callbacks once if we receive a bunch of inbound messages for the same queue
+        if( ! queue || queue != queueMsgs_itr->first )
         {
             queue = queueMsgs_itr->first;
 
-            queueCallbacks = _callbacks.equal_range(*queue);
+            queueCallbacks = _callbacks.equal_range(queue);
         }
 
         CallbacksPerQueue::const_iterator cb_itr = queueCallbacks.first;
@@ -311,24 +277,24 @@ void ActiveMQConnectionManager::dispatchTempQueueReplies()
 }
 
 
-void ActiveMQConnectionManager::enqueueMessage(const ActiveMQ::OutboundQueues::type queueId, auto_ptr<StreamableMessage> message)
+void ActiveMQConnectionManager::enqueueMessage(const ActiveMQ::Queues::OutboundQueue &queue, auto_ptr<StreamableMessage> message)
 {
-    gActiveMQConnection->enqueueOutgoingMessage(queueId, message);
+    gActiveMQConnection->enqueueOutgoingMessage(queue, message);
 }
 
 
-void ActiveMQConnectionManager::enqueueMessages(const ActiveMQ::OutboundQueues::type queueId, const std::vector<SerializedMessage> &messages, MessageCallback callback)
+void ActiveMQConnectionManager::enqueueMessages(const ActiveMQ::Queues::OutboundQueue &queue, const std::vector<SerializedMessage> &messages, MessageCallback callback)
 {
     for each( const SerializedMessage &message in messages )
     {
         //  acquires and releases the mux for each message - we might do better by passing in all or chunks at a time...
         //    but the critical section should be cheap, so let's not optimize prematurely
-        gActiveMQConnection->enqueueOutgoingMessage(queueId, message, callback);
+        gActiveMQConnection->enqueueOutgoingMessage(queue, message, callback);
     }
 }
 
 
-void ActiveMQConnectionManager::enqueueOutgoingMessage(const ActiveMQ::OutboundQueues::type queueId, auto_ptr<StreamableMessage> message)
+void ActiveMQConnectionManager::enqueueOutgoingMessage(const ActiveMQ::Queues::OutboundQueue &queue, auto_ptr<StreamableMessage> message)
 {
     //  ensure the message is not null
     if( ! message.get() )
@@ -352,7 +318,7 @@ void ActiveMQConnectionManager::enqueueOutgoingMessage(const ActiveMQ::OutboundQ
 
     std::auto_ptr<StreamableEnvelope> e(new StreamableEnvelope);
 
-    e->queueId = queueId;
+    e->queue = &queue;
     e->message.reset(message.release());
 
     {
@@ -368,7 +334,7 @@ void ActiveMQConnectionManager::enqueueOutgoingMessage(const ActiveMQ::OutboundQ
 }
 
 
-void ActiveMQConnectionManager::enqueueOutgoingMessage(const ActiveMQ::OutboundQueues::type queueId, const SerializedMessage &message, MessageCallback callback)
+void ActiveMQConnectionManager::enqueueOutgoingMessage(const ActiveMQ::Queues::OutboundQueue &queue, const SerializedMessage &message, MessageCallback callback)
 {
     struct BytesEnvelope : Envelope
     {
@@ -386,7 +352,7 @@ void ActiveMQConnectionManager::enqueueOutgoingMessage(const ActiveMQ::OutboundQ
 
     std::auto_ptr<BytesEnvelope> e(new BytesEnvelope);
 
-    e->queueId  = queueId;
+    e->queue  = &queue;
     e->message  = message;
     e->callback = callback;
 
@@ -427,21 +393,21 @@ ActiveMQ::QueueProducer &ActiveMQConnectionManager::getQueueProducer(cms::Sessio
 }
 
 
-void ActiveMQConnectionManager::registerHandler(const ActiveMQ::InboundQueues::type queueId, MessageCallback callback)
+void ActiveMQConnectionManager::registerHandler(const ActiveMQ::Queues::InboundQueue &queue, MessageCallback callback)
 {
-    gActiveMQConnection->addNewCallback(queueId, callback);
+    gActiveMQConnection->addNewCallback(queue, callback);
 }
 
 
-void ActiveMQConnectionManager::addNewCallback(const ActiveMQ::InboundQueues::type queueId, MessageCallback callback)
+void ActiveMQConnectionManager::addNewCallback(const ActiveMQ::Queues::InboundQueue &queue, MessageCallback callback)
 {
     CtiLockGuard<CtiCriticalSection> lock(_newCallbackMux);
 
-    _newCallbacks.insert(std::make_pair(queueId, callback));
+    _newCallbacks.insert(std::make_pair(&queue, callback));
 }
 
 
-void ActiveMQConnectionManager::onInboundMessage(ActiveMQ::InboundQueues::type queue, const cms::Message *message)
+void ActiveMQConnectionManager::onInboundMessage(const ActiveMQ::Queues::InboundQueue *queue, const cms::Message *message)
 {
     if( const cms::BytesMessage *bytesMessage = dynamic_cast<const cms::BytesMessage *>(message) )
     {
@@ -474,6 +440,44 @@ void ActiveMQConnectionManager::onTempQueueReply(const cms::Message *message)
     }
 }
 
+
+namespace ActiveMQ {
+namespace Queues {
+
+OutboundQueue::OutboundQueue(std::string name_) : name(name_) {}
+
+const IM_EX_MSG OutboundQueue
+        OutboundQueue::PorterResponses
+                ("yukon.notif.stream.amr.PorterResponseMessage");
+const IM_EX_MSG OutboundQueue
+        OutboundQueue::SmartEnergyProfileControl
+                ("yukon.notif.stream.dr.SmartEnergyProfileControlMessage");
+const IM_EX_MSG OutboundQueue
+        OutboundQueue::SmartEnergyProfileRestore
+                ("yukon.notif.stream.dr.SmartEnergyProfileRestoreMessage");
+const IM_EX_MSG OutboundQueue
+        OutboundQueue::HistoryRowAssociationResponse
+                ("yukon.notif.stream.dr.HistoryRowAssociationResponse");
+const IM_EX_MSG OutboundQueue
+        OutboundQueue::IvvcAnalysisMessage
+                ("yukon.notif.stream.cc.IvvcAnalysisMessage");
+const IM_EX_MSG OutboundQueue
+        OutboundQueue::CapControlOperationMessage
+                ("yukon.notif.stream.cc.CapControlOperationMessage");
+const IM_EX_MSG OutboundQueue
+        OutboundQueue::RfnBroadcast
+                ("yukon.qr.obj.dr.rfn.ExpressComBroadcastRequest");
+const IM_EX_MSG OutboundQueue
+        OutboundQueue::NetworkManagerE2eDataRequest
+                ("com.eaton.eas.yukon.networkmanager.rfn.e2e.data.request");
+
+InboundQueue::InboundQueue(std::string name_) : name(name_) {}
+
+const IM_EX_MSG InboundQueue
+        InboundQueue::NetworkManagerE2eDataIndication
+                ("com.eaton.eas.yukon.networkmanager.rfn.e2e.data.indication");
+}
+}
 
 }
 }

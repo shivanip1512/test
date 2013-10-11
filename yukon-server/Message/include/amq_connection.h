@@ -22,7 +22,6 @@ class Destination;
 
 namespace Cti {
 namespace Messaging {
-
 namespace ActiveMQ {
 
 class ManagedConnection;
@@ -30,29 +29,37 @@ class QueueConsumer;
 class QueueProducer;
 class TempQueueConsumer;
 
-struct OutboundQueues
+namespace Queues {
+
+struct IM_EX_MSG OutboundQueue
 {
-    enum type  //  standin for strongly-typed enums
-    {
-        PorterResponses,
-        SmartEnergyProfileControl,
-        SmartEnergyProfileRestore,
-        HistoryRowAssociationResponse,
-        IvvcAnalysisMessage,
-        CapControlOperationMessage,
-        RfnBroadcast,
-        NetworkManagerE2eDataRequest,
-    };
+    std::string name;
+
+    static const OutboundQueue PorterResponses;
+    static const OutboundQueue SmartEnergyProfileControl;
+    static const OutboundQueue SmartEnergyProfileRestore;
+    static const OutboundQueue HistoryRowAssociationResponse;
+    static const OutboundQueue IvvcAnalysisMessage;
+    static const OutboundQueue CapControlOperationMessage;
+    static const OutboundQueue RfnBroadcast;
+    static const OutboundQueue NetworkManagerE2eDataRequest;
+
+private:
+    OutboundQueue(std::string name);
 };
 
-struct InboundQueues {
 
-    enum type  //  standin for strongly-typed enums
-    {
-        NetworkManagerE2eDataIndication,
-    };
+struct IM_EX_MSG InboundQueue
+{
+    std::string name;
+
+    static const InboundQueue NetworkManagerE2eDataIndication;
+
+private:
+    InboundQueue(std::string name);
 };
 
+}
 }
 
 class IM_EX_MSG ActiveMQConnectionManager :
@@ -66,19 +73,19 @@ public:
     ActiveMQConnectionManager(const std::string &broker_uri);
     virtual ~ActiveMQConnectionManager();
 
-    static void enqueueMessage (const ActiveMQ::OutboundQueues::type queueId, std::auto_ptr<StreamableMessage> message);
-    static void enqueueMessages(const ActiveMQ::OutboundQueues::type queueId, const std::vector<SerializedMessage> &messages, MessageCallback callback);
+    static void enqueueMessage (const ActiveMQ::Queues::OutboundQueue &queue, std::auto_ptr<StreamableMessage> message);
+    static void enqueueMessages(const ActiveMQ::Queues::OutboundQueue &queue, const std::vector<SerializedMessage> &messages, MessageCallback callback);
 
-    static void registerHandler(const ActiveMQ::InboundQueues::type queueId, const MessageCallback callback);
+    static void registerHandler(const ActiveMQ::Queues::InboundQueue &queue, const MessageCallback callback);
 
 protected:
 
-    virtual void enqueueOutgoingMessage(const ActiveMQ::OutboundQueues::type queueId, std::auto_ptr<StreamableMessage> message);
-    virtual void enqueueOutgoingMessage(const ActiveMQ::OutboundQueues::type queueId, const SerializedMessage &message, MessageCallback callback);
+    virtual void enqueueOutgoingMessage(const ActiveMQ::Queues::OutboundQueue &queue, std::auto_ptr<StreamableMessage> message);
+    virtual void enqueueOutgoingMessage(const ActiveMQ::Queues::OutboundQueue &queue, const SerializedMessage &message, MessageCallback callback);
 
-    void addNewCallback(const ActiveMQ::InboundQueues::type queueId, const MessageCallback callback);
+    void addNewCallback(const ActiveMQ::Queues::InboundQueue &queue, const MessageCallback callback);
 
-    void onInboundMessage(ActiveMQ::InboundQueues::type queue, const cms::Message *message);
+    void onInboundMessage(const ActiveMQ::Queues::InboundQueue *queue, const cms::Message *message);
     void onTempQueueReply(const cms::Message *message);
 
 private:
@@ -90,7 +97,7 @@ private:
     void releaseConnectionObjects();
 
     void updateCallbacks();
-    bool addQueueCallback(const ActiveMQ::InboundQueues::type queueId, const MessageCallback callback);
+    bool addQueueCallback(const ActiveMQ::Queues::InboundQueue &queue, const MessageCallback callback);
 
     void sendOutgoingMessages();
     ActiveMQ::QueueProducer &getQueueProducer(cms::Session &session, const std::string &queue);
@@ -108,7 +115,7 @@ private:
     //  Message submission objects and methods
     struct Envelope
     {
-        ActiveMQ::OutboundQueues::type queueId;
+        const ActiveMQ::Queues::OutboundQueue *queue;
 
         boost::optional<MessageCallback> callback;
 
@@ -119,14 +126,14 @@ private:
     CtiCriticalSection _outgoingMessagesMux;
     EnvelopeQueue      _outgoingMessages;
 
-    typedef std::map<ActiveMQ::InboundQueues::type, std::vector<SerializedMessage>> IncomingPerQueue;
+    typedef std::map<const ActiveMQ::Queues::InboundQueue *, std::vector<SerializedMessage>> IncomingPerQueue;
     CtiCriticalSection _newIncomingMessagesMux;
     IncomingPerQueue   _newIncomingMessages;
 
     typedef boost::ptr_map<const std::string, ActiveMQ::QueueProducer> ProducersByQueueName;
     ProducersByQueueName _producers;
 
-    typedef std::multimap<const ActiveMQ::InboundQueues::type, MessageCallback> CallbacksPerQueue;
+    typedef std::multimap<const ActiveMQ::Queues::InboundQueue *, MessageCallback> CallbacksPerQueue;
     CtiCriticalSection _newCallbackMux;
     CallbacksPerQueue  _newCallbacks;
     CallbacksPerQueue  _callbacks;

@@ -34,10 +34,10 @@ RfnRequestManager::RfnRequestManager() :
     _generator(std::time(0))
 {
     using Messaging::ActiveMQConnectionManager;
-    using Messaging::ActiveMQ::InboundQueues;
+    using Messaging::ActiveMQ::Queues::InboundQueue;
 
     ActiveMQConnectionManager::registerHandler(
-        InboundQueues::NetworkManagerE2eDataIndication,
+        InboundQueue::NetworkManagerE2eDataIndication,
         boost::bind(&RfnRequestManager::handleRfnE2eDataIndicationMsg, this, _1));
 }
 
@@ -483,10 +483,10 @@ void RfnRequestManager::submitRequests(const std::vector<RfnDeviceRequest> &requ
 
 void RfnRequestManager::sendMessages()
 {
-    using Messaging::ActiveMQ::OutboundQueues;
+    using Messaging::ActiveMQ::Queues::OutboundQueue;
 
     Messaging::ActiveMQConnectionManager::enqueueMessages(
-            OutboundQueues::NetworkManagerE2eDataRequest,
+            OutboundQueue::NetworkManagerE2eDataRequest,
             _messages,
             boost::bind(&RfnRequestManager::handleRfnE2eDataConfirmMsg, this, _1));
 

@@ -127,7 +127,7 @@ void CtiDeviceGroupRfnExpresscom::sendDRMessage(int priority, int expirationDura
 {
     using namespace Cti::Messaging;
     using namespace Cti::Messaging::Rfn;
-    using Cti::Messaging::ActiveMQ::OutboundQueues;
+    using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
 
     std::auto_ptr<StreamableMessage> message(
         RfnBroadcastMessage::createMessage(
@@ -136,7 +136,7 @@ void CtiDeviceGroupRfnExpresscom::sendDRMessage(int priority, int expirationDura
            expirationDuration,
            payload));
 
-    ActiveMQConnectionManager::enqueueMessage(OutboundQueues::RfnBroadcast, message);
+    ActiveMQConnectionManager::enqueueMessage(OutboundQueue::RfnBroadcast, message);
 }
 
 string CtiDeviceGroupRfnExpresscom::getSQLCoreStatement() const

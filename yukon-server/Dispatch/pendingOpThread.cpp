@@ -1107,10 +1107,10 @@ void CtiPendingOpThread::writeLMControlHistoryToDB(bool justdoit)
                 if(pTblEntry->getAssociationId() != 0)
                 {
                     using namespace Cti::Messaging;
-                    using Cti::Messaging::ActiveMQ::OutboundQueues;
+                    using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
 
                     std::auto_ptr<StreamableMessage> msg(new ControlHistoryAssociationResponse(pTblEntry->getLMControlHistoryID(), pTblEntry->getAssociationId()));
-                    ActiveMQConnectionManager::enqueueMessage(OutboundQueues::HistoryRowAssociationResponse, msg);
+                    ActiveMQConnectionManager::enqueueMessage(OutboundQueue::HistoryRowAssociationResponse, msg);
                 }
                 delete pTblEntry;
             }
