@@ -8,7 +8,12 @@ Yukon.CapControl = (function () {
             //el_id comes in looking like this: "editorForm:hdr_submit_button_1"
             jQuery(document.getElementById(el_id)).click(function() {
                 jQuery('input.stdButton').each(function() {
-                    var elseCallBack = function() {
+                    // jsf puts colons in id names, but colons are invalid in id names so we must clean this up here
+                    var sanitizeSelector = function (dirtyId) {
+                        return dirtyId.replace(':', '\\\:');
+                    },
+                    elseCallBack = function() {
+                        el_id = sanitizeSelector (el_id);
                         jQuery('[id=' + el_id + ']')[0].disabled=true;
                     };
 

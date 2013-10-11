@@ -49,7 +49,6 @@
                     var bankId = jQuery(row)[0].id.split('_')[2],
                         bankName,
                         bankState;
-                    console.log('row.id=%s bankId=%s jQuery(row)[0].id.split("_")[2]=%s',row.id,bankId,jQuery(row)[0].id.split("_")[2]);
                     // Add menus
                     bankName = jQuery(row).find('button[id^="bankName"]')[0];
                     jQuery(bankName).click( function(event) {
@@ -83,7 +82,6 @@
                         topRow;
                     jQuery(dummyHolder).html(data);
                     rows = jQuery(dummyHolder).find('tr');
-                    console.log('rows.length=%d',rows.length);
                     if (typeof rows[0] !== 'undefined') {
                         // assign our hidden td field to mostRecentDateTime for use in future calls
                         jQuery('#mostRecentDateTime').val(jQuery(rows[0]).find('td input[type="hidden"]')[0].value);
