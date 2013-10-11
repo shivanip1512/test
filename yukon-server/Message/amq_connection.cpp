@@ -183,6 +183,8 @@ void ActiveMQConnectionManager::sendOutgoingMessages()
                     ActiveMQ::createTempQueueConsumer(
                             *_consumerSession));
 
+            message->setCMSReplyTo(tempConsumer->managedConsumer->getDestination());
+
             tempConsumer->listener.reset(
                     new ActiveMQ::MessageListener(
                             boost::bind(&ActiveMQConnectionManager::onTempQueueReply, this, _1)));
@@ -192,8 +194,6 @@ void ActiveMQConnectionManager::sendOutgoingMessages()
             _temporaryConsumers.insert(
                     tempConsumer->managedConsumer->getDestination(),
                     tempConsumer);
-
-            message->setCMSReplyTo(tempConsumer->managedConsumer->getDestination());
         }
 
         ActiveMQ::QueueProducer &queueProducer = getQueueProducer(*_producerSession, e->queue->name);
