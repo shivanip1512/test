@@ -167,6 +167,10 @@ function loadTarget (form) {
 }
 
 function enableDates (value) {
+    var dateFieldNames = ['startCal', 'stopCal', 'stopHourID', 'stopMinuteID', 'startHourID', 'startHourID', 'startMinuteID'],
+        dateField,
+        dateElem;
+
     if (value) {
         jQuery('#calImg_startCal').show();
         jQuery('#calImg_stopCal').show();
@@ -175,12 +179,12 @@ function enableDates (value) {
         jQuery('#calImg_stopCal').hide();
     }
 
-    document.getElementById('startCal').disabled = !value;
-    document.getElementById('stopCal').disabled = !value;
-    document.getElementById('stopHourID').disabled = !value;
-    document.getElementById('stopMinuteID').disabled = !value;
-    document.getElementById('startHourID').disabled = !value;
-    document.getElementById('startMinuteID').disabled = !value;
+    for (dateField in dateFieldNames) {
+        dateElem = document.getElementById(dateField);
+        if (dateElem) {
+            dateElem.disabled = !value;
+        }
+    }
 }
 
 function checkDates () {
