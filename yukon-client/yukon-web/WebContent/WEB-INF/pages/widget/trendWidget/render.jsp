@@ -13,7 +13,7 @@ jQuery(function () {
         return true;
     });
 
-    jQuery("#trendWidget").find(".icon-help").click(function(e) {
+    jQuery("#trendWidget").find(".icon-help").click(function() {
         jQuery("#trendWidgetWhatsThisText")
             .html('<cti:msg2 javaScriptEscape="true" key="${attributeGraphType.description}"/>');
     });
