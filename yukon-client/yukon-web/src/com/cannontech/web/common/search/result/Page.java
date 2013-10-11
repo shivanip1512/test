@@ -1,6 +1,9 @@
 package com.cannontech.web.common.search.result;
 
+import org.springframework.context.MessageSourceResolvable;
+
 import com.cannontech.common.userpage.model.UserPage;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 
 /**
  * A representation of a page which can be used for displaying the page in a list with a short summary of the page.
@@ -24,6 +27,11 @@ public final class Page {
 
     public UserPage getUserPage() {
         return userPage;
+    }
+
+    public MessageSourceResolvable getSummary() {
+        return new YukonMessageSourceResolvable("yukon.web.modules.search." + userPage.getModule() + "."
+                + userPage.getName() + ".summary", summaryArgs);
     }
 
     public Object[] getSummaryArgs() {

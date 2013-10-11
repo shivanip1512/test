@@ -16,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.search.TopDocsCallbackHandler;
 import com.cannontech.common.search.index.PaoIndexManager;
 import com.cannontech.common.search.index.SearchTemplate;
@@ -28,17 +30,43 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
 @Component
-public class MeterPageSearcher implements PageSearcher {
+public class DrPageSearcher implements PageSearcher {
     @Autowired private PaoIndexManager indexManager;
+
+    private final BooleanQuery isDrObjectQuery;
+    private final Set<PaoType> controlAreaPaoTypes;
+    private final Set<PaoType> scenarioPaoTypes;
+    private final Set<PaoType> programPaoTypes;
+    private final Set<PaoType> loadGroupPaoTypes;
+
+    @Autowired
+    public DrPageSearcher(PaoDefinitionDao paoDefinitionDao) {
+        controlAreaPaoTypes = paoDefinitionDao.getPaoTypesThatSupportTag(PaoTag.LM_CONTROL_AREA);
+        scenarioPaoTypes = paoDefinitionDao.getPaoTypesThatSupportTag(PaoTag.LM_SCENARIO);
+        programPaoTypes = paoDefinitionDao.getPaoTypesThatSupportTag(PaoTag.LM_PROGRAM);
+        loadGroupPaoTypes = paoDefinitionDao.getPaoTypesThatSupportTag(PaoTag.LM_GROUP);
+        isDrObjectQuery = new BooleanQuery(false);
+        for (PaoType paoType : controlAreaPaoTypes) {
+            isDrObjectQuery.add(new TermQuery(new Term("type", paoType.getDbString())), Occur.SHOULD);
+        }
+        for (PaoType paoType : scenarioPaoTypes) {
+            isDrObjectQuery.add(new TermQuery(new Term("type", paoType.getDbString())), Occur.SHOULD);
+        }
+        for (PaoType paoType : programPaoTypes) {
+            isDrObjectQuery.add(new TermQuery(new Term("type", paoType.getDbString())), Occur.SHOULD);
+        }
+        for (PaoType paoType : loadGroupPaoTypes) {
+            isDrObjectQuery.add(new TermQuery(new Term("type", paoType.getDbString())), Occur.SHOULD);
+        }
+    }
 
     @Override
     public SearchResults<Page> search(String searchString, final int count, YukonUserContext userContext) {
         BooleanQuery searchQuery = new BooleanQuery(false);
-        searchQuery.add(new TermQuery(new Term("deviceName", searchString)), Occur.SHOULD);
-        searchQuery.add(new TermQuery(new Term("meterNumber", searchString)), Occur.SHOULD);
+        searchQuery.add(new TermQuery(new Term("pao", searchString)), Occur.SHOULD);
 
         BooleanQuery query = new BooleanQuery(false);
-        query.add(new TermQuery(new Term("isMeter", "true")), Occur.MUST);
+        query.add(isDrObjectQuery, Occur.MUST);
         query.add(searchQuery, Occur.MUST);
 
         SearchTemplate searchTemplate = indexManager.getSearchTemplate();
@@ -51,24 +79,32 @@ public class MeterPageSearcher implements PageSearcher {
                 for (int index = 0; index < stop; ++index) {
                     int docId = topDocs.scoreDocs[index].doc;
                     Document document = indexSearcher.doc(docId);
-                    String deviceName = document.get("deviceName");
+                    String paoName = document.get("pao");
                     @SuppressWarnings("deprecation")
                     PaoType paoType = PaoType.getForDbString(document.get("type"));
                     int paoId = Integer.parseInt(document.get("paoid"));
-                    String meterNumber = document.get("meterNumber");
 
-                    String module = "amr";
-                    String path = "/meter/home?deviceId=" + paoId;
-                    String pageName = "meterDetail.electric";
-                    if (paoType.isWaterMeter()) {
-                        path = "/meter/water/home?deviceId=" + paoId;
-                        pageName = "meterDetail.water";
+                    String module = "dr";
+                    String path = null;
+                    String pageName = null;
+                    if (controlAreaPaoTypes.contains(paoType)) {
+                        path = "/dr/controlArea/detail?controlAreaId=" + paoId;
+                        pageName = "controlAreaDetail";
+                    } else if (scenarioPaoTypes.contains(paoType)) {
+                        path = "/dr/scenario/detail?scenarioId=" + paoId;
+                        pageName = "scenarioDetail";
+                    } else if (programPaoTypes.contains(paoType)) {
+                        path = "/dr/program/detail?programId=" + paoId;
+                        pageName = "programDetail";
+                    } else if (loadGroupPaoTypes.contains(paoType)) {
+                        path = "/dr/loadGroup/detail?loadGroupId=" + paoId;
+                        pageName = "loadGroupDetail";
                     }
 
-                    List<String> arguments = ImmutableList.of(deviceName);
+                    List<String> arguments = ImmutableList.of(paoName);
                     UserPage userPage = new UserPage(0, path, false, module, pageName, arguments, null, null);
 
-                    Page page = new Page(userPage, new Object[] { deviceName, meterNumber });
+                    Page page = new Page(userPage, new Object[] { paoName });
                     list.add(page);
                 }
 
@@ -91,7 +127,7 @@ public class MeterPageSearcher implements PageSearcher {
     private Set<String> autocomplete(String searchString, final int count, final String columnToMatch)
             throws IOException {
         BooleanQuery query = new BooleanQuery(false);
-        query.add(new TermQuery(new Term("isMeter", "true")), Occur.MUST);
+        query.add(isDrObjectQuery, Occur.MUST);
         query.add(new TermQuery(new Term(columnToMatch, searchString)), Occur.MUST);
 
         SearchTemplate searchTemplate = indexManager.getSearchTemplate();
@@ -118,8 +154,7 @@ public class MeterPageSearcher implements PageSearcher {
     public Set<String> autocomplete(String searchString, int count, YukonUserContext userContext) {
         try {
             Set<String> matches = new HashSet<>();
-            matches.addAll(autocomplete(searchString, count, "deviceName"));
-            matches.addAll(autocomplete(searchString, count, "meterNumber"));
+            matches.addAll(autocomplete(searchString, count, "pao"));
             return matches;
         } catch (IOException e) {
             throw new RuntimeException(e);

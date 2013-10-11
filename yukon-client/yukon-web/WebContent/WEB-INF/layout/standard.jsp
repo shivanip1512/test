@@ -13,7 +13,18 @@
 <html>
     <head>
         <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
-        
+
+        <style type="text/css">
+        body.tools_module ul.ui-autocomplete.ui-menu.ui-widget.ui-widget-content {
+            background: rgba(255, 255, 255, 1) !important;
+            z-index: 100 !important;
+        }
+
+        .ui-menu .ui-menu-item a.ui-state-focus,.ui-menu .ui-menu-item a.ui-state-active {
+            margin: 0 !important;
+        }
+        </style>
+
         <title>${pageDetail.pageTitle}</title>
         <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
         <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/normalize.css"/>" >
@@ -77,6 +88,9 @@
         <div class="inner">
             <div class="toolbar">
                 <cti:outputContent writable="${searchRenderer}"/>
+                <form accept-charset="ISO-8859-1" enctype="application/x-www-form-urlencoded" method="get" action="/search" class="yukon-search-form f-sitewideSearchForm">
+                    <input type="text" placeholder="<cti:msg2 key='yukon.common.search.placeholder'/>" role="search" name="q" class="search-field">
+                </form>
                 <cti:button id="yukon_alert_button" classes="action dn" label="0"/>
                 <cm:dropdown containerCssClass="b-user-menu fl" icon="icon-user" label="${fn:escapeXml(displayName)}" type="button">
                     <cti:checkRolesAndProperties value="ADMIN_SUPER_USER">

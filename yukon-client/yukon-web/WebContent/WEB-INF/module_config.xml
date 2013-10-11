@@ -177,6 +177,9 @@
   <module name="tools">
     <skin name="STANDARD"/>
     <pages>
+      <page name="search" type="BASIC">
+        <link>/search</link>
+      </page>
       <page name="tdc.home" type="BASIC">
         <link>/tdc</link>
         <pages>

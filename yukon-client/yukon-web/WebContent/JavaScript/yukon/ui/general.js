@@ -752,6 +752,41 @@ Yukon.modules.ui = function (mod) {
             undo.fadeIn(100);
         });
     };
+
+    mod.initSitewideSearchAutocomplete = function() {
+        var theInput = jQuery( ".f-sitewideSearchForm .search-field" );
+        theInput.autocomplete({
+            delay: 100, // Delay 100ms after keyUp before sending request
+            minLength: 2, // user must type 2 characters before any search is done
+            source: function(request, response) {
+                jQuery.ajax({
+                    type: 'get',
+                    url: "/autocomplete.json",
+                    dataType: "json",
+                    data: {
+                        q: request.term
+                    }
+                }).done(function(data) {
+                    response(jQuery.map(data, function(item) {
+                        return {
+                            label: item,
+                            value: item
+                        };
+                    }));
+                });
+            },
+            select: function( event, ui ) {
+                theInput.val(ui.item.value);
+                theInput.parents(".f-sitewideSearchForm").submit();
+            },
+            open: function() {
+                jQuery( this ).removeClass( "ui-corner-all" ).addClass( "ui-corner-top" );
+            },
+            close: function() {
+                jQuery( this ).removeClass( "ui-corner-top" ).addClass( "ui-corner-all" );
+            }
+        });
+    };
 };
 
 // merge created sandbox module with existing Yukon barebones module
@@ -816,6 +851,7 @@ jQuery.fn.flashYellow = function (duration) {
 // initialize the lib
 jQuery(document).ready(function () {
     Yukon.ui.init();
+    Yukon.ui.initSitewideSearchAutocomplete();
 
     //turn off ajax caching application-wide by default
     jQuery.ajaxSetup({cache: false});

@@ -81,4 +81,19 @@
     <entry key="yukon.web.modules.tools.tdc.altScanRate.DAYS2">2 days</entry>
     <entry key="yukon.web.modules.tools.tdc.altScanRate.DAYS5">5 days</entry>
 
+    <entry key="yukon.web.modules.tools.search.emptySearch">Please enter some text to search for.</entry>
+    <entry key="yukon.web.modules.tools.search.noResults">
+        <![CDATA[<span class="detail">No results found for:</span>&nbsp;<strong><em>{0}</em></strong>]]>
+    </entry>
+    <entry key="yukon.web.modules.tools.search.results.page.title">Page</entry>
+    <entry key="yukon.web.modules.tools.search.results.summary">
+        <![CDATA[<span class="detail">Showing {0} - {1} of {2} for:</span>&nbsp;<strong><em>{3}</em></strong>]]>
+    </entry>
+
+<!-- TODO:  Add all the context keys and DOCUMENT what the arguments for each one is. -->
+    <entry key="yukon.web.modules.search.amr.meterDetail.electric.summary">Meter Number: {1}</entry>
+    <entry key="yukon.web.modules.search.dr.controlAreaDetail.summary">{0}</entry>
+    <entry key="yukon.web.modules.search.dr.scenarioDetail.summary">{0}</entry>
+    <entry key="yukon.web.modules.search.dr.programDetail.summary">{0}</entry>
+    <entry key="yukon.web.modules.search.dr.loadGroupDetail.summary">{0}</entry>
 </properties>

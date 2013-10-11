@@ -9,6 +9,7 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.search.result.SearchResults;
@@ -20,6 +21,7 @@ import com.cannontech.web.common.search.service.SiteSearchService;
 import com.cannontech.web.common.userpage.service.UserPageService;
 import com.google.common.base.Function;
 
+@Component
 public class SiteSearchServiceImpl implements SiteSearchService {
     private final Logger log = YukonLogManager.getLogger(SiteSearchServiceImpl.class);
 
@@ -44,9 +46,11 @@ public class SiteSearchServiceImpl implements SiteSearchService {
         int searchCount = startIndex + count;
 
         List<Page> combined = new ArrayList<>();
+        int combinedCount = 0;
         for (PageSearcher searchService : pageSearchers) {
             SearchResults<Page> results = searchService.search(searchStr, searchCount, userContext);
             combined.addAll(results.getResultList());
+            combinedCount += results.getResultCount();
         }
 
         // Sort on the localized name.
@@ -58,7 +62,6 @@ public class SiteSearchServiceImpl implements SiteSearchService {
             }
         };
         combined = CtiUtilities.smartTranslatedSort(combined, translator);
-        int combinedCount = combined.size();
 
         // Return only what was asked for by index-range.
         int max = Math.min(startIndex + count, combinedCount);
