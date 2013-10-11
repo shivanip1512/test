@@ -6,7 +6,6 @@
 
 <cti:standardPage module="tools" page="bulk.analysis.list">
 
-    <tags:boxContainer2 nameKey="title">
         <table class="compactResultsTable">
             <thead>
 	            <tr>
@@ -23,15 +22,14 @@
             <tfoot></tfoot>
             <tbody>
 	            <c:forEach items="${analysisMap}" var="analysisEntry">
+                    <cti:msg2 var="attribName" key="${analysisEntry.key.attribute}"/>
 	                <c:if test="${analysisEntry.key.status != 'DELETED'}">
 	                    <tr>
 	                        <input type="hidden" value="${analysisEntry.key.analysisId}"/>
 	                        <td>
 	                            <cti:formatDate value="${analysisEntry.key.runDate}" type="DATEHM"/>
 	                        </td>
-	                        <td>
-	                            <cti:msg2 key="${analysisEntry.key.attribute}"/>
-	                        </td>
+	                        <td>${attribName}</td>
 	                        <td>
 	                            ${analysisEntry.value}
 	                        </td>
@@ -64,7 +62,7 @@
 	                                <td>
 	                                    <cti:button nameKey="viewButtonAnalyzing" renderMode="image" disabled="true" icon="icon-application-view-columns"/>
 	                                    <cti:button id="deleteButton_${analysisEntry.key.analysisId}" nameKey="remove" renderMode="image" icon="icon-cross" href="/bulk/archiveDataAnalysis/list/delete?analysisId=${analysisEntry.key.analysisId}"/>
-                                        <d:confirm on="#deleteButton_${analysisEntry.key.analysisId}" nameKey="confirmDelete" argument="${accountGeneral.accountDto.accountNumber}"/>
+                                        <d:confirm on="#deleteButton_${analysisEntry.key.analysisId}" nameKey="deleteConfirmation" argument="${attribName}"/>
 	                                </td>
 	                            </c:when>
 	                            <%-- if complete with some devices successfully analyzed, enable view, enable delete, status doesn't link--%>
@@ -78,7 +76,7 @@
 	                                        <c:when test="${analysisEntry.value == 0}">
 	                                            <cti:button nameKey="viewButtonNoDevices" renderMode="image" disabled="true" icon="icon-application-view-columns"/>
 	                                            <cti:button id="deleteButton_${analysisEntry.key.analysisId}" nameKey="remove" renderMode="image" icon="icon-cross" href="/bulk/archiveDataAnalysis/list/delete?analysisId=${analysisEntry.key.analysisId}"/>
-                                                <d:confirm on="#deleteButton_${analysisEntry.key.analysisId}" nameKey="confirmDelete" argument="${accountGeneral.accountDto.accountNumber}"/>
+                                                <d:confirm on="#deleteButton_${analysisEntry.key.analysisId}" nameKey="deleteConfirmation" argument="${attribName}"/>
 	                                        </c:when>
 	                                        <c:otherwise>
 	                                            <cti:url var="viewUrl" value="/bulk/archiveDataAnalysis/results/view">
@@ -86,7 +84,7 @@
 	                                            </cti:url>
 	                                            <cti:button nameKey="viewButton" renderMode="image" href="${viewUrl}" icon="icon-application-view-columns"/>
 	                                            <cti:button id="deleteButton_${analysisEntry.key.analysisId}" nameKey="remove" renderMode="image" icon="icon-cross" href="/bulk/archiveDataAnalysis/list/delete?analysisId=${analysisEntry.key.analysisId}"/>
-                                                <d:confirm on="#deleteButton_${analysisEntry.key.analysisId}" nameKey="confirmDelete" argument="${accountGeneral.accountDto.accountNumber}"/>
+                                                <d:confirm on="#deleteButton_${analysisEntry.key.analysisId}" nameKey="deleteConfirmation" argument="${attribName}"/>
 	                                        </c:otherwise>
 	                                    </c:choose>
 	                                </td>
@@ -106,7 +104,7 @@
 	                                    </cti:url>
 	                                    <cti:button nameKey="viewButton" renderMode="image" href="${viewUrl}" icon="icon-application-view-columns"/>
 	                                    <cti:button id="deleteButton_${analysisEntry.key.analysisId}" nameKey="remove" renderMode="image" icon="icon-cross" href="/bulk/archiveDataAnalysis/list/delete?analysisId=${analysisEntry.key.analysisId}"/>
-                                        <d:confirm on="#deleteButton_${analysisEntry.key.analysisId}" nameKey="confirmDelete" argument="${accountGeneral.accountDto.accountNumber}"/>
+                                        <d:confirm on="#deleteButton_${analysisEntry.key.analysisId}" nameKey="deleteConfirmation" argument="${attribName}"/>
 	                                </td>
 	                            </c:when>
 	                        </c:choose>
@@ -115,5 +113,4 @@
 	            </c:forEach>
             </tbody>
         </table>
-    </tags:boxContainer2>
 </cti:standardPage>
