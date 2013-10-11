@@ -141,8 +141,10 @@
             </div>
             
             <div class="column two nogutter">
-	
-					<tags:widget bean="csrTrendWidget" tabularDataViewer="archivedDataReport" />
+                    <c:set var="whatsThis" value="<div id='trendWidgetWhatsThisText'></div>"/>
+                    <div id="trendWidget">
+					   <tags:widget bean="csrTrendWidget" tabularDataViewer="archivedDataReport" helpText="${whatsThis}"/>
+					</div>
 					
 					<c:if test="${disconnectSupported}">
 						<tags:widget bean="disconnectMeterWidget"/>

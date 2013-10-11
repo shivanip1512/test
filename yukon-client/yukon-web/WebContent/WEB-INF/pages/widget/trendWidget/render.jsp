@@ -12,27 +12,21 @@ jQuery(function () {
         e.stopPropagation();
         return true;
     });
-    // init for a specific DOM element and its children
-    Yukon.ui.dateTimePickers.ancestorInit('#optionalDateFields');
-});
+
+    jQuery("#trendWidget").find(".icon-help").click(function(e) {
+        jQuery("#trendWidgetWhatsThisText")
+            .html('<cti:msg2 javaScriptEscape="true" key="${attributeGraphType.description}"/>');
+    });
+
+        // init for a specific DOM element and its children
+        Yukon.ui.dateTimePickers.ancestorInit('#optionalDateFields');
+    });
 </script>
 
 <c:choose>
     
     <c:when test="${attributeGraphType != null}">
-    
-        <%-- DESCRIPTION POPUP --%>
-		<c:if test="${attributeGraphType.description != null}">
-            <div class="pr">
-				<div class="f-tooltip dn">
-	                <cti:msg2 key="${attributeGraphType.description}"/>
-	            </div>
-				<div class="f-has-tooltip detail">
-					<cti:msg2 key=".whatsThis"/>
-				</div>
-            </div>
-		</c:if>
-		
+
 		<%-- THE CHART --%>
 		<flot:trend title="${title}" pointIds="${pointId}"
 			startDate="${startDateMillis}" endDate="${stopDateMillis}"

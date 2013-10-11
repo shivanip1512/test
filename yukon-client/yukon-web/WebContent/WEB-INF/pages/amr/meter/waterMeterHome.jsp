@@ -42,7 +42,10 @@
 	                <ct:widget bean="deviceGroupWidget"/>
             </div>
             <div class="column two nogutter">
-                <ct:widget bean="waterCsrTrendWidget" tabularDataViewer="archivedDataReport" />
+                <c:set var="whatsThis" value="<div id='trendWidgetWhatsThisText'></div>"/>
+                <div id="trendWidget">
+                   <ct:widget bean="waterCsrTrendWidget" tabularDataViewer="archivedDataReport" helpText="${whatsThis}"/>
+                </div>
             </div>
         </div>
     </ct:widgetContainer>
