@@ -168,23 +168,20 @@ function loadTarget (form) {
 
 function enableDates (value) {
     var dateFieldNames = ['startCal', 'stopCal', 'stopHourID', 'stopMinuteID', 'startHourID', 'startHourID', 'startMinuteID'],
-        dateField,
         dateElem;
 
-    if (value) {
-        jQuery('#calImg_startCal').show();
-        jQuery('#calImg_stopCal').show();
-    } else {
-        jQuery('#calImg_startCal').hide();
-        jQuery('#calImg_stopCal').hide();
-    }
-
-    for (dateField in dateFieldNames) {
-        dateElem = document.getElementById(dateField);
-        if (dateElem) {
-            dateElem.disabled = !value;
+    // do the following after the DOM is loaded
+    jQuery ( function() {
+        jQuery.each( dateFieldNames, function (key, dateField) {
+            dateElem = jQuery('#' + dateField);
+            if (dateElem.length > 0) {
+                dateElem.prop('disabled', !value);
+            }
+        });
+        if (false === value) {
+            jQuery('.datetimeEntry_wrap').hide();
         }
-    }
+    });
 }
 
 function checkDates () {
