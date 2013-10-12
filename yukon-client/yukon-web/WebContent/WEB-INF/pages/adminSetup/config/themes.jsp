@@ -26,56 +26,6 @@ jQuery(function() {
 });
 </script>
 
-<style>
-.side-tabs {
-    list-style: none;
-    padding-left: 0;
-    text-shadow: 1px 1px 0 white;
-}
-.side-tabs li {
-    padding: 5px;
-}
-.side-tabs li.selected {
-}
-.side-tabs li:not(:last-child) {
-    border-bottom: 1px dashed #ccc;
-}
-.side-tabs li.selected a {
-    color: #555;
-    cursor: default;
-}
-.side-tabs li:not(.selected):hover {
-    background-color: #fff;
-    border-right: none;
-}
-.cp-spectrum.sp-container, .cp-spectrum.sp-replacer {border: 1px solid #bbb;border-radius: 2px;}
-.cp-spectrum .sp-palette {width: 180px;}
-.cp-spectrum .sp-picker-container {width: 200px;}
-.cp-spectrum .sp-picker-container .sp-input-container {width: 100%;}
-.cp-spectrum .sp-slider {height: 5px;}
-.cp-spectrum .sp-button-container {width:100%;} 
-.cp-spectrum .sp-button-container .sp-cancel {display: none;}
-.cp-spectrum .sp-button-container .sp-choose {
-    background: #F3F3F3;
-    border: solid 1px #bbb;
-    border-radius: 2px;
-    color: #444;
-    display: inline-block;
-    float: right;
-    font: bold 12px Helvetica, Arial, sans-serif;
-    font-smoothing: antialiased;
-    height: 26px;
-    line-height: 16px;
-    margin: 3px 5px;
-    padding: 4px 8px;
-    text-decoration: none;
-    text-shadow: 0 1px 0 #fff;
-    transition: border-color 0.2s;
-}
-
-.image-picker .image.selected, .image-picker .image:hover {box-shadow: 0 0 8px #06C;cursor: pointer;}
-</style>
-
 <form id="file-upload" class="dn" action="/common/images" method="post">
     <input type="file" name="file" multiple>
 </form>

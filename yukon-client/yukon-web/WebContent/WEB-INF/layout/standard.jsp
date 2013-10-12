@@ -88,7 +88,7 @@
         <div class="inner">
             <div class="toolbar">
                 <cti:outputContent writable="${searchRenderer}"/>
-                <form accept-charset="ISO-8859-1" enctype="application/x-www-form-urlencoded" method="get" action="/search" class="yukon-search-form f-sitewideSearchForm">
+                <form accept-charset="ISO-8859-1" enctype="application/x-www-form-urlencoded" method="get" action="/search" class="yukon-search-form">
                     <input type="text" placeholder="<cti:msg2 key='yukon.common.search.placeholder'/>" role="search" name="q" class="search-field">
                 </form>
                 <cti:button id="yukon_alert_button" classes="action dn" label="0"/>

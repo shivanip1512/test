@@ -174,6 +174,7 @@ public class ThemeController {
         List<LiteYukonImage> images = yid.getImagesForCategory(category);
         model.addAttribute("images", images);
         model.addAttribute("selected", selected);
+        model.addAttribute("category", category);
         
         return "/config/_imagePicker.jsp";
     }

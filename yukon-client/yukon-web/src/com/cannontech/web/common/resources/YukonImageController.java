@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -18,15 +19,18 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.dao.YukonImageDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonImage;
-import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.user.YukonUserContext;
 
 @Controller
 public class YukonImageController {
@@ -34,6 +38,7 @@ public class YukonImageController {
     @Autowired YukonImageDao yid;
     @Autowired ResourceLoader loader;
     @Autowired RolePropertyDao rpDao;
+    @Autowired YukonUserContextMessageSourceResolver resolver;
 
     @RequestMapping(value="/images/{id}", method=RequestMethod.GET)
     public void image(HttpServletResponse resp, @PathVariable int id) throws IOException, SQLException {
@@ -59,23 +64,25 @@ public class YukonImageController {
         String contentType = "image/" + (ext.equals("jpg") ? "jpeg" : ext);
         
         resp.setContentType(contentType);
-        resp.getOutputStream().write(image.getImageValue());
+        ServletOutputStream out = resp.getOutputStream();
+        out.write(image.getImageValue());
+        out.close();
     }
     
     @RequestMapping(value="/images", method=RequestMethod.POST)
-    public @ResponseBody Map<String, Object> upload(HttpServletRequest request, LiteYukonUser user) {
+    public @ResponseBody Map<String, Object> upload(HttpServletRequest req, YukonUserContext context, @RequestParam(defaultValue="logos") String category) {
         
         Map<String, Object> json = new HashMap<>();
         
         try {
-            rpDao.verifyProperty(YukonRoleProperty.ADMIN_SUPER_USER, user);
+            rpDao.verifyProperty(YukonRoleProperty.ADMIN_SUPER_USER, context.getYukonUser());
             
-            boolean isMultipart = ServletFileUpload.isMultipartContent(request);
+            boolean isMultipart = ServletFileUpload.isMultipartContent(req);
             if (!isMultipart) {
                 throw new IllegalArgumentException("not multipart file");
             }
             
-            MultipartHttpServletRequest mRequest = (MultipartHttpServletRequest) request;
+            MultipartHttpServletRequest mRequest = (MultipartHttpServletRequest) req;
             MultipartFile file = mRequest.getFile("file");
             if (file == null || StringUtils.isBlank(file.getOriginalFilename())) {
                 throw new IllegalArgumentException("Blank file.");
@@ -86,12 +93,15 @@ public class YukonImageController {
             }
             
             InputStream inputStream = file.getInputStream();
-            LiteYukonImage image = yid.add("logos", file.getOriginalFilename(), new InputStreamResource(inputStream));
+            LiteYukonImage image = yid.add(category, file.getOriginalFilename(), new InputStreamResource(inputStream));
             Map<String, Object> imageStats = new HashMap<>(); 
             imageStats.put("id", image.getImageID());
             imageStats.put("name", image.getImageName());
             imageStats.put("category", image.getImageCategory());
-            imageStats.put("size", image.getImageValue().length);
+            
+            MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
+            String size = accessor.getMessage("yukon.common.prefixedByteValue.kibi", image.getImageValue().length * .001);
+            imageStats.put("size", size);
             json.put("image", imageStats);
             
             json.put("status", "success");

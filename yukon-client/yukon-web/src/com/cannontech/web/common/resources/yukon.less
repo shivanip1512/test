@@ -23,6 +23,7 @@
     CATEGORIES AND SETTINGS
     MISC
     DATE/TIME PICKER
+    COLOR PICKER
     DROPDOWN MENUS
     MODAL/BLOCKING GLASS
     CONNECTION WARNING
@@ -123,6 +124,17 @@ input[type=radio]:focus {outline:none;}
 .vertical_menu li.selected, .vertical_menu li:hover, .vertical_menu li:focus {background: white;border-right: solid 1px white;}
 .vertical_menu li.selected {border-left: solid 5px #ccc;}
 .vertical_menu a {color: inherit;display: block;word-wrap: break-word;text-shadow: 1px 1px 0 white;}
+
+.side-tabs {
+    list-style: none;
+    padding-left: 0;
+    text-shadow: 1px 1px 0 white;
+    
+    li {padding: 5px;}
+    li:not(:last-child) {border-bottom: 1px dashed #ccc;}
+    li.selected a {color: #555;cursor: default;}
+    li:not(.selected):hover {background-color: #fff;border-right: none;}
+}
 
 /* TABLES */
 table {width: auto;border-collapse: collapse;}
@@ -425,7 +437,7 @@ hr.dashed, .divider.dashed {border-style: dashed none none none;}
 @-webkit-keyframes pulse { from {opacity: 0.3;} to {opacity: 1.0;}}
 .pulse {-webkit-animation-name: pulse;-webkit-animation-duration: 1s;-webkit-animation-iteration-count: infinite;-webkit-animation-timing-function: ease-in-out;-webkit-animation-direction: alternate;}
 
- /* DATE/TIME PICKERS */
+ /* DATE/TIME PICKER */
 .datetimeEntry_wrap {display: inline-block; overflow: hidden; background: #ccc; -webkit-border-radius: 2px; -moz-border-radius: 2px; border-radius: 2px; float: left; margin-right: 5px;border: 1px solid #aaa;height: 22px;}
 .datetimeEntry_wrap.date {width: 144px;}
 .datetimeEntry_wrap.dateTime {min-width: 171px;}
@@ -442,6 +454,52 @@ input.datePicker {width: 114px;}
 input.timePicker {width: 74px;}
 input.dateTimePicker {margin: 0;}
 .ui-datepicker-trigger:hover {cursor: pointer;}
+
+/* COLOR PICKER */
+.color-picker {
+    &.sp-container, &.sp-replacer {
+        border: 1px solid #bbb;border-radius: 2px;
+    }
+    
+    .sp-palette {width: 180px;}
+    .sp-picker-container {
+        width: 200px;
+        .sp-input-container {width: 100%;}
+    }
+    .sp-slider {height: 5px;}
+    .sp-button-container {
+        width: 100%;
+        .sp-cancel {display: none;}
+        .sp-choose {
+            background: #F3F3F3;
+            border: solid 1px #bbb;
+            border-radius: 2px;
+            color: #444;
+            display: inline-block;
+            float: right;
+            font: bold 12px Helvetica, Arial, sans-serif;
+            font-smoothing: antialiased;
+            height: 26px;
+            line-height: 16px;
+            margin: 3px 5px;
+            padding: 4px 8px;
+            text-decoration: none;
+            text-shadow: 0 1px 0 #fff;
+            transition: border-color 0.2s;
+        }
+    }
+}
+
+/* IMAGE PICKER */
+.image-picker {
+    .image {
+        border: 2px solid transparent;
+        &.selected, &:hover {cursor: pointer; border-color: #bbb}
+    }
+    .upload-percent, .upload-progress {display: inline-block; float: left;}
+    .upload-progress {width: 200px;}
+    .upload-percent {line-height: 26px; margin-left: 15px;}
+}
 
 /* DROPDOWN MENUS */
 .dropdown-container {display: inline-block; position: relative;}

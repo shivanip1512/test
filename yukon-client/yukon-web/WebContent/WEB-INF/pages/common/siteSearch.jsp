@@ -36,7 +36,7 @@
     </script>
 
     <div class="stacked">
-        <form action="" method="get" id="formSiteSearch" class="clearfix f-sitewideSearchForm">
+        <form action="" method="get" id="formSiteSearch" class="clearfix yukon-search-form">
             <input id="searchString" name="q" value="${fn:escapeXml(searchString)}" size="50" type="text"
             	class="fl search-field" placeholder="<cti:msg2 key='yukon.common.search.placeholder'/>">
            	<input type="hidden" name="itemsPerPage" value="${itemsPerPage}">

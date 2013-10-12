@@ -7,10 +7,10 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <cti:msgScope paths="yukon.common.imagePicker">
-<div class="separated-sections image-picker">
+<div class="separated-sections image-picker" data-category="${category}">
     <div class="section clearfix">
         <cti:button classes="b-upload" nameKey="upload" icon="icon-bullet-go-up"/>
-        <div class="f-upload-progress"></div>
+        <div class="upload-progress"></div><div class="upload-percent"></div>
     </div>
     <c:forEach var="image" items="${images}">
         <div class="section">

@@ -42,7 +42,7 @@ Yukon.Themes = (function () {
                 item.spectrum({
                     color: color,
                     showInput: true,
-                    className: "cp-spectrum",
+                    className: "color-picker",
                     chooseText: _chooseText,
                     showInitial: true,
                     showAlpha: true,
@@ -103,14 +103,17 @@ Yukon.Themes = (function () {
             jQuery('#file-upload').fileupload({
                 dataType: 'json',
                 start: function (e) {
-                    console.log('starting upload...');
-                    jQuery(jQuery('#file-upload input').data('button').next()).progressbar({max:100, value: 0});
+                    var bar = jQuery('#file-upload input').data('button').next();
+                    jQuery(bar).progressbar({max:100, value: 0});
                 },
                 done: function (e, data) {
                     if (data.result.status == 'success') {
-                        console.log('upload success');
                         var uploadArea = jQuery(jQuery('#file-upload input').data('button')).parent(),
                             copy = uploadArea.next().clone();
+                        
+                        uploadArea.closest('.image-picker').find('.image').removeClass('selected');
+                        copy.addClass('selected');
+                        
                         copy.find('.image').attr('data-image-id', data.result.image.id);
                         copy.find('.f-name-value').text(data.result.image.name);
                         copy.find('.f-category-value').text(data.result.image.category);
@@ -124,14 +127,19 @@ Yukon.Themes = (function () {
                     }
                 },
                 progressall: function (e, data) {
-                    var progress = parseInt(data.loaded / data.total * 100, 10);
-                    jQuery(jQuery('#file-upload input').data('button').next()).progressbar("value", progress);
-                    console.log('progress: ' + progress + '%');
+                    var progress = parseInt(data.loaded / data.total * 100, 10),
+                        button = jQuery('#file-upload input').data('button'),
+                        bar = jQuery(button.next()),
+                        percent = jQuery(bar.next());
+                    bar.progressbar("value", progress);
+                    percent.text(progress + "%");
                 }
             });
             
             jQuery(document).on('click', '.b-upload', function(e) {
+                var category = jQuery(e.currentTarget).closest('.image-picker').data('category');
                 jQuery('#file-upload input').data('button', e.currentTarget);
+                jQuery('#file-upload').fileupload('option', 'formData', {'category': category});
                 jQuery('#file-upload input').trigger('click');
             });
             

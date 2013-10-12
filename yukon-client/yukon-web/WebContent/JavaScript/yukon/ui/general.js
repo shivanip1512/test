@@ -754,8 +754,9 @@ Yukon.modules.ui = function (mod) {
     };
 
     mod.initSitewideSearchAutocomplete = function() {
-        var theInput = jQuery( ".f-sitewideSearchForm .search-field" );
+        var theInput = jQuery( ".yukon-search-form .search-field" );
         theInput.autocomplete({
+            class: 'yukon-search-autocomplete',
             delay: 100, // Delay 100ms after keyUp before sending request
             minLength: 2, // user must type 2 characters before any search is done
             source: function(request, response) {
@@ -777,7 +778,7 @@ Yukon.modules.ui = function (mod) {
             },
             select: function( event, ui ) {
                 theInput.val(ui.item.value);
-                theInput.parents(".f-sitewideSearchForm").submit();
+                theInput.parents(".yukon-search-form").submit();
             },
             open: function() {
                 jQuery( this ).removeClass( "ui-corner-all" ).addClass( "ui-corner-top" );
