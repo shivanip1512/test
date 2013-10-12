@@ -14,24 +14,9 @@
         <property name="order" value="1"/>
     </bean>
     
-    <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
-        <property name="mappings">
-            <props>
-                <prop key="/alert/*">alertController</prop>
-                <prop key="/deviceDefinition.xml">DeviceDefinitionViewerController</prop>
-            </props>
-        </property>
-        <property name="order" value="2"/>
-    </bean>
-    
     <bean id="viewResolver" class="org.springframework.web.servlet.view.UrlBasedViewResolver">
         <property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
         <property name="prefix" value="/WEB-INF/pages/common/" />
     </bean>
     
-    <bean id="alertController" class="com.cannontech.web.common.alert.AlertController">
-        <property name="alertService" ref="alertService"/>
-    </bean>
-    
-    <bean id="DeviceDefinitionViewerController" class="com.cannontech.web.util.DeviceDefinitionViewerController"/>
 </beans>

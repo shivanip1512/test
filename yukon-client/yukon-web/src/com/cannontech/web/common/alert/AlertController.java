@@ -2,41 +2,39 @@ package com.cannontech.web.common.alert;
 
 import java.util.Collection;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import net.sf.jsonOLD.JSONArray;
 
-import org.springframework.web.bind.ServletRequestUtils;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.common.alert.model.IdentifiableAlert;
 import com.cannontech.common.alert.service.AlertService;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.util.ServletUtil;
 
-public class AlertController extends MultiActionController {
-    private AlertService alertService;
+@Controller
+@RequestMapping("/alert/*")
+public class AlertController {
     
-    public ModelAndView view(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        final ModelAndView mav = new ModelAndView();
-        final LiteYukonUser user = ServletUtil.getYukonUser(request);
-        final String viewName = ServletRequestUtils.getStringParameter(request, "style", "alertView");
+    @Autowired private AlertService alertService;
+    
+    @RequestMapping
+    public String view(ModelMap model, LiteYukonUser user, @RequestParam(defaultValue="alertView") String style) {
         
         final Collection<IdentifiableAlert> alerts = alertService.getAll(user);
-        mav.addObject("alerts", alerts);
+        model.addAttribute("alerts", alerts);
         
         int count = alerts.size();
-        mav.addObject("count", count);
+        model.addAttribute("count", count);
         
-        mav.setViewName("alert/" + viewName + ".jsp");
-        return mav;
+        return "alert/" + style + ".jsp";
     }
     
-    public void clear(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        final LiteYukonUser user = ServletUtil.getYukonUser(request);
-        final String jsonString = ServletRequestUtils.getRequiredStringParameter(request, "jsonString");
+    @RequestMapping(method=RequestMethod.POST)
+    public void clear(LiteYukonUser user, String jsonString) {
         final JSONArray array = new JSONArray(jsonString);
         
         final int[] alertIds = new int[array.length()];
@@ -45,20 +43,6 @@ public class AlertController extends MultiActionController {
         }
         
         alertService.remove(alertIds, user);
-    }
-    
-    public void singleClear(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        final LiteYukonUser user = ServletUtil.getYukonUser(request);
-        final int alertId = ServletRequestUtils.getRequiredIntParameter(request, "alertId");
-        
-        final int[] alertIds = new int[1];
-        alertIds[0] = alertId;
-
-        alertService.remove(alertIds, user);
-    }
-    
-    public void setAlertService(AlertService alertService) {
-        this.alertService = alertService;
     }
     
 }

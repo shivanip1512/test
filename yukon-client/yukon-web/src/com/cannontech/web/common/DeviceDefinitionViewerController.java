@@ -1,4 +1,4 @@
-package com.cannontech.web.util;
+package com.cannontech.web.common;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,13 +13,13 @@ import java.util.Set;
 import java.util.SortedSet;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.AbstractController;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.Attribute;
@@ -36,11 +36,11 @@ import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.point.PointType;
-import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Sets;
 
-public class DeviceDefinitionViewerController extends AbstractController {
+@Controller
+public class DeviceDefinitionViewerController {
 
     @Autowired private PaoDefinitionDao paoDefinitionDao;
 	@Autowired private UnitMeasureDao unitMeasureDao;
@@ -49,11 +49,9 @@ public class DeviceDefinitionViewerController extends AbstractController {
 
 	private static String[] DISPLAY_GROUP_ORDER = {"MCT", "Two Way LCR", "Signal Transmitters", "Electronic Meters", "RTU", "Virtual", "Grid Advisor", ""};
 	
-	@Override
-    protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
+	@RequestMapping("/deviceDefinition.xml")
+    public String view(HttpServletRequest request, ModelMap model, YukonUserContext context) throws Exception {
 
-	    YukonUserContext context = YukonUserContextUtils.getYukonUserContext(request);
-        ModelAndView mav = new ModelAndView("deviceDefinition/deviceDefinitionViewer.jsp");
         // init
         Set<PaoDefinition> allDefinitions = paoDefinitionDao.getAllPaoDefinitions();
         Map<String, Set<PaoDefinition>> allDeviceTypes = new LinkedHashMap<String, Set<PaoDefinition>>();
@@ -155,21 +153,21 @@ public class DeviceDefinitionViewerController extends AbstractController {
         displayDefinitionsMap = sortDisplayDefinitionsByGroupOrder(displayDefinitionsMap);
         allDisplayGroups = sortDisplayGroupsByDisplayGroupOrder(allDisplayGroups);
         
-        mav.addObject("deviceTypeParam", deviceTypeParam);
-        mav.addObject("displayGroupParam", displayGroupParam);
-        mav.addObject("changeGroupParam", changeGroupParam);
-        mav.addObject("attributeParam", attributeParam);
-        mav.addObject("tagParam", tagParam);
+        model.addAttribute("deviceTypeParam", deviceTypeParam);
+        model.addAttribute("displayGroupParam", displayGroupParam);
+        model.addAttribute("changeGroupParam", changeGroupParam);
+        model.addAttribute("attributeParam", attributeParam);
+        model.addAttribute("tagParam", tagParam);
         
-        mav.addObject("allDeviceTypes", allDeviceTypes);
-        mav.addObject("allDisplayGroups", allDisplayGroups);
-        mav.addObject("allChangeGroups", allChangeGroups);
-        mav.addObject("allAttributes", allAttributes);
-        mav.addObject("allTags", allTags);
+        model.addAttribute("allDeviceTypes", allDeviceTypes);
+        model.addAttribute("allDisplayGroups", allDisplayGroups);
+        model.addAttribute("allChangeGroups", allChangeGroups);
+        model.addAttribute("allAttributes", allAttributes);
+        model.addAttribute("allTags", allTags);
         
-        mav.addObject("displayDefinitionsMap", displayDefinitionsMap);
+        model.addAttribute("displayDefinitionsMap", displayDefinitionsMap);
         
-        return mav;
+        return "deviceDefinition/deviceDefinitionViewer.jsp";
     }
 	
 	private Map<String, Set<PaoDefinition>> sortDeviceTypesByGroupOrder(Map<String, Set<PaoDefinition>> allDeviceTypes) {

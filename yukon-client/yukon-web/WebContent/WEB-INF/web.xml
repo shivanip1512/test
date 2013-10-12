@@ -865,6 +865,7 @@
         <servlet-name>common</servlet-name>
         <url-pattern>/common/*</url-pattern>
         <url-pattern>/search</url-pattern>
+        <url-pattern>/deviceDefinition.xml</url-pattern>
         <url-pattern>/autocomplete.json</url-pattern>
         <url-pattern>/WebConfig/yukon/styles/layout.css</url-pattern>
         <url-pattern>/WebConfig/yukon/styles/yukon.css</url-pattern>

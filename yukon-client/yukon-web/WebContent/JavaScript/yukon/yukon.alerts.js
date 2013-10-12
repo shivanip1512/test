@@ -11,6 +11,11 @@ var Yukon = (function (yukonMod) {
 Yukon.namespace('Yukon.Alerts');
 Yukon.Alerts = (function () {
     var initialized = false, 
+        _alert_button = "#yukon_alert_button",
+        _clear_button = "#yukon_clear_alerts_button",
+        _viewAlertUrl = "/common/alert/view",
+        _clearAlertUrl = "/common/alert/clear",
+        
         /* --------------- */
         /* private methods */
         /* --------------- */
@@ -40,10 +45,6 @@ Yukon.Alerts = (function () {
             jQuery("#yukon_alert_popup").dialog("close");
             jQuery("#alert_body").empty();
         },
-        _alert_button = "#yukon_alert_button",
-        _clear_button = "#yukon_clear_alerts_button",
-        _viewAlertUrl = "/common/alert/view",
-        _clearAlertUrl = "/common/alert/clear",
         alertMod;
 
     alertMod = {
