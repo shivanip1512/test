@@ -756,7 +756,6 @@ Yukon.modules.ui = function (mod) {
     mod.initSitewideSearchAutocomplete = function() {
         var theInput = jQuery( ".yukon-search-form .search-field" );
         theInput.autocomplete({
-            class: 'yukon-search-autocomplete',
             delay: 100, // Delay 100ms after keyUp before sending request
             minLength: 2, // user must type 2 characters before any search is done
             source: function(request, response) {
