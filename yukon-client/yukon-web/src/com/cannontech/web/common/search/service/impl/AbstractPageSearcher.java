@@ -45,8 +45,7 @@ public abstract class AbstractPageSearcher implements PageSearcher {
      */
     protected abstract String[] getSearchFields();
 
-    // TODO:  remove x
-    protected Query getSearchQueryx(String searchString) throws ParseException {
+    private Query getSearchQuery(String searchString) throws ParseException {
         BooleanQuery searchQuery = new BooleanQuery(false);
 
         for (String searchField : getSearchFields()) {
@@ -64,7 +63,7 @@ public abstract class AbstractPageSearcher implements PageSearcher {
         Query query;
         try {
             Query requiredQuery = getRequiredQuery();
-            Query searchQuery = getSearchQueryx(searchString);
+            Query searchQuery = getSearchQuery(searchString);
             if (requiredQuery == null) {
                 query = searchQuery;
             } else {
