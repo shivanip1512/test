@@ -8,7 +8,7 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.google.common.collect.ImmutableList.Builder;
 
 @Component
-public final class LoadProfileResolution implements DeviceConfigurationInputEnumeration {
+public final class ProfileResolution implements DeviceConfigurationInputEnumeration {
 
     private static final String baseKey = "yukon.web.modules.tools.configs.enum.whResolution";
     
@@ -46,7 +46,7 @@ public final class LoadProfileResolution implements DeviceConfigurationInputEnum
     
     @Override
     public String getEnumOptionName() {
-        return "LoadProfileResolution";
+        return "ProfileResolution";
     }
 
     @Override

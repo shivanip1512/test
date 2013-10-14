@@ -1145,7 +1145,7 @@ public void setValue(Object val)
               LightDeviceConfiguration config = deviceConfigDao.findConfigurationForDevice(device);
               if (config != null) {
                   int configId = config.getConfigurationId();
-                  CategoryType catType = CategoryType.MCT_470_DEMAND_LOAD_PROFILE;
+                  CategoryType catType = CategoryType.DEMAND_PROFILE;
                   
                   String intervalVal = deviceConfigDao.getValueForItemName(configId, catType, "demandInterval");
                   String lpVal = deviceConfigDao.getValueForItemName(configId, catType, "loadProfileInterval1");
