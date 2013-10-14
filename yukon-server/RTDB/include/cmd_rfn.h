@@ -53,6 +53,25 @@ public:
 
 protected:
 
+    struct ApplicationServiceIdentifiers
+    {
+        enum type
+        {
+            //Reserved = 0,
+            //C1218PassThrough = 1,
+            ChannelManager = 2,
+            //DlmsPassThrough = 3,
+            //MeterTimeSynchronization = 4,
+            //HanManager = 5,
+            EventManager = 6,
+            //ConfigurationManagement = 8,
+            //HubMeterCommandSet = 0x81,
+            //E2EDT = 0x09,
+            //E2EAP_SNMP = 0x0a,
+            //E2EAP_DNP3 = 0x0b,
+        };
+    };
+
     //
     // Functions called by execute() to create a request command
     //

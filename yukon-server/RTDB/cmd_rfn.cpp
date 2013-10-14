@@ -52,10 +52,10 @@ RfnCommand::Bytes RfnCommand::getCommandHeader()
     return header;
 }
 
-// Defaults to Advanced Metrology
+// Defaults to Advanced Metrology, which operates via Channel Manager
 unsigned char RfnCommand::getApplicationServiceId() const
 {
-    return 0x09;
+    return ApplicationServiceIdentifiers::ChannelManager;
 }
 
 // Convert type-length-value vector to a byte vector
