@@ -111,10 +111,9 @@ Yukon.Themes = (function () {
                         var uploadArea = jQuery(jQuery('#file-upload input').data('button')).parent(),
                             copy = uploadArea.next().clone();
                         
-                        uploadArea.closest('.image-picker').find('.image').removeClass('selected');
-                        copy.addClass('selected');
+                        uploadArea.closest('.image-picker').find('.image.selected').removeClass('selected');
                         
-                        copy.find('.image').attr('data-image-id', data.result.image.id);
+                        copy.find('.image').addClass('selected').attr('data-image-id', data.result.image.id);
                         copy.find('.f-name-value').text(data.result.image.name);
                         copy.find('.f-category-value').text(data.result.image.category);
                         copy.find('.f-size-value').text(data.result.image.size);
@@ -123,7 +122,7 @@ Yukon.Themes = (function () {
                         
                         copy.insertAfter(uploadArea);
                     } else {
-                        console.log('upload fail: ' + data.result.message);
+                        //TODO something useful here
                     }
                 },
                 progressall: function (e, data) {
@@ -143,7 +142,7 @@ Yukon.Themes = (function () {
                 jQuery('#file-upload input').trigger('click');
             });
             
-            // if i don't listen for this event it doesn't work, god knows why
+            // if i don't listen for this event it doesn't work, God knows why
             jQuery(document).on('show.spectrum', 'input', function(e) {
                 e.preventDefault();
             });

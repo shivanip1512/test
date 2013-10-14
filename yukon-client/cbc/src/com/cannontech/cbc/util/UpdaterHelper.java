@@ -151,7 +151,7 @@ public class UpdaterHelper {
     // The color schemes - based on the schedule status
     private static final Color[] _DEFAULT_COLORS = {
         // Enabled subbus (Green like color)
-        new Color(60, 130, 66),
+        new Color(0, 153, 51),
         // Disabled subbus (Red like color)
         new Color(209,72,54),
         // Pending subbus (Yellow like color)
