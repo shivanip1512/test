@@ -11,47 +11,47 @@
     <div>
         <table>
             <tr>
-                <td>
+                <td colspan="2">                  
+                    <div class="fr">
+                        <c:if test="${not empty currentConfigId}">
+                            <cm:dropdown type="button">
+                                <cti:checkRolesAndProperties value="ASSIGN_CONFIG">
+                                    <li>
+                                        <ct:widgetActionRefresh method="unassignConfig"
+                                            nameKey="unassign" type="link"/>
+                                    </li>
+                                </cti:checkRolesAndProperties>
+                                <cti:checkRolesAndProperties value="SEND_READ_CONFIG">
+                                    <li>
+                                        <ct:widgetActionUpdate method="sendConfig"
+                                            nameKey="send"
+                                            container="${widgetParameters.widgetId}_config_results"
+                                            type="link"
+                                            waitingTextLocation="#${widgetParameters.widgetId}_busy" />
+                                    </li>
+                                    <li>
+                                        <ct:widgetActionUpdate method="readConfig"
+                                            nameKey="read"
+                                            container="${widgetParameters.widgetId}_config_results"
+                                            type="link"
+                                            waitingTextLocation="#${widgetParameters.widgetId}_busy" />
+                                    </li>
+                                </cti:checkRolesAndProperties>
+                                <li>
+                                    <ct:widgetActionUpdate method="verifyConfig"
+                                        nameKey="verify"
+                                        container="${widgetParameters.widgetId}_config_results"
+                                        type="link" 
+                                        waitingTextLocation="#${widgetParameters.widgetId}_busy" />
+                                </li>
+                            </cm:dropdown>
+                        </c:if>
+                    </div>
                     <ct:nameValueContainer2>
                         <ct:nameValue2 nameKey=".currentConfigurations">
                             <c:out value="${currentConfigName}"/>
                         </ct:nameValue2>
                     </ct:nameValueContainer2>
-                </td>
-                <td>
-                    <c:if test="${not empty currentConfigId}">
-						<cm:dropdown type="button">
-							<cti:checkRolesAndProperties value="ASSIGN_CONFIG">
-								<li>
-                                    <ct:widgetActionRefresh method="unassignConfig"
-										nameKey="unassign" type="link"/>
-                                </li>
-							</cti:checkRolesAndProperties>
-							<cti:checkRolesAndProperties value="SEND_READ_CONFIG">
-								<li>
-								    <ct:widgetActionUpdate method="sendConfig"
-										nameKey="send"
-										container="${widgetParameters.widgetId}_config_results"
-										type="link"
-										waitingTextLocation="#${widgetParameters.widgetId}_busy" />
-                                </li>
-								<li>
-								    <ct:widgetActionUpdate method="readConfig"
-										nameKey="read"
-										container="${widgetParameters.widgetId}_config_results"
-										type="link"
-                                        waitingTextLocation="#${widgetParameters.widgetId}_busy" />
-                                </li>
-							</cti:checkRolesAndProperties>
-							<li>
-                                <ct:widgetActionUpdate method="verifyConfig"
-									nameKey="verify"
-									container="${widgetParameters.widgetId}_config_results"
-									type="link" 
-                                    waitingTextLocation="#${widgetParameters.widgetId}_busy" />
-                            </li>
-						</cm:dropdown>
-                    </c:if>
                 </td>
             </tr>
             <cti:checkRolesAndProperties value="ASSIGN_CONFIG">
@@ -59,7 +59,7 @@
                     <td>
                         <ct:nameValueContainer2>
                             <ct:nameValue2 nameKey=".deviceConfigurations">
-                                <select id="configuration" name="configuration">
+                                <select id="configuration" name="configuration" class="full_width">
                                     <c:forEach var="config" items="${existingConfigs}">
                                         <option value="${config.configurationId}" <c:if test="${config.configurationId == currentConfigId}">selected</c:if>>${fn:escapeXml(config.name)}</option>
                                     </c:forEach>
