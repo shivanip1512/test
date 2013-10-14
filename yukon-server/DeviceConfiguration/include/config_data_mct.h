@@ -112,20 +112,20 @@ public:
 
     static const std::string TimeZoneOffset;
 
-    static const std::string LoadProfileResolution1;
+    static const std::string ProfileResolution1;
     static const std::string PeakKwResolution1;
     static const std::string LastIntervalDemandResolution1;
-    static const std::string LoadProfileResolution2;
+    static const std::string ProfileResolution2;
     static const std::string PeakKwResolution2;
     static const std::string LastIntervalDemandResolution2;
-    static const std::string LoadProfileResolution3;
+    static const std::string ProfileResolution3;
     static const std::string PeakKwResolution3;
     static const std::string LastIntervalDemandResolution3;
-    static const std::string LoadProfileResolution4;
+    static const std::string ProfileResolution4;
     static const std::string PeakKwResolution4;
     static const std::string LastIntervalDemandResolution4;
     static const std::string DemandInterval;
-    static const std::string LoadProfileInterval;
+    static const std::string ProfileInterval;
 
     static const std::string TimeAdjustTolerance;
 

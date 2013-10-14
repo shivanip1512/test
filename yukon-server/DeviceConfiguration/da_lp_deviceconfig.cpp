@@ -27,13 +27,13 @@ int DeviceConfigurationLoadProfileData::getLastIntervalDemandRate() const
 
 int DeviceConfigurationLoadProfileData::getLoadProfileDemandRate() const
 {
-    long lpInterval_minutes = _deviceConfig->getLongValueFromKey(MCTStrings::LoadProfileInterval);
+    long lpInterval_minutes = _deviceConfig->getLongValueFromKey(MCTStrings::ProfileInterval);
 
     if( lpInterval_minutes <= 0 )
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** getLoadProfileDemandRate() - \"" << MCTStrings::LoadProfileInterval << "\" returned \"" << lpInterval_minutes << "\", returning 0 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** getLoadProfileDemandRate() - \"" << MCTStrings::ProfileInterval << "\" returned \"" << lpInterval_minutes << "\", returning 0 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         return 0;

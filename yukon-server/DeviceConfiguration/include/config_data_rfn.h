@@ -52,7 +52,7 @@ struct IM_EX_CONFIG RfnStrings
     static const std::string displayItemDuration;
 
     static const std::string demandInterval;
-    static const std::string loadProfileInterval;
+    static const std::string profileInterval;
 
     static const std::string demandFreezeDay;
 

@@ -296,7 +296,7 @@ int RfnResidentialDevice::executePutConfigVoltageAveragingInterval( CtiRequestMs
     }
 
     {
-        const std::string           configKey( Config::RfnStrings::loadProfileInterval );
+        const std::string           configKey( Config::RfnStrings::profileInterval );
         const boost::optional<long> configValue = deviceConfig->findLongValueForKey( configKey );
 
         if ( ! configValue  )

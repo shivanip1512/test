@@ -112,22 +112,22 @@ const string MCTStrings::TimeZoneOffset = "timeZoneOffset";
 
 const string MCTStrings::PeakKwResolution1 = "channel1PeakKWResolution";
 const string MCTStrings::LastIntervalDemandResolution1 = "channel1LastIntervalDemandResolution";
-const string MCTStrings::LoadProfileResolution1 = "channel1LoadProfileResolution";
+const string MCTStrings::ProfileResolution1 = "channel1ProfileResolution";
 
 const string MCTStrings::PeakKwResolution2 = "channel2PeakKWResolution";
 const string MCTStrings::LastIntervalDemandResolution2 = "channel2LastIntervalDemandResolution";
-const string MCTStrings::LoadProfileResolution2 = "channel2LoadProfileResolution";
+const string MCTStrings::ProfileResolution2 = "channel2ProfileResolution";
 
 const string MCTStrings::PeakKwResolution3 = "channel3PeakKWResolution";
 const string MCTStrings::LastIntervalDemandResolution3 = "channel3LastIntervalDemandResolution";
-const string MCTStrings::LoadProfileResolution3 = "channel3LoadProfileResolution";
+const string MCTStrings::ProfileResolution3 = "channel3ProfileResolution";
 
 const string MCTStrings::PeakKwResolution4 = "channel4PeakKWResolution";
 const string MCTStrings::LastIntervalDemandResolution4 = "channel4LastIntervalDemandResolution";
-const string MCTStrings::LoadProfileResolution4 = "channel4LoadProfileResolution";
+const string MCTStrings::ProfileResolution4 = "channel4ProfileResolution";
 
 const string MCTStrings::DemandInterval = "demandInterval";
-const string MCTStrings::LoadProfileInterval = "loadProfileInterval1";
+const string MCTStrings::ProfileInterval = "profileInterval";
 
 const string MCTStrings::TimeAdjustTolerance = "timeAdjustTolerance";
 const string MCTStrings::EnableDst = "enableDst";
@@ -217,10 +217,10 @@ const string RfnStrings::displayAlphameric10   = "displayAlphameric10";
 // focus display item duration
 const string RfnStrings::displayItemDuration   = "displayItemDuration";
 
-const string RfnStrings::demandInterval         = "demandInterval";
-const string RfnStrings::loadProfileInterval    = "loadProfileInterval1";
+const string RfnStrings::demandInterval        = "demandInterval";
+const string RfnStrings::profileInterval       = "profileInterval";
 
-const string RfnStrings::demandFreezeDay    = "demandFreezeDay";
+const string RfnStrings::demandFreezeDay       = "demandFreezeDay";
 
 // day table
 const string RfnStrings::MondaySchedule        = "monday";
