@@ -469,13 +469,13 @@ const IM_EX_MSG OutboundQueue
                 ("yukon.qr.obj.dr.rfn.ExpressComBroadcastRequest");
 const IM_EX_MSG OutboundQueue
         OutboundQueue::NetworkManagerE2eDataRequest
-                ("com.eaton.eas.yukon.networkmanager.rfn.E2eDataRequest");
+                ("com.eaton.eas.yukon.networkmanager.e2e.rfn.E2eDataRequest");
 
 InboundQueue::InboundQueue(std::string name_) : name(name_) {}
 
 const IM_EX_MSG InboundQueue
         InboundQueue::NetworkManagerE2eDataIndication
-                ("com.eaton.eas.yukon.networkmanager.rfn.E2eDataIndication");
+                ("com.eaton.eas.yukon.networkmanager.e2e.rfn.E2eDataIndication");
 }
 }
 
