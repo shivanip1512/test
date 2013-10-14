@@ -3,9 +3,12 @@ package com.cannontech.web.support;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletResponse;
@@ -66,7 +69,8 @@ import com.google.common.collect.Sets;
 public class SupportController {
 
     private final static String baseKey = "yukon.web.modules.support.supportBundle";
-
+    private final static String manualsFolderName = CtiUtilities.getYukonBase() + "/Manuals/";
+    private final static Pattern pdfFileName = Pattern.compile("(.*)\\.pdf$");
     @Autowired private SupportBundleService supportBundleService;
     @Autowired private List<SupportBundleWriter> writerList;
     @Autowired private DateFormattingService dateFormattingService;
@@ -87,6 +91,16 @@ public class SupportController {
     @RequestMapping(value={"","/support"})
     public String support(ModelMap model, YukonUserContext context) {
         return supportBundle(model, new SupportBundle(), context);
+    }
+
+    @RequestMapping("/manual")
+    public void manual(String manualName, HttpServletResponse response) throws IOException  {
+        File f = new File(manualsFolderName + manualName + ".pdf");
+        InputStream is = new FileInputStream(f);
+        response.flushBuffer();
+        response.setContentType("application/pdf");
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + manualName + ".pdf\"");
+        FileCopyUtils.copy(is, response.getOutputStream());
     }
 
     private void setUpLogsAndInfo(ModelMap model, YukonUserContext context){
@@ -139,9 +153,24 @@ public class SupportController {
         }        model.addAttribute("supportPages", supportPages);
     }
 
+    private void setUpManuals(ModelMap model){
+        File folder = new File(manualsFolderName);
+        List<String> fileNames = new ArrayList<>();
+        if(folder.listFiles() != null){
+            for(File file : folder.listFiles()){
+                Matcher m = pdfFileName.matcher(file.getName());
+                if (m.find()) {
+                    fileNames.add(m.group(1));
+                }
+            }
+        }
+        model.addAttribute("manuals", fileNames);
+    }
+
     private String supportBundle(ModelMap model, SupportBundle bundle, YukonUserContext context){
         setUpLogsAndInfo(model, context);
         setUpLinks(model, context);
+        setUpManuals(model);
         
         List<JSONObject> previousBundles = Lists.newArrayList();
         for(File f : bundleService.getBundles()){

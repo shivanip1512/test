@@ -34,15 +34,9 @@
     <entry key="yukon.web.modules.support.support.ftpUpload.title">Upload Support Bundle</entry>
 
 
-    <entry key="yukon.web.modules.support.manuals.release.title">Release Notes</entry>
-    <entry key="yukon.web.modules.support.manuals.requirements.title">System Requirements</entry>
-    <entry key="yukon.web.modules.support.manuals.new.title">What's New</entry>
-    <entry key="yukon.web.modules.support.manuals.general.title">Yukon 6.0 Admin and Users Manuals</entry>
-
-    <entry key="yukon.web.modules.support.manuals.release.link">http://www.cannontech.com/support/docs/Yukon5.6ReleaseNotes.pdf</entry>
-    <entry key="yukon.web.modules.support.manuals.requirements.link">http://www.cannontech.com/support/docs/Yukon5.6MinSysReq.pdf</entry>
-    <entry key="yukon.web.modules.support.manuals.new.link">http://www.cannontech.com/support/docs/Yukon5.6WhatsNew.pdf</entry>
+    <entry key="yukon.web.modules.support.manuals.general.title">Yukon Admin and User Manuals</entry>
     <entry key="yukon.web.modules.support.manuals.general.link">http://www.cannontech.com/support/docs/yukon.asp</entry>
+    <entry key="yukon.web.modules.support.manuals.general.label">(Portal)</entry>
     
     <!-- info.jsp -->
     <entry key="yukon.web.modules.support.system.pageName">System Info</entry>

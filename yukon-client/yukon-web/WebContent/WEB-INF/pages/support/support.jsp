@@ -67,10 +67,16 @@ jQuery(function() {
     <div class="column two">
         <tags:sectionContainer2 nameKey="manuals">
             <ul class="simple-list stacked">
-                <li><a href="<cti:msg2 key=".manuals.release.link"/>"><i:inline key=".manuals.release.title"/></a></li>
-                <li><a href="<cti:msg2 key=".manuals.requirements.link"/>"><i:inline key=".manuals.requirements.title"/></a></li>
-                <li><a href="<cti:msg2 key=".manuals.new.link"/>"><i:inline key=".manuals.new.title"/></a></li>
-                <li><a href="<cti:msg2 key=".manuals.general.link"/>"><i:inline key=".manuals.general.title"/></a></li>
+                <li class="stacked"><a href="<cti:msg2 key=".manuals.general.link"/>"><i:inline key=".manuals.general.title"/></a>&nbsp;<span class="notes"><i:inline key=".manuals.general.label"/></span></li>
+                
+                <c:forEach var="manual" items="${manuals}">
+                    <cti:url var="manualLink" value="/support/manual">
+                        <cti:param name="manualName" value="${manual}" />
+                    </cti:url>
+                    <li>
+                        <a href="${manualLink}">${fn:escapeXml(manual)}</a>
+                    </li>
+                </c:forEach>
             </ul>
         </tags:sectionContainer2>
     </div>
