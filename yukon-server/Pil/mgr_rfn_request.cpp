@@ -369,7 +369,7 @@ void RfnRequestManager::checkForNewRequest(const RfnIdentifier &rfnIdentifier)
 
             Messaging::Rfn::E2eDataRequestMsg msg;
 
-            msg.applicationServiceId = request.command->getApplicationServiceId();  //  9 for Advanced Metrology, 6 for Event Manager, etc...
+            msg.applicationServiceId = request.command->getApplicationServiceId();  //  2 for Channel Manager, 6 for Event Manager, etc...
             msg.payload         = si.message;
             msg.high_priority   = false;
             msg.rfnIdentifier   = request.rfnIdentifier;
@@ -380,6 +380,8 @@ void RfnRequestManager::checkForNewRequest(const RfnIdentifier &rfnIdentifier)
 
             newRequest.requestMessage = serialized;
             newRequest.timeout = CtiTime::now().seconds() + gConfigParms.getValueAsInt("E2EDT_AMQ_TIMEOUT", E2EDT_AMQ_TIMEOUT);
+
+            _upcomingExpirations[newRequest.timeout].insert(newRequest.request.rfnIdentifier);
 
             _messages.push_back(serialized);
 

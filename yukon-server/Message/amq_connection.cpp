@@ -140,6 +140,9 @@ void ActiveMQConnectionManager::verifyConnectionObjects()
                     new ActiveMQ::MessageListener(
                             boost::bind(&ActiveMQConnectionManager::onInboundMessage, this, inboundQueue, _1)));
 
+            consumer->managedConsumer->setMessageListener(
+                    consumer->listener.get());
+
             _consumers.push_back(consumer);
         }
     }
@@ -185,11 +188,14 @@ void ActiveMQConnectionManager::sendOutgoingMessages()
 
             message->setCMSReplyTo(tempConsumer->managedConsumer->getDestination());
 
+            tempConsumer->callback = *(e->callback);
+
             tempConsumer->listener.reset(
                     new ActiveMQ::MessageListener(
                             boost::bind(&ActiveMQConnectionManager::onTempQueueReply, this, _1)));
 
-            tempConsumer->callback = *(e->callback);
+            tempConsumer->managedConsumer->setMessageListener(
+                    tempConsumer->listener.get());
 
             _temporaryConsumers.insert(
                     tempConsumer->managedConsumer->getDestination(),
