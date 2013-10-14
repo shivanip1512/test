@@ -22,7 +22,7 @@
             <tfoot></tfoot>
             <tbody>
 	            <c:forEach items="${analysisMap}" var="analysisEntry">
-                    <cti:msg2 var="attribName" key="${analysisEntry.key.attribute}"/>
+                    <cti:msg2 var="attribName" key="${analysisEntry.key.attribute}" htmlEscape="true"/>
 	                <c:if test="${analysisEntry.key.status != 'DELETED'}">
 	                    <tr>
 	                        <input type="hidden" value="${analysisEntry.key.analysisId}"/>
