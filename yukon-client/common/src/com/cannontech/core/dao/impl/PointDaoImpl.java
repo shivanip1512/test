@@ -73,10 +73,12 @@ import com.cannontech.enums.Phase;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.base.Function;
 import com.google.common.base.Functions;
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.SetMultimap;
 
 /**
@@ -137,6 +139,16 @@ public class PointDaoImpl implements PointDao {
         public LiteRawPointHistory mapRow(ResultSet rs, int rowNum) throws SQLException {
             return createLitePointHistory(rs);
         };
+    };
+    
+    private static final SqlFragmentGenerator<Integer> paoPointFragmentGenerator = new SqlFragmentGenerator<Integer>() {
+        public SqlFragmentSource generate(List<Integer> subList) {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT PaObjectId, PointId");
+            sql.append("FROM Point");
+            sql.append("WHERE PaObjectId").in(subList);
+            return sql;
+        }
     };
     
     @Override
@@ -641,18 +653,24 @@ public class PointDaoImpl implements PointDao {
     }
     
     @Override
-    public Map<Integer, Integer> getPointIdsForPaos(Iterable<Integer> paoIds) {
-        SqlFragmentGenerator<Integer> sqlFragmentGenerator = new SqlFragmentGenerator<Integer>() {
-            public SqlFragmentSource generate(List<Integer> subList) {
-                SqlStatementBuilder sql = new SqlStatementBuilder();
-                sql.append("SELECT PaObjectId, PointId");
-                sql.append("FROM Point");
-                sql.append("WHERE PaObjectId").in(subList);
-                return sql;
+    public Multimap<Integer, Integer> getPaoPointMultimap(Iterable<Integer> paoIds) {
+        List<Pair<Integer, Integer>> paoPointPairs = chunkingSqlTemplate.query(paoPointFragmentGenerator, paoIds, new YukonRowMapper<Pair<Integer, Integer>>() {
+            public Pair<Integer, Integer> mapRow(YukonResultSet rs) throws SQLException {
+                int paObjectId = rs.getInt("PaObjectId");
+                int pointId = rs.getInt("PointId");
+                return new Pair<>(paObjectId, pointId);
             }
-        };
-        
-        List<Pair<Integer, Integer>> pointPaoPairs = chunkingSqlTemplate.query(sqlFragmentGenerator, paoIds, new YukonRowMapper<Pair<Integer, Integer>>() {
+        });
+        Multimap<Integer, Integer> paoToPoints = ArrayListMultimap.create();
+        for(Pair<Integer, Integer> pair : paoPointPairs) {
+            paoToPoints.put(pair.getFirst(), pair.getSecond());
+        }
+        return paoToPoints;
+    }
+    
+    @Override
+    public Map<Integer, Integer> getPointIdsForPaos(Iterable<Integer> paoIds) {
+        List<Pair<Integer, Integer>> pointPaoPairs = chunkingSqlTemplate.query(paoPointFragmentGenerator, paoIds, new YukonRowMapper<Pair<Integer, Integer>>() {
             public Pair<Integer, Integer> mapRow(YukonResultSet rs) throws SQLException {
                 int paObjectId = rs.getInt("PaObjectId");
                 int pointId = rs.getInt("PointId");

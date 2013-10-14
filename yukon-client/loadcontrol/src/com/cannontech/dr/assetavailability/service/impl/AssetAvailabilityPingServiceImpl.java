@@ -15,6 +15,7 @@ import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.util.RecentResultsCache;
@@ -57,7 +58,7 @@ public class AssetAvailabilityPingServiceImpl implements AssetAvailabilityPingSe
         }
         
         //Set up results callback
-        AssetAvailabilityReadResult result = new AssetAvailabilityReadResult(Iterables.transform(devices, paoToIdFunction));
+        AssetAvailabilityReadResult result = new AssetAvailabilityReadResult(Iterables.transform(devices, PaoUtils.getYukonPaoToPaoIdFunction()));
         String resultId = recentResultsCache.addResult(result);
         paoIdToResultIdMap.put(paoIdentifier.getPaoId(), resultId);
         
@@ -117,11 +118,4 @@ public class AssetAvailabilityPingServiceImpl implements AssetAvailabilityPingSe
         log.error("Asset availability read with paoId " + paoIdentifier.getPaoId() + "skipped " + size + 
                   " reads on invalid relay " + relay);
     }
-    
-    //Function to pull paoId from a YukonPao
-    private static final Function<YukonPao, Integer> paoToIdFunction = new Function<YukonPao, Integer>() {
-        public Integer apply(YukonPao pao) {
-            return pao.getPaoIdentifier().getPaoId();
-        }
-    };
 }

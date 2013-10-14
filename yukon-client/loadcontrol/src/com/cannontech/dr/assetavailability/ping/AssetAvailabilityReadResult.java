@@ -97,6 +97,8 @@ public class AssetAvailabilityReadResult implements DeviceAttributeReadCallback,
     }
     
     private boolean isValidDevice(int paoId) {
-        return devicesToRead.contains(paoId);
+        return devicesToRead.contains(paoId)
+                && !successDevices.contains(paoId)
+                && !failedDevices.contains(paoId);
     }
 }

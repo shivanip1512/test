@@ -20,6 +20,7 @@ import com.cannontech.database.data.point.CapBankMonitorPointParams;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointInfo;
 import com.cannontech.database.data.point.PointType;
+import com.google.common.collect.Multimap;
 
 public interface PointDao {
     public LitePoint getLitePoint(int pointId);
@@ -39,6 +40,11 @@ public interface PointDao {
      * Retrieves point ids for every point attached to the specified paos.
      */
     public Map<Integer, Integer> getPointIdsForPaos(Iterable<Integer> paoIds);
+    
+    /**
+     * Retrieves point ids for every point attached to the specified paos, in the form of a multimap of pao to points.
+     */
+    public Multimap<Integer, Integer> getPaoPointMultimap(Iterable<Integer> paoIds);
     
     /**
      * Retrieves point ids for the points matching the attribute on the specified paos. 

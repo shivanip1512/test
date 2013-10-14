@@ -24,6 +24,7 @@ import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointInfo;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.PointTypes;
+import com.google.common.collect.Multimap;
 
 /**
  * Mock PointDao class for testing purposes. The methods in this class return
@@ -263,6 +264,11 @@ public class MockPointDao implements PointDao {
 
     @Override
     public SqlFragmentSource getAttributeLookupSqlLimit(Attribute attribute, int limitToRowCount) {
+        return null;
+    }
+
+    @Override
+    public Multimap<Integer, Integer> getPaoPointMultimap(Iterable<Integer> paoIds) {
         return null;
     }
 }
