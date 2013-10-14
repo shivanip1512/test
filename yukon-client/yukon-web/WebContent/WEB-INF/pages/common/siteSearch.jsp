@@ -79,13 +79,18 @@
                         <tr>
                             <td>
                                 <div>
-                                    <a href="<cti:url value="${result.userPage.path}"/>">
+                                    <a href="<cti:url value="${result.path}"/>">
                                     	<cti:searchTerm term="${searchString}" asLuceneTerms="true">
-                                    		<cti:pageName userPage="${result.userPage}"/>
+                                    		<c:if test="${result.backedBySiteMapPage}">
+                                    			<i:inline key="${result.siteMapPage}"/>
+                                    		</c:if>
+                                    		<c:if test="${!result.backedBySiteMapPage}">
+	                                    		<cti:pageName userPage="${result.userPage}"/>
+                                    		</c:if>
                                    		</cti:searchTerm>
                                    	</a>
                                 </div>
-                                <div><span class="result-url">${fn:escapeXml(result.userPage.path)}</span></div>
+                                <div><span class="result-url">${fn:escapeXml(result.path)}</span></div>
                                 <div><cti:msg2 key="${result.summary}" blankIfMissing="true"/></div>
                             </td>
                         </tr>

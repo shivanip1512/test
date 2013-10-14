@@ -1,0 +1,267 @@
+package com.cannontech.web.support;
+
+import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
+import com.cannontech.common.i18n.DisplayableEnum;
+import com.cannontech.common.userpage.model.SiteMapCategory;
+import com.cannontech.common.util.MatchStyle;
+import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.system.GlobalSettingType;
+
+public enum SiteMapPage implements DisplayableEnum {
+    METERING(SiteMapCategory.AMI, "yukon.web.modules.amr.meteringStart.pageName", "/meter/start",
+            MatchStyle.any, YukonRole.METERING, YukonRole.APPLICATION_BILLING, YukonRole.SCHEDULER, YukonRole.DEVICE_ACTIONS),
+    BILLING(SiteMapCategory.AMI, "yukon.web.menu.config.amr.billing", "/billing/home",
+            MatchStyle.all, YukonRole.APPLICATION_BILLING),
+    TRENDS(SiteMapCategory.AMI, "yukon.web.modules.operator.metering.trends.title", "/operator/Metering/Metering.jsp",
+            MatchStyle.all, YukonRole.TRENDING),
+    IMPORT_AMI(SiteMapCategory.AMI, "yukon.web.menu.import", "/amr/bulkimporter/home",
+            MatchStyle.all, YukonRoleProperty.IMPORTER_ENABLED),
+    AMI_REPORTS(SiteMapCategory.AMI, "yukon.web.menu.config.reporting.reports.metering", "/analysis/Reports.jsp?groupType=METERING",
+            MatchStyle.all, YukonRoleProperty.AMR_REPORTS_GROUP),
+    ARCHIVE_DATA_ANALYSIS(SiteMapCategory.AMI, "yukon.web.modules.tools.bulk.analysis.home.pageName", "/bulk/archiveDataAnalysis/list/view",
+            MatchStyle.all, YukonRoleProperty.ARCHIVED_DATA_ANALYSIS),
+    PHASE_DETECT(SiteMapCategory.AMI, "yukon.web.modules.amr.phaseDetect.home.pageDescription", "/amr/phaseDetect/home",
+            MatchStyle.all, YukonRoleProperty.PHASE_DETECT),
+    METER_EVENTS_REPORT(SiteMapCategory.AMI, "yukon.web.modules.amr.meterEventsReport.report.pageName", "/amr/meterEventsReport/selectDevices",
+            MatchStyle.all),
+    WATER_LEAK_REPORT(SiteMapCategory.AMI, "yukon.web.modules.amr.waterLeakReport.report.pageName", "/amr/waterLeakReport/report?initReport=true",
+            MatchStyle.all),
+    BILLING_SCHEDULES(SiteMapCategory.AMI, "yukon.web.menu.config.amr.billing.schedules", "/billing/schedules",
+            MatchStyle.all, YukonRole.APPLICATION_BILLING),
+    CREATE_BILLING_SCHEDULES(SiteMapCategory.AMI, "yukon.web.modules.amr.scheduledGroupRequestHome.CREATE.pageDescription", "/group/scheduledGroupRequestExecution/home",
+            MatchStyle.all, YukonRoleProperty.MANAGE_SCHEDULES),
+    REVIEW_FLAGGED_POINTS(SiteMapCategory.AMI, "yukon.web.widgets.validationMonitorsWidget.review", "/common/veeReview/home",
+            MatchStyle.all, YukonRoleProperty.MANAGE_SCHEDULES),
+
+    DR_DASHBOARD(SiteMapCategory.DR, "yukon.web.modules.dr.home.pageName", "/dr/home",
+            MatchStyle.all, YukonRoleProperty.DEMAND_RESPONSE),
+    CONTROL_AREAS(SiteMapCategory.DR, "yukon.web.modules.dr.controlAreaList.pageName", "/dr/controlArea/list",
+            MatchStyle.all, YukonRoleProperty.DEMAND_RESPONSE, YukonRoleProperty.SHOW_CONTROL_AREAS),
+    SCENARIOS(SiteMapCategory.DR, "yukon.web.modules.dr.scenarioList.pageName", "/dr/controlArea/list",
+            MatchStyle.all, YukonRoleProperty.DEMAND_RESPONSE, YukonRoleProperty.SHOW_SCENARIOS),
+    PROGRAMS(SiteMapCategory.DR, "yukon.web.modules.dr.programList.pageName", "/dr/program/list",
+            MatchStyle.all, YukonRoleProperty.DEMAND_RESPONSE),
+    LOAD_GROUPS(SiteMapCategory.DR, "yukon.web.modules.dr.loadGroupList.pageName", "/dr/loadGroup/list",
+            MatchStyle.all, YukonRoleProperty.DEMAND_RESPONSE),
+    DR_REPORTS(SiteMapCategory.DR, "yukon.web.menu.config.reporting.reports.management", "/analysis/Reports.jsp?groupType=LOAD_MANAGEMENT",
+            MatchStyle.all, YukonRoleProperty.LOAD_MANAGEMENT_REPORTS_GROUP),
+    CI_CURTAILMENT(SiteMapCategory.DR, "yukon.web.menu.portal.loadResponse.ciCurtailment", "/cc/programSelect.jsf",
+            MatchStyle.all, YukonRole.CI_CURTAILMENT),
+    ODDS_FOR_CONTROL(SiteMapCategory.DR, "yukon.web.oddsForControl", "/operator/Consumer/Odds.jsp",
+            MatchStyle.all, YukonRole.ODDS_FOR_CONTROL),
+    ACTIVE_CONTROL_AREAS(SiteMapCategory.DR, "yukon.web.modules.dr.home.activeControlAreasQuickSearch", "/dr/controlArea/list?state=active",
+            MatchStyle.all, YukonRoleProperty.DEMAND_RESPONSE, YukonRoleProperty.SHOW_CONTROL_AREAS),
+    ACTIVE_PROGRAMS(SiteMapCategory.DR, "yukon.web.modules.dr.home.activeProgramsQuickSearch", "/dr/program/list?state=ACTIVE",
+            MatchStyle.all, YukonRoleProperty.DEMAND_RESPONSE),
+    ACTIVE_LOAD_GROUPS(SiteMapCategory.DR, "yukon.web.modules.dr.home.activeLoadGroupsQuickSearch", "/dr/loadGroup/list?state=active",
+            MatchStyle.all, YukonRoleProperty.DEMAND_RESPONSE),
+    DIRECT_CONTROL(SiteMapCategory.DR, "yukon.web.direct", "/operator/LoadControl/oper_direct.jsp",
+            MatchStyle.all, YukonRoleProperty.DIRECT_CONTROL),
+
+    AREAS(SiteMapCategory.VV, "yukon.web.modules.capcontrol.areas.normal.pageName", "/capcontrol/tier/areas",
+            MatchStyle.all, YukonRoleProperty.CAP_CONTROL_ACCESS),
+    IVVC_SCHEDULES(SiteMapCategory.VV, "yukon.web.modules.capcontrol.schedules.pageName", "/capcontrol/schedule/schedules",
+            MatchStyle.all, YukonRoleProperty.CAP_CONTROL_ACCESS),
+    STRATEGIES(SiteMapCategory.VV, "yukon.web.modules.capcontrol.strategies.pageName", "/capcontrol/strategy/strategies",
+            MatchStyle.all, YukonRoleProperty.CAP_CONTROL_ACCESS),
+    MOVED_CAP_BANKS(SiteMapCategory.VV, "yukon.web.modules.capcontrol.movedCapBanks.pageName", "/capcontrol/strategy/strategies",
+            MatchStyle.all, YukonRoleProperty.CAP_CONTROL_ACCESS),
+    ORPHANS(SiteMapCategory.VV, "yukon.web.menu.config.capcontrol.orphans", "/capcontrol/search/searchResults?cbc_lastSearch=__cti_oSubstations__",
+            MatchStyle.all, YukonRoleProperty.CAP_CONTROL_ACCESS),
+    IMPORT(SiteMapCategory.VV, "yukon.web.modules.capcontrol.import.pageTitle", "/capcontrol/import/view",
+            MatchStyle.all, YukonRoleProperty.CAP_CONTROL_ACCESS, YukonRoleProperty.CAP_CONTROL_IMPORTER),
+    IVVC_REPORTS(SiteMapCategory.VV, "yukon.web.menu.config.reporting.reports.capcontrol", "/analysis/Reports.jsp?groupType=CAP_CONTROL",
+            MatchStyle.all, YukonRoleProperty.CAP_CONTROL_REPORTS_GROUP),
+    ESUB(SiteMapCategory.VV, "yukon.web.esubstation", "/esub/home",
+            MatchStyle.all, YukonRoleProperty.OPERATOR_ESUBSTATION_DRAWINGS_VIEW),
+    SPECIAL_AREAS(SiteMapCategory.VV, "yukon.web.modules.capcontrol.areas.special.pageName", "/capcontrol/tier/areas?isSpecialArea=true",
+            MatchStyle.all, YukonRoleProperty.CAP_CONTROL_ACCESS),
+
+    CREATE_ACCOUNT(SiteMapCategory.ASSETS, "yukon.web.modules.operator.account.CREATE.pageName", "/stars/operator/account/accountCreate",
+            MatchStyle.all, OtherPermission.EC_OPERATOR, YukonRoleProperty.OPERATOR_NEW_ACCOUNT_WIZARD),
+    ACCOUNTS_AND_INVENTORY(SiteMapCategory.ASSETS, "yukon.web.modules.operator.inventory.home.pageName", "/stars/operator/inventory/home",
+            MatchStyle.all, YukonRole.INVENTORY),
+    OPT_OUT(SiteMapCategory.ASSETS, "yukon.web.modules.dr.optOutAdmin.pageName", "/stars/operator/optOut/admin",
+            MatchStyle.any, YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_STATUS, YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CHANGE_ENABLE, YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CHANGE_COUNTS,YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CANCEL_CURRENT, YukonRoleProperty.ADMIN_VIEW_OPT_OUT_EVENTS),
+    WORK_ORDERS(SiteMapCategory.ASSETS, "yukon.web.workOrders", "/operator/WorkOrder/WorkOrder.jsp",
+            MatchStyle.all, YukonRole.WORK_ORDER),
+    PURCHASING(SiteMapCategory.ASSETS, "yukon.web.purchasing", "/operator/Hardware/PurchaseTrack.jsp",
+            MatchStyle.all, YukonRoleProperty.PURCHASING_ACCESS),
+    SWITCHCOMMANDS(SiteMapCategory.ASSETS, "yukon.web.viewBatchCommands", "/operator/Admin/SwitchCommands.jsp",
+            MatchStyle.all, YukonRoleProperty.ADMIN_VIEW_BATCH_COMMANDS, OtherPermission.EC_OPERATOR),
+    SURVEYS(SiteMapCategory.ASSETS, "yukon.web.modules.survey.list.pageName", "/stars/survey/list",
+            MatchStyle.all, OtherPermission.HIDEABLE , YukonRoleProperty.OPERATOR_SURVEY_EDIT),
+    STARS_IMPORT(SiteMapCategory.ASSETS, "yukon.web.menu.import", "/stars/operator/account/accountImport",
+            MatchStyle.all, YukonRoleProperty.OPERATOR_IMPORT_CUSTOMER_ACCOUNT),
+    ENROLLMENT_MIGRATION(SiteMapCategory.ASSETS, "yukon.web.migrateEnrollmentInformation", "/operator/Consumer/MigrateEnrollment.jsp",
+            MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBooleanKeysEnum.ENABLE_MIGRATE_ENROLLMENT),
+    ENABLE_GENERIC_UPLOAD(SiteMapCategory.ASSETS, "yukon.web.genericUpload", "/operator/Consumer/GenericUpload.jsp",
+            MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBooleanKeysEnum.ENABLE_GENERIC_UPLOAD),
+    STARS_REPORTS(SiteMapCategory.ASSETS, "yukon.web.menu.config.reporting.reports.stars", "/analysis/Reports.jsp?groupType=STARS",
+            MatchStyle.all, YukonRoleProperty.STARS_REPORTS_GROUP),
+    SERVICE_ORDER_LIST(SiteMapCategory.ASSETS, "yukon.web.serviceOrderList", "/operator/WorkOrder/WOFilter.jsp",
+            MatchStyle.all, YukonRole.WORK_ORDER),
+    ZIGBEE_PROBLEM_DEVICES(SiteMapCategory.ASSETS, "yukon.web.modules.operator.inventory.home.zbProblemDevices", "/stars/operator/inventory/zbProblemDevices/view",
+            MatchStyle.all, YukonRole.INVENTORY),
+    WORK_ORDER_REPORTS(SiteMapCategory.ASSETS, "yukon.web.menu.assets.workOrderReports", "/operator/WorkOrder/Report.jsp",
+            MatchStyle.all, YukonRole.WORK_ORDER),
+    NEW_WORK_ORDER(SiteMapCategory.ASSETS, "yukon.web.menu.assets.newWorkOrder", "/operator/WorkOrder/CreateOrder.jsp",
+            MatchStyle.all, YukonRole.WORK_ORDER, YukonRoleProperty.OPERATOR_ORDER_NUMBER_AUTO_GEN),
+
+    CONFIGURATION(SiteMapCategory.ADMIN, "yukon.web.modules.adminSetup.config.pageName", "/adminSetup/config/view",
+            MatchStyle.all, YukonRoleProperty.ADMIN_SUPER_USER),
+    ENERGY_COMPANY(SiteMapCategory.ADMIN, "yukon.web.modules.adminSetup.systemAdministration.energyCompanyAdministration", "/adminSetup/energyCompany/home",
+            MatchStyle.all, OtherPermission.EC_OPERATOR),
+    ACTIVE_JOBS(SiteMapCategory.ADMIN, "yukon.web.modules.adminSetup.jobsscheduler.active.pageName", "/adminSetup/jobsscheduler/active",
+            MatchStyle.all),
+    JOB_STATUS(SiteMapCategory.ADMIN, "yukon.web.modules.adminSetup.jobsscheduler.status.pageName", "/adminSetup/jobsscheduler/status",
+            MatchStyle.all),
+    ALL_JOBS(SiteMapCategory.ADMIN, "yukon.web.modules.adminSetup.jobsscheduler.all.pageName", "/adminSetup/jobsscheduler/all",
+            MatchStyle.all),
+    MAINTENANCE(SiteMapCategory.ADMIN, "yukon.web.modules.adminSetup.systemAdministration.maintenance", "/adminSetup/maintenance/view",
+            MatchStyle.all, YukonRoleProperty.ADMIN_SUPER_USER),
+    MULTISPEAK(SiteMapCategory.ADMIN, "yukon.web.modules.adminSetup.systemAdministration.multiSpeakSetup", "/multispeak/setup/home",
+            MatchStyle.all, YukonRoleProperty.ADMIN_MULTISPEAK_SETUP),
+    SUBSTATIONS(SiteMapCategory.ADMIN, "yukon.web.modules.adminSetup.systemAdministration.substations", "/adminSetup/substations/routeMapping/view",
+            MatchStyle.all, YukonRole.OPERATOR_ADMINISTRATOR),
+    USERS_GROUPS(SiteMapCategory.ADMIN, "yukon.web.menu.admin.usersAndGroups", "/adminSetup/userEditor/home",
+            MatchStyle.all, YukonRoleProperty.ADMIN_SUPER_USER),
+    ADMIN_REPORTS(SiteMapCategory.ADMIN, "yukon.web.menu.config.reporting.reports.administrator", "/analysis/Reports.jsp?groupType=ADMINISTRATIVE",
+            MatchStyle.all, YukonRoleProperty.ADMIN_REPORTS_GROUP),
+    SYSTEM_ADMIN(SiteMapCategory.ADMIN, "yukon.web.menu.portal.administration.systemAdministration", "/adminSetup/systemAdmin",
+            MatchStyle.all, YukonRole.OPERATOR_ADMINISTRATOR),
+    DATABASE_REPORTS(SiteMapCategory.ADMIN, "yukon.web.menu.config.reporting.reports.database", "/analysis/Reports.jsp?groupType=DATABASE",
+            MatchStyle.all, YukonRoleProperty.DATABASE_REPORTS_GROUP),
+    STATISTICAL_REPORTS(SiteMapCategory.ADMIN, "yukon.web.menu.config.reporting.reports.statistical", "/analysis/Reports.jsp?groupType=STATISTICAL",
+            MatchStyle.all, YukonRoleProperty.STATISTICAL_REPORTS_GROUP),
+    CCURT_REPORTS(SiteMapCategory.ADMIN, "yukon.web.menu.config.reporting.reports.cni", "/analysis/Reports.jsp?groupType=CCURT",
+            MatchStyle.all, YukonRoleProperty.CI_CURTAILMENT_REPORTS_GROUP),
+    SETTLEMENT_REPORTS(SiteMapCategory.ADMIN, "yukon.web.menu.config.reporting.reports.settlement", "/analysis/Reports.jsp?groupType=SETTLEMENT",
+            MatchStyle.all, OtherPermission.HIDEABLE, YukonRoleProperty.SETTLEMENT_REPORTS_GROUP),
+
+    BULK_OPERATIONS(SiteMapCategory.TOOLS, "yukon.web.modules.tools.bulk.home.pageName", "/bulk/bulkHome",
+            MatchStyle.all),
+    COMMANDER(SiteMapCategory.TOOLS, "yukon.web.modules.commanderSelect.pageTitle", "/apps/SelectDevice.jsp",
+            MatchStyle.all),
+    DATA_EXPORT(SiteMapCategory.TOOLS, "yukon.web.menu.portal.analysis.archivedDateExport", "/amr/archivedValuesExporter/view",
+            MatchStyle.all, YukonRoleProperty.ARCHIVED_DATA_EXPORT),
+    DEVICE_CONFIGURATION(SiteMapCategory.TOOLS, "yukon.web.menu.portal.administration.deviceConfiguration", "/deviceConfiguration/home",
+            MatchStyle.all, YukonRoleProperty.ADMIN_VIEW_CONFIG),
+    DEVICE_GROUPS(SiteMapCategory.TOOLS, "yukon.web.menu.config.amr.devicegroups", "/group/editor/home",
+            MatchStyle.all, YukonRoleProperty.ADMIN_VIEW_CONFIG),
+    DEVICE_UPLOAD(SiteMapCategory.TOOLS, "yukon.web.menu.tools.deviceGroupUpload", "/group/updater/upload",
+            MatchStyle.all, YukonRoleProperty.BULK_UPDATE_OPERATION),
+    BULK_IMPORT(SiteMapCategory.TOOLS, "yukon.web.modules.tools.bulk.importUpload.pageName", "/bulk/import/upload",
+            MatchStyle.all, YukonRoleProperty.BULK_UPDATE_OPERATION),
+    BULK_UPDATE(SiteMapCategory.TOOLS, "yukon.web.modules.tools.bulk.updateUpload.pageName", "/bulk/update/upload",
+            MatchStyle.all, YukonRoleProperty.BULK_UPDATE_OPERATION),
+    POINT_IMPORT(SiteMapCategory.TOOLS, "yukon.web.modules.tools.bulk.pointImport.pageName", "/bulk/pointImport/upload",
+            MatchStyle.all, YukonRoleProperty.ADD_REMOVE_POINTS),
+    COLLECTION_ACTIONS(SiteMapCategory.TOOLS, "yukon.web.modules.tools.bulk.collectionActions.pageName", "/bulk/deviceSelection",
+            MatchStyle.all, YukonRoleProperty.ADD_REMOVE_POINTS),
+    FDR_TRANSLATIONS(SiteMapCategory.TOOLS, "yukon.web.modules.tools.bulk.fdrTranslationManagement.pageName", "/bulk/fdrTranslationManager/home",
+            MatchStyle.all, YukonRoleProperty.FDR_TRANSLATION_MANAGER),
+    MSP_TO_LM_MAPPING(SiteMapCategory.TOOLS, "yukon.web.menu.portal.analysis.visualDisplays", "/multispeak/visualDisplays/loadManagement/home",
+            MatchStyle.all, OtherPermission.HIDEABLE  ,GlobalSettingType.MSP_LM_MAPPING_SETUP),
+    SCHEDULES(SiteMapCategory.TOOLS, "yukon.web.modules.amr.billing.jobs.title", "/group/scheduledGroupRequestExecutionResults/jobs",
+            MatchStyle.all, YukonRole.SCHEDULER),
+    SCRIPTS(SiteMapCategory.TOOLS, "yukon.web.menu.config.amr.scheduler", "/macsscheduler/schedules/view",
+            MatchStyle.all, YukonRole.SCHEDULER),
+
+    SUPPORT(SiteMapCategory.SUPPORT, "yukon.web.modules.support.support.pageName", "/support",
+            MatchStyle.all, YukonRole.OPERATOR_ADMINISTRATOR),
+    SYSTEM(SiteMapCategory.SUPPORT, "yukon.web.modules.support.system.pageName", "/support/info",
+            MatchStyle.all, YukonRole.OPERATOR_ADMINISTRATOR),
+    ERROR_CODES(SiteMapCategory.SUPPORT, "yukon.web.menu.config.support.information.errorCodes", "/support/errorCodes/view",
+            MatchStyle.all),
+    MANAGE_INDEXES(SiteMapCategory.SUPPORT, "yukon.web.menu.tools.manageIndex", "/index/manage",
+            MatchStyle.all, YukonRoleProperty.ADMIN_MANAGE_INDEXES),
+    LOCALIZATION(SiteMapCategory.SUPPORT, "yukon.web.modules.support.localization.pageName", "/support/localization/view",
+            MatchStyle.all),
+    LOG_VIEWER(SiteMapCategory.SUPPORT, "yukon.web.menu.portal.administration.viewLogs", "/support/logging/menu",
+            MatchStyle.all, YukonRoleProperty.ADMIN_VIEW_LOGS),
+    DATABASE_VALIDATION(SiteMapCategory.SUPPORT, "yukon.web.modules.support.databaseValidate.pageName", "/support/database/validate/home",
+            MatchStyle.all, YukonRoleProperty.ADMIN_VIEW_LOGS),
+    EVENT_LOG(SiteMapCategory.SUPPORT, "yukon.web.modules.support.eventViewer.pageName", "/common/eventLog/viewByCategory",
+            MatchStyle.all, YukonRoleProperty.ADMIN_EVENT_LOGS),
+    FILE_EXPORT_HISTORY(SiteMapCategory.SUPPORT, "yukon.web.modules.support.fileExportHistory.pageName", "/support/fileExportHistory/list",
+            MatchStyle.all),
+    THREAD_DUMP(SiteMapCategory.SUPPORT, "yukon.web.modules.support.threadDump.pageName", "/support/threadDump",
+            MatchStyle.all),
+    ROUTE_USAGE(SiteMapCategory.SUPPORT, "yukon.web.modules.support.routeUsage.pageName", "/support/routeUsage",
+            MatchStyle.all),
+    DEVICE_DEFINITIONS(SiteMapCategory.SUPPORT, "yukon.web.menu.config.support.information.deviceDef", "/common/deviceDefinition.xml",
+            MatchStyle.all),
+
+    DEVELOPMENT(SiteMapCategory.DEVELOPMENT, "yukon.web.modules.support.development.pageName", "/support/development/main",
+            MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE),
+    UI_DEMO(SiteMapCategory.DEVELOPMENT, "yukon.web.modules.support.uiDemos.pageName", "/support/development/uiDemos/main",
+            MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE),
+    UI_TOOLKIT(SiteMapCategory.DEVELOPMENT, "yukon.web.menu.config.support.development.uiToolkitDemo", "/support/development/uiToolkitDemo/main",
+            MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE),
+    POINT_INJECTION(SiteMapCategory.DEVELOPMENT, "yukon.web.modules.support.pointInjection.pageName", "/support/development/pointInjection/main",
+            MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE),
+    BULK_POINT_INJECTION(SiteMapCategory.DEVELOPMENT, "yukon.web.modules.support.bulkPointInjection.pageName", "/support/development/bulkPointInjection/main",
+            MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE),
+    SETUP_DATABASE(SiteMapCategory.DEVELOPMENT, "yukon.web.menu.config.support.development.setupDatabase", "/support/development/setupDatabase/main",
+            MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE),
+    MISC_METHODS(SiteMapCategory.DEVELOPMENT, "yukon.web.modules.support.miscellaneousMethod.pageName", "/support/development/miscellaneousMethod/main",
+            MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE),
+    RFN_TEST(SiteMapCategory.DEVELOPMENT, "yukon.web.modules.support.rfnTest.pageName", "/support/development/rfn/viewBase",
+            MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE),
+    EIM_TEST(SiteMapCategory.DEVELOPMENT, "yukon.web.modules.support.webServices.eimTest.pageName", "/support/development/eimTest/main",
+            MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE, MasterConfigBooleanKeysEnum.ENABLE_WEB_DEBUG_PAGES),
+    LOAD_CONTROL_TEST(SiteMapCategory.DEVELOPMENT, "yukon.web.modules.support.webServices.loadControl.pageName", "/debug/loadControlService/inputs/home",
+            MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE, MasterConfigBooleanKeysEnum.ENABLE_WEB_DEBUG_PAGES),
+    ACCOUNT_TEST(SiteMapCategory.DEVELOPMENT, "yukon.web.modules.support.webServices.account.pageName", "/debug/accountService/inputs/home",
+            MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE, MasterConfigBooleanKeysEnum.ENABLE_WEB_DEBUG_PAGES),
+    ;
+
+    public enum OtherPermission { 
+        EC_OPERATOR,
+        HIDEABLE;
+    }
+
+    public enum PermissionLevel {
+        ACCESS,
+        VIEW,
+        HIDE
+    }
+
+    private final SiteMapCategory category;
+    private final String link;
+    private final String messageKey;
+    private final MatchStyle matchStyle;
+    private final Object[] permissions;
+
+    private SiteMapPage(SiteMapCategory siteMenu, String messageKey, String link, MatchStyle matchStyle,
+            Object... permissions) {
+        this.category = siteMenu;
+        this.link = link;
+        this.matchStyle = matchStyle;
+        this.permissions = permissions;
+        this.messageKey = messageKey;
+    }
+
+    public Object[] getPermissions() {
+        return permissions;
+    }
+
+    public String getLink() {
+        return link;
+    }
+
+    public MatchStyle getMatchStyle(){
+        return matchStyle;
+    }
+
+    public SiteMapCategory getCategory() {
+        return category;
+    }
+
+    @Override
+    public String getFormatKey() {
+        return messageKey;
+    }
+}

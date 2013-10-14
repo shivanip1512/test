@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.i18n.ObjectFormattingService;
+import com.cannontech.common.userpage.model.SiteMapCategory;
 import com.cannontech.common.util.BinaryPrefix;
 import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.common.util.CtiUtilities;
@@ -53,8 +54,6 @@ import com.cannontech.util.ServletUtil;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.security.annotation.CheckRole;
-import com.cannontech.web.support.SiteMapHelper.SiteMapCategory;
-import com.cannontech.web.support.SiteMapHelper.SiteMapPage;
 import com.cannontech.web.support.SiteMapHelper.SiteMapWrapper;
 import com.cannontech.web.support.SupportBundle.BundleRangeSelection;
 import com.cannontech.web.support.logging.LogExplorerController;

@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.userpage.dao.UserPageDao;
+import com.cannontech.common.userpage.model.SiteModule;
 import com.cannontech.common.userpage.model.UserPage;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -194,9 +195,7 @@ public class UserPageDaoImpl implements UserPageDao {
        return params;
    }
 
-    private YukonRowMapper<UserPage> userPageRowMapper = 
-            new YukonRowMapper<UserPage>() {
-
+    private YukonRowMapper<UserPage> userPageRowMapper = new YukonRowMapper<UserPage>() {
         @Override
         public UserPage mapRow(YukonResultSet rs) throws SQLException {
             int id = rs.getInt("UserPageId");
@@ -209,7 +208,8 @@ public class UserPageDaoImpl implements UserPageDao {
 
             List<String> params = getParameters(id);
 
-            UserPage userPage = new UserPage(userId, pagePath, isFavorite, module, pageName, params, lastAccess, id);
+            UserPage userPage = new UserPage(userId, pagePath, isFavorite, SiteModule.getByName(module), pageName,
+                params, lastAccess, id);
 
             return userPage;
         }

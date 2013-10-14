@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.common.userpage.dao.UserPageDao;
 import com.cannontech.common.userpage.dao.UserSubscriptionDao;
+import com.cannontech.common.userpage.model.SiteMapCategory;
+import com.cannontech.common.userpage.model.SiteModule;
 import com.cannontech.common.userpage.model.UserPage;
 import com.cannontech.common.userpage.model.UserSubscription;
 import com.cannontech.common.userpage.model.UserSubscription.SubscriptionType;
@@ -60,7 +62,7 @@ public class HomeController {
         }
         model.put("history", history);
 
-        Multimap<UserPage.Module, UserPage> favoritesMap = setupDisplayableFavorites(pages, context);
+        Multimap<SiteMapCategory, UserPage> favoritesMap = setupDisplayableFavorites(pages, context);
         model.put("favorites", favoritesMap.asMap());
 
         model.addAttribute("jreInstaller", CtiUtilities.getJREInstaller());
@@ -68,7 +70,7 @@ public class HomeController {
         return "dashboard.jsp";
     }
 
-    private Multimap<UserPage.Module, UserPage> setupDisplayableFavorites(List<UserPage> pages,
+    private Multimap<SiteMapCategory, UserPage> setupDisplayableFavorites(List<UserPage> pages,
             final YukonUserContext userContext) {
         List<UserPage> favorites = new ArrayList<>();
         for (UserPage page : pages) {
@@ -88,9 +90,9 @@ public class HomeController {
         };
         favorites = CtiUtilities.smartTranslatedSort(favorites, translator);
 
-        Multimap<UserPage.Module, UserPage> favoritesMap = LinkedListMultimap.create();
+        Multimap<SiteMapCategory, UserPage> favoritesMap = LinkedListMultimap.create();
         for (UserPage page : favorites) {
-            favoritesMap.put(page.getModuleEnum(), page);
+            favoritesMap.put(page.getModule().getSiteMapCategory(), page);
         }
 
         return favoritesMap;
@@ -111,7 +113,8 @@ public class HomeController {
 
         List<String> arguments = StringUtils.restoreJsSafeList(labelArgs);
 
-        UserPage page = new UserPage (context.getYukonUser().getUserID(), path, true, module, name, arguments);
+        UserPage page = new UserPage (context.getYukonUser().getUserID(), path, true, SiteModule.getByName(module),
+            name, arguments);
 
         boolean isFavorite = userPageDao.toggleFavorite(page);
 
@@ -142,7 +145,8 @@ public class HomeController {
 
         List<String> arguments = StringUtils.restoreJsSafeList(labelArgs);
 
-        UserPage page = new UserPage(context.getYukonUser().getUserID(), path, false, module, name, arguments);
+        UserPage page = new UserPage(context.getYukonUser().getUserID(), path, false, SiteModule.getByName(module),
+            name, arguments);
         userPageDao.updateHistory(page);
 
         return new JSONObject();
@@ -178,10 +182,10 @@ public class HomeController {
     }
 
     private final static Comparator<UserPage> byModuleAsc = Ordering.natural().onResultOf(
-        new Function<UserPage, UserPage.Module>() {
+        new Function<UserPage, SiteMapCategory>() {
             @Override
-            public UserPage.Module apply(UserPage userPage) {
-                return userPage.getModuleEnum();
+            public SiteMapCategory apply(UserPage userPage) {
+                return userPage.getModule().getSiteMapCategory();
             }
         });
 }

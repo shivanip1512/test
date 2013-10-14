@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.user.YukonUserContext;
@@ -20,7 +19,7 @@ import com.cannontech.web.common.search.service.SiteSearchService;
 @Controller
 @RequestMapping("/*")
 // @CheckRole({YukonRole.METERING,YukonRole.APPLICATION_BILLING,YukonRole.SCHEDULER,YukonRole.DEVICE_ACTIONS})
-public class SiteSearchController extends MultiActionController {
+public class SiteSearchController {
     @Autowired private SiteSearchService siteSearchService;
 
     @RequestMapping(value="/autocomplete.json", method=RequestMethod.GET)

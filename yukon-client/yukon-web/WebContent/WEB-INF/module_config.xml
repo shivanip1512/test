@@ -1015,7 +1015,7 @@
                 <link>/stars/operator/home</link>
             </page>
             <page name="accountImport" type="BASIC" hideSearch="true">
-                <link>/stars/operator/account/import</link>
+                <link>/stars/operator/account/accountImport</link>
             </page>
             <page name="accountList" type="BASIC" hideSearch="true">
                 <link>/stars/operator/account/search</link>

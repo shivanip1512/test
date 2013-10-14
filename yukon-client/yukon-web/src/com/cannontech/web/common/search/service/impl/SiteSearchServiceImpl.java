@@ -12,8 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.search.result.Page;
 import com.cannontech.web.common.search.service.PageSearcher;
@@ -26,6 +28,7 @@ public class SiteSearchServiceImpl implements SiteSearchService {
     private final Logger log = YukonLogManager.getLogger(SiteSearchServiceImpl.class);
 
     @Autowired private UserPageService userPageService;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
     @Autowired private List<PageSearcher> pageSearchers;
 
@@ -57,6 +60,11 @@ public class SiteSearchServiceImpl implements SiteSearchService {
         Function<Page, String> translator = new Function<Page, String>() {
             @Override
             public String apply(Page page) {
+                if (page.isBackedBySiteMapPage()) {
+                    MessageSourceAccessor messageSourceAccessor =
+                            messageSourceResolver.getMessageSourceAccessor(userContext);
+                    return messageSourceAccessor.getMessage(page.getSiteMapPage().getFormatKey());
+                }
                 return userPageService.getLocalizePageName(page.getUserPage(),
                     userContext).toLowerCase(userContext.getLocale());
             }
@@ -77,6 +85,10 @@ public class SiteSearchServiceImpl implements SiteSearchService {
 
     @Override
     public List<String> autocomplete(String searchStr, YukonUserContext userContext) {
+        if (log.isDebugEnabled()) {
+            log.debug("autocompleting [" + searchStr + "]");
+        }
+
         int maxNumResults = 10;
 
         SortedSet<String> combined = new TreeSet<>(Collator.getInstance(userContext.getLocale()));

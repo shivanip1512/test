@@ -19,7 +19,7 @@ public class UserPageServiceImpl implements UserPageService {
 
     @Override
     public String getLocalizePageName(UserPage userPage, YukonUserContext userContext) {
-        Module moduleBase = moduleBuilder.getModule(userPage.getModule());
+        Module moduleBase = moduleBuilder.getModule(userPage.getModule().getName());
 
         String pageName = null;
         PageInfo pageInfo = moduleBase.getPageInfo(userPage.getName());

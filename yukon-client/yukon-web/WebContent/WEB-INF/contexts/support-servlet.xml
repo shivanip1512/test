@@ -36,6 +36,4 @@
         </constructor-arg>
         <property name="defaultUri" value="http://example.com/WebService"/>
     </bean>
-    
-    <bean class="com.cannontech.web.support.SiteMapHelper"/>
 </beans>
