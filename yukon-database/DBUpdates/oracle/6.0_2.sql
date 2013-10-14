@@ -270,8 +270,20 @@ INSERT INTO ThemeProperty VALUES (-1, 'LOGO', 1);
 INSERT INTO ThemeProperty VALUES (-1, 'LOGIN_BACKGROUND', 2);
 /* End YUK-12572 */
 
+/* Start YUK-12627 */
+UPDATE DeviceConfigCategoryItem SET ItemName = 'profileInterval' WHERE ItemName = 'loadProfileInterval1';
+UPDATE DeviceConfigCategoryItem SET ItemName = 'channel1ProfileResolution' WHERE ItemName = 'channel1LoadProfileResolution';
+UPDATE DeviceConfigCategoryItem SET ItemName = 'channel2ProfileResolution' WHERE ItemName = 'channel2LoadProfileResolution';
+UPDATE DeviceConfigCategoryItem SET ItemName = 'channel3ProfileResolution' WHERE ItemName = 'channel3LoadProfileResolution';
+UPDATE DeviceConfigCategoryItem SET ItemName = 'channel4ProfileResolution' WHERE ItemName = 'channel4LoadProfileResolution';
+
+UPDATE DeviceConfigCategory SET CategoryType = 'mct430ProfileChannels' WHERE CategoryType = 'mct430LoadProfileChannels';
+UPDATE DeviceConfigCategory SET CategoryType = 'mct470ProfileChannels' WHERE CategoryType = 'mct470LoadProfileChannels';
+UPDATE DeviceConfigCategory SET CategoryType = 'demandProfile' WHERE CategoryType = 'mct470DemandLoadProfile';
+/* End YUK-12627 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
 /**************************************************************/
-/*INSERT INTO CTIDatabase VALUES ('6.0', '16-OCT-2013', 'Latest Update', 2, SYSDATE);*/
+INSERT INTO CTIDatabase VALUES ('6.0', '16-OCT-2013', 'Latest Update', 2, SYSDATE);
