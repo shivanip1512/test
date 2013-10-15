@@ -5,6 +5,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
+
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,10 +27,10 @@ import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.dr.assetavailability.ApplianceAssetAvailabilitySummary;
 import com.cannontech.dr.assetavailability.ApplianceWithRuntime;
 import com.cannontech.dr.assetavailability.AssetAvailabilityRelays;
-import com.cannontech.dr.assetavailability.InventoryRelayAppliances;
-import com.cannontech.dr.assetavailability.SimpleAssetAvailability;
 import com.cannontech.dr.assetavailability.AssetAvailabilityStatus;
 import com.cannontech.dr.assetavailability.DeviceRelayApplianceCategories;
+import com.cannontech.dr.assetavailability.InventoryRelayAppliances;
+import com.cannontech.dr.assetavailability.SimpleAssetAvailability;
 import com.cannontech.dr.assetavailability.SimpleAssetAvailabilitySummary;
 import com.cannontech.dr.assetavailability.dao.DRGroupDeviceMappingDao;
 import com.cannontech.dr.assetavailability.service.AssetAvailabilityService;
@@ -59,6 +61,15 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
     @Autowired private PointDao pointDao;
     @Autowired private AttributeService attributeService;
     @Autowired private GlobalSettingDao globalSettingDao;
+    
+    private Duration COMMUNICATION_WINDOW_DURATION;
+    private Duration RUNTIME_WINDOW_DURATION;
+    
+    @PostConstruct
+    public void init() {
+        COMMUNICATION_WINDOW_DURATION = Duration.standardHours(globalSettingDao.getInteger(GlobalSettingType.LAST_COMMUNICATION_HOURS));
+        RUNTIME_WINDOW_DURATION = Duration.standardHours(globalSettingDao.getInteger(GlobalSettingType.LAST_RUNTIME_HOURS));
+    }
     
     @Override
     public SimpleAssetAvailabilitySummary getAssetAvailabilityFromDrGroup(PaoIdentifier drPaoIdentifier) throws DynamicDataAccessException {
@@ -103,10 +114,14 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
         Set<Integer> optedOutAppliances = getAppliancesFromInventory(inventoryToApplianceMultimap, optedOutInventory);
         summary.addOptedOut(optedOutAppliances);
         
+        //If all devices are one-way, we don't need to check any points for running/communicating
+        if(inventoryAndDevices.isEmpty()) {
+            return summary;
+        }
+        
         //Get communicating
-        Instant now = Instant.now();
-        Instant communicatingWindowEnd = now.minus(Duration.standardHours(globalSettingDao.getInteger(GlobalSettingType.LAST_COMMUNICATION_HOURS)));
-        Range<Instant> communicatingWindow = Range.inclusive(communicatingWindowEnd, now);
+        Instant communicatingWindowEnd = Instant.now().minus(COMMUNICATION_WINDOW_DURATION);
+        Range<Instant> communicatingWindow = Range.inclusive(communicatingWindowEnd, null);
         Set<Integer> communicatedInventory = rawPointHistoryDao.getCommunicatingInventoryByLoadGroups(loadGroupIds, communicatingWindow);
         Set<Integer> communicatedAppliances = getAppliancesFromInventory(inventoryToApplianceMultimap, communicatedInventory);
         summary.addCommunicating(communicatedAppliances);
@@ -117,8 +132,8 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
         for(int relay = 1; relay <= AssetAvailabilityRelays.MAX_RELAY; relay++) {
             Set<PaoIdentifier> relayPaoIdentifiers = Sets.newHashSet(relayToDeviceIdMultiMap.get(relay));
             
-            Instant runtimeWindowEnd = Instant.now().minus(Duration.standardHours(globalSettingDao.getInteger(GlobalSettingType.LAST_RUNTIME_HOURS)));
-            Range<Instant> runtimeRange = Range.inclusive(runtimeWindowEnd, Instant.now());
+            Instant runtimeWindowEnd = Instant.now().minus(RUNTIME_WINDOW_DURATION);
+            Range<Instant> runtimeRange = Range.inclusive(runtimeWindowEnd, null);
             Range<Long> changeIdRange = Range.unbounded();
             Attribute relayAttribute = AssetAvailabilityRelays.getAttributeForRelay(relay);
             
@@ -167,10 +182,15 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
         Set<Integer> optedOutInventory = optOutEventDao.getOptedOutInventoryByLoadGroups(loadGroupIds);
         aaSummary.addOptedOut(optedOutInventory);
         
+        //If all devices are one-way, we don't need to check any points for running/communicating
+        if(inventoryAndDevices.isEmpty()) {
+            return aaSummary;
+        }
+        
         //Get communicating
         Instant now = Instant.now();
-        Instant communicatingWindowEnd = now.minus(Duration.standardHours(globalSettingDao.getInteger(GlobalSettingType.LAST_COMMUNICATION_HOURS)));
-        Range<Instant> communicatingWindow = Range.inclusive(communicatingWindowEnd, now);
+        Instant communicatingWindowEnd = now.minus(COMMUNICATION_WINDOW_DURATION);
+        Range<Instant> communicatingWindow = Range.inclusive(communicatingWindowEnd, null);
         Set<Integer> communicatedInventory = rawPointHistoryDao.getCommunicatingInventoryByLoadGroups(loadGroupIds, communicatingWindow);
         aaSummary.addCommunicating(communicatedInventory);
         
@@ -183,8 +203,8 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
             //remove any that we already found runtime for
             relayPaoIdentifiers = Sets.difference(relayPaoIdentifiers, allPaosWithRuntime);
             
-            Instant runtimeWindowEnd = Instant.now().minus(Duration.standardHours(globalSettingDao.getInteger(GlobalSettingType.LAST_RUNTIME_HOURS)));
-            Range<Instant> runtimeRange = Range.inclusive(runtimeWindowEnd, Instant.now());
+            Instant runtimeWindowEnd = now.minus(RUNTIME_WINDOW_DURATION);
+            Range<Instant> runtimeRange = Range.inclusive(runtimeWindowEnd, null);
             Range<Long> changeIdRange = Range.unbounded();
             
             Attribute relayAttribute = AssetAvailabilityRelays.getAttributeForRelay(relay);
@@ -222,42 +242,45 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
         //Get opted out inventory
         Set<Integer> optedOutInventory = optOutEventDao.getOptedOutInventory(inventoryIds);
         
-        //Get latest communication time from dispatch
-        Map<Integer, Integer> pointsToPaos = pointDao.getPointIdsForPaos(deviceIds);
-        Map<Integer, Instant> paoCommunicationTimes = getPaoLatestPointTimes(pointsToPaos, null);
-        
-        //Get latest non-zero runtime reported
+        //Only continue if there are two-way devices to analyze
+        Map<Integer, Instant> paoCommunicationTimes = null;
         PaoRelayRuntimes paoRelayRuntimes = new PaoRelayRuntimes();
-        Multimap<Integer, PaoIdentifier> relayToDeviceIdMultiMap = lmHardwareConfigurationDao.getRelayToDeviceMapByDeviceIds(deviceIds);
-        for(int relay = 1; relay <= AssetAvailabilityRelays.MAX_RELAY; relay++) {
-            Attribute relayAttribute = AssetAvailabilityRelays.getAttributeForRelay(relay);
-            Set<PaoIdentifier> relayPaoIdentifiers = Sets.newHashSet(relayToDeviceIdMultiMap.get(relay));
-            Map<Integer, Instant> paoRuntimeTimes = getPaoRuntimeTimesFromDispatch(relayPaoIdentifiers, relayAttribute);
+        if(!oneWayInventory.equals(inventoryAndDevices.keySet())) {
+            //Get latest communication time from dispatch
+            Map<Integer, Integer> pointsToPaos = pointDao.getPointIdsForPaos(deviceIds);
+            paoCommunicationTimes = getPaoLatestPointTimes(pointsToPaos, null);
             
-            for(Map.Entry<Integer, Instant> entry : paoRuntimeTimes.entrySet()) {
-                paoRelayRuntimes.put(entry.getKey(), relay, entry.getValue());
-            }
-            
-            //remove paos from the list that just got non-zero runtime from dispatch
-            for(Iterator<PaoIdentifier> iterator = relayPaoIdentifiers.iterator(); iterator.hasNext();) {
-                PaoIdentifier relayPaoIdentifier = iterator.next();
-                if(paoRuntimeTimes.containsKey(relayPaoIdentifier.getPaoId())) {
-                    iterator.remove();
+            //Get latest non-zero runtime reported
+            Multimap<Integer, PaoIdentifier> relayToDeviceIdMultiMap = lmHardwareConfigurationDao.getRelayToDeviceMapByDeviceIds(deviceIds);
+            for(int relay = 1; relay <= AssetAvailabilityRelays.MAX_RELAY; relay++) {
+                Attribute relayAttribute = AssetAvailabilityRelays.getAttributeForRelay(relay);
+                Set<PaoIdentifier> relayPaoIdentifiers = Sets.newHashSet(relayToDeviceIdMultiMap.get(relay));
+                Map<Integer, Instant> paoRuntimeTimes = getPaoRuntimeTimesFromDispatch(relayPaoIdentifiers, relayAttribute);
+                
+                for(Map.Entry<Integer, Instant> entry : paoRuntimeTimes.entrySet()) {
+                    paoRelayRuntimes.put(entry.getKey(), relay, entry.getValue());
                 }
+                
+                //remove paos from the list that just got non-zero runtime from dispatch
+                for(Iterator<PaoIdentifier> iterator = relayPaoIdentifiers.iterator(); iterator.hasNext();) {
+                    PaoIdentifier relayPaoIdentifier = iterator.next();
+                    if(paoRuntimeTimes.containsKey(relayPaoIdentifier.getPaoId())) {
+                        iterator.remove();
+                    }
+                }
+                
+                //query database for remainder
+                ReadableRange<Instant> runtimeRange = Range.unbounded();
+                ReadableRange<Long> changeIdRange = Range.unbounded();
+                Multimap<PaoIdentifier, PointValueQualityHolder> relayAttributeData = 
+                        rawPointHistoryDao.getAttributeData(relayPaoIdentifiers, relayAttribute, 
+                                                            runtimeRange, changeIdRange, false, 
+                                                            Order.FORWARD, 0.0);
+                
+                //add successful results to the map of device -> latest runtime
+                updatePaoRuntimeTimesFromDatabase(paoRelayRuntimes, relayAttributeData, relay);
             }
-            
-            //query database for remainder
-            ReadableRange<Instant> runtimeRange = Range.unbounded();
-            ReadableRange<Long> changeIdRange = Range.unbounded();
-            Multimap<PaoIdentifier, PointValueQualityHolder> relayAttributeData = 
-                    rawPointHistoryDao.getAttributeData(relayPaoIdentifiers, relayAttribute, 
-                                                        runtimeRange, changeIdRange, false, 
-                                                        Order.FORWARD, 0.0);
-            
-            //add successful results to the map of device -> latest runtime
-            updatePaoRuntimeTimesFromDatabase(paoRelayRuntimes, relayAttributeData, relay);
         }
-        
         //build the asset availability objects
         Map<Integer, SimpleAssetAvailability> assetAvailabilityMap = 
                 buildAssetAvailabilityMap(inventoryIds, optedOutInventory, oneWayInventory, inventoryAndDevices, 
@@ -403,9 +426,8 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
     }
     
     /*
-     * Given the map of inventoryIds to deviceIds, this method returns the subset of inventoryIds that belong to
-     * two-way inventory. (This is done by removing all inventory that map to deviceId of 0, which are one-way
-     * inventory, since they don't map to a real pao.)
+     * Given the map of inventoryIds to deviceIds, this method returns the subset of deviceIds that belong to
+     * two-way inventory.
      */
     private Set<Integer> getTwoWayInventoryDevices(Map<Integer, Integer> inventoryAndDevices) {
         Set<Integer> deviceIds = Sets.newHashSet(inventoryAndDevices.values());
@@ -423,11 +445,11 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
                                               Collection<ApplianceWithRuntime> applianceRuntimes) {
         boolean communicating = false;
         boolean hasRuntime = false;
-        Instant endOfCommunicationWindow = now.minus(Duration.standardHours(globalSettingDao.getInteger(GlobalSettingType.LAST_COMMUNICATION_HOURS)));
+        Instant endOfCommunicationWindow = now.minus(COMMUNICATION_WINDOW_DURATION);
         if(lastCommunicationTime != null && lastCommunicationTime.isAfter(endOfCommunicationWindow)) {
             communicating = true;
         }
-        Instant endOfRuntimeWindow = now.minus(Duration.standardHours(globalSettingDao.getInteger(GlobalSettingType.LAST_RUNTIME_HOURS)));
+        Instant endOfRuntimeWindow = now.minus(RUNTIME_WINDOW_DURATION);
         for(ApplianceWithRuntime applianceRuntime : applianceRuntimes) {
             Instant runtime = applianceRuntime.getLastNonZeroRuntime();
             if(runtime != null && runtime.isAfter(endOfRuntimeWindow)) {

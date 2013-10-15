@@ -15,6 +15,9 @@ public class SimpleAssetAvailabilitySummary {
     private final Set<Integer> communicating = Sets.newHashSet();
     private final Set<Integer> running = Sets.newHashSet();
     private final Set<Integer> optedOut = Sets.newHashSet();
+    private Integer unavailableSize = null;
+    private Integer communicatingNotRunningSize = null;
+    private Integer communicatingRunningSize = null;
     
     /**
      * The object must be populated with the complete set of deviceIds on creation.
@@ -102,7 +105,10 @@ public class SimpleAssetAvailabilitySummary {
      * opted-out.
      */
     public int getCommunicatingRunningSize() {
-        return getCommunicatingRunningSize(false);
+        if(communicatingRunningSize == null) {
+            communicatingRunningSize = getCommunicatingRunningSize(false);
+        }
+        return communicatingRunningSize;
     }
     
     /**
@@ -122,7 +128,10 @@ public class SimpleAssetAvailabilitySummary {
      * opted out.
      */
     public int getCommunicatingNotRunningSize() {
-        return getCommunicatingNotRunningSize(false);
+        if(communicatingNotRunningSize == null) {
+            communicatingNotRunningSize = getCommunicatingNotRunningSize(false);
+        }
+        return communicatingNotRunningSize;
     }
     
     /**
@@ -142,7 +151,10 @@ public class SimpleAssetAvailabilitySummary {
      * are opted-out.
      */
     public int getUnavailableSize() {
-        return getUnavailableSize(false);
+        if(unavailableSize == null) {
+            unavailableSize = getUnavailableSize(false);
+        }
+        return unavailableSize;
     }
     
     /**
