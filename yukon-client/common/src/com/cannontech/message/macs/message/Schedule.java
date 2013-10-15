@@ -1,5 +1,7 @@
 package com.cannontech.message.macs.message;
 
+import java.util.GregorianCalendar;
+
 import com.cannontech.database.data.schedule.script.ScriptTemplateTypes;
 
 /**
@@ -93,6 +95,7 @@ public Schedule() {
  * @return boolean
  * @param val java.lang.Object
  */
+@Override
 public boolean equals(Object val) {
 
 	if( val instanceof Schedule )
@@ -180,6 +183,9 @@ public java.util.Date getManualStopTime() {
  * @return java.util.Date
  */
 public java.util.Date getNextRunTime() {
+    if (nextRunTime == null) {
+        nextRunTime = new GregorianCalendar().getTime();
+    }
 	return nextRunTime;
 }
 /**
@@ -188,7 +194,10 @@ public java.util.Date getNextRunTime() {
  * @return java.util.Date
  */
 public java.util.Date getNextStopTime() {
-	return nextStopTime;
+    if (nextStopTime == null) {
+        nextStopTime = new GregorianCalendar().getTime();
+    }
+    return nextStopTime;
 }
 
 /**
