@@ -2,6 +2,7 @@ package com.cannontech.web.common.search;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jackson.node.POJONode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -36,7 +37,13 @@ public class SiteSearchController {
             ModelMap model, YukonUserContext userContext) {
         int start = (page - 1) * itemsPerPage;
 
-        SearchResults<Page> results = siteSearchService.search(searchString, start, itemsPerPage, userContext);
+        searchString = StringUtils.trimToEmpty(searchString);
+        SearchResults<Page> results;
+        if (searchString.length() != 0) {
+            results = siteSearchService.search(searchString, start, itemsPerPage, userContext);
+        } else {
+            results = SearchResults.emptyResult();
+        }
 
         // Forward to the single result's URL
         if (results.getResultCount() == 1) {
