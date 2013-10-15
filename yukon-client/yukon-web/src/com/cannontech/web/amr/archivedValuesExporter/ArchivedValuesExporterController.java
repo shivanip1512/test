@@ -52,8 +52,6 @@ import com.cannontech.amr.archivedValueExporter.model.dataRange.DataRange;
 import com.cannontech.amr.archivedValueExporter.model.dataRange.DataRangeType;
 import com.cannontech.amr.archivedValueExporter.model.dataRange.LocalDateRange;
 import com.cannontech.amr.archivedValueExporter.service.ExportReportGeneratorService;
-import com.cannontech.amr.meter.dao.MeterDao;
-import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionCreationException;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
@@ -123,7 +121,6 @@ public class ArchivedValuesExporterController {
     @Autowired private ExportFormatValidator exportFormatValidator;
     @Autowired private ExportReportGeneratorService exportReportGeneratorService;
     @Autowired private GlobalSettingDao globalSettingDao;
-    @Autowired private MeterDao meterDao;
     @Autowired private ObjectFormattingService objectFormattingService;
     @Autowired private CronExpressionTagService cronExpressionTagService;
     @Autowired private AttributeService attributeService;
@@ -455,10 +452,9 @@ public class ArchivedValuesExporterController {
 
         List<SimpleDevice> deviceList = archivedValuesExporter.getDeviceCollection().getDeviceList();
         DataRange dataRange = archivedValuesExporter.getRunDataRange();
-        //TODO This is bad, it's limiting the ADE to only meters, not allowing for LCRs for example!!!
-        List<YukonMeter> meters = meterDao.getMetersForYukonPaos(deviceList);
         ExportFormat format = archiveValuesExportFormatDao.getByFormatId(archivedValuesExporter.getFormatId());
-        List<String> report = exportReportGeneratorService.generateReport(meters, format, dataRange, userContext, archivedValuesExporter.getAttributesArray());
+        List<String> report = exportReportGeneratorService.generateReport(deviceList, format, dataRange, userContext,
+            archivedValuesExporter.getAttributesArray());
         String fileName = getFileName(Instant.now().toDate(), format.getFormatName());
         setupResponse(response, fileName);
         createReportFile(response, report);

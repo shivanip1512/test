@@ -2,11 +2,13 @@ package com.cannontech.common.pao.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.jdom.Element;
 import org.w3c.dom.Node;
 
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.definition.model.PaoData;
 import com.cannontech.common.pao.definition.model.PaoData.OptionalField;
 import com.google.common.collect.ImmutableSet;
@@ -21,7 +23,7 @@ public interface PaoSelectionService {
         ;
 
         private final String elementName;
-        private final ImmutableSet<OptionalField> matchingOptionalFieldSet;
+        private final Set<OptionalField> matchingOptionalFieldSet;
 
         private PaoSelectorType(String elementName, OptionalField matchingField) {
             this.elementName = elementName;
@@ -36,7 +38,7 @@ public interface PaoSelectionService {
             return elementName;
         }
 
-        public ImmutableSet<OptionalField> getMatchingOptionalFieldSet() {
+        public Set<OptionalField> getMatchingOptionalFieldSet() {
             return matchingOptionalFieldSet;
         }
     }
@@ -99,7 +101,7 @@ public interface PaoSelectionService {
      *         in responseFields.
      */
     public Map<PaoIdentifier, PaoData> selectPaoIdentifiersAndGetData(Node paoCollectionNode,
-                                                                      ImmutableSet<OptionalField> responseFields);
+                                                                      Set<OptionalField> responseFields);
 
     /**
      * Find all PAOs defined in the given pao collection node. The PaoData instances in this
@@ -107,6 +109,11 @@ public interface PaoSelectionService {
      * all devices selected by meter number will include meter number but no other required fields.
      */
     public PaoSelectionData selectPaoIdentifiersByType(Node paoCollectionNode);
+
+    /**
+     * Look up the requested data for the given PAOs.
+     */
+    public <T extends YukonPao> Map<T, PaoData> lookupPaoData(Iterable<T> paos, Set<OptionalField> requestedFields);
 
     /**
      * If there are any lookup errors, add a "lookupError" node as a child of the given parent.

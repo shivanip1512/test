@@ -5,14 +5,16 @@ import java.util.Set;
 import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.common.i18n.Displayable;
+import com.cannontech.common.pao.definition.model.PaoData;
+import com.cannontech.common.pao.definition.model.PaoData.OptionalField;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.google.common.collect.ImmutableSet;
 
 public enum FieldType implements Displayable{
-    METER_NUMBER("Meter Number"),
-    DEVICE_NAME("Device Name"),
-    ADDRESS("Address/Serial Number"),
-    ROUTE("Route"),
+    METER_NUMBER("Meter Number", OptionalField.METER_NUMBER),
+    DEVICE_NAME("Device Name", OptionalField.NAME),
+    ADDRESS("Address/Serial Number", OptionalField.ADDRESS_OR_SERIAL_NUMBER),
+    ROUTE("Route", OptionalField.ROUTE_NAME),
     PLAIN_TEXT("Plain Text"),
     ATTRIBUTE("Attribute"),
     ATTRIBUTE_NAME("Attribute Name"),
@@ -36,10 +38,16 @@ public enum FieldType implements Displayable{
     
     private final static String keyPrefix = "yukon.web.modules.tools.bulk.archivedValueExporter.fieldType.";
     
-    private String description;
+    private final String description;
+    private final OptionalField paoDataOptionalField;
+
+    private FieldType(String description, OptionalField paoDataOptionalField) {
+        this.description = description;
+        this.paoDataOptionalField = paoDataOptionalField;
+    }
 
     private FieldType(String description) {
-        this.setDescription(description);
+        this(description, null);
     }
 
     public String getKey() {
@@ -49,8 +57,13 @@ public enum FieldType implements Displayable{
     public String getDescription() {
         return description;
     }
-    public void setDescription(String description) {
-        this.description = description;
+
+    /**
+     * If this field type gets its data from an optional field in a {@link PaoData} object, this will return that
+     * optional field.
+     */
+    public OptionalField getPaoDataOptionalField() {
+        return paoDataOptionalField;
     }
 
     @Override

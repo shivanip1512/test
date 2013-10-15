@@ -14,7 +14,15 @@ public class PaoData {
         NAME,
         ENABLED,
         METER_NUMBER,
-        CARRIER_ADDRESS;
+        CARRIER_ADDRESS,
+        ROUTE_NAME,
+        /**
+         * A field which will be the address for PLC devices or the serial number for RFN devices.
+         */
+        ADDRESS_OR_SERIAL_NUMBER,
+        ;
+
+        public final static Set<OptionalField> SET_OF_ALL = ImmutableSet.copyOf(values());
     }
 
     public final static Function<PaoData, PaoIdentifier> paoIdFunction =
@@ -25,20 +33,22 @@ public class PaoData {
             }
         };
 
-    private ImmutableSet<OptionalField> responseFields;
+    private Set<OptionalField> responseFields;
 
     private PaoIdentifier paoIdentifier;
     private String name;
     private boolean enabled;
     private String meterNumber;
     private Integer carrierAddress;
+    private String routeName;
+    private String addressOrSerialNumber;
 
     /**
      * Create an instance of this class which will have at a minimum the fields specified by
      * responseFields populated.  This Set is used by this class to help error check--if a caller
      * requests a field not in responseFields, an exception will be thrown.
      */
-    public PaoData(ImmutableSet<OptionalField> responseFields, PaoIdentifier paoIdentifier) {
+    public PaoData(Set<OptionalField> responseFields, PaoIdentifier paoIdentifier) {
         this.responseFields = responseFields;
         this.paoIdentifier = paoIdentifier;
     }
@@ -93,5 +103,27 @@ public class PaoData {
 
     public void setCarrierAddress(Integer carrierAddress) {
         this.carrierAddress = carrierAddress;
+    }
+
+    public String getRouteName() {
+        if (responseFields.contains(OptionalField.ROUTE_NAME)) {
+            return routeName;
+        }
+        throw new UnsupportedOperationException("routeName not populated for this object");
+    }
+
+    public void setRouteName(String routeName) {
+        this.routeName = routeName;
+    }
+
+    public String getAddressOrSerialNumber() {
+        if (responseFields.contains(OptionalField.ADDRESS_OR_SERIAL_NUMBER)) {
+            return addressOrSerialNumber;
+        }
+        throw new UnsupportedOperationException("addressOrSerialNumber not populated for this object");
+    }
+
+    public void setAddressOrSerialNumber(String addressOrSerialNumber) {
+        this.addressOrSerialNumber = addressOrSerialNumber;
     }
 }

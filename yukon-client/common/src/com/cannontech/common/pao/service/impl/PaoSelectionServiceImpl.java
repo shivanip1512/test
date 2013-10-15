@@ -1,11 +1,8 @@
 package com.cannontech.common.pao.service.impl;
 
-import static com.cannontech.common.pao.service.PaoSelectionService.PaoSelectorType.ADDRESS;
-import static com.cannontech.common.pao.service.PaoSelectionService.PaoSelectorType.DEVICE_GROUP;
-import static com.cannontech.common.pao.service.PaoSelectionService.PaoSelectorType.METER_NUMBER;
-import static com.cannontech.common.pao.service.PaoSelectionService.PaoSelectorType.PAO_ID;
-import static com.cannontech.common.pao.service.PaoSelectionService.PaoSelectorType.PAO_NAME;
+import static com.cannontech.common.pao.service.PaoSelectionService.PaoSelectorType.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -19,6 +16,7 @@ import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.dao.PaoSelectionDao;
 import com.cannontech.common.pao.definition.model.PaoData;
 import com.cannontech.common.pao.definition.model.PaoData.OptionalField;
@@ -29,7 +27,6 @@ import com.cannontech.core.dao.PaoDao;
 import com.google.common.base.Functions;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -57,7 +54,7 @@ public class PaoSelectionServiceImpl implements PaoSelectionService {
 
     @Override
     public Map<PaoIdentifier, PaoData> selectPaoIdentifiersAndGetData(Node paoCollectionNode,
-                                                                      ImmutableSet<OptionalField> responseFields) {
+                                                                      Set<OptionalField> responseFields) {
         return selectAndGetData(paoCollectionNode, responseFields, null);
     }
 
@@ -76,7 +73,7 @@ public class PaoSelectionServiceImpl implements PaoSelectionService {
     }
 
     private Map<PaoIdentifier, PaoData> selectAndGetData(Node paoCollectionNode,
-                                                         ImmutableSet<OptionalField> responseFieldsIn,
+                                                         Set<OptionalField> responseFieldsIn,
                                                          Map<PaoSelectorType, List<String>> lookupFailures) {
         SimpleXPathTemplate paoListTemplate = YukonXml.getXPathTemplateForNode(paoCollectionNode);
 
@@ -85,7 +82,7 @@ public class PaoSelectionServiceImpl implements PaoSelectionService {
         for (PaoSelectorType type : paoSelectors.keySet()) {
             List<Node> nodeList = paoListTemplate.evaluateAsNodeList(ns.getPrefix() + ":"
                     + type.getElementName());
-            ImmutableSet<OptionalField> responseFields = responseFieldsIn == null
+            Set<OptionalField> responseFields = responseFieldsIn == null
                     ? type.getMatchingOptionalFieldSet() : responseFieldsIn;
             List<String> lookupFailuresForType = null;
             if (lookupFailures != null) {
@@ -97,6 +94,17 @@ public class PaoSelectionServiceImpl implements PaoSelectionService {
         }
 
         return retVal;
+    }
+
+    @Override
+    public <T extends YukonPao> Map<T, PaoData> lookupPaoData(Iterable<T> paos, Set<OptionalField> requestedFields) {
+        Map<T, PaoData> paoDataByPao = new HashMap<>();
+        for (T pao : paos) {
+            PaoData paoData = new PaoData(requestedFields, pao.getPaoIdentifier());
+            paoDataByPao.put(pao, paoData);
+        }
+        addNeededData(paoDataByPao.values(), requestedFields, null);
+        return paoDataByPao;
     }
 
     @Override
@@ -120,8 +128,7 @@ public class PaoSelectionServiceImpl implements PaoSelectionService {
         parent.addContent(lookupErrorElem);
     }
 
-    private void addNeededData(List<PaoData> paosNeedingData,
-                               ImmutableSet<OptionalField> responseFields,
+    private void addNeededData(Iterable<PaoData> paosNeedingData, Set<OptionalField> responseFields,
                                OptionalField alreadyFulfilled) {
         Set<OptionalField> neededFields = Sets.newEnumSet(responseFields, OptionalField.class);
         if (alreadyFulfilled != null) {
@@ -138,13 +145,13 @@ public class PaoSelectionServiceImpl implements PaoSelectionService {
          *            for which no PAO was found. Use null to avoid extra work if this is not
          *            needed.
          */
-        public abstract void selectPaos(List<Node> nodes, ImmutableSet<OptionalField> responseFields,
+        public abstract void selectPaos(List<Node> nodes, Set<OptionalField> responseFields,
                                         Map<PaoIdentifier, PaoData> into, List<String> lookupFailures);
     }
 
     private class ByCarrierAddressSelector extends PaoSelector {
         @Override
-        public void selectPaos(List<Node> nodes, ImmutableSet<OptionalField> responseFields,
+        public void selectPaos(List<Node> nodes, Set<OptionalField> responseFields,
                                Map<PaoIdentifier, PaoData> into, List<String> lookupFailures) {
             Set<Integer> carrierAddresses = Sets.newHashSet();
             for (Node node : nodes) {
@@ -188,7 +195,7 @@ public class PaoSelectionServiceImpl implements PaoSelectionService {
 
     private class ByDeviceGroupNamesSelector extends PaoSelector {
         @Override
-        public void selectPaos(List<Node> nodes, ImmutableSet<OptionalField> responseFields,
+        public void selectPaos(List<Node> nodes, Set<OptionalField> responseFields,
                                Map<PaoIdentifier, PaoData> into, List<String> lookupFailures) {
             Set<String> groupNames = Sets.newHashSet();
 
@@ -229,7 +236,7 @@ public class PaoSelectionServiceImpl implements PaoSelectionService {
 
     private class ByMeterNumbersSelector extends PaoSelector {
         @Override
-        public void selectPaos(List<Node> nodes, ImmutableSet<OptionalField> responseFields,
+        public void selectPaos(List<Node> nodes, Set<OptionalField> responseFields,
                                Map<PaoIdentifier, PaoData> into, List<String> lookupFailures) {
             Set<String> meterNumbers = Sets.newHashSet();
             for (Node node : nodes) {
@@ -262,7 +269,7 @@ public class PaoSelectionServiceImpl implements PaoSelectionService {
 
     private class ByPaoNamesSelector extends PaoSelector {
         @Override
-        public void selectPaos(List<Node> nodes, ImmutableSet<OptionalField> responseFields,
+        public void selectPaos(List<Node> nodes, Set<OptionalField> responseFields,
                                Map<PaoIdentifier, PaoData> into, List<String> lookupFailures) {
             Set<String> paoNames = Sets.newHashSet();
             for (Node node : nodes) {
@@ -295,7 +302,7 @@ public class PaoSelectionServiceImpl implements PaoSelectionService {
 
     private class ByPaoIdSelector extends PaoSelector {
         @Override
-        public void selectPaos(List<Node> nodes, ImmutableSet<OptionalField> responseFields,
+        public void selectPaos(List<Node> nodes, Set<OptionalField> responseFields,
                                Map<PaoIdentifier, PaoData> into, List<String> lookupFailures) {
             Set<Integer> paoIds = Sets.newHashSet();
             for (Node node : nodes) {
