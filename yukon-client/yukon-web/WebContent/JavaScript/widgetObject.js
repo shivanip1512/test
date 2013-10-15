@@ -132,8 +132,8 @@ function JsWidgetObject(shortName, parameters) {
               }
               else {
                   jQuery('#' + args.buttonID).find('span').text(defaultButtonText);
-                  jQuery('#' + args.buttonID).find('.widgetAction_waiting').hide();
               }
+              jQuery('#' + args.buttonID).find('.widgetAction_waiting').hide();
               jQuery('#' + container).find('button').removeAttr('disabled');
           };
       if (args.buttonID) {
@@ -143,8 +143,8 @@ function JsWidgetObject(shortName, parameters) {
           } else {
               defaultButtonText = jQuery('#' + args.buttonID).find('span').text();
               jQuery('#' + args.buttonID).find('span').text(args.waitingText);
-              jQuery('#' + args.buttonID).find('.widgetAction_waiting').show();
           }
+          jQuery('#' + args.buttonID).find('.widgetAction_waiting').show();
           jQuery('#' + container).find('button').attr('disabled', 'disabled');
       }
 

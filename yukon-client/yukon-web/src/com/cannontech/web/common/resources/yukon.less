@@ -186,12 +186,12 @@ margin: 0px;
 
 /* PROGRESS BARS */
 .progressBar {display: inline-block;margin-right: 5px;height: 16px;position: relative;}
-.progressBarBorder {height: 16px;width: 100px;border: 1px solid #555;background-color: #efefef;}
+.progressBarBorder {display: inline-block;height: 16px;width: 100px;border: 1px solid #555;background-color: #efefef;}
 .progressBarInner, div.progressBarInnerSuccess, div.progressBarInnerFailure {display: inline-block;float: left;height:14px;width: 0px;}
 .progressBarInner, div.progressBarInnerSuccess {background: @green;}
 .progressBarInnerFailure {background: @red;}
 
-.progressBarPercentComplete, .progressBarCompletedCount {font-size: 11px;}
+.progressBarPercentComplete, .progressBarCompletedCount {font-size: 11px; display: inline-block;}
 .progressBar .scheduledRequestProgressBarBorder {width: 62px;}
 .actionArea .progressBar .progressBarBorder, .pageActionArea .progressBar .progressBarBorder {margin-top:2px;}
 

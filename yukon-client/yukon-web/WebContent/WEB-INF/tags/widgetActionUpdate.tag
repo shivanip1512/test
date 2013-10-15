@@ -58,7 +58,7 @@
             });
         </script>
         
-        <span class="widgetAction_waiting" style="display:none">
+        <span class="widgetAction_waiting dn fr">
             <img src="<c:url value="/WebConfig/yukon/Icons/spinner.gif"/>" alt="<cti:msg2 key="yukon.web.components.waiting"/>"/>
         </span>
 	</span>
