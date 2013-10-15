@@ -280,6 +280,7 @@ UPDATE DeviceConfigCategoryItem SET ItemName = 'channel4ProfileResolution' WHERE
 UPDATE DeviceConfigCategory SET CategoryType = 'mct430ProfileChannels' WHERE CategoryType = 'mct430LoadProfileChannels';
 UPDATE DeviceConfigCategory SET CategoryType = 'mct470ProfileChannels' WHERE CategoryType = 'mct470LoadProfileChannels';
 UPDATE DeviceConfigCategory SET CategoryType = 'demandProfile' WHERE CategoryType = 'mct470DemandLoadProfile';
+UPDATE DeviceConfigCategory SET CategoryType = 'centronDisplayItems' WHERE CategoryType = 'displayItems'
 /* End YUK-12627 */
 
 /* Start YUK-12639 */
