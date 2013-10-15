@@ -44,9 +44,9 @@ public class MockMeterDaoImpl extends MeterDaoImpl {
                                                             "Null Valued Meter",
                                                             "MCT410IL 3",
                                                             false,
-                                                            "Route A",
+                                                            "",
                                                             1,
-                                                            "Address C");
+                                                            "");
     
     private List<YukonMeter> meters = Lists.newArrayList(METER_MCT410FL, METER_MCT410IL, METER_RFN410FL, NULL_VALUED_METER);
     private Map<String, YukonMeter> meterNumberToMeter;
