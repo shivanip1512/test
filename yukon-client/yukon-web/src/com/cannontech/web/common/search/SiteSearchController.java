@@ -40,7 +40,7 @@ public class SiteSearchController {
 
         // Forward to the single result's URL
         if (results.getResultCount() == 1) {
-            String url = results.getResultList().get(0).getUserPage().getPath();
+            String url = results.getResultList().get(0).getPath();
             return "redirect:" + url;
         }
 
