@@ -13,11 +13,10 @@
 </script>
 
 <style type="text/css">
-    .monitor-subs th.name {width: 50%}
-    .monitor-subs th.data {width: 20%}
-    .monitor-subs th.monitoring {width: 25%}
-    .monitor-subs th.enable {width: 5%}
-    
+    .monitor-subs th.name {width: 50%;}
+    .monitor-subs th.data {width: 20%;}
+    .monitor-subs th.monitoring {width: 25%;}
+    .monitor-subs th.enable {width: 5%;}
 </style>
 
 <cti:msg2 var="undoText" key="yukon.common.undo"/>
@@ -73,12 +72,12 @@
                         <c:choose>
                             <c:when test="${monitor.enabled}">
                                 <tags:widgetActionRefreshImage method="toggleEnabledDeviceData"
-                                    nameKey="disable" arguments="${monitor.name}" btnClass="fr"
+                                    nameKey="disable" arguments="${monitor.name}" btnClass="fr M0"
                                     monitorId="${monitor.id}" icon="icon-enabled" />
                             </c:when>
                             <c:otherwise>
                                 <tags:widgetActionRefreshImage method="toggleEnabledDeviceData"
-                                    nameKey="enable" arguments="${monitor.name}" btnClass="fr"
+                                    nameKey="enable" arguments="${monitor.name}" btnClass="fr M0"
                                     monitorId="${monitor.id}" checked="false" icon="icon-disabled" />
                             </c:otherwise>
                         </c:choose>
@@ -141,11 +140,11 @@
                     <td class="tar">
                         <c:choose>
                             <c:when test="${monitor.evaluatorStatus eq 'ENABLED'}">
-                                <tags:widgetActionRefreshImage method="toggleEnabledOutage" outageMonitorId="${monitorId}" btnClass="fr"
+                                <tags:widgetActionRefreshImage method="toggleEnabledOutage" outageMonitorId="${monitorId}" btnClass="fr M0"
                                                                nameKey="disable" arguments="${monitorName}" icon="icon-enabled"/>
                             </c:when>
                             <c:when test="${monitor.evaluatorStatus eq 'DISABLED'}">
-                                <tags:widgetActionRefreshImage method="toggleEnabledOutage" outageMonitorId="${monitorId}" btnClass="fr"
+                                <tags:widgetActionRefreshImage method="toggleEnabledOutage" outageMonitorId="${monitorId}" btnClass="fr M0"
                                                                nameKey="enable" arguments="${monitorName}" icon="icon-disabled"/>
                             </c:when>
                         </c:choose>
@@ -212,11 +211,11 @@
                     <td class="${tdClass} tar">
                         <c:choose>
                             <c:when test="${monitor.evaluatorStatus eq 'ENABLED'}">
-                                <tags:widgetActionRefreshImage method="toggleEnabledTamperFlag" tamperFlagMonitorId="${monitorId}" btnClass="fr"
+                                <tags:widgetActionRefreshImage method="toggleEnabledTamperFlag" tamperFlagMonitorId="${monitorId}" btnClass="fr M0"
                                                                nameKey="disable" arguments="${monitorName}" icon="icon-enabled"/>
                             </c:when>
                             <c:when test="${monitor.evaluatorStatus eq 'DISABLED'}">
-                                <tags:widgetActionRefreshImage method="toggleEnabledTamperFlag" tamperFlagMonitorId="${monitorId}" btnClass="fr"
+                                <tags:widgetActionRefreshImage method="toggleEnabledTamperFlag" tamperFlagMonitorId="${monitorId}" btnClass="fr M0"
                                                                nameKey="enable" arguments="${monitorName}" icon="icon-disabled"/>
                             </c:when>
                         </c:choose>
@@ -278,11 +277,11 @@
                 <td class="tar">
                     <c:choose>
                         <c:when test="${monitor.evaluatorStatus eq 'ENABLED'}">
-                            <tags:widgetActionRefreshImage method="toggleEnabledStatusPoint" statusPointMonitorId="${monitorId}" btnClass="fr"
+                            <tags:widgetActionRefreshImage method="toggleEnabledStatusPoint" statusPointMonitorId="${monitorId}" btnClass="fr M0"
                                                            nameKey="disable" arguments="${monitorName}" icon="icon-enabled"/>
                         </c:when>
                         <c:when test="${monitor.evaluatorStatus eq 'DISABLED'}">
-                            <tags:widgetActionRefreshImage method="toggleEnabledStatusPoint" statusPointMonitorId="${monitorId}" btnClass="fr"
+                            <tags:widgetActionRefreshImage method="toggleEnabledStatusPoint" statusPointMonitorId="${monitorId}" btnClass="fr M0"
                                                            nameKey="enable" arguments="${monitorName}" icon="icon-disabled"/>
                         </c:when>
                     </c:choose>
@@ -338,12 +337,12 @@
                      <c:choose>
                         <c:when test="${monitor.evaluatorStatus eq 'ENABLED'}">
                             <tags:widgetActionRefreshImage method="toggleEnabledPorterResponse"
-                                nameKey="disable" arguments="${monitor.name}" btnClass="fr"
+                                nameKey="disable" arguments="${monitor.name}" btnClass="fr M0"
                                 monitorId="${monitor.monitorId}" icon="icon-enabled"/>
                         </c:when>
                         <c:when test="${monitor.evaluatorStatus eq 'DISABLED'}">
                             <tags:widgetActionRefreshImage method="toggleEnabledPorterResponse"
-                                nameKey="enable" arguments="${monitor.name}" btnClass="fr"
+                                nameKey="enable" arguments="${monitor.name}" btnClass="fr M0"
                                 monitorId="${monitor.monitorId}" checked="false" icon="icon-disabled"/>
                         </c:when>
                     </c:choose>
@@ -412,10 +411,10 @@
                 <td>
                     <c:choose>
                         <c:when test="${monitor.evaluatorStatus eq 'ENABLED'}">
-                            <tags:widgetActionRefreshImage  method="toggleEnabledValidation" validationMonitorId="${monitorId}" btnClass="fr" nameKey="disable" arguments="${monitorName}" icon="icon-enabled"/>
+                            <tags:widgetActionRefreshImage  method="toggleEnabledValidation" validationMonitorId="${monitorId}" btnClass="fr M0" nameKey="disable" arguments="${monitorName}" icon="icon-enabled"/>
                         </c:when>
                         <c:when test="${monitor.evaluatorStatus eq 'DISABLED'}">
-                            <tags:widgetActionRefreshImage method="toggleEnabledValidation" validationMonitorId="${monitorId}" btnClass="fr" nameKey="enable" arguments="${monitorName}" icon="icon-disabled"/>
+                            <tags:widgetActionRefreshImage method="toggleEnabledValidation" validationMonitorId="${monitorId}" btnClass="fr M0" nameKey="enable" arguments="${monitorName}" icon="icon-disabled"/>
                         </c:when>
                     </c:choose>
                 </td> 

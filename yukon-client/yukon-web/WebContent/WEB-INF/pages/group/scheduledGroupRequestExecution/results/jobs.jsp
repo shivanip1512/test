@@ -140,14 +140,14 @@
                         <span id="jobNotRunningSpan_${jobWrapper.job.id}" <c:if test="${jobWrapper.jobStatus eq 'RUNNING'}">style="display:none;"</c:if>>
                             <cti:dataUpdaterValue type="JOB" identifier="${jobWrapper.job.id}/STATE_TEXT"/>
                         </span>
-                        <span id="jobRunningSpan_${jobWrapper.job.id}" <c:if test="${not (jobWrapper.jobStatus eq 'RUNNING')}">style="display:none;"</c:if>>
+                        <div id="jobRunningSpan_${jobWrapper.job.id}" <c:if test="${not (jobWrapper.jobStatus eq 'RUNNING')}">style="display:none;"</c:if> class="wsnw">
                             <tags:updateableProgressBar totalCountKey="SCHEDULED_GROUP_REQUEST_EXECUTION/${jobWrapper.job.id}/LAST_REQUEST_COUNT_FOR_JOB"
                                 countKey="SCHEDULED_GROUP_REQUEST_EXECUTION/${jobWrapper.job.id}/LAST_SUCCESS_RESULTS_COUNT_FOR_JOB"
                                 failureCountKey="SCHEDULED_GROUP_REQUEST_EXECUTION/${jobWrapper.job.id}/LAST_FAILURE_RESULTS_COUNT_FOR_JOB"
                                 borderClasses="scheduledRequestProgressBarBorder" hideCount="true" hidePercent="true"/>
-                            <cti:button nameKey="cancel" id="cancel_${jobWrapper.job.id}" classes="stopButton" renderMode="image" arguments="${jobWrapper.name}" icon="icon-cross"/>
+                            <cti:button nameKey="cancel" id="cancel_${jobWrapper.job.id}" classes="stopButton fn M0" renderMode="image" arguments="${jobWrapper.name}" icon="icon-cross"/>
                             <d:confirm on="#cancel_${jobWrapper.job.id}" nameKey="cancelConfirm" argument="${jobWrapper.name}" />
-                        </span>
+                        </div>
                     </td>
                     <cti:checkRolesAndProperties value="MANAGE_SCHEDULES">
                         <td class="tar">

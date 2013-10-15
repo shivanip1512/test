@@ -146,8 +146,8 @@
     <entry key="yukon.web.modules.amr.highBill.pageName">High Bill Complaint</entry>
     <entry key="yukon.web.modules.amr.highBill.pageDescription">High Bill Complaint</entry>
     <entry key="yukon.web.modules.amr.highBill.error">Error: {0}</entry>
-    <entry key="yukon.web.modules.amr.highBill.endDate">End Date:</entry>
-    <entry key="yukon.web.modules.amr.highBill.startDate">Start Date:</entry>
+    <entry key="yukon.web.modules.amr.highBill.endDate">End Date</entry>
+    <entry key="yukon.web.modules.amr.highBill.startDate">Start Date</entry>
     <entry key="yukon.web.modules.amr.highBill.getReport">Get Report</entry>
     <entry key="yukon.web.modules.amr.highBill.retrievingReport">Retrieving Report...</entry>
     <entry key="yukon.web.modules.amr.highBill.prevReports">Previous Reports</entry>
@@ -163,6 +163,7 @@
     <entry key="yukon.web.modules.amr.highBill.reportPeriod">Report Period</entry>
     <entry key="yukon.web.modules.amr.highBill.tabularData">Tabular Data:</entry>
     <entry key="yukon.web.modules.amr.highBill.dailyUsage">Daily Usage Report:</entry>
+    <entry key="yukon.web.modules.amr.highBill.config.label">Configure Now</entry>
     <entry key="yukon.web.modules.amr.highBill.isNotConfigured">{0} is not configured for High Bill Processing.</entry>
     <entry key="yukon.web.modules.amr.highBill.errorMsgStart1">Start date: {0} is not formatted correctly - example (mm/dd/yyyy).</entry>
     <entry key="yukon.web.modules.amr.highBill.errorMsgStart2">Start date must be before stop date.</entry>
