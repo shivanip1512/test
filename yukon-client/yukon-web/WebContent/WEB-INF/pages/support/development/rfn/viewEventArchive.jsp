@@ -24,28 +24,47 @@
                 
                 <tags:nameValue name="Manufacturer">
                     <form:select path="manufacturer">
-                        <form:option value="LGYR">LGYR</form:option>
-                        <form:option value="ITRN">ITRN</form:option>
-                        <form:option value="Eka">Eka</form:option>
                         <form:option value="EE">EE</form:option>
-                        <form:option value="GE">GE</form:option>
+                        <form:option value="Eka">Eka</form:option>
                         <form:option value="ELO">ELO</form:option>
+                        <form:option value="GE">GE</form:option>
+						<form:option value="ITRN">ITRN</form:option>
+                        <form:option value="LGYR">LGYR</form:option>
+                        <form:option value="SCH">SCH</form:option>
                     </form:select>
                 </tags:nameValue>
                 
                 <tags:nameValue name="Model">
                     <form:select path="model">
-                        <form:option value="FocuskWh">FocuskWh</form:option>
-                        <form:option value="C2SX">C2SX</form:option>
-                        <form:option value="water_sensor">water_sensor</form:option>
-                        <form:option value="water_sensor">water_node</form:option>
+                    	<!-- EE -->
                         <form:option value="A3R">A3R</form:option>
+                        <form:option value="A3D">A3D</form:option>
+                        <form:option value="A3T">A3T</form:option>
+                        <!--  Eka -->
                         <form:option value="Centron">Centron</form:option>
-                        <form:option value="kV2">kV2</form:option>
-                        <form:option value="FocusAXD">FocusAXD</form:option>
-                        <form:option value="FocusAXR">FocusAXR</form:option>
+                        <form:option value="water_sensor">water_sensor</form:option>
+                        <form:option value="water_node">water_node</form:option>
+                        <!-- ELO -->
                         <form:option value="2131T">2131T</form:option>
                         <form:option value="2131xT">2131xT</form:option>
+                        <!-- GE -->
+                        <form:option value="kV2">kV2</form:option>
+                        <!-- ITRN -->
+                        <form:option value="C1SX">C1SX</form:option>
+                        <form:option value="C2SX">C2SX</form:option>
+                        <form:option value="C2SX-SD">C2SX-SD</form:option>
+                        <!--  LGYR -->
+                        <form:option value="FocuskWh">FocuskWh</form:option>
+                        <form:option value="FocusAXD">FocusAXD</form:option>
+                        <form:option value="FocusAXD-SD">FocusAXD-SD</form:option>
+                        <form:option value="FocusAXR">FocusAXR</form:option>
+                        <form:option value="FocusAXR-SD">FocusAXR-SD</form:option>
+                        <!-- SCH -->
+                        <form:option value="SENTINEL-L0">SENTINEL-L0</form:option>
+                        <form:option value="SENTINEL-L1">SENTINEL-L1</form:option>
+                        <form:option value="SENTINEL-L2">SENTINEL-L2</form:option>
+                        <form:option value="SENTINEL-L3">SENTINEL-L3</form:option>
+                        <form:option value="SENTINEL-L4">SENTINEL-L4</form:option>
                     </form:select>
                 </tags:nameValue>
                 
