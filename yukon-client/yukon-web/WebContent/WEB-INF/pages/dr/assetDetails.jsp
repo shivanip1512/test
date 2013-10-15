@@ -25,10 +25,10 @@
         <div class="column one">
             <div class="pageActionArea stacked">
                 <strong class="fl">Filter:</strong>
-                <button data-filter="RUNNING" class="left on">
-                    <span class="label green"><cti:msg2 key=".running"/></span></button>
-                <button data-filter="NOT_RUNNING" class="middle on">
-                    <span class="label orange"><cti:msg2 key=".notRunning"/></span></button>
+                <button data-filter="ACTIVE" class="left on">
+                    <span class="label green"><cti:msg2 key=".active"/></span></button>
+                <button data-filter="INACTIVE" class="middle on">
+                    <span class="label orange"><cti:msg2 key=".inactive"/></span></button>
                 <button data-filter="OPTED_OUT" class="middle on">
                     <span class="label grey"><cti:msg2 key=".optedOut"/></span></button>
                 <button data-filter="UNAVAILABLE" class="right on">

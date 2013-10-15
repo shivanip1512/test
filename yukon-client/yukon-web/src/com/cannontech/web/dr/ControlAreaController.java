@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.Vector;
 import java.util.concurrent.TimeUnit;
 
@@ -330,9 +329,9 @@ public class ControlAreaController extends DemandResponseControllerBase {
     
     @ResponseBody
     @RequestMapping("/controlArea/pingDevices")
-    public void pingDevices(int assetId, YukonUserContext userContext) {
+    public void pingDevices(int assetId, LiteYukonUser user) {
         DisplayablePao controlArea = controlAreaService.getControlArea(assetId);
-        assetAvailabilityPingService.readDevicesInDrGrouping(controlArea.getPaoIdentifier(), userContext.getYukonUser());
+        assetAvailabilityPingService.readDevicesInDrGrouping(controlArea.getPaoIdentifier(), user);
     }
     
     @RequestMapping("/controlArea/sendEnableConfirm")

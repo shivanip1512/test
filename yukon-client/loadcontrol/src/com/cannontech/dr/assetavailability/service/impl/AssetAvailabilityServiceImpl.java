@@ -459,9 +459,9 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
         }
         if(communicating) {
             if(hasRuntime) {
-                return AssetAvailabilityStatus.IN_COMMUNICATION_RUNNING;
+                return AssetAvailabilityStatus.ACTIVE;
             }
-            return AssetAvailabilityStatus.IN_COMMUNICATION_NOT_RUNNING;
+            return AssetAvailabilityStatus.INACTIVE;
         }
         return AssetAvailabilityStatus.UNAVAILABLE;
     }

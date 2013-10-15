@@ -12,22 +12,22 @@
 
 
 <cti:msgScope paths="modules.operator.hardware.assetAvailability">
-<c:set var="runningSize" value="${assetAvailabilitySummary.communicatingRunningSize}"/>
-<c:set var="notRunningSize" value="${assetAvailabilitySummary.communicatingNotRunningSize}"/>
+<c:set var="activeSize" value="${assetAvailabilitySummary.activeSize}"/>
+<c:set var="inactiveSize" value="${assetAvailabilitySummary.inactiveSize}"/>
 <c:set var="optedOutSize" value="${assetAvailabilitySummary.optedOutSize}"/>
 <c:set var="unavailableSize" value="${assetAvailabilitySummary.unavailableSize}"/>
 
 <div class="column_12_12 clearfix">
     <div class="column one">
         <tags:nameValueContainer2>
-            <tags:nameValue2 nameKey=".running" titleKey=".running.title">
-                <cti:msg2 var="numberOfDevices" key=".numberOfDevices" argument="${runningSize}"/>
-                <span class="success">${runningSize} ${numberOfDevices}</span>
+            <tags:nameValue2 nameKey=".active" titleKey=".active.title">
+                <cti:msg2 var="numberOfDevices" key=".numberOfDevices" argument="${activeSize}"/>
+                <span class="success">${activeSize} ${numberOfDevices}</span>
             </tags:nameValue2>
             
-            <tags:nameValue2 nameKey=".notRunning" titleKey=".notRunning.title">
-                <cti:msg2 var="numberOfDevices" key=".numberOfDevices" argument="${notRunningSize}"/>
-                <span class="warning">${notRunningSize} ${numberOfDevices}</span>
+            <tags:nameValue2 nameKey=".inactive" titleKey=".inactive.title">
+                <cti:msg2 var="numberOfDevices" key=".numberOfDevices" argument="${inactiveSize}"/>
+                <span class="warning">${inactiveSize} ${numberOfDevices}</span>
             </tags:nameValue2>
             
             <tags:nameValue2 nameKey=".optedOut" titleKey=".optedOut.title">

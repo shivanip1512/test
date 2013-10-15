@@ -1,7 +1,6 @@
 package com.cannontech.amr.deviceread.dao.impl;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -103,30 +102,33 @@ public class DeviceAttributeReadRfnStrategy implements DeviceAttributeReadStrate
             return;
         }
         
-        sendRequests(rfnMeters, null, delegateCallback);
+        sendMeterRequests(rfnMeters, delegateCallback);
         
         Iterable<Integer> devicePaoIds = Iterables.transform(rfnDevices, PaoUtils.getYukonPaoToPaoIdFunction());
         Multimap<Integer, Integer> devicePointIds = pointDao.getPaoPointMultimap(devicePaoIds);
-        sendRequests(rfnDevices, devicePointIds, delegateCallback);
+        sendDeviceRequests(rfnDevices, devicePointIds, delegateCallback);
     }
     
-    private void sendRequests(List<? extends YukonDevice> devices, Multimap<Integer, Integer> devicePointIds, final DeviceAttributeReadStrategyCallback delegateCallback) {
+    //Use for RFN Meters
+    private void sendMeterRequests(List<RfnMeter> meters, final DeviceAttributeReadStrategyCallback delegateCallback) {
+        final AtomicInteger pendingRequests = new AtomicInteger(meters.size());
+        for (final RfnMeter meter : meters) {
+            RfnDeviceReadCompletionCallback<RfnMeterReadingReplyType, RfnMeterReadingDataReplyType> meterCallback = getCallback(meter, delegateCallback, pendingRequests);
+            rfnMeterReadService.send(meter, meterCallback);
+        }
+    }
+    
+    //Use for RFN LCRs
+    private void sendDeviceRequests(List<RfnDevice> devices, Multimap<Integer, Integer> devicePointIds, final DeviceAttributeReadStrategyCallback delegateCallback) {
         final AtomicInteger pendingRequests = new AtomicInteger(devices.size());
-
-        for (final YukonDevice device : devices) {
-            
-            if (device.getPaoIdentifier().getPaoType().isMeter()) {
-                RfnDeviceReadCompletionCallback<RfnMeterReadingReplyType, RfnMeterReadingDataReplyType> meterCallback = getCallback(device, delegateCallback, pendingRequests);
-                rfnMeterReadService.send((RfnMeter) device, meterCallback);
-            } else {
-                DataListeningReadCompletionCallback<RfnExpressComUnicastReplyType, RfnExpressComUnicastDataReplyType> deviceCallback = 
-                        new DataListeningReadCompletionCallback<>(device, delegateCallback, pendingRequests);
-                //register callback as listener for device points (since request won't return data)
-                int paoIdentifier = device.getPaoIdentifier().getPaoId();
-                Set<Integer> pointIds = Sets.newHashSet(devicePointIds.get(paoIdentifier));
-                asyncDynamicDataSource.registerForPointData(deviceCallback, pointIds);
-                rfnExpressComMessageService.readDevice((RfnDevice) device, deviceCallback);
-            }
+        for (final RfnDevice device : devices) {
+            DataListeningReadCompletionCallback<RfnExpressComUnicastReplyType, RfnExpressComUnicastDataReplyType> deviceCallback = 
+                    new DataListeningReadCompletionCallback<>(device, delegateCallback, pendingRequests);
+            //register callback as listener for device points (since request won't return data)
+            int paoIdentifier = device.getPaoIdentifier().getPaoId();
+            Set<Integer> pointIds = Sets.newHashSet(devicePointIds.get(paoIdentifier));
+            asyncDynamicDataSource.registerForPointData(deviceCallback, pointIds);
+            rfnExpressComMessageService.readDevice(device, deviceCallback);
         }
     }
     

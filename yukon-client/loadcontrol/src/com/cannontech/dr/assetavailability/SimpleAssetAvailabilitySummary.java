@@ -16,8 +16,8 @@ public class SimpleAssetAvailabilitySummary {
     private final Set<Integer> running = Sets.newHashSet();
     private final Set<Integer> optedOut = Sets.newHashSet();
     private Integer unavailableSize = null;
-    private Integer communicatingNotRunningSize = null;
-    private Integer communicatingRunningSize = null;
+    private Integer inactiveSize = null;
+    private Integer activeSize = null;
     
     /**
      * The object must be populated with the complete set of deviceIds on creation.
@@ -58,7 +58,7 @@ public class SimpleAssetAvailabilitySummary {
      * Gets deviceIds for all devices that are both communicating and running. This does not include devices that are
      * opted-out.
      */
-    public Set<Integer> getCommunicatingRunning() {
+    public Set<Integer> getActive() {
         Set<Integer> communicatingRunning = Sets.intersection(communicating, running);
         return Sets.difference(communicatingRunning, optedOut);
     }
@@ -67,7 +67,7 @@ public class SimpleAssetAvailabilitySummary {
      * Gets deviceIds for all devices that are communicating but not running. This does not include devices that are
      * opted-out.
      */
-    public Set<Integer> getCommunicatingNotRunning() {
+    public Set<Integer> getInactive() {
         Set<Integer> communicatingNotRunning = Sets.difference(communicating, running);
         return Sets.difference(communicatingNotRunning, optedOut);
     }
@@ -92,7 +92,7 @@ public class SimpleAssetAvailabilitySummary {
      * Gets the total number of devices that are both communicating and running.
      * @param includeOptedOut Determines if the count includes devices that are opted-out.
      */
-    public int getCommunicatingRunningSize(boolean includeOptedOut) {
+    public int getActiveSize(boolean includeOptedOut) {
         Set<Integer> communicatingRunning = Sets.intersection(communicating, running);
         if(includeOptedOut) {
             return communicatingRunning.size();
@@ -104,18 +104,18 @@ public class SimpleAssetAvailabilitySummary {
      * Gets the total number of devices that are both communicating and running. This does not include devices that are
      * opted-out.
      */
-    public int getCommunicatingRunningSize() {
-        if(communicatingRunningSize == null) {
-            communicatingRunningSize = getCommunicatingRunningSize(false);
+    public int getActiveSize() {
+        if(activeSize == null) {
+            activeSize = getActiveSize(false);
         }
-        return communicatingRunningSize;
+        return activeSize;
     }
     
     /**
      * Gets the total number of devices that are communicating, but not running.
      * @param includeOptedOut Determines if the count includes devices that are opted-out.
      */
-    public int getCommunicatingNotRunningSize(boolean includeOptedOut) {
+    public int getInactiveSize(boolean includeOptedOut) {
         Set<Integer> communicatingNotRunning = Sets.difference(communicating, running);
         if(includeOptedOut) {
             return communicatingNotRunning.size();
@@ -127,11 +127,11 @@ public class SimpleAssetAvailabilitySummary {
      * Gets the total number of devices that are communicating, but not running. This does not include devices that are
      * opted out.
      */
-    public int getCommunicatingNotRunningSize() {
-        if(communicatingNotRunningSize == null) {
-            communicatingNotRunningSize = getCommunicatingNotRunningSize(false);
+    public int getInactiveSize() {
+        if(inactiveSize == null) {
+            inactiveSize = getInactiveSize(false);
         }
-        return communicatingNotRunningSize;
+        return inactiveSize;
     }
     
     /**

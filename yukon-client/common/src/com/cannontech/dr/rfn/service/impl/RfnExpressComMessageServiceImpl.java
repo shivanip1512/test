@@ -133,13 +133,11 @@ public class RfnExpressComMessageServiceImpl implements RfnExpressComMessageServ
                 } else {
                     /* Data response successful, process point data */
                     
-                    List<Object> resultObjects = Lists.newArrayList();
-                    //TODO Garrett
-                    // resultObjects = garrettService.garrett(dataReplyMessage);
-
-                    for (Object resultObject : resultObjects) {
-                        callback.receivedData(resultObject);
-                    }
+                    //WARNING
+                    //As of Oct. 15, 2013, Network Manager does not send a data reply for RFN expresscom.
+                    //Do not rely on a response to confirm message was sent successfully.
+                    //Instead, listen for the expected point updates. See 
+                    //DeviceAttributeReadRfnStrategy.DataListeningReadCompletionCallback
                 }
            }
 

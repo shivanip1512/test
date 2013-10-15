@@ -1,6 +1,5 @@
 package com.cannontech.dr.assetavailability.service;
 
-import java.util.Collection;
 import java.util.Map;
 
 import com.cannontech.common.pao.PaoIdentifier;
@@ -14,9 +13,9 @@ import com.cannontech.dr.assetavailability.SimpleAssetAvailabilitySummary;
  * programs, control areas and scenarios).
  * 
  * Asset availability is calculated as follows:
- * -In communication; Running - The device has communicated within the communication window, and
+ * -Active - The device has communicated within the communication window, and
  *  non-zero runtime has been reported from the device within the runtime window.
- * -In communication; Not Running - The device has communicated within the communication window,
+ * -Inactive - The device has communicated within the communication window,
  *  but no non-zero runtime has been reported from the device within the runtime window.
  * -Unavailable - The device has not communicated within the communication window.
  * -Opted-out - The device is opted-out.

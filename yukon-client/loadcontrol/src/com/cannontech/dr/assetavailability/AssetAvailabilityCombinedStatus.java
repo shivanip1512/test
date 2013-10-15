@@ -5,8 +5,8 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
 public enum AssetAvailabilityCombinedStatus implements DisplayableEnum {
-    RUNNING(AssetAvailabilityStatus.IN_COMMUNICATION_RUNNING),
-    NOT_RUNNING(AssetAvailabilityStatus.IN_COMMUNICATION_NOT_RUNNING),
+    ACTIVE(AssetAvailabilityStatus.ACTIVE),
+    INACTIVE(AssetAvailabilityStatus.INACTIVE),
     UNAVAILABLE(AssetAvailabilityStatus.UNAVAILABLE),
     OPTED_OUT(null);
 

@@ -45,8 +45,8 @@
 <entry key="yukon.web.modules.dr.loadGroup.assetDetails.pageDescription">{0}</entry>
 <entry key="yukon.web.modules.dr.loadGroup.assetDetails.contextualPageName">Asset Availability</entry>
 
-<entry key="yukon.web.modules.dr.assetDetails.status.RUNNING">Active</entry>
-<entry key="yukon.web.modules.dr.assetDetails.status.NOT_RUNNING">Not Active</entry>
+<entry key="yukon.web.modules.dr.assetDetails.status.ACTIVE">Active</entry>
+<entry key="yukon.web.modules.dr.assetDetails.status.INACTIVE">Inactive</entry>
 <entry key="yukon.web.modules.dr.assetDetails.status.UNAVAILABLE">Unavailable</entry>
 <entry key="yukon.web.modules.dr.assetDetails.status.OPTED_OUT">Opted Out</entry>
 

@@ -300,7 +300,7 @@ public class EstimatedLoadServiceImpl implements EstimatedLoadService {
         
         // Calculate actual ELRA values: connected load, diversified load, max kW savings
         // by multiplying connected load amount with the formula output values.
-        double connectedLoad = loadCalcInfo.getAverageKwLoad() * summary.getCommunicatingRunningSize();
+        double connectedLoad = loadCalcInfo.getAverageKwLoad() * summary.getActiveSize();
         double diversifiedLoad = connectedLoad * applianceCategoryFormulaOutput;
         double maxKwSavings = diversifiedLoad * gearFormulaOutput;
         return new PartialEstimatedLoadReductionAmount(connectedLoad, diversifiedLoad, maxKwSavings);
@@ -357,7 +357,7 @@ public class EstimatedLoadServiceImpl implements EstimatedLoadService {
                     // Determine what fraction of the controlling program's Max kW Savings 
                     // will contribute to the calculation program's kW Savings Now value.
                     double reductionAmount = controllingProgramPartialAmount.getMaxKwSavings() 
-                            * (new Double(controllingProgramSummary.getCommunicatingRunning().size()) / 
+                            * (new Double(controllingProgramSummary.getActiveSize()) / 
                                     controllingProgramSummary.getAll().size())
                             * (new Double(inventoryInCommon.size()) / inventoryIdsInControllingProgram.size());
                     reductionFromControllingPrograms += reductionAmount;

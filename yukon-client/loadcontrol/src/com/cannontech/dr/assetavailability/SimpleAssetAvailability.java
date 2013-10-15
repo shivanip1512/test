@@ -34,7 +34,7 @@ public final class SimpleAssetAvailability {
      */
     public SimpleAssetAvailability(int inventoryId, boolean isOptedOut, Iterable<Integer> appliances) {
         this.inventoryId = inventoryId;
-        this.status = AssetAvailabilityStatus.IN_COMMUNICATION_RUNNING;
+        this.status = AssetAvailabilityStatus.ACTIVE;
         this.isOptedOut = isOptedOut;
         this.lastCommunicationTime = null;
         Set<ApplianceWithRuntime> appliancesWithoutRuntime = Sets.newHashSet();

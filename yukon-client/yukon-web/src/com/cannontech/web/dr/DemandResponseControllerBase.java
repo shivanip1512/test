@@ -61,8 +61,8 @@ public abstract class DemandResponseControllerBase {
     protected static Map<AssetAvailabilityCombinedStatus, String> colorMap;
     static {
         colorMap = new HashMap<>();
-        colorMap.put(AssetAvailabilityCombinedStatus.RUNNING, "green");
-        colorMap.put(AssetAvailabilityCombinedStatus.NOT_RUNNING, "orange");
+        colorMap.put(AssetAvailabilityCombinedStatus.ACTIVE, "green");
+        colorMap.put(AssetAvailabilityCombinedStatus.INACTIVE, "orange");
         colorMap.put(AssetAvailabilityCombinedStatus.UNAVAILABLE, "red");
         colorMap.put(AssetAvailabilityCombinedStatus.OPTED_OUT, "grey");
     }
@@ -164,16 +164,16 @@ public abstract class DemandResponseControllerBase {
         // Either null or an empty JSONArray will display all data values.
         Set<AssetAvailabilityCombinedStatus> filterSet = Sets.newHashSet();
         if (filters == null || filters.isEmpty()) {
-            filterSet.add(AssetAvailabilityCombinedStatus.RUNNING);
-            filterSet.add(AssetAvailabilityCombinedStatus.NOT_RUNNING);
+            filterSet.add(AssetAvailabilityCombinedStatus.ACTIVE);
+            filterSet.add(AssetAvailabilityCombinedStatus.INACTIVE);
             filterSet.add(AssetAvailabilityCombinedStatus.OPTED_OUT);
             filterSet.add(AssetAvailabilityCombinedStatus.UNAVAILABLE);
         } else {
-            if (filters.contains(AssetAvailabilityCombinedStatus.RUNNING)) {
-                filterSet.add(AssetAvailabilityCombinedStatus.RUNNING);
+            if (filters.contains(AssetAvailabilityCombinedStatus.ACTIVE)) {
+                filterSet.add(AssetAvailabilityCombinedStatus.ACTIVE);
             }
-            if (filters.contains(AssetAvailabilityCombinedStatus.NOT_RUNNING)) {
-                filterSet.add(AssetAvailabilityCombinedStatus.NOT_RUNNING);
+            if (filters.contains(AssetAvailabilityCombinedStatus.INACTIVE)) {
+                filterSet.add(AssetAvailabilityCombinedStatus.INACTIVE);
             }
             if (filters.contains(AssetAvailabilityCombinedStatus.OPTED_OUT)) {
                 filterSet.add(AssetAvailabilityCombinedStatus.OPTED_OUT);
