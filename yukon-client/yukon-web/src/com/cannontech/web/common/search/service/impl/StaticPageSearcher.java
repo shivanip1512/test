@@ -177,7 +177,7 @@ public class StaticPageSearcher implements PageSearcher {
         try (IndexReader reader = IndexReader.open(directory); IndexSearcher searcher = new IndexSearcher(reader) ) {
             QueryParser parser = new QueryParser(Version.LUCENE_34, "pageName", analyzer);
             Query query = parser.parse(searchString);
-            TopDocs topDocs = searcher.search(query, count);
+            TopDocs topDocs = searcher.search(query, Integer.MAX_VALUE);
             for (ScoreDoc scoreDoc : topDocs.scoreDocs) {
                 Document document = searcher.doc(scoreDoc.doc);
                 SiteMapPage siteMapPage = SiteMapPage.valueOf(document.get("page"));
