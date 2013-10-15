@@ -14,7 +14,7 @@
         <boolean field="disconnectDisplayDisabled" default="false"/>
     </category>
     
-    <category type="displayItems">
+    <category type="centronDisplayItems">
         <enum field="displayItem1" type="DisplayItem" default="0"/>
         <enum field="displayItem2" type="DisplayItem" default="0"/>
         <enum field="displayItem3" type="DisplayItem" default="0"/>

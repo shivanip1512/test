@@ -38,7 +38,7 @@ public class CategoryEditValidator extends SimpleValidator<CategoryEditBean> {
     
         List<Field<?>> fields = categoryTemplate.getFields();
         
-        if (CategoryType.DISPLAY_ITEMS.value().equals(categoryTemplate.getCategoryType())) {
+        if (CategoryType.CENTRON_DISPLAY_ITEMS.value().equals(categoryTemplate.getCategoryType())) {
             // Handle this guy differently.
             boolean slotDisabledHit = false;
             for (Field<?> field : fields) {

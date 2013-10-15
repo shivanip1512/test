@@ -246,13 +246,13 @@
         </tags>
     </pao>
     
-    <pao id="DISPLAY_CONFIGURATION" abstract="true" inherits="SUPPORTS_DEVICE_CONFIGURATION">
+    <pao id="CENTRON_DISPLAY_CONFIGURATION" abstract="true" inherits="SUPPORTS_DEVICE_CONFIGURATION">
         <configuration>
-            <category type="displayItems"/>
+            <category type="centronDisplayItems"/>
         </configuration>
     </pao>
     
-    <pao id="MCT_420_CONFIGURATION" abstract="true" inherits="DISPLAY_CONFIGURATION">
+    <pao id="MCT_420_CONFIGURATION" abstract="true" inherits="CENTRON_DISPLAY_CONFIGURATION">
         <configuration>
             <category type="meterParameters"/>
         </configuration>
@@ -7870,7 +7870,7 @@
         <displayName>RFN-420fRD</displayName></pao>
 
     <!-- ITRON RFN METERS -->
-    <pao id="RFN410CL"  inherits="RFN_L3_CENTRON, SUPPORTS_RFN_DEMAND_RESET_TAG, RFN_CONFIGURATION, DISPLAY_CONFIGURATION">
+    <pao id="RFN410CL"  inherits="RFN_L3_CENTRON, SUPPORTS_RFN_DEMAND_RESET_TAG, RFN_CONFIGURATION, CENTRON_DISPLAY_CONFIGURATION">
         <displayName>RFN-410cL</displayName></pao>
     <pao id="RFN420CL"  inherits="RFN410CL">
         <displayName>RFN-420cL</displayName></pao>
