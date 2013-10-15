@@ -14,6 +14,7 @@
             <xs:enumeration value="mct440Tou"/>
             <xs:enumeration value="dnp"/>
             <xs:enumeration value="demandProfile"/>
+            <xs:enumeration value="demandFreeze"/>
             <xs:enumeration value="mct470ProfileChannels"/>
             <xs:enumeration value="mct470ConfigurationByte"/>
             <xs:enumeration value="addressing"/>

@@ -305,6 +305,7 @@
             <category type="rfnOvUv"/>
             <category type="demandProfile"/>
             <category type="tou"/>
+            <category type="demandFreeze"/>
         </configuration>
     </pao>
 

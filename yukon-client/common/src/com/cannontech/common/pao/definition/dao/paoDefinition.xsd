@@ -20,7 +20,7 @@
 
 	<!-- PAO -->
 	<xs:attributeGroup name="paoAttributes">
-		<xs:attribute name="id" type="xs:ID" use="required" /> <!-- Unique identifier for parser. Must be PaoTypes Java constant for non-abstract paos. -->
+	   <xs:attribute name="id" type="xs:ID" use="required" /> <!-- Unique identifier for parser. Must be PaoTypes Java constant for non-abstract paos. -->
         <xs:attribute name="enabled" type="xs:boolean" default="true" />
         <xs:attribute name="abstract" type="xs:boolean" default="false" />
 	    <xs:attribute name="inherits" type="xs:string" />

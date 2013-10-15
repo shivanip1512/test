@@ -277,4 +277,8 @@
         <integer field="alarmRepeatInterval" default="60" minValue="60" maxValue="240"/>
         <integer field="ovuvRepeats" default="2" minValue="1" maxValue="3"/>
     </category>
+    
+    <category type="demandFreeze">
+        <integer field="demandFreezeDay" default="0" minValue="0" maxValue="32"/>
+    </category>
 </deviceConfigurationCategories>
