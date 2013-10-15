@@ -10,7 +10,9 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.PlcMeter;
+import com.cannontech.amr.meter.model.YukonMeter;
+import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
@@ -18,6 +20,7 @@ import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
@@ -92,7 +95,7 @@ public class DisconnectModel extends FilteredReportModelBase<DisconnectModel.Dis
 
     
     static public class DisconnectMeter implements YukonPao {
-        public Meter meter;
+        public YukonMeter meter;
         public Integer discAddress;
         
         @Override
@@ -114,7 +117,7 @@ public class DisconnectModel extends FilteredReportModelBase<DisconnectModel.Dis
         public void loadData(DisconnectMeter disconnectMeter, PointValueQualityHolder pointValue, String stateText) {
             deviceName = disconnectMeter.meter.getName();
             meterNumber = disconnectMeter.meter.getMeterNumber();
-            address = disconnectMeter.meter.getAddress();
+            address = disconnectMeter.meter.getSerialOrAddress();
             deviceType = disconnectMeter.meter.getPaoType().getPaoTypeName();
             routeName = disconnectMeter.meter.getRoute();
             discAddress = disconnectMeter.discAddress;
@@ -199,7 +202,7 @@ public class DisconnectModel extends FilteredReportModelBase<DisconnectModel.Dis
                 SqlStatementBuilder sql = new SqlStatementBuilder();
                 sql.append("SELECT ypo.paobjectId, ypo.paoName, ypo.type, ypo.disableFlag,");
                 sql.append("dmg.meterNumber, dcs.address, dr.routeId, rypo.paoName as route,");
-                sql.append("rfna.serialNumber, mct.disconnectAddress");
+                sql.append("rfna.serialNumber, rfna.Manufacturer, rfna.Model, mct.disconnectAddress");
                 sql.append("FROM YukonPaobject ypo");
                 sql.append("JOIN Device d ON ypo.paObjectId = d.deviceId");
                 sql.append("JOIN DeviceMeterGroup dmg ON d.deviceId = dmg.deviceId");
@@ -217,24 +220,29 @@ public class DisconnectModel extends FilteredReportModelBase<DisconnectModel.Dis
 
             @Override
             public DisconnectMeter mapRow(YukonResultSet rs) throws SQLException {
-                int paobjectId = rs.getInt("paobjectId");
-                PaoType paoType = rs.getEnum("type", PaoType.class);
-                PaoIdentifier paoIdentifier = new PaoIdentifier(paobjectId, paoType);
+                PaoIdentifier paoIdentifier = rs.getPaoIdentifier("paobjectId",  "type");
 
-                Meter meter = new Meter();
-                meter.setPaoIdentifier(paoIdentifier);
-                meter.setName(rs.getString("paoName"));
-                meter.setMeterNumber(rs.getString("meterNumber"));
-                String address = rs.getString("address");
-                if (address == null) {  //try to load the rfn address
-                    address = rs.getString("serialNumber");
+                
+                String paoName = rs.getString("paoName");
+                String meterNumber = rs.getString("meterNumber");
+                boolean disabled = rs.getBoolean("disableFlag");
+                YukonMeter yukonMeter;
+                if (paoIdentifier.getPaoType().isRfn()) {
+                    String serialNumber = rs.getString("serialNumber");
+                    String manufacturer = rs.getString("manufacturer");
+                    String model = rs.getString("model");
+                    
+                    RfnIdentifier rfnIdentifier = new RfnIdentifier(serialNumber, manufacturer, model);
+                    yukonMeter = new RfnMeter(paoIdentifier, rfnIdentifier, meterNumber, paoName, disabled);
+                } else {    //assume PLC
+                    String address = rs.getString("address");
+                    String routeName = rs.getString("route");
+                    int routeId = rs.getInt("routeId");
+                    yukonMeter = new PlcMeter(paoIdentifier, meterNumber, paoName, disabled, routeName, routeId, address);
                 }
-                meter.setAddress(address);
-                meter.setRoute(rs.getString("route"));
-                meter.setDisabled(rs.getBoolean("disableFlag"));
                 
                 DisconnectMeter discMeter = new DisconnectMeter();
-                discMeter.meter = meter;
+                discMeter.meter = yukonMeter;
                 discMeter.discAddress = rs.getNullableInt("disconnectAddress");
                 return discMeter;
             }

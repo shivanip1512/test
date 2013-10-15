@@ -8,7 +8,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.meter.dao.MeterDao;
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
@@ -69,12 +69,12 @@ public class MeterUsageModel extends FilteredReportModelBase<MeterUsageModel.Met
     public void doLoadData() {
     	
         Iterable<? extends YukonPao> devices = getYukonPaoList();
-        List<Meter> meters = meterDao.getMetersForYukonPaos(devices);
+        List<YukonMeter> meters = meterDao.getMetersForYukonPaos(devices);
         
         ListMultimap<PaoIdentifier, PointValueQualityHolder> intermediateResults = 
         	rawPointHistoryDao.getAttributeData(meters, attribute, getStartDate(), getStopDate(), excludeDisabledDevices, Clusivity.EXCLUSIVE_INCLUSIVE, Order.FORWARD);
            
-        for (Meter meter : meters) {
+        for (YukonMeter meter : meters) {
         	Double previousReading = null;
             List<PointValueQualityHolder> values = intermediateResults.get(meter.getPaoIdentifier());
             for (PointValueQualityHolder pointValueHolder : values) {

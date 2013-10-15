@@ -7,7 +7,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.ResultSetExtractor;
 
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.PlcMeter;
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.ReportFilter;
 import com.cannontech.clientutils.CTILogger;
@@ -28,7 +28,7 @@ import com.cannontech.database.JdbcTemplateHelper;
  *  String address			- DeviceCarrierSettings.address
  *  String routeName		- YukonPaobject.paoName (route)
  */
-public class CarrierDBModel extends ReportModelBase<Meter>
+public class CarrierDBModel extends ReportModelBase<PlcMeter>
 {
 	/** Number of columns */
 	protected final int NUMBER_COLUMNS = 6;
@@ -105,28 +105,21 @@ public class CarrierDBModel extends ReportModelBase<Meter>
 	        @Override
 	        public Object extractData(ResultSet rset) throws SQLException, DataAccessException {
 
-	            while( rset.next())
-	            {
-	                Meter meter = new Meter();
-
+	            while( rset.next()) {
 	                int paobjectID = rset.getInt(1);
 	                String paoName = rset.getString(2);
-	                meter.setName(paoName);
 	                PaoType paoType = PaoType.getForDbString(rset.getString(3));
 	                PaoIdentifier paoIdentifier = new PaoIdentifier(paobjectID, paoType);
-	                meter.setPaoIdentifier(paoIdentifier);
 	                String disabledStr = rset.getString(4);
 	                boolean disabled = CtiUtilities.isTrue(disabledStr.charAt(0));
-	                meter.setDisabled(disabled);
 	                String meterNumber = rset.getString(5);
-	                meter.setMeterNumber(meterNumber);
+
 	                String address = rset.getString(6);
-	                meter.setAddress(address);
 	                int routeID = rset.getInt(7);
-	                meter.setRouteId(routeID);
 	                String routeName = rset.getString(8);
-	                meter.setRoute(routeName);
-	                getData().add(meter);
+
+	                PlcMeter plcMeter = new PlcMeter(paoIdentifier, meterNumber, paoName, disabled, routeName, routeID, address);
+	                getData().add(plcMeter);
 	            }
 	            return null;
 	        }
@@ -145,11 +138,12 @@ public class CarrierDBModel extends ReportModelBase<Meter>
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getAttribute(int, java.lang.Object)
 	 */
-	public Object getAttribute(int columnIndex, Object o)
+	@Override
+    public Object getAttribute(int columnIndex, Object o)
 	{
-		if ( o instanceof Meter)
+		if ( o instanceof PlcMeter)
 		{
-		    Meter meter = (Meter)o;
+		    PlcMeter meter = (PlcMeter)o;
 			switch( columnIndex)
 			{
 				case PAO_NAME_COLUMN:
@@ -177,7 +171,8 @@ public class CarrierDBModel extends ReportModelBase<Meter>
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getColumnNames()
 	 */
-	public String[] getColumnNames()
+	@Override
+    public String[] getColumnNames()
 	{
 		if( columnNames == null)
 		{
@@ -196,7 +191,8 @@ public class CarrierDBModel extends ReportModelBase<Meter>
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getColumnTypes()
 	 */
-	public Class[] getColumnTypes()
+	@Override
+    public Class[] getColumnTypes()
 	{
 		if( columnTypes == null)
 		{
@@ -215,7 +211,8 @@ public class CarrierDBModel extends ReportModelBase<Meter>
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getColumnProperties()
 	 */
-	public ColumnProperties[] getColumnProperties()
+	@Override
+    public ColumnProperties[] getColumnProperties()
 	{
 		if(columnProperties == null)
 		{
@@ -234,7 +231,8 @@ public class CarrierDBModel extends ReportModelBase<Meter>
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getTitleString()
 	 */
-	public String getTitleString()
+	@Override
+    public String getTitleString()
 	{
 		return title + " - Carrier";
 	}

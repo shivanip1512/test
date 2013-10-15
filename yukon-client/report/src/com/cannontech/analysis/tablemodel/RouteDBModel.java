@@ -5,7 +5,7 @@ import java.util.Comparator;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.PlcMeter;
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.util.NaturalOrderComparator;
 
@@ -39,8 +39,8 @@ public class RouteDBModel extends CarrierDBModel
 
 	private static final String ATT_ORDER_BY = "orderBy";
 	
-	public Comparator<Meter> routeDBComparator = new java.util.Comparator<Meter>() {
-		public int compare(Meter o1, Meter o2){
+	public Comparator<PlcMeter> routeDBComparator = new java.util.Comparator<PlcMeter>() {
+		public int compare(PlcMeter o1, PlcMeter o2){
 
 		    String thisVal = o1.getRoute();
 		    String anotherVal = o2.getRoute();
@@ -63,9 +63,9 @@ public class RouteDBModel extends CarrierDBModel
 	
 	@Override
     public Object getAttribute(int columnIndex, Object o) {
-        if ( o instanceof Meter)
+        if ( o instanceof PlcMeter)
         {
-            Meter meter = (Meter)o;
+            PlcMeter meter = (PlcMeter)o;
             switch( columnIndex)
             {
                 case ROUTEDB_ROUTE_NAME_COLUMN:

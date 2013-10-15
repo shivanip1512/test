@@ -8,7 +8,7 @@ import java.util.Comparator;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.PlcMeter;
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.MeterAndPointData;
 import com.cannontech.analysis.data.device.ScanRateMeterData;
@@ -75,18 +75,19 @@ public class ScanRateSetupDBModel extends ReportModelBase<ScanRateMeterData> imp
 	 */
 	public void addDataRow(ResultSet rs) {
 		try {
-            final Meter meter = new Meter();
-            int paobjectId = rs.getInt("PAOBJECTID");
-            meter.setName(rs.getString("PAONAME"));
+
+		    int paobjectId = rs.getInt("PAOBJECTID");
+            String paoName = rs.getString("PAONAME");
             PaoType paoType = PaoType.getForDbString(rs.getString("TYPE"));
             PaoIdentifier paoIdentifier = new PaoIdentifier(paobjectId, paoType);
-            meter.setPaoIdentifier(paoIdentifier);
-            meter.setDisabled(CtiUtilities.isTrue(rs.getString("DISABLEFLAG").charAt(0)));
-            meter.setMeterNumber(rs.getString("METERNUMBER"));
-            meter.setAddress(rs.getString("ADDRESS"));
-            meter.setRouteId(rs.getInt("ROUTEPAOBJECTID"));
-            meter.setRoute(rs.getString("ROUTEPAONAME"));
+            boolean disabled = CtiUtilities.isTrue(rs.getString("DISABLEFLAG").charAt(0));
+            String meterNumber = rs.getString("METERNUMBER");
+            String address = rs.getString("ADDRESS");
+            int routeId = rs.getInt("ROUTEPAOBJECTID");
+            String routeName = rs.getString("ROUTEPAONAME");
 
+            PlcMeter meter = new PlcMeter(paoIdentifier, meterNumber, paoName, disabled, routeName, routeId, address);
+            
             final MeterAndPointData mpData = 
                 new MeterAndPointData(
                     meter
@@ -196,7 +197,8 @@ public class ScanRateSetupDBModel extends ReportModelBase<ScanRateMeterData> imp
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getAttribute(int, java.lang.Object)
 	 */
-	public Object getAttribute(int columnIndex, Object o) {
+	@Override
+    public Object getAttribute(int columnIndex, Object o) {
 		
         if (o instanceof ScanRateMeterData) {
             
@@ -213,7 +215,7 @@ public class ScanRateSetupDBModel extends ReportModelBase<ScanRateMeterData> imp
 				case METER_NUMBER_COLUMN:
                     return mpData.getMeter().getMeterNumber();
 				case ADDRESS_COLUMN:
-                    return mpData.getMeter().getAddress();
+                    return mpData.getMeter().getSerialOrAddress();
 				case ROUTE_NAME_COLUMN:
                     return mpData.getMeter().getRoute();
 				case SCAN_TYPE_COLUMN:
@@ -230,7 +232,8 @@ public class ScanRateSetupDBModel extends ReportModelBase<ScanRateMeterData> imp
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getColumnNames()
 	 */
-	public String[] getColumnNames()
+	@Override
+    public String[] getColumnNames()
 	{
 		if( columnNames == null)
 		{
@@ -252,7 +255,8 @@ public class ScanRateSetupDBModel extends ReportModelBase<ScanRateMeterData> imp
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getColumnTypes()
 	 */
-	public Class[] getColumnTypes()
+	@Override
+    public Class[] getColumnTypes()
 	{
 		if( columnTypes == null)
 		{
@@ -274,7 +278,8 @@ public class ScanRateSetupDBModel extends ReportModelBase<ScanRateMeterData> imp
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getColumnProperties()
 	 */
-	public ColumnProperties[] getColumnProperties()
+	@Override
+    public ColumnProperties[] getColumnProperties()
 	{
 		if(columnProperties == null) {
 			columnProperties = new ColumnProperties[]{
@@ -295,7 +300,8 @@ public class ScanRateSetupDBModel extends ReportModelBase<ScanRateMeterData> imp
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getTitleString()
 	 */
-	public String getTitleString()
+	@Override
+    public String getTitleString()
 	{
 		return title + " - Scan Rate Meter Data";
 	}
@@ -383,6 +389,7 @@ public class ScanRateSetupDBModel extends ReportModelBase<ScanRateMeterData> imp
 		}		
 	}
     
+    @Override
     public int compare(ScanRateMeterData o1, ScanRateMeterData o2) {
         final MeterAndPointData mpData1 = o1.getMeterAndPointData();
         final MeterAndPointData mpData2 = o2.getMeterAndPointData();

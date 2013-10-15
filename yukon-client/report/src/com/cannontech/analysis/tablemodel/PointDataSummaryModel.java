@@ -17,7 +17,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.ResultSetExtractor;
 
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.PlcMeter;
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.ReportFilter;
 import com.cannontech.analysis.data.device.LPMeterData;
@@ -217,7 +217,8 @@ public class PointDataSummaryModel extends ReportModelBase<LPMeterData>
 
     public Comparator<LPMeterData> lpDataSummaryComparator = new java.util.Comparator<LPMeterData>()
 	{
-		public int compare(LPMeterData o1, LPMeterData o2){
+		@Override
+        public int compare(LPMeterData o1, LPMeterData o2){
             final MeterAndPointData mpData1 = o1.getMeterAndPointData();
             final MeterAndPointData mpData2 = o2.getMeterAndPointData();
             
@@ -230,8 +231,8 @@ public class PointDataSummaryModel extends ReportModelBase<LPMeterData>
 		    }
 		    if( getOrderBy() == ORDER_BY_PHYSICAL_ADDRESS)
 		    {
-                thisVal = mpData1.getMeter().getAddress();
-                anotherVal = mpData2.getMeter().getAddress();
+                thisVal = mpData1.getMeter().getSerialOrAddress();
+                anotherVal = mpData2.getMeter().getSerialOrAddress();
 		    }
 		    if( getOrderBy() == ORDER_BY_METER_NUMBER)
 		    {
@@ -244,13 +245,15 @@ public class PointDataSummaryModel extends ReportModelBase<LPMeterData>
 	
     public static Comparator<MeterAndPointData> mpDataValueComparator = new Comparator<MeterAndPointData>()
 	{
-		public int compare(MeterAndPointData o1, MeterAndPointData o2)
+		@Override
+        public int compare(MeterAndPointData o1, MeterAndPointData o2)
 		{
 			double thisVal = o1.getValue().doubleValue();
 			double anotherVal = o2.getValue().doubleValue();
 			return ( thisVal<anotherVal ? -1 : (thisVal==anotherVal ? 0 : 1));
 		}
-		public boolean equals(Object obj)
+		@Override
+        public boolean equals(Object obj)
 		{
 			return false;
 		}
@@ -449,17 +452,10 @@ public class PointDataSummaryModel extends ReportModelBase<LPMeterData>
                         voltageDemandInterval = String.valueOf(rset.getInt(15));
                     }
 
-                    Meter meter = new Meter();
                     PaoIdentifier paoIdentifier = new PaoIdentifier(paobjectID, paoType);
-	                meter.setPaoIdentifier(paoIdentifier);
-                    meter.setName(paoName);
-                    if (address != null)
-                        meter.setAddress(address);
+                    //meter is partially loaded!!! disabled flag, routeId, routeName = FAKE!!!
+                    PlcMeter meter = new PlcMeter(paoIdentifier, meterNumber, paoName, false, "", -1, address);
                     
-                    if (meterNumber != null) {
-                        meter.setMeterNumber(meterNumber);
-                    }
-
                     MeterAndPointData mpData = new MeterAndPointData(meter, pointID, pointName, new Date(ts.getTime()), value, quality);
 
                     LPMeterData lpMeterData = new LPMeterData(mpData, liDemandRate, voltageDemandInterval, lpDemandRate, voltageDemandRate);
@@ -529,7 +525,8 @@ public class PointDataSummaryModel extends ReportModelBase<LPMeterData>
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getAttribute(int, java.lang.Object)
 	 */
-	public Object getAttribute(int columnIndex, Object o)
+	@Override
+    public Object getAttribute(int columnIndex, Object o)
 	{
 		if ( o instanceof LPMeterData)
 		{
@@ -543,7 +540,7 @@ public class PointDataSummaryModel extends ReportModelBase<LPMeterData>
 				case METER_NUMBER_COLUMN:
 				    return lpMeterData.getMeterAndPointData().getMeter().getMeterNumber();
 				case PHYSICAL_ADDRESS_COLUMN:
-                    return lpMeterData.getMeterAndPointData().getMeter().getAddress();
+                    return lpMeterData.getMeterAndPointData().getMeter().getSerialOrAddress();
 				case POINT_NAME_COLUMN:
 				    return lpMeterData.getMeterAndPointData().getPointName();
 				case CHANNEL_NUMBER_COLUMN:
@@ -754,6 +751,7 @@ public class PointDataSummaryModel extends ReportModelBase<LPMeterData>
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getColumnNames()
 	 */
+    @Override
     public String[] getColumnNames()
 	{
 		if( columnNames == null)
@@ -823,6 +821,7 @@ public class PointDataSummaryModel extends ReportModelBase<LPMeterData>
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getColumnTypes()
 	 */
+    @Override
     public Class[] getColumnTypes()
 	{
 		if( columnTypes == null)
@@ -891,6 +890,7 @@ public class PointDataSummaryModel extends ReportModelBase<LPMeterData>
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getColumnProperties()
 	 */
+    @Override
     public ColumnProperties[] getColumnProperties()
 	{
 		if(columnProperties == null)
@@ -954,7 +954,8 @@ public class PointDataSummaryModel extends ReportModelBase<LPMeterData>
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getTitleString()
 	 */
-	public String getTitleString()
+	@Override
+    public String getTitleString()
 	{
 		return title;
 	}

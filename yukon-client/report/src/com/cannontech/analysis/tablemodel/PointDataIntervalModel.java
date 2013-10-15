@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowCallbackHandler;
 
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.PlcMeter;
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.ReportFilter;
 import com.cannontech.analysis.data.device.MeterAndPointData;
@@ -157,10 +157,9 @@ public class PointDataIntervalModel extends ReportModelBase<MeterAndPointData>
         PaoType paoType = PaoType.getForDbString(rset.getString(8));
 
 	    //Using only a partially loaded lPao because that is all the information this report cares about.  Maybe a bad decision?!
-	    Meter meter = new Meter();
         PaoIdentifier paoIdentifier = new PaoIdentifier(paobjectID, paoType);
-        meter.setPaoIdentifier(paoIdentifier);
-	    meter.setName(paoName);
+	    PlcMeter meter = new PlcMeter(paoIdentifier, "", paoName, false, "", -1, "");
+	    
 	    MeterAndPointData mpData = new MeterAndPointData(meter, new Integer(pointID), pointName, 
 	                                                     cal.getTime(), new Double(value), new Integer(quality));
 	    getData().add(mpData);
@@ -250,7 +249,8 @@ public class PointDataIntervalModel extends ReportModelBase<MeterAndPointData>
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getAttribute(int, java.lang.Object)
 	 */
-	public Object getAttribute(int columnIndex, Object o)
+	@Override
+    public Object getAttribute(int columnIndex, Object o)
 	{
 		if ( o instanceof MeterAndPointData)
 		{
@@ -287,7 +287,8 @@ public class PointDataIntervalModel extends ReportModelBase<MeterAndPointData>
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getColumnNames()
 	 */
-	public String[] getColumnNames()
+	@Override
+    public String[] getColumnNames()
 	{
 		if( columnNames == null)
 		{
@@ -306,7 +307,8 @@ public class PointDataIntervalModel extends ReportModelBase<MeterAndPointData>
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getColumnTypes()
 	 */
-	public Class[] getColumnTypes()
+	@Override
+    public Class[] getColumnTypes()
 	{
 		if( columnTypes == null)
 		{
@@ -325,7 +327,8 @@ public class PointDataIntervalModel extends ReportModelBase<MeterAndPointData>
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getColumnProperties()
 	 */
-	public ColumnProperties[] getColumnProperties()
+	@Override
+    public ColumnProperties[] getColumnProperties()
 	{
 		if(columnProperties == null)
 		{
@@ -344,7 +347,8 @@ public class PointDataIntervalModel extends ReportModelBase<MeterAndPointData>
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getTitleString()
 	 */
-	public String getTitleString()
+	@Override
+    public String getTitleString()
 	{
 		return title;
 	}

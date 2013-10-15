@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.PlcMeter;
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.ReportFilter;
 import com.cannontech.analysis.data.device.MeterAndPointData;
@@ -194,18 +194,18 @@ public class StarsAMRDetailModel extends ReportModelBase<StarsAMRDetail> impleme
                 @Override
                 public StarsAMRDetail mapRow(ResultSet rs, int rowNum) throws SQLException {
                     
-                    final Meter meter = new Meter();
                     int paobjectId = rs.getInt("PAOBJECTID");
-                    meter.setName(rs.getString("PAONAME"));
+                    String paoName = rs.getString("PAONAME");
                     PaoType paoType = PaoType.getForDbString(rs.getString("TYPE"));
                     PaoIdentifier paoIdentifier = new PaoIdentifier(paobjectId, paoType);
-                    meter.setPaoIdentifier(paoIdentifier);
-                    meter.setDisabled(CtiUtilities.isTrue(rs.getString("DISABLEFLAG").charAt(0)));
-                    meter.setMeterNumber(rs.getString("METERNUMBER"));
-                    meter.setAddress(rs.getString("ADDRESS"));
-                    meter.setRouteId(rs.getInt("ROUTEPAOBJECTID"));
-                    meter.setRoute(rs.getString("ROUTEPAONAME"));
+                    boolean disabled = CtiUtilities.isTrue(rs.getString("DISABLEFLAG").charAt(0));
+                    String meterNumber = rs.getString("METERNUMBER");
+                    String address = rs.getString("ADDRESS");
+                    int routeId = rs.getInt("ROUTEPAOBJECTID");
+                    String routeName = rs.getString("ROUTEPAONAME");
 
+                    final PlcMeter meter = new PlcMeter(paoIdentifier, meterNumber, paoName, disabled, routeName, routeId, address);
+                    
                     final MeterAndPointData mpData = 
                         new MeterAndPointData(
                                               meter,
@@ -248,6 +248,7 @@ public class StarsAMRDetailModel extends ReportModelBase<StarsAMRDetail> impleme
     /* (non-Javadoc)
      * @see com.cannontech.analysis.Reportable#getAttribute(int, java.lang.Object)
      */
+    @Override
     public Object getAttribute(int columnIndex, Object o)
     {
         if (o instanceof StarsAMRDetail)
@@ -272,7 +273,7 @@ public class StarsAMRDetailModel extends ReportModelBase<StarsAMRDetail> impleme
             case METER_NUMBER_COLUMN:
                 return mpData.getMeter().getMeterNumber();
             case PHYSICAL_ADDRESS_COLUMN:
-                return mpData.getMeter().getAddress();
+                return mpData.getMeter().getSerialOrAddress();
             case LAST_KWH_READING_COLUMN:
                 return mpData.getValue();
             case DATE_TIME_COLUMN:
@@ -285,6 +286,7 @@ public class StarsAMRDetailModel extends ReportModelBase<StarsAMRDetail> impleme
     /* (non-Javadoc)
      * @see com.cannontech.analysis.Reportable#getColumnNames()
      */
+    @Override
     public String[] getColumnNames()
     {
         if( columnNames == null)
@@ -308,6 +310,7 @@ public class StarsAMRDetailModel extends ReportModelBase<StarsAMRDetail> impleme
     /* (non-Javadoc)
      * @see com.cannontech.analysis.Reportable#getColumnTypes()
      */
+    @Override
     public Class[] getColumnTypes()
     {
         if( columnTypes == null)
@@ -331,6 +334,7 @@ public class StarsAMRDetailModel extends ReportModelBase<StarsAMRDetail> impleme
     /* (non-Javadoc)
      * @see com.cannontech.analysis.Reportable#getColumnProperties()
      */
+    @Override
     public ColumnProperties[] getColumnProperties()
     {
         if(columnProperties == null)
@@ -355,6 +359,7 @@ public class StarsAMRDetailModel extends ReportModelBase<StarsAMRDetail> impleme
     /* (non-Javadoc)
      * @see com.cannontech.analysis.Reportable#getTitleString()
      */
+    @Override
     public String getTitleString()
     {
         String title = "Stars "; 
@@ -494,6 +499,7 @@ public class StarsAMRDetailModel extends ReportModelBase<StarsAMRDetail> impleme
         this.showHistory = showHistory;
     }
     
+    @Override
     public int compare(StarsAMRDetail o1, StarsAMRDetail o2){
         int tempOrderBy = getOrderBy();
         final MeterAndPointData mpData1 = o1.getMeterAndPointData();
@@ -543,8 +549,8 @@ public class StarsAMRDetailModel extends ReportModelBase<StarsAMRDetail> impleme
             }
             if( tempOrderBy == ORDER_BY_PHYSICAL_ADDRESS)
             {
-                thisVal = mpData1.getMeter().getAddress();
-                anotherVal = mpData2.getMeter().getAddress();
+                thisVal = mpData1.getMeter().getSerialOrAddress();
+                anotherVal = mpData2.getMeter().getSerialOrAddress();
             }
             if( tempOrderBy == ORDER_BY_MAP_NUMBER)
             {

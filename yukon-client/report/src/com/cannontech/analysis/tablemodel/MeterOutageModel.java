@@ -1,6 +1,5 @@
 package com.cannontech.analysis.tablemodel;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -10,10 +9,10 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.dao.impl.MeterRowMapper;
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
@@ -28,8 +27,6 @@ import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.YukonJdbcTemplate;
-import com.cannontech.database.YukonResultSet;
-import com.cannontech.database.YukonRowMapper;
 import com.cannontech.util.NaturalOrderComparator;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ListMultimap;
@@ -38,6 +35,7 @@ public class MeterOutageModel extends FilteredReportModelBase<MeterOutageModel.M
 
     @Autowired private RawPointHistoryDao rawPointHistoryDao;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private MeterRowMapper meterRowMapper;
 
     public enum MeterOutageOrderByFilter {
         DEVICE_NAME("Device Name"),
@@ -58,8 +56,8 @@ public class MeterOutageModel extends FilteredReportModelBase<MeterOutageModel.M
     }
     private Logger log = YukonLogManager.getLogger(MeterOutageModel.class);
 
-	/** A string for the title of the data */
-	private static String title = "Outage Report";
+    /** A string for the title of the data */
+    private static String title = "Outage Report";
     
     /** Class fields */
     private List<MeterOutageRow> data = new ArrayList<MeterOutageRow>();
@@ -78,10 +76,10 @@ public class MeterOutageModel extends FilteredReportModelBase<MeterOutageModel.M
         public Date timestamp;
         public String duration;
 
-        public void loadData(Meter meter, PointValueQualityHolder pointValue) {
+        public void loadData(YukonMeter meter, PointValueQualityHolder pointValue) {
             deviceName = meter.getName();
             meterNumber =meter.getMeterNumber();
-            address = meter.getAddress();
+            address = meter.getSerialOrAddress();
             deviceType = meter.getPaoType().getPaoTypeName();
             routeName = meter.getRoute();
             timestamp = pointValue.getPointDataTimeStamp();
@@ -91,17 +89,17 @@ public class MeterOutageModel extends FilteredReportModelBase<MeterOutageModel.M
 
     @Override
     protected MeterOutageRow getRow(int rowIndex) {
-    	return data.get(rowIndex);
+        return data.get(rowIndex);
     }
     
     @Override
     protected Class<MeterOutageRow> getRowClass() {
-    	return MeterOutageRow.class;
+        return MeterOutageRow.class;
     }
     
     @Override
     public int getRowCount() {
-    	return data.size();
+        return data.size();
     }
 
     @Override
@@ -112,20 +110,20 @@ public class MeterOutageModel extends FilteredReportModelBase<MeterOutageModel.M
     @Override
     public void doLoadData() {
         Iterable<? extends YukonPao> devices = getYukonPaoList();
-        List<Meter> meters = getMetersForYukonPaos(devices);
+        List<YukonMeter> meters = getMetersForYukonPaos(devices);
 
         ListMultimap<PaoIdentifier, PointValueQualityHolder> intermediateResults;
         intermediateResults = rawPointHistoryDao.getAttributeData(meters, attribute, getStartDate(), getStopDate(), false, Clusivity.INCLUSIVE_INCLUSIVE, getOrderDirection());
 
-        for (Meter meter : meters) {
+        for (YukonMeter meter : meters) {
             List<PointValueQualityHolder> values = intermediateResults.get(meter.getPaoIdentifier());
             for (PointValueQualityHolder pointValueHolder : values) {
                 
                 if (isIncluded(pointValueHolder.getValue())) {    //limit by minimum value filter; COULD BE DONE IN SQL but...
                     MeterOutageRow meterOutage = new MeterOutageRow();
                     meterOutage.loadData(meter, pointValueHolder);   //This probably duplicates the memory footprint, need to cleanup.
-            	    data.add(meterOutage);
-            	}
+                    data.add(meterOutage);
+                }
             }
         }
 
@@ -134,8 +132,8 @@ public class MeterOutageModel extends FilteredReportModelBase<MeterOutageModel.M
         
         log.info("Report Records Collected from Database: " + data.size());
     }
-	
-    private <I extends YukonPao> List<Meter> getMetersForYukonPaos(Iterable<I> identifiers) {
+    
+    private <I extends YukonPao> List<YukonMeter> getMetersForYukonPaos(Iterable<I> identifiers) {
         ChunkingSqlTemplate template = new ChunkingSqlTemplate(yukonJdbcTemplate);
 
         SqlFragmentGenerator<I> sqlGenerator = new SqlFragmentGenerator<I>() {
@@ -143,52 +141,17 @@ public class MeterOutageModel extends FilteredReportModelBase<MeterOutageModel.M
             public SqlFragmentSource generate(List<I> subList) {
                 ImmutableList<Integer> paoIdList = PaoUtils.asPaoIdList(subList);
                 SqlStatementBuilder sql = new SqlStatementBuilder();
-                sql.append("SELECT ypo.paobjectId, ypo.paoName, ypo.type, ypo.disableFlag,");
-                sql.append("dmg.meterNumber, dcs.address, dr.routeId, rypo.paoName as route,");
-                sql.append("rfna.serialNumber");
-                sql.append("FROM YukonPaobject ypo");
-                sql.append("JOIN Device d ON ypo.paObjectId = d.deviceId");
-                sql.append("JOIN DeviceMeterGroup dmg ON d.deviceId = dmg.deviceId");
-                sql.append("LEFT JOIN DeviceCarrierSettings dcs ON d.deviceId = dcs.deviceId");
-                sql.append("LEFT JOIN DeviceRoutes dr ON d.deviceId = dr.deviceId");
-                sql.append("LEFT JOIN YukonPaobject rypo ON dr.routeId = rypo.paObjectId");
-                sql.append("LEFT JOIN RFNAddress rfna ON rfna.deviceId = d.deviceid");
+                sql.append(meterRowMapper.getSql());
                 sql.append("WHERE ypo.paObjectId").in(paoIdList);
                 return sql;
             }
         };
 
-        YukonRowMapper<Meter> rowMapper = new YukonRowMapper<Meter>() {
 
-            /**
-             * NOTE! This mapper overloads the meter.address field with either the plc address or rfn serial number.
-             */
-            @Override
-            public Meter mapRow(YukonResultSet rs) throws SQLException {
-                int paobjectId = rs.getInt("paobjectId");
-                PaoType paoType = rs.getEnum("type", PaoType.class);
-                PaoIdentifier paoIdentifier = new PaoIdentifier(paobjectId, paoType);
-
-                Meter meter = new Meter();
-                meter.setPaoIdentifier(paoIdentifier);
-                meter.setName(rs.getString("paoName"));
-                meter.setMeterNumber(rs.getString("meterNumber"));
-                String address = rs.getString("address");
-                if (address == null) {  //try to load the rfn address
-                    address = rs.getString("serialNumber");
-                }
-                meter.setAddress(address);
-                meter.setRoute(rs.getString("route"));
-                meter.setDisabled(rs.getBoolean("disableFlag"));
-
-                return meter;
-            }
-        };
-
-        List<Meter> result = template.query(sqlGenerator, identifiers, rowMapper);
+        List<YukonMeter> result = template.query(sqlGenerator, identifiers, meterRowMapper);
         return Collections.unmodifiableList(result);
     }
-	
+    
     @Override
     public int compare(MeterOutageRow o1, MeterOutageRow o2) {
 

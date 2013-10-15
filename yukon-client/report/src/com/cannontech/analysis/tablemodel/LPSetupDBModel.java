@@ -11,7 +11,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowCallbackHandler;
 
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.PlcMeter;
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.ReportFilter;
 import com.cannontech.analysis.data.device.LPMeterData;
@@ -95,18 +95,17 @@ public class LPSetupDBModel extends ReportModelBase<LPMeterData> implements Comp
 	 */
 	public void addDataRow(ResultSet rs) throws SQLException {
 		    
-	    final Meter meter = new Meter();
 	    int paobjectId = rs.getInt("PAOBJECTID");
-	    meter.setName(rs.getString("PAONAME"));
+	    String paoName = rs.getString("PAONAME");
         PaoType paoType = PaoType.getForDbString(rs.getString("TYPE"));
         PaoIdentifier paoIdentifier = new PaoIdentifier(paobjectId, paoType);
-        meter.setPaoIdentifier(paoIdentifier);
-	    meter.setDisabled(CtiUtilities.isTrue(rs.getString("DISABLEFLAG").charAt(0)));
-	    meter.setMeterNumber(rs.getString("METERNUMBER"));
-	    meter.setAddress(rs.getString("ADDRESS"));
-	    meter.setRouteId(rs.getInt("ROUTEPAOBJECTID"));
-	    meter.setRoute(rs.getString("ROUTEPAONAME"));
-
+	    boolean disabledFlag = CtiUtilities.isTrue(rs.getString("DISABLEFLAG").charAt(0));
+	    String meterNumber = rs.getString("METERNUMBER");
+	    String address = rs.getString("ADDRESS");
+	    int routeId = rs.getInt("ROUTEPAOBJECTID");
+	    String routeName = rs.getString("ROUTEPAONAME");
+        final PlcMeter meter = new PlcMeter(paoIdentifier, meterNumber, paoName, disabledFlag, routeName, routeId, address);
+        
 	    final MeterAndPointData mpData = 
 	        new MeterAndPointData(
 	                              meter
@@ -203,7 +202,8 @@ public class LPSetupDBModel extends ReportModelBase<LPMeterData> implements Comp
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getAttribute(int, java.lang.Object)
 	 */
-	public Object getAttribute(int columnIndex, Object o) {
+	@Override
+    public Object getAttribute(int columnIndex, Object o) {
 		
         if (o instanceof LPMeterData) {
             
@@ -218,7 +218,7 @@ public class LPSetupDBModel extends ReportModelBase<LPMeterData> implements Comp
 				case METER_NUMBER_COLUMN:
                     return mpData.getMeter().getMeterNumber();
 				case ADDRESS_COLUMN:
-                    return mpData.getMeter().getAddress();
+                    return mpData.getMeter().getSerialOrAddress();
 				case ROUTE_NAME_COLUMN:
                     return mpData.getMeter().getRoute();
 				case LAST_INTERVAL_DEMAND_COLUMN:
@@ -237,7 +237,8 @@ public class LPSetupDBModel extends ReportModelBase<LPMeterData> implements Comp
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getColumnNames()
 	 */
-	public String[] getColumnNames()
+	@Override
+    public String[] getColumnNames()
 	{
 		if( columnNames == null)
 		{
@@ -259,7 +260,8 @@ public class LPSetupDBModel extends ReportModelBase<LPMeterData> implements Comp
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getColumnTypes()
 	 */
-	public Class[] getColumnTypes()
+	@Override
+    public Class[] getColumnTypes()
 	{
 		if( columnTypes == null)
 		{
@@ -281,7 +283,8 @@ public class LPSetupDBModel extends ReportModelBase<LPMeterData> implements Comp
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getColumnProperties()
 	 */
-	public ColumnProperties[] getColumnProperties()
+	@Override
+    public ColumnProperties[] getColumnProperties()
 	{
 		if(columnProperties == null)
 		{
@@ -303,7 +306,8 @@ public class LPSetupDBModel extends ReportModelBase<LPMeterData> implements Comp
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getTitleString()
 	 */
-	public String getTitleString()
+	@Override
+    public String getTitleString()
 	{
 		return title + " - LP Meter Data";
 	}
@@ -391,6 +395,7 @@ public class LPSetupDBModel extends ReportModelBase<LPMeterData> implements Comp
 		}		
 	}
     
+    @Override
     public int compare(LPMeterData o1, LPMeterData o2) {
         final MeterAndPointData mpData1 = o1.getMeterAndPointData();
         final MeterAndPointData mpData2 = o2.getMeterAndPointData();

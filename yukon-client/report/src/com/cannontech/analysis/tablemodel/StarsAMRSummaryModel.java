@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowCallbackHandler;
 
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.PlcMeter;
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.ReportFilter;
 import com.cannontech.analysis.data.device.MeterAndPointData;
@@ -106,18 +106,18 @@ public class StarsAMRSummaryModel extends ReportModelBase<StarsAMRDetail> implem
 	public void addDataRow(ResultSet rs)
 	{
 		try {
-            final Meter meter = new Meter();
             int paobjectId = rs.getInt("PAOBJECTID");
-            meter.setName(rs.getString("PAONAME"));
+            String paoName = rs.getString("PAONAME");
             PaoType paoType = PaoType.getForDbString(rs.getString("TYPE"));
             PaoIdentifier paoIdentifier = new PaoIdentifier(paobjectId, paoType);
-            meter.setPaoIdentifier(paoIdentifier);
-            meter.setDisabled(CtiUtilities.isTrue(rs.getString("DISABLEFLAG").charAt(0)));
-            meter.setMeterNumber(rs.getString("METERNUMBER"));
-            meter.setAddress(rs.getString("ADDRESS"));
-            meter.setRouteId(rs.getInt("ROUTEPAOBJECTID"));
-            meter.setRoute(rs.getString("ROUTEPAONAME"));
+            boolean disabled = CtiUtilities.isTrue(rs.getString("DISABLEFLAG").charAt(0));
+            String meterNumber = rs.getString("METERNUMBER");
+            String address = rs.getString("ADDRESS");
+            int routeId = rs.getInt("ROUTEPAOBJECTID");
+            String routeName = rs.getString("ROUTEPAONAME");
 
+            PlcMeter meter = new PlcMeter(paoIdentifier, meterNumber, paoName, disabled, routeName, routeId, address);
+            
             final MeterAndPointData mpData = 
                 new MeterAndPointData(
                     meter,
@@ -218,7 +218,8 @@ public class StarsAMRSummaryModel extends ReportModelBase<StarsAMRDetail> implem
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getAttribute(int, java.lang.Object)
 	 */
-	public Object getAttribute(int columnIndex, Object o)
+	@Override
+    public Object getAttribute(int columnIndex, Object o)
 	{
 		if (o instanceof StarsAMRDetail) {
 			
@@ -242,7 +243,7 @@ public class StarsAMRSummaryModel extends ReportModelBase<StarsAMRDetail> implem
 				case METER_NUMBER_COLUMN:
 				    return mpData.getMeter().getMeterNumber();
 				case PHYSICAL_ADDRESS_COLUMN:
-				    return mpData.getMeter().getAddress();
+				    return mpData.getMeter().getSerialOrAddress();
 				case LAST_KWH_READING_COLUMN:
 				    return mpData.getValue();
 				case DATE_TIME_COLUMN:
@@ -255,7 +256,8 @@ public class StarsAMRSummaryModel extends ReportModelBase<StarsAMRDetail> implem
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getColumnNames()
 	 */
-	public String[] getColumnNames()
+	@Override
+    public String[] getColumnNames()
 	{
 		if( columnNames == null)
 		{
@@ -278,7 +280,8 @@ public class StarsAMRSummaryModel extends ReportModelBase<StarsAMRDetail> implem
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getColumnTypes()
 	 */
-	public Class[] getColumnTypes()
+	@Override
+    public Class[] getColumnTypes()
 	{
 		if( columnTypes == null)
 		{
@@ -301,7 +304,8 @@ public class StarsAMRSummaryModel extends ReportModelBase<StarsAMRDetail> implem
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getColumnProperties()
 	 */
-	public ColumnProperties[] getColumnProperties()
+	@Override
+    public ColumnProperties[] getColumnProperties()
 	{
 		if(columnProperties == null)
 		{
@@ -325,7 +329,8 @@ public class StarsAMRSummaryModel extends ReportModelBase<StarsAMRDetail> implem
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getTitleString()
 	 */
-	public String getTitleString()
+	@Override
+    public String getTitleString()
 	{
 	    return "Stars AMR Detail";
 	}
@@ -422,6 +427,7 @@ public class StarsAMRSummaryModel extends ReportModelBase<StarsAMRDetail> implem
         super.setFilterModelType(filterModelType);
     }
     
+    @Override
     public int compare(StarsAMRDetail o1, StarsAMRDetail o2){
         int tempOrderBy = getOrderBy();
         final MeterAndPointData mpData1 = o1.getMeterAndPointData();
@@ -465,8 +471,8 @@ public class StarsAMRSummaryModel extends ReportModelBase<StarsAMRDetail> implem
         }
         if( tempOrderBy == ORDER_BY_PHYSICAL_ADDRESS)
         {
-            thisVal = mpData1.getMeter().getAddress();
-            anotherVal = mpData2.getMeter().getAddress();
+            thisVal = mpData1.getMeter().getSerialOrAddress();
+            anotherVal = mpData2.getMeter().getSerialOrAddress();
         }
         if( tempOrderBy == ORDER_BY_MAP_NUMBER)
         {

@@ -13,13 +13,16 @@ import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowCallbackHandler;
 
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.PlcMeter;
+import com.cannontech.amr.meter.model.YukonMeter;
+import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.ReportFilter;
 import com.cannontech.analysis.data.device.MeterAndPointData;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -123,28 +126,32 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
 	public void addDataRow(ResultSet rset)
 	{
 		try {
-		    Meter meter = new Meter();
-            
+
             int paobjectID = rset.getInt("paobjectId");
             String paoName = rset.getString("paoName");
-            meter.setName(paoName);
+            
             PaoType paoType = PaoType.getForDbString(rset.getString("type"));
             PaoIdentifier paoIdentifier = new PaoIdentifier(paobjectID, paoType);
-            meter.setPaoIdentifier(paoIdentifier);
+            
             String disabledStr = rset.getString("disableFlag");
             boolean disabled = CtiUtilities.isTrue(disabledStr.charAt(0));
-            meter.setDisabled(disabled);
             String meterNumber = rset.getString("meterNumber");
-            meter.setMeterNumber(meterNumber);
-            String address = rset.getString("address");
-            if (address == null) {
-                address = rset.getString("serialNumber");               
+
+            YukonMeter yukonMeter;
+            if (paoIdentifier.getPaoType().isRfn()) {
+                String serialNumber = rset.getString("serialNumber");
+                String manufacturer = ""; //not loaded
+                String model = ""; //not loaded
+                
+                RfnIdentifier rfnIdentifier = new RfnIdentifier(serialNumber, manufacturer, model);
+                yukonMeter = new RfnMeter(paoIdentifier, rfnIdentifier, meterNumber, paoName, disabled);
+            } else {    //assume PLC
+                String address = rset.getString("address");
+                String routeName = rset.getString("route");
+                int routeId = rset.getInt("routeId");
+                yukonMeter = new PlcMeter(paoIdentifier, meterNumber, paoName, disabled, routeName, routeId, address);
             }
-            meter.setAddress(address);
-            int routeID = rset.getInt("routeId");
-            meter.setRouteId(routeID);
-            String routeName = rset.getString("routeName");
-            meter.setRoute(routeName);
+           
             
 			Date ts = null;
 			if (getMeterReadType()== SUCCESS_METER_READ_TYPE)
@@ -152,7 +159,7 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
 			    Timestamp timestamp = rset.getTimestamp("timestamp");
 			    ts = new Date(timestamp.getTime());
 			}
-			MeterAndPointData mpData = new MeterAndPointData(meter, ts);
+			MeterAndPointData mpData = new MeterAndPointData(yukonMeter, ts);
 
 			getData().add(mpData);
 		}
@@ -280,7 +287,7 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
                     return mpData.getMeter().getMeterNumber();
                     
                 case PHYSICAL_ADDRESS_COLUMN:
-                    return mpData.getMeter().getAddress();
+                    return mpData.getMeter().getSerialOrAddress();
     
                 case ROUTE_NAME_COLUMN:
                     return mpData.getMeter().getRoute();
