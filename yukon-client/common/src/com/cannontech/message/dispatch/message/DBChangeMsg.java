@@ -105,7 +105,7 @@ public class DBChangeMsg extends com.cannontech.message.util.Message
     public static final String CAT_STATIC_PAO_INFO_DB = "Static Pao Info";
     public static final String CAT_YUKON_PAOBJECT_ENCRYPTION_KEY_DB = "Yukon Paobject Encryption Key";
     public static final String CAT_ENCRYPTION_KEY_DB = "Encryption Key";
-    public static final String CAT_INVENTORY_DB = "Encryption Key";
+    public static final String CAT_INVENTORY_DB = "Inventory";
 
     // Categories used by stars
     public static final String CAT_CUSTOMER_ACCOUNT = "CustomerAccount";

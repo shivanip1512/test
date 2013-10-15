@@ -10,18 +10,23 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.Term;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.inventory.Hardware;
 import com.cannontech.common.search.YukonObjectAnalyzer;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.stars.dr.hardware.service.HardwareUiService;
 
 /**
  * Class which manages Lucene index creation and update for inventory.
  */
 public class InventoryIndexManager extends AbstractIndexManager {
     private final Logger log = YukonLogManager.getLogger(InventoryIndexManager.class);
+
+    @Autowired private HardwareUiService hardwareUiService;
 
     @Override
     public String getIndexName() {
@@ -50,10 +55,11 @@ public class InventoryIndexManager extends AbstractIndexManager {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select ib.inventoryId, ib.accountId, ib.deviceId, ib.deviceLabel,");
         sql.append(    "lmhw.manufacturerSerialNumber, lmhw.lmHardwareTypeId,");
-        sql.append(    "mhw.meterNumber, meterTypeId");
+        sql.append(    "meterTypeId");
         sql.append("from inventoryBase ib");
         sql.append(    "left join lmHardwareBase lmhw on lmhw.inventoryId = ib.inventoryId");
         sql.append(    "left join meterHardwareBase mhw on mhw.inventoryId = ib.inventoryId");
+        sql.append("where ib.inventoryId <> 0");
         return sql;
     }
 
@@ -74,6 +80,11 @@ public class InventoryIndexManager extends AbstractIndexManager {
 
         int inventoryId = rs.getInt("inventoryId");
         doc.add(new Field("inventoryId", Integer.toString(inventoryId), Field.Store.YES, Field.Index.NOT_ANALYZED));
+        
+        Hardware hardware = hardwareUiService.getHardware(inventoryId);
+
+        int energyCompanyId = hardware.getEnergyCompanyId();
+        doc.add(new Field("energyCompanyId", Integer.toString(energyCompanyId), Field.Store.YES, Field.Index.NOT_ANALYZED));
 
         int accountId = rs.getInt("accountId");
         String accountIdStr = rs.wasNull() ? "" : Integer.toString(accountId);
@@ -94,12 +105,19 @@ public class InventoryIndexManager extends AbstractIndexManager {
         String lmHardwareTypeIdStr = rs.wasNull() ? "" : Integer.toString(lmHardwareTypeId);
         doc.add(new Field("lmHardwareTypeId", lmHardwareTypeIdStr, Field.Store.YES, Field.Index.NOT_ANALYZED));
 
-        String meterNumber = rs.getString("meterNumber");
+        String meterNumber = hardware.getMeterNumber();
         doc.add(new Field("meterNumber", meterNumber == null ? "" : meterNumber, Field.Store.YES, Field.Index.ANALYZED));
 
         int meterTypeId = rs.getInt("meterTypeId");
         String meterTypeIdStr = rs.wasNull() ? "" : Integer.toString(meterTypeId);
         doc.add(new Field("meterTypeId", meterTypeIdStr, Field.Store.YES, Field.Index.NOT_ANALYZED));
+
+        String displayName = hardware.getDisplayName();
+        doc.add(new Field("displayName", displayName == null ? "" : displayName, Field.Store.YES, Field.Index.ANALYZED));
+
+        String altTrackingNumber = hardware.getAltTrackingNumber();
+        doc.add(new Field("altTrackingNumber", altTrackingNumber == null ? "" : altTrackingNumber, Field.Store.YES,
+            Field.Index.ANALYZED));
 
         return doc;
     }
