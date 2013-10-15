@@ -26,7 +26,7 @@ public class PointValueTag extends YukonTagSupport {
     private boolean pointIdSet;
     private String unavailableValue = null;
     private boolean colorForStatus;
-    private String cssClass;
+    private String cssClass = "";
     
     @Override
     public void doTag() throws JspException, IOException {
@@ -57,7 +57,7 @@ public class PointValueTag extends YukonTagSupport {
             out.print("<span style=\"color: " + color + " !important;\" data-color-updater=\"" + latestValue.getFullIdentifier() + "\">");
         }
         
-        out.print("<span title=\"pointId:" + pointId + "\" data-updater=\"" + value.getFullIdentifier() + "\" class=\"pointValueTagSpan " + cssClass +"\" >");
+        out.print("<span data-updater=\"" + value.getFullIdentifier() + "\" class=\"pointValueTagSpan " + cssClass +"\" >");
         out.print(outputText);
         out.print("</span>");
         if (useColor) {
