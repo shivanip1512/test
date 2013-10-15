@@ -285,7 +285,7 @@ UPDATE DeviceConfigCategory SET CategoryType = 'centronDisplayItems' WHERE Categ
 
 /* Start YUK-12639 */
 ALTER TABLE UserPageParam
-MODIFY Parameter VARCHAR2(2000) NOT NULL;
+MODIFY Parameter VARCHAR2(2000);
 /* End YUK-12639 */
 
 /**************************************************************/
