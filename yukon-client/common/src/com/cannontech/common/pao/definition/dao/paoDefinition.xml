@@ -8762,7 +8762,7 @@
 		</tags>
     </pao>
 
-    <pao id="RFN_L1_SENTINEL" abstract="true" inherits="RFN_L0_SENTINEL, RFN_TOU_FOR_ALL_EXCEPT_A3D">
+    <pao id="RFN_L1_SENTINEL" abstract="true" inherits="RFN_L0_SENTINEL, RFN_TOU_FOR_ALL_EXCEPT_A3D, THREE_PHASE_VOLTAGE">
         <points>
             <point type="Analog" offset="2">
                 <init>true</init>
