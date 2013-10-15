@@ -27,20 +27,20 @@ jQuery(function() {
 	<c:when test="${touAttributesAvailable}">
 		<div id="touTable">
 			<tags:touAttribute headerKey="yukon.web.widgets.touWidget.rateA"
-			                 usageAttribute="${TOU_RATE_A_USAGE}"
-			                 peakAttribute="${TOU_RATE_A_PEAK_DEMAND}" />
+			                 usageAttribute="${USAGE_RATE_A}"
+			                 peakAttribute="${PEAK_DEMAND_RATE_A}" />
 		
 			<tags:touAttribute headerKey="yukon.web.widgets.touWidget.rateB"
-			                 usageAttribute="${TOU_RATE_B_USAGE}"
-			                 peakAttribute="${TOU_RATE_B_PEAK_DEMAND}" />
+			                 usageAttribute="${USAGE_RATE_B}"
+			                 peakAttribute="${PEAK_DEMAND_RATE_B}" />
 			        
 			<tags:touAttribute headerKey="yukon.web.widgets.touWidget.rateC"
-			                 usageAttribute="${TOU_RATE_C_USAGE}"
-			                 peakAttribute="${TOU_RATE_C_PEAK_DEMAND}" />
+			                 usageAttribute="${USAGE_RATE_C}"
+			                 peakAttribute="${PEAK_DEMAND_RATE_C}" />
 			        
 			<tags:touAttribute headerKey="yukon.web.widgets.touWidget.rateD"
-			                 usageAttribute="${TOU_RATE_D_USAGE}"
-			                 peakAttribute="${TOU_RATE_D_PEAK_DEMAND}" />
+			                 usageAttribute="${USAGE_RATE_D}"
+			                 peakAttribute="${PEAK_DEMAND_RATE_D}" />
 		</div>
 		<div id="${widgetParameters.widgetId}_results"></div>
 		<div class="actionArea clearfix full_width">
