@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.PlcMeter;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.core.dynamic.PointValueHolder;
 
@@ -15,8 +15,8 @@ public class MoveInResult{
     private PointValueHolder currentReading;
     private PointValueHolder calculatedPreviousReading;
     private PointValueHolder calculatedDifference;
-    private Meter previousMeter;
-    private Meter newMeter;
+    private PlcMeter previousMeter;
+    private PlcMeter newMeter;
     private List<SpecificDeviceErrorDescription> errors = new ArrayList<SpecificDeviceErrorDescription>();  //contains device read errors 
     private List<DeviceGroup> deviceGroupsRemoved = new ArrayList<DeviceGroup>();
     private String emailAddress;
@@ -43,16 +43,16 @@ public class MoveInResult{
     public void setCurrentReading(PointValueHolder currentReading) {
         this.currentReading = currentReading;
     }
-    public Meter getNewMeter() {
+    public PlcMeter getNewMeter() {
         return newMeter;
     }
-    public void setNewMeter(Meter newMeter) {
+    public void setNewMeter(PlcMeter newMeter) {
         this.newMeter = newMeter;
     }
-    public Meter getPreviousMeter() {
+    public PlcMeter getPreviousMeter() {
         return previousMeter;
     }
-    public void setPreviousMeter(Meter previousMeter) {
+    public void setPreviousMeter(PlcMeter previousMeter) {
         this.previousMeter = previousMeter;
     }
     public boolean isScheduled() {

@@ -34,11 +34,7 @@
         <property name="meterSearchDao" ref="meterSearchDao" />
     </bean>
 
-    <bean id="meterSearchDao"
-        class="com.cannontech.amr.meter.search.dao.impl.MeterSearchDaoImpl">
-        <property name="jdbcTemplate" ref="simpleJdbcTemplate" />
-        <property name="meterRowMapper" ref="meterRowMapper" />
-    </bean>
+    <bean id="meterSearchDao" class="com.cannontech.amr.meter.search.dao.impl.MeterSearchDaoImpl"/>
 
     <bean id="macsScheduleService"
         class="com.cannontech.amr.macsscheduler.service.impl.MACSScheduleServiceImpl">
@@ -49,12 +45,8 @@
     
     <bean class="com.cannontech.amr.plc.impl.PlcBasicDaoImpl"/>
 
-    <bean id="groupMetersDao" class="com.cannontech.amr.meter.dao.impl.GroupMetersDaoImpl">
-        <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />
-        <property name="meterRowMapper" ref="meterRowMapper" />
-        <property name="deviceGroupProviderDao" ref="deviceGroupDao" />
-    </bean>
-    
+    <bean id="groupMetersDao" class="com.cannontech.amr.meter.dao.impl.GroupMetersDaoImpl"/>
+
     <bean id="meterService" class="com.cannontech.amr.meter.service.impl.MeterServiceImpl">
         <property name="dbPersistentDao" ref="dbPersistentDao" />
         <property name="attributeService" ref="attributeService" />

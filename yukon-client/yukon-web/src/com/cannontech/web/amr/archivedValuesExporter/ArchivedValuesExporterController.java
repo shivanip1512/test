@@ -53,7 +53,7 @@ import com.cannontech.amr.archivedValueExporter.model.dataRange.DataRangeType;
 import com.cannontech.amr.archivedValueExporter.model.dataRange.LocalDateRange;
 import com.cannontech.amr.archivedValueExporter.service.ExportReportGeneratorService;
 import com.cannontech.amr.meter.dao.MeterDao;
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionCreationException;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
@@ -455,7 +455,8 @@ public class ArchivedValuesExporterController {
 
         List<SimpleDevice> deviceList = archivedValuesExporter.getDeviceCollection().getDeviceList();
         DataRange dataRange = archivedValuesExporter.getRunDataRange();
-        List<Meter> meters = meterDao.getMetersForYukonPaos(deviceList);
+        //TODO This is bad, it's limiting the ADE to only meters, not allowing for LCRs for example!!!
+        List<YukonMeter> meters = meterDao.getMetersForYukonPaos(deviceList);
         ExportFormat format = archiveValuesExportFormatDao.getByFormatId(archivedValuesExporter.getFormatId());
         List<String> report = exportReportGeneratorService.generateReport(meters, format, dataRange, userContext, archivedValuesExporter.getAttributesArray());
         String fileName = getFileName(Instant.now().toDate(), format.getFormatName());

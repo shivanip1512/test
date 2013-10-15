@@ -10,7 +10,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.meter.dao.MeterDao;
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.clientutils.tags.AlarmUtils;
 import com.cannontech.common.util.Iso8601DateUtil;
@@ -59,6 +59,7 @@ public class AlarmMessageHandler extends NotifHandler implements MessageHandler<
         final LiteNotificationGroup liteNotifGroup = _liteNotifGroup;
         
         NotificationBuilder notifFormatter = new NotificationBuilder() {
+            @Override
             public Notification buildNotification(Contactable contact) {
                 
                 Notification notif = new Notification("alarm");
@@ -79,7 +80,7 @@ public class AlarmMessageHandler extends NotifHandler implements MessageHandler<
                 String meterNumber = "";
                 if (liteYukonPAO.getPaoType().isMeter()) {
                     try {
-                        Meter meter = meterDao.getForId(liteYukonPAO.getYukonID());
+                        YukonMeter meter = meterDao.getForId(liteYukonPAO.getYukonID());
                         meterNumber = meter.getMeterNumber();
                     } catch (NotFoundException nfe) {
                         // ignore if not found, will use default empty string.
@@ -140,17 +141,20 @@ public class AlarmMessageHandler extends NotifHandler implements MessageHandler<
                 log.debug("build notification for: " + contact);
                 return notif;
             }
+            @Override
             public void notificationComplete(Contactable contactable, NotifType notifType, boolean success) {
                 log.debug("notification complete for " + contactable + ", type=" + notifType + ", success=" + success);
                 logNotificationStatus("ALARM NOTIF STATUS", success, contactable, notifType, this);
             }
             
+            @Override
             public void logIndividualNotification(LiteContactNotification destination, Contactable contactable, 
                     NotifType notifType, boolean success) {
                 log.debug("individual notification complete for " + destination + ", contactable=" + contactable + ", notifType=" + notifType + ", success=" + success);
                 logNotificationActivity("ALARM NOTIF", success, destination, contactable, notifType, this);
             }
             
+            @Override
             public String toString() {
                 return "Alarm Notification";
             }

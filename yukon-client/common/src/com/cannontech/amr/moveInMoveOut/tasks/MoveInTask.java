@@ -5,7 +5,7 @@ import java.util.Date;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
 
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.PlcMeter;
 import com.cannontech.amr.moveInMoveOut.bean.MoveInForm;
 import com.cannontech.amr.moveInMoveOut.bean.MoveInResult;
 import com.cannontech.amr.moveInMoveOut.service.MoveInMoveOutEmailService;
@@ -18,7 +18,7 @@ public class MoveInTask extends YukonTaskBase {
     private Logger logger = YukonLogManager.getLogger(MoveInTask.class);
 
     // Injected variables
-    private Meter meter = null;
+    private PlcMeter meter = null;
     private String newMeterName = null;
     private String newMeterNumber = null;
     private String emailAddress = null;
@@ -82,11 +82,11 @@ public class MoveInTask extends YukonTaskBase {
         return newMeterNumber;
     }
 
-    public void setMeter(Meter meter) {
+    public void setMeter(PlcMeter meter) {
         this.meter = meter;
     }
 
-    public Meter getMeter() {
+    public PlcMeter getMeter() {
         return meter;
     }
 

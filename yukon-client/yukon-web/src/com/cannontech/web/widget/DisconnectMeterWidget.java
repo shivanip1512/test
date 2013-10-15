@@ -12,7 +12,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.amr.deviceread.dao.PlcDeviceAttributeReadService;
 import com.cannontech.amr.meter.dao.MeterDao;
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.commands.CommandResultHolder;
@@ -36,6 +36,9 @@ import com.cannontech.util.ServletUtil;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 
+/**
+ * This is assumed to be for PLC meters. See RfnMeterDisconnectWidget for RFN meter types.
+ */
 public class DisconnectMeterWidget extends WidgetControllerBase {
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private MeterDao meterDao;
@@ -56,9 +59,10 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
         CONNECTED, DISCONNECTED, UNKNOWN}; 
 
     
+    @Override
     public ModelAndView render(HttpServletRequest request, HttpServletResponse response)
             throws Exception {
-        Meter meter = getMeter(request);
+        YukonMeter meter = getMeter(request);
         ModelAndView mav = new ModelAndView("disconnectMeterWidget/render.jsp");
         mav.addObject("shortName", getShortName());
         mav.addObject("device", meter);
@@ -98,7 +102,7 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
 
     public ModelAndView read(HttpServletRequest request, HttpServletResponse response)
     throws Exception {
-        Meter meter = getMeter(request);
+        YukonMeter meter = getMeter(request);
         ModelAndView mav = getReadModelAndView(meter, true);
         LiteYukonUser user = ServletUtil.getYukonUser(request);
         CommandResultHolder result = plcDeviceAttributeReadService.readMeter(meter, disconnectAttribute, DeviceRequestType.DISCONNECT_STATUS_ATTRIBUTE_READ,user);
@@ -162,7 +166,7 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
         LiteYukonUser user = ServletUtil.getYukonUser(request);
         rolePropertyDao.verifyProperty(YukonRoleProperty.ALLOW_DISCONNECT_CONTROL, user);
         
-    	Meter meter = getMeter(request);
+    	YukonMeter meter = getMeter(request);
     	
         CommandResultHolder result = commandRequestExecutor.execute(meter, CONTROL_CONNECT_COMMAND, DeviceRequestType.CONTROL_CONNECT_DISCONNECT_COMAMND, user);
         
@@ -176,7 +180,7 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
         LiteYukonUser user = ServletUtil.getYukonUser(request);
         rolePropertyDao.verifyProperty(YukonRoleProperty.ALLOW_DISCONNECT_CONTROL, user);
         
-    	Meter meter = getMeter(request);
+    	YukonMeter meter = getMeter(request);
     	
         CommandResultHolder result = commandRequestExecutor.execute(meter, CONTROL_DISCONNECT_COMMAND, DeviceRequestType.CONTROL_CONNECT_DISCONNECT_COMAMND, user);
         
@@ -185,9 +189,9 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
         return mav;
     }
     
-    private Meter getMeter(HttpServletRequest request) throws ServletRequestBindingException {
+    private YukonMeter getMeter(HttpServletRequest request) throws ServletRequestBindingException {
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
-        Meter meter = meterDao.getForId(deviceId);
+        YukonMeter meter = meterDao.getForId(deviceId);
         return meter;
     }
     
@@ -199,7 +203,7 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
         return pointId;
     }
     
-    private ModelAndView getReadModelAndView(Meter meter, boolean isRead){
+    private ModelAndView getReadModelAndView(YukonMeter meter, boolean isRead){
         
         ModelAndView mav = new ModelAndView("disconnectMeterWidget/render.jsp");
         mav.addObject("device", meter);
@@ -213,7 +217,7 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
     }
     
     private ModelAndView getControlModelAndView(HttpServletRequest request, CommandResultHolder result) throws Exception {
-        Meter meter = getMeter(request);
+        YukonMeter meter = getMeter(request);
         
         ModelAndView mav = getReadModelAndView(meter, true);
         mav.addObject("shortName", getShortName());
@@ -236,7 +240,7 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
         return mav;
     }
     
-    private DisconnectState getDisconnectedState(Meter meter, CommandResultHolder result) {
+    private DisconnectState getDisconnectedState(YukonMeter meter, CommandResultHolder result) {
         
         Double stateValue =  null;
         LitePoint litePoint = attributeService.getPointForAttribute(meter, BuiltInAttribute.DISCONNECT_STATUS);

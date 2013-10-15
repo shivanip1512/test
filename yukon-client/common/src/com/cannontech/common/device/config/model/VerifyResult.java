@@ -2,24 +2,24 @@ package com.cannontech.common.device.config.model;
 
 import java.util.List;
 
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.google.common.collect.Lists;
 
 public class VerifyResult {
-    private Meter meter;
+    private YukonMeter meter;
     private LightDeviceConfiguration config;
     private List<String> matching = Lists.newArrayList();
     private List<String> discrepancies = Lists.newArrayList();
 
-    public VerifyResult(Meter meter) {
+    public VerifyResult(YukonMeter meter) {
         this.meter = meter;
     }
 
-    public Meter getMeter() {
+    public YukonMeter getMeter() {
         return meter;
     }
 
-    public void setMeter(Meter meter) {
+    public void setMeter(YukonMeter meter) {
         this.meter = meter;
     }
 

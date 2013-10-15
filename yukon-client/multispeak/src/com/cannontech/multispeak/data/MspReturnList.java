@@ -5,7 +5,7 @@ import java.util.NoSuchElementException;
 
 import org.apache.log4j.Logger;
 
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.PlcMeter;
 import com.cannontech.clientutils.YukonLogManager;
 import com.google.common.collect.Iterables;
 
@@ -62,8 +62,8 @@ public abstract class MspReturnList {
      * @param lastObject
      */
     private String getLastSentObjectId(Object lastObject) {
-    	if (lastObject instanceof Meter) {
-    		return ((Meter)lastObject).getMeterNumber();
+    	if (lastObject instanceof PlcMeter) {
+    		return ((PlcMeter)lastObject).getMeterNumber();
     	} else if (lastObject instanceof com.cannontech.multispeak.deploy.service.Meter) {
     		return ((com.cannontech.multispeak.deploy.service.Meter)lastObject).getMeterNo();
     	} else {

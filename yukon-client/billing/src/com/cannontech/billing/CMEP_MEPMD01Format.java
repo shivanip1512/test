@@ -12,7 +12,7 @@ import org.apache.commons.lang.StringUtils;
 import org.joda.time.Instant;
 
 import com.cannontech.amr.meter.dao.MeterDao;
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.billing.model.CMEPCommodityEnum;
 import com.cannontech.billing.model.CMEPUnitEnum;
 import com.cannontech.billing.model.CMEP_MEPMD01Record;
@@ -71,7 +71,7 @@ public class CMEP_MEPMD01Format extends FileFormatBase  {
         List<DeviceGroup> billingDeviceGroups = getBillingDeviceGroups();
         
         // Build up the data entries and write them out the report file.
-        Map<Integer, Meter> deviceIdToMeterMap = getDeviceIdToMeterMap(billingDeviceGroups);
+        Map<Integer, YukonMeter> deviceIdToMeterMap = getDeviceIdToMeterMap(billingDeviceGroups);
         for (CMEPUnitEnum cmepUnit : cmepUnits) {
             try {
                 ListMultimap<PaoIdentifier, PointValueQualityHolder> billingAttributeData;  
@@ -119,13 +119,13 @@ public class CMEP_MEPMD01Format extends FileFormatBase  {
     /**
      * This method gets all of the meters for the supplied groups and builds up a map to better access these meters by their id.
      */
-    private Map<Integer, Meter> getDeviceIdToMeterMap(List<DeviceGroup> billingDeviceGroups) {
+    private Map<Integer, YukonMeter> getDeviceIdToMeterMap(List<DeviceGroup> billingDeviceGroups) {
         Set<SimpleDevice> devices = deviceGroupService.getDevices(billingDeviceGroups);
-        List<Meter> meters = meterDao.getMetersForYukonPaos(devices);
-        Map<Integer, Meter> deviceIdToMeterMap =
-            Maps.uniqueIndex(meters, new Function<Meter, Integer>() {
+        List<YukonMeter> meters = meterDao.getMetersForYukonPaos(devices);
+        Map<Integer, YukonMeter> deviceIdToMeterMap =
+            Maps.uniqueIndex(meters, new Function<YukonMeter, Integer>() {
                 @Override
-                public Integer apply(Meter meter) {
+                public Integer apply(YukonMeter meter) {
                     return meter.getDeviceId();
                 }
             });

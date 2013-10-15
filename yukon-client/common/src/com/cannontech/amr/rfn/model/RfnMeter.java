@@ -2,42 +2,34 @@ package com.cannontech.amr.rfn.model;
 
 import java.io.Serializable;
 
+import org.springframework.core.style.ToStringCreator;
+
 import com.cannontech.amr.meter.model.YukonMeter;
-import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.YukonRfn;
 
-public class RfnMeter extends YukonMeter implements YukonRfn, DisplayablePao, Serializable {
+public class RfnMeter extends YukonMeter implements YukonRfn, Serializable {
     private static final long serialVersionUID = 2L;
 
     private RfnIdentifier meterIdentifier;
 
-    public RfnMeter(YukonPao pao, RfnIdentifier meterIdentifier) {
-        super.setPaoIdentifier(pao.getPaoIdentifier());
+    public RfnMeter(YukonPao pao, RfnIdentifier meterIdentifier, String meterNumber, String paoName, boolean disabled) {
+        super(pao.getPaoIdentifier(), meterNumber, paoName, disabled);
         this.meterIdentifier = meterIdentifier;
     }
 
-    public RfnIdentifier getMeterIdentifier() {
-        return meterIdentifier;
-    }
-    
     @Override
     public RfnIdentifier getRfnIdentifier() {
         return meterIdentifier;
     }
     
     @Override
-    public String getName() {
-        // arbitrary guess!
-        return meterIdentifier.getSensorSerialNumber();
-    }
-
-    @Override
     public String toString() {
-        return String.format("RfnMeter [paoIdentifier=%s, meterIdentifier=%s]",
-                             getPaoIdentifier(),
-                             meterIdentifier);
+        ToStringCreator tsc = new ToStringCreator(this);
+        tsc.append("meter", super.toString());
+        tsc.append("rfnId", meterIdentifier);
+        return tsc.toString();
     }
 
     @Override

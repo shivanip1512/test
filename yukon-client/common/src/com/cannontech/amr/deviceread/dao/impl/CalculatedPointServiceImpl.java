@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Required;
 import com.cannontech.amr.deviceread.CalculatedPointResults;
 import com.cannontech.amr.deviceread.dao.CalculatedPointService;
 import com.cannontech.amr.deviceread.dao.PlcDeviceAttributeReadService;
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.PlcMeter;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandResultHolder;
@@ -44,7 +44,8 @@ public class CalculatedPointServiceImpl implements CalculatedPointService {
 	 * @param device
 	 * @param beginDate
 	 */
-	public CalculatedPointResults calculatePoint(Meter meter, Date beginDate, DeviceRequestType type, YukonUserContext userContext) {
+	@Override
+    public CalculatedPointResults calculatePoint(PlcMeter meter, Date beginDate, DeviceRequestType type, YukonUserContext userContext) {
 
         CalculatedPointResults results = new CalculatedPointResults();
 

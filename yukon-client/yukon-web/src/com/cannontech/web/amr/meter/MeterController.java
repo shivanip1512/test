@@ -15,7 +15,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 import org.springframework.web.servlet.view.RedirectView;
 
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.amr.meter.search.model.FilterBy;
 import com.cannontech.amr.meter.search.model.MeterSearchField;
 import com.cannontech.amr.meter.search.model.MeterSearchOrderBy;
@@ -119,7 +119,7 @@ public class MeterController extends MultiActionController {
         List<FilterBy> queryFilter = MeterSearchUtils.getQueryFilter(request, filterByList);
         
         // Perform the search
-        SearchResults<Meter> meterSearchResults = 
+        SearchResults<YukonMeter> meterSearchResults = 
             meterSearchService.search(queryFilter, orderBy, startIndex, itemsPerPage);
 
         ModelAndView mav;
@@ -127,7 +127,7 @@ public class MeterController extends MultiActionController {
         if (meterSearchResults.getHitCount() == 1) {
             mav = new ModelAndView();
 
-            Meter meter = meterSearchResults.getResultList().get(0);
+            YukonMeter meter = meterSearchResults.getResultList().get(0);
             
             String urlForPaoDetailPage = paoDetailUrlHelper.getUrlForPaoDetailPage(meter);
             if (!StringUtils.isBlank(urlForPaoDetailPage)) {
@@ -148,10 +148,10 @@ public class MeterController extends MultiActionController {
         mav.addObject("orderByFields", MeterSearchField.values());
         mav.addObject("filterByList", filterByList);
         
-        ImmutableMap<String,Meter> paoIdToMeterMap = 
-            Maps.uniqueIndex(meterSearchResults.getResultList(), new Function<Meter, String>() {
+        ImmutableMap<String, YukonMeter> paoIdToMeterMap = 
+            Maps.uniqueIndex(meterSearchResults.getResultList(), new Function<YukonMeter, String>() {
                 @Override
-                public String apply(Meter meter) {
+                public String apply(YukonMeter meter) {
                     return String.valueOf(meter.getDeviceId());
                 }
             });

@@ -13,8 +13,8 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.cannontech.amr.meter.model.Meter;
-import com.cannontech.amr.rfn.dao.RfnDeviceDao;
+import com.cannontech.amr.meter.dao.MeterDao;
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.amr.rfn.model.RfnInvalidValues;
 import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.common.device.DeviceRequestType;
@@ -39,7 +39,7 @@ import com.google.common.collect.ListMultimap;
 
 public class RfnOutagesWidget extends AdvancedWidgetControllerBase {
 
-    @Autowired private RfnDeviceDao rfnDeviceDao;
+    @Autowired private MeterDao meterDao;
     @Autowired private AttributeReadingWidgetHelper widgetHelper;
     @Autowired private RawPointHistoryDao rphDao;
     @Autowired private AttributeService attributeService;
@@ -56,7 +56,7 @@ public class RfnOutagesWidget extends AdvancedWidgetControllerBase {
     @RequestMapping
     public String render(ModelMap model, HttpServletRequest request, HttpServletResponse response) throws ServletRequestBindingException, NotFoundException {
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
-        RfnMeter meter = rfnDeviceDao.getMeterForId(deviceId);
+        RfnMeter meter = meterDao.getRfnMeterForId(deviceId);
         model.addAttribute("meter", meter);
         model.addAttribute("deviceId", deviceId);
         
@@ -71,7 +71,7 @@ public class RfnOutagesWidget extends AdvancedWidgetControllerBase {
     
     @RequestMapping
     public String outageData(ModelMap model, HttpServletRequest req, HttpServletResponse resp, YukonUserContext context) throws ServletRequestBindingException {
-        Meter meter = widgetHelper.getMeter(req);
+        YukonMeter meter = widgetHelper.getMeter(req);
         ListMultimap<PaoIdentifier, PointValueQualityHolder> data = rphDao.getAttributeData(Collections.singleton(meter), 
                                 BuiltInAttribute.OUTAGE_LOG, 
                                 new Instant().minus(Duration.standardDays(100)).toDate(), 
@@ -131,7 +131,7 @@ public class RfnOutagesWidget extends AdvancedWidgetControllerBase {
     
     @RequestMapping
     public String read(ModelMap model, HttpServletRequest request, HttpServletResponse response) throws ServletRequestBindingException {
-        Meter meter = widgetHelper.getMeter(request);
+        YukonMeter meter = widgetHelper.getMeter(request);
         widgetHelper.initiateRead(request, meter, attributes, model, DeviceRequestType.METER_OUTAGES_WIDGET_ATTRIBUTE_READ);
         return "common/deviceAttributeReadResult.jsp";
     }

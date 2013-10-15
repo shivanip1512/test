@@ -11,7 +11,7 @@ import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeHelper;
@@ -31,7 +31,7 @@ public class TouWidget extends WidgetControllerBase {
             HttpServletResponse response) throws Exception {
         
         ModelAndView mav = new ModelAndView("touWidget/render.jsp");
-        Meter meter = widgetHelper.getMeter(request);
+        YukonMeter meter = widgetHelper.getMeter(request);
         LiteYukonUser user = ServletUtil.getYukonUser(request);
 
         // Finds the existing attributes for the supplied meter
@@ -56,7 +56,7 @@ public class TouWidget extends WidgetControllerBase {
 
     public ModelAndView read(HttpServletRequest request, HttpServletResponse response)
     throws ServletRequestBindingException {
-        Meter meter = widgetHelper.getMeter(request);
+        YukonMeter meter = widgetHelper.getMeter(request);
         
         // Finds the existing attributes for the supplied meter
         Set<Attribute> existingTouAttributes = 

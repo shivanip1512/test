@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.amr.meter.dao.MeterDao;
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.PlcMeter;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.events.loggers.HardwareEventLogService;
 import com.cannontech.common.events.model.EventSource;
@@ -461,7 +461,8 @@ public class OperatorHardwareConfigController {
 
         setPageMode(model, userContext);
 
-        Meter meter = meterDao.getForId(meterId);
+        // The operator pages appear to only be able to support PLC (not RFN) meters.
+        PlcMeter meter = meterDao.getPlcMeterForId(meterId);
         model.addAttribute("meter", meter);
         model.addAttribute("displayName", meter.getName());
 
@@ -472,7 +473,7 @@ public class OperatorHardwareConfigController {
     }
 
     @RequestMapping
-    public String updateMeterConfig(@ModelAttribute("meter") Meter meter, BindingResult bindingResult,
+    public String updateMeterConfig(@ModelAttribute("meter") PlcMeter meter, BindingResult bindingResult,
                                  ModelMap model,
                                  YukonUserContext userContext,
                                  HttpServletRequest request,

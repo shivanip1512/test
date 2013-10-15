@@ -3,7 +3,7 @@ package com.cannontech.amr.paoPointValue.model;
 import java.util.Comparator;
 import java.util.Date;
 
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
@@ -13,13 +13,13 @@ import com.google.common.collect.Ordering;
 
 public class MeterPointValue implements YukonPao {
 
-    private final Meter meter;
+    private final YukonMeter meter;
     private final PaoPointIdentifier paoPointIdentifier;
     private final PointValueHolder pointValueHolder;
     private final String pointName;
     private final String formattedValue;
 
-    public MeterPointValue(Meter meter, PaoPointIdentifier paoPointIdentifier,
+    public MeterPointValue(YukonMeter meter, PaoPointIdentifier paoPointIdentifier,
                            PointValueHolder pointValueHolder, String pointName,
                            String formattedValue) {
         this.meter = meter;
@@ -29,7 +29,7 @@ public class MeterPointValue implements YukonPao {
         this.formattedValue = formattedValue;
     }
 
-    public Meter getMeter() {
+    public YukonMeter getMeter() {
         return meter;
     }
 

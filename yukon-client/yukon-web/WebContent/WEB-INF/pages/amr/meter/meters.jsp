@@ -111,8 +111,8 @@
                     </td>
                     <td><tags:paoType yukonPao="${searchResultRow}" /></td>
                     <td><c:choose>
-                            <c:when test="${empty searchResultRow.address}"></c:when>
-                            <c:otherwise>${searchResultRow.address}</c:otherwise>
+                            <c:when test="${empty searchResultRow.serialOrAddress}"></c:when>
+                            <c:otherwise>${searchResultRow.serialOrAddress}</c:otherwise>
                         </c:choose>
                     </td>
                     <td><c:choose>

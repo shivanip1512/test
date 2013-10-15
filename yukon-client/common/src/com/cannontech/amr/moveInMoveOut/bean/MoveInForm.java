@@ -2,7 +2,7 @@ package com.cannontech.amr.moveInMoveOut.bean;
 
 import java.util.Date;
 
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.PlcMeter;
 import com.cannontech.user.YukonUserContext;
 
 public class MoveInForm{
@@ -11,7 +11,7 @@ public class MoveInForm{
     private String meterName;
     private String meterNumber;
     private Date moveInDate;
-    private Meter previousMeter;
+    private PlcMeter previousMeter;
 
     public String getEmailAddress() {
         return emailAddress;
@@ -47,10 +47,10 @@ public class MoveInForm{
         this.moveInDate = moveInDate;
     }
     
-    public Meter getPreviousMeter() {
+    public PlcMeter getPreviousMeter() {
         return previousMeter;
     }
-    public void setPreviousMeter(Meter previousMeter) {
+    public void setPreviousMeter(PlcMeter previousMeter) {
         this.previousMeter = previousMeter;
     }
 }

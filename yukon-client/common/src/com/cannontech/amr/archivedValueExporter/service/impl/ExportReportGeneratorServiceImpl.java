@@ -22,7 +22,8 @@ import com.cannontech.amr.archivedValueExporter.model.ExportFormat;
 import com.cannontech.amr.archivedValueExporter.model.FieldType;
 import com.cannontech.amr.archivedValueExporter.model.dataRange.DataRange;
 import com.cannontech.amr.archivedValueExporter.service.ExportReportGeneratorService;
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.PlcMeter;
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -32,7 +33,6 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.point.PointQuality;
-import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.ReadableRange;
 import com.cannontech.common.util.TimeZoneFormat;
@@ -83,7 +83,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
     public List<String> generatePreview(ExportFormat format, YukonUserContext userContext) {
         List<String> preview = new ArrayList<>();
 
-        Meter previewMeter = getDefaultMeter(userContext);
+        YukonMeter previewMeter = getDefaultMeter(userContext);
         addHeader(format, preview);
 
         if (format.getFormatType() == ArchivedValuesExportFormatType.FIXED_ATTRIBUTE) {
@@ -99,7 +99,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
     }
 
     @Override
-    public List<String> generateReport(List<Meter> meters, ExportFormat format, DataRange dataRange, YukonUserContext userContext, Attribute... attributes) {
+    public List<String> generateReport(List<YukonMeter> meters, ExportFormat format, DataRange dataRange, YukonUserContext userContext, Attribute... attributes) {
         List<String> reportResults = new ArrayList<>();
 
         addHeader(format, reportResults);
@@ -209,11 +209,11 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
     /**
      * Builds and returns a list of strings each representing one row of data for the report.
      */
-    private void generateFixedBody(List<String> reportRows, List<Meter> meters, ExportFormat format, 
+    private void generateFixedBody(List<String> reportRows, List<YukonMeter> meters, ExportFormat format, 
             Map<Integer, ListMultimap<PaoIdentifier, PointValueQualityHolder>> attributeData, 
             YukonUserContext userContext) {
 
-        for (Meter meter : meters) {
+        for (YukonMeter meter : meters) {
             String dataRow = getDataRow(format, meter, userContext, attributeData);
             if (!dataRow.equals(SKIP_RECORD)) {
                 reportRows.add(dataRow);
@@ -224,10 +224,10 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
     /**
      * Builds and returns a list of strings each representing one row of data for the report.
      */
-    private void generateDynamicBody(List<String> reportRows, List<Meter> meters, ExportFormat format, YukonUserContext userContext, 
+    private void generateDynamicBody(List<String> reportRows, List<YukonMeter> meters, ExportFormat format, YukonUserContext userContext, 
                                              Attribute attribute, ListMultimap<PaoIdentifier, PointValueQualityHolder> attributeData) {
         
-        for (Meter meter : meters) {
+        for (YukonMeter meter : meters) {
             List<PointValueQualityHolder> pointData = attributeData.get(meter.getPaoIdentifier());
             for (PointValueQualityHolder pointValueQualityHolder : pointData) {
                 String reportRow = generateReportRow(format, meter, attribute, pointValueQualityHolder, userContext);
@@ -241,7 +241,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
     /**
      * This method generates one row to the given report.
      */
-    private String generateReportRow(ExportFormat format, Meter meter, Attribute attribute, 
+    private String generateReportRow(ExportFormat format, YukonMeter meter, Attribute attribute, 
                                      PointValueQualityHolder pointValueQualityHolder, 
                                      YukonUserContext userContext) {
 
@@ -276,7 +276,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
     /**
      * This method translates the information supplied along with the export field to get the desired data from the report row.
      */
-    public String getValue(ExportField field, Meter meter, Attribute attribute, PointValueQualityHolder pointValueQualityHolder, 
+    public String getValue(ExportField field, YukonMeter meter, Attribute attribute, PointValueQualityHolder pointValueQualityHolder, 
                            YukonUserContext userContext, TimeZoneFormat tzFormat) {
         switch (field.getFieldType()) {
             case METER_NUMBER:
@@ -284,18 +284,14 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
             case DEVICE_NAME:
                 return meter.getName();
             case ADDRESS:
-                if (StringUtils.isEmpty(meter.getAddress())) {
-                    if (meter.getPaoType().isRfn()) {
-                        RfnDevice rfnDevice = rfnDeviceDao.getDevice(meter);
-                        return rfnDevice.getRfnIdentifier().getSensorSerialNumber();
-                    }
-                }
-                
-                return meter.getAddress();
+                return meter.getSerialOrAddress();
             case PLAIN_TEXT:
                 return field.getPattern();
             case ROUTE:
-                return meter.getRoute();
+                if (meter instanceof PlcMeter) {
+                    return ((PlcMeter)meter).getRoute();
+                }
+                return "";
             case ATTRIBUTE_NAME:
                 return getAttributeName(attribute, userContext);
             case UNIT_OF_MEASURE:
@@ -328,7 +324,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
     /**
      * This method builds preview attribute data from localized preview values. 
      */
-    private ListMultimap<PaoIdentifier, PointValueQualityHolder> getDynamicPreviewAttributeData(ExportFormat format, Meter previewMeter) {
+    private ListMultimap<PaoIdentifier, PointValueQualityHolder> getDynamicPreviewAttributeData(ExportFormat format, YukonMeter previewMeter) {
         ListMultimap<PaoIdentifier, PointValueQualityHolder> attributeDataValues = ArrayListMultimap.create();
 
         PointData pointData = new PointData();
@@ -343,7 +339,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
     /**
      * This method builds preview attribute data from localized preview values. 
      */
-    private Map<Integer, ListMultimap<PaoIdentifier, PointValueQualityHolder>> getFixedPreviewAttributeData(ExportFormat format, Meter previewMeter) {
+    private Map<Integer, ListMultimap<PaoIdentifier, PointValueQualityHolder>> getFixedPreviewAttributeData(ExportFormat format, YukonMeter previewMeter) {
         Map<Integer, ListMultimap<PaoIdentifier, PointValueQualityHolder>> attributeData = new HashMap<>();
 
         for (ExportField field : format.getFields()) {
@@ -361,7 +357,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
      * - fieldId and the values - the data for all the devices (meters) selected by the user.
      *
      */
-    private ListMultimap<PaoIdentifier, PointValueQualityHolder> getFixedAttributeData(List<Meter> meters, ExportAttribute attribute, ReadableRange<Instant> dateRange) {
+    private ListMultimap<PaoIdentifier, PointValueQualityHolder> getFixedAttributeData(List<YukonMeter> meters, ExportAttribute attribute, ReadableRange<Instant> dateRange) {
     	
         Order order = null;
         OrderBy orderBy = null;
@@ -393,7 +389,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
     /**
      * This is method is a helper method for retrieving the raw point history data for the supplied dateRange or changeIdRange.
      */
-    private ListMultimap<PaoIdentifier, PointValueQualityHolder> getDynamicAttributeData(List<Meter> meters, Attribute attribute, ReadableRange<Instant> dateRange, ReadableRange<Long> changeIdRange) {
+    private ListMultimap<PaoIdentifier, PointValueQualityHolder> getDynamicAttributeData(List<YukonMeter> meters, Attribute attribute, ReadableRange<Instant> dateRange, ReadableRange<Long> changeIdRange) {
         ListMultimap<PaoIdentifier, PointValueQualityHolder> attributeDataValues = 
                 rawPointHistoryDao.getAttributeData(meters, attribute, dateRange, changeIdRange, false, Order.FORWARD, null);
         return attributeDataValues;
@@ -403,7 +399,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
      * Builds the data row for the report. If the the value was not found, and a user
      * selected to skip a record, it returns "SKIP_RECORD_SKIP_RECORD".
      */
-    private String getDataRow(ExportFormat format, Meter meter, YukonUserContext userContext,
+    private String getDataRow(ExportFormat format, YukonMeter meter, YukonUserContext userContext,
                               Map<Integer, ListMultimap<PaoIdentifier, PointValueQualityHolder>> attributeData) {
 
         StringBuilder dataRow = new StringBuilder();
@@ -447,7 +443,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
      * If Point value quality holder was not found, null is returned.
      *
      */
-    private PointValueQualityHolder findPointValueQualityHolder(Meter meter, ExportField field,
+    private PointValueQualityHolder findPointValueQualityHolder(YukonMeter meter, ExportField field,
                                                                 Map<Integer, ListMultimap<PaoIdentifier, PointValueQualityHolder>> attributeData) {
 
         PointValueQualityHolder pointValueQualityHolder = null;
@@ -530,7 +526,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
     /**
      * Gets the UOM value. Returns "" if the value was not found. If the meter.getDeviceId() is -1, returns the preview value.
      */
-    private String getUOMValue(Meter meter, Attribute attribute, YukonUserContext userContext) {
+    private String getUOMValue(YukonMeter meter, Attribute attribute, YukonUserContext userContext) {
         try {
             if (meter.getDeviceId() == fakeDeviceId) {
                 return getDefaultUOMValue(userContext);
@@ -556,15 +552,15 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
     /**
      * Gets default (preview) meter
      */
-    private Meter getDefaultMeter(YukonUserContext userContext) {
+    private YukonMeter getDefaultMeter(YukonUserContext userContext) {
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        Meter previewMeter = new Meter();
-        previewMeter.setMeterNumber(messageSourceAccessor.getMessage(previewMeterNumberKey));
-        previewMeter.setName(messageSourceAccessor.getMessage(previewMeterNameKey));
-        previewMeter.setAddress(messageSourceAccessor.getMessage(previewMeterAddressKey));
-        previewMeter.setRoute(messageSourceAccessor.getMessage(previewMeterRouteKey));
+        String meterNumber = messageSourceAccessor.getMessage(previewMeterNumberKey);
+        String paoName = messageSourceAccessor.getMessage(previewMeterNameKey);
+        String address = messageSourceAccessor.getMessage(previewMeterAddressKey);
+        String routeName = messageSourceAccessor.getMessage(previewMeterRouteKey);
+        int fakeRouteId = -2;
         PaoIdentifier paoIdentifier = new PaoIdentifier(fakeDeviceId, PaoType.MCT420CL);
-        previewMeter.setPaoIdentifier(paoIdentifier);
+        PlcMeter previewMeter = new PlcMeter(paoIdentifier, meterNumber, paoName, false, routeName, fakeRouteId, address);
         return previewMeter;
     }
     

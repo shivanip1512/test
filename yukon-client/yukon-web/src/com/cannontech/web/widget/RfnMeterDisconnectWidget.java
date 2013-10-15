@@ -10,7 +10,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.cannontech.amr.rfn.dao.RfnDeviceDao;
+import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectState;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectStatusType;
 import com.cannontech.amr.rfn.model.RfnMeter;
@@ -34,7 +34,7 @@ import com.cannontech.web.widget.support.WidgetParameterHelper;
 
 public class RfnMeterDisconnectWidget extends AdvancedWidgetControllerBase {
     @Autowired private RolePropertyDao rolePropertyDao;
-    @Autowired private RfnDeviceDao rfnDeviceDao;
+    @Autowired private MeterDao meterDao;
     @Autowired private AttributeService attributeService;
     @Autowired private RfnMeterDisconnectService rfnMeterDisconnectService;
     @Autowired private ConfigurationSource configurationSource;
@@ -43,7 +43,11 @@ public class RfnMeterDisconnectWidget extends AdvancedWidgetControllerBase {
     
     @RequestMapping
     public String render(ModelMap model, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        setupRenderModel(model, request);
+        
+        final int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
+        RfnMeter meter = meterDao.getRfnMeterForId(deviceId);
+        
+        setupRenderModel(model, request, meter);
         return "rfnMeterDisconnectWidget/render.jsp";
     }
     
@@ -69,14 +73,17 @@ public class RfnMeterDisconnectWidget extends AdvancedWidgetControllerBase {
     
     private String doCommand(ModelMap model, HttpServletRequest request, RfnMeterDisconnectStatusType type, String command) throws Exception {
         model.addAttribute("command", command);
-        setupRenderModel(model, request);
-        setupSendCommandModel(request, model, type);
+        
+        final int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
+        RfnMeter meter = meterDao.getRfnMeterForId(deviceId);
+
+        setupRenderModel(model, request, meter);
+        setupSendCommandModel(request, model, type, meter);
         
         return "rfnMeterDisconnectWidget/result.jsp";
     }
     
-    private void setupRenderModel(ModelMap model, HttpServletRequest request) throws Exception {
-        RfnMeter meter = rfnDeviceDao.getMeterForId(WidgetParameterHelper.getRequiredIntParameter(request, "deviceId"));
+    private void setupRenderModel(ModelMap model, HttpServletRequest request, RfnMeter meter) throws Exception {
         model.addAttribute("meter", meter);
         
         LiteYukonUser user = ServletUtil.getYukonUser(request);
@@ -94,10 +101,10 @@ public class RfnMeterDisconnectWidget extends AdvancedWidgetControllerBase {
         }
     }
     
-    private void setupSendCommandModel(HttpServletRequest request, final ModelMap model, final RfnMeterDisconnectStatusType action) throws ServletRequestBindingException, NotFoundException {
-        final int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
-        final RfnMeter meter = rfnDeviceDao.getMeterForId(deviceId);
-        model.addAttribute("deviceId", deviceId);
+    private void setupSendCommandModel(HttpServletRequest request, final ModelMap model, 
+            final RfnMeterDisconnectStatusType action, RfnMeter meter) throws ServletRequestBindingException, NotFoundException {
+
+        model.addAttribute("deviceId", meter.getPaoIdentifier().getPaoId());
         
         LiteYukonUser user = ServletUtil.getYukonUser(request);
         boolean userCanDisconnect = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_DISCONNECT_CONTROL, user);

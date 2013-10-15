@@ -6,12 +6,12 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.multispeak.block.Block;
 import com.cannontech.multispeak.dao.FormattedBlockProcessingService;
+import com.cannontech.multispeak.dao.MspMeterDao;
 import com.cannontech.multispeak.dao.MspObjectDao;
 import com.cannontech.multispeak.deploy.service.ControlEventType;
 import com.cannontech.multispeak.deploy.service.ErrorObject;
@@ -22,7 +22,7 @@ import com.cannontech.multispeak.deploy.service.Strategy;
 import com.cannontech.multispeak.service.MspValidationService;
 
 public class MspValidationServiceImpl implements MspValidationService {
-    @Autowired private MeterDao meterDao;
+    @Autowired private MspMeterDao mspMeterDao;
     @Autowired private MspObjectDao mspObjectDao;
 
     @Override
@@ -44,7 +44,7 @@ public class MspValidationServiceImpl implements MspValidationService {
             throw new RemoteException("Meter Number is invalid.  Meter number is blank or null");
 
         try {
-            yukonMeter = meterDao.getYukonMeterForMeterNumber(meterNumber);
+            yukonMeter = mspMeterDao.getMeterForMeterNumber(meterNumber);
         }catch (NotFoundException e){
             CTILogger.info("Meter Number: (" + meterNumber + ") - Was NOT found in Yukon.");
             throw new RemoteException( "Meter Number: (" + meterNumber + ") - Was NOT found in Yukon.");

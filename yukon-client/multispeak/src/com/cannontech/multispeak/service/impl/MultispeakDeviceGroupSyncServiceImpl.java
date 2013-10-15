@@ -14,7 +14,7 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.meter.dao.MeterDao;
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.core.dao.PersistedSystemValueDao;
@@ -24,6 +24,7 @@ import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MspObjectDao;
 import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.dao.MultispeakGetAllServiceLocationsCallback;
+import com.cannontech.multispeak.deploy.service.Meter;
 import com.cannontech.multispeak.deploy.service.ServiceLocation;
 import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncProgress;
 import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncService;
@@ -62,12 +63,14 @@ public class MultispeakDeviceGroupSyncServiceImpl implements MultispeakDeviceGro
 		processorMap.put(MultispeakDeviceGroupSyncTypeProcessorType.BILLING_CYCLE, new BillingCycleSyncTypeProcessor());
 	}
 	
-	public MultispeakDeviceGroupSyncProgress getProgress() {
+	@Override
+    public MultispeakDeviceGroupSyncProgress getProgress() {
 		return progress;
 	};
 	
 	// LAST SYNC INSTANTS
-	public Map<MultispeakDeviceGroupSyncTypeProcessorType, Instant> getLastSyncInstants() {
+	@Override
+    public Map<MultispeakDeviceGroupSyncTypeProcessorType, Instant> getLastSyncInstants() {
 		
 		Instant lastSubstationInstant = persistedSystemValueDao.getInstantValue(PersistedSystemValueKey.MSP_SUBSTATION_DEVICE_GROUP_SYNC_LAST_COMPLETED);
 		Instant lastBillingCycleInstant = persistedSystemValueDao.getInstantValue(PersistedSystemValueKey.MSP_BILLING_CYCLE_DEVICE_GROUP_SYNC_LAST_COMPLETED);
@@ -125,23 +128,23 @@ public class MultispeakDeviceGroupSyncServiceImpl implements MultispeakDeviceGro
     			// loop per service location
     			for (ServiceLocation mspServiceLocation : mspServiceLocations) {
     				
-    				List<com.cannontech.multispeak.deploy.service.Meter> mspMeters = mspObjectDao.getMspMetersByServiceLocation(mspServiceLocation, mspVendor);
+    				List<Meter> mspMeters = mspObjectDao.getMspMetersByServiceLocation(mspServiceLocation, mspVendor);
     				
     				// msp meter map
         			log.debug("Handling msp meter list of size " + mspMeters.size() + " for Service Location: " + mspServiceLocation.getObjectID());
-        			ImmutableMap<String, com.cannontech.multispeak.deploy.service.Meter> mspMeterMap = Maps.uniqueIndex(mspMeters,  new Function<com.cannontech.multispeak.deploy.service.Meter, String>() {
+        			ImmutableMap<String, Meter> mspMeterMap = Maps.uniqueIndex(mspMeters,  new Function<Meter, String>() {
         	    		@Override
-        	    		public String apply(com.cannontech.multispeak.deploy.service.Meter device) {
+        	    		public String apply(Meter device) {
         	    			return device.getMeterNo();
         	    		}
         	    	});
         			
         			// yukon meter map
         			List<String> meterNumberList = new ArrayList<String>(mspMeterMap.keySet());
-        	    	List<Meter> yukonMeters = meterDao.getMetersForMeterNumbers(meterNumberList);
-        	    	ImmutableMap<String, Meter> yukonMeterMap = Maps.uniqueIndex(yukonMeters,  new Function<Meter, String>() {
+        	    	List<YukonMeter> yukonMeters = meterDao.getMetersForMeterNumbers(meterNumberList);
+        	    	ImmutableMap<String, YukonMeter> yukonMeterMap = Maps.uniqueIndex(yukonMeters,  new Function<YukonMeter, String>() {
         	    		@Override
-        	    		public String apply(Meter meter) {
+        	    		public String apply(YukonMeter meter) {
         	    			return meter.getMeterNumber();
         	    		}
         	    	});
@@ -149,7 +152,7 @@ public class MultispeakDeviceGroupSyncServiceImpl implements MultispeakDeviceGro
         	    	log.debug("Found " + yukonMeters.size() + " yukon meters for Service Location: " + mspServiceLocation.getObjectID());
     				
         	    	// loop per msp meter
-    				for (com.cannontech.multispeak.deploy.service.Meter mspMeter : mspMeterMap.values()) {
+    				for (Meter mspMeter : mspMeterMap.values()) {
     					
     					// kill before processing another meter if canceled
     	    			if (progress.isCanceled()) {
@@ -163,7 +166,7 @@ public class MultispeakDeviceGroupSyncServiceImpl implements MultispeakDeviceGro
     	    				log.debug("No Yukon meter found for meter number " + meterNumber + " from Service Location " + mspServiceLocation.getObjectID());
     	    				continue;
     	    			}
-    	    			Meter yukonMeter = yukonMeterMap.get(meterNumber);
+    	    			YukonMeter yukonMeter = yukonMeterMap.get(meterNumber);
     	    			
     	    			// process
     	    			Set<MultispeakDeviceGroupSyncTypeProcessorType> processorsTypes = type.getProcessorTypes();
@@ -208,7 +211,7 @@ public class MultispeakDeviceGroupSyncServiceImpl implements MultispeakDeviceGro
 	private class SubstationSyncTypeProcessor implements MultispeakDeviceGroupSyncTypeProcessor {
 		
 		@Override
-		public boolean processMeterSync(MultispeakVendor mspVendor, ServiceLocation mspServiceLocation, com.cannontech.multispeak.deploy.service.Meter mspMeter, Meter yukonMeter) {
+		public boolean processMeterSync(MultispeakVendor mspVendor, ServiceLocation mspServiceLocation, Meter mspMeter, YukonMeter yukonMeter) {
 
 			boolean added = false;
 			if (mspMeter.getUtilityInfo() != null) {
@@ -229,7 +232,7 @@ public class MultispeakDeviceGroupSyncServiceImpl implements MultispeakDeviceGro
 	private class BillingCycleSyncTypeProcessor implements MultispeakDeviceGroupSyncTypeProcessor {
 		
 		@Override
-		public boolean processMeterSync(MultispeakVendor mspVendor, ServiceLocation mspServiceLocation, com.cannontech.multispeak.deploy.service.Meter mspMeter, Meter yukonMeter) {
+		public boolean processMeterSync(MultispeakVendor mspVendor, ServiceLocation mspServiceLocation, Meter mspMeter, YukonMeter yukonMeter) {
 			
 			boolean added = false;
 			String billingCycleName = mspServiceLocation.getBillingCycle();

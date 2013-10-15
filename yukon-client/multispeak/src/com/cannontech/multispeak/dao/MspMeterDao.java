@@ -1,5 +1,6 @@
 package com.cannontech.multispeak.dao;
 
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.multispeak.data.MspMeterReturnList;
 
 public interface MspMeterDao
@@ -15,4 +16,17 @@ public interface MspMeterDao
     public MspMeterReturnList getCDSupportedMeters(String lastReceived, int maxRecords);
     
     public boolean isCDSupportedMeter(String meterNumber);
+    
+    /**
+     * Returns a YukonMeter for meterNumber.
+     * Throws NotFoundException if no matching results.
+     * Uses GlobalSettingType.MSP_EXCLUDE_DISABLED_METERS to determine if disabled meters should be included
+     *  in query. If excludeDisabled = true, a MeterNumber _may_ exist in the database, be disabled, and this 
+     *  would method throw NotFoundException.
+     * 
+     * The expectation (or rather reality) with MultiSpeak is that multiple meters may exist in Yukon with the 
+     *  same meterNumber, but only one of them is enabled. Others may exist in Yukon but be disabled. 
+     *  This is most likely a temporary period of time during change outs/replacement.   
+     */
+    public YukonMeter getMeterForMeterNumber(String meterNumber);
 }

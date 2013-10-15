@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 
 import com.cannontech.amr.meter.dao.MeterDao;
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.amr.paoPointValue.model.MeterPointValue;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
@@ -127,9 +127,9 @@ public class PaoPointValueServiceImpl implements PaoPointValueService {
             }
         }
 
-        List<Meter> meters = meterDao.getMetersForYukonPaos(retrievedPaoIds);
-        Map<PaoIdentifier, Meter> paoPointIdMeterMap = Maps.newHashMap();
-        for (Meter meter : meters) {
+        List<YukonMeter> meters = meterDao.getMetersForYukonPaos(retrievedPaoIds);
+        Map<PaoIdentifier, YukonMeter> paoPointIdMeterMap = Maps.newHashMap();
+        for (YukonMeter meter : meters) {
             for (Entry<PaoPointIdentifier, PointInfo> entry : paoPointInfoMap.entrySet()) {
                 if (meter.getDeviceId() == entry.getKey().getPaoIdentifier().getPaoId()) {
                     paoPointIdMeterMap.put(entry.getKey().getPaoIdentifier(), meter);
@@ -147,7 +147,7 @@ public class PaoPointValueServiceImpl implements PaoPointValueService {
             }
             PointInfo pointInfo = pointIdsToPointInfos.get(pointValueHolder.getId());
             PaoPointIdentifier paoPointIdentifier = pointIdPaoPointIdMap.get(pointValueHolder.getId());
-            Meter meter = paoPointIdMeterMap.get(paoPointIdentifier.getPaoIdentifier());
+            YukonMeter meter = paoPointIdMeterMap.get(paoPointIdentifier.getPaoIdentifier());
 
             MeterPointValue meterPointValue =
                 new MeterPointValue(meter,

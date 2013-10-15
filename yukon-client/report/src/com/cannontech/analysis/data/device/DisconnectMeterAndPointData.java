@@ -1,6 +1,6 @@
 package com.cannontech.analysis.data.device;
 
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.YukonMeter;
 
 
 public class DisconnectMeterAndPointData  {
@@ -21,7 +21,7 @@ public class DisconnectMeterAndPointData  {
         return disconnectAddress;
     }
     
-    public Meter getMeter() {
+    public YukonMeter getMeter() {
         return meterAndPointData.getMeter();
     }
 }

@@ -1,6 +1,6 @@
 package com.cannontech.amr.moveInMoveOut.service;
 
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.PlcMeter;
 import com.cannontech.amr.moveInMoveOut.bean.MoveInForm;
 import com.cannontech.amr.moveInMoveOut.bean.MoveInResult;
 import com.cannontech.amr.moveInMoveOut.bean.MoveOutForm;
@@ -39,6 +39,6 @@ public interface MoveInMoveOutService {
      * @param liteYukonUser
      * @return
      */
-    public boolean isAuthorized(LiteYukonUser liteYukonUser, Meter meter);
+    public boolean isAuthorized(LiteYukonUser liteYukonUser, PlcMeter meter);
 
 }

@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.amr.meter.dao.MeterDao;
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
@@ -105,13 +105,14 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         List<YukonDevice> deviceList = Lists.newArrayList(devices);
         
         ObjectMapper<YukonDevice, CommandRequestDevice> objectMapper = new ObjectMapper<YukonDevice, CommandRequestDevice>() {
+            @Override
             public CommandRequestDevice map(YukonDevice from) throws ObjectMappingException {
                 return buildStandardRequest(from, commandString);
             }
         };
         
         for (YukonDevice device : devices) {
-            Meter meter = meterDao.getForYukonDevice(device);
+            YukonMeter meter = meterDao.getForYukonDevice(device);
             LightDeviceConfiguration configuration = deviceConfigurationDao.findConfigurationForDevice(device);
             if (configuration != null && 
                 deviceConfigurationDao.isTypeSupportedByConfiguration(configuration, meter.getPaoType())) {

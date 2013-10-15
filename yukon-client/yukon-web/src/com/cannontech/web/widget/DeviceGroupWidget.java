@@ -17,8 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.cannontech.amr.meter.dao.MeterDao;
-import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
@@ -29,6 +27,9 @@ import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.groups.service.DeviceGroupUiService;
 import com.cannontech.common.device.groups.service.ModifiableDeviceGroupPredicate;
 import com.cannontech.common.device.groups.service.NonHiddenDeviceGroupPredicate;
+import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.YukonDevice;
+import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -53,7 +54,7 @@ public class DeviceGroupWidget extends WidgetControllerBase {
     @Autowired private DeviceGroupProviderDao deviceGroupDao;
     @Autowired private DeviceGroupEditorDao deviceGroupEditorDao;
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
-    @Autowired private MeterDao meterDao;
+    @Autowired private DeviceDao deviceDao;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     
@@ -65,6 +66,7 @@ public class DeviceGroupWidget extends WidgetControllerBase {
      * @return
      * @throws Exception
      */
+    @Override
     public ModelAndView render(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
@@ -73,10 +75,9 @@ public class DeviceGroupWidget extends WidgetControllerBase {
         // Grabs the deviceId from the request
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request,
                                                                      "deviceId");
-        Meter meter = meterDao.getForId(deviceId);
-
+        SimpleDevice device = deviceDao.getYukonDevice(deviceId);
         // Gets all the current groups of the device
-        final List<DeviceGroup> currentGroups = getCurrentGroups(meter);
+        final List<DeviceGroup> currentGroups = getCurrentGroups(device);
 
         DeviceGroupHierarchy groupHierarchy =
             deviceGroupUiService.getDeviceGroupHierarchy(deviceGroupService.getRootGroup(), new NonHiddenDeviceGroupPredicate());
@@ -86,6 +87,7 @@ public class DeviceGroupWidget extends WidgetControllerBase {
   
         class ExpandAndSelectCurrentGroups implements NodeAttributeSettingCallback<DeviceGroup> {
 
+            @Override
             public void setAdditionalAttributes(JsTreeNode node, DeviceGroup deviceGroup) {
                 
                 // expands group
@@ -107,7 +109,7 @@ public class DeviceGroupWidget extends WidgetControllerBase {
                              new ExpandAndSelectCurrentGroups());
         
         mav.addObject("currentGroupsDataJson", currentGroupsDataJson);
-        mav.addObject("meter", meter);
+        mav.addObject("device", device); //TODO this was called "meter" but can't find where it's used!!!
         mav.addObject("deviceId", deviceId);
 
         return mav;
@@ -129,10 +131,10 @@ public class DeviceGroupWidget extends WidgetControllerBase {
         // Grabs the deviceId from the request
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request,
                                                                      "deviceId");
-        Meter meter = meterDao.getForId(deviceId);
-
+        SimpleDevice device = deviceDao.getYukonDevice(deviceId);
+        
         // Gets all the current groups of the device
-        final List<DeviceGroup> currentGroups = getCurrentGroups(meter);
+        final List<DeviceGroup> currentGroups = getCurrentGroups(device);
         final Map<DeviceGroup,DeviceGroup> groupsToExpand = getGroupsToExpand(currentGroups);
         
         DeviceGroupHierarchy hierarchyAllGroups =
@@ -140,6 +142,7 @@ public class DeviceGroupWidget extends WidgetControllerBase {
 
         class ExpandAndSelectCurrentGroups implements NodeAttributeSettingCallback<DeviceGroup> {
             
+            @Override
             public void setAdditionalAttributes(JsTreeNode node, DeviceGroup deviceGroup) {
                 
                 String groupId = String.valueOf(((StoredDeviceGroup) deviceGroup).getId());
@@ -163,14 +166,14 @@ public class DeviceGroupWidget extends WidgetControllerBase {
                              new ExpandAndSelectCurrentGroups());
         
         mav.addObject("allGroupsDataJson", allGroupsDataJson);
-        mav.addObject("meter", meter);
+        mav.addObject("device", device); //TODO this was called "meter" but can't find where it's used!!!
         mav.addObject("deviceId", deviceId);
                 
         return mav;
     }
        
-    private List<DeviceGroup> getCurrentGroups(Meter meter){
-        Set<? extends DeviceGroup> currentGroupsSet = deviceGroupDao.getGroupMembership(meter);
+    private List<DeviceGroup> getCurrentGroups(YukonDevice device){
+        Set<? extends DeviceGroup> currentGroupsSet = deviceGroupDao.getGroupMembership(device);
         final List<DeviceGroup> currentGroups = new ArrayList<DeviceGroup>(currentGroupsSet);
 
         Collections.sort(currentGroups); 
@@ -257,10 +260,10 @@ public class DeviceGroupWidget extends WidgetControllerBase {
         
         // Gets the parameters from the request
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
-        Meter meter = meterDao.getForId(deviceId);
+        SimpleDevice device = deviceDao.getYukonDevice(deviceId);
         
         // Gets all the current groups of the device
-        Set<? extends DeviceGroup> currentGroupsSet = deviceGroupDao.getGroupMembership(meter);
+        Set<? extends DeviceGroup> currentGroupsSet = deviceGroupDao.getGroupMembership(device);
         
         String groupIdsStr = WidgetParameterHelper.getRequiredStringParameter(request, "groupIds");
          
@@ -286,7 +289,7 @@ public class DeviceGroupWidget extends WidgetControllerBase {
         if (!currentGroupIds.isEmpty()) {
             HashSet<String> idsToRemove = Sets.newHashSet(currentGroupIds);
             idsToRemove.removeAll(commonGroupIds);
-            List<Meter> devices = Collections.singletonList(meter);
+            List<SimpleDevice> devices = Collections.singletonList(device);
             for (String groupId : idsToRemove) {
                 StoredDeviceGroup storedDeviceGroup =
                     deviceGroupEditorDao.getGroupById(Integer.parseInt(groupId));
@@ -304,7 +307,7 @@ public class DeviceGroupWidget extends WidgetControllerBase {
             for (String groupId : idsToAdd) {
                 StoredDeviceGroup storedDeviceGroup =
                     deviceGroupEditorDao.getGroupById(Integer.parseInt(groupId));
-                deviceGroupMemberEditorDao.addDevices(storedDeviceGroup, meter);
+                deviceGroupMemberEditorDao.addDevices(storedDeviceGroup, device);
             }
             if(!idsToAdd.isEmpty()){
                 deviceGroupsUpdated = true;

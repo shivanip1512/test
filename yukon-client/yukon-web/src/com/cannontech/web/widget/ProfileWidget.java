@@ -26,7 +26,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.cannontech.amr.device.ProfileAttributeChannel;
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.meter.dao.MeterDao;
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.amr.toggleProfiling.service.ProfilingService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -105,7 +105,7 @@ public class ProfileWidget extends WidgetControllerBase {
 
         // get load profile
         DeviceLoadProfile deviceLoadProfile = profilingService.getDeviceLoadProfile(deviceId);
-        Meter meter = meterDao.getForId(deviceId);
+        YukonMeter meter = meterDao.getForId(deviceId);
 
         Set<Attribute> supportedProfileAttributes = getSupportedProfileAttributes(meter);
         List<Map<String, Object>> availableChannels = new ArrayList<Map<String, Object>>();
@@ -139,7 +139,7 @@ public class ProfileWidget extends WidgetControllerBase {
         mav.addObject("hours", hours);
     }
 
-    private Set<Attribute> getSupportedProfileAttributes(Meter meter) {
+    private Set<Attribute> getSupportedProfileAttributes(YukonMeter meter) {
         return attributeService.getExistingAttributes(meter, ProfileAttributeChannel.getAttributes());
     }
 
@@ -506,7 +506,7 @@ public class ProfileWidget extends WidgetControllerBase {
         try {
             point = attributeService.getPointForAttribute(device, BuiltInAttribute.LOAD_PROFILE);
         } catch (IllegalUseOfAttribute e) {
-            Meter meter = meterDao.getForId(device.getDeviceId());
+            YukonMeter meter = meterDao.getForId(device.getDeviceId());
             PaoType paoType = meter.getPaoType();
             errorMessages.add(messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.operationNotSupported",
                                                                paoType.getPaoTypeName()));

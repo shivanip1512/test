@@ -5,7 +5,7 @@ package com.cannontech.analysis.data.device;
 
 import java.util.Date;
 
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.YukonMeter;
 
 
 
@@ -17,7 +17,7 @@ import com.cannontech.amr.meter.model.Meter;
  */
 public class MeterAndPointData
 {	
-    private Meter meter = null;
+    private YukonMeter meter = null;
     private Integer pointID = null;
     private String pointName = null;
 	private java.util.Date timeStamp = null;
@@ -31,7 +31,7 @@ public class MeterAndPointData
 	 * @param timestamp_
 	 * @param value_
 	 */
-	public MeterAndPointData(Meter meter_, Integer pointID_, String pointName_, java.util.Date timeStamp_, Double value_, Integer quality_) {
+	public MeterAndPointData(YukonMeter meter_, Integer pointID_, String pointName_, java.util.Date timeStamp_, Double value_, Integer quality_) {
 	    meter = meter_;
 	    pointID = pointID_;
 		timeStamp = timeStamp_;
@@ -40,7 +40,7 @@ public class MeterAndPointData
         quality = quality_;
 	}
 
-    public MeterAndPointData(Meter meter_, Integer pointID_, String pointName_, java.util.Date timeStamp_, Double value_) {
+    public MeterAndPointData(YukonMeter meter_, Integer pointID_, String pointName_, java.util.Date timeStamp_, Double value_) {
         meter = meter_;
         pointID = pointID_;
         pointName = pointName_;
@@ -48,12 +48,12 @@ public class MeterAndPointData
         value = value_;         
     }
     
-    public MeterAndPointData(Meter meter, Date ts) {
+    public MeterAndPointData(YukonMeter meter, Date ts) {
         this.meter = meter;
         this.timeStamp = ts;
     }
     
-    public MeterAndPointData(Meter meter_)  {
+    public MeterAndPointData(YukonMeter meter_)  {
         meter = meter_;
     }
 	/**
@@ -80,7 +80,7 @@ public class MeterAndPointData
         return pointID;
     }
 
-    public Meter getMeter() {
+    public YukonMeter getMeter() {
         return meter;
     }
     

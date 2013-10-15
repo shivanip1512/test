@@ -16,7 +16,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.amr.meter.model.YukonMeter;
+import com.cannontech.amr.meter.model.SimpleMeter;
 import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.SimpleCallback;
@@ -55,7 +55,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
     }
     
     @Override
-	public Customer getMspCustomer(YukonMeter meter, MultispeakVendor mspVendor) {
+	public Customer getMspCustomer(SimpleMeter meter, MultispeakVendor mspVendor) {
         return getMspCustomer(meter.getMeterNumber(), mspVendor);
     }
     @Override
@@ -80,7 +80,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
         return mspCustomer;
     }
     @Override
-    public ServiceLocation getMspServiceLocation(YukonMeter meter, MultispeakVendor mspVendor) {
+    public ServiceLocation getMspServiceLocation(SimpleMeter meter, MultispeakVendor mspVendor) {
         return getMspServiceLocation(meter.getMeterNumber(), mspVendor);
     }
     @Override
@@ -105,7 +105,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
        return mspServiceLocation;
     }
     @Override
-    public com.cannontech.multispeak.deploy.service.Meter getMspMeter(YukonMeter meter, MultispeakVendor mspVendor) {
+    public com.cannontech.multispeak.deploy.service.Meter getMspMeter(SimpleMeter meter, MultispeakVendor mspVendor) {
         return getMspMeter(meter.getMeterNumber(), mspVendor);
     }
     @Override

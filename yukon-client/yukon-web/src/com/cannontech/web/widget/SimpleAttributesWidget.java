@@ -16,10 +16,11 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
 import com.cannontech.amr.meter.dao.MeterDao;
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.ObjectFormattingService;
+import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
@@ -37,7 +38,6 @@ public class SimpleAttributesWidget extends WidgetControllerBase {
     @Autowired private AttributeService attributeService;
     @Autowired private DeviceAttributeReadService deviceAttributeReadService;
     @Autowired private DeviceDao deviceDao;
-    @Autowired private MeterDao meterDao;
     @Autowired private ObjectFormattingService objectFormattingService;
 
     @Override
@@ -79,8 +79,7 @@ public class SimpleAttributesWidget extends WidgetControllerBase {
         mav.addObject("attributeInfos", attributeInfos);
 
         // readable?
-        Meter meter = meterDao.getForId(deviceId);
-        boolean isReadable = deviceAttributeReadService.isReadable(Collections.singleton(meter), attributes, user);
+        boolean isReadable = deviceAttributeReadService.isReadable(Collections.singleton(device), attributes, user);
         mav.addObject("isReadable", isReadable);
 
         return mav;
@@ -94,12 +93,12 @@ public class SimpleAttributesWidget extends WidgetControllerBase {
         Set<Attribute> attributes = getAttributesFromString(attributesStr);
         
         // command
-        Meter meter = meterDao.getForId(deviceId);
+        SimpleDevice device = deviceDao.getYukonDevice(deviceId);
         
-        Set<Attribute> allExistingAttributes = attributeService.getExistingAttributes(meter, attributes);
+        Set<Attribute> allExistingAttributes = attributeService.getExistingAttributes(device, attributes);
 
         ModelAndView mav = widgetHelper.initiateRead(request, 
-                                                     meter, 
+                                                     device, 
                                                      allExistingAttributes, 
                                                      "common/deviceAttributeReadResult.jsp", 
                                                      DeviceRequestType.SIMPLE_ATTRIBUTES_WIDGET_ATTRIBUTE_READ);

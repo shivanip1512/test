@@ -1,22 +1,22 @@
 package com.cannontech.amr.waterMeterLeak.model;
 
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.core.dynamic.PointValueHolder;
 
 public class WaterMeterLeak {
 
-    private Meter meter;
+    private YukonMeter meter;
     private PointValueHolder pointValueHolder;
     private double leakRate;
 
-    public Meter getMeter() {
+    public YukonMeter getMeter() {
         return meter;
     }
-
-    public void setMeter(Meter meter) {
+    
+    public void setMeter(YukonMeter meter) {
         this.meter = meter;
     }
-
+    
     public PointValueHolder getPointValueHolder() {
         return pointValueHolder;
     }

@@ -3,11 +3,12 @@ package com.cannontech.multispeak.dao;
 import java.rmi.RemoteException;
 import java.util.List;
 
-import com.cannontech.amr.meter.model.YukonMeter;
+import com.cannontech.amr.meter.model.SimpleMeter;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.deploy.service.Customer;
 import com.cannontech.multispeak.deploy.service.ErrorObject;
+import com.cannontech.multispeak.deploy.service.Meter;
 import com.cannontech.multispeak.deploy.service.ServiceLocation;
 
 public interface MspObjectDao {
@@ -20,7 +21,7 @@ public interface MspObjectDao {
      * @param mspVendor The Multispeak Vendor to ask for the information from.
      * @return
      */
-    public Customer getMspCustomer(YukonMeter meter, MultispeakVendor mspVendor);
+    public Customer getMspCustomer(SimpleMeter meter, MultispeakVendor mspVendor);
     
     /**
      * Returns a Msp Customer for the meterNo.
@@ -40,7 +41,7 @@ public interface MspObjectDao {
      * @param mspVendor The Multispeak Vendor to ask for the information from.
      * @return
      */
-    public ServiceLocation getMspServiceLocation(YukonMeter meter, MultispeakVendor mspVendor);
+    public ServiceLocation getMspServiceLocation(SimpleMeter meter, MultispeakVendor mspVendor);
 
     /**
      * Returns a Msp ServiceLocation for the meterNo.
@@ -61,7 +62,7 @@ public interface MspObjectDao {
      * @param mspVendor The Multispeak Vendor to ask for the information from.
      * @return
      */
-    public com.cannontech.multispeak.deploy.service.Meter getMspMeter(YukonMeter meter, MultispeakVendor mspVendor);
+    public Meter getMspMeter(SimpleMeter meter, MultispeakVendor mspVendor);
 
     /**
      * Returns a Msp Meter for the meterNo.
@@ -71,7 +72,7 @@ public interface MspObjectDao {
      * @param mspVendor The Multispeak Vendor to ask for the information from.
      * @return
      */
-    public com.cannontech.multispeak.deploy.service.Meter getMspMeter(String meterNumber, MultispeakVendor mspVendor);
+    public Meter getMspMeter(String meterNumber, MultispeakVendor mspVendor);
 
 
     /**
@@ -81,7 +82,7 @@ public interface MspObjectDao {
      * @param callback
      * @throws Exception
      */
-    public void getAllMspMeters(MultispeakVendor mspVendor, SimpleCallback<List<com.cannontech.multispeak.deploy.service.Meter>> callback) throws Exception;
+    public void getAllMspMeters(MultispeakVendor mspVendor, SimpleCallback<List<Meter>> callback) throws Exception;
     
     /**
      * Retrieves msp ServiceLocation objects from the mspVendor.

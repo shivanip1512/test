@@ -11,7 +11,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.meter.dao.impl.MeterRowMapper;
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -36,15 +36,16 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
 {
 	private final Logger log = YukonLogManager.getLogger(MspRawPointHistoryDaoImpl.class);
 	
-	private YukonJdbcTemplate yukonJdbcTemplate;
-	private RawPointHistoryDao rawPointHistoryDao;
-	private MeterReadProcessingService meterReadProcessingService;
+	@Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+	@Autowired private RawPointHistoryDao rawPointHistoryDao;
+	@Autowired private MeterReadProcessingService meterReadProcessingService;
+    @Autowired private MeterRowMapper meterRowMapper;
     
 	@Override
 	public MspMeterReadReturnList retrieveMeterReads(ReadBy readBy, String readByValue, Date startDate, 
 	                                      Date endDate, String lastReceived, int maxRecords) {
 
-	    List<Meter> meters = getPaoList(readBy, readByValue, lastReceived, maxRecords);
+	    List<YukonMeter> meters = getPaoList(readBy, readByValue, lastReceived, maxRecords);
 	    
 	    final Date timerStart = new Date();
 	    EnumMap<BuiltInAttribute, ListMultimap<PaoIdentifier, PointValueQualityHolder>> resultsPerAttribute = Maps.newEnumMap(BuiltInAttribute.class);
@@ -68,7 +69,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
 	    
 
 	    // loop over meters, results will be returned in whatever order getPaoList returns the meters in
-        for (Meter meter : meters) { 
+        for (YukonMeter meter : meters) { 
             for (BuiltInAttribute attribute : attributesToLoad) { 
                 List<PointValueQualityHolder> rawValues =  
                     resultsPerAttribute.get(attribute).removeAll(meter.getPaoIdentifier()); // remove to keep our memory consumption somewhat in check 
@@ -92,7 +93,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
 	@Override
     public MspMeterReadReturnList retrieveLatestMeterReads(ReadBy readBy, String readByValue, String lastReceived, int maxRecords) {
 
-        List<Meter> meters = getPaoList(readBy, readByValue, lastReceived, maxRecords);
+        List<YukonMeter> meters = getPaoList(readBy, readByValue, lastReceived, maxRecords);
         
         final Date timerStart = new Date();
         
@@ -112,7 +113,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
         
         // loop over meters, results will be returned in whatever order getPaoList returns the meters in
         // attempt to group all attributes for one meter together, because we know we only have one pointValue per meter per attribute. 
-        for (Meter meter : meters) {
+        for (YukonMeter meter : meters) {
 
             MeterRead meterRead = meterReadProcessingService.createMeterRead(meter);
             boolean hasReadings = false;            
@@ -147,7 +148,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
                                      FormattedBlockProcessingService<Block> blockProcessingService,
                                      Date startDate, Date endDate, String lastReceived, int maxRecords) {
 
-        List<Meter> meters = getPaoList(readBy, readByValue, lastReceived, maxRecords);
+        List<YukonMeter> meters = getPaoList(readBy, readByValue, lastReceived, maxRecords);
 
         final Date timerStart = new Date();
         
@@ -172,7 +173,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
         // loop over meters, results will be returned in whatever order getPaoList returns the meters in
         // results will be one block for every reading, no grouping of similar timstamped data into one block.
         // this is a change from how things previously worked where we made a best guess to "block" data with like timestamps.
-        for (Meter meter : meters) { 
+        for (YukonMeter meter : meters) { 
 
             for (BuiltInAttribute attribute : attributesToLoad) {
                 List<PointValueQualityHolder> rawValues =
@@ -197,7 +198,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
     @Override
     public MspBlockReturnList retrieveLatestBlock(FormattedBlockProcessingService<Block> blockProcessingService, String lastReceived, int maxRecords) {
 
-        List<Meter> meters = getPaoList(ReadBy.NONE, null, lastReceived, maxRecords);
+        List<YukonMeter> meters = getPaoList(ReadBy.NONE, null, lastReceived, maxRecords);
         
         final Date timerStart = new Date();
 
@@ -221,7 +222,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
 
         // loop over meters, results will be returned in whatever order getPaoList returns the meters in
         // attempt to "block" all attributes for one meter together, because we know we only have one pointValue per meter per attribute.
-        for (Meter meter : meters) {
+        for (YukonMeter meter : meters) {
             Block block = blockProcessingService.createBlock(meter);
             for (BuiltInAttribute attribute : attributesToLoad) { 
                 PointValueQualityHolder rawValue = resultsPerAttribute.get(attribute).remove(meter.getPaoIdentifier());
@@ -250,46 +251,23 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
      * @param maxRecords - maximum number of meters to return.
      * @return
      */
-    private List<Meter> getPaoList(ReadBy readBy, String readByValue, String lastReceived,
+    private List<YukonMeter> getPaoList(ReadBy readBy, String readByValue, String lastReceived,
                                            int maxRecords) {
         final Date timerStart = new Date();
         
         // get the paos we want, using readBy, readByValue, and lastReceived
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT ypo.paObjectId, ypo.paoName, ypo.type, ypo.disableFlag,");
-        sql.append("  dmg.meterNumber, dcs.address,");
-        sql.append("  dr.routeId, rypo.paoName as route");
-        sql.append("FROM YukonPaObject ypo");
-        sql.append("  JOIN Device d ON ypo.paObjectId = d.deviceId");
-        sql.append("  JOIN DeviceMeterGroup dmg ON d.deviceId = dmg.deviceId");
-        sql.append("  LEFT JOIN DeviceCarrierSettings dcs ON d.deviceId = dcs.deviceId");
-        sql.append("  LEFT JOIN DeviceRoutes dr ON d.deviceId = dr.deviceId");
-        sql.append("  LEFT JOIN YukonPaObject rypo ON dr.routeId = rypo.paObjectId");
+        sql.append(meterRowMapper.getSql());
         if (readBy == ReadBy.METER_NUMBER) {
             sql.append(  "WHERE dmg.meterNumber").eq(readByValue);
         } else if (StringUtils.isNotBlank(lastReceived) ){
             sql.append(  "WHERE dmg.meterNumber").gt(lastReceived);
         }
         sql.append("ORDER BY dmg.meterNumber"); 
-        
-        List<Meter> result = yukonJdbcTemplate.queryForLimitedResults(sql, new MeterRowMapper(), maxRecords);
+
+        List<YukonMeter> result = yukonJdbcTemplate.queryForLimitedResults(sql, meterRowMapper, maxRecords);
 
         log.debug("Retrieved " + result.size() + " paos to process. (" + (new Date().getTime() - timerStart.getTime())*.001 + " secs)");
         return result;
-    }
-    
-    @Autowired
-    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
-		this.yukonJdbcTemplate = yukonJdbcTemplate;
-	}
-    
-    @Autowired
-    public void setRawPointHistoryDao(RawPointHistoryDao rawPointHistoryDao) {
-        this.rawPointHistoryDao = rawPointHistoryDao;
-    }
-    
-    @Autowired
-    public void setMeterReadProcessingService(MeterReadProcessingService meterReadProcessingService) {
-        this.meterReadProcessingService = meterReadProcessingService;
     }
 }

@@ -13,7 +13,7 @@ import org.springframework.context.MessageSourceResolvable;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.amr.meter.search.dao.MeterSearchDao;
 import com.cannontech.amr.meter.search.model.FilterBy;
 import com.cannontech.amr.meter.search.model.MeterSearchField;
@@ -117,8 +117,8 @@ public class DeviceFilterCollectionProducer implements DeviceCollectionProducer,
 
             @Override
             public List<SimpleDevice> getDevices(int start, int size) {
-                SearchResults<Meter> searchResult = meterSearchDao.search(filterBys, orderBy, start, size);
-                List<Meter> resultList = searchResult.getResultList();
+                SearchResults<YukonMeter> searchResult = meterSearchDao.search(filterBys, orderBy, start, size);
+                List<YukonMeter> resultList = searchResult.getResultList();
                 List<SimpleDevice> result = PaoUtils.asSimpleDeviceListFromPaos(resultList);
                 return result;
             }

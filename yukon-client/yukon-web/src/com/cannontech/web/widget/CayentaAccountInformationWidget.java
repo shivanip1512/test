@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.amr.meter.dao.MeterDao;
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.model.Address;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.web.cayenta.model.CayentaLocationInfo;
@@ -25,12 +25,13 @@ public class CayentaAccountInformationWidget extends WidgetControllerBase {
     private MeterDao meterDao;
     private CayentaApiService cayentaApiService;
     
+    @Override
     public ModelAndView render(HttpServletRequest request, HttpServletResponse response) throws Exception {
         
     	ModelAndView mav = new ModelAndView("cayentaAccountInformationWidget/accountInfo.jsp");
         int deviceId = WidgetParameterHelper.getIntParameter(request, "deviceId");
         
-        Meter meter = meterDao.getForId(deviceId);
+        YukonMeter meter = meterDao.getForId(deviceId);
         String meterName = meter.getName();
         
         try {

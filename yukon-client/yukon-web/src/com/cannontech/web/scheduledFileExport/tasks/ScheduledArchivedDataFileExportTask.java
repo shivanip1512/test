@@ -21,7 +21,7 @@ import com.cannontech.amr.archivedValueExporter.model.dataRange.DataRangeType;
 import com.cannontech.amr.archivedValueExporter.model.dataRange.LocalDateRange;
 import com.cannontech.amr.archivedValueExporter.service.ExportReportGeneratorService;
 import com.cannontech.amr.meter.dao.MeterDao;
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.device.groups.dao.DeviceGroupPermission;
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
@@ -57,7 +57,7 @@ public class ScheduledArchivedDataFileExportTask extends ScheduledFileExportTask
 	
 	@Override
 	public void start() {
-		List<Meter> meters = meterDao.getMetersForYukonPaos(deviceList);
+		List<YukonMeter> meters = meterDao.getMetersForYukonPaos(deviceList);
 		ExportFormat format = archiveValuesExportFormatDao.getByFormatId(formatId);
 		populateDataRange();
 		

@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.amr.meter.dao.MeterDao;
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.PlcMeter;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.commands.CommandResultHolder;
@@ -27,6 +27,7 @@ public class TouScheduleWidget extends WidgetControllerBase {
     private CommandRequestDeviceExecutor commandRequestExecutor;
     private IDatabaseCache databaseCache;
     
+    @Override
     public ModelAndView render(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         ModelAndView mav = new ModelAndView("touScheduleWidget/render.jsp");
@@ -48,7 +49,7 @@ public class TouScheduleWidget extends WidgetControllerBase {
         YCBean ycBean = getYcBean(request, deviceId);
         String command = ycBean.buildTOUScheduleCommand(scheduleId);
         
-        Meter meter = meterDao.getForId(deviceId);
+        PlcMeter meter = meterDao.getPlcMeterForId(deviceId);
         CommandResultHolder result = commandRequestExecutor.execute(meter, command, DeviceRequestType.TOU_SCHEDULE_COMMAND, user);
         
         mav.addObject("result", result);

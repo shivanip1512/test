@@ -4,8 +4,10 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.PlcMeter;
+import com.cannontech.amr.meter.model.SimpleMeter;
 import com.cannontech.amr.meter.model.YukonMeter;
+import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.common.device.model.DeviceCollectionReportDevice;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -14,42 +16,50 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.core.service.impl.PaoLoader;
 
 public interface MeterDao {
-    public String getFormattedDeviceName(Meter device);
+    public String getFormattedDeviceName(YukonMeter device);
     
-    public Meter getForMeterNumber(String meterNumber);
+    public YukonMeter getForMeterNumber(String meterNumber);
     
-    public YukonMeter getYukonMeterForMeterNumber(String meterNumber);
-    
-    public Meter getForPhysicalAddress(String address);
+    /**
+     * Specific to PLC meters. Only use this if you really only want PLC meters.
+     */
+    public PlcMeter getForPhysicalAddress(String address);
 
     public YukonMeter getForPaoName(String paoName);
     
-    public Meter findForPaoName(String paoName);
+    public YukonMeter findForPaoName(String paoName);
 
-    public Meter getForYukonDevice(YukonDevice yukonDevice);
+    public YukonMeter getForYukonDevice(YukonDevice yukonDevice);
     
-    public Meter getForId(Integer id);
+    public YukonMeter getForId(Integer id);
     
-    public YukonMeter getYukonMeterForId(int id);
+    public SimpleMeter getSimpleMeterForId(int id);
+
+    /**
+     * Specific to PLC meters. Only use this if you really only want PLC meters.
+     * Throws NotFoundException if id is not found for Plc Meter
+     */
+    public PlcMeter getPlcMeterForId(int id);
+    /**
+     * Specific to Rfn meters. Only use this if you really only want Rfn meters.
+     * Throws NotFoundException if id is not found for Rfn Meter
+     */
+    public RfnMeter getRfnMeterForId(int id);
     
-    public List<Meter> getMetersForMeterNumbers(List<String> meterNumbers);
+    public List<YukonMeter> getMetersForMeterNumbers(List<String> meterNumbers);
     
-    public List<Meter> getMetersByMeterNumber(String lastReceived, int maxRecordCount);
+    public Comparator<YukonMeter> getMeterComparator();
     
-    public List<Meter> getMetersByPaoName(String lastReceived, int maxRecordCount);
-    
-    public Comparator<Meter> getMeterComparator();
-    
-    public void update(Meter newMeterInfo);
+    public void update(YukonMeter newMeterInfo);
     
     public PaoLoader<DisplayablePao> getDisplayableDeviceLoader();
     
     public PaoLoader<DeviceCollectionReportDevice> getDeviceCollectionReportDeviceLoader();
     
-    public List<Meter> getMetersForYukonPaos(Iterable<? extends YukonPao> identifiers);
+    public List<YukonMeter> getMetersForYukonPaos(Iterable<? extends YukonPao> identifiers);
     
     public int getMeterCount();
 
-    public Map<PaoIdentifier, Meter> getPaoIdMeterMap(Iterable<PaoIdentifier> paoIds);
+    public Map<PaoIdentifier, YukonMeter> getPaoIdMeterMap(Iterable<PaoIdentifier> paoIds);
     
 }

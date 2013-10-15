@@ -169,6 +169,8 @@
     <entry key="yukon.common.setting.ALERT_TIMEOUT_HOURS.description">The number of hours that an alert should be held (zero = forever, decimal numbers are okay)</entry>
     <entry key="yukon.common.setting.DEVICE_DISPLAY_TEMPLATE">Device Display Template</entry>
     <entry key="yukon.common.setting.DEVICE_DISPLAY_TEMPLATE.description">Defines the format for displaying devices. Available placeholders: DEVICE_NAME, METER_NUMBER</entry>
+    <entry key="yukon.common.setting.MSP_EXCLUDE_DISABLED_METERS">MSP Exclude Disabled Meters</entry>
+    <entry key="yukon.common.setting.MSP_EXCLUDE_DISABLED_METERS.description">When true, excludes disabled meters from initiated read, ping, and control requests and from supported meters requests.</entry>
     <entry key="yukon.common.setting.MSP_METER_LOOKUP_FIELD">MSP Meter Lookup Field</entry>
     <entry key="yukon.common.setting.MSP_METER_LOOKUP_FIELD.description">Defines the field used to lookup a meter by in Yukon. Valid values: AUTO_METER_NUMBER_FIRST, AUTO_DEVICE_NAME_FIRST, METER_NUMBER, DEVICE_NAME, or ADDRESS.</entry>
     <entry key="yukon.common.setting.MSP_LM_MAPPING_SETUP">MSP LM Mapping Setup</entry>

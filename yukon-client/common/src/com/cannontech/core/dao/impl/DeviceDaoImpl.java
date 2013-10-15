@@ -14,7 +14,8 @@ import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.amr.meter.dao.MeterDao;
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.PlcMeter;
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.device.groups.editor.dao.impl.YukonDeviceRowMapper;
 import com.cannontech.common.device.model.DeviceCollectionReportDevice;
 import com.cannontech.common.device.model.SimpleDevice;
@@ -40,11 +41,9 @@ import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.device.DeviceCarrierSettings;
 import com.cannontech.message.DbChangeManager;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.base.Function;
@@ -107,11 +106,7 @@ public final class DeviceDaoImpl implements DeviceDao {
         String sql = "UPDATE yukonpaobject SET disableflag = ? WHERE paobjectid = ?";
         jdbcOps.update(sql, new Object[] { disableFlag, device.getPaoIdentifier().getPaoId() });
 
-        dbChangeManager.processDbChange(device.getPaoIdentifier().getPaoId(),
-                                        DBChangeMsg.CHANGE_PAO_DB,
-                                        PaoCategory.DEVICE.getDbString(),
-                                        device.getPaoIdentifier().getPaoType().getDbString(),
-                                        DbChangeType.UPDATE);
+        dbChangeManager.processPaoDbChange(device, DbChangeType.UPDATE);
     }
 
     @Override
@@ -146,6 +141,7 @@ public final class DeviceDaoImpl implements DeviceDao {
         ChunkingSqlTemplate template = new ChunkingSqlTemplate(yukonJdbcTemplate);
         
         SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
             public SqlFragmentSource generate(List<Integer> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
                 sql.append("SELECT ypo.PAObjectID, ypo.Type");
@@ -419,8 +415,8 @@ public final class DeviceDaoImpl implements DeviceDao {
     @Override
     public String getFormattedName(YukonDevice device) {
 
-        if (device instanceof Meter) {
-            return meterDao.getFormattedDeviceName((Meter)device);
+        if (device instanceof PlcMeter) {
+            return meterDao.getFormattedDeviceName((PlcMeter)device);
         }
 
         LiteYukonPAObject paoObj = paoDao.getLiteYukonPAO(device.getPaoIdentifier().getPaoId());
@@ -431,7 +427,7 @@ public final class DeviceDaoImpl implements DeviceDao {
     public String getFormattedName(int deviceId) {
 
         try {
-            Meter meter = meterDao.getForId(deviceId);
+            YukonMeter meter = meterDao.getForId(deviceId);
             return meterDao.getFormattedDeviceName(meter);
 
         } catch (NotFoundException e) {

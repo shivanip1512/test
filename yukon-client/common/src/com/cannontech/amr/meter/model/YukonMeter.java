@@ -1,41 +1,24 @@
 package com.cannontech.amr.meter.model;
 
-import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.YukonDevice;
+import org.springframework.core.style.ToStringCreator;
 
-public class YukonMeter implements YukonDevice {
-    private PaoIdentifier paoIdentifier;
-    private String meterNumber;
+import com.cannontech.amr.rfn.model.RfnMeter;
+import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
+
+public abstract class YukonMeter extends SimpleMeter implements DisplayablePao{
+    
     private String name;
     private boolean disabled;
     
-    public YukonMeter() {
-    }
-    
-    public YukonMeter(PaoIdentifier paoIdentifier, String meterNumber, String name, boolean disabled) {
-        this.paoIdentifier = paoIdentifier;
-        this.meterNumber = meterNumber;
+    protected YukonMeter(PaoIdentifier paoIdentifier, String meterNumber, String name, boolean disabled) {
+        super(paoIdentifier, meterNumber);
         this.name = name;
         this.disabled = disabled;
     }
 
     @Override
-    public PaoIdentifier getPaoIdentifier() {
-        return paoIdentifier;
-    }
-    
-    public void setPaoIdentifier(PaoIdentifier paoIdentifier) {
-        this.paoIdentifier = paoIdentifier;
-    }
-
-    public String getMeterNumber() {
-        return meterNumber;
-    }
-    
-    public void setMeterNumber(String meterNumber) {
-        this.meterNumber = meterNumber;
-    }
-    
     public String getName() {
         return name;
     }
@@ -52,4 +35,47 @@ public class YukonMeter implements YukonDevice {
         return disabled;
     }
 
+    public int getDeviceId() {
+        return getPaoIdentifier().getPaoId();
+    }
+
+    public PaoType getPaoType() {
+        return getPaoIdentifier().getPaoType();
+    }
+    
+    /**
+     * Returns either address (PLC) or serialnumber (RFN) depending on type.
+     * This is a helper method to limit repetition of this instanceof checks 
+     */
+    public String getSerialOrAddress() {
+        if (this instanceof PlcMeter) {
+            return ((PlcMeter)this).getAddress();
+        } else if (this instanceof RfnMeter) {
+            return ((RfnMeter)this).getRfnIdentifier().getSensorSerialNumber();
+        }
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Returns the (plc) routeName for Meter objects, for RfnMeters, returns empty string.
+     * This is a helper method to limit repetition of this instanceof checks 
+     */
+    public String getRoute() {
+        if (this instanceof PlcMeter) {
+            return ((PlcMeter)this).getRoute();
+        } else if (this instanceof RfnMeter) {
+            return "";
+        }
+        throw new UnsupportedOperationException();
+
+    }
+    
+    @Override
+    public String toString() {
+        ToStringCreator tsc = new ToStringCreator(this);
+        tsc.append("meter", super.toString());
+        tsc.append("name", getName());
+        tsc.append("disabled", isDisabled());
+        return tsc.toString();
+    }
 }

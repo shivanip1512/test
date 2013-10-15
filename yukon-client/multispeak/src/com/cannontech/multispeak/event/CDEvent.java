@@ -10,7 +10,7 @@ package com.cannontech.multispeak.event;
 import java.rmi.RemoteException;
 
 import com.cannontech.amr.meter.dao.MeterDao;
-import com.cannontech.amr.meter.model.YukonMeter;
+import com.cannontech.amr.meter.model.SimpleMeter;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.porter.message.Return;
@@ -108,7 +108,7 @@ public class CDEvent extends MultispeakEvent{
     @Override
     public boolean messageReceived(Return returnMsg)
     {
-        YukonMeter meter = meterDao.getYukonMeterForId(returnMsg.getDeviceID());
+        SimpleMeter meter = meterDao.getSimpleMeterForId(returnMsg.getDeviceID());
         setMeterNumber(meter.getMeterNumber());
         setResultMessage(returnMsg.getResultString());
 

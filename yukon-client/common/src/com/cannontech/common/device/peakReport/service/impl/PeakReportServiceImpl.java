@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.amr.meter.dao.MeterDao;
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.PlcMeter;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.commands.CommandResultHolder;
@@ -68,7 +68,7 @@ public class PeakReportServiceImpl implements PeakReportService {
         commandBuffer.append(" " + commandDays);
         
         // execute command to get profile peak summary results for user request
-        Meter meter = meterDao.getForId(deviceId);
+        PlcMeter meter = meterDao.getPlcMeterForId(deviceId);
         
         // setup basics of PeakReportResult
         PeakReportResult peakResult = new PeakReportResult();

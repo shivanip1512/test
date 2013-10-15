@@ -22,7 +22,7 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.meter.dao.MeterDao;
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.PlcMeter;
 import com.cannontech.common.chart.model.ChartInterval;
 import com.cannontech.common.chart.model.ConverterType;
 import com.cannontech.common.chart.model.GraphType;
@@ -98,7 +98,7 @@ public class HighBillController extends MultiActionController {
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         int deviceId = ServletRequestUtils.getRequiredIntParameter(request, "deviceId");
         mav.addObject("deviceId", String.valueOf(deviceId));
-        Meter meter = meterDao.getForId(deviceId);
+        PlcMeter meter = meterDao.getPlcMeterForId(deviceId);
         
         // readable?
         boolean readable = commandAuthorizationService.isAuthorized(userContext.getYukonUser(), "getvalue lp peak", meter);
@@ -556,7 +556,7 @@ public class HighBillController extends MultiActionController {
      * @param mav
      * @param deviceId
      */
-    private void addPointIdToMav(ModelAndView mav, Meter meter) {
+    private void addPointIdToMav(ModelAndView mav, PlcMeter meter) {
         
         LitePoint point = attributeService.getPointForAttribute(meter, BuiltInAttribute.LOAD_PROFILE);
         int pointId = point.getPointID();

@@ -2,7 +2,7 @@ package com.cannontech.amr.meter.dao;
 
 import java.util.List;
 
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 
 
@@ -14,7 +14,7 @@ public interface GroupMetersDao {
      * @param group
      * @return
      */
-    public List<Meter> getMetersByGroup(DeviceGroup group);
+    public List<YukonMeter> getMetersByGroup(DeviceGroup group);
     
     /**
      * Get all meters in group. Returns meters ordered by DEVICE_DISPLAY_TEMPLATE role property.
@@ -22,7 +22,7 @@ public interface GroupMetersDao {
      * @param group
      * @return
      */
-    public List<Meter> getChildMetersByGroup(DeviceGroup group);
+    public List<YukonMeter> getChildMetersByGroup(DeviceGroup group);
     
     /**
      * Get meters in group. Returns meters ordered by DEVICE_DISPLAY_TEMPLATE role property.
@@ -32,5 +32,5 @@ public interface GroupMetersDao {
      * @param maxSize
      * @return
      */
-    public List<Meter> getChildMetersByGroup(DeviceGroup group, int maxRecordCount);
+    public List<YukonMeter> getChildMetersByGroup(DeviceGroup group, int maxRecordCount);
 }

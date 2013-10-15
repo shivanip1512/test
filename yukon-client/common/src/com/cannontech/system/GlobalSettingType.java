@@ -1,6 +1,9 @@
 package com.cannontech.system;
 
-import static com.cannontech.core.roleproperties.InputTypeFactory.*;
+import static com.cannontech.core.roleproperties.InputTypeFactory.booleanType;
+import static com.cannontech.core.roleproperties.InputTypeFactory.integerType;
+import static com.cannontech.core.roleproperties.InputTypeFactory.stringType;
+import static com.cannontech.core.roleproperties.InputTypeFactory.userType;
 
 import java.math.RoundingMode;
 import java.util.Set;
@@ -62,6 +65,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     MSP_BILLING_CYCLE_PARENT_DEVICEGROUP(GlobalSettingSubCategory.MULTISPEAK, stringType(), "/Meters/Billing/"),
     MSP_LM_MAPPING_SETUP(GlobalSettingSubCategory.MULTISPEAK, booleanType(), false),
     MSP_METER_LOOKUP_FIELD(GlobalSettingSubCategory.MULTISPEAK, InputTypeFactory.enumType(MultispeakMeterLookupFieldEnum.class), MultispeakMeterLookupFieldEnum.AUTO_METER_NUMBER_FIRST),
+    MSP_EXCLUDE_DISABLED_METERS(GlobalSettingSubCategory.MULTISPEAK, booleanType(), false),
 
     // OpenADR
     OADR_REQUEST_INTERVAL(GlobalSettingSubCategory.OPEN_ADR, integerType(), 60000),

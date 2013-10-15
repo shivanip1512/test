@@ -23,8 +23,6 @@ public interface RfnDeviceDao {
     
     public RfnMeter getMeterForExactIdentifier(RfnIdentifier rfnIdentifier) throws NotFoundException;
     
-    public RfnMeter getMeter(YukonPao pao) throws NotFoundException;
-    
     public RfnDevice getDevice(YukonPao pao) throws NotFoundException;
 
     /**
@@ -34,8 +32,6 @@ public interface RfnDeviceDao {
     public <T extends YukonPao> Map<T, RfnIdentifier> getRfnIdentifiersByPao(Iterable<T> paos);
 
     public RfnDevice getDeviceForId(int deviceId) throws NotFoundException;
-    
-    public RfnMeter getMeterForId(int deviceId) throws NotFoundException;
     
     /** 
      * Updates the fields (currently just the RfnIdentifier fields) for the device 

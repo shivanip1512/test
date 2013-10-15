@@ -6,7 +6,7 @@ import com.cannontech.common.pao.PaoIdentifier;
 
 public class DisplayableMeter implements DisplayablePao {
 
-	private Meter meter;
+	private YukonMeter meter;
 	private MeterDisplayFieldEnum meterDisplayFieldEnum;
 
 	@Override
@@ -27,7 +27,7 @@ public class DisplayableMeter implements DisplayablePao {
 		return meter.getPaoIdentifier();
 	}
 
-	public DisplayableMeter(Meter meter,
+	public DisplayableMeter(YukonMeter meter,
 			MeterDisplayFieldEnum meterDisplayFieldEnum) {
 		super();
 		this.meter = meter;

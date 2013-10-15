@@ -17,7 +17,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.amr.meter.dao.MeterDao;
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.PlcMeter;
 import com.cannontech.amr.moveInMoveOut.bean.MoveInForm;
 import com.cannontech.amr.moveInMoveOut.bean.MoveInResult;
 import com.cannontech.amr.moveInMoveOut.bean.MoveOutForm;
@@ -62,7 +62,7 @@ public class MoveInMoveOutController extends MultiActionController {
     public ModelAndView moveIn(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
         ModelAndView mav = new ModelAndView("moveIn.jsp");
-        Meter meter = getMeter(request);
+        PlcMeter meter = getMeter(request);
         SimpleDevice device = deviceDao.getYukonDevice(meter.getDeviceId());
         LiteYukonUser liteYukonUser = ServletUtil.getYukonUser(request);
 
@@ -91,7 +91,7 @@ public class MoveInMoveOutController extends MultiActionController {
         ModelAndView mav = moveIn(request, response);
 
         // Getting all the needed form values
-        Meter prevMeter = getMeter(request);
+        PlcMeter prevMeter = getMeter(request);
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
 
         String deviceName = ServletRequestUtils.getStringParameter(request,
@@ -174,7 +174,7 @@ public class MoveInMoveOutController extends MultiActionController {
     public ModelAndView moveOut(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
         ModelAndView mav = new ModelAndView("moveOut.jsp");
-        Meter meter = getMeter(request);
+        PlcMeter meter = getMeter(request);
         SimpleDevice device = deviceDao.getYukonDevice(meter.getDeviceId());
         LiteYukonUser liteYukonUser = ServletUtil.getYukonUser(request);
 
@@ -203,7 +203,7 @@ public class MoveInMoveOutController extends MultiActionController {
         ModelAndView mav = moveOut(request, response);
 
         // Getting all the needed form values
-        Meter prevMeter = getMeter(request);
+        PlcMeter prevMeter = getMeter(request);
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
 
         String emailAddress = ServletRequestUtils.getStringParameter(request,
@@ -349,11 +349,11 @@ public class MoveInMoveOutController extends MultiActionController {
      * @return
      * @throws ServletRequestBindingException
      */
-    private Meter getMeter(HttpServletRequest request)
+    private PlcMeter getMeter(HttpServletRequest request)
             throws ServletRequestBindingException {
         int deviceId = ServletRequestUtils.getRequiredIntParameter(request,
                                                                    "deviceId");
-        Meter meter = meterDao.getForId(deviceId);
+        PlcMeter meter = meterDao.getPlcMeterForId(deviceId);
         return meter;
     }
 

@@ -35,7 +35,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.amr.meter.dao.MeterDao;
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.amr.waterMeterLeak.model.WaterMeterLeak;
 import com.cannontech.amr.waterMeterLeak.service.WaterMeterLeakService;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
@@ -320,7 +320,7 @@ public class WaterLeakReportController {
     public String cisDetails(ModelMap model, YukonUserContext userContext, int paoId) {
         MspMeterAccountInfo mspMeterAccountInfo = mspMeterAccountInfoMap.getIfPresent(paoId);
         if (mspMeterAccountInfo == null) {
-            Meter meter = meterDao.getForId(paoId);
+            YukonMeter meter = meterDao.getForId(paoId);
             MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(multispeakFuncs.getPrimaryCIS());
 
             mspMeterAccountInfo = new MspMeterAccountInfo();
@@ -480,7 +480,7 @@ public class WaterLeakReportController {
                 .getMessage(baseKey + ".intervalData.results.deviceCollectionDescription");
 
         HashSet<PaoIdentifier> paoIdentifiers = Sets.newHashSet(paoDao.getPaoIdentifiersForPaoIds(Lists.newArrayList(selectedPaoIds)));
-        Set<Meter> meters = Sets.newHashSet(meterDao.getMetersForYukonPaos(paoIdentifiers));
+        Set<YukonMeter> meters = Sets.newHashSet(meterDao.getMetersForYukonPaos(paoIdentifiers));
         DeviceCollection deviceCollection = getDeviceCollectionFromYukonDevices(meters, message);
         backingBean.setDeviceCollection(deviceCollection);
     }
@@ -574,7 +574,7 @@ public class WaterLeakReportController {
     
     private DeviceCollection getDeviceCollectionFromReportResults(List<WaterMeterLeak> reportRows,
                                                                   YukonUserContext userContext) {
-        Set<Meter> meters = Sets.newHashSet();
+        Set<YukonMeter> meters = Sets.newHashSet();
         for (WaterMeterLeak row : reportRows) {
             meters.add(row.getMeter());
         }
@@ -585,7 +585,7 @@ public class WaterLeakReportController {
         return getDeviceCollectionFromYukonDevices(meters, message);
     }
 
-    private DeviceCollection getDeviceCollectionFromYukonDevices(Set<Meter> meters, String message) {
+    private DeviceCollection getDeviceCollectionFromYukonDevices(Set<YukonMeter> meters, String message) {
         DeviceCollection resultsDeviceCollection =
             deviceGroupCollectionHelper.createDeviceGroupCollection(meters.iterator(), message);
         return resultsDeviceCollection;

@@ -20,7 +20,7 @@ import com.cannontech.amr.deviceread.CalculatedPointResults;
 import com.cannontech.amr.deviceread.dao.CalculatedPointService;
 import com.cannontech.amr.deviceread.dao.PlcDeviceAttributeReadService;
 import com.cannontech.amr.meter.dao.MeterDao;
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.PlcMeter;
 import com.cannontech.amr.moveInMoveOut.bean.MoveInForm;
 import com.cannontech.amr.moveInMoveOut.bean.MoveInResult;
 import com.cannontech.amr.moveInMoveOut.bean.MoveOutForm;
@@ -80,6 +80,7 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
     @Autowired private NextValueHelper nextValueHelper = null;
     @Autowired private PaoCommandAuthorizationService paoCommandAuthorizationService = null;
     @Autowired private RolePropertyDao rolePropertyDao = null;
+    @Override
     public MoveInResult moveIn(MoveInForm moveInFormObj) {
 
         MoveInResult moveInResult = new MoveInResult();
@@ -102,7 +103,7 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
                 
                 // Makes a call to the meter to find the usage,
                 // which we use to calculate the point
-                Meter meter = moveInResult.getPreviousMeter();
+                PlcMeter meter = moveInResult.getPreviousMeter();
                 logger.info("Starting meter read for " + meter.toString());
                 CommandResultHolder meterReadResults = plcDeviceAttributeReadService.readMeter(meter, 
                                                                                   Collections.singleton(BuiltInAttribute.USAGE),
@@ -203,6 +204,7 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
         return moveInResult;
     }
 
+    @Override
     public MoveInResult scheduleMoveIn(MoveInForm moveInFormObj) {
         MoveInResult moveInResultObj = new MoveInResult();
         transferMoveInFormToMoveInResults(moveInFormObj, moveInResultObj);
@@ -236,6 +238,7 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
         return moveInResultObj;
     }
 
+    @Override
     public MoveOutResult moveOut(MoveOutForm moveOutFormObj) {
 
         MoveOutResult moveOutResult = new MoveOutResult();
@@ -258,7 +261,7 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
                 
                 // Makes a call to the meter to find the usage,
                 // which we use to calculate the point
-                Meter meter = moveOutResult.getPreviousMeter();
+                PlcMeter meter = moveOutResult.getPreviousMeter();
                 logger.info("Starting meter read for " + meter.toString());
                 CommandResultHolder meterReadResults = plcDeviceAttributeReadService.readMeter(meter, 
                                                                                   Collections.singleton(BuiltInAttribute.USAGE),
@@ -359,6 +362,7 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
 
     }
 
+    @Override
     public MoveOutResult scheduleMoveOut(MoveOutForm moveOutFormObj) {
         MoveOutResult moveOutResultObj = new MoveOutResult();
         moveOutResultObj.setPreviousMeter(moveOutFormObj.getMeter());
@@ -408,7 +412,7 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
         dynamicDataSource.putValue(pointData);
     }
 
-    private void updateMeter(Meter oldMeter, Meter newMeter) {
+    private void updateMeter(PlcMeter oldMeter, PlcMeter newMeter) {
         if (!oldMeter.getMeterNumber()
                      .equalsIgnoreCase(newMeter.getMeterNumber()) || !oldMeter.getName()
                                                                               .equalsIgnoreCase(newMeter.getName())) {
@@ -419,7 +423,7 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
     private void transferMoveInFormToMoveInResults(MoveInForm moveInFormObj,
             MoveInResult moveInResultObj) {
         moveInResultObj.setPreviousMeter(moveInFormObj.getPreviousMeter());
-        moveInResultObj.setNewMeter(meterDao.getForId(moveInFormObj.getPreviousMeter().getDeviceId()));
+        moveInResultObj.setNewMeter(meterDao.getPlcMeterForId(moveInFormObj.getPreviousMeter().getDeviceId()));
         moveInResultObj.getNewMeter().setName(moveInFormObj.getMeterName());
         moveInResultObj.getNewMeter()
                        .setMeterNumber(moveInFormObj.getMeterNumber());
@@ -428,7 +432,7 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
 
     private void removeServiceDeviceGroups(MoveInResult moveInResultObj) {
 
-        Meter newMeter = moveInResultObj.getNewMeter();
+        PlcMeter newMeter = moveInResultObj.getNewMeter();
 
         StoredDeviceGroup disconnectGroup = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.DISCONNECTED_STATUS);
         if (deviceGroupDao.isDeviceInGroup(disconnectGroup, newMeter)) {
@@ -445,7 +449,7 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
     }
 
     private void addServiceDeviceGroups(MoveOutResult moveOutResultObj) {
-        Meter oldMeter = moveOutResultObj.getPreviousMeter();
+        PlcMeter oldMeter = moveOutResultObj.getPreviousMeter();
 
         StoredDeviceGroup disconnectGroup = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.DISCONNECTED_STATUS);
         if (!deviceGroupDao.isDeviceInGroup(disconnectGroup, oldMeter)) {
@@ -496,7 +500,7 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
 
     }
 
-    private void addArchiveEntryDatabase(Meter oldMeter, Date moveDate,
+    private void addArchiveEntryDatabase(PlcMeter oldMeter, Date moveDate,
             DeviceEventEnum deviceEvent, LiteYukonUser liteYukonUser) {
 
         boolean autoArchivingEnabled = rolePropertyDao.getPropertyBooleanValue(
@@ -517,7 +521,7 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
     }
 
     private boolean addArchiveEntryFile(LiteYukonUser liteYukonUser,
-            Meter prevMeter, Meter newMeter, PointValueHolder pvhCalc,
+            PlcMeter prevMeter, PlcMeter newMeter, PointValueHolder pvhCalc,
             PointValueHolder pvhDiff, DeviceEventEnum deviceEventEnum) {
         String filePath = CtiUtilities.getYukonBase() + "/Server/Export/DeviceEventArchive.csv";
         File file = new File(filePath);
@@ -556,7 +560,8 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
         return true;
     }
     
-    public boolean isAuthorized(LiteYukonUser liteYukonUser, Meter meter) {
+    @Override
+    public boolean isAuthorized(LiteYukonUser liteYukonUser, PlcMeter meter) {
     	
     	return paoCommandAuthorizationService.isAuthorized(liteYukonUser, "getvalue lp peak", meter);
     }

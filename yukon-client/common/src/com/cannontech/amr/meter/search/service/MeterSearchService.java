@@ -2,7 +2,7 @@ package com.cannontech.amr.meter.search.service;
 
 import java.util.List;
 
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.amr.meter.search.model.FilterBy;
 import com.cannontech.amr.meter.search.model.MeterSearchOrderBy;
 import com.cannontech.common.search.result.SearchResults;
@@ -20,7 +20,7 @@ public interface MeterSearchService {
      * @param count - Number of paos we want from the sorted, filtered list
      * @return A sorted list of paos that match the filter criteria
      */
-    public SearchResults<Meter> search(List<FilterBy> filterByList, MeterSearchOrderBy orderBy, int start,
+    public SearchResults<YukonMeter> search(List<FilterBy> filterByList, MeterSearchOrderBy orderBy, int start,
             int count);
 
 }

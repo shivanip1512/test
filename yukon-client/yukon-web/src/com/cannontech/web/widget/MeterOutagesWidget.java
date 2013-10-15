@@ -20,9 +20,10 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.amr.deviceread.dao.PlcDeviceAttributeReadService;
 import com.cannontech.amr.meter.dao.MeterDao;
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandResultHolder;
+import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
@@ -40,6 +41,7 @@ import com.cannontech.web.widget.support.WidgetParameterHelper;
 
 /**
  * Widget used to display basic device information
+ * This is assumed to be for PLC meters. See RfnOutagesWidget for RFN meter types.
  */
 public class MeterOutagesWidget extends WidgetControllerBase {
 
@@ -121,7 +123,7 @@ public class MeterOutagesWidget extends WidgetControllerBase {
     @Override
     public ModelAndView render(HttpServletRequest request, HttpServletResponse response)
             throws Exception {
-        Meter meter = getMeter(request);
+        YukonMeter meter = getMeter(request);
 
         Set<Attribute> allExistingAttributes = getExistingAttributes(meter);
 
@@ -139,7 +141,7 @@ public class MeterOutagesWidget extends WidgetControllerBase {
 
     public ModelAndView read(HttpServletRequest request, HttpServletResponse response)
     throws Exception {
-        Meter meter = getMeter(request);
+        YukonMeter meter = getMeter(request);
         
         Set<Attribute> allExistingAttributes = getExistingAttributes(meter);
         
@@ -163,7 +165,7 @@ public class MeterOutagesWidget extends WidgetControllerBase {
         return mav;
     }
     
-    private ModelAndView getOutagesModelAndView(Meter meter, Set<Attribute> allExistingAttributes) throws Exception{
+    private ModelAndView getOutagesModelAndView(YukonMeter meter, Set<Attribute> allExistingAttributes) throws Exception{
 
         ModelAndView mav = new ModelAndView("meterOutagesWidget/render.jsp");
         mav.addObject("device", meter);
@@ -177,21 +179,21 @@ public class MeterOutagesWidget extends WidgetControllerBase {
         return mav; 
     }
     
-    private Set<Attribute> getExistingAttributes(Meter meter) {
+    private Set<Attribute> getExistingAttributes(YukonDevice device) {
         
         Set<Attribute> attributesToShow = new HashSet<Attribute>();
         attributesToShow.add(BuiltInAttribute.BLINK_COUNT);
         attributesToShow.add(BuiltInAttribute.OUTAGE_LOG);
-        return attributeService.getExistingAttributes(meter, attributesToShow);
+        return attributeService.getExistingAttributes(device, attributesToShow);
     }
 
-    private Meter getMeter(HttpServletRequest request) throws ServletRequestBindingException {
+    private YukonMeter getMeter(HttpServletRequest request) throws ServletRequestBindingException {
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
-        Meter meter = meterDao.getForId(deviceId);
+        YukonMeter meter = meterDao.getForId(deviceId);
         return meter;
     }
 
-    private PerishableOutageData addOutageData(Meter meter, List<PointValueHolder> values, YukonUserContext userContext) {
+    private PerishableOutageData addOutageData(YukonMeter meter, List<PointValueHolder> values, YukonUserContext userContext) {
 
         LitePoint litePoint = attributeService.getPointForAttribute(meter, BuiltInAttribute.OUTAGE_LOG);
         
@@ -222,7 +224,7 @@ public class MeterOutagesWidget extends WidgetControllerBase {
         return data;
     }
     
-    private PerishableOutageData getOutageData(Meter meter) {
+    private PerishableOutageData getOutageData(YukonMeter meter) {
             return recentOutageLogs.get(meter.getDeviceId());
     }
     

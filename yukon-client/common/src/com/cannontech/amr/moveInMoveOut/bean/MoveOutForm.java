@@ -2,13 +2,13 @@ package com.cannontech.amr.moveInMoveOut.bean;
 
 import java.util.Date;
 
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.PlcMeter;
 import com.cannontech.user.YukonUserContext;
 
 public class MoveOutForm{
     private String emailAddress;
     private YukonUserContext userContext;
-    private Meter meter;
+    private PlcMeter meter;
     private Date moveOutDate;
     
     public String getEmailAddress() {
@@ -29,10 +29,10 @@ public class MoveOutForm{
     public void setUserContext(YukonUserContext userContext) {
         this.userContext = userContext;
     }
-    public Meter getMeter() {
+    public PlcMeter getMeter() {
         return meter;
     }
-    public void setMeter(Meter meter) {
+    public void setMeter(PlcMeter meter) {
         this.meter = meter;
     }
 }

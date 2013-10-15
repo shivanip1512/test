@@ -86,6 +86,7 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
         
         try {
             RfnIdentifier rfnIdentifier = jdbcTemplate.queryForObject(sql, new YukonRowMapper<RfnIdentifier>() {
+                @Override
                 public RfnIdentifier mapRow(YukonResultSet rs) throws SQLException {
                     RfnIdentifier result = new RfnIdentifier(rs.getStringSafe("SerialNumber"), 
                                                              rs.getStringSafe("Manufacturer"), 
@@ -100,31 +101,6 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
             return rfnDevice;
         }
     }
-    
-    @Override
-    public RfnMeter getMeterForId(int paoId) throws NotFoundException {
-        return getMeter(paoDao.getYukonPao(paoId));
-    }
-
-    @Override
-    public RfnMeter getMeter(final YukonPao pao) throws NotFoundException {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select rfn.SerialNumber, rfn.Manufacturer, rfn.Model, dmg.MeterNumber,");
-        sql.append("  pao.paoName, pao.type, pao.disableFlag, pao.paobjectId");
-        sql.append("from RfnAddress rfn");
-        sql.append(  "join DeviceMeterGroup dmg on dmg.deviceId = rfn.DeviceId");
-        sql.append(  "JOIN YukonPaobject pao on pao.paobjectId = rfn.deviceId");
-        sql.append("where rfn.DeviceId").eq(pao.getPaoIdentifier().getPaoId());
-        
-        try {
-            RfnMeter rfnMeter = jdbcTemplate.queryForObject(sql, new RfnMeterRowMapper());
-            return rfnMeter;
-        } catch (EmptyResultDataAccessException e) {
-            RfnMeter rfnMeter = new RfnMeter(pao, RfnIdentifier.BLANK);
-            return rfnMeter;
-            // NOTE: you end up here if you call getMeter on a *RfnTemplate meter because they have no rfnIdentifier
-        }
-    }
 
     @Override
     public <T extends YukonPao> Map<T, RfnIdentifier> getRfnIdentifiersByPao(Iterable<T> paos) {
@@ -132,6 +108,7 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
                 new ChunkingMappedSqlTemplate(jdbcTemplate);
 
         SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
             public SqlFragmentSource generate(List<Integer> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
                 sql.append("SELECT SerialNumber, Manufacturer, Model, DeviceId");

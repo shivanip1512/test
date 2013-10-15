@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.View;
 
 import com.cannontech.amr.meter.dao.MeterDao;
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.PlcMeter;
 import com.cannontech.amr.phaseDetect.data.PhaseDetectData;
 import com.cannontech.amr.phaseDetect.data.PhaseDetectResult;
 import com.cannontech.amr.phaseDetect.data.PhaseDetectState;
@@ -421,10 +421,10 @@ public class PhaseDetectController {
         }
         model.addAttribute("data", dataCopy);
         model.addAttribute("result", resultCopy);
-        List<Meter> phaseAMeters = getMeterListForGroup(resultCopy.getPhaseToGroupMap().get(Phase.A));
-        List<Meter> phaseBMeters = getMeterListForGroup(resultCopy.getPhaseToGroupMap().get(Phase.B));
-        List<Meter> phaseCMeters = getMeterListForGroup(resultCopy.getPhaseToGroupMap().get(Phase.C));
-        List<Meter> undefinedMeters = getUndefinedMeters();
+        List<PlcMeter> phaseAMeters = getMeterListForGroup(resultCopy.getPhaseToGroupMap().get(Phase.A));
+        List<PlcMeter> phaseBMeters = getMeterListForGroup(resultCopy.getPhaseToGroupMap().get(Phase.B));
+        List<PlcMeter> phaseCMeters = getMeterListForGroup(resultCopy.getPhaseToGroupMap().get(Phase.C));
+        List<PlcMeter> undefinedMeters = getUndefinedMeters();
         
         model.addAttribute("phaseAMeters", phaseAMeters);
         model.addAttribute("phaseAMetersSize", phaseAMeters.size());
@@ -434,9 +434,9 @@ public class PhaseDetectController {
         model.addAttribute("phaseCMetersSize", phaseCMeters.size());
         model.addAttribute("undefinedMeters", undefinedMeters);
         model.addAttribute("undefinedMetersSize", undefinedMeters.size());
-        Map<Meter, String> failureMetersMap = Maps.newHashMap();
+        Map<PlcMeter, String> failureMetersMap = Maps.newHashMap();
         for(SimpleDevice device : resultCopy.getFailureGroupMap().keySet()){
-            Meter meter = meterDao.getForYukonDevice(device);
+            PlcMeter meter = meterDao.getPlcMeterForId(device.getDeviceId());
             String error = resultCopy.getFailureGroupMap().get(device);
             failureMetersMap.put(meter, error);
         }
@@ -541,7 +541,7 @@ public class PhaseDetectController {
             phaseResultsMap.put("phaseC", 0);
         }
         
-        List<Meter> undefinedMeters = getUndefinedMeters();
+        List<PlcMeter> undefinedMeters = getUndefinedMeters();
         phaseResultsMap.put("undefined", undefinedMeters.size());
         
         if(!dataCopy.isReadAfterAll()){
@@ -580,9 +580,9 @@ public class PhaseDetectController {
         return phaseResultsMap;
     }
     
-    private List<Meter> getUndefinedMeters(){
+    private List<PlcMeter> getUndefinedMeters(){
         List<SimpleDevice> allDevices = getDevicesOnSub(dataCopy.getSubstationId());
-        List<Meter> undefinedMeters = Lists.newArrayList();
+        List<PlcMeter> undefinedMeters = Lists.newArrayList();
         List<SimpleDevice> phaseADevices = deviceGroupMemberEditorDao.getChildDevices(resultCopy.getPhaseToGroupMap().get(Phase.A));
         List<SimpleDevice> phaseBDevices = deviceGroupMemberEditorDao.getChildDevices(resultCopy.getPhaseToGroupMap().get(Phase.B));
         List<SimpleDevice> phaseCDevices = deviceGroupMemberEditorDao.getChildDevices(resultCopy.getPhaseToGroupMap().get(Phase.C));
@@ -596,7 +596,7 @@ public class PhaseDetectController {
             allDevices.remove(device);
         }
         for(SimpleDevice device : allDevices){
-            Meter meter = meterDao.getForYukonDevice(device);
+            PlcMeter meter = meterDao.getPlcMeterForId(device.getDeviceId());
             undefinedMeters.add(meter);
         }
         return undefinedMeters;
@@ -615,11 +615,11 @@ public class PhaseDetectController {
         return devicesOnSub;
     }
     
-    private List<Meter> getMeterListForGroup(StoredDeviceGroup group){
+    private List<PlcMeter> getMeterListForGroup(StoredDeviceGroup group){
         List<SimpleDevice> devices = deviceGroupMemberEditorDao.getChildDevices(group);
-        List<Meter> meters = Lists.newArrayList();
+        List<PlcMeter> meters = Lists.newArrayList();
         for(SimpleDevice device : devices){
-            Meter meter = meterDao.getForYukonDevice(device);
+            PlcMeter meter = meterDao.getPlcMeterForId(device.getDeviceId());
             meters.add(meter);
         }
         return meters;

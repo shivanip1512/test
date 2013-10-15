@@ -14,7 +14,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.amr.meter.dao.MeterDao;
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.amr.meter.service.impl.MeterEventLookupService;
 import com.cannontech.amr.paoPointValue.model.MeterPointValue;
 import com.cannontech.common.pao.attribute.model.Attribute;
@@ -44,14 +44,14 @@ public class MeterEventsWidget extends AdvancedWidgetControllerBase {
     }
 
     public void setupModel(int deviceId, ModelMap model, YukonUserContext userContext) {
-        Meter meter = meterDao.getForId(deviceId);
+        YukonMeter meter = meterDao.getForId(deviceId);
         List<MeterPointValue> meterPointValues = getMeterPointValues(meter, userContext);
         model.addAttribute("valueMap", meterPointValues);
         model.addAttribute("deviceId", deviceId);
         model.addAttribute("meter", meter);
     }
     
-    private List<MeterPointValue> getMeterPointValues(Meter meter, YukonUserContext userContext) {
+    private List<MeterPointValue> getMeterPointValues(YukonMeter meter, YukonUserContext userContext) {
         Set<Attribute> availableEventAttributes =
             meterEventLookupService.getAvailableEventAttributes(Collections.singletonList(meter));
         

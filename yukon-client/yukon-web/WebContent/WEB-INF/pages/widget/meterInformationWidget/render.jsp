@@ -21,9 +21,9 @@
         </tags:nameValue2>
     </c:if>
     <c:if test="${showRFMeshSettings}">
-        <tags:nameValue2 nameKey=".serialNumber">${fn:escapeXml(rfnMeter.meterIdentifier.sensorSerialNumber)}</tags:nameValue2>
-        <tags:nameValue2 nameKey=".model">${fn:escapeXml(rfnMeter.meterIdentifier.sensorModel)}</tags:nameValue2>
-        <tags:nameValue2 nameKey=".manufacturer">${fn:escapeXml(rfnMeter.meterIdentifier.sensorManufacturer)}</tags:nameValue2>
+        <tags:nameValue2 nameKey=".serialNumber">${fn:escapeXml(meter.rfnIdentifier.sensorSerialNumber)}</tags:nameValue2>
+        <tags:nameValue2 nameKey=".model">${fn:escapeXml(meter.rfnIdentifier.sensorModel)}</tags:nameValue2>
+        <tags:nameValue2 nameKey=".manufacturer">${fn:escapeXml(meter.rfnIdentifier.sensorManufacturer)}</tags:nameValue2>
     </c:if>
 	<tags:nameValue2 nameKey=".status">
 	<c:if test='${meter.disabled}'><span class="fwb error"><i:inline key=".disabled"/></span></c:if>

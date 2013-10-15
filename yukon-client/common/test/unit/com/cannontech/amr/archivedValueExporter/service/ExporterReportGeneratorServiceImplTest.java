@@ -50,7 +50,7 @@ import com.cannontech.amr.archivedValueExporter.model.dataRange.LocalDateRange;
 import com.cannontech.amr.archivedValueExporter.service.impl.ExportReportGeneratorServiceImpl;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.dao.MockMeterDaoImpl;
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.amr.rfn.dao.MockRfnDeviceDaoImpl;
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.common.pao.attribute.service.AttributeService;
@@ -165,7 +165,7 @@ public class ExporterReportGeneratorServiceImplTest {
         Assert.assertEquals(timestampValue, "07/12/2012");
 
         // Unit of Measure Test 
-        Meter meter = meterDao.getForMeterNumber("Meter Number 1");
+        YukonMeter meter = meterDao.getForMeterNumber("Meter Number 1");
         ExportField exportFieldUnitOfMeasure = getExportField(0, FieldType.UNIT_OF_MEASURE, earliestUsageAttribute, AttributeField.UNIT_OF_MEASURE, null);
         String unitOfMeasureValue = exporterReportGeneratorService.getValue(exportFieldUnitOfMeasure, meter, USAGE, pointValueQualityHolder, userContextOne, tzFormat);
         
@@ -180,7 +180,7 @@ public class ExporterReportGeneratorServiceImplTest {
 
     @Test
     public void getValue_Meter_Test() {
-        Meter meter = meterDao.getForMeterNumber("Meter Number 1");
+        YukonMeter meter = meterDao.getForMeterNumber("Meter Number 1");
         
         // Point Value Test
         ExportField meterExportFieldMeterNumber = getExportField(0, METER_NUMBER);
@@ -198,7 +198,7 @@ public class ExporterReportGeneratorServiceImplTest {
 
         Assert.assertEquals(addressValue, "Address A");
 
-        Meter rfnMeter = meterDao.getForMeterNumber("Meter Number 3");
+        YukonMeter rfnMeter = meterDao.getForMeterNumber("Meter Number 3");
         String rfnSerialNumberValue = exporterReportGeneratorService.getValue(meterExportFieldAddress, rfnMeter, null, pointValueQualityHolder, userContextOne, tzFormat);
 
         Assert.assertEquals("410987654", rfnSerialNumberValue);
@@ -211,7 +211,7 @@ public class ExporterReportGeneratorServiceImplTest {
 
     @Test
     public void getValue_Null_Meter_Test() {
-        Meter meter = meterDao.getForMeterNumber("Null Valued Meter");
+        YukonMeter meter = meterDao.getForMeterNumber("Null Valued Meter");
         
         ExportField meterExportFieldAddress = getExportField(0, ADDRESS);
         String addressValue = exporterReportGeneratorService.getValue(meterExportFieldAddress, meter, null, pointValueQualityHolder, userContextOne, tzFormat);
@@ -252,7 +252,7 @@ public class ExporterReportGeneratorServiceImplTest {
 
     @Test
     public void generateFixedFormat_Test() {
-        List<Meter> meters = new ArrayList<>();
+        List<YukonMeter> meters = new ArrayList<>();
         meters.add(meterDao.getForMeterNumber("Meter Number 1"));
         meters.add(meterDao.getForMeterNumber("Meter Number 2"));
         
@@ -270,7 +270,7 @@ public class ExporterReportGeneratorServiceImplTest {
 
     @Test
     public void generateDyanamicFormat_noAttributes_Test() {
-        List<Meter> meters = new ArrayList<>();
+        List<YukonMeter> meters = new ArrayList<>();
         meters.add(meterDao.getForMeterNumber("Meter Number 1"));
         meters.add(meterDao.getForMeterNumber("Meter Number 2"));
         
@@ -289,7 +289,7 @@ public class ExporterReportGeneratorServiceImplTest {
     
     @Test
     public void generateDyanamicFormatByDateRange_Test() {
-        List<Meter> meters = new ArrayList<>();
+        List<YukonMeter> meters = new ArrayList<>();
         meters.add(meterDao.getForMeterNumber("Meter Number 1"));
         meters.add(meterDao.getForMeterNumber("Meter Number 2"));
         
@@ -321,7 +321,7 @@ public class ExporterReportGeneratorServiceImplTest {
     
     @Test
     public void generateDyanamicFormatByChangeId_Test() {
-        List<Meter> meters = new ArrayList<>();
+        List<YukonMeter> meters = new ArrayList<>();
         meters.add(meterDao.getForMeterNumber("Meter Number 1"));
         meters.add(meterDao.getForMeterNumber("Meter Number 2"));
         
@@ -352,7 +352,7 @@ public class ExporterReportGeneratorServiceImplTest {
 
     @Test
     public void generateDyanamicFormatByDaysPrevious_Test() {
-        List<Meter> meters = new ArrayList<>();
+        List<YukonMeter> meters = new ArrayList<>();
         meters.add(meterDao.getForMeterNumber("Meter Number 1"));
         
         DataRange dataRange = new DataRange();

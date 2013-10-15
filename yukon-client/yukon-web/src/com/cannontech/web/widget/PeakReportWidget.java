@@ -19,7 +19,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.amr.meter.dao.MeterDao;
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.PlcMeter;
 import com.cannontech.common.device.peakReport.model.PeakReportPeakType;
 import com.cannontech.common.device.peakReport.model.PeakReportResult;
 import com.cannontech.common.device.peakReport.model.PeakReportRunType;
@@ -48,6 +48,7 @@ public class PeakReportWidget extends WidgetControllerBase {
     private PaoCommandAuthorizationService commandAuthorizationService;
     private YukonUserContextMessageSourceResolver messageSourceResolver = null;
     
+    @Override
     public ModelAndView render(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
@@ -60,7 +61,7 @@ public class PeakReportWidget extends WidgetControllerBase {
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
 
         // get meter
-        Meter meter = meterDao.getForId(deviceId);
+        PlcMeter meter = meterDao.getPlcMeterForId(deviceId);
 
         // available channels
         Integer prevChannel = WidgetParameterHelper.getIntParameter(request, "channel", 1);
@@ -158,7 +159,7 @@ public class PeakReportWidget extends WidgetControllerBase {
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
         
         // get meter
-        Meter meter = meterDao.getForId(deviceId);
+        PlcMeter meter = meterDao.getPlcMeterForId(deviceId);
         
         // channel
         int channel = WidgetParameterHelper.getRequiredIntParameter(request, "channel");

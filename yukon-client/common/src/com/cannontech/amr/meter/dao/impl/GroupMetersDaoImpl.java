@@ -6,26 +6,24 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Required;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
 import com.cannontech.amr.meter.dao.GroupMetersDao;
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.database.ListRowCallbackHandler;
+import com.cannontech.database.CollectionRowCallbackHandler;
 import com.cannontech.database.MaxRowCalbackHandlerRse;
-import com.cannontech.database.SqlProvidingRowMapper;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 
 public class GroupMetersDaoImpl implements GroupMetersDao {
 
-    private SqlProvidingRowMapper<Meter> meterRowMapper;
-    private SimpleJdbcOperations simpleJdbcTemplate;
-    private DeviceGroupProviderDao deviceGroupProviderDao;
+    @Autowired private MeterRowMapper meterRowMapper;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
+    @Autowired private DeviceGroupProviderDao deviceGroupProviderDao;
     @Autowired private GlobalSettingDao globalSettingDao;
     
     private static Map<MeterDisplayFieldEnum, String> orderByMap = new HashMap<MeterDisplayFieldEnum, String>();
@@ -34,20 +32,6 @@ public class GroupMetersDaoImpl implements GroupMetersDao {
         orderByMap.put(MeterDisplayFieldEnum.METER_NUMBER, "DeviceMeterGroup.meterNumber");
         orderByMap.put(MeterDisplayFieldEnum.ADDRESS, "DeviceCarrierSettings.address");
         orderByMap.put(MeterDisplayFieldEnum.ID, "ypo.paObjectId");
-    }
-    
-    @Required
-    public void setMeterRowMapper(SqlProvidingRowMapper<Meter> meterRowMapper) {
-        this.meterRowMapper = meterRowMapper;
-    }
-    @Required
-    public void setSimpleJdbcTemplate(SimpleJdbcOperations simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
-    }
-    @Required
-    public void setDeviceGroupProviderDao(
-            DeviceGroupProviderDao deviceGroupProviderDao) {
-        this.deviceGroupProviderDao = deviceGroupProviderDao;
     }
     
     private static String getOrderByFromMeterDisplayFieldEnum(MeterDisplayFieldEnum meterDisplayFieldEnum) {
@@ -61,10 +45,11 @@ public class GroupMetersDaoImpl implements GroupMetersDao {
         return getOrderByFromMeterDisplayFieldEnum(meterDisplayFieldEnumVal);
     }
 
-    public List<Meter> getMetersByGroup(DeviceGroup group) {
+    @Override
+    public List<YukonMeter> getMetersByGroup(DeviceGroup group) {
         SqlFragmentSource sql = getChildMetersByGroupSql(group);
 
-        List<Meter> meterList = simpleJdbcTemplate.query(sql.getSql(), meterRowMapper, sql.getArguments());
+        List<YukonMeter> meterList = jdbcTemplate.query(sql,  meterRowMapper);
 
         return meterList;
     }
@@ -82,25 +67,26 @@ public class GroupMetersDaoImpl implements GroupMetersDao {
         return sql;
     }
     
-    public List<Meter> getChildMetersByGroup(DeviceGroup group) {
+    @Override
+    public List<YukonMeter> getChildMetersByGroup(DeviceGroup group) {
         SqlFragmentSource sql = getChildMetersByGroupSql(group);
 
-        List<Meter> meterList = simpleJdbcTemplate.query(sql.getSql(), meterRowMapper, sql.getArguments());
+        List<YukonMeter> meterList = jdbcTemplate.query(sql,  meterRowMapper);
 
         return meterList;
     }
     
-    public List<Meter> getChildMetersByGroup(DeviceGroup group, final int maxRecordCount) {
+    @Override
+    public List<YukonMeter> getChildMetersByGroup(DeviceGroup group, final int maxRecordCount) {
         SqlFragmentSource sql = getChildMetersByGroupSql(group);
 
-        final List<Meter> meterList = new ArrayList<Meter>();
+        final List<YukonMeter> meterList = new ArrayList<YukonMeter>();
         
-        ListRowCallbackHandler lrcHandler = new ListRowCallbackHandler(meterList,
-                                                                       meterRowMapper);
+        CollectionRowCallbackHandler<YukonMeter> crcHandler = new CollectionRowCallbackHandler<YukonMeter>(meterRowMapper, meterList);
 
-        MaxRowCalbackHandlerRse rse = new MaxRowCalbackHandlerRse(lrcHandler, maxRecordCount);
-            
-        simpleJdbcTemplate.getJdbcOperations().query(sql.getSql(), sql.getArguments(), rse);
+        MaxRowCalbackHandlerRse rse = new MaxRowCalbackHandlerRse(crcHandler, maxRecordCount);
+        
+        jdbcTemplate.query(sql,  rse);
 
         return meterList;
     }

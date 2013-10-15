@@ -5,7 +5,6 @@ import java.util.Set;
 
 import org.joda.time.Instant;
 
-import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.amr.paoPointValue.model.MeterPointValue;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;

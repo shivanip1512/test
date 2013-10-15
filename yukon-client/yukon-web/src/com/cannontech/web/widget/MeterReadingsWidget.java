@@ -13,7 +13,7 @@ import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.model.PreviousReadings;
 import com.cannontech.common.events.loggers.MeteringEventLogService;
@@ -59,7 +59,7 @@ public class MeterReadingsWidget extends WidgetControllerBase {
     public ModelAndView render(HttpServletRequest request, HttpServletResponse response)
             throws ServletRequestBindingException {
 
-        Meter meter = widgetHelper.getMeter(request);
+        YukonMeter meter = widgetHelper.getMeter(request);
         ModelAndView mav = new ModelAndView("meterReadingsWidget/render.jsp");
         mav.addObject("device", meter);
         mav.addObject("attributes", attributesToShow);
@@ -102,7 +102,7 @@ public class MeterReadingsWidget extends WidgetControllerBase {
     public ModelAndView read(HttpServletRequest request, HttpServletResponse response)
     throws ServletRequestBindingException {
         
-        Meter meter = widgetHelper.getMeter(request);
+        YukonMeter meter = widgetHelper.getMeter(request);
         Set<Attribute> allExistingAttributes = 
                 attributeService.getExistingAttributes(meter, Sets.newHashSet(attributesToShow));
         

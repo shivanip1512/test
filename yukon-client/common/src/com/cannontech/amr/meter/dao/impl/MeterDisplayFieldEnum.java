@@ -1,19 +1,21 @@
 package com.cannontech.amr.meter.dao.impl;
 
 import com.cannontech.amr.meter.dao.MeterDisplayFieldAccessor;
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.amr.meter.search.model.MeterSearchField;
 
 public enum MeterDisplayFieldEnum {
 
     DEVICE_NAME("Device Name", "deviceName", MeterSearchField.PAONAME, new MeterDisplayFieldAccessor() {
-        public String getField(Meter meter) {
+        @Override
+        public String getField(YukonMeter meter) {
             return meter.getName();
         }
     }),
     
     METER_NUMBER("Meter Number", "meterNumber", MeterSearchField.METERNUMBER, new MeterDisplayFieldAccessor() {
-        public String getField(Meter meter) {
+        @Override
+        public String getField(YukonMeter meter) {
             String meterNumber = meter.getMeterNumber();
             if (meterNumber == null) {
                 return "n/a";
@@ -23,8 +25,9 @@ public enum MeterDisplayFieldEnum {
     }),
     
     ADDRESS("Address", "address", MeterSearchField.ADDRESS, new MeterDisplayFieldAccessor() {
-        public String getField(Meter meter) {
-            return meter.getAddress();
+        @Override
+        public String getField(YukonMeter meter) {
+            return meter.getSerialOrAddress();
         }
     }),
     
@@ -33,7 +36,8 @@ public enum MeterDisplayFieldEnum {
      * Used for meter search selection page only
      */
     ROUTE("Route", "route", MeterSearchField.ROUTE, new MeterDisplayFieldAccessor() {
-        public String getField(Meter meter) {
+        @Override
+        public String getField(YukonMeter meter) {
             return meter.getRoute();
         }
     }),
@@ -43,13 +47,15 @@ public enum MeterDisplayFieldEnum {
      * Used for meter search selection page only
      */
     DEVICE_TYPE("Device Type", "deviceType",MeterSearchField.TYPE, new MeterDisplayFieldAccessor() {
-        public String getField(Meter meter) {
+        @Override
+        public String getField(YukonMeter meter) {
             return meter.getPaoType().getPaoTypeName();
         }
     }),
     
     ID("Device ID", "id", null, new MeterDisplayFieldAccessor() {
-        public String getField(Meter meter) {
+        @Override
+        public String getField(YukonMeter meter) {
             return ((Integer)meter.getDeviceId()).toString();
         }
     });
@@ -79,7 +85,7 @@ public enum MeterDisplayFieldEnum {
         return searchField;
     }
     
-    public String getField(Meter meter) {
+    public String getField(YukonMeter meter) {
         return this.meterDisplayFieldAccessor.getField(meter);
     }
 }

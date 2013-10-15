@@ -39,7 +39,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.amr.meter.service.impl.MeterEventLookupService;
 import com.cannontech.amr.meter.service.impl.MeterEventStatusTypeGroupings;
 import com.cannontech.amr.paoPointValue.model.MeterPointValue;
@@ -509,7 +509,7 @@ public class MeterEventsReportController {
     }
     
     private DeviceCollection getDeviceCollectionFromReportResults(List<MeterPointValue> events, YukonUserContext userContext) {
-        Set<Meter> meters = Sets.newHashSet();
+        Set<YukonMeter> meters = Sets.newHashSet();
         for (MeterPointValue reportEvent : events) {
             meters.add(reportEvent.getMeter());
         }
