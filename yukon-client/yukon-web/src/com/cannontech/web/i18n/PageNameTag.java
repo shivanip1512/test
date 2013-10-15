@@ -7,6 +7,7 @@ import javax.servlet.jsp.JspException;
 import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.web.util.HtmlUtils;
 
 import com.cannontech.common.userpage.model.UserPage;
 import com.cannontech.web.common.userpage.service.UserPageService;
@@ -21,6 +22,7 @@ public class PageNameTag extends YukonTagSupport {
     @Override
     public void doTag() throws JspException, IOException {
         String pageName = userPageService.getLocalizePageName(userPage, getUserContext());
+        pageName = HtmlUtils.htmlEscape(pageName);
 
         getJspContext().getOut().print(pageName);
     }
