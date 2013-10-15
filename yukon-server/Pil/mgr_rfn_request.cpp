@@ -239,24 +239,26 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleTimeouts()
     RfnIdentifierSet expirations;
 
     ExpirationMap::const_iterator
-            itr     = _upcomingExpirations.begin(),
-            expired = _upcomingExpirations.upper_bound(now.seconds());
+            expired_itr = _upcomingExpirations.begin(),
+            expired_end = _upcomingExpirations.upper_bound(now.seconds());
 
     RfnIdentifierSet retransmits;
 
-    for( ; itr != expired; ++itr )
+    for( ; expired_itr != expired_end; ++expired_itr )
     {
-        for each( const RfnIdentifier rfnId in itr->second )
+        for each( const RfnIdentifier &rfnId in expired_itr->second )
         {
-            RfnIdToActiveRequest::iterator itr = _activeRequests.find(rfnId);
+            RfnIdToActiveRequest::iterator expired_itr = _activeRequests.find(rfnId);
 
-            if( itr == _activeRequests.end() )
+            if( expired_itr == _activeRequests.end() )
             {
                 CtiLockGuard<CtiLogger> dout_guard(dout);
                 dout << CtiTime() << " Timeout occurred for inactive device " << rfnId << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+
+                continue;
             }
 
-            ActiveRfnRequest &activeRequest = itr->second;
+            ActiveRfnRequest &activeRequest = expired_itr->second;
 
             if( activeRequest.status == ActiveRfnRequest::PendingReply )
             {
@@ -281,7 +283,7 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleTimeouts()
                 default:
                     {
                         CtiLockGuard<CtiLogger> dout_guard(dout);
-                        dout << CtiTime() << " Timeout occurred for device in state " << activeRequest.status << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+                        dout << CtiTime() << " Timeout occurred for device \"" << activeRequest.request.rfnIdentifier << "\" deviceid " << activeRequest.request.deviceId << " in state " << activeRequest.status << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
                     }
                     result->status = UnknownError;
                     break;
@@ -303,7 +305,7 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleTimeouts()
         }
     }
 
-    _upcomingExpirations.erase(_upcomingExpirations.begin(), expired);
+    _upcomingExpirations.erase(_upcomingExpirations.begin(), expired_end);
 
     const time_t newExpiration = CtiTime::now().seconds() + gConfigParms.getValueAsInt("E2EDT_AMQ_TIMEOUT", E2EDT_AMQ_TIMEOUT);
 
@@ -362,6 +364,7 @@ void RfnRequestManager::checkForNewRequest(const RfnIdentifier &rfnIdentifier)
 
             ActiveRfnRequest &newRequest = _activeRequests[request.rfnIdentifier];
 
+            newRequest.request = request;
             newRequest.e2eId = ++_e2eIds[request.deviceId];
             newRequest.retransmits = gConfigParms.getValueAsInt("E2EDT_CON_MAX_RETX", E2EDT_CON_MAX_RETX);
 
@@ -379,9 +382,10 @@ void RfnRequestManager::checkForNewRequest(const RfnIdentifier &rfnIdentifier)
             rfnMessageFactory.serialize(msg, serialized);
 
             newRequest.requestMessage = serialized;
+            newRequest.status = ActiveRfnRequest::PendingReply;
             newRequest.timeout = CtiTime::now().seconds() + gConfigParms.getValueAsInt("E2EDT_AMQ_TIMEOUT", E2EDT_AMQ_TIMEOUT);
 
-            _upcomingExpirations[newRequest.timeout].insert(newRequest.request.rfnIdentifier);
+            _upcomingExpirations[newRequest.timeout].insert(request.rfnIdentifier);
 
             _messages.push_back(serialized);
 
