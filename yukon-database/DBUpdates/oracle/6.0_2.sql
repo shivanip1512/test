@@ -282,6 +282,11 @@ UPDATE DeviceConfigCategory SET CategoryType = 'mct470ProfileChannels' WHERE Cat
 UPDATE DeviceConfigCategory SET CategoryType = 'demandProfile' WHERE CategoryType = 'mct470DemandLoadProfile';
 /* End YUK-12627 */
 
+/* Start YUK-12639 */
+ALTER TABLE UserPageParam
+MODIFY Parameter VARCHAR2(2000) NOT NULL;
+/* End YUK-12639 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

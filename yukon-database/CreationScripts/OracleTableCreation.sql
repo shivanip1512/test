@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     10/9/2013 2:04:52 PM                         */
+/* Created on:     10/15/2013 4:07:43 PM                        */
 /*==============================================================*/
 
 
@@ -8093,7 +8093,7 @@ create table UserPageParam  (
    UserPageParamId      NUMBER                          not null,
    UserPageId           NUMBER                          not null,
    ParamNumber          NUMBER                          not null,
-   Parameter            VARCHAR2(80)                    not null,
+   Parameter            VARCHAR2(2000)                  not null,
    constraint PK_UserPageParam primary key (UserPageParamId)
 );
 

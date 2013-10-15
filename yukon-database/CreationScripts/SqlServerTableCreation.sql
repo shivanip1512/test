@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     10/9/2013 2:02:43 PM                         */
+/* Created on:     10/15/2013 4:08:57 PM                        */
 /*==============================================================*/
 
 
@@ -8602,7 +8602,7 @@ create table UserPageParam (
    UserPageParamId      numeric              not null,
    UserPageId           numeric              not null,
    ParamNumber          numeric              not null,
-   Parameter            varchar(80)          not null,
+   Parameter            varchar(2000)        not null,
    constraint PK_UserPageParam primary key (UserPageParamId)
 )
 go
