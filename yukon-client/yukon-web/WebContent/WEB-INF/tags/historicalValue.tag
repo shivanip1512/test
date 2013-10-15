@@ -27,8 +27,8 @@
                     href="${showHistoricalReadingsUrl}">
                     <cti:pointValue pointId="${pointId}" format="DATE" cssClass="fl"/>
                 </a>
-                <div id="${uid}"></div>
             </c:if>
         </span>
     </c:otherwise>
 </c:choose>
+<div id="${uid}"></div>

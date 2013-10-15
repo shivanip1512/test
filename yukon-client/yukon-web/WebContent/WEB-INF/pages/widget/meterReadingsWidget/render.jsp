@@ -1,10 +1,8 @@
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
-<%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog"%>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:url var="previousReadingOptionsUrl" value="/WEB-INF/pages/point/previousReadingsOptions.jsp" />
 
@@ -143,7 +141,7 @@ function ${widgetParameters.widgetId}_updateDifference() {
                     </c:if>
                  </td>
                  <td><cti:pointValue pointId="${pointResultRow.pointId}" format="SHORT"/></td>
-                 <td><tags:historicalValue device="${device}" pointId="${pointResultRow.pointId}"/></td> 
+                 <td><tags:historicalValue device="${device}" pointId="${pointResultRow.pointId}"/></td>
              </tr>
          </c:forEach>
         </tbody>
