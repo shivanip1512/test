@@ -197,8 +197,12 @@ void ActiveMQConnectionManager::sendOutgoingMessages()
             tempConsumer->managedConsumer->setMessageListener(
                     tempConsumer->listener.get());
 
+            //  copy the key string for inserting, since tempConsumer will be invalidated
+            //    when passed as a parameter to ptr_map::insert()
+            const std::string destinationPhysicalName = tempConsumer->managedConsumer->getDestPhysicalName();
+
             _temporaryConsumers.insert(
-                    tempConsumer->managedConsumer->getDestPhysicalName(),
+                    destinationPhysicalName,
                     tempConsumer);
         }
 
