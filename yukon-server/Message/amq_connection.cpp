@@ -198,7 +198,7 @@ void ActiveMQConnectionManager::sendOutgoingMessages()
                     tempConsumer->listener.get());
 
             _temporaryConsumers.insert(
-                    tempConsumer->managedConsumer->getDestination(),
+                    tempConsumer->managedConsumer->getDestPhysicalName(),
                     tempConsumer);
         }
 
@@ -271,7 +271,7 @@ void ActiveMQConnectionManager::dispatchTempQueueReplies()
         if( itr == _temporaryConsumers.end() )
         {
             CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << CtiTime() << " Message received for unknown consumer in " << __FUNCTION__ << " @ " << __FILE__ << " (" << __LINE__ << ")";
+            dout << CtiTime() << " Message received with no consumer; destination [" << reply.first << "] in " << __FUNCTION__ << " @ " << __FILE__ << " (" << __LINE__ << ")\n";
 
             continue;
         }
@@ -438,10 +438,11 @@ void ActiveMQConnectionManager::onTempQueueReply(const cms::Message *message)
 
         bytesMessage->readBytes(payload);
 
+        if( const cms::Destination *dest = message->getCMSDestination() )
         {
             CtiLockGuard<CtiCriticalSection> lock(_tempQueueRepliesMux);
 
-            _tempQueueReplies[message->getCMSDestination()] = payload;
+            _tempQueueReplies[ActiveMQ::destPhysicalName(*dest)] = payload;
         }
     }
 }

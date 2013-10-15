@@ -156,10 +156,10 @@ private:
         MessageCallback callback;
     };
 
-    typedef boost::ptr_map<const cms::Destination *, TempQueueConsumerWithCallback> TemporaryConsumersByDestination;
+    typedef boost::ptr_map<std::string, TempQueueConsumerWithCallback> TemporaryConsumersByDestination;
     TemporaryConsumersByDestination _temporaryConsumers;
 
-    typedef std::map<const cms::Destination *, SerializedMessage> ReplyPerDestination;
+    typedef std::map<std::string, SerializedMessage> ReplyPerDestination;
     CtiCriticalSection  _tempQueueRepliesMux;
     ReplyPerDestination _tempQueueReplies;
 
