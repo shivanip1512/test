@@ -20,6 +20,9 @@ import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.message.DbChangeManager;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.core.service.StarsInventoryBaseService;
@@ -52,6 +55,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
     @Autowired private DeviceCreationService deviceCreationService;
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private InventoryBaseDao inventoryBaseDao;
+    @Autowired private DbChangeManager dbChangeManager;
 
     private String getAccountNumber(LmDeviceDto dto) {
         String acctNum = dto.getAccountNumber();
@@ -144,6 +148,8 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
             RfnDevice device = new RfnDevice(newDevice.getPaoIdentifier(), new RfnIdentifier(dto.getSerialNumber(), manufacturer, model));
             rfnDeviceDao.updateDevice(device);
             inventoryBaseDao.updateInventoryBaseDeviceId(liteInv.getInventoryID(), device.getPaoIdentifier().getPaoId());
+            dbChangeManager.processDbChange(liteInv.getInventoryID(), DBChangeMsg.CHANGE_INVENTORY_DB,
+                DBChangeMsg.CAT_INVENTORY_DB, DbChangeType.UPDATE);
             } catch (BadTemplateDeviceCreationException e) {
                 throw new StarsInvalidArgumentException(e.getMessage(), e);
             }
@@ -178,7 +184,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
             
             boolean lmHardware = type.isLmHardware();
             if (lmHardware) {
-                LiteLmHardwareBase lmhw = (LiteLmHardwareBase) starsSearchDao.searchLmHardwareBySerialNumber(getSerialNumber(dto), lsec);
+                LiteLmHardwareBase lmhw = starsSearchDao.searchLmHardwareBySerialNumber(getSerialNumber(dto), lsec);
                 lib = lmhw;
             }
         } catch (ObjectInOtherEnergyCompanyException e) {

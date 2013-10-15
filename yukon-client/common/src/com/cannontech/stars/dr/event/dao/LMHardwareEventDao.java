@@ -37,7 +37,4 @@ public interface LMHardwareEventDao {
     public LiteLMHardwareEvent add(LiteLMHardwareEvent lmHwEvent, int energyCompanyId);
     
     public LiteLMHardwareEvent update(LiteLMHardwareEvent lmHwEvent);    
-    
-    public void deleteAllLMHardwareEvents(Integer inventoryId);    
-
 }

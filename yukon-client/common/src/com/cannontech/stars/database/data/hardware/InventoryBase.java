@@ -2,24 +2,22 @@ package com.cannontech.stars.database.data.hardware;
 
 import java.util.ArrayList;
 
+import org.apache.log4j.Logger;
+
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
+import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.stars.database.data.customer.CustomerAccount;
 import com.cannontech.stars.database.data.event.EventInventory;
 
 
-/**
- * <p>Title: </p>
- * <p>Description: </p>
- * <p>Copyright: Copyright (c) 2002</p>
- * <p>Company: </p>
- * @author unascribed
- * @version 1.0
- */
-
-public class InventoryBase extends DBPersistent {
+public class InventoryBase extends DBPersistent implements CTIDbChange {
+    private static final Logger log = YukonLogManager.getLogger(InventoryBase.class);
 
     private com.cannontech.stars.database.db.hardware.InventoryBase inventoryBase = null;
     private com.cannontech.stars.database.db.report.ServiceCompany installationCompany = null;
@@ -45,6 +43,7 @@ public class InventoryBase extends DBPersistent {
     	getInventoryBase().setAccountID(accountID);
     }
     
+    @Override
     public void setDbConnection(java.sql.Connection conn) {
         super.setDbConnection(conn);
         getInventoryBase().setDbConnection(conn);
@@ -76,6 +75,7 @@ public class InventoryBase extends DBPersistent {
         getInventoryBase().delete();
     }
 
+    @Override
     public void delete() throws java.sql.SQLException {
     	// Call customized delete method from all subclasses of InventoryBase, now there is only LMHardwareBase
     	LMHardwareBase hw = new LMHardwareBase();
@@ -86,6 +86,7 @@ public class InventoryBase extends DBPersistent {
     	deleteInventoryBase();
     }
 
+    @Override
     public void add() throws java.sql.SQLException {
     	if (getEnergyCompanyID() == null)
     		throw new java.sql.SQLException( "setEnergyCompanyID() must be called before this function" );
@@ -100,10 +101,12 @@ public class InventoryBase extends DBPersistent {
         add( "ECToInventoryMapping", addValues );
     }
 
+    @Override
     public void update() throws java.sql.SQLException {
         getInventoryBase().update();
     }
 
+    @Override
     public void retrieve() throws java.sql.SQLException {
         getInventoryBase().retrieve();
     }
@@ -137,9 +140,9 @@ public class InventoryBase extends DBPersistent {
     public void setInstallationCompany(com.cannontech.stars.database.db.report.ServiceCompany newInstallationCompany) {
         installationCompany = newInstallationCompany;
     }
-	/**
+
+    /**
 	 * Returns the energyCompanyID.
-	 * @return Integer
 	 */
 	public Integer getEnergyCompanyID() {
 		return energyCompanyID;
@@ -153,4 +156,13 @@ public class InventoryBase extends DBPersistent {
 		this.energyCompanyID = energyCompanyID;
 	}
 
+    @Override
+    public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType) {
+        DBChangeMsg msg = new DBChangeMsg(getInventoryBase().getInventoryID(), DBChangeMsg.CHANGE_INVENTORY_DB,
+            DBChangeMsg.CAT_INVENTORY_DB, dbChangeType);
+        if (log.isDebugEnabled()) {
+            log.debug("created DBChangeMsg " + msg);
+        }
+        return new DBChangeMsg[] { msg };
+    }
 }

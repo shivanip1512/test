@@ -74,5 +74,10 @@
         <property name="asyncDynamicDataSource" ref="asyncDynamicDataSource" />
     </bean>
 
+    <bean class="com.cannontech.common.search.index.InventoryIndexManager">
+        <property name="jdbcTemplate" ref="jdbcTemplate"/>
+        <property name="asyncDynamicDataSource" ref="asyncDynamicDataSource"/>
+    </bean>
+
     <bean id="indexBuilder" class="com.cannontech.common.search.index.IndexBuilder"/>
 </beans>

@@ -168,17 +168,6 @@ public class ECMappingDaoImpl implements ECMappingDao {
         yukonJdbcTemplate.update(sql, accountId);
     }
 
-    /**
-     * Method to delete energy company to inventory mapping 
-     * @param inventoryId
-     */    
-    @Override    
-    @Transactional    
-    public void deleteECToInventoryMapping(int inventoryId) {
-        String sql = "DELETE FROM ECToInventoryMapping WHERE InventoryID = ?";
-        yukonJdbcTemplate.update(sql, inventoryId);
-    }
-    
     @Override
     @Transactional    
     public void deleteECToCustomerEventMapping(List<Integer> eventIds) {

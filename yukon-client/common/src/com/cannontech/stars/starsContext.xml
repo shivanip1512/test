@@ -208,9 +208,7 @@
     <bean id="lmProgramEventDao" class="com.cannontech.stars.dr.event.dao.impl.LMProgramEventDaoImpl"/>
     
     <bean id="lmHardwareConfigurationDao" class="com.cannontech.stars.dr.hardware.dao.impl.LMHardwareConfigurationDaoImpl"/>
-    
-    <bean id="lmConfigurationBaseDao" class="com.cannontech.stars.dr.hardware.dao.impl.LMConfigurationBaseDaoImpl"/>
-        
+
     <bean id="applianceAndProgramDao" class="com.cannontech.stars.dr.account.dao.impl.ApplianceAndProgramDaoImpl"/>
 
     <bean id="customerResidenceDaoImpl" class="com.cannontech.stars.dr.account.dao.impl.CustomerResidenceDaoImpl"/>
@@ -228,9 +226,7 @@
     <bean id="hardwareBaseDao" class="com.cannontech.stars.dr.hardware.dao.impl.LmHardwareBaseDaoImpl"/>
 
     <bean id="eventBaseDao" class="com.cannontech.stars.dr.event.dao.impl.EventBaseDaoImpl"/>
-        
-    <bean id="eventInventoryDao" class="com.cannontech.stars.dr.event.dao.impl.EventInventoryDaoImpl"/>
-            
+
     <bean id="customerEventBaseDao" class="com.cannontech.stars.dr.event.dao.impl.LMCustomerEventBaseDaoImpl">
         <property name="nextValueHelper" ref="nextValueHelper" />
         <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>

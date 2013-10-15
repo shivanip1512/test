@@ -21,6 +21,9 @@ import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.message.DbChangeManager;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
@@ -69,7 +72,8 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
     @Autowired private InventoryDao inventoryDao;
     @Autowired private GatewayDeviceDao gatewayDeviceDao;
     @Autowired private RfnDeviceDao rfnDeviceDao;
-    
+    @Autowired private DbChangeManager dbChangeManager;
+
     // ADD DEVICE TO ACCOUNT
     @Override
     @Transactional
@@ -81,8 +85,9 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
             if (lmHardware) {
                 LiteLmHardwareBase lmHw = (LiteLmHardwareBase) liteInv;
                 // create LMHardware here
-                liteInv = inventoryBaseDao.saveLmHardware(lmHw,
-                                                               energyCompany.getEnergyCompanyId());
+                liteInv = inventoryBaseDao.saveLmHardware(lmHw, energyCompany.getEnergyCompanyId());
+                dbChangeManager.processDbChange(lmHw.getInventoryID(), DBChangeMsg.CHANGE_INVENTORY_DB,
+                    DBChangeMsg.CAT_INVENTORY_DB, DbChangeType.ADD);
             }
         }
         // existing inventory
@@ -100,6 +105,8 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
                 // update LMHardware here
                 liteInv = inventoryBaseDao.saveLmHardware((LiteLmHardwareBase) liteInv,
                                                                energyCompany.getEnergyCompanyId());
+                dbChangeManager.processDbChange(liteInv.getInventoryID(), DBChangeMsg.CHANGE_INVENTORY_DB,
+                    DBChangeMsg.CAT_INVENTORY_DB, DbChangeType.UPDATE);
             }
         }
 
@@ -234,7 +241,9 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
 
                 // save LMHardware here
                 liteInv = inventoryBaseDao.saveLmHardware(lmHw, lsec.getEnergyCompanyId());
-                
+                dbChangeManager.processDbChange(lmHw.getInventoryID(), DBChangeMsg.CHANGE_INVENTORY_DB,
+                    DBChangeMsg.CAT_INVENTORY_DB, DbChangeType.UPDATE);
+
                 InventoryIdentifier inventoryIdentifier = inventoryDao.getYukonInventory(liteInv.getInventoryID());
                 
                 if (changingSerialNo && inventoryIdentifier.getHardwareType().isRf()) {
@@ -339,7 +348,9 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
         String removeLbl = lib.getManufacturerSerialNumber();
         // update the Inventory to remove it from the account
         inventoryBaseDao.removeInventoryFromAccount(inventoryId, removeInstant, removeLbl);
-        
+        dbChangeManager.processDbChange(lib.getInventoryID(), DBChangeMsg.CHANGE_INVENTORY_DB,
+            DBChangeMsg.CAT_INVENTORY_DB, DbChangeType.UPDATE);
+
         // cleaup gateway assignments for zigbee devices
         HardwareClass hardwareClass = identifier.getHardwareType().getHardwareClass();
         if (hardwareClass == HardwareClass.GATEWAY) {

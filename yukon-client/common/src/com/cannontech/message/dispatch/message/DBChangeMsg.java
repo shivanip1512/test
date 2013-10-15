@@ -68,6 +68,7 @@ public class DBChangeMsg extends com.cannontech.message.util.Message
     public static final int CHANGE_ENCRYPTION_KEY_DB = 39;
     public static final int CHANGE_USER_PREFERENCE_DB = 40;
     public static final int CHANGE_USER_PREFERENCE_DB_DELETE_BY_USER_ID = 41;
+    public static final int CHANGE_INVENTORY_DB = 42;
 
     /*Possible values for the Categories field
      *NOTE: If you are using the CHANGE_PAO_DB database field you will
@@ -104,6 +105,7 @@ public class DBChangeMsg extends com.cannontech.message.util.Message
     public static final String CAT_STATIC_PAO_INFO_DB = "Static Pao Info";
     public static final String CAT_YUKON_PAOBJECT_ENCRYPTION_KEY_DB = "Yukon Paobject Encryption Key";
     public static final String CAT_ENCRYPTION_KEY_DB = "Encryption Key";
+    public static final String CAT_INVENTORY_DB = "Encryption Key";
 
     // Categories used by stars
     public static final String CAT_CUSTOMER_ACCOUNT = "CustomerAccount";

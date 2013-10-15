@@ -33,6 +33,9 @@ import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.message.DbChangeManager;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
@@ -85,7 +88,8 @@ public class HardwareUiServiceImpl implements HardwareUiService {
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
     @Autowired private InventoryDao inventoryDao;
     @Autowired private ECMappingDao ecMappingDao;
-    
+    @Autowired private DbChangeManager dbChangeManager;
+
     @Override
     public Hardware getHardware(int inventoryId) {
         int ecId = ecMappingDao.getEnergyCompanyIdForInventoryId(inventoryId);
@@ -393,7 +397,9 @@ public class HardwareUiServiceImpl implements HardwareUiService {
         
         // Log hardware update
         hardwareEventLogService.hardwareUpdated(user, hardware.getSerialNumber());
-        
+        dbChangeManager.processDbChange(hardware.getInventoryId(), DBChangeMsg.CHANGE_INVENTORY_DB,
+            DBChangeMsg.CAT_INVENTORY_DB, DbChangeType.UPDATE);
+
         /* Tell controller to spawn event for device status change if necessary */
         if (hardware.getOriginalDeviceStatusEntryId() != null) {
             if (liteInventoryBase.getCurrentStateID() != hardware.getOriginalDeviceStatusEntryId()){
@@ -514,7 +520,9 @@ public class HardwareUiServiceImpl implements HardwareUiService {
         
         // Pass to the extension service
         hardwareTypeExtensionService.createDevice(hardware);
-        
+        dbChangeManager.processDbChange(hardware.getInventoryId(), DBChangeMsg.CHANGE_INVENTORY_DB,
+            DBChangeMsg.CAT_INVENTORY_DB, DbChangeType.UPDATE);
+
         // Log hardware creation
         hardwareEventLogService.hardwareCreated(user, deviceLabel);
         
@@ -550,6 +558,8 @@ public class HardwareUiServiceImpl implements HardwareUiService {
             liteInventoryBase.setInstallDate(now.getTime());
             
             inventoryBaseDao.saveInventoryBase(liteInventoryBase, energyCompany.getEnergyCompanyId()).getInventoryID();
+            dbChangeManager.processDbChange(liteInventoryBase.getInventoryID(), DBChangeMsg.CHANGE_INVENTORY_DB,
+                DBChangeMsg.CAT_INVENTORY_DB, DbChangeType.UPDATE);
 
             /* Reset the installation notes */
             List<LiteLMHardwareEvent> events = lmHardwareEventDao.getByInventoryId(liteInventoryBase.getInventoryID());

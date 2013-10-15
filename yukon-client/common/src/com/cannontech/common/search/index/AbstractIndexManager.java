@@ -21,6 +21,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
+import org.apache.log4j.Logger;
+import org.apache.log4j.Priority;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
@@ -44,7 +46,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
-import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.search.TopDocsCallbackHandler;
 import com.cannontech.common.util.CtiUtilities;
@@ -57,6 +59,7 @@ import com.cannontech.message.dispatch.message.DbChangeType;
  */
 @ManagedResource
 public abstract class AbstractIndexManager implements IndexManager {
+    private static final Logger log = YukonLogManager.getLogger(AbstractIndexManager.class);
 
     public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
     private static final String VERSION_PROPERTY = "version";
@@ -97,10 +100,12 @@ public abstract class AbstractIndexManager implements IndexManager {
     public AbstractIndexManager() {
     }
 
+    @Override
     public boolean isBuilding() {
         return this.isBuilding;
     }
 
+    @Override
     public String getDateCreated() {
         if (this.dateCreated == null) {
             return null;
@@ -108,10 +113,12 @@ public abstract class AbstractIndexManager implements IndexManager {
         return DATE_FORMAT.format(this.dateCreated);
     }
 
+    @Override
     public String getVersion() {
         return this.version;
     }
     
+    @Override
     public String getDatabase() {
         return this.database;
     }
@@ -198,6 +205,7 @@ public abstract class AbstractIndexManager implements IndexManager {
     abstract protected IndexUpdateInfo processDBChange(DbChangeType dbChangeType, int id, int database, String category,
             String type);
 
+    @Override
     public float getPercentDone() {
 
         this.checkForException();
@@ -213,6 +221,7 @@ public abstract class AbstractIndexManager implements IndexManager {
 
     }
 
+    @Override
     public void dbChangeReceived(DBChangeMsg dbChange) {
 
         try {
@@ -225,18 +234,22 @@ public abstract class AbstractIndexManager implements IndexManager {
             if (info != null) {
                 boolean success = this.updateQueue.offer(info);
                 if (!success) {
-                    CTILogger.warn("Unable to insert IndexUpdateInfo onto work queue (it is full), index will be out of sync");
+                    log.warn("Unable to insert IndexUpdateInfo onto work queue (it is full), index will be out of sync");
                     updateErrorCount.getAndIncrement();
                 }
             }
         } catch (RuntimeException e) {
-            CTILogger.warn("Caught exception handling db change for " + this.getIndexName() + ": " + e);
+            if (log.isDebugEnabled()) {
+                log.warn("Caught exception handling db change for " + getIndexName() + ": ", e);
+            } else {
+                log.warn("Caught exception handling db change for " + getIndexName() + ": " + e);
+            }
             updateErrorCount.getAndIncrement();
             this.currentException = e;
         }
-
     }
 
+    @Override
     public synchronized void rebuildIndex() {
 
         if (!this.isBuilding() && !this.managerThread.isInterrupted()) {
@@ -276,14 +289,14 @@ public abstract class AbstractIndexManager implements IndexManager {
                     try {
                         this.dateCreated = DATE_FORMAT.parse(dateString);
                     } catch (ParseException e) {
-                        CTILogger.error(e);
+                        log.error(e);
                     }
                 }
             } catch (FileNotFoundException e) {
                 // do nothing - no version.txt
             }
         } catch (IOException e) {
-            CTILogger.error("Exception reading " + this.getIndexName() + " lucene index directory", e);
+            log.error("Exception reading " + getIndexName() + " lucene index directory", e);
         }
 
         
@@ -302,6 +315,7 @@ public abstract class AbstractIndexManager implements IndexManager {
 
         // Start the index manager thread
         managerThread = new Thread(new Runnable() {
+            @Override
             public void run() {
                 processBuild(rebuild);
                 processUpdates();
@@ -312,8 +326,10 @@ public abstract class AbstractIndexManager implements IndexManager {
 
     }
     
+    @Override
     public SearchTemplate getSearchTemplate(){
         return new SearchTemplate(){
+            @Override
             public <R> R doCallBackSearch(Query query, TopDocsCallbackHandler<R> handler) throws IOException {
                 
                 // Make sure there are currently no issues with the index
@@ -335,6 +351,7 @@ public abstract class AbstractIndexManager implements IndexManager {
             }};
     }
 
+    @Override
     @PreDestroy
     public void shutdown() {
         shutdownNow = true;
@@ -371,7 +388,8 @@ public abstract class AbstractIndexManager implements IndexManager {
                                                                  + " index",
                                                                  e);
                     updateErrorCount.getAndIncrement();
-                    CTILogger.error("Caught IOException exception while processing update, index is probably out of sync", this.currentException);
+                    log.error("Caught IOException exception while processing update, index is probably out of sync",
+                        currentException);
                 } finally {
                     try {
                         if (indexModifier != null) {
@@ -385,7 +403,7 @@ public abstract class AbstractIndexManager implements IndexManager {
 
             } catch (InterruptedException e) {
                 if (shutdownNow) {
-                    CTILogger.info("Shutting down " + getIndexName() + " indexing thread");
+                    log.info("Shutting down " + getIndexName() + " indexing thread");
                     break;
                 } else if (this.buildIndex && !this.isBuilding()) {
                     // Build the index
@@ -399,7 +417,7 @@ public abstract class AbstractIndexManager implements IndexManager {
                 }
             } catch (Throwable e) {
                 updateErrorCount.getAndIncrement();
-                CTILogger.warn("Caught unknown exception while processing updates, index is probably out of sync", e);
+                log.warn("Caught unknown exception while processing updates, index is probably out of sync", e);
             }
         }
     }
@@ -448,7 +466,7 @@ public abstract class AbstractIndexManager implements IndexManager {
         // Create the index
         IndexWriter indexWriter = null;
         try {
-            CTILogger.info("Building " + this.getIndexName() + " index.");
+            log.info("Building " + getIndexName() + " index.");
 
             // Get a new index writer
             indexWriter = new IndexWriter(indexLocation,  getIndexWriterConfig().setOpenMode(OpenMode.CREATE));
@@ -466,7 +484,7 @@ public abstract class AbstractIndexManager implements IndexManager {
             // Reset the current document count and clear any exceptions
             count.set(0);
 
-            CTILogger.info(this.getIndexName() + " index has been built.");
+            log.info(getIndexName() + " index has been built.");
             this.currentException = null;
 
         } catch (IOException e) {
@@ -481,7 +499,7 @@ public abstract class AbstractIndexManager implements IndexManager {
                     indexWriter.close();
                 }
             } catch (IOException e) {
-                CTILogger.error(e);
+                log.error(e);
             }
         }
 
@@ -509,7 +527,7 @@ public abstract class AbstractIndexManager implements IndexManager {
             dateCreated = date;
 
         } catch (IOException e) {
-            CTILogger.error("Exception creating " + this.getIndexName() + " index version file", e);
+            log.error("Exception creating " + getIndexName() + " index version file", e);
         } finally {
             try {
                 if (oStream != null) {
@@ -565,6 +583,7 @@ public abstract class AbstractIndexManager implements IndexManager {
      */
     private String getCurrentDb() {
         String currentDb = (String) jdbcTemplate.execute(new ConnectionCallback() {
+            @Override
             public Object doInConnection(Connection con) throws SQLException, DataAccessException {
                 return con.getMetaData().getURL();
             }
@@ -578,6 +597,7 @@ public abstract class AbstractIndexManager implements IndexManager {
      */
     private String getCurrentDbUser() {
         String currentDbUser = (String) jdbcTemplate.execute(new ConnectionCallback() {
+            @Override
             public Object doInConnection(Connection con) throws SQLException, DataAccessException {
                 return con.getMetaData().getUserName();
             }
@@ -601,6 +621,7 @@ public abstract class AbstractIndexManager implements IndexManager {
             this.count = count;
         }
 
+        @Override
         public void processRow(ResultSet rs) throws SQLException {
 
             Document doc = createDocument(rs);
@@ -621,6 +642,7 @@ public abstract class AbstractIndexManager implements IndexManager {
      */
     protected class DocumentMapper implements RowMapper<Document> {
 
+        @Override
         public Document mapRow(ResultSet rs, int rowNum) throws SQLException {
             return createDocument(rs);
         }

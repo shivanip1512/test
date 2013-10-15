@@ -9,6 +9,9 @@ import org.springframework.dao.DataRetrievalFailureException;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.message.DbChangeManager;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
@@ -26,7 +29,9 @@ public class DeviceActivationServiceImpl implements DeviceActivationService {
     @Autowired private InventoryBaseDao inventoryBaseDao;
     @Autowired private LmHardwareBaseDao hardwareBaseDao;
     @Autowired private LMCustomerEventBaseDao customerEventBaseDao;
+    @Autowired private DbChangeManager dbChangeManager;
     
+    @Override
     public boolean isValidActivation(String accountNumber, String serialNumber, LiteYukonUser user) {
         Validate.notNull(accountNumber, "AccountNumber cannot be null");
         Validate.notNull(serialNumber, "SerialNumber cannot be null");
@@ -43,6 +48,7 @@ public class DeviceActivationServiceImpl implements DeviceActivationService {
         }
     }
     
+    @Override
     public boolean activate(LiteStarsEnergyCompany energyCompany, String accountNumber, 
     		String serialNumber, LiteYukonUser user) {
         Validate.notNull(energyCompany, "EnergyCompany cannot be null");
@@ -57,7 +63,9 @@ public class DeviceActivationServiceImpl implements DeviceActivationService {
             inventoryBase.setAccountID(account.getAccountId());
         
             inventoryBaseDao.saveInventoryBase(inventoryBase, energyCompany.getLiteID());
-            
+            dbChangeManager.processDbChange(inventoryBase.getInventoryID(), DBChangeMsg.CHANGE_INVENTORY_DB,
+                DBChangeMsg.CAT_INVENTORY_DB, DbChangeType.UPDATE);
+
             int eventTypeId = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE ).getEntryID();
             int installActID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_INSTALL ).getEntryID();
             

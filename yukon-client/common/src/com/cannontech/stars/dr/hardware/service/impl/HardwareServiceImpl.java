@@ -21,6 +21,9 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.message.DbChangeManager;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
@@ -71,7 +74,8 @@ public class HardwareServiceImpl implements HardwareService {
     @Autowired private PaoDao paoDao;
     @Autowired private HardwareUiService hardwareUiService;
     @Autowired private YukonListDao yukonListDao;
-    
+    @Autowired private DbChangeManager dbChangeManager;
+
     @Override
     @Transactional
     public void deleteHardware(LiteYukonUser user, boolean delete, int inventoryId) 
@@ -127,6 +131,8 @@ public class HardwareServiceImpl implements HardwareService {
             hardwareEventLogService.hardwareDeleted(user, lib.getDeviceLabel());
         } else {
             removeFromAccount(user, lib, accountNumber);
+            dbChangeManager.processDbChange(lib.getInventoryID(), DBChangeMsg.CHANGE_INVENTORY_DB,
+                DBChangeMsg.CAT_INVENTORY_DB, DbChangeType.UPDATE);
         }
     }
     

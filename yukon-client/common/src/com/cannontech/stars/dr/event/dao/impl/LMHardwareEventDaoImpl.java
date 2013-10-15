@@ -159,18 +159,6 @@ public class LMHardwareEventDaoImpl implements LMHardwareEventDao {
         return mapper;
     }
 
-    @Override
-    @Transactional
-    public void deleteAllLMHardwareEvents(Integer inventoryId) {
-        List<Integer> eventIds = getAllLMHardwareEventIds(inventoryId);
-        if (!eventIds.isEmpty()) {
-            chunkingJdbcTemplate.update(new LMHardwareEventDeleteSqlGenerator(),
-                                      eventIds);
-            ecMappingDao.deleteECToCustomerEventMapping(eventIds);
-            customerEventBaseDao.deleteCustomerEvents(eventIds);
-        }
-    }
-
     private List<Integer> getAllLMHardwareEventIds(Integer inventoryId) {
         List<Integer> eventIds = new ArrayList<Integer>();
         String sql = "SELECT EventId FROM LMHardwareEvent WHERE InventoryId = ?";

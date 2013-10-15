@@ -47,10 +47,8 @@ import com.cannontech.stars.database.data.lite.LiteLMHardwareEvent;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.database.data.lite.LiteMeterHardwareBase;
 import com.cannontech.stars.dr.displayable.model.DisplayableLmHardware;
-import com.cannontech.stars.dr.event.dao.EventInventoryDao;
 import com.cannontech.stars.dr.event.dao.LMHardwareEventDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
-import com.cannontech.stars.dr.hardware.dao.LMConfigurationBaseDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareConfigurationDao;
 import com.cannontech.stars.dr.hardware.model.InventoryBase;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
@@ -99,8 +97,6 @@ public class InventoryBaseDaoImpl implements InventoryBaseDao {
     @Autowired private LMHardwareConfigurationDao lmHardwareConfigurationDao;
     @Autowired private ThermostatScheduleDao thermostatScheduleDao;
     @Autowired private LMHardwareEventDao hardwareEventDao;
-    @Autowired private LMConfigurationBaseDao lmConfigurationBaseDao;
-    @Autowired private EventInventoryDao eventInventoryDao;
     @Autowired private ECMappingDao ecMappingDao;
     @Autowired private AccountThermostatScheduleDao accountThermostatScheduleDao;
     @Autowired private YukonListDao yukonListDao;
@@ -526,23 +522,6 @@ public class InventoryBaseDaoImpl implements InventoryBaseDao {
     }
 
     @Override
-    @Transactional
-    public void deleteInventoryBase(int inventoryId) {
-
-        // Retrieve the Inventory
-        LiteInventoryBase liteInv = getByInventoryId(inventoryId);
-
-        // Delete the lmHardware info
-        deleteLMHardwareInfo(liteInv);
-
-        // Now delete the Inventory base info
-        eventInventoryDao.deleteInventoryEvents(inventoryId);
-        ecMappingDao.deleteECToInventoryMapping(inventoryId);
-        deleteInventoryToWarehouseMapping(inventoryId);
-        internalDeleteInventoryBase(inventoryId);
-    }
-    
-    @Override
     public List<PaoIdentifier> getPaosNotInInventory() {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -577,48 +556,6 @@ public class InventoryBaseDaoImpl implements InventoryBaseDao {
         List<PaoIdentifier> paoList = yukonJdbcTemplate.query(sql, new YukonPaoRowMapper());
 
         return paoList;
-    }
-    
-    private void deleteLMHardwareInfo(LiteInventoryBase lib) {
-        int inventoryId = lib.getInventoryID();
-
-        lmHardwareConfigurationDao.delete(inventoryId);
-        accountThermostatScheduleDao.deleteByInventoryId(inventoryId);
-        thermostatScheduleDao.deleteManualEvents(inventoryId);
-        
-        if (lib instanceof LiteLmHardwareBase) {
-            LiteLmHardwareBase lmHw = (LiteLmHardwareBase) lib;
-            if (lmHw.getConfigurationID() > 0) {
-                lmConfigurationBaseDao.delete(lmHw.getConfigurationID());
-            }
-        }
-        deleteHardwareToMeterMapping(inventoryId);
-        hardwareEventDao.deleteAllLMHardwareEvents(inventoryId);
-        deleteLmHardware(inventoryId);
-    }
-
-    private void deleteHardwareToMeterMapping(int inventoryId) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("DELETE FROM LMHardwareToMeterMapping WHERE LMHardwareInventoryId").eq(inventoryId);
-        yukonJdbcTemplate.update(sql);
-    }
-
-    private void deleteLmHardware(int inventoryId) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("DELETE FROM LMHardwareBase WHERE InventoryID").eq(inventoryId);
-        yukonJdbcTemplate.update(sql);
-    }
-
-    private void deleteInventoryToWarehouseMapping(int inventoryId) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("DELETE FROM InventoryToWarehouseMapping WHERE InventoryID").eq(inventoryId);
-        yukonJdbcTemplate.update(sql);
-    }
-
-    private void internalDeleteInventoryBase(int inventoryId) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("DELETE FROM InventoryBase WHERE InventoryID").eq(inventoryId);
-        yukonJdbcTemplate.update(sql);
     }
 
     @Override
