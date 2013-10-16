@@ -172,7 +172,10 @@ Yukon.DeviceDataMonitor = (function () {
 
         _get_supported_counts_success = function (data, counts_selector) {
             // clear out our data
-            var countSel = counts_selector + ' ' + _supported_count;
+            var countSel = counts_selector + ' ' + _supported_count,
+                anyTrs,
+                someHtml,
+                newTable;
             jQuery(countSel).empty().show();
             jQuery(counts_selector + ' '
                     + _supported_count_details + ' '
@@ -204,7 +207,7 @@ Yukon.DeviceDataMonitor = (function () {
             }
             var same_point_violation_exists = false;
 
-            jQuery(countSel).append(" <table><tbody>\n");
+            newTable = jQuery(countSel).html("<table><tbody></tbody></table>");
             for (var ii=0; ii < data.missingPointList.length; ii++) {
                 var procRowMsgs = data.missingPointList[ii];
                 for (var jj=0; jj < procRowMsgs.length; jj++) {
@@ -245,20 +248,26 @@ Yukon.DeviceDataMonitor = (function () {
                         + countText + "</a><span class='fl f-loading dn'><i class='icon icon-spinner'></i><span class='label'>"+ countText +"</span></span>"
                         + postHref +"<div class='f-problems_container problem_device_list dn' id='"+ popupListId +"'/></td>";
                     output += "<td>"+ missingText +"</td><td>"+ itemName +"</td>\n";
-                    if(_check_row_type_is_point(itemType)) {
+                    // do not add add points functionality unless we are editing
+                    if(_check_row_type_is_point(itemType) && jQuery(_monitor_form).length !== 0) {
                         var add_points_url = _url_to_add_points_to_display_devices +'?'+ url_params;
                         output += "<td class='fr' style='white-space:nowrap;padding-left:0.5em;'><a href='"
                             + add_points_url +"' style='margin-top: 2px;' target='_blank' data-add-key='"+ encodeURIComponent(attr_id) +"'><i class='icon icon-add'></i><span class='label'>"+ addPointsTxt +"</span></a></td>";
                         if( refresh_key != null && _str_equal(attr_id, refresh_key))
                             same_point_violation_exists = true;
-                    } else
+                    } else {
                         output += "<td>&nbsp;</td>\n";
-                    jQuery(countSel).append(output +"<td><a href='javascript:void(0);' class='f-showViolationHelp violation_help_link' target-id='"
-                            + popupHelpId +"' target-title='"+ helpTitle +"'><i class='icon icon-help'>&nbsp;</i></a><div class='dn' id='"+ popupHelpId +"'>"+ helpText +"</div></td></td></tr>\n");
-                    
+                    }
+                    anyTrs = jQuery(newTable).find('tr');
+                    someHtml = output +"<td><a href='javascript:void(0);' class='f-showViolationHelp violation_help_link' target-id='"
+                            + popupHelpId +"' target-title='"+ helpTitle +"'><i class='icon icon-help'>&nbsp;</i></a><div class='dn' id='"+ popupHelpId +"'>"+ helpText +"</div></td></td></tr>";
+                    if (0 < anyTrs.length) {
+                        jQuery(anyTrs[anyTrs.length-1]).after(someHtml);
+                    } else {
+                        jQuery(newTable).find('tbody').html(someHtml);
+                    }
                 }
             }
-            jQuery(countSel).append("</tbody></table>\n");
             
             if(! same_point_violation_exists) {
                 ctrl_refresh.attr('data-add-key', '');

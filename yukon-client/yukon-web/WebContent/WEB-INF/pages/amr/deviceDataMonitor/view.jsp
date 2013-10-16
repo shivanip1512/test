@@ -8,15 +8,13 @@
 <%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog"%>
 
 <cti:standardPage module="amr" page="deviceDataMonitor.${mode}">
-
     <%@ include file="shared.jspf"%>
 
     <div class="column_12_12 clearfix">
             <div class="column one">
                 <tags:sectionContainer2 nameKey="settings" styleClass="${settings_section_class}">
+                    <input type="hidden" id="monitorId" value="${monitor.id}"/>
                     <tags:nameValueContainer2>
-                        
-                        <input type="hidden" id="monitorId" value="${monitor.id}"/>
                         
                         <%-- monitor name --%>
                         <tags:nameValue2 nameKey=".name">${fn:escapeXml(monitor.name)}</tags:nameValue2>
