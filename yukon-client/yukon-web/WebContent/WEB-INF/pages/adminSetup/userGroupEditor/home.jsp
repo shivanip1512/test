@@ -32,7 +32,7 @@
         }
     </script>
 
-    <div id="tabs">
+    <div id="tabs" class="section">
         <ul>
             <!-- Panel IDs should match the pickerDialog IDs minus the word 'Picker' -->
             <li><a href="#user"><i:inline key=".users"/></a></li>
@@ -42,21 +42,21 @@
 
         <div id="user">
             <input type="hidden" id="userId" name="userId">
-            <tags:boxContainer2 nameKey="userPicker" id="userPickerContainer"/>
+            <tags:sectionContainer2 nameKey="userPicker" id="userPickerContainer"/>
             <tags:pickerDialog type="userPicker" id="userPicker" linkType="none" containerDiv="userPickerContainer_content" 
                 immediateSelectMode="true" destinationFieldId="userId" endAction="editUser"/>
         </div>
 
         <div id="userGroup">
             <input type="hidden" id="userGroupId" name="userGroupId">
-            <tags:boxContainer2 nameKey="userGroupPicker" id="userGroupPickerContainer"/>
+            <tags:sectionContainer2 nameKey="userGroupPicker" id="userGroupPickerContainer"/>
             <tags:pickerDialog type="userGroupPicker" id="userGroupPicker" linkType="none" containerDiv="userGroupPickerContainer_content" 
                 immediateSelectMode="true" destinationFieldId="userGroupId" endAction="editUserGroup"/>
         </div>
 
         <div id="roleGroup">
             <input type="hidden" id="roleGroupId" name="roleGroupId">
-            <tags:boxContainer2 nameKey="roleGroupPicker" id="roleGroupPickerContainer"/>
+            <tags:sectionContainer2 nameKey="roleGroupPicker" id="roleGroupPickerContainer"/>
             <tags:pickerDialog type="loginGroupPicker" id="roleGroupPicker" linkType="none" containerDiv="roleGroupPickerContainer_content" 
                 immediateSelectMode="true" destinationFieldId="roleGroupId" endAction="editRoleGroup"/>
         </div>

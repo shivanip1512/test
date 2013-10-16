@@ -143,7 +143,7 @@ jQuery(function() {
             
             <cti:displayForPageEditModes modes="VIEW">
                 
-                <tags:boxContainer2 nameKey="rolesContainer">
+                <tags:sectionContainer2 nameKey="rolesContainer">
                     <c:choose>
                         <c:when test="${empty roles}">
                             <i:inline key=".noRoles"/>
@@ -167,7 +167,7 @@ jQuery(function() {
                             </div>
                         </c:otherwise>
                     </c:choose>
-                </tags:boxContainer2>
+                </tags:sectionContainer2>
                 
             </cti:displayForPageEditModes>
             
