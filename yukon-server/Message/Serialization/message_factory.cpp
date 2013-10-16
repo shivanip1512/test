@@ -6,7 +6,7 @@ namespace Cti {
 namespace Messaging {
 namespace Serialization {
 
-IM_EX_MSG MessageFactory<::CtiMessage> g_messageFactory;
+IM_EX_MSG MessageFactory<::CtiMessage> g_messageFactory(::Cti::Messaging::ActiveMQ::MessageType::prefix);
 
 }
 }

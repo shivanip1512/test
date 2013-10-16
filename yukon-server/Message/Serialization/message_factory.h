@@ -50,14 +50,21 @@ class MessageFactory
     std::map<std::string, SerializerBase<MessageBase_t> *>   _serializers;
     std::map<std::string, DeserializerBase<MessageBase_t> *> _deserializers;
 
+    std::string _prefix;
+
 public:
+    MessageFactory(const std::string &prefix) :
+        _prefix(prefix)
+    {
+    }
+
     // registration method
     template <typename Msg_t, typename ThriftMsg_t>
     void registerSerializer( typename MessagePtr<ThriftMsg_t>::type (*serializeFn) (const Msg_t&),
                              typename MessagePtr<Msg_t>::type (*deserializeFn) (const ThriftMsg_t&),
                              const std::string &msgType )
     {
-        const std::string qualifiedMsgType = ::Cti::Messaging::ActiveMQ::MessageType::prefix + msgType;
+        const std::string qualifiedMsgType = _prefix + msgType;
 
         if( serializeFn != NULL )
         {

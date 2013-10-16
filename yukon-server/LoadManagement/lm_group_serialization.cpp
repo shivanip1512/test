@@ -9,7 +9,7 @@ namespace Cti {
 namespace Messaging {
 namespace Serialization {
 
-MessageFactory<CtiLMGroupBase> g_lmGroupFactory;
+MessageFactory<CtiLMGroupBase> g_lmGroupFactory(::Cti::Messaging::ActiveMQ::MessageType::prefix);
 
 namespace {
 
