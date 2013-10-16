@@ -9,6 +9,10 @@
 <%@ taglib prefix="ct" tagdir="/WEB-INF/tags"%>
 
 <cti:standardPage module="tools" page="tdc.home">
+    
+    <audio id="alarm-audio" loop>
+        <source src="/WebConfig/yukon/audio/beep1.mp3" type="audio/mpeg">
+    </audio>
 
     <cti:includeScript link="JQUERY_COOKIE" />
     <cti:includeScript link="/JavaScript/yukon/yukon.tdc.js" />
@@ -78,7 +82,9 @@
                 <cti:button nameKey="tdc.alarm.acknowledgeAll" icon="icon-tick" classes="f-ack-all dn" />
             </tags:dynamicChooseOption>
         </tags:dynamicChoose>
-        <cti:button id="b_mute" nameKey="mute" icon="icon-sound-mute" classes="dn" renderMode="buttonImage" />
-        <cti:button id="b_unmute" nameKey="unmute" icon="icon-sound" renderMode="buttonImage" />
+        <%-- TODO 
+        <cti:button id="b_mute" nameKey="mute" icon="icon-sound" renderMode="buttonImage"/>
+        <cti:button id="b_unmute" nameKey="unmute" icon="icon-sound-mute" renderMode="buttonImage" classes="dn"/>
+        --%>
     </div>
 </cti:standardPage>

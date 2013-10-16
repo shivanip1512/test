@@ -291,11 +291,11 @@ public class TdcServiceImpl implements TdcService{
             String color = stateColorMap.get((int) signal.getCategoryID() - 1);
             if (!color.isEmpty()) {
                 StringBuilder classes = new StringBuilder();
+                classes.append("stateBox");
+                classes.append(" " + color.toLowerCase());
                 if (TagUtils.isAlarmUnacked(signal.getTags())) {
-                    classes.append("pulse box");
+                    classes.append(" blink-shadow");
                 }
-                classes.append(" stateBox ");
-                classes.append(color.toLowerCase());
                 return classes.toString();
             }
         }

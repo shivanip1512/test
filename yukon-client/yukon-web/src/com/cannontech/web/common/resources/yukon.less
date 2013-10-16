@@ -155,6 +155,7 @@ table.nowrap th, table.nowrap td {white-space: nowrap;}
 .compactResultsTable td > .naked .icon {margin-right: 5px;}
 .compactResultsTable.with-footer {border-bottom: 1px solid #ccc}
 .compactResultsTable.separated tr:not(:last-child) {border-bottom: 1px dashed #ccc;}
+.compactResultsTable.no-stripes tr {background-color: white;}
 .compactResultsPaging {border-top: 1px solid #ccc;}
 .compactResultsPaging .pagingArea {float: right;margin: -1px 50px 0 0;border: 1px solid #ccc;border-style: none solid solid solid;padding: 5px 10px;background-color: white;}
 .compactResultsPaging span {line-height: 16px;}
@@ -431,8 +432,23 @@ hr.dashed, .divider.dashed {border-style: dashed none none none;}
 .front {z-index: 9999;}
 .with-form-controls {line-height: 26px;}
 .with-form-controls td button.naked, .with-form-controls td .button.naked {margin-top: 5px;}
-@-webkit-keyframes pulse { from {opacity: 0.3;} to {opacity: 1.0;}}
-.pulse {-webkit-animation-name: pulse;-webkit-animation-duration: 1s;-webkit-animation-iteration-count: infinite;-webkit-animation-timing-function: ease-in-out;-webkit-animation-direction: alternate;}
+@-webkit-keyframes pulse-opacity { from {opacity: 0.3;} to {opacity: 1.0;}}
+.pulse-opacity {-webkit-animation-name: pulse-opacity;-webkit-animation-duration: 1s;-webkit-animation-iteration-count: infinite;-webkit-animation-timing-function: ease-in-out;-webkit-animation-direction: alternate;}
+
+@-webkit-keyframes blink-shadow {
+    0% {box-shadow: 0 0 15px @red;}
+    25% {box-shadow: 0 0 15px transparent;}
+    50% {box-shadow: 0 0 15px @red;}
+    75% {box-shadow: 0 0 15px transparent;}
+    100% {box-shadow: 0 0 15px @red;}
+}
+.blink-shadow {
+    -webkit-animation-name: blink-shadow;
+    -webkit-animation-duration: 1s;
+    -webkit-animation-direction: alternate;
+    -webkit-animation-timing-function: linear;
+    -webkit-animation-iteration-count: infinite; 
+}
 
  /* DATE/TIME PICKER */
 .datetimeEntry_wrap {display: inline-block; overflow: hidden; background: #ccc; -webkit-border-radius: 2px; -moz-border-radius: 2px; border-radius: 2px; float: left; margin-right: 5px;border: 1px solid #aaa;height: 22px;}
