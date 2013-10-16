@@ -449,7 +449,6 @@
 <entry key="yukon.web.modules.dr.scenarioList.filter.submit">Filter</entry>
 <entry key="yukon.web.modules.dr.scenarioList.filter.clear">Show All</entry>
 <entry key="yukon.web.modules.dr.scenarioList.heading.name.linkText">Name</entry>
-<entry key="yukon.web.modules.dr.scenarioList.heading.kwSavings">kW Savings (Max/Now)</entry>
 <entry key="yukon.web.modules.dr.scenarioList.heading.actions">Actions</entry>
 
 
@@ -496,7 +495,6 @@
 <entry key="yukon.web.modules.dr.controlAreaList.heading.atku.linkText">ATKU</entry>
 <entry key="yukon.web.modules.dr.controlAreaList.heading.priority.linkText">Priority</entry>
 <entry key="yukon.web.modules.dr.controlAreaList.heading.timeWindow.linkText">Time Window</entry>
-<entry key="yukon.web.modules.dr.controlAreaList.heading.kwSavings">kW Savings (Max/Now)</entry>
 
 <!-- Estimated Load -->
 <entry key="yukon.web.modules.dr.estimatedLoad.actions">Actions</entry>
@@ -532,7 +530,6 @@
 <entry key="yukon.web.modules.dr.estimatedLoad.gearId">Gear Id</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.gears.title">Gears</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.kwSavings">{0} kW / {1} kW</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.kwSavingsWarn">!! {0} kW / {1} kW !!</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.lastUpdated">Last Updated</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.loadInKw">{0} kW</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.name">Name</entry>
@@ -548,6 +545,7 @@
 <entry key="yukon.web.modules.dr.estimatedLoad.info.connectedLoad">Connected Load</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.info.diversifiedLoad">Diversified Load</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.info.kwSavings">kW Savings (Max/Now)</entry>
+<entry key="yukon.web.modules.dr.heading.kwSavings">kW Savings (Max/Now)</entry>
 
 <entry key="yukon.web.modules.dr.formula.actions">Actions</entry>
 <entry key="yukon.web.modules.dr.formula.addAssignment.label">Add Assignment</entry>
@@ -703,7 +701,6 @@
 <entry key="yukon.web.modules.dr.programList.heading.currentGear.linkText">Current Gear</entry>
 <entry key="yukon.web.modules.dr.programList.heading.priority.linkText">Priority</entry>
 <entry key="yukon.web.modules.dr.programList.heading.reduction.linkText">Reduction</entry>
-<entry key="yukon.web.modules.dr.programList.heading.kwSavings">kW Savings (Max/Now)</entry>
 <entry key="yukon.web.modules.dr.programList.typeMismatch.java.util.Date">Invalid date</entry>
 <entry key="yukon.web.modules.dr.programList.typeMismatch.java.lang.Integer">Must be an integer.</entry>
 <entry key="yukon.web.modules.dr.programList.startFromTimeAfterToTime">Beginning of date range for Start must be before or equal to end.</entry>

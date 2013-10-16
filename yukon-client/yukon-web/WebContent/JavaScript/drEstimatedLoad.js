@@ -9,7 +9,6 @@ Yukon.EstimatedLoad = (function() {
     drEstimatedLoadModule = {
             
             createToolTip : function (msg) {
-                console.log(msg);
                 var data = null == msg.value ? jQuery.parseJSON(msg.identifier) : jQuery.parseJSON(msg.value);
                 
                 if (typeof data.errorMessage != 'undefined') {

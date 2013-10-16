@@ -162,7 +162,7 @@
                             </cti:checkRolesAndProperties>
 
                             <cti:checkRolesAndProperties value="ENABLE_ESTIMATED_LOAD">
-                                <cti:msg2 var="kwSavingsHeading" key=".heading.kwSavings"/>
+                                <cti:msg2 var="kwSavingsHeading" key="yukon.web.modules.dr.heading.kwSavings"/>
                                 <th>${kwSavingsHeading}</th>
                             </cti:checkRolesAndProperties>
                             <th class="action-column"></th>
