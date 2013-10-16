@@ -193,6 +193,8 @@ public enum SiteMapPage implements DisplayableEnum {
             MatchStyle.all),
     DEVICE_DEFINITIONS(SiteMapCategory.SUPPORT, "yukon.web.menu.config.support.information.deviceDef", "/common/deviceDefinition.xml",
             MatchStyle.all),
+    DATABASE_MIGRATION(SiteMapCategory.SUPPORT, "yukon.web.modules.support.databaseMigration.pageName", "/support/database/migration/home",
+            MatchStyle.all, YukonRoleProperty.ADMIN_DATABASE_MIGRATION),
 
     DEVELOPMENT(SiteMapCategory.DEVELOPMENT, "yukon.web.modules.support.development.pageName", "/support/development/main",
             MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE),
