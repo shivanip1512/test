@@ -97,7 +97,6 @@ public class SupportController {
     public void manual(String manualName, HttpServletResponse response) throws IOException  {
         File f = new File(manualsFolderName + manualName + ".pdf");
         InputStream is = new FileInputStream(f);
-        response.flushBuffer();
         response.setContentType("application/pdf");
         response.setHeader("Content-Disposition", "attachment; filename=\"" + manualName + ".pdf\"");
         FileCopyUtils.copy(is, response.getOutputStream());
@@ -153,6 +152,9 @@ public class SupportController {
         }        model.addAttribute("supportPages", supportPages);
     }
 
+    /**
+     * Adds names of manuals found in Yukon/Manuals to the model
+     */
     private void setUpManuals(ModelMap model){
         File folder = new File(manualsFolderName);
         List<String> fileNames = new ArrayList<>();
