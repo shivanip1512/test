@@ -1,8 +1,8 @@
 package com.cannontech.dr.estimatedload;
 
-public class EstimatedLoadApplianceCategoryInfo {
-    int applianceCategoryId;
-    double avgKwLoad;
+public final class EstimatedLoadApplianceCategoryInfo {
+    private final int applianceCategoryId;
+    private final double avgKwLoad;
 
     public EstimatedLoadApplianceCategoryInfo(int applianceCategoryId, double avgKwLoad) {
         this.applianceCategoryId = applianceCategoryId;

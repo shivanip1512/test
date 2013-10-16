@@ -1,6 +1,7 @@
 package com.cannontech.dr.scenario.model;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.dr.estimatedload.EstimatedLoadCalculationException;
 import com.cannontech.dr.estimatedload.EstimatedLoadReductionAmount;
@@ -26,7 +27,7 @@ public class ScenarioKwSavingsField extends ScenarioBackingFieldBase {
         } catch (EstimatedLoadCalculationException e) {
             return blankFieldResolvable;
         }
-        YukonMessageSourceResolvable kwSavings = new YukonMessageSourceResolvable(
+        MessageSourceResolvable kwSavings = new YukonMessageSourceResolvable(
                 "yukon.web.modules.dr.estimatedLoad.kwSavings", 
                 estimatedLoadAmount.getMaxKwSavings(),
                 estimatedLoadAmount.getNowKwSavings());

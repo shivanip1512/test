@@ -259,7 +259,7 @@ public class FormulaServiceImpl implements FormulaService {
      */
     private Double evaluateTimeTable(Formula f, ImmutableMap<LocalTime, Double> entries, LocalTime input) {
         LocalTime outputKey = null;
-        List<LocalTime> entryKeys = new ArrayList<>(entries.keySet().asList());
+        List<LocalTime> entryKeys = new ArrayList<>(entries.keySet());
         Collections.sort(entryKeys);
         
         for (LocalTime entryKey : entryKeys) {

@@ -1,9 +1,9 @@
 package com.cannontech.dr;
 
-public class ThermostatRampRateValues {
+public final class ThermostatRampRateValues {
 
-    int valueD;
-    int valueTd;
+    private final int valueD;
+    private final int valueTd;
 
     public ThermostatRampRateValues(int valueD, int valueTd) {
         super();
@@ -29,6 +29,6 @@ public class ThermostatRampRateValues {
      * @return The ramp rate in degrees per hour as a double value.
      */
     public double getRampRate() {
-        return valueD / (valueTd / 60);
+        return valueD / (new Double(valueTd) / 60);
     }
 }

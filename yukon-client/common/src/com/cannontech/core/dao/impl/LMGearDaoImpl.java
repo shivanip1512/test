@@ -2,6 +2,7 @@ package com.cannontech.core.dao.impl;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -116,11 +117,10 @@ public class LMGearDaoImpl implements LMGearDao {
 
         return gearMap;
     }
-    
+
+    @Override
     public LMProgramDirectGear getByGearId(Integer gearId) {
-        List<Integer> singleGearId = new ArrayList<>(1);
-        singleGearId.add(gearId);
-        return getByGearIds(singleGearId).get(gearId);
+        return getByGearIds(Collections.singleton(gearId)).get(gearId);
     }
 
     private static class LMProgramDirectGearRowMapper extends AbstractRowMapperWithBaseQuery<LMProgramDirectGear> {

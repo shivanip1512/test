@@ -2,7 +2,7 @@ package com.cannontech.dr.estimatedload;
 
 public final class EstimatedLoadCalculationInfo {
 
-    private final int acId;
+    private final int applianceCategoryId;
     private final double averageKwLoad;
     private final int gearId;
     private final Formula applianceCategoryFormula;
@@ -10,15 +10,15 @@ public final class EstimatedLoadCalculationInfo {
 
     public EstimatedLoadCalculationInfo(Integer acId, Double averageKwLoad, Integer gearId,
             Formula applianceCategoryFormula, Formula gearFormula) {
-        this.acId = acId;
+        this.applianceCategoryId = acId;
         this.averageKwLoad = averageKwLoad;
         this.gearId = gearId;
         this.applianceCategoryFormula = applianceCategoryFormula;
         this.gearFormula = gearFormula;
     }
 
-    public Integer getAcId() {
-        return acId;
+    public Integer getApplianceCategoryId() {
+        return applianceCategoryId;
     }
 
     public Double getAverageKwLoad() {

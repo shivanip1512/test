@@ -782,13 +782,12 @@ public class FormulaDaoImpl implements FormulaDao {
     public Formula getFormulaForApplianceCategory(int appCategoryId) throws EstimatedLoadCalculationException {
         ApplianceCategoryAssignment assignment = getAssignmentForApplianceCategory(appCategoryId);
         if (assignment.getFormulaId() == null) {
-            String applianceCategoryName = applianceCategoryDao.getById(appCategoryId).getDisplayName();
-            throw new EstimatedLoadCalculationException(Type.NO_FORMULA_FOR_APPLIANCE_CATEGORY, applianceCategoryName);
+            throw new EstimatedLoadCalculationException(Type.NO_FORMULA_FOR_APPLIANCE_CATEGORY);
         } else {
             try {
                 return getFormulaById(assignment.getFormulaId());
             } catch (DataAccessException e) {
-                throw new EstimatedLoadCalculationException(Type.NO_FORMULA_FOR_APPLIANCE_CATEGORY, appCategoryId);
+                throw new EstimatedLoadCalculationException(Type.NO_FORMULA_FOR_APPLIANCE_CATEGORY);
             }
         }
     }
@@ -797,12 +796,12 @@ public class FormulaDaoImpl implements FormulaDao {
     public Formula getFormulaForGear(int gearId) throws EstimatedLoadCalculationException {
         GearAssignment assignment = getAssignmentForGear(gearId);
         if (assignment.getFormulaId() == null) {
-            throw new EstimatedLoadCalculationException(Type.NO_FORMULA_FOR_GEAR, gearDao.getGearName(gearId));
+            throw new EstimatedLoadCalculationException(Type.NO_FORMULA_FOR_GEAR);
         } else {
             try {
                 return getFormulaById(assignment.getFormulaId());
             } catch (DataAccessException e) {
-                throw new EstimatedLoadCalculationException(Type.NO_FORMULA_FOR_GEAR, gearDao.getGearName(gearId));
+                throw new EstimatedLoadCalculationException(Type.NO_FORMULA_FOR_GEAR);
             }
         }
     }

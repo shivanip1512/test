@@ -504,10 +504,10 @@
 <entry key="yukon.web.modules.dr.estimatedLoad.applianceCategories.title">Appliance Categories</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.applianceLoad.linkText">Appliance Load</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.assignments">Assignments</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.acFormulaAssignmentNotFound">No Formula assigned to Appliance Category: {0}.</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.acFormulaAssignmentNotFound">No Formula assigned to the appliance category for this program.</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.appCatInfoNotFound">Appliance Category not found for LM Program: {0}.</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.controlAreaHasErrors">Estimated load reduction amounts for one or more of the programs in this control area cannot be calculated.  See detail page to find the program(s) in error.</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.gearFormulaAssignmentNotFound">No Formula assigned to Gear: {0}.</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.gearFormulaAssignmentNotFound">No Formula assigned to the current gear for this program.</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.gearNumberNotFound">Gear number {0} not found for LM program: {1}.</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.inputOutOfRange">Formula: {0} Function or table: {1} has an input value that is not within the valid range.</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.inputValueNotFound">Can not retrieve an input point value for Formula: {0}.</entry>

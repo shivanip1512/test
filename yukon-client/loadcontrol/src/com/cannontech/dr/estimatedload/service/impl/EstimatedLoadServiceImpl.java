@@ -14,7 +14,6 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.DatedObject;
-import com.cannontech.core.dao.LMGearDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.dr.assetavailability.ApplianceAssetAvailabilitySummary;
 import com.cannontech.dr.assetavailability.dao.DRGroupDeviceMappingDao;
@@ -54,7 +53,6 @@ public class EstimatedLoadServiceImpl implements EstimatedLoadService {
     @Autowired private FormulaDao formulaDao;
     @Autowired private ControlAreaDao controlAreaDao;
     @Autowired private ScenarioDao scenarioDao;
-    @Autowired private LMGearDao gearDao;
 
     // Time in seconds that estimated load values should be cached.
     private static final int CACHE_TIME_TO_LIVE = 15; 
@@ -405,13 +403,12 @@ public class EstimatedLoadServiceImpl implements EstimatedLoadService {
         Formula applianceCategoryFormula = formulaDao.getFormulaForApplianceCategory(applianceCategoryId);
         if (applianceCategoryFormula == null) {
             log.debug("No formula assigned for appliance category : " + applianceCategoryId);
-            String applianceCategoryName = applianceCategoryDao.getById(applianceCategoryId).getDisplayName();
-            throw new EstimatedLoadCalculationException(Type.NO_FORMULA_FOR_APPLIANCE_CATEGORY, applianceCategoryName);
+            throw new EstimatedLoadCalculationException(Type.NO_FORMULA_FOR_APPLIANCE_CATEGORY);
         }
         Formula gearFormula = formulaDao.getFormulaForGear(gearId);
         if (gearFormula == null) {
             log.debug("No formula assigned for gear: " + gearId);
-            throw new EstimatedLoadCalculationException(Type.NO_FORMULA_FOR_GEAR, gearDao.getGearName(gearId));
+            throw new EstimatedLoadCalculationException(Type.NO_FORMULA_FOR_GEAR);
         }
         
         return new EstimatedLoadCalculationInfo(applianceCategoryId, averageKwLoad, gearId,

@@ -7,6 +7,7 @@ import java.util.Map;
 import net.sf.jsonOLD.JSONObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.dr.estimatedload.EstimatedLoadCalculationException;
@@ -47,7 +48,7 @@ public class ProgramEstimatedLoadErrorField extends ProgramBackingFieldBase {
             EstimatedLoadCalculationException e) {
         Map<String, String> errorTooltipJSON = new HashMap<>();
         
-        YukonMessageSourceResolvable error = new YukonMessageSourceResolvable(
+        MessageSourceResolvable error = new YukonMessageSourceResolvable(
                 e.getResolvableKey(),
                 e.getResolvableArgs());
         MessageSourceAccessor accessor = messageSourceAccessor.getMessageSourceAccessor(userContext);

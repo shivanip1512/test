@@ -1,6 +1,6 @@
 package com.cannontech.dr.estimatedload;
 
-public class PartialEstimatedLoadReductionAmount {
+public final class PartialEstimatedLoadReductionAmount {
 
     private final Double connectedLoad;
     private final Double diversifiedLoad;

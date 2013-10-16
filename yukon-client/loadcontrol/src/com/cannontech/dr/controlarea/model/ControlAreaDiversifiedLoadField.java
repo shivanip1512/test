@@ -1,6 +1,7 @@
 package com.cannontech.dr.controlarea.model;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.dr.estimatedload.EstimatedLoadCalculationException;
 import com.cannontech.dr.estimatedload.EstimatedLoadReductionAmount;
@@ -27,7 +28,7 @@ public class ControlAreaDiversifiedLoadField extends ControlAreaBackingFieldBase
         } catch (EstimatedLoadCalculationException e) {
             return blankFieldResolvable;
         }
-        YukonMessageSourceResolvable amount = new YukonMessageSourceResolvable(
+        MessageSourceResolvable amount = new YukonMessageSourceResolvable(
                 "yukon.web.modules.dr.estimatedLoad.loadInKw", estimatedLoadAmount.getDiversifiedLoad());
         return amount;
     }
