@@ -13,7 +13,7 @@
 
 <div class="titledContainer sectionContainer" id="${thisId}">
 
-    <div class="title-bar">
+    <div class="title-bar clearfix">
             
         <c:choose>
             <c:when test="${not empty deviceType}">
