@@ -295,6 +295,13 @@ const std::map<unsigned char, std::string>  ovuvStateResolver = boost::assign::m
     ( 0x00, "OV/UV Disabled" )
     ( 0x01, "OV/UV Enabled" );
 
+const std::map<unsigned char, std::string> severityResolver = boost::assign::map_list_of
+    ( 0x01, "Not Reported" )
+    ( 0x02, "Not Alarmed" )
+    ( 0x03, "Warning" )
+    ( 0x04, "Minor" )
+    ( 0x05, "Major" )
+    ( 0x06, "Critical" );
 }
 
 
@@ -317,7 +324,7 @@ RfnCommandResult RfnGetOvUvAlarmConfigurationCommand::decodeCommand( const CtiTi
 ///        2   -- UoM modifier 1
 ///        2   -- UoM modifier 2
 
-    validateCondition( response.size() == 18,
+    validateCondition( response.size() == 19,
                        ErrorInvalidData, "Invalid Response length (" + CtiNumStr(response.size()) + ")" );
 
     // Validate the bytes
@@ -327,19 +334,19 @@ RfnCommandResult RfnGetOvUvAlarmConfigurationCommand::decodeCommand( const CtiTi
 
     // UoM is always in volts for Ov/Uv (0x10)
 
-    validateCondition( response[13] == Uom_Volts,
-                       ErrorInvalidData, "Invalid UoM Code (" + CtiNumStr(response[13]).xhex(2) + ")" );
+    validateCondition( response[14] == Uom_Volts,
+                       ErrorInvalidData, "Invalid UoM Code (" + CtiNumStr(response[14]).xhex(2) + ")" );
 
     // UoM modifier 1 is always 0x8000 for Ov/Uv
 
-    const unsigned uom_modifier1 = (response[14] << 8) + response[15];
+    const unsigned uom_modifier1 = (response[15] << 8) + response[16];
 
     validateCondition( uom_modifier1 == 0x8000,
                        ErrorInvalidData, "Invalid UoM Modifier 1 Code (" + CtiNumStr(uom_modifier1).xhex(4) + ")" );
 
     // UoM modifier 2 is always 0x01c0 for Ov/Uv
 
-    const unsigned uom_modifier2 = (response[16] << 8) + response[17];
+    const unsigned uom_modifier2 = (response[17] << 8) + response[18];
 
     validateCondition( uom_modifier2 == 0x01c0,
                        ErrorInvalidData, "Invalid UoM Modifier 2 Code (" + CtiNumStr(uom_modifier2).xhex(4) + ")" );
@@ -380,12 +387,19 @@ RfnCommandResult RfnGetOvUvAlarmConfigurationCommand::decodeCommand( const CtiTi
     result.description += "\nSET Alarm Repeat Count: " + CtiNumStr(response[7]) + " count(s)";
     result.description += "\nCLEAR Alarm Repeat Count: " + CtiNumStr(response[8]) + " count(s)";
 
+    boost::optional<std::string> severity = Cti::mapFind( severityResolver, response[9] );
+
+    validateCondition( severity,
+                       ErrorInvalidData, "Invalid severity (" + CtiNumStr(response[9]) + ")" );
+
+    result.description += "\nSeverity: " + *severity + " (" + CtiNumStr(response[9]) + ")";
+
     _alarmConfig.ovuvEnabled                = response[4];
     _alarmConfig.ovuvAlarmReportingInterval = response[5];
     _alarmConfig.ovuvAlarmRepeatInterval    = response[6];
     _alarmConfig.ovuvAlarmRepeatCount       = response[7];
 
-    const unsigned thresholdValue = (response[9] << 24) + (response[10] << 16) + (response[11] << 8) + response[12];
+    const unsigned thresholdValue = (response[10] << 24) + (response[11] << 16) + (response[12] << 8) + response[13];
 
     const double threshold = thresholdValue / 1000.0;
 
@@ -393,7 +407,7 @@ RfnCommandResult RfnGetOvUvAlarmConfigurationCommand::decodeCommand( const CtiTi
 
     ( _eventID == OverVoltage ? _alarmConfig.ovThreshold : _alarmConfig.uvThreshold ) = threshold;
 
-    result.description += "\nUnit of Measure: Volts (" + CtiNumStr(response[13]).xhex(2) + ")";
+    result.description += "\nUnit of Measure: Volts (" + CtiNumStr(response[14]).xhex(2) + ")";
     result.description += "\nUoM modifier 1: " + CtiNumStr(uom_modifier1).xhex(4);
     result.description += "\nUoM modifier 2: " + CtiNumStr(uom_modifier2).xhex(4);
 

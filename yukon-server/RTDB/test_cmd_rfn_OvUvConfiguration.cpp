@@ -417,6 +417,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_OvUvConfiguration_Get_Config_FocusAL_OverVolt
             ( 0xb4 )
             ( 0x02 )
             ( 0x01 )
+            ( 0x04 )
             ( 0x00 )( 0x01 )( 0xd2 )( 0x04 )
             ( 0x10 )
             ( 0x80 )( 0x00 )
@@ -431,6 +432,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_OvUvConfiguration_Get_Config_FocusAL_OverVolt
                                             "\nAlarm Repeat Interval: 180 minutes"
                                             "\nSET Alarm Repeat Count: 2 count(s)"
                                             "\nCLEAR Alarm Repeat Count: 1 count(s)"
+                                            "\nSeverity: Minor (4)"
                                             "\nSet Threshold Value: 119.300 volts (0x0001d204)"
                                             "\nUnit of Measure: Volts (0x10)"
                                             "\nUoM modifier 1: 0x8000"
