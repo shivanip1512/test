@@ -291,7 +291,8 @@ MessagePtr<::CtiMCSchedule>::type deserialize( const Thrift::MCSchedule& imsg )
     omsg->setStopCommand                ( imsg._stopCommand );
     omsg->setRepeatInterval             ( imsg._repeatInterval );
 
-    // TODO: find why those are not included in original code
+    // Those fields are not deserialized because the C++ server calculates the start
+    // and stop times and tells the Java client about them, not the other way around.
     // omsg.setCurrentStartTime( CtiTime( imsg._currentStartTime ));
     // omsg.setCurrentStopTime ( CtiTime( imsg._currentStopTime ));
 

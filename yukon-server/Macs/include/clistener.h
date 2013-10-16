@@ -1,22 +1,11 @@
 #pragma once
 
-#include <rw/toolpro/sockaddr.h>
-#include <rw/toolpro/sockport.h>
-
-#include <rw/thr/thread.h>
-#include <rw/thr/prodcons.h>
-
-#include "mc.h"
-#include "clientconn.h"
-#include "observe.h"
-#include "guard.h"
-#include "logger.h"
-#include "msg_multi.h"
-#include "queue.h"
-
+#include "thread.h"
 #include "connection_listener.h"
+#include "clientconn.h"
 
-class CtiMCClientListener : public CtiThread, public CtiObserver
+
+class CtiMCClientListener : public CtiThread
 {
 public:
     CtiMCClientListener();
@@ -29,35 +18,27 @@ public:
     // are still good
     void checkConnections();
 
-    // Inherited from CtiObserver
-    // Instances of CtiMCClientListener register
-    // themselves as observers each time they
-    // create a connection
-    virtual void update(CtiObservable& observable);
-
     // Inherited from CtiThread
     virtual void run();
-    virtual void interrupt(int id );
+    virtual void interrupt( int id );
 
     // If this is set then all the messages
     // collected from the connections will
     // be put into this queue.. a little hackish but oh well
-    void setQueue(CtiQueue< CtiMessage, std::greater<CtiMessage> >* queue );
-
-    friend std::ostream& operator<<( std::ostream& ostrm, CtiMCClientListener& listener );
-
-protected:
+    void setQueue( CtiConnection::Que_t* queue );
 
 private:
 
     CtiListenerConnection _listenerConnection;
 
-    boost::ptr_vector<CtiMCConnection> _connections;
-    RWMutexLock _connmutex;
+    typedef boost::ptr_vector<CtiMCConnection> ConnectionVec;
+
+    ConnectionVec _connections;
+    CtiMutex _connmutex;
 
     volatile bool _doquit;
 
-    CtiQueue< CtiMessage, std::greater<CtiMessage> >* _conn_in_queue;
+    CtiConnection::Que_t* _conn_in_queue;
 
     void removeAllConnections();
 };
