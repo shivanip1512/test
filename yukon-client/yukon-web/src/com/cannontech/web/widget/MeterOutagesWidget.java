@@ -201,8 +201,8 @@ public class MeterOutagesWidget extends WidgetControllerBase {
         List<OutageData> outageData = new ArrayList<OutageData>(values.size());
         for (PointValueHolder holder : values) {
             if( holder.getId() == litePoint.getPointID()) {
-//                String duration = TimeUtil.convertSecondsToTimeString(holder.getValue());
-                String duration = TimeUtil.convertSecondsToNormalizedStandard(holder.getValue());
+                String duration = TimeUtil.convertSecondsToTimeString(holder.getValue());
+//                String duration = TimeUtil.convertSecondsToNormalizedStandard(holder.getValue());
                 PointValueHolder timestamp = holder;
 
                 // based on the string returned from porter, parse out the outage index
