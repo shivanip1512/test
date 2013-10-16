@@ -1,15 +1,14 @@
 #pragma once
 
 #include <rw/collect.h>
-#include <rw/vstream.h>
 #include <rw/thr/mutex.h>
-#include <rw/thr/recursiv.h> 
+#include <rw/thr/recursiv.h>
 
 #include "lmgroupbase.h"
 #include "observe.h"
 #include "GroupControlInterface.h"
 #include "SepControlInterface.h"
-                
+
 class LMGroupDigiSEP : public CtiLMGroupBase, public Cti::LoadManagement::GroupControlInterface, public Cti::LoadManagement::SEPControlInterface
 {
 
@@ -22,7 +21,7 @@ DECLARE_COLLECTABLE( LMGroupDigiSEP );
     LMGroupDigiSEP(const LMGroupDigiSEP& group);
 
     virtual ~LMGroupDigiSEP();
-    
+
     virtual CtiLMGroupBase* replicate() const;
 
     LMGroupDigiSEP& operator=(const LMGroupDigiSEP& right);

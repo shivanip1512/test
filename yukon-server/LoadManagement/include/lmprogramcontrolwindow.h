@@ -1,9 +1,8 @@
 #pragma once
 
 #include <rw/collect.h>
-#include <rw/vstream.h>
 #include <rw/thr/mutex.h>
-#include <rw/thr/recursiv.h> 
+#include <rw/thr/recursiv.h>
 
 #include "observe.h"
 #include "ctidate.h"
@@ -45,7 +44,7 @@ DECLARE_COLLECTABLE( CtiLMProgramControlWindow );
     /* Static Members */
 
 private:
-    
+
     LONG _paoid;
     LONG _windownumber;
     LONG _availablestarttime;

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <rw/collect.h>
-#include <rw/vstream.h>
 
 #include "connection.h"
 #include "observe.h"

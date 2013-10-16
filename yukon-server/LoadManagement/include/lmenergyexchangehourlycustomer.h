@@ -1,9 +1,8 @@
 #pragma once
 
 #include <rw/collect.h>
-#include <rw/vstream.h>
 #include <rw/thr/mutex.h>
-#include <rw/thr/recursiv.h> 
+#include <rw/thr/recursiv.h>
 
 #include "observe.h"
 #include "row_reader.h"
@@ -21,7 +20,7 @@ public:
     CtiLMEnergyExchangeHourlyCustomer(const CtiLMEnergyExchangeHourlyCustomer& customer);
 
     virtual ~CtiLMEnergyExchangeHourlyCustomer();
-    
+
     LONG getCustomerId() const;
     LONG getOfferId() const;
     LONG getRevisionNumber() const;
@@ -38,7 +37,7 @@ public:
 
     void addLMEnergyExchangeHourlyCustomerTable();
     void updateLMEnergyExchangeHourlyCustomerTable();
-    
+
     CtiLMEnergyExchangeHourlyCustomer& operator=(const CtiLMEnergyExchangeHourlyCustomer& right);
 
     int operator==(const CtiLMEnergyExchangeHourlyCustomer& right) const;
@@ -46,7 +45,7 @@ public:
 
     // Static Members
 
-    // Possible 
+    // Possible
 
 protected:
 

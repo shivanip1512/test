@@ -1,10 +1,9 @@
 #pragma once
 
 #include <rw/collect.h>
-#include <rw/vstream.h>
 
 #include "lmgroupbase.h"
-                
+
 class CtiLMGroupSADigital : public CtiLMGroupBase
 {
 public:
@@ -26,7 +25,7 @@ DECLARE_COLLECTABLE( CtiLMGroupSADigital );
 
     int getNominalTimeout() const;
     CtiLMGroupSADigital& setNominalTimeout(int nominal_timeout);
-    
+
     CtiLMGroupSADigital& operator=(const CtiLMGroupSADigital& right);
 
     int operator==(const CtiLMGroupSADigital& right) const;
@@ -36,6 +35,6 @@ DECLARE_COLLECTABLE( CtiLMGroupSADigital );
 
 private:
     int _nominal_timeout;
-    
+
     void restore(Cti::RowReader &rdr);
 };

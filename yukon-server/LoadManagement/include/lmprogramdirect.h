@@ -7,7 +7,6 @@
 #include "boostutil.h"
 
 #include <rw/collect.h>
-#include <rw/vstream.h>
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h>
 
@@ -54,7 +53,7 @@ DECLARE_COLLECTABLE( CtiLMProgramDirect );
     const CtiTime& getStartedRampingOutTime() const;
     BOOL getConstraintOverride() const;
     bool isAdjustNotificationPending() const;
-    
+
     bool getIsRampingIn();
     bool getIsRampingOut();
 
@@ -115,7 +114,7 @@ DECLARE_COLLECTABLE( CtiLMProgramDirect );
     bool isControlling();
 
     BOOL notifyGroupsOfStart(CtiMultiMsg* multiNotifMsg);
-    BOOL notifyGroupsOfStop(CtiMultiMsg* multiNotifMsg); 
+    BOOL notifyGroupsOfStop(CtiMultiMsg* multiNotifMsg);
     bool notifyGroupsOfAdjustment(CtiMultiMsg* multiNotifMsg);
     BOOL wasControlActivatedByStatusTrigger();
 
@@ -166,7 +165,7 @@ private:
 
     typedef CtiLMProgramBase Inherited;
     bool notifyGroups(int type, CtiMultiMsg* multiNotifMsg);
-    
+
     LONG _notify_active_offset;
     LONG _notify_inactive_offset;
     bool _adjustment_notification_enabled;

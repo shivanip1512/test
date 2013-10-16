@@ -1,16 +1,15 @@
 #pragma once
 
 #include <rw/collect.h>
-#include <rw/vstream.h>
 #include <rw/thr/mutex.h>
-#include <rw/thr/recursiv.h> 
+#include <rw/thr/recursiv.h>
 
 #include "observe.h"
 #include "row_reader.h"
 #include "collectable.h"
 
 class SmartGearBase;
-                
+
 class CtiLMProgramDirectGear
 {
 
@@ -23,7 +22,7 @@ DECLARE_COLLECTABLE( CtiLMProgramDirectGear );
     CtiLMProgramDirectGear(const CtiLMProgramDirectGear& proggear);
 
     virtual ~CtiLMProgramDirectGear();
-    
+
     LONG getProgramPAOId() const;
     const std::string& getGearName() const;
     LONG getGearNumber() const;
@@ -50,7 +49,7 @@ DECLARE_COLLECTABLE( CtiLMProgramDirectGear );
     const std::string& getFrontRampOption() const;
     const std::string& getBackRampOption() const;
     DOUBLE getKWReduction() const;
-        
+
     CtiLMProgramDirectGear& setProgramPAOId(LONG paoid);
     CtiLMProgramDirectGear& setGearName(const std::string& name);
     CtiLMProgramDirectGear& setGearNumber(LONG gearnum);
@@ -106,7 +105,7 @@ DECLARE_COLLECTABLE( CtiLMProgramDirectGear );
     static const std::string RampOutFIFOStopType;
     static const std::string RampOutRandomRestoreStopType;
     static const std::string RampOutFIFORestoreStopType;
-    
+
     //Possible gear change condition types
     static const std::string NoneChangeCondition;
     static const std::string DurationChangeCondition;
@@ -128,7 +127,7 @@ DECLARE_COLLECTABLE( CtiLMProgramDirectGear );
     static const std::string NoneRandomOptionType;
     static const std::string NoRampRandomOptionType;
     static const std::string RandomizeRandomOptionType;
-    
+
 protected:
     void restore(Cti::RowReader &rdr);
 

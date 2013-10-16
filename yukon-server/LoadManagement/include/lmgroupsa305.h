@@ -1,10 +1,9 @@
 #pragma once
 
 #include <rw/collect.h>
-#include <rw/vstream.h>
 
 #include "lmgroupbase.h"
-                
+
 class CtiLMGroupSA305 : public CtiLMGroupBase
 {
 public:

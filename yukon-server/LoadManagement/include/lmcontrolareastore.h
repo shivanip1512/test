@@ -2,7 +2,6 @@
 
 #include <map>
 
-#include <rw/vstream.h>
 #include <rw/thr/onlyptr.h>
 #include <rw/thr/thread.h>
 #include <rw/collect.h>
@@ -68,20 +67,20 @@ private:
 
 class CtiLMControlAreaStore
 {
-public:   
+public:
 
     std::vector<CtiLMControlArea*>* getControlAreas(CtiTime currentTime = CtiTime());
     bool findProgram(LONG programID, CtiLMProgramBaseSPtr& program = CtiLMProgramBaseSPtr(), CtiLMControlArea** controlArea = NULL);
-    
+
     CtiLMGroupPtr             findGroupByPointID       (long point_id);
     std::vector<CtiLMControlArea*> findControlAreasByPointID(long point_id);
-    
+
     static CtiLMControlAreaStore* getInstance();
     static void deleteInstance();
 
     void dumpAllDynamicData();
     void updateAllDynamicData();
-    
+
     bool isValid();
     void setValid(bool valid);
     bool getReregisterForPoints();
@@ -110,7 +109,7 @@ private:
     //Don't allow just anyone to create or destroy control areas
     CtiLMControlAreaStore();
     virtual ~CtiLMControlAreaStore();
-    
+
     void reset();
     void shutdown();
 

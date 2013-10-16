@@ -1,13 +1,12 @@
 #pragma once
 
 #include <rw/collect.h>
-#include <rw/vstream.h>
 #include <rw/thr/mutex.h>
-#include <rw/thr/recursiv.h> 
+#include <rw/thr/recursiv.h>
 
 #include "observe.h"
 #include "lmprogramdirectgear.h"
-                
+
 class CtiLMProgramThermoStatGear : public CtiLMProgramDirectGear
 {
 
@@ -17,7 +16,7 @@ public:
     CtiLMProgramThermoStatGear(const CtiLMProgramThermoStatGear& thermogear);
 
     virtual ~CtiLMProgramThermoStatGear();
-    
+
     const std::string& getSettings() const;
     LONG getMinValue() const;
     LONG getMaxValue() const;

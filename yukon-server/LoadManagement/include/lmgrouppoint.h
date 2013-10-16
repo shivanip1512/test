@@ -1,9 +1,8 @@
 #pragma once
 
 #include <rw/collect.h>
-#include <rw/vstream.h>
 #include <rw/thr/mutex.h>
-#include <rw/thr/recursiv.h> 
+#include <rw/thr/recursiv.h>
 
 #include "lmgroupbase.h"
 #include "msg_cmd.h"
@@ -21,7 +20,7 @@ DECLARE_COLLECTABLE( CtiLMGroupPoint );
     CtiLMGroupPoint(const CtiLMGroupPoint& grouppoint);
 
     virtual ~CtiLMGroupPoint();
-    
+
     LONG getDeviceIdUsage() const;
     LONG getPointIdUsage() const;
     LONG getStartControlRawState() const;

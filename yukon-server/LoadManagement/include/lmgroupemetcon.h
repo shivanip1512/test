@@ -1,13 +1,12 @@
 #pragma once
 
 #include <rw/collect.h>
-#include <rw/vstream.h>
 #include <rw/thr/mutex.h>
-#include <rw/thr/recursiv.h> 
+#include <rw/thr/recursiv.h>
 
 #include "lmgroupbase.h"
 #include "observe.h"
-                
+
 class CtiLMGroupEmetcon : public CtiLMGroupBase
 {
 
@@ -20,9 +19,9 @@ DECLARE_COLLECTABLE( CtiLMGroupEmetcon );
     CtiLMGroupEmetcon(const CtiLMGroupEmetcon& groupemet);
 
     virtual ~CtiLMGroupEmetcon();
-    
+
     virtual CtiLMGroupBase& setGroupControlState(LONG controlstate);
-    
+
     virtual CtiLMGroupBase* replicate() const;
     virtual CtiRequestMsg* createTimeRefreshRequestMsg(LONG refreshRate, LONG shedTime, int priority) const;
     virtual CtiRequestMsg* createSmartCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, bool no_ramp, int priority) const;

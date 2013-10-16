@@ -1,14 +1,13 @@
 #pragma once
 
 #include <rw/collect.h>
-#include <rw/vstream.h>
 #include <rw/thr/mutex.h>
-#include <rw/thr/recursiv.h> 
+#include <rw/thr/recursiv.h>
 #include "ctitime.h"
 #include "lmenergyexchangehourlyoffer.h"
 #include "observe.h"
 #include "row_reader.h"
-                
+
 class CtiLMEnergyExchangeOfferRevision
 {
 
@@ -21,7 +20,7 @@ DECLARE_COLLECTABLE( CtiLMEnergyExchangeOfferRevision );
     CtiLMEnergyExchangeOfferRevision(const CtiLMEnergyExchangeOfferRevision& revision);
 
     virtual ~CtiLMEnergyExchangeOfferRevision();
-    
+
     LONG getOfferId() const;
     LONG getRevisionNumber() const;
     const CtiTime& getActionDateTime() const;
@@ -46,7 +45,7 @@ DECLARE_COLLECTABLE( CtiLMEnergyExchangeOfferRevision );
     LONG getLastCurtailHour() const;
     void restoreDynamicData();
     void dumpDynamicData();
-    
+
     CtiLMEnergyExchangeOfferRevision& operator=(const CtiLMEnergyExchangeOfferRevision& right);
 
     int operator==(const CtiLMEnergyExchangeOfferRevision& right) const;

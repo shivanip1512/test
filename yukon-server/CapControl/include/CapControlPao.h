@@ -6,7 +6,6 @@
 #include "cctypes.h"
 #include <string>
 
-#include <rw/vstream.h>
 
 class CapControlPao
 {

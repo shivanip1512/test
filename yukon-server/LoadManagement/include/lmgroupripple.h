@@ -1,13 +1,12 @@
 #pragma once
 
 #include <rw/collect.h>
-#include <rw/vstream.h>
 #include <rw/thr/mutex.h>
-#include <rw/thr/recursiv.h> 
+#include <rw/thr/recursiv.h>
 
 #include "lmgroupbase.h"
 #include "observe.h"
-                
+
 class CtiLMGroupRipple : public CtiLMGroupBase
 {
 
@@ -20,7 +19,7 @@ DECLARE_COLLECTABLE( CtiLMGroupRipple );
     CtiLMGroupRipple(const CtiLMGroupRipple& groupripple);
 
     virtual ~CtiLMGroupRipple();
-    
+
     LONG getShedTime() const;
 
     CtiLMGroupRipple& setShedTime(LONG shed);

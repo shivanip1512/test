@@ -3,7 +3,6 @@
 #include <vector>
 
 #include <rw/collect.h>
-#include <rw/vstream.h>
 #include "ctitime.h"
 
 #include "message.h"
@@ -26,7 +25,7 @@ public:
     virtual ~CtiLMMessage() { };
 
     const std::string& getMessage() const;
-    
+
 private:
     // The connection that received/produced this message
     std::string _message;
@@ -40,7 +39,7 @@ public:
 
 public:
 
-    enum 
+    enum
     {
         CHANGE_THRESHOLD = 0,
         CHANGE_RESTORE_OFFSET,
@@ -59,8 +58,8 @@ public:
         ENABLE_GROUP,
         DISABLE_GROUP,
         CONFIRM_GROUP,
-	RESET_PEAK_POINT_VALUE,
-	EMERGENCY_DISABLE_PROGRAM
+    RESET_PEAK_POINT_VALUE,
+    EMERGENCY_DISABLE_PROGRAM
     };
 
     CtiLMCommand( LONG command,
@@ -89,7 +88,7 @@ public:
     CtiLMCommand& operator=(const CtiLMCommand& right);
 
 private:
-    
+
     LONG _command;
     LONG _paoid;
     LONG _number;
@@ -106,37 +105,37 @@ public:
 
 public:
 
-    enum 
-    { 
+    enum
+    {
         SCHEDULED_START = 0,
         SCHEDULED_STOP,
         START_NOW,
         STOP_NOW,
         CHANGE_GEAR
-    };      
-    
-     enum   
-     {   // How to deal with constraint checking   
-         USE_CONSTRAINTS = 0,  // accept the request and use constraints   
-         OVERRIDE_CONSTRAINTS,  // accept the request and set the override constraints flag on the groups   
-         CHECK_CONSTRAINTS    // don't accept the request if constraints look like they will be violated   
-    
-     }; 
+    };
+
+     enum
+     {   // How to deal with constraint checking
+         USE_CONSTRAINTS = 0,  // accept the request and use constraints
+         OVERRIDE_CONSTRAINTS,  // accept the request and set the override constraints flag on the groups
+         CHECK_CONSTRAINTS    // don't accept the request if constraints look like they will be violated
+
+     };
 
     CtiLMManualControlRequest() { }; //provided for polymorphic persitence only
     CtiLMManualControlRequest(LONG cmd,
-			      LONG pao_id,
-			      const CtiTime& notify_time,
-			      const CtiTime& start_time,
-			      const CtiTime& stop_time,
-			      LONG start_gear,
-			      LONG start_priority,
-			      const std::string& addl_info,
-			      LONG constraint_cmd
-			      
-			      );
+                  LONG pao_id,
+                  const CtiTime& notify_time,
+                  const CtiTime& start_time,
+                  const CtiTime& stop_time,
+                  LONG start_gear,
+                  LONG start_priority,
+                  const std::string& addl_info,
+                  LONG constraint_cmd
+
+                  );
     CtiLMManualControlRequest(const CtiLMManualControlRequest& req);
-    
+
     virtual ~CtiLMManualControlRequest();
 
     LONG getCommand() const;
@@ -150,12 +149,12 @@ public:
     const std::string& getAdditionalInfo() const;
     LONG getConstraintCmd() const;
     virtual void dump() const;
-    
+
     virtual CtiMessage* replicateMessage() const;
-	
+
     CtiLMManualControlRequest& operator=(const CtiLMManualControlRequest& right);
 private:
-    
+
     LONG _command;
     LONG _paoid;
     CtiTime _notifytime;
@@ -187,7 +186,7 @@ public:
     CtiLMManualControlResponse& setBestFitAction(const std::string& best_fit_action);
 
     virtual CtiMessage* replicateMessage() const;
-    
+
     CtiLMManualControlResponse& operator=(const CtiLMManualControlResponse& right);
 private:
     LONG _paoid;
@@ -202,7 +201,7 @@ public:
 
 public:
 
-    enum 
+    enum
     {
         NEW_OFFER = 0,
         OFFER_UPDATE,
@@ -215,7 +214,7 @@ public:
     /*CtiLMControlMsg(LONG command);
     CtiLMControlMsg(LONG command, LONG id);
     CtiLMControlMsg(const CtiLMCommand& commandMsg);*/
-    
+
     virtual ~CtiLMEnergyExchangeControlMsg();
 
     LONG getCommand() const;
@@ -267,7 +266,7 @@ public:
     /*CtiLMControlMsg(LONG command);
     CtiLMControlMsg(LONG command, LONG id);
     CtiLMControlMsg(const CtiLMCommand& commandMsg);*/
-    
+
     virtual ~CtiLMEnergyExchangeAcceptMsg();
 
     LONG getPAOId() const;
@@ -314,7 +313,7 @@ public:
 
 public:
     CtiLMControlAreaMsg(std::vector<CtiLMControlArea*>& contAreas, ULONG bitMask = 0);
-    
+
     CtiLMControlAreaMsg(const CtiLMControlAreaMsg& contAreaMsg);
 
     virtual ~CtiLMControlAreaMsg();
@@ -331,7 +330,7 @@ public:
 
 private:
     CtiLMControlAreaMsg() : CtiLMMessage("ControlAreas"), _controlAreas(NULL), _msgInfoBitMask(0) {};
-    
+
     ULONG _msgInfoBitMask;
     std::vector<CtiLMControlArea*>* _controlAreas;
 };
@@ -366,7 +365,7 @@ public:
 
     CtiLMCurtailmentAcknowledgeMsg& operator=(const CtiLMCurtailmentAcknowledgeMsg& right);
 private:
-    
+
     LONG _paoid;
     LONG _curtailreferenceid;
     std::string _acknowledgestatus;

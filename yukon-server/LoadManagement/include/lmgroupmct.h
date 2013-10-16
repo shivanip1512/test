@@ -1,12 +1,11 @@
 #pragma once
 
 #include <rw/collect.h>
-#include <rw/vstream.h>
 #include <rw/thr/mutex.h>
-#include <rw/thr/recursiv.h> 
+#include <rw/thr/recursiv.h>
 
 #include "lmgroupemetcon.h"
-                
+
 class CtiLMGroupMCT : public CtiLMGroupEmetcon
 {
 
@@ -15,13 +14,13 @@ public:
 DECLARE_COLLECTABLE( CtiLMGroupMCT );
 
     typedef CtiLMGroupEmetcon Inherited;
-    
+
     CtiLMGroupMCT();
     CtiLMGroupMCT(Cti::RowReader &rdr);
     CtiLMGroupMCT(const CtiLMGroupMCT& groupmct);
 
     virtual ~CtiLMGroupMCT();
-    
+
     virtual CtiLMGroupBase* replicate() const;
     /*virtual CtiRequestMsg* createTimeRefreshRequestMsg(LONG refreshRate, LONG shedTime, int priority) const;
     virtual CtiRequestMsg* createSmartCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, int priority) const;

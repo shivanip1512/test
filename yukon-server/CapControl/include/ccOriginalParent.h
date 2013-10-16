@@ -1,9 +1,8 @@
 #pragma once
 
 #include <rw/collect.h>
-#include <rw/vstream.h>
 #include <rw/thr/mutex.h>
-#include <rw/thr/recursiv.h> 
+#include <rw/thr/recursiv.h>
 
 #include "dbaccess.h"
 #include "types.h"
@@ -49,13 +48,13 @@ public:
 
 private:
 
-    long _paoId;       
-    long _originalParentId;  
-    float _originalSwitchingOrder; 
-    float _originalCloseOrder; 
-    float _originalTripOrder; 
-    
+    long _paoId;
+    long _originalParentId;
+    float _originalSwitchingOrder;
+    float _originalCloseOrder;
+    float _originalTripOrder;
+
     //don't stream
     bool _insertDynamicDataFlag;
-    bool _dirty; 
+    bool _dirty;
 };

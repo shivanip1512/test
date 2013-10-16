@@ -1,9 +1,8 @@
 #pragma once
 
 #include <rw/collect.h>
-#include <rw/vstream.h>
 #include <rw/thr/mutex.h>
-#include <rw/thr/recursiv.h> 
+#include <rw/thr/recursiv.h>
 #include "ctitime.h"
 
 #include "observe.h"
@@ -22,7 +21,7 @@ DECLARE_COLLECTABLE( CtiLMEnergyExchangeCustomerReply );
     CtiLMEnergyExchangeCustomerReply(const CtiLMEnergyExchangeCustomerReply& customerreply);
 
     virtual ~CtiLMEnergyExchangeCustomerReply();
-    
+
     LONG getCustomerId() const;
     LONG getOfferId() const;
     const std::string& getAcceptStatus() const;
@@ -51,7 +50,7 @@ DECLARE_COLLECTABLE( CtiLMEnergyExchangeCustomerReply );
     void updateLMEnergyExchangeCustomerReplyTable();
     void restoreDynamicData(Cti::RowReader &rdr);
     void dumpDynamicData();
-    
+
     CtiLMEnergyExchangeCustomerReply& operator=(const CtiLMEnergyExchangeCustomerReply& right);
 
     int operator==(const CtiLMEnergyExchangeCustomerReply& right) const;

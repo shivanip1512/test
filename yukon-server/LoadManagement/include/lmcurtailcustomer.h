@@ -1,15 +1,14 @@
 #pragma once
 
 #include <rw/collect.h>
-#include <rw/vstream.h>
 #include <rw/thr/mutex.h>
-#include <rw/thr/recursiv.h> 
+#include <rw/thr/recursiv.h>
 
 #include "observe.h"
 #include "msg_pcrequest.h"
 #include "lmcicustomerbase.h"
 #include "database_connection.h"
-                
+
 class CtiLMCurtailCustomer : public CtiLMCICustomerBase
 {
 
@@ -22,7 +21,7 @@ DECLARE_COLLECTABLE( CtiLMCurtailCustomer );
     CtiLMCurtailCustomer(const CtiLMCurtailCustomer& customer);
 
     virtual ~CtiLMCurtailCustomer();
-    
+
     BOOL getRequireAck() const;
     LONG getCurtailReferenceId() const;
     const std::string& getAcknowledgeStatus() const;
@@ -49,7 +48,7 @@ DECLARE_COLLECTABLE( CtiLMCurtailCustomer );
     void restoreDynamicData();
     void dumpDynamicData();
     void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
-    
+
     CtiLMCurtailCustomer& operator=(const CtiLMCurtailCustomer& right);
 
     // Static Members

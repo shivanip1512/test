@@ -1,10 +1,9 @@
 #pragma once
 
 #include <rw/collect.h>
-#include <rw/vstream.h>
 
 #include "lmgroupbase.h"
-                
+
 class CtiLMGroupGolay : public CtiLMGroupBase
 {
 public:
@@ -26,7 +25,7 @@ DECLARE_COLLECTABLE( CtiLMGroupGolay );
 
     int getNominalTimeout() const;
     CtiLMGroupGolay& setNominalTimeout(int nominal_timeout);
-      
+
     CtiLMGroupGolay& operator=(const CtiLMGroupGolay& right);
 
     int operator==(const CtiLMGroupGolay& right) const;
@@ -37,6 +36,6 @@ DECLARE_COLLECTABLE( CtiLMGroupGolay );
 private:
 
     int _nominal_timeout;
-    
+
     void restore(Cti::RowReader &rdr);
 };

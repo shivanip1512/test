@@ -7,7 +7,6 @@
 #include "boostutil.h"
 
 #include <rw/collect.h>
-#include <rw/vstream.h>
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h>
 

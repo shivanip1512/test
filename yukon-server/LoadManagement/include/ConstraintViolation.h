@@ -1,7 +1,6 @@
 #pragma once
 
 #include <rw/collect.h>
-#include <rw/vstream.h>
 
 #include "ctitime.h"
 
@@ -115,7 +114,7 @@ public:
         CV_S_LoadGroupMinRestartViolation  = 139,
         CV_S_LoadGroupMaxDailyOpsViolation = 140,
         CV_S_LoadGroupMaxDailyHoursViolation = 141,
-        CV_S_LoadGroupMaxMonthlyHoursViolation = 142, 
+        CV_S_LoadGroupMaxMonthlyHoursViolation = 142,
         CV_S_LoadGroupMaxSeasonalHoursViolation = 143,
         CV_S_LoadGroupMaxAnnualHoursViolation = 144,
         CV_S_LoadGroupCannotControlInWindow = 145,

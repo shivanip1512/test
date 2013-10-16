@@ -1,9 +1,8 @@
 #pragma once
 
 #include <rw/collect.h>
-#include <rw/vstream.h>
 #include <rw/thr/mutex.h>
-#include <rw/thr/recursiv.h> 
+#include <rw/thr/recursiv.h>
 
 #include "observe.h"
 #include "lmcicustomerbase.h"
@@ -21,7 +20,7 @@ DECLARE_COLLECTABLE( CtiLMEnergyExchangeCustomer );
     CtiLMEnergyExchangeCustomer(const CtiLMEnergyExchangeCustomer& customer);
 
     virtual ~CtiLMEnergyExchangeCustomer();
-    
+
     std::vector<CtiLMEnergyExchangeCustomerReply*>& getLMEnergyExchangeCustomerReplies();
     const std::vector<CtiLMEnergyExchangeCustomerReply*>& getLMEnergyExchangeCustomerReplies() const;
 
@@ -35,7 +34,7 @@ DECLARE_COLLECTABLE( CtiLMEnergyExchangeCustomer );
 
     // Static Members
 
-    // Possible 
+    // Possible
 
 protected:
 

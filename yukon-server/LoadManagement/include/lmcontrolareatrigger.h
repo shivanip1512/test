@@ -1,10 +1,9 @@
 #pragma once
 
 #include <rw/collect.h>
-#include <rw/vstream.h>
 #include <rw/thr/mutex.h>
-#include <rw/thr/recursiv.h> 
-#include <rw/tvdlist.h> 
+#include <rw/thr/recursiv.h>
+#include <rw/tvdlist.h>
 #include "ctitime.h"
 #include "row_reader.h"
 #include "observe.h"
@@ -96,9 +95,9 @@ public:
     void dumpDynamicData();
     void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
     void calculateProjectedValue();
-    
+
     bool hasReceivedPointData() const;
-    
+
     CtiLMControlAreaTrigger& operator=(const CtiLMControlAreaTrigger& right);
 
     int operator==(const CtiLMControlAreaTrigger& right) const;
