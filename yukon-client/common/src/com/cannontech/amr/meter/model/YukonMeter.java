@@ -2,7 +2,6 @@ package com.cannontech.amr.meter.model;
 
 import org.springframework.core.style.ToStringCreator;
 
-import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
@@ -44,31 +43,14 @@ public abstract class YukonMeter extends SimpleMeter implements DisplayablePao{
     }
     
     /**
-     * Returns either address (PLC) or serialnumber (RFN) depending on type.
-     * This is a helper method to limit repetition of this instanceof checks 
+     * Returns the field representing the communcation address or sensor serial number.
      */
-    public String getSerialOrAddress() {
-        if (this instanceof PlcMeter) {
-            return ((PlcMeter)this).getAddress();
-        } else if (this instanceof RfnMeter) {
-            return ((RfnMeter)this).getRfnIdentifier().getSensorSerialNumber();
-        }
-        throw new UnsupportedOperationException();
-    }
+    public abstract String getSerialOrAddress();
 
     /**
-     * Returns the (plc) routeName for Meter objects, for RfnMeters, returns empty string.
-     * This is a helper method to limit repetition of this instanceof checks 
+     * Returns the communication routeName for Meter objects. If no route, overwrite and return empty string.
      */
-    public String getRoute() {
-        if (this instanceof PlcMeter) {
-            return ((PlcMeter)this).getRoute();
-        } else if (this instanceof RfnMeter) {
-            return "";
-        }
-        throw new UnsupportedOperationException();
-
-    }
+    public abstract String getRoute();
     
     @Override
     public String toString() {

@@ -140,10 +140,8 @@ public class MeterDaoImpl implements MeterDao {
     
     @Override
     public YukonMeter getForYukonDevice(YukonDevice yukonDevice) {
-        if (yukonDevice instanceof PlcMeter) {
-            return (PlcMeter) yukonDevice;
-        } else if (yukonDevice instanceof RfnMeter) {
-            return (RfnMeter) yukonDevice;
+        if (yukonDevice instanceof YukonMeter) {
+            return (YukonMeter) yukonDevice;
         } else {
             return getForId(yukonDevice.getPaoIdentifier().getPaoId());
         }
@@ -316,16 +314,7 @@ public class MeterDaoImpl implements MeterDao {
                       return sql;
                    }
                };
-
-               YukonRowMapper<YukonMeter> rowMapper = new YukonRowMapper<YukonMeter>() {
-                   @Override
-                   public YukonMeter mapRow(YukonResultSet rs) throws SQLException {
-                       YukonMeter meter = meterRowMapper.mapRow(rs);
-                       return meter;
-                   }
-               };
-
-         return template.query(sqlGenerator, identifiers, rowMapper);
+         return template.query(sqlGenerator, identifiers, meterRowMapper);
      }
 
     @Override
@@ -337,7 +326,7 @@ public class MeterDaoImpl implements MeterDao {
     	
     	ChunkingSqlTemplate template = new ChunkingSqlTemplate(yukonJdbcTemplate);
     	
-    	List<YukonMeter> meters = template.query(new SqlFragmentGenerator<String>() {
+    	SqlFragmentGenerator<String> fragmentGenerator = new SqlFragmentGenerator<String>() {
     		@Override
             public SqlFragmentSource generate(List<String> subList) {
     		    
@@ -353,7 +342,8 @@ public class MeterDaoImpl implements MeterDao {
     			sql.append("WHERE UPPER(dmg.MeterNumber) IN (").appendArgumentList(subListUppercase).append(")");
     			return sql;
     		}
-    	}, meterNumbers, meterRowMapper);
+    	};
+    	List<YukonMeter> meters = template.query(fragmentGenerator, meterNumbers, meterRowMapper);
     	
     	
     	return meters;

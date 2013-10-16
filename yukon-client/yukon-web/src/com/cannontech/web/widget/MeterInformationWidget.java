@@ -59,19 +59,14 @@ public class MeterInformationWidget extends WidgetControllerBase {
         
         ModelAndView mav = new ModelAndView("meterInformationWidget/render.jsp");
         YukonMeter meter = meterDao.getForId(deviceId);
-                
+        mav.addObject("meter", meter);
+        
         if (meter instanceof RfnMeter) {
             /* Show RFMESH settings such as serial number, model, and manufacturer*/
-            RfnMeter rfnMeter = (RfnMeter)meter;
             mav.addObject("showRFMeshSettings", true);
-            mav.addObject("meter", rfnMeter);
         } else if (meter instanceof PlcMeter) {
             /* Show PLC settings such as route and physcal address */
-            PlcMeter plcMeter = (PlcMeter)meter;
             mav.addObject("showCarrierSettings", true);
-            mav.addObject("meter", plcMeter);
-        } else {
-            mav.addObject("meter", meter);
         }
         
         if(paoDefinitionDao.isTagSupported(meter.getPaoIdentifier().getPaoType(), PaoTag.PORTER_COMMAND_REQUESTS)) {

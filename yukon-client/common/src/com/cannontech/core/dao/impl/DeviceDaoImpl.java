@@ -14,7 +14,6 @@ import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.amr.meter.dao.MeterDao;
-import com.cannontech.amr.meter.model.PlcMeter;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.device.groups.editor.dao.impl.YukonDeviceRowMapper;
 import com.cannontech.common.device.model.DeviceCollectionReportDevice;
@@ -415,8 +414,8 @@ public final class DeviceDaoImpl implements DeviceDao {
     @Override
     public String getFormattedName(YukonDevice device) {
 
-        if (device instanceof PlcMeter) {
-            return meterDao.getFormattedDeviceName((PlcMeter)device);
+        if (device instanceof YukonMeter) {
+            return meterDao.getFormattedDeviceName((YukonMeter)device);
         }
 
         LiteYukonPAObject paoObj = paoDao.getLiteYukonPAO(device.getPaoIdentifier().getPaoId());

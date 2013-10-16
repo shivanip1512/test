@@ -23,6 +23,18 @@ public class RfnMeter extends YukonMeter implements YukonRfn, Serializable {
     public RfnIdentifier getRfnIdentifier() {
         return meterIdentifier;
     }
+
+    @Override
+    public String getSerialOrAddress() {
+        return getRfnIdentifier().getSensorSerialNumber();
+    }
+
+
+    /** RFN meters do not have a "route" */
+    @Override
+    public String getRoute() {
+        return "";
+    }
     
     @Override
     public String toString() {

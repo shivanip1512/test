@@ -21,19 +21,19 @@ public class PlcMeter extends YukonMeter {
         this.address = address;
     }
 
-    /**
-     * @return the address or "" if none is assigned
-     */
     public String getAddress() {
         return address;
     }
+    
     public void setAddress(String address) {
         this.address = address == null ? "" : address;
     }
 
-    /**
-     * @return the route name or "" if no route is assigned
-     */
+    @Override
+    public String getSerialOrAddress() {
+        return getAddress();
+    }
+
     @Override
     public String getRoute() {
         return route;

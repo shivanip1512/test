@@ -77,7 +77,7 @@ public final class MspMeterDaoImpl implements MspMeterDao
         	sql.append("WHERE MeterNumber").gt(lastReceived);
         }
         if (excludeDisabled) {
-            if (sql.toString().indexOf("WHERE ") > 0) { 
+            if (StringUtils.containsIgnoreCase(sql.toString(), "WHERE ")) { 
                 sql.append("AND");
             } else {
                 sql.append("WHERE");
