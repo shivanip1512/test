@@ -20,22 +20,22 @@
 <div class="column_12_12 clearfix">
     <div class="column one">
         <tags:nameValueContainer2>
-            <tags:nameValue2 nameKey=".active" titleKey=".active.title">
+            <tags:nameValue2 nameKey=".active">
                 <cti:msg2 var="numberOfDevices" key=".numberOfDevices" argument="${activeSize}"/>
                 <span class="success">${activeSize} ${numberOfDevices}</span>
             </tags:nameValue2>
             
-            <tags:nameValue2 nameKey=".inactive" titleKey=".inactive.title">
+            <tags:nameValue2 nameKey=".inactive">
                 <cti:msg2 var="numberOfDevices" key=".numberOfDevices" argument="${inactiveSize}"/>
                 <span class="warning">${inactiveSize} ${numberOfDevices}</span>
             </tags:nameValue2>
             
-            <tags:nameValue2 nameKey=".optedOut" titleKey=".optedOut.title">
+            <tags:nameValue2 nameKey=".optedOut">
                 <cti:msg2 var="numberOfDevices" key=".numberOfDevices" argument="${optedOutSize}"/>
                 <span class="disabled">${optedOutSize} ${numberOfDevices}</span>
             </tags:nameValue2>
             
-            <tags:nameValue2 nameKey=".unavailable" titleKey=".unavailable.title">
+            <tags:nameValue2 nameKey=".unavailable">
                 <cti:msg2 var="numberOfDevices" key=".numberOfDevices" argument="${unavailableSize}"/>
                 <span class="error">${unavailableSize} ${numberOfDevices}</span>
             </tags:nameValue2>

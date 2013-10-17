@@ -15,12 +15,12 @@
 <%@ attribute name="valueClass" %>
 <%@ attribute name="titleKey" %>
 
-
+<cti:msgScope paths=".${nameKey},">
 <c:choose>
 	<c:when test="${nameValueContainter2}">
         <tr <c:if test="${!empty rowId}"> id="${rowId}"</c:if>
             <c:if test="${!empty rowClass}"> class="${rowClass}"</c:if>>
-            <td class="name <c:if test="${!empty nameClass}"> ${nameClass}</c:if>" style="<c:if test="${not empty pageScope.nameColumnWidth}">width:${pageScope.nameColumnWidth};</c:if>" title="<c:if test="${!empty titleKey}"><cti:msg2 key="${titleKey}"/></c:if>">
+            <td class="name <c:if test="${!empty nameClass}"> ${nameClass}</c:if>" style="<c:if test="${not empty pageScope.nameColumnWidth}">width:${pageScope.nameColumnWidth};</c:if>" title="<cti:msg2 key="${nameKey}.title" blankIfMissing="true"/>">
             
 				<c:set var="colonSuffix" value=":"/>
 				<c:if test="${excludeColon == true}">
@@ -59,3 +59,4 @@
 		<div class="error">ERROR: The &lt;nameValue2&gt; tag must be enclosed in a &lt;nameValueContainer2&gt; tag</div>
 	</c:otherwise>
 </c:choose>
+</cti:msgScope>
