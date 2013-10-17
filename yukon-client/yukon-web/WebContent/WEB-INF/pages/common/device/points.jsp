@@ -45,7 +45,7 @@
                  </c:forEach>
              </tbody>
          </table>
-         <div class="pageActionArea">
+         <div id="f-page-buttons" class="dn">
             <cti:url var="download" value="download">
                 <cti:param name="deviceId" value="${deviceId}"/>
                 <cti:param name="orderBy" value="${orderBy}"/>
