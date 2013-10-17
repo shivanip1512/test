@@ -51,7 +51,7 @@
                     </c:if>
                     <cti:url var="editUrl" value="/editor/cbcBase.jsf">
                         <cti:param name="type" value="2"/>
-                        <cti:param name="itemid=" value="${feederId}"/>
+                        <cti:param name="itemid" value="${feederId}"/>
                     </cti:url>
 
                     <span class="${warning}">
