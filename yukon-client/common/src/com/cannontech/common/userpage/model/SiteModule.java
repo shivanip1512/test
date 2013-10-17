@@ -19,6 +19,7 @@ public enum SiteModule implements DatabaseRepresentationSource {
     TOOLS("tools", SiteMapCategory.TOOLS),
     ADMIN("adminSetup", SiteMapCategory.ADMIN),
     SUPPORT("support", SiteMapCategory.SUPPORT),
+    USER("user", SiteMapCategory.ADMIN),
     ;
 
     private final String name;

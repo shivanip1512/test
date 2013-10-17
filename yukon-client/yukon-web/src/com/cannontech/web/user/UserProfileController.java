@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletResponse;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -39,7 +38,6 @@ import com.cannontech.core.authorization.service.PaoPermissionService;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.RoleDao;
 import com.cannontech.core.dao.YukonUserDao;
-import com.cannontech.core.roleproperties.InputTypeFactory;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.core.users.model.UserPreferenceName;
@@ -50,7 +48,6 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.dr.general.service.ContactNotificationService;
 import com.cannontech.stars.dr.general.service.ContactService;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.util.ServletUtil;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
@@ -135,8 +132,7 @@ public class UserProfileController {
     @RequestMapping(method = RequestMethod.GET, value = "/activityStream/{startIndex}.html")
     public String loadActivityStream(@PathVariable Integer startIndex,
                                                    ModelMap model,
-                                                   LiteYukonUser user,
-                                                   YukonUserContext context) {
+                                                   LiteYukonUser user) {
 
         startIndex = startIndex < 0 ? 0 : startIndex;
         profileHelper.setupActivityStream(model, user, startIndex, PAGE_EVENT_ROW_COUNT);
@@ -156,7 +152,6 @@ public class UserProfileController {
                                                         BindingResult result,
                                                         ModelMap model, 
                                                         LiteYukonUser user,
-                                                        YukonUserContext context, 
                                                         FlashScope flash) {
 
         // validate user permissions: so far, just verify that the current user is editing themself.
@@ -209,37 +204,10 @@ public class UserProfileController {
     public @ResponseBody JSONObject updatePreference(Integer userId,
                                                      String prefName,
                                                      String prefValue,
-                                                     LiteYukonUser user,
-                                                     YukonUserContext context,
-                                                     HttpServletRequest request) {
+                                                     LiteYukonUser user) {
 
         profileHelper.isUserAuthorized(user, userId);
-        UserPreferenceName preference = UserPreferenceName.getName(prefName); // valueOf FAILS
-
-        // TODO FIXME: HOW to validate that prefValue is one of the options for prefName?
-        if (preference.getValueType() == InputTypeFactory.stringType()) {
-            if (preference.toString().endsWith("_URL")) {
-                MessageSourceAccessor messenger = resolver.getMessageSourceAccessor(context);
-                if (StringUtils.isBlank(prefValue)) {   // Allow blanks
-                    
-                // If it is a full URL, error out if it isn't on this website.
-                } else if (YukonValidationUtils.isBasicUrl(prefValue)) {
-                    String currentPrefix = ServletUtil.getHostURL(request).toString();
-                    if (prefValue.startsWith(currentPrefix)) { // Allow
-                        // Save only the path information
-                        prefValue = prefValue.substring(currentPrefix.length());
-                    } else {
-                        return jsonHelper.failToJSON("notificationValue", MSGKEY_PREF_BAD_URL, messenger);
-                    }
-                    
-                // Save URL paths, ie. anything after the http://*/, eg. "/user/profile"
-                } else if (YukonValidationUtils.isUrlPath(prefValue)) { // Allow
-                } else {
-                    return jsonHelper.failToJSON("notificationValue", MSGKEY_PREF_BAD_URL, messenger);
-                }
-            }
-        }
-
+        UserPreferenceName preference = UserPreferenceName.valueOf(prefName);
         prefService.savePreference(user, preference, prefValue);
 
         return jsonHelper.succeed();
