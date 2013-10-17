@@ -143,7 +143,7 @@ public class InventoryIndexManager extends AbstractIndexManager {
 
             SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append(getBaseQuery());
-            sql.append("WHERE ib.inventoryId").eq(id);
+            sql.append("AND ib.inventoryId").eq(id);
 
             docList = jdbcTemplate.query(sql.getSql(), sql.getArguments(), new DocumentMapper());
             return new IndexUpdateInfo(docList, term);
