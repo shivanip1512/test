@@ -47,8 +47,9 @@
         <div class="progressBarPercentComplete ${pageScope.percentClasses}">0%</div>
     </c:if>
     <c:if test="${!hideCount}">
-        <div class="progressBarCompletedCount ${pageScope.countClasses}">
-            <span></span>/
+        <span class="${pageScope.countClasses}">
+            <span class="progressBarCompletedCount"></span>
+            <span>/</span>
             <span class="progressBarTotal">
                 <c:if test="${empty totalCountKey}">
                     ${totalCount}

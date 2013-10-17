@@ -45,7 +45,7 @@ function setupProgressBar(pbarId, completedCount, totalCount, completionCallback
         progressContainer = getProgressBarContainer(pbarId);
         progressContainer.find('.progressBarInner').css('width', innerWidth + 'px');
         progressContainer.find('.progressBarPercentComplete').html(percentDone + '%');
-        progressContainer.find('.progressBarCompletedCount span').html(completedCount);
+        progressContainer.find('.progressBarCompletedCount').html(completedCount);
     } catch(e) {}
 
     if (completionCallback != null && percentDone == 100) {
@@ -93,7 +93,7 @@ function setupSuccessFailureProgressBar(pbarId, totalCount, successCompletedCoun
         
         progressContainer.find('.progressBarInnerSuccess').css('width', successWidth + 'px');
         progressContainer.find('.progressBarInnerFailure').css('width', failureWidth + 'px');
-        progressContainer.find('.progressBarCompletedCount span').html(totalCompletedCount);
+        progressContainer.find('.progressBarCompletedCount').html(totalCompletedCount);
         progressContainer.find('.progressBarPercentComplete').html(percentDone + '%');
     } catch (e) {}
 

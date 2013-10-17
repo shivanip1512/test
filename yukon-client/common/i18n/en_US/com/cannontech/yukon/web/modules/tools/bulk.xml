@@ -240,6 +240,8 @@
     <entry key="yukon.common.device.bulk.massChangeOptions.enable.noteText"></entry>
     
     <!-- massChangeResults.jsp -->
+    <entry key="yukon.web.modules.tools.bulk.massChangeResults.pageName">Mass Change Results</entry>
+    <entry key="yukon.web.modules.tools.bulk.massChangeResults.contextualPageName">Results</entry>
     <entry key="yukon.common.device.bulk.massChangeResults.pageTitle">Mass Change Results</entry>
     <entry key="yukon.common.device.bulk.massChangeResults.header">Results Of Mass Change Operation</entry>
     
