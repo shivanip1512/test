@@ -32,14 +32,6 @@
 <cti:msg var="warningHelpTitle" key="yukon.web.modules.support.databaseMigration.importValidate.warningHelpTitle"/>
 <cti:msg var="warningHelp" key="yukon.web.modules.support.databaseMigration.importValidate.warningHelp"/>
 
-<cti:msg var="magImg" key="yukon.web.modules.support.databaseMigration.importValidate.mag.img"/>
-<cti:msg var="magImgOver" key="yukon.web.modules.support.databaseMigration.importValidate.mag.img.hover"/>
-<cti:msg var="warningImg" key="yukon.web.modules.support.databaseMigration.importValidate.warning.img"/>
-<cti:msg var="warningImgOver" key="yukon.web.modules.support.databaseMigration.importValidate.warning.img.hover"/>
-<cti:msg var="errorImg" key="yukon.web.modules.support.databaseMigration.importValidate.error.img"/>
-<cti:msg var="errorImgOver" key="yukon.web.modules.support.databaseMigration.importValidate.error.img.hover"/>
-<cti:msg var="placeHolderImg" key="yukon.web.modules.support.databaseMigration.importValidate.placeholder.img"/>
-
 <cti:standardPage title="${pageTitle}" module="support">
 
     <cti:breadCrumbs>
