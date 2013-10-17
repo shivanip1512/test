@@ -10,6 +10,7 @@ import com.cannontech.common.search.index.CustomerAccountIndexManager;
 import com.cannontech.common.search.index.IndexManager;
 import com.cannontech.common.userpage.model.SiteModule;
 import com.cannontech.common.userpage.model.UserPage;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.common.search.result.Page;
 import com.google.common.collect.ImmutableList;
 
@@ -30,9 +31,10 @@ public class CustomerAccountPageSearcher extends AbstractPageSearcher {
     }
 
     @Override
-    protected Page buildPage(Document document) {
+    protected Page buildPage(Document document, LiteYukonUser user) {
         String accountNumber = document.get("accountNumber");
         String accountId = document.get("accountId");
+        // int ecId = Integer.parseInt(document.get("energyCompanyId"));
 
         String module = "operator";
         String path = "/stars/operator/account/view?accountId=" + accountId;

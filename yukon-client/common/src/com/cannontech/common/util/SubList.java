@@ -12,7 +12,10 @@ import com.google.common.collect.ForwardingList;
  * 
  * List newList = originalList.subList(fromIndex, toIndex);
  * SubList subList = new SubList(newList, fromIndex, originialList.size());
+ * 
+ * @deprecated Use {@link #pageBasedForSublist(List, int, int, int)}
  */
+@Deprecated
 public class SubList<T> extends ForwardingList<T> {
 
     private int startIndex;

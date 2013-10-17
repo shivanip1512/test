@@ -85,15 +85,28 @@
     <entry key="yukon.web.modules.tools.search.noResults">
         <![CDATA[<span class="detail">No results found for:</span>&nbsp;<strong><em>{0}</em></strong>]]>
     </entry>
+    <entry key="yukon.web.modules.tools.search.queryOutOfRange">Sorry, Yukon does not serve more than {1} results for any query. (You asked for results starting from {0}.).</entry>
     <entry key="yukon.web.modules.tools.search.results.page.title">Page</entry>
     <entry key="yukon.web.modules.tools.search.results.summary">
         <![CDATA[<span class="detail">Showing {0} - {1} of {2} for:</span>&nbsp;<strong><em>{3}</em></strong>]]>
     </entry>
 
-<!-- TODO:  Add all the context keys and DOCUMENT what the arguments for each one is. -->
+    <!-- Arguments available for the electric and water meter detail pages are 0: device name, 1: meter number -->
     <entry key="yukon.web.modules.search.amr.meterDetail.electric.summary">Meter Number: {1}</entry>
+    <entry key="yukon.web.modules.search.amr.meterDetail.water.summary">Meter Number: {1}</entry>
+
+    <!-- Arguments available for the control area page 0: control area name -->
     <entry key="yukon.web.modules.search.dr.controlAreaDetail.summary">{0}</entry>
+
+    <!-- Arguments available for the scenario page 0: scenario name -->
     <entry key="yukon.web.modules.search.dr.scenarioDetail.summary">{0}</entry>
+
+    <!-- Arguments available for the program page 0: program name -->
     <entry key="yukon.web.modules.search.dr.programDetail.summary">{0}</entry>
+
+    <!-- Arguments available for the load group page 0: load group name -->
     <entry key="yukon.web.modules.search.dr.loadGroupDetail.summary">{0}</entry>
+
+    <!-- Arguments available for the load group page 0: load group name -->
+    <entry key="yukon.web.modules.search.operator.account.VIEW.summary">Account Number: {0}</entry>
 </properties>

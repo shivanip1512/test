@@ -158,9 +158,9 @@ public class StaticPageSearcher implements PageSearcher {
             }
         } catch (IOException exception) {
             throw new RuntimeException("error searching index for userContext " + userContext, exception);
-        } catch (ParseException exception) {
-            // TODO:
-            throw new RuntimeException("unable to parse Lucene expression", exception);
+        } catch (ParseException parseException) {
+            throw new IllegalArgumentException("could not parse query for searchString [" + searchString + "]",
+                parseException);
         }
 
         SearchResults<Page> results = new SearchResults<>();
@@ -192,9 +192,9 @@ public class StaticPageSearcher implements PageSearcher {
             }
         } catch (IOException exception) {
             throw new RuntimeException("error searching index for userContext " + userContext, exception);
-        } catch (ParseException exception) {
-            // TODO:
-            throw new RuntimeException("unable to parse Lucene expression", exception);
+        } catch (ParseException parseException) {
+            throw new IllegalArgumentException("could not parse query for searchString [" + searchString + "]",
+                parseException);
         }
 
         return results;

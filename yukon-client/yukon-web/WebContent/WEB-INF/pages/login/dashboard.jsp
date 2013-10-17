@@ -15,28 +15,29 @@
                         <span class="empty-list"><i:inline key=".favorites.emptyList" /></span>
                     </c:if>
                     <c:if test="${not empty favorites}">
-                            <cti:msg2 var="undoText" key="yukon.common.undo"/>
+                        <cti:msg2 var="undoText" key="yukon.common.undo"/>
 
-                            <c:forEach var="module" items="${favorites}">
-                                        <c:if test="${favorites.size() > 1}">
-                                            <h5><cti:msg2 key="${module.key}"/></h5>
-                                        </c:if>
-                                        <ul class="simple-list stacked favorites" data-undo-text="${undoText}">
-                                            <c:forEach items="${module.value}" var="favorite">
-                                            	<c:set var="favoritePageName"><cti:pageName userPage="${favorite}"/></c:set>
-                                                <cti:msg2 var="removedText" key=".favorites.removed" argument="${favoritePageName}"/>
-                                                <li class="favorite" data-removed-text="${removedText}">
-                                                    <cti:button classes="b-favorite remove" nameKey="favorite" renderMode="image" icon="icon-star" 
-                                                        data-name="${favorite.name}" 
-                                                        data-module="${favorite.module}" 
-                                                        data-path="${favorite.path}" 
-                                                        data-label-args="${com.cannontech.common.util.StringUtils.listAsJsSafeString(favorite.arguments)}"/>
+                        <c:forEach var="module" items="${favorites}">
+                            <c:if test="${!empty favorites}">
+                                <h5><cti:msg2 key="${module.key}"/></h5>
+                            </c:if>
+                            <ul class="simple-list stacked favorites" data-undo-text="${undoText}">
+                                <c:forEach items="${module.value}" var="favorite">
+                                	<c:set var="favoritePageName"><cti:pageName userPage="${favorite}"/></c:set>
+                                    <cti:msg2 var="removedText" key=".favorites.removed" htmlEscapeArguments="false"
+                                    	arguments="${favoritePageName}"/>
+                                    <li class="favorite" data-removed-text="${removedText}">
+                                        <cti:button classes="b-favorite remove" nameKey="favorite" renderMode="image" icon="icon-star" 
+                                            data-name="${favorite.name}"
+                                            data-module="${favorite.module}"
+                                            data-path="${favorite.path}"
+                                            data-label-args="${com.cannontech.common.util.StringUtils.listAsJsSafeString(favorite.arguments)}"/>
 
-                                                    <a href="${favorite.path}">${fn:escapeXml(favoritePageName)}</a>
-                                                </li>
-                                            </c:forEach>
-                                        </ul>
-                            </c:forEach>
+                                        <a href="${favorite.path}">${favoritePageName}</a>
+                                    </li>
+                                </c:forEach>
+                            </ul>
+                        </c:forEach>
                     </c:if>
                 </cti:tabbedContentSelectorContent>
                 <cti:msg2 var="historyTab" key=".history" />

@@ -19,12 +19,15 @@ import com.cannontech.common.search.index.IndexManager;
 import com.cannontech.common.search.index.PaoIndexManager;
 import com.cannontech.common.userpage.model.SiteModule;
 import com.cannontech.common.userpage.model.UserPage;
+import com.cannontech.core.authorization.service.PaoPermissionService;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.common.search.result.Page;
 import com.google.common.collect.ImmutableList;
 
 @Service
 public class DrPageSearcher extends AbstractPageSearcher {
     @Autowired private PaoIndexManager indexManager;
+    @Autowired private PaoPermissionService paoPermissionService;
 
     private final BooleanQuery isDrObjectQuery;
     private final Set<PaoType> controlAreaPaoTypes;
@@ -70,11 +73,18 @@ public class DrPageSearcher extends AbstractPageSearcher {
     }
 
     @Override
-    protected Page buildPage(Document document) {
+    protected Page buildPage(Document document, LiteYukonUser user) {
         String paoName = document.get("pao");
         @SuppressWarnings("deprecation")
         PaoType paoType = PaoType.getForDbString(document.get("type"));
         int paoId = Integer.parseInt(document.get("paoid"));
+        // For some reason paoPermissionService.hasPermission is returning UNKNOWN
+//        PaoIdentifier paoIdentifier = new PaoIdentifier(paoId, paoType);
+//        AuthorizationResponse hasPermission =
+//                paoPermissionService.hasPermission(user, paoIdentifier, Permission.LM_VISIBLE);
+//        if (hasPermission != AUTHORIZED) {
+//            return null;
+//        }
 
         String module = "dr";
         String path = null;

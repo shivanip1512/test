@@ -11,12 +11,17 @@ import com.cannontech.common.search.index.IndexManager;
 import com.cannontech.common.search.index.InventoryIndexManager;
 import com.cannontech.common.userpage.model.SiteModule;
 import com.cannontech.common.userpage.model.UserPage;
+import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.common.search.result.Page;
 import com.google.common.collect.ImmutableList;
 
 @Service
 public class InventoryPageSearcher extends AbstractPageSearcher {
     @Autowired private InventoryIndexManager indexManager;
+    @Autowired private RolePropertyDao rolePropertyDao;
 
     private final static String[] searchFields = new String[] {"manufacturerSerialNumber", "meterNumber"};
 
@@ -31,7 +36,7 @@ public class InventoryPageSearcher extends AbstractPageSearcher {
     }
 
     @Override
-    protected Page buildPage(Document document) {
+    protected Page buildPage(Document document, LiteYukonUser user) {
         int inventoryId = Integer.parseInt(document.get("inventoryId"));
 
         String accountIdStr = document.get("accountId");
@@ -39,9 +44,15 @@ public class InventoryPageSearcher extends AbstractPageSearcher {
         String path;
         String pageName;
         if (StringUtils.isBlank(accountIdStr) || "0".equals(accountIdStr)) {
+            if (!rolePropertyDao.checkRole(YukonRole.INVENTORY, user)) {
+                return null;
+            }
             pageName = "inventory.VIEW";
             path = "/stars/operator/inventory/view?inventoryId=" + inventoryId;
         } else {
+            if (!rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES, user)) {
+                return null;
+            }
             int accountId = Integer.parseInt(accountIdStr);
             pageName = "hardware.VIEW";
             path = "/stars/operator/hardware/view?accountId=" + accountId + "&inventoryId=" + inventoryId;

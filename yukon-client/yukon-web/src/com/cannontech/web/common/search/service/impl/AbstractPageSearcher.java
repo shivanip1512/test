@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.queryParser.ParseException;
@@ -17,17 +18,21 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.util.Version;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.search.TopDocsCallbackHandler;
 import com.cannontech.common.search.YukonObjectSearchAnalyzer;
 import com.cannontech.common.search.index.IndexManager;
 import com.cannontech.common.search.index.SearchTemplate;
 import com.cannontech.common.search.result.SearchResults;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.search.result.Page;
 import com.cannontech.web.common.search.service.PageSearcher;
 import com.google.common.collect.Lists;
 
 public abstract class AbstractPageSearcher implements PageSearcher {
+    private final Logger log = YukonLogManager.getLogger(AbstractPageSearcher.class);
+
     protected final static Analyzer analyzer = new YukonObjectSearchAnalyzer();
 
     protected abstract IndexManager getIndexManager();
@@ -56,7 +61,11 @@ public abstract class AbstractPageSearcher implements PageSearcher {
         return searchQuery;
     }
 
-    protected abstract Page buildPage(Document document);
+    /**
+     * Build a page given the Lucene document.  This method can return null if the user is not allowed to view
+     * the page represented by the Lucene document.
+     */
+    protected abstract Page buildPage(Document document, LiteYukonUser user);
 
     @Override
     public SearchResults<Page> search(String searchString, final int count, YukonUserContext userContext) {
@@ -73,10 +82,11 @@ public abstract class AbstractPageSearcher implements PageSearcher {
                 query = booleanQuery;
             }
         } catch (ParseException parseException) {
-            // TODO:
-            throw new RuntimeException("could not parse query", parseException);
+            throw new IllegalArgumentException("could not parse query for searchString [" + searchString + "]",
+                parseException);
         }
 
+        final LiteYukonUser user = userContext.getYukonUser();
         SearchTemplate searchTemplate = getIndexManager().getSearchTemplate();
         TopDocsCallbackHandler<SearchResults<Page>> handler = new TopDocsCallbackHandler<SearchResults<Page>>() {
             @Override
@@ -87,8 +97,10 @@ public abstract class AbstractPageSearcher implements PageSearcher {
                 for (int index = 0; index < stop; ++index) {
                     int docId = topDocs.scoreDocs[index].doc;
                     Document document = indexSearcher.doc(docId);
-                    Page page = buildPage(document);
-                    list.add(page);
+                    Page page = buildPage(document, user);
+                    if (page != null) {
+                        list.add(page);
+                    }
                 }
 
                 SearchResults<Page> results = new SearchResults<>();
@@ -102,8 +114,9 @@ public abstract class AbstractPageSearcher implements PageSearcher {
         try {
             SearchResults<Page> results = searchTemplate.doCallBackSearch(query, handler);
             return results;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (IOException ioe) {
+            log.error("IOException searching Lucene index", ioe);
+            throw new RuntimeException(ioe);
         }
     }
 
@@ -124,8 +137,8 @@ public abstract class AbstractPageSearcher implements PageSearcher {
                 query = booleanQuery;
             }
         } catch (ParseException parseException) {
-            // TODO:
-            throw new RuntimeException("could not parse query", parseException);
+            throw new IllegalArgumentException("could not parse query for searchString [" + searchString + "]",
+                parseException);
         }
 
         SearchTemplate searchTemplate = getIndexManager().getSearchTemplate();
@@ -156,8 +169,9 @@ public abstract class AbstractPageSearcher implements PageSearcher {
                 matches.addAll(autocomplete(searchString, count, autocompleteField));
             }
             return matches;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (IOException ioe) {
+            log.error("IOException searching Lucene index", ioe);
+            throw new RuntimeException(ioe);
         }
     }
 }

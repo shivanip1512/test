@@ -8,10 +8,33 @@ import com.cannontech.web.common.search.result.Page;
 
 public interface SiteSearchService {
     /**
+     * For performance reasons, searches are limited to the first MAX_SEARCH_ITEMS results. Querying
+     * for more than this will result in an error. (In
+     * {@link #search(String, int, int, YukonUserContext)}, startIndex + count must be no greater
+     * than this value.)
+     */
+    final static int MAX_SEARCH_ITEMS = 1000;
+
+    /**
+     * This should be called on any search string before using it in a search to clean the string of any special
+     * Lucene characters.  This is available as a separate method (instead of just happening inside search) so the
+     * user can report the actual string searched on.
+     */
+    String sanitizeSearchStr(String searchStr);
+
+    /**
      * Search for up to count results across all searchable pages, starting at startIndex.  The value of
-     * count cannot be greater than 1000.
+     * count cannot be greater than 1000.  It is expected that {@link #sanitizeSearchStr(String)} will have
+     * been called on searchStr before calling this method.<p>
+     * 
+     * startIndex + count must be no greater than {@link #MAX_SEARCH_ITEMS}
      */
     SearchResults<Page> search(String searchStr, int startIndex, int count, YukonUserContext userContext);
 
+    /**
+     * Search for a list of search strings.  The incoming searchStr will be sanitized using
+     * {@link #sanitizeSearchStr(String)} so it is not necessary to call it as with
+     * {@link #search(String, int, int, YukonUserContext)}.
+     */
     List<String> autocomplete(String searchStr, YukonUserContext userContext);
 }

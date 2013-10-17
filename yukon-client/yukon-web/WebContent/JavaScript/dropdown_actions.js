@@ -119,7 +119,7 @@ jQuery(function() {
     });
     
     function updateCriteriaButton(menu) {
-        var button = menu.data('button');
+        var button = menu.prev();
         var allOptions = menu.find('.criteria-option input');
         var checkedOptions = allOptions.filter(':checked');
         var buttonText = ''; 

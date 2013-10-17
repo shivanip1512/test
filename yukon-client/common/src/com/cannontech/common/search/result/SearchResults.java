@@ -15,15 +15,19 @@ public class SearchResults<T> {
     private int count = 0;          // number of results per page
     private int lastStartIndex = 0; // index of last page of results
     private int numberOfPages = 0;  // total number of result pages 
-    
+
+    private final static SearchResults<Object> emptyResult = new SearchResults<>();
+    static {
+        List<Object> empty = Collections.emptyList();
+        emptyResult.setEndIndex(0);
+        emptyResult.setHitCount(0);
+        emptyResult.setResultList(empty);
+        emptyResult.setStartIndex(0);
+    }
+
+    @SuppressWarnings("unchecked")
     public static <T> SearchResults<T> emptyResult() {
-        List<T> empty = Collections.emptyList();
-        SearchResults<T> result = new SearchResults<T>();
-        result.setEndIndex(0);
-        result.setHitCount(0);
-        result.setResultList(empty);
-        result.setStartIndex(0);
-        return result;
+        return (SearchResults<T>) emptyResult;
     }
 
    /**
@@ -31,7 +35,10 @@ public class SearchResults<T> {
     * 
     * @param size - size of all items (not size of itemList since itemList is only the current page items)
     * @param itemList - items for current page
+    * 
+    * @deprecated Use {@link #pageBasedForSublist(List, int, int, int)}
     */
+    @Deprecated
     public static  <T> SearchResults<T> pageBasedForSubList(int itemsPerPage, SubList<T> itemList) {
 
         SearchResults<T> result = new SearchResults<>();
@@ -42,24 +49,38 @@ public class SearchResults<T> {
     }
 
     /**
-     * Returns a SearchResult containing a specific "page" of items, based on the specified
-     * parameters.
+     * Returns a SearchResult containing a specific "page" of items, based on the specified parameters.
+     * This method takes a list of _all_ results and will set the result list to the appropriate sublist for
+     * the specified page.
      */
-    public static  <T> SearchResults<T> pageBasedForWholeList(int currentPage, int itemsPerPage, List<T> itemList) {
+    public static <T> SearchResults<T> pageBasedForWholeList(int currentPage, int itemsPerPage, List<T> itemList) {
         int startIndex = (currentPage - 1) * itemsPerPage;
-        int toIndex = startIndex + itemsPerPage;
         int numberOfResults = itemList.size();
-        
-        if(numberOfResults < toIndex) toIndex = numberOfResults;
+        int toIndex = Math.min(startIndex + itemsPerPage, numberOfResults);
+
         itemList = itemList.subList(startIndex, toIndex);
-        
+
         SearchResults<T> result = new SearchResults<>();
         result.setResultList(itemList);
         result.setBounds(startIndex, itemsPerPage, numberOfResults);
-        
+
         return result;
     }
-    
+
+    /**
+     * Create an instance with a list of items that has already been reduced to the items on the given page.
+     */
+    public static <T> SearchResults<T> pageBasedForSublist(List<T> sublist, int currentPage, int itemsPerPage,
+            int numberOfResults) {
+        int startIndex = (currentPage - 1) * itemsPerPage;
+
+        SearchResults<T> result = new SearchResults<>();
+        result.setResultList(sublist);
+        result.setBounds(startIndex, itemsPerPage, numberOfResults);
+
+        return result;
+    }
+
     /**
      * @param startIndex O-based index from which to start
      * @param count number of items the caller wanted back

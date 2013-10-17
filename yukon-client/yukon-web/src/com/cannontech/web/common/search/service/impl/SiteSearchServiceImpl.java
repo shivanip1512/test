@@ -33,12 +33,17 @@ public class SiteSearchServiceImpl implements SiteSearchService {
     @Autowired private List<PageSearcher> pageSearchers;
 
     @Override
+    public String sanitizeSearchStr(String searchStr) {
+        return searchStr == null ? "" : searchStr.replaceAll("[^\\p{Alnum}]+", " ").trim();
+    }
+
+    @Override
     public SearchResults<Page> search(String searchStr, int startIndex, int count, final YukonUserContext userContext) {
         if (log.isDebugEnabled()) {
             log.debug("searching for [" + searchStr + "], starting at " + startIndex + ", count = " + count);
         }
 
-        if (count > 1000) {
+        if (startIndex + count > 1000) {
             // The caller should limit this to avoid this exception.
             throw new UnsupportedOperationException("search does not support more than 1000 results");
         }
@@ -85,6 +90,7 @@ public class SiteSearchServiceImpl implements SiteSearchService {
 
     @Override
     public List<String> autocomplete(String searchStr, YukonUserContext userContext) {
+        searchStr = sanitizeSearchStr(searchStr);
         if (log.isDebugEnabled()) {
             log.debug("autocompleting [" + searchStr + "]");
         }

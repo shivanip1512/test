@@ -46,10 +46,10 @@
     </div>
 
     <div class="stacked">
-        <c:if test="${empty searchString}">
-        	<i:inline key=".emptySearch"/>
+        <c:if test="${!empty error}">
+        	<i:inline key="${error}"/>
         </c:if>
-        <c:if test="${!empty searchString}">
+        <c:if test="${empty error}">
             <c:if test="${empty results.resultList}">
                 <i:inline key=".noResults" arguments="${fn:escapeXml(searchString)}"/>
             </c:if>

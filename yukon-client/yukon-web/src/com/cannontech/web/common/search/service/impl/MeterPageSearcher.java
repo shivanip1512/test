@@ -14,6 +14,7 @@ import com.cannontech.common.search.index.IndexManager;
 import com.cannontech.common.search.index.PaoIndexManager;
 import com.cannontech.common.userpage.model.SiteModule;
 import com.cannontech.common.userpage.model.UserPage;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.common.search.result.Page;
 import com.google.common.collect.ImmutableList;
 
@@ -40,7 +41,7 @@ public class MeterPageSearcher extends AbstractPageSearcher {
     }
 
     @Override
-    protected Page buildPage(Document document) {
+    protected Page buildPage(Document document, LiteYukonUser user) {
         String deviceName = document.get("deviceName");
         @SuppressWarnings("deprecation")
         PaoType paoType = PaoType.getForDbString(document.get("type"));
