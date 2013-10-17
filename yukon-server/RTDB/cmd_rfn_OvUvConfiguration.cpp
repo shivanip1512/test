@@ -310,7 +310,7 @@ RfnCommandResult RfnGetOvUvAlarmConfigurationCommand::decodeCommand( const CtiTi
 {
     RfnCommandResult    result;
 
-///    We need 18 bytes
+///    We need 19 bytes
 ///        1   -- opCode
 ///        1   -- Meter ID
 ///        2   -- Event ID
@@ -319,6 +319,7 @@ RfnCommandResult RfnGetOvUvAlarmConfigurationCommand::decodeCommand( const CtiTi
 ///        1   -- Alarm Repeat Interval (minutes)
 ///        1   -- SET Alarm Repeat Count
 ///        1   -- CLEAR Alarm Repeat Count
+///        1   -- Severity
 ///        4   -- Threshold Value
 ///        1   -- Unit of Measurement
 ///        2   -- UoM modifier 1
