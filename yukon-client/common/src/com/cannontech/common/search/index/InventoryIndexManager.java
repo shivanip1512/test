@@ -71,6 +71,7 @@ public class InventoryIndexManager extends AbstractIndexManager {
     protected String getDocumentCountQuery() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select count(*) from inventoryBase");
+        sql.append("where inventoryId <> 0");
         return sql.getSql();
     }
 
