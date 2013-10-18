@@ -251,8 +251,8 @@ bool CtiMCScheduleManager::deleteSchedule(long sched_id)
         MapIterator itr2 = Map.find( sched_id );
 
         if (itr2 != Map.end() ){
-            Map.erase( sched_id );
             key_p =  (*itr2).first;
+            Map.erase( sched_id );
         }
         else
             key_p = 0;
