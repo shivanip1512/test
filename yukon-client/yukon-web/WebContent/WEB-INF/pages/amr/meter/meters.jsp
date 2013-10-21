@@ -98,28 +98,15 @@
             <tbody>
             <c:forEach var="searchResultRow" items="${meterSearchResults.resultList}">
                 <tr>
-                    <td><cti:paoDetailUrl yukonPao="${searchResultRow}">
-                            <c:choose>
-                                <c:when test="${empty searchResultRow.name}"></c:when>
-                                <c:otherwise>${fn:escapeXml(searchResultRow.name)}</c:otherwise>
-                            </c:choose>
-                        </cti:paoDetailUrl></td>
-                    <td><c:choose>
-                            <c:when test="${empty searchResultRow.meterNumber}"></c:when>
-                            <c:otherwise>${fn:escapeXml(searchResultRow.meterNumber)}</c:otherwise>
-                        </c:choose>
+                    <td>
+                    	<cti:paoDetailUrl yukonPao="${searchResultRow}">
+                    		<c:if test="${!empty searchResultRow.name}">${fn:escapeXml(searchResultRow.name)}</c:if>
+                        </cti:paoDetailUrl>
                     </td>
-                    <td><tags:paoType yukonPao="${searchResultRow}" /></td>
-                    <td><c:choose>
-                            <c:when test="${empty searchResultRow.serialOrAddress}"></c:when>
-                            <c:otherwise>${searchResultRow.serialOrAddress}</c:otherwise>
-                        </c:choose>
-                    </td>
-                    <td><c:choose>
-                            <c:when test="${empty searchResultRow.route}"></c:when>
-                            <c:otherwise>${searchResultRow.route}</c:otherwise>
-                        </c:choose>
-                    </td>
+                    <td><c:if test="${!empty searchResultRow.meterNumber}">${fn:escapeXml(searchResultRow.meterNumber)}</c:if></td>
+                    <td><tags:paoType yukonPao="${searchResultRow}"/></td>
+                    <td><c:if test="${!empty searchResultRow.serialOrAddress}">${fn:escapeXml(searchResultRow.serialOrAddress)}</c:if></td>
+                    <td><c:if test="${!empty searchResultRow.route}">${fn:escapeXml(searchResultRow.route)}</c:if>></td>
                     <td class="contextual-menu">
                         <cm:singleDeviceMenu deviceId="${searchResultRow.paoIdentifier.paoId}" containerCssClass="fr"/>
                     </td>
