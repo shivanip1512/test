@@ -5,22 +5,17 @@
 <%-- MODULE, MENU --%>
 <cti:standardPage page="bulkImporter" module="blank">
 
-<div class="notAuthorized">Note: <a href="/bulk/bulkHome">Bulk Operations</a> is the preferred method of importing or updating meters.</div>
-<br>
+<cti:url var="refreshUrl" value="/amr/bulkimporter/refreshResults" />
 
 <cti:includeScript link="/JavaScript/bulkImporter.js"/>
-
 <script type="text/javascript">
-
-    <cti:url var="refreshUrl" value="/amr/bulkimporter/refreshResults" />
-    
     setupRefreshStuff("${refreshUrl}", "${refreshRate}");
-    
     jQuery(function() {
         show_next('failed');
     });
-    
 </script>
+
+<div class="warning stacked"><span class="fwb">Warning:&nbsp;</span><a href="/bulk/bulkHome">Bulk Operations</a> is the preferred method of importing or updating meters.</div>
 
 <form id="actionsForm" method="post" action="/amr/bulkimporter/upload" enctype="multipart/form-data">
 <tags:boxContainer title="Actions" hideEnabled="false">
