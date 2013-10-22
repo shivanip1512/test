@@ -15,7 +15,7 @@
                 
                     <%-- note --%>
                     <div class="stacked">
-                        <span class="fwb"><i:inline key=".noteLabel"/></span>
+                        <h3><i:inline key=".noteLabel"/></h3>
                         <span class="notes"><i:inline key=".noteText"/></span>
                     </div>
                     
@@ -26,7 +26,7 @@
                     </tags:nameValueContainer2>
                     
                     <div class="actionArea stacked">
-                        <div><cti:button nameKey="prescan" type="submit" classes="f-blocker action primary"/></div>
+                        <cti:button nameKey="prescan" type="submit" classes="f-blocker action primary"/>
                     </div>
                 </form:form>
                 
@@ -35,12 +35,12 @@
             <div class="column two nogutter">
                 
                 <%-- instructions --%>
-                        <span class="fwb"><i:inline key=".instructionsLabel"/></span>
-                        <ul class="disc stacked">
-                            <li><i:inline key=".instructionsText1" /></li>
-                            <li><i:inline key=".instructionsText2" /></li>
-                            <li><i:inline key=".instructionsText3" /></li>
-                        </ul>
+                <h3><i:inline key=".instructionsLabel"/></h3>
+                <ul class="disc stacked">
+                    <li><i:inline key=".instructionsText1" /></li>
+                    <li><i:inline key=".instructionsText2" /></li>
+                    <li><i:inline key=".instructionsText3" /></li>
+                </ul>
                 
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".sampleFiles" nameClass="wsnw">
