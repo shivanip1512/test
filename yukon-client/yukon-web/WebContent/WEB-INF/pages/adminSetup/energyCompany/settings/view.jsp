@@ -18,85 +18,83 @@ jQuery(function() {
 
 <c:set var="legend"><cti:icon icon="icon-asterisk-orange"/>&nbsp;<i:inline key=".legend"/></c:set>
 
-<div class="box dashboard">
-    <form:form commandName="settingsBean" action="save" id="settingsForm" method="post">
-        <form:hidden path="ecId"/>
-        
-        <c:forEach items="${categories}" var="category">
+<form:form commandName="settingsBean" action="save" id="settingsForm" method="post">
+    <form:hidden path="ecId"/>
+    
+    <c:forEach items="${categories}" var="category">
 
-            <cti:msg2 key="${category}" var="title"/>
-            <tags:sectionContainer title="${title}" controls="${legend}">
-            
-                <c:forEach items="${mappedPropertiesHelper.mappableProperties}" var="setting">
-                    <c:if test="${category eq setting.extra.category}">
-                        <div class="setting box">
-                            <form:hidden path="settings[${setting.extra}].type"/>
-                            
-                            <div class="column_6_12_6 clearfix">
-                                <div class="column one">
-                                    <i:inline key="${setting.extra}"/>
-                                </div>
-                                <div class="column two">
-                                    <div class="default-indicator">
-                                        <c:if test="${settingsBean.settings[setting.extra].nonDefault}">
-                                            <cti:icon icon="icon-asterisk-orange"/>
-                                        </c:if>
-                                    </div>
-                                    <div class="value-description">
-                                        <div class="value">
-                                            <c:if test="${setting.extra.usesEnabledField}">
-                                                <form:select cssClass="f-setUnsetSelect" path="settings['${setting.extra}'].enabled">
-                                                    <form:option value="true"><cti:msg2 key="yukon.common.enabled"/></form:option>
-                                                    <form:option value="false"><cti:msg2 key="yukon.common.disabled"/></form:option>
-                                                </form:select>
-                                                <form:errors path="settings['${setting.extra}'].enabled" cssClass="errorMessage" element="span"/>
-                                            </c:if>
-                                            <c:if test="${!setting.extra.usesEnabledField}">
-                                                <form:hidden path="settings['${setting.extra}'].enabled"/>
-                                            </c:if>
-                                            <tags:simpleInputType id="${setting.extra}" input="${setting.valueType}" path="${setting.path}"/>
-                                        </div>
-                                        <div class="description detail">
-                                            <p>
-                                                <i:inline key="yukon.common.energyCompanySetting.${setting.extra}.description"/>
-                                                <c:if test="${settingsBean.settings[setting.extra].nonDefault}">
-                                                    <span class="default"><i:inline key=".default"/>:&nbsp;(${fn:escapeXml(setting.extra.defaultValue)})</span>
-                                                 </c:if>
-                                                <form:errors path="${setting.path}" cssClass="errorMessage" element="div"/>
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="column three nogutter comments">
-                                    <span class="detail updated">
-                                        <c:if test="${not empty settingsBean.settings[setting.extra].lastChanged}">
-                                            <i:inline key=".updated"/>:&nbsp;<cti:formatDate type="DATEHM" value="${settingsBean.settings[setting.extra].lastChanged}"/>
-                                        </c:if>
-                                    </span>
-                                    <c:set var="inputClass" value="${status.error ? 'error' : ''}"/>
-                                    <c:set var="style" value="${empty settingsBean.settings[setting.extra].comments ? 'display:none' : ''}"/>
-                                    <c:if test="${empty settingsBean.settings[setting.extra].comments}">
-                                        <cti:button classes="f-addCommentBtn" nameKey="energyCompanySettings.addComment" type="button" name="add" value="${setting.extra}" renderMode="labeledImage" icon="icon-pencil"/>
+        <cti:msg2 key="${category}" var="title"/>
+        <tags:sectionContainer title="${title}" controls="${legend}">
+        
+            <c:forEach items="${mappedPropertiesHelper.mappableProperties}" var="setting">
+                <c:if test="${category eq setting.extra.category}">
+                    <div class="setting">
+                        <form:hidden path="settings[${setting.extra}].type"/>
+                        
+                        <div class="column_6_12_6 clearfix">
+                            <div class="column one">
+                                <i:inline key="${setting.extra}"/>
+                            </div>
+                            <div class="column two">
+                                <div class="default-indicator">
+                                    <c:if test="${settingsBean.settings[setting.extra].nonDefault}">
+                                        <cti:icon icon="icon-asterisk-orange"/>
                                     </c:if>
-                                    <form:textarea rows="3" cols="27" 
-                                        placeholder="comments" 
-                                        id="${setting.extra}_comments" 
-                                        path="settings[${setting.extra}].comments"
-                                        style="${style};"
-                                        class="f-commentsShowHide ${inputClass}"/> 
-                                    <form:errors path="settings[${setting.extra}].comments" cssClass="errorMessage" element="div"/>
+                                </div>
+                                <div class="value-description">
+                                    <div class="value">
+                                        <c:if test="${setting.extra.usesEnabledField}">
+                                            <form:select cssClass="f-setUnsetSelect" path="settings['${setting.extra}'].enabled">
+                                                <form:option value="true"><cti:msg2 key="yukon.common.enabled"/></form:option>
+                                                <form:option value="false"><cti:msg2 key="yukon.common.disabled"/></form:option>
+                                            </form:select>
+                                            <form:errors path="settings['${setting.extra}'].enabled" cssClass="errorMessage" element="span"/>
+                                        </c:if>
+                                        <c:if test="${!setting.extra.usesEnabledField}">
+                                            <form:hidden path="settings['${setting.extra}'].enabled"/>
+                                        </c:if>
+                                        <tags:simpleInputType id="${setting.extra}" input="${setting.valueType}" path="${setting.path}"/>
+                                    </div>
+                                    <div class="description detail">
+                                        <p>
+                                            <i:inline key="yukon.common.energyCompanySetting.${setting.extra}.description"/>
+                                            <c:if test="${settingsBean.settings[setting.extra].nonDefault}">
+                                                <span class="default"><i:inline key=".default"/>:&nbsp;(${fn:escapeXml(setting.extra.defaultValue)})</span>
+                                             </c:if>
+                                            <form:errors path="${setting.path}" cssClass="errorMessage" element="div"/>
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
+                            <div class="column three nogutter comments">
+                                <span class="detail updated">
+                                    <c:if test="${not empty settingsBean.settings[setting.extra].lastChanged}">
+                                        <i:inline key=".updated"/>:&nbsp;<cti:formatDate type="DATEHM" value="${settingsBean.settings[setting.extra].lastChanged}"/>
+                                    </c:if>
+                                </span>
+                                <c:set var="inputClass" value="${status.error ? 'error' : ''}"/>
+                                <c:set var="style" value="${empty settingsBean.settings[setting.extra].comments ? 'display:none' : ''}"/>
+                                <c:if test="${empty settingsBean.settings[setting.extra].comments}">
+                                    <cti:button classes="f-addCommentBtn" nameKey="energyCompanySettings.addComment" type="button" name="add" value="${setting.extra}" renderMode="labeledImage" icon="icon-pencil"/>
+                                </c:if>
+                                <form:textarea rows="3" cols="27" 
+                                    placeholder="comments" 
+                                    id="${setting.extra}_comments" 
+                                    path="settings[${setting.extra}].comments"
+                                    style="${style};"
+                                    class="f-commentsShowHide ${inputClass}"/> 
+                                <form:errors path="settings[${setting.extra}].comments" cssClass="errorMessage" element="div"/>
+                            </div>
                         </div>
-                        
-                    </c:if>
-                </c:forEach>
-            </tags:sectionContainer>
-        </c:forEach>
-        <div class="pageActionArea stickyPanel" style="min-height: 24px;">
-            <cti:button nameKey="save" name="save" type="submit" classes="primary action"/>
-            <cti:button nameKey="cancel" name="cancel" href="view?ecId=${ecId}"/>
-        </div>
-    </form:form>
-</div>
+                    </div>
+                    
+                </c:if>
+            </c:forEach>
+        </tags:sectionContainer>
+    </c:forEach>
+    <div class="pageActionArea stickyPanel" style="min-height: 24px;">
+        <cti:button nameKey="save" name="save" type="submit" classes="primary action"/>
+        <cti:button nameKey="cancel" name="cancel" href="view?ecId=${ecId}"/>
+    </div>
+</form:form>
 </cti:standardPage>

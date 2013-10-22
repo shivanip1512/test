@@ -18,7 +18,7 @@ jQuery(function() {
 });
 </script>
 
-<div class="box clear dashboard">
+<div class="dashboard">
     <form:form action="/adminSetup/config/update" id="settingsForm" method="post">
         <form:hidden path="category"/>
         
@@ -35,11 +35,11 @@ jQuery(function() {
 	        <div class="legend"><cti:icon icon="icon-asterisk-orange"/><i:inline key=".legend"/></div>
         </div>
         
-        <div class="box liteContainer">
+        <div class="liteContainer">
         
             <c:forEach items="${mappedPropertiesHelper.mappableProperties}" var="setting" varStatus="loopStatus">
                 
-                <div class="setting box">
+                <div class="setting">
                     <div class="column_6_12_6 clearfix">
                         <div class="column one">
                             <i:inline key="${setting.extra.type}"/>
