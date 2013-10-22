@@ -106,7 +106,7 @@
                     <td><c:if test="${!empty searchResultRow.meterNumber}">${fn:escapeXml(searchResultRow.meterNumber)}</c:if></td>
                     <td><tags:paoType yukonPao="${searchResultRow}"/></td>
                     <td><c:if test="${!empty searchResultRow.serialOrAddress}">${fn:escapeXml(searchResultRow.serialOrAddress)}</c:if></td>
-                    <td><c:if test="${!empty searchResultRow.route}">${fn:escapeXml(searchResultRow.route)}</c:if>></td>
+                    <td><c:if test="${!empty searchResultRow.route}">${fn:escapeXml(searchResultRow.route)}</c:if></td>
                     <td class="contextual-menu">
                         <cm:singleDeviceMenu deviceId="${searchResultRow.paoIdentifier.paoId}" containerCssClass="fr"/>
                     </td>
