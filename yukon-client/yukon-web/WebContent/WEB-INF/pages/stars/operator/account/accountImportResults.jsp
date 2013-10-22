@@ -5,31 +5,26 @@
 
 <cti:standardPage module="operator" page="accountImport">
     <cti:checkRolesAndProperties value="OPERATOR_IMPORT_CUSTOMER_ACCOUNT" />
-    
+    <input id="prescan" type='hidden' value="${prescan}"/>
+
     <script type="text/javascript">
         function importFinished() {
-            jQuery('#cancelButton').attr('disabled','disabled');
-        
+            var prescan = (jQuery("#prescan").val() === 'true');
+            jQuery('#cancelButton').prop('disabled', true);
+
             var params = {'resultId': '${resultId}'};
             jQuery.ajax({
                 dataType: "json",
                 url: '/stars/operator/account/importResult',
                 data: params
-            }).done(function(data, status, xhrobj) {
-                var jsonResp,
-                    prescan;
-                prescan = ${prescan};
-                // this gets our JSON response
-                jsonResp = jQuery.parseJSON(xhrobj.getResponseHeader('X-JSON'));
-                try {
-                    if(jsonResp.passed === false) {
-                        jQuery('#errorsLink').show();
-                        jQuery('#importButton').attr('disabled','disabled');
-                        jQuery('#importButton').hide();
-                    } else if(prescan === true) {
-                        jQuery('#importButton').removeAttr('disabled');
-                    }
-                } catch(badajaxex) {
+            }).done(function(passed) {
+                if(passed === false) {
+                    jQuery('#errorsLink').show();
+                    jQuery('#importButton')
+                        .prop('disabled', true)
+                        .hide();
+                } else if(prescan === true) {
+                    jQuery('#importButton').prop('disabled', false);
                 }
             });
         }
@@ -122,7 +117,7 @@
         <form action="${action}" id="importForm">
             <input type="hidden" value="${resultId}" name="resultId">
               
-            <c:if test="${prescan}"><cti:button type="submit" id="importButton" nameKey="import" disabled="disabled"/></c:if>
+            <c:if test="${prescan}"><cti:button type="submit" id="importButton" nameKey="import" disabled="true"/></c:if>
             <cti:button type="submit" id="cancelButton" name="cancelImport" nameKey="cancel"/>
             
             <input type="hidden" name="prescan" value="${prescan}">

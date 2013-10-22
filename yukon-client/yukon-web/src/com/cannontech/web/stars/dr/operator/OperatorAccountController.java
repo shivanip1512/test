@@ -17,6 +17,7 @@ import javax.servlet.http.HttpSession;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.StringUtils;
+import org.codehaus.jackson.node.BooleanNode;
 import org.jfree.util.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -33,7 +34,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.events.loggers.AccountEventLogService;
@@ -96,7 +96,6 @@ import com.cannontech.web.stars.dr.operator.validator.AccountImportDataValidator
 import com.cannontech.web.stars.dr.operator.validator.LoginPasswordValidator;
 import com.cannontech.web.stars.dr.operator.validator.LoginUsernameValidator;
 import com.cannontech.web.stars.dr.operator.validator.LoginValidatorFactory;
-import com.cannontech.web.util.JsonView;
 import com.cannontech.web.util.SessionUtil;
 import com.cannontech.web.util.TextView;
 import com.google.common.collect.Lists;
@@ -199,14 +198,12 @@ public class OperatorAccountController {
         
         return "operator/account/accountImportResults.jsp";
     }
-    
-    // IMPORT RESULTS PAGE
+
     @RequestMapping
-    public ModelAndView importResult(ModelMap modelMap, String resultId) throws ServletException {
-        ModelAndView mav = new ModelAndView(new JsonView());
+    @ResponseBody
+    public BooleanNode importResult(String resultId) {
         AccountImportResult result = recentResultsCache.getResult(resultId);
-        mav.addObject("passed", !result.hasErrors());
-        return mav;
+        return BooleanNode.valueOf(!result.hasErrors());
     }
     
     // IMPORT ERRORS PAGE
