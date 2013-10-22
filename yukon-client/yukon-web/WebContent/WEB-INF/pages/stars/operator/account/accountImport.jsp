@@ -43,7 +43,7 @@
                         </ul>
                 
                 <tags:nameValueContainer2>
-                    <tags:nameValue2 nameKey=".sampleFiles">
+                    <tags:nameValue2 nameKey=".sampleFiles" nameClass="wsnw">
                         <a href="<cti:url value="/WebConfig/custom/sample_bulk_files/Sample_Account_Import_File.csv"/>"><i:inline key=".sampleAccountFile"/></a>, 
                         <a href="<cti:url value="/WebConfig/custom/sample_bulk_files/Sample_Hardware_Import_File.csv"/>"><i:inline key=".sampleHardwareFile"/></a>,
                         <a href="<cti:url value="/WebConfig/custom/sample_bulk_files/Sample_Account_And_Hardware_Import_File.csv"/>"><i:inline key=".sampleAccountAndHardwareFile"/></a> 

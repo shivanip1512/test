@@ -48,7 +48,7 @@
                     </tags:nameValueContainer>
                     
                     <div class="actionArea">
-                        <cti:button type="submit" nameKey="importSubmitButton" id="importSubmitButton" classes="f-blocker" />
+                        <cti:button type="submit" nameKey="importSubmitButton" id="importSubmitButton" classes="f-blocker primary action" />
                     </div>
                 </form>
             </tags:sectionContainer2>

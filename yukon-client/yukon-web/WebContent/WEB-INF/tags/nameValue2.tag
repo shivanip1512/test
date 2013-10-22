@@ -3,13 +3,13 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 
-<%@ attribute name="argument" required="false" type="java.lang.Object" %>
-<%@ attribute name="excludeColon" required="false" %>
-<%@ attribute name="label" required="false" type="java.lang.Object" %>
-<%@ attribute name="labelForId" required="false" %>
+<%@ attribute name="argument" type="java.lang.Object" %>
+<%@ attribute name="excludeColon" %>
+<%@ attribute name="label" type="java.lang.Object" %>
+<%@ attribute name="labelForId" %>
 <%@ attribute name="nameKey" %>
 <%@ attribute name="nameClass" %>
-<%@ attribute name="nameColumnWidth" required="false" %>
+<%@ attribute name="nameColumnWidth" %>
 <%@ attribute name="rowClass" %>
 <%@ attribute name="rowId" %>
 <%@ attribute name="valueClass" %>

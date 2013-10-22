@@ -47,50 +47,57 @@
     <div class="column_12_12">
         <div class="column one">
             <div class="stacked clearfix">
-                <h3><i:inline key="yukon.web.modules.tools.bulk.fdrTranslationManagement.addRemoveTitle"/></h3>
-                <i:inline key="yukon.web.modules.tools.bulk.fdrTranslationManagement.addRemoveText"/>
+                <h3><i:inline key=".addRemoveTitle"/></h3>
+                <i:inline key=".addRemoveText"/>
             </div>
             <div class="stacked clearfix">
                 <%-- This form submitted through ajax --%>
                 <form id="importForm" method="post" action="/bulk/fdrTranslationManager/submitImport" enctype="multipart/form-data">
-                    <cti:icon icon="icon-folder-edit"/>&nbsp;<input type="file" name="importFile"><br>
-                    <input type="checkbox" name="ignoreInvalidColumns">&nbsp;<i:inline key="yukon.web.modules.tools.bulk.fdrTranslationManagement.ignoreInvalidText"/>
+                    <cti:msg2 key="yukon.common.file" var="fileName"/>
+                    <tags:nameValueContainer>
+                        <tags:nameValue name="${fileName}">
+                            <input type="file" name="importFile">
+                        </tags:nameValue>
+                        <tags:nameValue name="">
+                            <input type="checkbox" name="ignoreInvalidColumns">&nbsp;<i:inline key=".ignoreInvalidText"/>
+                        </tags:nameValue>
+                    </tags:nameValueContainer>
                     <div class="actionArea">
                         <cti:button type="submit" nameKey="import" classes="primary action"/>
                     </div>
                 </form>
             </div>
             <div class="stacked clearfix">
-                <h3><i:inline key="yukon.web.modules.tools.bulk.fdrTranslationManagement.reportTitle"/></h3>
-                <i:inline key="yukon.web.modules.tools.bulk.fdrTranslationManagement.reportText"/>
+                <h3><i:inline key=".reportTitle"/></h3>
+                <i:inline key=".reportText"/>
             </div>
             <form id="downloadReportForm" method="post" action="/bulk/fdrTranslationManager/report" class="clearfix">
                 <div class="actionArea">
                   <cti:button type="submit" nameKey="download" icon="icon-bullet-go-down"/>
                   <label>
                     <select name="reportInterface">
-                        <option value="AllInterfaces"><i:inline key="yukon.web.modules.tools.bulk.fdrTranslationManagement.allInterfaces"/></option>
+                        <option value="AllInterfaces"><i:inline key=".allInterfaces"/></option>
                         <c:forEach var="interfaceType" items="${interfaceTypes}">
                             <option value="${interfaceType}"><i:inline key="${interfaceType}"/></option>
                         </c:forEach>
                     </select>
-                    <span class="fr" style="margin-right:10px;"><i:inline key="yukon.web.modules.tools.bulk.fdrTranslationManagement.interfaceFilterLabel"/></span>
+                    <span class="fr" style="margin-right:10px;"><i:inline key=".interfaceFilterLabel"/></span>
                   </label>
                 </div>
             </form>
         </div>
         <div class="column two nogutter">
             <div class="stacked">
-                <h3><i:inline key="yukon.web.modules.tools.bulk.fdrTranslationManagement.importTitle"/></h3>
-                <i:inline key="yukon.web.modules.tools.bulk.fdrTranslationManagement.importText"/>
+                <h3><i:inline key=".importTitle"/></h3>
+                <i:inline key=".importText"/>
             </div>
-            <i:inline key="yukon.web.modules.tools.bulk.fdrTranslationManagement.defaultColumnsText"/><br>
+            <i:inline key=".defaultColumnsText"/><br>
             
             <div class="stacked">
                 <table class="resultsTable detail">
                     <tr>
-                        <th><i:inline key="yukon.web.modules.tools.bulk.fdrTranslationManagement.defaultColumnsHeader"/></th>
-                        <th><i:inline key="yukon.web.modules.tools.bulk.fdrTranslationManagement.defaultColumnsDescriptionHeader"/></th>
+                        <th><i:inline key=".defaultColumnsHeader"/></th>
+                        <th><i:inline key=".defaultColumnsDescriptionHeader"/></th>
                     </tr>
                     <tr>
                         <td class="smallBoldLabel">
@@ -105,7 +112,7 @@
                             DEVICE_NAME
                         </td>
                         <td>
-                            <i:inline key="yukon.web.modules.tools.bulk.fdrTranslationManagement.defaultColumns.deviceNameDescription"/>
+                            <i:inline key=".defaultColumns.deviceNameDescription"/>
                         </td>
                     </tr>
                     <tr>
@@ -113,7 +120,7 @@
                             DEVICE_TYPE
                         </td>
                         <td>
-                            <i:inline key="yukon.web.modules.tools.bulk.fdrTranslationManagement.defaultColumns.deviceTypeDescription"/>
+                            <i:inline key=".defaultColumns.deviceTypeDescription"/>
                         </td>
                     </tr>
                     <tr>
@@ -121,7 +128,7 @@
                             POINT_NAME
                         </td>
                         <td>
-                            <i:inline key="yukon.web.modules.tools.bulk.fdrTranslationManagement.defaultColumns.pointNameDescription"/>
+                            <i:inline key=".defaultColumns.pointNameDescription"/>
                         </td>
                     </tr>
                     <c:forEach var="interfaceType" items="${interfaceTypes}">
@@ -137,9 +144,9 @@
                 </table>
             </div>
             <div class="stacked">
-                <i:inline key="yukon.web.modules.tools.bulk.fdrTranslationManagement.interfaceColumnsText"/>
+                <i:inline key=".interfaceColumnsText"/>
             </div>
-            <i:inline key="yukon.web.modules.tools.bulk.fdrTranslationManagement.interfaceColumnsLabel"/>
+            <i:inline key=".interfaceColumnsLabel"/>
             <select id="interfaceColumnSelector">
                 <c:forEach var="interfaceType" items="${interfaceTypes}">
                     <option value="${interfaceType}"><i:inline key="${interfaceType}"/></option>
@@ -150,10 +157,10 @@
                 <c:forEach var="displayableInterface" items="${displayableInterfaces}">
                     <tr class="interface_${displayableInterface.name}" style="display: none;">
                         <th>
-                            ${displayableInterface.name}&nbsp;<i:inline key="yukon.web.modules.tools.bulk.fdrTranslationManagement.interfaceColumnsHeader"/>
+                            ${displayableInterface.name}&nbsp;<i:inline key=".interfaceColumnsHeader"/>
                         </th>
                         <th>
-                            <i:inline key="yukon.web.modules.tools.bulk.fdrTranslationManagement.defaultColumnsDescriptionHeader"/>
+                            <i:inline key=".defaultColumnsDescriptionHeader"/>
                         </th>
                     </tr>
                     <c:forEach var="colEntry" items="${displayableInterface.columnsAndDescriptions}">
@@ -171,7 +178,7 @@
             </div>
 
             <a id="sampleFileLink" href="">
-                <i:inline key="yukon.web.modules.tools.bulk.fdrTranslationManagement.sampleFileLink"/>
+                <i:inline key=".sampleFileLink"/>
             </a>
         </div>
     </div>
