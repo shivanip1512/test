@@ -56,6 +56,8 @@
     <entry key="yukon.web.modules.adminSetup.roles.loginGroupRoleUpdated">Role Group Role Updated Successfully</entry>
     <entry key="yukon.web.modules.adminSetup.roles.confirmDelete.title">Remove Role From {0}</entry>
     <entry key="yukon.web.modules.adminSetup.roles.confirmDelete.message">Are you sure you want to remove this role from {0}?</entry>
+    <entry key="yukon.web.modules.adminSetup.roles.default">Default</entry>
+    <entry key="yukon.web.modules.adminSetup.roles.legend">- non default value</entry>
     
     <!-- Group Permission Editor -->
     <entry key="yukon.web.modules.adminSetup.groupPermissions.pageName">Permissions</entry>
