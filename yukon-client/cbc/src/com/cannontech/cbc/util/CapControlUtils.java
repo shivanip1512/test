@@ -373,12 +373,13 @@ public final class CapControlUtils {
         final List<LiteState> stateList = stateDao.getLiteStateGroup(
             CapControlConst.CAPBANKSTATUS_STATEGROUP_ID).getStatesList();
         
-        if (index < 0 || index >= stateList.size()) 
-            throw new NotFoundException("State with index of " + index + " not found");
-        
-        LiteState state = stateList.get(index);
-        String text = state.getStateText();
-        return text;
+        for (LiteState liteState : stateList) {
+            if (liteState.getStateRawState() == index) {
+                return liteState.getStateText();
+            }
+        }
+        // If no matching state found..Note: getLiteStateGroup doesn't return rawStates < 0
+        throw new NotFoundException("State with value of " + index + " not found");
     }
     
     /**
