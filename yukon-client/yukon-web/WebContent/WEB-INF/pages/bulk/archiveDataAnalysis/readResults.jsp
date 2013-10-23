@@ -48,6 +48,6 @@
         </div>
     </tags:sectionContainer2>
     
-    <cti:dataUpdaterCallback function="toggleElementsWhenTrue(['successActionsDiv', 'failureActionsDiv'], true)" initialize="true" value="ARCHIVE_DATA_ANALYSIS_LP_READ/${resultId}/IS_COMPLETE"/>
+    <cti:dataUpdaterCallback function="Yukon.ui.progressBar.toggleElementsWhenTrue(['successActionsDiv', 'failureActionsDiv'], true)" initialize="true" value="ARCHIVE_DATA_ANALYSIS_LP_READ/${resultId}/IS_COMPLETE"/>
 
 </cti:standardPage>

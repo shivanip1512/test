@@ -9,7 +9,6 @@
 
 <cti:standardPage page="scheduledGroupRequestAllJobs" module="amr">
     
-    <cti:includeScript link="/JavaScript/bulkDataUpdaterCallbacks.js"/>
     <cti:includeScript link="/JavaScript/scheduledJobs.js"/>
 
     <script type="text/javascript">

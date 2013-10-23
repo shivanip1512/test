@@ -4,7 +4,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <cti:standardPage module="amr" page="phaseDetect.readBetweenPhaseTest">
-<cti:includeScript link="/JavaScript/bulkDataUpdaterCallbacks.js"/>
+<cti:includeScript link="/JavaScript/progressbar.js"/>
 
     <script type="text/javascript">
 

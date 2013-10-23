@@ -33,8 +33,6 @@
     
 <cti:standardPage page="scheduledGroupRequestDetail" module="amr">
     
-    <cti:includeScript link="/JavaScript/bulkDataUpdaterCallbacks.js"/>
-    
     <script type="text/javascript">
     
         function toggleLastRunLink() {
@@ -42,11 +40,11 @@
             return function(data) {
                 var creCount = data.value;
                 if (creCount > 0) {
-                    $('noLastRunSpan').hide();
-                    $('hasLastRunSpan').show();
+                    jQuery('#noLastRunSpan').hide();
+                    jQuery('#hasLastRunSpan').show();
                 } else {
-                    $('noLastRunSpan').show();
-                    $('hasLastRunSpan').hide();
+                    jQuery('#noLastRunSpan').show();
+                    jQuery('#hasLastRunSpan').hide();
                 }
             };
         }

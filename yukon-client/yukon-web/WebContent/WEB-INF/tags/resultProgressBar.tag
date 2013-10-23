@@ -11,7 +11,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:includeScript link="/JavaScript/bulkDataUpdaterCallbacks.js"/>
+<cti:includeScript link="/JavaScript/progressbar.js"/>
 <cti:uniqueIdentifier var="pDescId" prefix="pgd_"/>
 
 <span class="fwb"><cti:msg key="${progressLabelTextKey}" />: </span>
@@ -35,4 +35,4 @@
    
 </div>
 
-<cti:dataUpdaterCallback function="updateProgressStatus('${pDescId}')" initialize="true" statusText="${statusTextKey}" />
+<cti:dataUpdaterCallback function="Yukon.ui.progressBar.updateProgressStatus('${pDescId}')" initialize="true" statusText="${statusTextKey}" />

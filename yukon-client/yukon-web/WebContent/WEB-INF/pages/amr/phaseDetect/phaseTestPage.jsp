@@ -4,10 +4,12 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <cti:standardPage module="amr" page="phaseDetect.sendTest">
+<cti:includeScript link="/JavaScript/progressbar.js"/>
 
     <script type="text/javascript">
     var readingMsg = '<cti:msg2 key=".reading" javaScriptEscape="true"/>';
     var sendMsg = '<cti:msg2 key=".send" javaScriptEscape="true"/>';
+    var errorDetectMsg = '<cti:msg2 key=".errorDetect" javaScriptEscape="true"/>';
 
     function sendDetect () {
         var params = {'phase': jQuery('#phase').val()};
@@ -122,7 +124,6 @@
     </script>
 
     <c:set var="testStep" value="${state.testStep}"/>
-    <cti:includeScript link="/JavaScript/bulkDataUpdaterCallbacks.js"/>
 
     <tags:sectionContainer2 nameKey="phaseDetectionTest">
         <table>

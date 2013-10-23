@@ -20,7 +20,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
     
-<cti:includeScript link="/JavaScript/bulkDataUpdaterCallbacks.js"/>
+<cti:includeScript link="/JavaScript/progressbar.js"/>
 <cti:uniqueIdentifier var="pbarId" prefix="pbar_"/>
 
 <c:if test="${empty pageScope.hidePercent}">
@@ -65,11 +65,11 @@
             <c:when test="${empty pageScope.failureCountKey}">
                 <c:choose>
                     <c:when test="${empty totalCountKey}">
-                        <cti:dataUpdaterCallback function="updateProgressBar('${pbarId}', ${totalCount})"
+                        <cti:dataUpdaterCallback function="Yukon.ui.progressBar.updateProgressBar('${pbarId}', ${totalCount})"
                             initialize="true" completedCount="${countKey}"/>
                     </c:when>
                     <c:otherwise>
-                        <cti:dataUpdaterCallback function="updateProgressBarWithDynamicTotal('${pbarId}')"
+                        <cti:dataUpdaterCallback function="Yukon.ui.progressBar.updateProgressBarWithDynamicTotal('${pbarId}')"
                             initialize="true" completedCount="${countKey}" 
                             totalCount="${totalCountKey}" />
                     </c:otherwise>
@@ -78,11 +78,11 @@
             <c:otherwise>
                 <c:choose>
                     <c:when test="${empty totalCountKey}">
-                        <cti:dataUpdaterCallback function="updateSuccessFailureProgressBar('${pbarId}', ${totalCount})"
+                        <cti:dataUpdaterCallback function="Yukon.ui.progressBar.updateSuccessFailureProgressBar('${pbarId}', ${totalCount})"
                             initialize="true" successCompletedCount="${countKey}" failureCompletedCount="${failureCountKey}"/>
                     </c:when>
                     <c:otherwise>
-                        <cti:dataUpdaterCallback function="updateSuccessFailureProgressBarWithDynamicTotal('${pbarId}')"
+                        <cti:dataUpdaterCallback function="Yukon.ui.progressBar.updateSuccessFailureProgressBarWithDynamicTotal('${pbarId}')"
                             initialize="true" successCompletedCount="${countKey}" failureCompletedCount="${failureCountKey}"
                             totalCount="${totalCountKey}" />
                     </c:otherwise>
@@ -95,7 +95,7 @@
             <c:when test="${empty pageScope.failureCountKey}">
                 <c:choose>
                     <c:when test="${empty totalCountKey}">
-                        <cti:dataUpdaterCallback function="updateProgressBar('${pbarId}', ${totalCount},  ${pageScope.completionCallback})"
+                        <cti:dataUpdaterCallback function="Yukon.ui.progressBar.updateProgressBar('${pbarId}', ${totalCount},  ${pageScope.completionCallback})"
                             initialize="true" completedCount="${countKey}" />
                     </c:when>
                     <c:otherwise>
@@ -107,11 +107,11 @@
             <c:otherwise>
                 <c:choose>
                     <c:when test="${empty totalCountKey}">
-                        <cti:dataUpdaterCallback function="updateSuccessFailureProgressBarWithDynamicTotal('${pbarId}', ${totalCount},  ${pageScope.completionCallback})"
+                        <cti:dataUpdaterCallback function="Yukon.ui.progressBar.updateSuccessFailureProgressBarWithDynamicTotal('${pbarId}', ${totalCount},  ${pageScope.completionCallback})"
                             initialize="true" successCompletedCount="${countKey}" failureCompletedCount="${failureCountKey}"/>
                     </c:when>
                     <c:otherwise>
-                        <cti:dataUpdaterCallback function="updateSuccessFailureProgressBarWithDynamicTotal('${pbarId}', ${pageScope.completionCallback})"
+                        <cti:dataUpdaterCallback function="Yukon.ui.progressBar.updateSuccessFailureProgressBarWithDynamicTotal('${pbarId}', ${pageScope.completionCallback})"
                             initialize="true" successCompletedCount="${countKey}" failureCompletedCount="${failureCountKey}"
                             totalCount="${totalCountKey}" />
                     </c:otherwise>
@@ -122,5 +122,5 @@
 </c:choose>
 
 <c:if test="${not empty pageScope.isAbortedKey}">
-    <cti:dataUpdaterCallback function="abortProgressBar('${pbarId}')" initialize="true" isAborted="${pageScope.isAbortedKey}"/>
+    <cti:dataUpdaterCallback function="Yukon.ui.progressBar.abortProgressBar('${pbarId}')" initialize="true" isAborted="${pageScope.isAbortedKey}"/>
 </c:if>

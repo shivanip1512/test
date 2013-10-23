@@ -39,8 +39,6 @@
         <cti:crumbLink>${pageTitle}</cti:crumbLink>
         
     </cti:breadCrumbs>
-    
-    <cti:includeScript link="/JavaScript/bulkDataUpdaterCallbacks.js"/>
 
     <script type="text/javascript">
 
@@ -65,36 +63,36 @@
             }
 
             // show indicator, disable select
-            $('viewHideDetailsReportButtonIndicator').show();
+            jQuery('#viewHideDetailsReportButtonIndicator').show();
 
             // request report
-            new Ajax.Updater('detailsReportDiv', url, {
-               'parameters': paramObj,
-               'evalScripts': true,
-               'onSuccess': function(transport, json) {
-                    $('viewHideDetailsReportButtonIndicator').hide();
-                    $('detailsReportDiv').show();
-               },
-               'onException': function(e) {
-                   $('viewHideDetailsReportButtonIndicator').hide();
-                   $('detailsReportDiv').show();
-                   $('detailsReportDiv').innerHTML = "Error getting report:" + e.responseText;
-               }
-             });
+            jQuery.ajax({
+                type : 'POST',
+                url : url,
+                data : paramObj
+            }).done( function (data, textStatus, jqXHR) {
+                var json = Yukon.ui.aux.getHeaderJSON(jqXHR);
+                jQuery('#detailsReportDiv').html(data);
+                jQuery('#viewHideDetailsReportButtonIndicator').hide();
+                jQuery('#detailsReportDiv').show();
+            }).fail( function (jqXHR, textStatus) {
+                jQuery('#viewHideDetailsReportButtonIndicator').hide();
+                jQuery('#detailsReportDiv').show();
+                jQuery('#detailsReportDiv').html("Error getting report: " + textStatus);
+            });
         }
 
         function countUpdateCallback() {
           //assumes data is of type Hash
             return function(data) {
                 var isComplete = data.isComplete;
-                
-                if ($('creProgressBarDiv') != undefined && $('creStopTimeDiv') != undefined) { 
+                if (0 !== jQuery('#creProgressBarDiv').length && 0 !== jQuery('#creStopTimeDiv').length) { 
                     if (isComplete == 'true') {
-                        $('creProgressBarDiv').hide();
-                        $('creStopTimeDiv').show();
+                        jQuery('#creProgressBarDiv').hide();
+                        jQuery('#creStopTimeDiv').show();
                     } else if (isComplete == 'false') {
-                        $('creProgressBarDiv').show();
-                        $('creStopTimeDiv').hide();
+                        jQuery('#creProgressBarDiv').show();
+                        jQuery('#creStopTimeDiv').hide();
                     }
 
                 }

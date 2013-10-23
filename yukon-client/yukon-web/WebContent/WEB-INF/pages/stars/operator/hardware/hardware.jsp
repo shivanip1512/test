@@ -17,10 +17,11 @@
 
 <script type="text/javascript">
 jQuery(function(){
-    
+
     jQuery(document).on('click', '#refresh, button[name=commissionSubmit], button[name=decommissionSubmit]', function(event) {
         var url = '/stars/operator/hardware/zb/',
-            button = event.currentTarget;
+            button = event.currentTarget,
+            elementToBlock;
         if (button.id === 'refresh') {
             url += 'refresh';
         } else if (button.name === 'commissionSubmit') {
@@ -29,66 +30,65 @@ jQuery(function(){
         } else if (button.name === 'decommissionSubmit') {
             url += 'decommission';
         }
-        
-        var elementToBlock = event.currentTarget;
+
+        elementToBlock = event.currentTarget;
         Yukon.ui.block(elementToBlock);
-        
+
         jQuery.ajax({
+            type: 'GET',
             url: url,
-            method: 'GET',
-            data: {'deviceId': '${hardware.deviceId}'},
-            success: function(data) {
-                jQuery('#zbCommandStatus').html(data.message);
-                jQuery('#zbCommandStatus').show();
-                if (data.success ===  true) {
-                    jQuery('#zbCommandStatus').addClass('successMessage').removeClass('errorMessage');
-                 } else {
-                     jQuery('#zbCommandStatus').removeClass('successMessage').addClass('errorMessage');
-                 }
-                Yukon.ui.unblock(elementToBlock);
-             },
-             error: function(){
-                 Yukon.ui.unblock(elementToBlock);
-             }
+            data: {'deviceId': '${hardware.deviceId}'}
+        }).done( function (data, textStatus, jqXHR) {
+            jQuery('#zbCommandStatus').html(data.message);
+            jQuery('#zbCommandStatus').show();
+            if (data.success ===  true) {
+                jQuery('#zbCommandStatus').addClass('successMessage').removeClass('errorMessage');
+            } else {
+                jQuery('#zbCommandStatus').removeClass('successMessage').addClass('errorMessage');
+            }
+            Yukon.ui.unblock(elementToBlock);
+        }).fail( function (jqXHR, textStatus, errorThrown) {
+            Yukon.ui.unblock(elementToBlock);
         });
     });
-    
+
     jQuery(document).on('click', 'button[name^=assignedDevicesCommissionSubmit_], button[name^=assignedDevicesDecommissionSubmit_]', function(event) {
-        var url = '/stars/operator/hardware/zb/';
-        var button = event.currentTarget;
-        
-        var name = button.name.split('_')[0];
-        var deviceId = button.name.split('_')[1];
+        var url = '/stars/operator/hardware/zb/',
+            button = event.currentTarget,
+            name,
+            deviceId,
+            elementToBlock;
+
+        name = button.name.split('_')[0];
+        deviceId = button.name.split('_')[1];
         if (name === 'assignedDevicesCommissionSubmit') {
             url += 'commission';
             jQuery('#confirmCommissionPopup_' + deviceId).dialog('close');
         } else if (name === 'assignedDevicesDecommissionSubmit') {
             url += 'decommission';
         }
-        
-        var elementToBlock = event.currentTarget;
+
+        elementToBlock = event.currentTarget;
         Yukon.ui.block(elementToBlock);
-        
+
         jQuery.ajax({
+            type: 'GET',
             url: url,
-            method: 'GET',
-            data: {'deviceId': deviceId},
-            success: function(data) {
-                jQuery('#zbAssignedStatus').html(data.message);
-                jQuery('#zbAssignedStatus').show();
-                if (data.success ===  true) {
-                    jQuery('#zbAssignedStatus').addClass('successMessage').removeClass('errorMessage');
-                } else {
-                    jQuery('#zbAssignedStatus').removeClass('successMessage').addClass('errorMessage');
-                }
-                Yukon.ui.unblock(elementToBlock);
-            },
-            error: function() {
-                Yukon.ui.unblock(elementToBlock);
+            data: {'deviceId': deviceId}
+        }).done( function (data, textStatus, jqXHR) {
+            jQuery('#zbAssignedStatus').html(data.message);
+            jQuery('#zbAssignedStatus').show();
+            if (data.success ===  true) {
+                jQuery('#zbAssignedStatus').addClass('successMessage').removeClass('errorMessage');
+            } else {
+                jQuery('#zbAssignedStatus').removeClass('successMessage').addClass('errorMessage');
             }
+            Yukon.ui.unblock(elementToBlock);
+        }).fail( function (jqXHR, textStatus, errorThrown) {
+                Yukon.ui.unblock(elementToBlock);
         });
     });
-    
+
     <cti:displayForPageEditModes modes="VIEW">
     jQuery(document).on('click', '#sendTextMsg', function(event) {
         var params = {'accountId' : ${accountId}, 
@@ -144,7 +144,7 @@ function getCommissionConfirmationCallback() {
 function getEndpointCommissionConfirmationCallback(deviceId) {
     return function(data) {
         var commissionedValue = data.value;
-        
+
         if (commissionedValue === 'Decommissioned') {
             //decommissioned
             jQuery('#decommissionedConfirmMsg_' + deviceId).show();
@@ -536,11 +536,11 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
     <cti:displayForPageEditModes modes="VIEW">
         <cti:checkRolesAndProperties value="${editingRoleProperty}">
             <div class="pageActionArea">
-	            <cti:url value="/stars/operator/hardware/edit" var="editUrl">
-	                <cti:param name="accountId" value="${accountId}"/>
-	                <cti:param name="inventoryId" value="${inventoryId}"/>
-	            </cti:url>
-	            <cti:button nameKey="edit" icon="icon-pencil" href="${editUrl}"/>
+                <cti:url value="/stars/operator/hardware/edit" var="editUrl">
+                    <cti:param name="accountId" value="${accountId}"/>
+                    <cti:param name="inventoryId" value="${inventoryId}"/>
+                </cti:url>
+                <cti:button nameKey="edit" icon="icon-pencil" href="${editUrl}"/>
             </div>
         </cti:checkRolesAndProperties>
     </cti:displayForPageEditModes>

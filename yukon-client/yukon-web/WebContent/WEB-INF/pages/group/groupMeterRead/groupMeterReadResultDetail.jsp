@@ -34,7 +34,7 @@
         
     </cti:breadCrumbs>
     
-    <cti:includeScript link="/JavaScript/bulkDataUpdaterCallbacks.js"/>
+    <cti:includeScript link="/JavaScript/progressbar.js"/>
     
     <script type="text/javascript">
         function refreshResults(kind, theDiv) {
@@ -120,7 +120,7 @@
             
             <%-- success list --%>
             <div style="height:8px;"></div>
-            <a href="javascript:void(0);" onclick="$('successResultsDiv${resultKey}').toggle();refreshResults('successList', $('successResultsDiv${resultKey}'));" class="small">View Results</a>
+            <a href="javascript:void(0);" onclick="jQuery('#successResultsDiv${resultKey}').toggle();refreshResults('successList', jQuery('#successResultsDiv${resultKey}'));" class="small">View Results</a>
             <div id="successResultsDiv${resultKey}" style="display:none;"></div>
             
         </div>
@@ -140,7 +140,7 @@
             
             <%-- errors list --%>
             <div style="height:8px;"></div>
-            <a href="javascript:void(0);" onclick="$('errorsResultsDiv${resultKey}').toggle();refreshResults('errorsList', $('errorsResultsDiv${resultKey}'));" class="small">View Failure Reasons</a>
+            <a href="javascript:void(0);" onclick="jQuery('#errorsResultsDiv${resultKey}').toggle();refreshResults('errorsList', jQuery('#errorsResultsDiv${resultKey}'));" class="small">View Failure Reasons</a>
             <div id="errorsResultsDiv${resultKey}" style="display:none;"></div>
         
         </div> 
@@ -163,6 +163,6 @@
         
     </tags:boxContainer>
     
-    <cti:dataUpdaterCallback function="toggleElementsWhenTrue(['allDevicesActionsDiv','creResultsDiv','successActionsDiv','errorActionsDiv','unsupportedActionsDiv'],true)" initialize="true" value="GROUP_METER_READ/${resultKey}/IS_COMPLETE" />
+    <cti:dataUpdaterCallback function="Yukon.ui.progressBar.toggleElementsWhenTrue(['allDevicesActionsDiv','creResultsDiv','successActionsDiv','errorActionsDiv','unsupportedActionsDiv'],true)" initialize="true" value="GROUP_METER_READ/${resultKey}/IS_COMPLETE" />
       
 </cti:standardPage>

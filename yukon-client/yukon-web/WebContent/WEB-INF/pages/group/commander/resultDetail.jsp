@@ -21,7 +21,7 @@
     
     </cti:breadCrumbs>
     
-    <cti:includeScript link="/JavaScript/bulkDataUpdaterCallbacks.js"/>
+    <cti:includeScript link="/JavaScript/progressbar.js"/>
     
     <script type="text/javascript">
         
@@ -66,11 +66,11 @@
         <%-- PROGRESS --%>
         <c:set var="totalCount" value="${result.deviceCollection.deviceCount}" />
         <tags:resultProgressBar totalCount="${totalCount}"
-        						 countKey="COMMANDER/${result.key}/COMPLETED_ITEMS"
-        						 progressLabelTextKey="yukon.common.device.commander.results.progressLabel"
-        						 statusTextKey="COMMANDER/${result.key}/STATUS_TEXT"
-        						 statusClassKey="COMMANDER/${result.key}/STATUS_CLASS"
-        						 isAbortedKey="COMMANDER/${result.key}/IS_ABORTED">
+                                 countKey="COMMANDER/${result.key}/COMPLETED_ITEMS"
+                                 progressLabelTextKey="yukon.common.device.commander.results.progressLabel"
+                                 statusTextKey="COMMANDER/${result.key}/STATUS_TEXT"
+                                 statusClassKey="COMMANDER/${result.key}/STATUS_CLASS"
+                                 isAbortedKey="COMMANDER/${result.key}/IS_ABORTED">
                     
             <%-- cancel commands --%>
             <div id="cancelCommandsDiv">
@@ -98,7 +98,7 @@
                 <cti:msg var="creResultsText" key="yukon.common.device.commander.collectionActionOnDevicesLabel.creResults"/>
                 
                 <cti:url var="creResultsUrl" value="/common/commandRequestExecutionResults/detail">
-                	<cti:param name="commandRequestExecutionId" value="${result.commandRequestExecutionIdentifier.commandRequestExecutionId}"/>
+                    <cti:param name="commandRequestExecutionId" value="${result.commandRequestExecutionIdentifier.commandRequestExecutionId}"/>
                 </cti:url>
                 
                 <cti:link href="${creResultsUrl}" key="yukon.common.device.commander.collectionActionOnDevicesLabel.creResults" class="small"/>
@@ -121,7 +121,7 @@
             
             <%-- success list --%>
             <div style="height:8px;"></div>
-            <a href="javascript:void(0);" onclick="$('successResultsDiv${result.key}').toggle();refreshResults('successList', $('successResultsDiv${result.key}'));" class="small">View Results</a>
+            <a href="javascript:void(0);" onclick="jQuery('#successResultsDiv${result.key}').toggle();refreshResults('successList', jQuery('#successResultsDiv${result.key}'));" class="small">View Results</a>
             <div id="successResultsDiv${result.key}" style="display:none;"></div>
             
         </div>
@@ -149,34 +149,34 @@
             
             <%-- errors list --%>
             <div style="height:8px;"></div>
-            <a href="javascript:void(0);" onclick="$('errorsResultsDiv${result.key}').toggle();refreshResults('errorsList', $('errorsResultsDiv${result.key}'));" class="small">View Failure Reasons</a>
+            <a href="javascript:void(0);" onclick="jQuery('#errorsResultsDiv${result.key}').toggle();refreshResults('errorsList', jQuery('#errorsResultsDiv${result.key}'));" class="small">View Failure Reasons</a>
             <div id="errorsResultsDiv${result.key}" style="display:none;"></div>
             
         </div> 
         
         <c:if test="${result.handleUnsupported}">
-	        <%-- UNSUPPORTED --%>
-	        <br>
-	        <div class="fwb">Not Supported: <span class="error"><cti:dataUpdaterValue type="COMMANDER" identifier="${result.key}/UNSUPPORTED_COUNT"/></span></div>
-	        
-	        <c:if test="${not empty result.unsupportedCollection.deviceList}">
-		        <div id="unsupportedActionsDiv" style="padding:10px;">
-		        
-		            <%-- device collection action --%>
-		            <cti:link href="/bulk/collectionActions" key="yukon.common.device.commander.collectionActionOnDevicesLabel.unsupportedResults" class="small">
-		                <cti:mapParam value="${result.unsupportedCollection.collectionParameters}"/>
-		            </cti:link>
-		            <tags:selectedDevicesPopup deviceCollection="${result.unsupportedCollection}" />
-		            
-		        </div>
-	        </c:if>
+            <%-- UNSUPPORTED --%>
+            <br>
+            <div class="fwb">Not Supported: <span class="error"><cti:dataUpdaterValue type="COMMANDER" identifier="${result.key}/UNSUPPORTED_COUNT"/></span></div>
+            
+            <c:if test="${not empty result.unsupportedCollection.deviceList}">
+                <div id="unsupportedActionsDiv" style="padding:10px;">
+                
+                    <%-- device collection action --%>
+                    <cti:link href="/bulk/collectionActions" key="yukon.common.device.commander.collectionActionOnDevicesLabel.unsupportedResults" class="small">
+                        <cti:mapParam value="${result.unsupportedCollection.collectionParameters}"/>
+                    </cti:link>
+                    <tags:selectedDevicesPopup deviceCollection="${result.unsupportedCollection}" />
+                    
+                </div>
+            </c:if>
         </c:if>
 
         </jsp:body>
         
     </tags:boxContainer>
     
-    <cti:dataUpdaterCallback function="toggleElementsWhenTrue(['allDevicesActionsDiv','successActionsDiv','errorActionsDiv','creResultsDiv'],true)" initialize="true" value="COMMANDER/${result.key}/IS_COMPLETE" />
-    <cti:dataUpdaterCallback function="toggleElementsWhenTrue(['cancelCommandsDiv'],false)" initialize="true" value="COMMANDER/${result.key}/IS_COMPLETE" />
+    <cti:dataUpdaterCallback function="Yukon.ui.progressBar.toggleElementsWhenTrue(['allDevicesActionsDiv','successActionsDiv','errorActionsDiv','creResultsDiv'],true)" initialize="true" value="COMMANDER/${result.key}/IS_COMPLETE" />
+    <cti:dataUpdaterCallback function="Yukon.ui.progressBar.toggleElementsWhenTrue(['cancelCommandsDiv'],false)" initialize="true" value="COMMANDER/${result.key}/IS_COMPLETE" />
       
 </cti:standardPage>

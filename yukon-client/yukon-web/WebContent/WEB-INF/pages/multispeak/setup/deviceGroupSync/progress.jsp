@@ -5,65 +5,65 @@
 
 <cti:standardPage module="adminSetup" page="deviceGroupSyncProgress">
 
-	<cti:includeScript link="/JavaScript/bulkDataUpdaterCallbacks.js"/>
+    <cti:includeScript link="/JavaScript/progressbar.js"/>
 
-	<tags:formElementContainer nameKey="progressDetailContainer">
-	
-		<%-- INFO --%>
-		<tags:nameValueContainer2>
-		
-			<%-- status --%>
-			<tags:nameValue2 nameKey=".infoLabel.status">
-				<cti:classUpdater type="MSP_DEVICE_GROUP_SYNC" identifier="STATUS_CLASS">
-					<cti:dataUpdaterValue type="MSP_DEVICE_GROUP_SYNC" identifier="STATUS_TEXT"/>
-				</cti:classUpdater>
-			</tags:nameValue2>
-	
-			<%-- type --%>
-			<tags:nameValue2 nameKey=".infoLabel.type">
-				<cti:msg key="${progress.type}"/>
-			</tags:nameValue2>
-			
-			<%-- progress bar --%>
-			<tags:nameValue2 nameKey=".infoLabel.progress">
-				<tags:updateableProgressBar totalCount="${meterCount}" 
-											countKey="MSP_DEVICE_GROUP_SYNC/METERS_PROCESSED_COUNT"  
-											isAbortedKey="MSP_DEVICE_GROUP_SYNC/IS_ABORTED" 
-											hideCount="true"/>
-			</tags:nameValue2>
-			
-			<%-- stats --%>
-			<c:set var="processorTypes" value="${progress.type.processorTypes}"/>
-			<c:forEach var="processorType" items="${processorTypes}">
-			
-				<tags:nameValue2 nameKey=".infoLabel.statsLabel.${processorType}">
-					<cti:dataUpdaterValue type="MSP_DEVICE_GROUP_SYNC" identifier="${processorType}_CHANGE_COUNT"/> <i:inline key=".infoValue.metersAdded"/>
-					<br>
-					<cti:dataUpdaterValue type="MSP_DEVICE_GROUP_SYNC" identifier="${processorType}_NO_CHANGE_COUNT"/> <i:inline key=".infoValue.noChange"/>
-				</tags:nameValue2>
-			
-			</c:forEach>
-			
-		</tags:nameValueContainer2>
-		
-		<br>
-		
-		<%-- BACK/CANCEL BUTTONS --%>
-		<form id="backToHomeForm" action="/multispeak/setup/deviceGroupSync/done" method="post">
-		
-			<button name="backToHome" class="button">
-				<i:inline key=".backToHomeButton"/>
-			</button>
-			
-			<button name="cancel" class="button" id="cancelButton">
-				<i:inline key=".cancelButton"/>
-			</button>
-			
-	   	</form>
-	
-	</tags:formElementContainer>
-	
-	<cti:dataUpdaterCallback function="toggleElementsWhenTrue(['cancelButton'], true)" initialize="true" value="MSP_DEVICE_GROUP_SYNC/IS_RUNNING" />
-	<cti:dataUpdaterCallback function="toggleElementsWhenTrue(['cancelButton'], false)" initialize="true" value="MSP_DEVICE_GROUP_SYNC/IS_NOT_RUNNING" />
+    <tags:formElementContainer nameKey="progressDetailContainer">
+    
+        <%-- INFO --%>
+        <tags:nameValueContainer2>
+        
+            <%-- status --%>
+            <tags:nameValue2 nameKey=".infoLabel.status">
+                <cti:classUpdater type="MSP_DEVICE_GROUP_SYNC" identifier="STATUS_CLASS">
+                    <cti:dataUpdaterValue type="MSP_DEVICE_GROUP_SYNC" identifier="STATUS_TEXT"/>
+                </cti:classUpdater>
+            </tags:nameValue2>
+    
+            <%-- type --%>
+            <tags:nameValue2 nameKey=".infoLabel.type">
+                <cti:msg key="${progress.type}"/>
+            </tags:nameValue2>
+            
+            <%-- progress bar --%>
+            <tags:nameValue2 nameKey=".infoLabel.progress">
+                <tags:updateableProgressBar totalCount="${meterCount}" 
+                                            countKey="MSP_DEVICE_GROUP_SYNC/METERS_PROCESSED_COUNT"  
+                                            isAbortedKey="MSP_DEVICE_GROUP_SYNC/IS_ABORTED" 
+                                            hideCount="true"/>
+            </tags:nameValue2>
+            
+            <%-- stats --%>
+            <c:set var="processorTypes" value="${progress.type.processorTypes}"/>
+            <c:forEach var="processorType" items="${processorTypes}">
+            
+                <tags:nameValue2 nameKey=".infoLabel.statsLabel.${processorType}">
+                    <cti:dataUpdaterValue type="MSP_DEVICE_GROUP_SYNC" identifier="${processorType}_CHANGE_COUNT"/> <i:inline key=".infoValue.metersAdded"/>
+                    <br>
+                    <cti:dataUpdaterValue type="MSP_DEVICE_GROUP_SYNC" identifier="${processorType}_NO_CHANGE_COUNT"/> <i:inline key=".infoValue.noChange"/>
+                </tags:nameValue2>
+            
+            </c:forEach>
+            
+        </tags:nameValueContainer2>
+        
+        <br>
+        
+        <%-- BACK/CANCEL BUTTONS --%>
+        <form id="backToHomeForm" action="/multispeak/setup/deviceGroupSync/done" method="post">
+        
+            <button name="backToHome" class="button">
+                <i:inline key=".backToHomeButton"/>
+            </button>
+            
+            <button name="cancel" class="button" id="cancelButton">
+                <i:inline key=".cancelButton"/>
+            </button>
+            
+           </form>
+    
+    </tags:formElementContainer>
+    
+    <cti:dataUpdaterCallback function="Yukon.ui.progressBar.toggleElementsWhenTrue(['cancelButton'], true)" initialize="true" value="MSP_DEVICE_GROUP_SYNC/IS_RUNNING" />
+    <cti:dataUpdaterCallback function="Yukon.ui.progressBar.toggleElementsWhenTrue(['cancelButton'], false)" initialize="true" value="MSP_DEVICE_GROUP_SYNC/IS_NOT_RUNNING" />
 
 </cti:standardPage>
