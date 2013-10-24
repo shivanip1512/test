@@ -38,7 +38,7 @@
                                 <c:when test="${point.pointName == 'Serial Number'}">
                                     <cti:pointValue pointId="${point.pointID}" format="{rawValue|com.cannontech.cbc.util.CapControlUtils.convertSerialNumber}"/>
                                 </c:when>
-                                <c:when test="${point.pointName == 'Last Control Reason'}">
+                                <c:when test="${point.stateGroupID != 0}">
                                     <cti:pointStatusColor pointId="${point.pointID}">
                                         <cti:pointValue pointId="${point.pointID}" format="{state}"/>
                                     </cti:pointStatusColor>
