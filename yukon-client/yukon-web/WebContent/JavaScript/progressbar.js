@@ -126,12 +126,12 @@ Yukon.ui.progressBar = (function () {
         toggleElementsWhenTrue : function (elementsToToggle, show) {
             return function (data) {
                 var value = data.value;
-                 if (value === 'true') {
+                if (value === 'true') {
                     elementsToToggle.forEach( function (el, index, arr) {
                         if (show) {
-                            jQuery(el).show();
+                            jQuery('#' + el).show();
                         } else {
-                            jQuery(el).hide();
+                            jQuery('#' + el).hide();
                         }
                     });
                 }
