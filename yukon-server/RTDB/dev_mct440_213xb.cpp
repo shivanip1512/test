@@ -995,10 +995,10 @@ INT Mct440_213xBDevice::decodeGetValueInstantLineData(const INMESS    *InMessage
 
         point_info PowerFactor;
 
-                                                                /* Bits {7:0} Power factor in units of 0.01, range -0.99 to 1.00 */
+                                                                /* Bits {7:0} Power factor in units of 0.01, range -1.00 to 1.00 */
         int PowerFactorVal = reinterpret_cast<const char &>(PhaseData[3]);
 
-        if( PowerFactorVal < -99 || PowerFactorVal > 100 )
+        if( PowerFactorVal < -100 || PowerFactorVal > 100 )
         {
             PowerFactor.value       = 0.0;
             PowerFactor.quality     = (PowerFactorVal > 100) ? ExceedsHighQuality : ExceedsLowQuality;
