@@ -48,7 +48,7 @@
     </dialog:inline>
     
     <dialog:inline nameKey="viewPublicKeyDialog" okEvent="none" 
-        on="#viewPublicKeyBtn" options="{width: 600, 'buttons': [{text: 'Generate New Key', class: 'f-blocker2', click: function() { loadPublicKey(true);}},
+        on="#viewPublicKeyBtn" options="{width: 600, 'buttons': [{text: 'Generate New Key', 'class': 'f-blocker2', click: function() { loadPublicKey(true);}},
                                         {text: 'Cancel', click: function() { jQuery(this).dialog('close'); } }]}">
         <div id="publicKeyStatus"></div>
         <div id="publicKeyExpiration"></div>

@@ -192,7 +192,7 @@
                     {
                          text: '${empty jobId ? scheduleButton : updateButton}', 
                          click: function() {submitSchedule();},
-                         class: 'primary action'
+                         'class': 'primary action'
                     }]
                  }">
         <form:form id="scheduleForm" action="schedule" method="post" commandName="exportData">

@@ -72,7 +72,7 @@
                 dataJson="${dataJson}"
                 title="${title}"
                 maxHeight="${pageScope.maxHeight}"
-                buttonsList="[{text:'${cancelButtonText}', click:cancelNodeSelection_${id}},{text:'${submitButtonText}', click:submitNodeSelection_${id}, class:'primary action'}]"
+                buttonsList="[{text:'${cancelButtonText}', click:cancelNodeSelection_${id}},{text:'${submitButtonText}', click:submitNodeSelection_${id}, 'class':'primary action'}]"
                 multiSelect="${multiSelect}"
                 includeControlBar="${includeControlBar}"
                 styleClass="${styleClass}" />

@@ -300,23 +300,3 @@ jQuery(function() {
     });
 });
 
-/**  Button dropdown menu behavior (google+) */
-jQuery(function() {
-    jQuery(".dropdown .button, .dropdown button").click(function () {
-        if (!jQuery(this).find('span.toggle').hasClass('active')) {
-            jQuery('.dropdown-slider').slideUp();
-            jQuery('span.toggle').removeClass('active');
-        }
-        
-        jQuery(this).parent().find('.dropdown-slider').slideToggle('fast');
-        jQuery(this).find('span.toggle').toggleClass('active');
-        
-        return false;
-    });
-});
-jQuery(document).bind('click', function (e) {
-    if (e.target.id != jQuery('.dropdown').attr('class')) {
-        jQuery('.dropdown-slider').slideUp();
-        jQuery('span.toggle').removeClass('active');
-    }
-});

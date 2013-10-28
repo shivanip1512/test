@@ -14,17 +14,6 @@
     <head>
         <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
-        <style type="text/css">
-        body.tools_module ul.ui-autocomplete.ui-menu.ui-widget.ui-widget-content {
-            background: rgba(255, 255, 255, 1) !important;
-            z-index: 100 !important;
-        }
-
-        .ui-menu .ui-menu-item a.ui-state-focus,.ui-menu .ui-menu-item a.ui-state-active {
-            margin: 0 !important;
-        }
-        </style>
-
         <title>${pageDetail.pageTitle}</title>
         <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
         <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/normalize.css"/>" >

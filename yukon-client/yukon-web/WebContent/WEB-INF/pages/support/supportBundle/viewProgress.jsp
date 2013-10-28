@@ -33,7 +33,7 @@ function openFtpPopup(fileName){
                 },
                 upload: {
                     text: "<cti:msg2 key=".supportBundle.startUpload.label" />",
-                    class: "primary",
+                    'class': "primary",
                     click: function() {
                         form.submit();
                     }

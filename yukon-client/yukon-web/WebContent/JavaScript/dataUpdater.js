@@ -79,6 +79,12 @@ function initiateCannonDataUpdate(url, delayMs) {
                     if ('undefined' === typeof rgb || '' === rgb || null === rgb) {
                         return '#000000';
                     }
+                    
+                    // IE8 returns color in hex
+                    if (rgb.match(/^#[\da-f]{6}$/)) {
+                        return rgb;
+                    }
+                    
                     rgb = rgb.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+))?\)$/);
                     compositeRgb = hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
                     compositeRgb = compositeRgb.toLowerCase();

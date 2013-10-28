@@ -1,3 +1,54 @@
+/** Polyfills */ 
+
+// Array.forEach Polyfill
+// From https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach
+// Production steps of ECMA-262, Edition 5, 15.4.4.18
+// Reference: http://es5.github.com/#x15.4.4.18
+if (!Array.prototype.forEach) {
+  Array.prototype.forEach = function forEach(callback, thisArg) {
+    'use strict';
+    var T, k;
+
+    if (this == null) {
+      throw new TypeError("this is null or not defined");
+    }
+
+    var kValue,
+        O = Object(this),
+        len = O.length >>> 0;
+    if ({}.toString.call(callback) !== "[object Function]") {
+      throw new TypeError(callback + " is not a function");
+    }
+    if (arguments.length >= 2) {
+      T = thisArg;
+    }
+    k = 0;
+    while (k < len) {
+      if (k in O) {
+        kValue = O[k];
+        callback.call(T, kValue, k, O);
+      }
+      k++;
+    }
+  };
+}
+
+// Object.create Polyfill
+if (!Object.create) {
+    Object.create = (function(){
+        function F(){}
+
+        return function(o){
+            if (arguments.length != 1) {
+                throw new Error('Object.create implementation only accepts one parameter.');
+            }
+            F.prototype = o
+            return new F()
+        }
+    })()
+}
+
+/** Yukon Module */
 var Yukon = (function (yukonMod) {
     return yukonMod;
 })(Yukon || {});
@@ -83,8 +134,10 @@ Yukon.modules.base = function (box) {
     };
 };
 
-// create a sandbox with the functionality of the module names passed
-// Copied from Javascript Patterns, Stefanov
+/** 
+ * Create a sandbox with the functionality of the module names passed
+ * Copied from Javascript Patterns, Stefanov
+ */
 function Sandbox () {
     // turning arguments into an array
     var args = Array.prototype.slice.call(arguments),
@@ -130,21 +183,20 @@ Sandbox.prototype = {
 // for modules outside the Yukon umbrella
 Sandbox.modules = {};
 
-/*
-*   General purpose ui functionality for Yukon.
-*   
-*     REQUIRES:
-*     * jQuery 1.6.4
-*     * blockUI 2.39
-*     * jQuery placeholder plug-in
-*     
-*     USAGE:
-*     In day to day use, the Yukon.ui class will be your best bet at getting the functionality you
-*     need on a page.  The former Yukon.uiUtils are more low level functions for use by other libraries,
-*     but have been subsumed into Yukon.ui.
-*/
-Yukon.namespace("Yukon.modules.ui"); // creates our ui module ns
-// create the Yukon.ui module sandbox
+/** 
+ * UI module - General purpose ui functionality for Yukon.
+ * 
+ *     REQUIRES:
+ *     * jQuery 1.6.4
+ *     * blockUI 2.39
+ *     
+ *     USAGE:
+ *     In day to day use, the Yukon.ui class will be your best bet at getting the functionality you
+ *     need on a page.  The former Yukon.uiUtils are more low level functions for use by other libraries,
+ *     but have been subsumed into Yukon.ui.
+ */
+Yukon.namespace("Yukon.modules.ui");
+
 Yukon.modules.ui = function (mod) {
     var initialized = false;
 
@@ -222,6 +274,11 @@ Yukon.modules.ui = function (mod) {
         //   attaches tooltip handlers to all elements with a class of f-has-tooltip
         //   or a title attribute
         jQuery (function () {
+            
+            if (!Modernizr.input.placeholder) {
+                jQuery('input, textarea').placeholder();
+            }
+            
             var tooltipTargets = ['.f-has-tooltip'],// use browser-native tooltips for all but the fancy HTML ones
                 resetTipsyInner = function () {
                     // voodoo so inner div has full height of its container
@@ -268,9 +325,6 @@ Yukon.modules.ui = function (mod) {
             jQuery(this.getAttribute("data-selector")).load(this.getAttribute("href"));
             return false;
         });
-        
-        //html5 placeholder support for IE
-        jQuery.placeholder();
         
         //buttons that redirect the page on click
         jQuery(document).on('click', 'button[data-href]', function (event){window.location = jQuery(this).attr("data-href");});
@@ -387,22 +441,22 @@ Yukon.modules.ui = function (mod) {
         /* Focus the designated input element */
         mod._autofocus();
 
+        /* Init page 'Actions' button */
         html = jQuery('#f-page-actions')[0];
-
         if (typeof html !== 'undefined') {
             jQuery('#f-page-actions').remove();
             jQuery('#b-page-actions .dropdown-menu').html(html.innerHTML);
             jQuery('#b-page-actions').show();
         }
 
-        /* Update page buttons */
+        /* Init page buttons */
         html = jQuery('#f-page-buttons')[0];
-
         if (typeof html !== 'undefined') {
             jQuery('#f-page-buttons').remove();
             jQuery('.page-actions').append(html.innerHTML);
         }
-
+        
+        /* Add additional options to page 'Actions' button */
         var additionalActions = jQuery('.f-page-additional-actions');
         additionalActions.each( function(index, html) {
             if (typeof html !== 'undefined') {

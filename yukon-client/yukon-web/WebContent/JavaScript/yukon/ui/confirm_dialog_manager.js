@@ -50,7 +50,7 @@ Yukon.modules.DialogConfirmationManager = function (mod) {
             event.stopPropagation();
             //determine the 'ok' and 'cancel' events
             buttons.push({text: args.strings.cancel, click: _default._cancel_action});
-            buttons.push({text: args.strings.ok, click: _default._ok_action, class:'primary action'});
+            buttons.push({text: args.strings.ok, click: _default._ok_action, 'class':'primary action'});
             actionButton = buttons[_INDEX_OF_ACTION_BUTTON];
 
             //is the intent to redirect on ok?

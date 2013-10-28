@@ -24,7 +24,7 @@ public enum JsLibrary {
     JQUERY_GRID("/JavaScript/lib/jQuery/plugins/jqGrid/4.2.0/js/jquery.jqGrid.min.js"),         //http://www.trirand.com/jqgridwiki/doku.php?id=wiki:jqgriddocs
     JQUERY_GRID_HELPER("/JavaScript/lib/jQuery/plugins/jqGrid/jqGridHelper.js"),         //in-house
     JQUERY_IFRAME_TRANSPORT("/JavaScript/lib/jQuery/plugins/fileupload/jquery.iframe-transport.js"), //https://github.com/blueimp/jQuery-File-Upload/wiki/Basic-plugin
-    JQUERY_PLACEHOLDER("/JavaScript/lib/jQuery/plugins/placeholder/jquery.placeholder.js"), // https://github.com/thehappybit/jQuery-HTML5-placeholder-plugin
+    JQUERY_PLACEHOLDER("/JavaScript/lib/jQuery/plugins/placeholder/jquery.placeholder.js"), // https://github.com/mathiasbynens/jquery-placeholder
     JQUERY_SCROLLTO("/JavaScript/lib/jQuery/plugins/scrollTo/jquery.scrollTo-1.4.2-min.js"),    //http://demos.flesler.com/jquery/scrollTo/
     JQUERY_SPECTRUM("/JavaScript/lib/jQuery/plugins/spectrum/spectrum.js"), //http://bgrins.github.io/spectrum/
     JQUERY_STICKY_PANEL("/JavaScript/lib/jQuery/plugins/stickyPanel/jquery.stickyPanel.1.4.1.min.js"),    //http://code.google.com/p/sticky-panel/
@@ -52,6 +52,8 @@ public enum JsLibrary {
     YUKON_UI("/JavaScript/yukon/ui/general.js"),
     YUKON_ALERTS("/JavaScript/yukon/yukon.alerts.js"),
     YUKON_FAVORITES("/JavaScript/yukon/yukon.favorites.js"),
+    
+    MODERNIZR("/JavaScript/lib/modernizr/custom.js"),
     
     // --DEPRECATED VERSIONS --//
     PROTOTYPE_150("/JavaScript/prototype150.js");

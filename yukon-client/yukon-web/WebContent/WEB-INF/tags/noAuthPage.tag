@@ -25,6 +25,8 @@
         <%-- Include functional-overrides.css last so that, you know, they actually override.  cascade! --%>
         <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/functional-overrides.css"/>" >
             
+        <cti:includeScript link="MODERNIZR" force="true"/>
+        
         <cti:includeScript link="JQUERY" force="true"/>
         <cti:includeScript link="JQUERY_UI" force="true"/>
         <cti:includeScript link="JQUERY_UI_DIALOG_HELPER" force="true"/>

@@ -29,7 +29,7 @@ jQuery('.f-create-hardware').click(function(event) {
 
 function showFileUpload() {
 	var buttons = [{text: '${cancelText}', click: function() {jQuery('#fileUploadPopup input[type=file]').val('');jQuery(this).dialog("close");}},
-	               {text: '${uploadText}', click: function() {jQuery('#fileUploadPopup form').submit();}, class: 'primary action'}];
+	               {text: '${uploadText}', click: function() {jQuery('#fileUploadPopup form').submit();}, 'class': 'primary action'}];
     jQuery('#fileUploadPopup').dialog({width:500, 'buttons': buttons});
 }
 </script>

@@ -82,6 +82,8 @@ public class LayoutController {
         
         Builder<String> builder = ImmutableList.builder();
         
+        builder.add(JsLibrary.MODERNIZR.getPath());
+        
         //jquery MUST be included before any js library that commandeers the $ var.
         if (devMod) {
             builder.add(JsLibrary.JQUERY.getPath());
@@ -115,6 +117,7 @@ public class LayoutController {
         builder.add("/JavaScript/simpleDialog.js");
         builder.add("/JavaScript/yukon/util/analytics_manager.js");
         builder.add(JsLibrary.YUKON_FAVORITES.getPath());
+        
         
         layoutScriptFiles = builder.build();
     }
