@@ -30,6 +30,11 @@ public abstract class AmqConnectionBase<T extends AmqTransport> extends Connecti
 
     private static int conID = 0;
 
+    private static final long RECONNECT_DELAY_INITIAL = 1000;
+    private static final long RECONNECT_DELAY_MAX     = 30000;
+    private static final int  RECONNECT_ATTEMPT_MAX   = 120;
+    private static final int  RECONNECT_LOGGING_FREQ  = 10; // number of attempt
+    
     protected AmqConnectionBase(String name) {
         super(name);
 
@@ -68,10 +73,40 @@ public abstract class AmqConnectionBase<T extends AmqTransport> extends Connecti
         try {
             // Create the connection to the AMQ broker (if needed)
             if (isManagedConnection()) {
+
                 if (connection == null) {
-                    connection = createConnection();
-                    connection.setExceptionListener(this);
-                    connection.start();
+
+                    long delay = RECONNECT_DELAY_INITIAL;
+                    int attempt = 0;
+                    boolean started = false;
+                    String prevMessage = "";
+
+                    while (! started) {
+                        attempt++;
+                        try {
+                            connection = getConnectionService().createConnection();
+                            connection.setExceptionListener(this);
+                            connection.start();
+                            started = true;
+                        }
+                        catch (JMSException e) {
+                            connection = null;
+
+                            if (attempt == RECONNECT_ATTEMPT_MAX ) {
+                                throw e;
+                            }
+
+                            if (attempt % RECONNECT_LOGGING_FREQ == 1 || ! prevMessage.equals(e.getMessage())) {
+                                logger.error(e.getMessage());
+                                prevMessage = e.getMessage();
+                            }
+                        }
+
+                        if (! started) {
+                            Thread.sleep(delay);
+                            delay = Math.min(2*delay, RECONNECT_DELAY_MAX); // using exponential backoff
+                        }
+                    }
                 }
             }
 
@@ -93,8 +128,12 @@ public abstract class AmqConnectionBase<T extends AmqTransport> extends Connecti
                 connectionMonitor.start();
             }
         }
-        catch (JMSException e) {
+        catch (JMSException e) {            
             throw new ConnectionException("Error while starting an ActiveMQ connection", e);
+        }
+        catch (InterruptedException e) {
+            Thread.interrupted();
+            throw new ConnectionException("Interrupted while waiting to retry connecting", e);
         }
 
         setState(ConnectionState.Connected);

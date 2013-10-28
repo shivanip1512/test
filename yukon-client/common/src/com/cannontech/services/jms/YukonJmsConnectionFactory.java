@@ -56,14 +56,8 @@ public class YukonJmsConnectionFactory implements FactoryBean<ConnectionFactory>
                     connectionBase = "vm://ServiceManager?create=false";
                 }
                 
-                String internalMessageConnectionDefault = 
-                        "failover:(" + connectionBase + ")"
-                        + "?useExponentialBackOff=true"
-                        + "&initialReconnectDelay=1000"
-                        + "&maxReconnectDelay=30000" 
-                        + "&startupMaxReconnectAttempts=120" 
-                        + "&maxReconnectAttempts=0";
-    
+                String internalMessageConnectionDefault = connectionBase;
+
                 String InternalConnectionString = internalMessageConnectionDefault;
                 
                 if (!applicationName.equals("ServiceManager")) {
