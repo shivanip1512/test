@@ -16,7 +16,9 @@
     <script type="text/javascript">
     jQuery(document).ready(function() {
         jQuery('#addSurveyBtn').click(function() {
-            jQuery('#ajaxDialog').load('${addUrl}');
+            jQuery('#ajaxDialog').load('${addUrl}', function() {
+                jQuery('#inputForm').ajaxForm({'target' : '#ajaxDialog'});
+            });
         });
 
         jQuery(document).bind('yukonDetailsUpdated', function(event, newUrl) {

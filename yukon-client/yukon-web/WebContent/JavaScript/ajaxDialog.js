@@ -6,7 +6,7 @@ function closeAjaxDialogAndRefresh() {
 }
 
 jQuery(document).bind('yukonDialogSubmit', function(event) {
-    jQuery(this).find('form').submit();
+    jQuery(event.target).find('form').submit();
 });
 
 jQuery(document).bind('ajaxDialogSubmit', function(event) {

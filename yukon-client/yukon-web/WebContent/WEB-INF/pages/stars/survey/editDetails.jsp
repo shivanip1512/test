@@ -10,12 +10,6 @@
 
 <dialog:ajaxPage nameKey="details" module="survey" page="list" okEvent="yukonDialogSubmit">
 
-<script type="text/javascript">
-jQuery(document).ready(function() {
-    jQuery('#inputForm').ajaxForm({'target' : '#ajaxDialog'});
-});
-</script>
-
 <cti:url var="submitUrl" value="saveDetails"/>
 <form:form id="inputForm" commandName="survey" action="${submitUrl}">
     <form:hidden path="surveyId"/>
