@@ -171,7 +171,7 @@ public class DeviceConfigurationConfigController {
                                String categoryType) {
         CategoryType type = CategoryType.fromValue(categoryType);
         
-        deviceConfigurationDao.changeCategoryAssignment(configId, newCategoryId, type);
+        deviceConfigurationService.changeCategoryAssignment(configId, newCategoryId, type);
         
         flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + ".config.swapSuccess"));
         

@@ -3,6 +3,7 @@ package com.cannontech.common.device.config.service;
 import com.cannontech.common.device.config.dao.InvalidDeviceTypeException;
 import com.cannontech.common.device.config.model.DeviceConfigCategory;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
+import com.cannontech.common.device.config.model.jaxb.CategoryType;
 import com.cannontech.common.pao.YukonDevice;
 
 public interface DeviceConfigurationService {
@@ -53,4 +54,12 @@ public interface DeviceConfigurationService {
      * @throws InvalidDeviceTypeException if the device is a DNP device (which cannot be configurationless.)
      */
     public void unassignConfig(YukonDevice device) throws InvalidDeviceTypeException;
+    
+    /**
+     * Change the assignment of a category to a configuration
+     * @param deviceConfigurationId the configuration id the category is being assigned to.
+     * @param newCategoryId the category being assigned to the configuration.
+     * @param categoryType the type of category whose assignment is being updated.
+     */
+    public void changeCategoryAssignment(int deviceConfigurationId, int newCategoryId, CategoryType categoryType);
 }

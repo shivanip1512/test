@@ -6,6 +6,7 @@ import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.dao.InvalidDeviceTypeException;
 import com.cannontech.common.device.config.model.DeviceConfigCategory;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
+import com.cannontech.common.device.config.model.jaxb.CategoryType;
 import com.cannontech.common.device.config.service.DeviceConfigurationService;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.message.DbChangeManager;
@@ -95,5 +96,16 @@ public class DeviceConfigurationServiceImpl implements DeviceConfigurationServic
                                         DBChangeMsg.CAT_DEVICE_CONFIG, 
                                         DEVICE_OBJECT_TYPE, 
                                         DbChangeType.DELETE);
+    }
+    
+    @Override
+    public void changeCategoryAssignment(int deviceConfigurationId, int newCategoryId, CategoryType categoryType) {
+        deviceConfigurationDao.changeCategoryAssignment(deviceConfigurationId, newCategoryId, categoryType);
+
+        dbChangeManager.processDbChange(deviceConfigurationId,
+                                        DBChangeMsg.CHANGE_CONFIG_DB, 
+                                        DBChangeMsg.CAT_DEVICE_CONFIG, 
+                                        CONFIG_OBJECT_TYPE, 
+                                        DbChangeType.UPDATE);
     }
 }
