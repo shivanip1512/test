@@ -247,25 +247,35 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandFreeze_GetFreezeInfo_full )
         RfnCommandResult rcv = command.decodeCommand( execute_time, response );
 
         BOOST_CHECK_EQUAL( rcv.description, "Status: Success (0x00)"
-                                            "\nAdditional Status: NO ADDITIONAL STATUS (ASC: 0x00, ASCQ: 0x00)" );
+                                            "\nAdditional Status: NO ADDITIONAL STATUS (ASC: 0x00, ASCQ: 0x00)"
+                                            "\nDay of freeze   : 1"
+                                            "\nLast freeze time: 01/26/1971 09:34:29"
+                                            "\nBase rate Peak Delivered Demand  101124105 @ 05/04/1975 23:29:01"
+                                            "\nRate A Peak Delivered Demand  235868177 @ 08/11/1979 12:23:33"
+                                            "\nRate B Peak Delivered Demand  370612249 @ 11/18/1983 00:18:05"
+                                            "\nRate C Peak Delivered Demand  505356321 @ 02/24/1988 13:12:37"
+                                            "\nRate D Peak Delivered Demand  640100393 @ 06/02/1992 03:07:09"
+                                            "\nRate E Peak Delivered Demand  774844465 @ 09/08/1996 16:01:41" );
     }
 
-    RfnGetDemandFreezeInfoCommand::DemandFreezeData results = command.getDemandFreezeData();
+    typedef RfnGetDemandFreezeInfoCommand::DemandFreezeData Dfd;
+
+    Dfd results = command.getDemandFreezeData();
 
     BOOST_CHECK_EQUAL(        0x01, *results.dayOfFreeze );
     BOOST_CHECK_EQUAL(  0x02030405, *results.lastFreezeTime );
-    BOOST_CHECK_EQUAL(  0x06070809, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Base ].rate );
-    BOOST_CHECK_EQUAL(  0x0a0b0c0d, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Base ].timestamp );
-    BOOST_CHECK_EQUAL(  0x0e0f1011, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Rate_A ].rate );
-    BOOST_CHECK_EQUAL(  0x12131415, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Rate_A ].timestamp );
-    BOOST_CHECK_EQUAL(  0x16171819, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Rate_B ].rate );
-    BOOST_CHECK_EQUAL(  0x1a1b1c1d, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Rate_B ].timestamp );
-    BOOST_CHECK_EQUAL(  0x1e1f2021, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Rate_C ].rate );
-    BOOST_CHECK_EQUAL(  0x22232425, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Rate_C ].timestamp );
-    BOOST_CHECK_EQUAL(  0x26272829, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Rate_D ].rate );
-    BOOST_CHECK_EQUAL(  0x2a2b2c2d, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Rate_D ].timestamp );
-    BOOST_CHECK_EQUAL(  0x2e2f3031, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Rate_E ].rate );
-    BOOST_CHECK_EQUAL(  0x32333435, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Rate_E ].timestamp );
+    BOOST_CHECK_EQUAL(  0x06070809, *results.peakValues[ Dfd::DemandRates_Base   ][ Dfd::Metric_FrozenPeak_Demand_Delivered ].value );
+    BOOST_CHECK_EQUAL(  0x0a0b0c0d, *results.peakValues[ Dfd::DemandRates_Base   ][ Dfd::Metric_FrozenPeak_Demand_Delivered ].timestamp );
+    BOOST_CHECK_EQUAL(  0x0e0f1011, *results.peakValues[ Dfd::DemandRates_Rate_A ][ Dfd::Metric_FrozenPeak_Demand_Delivered ].value );
+    BOOST_CHECK_EQUAL(  0x12131415, *results.peakValues[ Dfd::DemandRates_Rate_A ][ Dfd::Metric_FrozenPeak_Demand_Delivered ].timestamp );
+    BOOST_CHECK_EQUAL(  0x16171819, *results.peakValues[ Dfd::DemandRates_Rate_B ][ Dfd::Metric_FrozenPeak_Demand_Delivered ].value );
+    BOOST_CHECK_EQUAL(  0x1a1b1c1d, *results.peakValues[ Dfd::DemandRates_Rate_B ][ Dfd::Metric_FrozenPeak_Demand_Delivered ].timestamp );
+    BOOST_CHECK_EQUAL(  0x1e1f2021, *results.peakValues[ Dfd::DemandRates_Rate_C ][ Dfd::Metric_FrozenPeak_Demand_Delivered ].value );
+    BOOST_CHECK_EQUAL(  0x22232425, *results.peakValues[ Dfd::DemandRates_Rate_C ][ Dfd::Metric_FrozenPeak_Demand_Delivered ].timestamp );
+    BOOST_CHECK_EQUAL(  0x26272829, *results.peakValues[ Dfd::DemandRates_Rate_D ][ Dfd::Metric_FrozenPeak_Demand_Delivered ].value );
+    BOOST_CHECK_EQUAL(  0x2a2b2c2d, *results.peakValues[ Dfd::DemandRates_Rate_D ][ Dfd::Metric_FrozenPeak_Demand_Delivered ].timestamp );
+    BOOST_CHECK_EQUAL(  0x2e2f3031, *results.peakValues[ Dfd::DemandRates_Rate_E ][ Dfd::Metric_FrozenPeak_Demand_Delivered ].value );
+    BOOST_CHECK_EQUAL(  0x32333435, *results.peakValues[ Dfd::DemandRates_Rate_E ][ Dfd::Metric_FrozenPeak_Demand_Delivered ].timestamp );
 }
 
 
@@ -306,23 +316,32 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandFreeze_GetFreezeInfo_supplied_case_1 )
         RfnCommandResult rcv = command.decodeCommand( execute_time, response );
 
         BOOST_CHECK_EQUAL( rcv.description, "Status: Success (0x00)"
-                                            "\nAdditional Status: NO ADDITIONAL STATUS (ASC: 0x00, ASCQ: 0x00)" );
+                                            "\nAdditional Status: NO ADDITIONAL STATUS (ASC: 0x00, ASCQ: 0x00)"
+                                            "\nDay of freeze   : 28"
+                                            "\nLast freeze time: 03/28/2013 10:40:01"
+                                            "\nBase rate Peak Delivered Demand  156 @ 03/28/2013 10:15:00"
+                                            "\nRate A Peak Delivered Demand  0 @ not-a-time"
+                                            "\nRate B Peak Delivered Demand  0 @ not-a-time"
+                                            "\nRate C Peak Delivered Demand  156 @ 03/28/2013 10:15:00"
+                                            "\nRate D Peak Delivered Demand  0 @ not-a-time" );
     }
 
-    RfnGetDemandFreezeInfoCommand::DemandFreezeData results = command.getDemandFreezeData();
+    typedef RfnGetDemandFreezeInfoCommand::DemandFreezeData Dfd;
+
+    Dfd results = command.getDemandFreezeData();
 
     BOOST_CHECK_EQUAL(        0x1c, *results.dayOfFreeze );
     BOOST_CHECK_EQUAL(  0x51546451, *results.lastFreezeTime );
-    BOOST_CHECK_EQUAL(  0x0000009c, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Base ].rate );
-    BOOST_CHECK_EQUAL(  0x51545e74, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Base ].timestamp );
-    BOOST_CHECK_EQUAL(  0x00000000, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Rate_A ].rate );
-    BOOST_CHECK_EQUAL(  0x00000000, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Rate_A ].timestamp );
-    BOOST_CHECK_EQUAL(  0x00000000, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Rate_B ].rate );
-    BOOST_CHECK_EQUAL(  0x00000000, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Rate_B ].timestamp );
-    BOOST_CHECK_EQUAL(  0x0000009c, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Rate_C ].rate );
-    BOOST_CHECK_EQUAL(  0x51545e74, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Rate_C ].timestamp );
-    BOOST_CHECK_EQUAL(  0x00000000, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Rate_D ].rate );
-    BOOST_CHECK_EQUAL(  0x00000000, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Rate_D ].timestamp );
+    BOOST_CHECK_EQUAL(  0x0000009c, *results.peakValues[ Dfd::DemandRates_Base   ][ Dfd::Metric_FrozenPeak_Demand_Delivered ].value );
+    BOOST_CHECK_EQUAL(  0x51545e74, *results.peakValues[ Dfd::DemandRates_Base   ][ Dfd::Metric_FrozenPeak_Demand_Delivered ].timestamp );
+    BOOST_CHECK_EQUAL(  0x00000000, *results.peakValues[ Dfd::DemandRates_Rate_A ][ Dfd::Metric_FrozenPeak_Demand_Delivered ].value );
+    BOOST_CHECK_EQUAL(  0x00000000, *results.peakValues[ Dfd::DemandRates_Rate_A ][ Dfd::Metric_FrozenPeak_Demand_Delivered ].timestamp );
+    BOOST_CHECK_EQUAL(  0x00000000, *results.peakValues[ Dfd::DemandRates_Rate_B ][ Dfd::Metric_FrozenPeak_Demand_Delivered ].value );
+    BOOST_CHECK_EQUAL(  0x00000000, *results.peakValues[ Dfd::DemandRates_Rate_B ][ Dfd::Metric_FrozenPeak_Demand_Delivered ].timestamp );
+    BOOST_CHECK_EQUAL(  0x0000009c, *results.peakValues[ Dfd::DemandRates_Rate_C ][ Dfd::Metric_FrozenPeak_Demand_Delivered ].value );
+    BOOST_CHECK_EQUAL(  0x51545e74, *results.peakValues[ Dfd::DemandRates_Rate_C ][ Dfd::Metric_FrozenPeak_Demand_Delivered ].timestamp );
+    BOOST_CHECK_EQUAL(  0x00000000, *results.peakValues[ Dfd::DemandRates_Rate_D ][ Dfd::Metric_FrozenPeak_Demand_Delivered ].value );
+    BOOST_CHECK_EQUAL(  0x00000000, *results.peakValues[ Dfd::DemandRates_Rate_D ][ Dfd::Metric_FrozenPeak_Demand_Delivered ].timestamp );
 }
 
 
@@ -362,23 +381,33 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandFreeze_GetFreezeInfo_supplied_case_2 )
         RfnCommandResult rcv = command.decodeCommand( execute_time, response );
 
         BOOST_CHECK_EQUAL( rcv.description, "Status: Success (0x00)"
-                                            "\nAdditional Status: NO ADDITIONAL STATUS (ASC: 0x00, ASCQ: 0x00)" );
+                                            "\nAdditional Status: NO ADDITIONAL STATUS (ASC: 0x00, ASCQ: 0x00)"
+                                            "\nDay of freeze   : 28"
+                                            "\nLast freeze time: 03/28/2013 09:05:00"
+                                            "\nBase rate Peak Delivered Demand  72 @ 03/28/2013 08:55:00"
+                                            "\nRate A Peak Delivered Demand  0 @ not-a-time"
+                                            "\nRate B Peak Delivered Demand  0 @ not-a-time"
+                                            "\nRate C Peak Delivered Demand  72 @ 03/28/2013 08:55:00"
+                                            "\nRate D Peak Delivered Demand  72 @ 03/27/2013 22:55:00"
+);
     }
 
-    RfnGetDemandFreezeInfoCommand::DemandFreezeData results = command.getDemandFreezeData();
+    typedef RfnGetDemandFreezeInfoCommand::DemandFreezeData Dfd;
+
+    Dfd results = command.getDemandFreezeData();
 
     BOOST_CHECK_EQUAL(        0x1c, *results.dayOfFreeze );
     BOOST_CHECK_EQUAL(  0x51544e0c, *results.lastFreezeTime );
-    BOOST_CHECK_EQUAL(  0x00000048, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Base ].rate );
-    BOOST_CHECK_EQUAL(  0x51544bb4, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Base ].timestamp );
-    BOOST_CHECK_EQUAL(  0x00000000, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Rate_A ].rate );
-    BOOST_CHECK_EQUAL(  0x00000000, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Rate_A ].timestamp );
-    BOOST_CHECK_EQUAL(  0x00000000, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Rate_B ].rate );
-    BOOST_CHECK_EQUAL(  0x00000000, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Rate_B ].timestamp );
-    BOOST_CHECK_EQUAL(  0x00000048, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Rate_C ].rate );
-    BOOST_CHECK_EQUAL(  0x51544bb4, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Rate_C ].timestamp );
-    BOOST_CHECK_EQUAL(  0x00000048, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Rate_D ].rate );
-    BOOST_CHECK_EQUAL(  0x5153bf14, *results.demandInfo[ RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates_Rate_D ].timestamp );
+    BOOST_CHECK_EQUAL(  0x00000048, *results.peakValues[ Dfd::DemandRates_Base   ][ Dfd::Metric_FrozenPeak_Demand_Delivered ].value );
+    BOOST_CHECK_EQUAL(  0x51544bb4, *results.peakValues[ Dfd::DemandRates_Base   ][ Dfd::Metric_FrozenPeak_Demand_Delivered ].timestamp );
+    BOOST_CHECK_EQUAL(  0x00000000, *results.peakValues[ Dfd::DemandRates_Rate_A ][ Dfd::Metric_FrozenPeak_Demand_Delivered ].value );
+    BOOST_CHECK_EQUAL(  0x00000000, *results.peakValues[ Dfd::DemandRates_Rate_A ][ Dfd::Metric_FrozenPeak_Demand_Delivered ].timestamp );
+    BOOST_CHECK_EQUAL(  0x00000000, *results.peakValues[ Dfd::DemandRates_Rate_B ][ Dfd::Metric_FrozenPeak_Demand_Delivered ].value );
+    BOOST_CHECK_EQUAL(  0x00000000, *results.peakValues[ Dfd::DemandRates_Rate_B ][ Dfd::Metric_FrozenPeak_Demand_Delivered ].timestamp );
+    BOOST_CHECK_EQUAL(  0x00000048, *results.peakValues[ Dfd::DemandRates_Rate_C ][ Dfd::Metric_FrozenPeak_Demand_Delivered ].value );
+    BOOST_CHECK_EQUAL(  0x51544bb4, *results.peakValues[ Dfd::DemandRates_Rate_C ][ Dfd::Metric_FrozenPeak_Demand_Delivered ].timestamp );
+    BOOST_CHECK_EQUAL(  0x00000048, *results.peakValues[ Dfd::DemandRates_Rate_D ][ Dfd::Metric_FrozenPeak_Demand_Delivered ].value );
+    BOOST_CHECK_EQUAL(  0x5153bf14, *results.peakValues[ Dfd::DemandRates_Rate_D ][ Dfd::Metric_FrozenPeak_Demand_Delivered ].timestamp );
 }
 
 

@@ -14,31 +14,43 @@ namespace Protocols {
 //  This class is designed to manage a single device's E2EDT state.
 struct IM_EX_PROT E2eDataTransferProtocol
 {
-    struct SendInfo
+    struct BlockInfo
     {
-        std::vector<unsigned char> message;  //  bytes payload
-        int status;
+        unsigned size;
+        unsigned num;
     };
 
     struct EndpointResponse
     {
+        enum MessageType
+        {
+            Ack,
+            Nonconfirmable,
+            Confirmable,
+            Reset,
+            Unknown
+        };
+        unsigned short id;
+        MessageType type;
         std::vector<unsigned char> data;  //  bytes payload
-        boost::optional<std::vector<unsigned char>> blockContinuation;
-        int status;
+        boost::optional<BlockInfo> blockContinuation;
     };
 
-    typedef int ErrorCode;
+    struct PayloadTooLarge {};
 
     enum
     {
-        MaxOutboundPayload = 1000
+        MaxOutboundPayload = 1000,
+        MaxInboundPayload  = 1000
     };
 
-    SendInfo sendRequest(const std::vector<unsigned char> &payload, const unsigned short id);
-    EndpointResponse handleIndication(const std::vector<unsigned char> &payload);
+    //  throws PayloadTooLarge
+    std::vector<unsigned char> sendRequest(const std::vector<unsigned char> &payload, const unsigned short id);
 
-    //  How much state is necessary?  Blockwise transfers, right?
-    //  Retransmits of individual packets?  Timeouts mean retransmits, etc...
+    std::vector<unsigned char> sendBlockContinuation(const BlockInfo &bi, const unsigned short id);
+
+    //  throws PayloadTooLarge
+    EndpointResponse handleIndication(const std::vector<unsigned char> &payload);
 };
 
 }

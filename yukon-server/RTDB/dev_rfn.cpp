@@ -27,6 +27,14 @@ std::string RfnDevice::getSQLCoreStatement() const
 }
 
 
+const std::string RfnDevice::ConfigPart::all              = "all";
+const std::string RfnDevice::ConfigPart::freezeday        = "freezeday";
+const std::string RfnDevice::ConfigPart::tou              = "tou";
+const std::string RfnDevice::ConfigPart::voltageaveraging = "voltageaveraging";
+const std::string RfnDevice::ConfigPart::ovuv             = "ovuv";
+const std::string RfnDevice::ConfigPart::display          = "display";
+
+
 int RfnDevice::invokeDeviceHandler(DeviceHandler &handler)
 {
     return handler.execute(*this);
@@ -57,168 +65,171 @@ void RfnDevice::DecodeDatabaseReader(RowReader &rdr)
 }
 
 
-int RfnDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests)
+int RfnDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
 {
-    typedef int (RfnDevice::*RfnExecuteMethod)(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
+    typedef int (RfnDevice::*RfnExecuteMethod)(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
 
     typedef std::map<int, RfnExecuteMethod> ExecuteLookup;
 
     const ExecuteLookup executeMethods = boost::assign::map_list_of
-        (PutConfigRequest, &RfnDevice::executePutConfig)
         (GetConfigRequest, &RfnDevice::executeGetConfig)
+        (PutConfigRequest, &RfnDevice::executePutConfig)
         (GetValueRequest,  &RfnDevice::executeGetValue)
+        (PutValueRequest,  &RfnDevice::executePutValue)
+        (GetStatusRequest, &RfnDevice::executeGetStatus)
         (PutStatusRequest, &RfnDevice::executePutStatus);
 
-    boost::optional<RfnExecuteMethod> executeMethod = mapFind(executeMethods, parse.getCommand());
+    int errorCode = NoMethod;
+    std::string errorDescription = "Invalid command.";
 
-    if( ! executeMethod )
+    if( const boost::optional<RfnExecuteMethod> executeMethod = mapFind(executeMethods, parse.getCommand()) )
     {
-        retList.push_back(
+        try
+        {
+            errorCode = (this->**executeMethod)(pReq, parse, returnMsgs, rfnRequests);
+        }
+        catch( const Commands::RfnCommand::CommandException &ce )
+        {
+            errorCode        = ce.error_code;
+            errorDescription = ce.error_description;
+        }
+    }
+
+    if( errorCode != NoError )
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime( ) << " Couldn't come up with an operation for device " << getName( ) << std::endl;
+            dout << CtiTime( ) << "   Command: " << pReq->CommandString( ) << std::endl;
+        }
+
+        std::auto_ptr<CtiReturnMsg> executeError(
                 new CtiReturnMsg(
-                        pReq->DeviceId(),
+                        getID( ),
                         pReq->CommandString(),
-                        "Invalid command.",
-                        NoMethod,
+                        errorDescription,
+                        errorCode,
                         0,
                         0,
                         0,
                         pReq->GroupMessageId(),
                         pReq->UserMessageId()));
 
-        return NoMethod;
+        returnMsgs.push_back(executeError);
     }
 
-    try
+    if( ! rfnRequests.empty() )
     {
-        return (this->**executeMethod)(pReq, parse, retList, rfnRequests);
-    }
-    catch( const Commands::RfnCommand::CommandException &ce )
-    {
-        std::auto_ptr<CtiReturnMsg> commandExceptionError(
-            new CtiReturnMsg(
-                    pReq->DeviceId(),
-                    pReq->CommandString(),
-                    ce.error_description,
-                    ce.error_code,
-                    0,
-                    0,
-                    0,
-                    pReq->GroupMessageId(),
-                    pReq->UserMessageId()));
+        const size_t numRequests = rfnRequests.size();
 
-        retList.push_back(commandExceptionError.release());
+        std::auto_ptr<CtiReturnMsg> commandsSent(
+                new CtiReturnMsg(
+                        getID( ),
+                        pReq->CommandString(),
+                        CtiNumStr(numRequests) + (numRequests == 1?" command":" commands") + " queued for device",
+                        NoError,
+                        0,
+                        0,
+                        0,
+                        pReq->GroupMessageId(),
+                        pReq->UserMessageId()));
 
-        return ExecutionComplete;
+        commandsSent->setExpectMore(true);
+
+        returnMsgs.push_back(commandsSent);
+
+        incrementGroupMessageCount(pReq->GroupMessageId(), reinterpret_cast<long>(pReq->getConnectionHandle()), rfnRequests.size());
     }
+
+    return ExecutionComplete;
 }
 
-int RfnDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests)
+int RfnDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
 {
     if( parse.isKeyValid("install") )
     {
-        return executeConfigInstall(pReq, parse, retList, rfnRequests, getPutConfigInstallMap());
+        return executeConfigInstall(pReq, parse, returnMsgs, rfnRequests, false);
     }
     if( parse.isKeyValid("tou") )
     {
-        return executePutConfigTou(pReq, parse, retList, rfnRequests);
+        return executePutConfigTou(pReq, parse, returnMsgs, rfnRequests);
     }
     if( parse.isKeyValid("holiday_date0") || parse.isKeyValid("holiday_set_active") || parse.isKeyValid("holiday_cancel_active"))
     {
-        return executePutConfigHoliday(pReq, parse, retList, rfnRequests);
+        return executePutConfigHoliday(pReq, parse, returnMsgs, rfnRequests);
     }
     if( parse.isKeyValid("voltage_profile") )
     {
-        return executePutConfigVoltageProfile(pReq, parse, retList, rfnRequests);
+        return executePutConfigVoltageProfile(pReq, parse, returnMsgs, rfnRequests);
     }
 
     return NoMethod;
 }
 
 
-int RfnDevice::executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests)
+int RfnDevice::executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
 {
     if( parse.isKeyValid("install") )
     {
-        return executeConfigInstall(pReq, parse, retList, rfnRequests, getGetConfigInstallMap());
+        return executeConfigInstall(pReq, parse, returnMsgs, rfnRequests, true);
     }
     if( parse.isKeyValid("tou") )
     {
-        return executeGetConfigTou(pReq, parse, retList, rfnRequests);
+        return executeGetConfigTou(pReq, parse, returnMsgs, rfnRequests);
     }
     if( parse.isKeyValid("holiday") )
     {
-        return executeGetConfigHoliday(pReq, parse, retList, rfnRequests);
+        return executeGetConfigHoliday(pReq, parse, returnMsgs, rfnRequests);
     }
     if( parse.isKeyValid("voltage_profile") )
     {
-        return executeGetConfigVoltageProfile(pReq, parse, retList, rfnRequests);
+        return executeGetConfigVoltageProfile(pReq, parse, returnMsgs, rfnRequests);
     }
 
     return NoMethod;
 }
 
-
-const RfnDevice::InstallMap RfnDevice::emptyMap;
-
 /**
  * define in inherited device classes
  */
-const RfnDevice::InstallMap & RfnDevice::getPutConfigInstallMap() const
+RfnDevice::ConfigMap RfnDevice::getConfigMethods(bool readOnly)
 {
-    return emptyMap;
-}
-
-/**
- * define in inherited device classes
- */
-const RfnDevice::InstallMap & RfnDevice::getGetConfigInstallMap() const
-{
-    return emptyMap;
+    return ConfigMap();
 }
 
 /**
  * Execute putconfig/getconfig Install
  */
-int RfnDevice::executeConfigInstall(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests, const InstallMap &installMap )
+int RfnDevice::executeConfigInstall(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests, bool readOnly )
 {
-    boost::optional<std::string> installValue;
-
-    if( installMap.empty() || ! (installValue = parse.findStringForKey("installvalue")) )
+    boost::optional<std::string> configPart = parse.findStringForKey("installvalue");
+    if( ! configPart )
     {
         return NoMethod;
     }
 
-    if( *installValue == "all" )
+    const ConfigMap configMethods = getConfigMethods( readOnly );
+    if( configMethods.empty() )
     {
-        for each( const InstallMap::value_type & p in installMap )
+        return NoMethod;
+    }
+
+    if( *configPart == ConfigPart::all )
+    {
+        for each( const ConfigMap::value_type & p in configMethods )
         {
-            executeConfigInstallSingle( pReq, parse, retList, rfnRequests, p.first, p.second );
+            executeConfigInstallSingle( pReq, parse, returnMsgs, rfnRequests, p.first, p.second );
         }
     }
     else
     {
-        boost::optional<InstallMethod> installMethod = mapFind( installMap, *installValue );
-
-        if( ! installMethod )
+        boost::optional<ConfigMethod> configMethod = mapFind( configMethods, *configPart );
+        if( ! configMethod )
         {
             return NoMethod;
         }
 
-        executeConfigInstallSingle( pReq, parse, retList, rfnRequests, *installValue, *installMethod );
-    }
-
-    //  TODO:  Increment group message count?  This is important for decode...
-
-    // Set ExpectMore on all messages.
-    // In the case of verify we need to let the Last expect more flag remain to false
-    for( CtiMessageList::iterator itr = retList.begin(); itr != retList.end(); )
-    {
-        CtiReturnMsg *retMsg = static_cast<CtiReturnMsg *>(*itr);
-
-        if( ++itr != retList.end() || ! parse.isKeyValid("verify") )
-        {
-            retMsg->setExpectMore(true);
-        }
+        executeConfigInstallSingle( pReq, parse, returnMsgs, rfnRequests, *configPart, *configMethod );
     }
 
     return NoError;
@@ -227,14 +238,14 @@ int RfnDevice::executeConfigInstall(CtiRequestMsg *pReq, CtiCommandParser &parse
 /**
  * Called by executeConfigInstall() to execute a putconfig/getconfig install for one config part
  */
-void RfnDevice::executeConfigInstallSingle(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests, const string & installValue, InstallMethod installMethod )
+void RfnDevice::executeConfigInstallSingle(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests, const std::string &configPart, const ConfigMethod &configMethod )
 {
     int nRet = NoMethod;
     string error_description;
 
     try
     {
-        nRet = (this->*installMethod)(pReq, parse, retList, rfnRequests);
+        nRet = configMethod(pReq, parse, returnMsgs, rfnRequests);
     }
     catch( const Commands::RfnCommand::CommandException &ce )
     {
@@ -244,43 +255,52 @@ void RfnDevice::executeConfigInstallSingle(CtiRequestMsg *pReq, CtiCommandParser
 
     if( nRet != NoError )
     {
-        string resultString;
+        string result;
 
-        if( nRet == NoConfigData )
+        switch(nRet)
         {
-            resultString = "ERROR: Invalid config data. Config name:" + installValue;
-
-            logInfo("had no configuration for config: " + installValue,
-                    __FUNCTION__, __FILE__, __LINE__ );
-        }
-        else if( nRet == ConfigCurrent )
-        {
-            resultString = "Config " + installValue + " is current.";
-
-            nRet = NoError; //This is an OK return! Note that nRet is no longer propogated!
-        }
-        else if( nRet == ConfigNotCurrent )
-        {
-            resultString = "Config " + installValue + " is NOT current.";
-        }
-        else
-        {
-            if( error_description.empty() )
+            case NoConfigData:
             {
-                error_description = "NoMethod or invalid config";
+                result = "ERROR: Invalid config data. Config name:" + configPart;
+
+                logInfo("had no configuration for config: " + configPart,
+                        __FUNCTION__, __FILE__, __LINE__ );
+
+                break;
             }
+            case ConfigCurrent:
+            {
+                result = "Config " + configPart + " is current.";
 
-            resultString = "ERROR: " + error_description + ". Config name:" + installValue;
+                nRet = NoError; //This is an OK return! Note that nRet is no longer propogated!
 
-            logInfo("had a configuration error using config: " + installValue,
-                    __FUNCTION__, __FILE__, __LINE__ );
+                break;
+            }
+            case ConfigNotCurrent:
+            {
+                result = "Config " + configPart + " is NOT current.";
+
+                break;
+            }
+            default:
+            {
+                if( error_description.empty() )
+                {
+                    error_description = "NoMethod or invalid config";
+                }
+
+                result = "ERROR: " + error_description + ". Config name:" + configPart;
+
+                logInfo("had a configuration error using config: " + configPart,
+                        __FUNCTION__, __FILE__, __LINE__ );
+            }
         }
 
         std::auto_ptr<CtiReturnMsg> retMsg(
                 new CtiReturnMsg(
                         pReq->DeviceId(),
                         pReq->CommandString(),
-                        resultString,
+                        result,
                         nRet,
                         0,
                         0,
@@ -288,77 +308,118 @@ void RfnDevice::executeConfigInstallSingle(CtiRequestMsg *pReq, CtiCommandParser
                         pReq->GroupMessageId(),
                         pReq->UserMessageId()));
 
-        retList.push_back( retMsg.release() );
+        returnMsgs.push_back( retMsg );
     }
 }
 
 
-int RfnDevice::executePutStatus(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests)
+int RfnDevice::executeGetStatus(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
+{
+    if( parse.getFlags() & CMD_FLAG_GS_TOU )
+    {
+        return executeGetStatusTou(pReq, parse, returnMsgs, rfnRequests);
+    }
+
+    return NoMethod;
+}
+
+int RfnDevice::executeGetStatusTou(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
+{
+    return NoMethod;
+}
+
+int RfnDevice::executePutStatus(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
 {
     if( parse.isKeyValid("freeze") )
     {
-        return executeImmediateDemandFreeze(pReq, parse, retList, rfnRequests);
+        return executeImmediateDemandFreeze(pReq, parse, returnMsgs, rfnRequests);
     }
     if( parse.isKeyValid("tou_critical_peak") )
     {
-        return executeTouCriticalPeak(pReq, parse, retList, rfnRequests);
+        return executeTouCriticalPeak(pReq, parse, returnMsgs, rfnRequests);
     }
 
     return NoMethod;
 }
 
-int RfnDevice::executeImmediateDemandFreeze(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests)
+int RfnDevice::executeImmediateDemandFreeze(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
 {
     return NoMethod;
 }
 
-int RfnDevice::executeTouCriticalPeak(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests)
+int RfnDevice::executeTouCriticalPeak(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
 {
     return NoMethod;
 }
 
-int RfnDevice::executePutConfigTou(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests)
+int RfnDevice::executePutConfigTou(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
 {
     return NoMethod;
 }
 
-int RfnDevice::executeGetConfigTou(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests)
+int RfnDevice::executeGetConfigTou(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
 {
     return NoMethod;
 }
 
-int RfnDevice::executePutConfigHoliday(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests)
+int RfnDevice::executePutConfigHoliday(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
 {
     return NoMethod;
 }
 
-int RfnDevice::executeGetConfigHoliday(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests)
+int RfnDevice::executeGetConfigHoliday(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
 {
     return NoMethod;
 }
 
-int RfnDevice::executeGetConfigVoltageProfile(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests)
+int RfnDevice::executeGetConfigVoltageProfile(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
 {
     return NoMethod;
 }
 
-int RfnDevice::executePutConfigVoltageProfile(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests)
+int RfnDevice::executePutConfigVoltageProfile(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
 {
     return NoMethod;
 }
 
-int RfnDevice::executeGetValueVoltageProfile(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests)
+int RfnDevice::executeGetValueVoltageProfile(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
 {
     return NoMethod;
 }
 
-int RfnDevice::executeGetValue (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests)
+int RfnDevice::executeGetValue(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
 {
     if( parse.isKeyValid("voltage_profile") )
     {
-        return executeGetValueVoltageProfile(pReq, parse, retList, rfnRequests);
+        return executeGetValueVoltageProfile(pReq, parse, returnMsgs, rfnRequests);
     }
 
+    return NoMethod;
+}
+
+int RfnDevice::executePutValue(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
+{
+    if( parse.isKeyValid("reset") && parse.isKeyValid("tou") )
+    {
+        if( parse.isKeyValid("tou_zero") )
+        {
+            return executePutValueTouResetZero(pReq, parse, returnMsgs, rfnRequests);
+        }
+
+        return executePutValueTouReset(pReq, parse, returnMsgs, rfnRequests);
+    }
+
+    return NoMethod;
+}
+
+
+int RfnDevice::executePutValueTouReset(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
+{
+    return NoMethod;
+}
+
+int RfnDevice::executePutValueTouResetZero(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
+{
     return NoMethod;
 }
 

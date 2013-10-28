@@ -34,7 +34,6 @@ ctitokenizer.obj \
 resolvers.obj \
 numstr.obj \
 bfexec.obj \
-c_port_interface.obj \
 cmdparse.obj \
 counter.obj \
 critical_section.obj \
@@ -252,11 +251,6 @@ ctitime.obj:	precompiled.h ctidate.h dlldefs.h logger.h thread.h \
 ctitokenizer.obj:	precompiled.h ctitokenizer.h dlldefs.h
 cti_asmc.obj:	precompiled.h cti_asmc.h dlldefs.h cticalls.h os2_2w32.h \
 		types.h
-c_port_interface.obj:	precompiled.h dlldefs.h os2_2w32.h types.h \
-		dsm2.h cticonnect.h yukon.h ctidbgmem.h netports.h mutex.h \
-		guard.h utility.h ctitime.h queues.h cticalls.h numstr.h \
-		dsm2err.h words.h optional.h porter.h devicetypes.h \
-		c_port_interface.h elogger.h
 database_connection.obj:	precompiled.h database_connection.h \
 		dbaccess.h dllbase.h dsm2.h cticonnect.h yukon.h types.h \
 		ctidbgmem.h dlldefs.h netports.h mutex.h guard.h utility.h \

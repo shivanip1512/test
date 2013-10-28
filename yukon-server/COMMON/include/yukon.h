@@ -389,6 +389,9 @@ enum YukonError_t
     ErrorRequestTimeout,
     ErrorNetworkManagerTimeout,
 
+    ErrorRequestPayloadTooLarge,
+    ErrorResponsePayloadTooLarge,
+
     FinalError
 };
 

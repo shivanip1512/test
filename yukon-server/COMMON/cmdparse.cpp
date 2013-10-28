@@ -1052,6 +1052,10 @@ void  CtiCommandParser::doParseGetStatus(const string &_CmdStr)
                 _cmd["ied_dnp"] =  CtiParseValue(TRUE);
             }
         }
+        if(CmdStr.contains(" tou"))
+        {
+            flag |= CMD_FLAG_GS_TOU;
+        }
         else
         {
             // Default GetStatus request has been specified....

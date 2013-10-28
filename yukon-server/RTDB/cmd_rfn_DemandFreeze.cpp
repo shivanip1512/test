@@ -4,6 +4,7 @@
 #include "cmd_rfn_DemandFreeze.h"
 #include "numstr.h"
 #include "std_helper.h"
+#include "cmd_rfn_helper.h"
 
 #include <boost/assign/list_of.hpp>
 #include <boost/optional.hpp>
@@ -48,18 +49,6 @@ const std::map< std::pair<unsigned char, unsigned char>, std::string>  ascAscqRe
     ( std::make_pair( 0x02, 0x00 ), "DATA NOT READY" )
     ( std::make_pair( 0x03, 0x00 ), "DEVICE BUSY" );
 
-
-void validateCondition( const bool condition,
-                        const int error_code,
-                        const std::string & error_message )
-{
-    if ( ! condition )
-    {
-        throw RfnCommand::CommandException( error_code, error_message );
-    }
-}
-
-
 }
 
 
@@ -97,13 +86,13 @@ RfnCommandResult RfnDemandFreezeCommand::decodeResponseHeader( const CtiTime now
 
     // We need at least 4 bytes
 
-    validateCondition( response.size() >= 4,
-                       ErrorInvalidData, "Invalid Response length (" + CtiNumStr(response.size()) + ")" );
+    validate( Condition( response.size() >= 4, ErrorInvalidData )
+            << "Invalid Response length (" << response.size() << ")" );
 
     // Validate the first 4 bytes
 
-    validateCondition( response[0] == CommandCode_Response,
-                       ErrorInvalidData, "Invalid Response Command Code (" + CtiNumStr(response[0]).xhex(2) + ")" );
+    validate( Condition( response[0] == CommandCode_Response, ErrorInvalidData )
+            << "Invalid Response Command Code (" << CtiNumStr(response[0]).xhex(2) << ")" );
 
     // validate status
 
@@ -117,15 +106,15 @@ RfnCommandResult RfnDemandFreezeCommand::decodeResponseHeader( const CtiTime now
 
     boost::optional<std::string> additionalStatus = Cti::mapFind( ascAscqResolver, std::make_pair( response[2], response[3] ) );
 
-    validateCondition( additionalStatus,
-                       ErrorInvalidData, "Invalid Additional Status (ASC: " + CtiNumStr(response[2]).xhex(2) + ", ASCQ: " +  CtiNumStr(response[3]).xhex(2) + ")" );
+    validate( Condition( additionalStatus, ErrorInvalidData )
+            << "Invalid Additional Status (ASC: " << CtiNumStr(response[2]).xhex(2) << ", ASCQ: " << CtiNumStr(response[3]).xhex(2) << ")" );
 
     result.description += "\nAdditional Status: " + *additionalStatus  + " (ASC: " + CtiNumStr(response[2]).xhex(2) + ", ASCQ: " +  CtiNumStr(response[3]).xhex(2) + ")";
 
     // check for errors ( status or additional status != 0 )
 
-    validateCondition( response[1] == 0x00 && response[2] == 0x00 && response[3] == 0x00,
-                       ErrorInvalidData, result.description );
+    validate( Condition( response[1] == 0x00 && response[2] == 0x00 && response[3] == 0x00, ErrorInvalidData )
+            << result.description );
 
     return result;
 }
@@ -163,11 +152,11 @@ RfnCommandResult RfnDemandFreezeConfigurationCommand::decodeCommand( const CtiTi
 {
     RfnCommandResult  result = decodeResponseHeader( now, response );
 
-    validateCondition( response.size() == 5,
-                       ErrorInvalidData, "Invalid Response length (" + CtiNumStr(response.size()) + ")" );
+    validate( Condition( response.size() == 5, ErrorInvalidData )
+            << "Invalid Response length (" << response.size() << ")" );
 
-    validateCondition( response[4] == 0,
-                       ErrorInvalidData, "Invalid TLV count (" + CtiNumStr(response[4]) + ")" );
+    validate( Condition( response[4] == 0, ErrorInvalidData )
+            << "Invalid TLV count (" << response[4] << ")" );
 
     return result;
 }
@@ -188,11 +177,11 @@ RfnCommandResult RfnImmediateDemandFreezeCommand::decodeCommand( const CtiTime n
 {
     RfnCommandResult  result = decodeResponseHeader( now, response );
 
-    validateCondition( response.size() == 5,
-                       ErrorInvalidData, "Invalid Response length (" + CtiNumStr(response.size()) + ")" );
+    validate( Condition( response.size() == 5, ErrorInvalidData )
+            << "Invalid Response length (" << response.size() << ")" );
 
-    validateCondition( response[4] == 0,
-                       ErrorInvalidData, "Invalid TLV count (" + CtiNumStr(response[4]) + ")" );
+    validate( Condition( response[4] == 0, ErrorInvalidData )
+            << "Invalid TLV count (" << response[4] << ")" );
 
     return result;
 }
@@ -219,6 +208,134 @@ RfnGetDemandFreezeInfoCommand::DemandFreezeData RfnGetDemandFreezeInfoCommand::g
 }
 
 
+namespace {
+
+typedef RfnGetDemandFreezeInfoCommand Cmd;
+typedef Cmd::DemandFreezeData Dfd;
+
+const std::map<RfnGetDemandFreezeInfoCommand::DemandFreezeData::DemandRates, std::string> RateNames = boost::assign::map_list_of
+    (Dfd::DemandRates_Base,   "Base rate")
+    (Dfd::DemandRates_Rate_A, "Rate A")
+    (Dfd::DemandRates_Rate_B, "Rate B")
+    (Dfd::DemandRates_Rate_C, "Rate C")
+    (Dfd::DemandRates_Rate_D, "Rate D")
+    (Dfd::DemandRates_Rate_E, "Rate E");
+
+const std::map<RfnGetDemandFreezeInfoCommand::DemandFreezeData::MetricTypes, std::string> MetricNames = boost::assign::map_list_of
+    (Dfd::Metric_FrozenPeak_Demand_Delivered, "Peak Delivered Demand")
+    (Dfd::Metric_FrozenPeak_Demand_Received,  "Peak Received Demand")
+    (Dfd::Metric_FrozenPeak_Vars_Delivered,   "Peak Delivered Vars")
+    (Dfd::Metric_FrozenPeak_Vars_Received,    "Peak Received Vars");
+
+std::string describeFreezeData(const RfnGetDemandFreezeInfoCommand::DemandFreezeData &freezeData)
+{
+    std::ostringstream str;
+
+    if( freezeData.dayOfFreeze )
+    {
+        str << std::endl << "Day of freeze   : " << static_cast<unsigned>(*freezeData.dayOfFreeze);
+    }
+    if( freezeData.lastFreezeTime )
+    {
+        str << std::endl << "Last freeze time: " << CtiTime(*freezeData.lastFreezeTime);
+    }
+    for each( const Dfd::PeaksPerRate::value_type &ratePeak in freezeData.peakValues )
+    {
+        const boost::optional<std::string> rateName = mapFind(RateNames, ratePeak.first);
+
+        for each( const Dfd::QuadrantPeakValues::value_type &qpv in ratePeak.second )
+        {
+            const boost::optional<std::string> metricName = mapFind(MetricNames, qpv.first);
+
+            const Dfd::PeakRecord &peak = qpv.second;
+
+            str << std::endl;
+
+            str << (rateName   ? *rateName : "[Unknown rate " + CtiNumStr(ratePeak.first) + "]");
+            str << " " << (metricName ? *metricName : "[Unknown rate " + CtiNumStr(qpv.first) + "]") << " ";
+
+            str << " " << (peak.value ? CtiNumStr(*peak.value).toString() : "(value missing)");
+            str << " @ " << (peak.timestamp ? CtiTime(*peak.timestamp).asString() : "(timestamp missing)");
+        }
+    }
+
+    return str.str();
+}
+
+struct RateMetric
+{
+    Dfd::DemandRates rate;
+    Dfd::MetricTypes metric;
+
+    static RateMetric make( Dfd::DemandRates rate, Dfd::MetricTypes metric )
+    {
+        RateMetric rm = { rate, metric };
+
+        return rm;
+    }
+};
+
+
+const std::map<unsigned char, RateMetric> ValueTlvToPeakMetric = boost::assign::map_list_of
+    (Cmd::TlvType_FrozenDeliveredPeakDemandTotal, RateMetric::make(Dfd::DemandRates_Base,   Dfd::Metric_FrozenPeak_Demand_Delivered))
+    (Cmd::TlvType_FrozenDeliveredPeakDemandRateA, RateMetric::make(Dfd::DemandRates_Rate_A, Dfd::Metric_FrozenPeak_Demand_Delivered))
+    (Cmd::TlvType_FrozenDeliveredPeakDemandRateB, RateMetric::make(Dfd::DemandRates_Rate_B, Dfd::Metric_FrozenPeak_Demand_Delivered))
+    (Cmd::TlvType_FrozenDeliveredPeakDemandRateC, RateMetric::make(Dfd::DemandRates_Rate_C, Dfd::Metric_FrozenPeak_Demand_Delivered))
+    (Cmd::TlvType_FrozenDeliveredPeakDemandRateD, RateMetric::make(Dfd::DemandRates_Rate_D, Dfd::Metric_FrozenPeak_Demand_Delivered))
+    (Cmd::TlvType_FrozenDeliveredPeakDemandRateE, RateMetric::make(Dfd::DemandRates_Rate_E, Dfd::Metric_FrozenPeak_Demand_Delivered))
+
+    (Cmd::TlvType_FrozenReceivedPeakDemandTotal,  RateMetric::make(Dfd::DemandRates_Base,   Dfd::Metric_FrozenPeak_Demand_Received))
+    (Cmd::TlvType_FrozenReceivedPeakDemandRateA,  RateMetric::make(Dfd::DemandRates_Rate_A, Dfd::Metric_FrozenPeak_Demand_Received))
+    (Cmd::TlvType_FrozenReceivedPeakDemandRateB,  RateMetric::make(Dfd::DemandRates_Rate_B, Dfd::Metric_FrozenPeak_Demand_Received))
+    (Cmd::TlvType_FrozenReceivedPeakDemandRateC,  RateMetric::make(Dfd::DemandRates_Rate_C, Dfd::Metric_FrozenPeak_Demand_Received))
+    (Cmd::TlvType_FrozenReceivedPeakDemandRateD,  RateMetric::make(Dfd::DemandRates_Rate_D, Dfd::Metric_FrozenPeak_Demand_Received))
+    (Cmd::TlvType_FrozenReceivedPeakDemandRateE,  RateMetric::make(Dfd::DemandRates_Rate_E, Dfd::Metric_FrozenPeak_Demand_Received))
+
+    (Cmd::TlvType_FrozenDeliveredPeakVarTotal,    RateMetric::make(Dfd::DemandRates_Base,   Dfd::Metric_FrozenPeak_Vars_Delivered))
+    (Cmd::TlvType_FrozenDeliveredPeakVarRateA,    RateMetric::make(Dfd::DemandRates_Rate_A, Dfd::Metric_FrozenPeak_Vars_Delivered))
+    (Cmd::TlvType_FrozenDeliveredPeakVarRateB,    RateMetric::make(Dfd::DemandRates_Rate_B, Dfd::Metric_FrozenPeak_Vars_Delivered))
+    (Cmd::TlvType_FrozenDeliveredPeakVarRateC,    RateMetric::make(Dfd::DemandRates_Rate_C, Dfd::Metric_FrozenPeak_Vars_Delivered))
+    (Cmd::TlvType_FrozenDeliveredPeakVarRateD,    RateMetric::make(Dfd::DemandRates_Rate_D, Dfd::Metric_FrozenPeak_Vars_Delivered))
+    (Cmd::TlvType_FrozenDeliveredPeakVarRateE,    RateMetric::make(Dfd::DemandRates_Rate_E, Dfd::Metric_FrozenPeak_Vars_Delivered))
+
+    (Cmd::TlvType_FrozenReceivedPeakVarTotal,     RateMetric::make(Dfd::DemandRates_Base,   Dfd::Metric_FrozenPeak_Vars_Received))
+    (Cmd::TlvType_FrozenReceivedPeakVarRateA,     RateMetric::make(Dfd::DemandRates_Rate_A, Dfd::Metric_FrozenPeak_Vars_Received))
+    (Cmd::TlvType_FrozenReceivedPeakVarRateB,     RateMetric::make(Dfd::DemandRates_Rate_B, Dfd::Metric_FrozenPeak_Vars_Received))
+    (Cmd::TlvType_FrozenReceivedPeakVarRateC,     RateMetric::make(Dfd::DemandRates_Rate_C, Dfd::Metric_FrozenPeak_Vars_Received))
+    (Cmd::TlvType_FrozenReceivedPeakVarRateD,     RateMetric::make(Dfd::DemandRates_Rate_D, Dfd::Metric_FrozenPeak_Vars_Received))
+    (Cmd::TlvType_FrozenReceivedPeakVarRateE,     RateMetric::make(Dfd::DemandRates_Rate_E, Dfd::Metric_FrozenPeak_Vars_Received));
+
+const std::map<unsigned char, RateMetric> TimestampTlvToPeakMetric = boost::assign::map_list_of
+    (Cmd::TlvType_FrozenDeliveredPeakDemandTime,      RateMetric::make(Dfd::DemandRates_Base,   Dfd::Metric_FrozenPeak_Demand_Delivered))
+    (Cmd::TlvType_FrozenDeliveredPeakDemandRateATime, RateMetric::make(Dfd::DemandRates_Rate_A, Dfd::Metric_FrozenPeak_Demand_Delivered))
+    (Cmd::TlvType_FrozenDeliveredPeakDemandRateBTime, RateMetric::make(Dfd::DemandRates_Rate_B, Dfd::Metric_FrozenPeak_Demand_Delivered))
+    (Cmd::TlvType_FrozenDeliveredPeakDemandRateCTime, RateMetric::make(Dfd::DemandRates_Rate_C, Dfd::Metric_FrozenPeak_Demand_Delivered))
+    (Cmd::TlvType_FrozenDeliveredPeakDemandRateDTime, RateMetric::make(Dfd::DemandRates_Rate_D, Dfd::Metric_FrozenPeak_Demand_Delivered))
+    (Cmd::TlvType_FrozenDeliveredPeakDemandRateETime, RateMetric::make(Dfd::DemandRates_Rate_E, Dfd::Metric_FrozenPeak_Demand_Delivered))
+
+    (Cmd::TlvType_FrozenReceivedPeakDemandTime,       RateMetric::make(Dfd::DemandRates_Base,   Dfd::Metric_FrozenPeak_Demand_Received))
+    (Cmd::TlvType_FrozenReceivedPeakDemandRateATime,  RateMetric::make(Dfd::DemandRates_Rate_A, Dfd::Metric_FrozenPeak_Demand_Received))
+    (Cmd::TlvType_FrozenReceivedPeakDemandRateBTime,  RateMetric::make(Dfd::DemandRates_Rate_B, Dfd::Metric_FrozenPeak_Demand_Received))
+    (Cmd::TlvType_FrozenReceivedPeakDemandRateCTime,  RateMetric::make(Dfd::DemandRates_Rate_C, Dfd::Metric_FrozenPeak_Demand_Received))
+    (Cmd::TlvType_FrozenReceivedPeakDemandRateDTime,  RateMetric::make(Dfd::DemandRates_Rate_D, Dfd::Metric_FrozenPeak_Demand_Received))
+    (Cmd::TlvType_FrozenReceivedPeakDemandRateETime,  RateMetric::make(Dfd::DemandRates_Rate_E, Dfd::Metric_FrozenPeak_Demand_Received))
+
+    (Cmd::TlvType_FrozenDeliveredPeakVarTime,         RateMetric::make(Dfd::DemandRates_Base,   Dfd::Metric_FrozenPeak_Vars_Delivered))
+    (Cmd::TlvType_FrozenDeliveredPeakVarRateATime,    RateMetric::make(Dfd::DemandRates_Rate_A, Dfd::Metric_FrozenPeak_Vars_Delivered))
+    (Cmd::TlvType_FrozenDeliveredPeakVarRateBTime,    RateMetric::make(Dfd::DemandRates_Rate_B, Dfd::Metric_FrozenPeak_Vars_Delivered))
+    (Cmd::TlvType_FrozenDeliveredPeakVarRateCTime,    RateMetric::make(Dfd::DemandRates_Rate_C, Dfd::Metric_FrozenPeak_Vars_Delivered))
+    (Cmd::TlvType_FrozenDeliveredPeakVarRateDTime,    RateMetric::make(Dfd::DemandRates_Rate_D, Dfd::Metric_FrozenPeak_Vars_Delivered))
+    (Cmd::TlvType_FrozenDeliveredPeakVarRateETime,    RateMetric::make(Dfd::DemandRates_Rate_E, Dfd::Metric_FrozenPeak_Vars_Delivered))
+
+    (Cmd::TlvType_FrozenReceivedPeakVarTime,          RateMetric::make(Dfd::DemandRates_Base,   Dfd::Metric_FrozenPeak_Vars_Received))
+    (Cmd::TlvType_FrozenReceivedPeakVarRateATime,     RateMetric::make(Dfd::DemandRates_Rate_A, Dfd::Metric_FrozenPeak_Vars_Received))
+    (Cmd::TlvType_FrozenReceivedPeakVarRateBTime,     RateMetric::make(Dfd::DemandRates_Rate_B, Dfd::Metric_FrozenPeak_Vars_Received))
+    (Cmd::TlvType_FrozenReceivedPeakVarRateCTime,     RateMetric::make(Dfd::DemandRates_Rate_C, Dfd::Metric_FrozenPeak_Vars_Received))
+    (Cmd::TlvType_FrozenReceivedPeakVarRateDTime,     RateMetric::make(Dfd::DemandRates_Rate_D, Dfd::Metric_FrozenPeak_Vars_Received))
+    (Cmd::TlvType_FrozenReceivedPeakVarRateETime,     RateMetric::make(Dfd::DemandRates_Rate_E, Dfd::Metric_FrozenPeak_Vars_Received));
+}
+
+
 RfnCommandResult RfnGetDemandFreezeInfoCommand::decodeCommand( const CtiTime now,
                                                                     const RfnCommand::RfnResponsePayload & response )
 {
@@ -230,10 +347,10 @@ RfnCommandResult RfnGetDemandFreezeInfoCommand::decodeCommand( const CtiTime now
         }
     };
 
-    RfnCommandResult  result = decodeResponseHeader( now, response );
+    RfnCommandResult result = decodeResponseHeader( now, response );
 
-    validateCondition( response.size() >= 5,
-                       ErrorInvalidData, "Invalid Response length (" + CtiNumStr(response.size()) + ")" );
+    validate( Condition( response.size() >= 5, ErrorInvalidData )
+            << "Invalid Response length (" << response.size() << ")" );
 
     unsigned tlvCount   = 0;
     unsigned totalBytes = 5;
@@ -247,8 +364,8 @@ RfnCommandResult RfnGetDemandFreezeInfoCommand::decodeCommand( const CtiTime now
 
         totalBytes += 2;
 
-        validateCondition( totalBytes + tlvLength <= response.size(),
-                           ErrorInvalidData, "Invalid TLV length (" + CtiNumStr(std::distance(current, response.end())) + ") expected " + CtiNumStr(tlvLength) );
+        validate( Condition( totalBytes + tlvLength <= response.size(), ErrorInvalidData )
+                << "Invalid TLV length (" << std::distance(current, response.end()) << ") expected " << tlvLength );
 
         unsigned int  tlvValue  = std::accumulate( current, current + tlvLength, 0u, Accumulator() );
 
@@ -267,76 +384,31 @@ RfnCommandResult RfnGetDemandFreezeInfoCommand::decodeCommand( const CtiTime now
                 _freezeData.lastFreezeTime = tlvValue;
                 break;
             }
-            case TlvType_FrozenPeakDemandTotal:
-            {
-                 _freezeData.demandInfo[ DemandFreezeData::DemandRates_Base ].rate = tlvValue;
-                break;
-            }
-            case TlvType_FrozenPeakDemandTime:
-            {
-                 _freezeData.demandInfo[ DemandFreezeData::DemandRates_Base ].timestamp = tlvValue;
-                break;
-            }
-            case TlvType_FrozenPeakDemandRateA:
-            {
-                 _freezeData.demandInfo[ DemandFreezeData::DemandRates_Rate_A ].rate = tlvValue;
-                break;
-            }
-            case TlvType_FrozenPeakDemandRateATime:
-            {
-                 _freezeData.demandInfo[ DemandFreezeData::DemandRates_Rate_A ].timestamp = tlvValue;
-                break;
-            }
-            case TlvType_FrozenPeakDemandRateB:
-            {
-                 _freezeData.demandInfo[ DemandFreezeData::DemandRates_Rate_B ].rate = tlvValue;
-                break;
-            }
-            case TlvType_FrozenPeakDemandRateBTime:
-            {
-                 _freezeData.demandInfo[ DemandFreezeData::DemandRates_Rate_B ].timestamp = tlvValue;
-                break;
-            }
-            case TlvType_FrozenPeakDemandRateC:
-            {
-                 _freezeData.demandInfo[ DemandFreezeData::DemandRates_Rate_C ].rate = tlvValue;
-                break;
-            }
-            case TlvType_FrozenPeakDemandRateCTime:
-            {
-                 _freezeData.demandInfo[ DemandFreezeData::DemandRates_Rate_C ].timestamp = tlvValue;
-                break;
-            }
-            case TlvType_FrozenPeakDemandRateD:
-            {
-                 _freezeData.demandInfo[ DemandFreezeData::DemandRates_Rate_D ].rate = tlvValue;
-                break;
-            }
-            case TlvType_FrozenPeakDemandRateDTime:
-            {
-                 _freezeData.demandInfo[ DemandFreezeData::DemandRates_Rate_D ].timestamp = tlvValue;
-                break;
-            }
-            case TlvType_FrozenPeakDemandRateE:
-            {
-                 _freezeData.demandInfo[ DemandFreezeData::DemandRates_Rate_E ].rate = tlvValue;
-                break;
-            }
-            case TlvType_FrozenPeakDemandRateETime:
-            {
-                 _freezeData.demandInfo[ DemandFreezeData::DemandRates_Rate_E ].timestamp = tlvValue;
-                break;
-            }
             default:
             {
+                if( const boost::optional<RateMetric> rateMetric = mapFind(ValueTlvToPeakMetric, tlvType) )
+                {
+                    _freezeData.peakValues[rateMetric->rate][rateMetric->metric].value = tlvValue;
+
+                    break;
+                }
+                if( const boost::optional<RateMetric> rateMetric = mapFind(TimestampTlvToPeakMetric, tlvType) )
+                {
+                    _freezeData.peakValues[rateMetric->rate][rateMetric->metric].timestamp = tlvValue;
+
+                    break;
+                }
+
                 throw RfnCommand::CommandException( ErrorInvalidData,
                                                     "Missing decode for TLV type (" + CtiNumStr(tlvType).xhex(2) + ")" );
             }
         }
     }
 
-    validateCondition( response[4] == tlvCount,
-                       ErrorInvalidData, "Invalid TLV count (" + CtiNumStr(tlvCount) + ") expected " + CtiNumStr(response[4]) );
+    validate( Condition( response[4] == tlvCount, ErrorInvalidData )
+            << "Invalid TLV count (" << tlvCount << ") expected " << response[4] );
+
+    result.description += describeFreezeData(_freezeData);
 
     return result;
 }

@@ -28,7 +28,6 @@
 #include "msg_reg.h"
 #include "msg_dbchg.h"
 
-#include "c_port_interface.h"
 #include "cparms.h"
 #include "connection_client.h"
 #include "amq_constants.h"

@@ -4,7 +4,7 @@
 
 #include "std_helper.h"
 #include "cmd_rfn_FocusLcdConfiguration.h"
-
+#include "cmd_rfn_helper.h"
 
 using namespace std;
 
@@ -13,14 +13,6 @@ namespace Devices {
 namespace Commands {
 
 namespace {
-
-void validateCondition( const bool condition, const int error_code, const string & error_message )
-{
-    if ( ! condition )
-    {
-        throw RfnCommand::CommandException( error_code, error_message );
-    }
-}
 
 /**
  * this method is somewhat similar to sizeof(arr)/sizeof(arr[0]),
@@ -212,18 +204,18 @@ RfnCommand::Bytes RfnFocusLcdConfigurationCommand::createCommandData( const Disp
 
     for each( const DisplayItem & display_item in displayItems )
     {
-        validateCondition( metric = mapFind( metricConfigNameLookup, display_item.metric ),
-                           BADPARAM, "Invalid metric (" + display_item.metric + ")" );
+        validate( Condition( metric = mapFind( metricConfigNameLookup, display_item.metric ), BADPARAM )
+                << "Invalid metric (" << display_item.metric << ")" );
 
         command_data.push_back( (*metric)->code );
 
-        validateCondition( display_item.alphamericId.length() == 2,
-                           BADPARAM, "Invalid alpha display length (" + CtiNumStr(display_item.alphamericId.length()) + ", expected 2)" );
+        validate( Condition( display_item.alphamericId.length() == 2, BADPARAM )
+                << "Invalid alpha display length (" << display_item.alphamericId.length() << ", expected 2)" );
 
         for each( char alpha_char in display_item.alphamericId )
         {
-            validateCondition( alpha_code = convertAsciiToCode( alpha_char ),
-                               BADPARAM, "Invalid alphanumeric character ('" + string(1,alpha_char) + "' " + CtiNumStr(alpha_char).xhex(2) + ")" );
+            validate( Condition( alpha_code = convertAsciiToCode( alpha_char ), BADPARAM )
+                    << "Invalid alphanumeric character ('" << alpha_char << "' " << CtiNumStr(alpha_char).xhex(2) << ")" );
 
             command_data.push_back( *alpha_code );
         }
@@ -253,16 +245,16 @@ RfnCommandResult RfnFocusLcdConfigurationCommand::decodeCommand(const CtiTime no
      *
      */
 
-    validateCondition( response.size() >= 3,
-                       ErrorInvalidData, "Response too small - (" + CtiNumStr(response.size()) + ", expecting >= 3-byte)");
+    validate( Condition( response.size() >= 3, ErrorInvalidData )
+            << "Response too small - (" << response.size() << ", expecting >= 3)" );
 
     const unsigned char commandCode         = response[0],
                         displayItemNbr      = response[1],
                         displayItemDuration = response[2];
 
     // check command
-    validateCondition( commandCode == FocusLcdConfig_CommandCode_Response,
-                       ErrorInvalidData, "Invalid command - (" + CtiNumStr(commandCode) + ", expecting " + CtiNumStr((int)FocusLcdConfig_CommandCode_Response) + ")");
+    validate( Condition( commandCode == FocusLcdConfig_CommandCode_Response, ErrorInvalidData )
+            << "Invalid command - (" << commandCode << ", expecting " << FocusLcdConfig_CommandCode_Response << ")" );
 
     // update display item duration
     _displayItemDurationReceived = displayItemDuration;
@@ -271,8 +263,8 @@ RfnCommandResult RfnFocusLcdConfigurationCommand::decodeCommand(const CtiTime no
 
     const unsigned responseSizeExp = 3 + displayItemNbr*3;
 
-    validateCondition( response.size() == responseSizeExp,
-                       ErrorInvalidData, "Invalid response size ("+ CtiNumStr(response.size()) + "-byte, expecting " + CtiNumStr(responseSizeExp) + "-byte)");
+    validate( Condition( response.size() == responseSizeExp, ErrorInvalidData )
+            << "Invalid response size (" << response.size() << ", expecting " << responseSizeExp << ")" );
 
     _displayItemsReceived = DisplayItemVector();
 
@@ -294,8 +286,8 @@ RfnCommandResult RfnFocusLcdConfigurationCommand::decodeCommand(const CtiTime no
 
         const unsigned char metric_code = *(response_iter++);
 
-        validateCondition( metric = mapFind( metricCodeLookup, metric_code ),
-                           ErrorInvalidData, "Invalid metric code (" + CtiNumStr(metric_code) + ")");
+        validate( Condition( metric = mapFind( metricCodeLookup, metric_code ), ErrorInvalidData )
+                << "Invalid metric code (" << metric_code << ")" );
 
         display_item.metric = (*metric)->configName;
 
@@ -303,8 +295,8 @@ RfnCommandResult RfnFocusLcdConfigurationCommand::decodeCommand(const CtiTime no
         {
             const unsigned char alpha_code = *(response_iter++);
 
-            validateCondition( alpha_char = convertCodeToAscii( alpha_code ),
-                               ErrorInvalidData, "Invalid alpha display code (" + CtiNumStr(alpha_code) + ")");
+            validate( Condition( alpha_char = convertCodeToAscii( alpha_code ), ErrorInvalidData )
+                    << "Invalid alpha display code (" << alpha_code << ")" );
 
             display_item.alphamericId += *alpha_char;
         }

@@ -21,48 +21,6 @@ namespace Devices {
 
 using Config::RfnStrings;
 
-const RfnDevice::InstallMap RfnResidentialDevice::_putConfigInstallMap = initPutConfigInstallMap();
-const RfnDevice::InstallMap RfnResidentialDevice::_getConfigInstallMap = initGetConfigInstallMap();
-
-/**
- * initialize  static variable _putConfigInstallMap
- */
-const RfnDevice::InstallMap RfnResidentialDevice::initPutConfigInstallMap()
-{
-    const InstallMap m = boost::assign::map_list_of
-            ("freezeday",        static_cast<InstallMethod>(&RfnResidentialDevice::executePutConfigDemandFreezeDay))
-            ("tou",              static_cast<InstallMethod>(&RfnResidentialDevice::executePutConfigInstallTou))
-            ("voltageaveraging", static_cast<InstallMethod>(&RfnResidentialDevice::executePutConfigVoltageAveragingInterval))
-            ("display",          static_cast<InstallMethod>(&RfnResidentialDevice::executePutConfigDisplay))
-            ("ovuv",             static_cast<InstallMethod>(&RfnResidentialDevice::executePutConfigOvUv));
-
-    return m;
-}
-
-/**
- * initialize  static variable _getConfigInstallMap
- */
-const RfnDevice::InstallMap RfnResidentialDevice::initGetConfigInstallMap()
-{
-    const InstallMap m = boost::assign::map_list_of
-            ("freezeday",        static_cast<InstallMethod>(&RfnResidentialDevice::executeReadDemandFreezeInfo))
-            ("tou",              static_cast<InstallMethod>(&RfnResidentialDevice::executeGetConfigInstallTou))
-            ("voltageaveraging", static_cast<InstallMethod>(&RfnResidentialDevice::executeGetConfigVoltageAveragingInterval))
-            ("ovuv",             static_cast<InstallMethod>(&RfnResidentialDevice::executeGetConfigOvUv));
-
-    return m;
-}
-
-const RfnDevice::InstallMap & RfnResidentialDevice::getPutConfigInstallMap() const
-{
-    return _putConfigInstallMap;
-}
-
-const RfnDevice::InstallMap & RfnResidentialDevice::getGetConfigInstallMap() const
-{
-    return _getConfigInstallMap;
-}
-
 namespace { // anonymous namespace
 
 /**
@@ -112,10 +70,33 @@ CtiDate getDateFromString( std::string date )
 
 } // anonymous namespace
 
+RfnDevice::ConfigMap RfnResidentialDevice::getConfigMethods(bool readOnly)
+{
+    if( readOnly )
+    {
+        ConfigMap m = boost::assign::map_list_of
+                ( ConfigPart::freezeday,        bindConfigMethod( &RfnResidentialDevice::executeReadDemandFreezeInfo,              this ))
+                ( ConfigPart::tou,              bindConfigMethod( &RfnResidentialDevice::executeGetConfigInstallTou,               this ))
+                ( ConfigPart::voltageaveraging, bindConfigMethod( &RfnResidentialDevice::executeGetConfigVoltageAveragingInterval, this ))
+                ( ConfigPart::ovuv,             bindConfigMethod( &RfnResidentialDevice::executeGetConfigOvUv,                     this ));
+
+        return m;
+    }
+    else
+    {
+        ConfigMap m = boost::assign::map_list_of
+                ( ConfigPart::freezeday,        bindConfigMethod( &RfnResidentialDevice::executePutConfigDemandFreezeDay,          this ))
+                ( ConfigPart::tou,              bindConfigMethod( &RfnResidentialDevice::executePutConfigInstallTou,               this ))
+                ( ConfigPart::voltageaveraging, bindConfigMethod( &RfnResidentialDevice::executePutConfigVoltageAveragingInterval, this ))
+                ( ConfigPart::ovuv,             bindConfigMethod( &RfnResidentialDevice::executePutConfigOvUv,                     this ));
+
+        return m;
+    }
+}
 
 int RfnResidentialDevice::executePutConfigVoltageProfile( CtiRequestMsg     * pReq,
                                                           CtiCommandParser  & parse,
-                                                          CtiMessageList    & retList,
+                                                          ReturnMsgList     & returnMsgs,
                                                           RfnCommandList    & rfnRequests )
 {
     // putconfig voltage profile demandinterval 1234 lpinterval 123
@@ -174,7 +155,7 @@ int RfnResidentialDevice::executePutConfigVoltageProfile( CtiRequestMsg     * pR
 
 int RfnResidentialDevice::executeGetConfigVoltageProfile( CtiRequestMsg     * pReq,
                                                           CtiCommandParser  & parse,
-                                                          CtiMessageList    & retList,
+                                                          ReturnMsgList     & returnMsgs,
                                                           RfnCommandList    & rfnRequests )
 {
     // getconfig voltage profile
@@ -198,7 +179,7 @@ int RfnResidentialDevice::executeGetConfigVoltageProfile( CtiRequestMsg     * pR
 
 int RfnResidentialDevice::executeGetValueVoltageProfile( CtiRequestMsg     * pReq,
                                                          CtiCommandParser  & parse,
-                                                         CtiMessageList    & retList,
+                                                         ReturnMsgList     & returnMsgs,
                                                          RfnCommandList    & rfnRequests )
 {
     // getvalue voltage profile 12/13/2005 12/15/2005
@@ -245,9 +226,26 @@ int RfnResidentialDevice::executeGetValueVoltageProfile( CtiRequestMsg     * pRe
 }
 
 
+int RfnResidentialDevice::executePutValueTouReset(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
+{
+    rfnRequests.push_back(
+            boost::make_shared<Commands::RfnTouResetCommand>());
+
+    return NoError;
+}
+
+int RfnResidentialDevice::executePutValueTouResetZero(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
+{
+    rfnRequests.push_back(
+            boost::make_shared<Commands::RfnTouResetZeroCommand>());
+
+    return NoError;
+}
+
+
 int RfnResidentialDevice::executePutConfigVoltageAveragingInterval( CtiRequestMsg     * pReq,
                                                                     CtiCommandParser  & parse,
-                                                                    CtiMessageList    & retList,
+                                                                    ReturnMsgList     & returnMsgs,
                                                                     RfnCommandList    & rfnRequests )
 {
     Config::DeviceConfigSPtr deviceConfig = getDeviceConfig();
@@ -356,7 +354,7 @@ int RfnResidentialDevice::executePutConfigVoltageAveragingInterval( CtiRequestMs
 
 int RfnResidentialDevice::executeGetConfigVoltageAveragingInterval( CtiRequestMsg     * pReq,
                                                                  CtiCommandParser  & parse,
-                                                                 CtiMessageList    & retList,
+                                                                 ReturnMsgList     & returnMsgs,
                                                                  RfnCommandList    & rfnRequests )
 {
     rfnRequests.push_back( boost::make_shared<Commands::RfnVoltageProfileGetConfigurationCommand>() );
@@ -367,7 +365,7 @@ int RfnResidentialDevice::executeGetConfigVoltageAveragingInterval( CtiRequestMs
 
 //int RfnResidentialDevice::executeLoadProfileRecording( CtiRequestMsg     * pReq,
 //                                                       CtiCommandParser  & parse,
-//                                                       CtiMessageList    & retList,
+//                                                       ReturnMsgList     & returnMsgs,
 //                                                       RfnCommandList    & rfnRequests )
 //{
 //    // TBD
@@ -390,7 +388,7 @@ int RfnResidentialDevice::executeGetConfigVoltageAveragingInterval( CtiRequestMs
 
 int RfnResidentialDevice::executePutConfigDemandFreezeDay( CtiRequestMsg     * pReq,
                                                         CtiCommandParser  & parse,
-                                                        CtiMessageList    & retList,
+                                                        ReturnMsgList     & returnMsgs,
                                                         RfnCommandList    & rfnRequests )
 {
     Config::DeviceConfigSPtr deviceConfig = getDeviceConfig();
@@ -460,7 +458,7 @@ int RfnResidentialDevice::executePutConfigDemandFreezeDay( CtiRequestMsg     * p
 
 int RfnResidentialDevice::executeImmediateDemandFreeze( CtiRequestMsg     * pReq,
                                                      CtiCommandParser  & parse,
-                                                     CtiMessageList    & retList,
+                                                     ReturnMsgList     & returnMsgs,
                                                      RfnCommandList    & rfnRequests )
 {
     rfnRequests.push_back( boost::make_shared<Commands::RfnImmediateDemandFreezeCommand>() );
@@ -471,7 +469,7 @@ int RfnResidentialDevice::executeImmediateDemandFreeze( CtiRequestMsg     * pReq
 
 int RfnResidentialDevice::executeReadDemandFreezeInfo( CtiRequestMsg     * pReq,
                                                     CtiCommandParser  & parse,
-                                                    CtiMessageList    & retList,
+                                                    ReturnMsgList     & returnMsgs,
                                                     RfnCommandList    & rfnRequests )
 {
     rfnRequests.push_back( boost::make_shared<Commands::RfnGetDemandFreezeInfoCommand>() );
@@ -480,9 +478,20 @@ int RfnResidentialDevice::executeReadDemandFreezeInfo( CtiRequestMsg     * pReq,
 }
 
 
+int RfnResidentialDevice::executeGetStatusTou( CtiRequestMsg    * pReq,
+                                               CtiCommandParser & parse,
+                                               ReturnMsgList    & returnMsgs,
+                                               RfnCommandList   & rfnRequests)
+{
+    rfnRequests.push_back( boost::make_shared<Commands::RfnTouStateConfigurationCommand>());
+
+    return NoError;
+}
+
+
 int RfnResidentialDevice::executeTouCriticalPeak( CtiRequestMsg     * pReq,
                                                CtiCommandParser  & parse,
-                                               CtiMessageList    & retList,
+                                               ReturnMsgList     & returnMsgs,
                                                RfnCommandList    & rfnRequests )
 {
 
@@ -526,12 +535,13 @@ int RfnResidentialDevice::executeTouCriticalPeak( CtiRequestMsg     * pReq,
  */
 int RfnResidentialDevice::executePutConfigTou( CtiRequestMsg     * pReq,
                                             CtiCommandParser  & parse,
-                                            CtiMessageList    & retList,
+                                            ReturnMsgList     & returnMsgs,
                                             RfnCommandList    & rfnRequests )
 {
     using Commands::RfnTouConfigurationCommand;
     using Commands::RfnTouStateConfigurationCommand;
     using Commands::RfnTouScheduleConfigurationCommand;
+    using Commands::RfnTouScheduleSetConfigurationCommand;
 
     RfnTouScheduleConfigurationCommand::Schedule schedule;
 
@@ -564,7 +574,7 @@ int RfnResidentialDevice::executePutConfigTou( CtiRequestMsg     * pReq,
 
     for( int day_nbr = 0; day_nbr < dayTableStr.length(); day_nbr++ )
     {
-        schedule._dayTable.push_back( "schedule " + dayTableStr.substr(day_nbr,1) );
+        schedule._dayTable.push_back( RfnTouConfigurationCommand::SchedulePrefix + dayTableStr.substr(day_nbr,1) );
     }
 
     //
@@ -588,9 +598,9 @@ int RfnResidentialDevice::executePutConfigTou( CtiRequestMsg     * pReq,
 
     while( parse.isKeyValid( schedule_name ))
     {
-        const string schedule_str = "schedule " + CtiNumStr( parse.getiValue( schedule_name ));
-
-        RfnTouScheduleConfigurationCommand::ScheduleNbr schedule_nbr = RfnTouScheduleConfigurationCommand::resolveScheduleName( schedule_str );
+        RfnTouScheduleConfigurationCommand::ScheduleNbr schedule_nbr =
+                RfnTouScheduleConfigurationCommand::resolveScheduleName(
+                        RfnTouConfigurationCommand::SchedulePrefix + CtiNumStr( parse.getiValue( schedule_name )));
 
         int change_nbr = 0;
         string change_name = schedule_name + "_" + CtiNumStr(change_nbr).zpad(2);
@@ -627,7 +637,7 @@ int RfnResidentialDevice::executePutConfigTou( CtiRequestMsg     * pReq,
         schedule_name = "tou_schedule_" + CtiNumStr(iter).zpad(2);
     }
 
-    rfnRequests.push_back( boost::make_shared<RfnTouScheduleConfigurationCommand>( schedule ));
+    rfnRequests.push_back( boost::make_shared<RfnTouScheduleSetConfigurationCommand>( schedule ));
 
     return NoError;
 }
@@ -637,10 +647,10 @@ int RfnResidentialDevice::executePutConfigTou( CtiRequestMsg     * pReq,
  */
 int RfnResidentialDevice::executeGetConfigTou( CtiRequestMsg     * pReq,
                                             CtiCommandParser  & parse,
-                                            CtiMessageList    & retList,
+                                            ReturnMsgList     & returnMsgs,
                                             RfnCommandList    & rfnRequests )
 {
-    rfnRequests.push_back( boost::make_shared<Commands::RfnTouScheduleConfigurationCommand>());
+    rfnRequests.push_back( boost::make_shared<Commands::RfnTouScheduleGetConfigurationCommand>());
 
     return NoError;
 }
@@ -650,7 +660,7 @@ int RfnResidentialDevice::executeGetConfigTou( CtiRequestMsg     * pReq,
  */
 int RfnResidentialDevice::executePutConfigHoliday( CtiRequestMsg     * pReq,
                                                 CtiCommandParser  & parse,
-                                                CtiMessageList    & retList,
+                                                ReturnMsgList     & returnMsgs,
                                                 RfnCommandList    & rfnRequests )
 {
     using Commands::RfnTouHolidayConfigurationCommand;
@@ -708,10 +718,11 @@ int RfnResidentialDevice::executePutConfigHoliday( CtiRequestMsg     * pReq,
  */
 int RfnResidentialDevice::executePutConfigInstallTou( CtiRequestMsg     * pReq,
                                                    CtiCommandParser  & parse,
-                                                   CtiMessageList    & retList,
+                                                   ReturnMsgList     & returnMsgs,
                                                    RfnCommandList    & rfnRequests )
 {
     using Commands::RfnTouScheduleConfigurationCommand;
+    using Commands::RfnTouScheduleSetConfigurationCommand;
 
     try
     {
@@ -745,13 +756,13 @@ int RfnResidentialDevice::executePutConfigInstallTou( CtiRequestMsg     * pReq,
         // day table
         schedule_to_send._dayTable.resize(8);
 
-        schedule_to_send._dayTable[0] = getConfigData( configMap, RfnStrings::MondaySchedule    );
-        schedule_to_send._dayTable[1] = getConfigData( configMap, RfnStrings::TuesdaySchedule   );
-        schedule_to_send._dayTable[2] = getConfigData( configMap, RfnStrings::WednesdaySchedule );
-        schedule_to_send._dayTable[3] = getConfigData( configMap, RfnStrings::ThursdaySchedule  );
-        schedule_to_send._dayTable[4] = getConfigData( configMap, RfnStrings::FridaySchedule    );
-        schedule_to_send._dayTable[5] = getConfigData( configMap, RfnStrings::SaturdaySchedule  );
-        schedule_to_send._dayTable[6] = getConfigData( configMap, RfnStrings::SundaySchedule    );
+        schedule_to_send._dayTable[0] = getConfigData( configMap, RfnStrings::SundaySchedule    );
+        schedule_to_send._dayTable[1] = getConfigData( configMap, RfnStrings::MondaySchedule    );
+        schedule_to_send._dayTable[2] = getConfigData( configMap, RfnStrings::TuesdaySchedule   );
+        schedule_to_send._dayTable[3] = getConfigData( configMap, RfnStrings::WednesdaySchedule );
+        schedule_to_send._dayTable[4] = getConfigData( configMap, RfnStrings::ThursdaySchedule  );
+        schedule_to_send._dayTable[5] = getConfigData( configMap, RfnStrings::FridaySchedule    );
+        schedule_to_send._dayTable[6] = getConfigData( configMap, RfnStrings::SaturdaySchedule  );
         schedule_to_send._dayTable[7] = getConfigData( configMap, RfnStrings::HolidaySchedule   );
 
         // default rate
@@ -839,7 +850,7 @@ int RfnResidentialDevice::executePutConfigInstallTou( CtiRequestMsg     * pReq,
         // create command
         //
 
-        rfnRequests.push_back( boost::make_shared<RfnTouScheduleConfigurationCommand>( schedule_to_send ));
+        rfnRequests.push_back( boost::make_shared<RfnTouScheduleSetConfigurationCommand>( schedule_to_send ));
 
         return NoError;
     }
@@ -947,10 +958,10 @@ bool RfnResidentialDevice::isTouConfigCurrent( const Config::DeviceConfigSPtr &d
 
 int RfnResidentialDevice::executeGetConfigInstallTou( CtiRequestMsg     * pReq,
                                                    CtiCommandParser  & parse,
-                                                   CtiMessageList    & retList,
+                                                   ReturnMsgList     & returnMsgs,
                                                    RfnCommandList    & rfnRequests )
 {
-    rfnRequests.push_back( boost::make_shared<Commands::RfnTouScheduleConfigurationCommand>());
+    rfnRequests.push_back( boost::make_shared<Commands::RfnTouScheduleGetConfigurationCommand>());
 
     return NoError;
 }
@@ -961,7 +972,7 @@ int RfnResidentialDevice::executeGetConfigInstallTou( CtiRequestMsg     * pReq,
  */
 int RfnResidentialDevice::executeGetConfigHoliday( CtiRequestMsg     * pReq,
                                                 CtiCommandParser  & parse,
-                                                CtiMessageList    & retList,
+                                                ReturnMsgList     & returnMsgs,
                                                 RfnCommandList    & rfnRequests )
 {
     rfnRequests.push_back( boost::make_shared<Commands::RfnTouHolidayConfigurationCommand>());
@@ -969,9 +980,17 @@ int RfnResidentialDevice::executeGetConfigHoliday( CtiRequestMsg     * pReq,
     return NoError;
 }
 
+int RfnResidentialDevice::executeGetConfigDisplay( CtiRequestMsg     * pReq,
+                                                   CtiCommandParser  & parse,
+                                                   ReturnMsgList     & returnMsgs,
+                                                   RfnCommandList    & rfnRequests )
+{
+    return NoMethod;
+}
+
 int RfnResidentialDevice::executePutConfigDisplay( CtiRequestMsg     * pReq,
                                                    CtiCommandParser  & parse,
-                                                   CtiMessageList    & retList,
+                                                   ReturnMsgList     & returnMsgs,
                                                    RfnCommandList    & rfnRequests )
 {
     return NoMethod;
@@ -979,7 +998,7 @@ int RfnResidentialDevice::executePutConfigDisplay( CtiRequestMsg     * pReq,
 
 int RfnResidentialDevice::executePutConfigOvUv( CtiRequestMsg    * pReq,
                                                 CtiCommandParser & parse,
-                                                CtiMessageList   & retList,
+                                                ReturnMsgList    & returnMsgs,
                                                 RfnCommandList   & rfnRequests )
 {
     Config::DeviceConfigSPtr deviceConfig = getDeviceConfig();
@@ -1273,13 +1292,11 @@ int RfnResidentialDevice::executePutConfigOvUv( CtiRequestMsg    * pReq,
             }
         }
 
-        Commands::RfnOvUvConfigurationCommand::EventID  eventID = Commands::RfnOvUvConfigurationCommand::OverVoltage;
-
         if ( *configOvThreshold == *paoOvThreshold )
         {
             if ( parse.isKeyValid("force") )
             {
-                rfnRequests.push_back( boost::make_shared<Commands::RfnSetOvUvSetThresholdCommand>( meterID, eventID, *configOvThreshold ) );
+                rfnRequests.push_back( boost::make_shared<Commands::RfnSetOvUvSetOverVoltageThresholdCommand>( meterID, *configOvThreshold ) );
             }
         }
         else
@@ -1290,7 +1307,7 @@ int RfnResidentialDevice::executePutConfigOvUv( CtiRequestMsg    * pReq,
             }
             else
             {
-                rfnRequests.push_back( boost::make_shared<Commands::RfnSetOvUvSetThresholdCommand>( meterID, eventID, *configOvThreshold ) );
+                rfnRequests.push_back( boost::make_shared<Commands::RfnSetOvUvSetOverVoltageThresholdCommand>( meterID, *configOvThreshold ) );
             }
         }
     }
@@ -1323,13 +1340,11 @@ int RfnResidentialDevice::executePutConfigOvUv( CtiRequestMsg    * pReq,
             }
         }
 
-        Commands::RfnOvUvConfigurationCommand::EventID  eventID = Commands::RfnOvUvConfigurationCommand::UnderVoltage;
-
         if ( *configUvThreshold == *paoUvThreshold )
         {
             if ( parse.isKeyValid("force") )
             {
-                rfnRequests.push_back( boost::make_shared<Commands::RfnSetOvUvSetThresholdCommand>( meterID, eventID, *configUvThreshold ) );
+                rfnRequests.push_back( boost::make_shared<Commands::RfnSetOvUvSetUnderVoltageThresholdCommand>( meterID, *configUvThreshold ) );
             }
         }
         else
@@ -1340,7 +1355,7 @@ int RfnResidentialDevice::executePutConfigOvUv( CtiRequestMsg    * pReq,
             }
             else
             {
-                rfnRequests.push_back( boost::make_shared<Commands::RfnSetOvUvSetThresholdCommand>( meterID, eventID, *configUvThreshold ) );
+                rfnRequests.push_back( boost::make_shared<Commands::RfnSetOvUvSetUnderVoltageThresholdCommand>( meterID, *configUvThreshold ) );
             }
         }
     }
@@ -1355,7 +1370,7 @@ int RfnResidentialDevice::executePutConfigOvUv( CtiRequestMsg    * pReq,
 
 int RfnResidentialDevice::executeGetConfigOvUv( CtiRequestMsg    * pReq,
                                                 CtiCommandParser & parse,
-                                                CtiMessageList   & retList,
+                                                ReturnMsgList     & returnMsgs,
                                                 RfnCommandList   & rfnRequests )
 {
     // get the meter ID
@@ -1399,7 +1414,7 @@ int RfnResidentialDevice::executeGetConfigOvUv( CtiRequestMsg    * pReq,
 }
 
 
-void RfnResidentialDevice::handleResult( const Commands::RfnGetOvUvAlarmConfigurationCommand & cmd )
+void RfnResidentialDevice::handleCommandResult( const Commands::RfnGetOvUvAlarmConfigurationCommand & cmd )
 {
     Commands::RfnGetOvUvAlarmConfigurationCommand::AlarmConfiguration   config = cmd.getAlarmConfiguration();
 
@@ -1420,14 +1435,59 @@ void RfnResidentialDevice::handleResult( const Commands::RfnGetOvUvAlarmConfigur
 }
 
 
-void RfnResidentialDevice::handleResult( const Commands::RfnVoltageProfileGetConfigurationCommand & cmd )
+void RfnResidentialDevice::handleCommandResult( const Commands::RfnSetOvUvAlarmProcessingStateCommand &cmd )
+{
+    setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_OvUvEnabled,
+                   cmd.alarmState == Commands::RfnSetOvUvAlarmProcessingStateCommand::EnableOvUv);
+}
+
+
+void RfnResidentialDevice::handleCommandResult( const Commands::RfnSetOvUvAlarmRepeatCountCommand &cmd )
+{
+    setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_OvUvRepeatCount, cmd.repeatCount);
+}
+
+
+void RfnResidentialDevice::handleCommandResult( const Commands::RfnSetOvUvAlarmRepeatIntervalCommand &cmd )
+{
+    setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_OvUvAlarmRepeatInterval, cmd.repeatInterval);
+}
+
+
+void RfnResidentialDevice::handleCommandResult( const Commands::RfnSetOvUvNewAlarmReportIntervalCommand &cmd )
+{
+    setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_OvUvAlarmReportingInterval, cmd.reportingInterval);
+}
+
+
+void RfnResidentialDevice::handleCommandResult( const Commands::RfnSetOvUvSetOverVoltageThresholdCommand &cmd )
+{
+    setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_OvThreshold, cmd.ovThresholdValue);
+}
+
+
+void RfnResidentialDevice::handleCommandResult( const Commands::RfnSetOvUvSetUnderVoltageThresholdCommand &cmd )
+{
+    setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_UvThreshold, cmd.uvThresholdValue);
+}
+
+
+void RfnResidentialDevice::handleCommandResult( const Commands::RfnVoltageProfileGetConfigurationCommand & cmd )
 {
     setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DemandInterval,      cmd.getDemandIntervalSeconds() );
     setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_LoadProfileInterval, cmd.getLoadProfileIntervalMinutes() );
 }
 
 
-void RfnResidentialDevice::handleResult( const Commands::RfnLoadProfileGetRecordingCommand & cmd )
+void RfnResidentialDevice::handleCommandResult( const Commands::RfnVoltageProfileSetConfigurationCommand & cmd )
+{
+    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DemandInterval, Commands::RfnVoltageProfileSetConfigurationCommand::SecondsPerInterval
+                                                                       * cmd.demandInterval );
+    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_LoadProfileInterval, cmd.loadProfileInterval );
+}
+
+
+void RfnResidentialDevice::handleCommandResult( const Commands::RfnLoadProfileGetRecordingCommand & cmd )
 {
     // TBD
 
@@ -1435,46 +1495,44 @@ void RfnResidentialDevice::handleResult( const Commands::RfnLoadProfileGetRecord
 }
 
 
-void RfnResidentialDevice::handleResult( const Commands::RfnGetDemandFreezeInfoCommand & cmd )
+void RfnResidentialDevice::handleCommandResult( const Commands::RfnGetDemandFreezeInfoCommand & cmd )
 {
-    // TBD
-
     Commands::RfnGetDemandFreezeInfoCommand::DemandFreezeData freezeData = cmd.getDemandFreezeData();
+
+    if( freezeData.dayOfFreeze )
+    {
+        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DemandFreezeDay, *freezeData.dayOfFreeze );
+    }
 }
 
 
-void RfnResidentialDevice::handleResult( const Commands::RfnTouScheduleConfigurationCommand & cmd )
+namespace {
+
+void storeSchedule(RfnResidentialDevice &dev, const Commands::RfnTouScheduleConfigurationCommand::Schedule &schedule)
 {
     using Commands::RfnTouScheduleConfigurationCommand;
-
-    boost::optional<RfnTouScheduleConfigurationCommand::Schedule> schedule_received = cmd.getTouScheduleReceived();
-
-    if( ! schedule_received )
-    {
-        return;
-    }
 
     //
     // Day table
     //
-    if( schedule_received->_dayTable.size() == 8 )
+    if( schedule._dayTable.size() == 8 )
     {
-        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_MondaySchedule,    schedule_received->_dayTable[0] );
-        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_TuesdaySchedule,   schedule_received->_dayTable[1] );
-        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_WednesdaySchedule, schedule_received->_dayTable[2] );
-        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ThursdaySchedule,  schedule_received->_dayTable[3] );
-        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_FridaySchedule,    schedule_received->_dayTable[4] );
-        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_SaturdaySchedule,  schedule_received->_dayTable[5] );
-        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_SundaySchedule,    schedule_received->_dayTable[6] );
-        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_HolidaySchedule,   schedule_received->_dayTable[7] );
+        dev.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_SundaySchedule,    schedule._dayTable[0] );
+        dev.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_MondaySchedule,    schedule._dayTable[1] );
+        dev.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_TuesdaySchedule,   schedule._dayTable[2] );
+        dev.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_WednesdaySchedule, schedule._dayTable[3] );
+        dev.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ThursdaySchedule,  schedule._dayTable[4] );
+        dev.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_FridaySchedule,    schedule._dayTable[5] );
+        dev.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_SaturdaySchedule,  schedule._dayTable[6] );
+        dev.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_HolidaySchedule,   schedule._dayTable[7] );
     }
 
     //
     // Default rate
     //
-    if( ! schedule_received->_defaultRate.empty() )
+    if( ! schedule._defaultRate.empty() )
     {
-        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DefaultTOURate, schedule_received->_defaultRate );
+        dev.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DefaultTOURate, schedule._defaultRate );
     }
 
     //
@@ -1484,51 +1542,51 @@ void RfnResidentialDevice::handleResult( const Commands::RfnTouScheduleConfigura
         boost::optional<RfnTouScheduleConfigurationCommand::DailyRates> rates;
 
         // schedule 1
-        rates = mapFind( schedule_received->_rates, RfnTouScheduleConfigurationCommand::Schedule1);
+        rates = mapFind( schedule._rates, RfnTouScheduleConfigurationCommand::Schedule1);
         if( rates && rates->size() == 6 )
         {
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate0, (*rates)[0] );
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate1, (*rates)[1] );
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate2, (*rates)[2] );
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate3, (*rates)[3] );
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate4, (*rates)[4] );
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate5, (*rates)[5] );
+            dev.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate0, (*rates)[0] );
+            dev.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate1, (*rates)[1] );
+            dev.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate2, (*rates)[2] );
+            dev.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate3, (*rates)[3] );
+            dev.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate4, (*rates)[4] );
+            dev.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate5, (*rates)[5] );
         }
 
         // schedule 2
-        rates = mapFind( schedule_received->_rates, RfnTouScheduleConfigurationCommand::Schedule2);
+        rates = mapFind( schedule._rates, RfnTouScheduleConfigurationCommand::Schedule2);
         if( rates && rates->size() == 6 )
         {
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate0, (*rates)[0] );
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate1, (*rates)[1] );
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate2, (*rates)[2] );
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate3, (*rates)[3] );
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate4, (*rates)[4] );
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate5, (*rates)[5] );
+            dev.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate0, (*rates)[0] );
+            dev.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate1, (*rates)[1] );
+            dev.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate2, (*rates)[2] );
+            dev.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate3, (*rates)[3] );
+            dev.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate4, (*rates)[4] );
+            dev.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate5, (*rates)[5] );
         }
 
         // schedule 3
-        rates = mapFind( schedule_received->_rates, RfnTouScheduleConfigurationCommand::Schedule3);
+        rates = mapFind( schedule._rates, RfnTouScheduleConfigurationCommand::Schedule3);
         if( rates && rates->size() == 6 )
         {
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate0, (*rates)[0] );
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate1, (*rates)[1] );
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate2, (*rates)[2] );
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate3, (*rates)[3] );
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate4, (*rates)[4] );
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate5, (*rates)[5] );
+            dev.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate0, (*rates)[0] );
+            dev.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate1, (*rates)[1] );
+            dev.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate2, (*rates)[2] );
+            dev.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate3, (*rates)[3] );
+            dev.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate4, (*rates)[4] );
+            dev.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate5, (*rates)[5] );
         }
 
         // schedule 3
-        rates = mapFind( schedule_received->_rates, RfnTouScheduleConfigurationCommand::Schedule4);
+        rates = mapFind( schedule._rates, RfnTouScheduleConfigurationCommand::Schedule4);
         if( rates && rates->size() == 6 )
         {
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate0, (*rates)[0] );
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate1, (*rates)[1] );
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate2, (*rates)[2] );
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate3, (*rates)[3] );
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate4, (*rates)[4] );
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate5, (*rates)[5] );
+            dev.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate0, (*rates)[0] );
+            dev.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate1, (*rates)[1] );
+            dev.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate2, (*rates)[2] );
+            dev.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate3, (*rates)[3] );
+            dev.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate4, (*rates)[4] );
+            dev.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate5, (*rates)[5] );
         }
     }
 
@@ -1539,53 +1597,76 @@ void RfnResidentialDevice::handleResult( const Commands::RfnTouScheduleConfigura
         boost::optional<RfnTouScheduleConfigurationCommand::DailyTimes> times;
 
         // schedule 1
-        times = mapFind( schedule_received->_times, RfnTouScheduleConfigurationCommand::Schedule1);
+        times = mapFind( schedule._times, RfnTouScheduleConfigurationCommand::Schedule1);
         if( times && times->size() == 6 ) // times[0] is midnight, there is no paoinfo for it
         {
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time1, (*times)[1] );
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time2, (*times)[2] );
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time3, (*times)[3] );
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time4, (*times)[4] );
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time5, (*times)[5] );
+            dev.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time1, (*times)[1] );
+            dev.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time2, (*times)[2] );
+            dev.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time3, (*times)[3] );
+            dev.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time4, (*times)[4] );
+            dev.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time5, (*times)[5] );
         }
 
         // schedule 2
-        times = mapFind( schedule_received->_times, RfnTouScheduleConfigurationCommand::Schedule2);
+        times = mapFind( schedule._times, RfnTouScheduleConfigurationCommand::Schedule2);
         if( times && times->size() == 6 ) // times[0] is midnight, there is no paoinfo for it
         {
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Time1, (*times)[1] );
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Time2, (*times)[2] );
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Time3, (*times)[3] );
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Time4, (*times)[4] );
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Time5, (*times)[5] );
+            dev.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Time1, (*times)[1] );
+            dev.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Time2, (*times)[2] );
+            dev.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Time3, (*times)[3] );
+            dev.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Time4, (*times)[4] );
+            dev.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Time5, (*times)[5] );
         }
 
         // schedule 3
-        times = mapFind( schedule_received->_times, RfnTouScheduleConfigurationCommand::Schedule3);
+        times = mapFind( schedule._times, RfnTouScheduleConfigurationCommand::Schedule3);
         if( times && times->size() == 6 ) // times[0] is midnight, there is no paoinfo for it
         {
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Time1, (*times)[1] );
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Time2, (*times)[2] );
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Time3, (*times)[3] );
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Time4, (*times)[4] );
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Time5, (*times)[5] );
+            dev.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Time1, (*times)[1] );
+            dev.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Time2, (*times)[2] );
+            dev.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Time3, (*times)[3] );
+            dev.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Time4, (*times)[4] );
+            dev.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Time5, (*times)[5] );
         }
 
         // schedule 4
-        times = mapFind( schedule_received->_times, RfnTouScheduleConfigurationCommand::Schedule4);
+        times = mapFind( schedule._times, RfnTouScheduleConfigurationCommand::Schedule4);
         if( times && times->size() == 6 ) // times[0] is midnight, there is no paoinfo for it
         {
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Time1, (*times)[1] );
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Time2, (*times)[2] );
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Time3, (*times)[3] );
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Time4, (*times)[4] );
-            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Time5, (*times)[5] );
+            dev.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Time1, (*times)[1] );
+            dev.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Time2, (*times)[2] );
+            dev.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Time3, (*times)[3] );
+            dev.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Time4, (*times)[4] );
+            dev.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Time5, (*times)[5] );
         }
     }
 }
 
+}
 
-void RfnResidentialDevice::handleResult( const Commands::RfnTouHolidayConfigurationCommand & cmd )
+
+void RfnResidentialDevice::handleCommandResult( const Commands::RfnTouScheduleGetConfigurationCommand & cmd )
+{
+    using Commands::RfnTouScheduleConfigurationCommand;
+
+    boost::optional<RfnTouScheduleConfigurationCommand::Schedule> schedule_received = cmd.getTouScheduleReceived();
+
+    if( ! schedule_received )
+    {
+        return;
+    }
+
+    storeSchedule(*this, *schedule_received);
+}
+
+
+void RfnResidentialDevice::handleCommandResult( const Commands::RfnTouScheduleSetConfigurationCommand & cmd )
+{
+    storeSchedule(*this, cmd.schedule_to_send);
+}
+
+
+void RfnResidentialDevice::handleCommandResult( const Commands::RfnTouHolidayConfigurationCommand & cmd )
 {
     using Commands::RfnTouHolidayConfigurationCommand;
 

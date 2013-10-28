@@ -10,6 +10,8 @@ using Cti::Devices::Commands::RfnCommand;
 using Cti::Devices::Commands::RfnCommandResult;
 using Cti::Devices::Commands::RfnTouConfigurationCommand;
 using Cti::Devices::Commands::RfnTouScheduleConfigurationCommand;
+using Cti::Devices::Commands::RfnTouScheduleGetConfigurationCommand;
+using Cti::Devices::Commands::RfnTouScheduleSetConfigurationCommand;
 using Cti::Devices::Commands::RfnTouHolidayConfigurationCommand;
 using Cti::Devices::Commands::RfnTouStateConfigurationCommand;
 using Cti::Devices::Commands::RfnTouSetHolidayActiveCommand;
@@ -127,14 +129,14 @@ BOOST_AUTO_TEST_CASE( test_RfnTouScheduleConfigurationCommand )
     {
         RfnTouScheduleConfigurationCommand::DayTable dayTable(8);
 
-        dayTable[0] = "schedule 1";
-        dayTable[1] = "schedule 3";
-        dayTable[2] = "schedule 2";
-        dayTable[3] = "schedule 4";
-        dayTable[4] = "schedule 2";
-        dayTable[5] = "schedule 3";
-        dayTable[6] = "schedule 1";
-        dayTable[7] = "schedule 3";
+        dayTable[0] = "Schedule 1";
+        dayTable[1] = "Schedule 3";
+        dayTable[2] = "Schedule 2";
+        dayTable[3] = "Schedule 4";
+        dayTable[4] = "Schedule 2";
+        dayTable[5] = "Schedule 3";
+        dayTable[6] = "Schedule 1";
+        dayTable[7] = "Schedule 3";
 
         sched._dayTable = dayTable;
     }
@@ -146,7 +148,7 @@ BOOST_AUTO_TEST_CASE( test_RfnTouScheduleConfigurationCommand )
 
     // execute
     {
-        RfnTouScheduleConfigurationCommand cmd( sched );
+        RfnTouScheduleSetConfigurationCommand cmd( sched );
 
         RfnCommand::RfnRequestPayload rcv = cmd.executeCommand( execute_time );
 
@@ -181,7 +183,7 @@ BOOST_AUTO_TEST_CASE( test_RfnTouScheduleConfigurationCommand )
 
     // execute read only
     {
-        RfnTouScheduleConfigurationCommand cmd;
+        RfnTouScheduleGetConfigurationCommand cmd;
 
         RfnCommand::RfnRequestPayload rcv = cmd.executeCommand( execute_time );
 
@@ -195,7 +197,7 @@ BOOST_AUTO_TEST_CASE( test_RfnTouScheduleConfigurationCommand )
 
     // decode
     {
-        RfnTouScheduleConfigurationCommand cmd;
+        RfnTouScheduleGetConfigurationCommand cmd;
 
         std::vector<unsigned char> response = boost::assign::list_of
                 (0x61)(0x00)(0x00)(0x00)(0x00)
@@ -228,14 +230,14 @@ BOOST_AUTO_TEST_CASE( test_RfnTouScheduleConfigurationCommand )
                 "Additional Status : NO ADDITIONAL STATUS\n"
                 "TOU State : Disabled\n"
                 "Day Table :\n"
-                " Sunday    - schedule 1\n"
-                " Monday    - schedule 3\n"
-                " Tuesday   - schedule 2\n"
-                " Wednesday - schedule 4\n"
-                " Thursday  - schedule 2\n"
-                " Friday    - schedule 3\n"
-                " Saturday  - schedule 1\n"
-                " Holiday   - schedule 3\n"
+                " Sunday    - Schedule 1\n"
+                " Monday    - Schedule 3\n"
+                " Tuesday   - Schedule 2\n"
+                " Wednesday - Schedule 4\n"
+                " Thursday  - Schedule 2\n"
+                " Friday    - Schedule 3\n"
+                " Saturday  - Schedule 1\n"
+                " Holiday   - Schedule 3\n"
                 "Schedule 1 switch times :\n"
                 " Switch time 1 - 00:01\n"
                 " Switch time 2 - 10:06\n"

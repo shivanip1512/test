@@ -5,6 +5,7 @@
 #include "config_data_rfn.h"
 
 #include <boost/assign/list_of.hpp>
+#include <boost/make_shared.hpp>
 
 namespace Cti {
 namespace Devices {
@@ -68,7 +69,31 @@ const std::vector<std::string> displayMetricConfigKeys = boost::assign::list_of
     ( Config::RfnStrings::displayItem26 );
 }
 
-int Rfn420CentronDevice::executePutConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests)
+RfnDevice::ConfigMap Rfn420CentronDevice::getConfigMethods(bool readOnly)
+{
+    ConfigMap m = RfnResidentialDevice::getConfigMethods( readOnly );
+
+    if( readOnly )
+    {
+        m.insert( ConfigMap::value_type( ConfigPart::display, bindConfigMethod( &Rfn420CentronDevice::executeGetConfigDisplay, this )));
+    }
+    else
+    {
+        m.insert( ConfigMap::value_type( ConfigPart::display, bindConfigMethod( &Rfn420CentronDevice::executePutConfigDisplay, this )));
+    }
+
+    return m;
+}
+
+int Rfn420CentronDevice::executeGetConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
+{
+    rfnRequests.push_back(
+            boost::make_shared<Commands::RfnCentronGetLcdConfigurationCommand>());
+
+    return NoError;
+}
+
+int Rfn420CentronDevice::executePutConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
 {
     Config::DeviceConfigSPtr deviceConfig = getDeviceConfig();
 
@@ -136,29 +161,40 @@ int Rfn420CentronDevice::executePutConfigDisplay(CtiRequestMsg *pReq, CtiCommand
         }
     }
 
-    std::auto_ptr<Commands::RfnCommand> displayCommand(
-       new Commands::RfnCentronLcdConfigurationCommand(config_display_metrics));
-
     rfnRequests.push_back(
-       Commands::RfnCommandSPtr(displayCommand.release()));
+       boost::make_shared<Commands::RfnCentronSetLcdConfigurationCommand>(config_display_metrics));
 
     return NoError;
 }
 
 
-void Rfn420CentronDevice::handleResult(const Commands::RfnCentronLcdConfigurationCommand &cmd)
+void Rfn420CentronDevice::handleCommandResult(const Commands::RfnCentronSetLcdConfigurationCommand &cmd)
 {
-    typedef Commands::RfnCentronLcdConfigurationCommand::metric_vector_t metric_vector_t;
-
-    const metric_vector_t received_metrics = cmd.getReceivedMetrics();
+    typedef Commands::RfnCentronGetLcdConfigurationCommand::metric_vector_t metric_vector_t;
 
     std::vector<PaoInfoKeys>::const_iterator pao_itr = displayMetricPaoKeys.begin();
-    metric_vector_t::const_iterator received_itr = received_metrics.begin();
+    metric_vector_t::const_iterator sent_itr = cmd.display_metrics_to_send.begin();
 
-    while( received_itr != received_metrics.end()
+    while( sent_itr != cmd.display_metrics_to_send.end()
            && pao_itr != displayMetricPaoKeys.end() )
     {
-        setDynamicInfo(*pao_itr++, *received_itr++);
+        setDynamicInfo(*pao_itr++, *sent_itr++);
+    }
+}
+
+
+void Rfn420CentronDevice::handleCommandResult(const Commands::RfnCentronGetLcdConfigurationCommand &cmd)
+{
+    typedef Commands::RfnCentronGetLcdConfigurationCommand::metric_map_t metric_map_t;
+
+    const metric_map_t received_metrics = cmd.getReceivedMetrics();
+
+    for each( const metric_map_t::value_type &metric in received_metrics )
+    {
+        if( metric.first < displayMetricPaoKeys.size() )
+        {
+            setDynamicInfo(displayMetricPaoKeys[metric.first], metric.second);
+        }
     }
 }
 

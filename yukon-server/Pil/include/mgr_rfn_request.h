@@ -18,6 +18,7 @@ struct RfnDeviceRequest
     Devices::Commands::RfnCommandSPtr command;
     Devices::RfnIdentifier rfnIdentifier;
     long deviceId;
+    unsigned long rfnRequestId;
     std::string commandString;
     unsigned priority;
     long userMessageId;
@@ -48,7 +49,7 @@ public:
 
     void tick();
 
-    void submitRequests(const RfnDeviceRequestList &requests);
+    unsigned long submitRequests(const RfnDeviceRequestList &requests, unsigned long requestId);
 
     ResultQueue getResults(unsigned max);
 

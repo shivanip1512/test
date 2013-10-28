@@ -9,9 +9,12 @@ namespace Devices {
 class IM_EX_DEVDB Rfn420FocusDevice
     :   public RfnResidentialDevice
 {
-    int executePutConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
+    virtual ConfigMap getConfigMethods(bool readOnly);
 
-    void handleResult(const Commands::RfnFocusLcdConfigurationCommand &cmd);
+    int executeGetConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
+    int executePutConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
+
+    void handleCommandResult(const Commands::RfnFocusLcdConfigurationCommand &cmd);
 
     bool isDisplayConfigCurrent( const std::vector<std::string> &config_display_metrics,
                                  const std::vector<std::string> &config_display_alphamerics,

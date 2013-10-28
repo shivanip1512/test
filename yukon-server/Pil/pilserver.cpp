@@ -151,6 +151,11 @@ void PilServer::mainThread()
     /* Give us a tiny attitude */
     CTISetPriority(PRTYC_TIMECRITICAL, THREAD_PRIORITY_HIGHEST);
 
+    if( CtiDeviceSPtr systemDevice = DeviceManager->getDeviceByID(0) )
+    {
+        systemDevice->getDynamicInfo(CtiTableDynamicPaoInfo::Key_RfnE2eRequestId, _rfnRequestId);
+    }
+
     /*
      *  MAIN: The main PIL loop lives here for all time!
      */
@@ -391,6 +396,11 @@ void PilServer::mainThread()
 
             Sleep(5000);
         }
+    }
+
+    if( CtiDeviceSPtr systemDevice = DeviceManager->getDeviceByID(0) )
+    {
+        systemDevice->setDynamicInfo(CtiTableDynamicPaoInfo::Key_RfnE2eRequestId, _rfnRequestId);
     }
 
     _broken = true;
@@ -751,7 +761,12 @@ struct RfnDeviceResultProcessor : Devices::DeviceHandler
                         result.request.deviceId,
                         result.request.commandString,
                         result.commandResult.description,
-                        result.status));
+                        result.status,
+                        0,
+                        0,
+                        0,
+                        result.request.groupMessageId,
+                        result.request.userMessageId));
 
         for each( const Devices::Commands::DeviceCommand::point_data &pd in result.commandResult.points )
         {
@@ -775,11 +790,10 @@ struct RfnDeviceResultProcessor : Devices::DeviceHandler
 
         retList.push_back(retMsg.release());
 
-        dev.extractCommandResult(*result.request.command);
-
-        //  Retries on error?
-
-        //  Note that there is no special error handling - other devices' ErrorDecode() just sends plugged NonUpdated points for scans, which RFN devices don't do.
+        if( ! result.status )
+        {
+            dev.extractCommandResult(*result.request.command);
+        }
 
         dev.decrementGroupMessageCount(result.request.userMessageId, reinterpret_cast<long>(result.request.connectionHandle));
 
@@ -1158,7 +1172,9 @@ struct RequestExecuter : Devices::DeviceHandler
     {
         Devices::RfnDevice::RfnCommandList commands;
 
-        const int retVal = dev.ExecuteRequest(pReq, parse, retList, commands);
+        boost::ptr_deque<CtiReturnMsg> returnMsgList;
+
+        const int retVal = dev.ExecuteRequest(pReq, parse, returnMsgList, commands);
 
         RfnDeviceRequest req;
 
@@ -1169,6 +1185,19 @@ struct RequestExecuter : Devices::DeviceHandler
         req.groupMessageId   = pReq->GroupMessageId();
         req.userMessageId    = pReq->UserMessageId();
         req.connectionHandle = pReq->getConnectionHandle();
+
+        while( ! returnMsgList.empty() )
+        {
+            boost::ptr_deque<CtiReturnMsg>::auto_type returnMsg = returnMsgList.pop_front();
+
+            // Set expectMore on all CtiReturnMsgs but the last, unless there was a command sent, in which case set expectMore on all of them.
+            if( ! returnMsgList.empty() || ! rfnRequests.empty() )
+            {
+                returnMsg->setExpectMore(true);
+            }
+
+            retList.push_back(returnMsg.release());
+        }
 
         for each( const Devices::Commands::RfnCommandSPtr &command in commands )
         {
@@ -1329,7 +1358,7 @@ int PilServer::executeRequest(const CtiRequestMsg *pReq)
 
                 outList.splice(outList.end(), executer.outList);
 
-                _rfnManager.submitRequests(executer.rfnRequests);
+                _rfnRequestId = _rfnManager.submitRequests(executer.rfnRequests, _rfnRequestId);
 
                 for each( CtiMessage *msg in executer.retList )
                 {

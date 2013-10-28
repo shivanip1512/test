@@ -88,7 +88,31 @@ long getLongConfigValue( const Config::DeviceConfigSPtr & deviceConfig, const st
 
 } // anonymous namespace
 
-int Rfn420FocusDevice::executePutConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests)
+RfnDevice::ConfigMap Rfn420FocusDevice::getConfigMethods(bool readOnly)
+{
+    ConfigMap m = RfnResidentialDevice::getConfigMethods( readOnly );
+
+    if( readOnly )
+    {
+        // TODO : missing executeGetConfigDisplay()
+    }
+    else
+    {
+        m.insert( ConfigMap::value_type( ConfigPart::display, bindConfigMethod( &Rfn420FocusDevice::executePutConfigDisplay, this )));
+    }
+
+    return m;
+}
+
+int Rfn420FocusDevice::executeGetConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
+{
+    rfnRequests.push_back(
+            boost::make_shared<Commands::RfnFocusLcdConfigurationCommand>());
+
+    return NoError;
+}
+
+int Rfn420FocusDevice::executePutConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
 {
     try
     {
@@ -209,7 +233,7 @@ bool Rfn420FocusDevice::isDisplayConfigCurrent( const std::vector<std::string> &
 }
 
 
-void Rfn420FocusDevice::handleResult(const Commands::RfnFocusLcdConfigurationCommand &cmd)
+void Rfn420FocusDevice::handleCommandResult(const Commands::RfnFocusLcdConfigurationCommand &cmd)
 {
     typedef Commands::RfnFocusLcdConfigurationCommand::DisplayItemVector DisplayItemVector;
 

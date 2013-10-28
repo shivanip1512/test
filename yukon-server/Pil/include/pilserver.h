@@ -56,6 +56,7 @@ class IM_EX_CTIPIL PilServer : public CtiServer
    long                 _currentUserMessageId;
 
    RfnRequestManager    _rfnManager;
+   unsigned long        _rfnRequestId;
 
    typedef std::multiset<CtiRequestMsg *, std::greater<CtiMessage *> > group_queue_t;
 
@@ -91,7 +92,8 @@ public:
       bServerClosing(FALSE),
       _currentParse(""),
       _currentUserMessageId(0),
-      _listenerConnection( Cti::Messaging::ActiveMQ::Queue::pil )
+      _listenerConnection( Cti::Messaging::ActiveMQ::Queue::pil ),
+      _rfnRequestId(0)
    {}
 
    virtual ~PilServer()

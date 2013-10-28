@@ -18,13 +18,8 @@ struct test_Rfn420CentronDevice : Rfn420CentronDevice
 struct test_state_rfn420centron
 {
     CtiRequestMsg               request;
-    RfnDevice::CtiMessageList   retList;
+    RfnDevice::ReturnMsgList    returnMsgs;
     RfnDevice::RfnCommandList   rfnRequests;
-
-    ~test_state_rfn420centron()
-    {
-        delete_container(retList);
-    }
 };
 
 const CtiTime execute_time( CtiDate( 27, 8, 2013 ) , 15 );
@@ -38,22 +33,30 @@ BOOST_AUTO_TEST_CASE( test_dev_rfn420centron_immediate_demand_freeze )
 
     CtiCommandParser    parse("putstatus freeze");
 
-    BOOST_CHECK_EQUAL( NoError, centron.ExecuteRequest(&request, parse, retList, rfnRequests) );
-    BOOST_CHECK_EQUAL( 0, retList.size() );
-
+    BOOST_CHECK_EQUAL( NoError, centron.ExecuteRequest(&request, parse, returnMsgs, rfnRequests) );
+    BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
     BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
-    Commands::RfnCommandSPtr    command = rfnRequests.front();
+    {
+        const CtiReturnMsg &returnMsg = returnMsgs.front();
 
-    // execute message and check request bytes
+        BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
+        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
+    }
 
-    const std::vector< unsigned char > exp = boost::assign::list_of
-        ( 0x55 )( 0x01 );
+    {
+        Commands::RfnCommandSPtr    command = rfnRequests.front();
 
-    Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
+        // execute message and check request bytes
 
-    BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
-                                   exp.begin() , exp.end() );
+        const std::vector< unsigned char > exp = boost::assign::list_of
+            ( 0x55 )( 0x01 );
+
+        Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
+
+        BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
+                                       exp.begin() , exp.end() );
+    }
 }
 
 
@@ -63,22 +66,30 @@ BOOST_AUTO_TEST_CASE( test_dev_rfn420centron_tou_critical_peak_cancel )
 
     CtiCommandParser    parse("putstatus tou critical peak cancel");
 
-    BOOST_CHECK_EQUAL( NoError, centron.ExecuteRequest(&request, parse, retList, rfnRequests) );
-    BOOST_CHECK_EQUAL( 0, retList.size() );
-
+    BOOST_CHECK_EQUAL( NoError, centron.ExecuteRequest(&request, parse, returnMsgs, rfnRequests) );
+    BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
     BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
-    Commands::RfnCommandSPtr    command = rfnRequests.front();
+    {
+        const CtiReturnMsg &returnMsg = returnMsgs.front();
 
-    // execute message and check request bytes
+        BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
+        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
+    }
 
-    const std::vector< unsigned char > exp = boost::assign::list_of
-        ( 0x60 )( 0x09 )( 0x00 );
+    {
+        Commands::RfnCommandSPtr    command = rfnRequests.front();
 
-    Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
+        // execute message and check request bytes
 
-    BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
-                                   exp.begin() , exp.end() );
+        const std::vector< unsigned char > exp = boost::assign::list_of
+            ( 0x60 )( 0x09 )( 0x00 );
+
+        Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
+
+        BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
+                                       exp.begin() , exp.end() );
+    }
 }
 
 
@@ -88,22 +99,30 @@ BOOST_AUTO_TEST_CASE( test_dev_rfn420centron_tou_critical_peak_today )
 
     CtiCommandParser    parse("putstatus tou critical peak rate b until 23:00");
 
-    BOOST_CHECK_EQUAL( NoError, centron.ExecuteRequest(&request, parse, retList, rfnRequests) );
-    BOOST_CHECK_EQUAL( 0, retList.size() );
-
+    BOOST_CHECK_EQUAL( NoError, centron.ExecuteRequest(&request, parse, returnMsgs, rfnRequests) );
+    BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
     BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
-    Commands::RfnCommandSPtr    command = rfnRequests.front();
+    {
+        const CtiReturnMsg &returnMsg = returnMsgs.front();
 
-    // execute message and check request bytes
+        BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
+        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
+    }
 
-    const std::vector< unsigned char > exp = boost::assign::list_of
-        ( 0x60 )( 0x08 )( 0x01 )( 0x0b )( 0x05 )( 0x01 )( 0x52 )( 0x1d )( 0x75 )( 0xc0 );
+    {
+        Commands::RfnCommandSPtr    command = rfnRequests.front();
 
-    Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
+        // execute message and check request bytes
 
-    BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
-                                   exp.begin() , exp.end() );
+        const std::vector< unsigned char > exp = boost::assign::list_of
+            ( 0x60 )( 0x08 )( 0x01 )( 0x0b )( 0x05 )( 0x01 )( 0x52 )( 0x1d )( 0x75 )( 0xc0 );
+
+        Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
+
+        BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
+                                       exp.begin() , exp.end() );
+    }
 }
 
 
@@ -113,22 +132,30 @@ BOOST_AUTO_TEST_CASE( test_dev_rfn420centron_tou_critical_peak_tomorrow )
 
     CtiCommandParser    parse("putstatus tou critical peak rate b until 8:00");
 
-    BOOST_CHECK_EQUAL( NoError, centron.ExecuteRequest(&request, parse, retList, rfnRequests) );
-    BOOST_CHECK_EQUAL( 0, retList.size() );
-
+    BOOST_CHECK_EQUAL( NoError, centron.ExecuteRequest(&request, parse, returnMsgs, rfnRequests) );
+    BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
     BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
-    Commands::RfnCommandSPtr    command = rfnRequests.front();
+    {
+        const CtiReturnMsg &returnMsg = returnMsgs.front();
 
-    // execute message and check request bytes
+        BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
+        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
+    }
 
-    const std::vector< unsigned char > exp = boost::assign::list_of
-        ( 0x60 )( 0x08 )( 0x01 )( 0x0b )( 0x05 )( 0x01 )( 0x52 )( 0x1d )( 0xf4 )( 0x50 );
+    {
+        Commands::RfnCommandSPtr    command = rfnRequests.front();
 
-    Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
+        // execute message and check request bytes
 
-    BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
-                                   exp.begin() , exp.end() );
+        const std::vector< unsigned char > exp = boost::assign::list_of
+            ( 0x60 )( 0x08 )( 0x01 )( 0x0b )( 0x05 )( 0x01 )( 0x52 )( 0x1d )( 0xf4 )( 0x50 );
+
+        Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
+
+        BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
+                                       exp.begin() , exp.end() );
+    }
 }
 
 

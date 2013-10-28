@@ -134,6 +134,8 @@ public:
         Key_FreezeCounter,
         Key_FreezeExpected,
         Key_VerificationSequence,
+        Key_RfnE2eRequestId,
+
         Key_FrozenRateAPeakTimestamp,
         Key_FrozenRateBPeakTimestamp,
         Key_FrozenRateCPeakTimestamp,

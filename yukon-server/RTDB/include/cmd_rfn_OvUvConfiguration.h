@@ -67,17 +67,16 @@ public:
     {
         DisableOvUv,
         EnableOvUv
-    };
+    }
+    const alarmState;
 
     RfnSetOvUvAlarmProcessingStateCommand( const AlarmStates alarmState );
+
+    virtual void invokeResultHandler( ResultHandler &rh ) const;
 
 protected:
 
     virtual Bytes getCommandData();
-
-private:
-
-    AlarmStates _state;
 };
 
 
@@ -87,13 +86,13 @@ public:
 
     RfnSetOvUvNewAlarmReportIntervalCommand( const unsigned interval_minutes );
 
+    virtual void invokeResultHandler( ResultHandler &rh ) const;
+
+    const unsigned reportingInterval;
+
 protected:
 
     virtual Bytes getCommandData();
-
-private:
-
-    unsigned _reportingInterval;
 };
 
 
@@ -103,13 +102,13 @@ public:
 
     RfnSetOvUvAlarmRepeatIntervalCommand( const unsigned interval_minutes );
 
+    virtual void invokeResultHandler( ResultHandler &rh ) const;
+
+    const unsigned repeatInterval;
+
 protected:
 
     virtual Bytes getCommandData();
-
-private:
-
-    unsigned _repeatInterval;
 };
 
 
@@ -119,13 +118,13 @@ public:
 
     RfnSetOvUvAlarmRepeatCountCommand( const unsigned repeat_count );
 
+    virtual void invokeResultHandler( ResultHandler &rh ) const;
+
+    const unsigned repeatCount;
+
 protected:
 
     virtual Bytes getCommandData();
-
-private:
-
-    unsigned _repeatCount;
 };
 
 
@@ -144,6 +143,24 @@ private:
     MeterID     _meterID;
     EventID     _eventID;
     unsigned    _thresholdValue;
+};
+
+struct IM_EX_DEVDB RfnSetOvUvSetOverVoltageThresholdCommand : public RfnSetOvUvSetThresholdCommand
+{
+    RfnSetOvUvSetOverVoltageThresholdCommand( const MeterID meter_id, const double threshold_volts );
+
+    virtual void invokeResultHandler( ResultHandler &rh ) const;
+
+    const unsigned ovThresholdValue;
+};
+
+struct IM_EX_DEVDB RfnSetOvUvSetUnderVoltageThresholdCommand : public RfnSetOvUvSetThresholdCommand
+{
+    RfnSetOvUvSetUnderVoltageThresholdCommand( const MeterID meter_id, const double threshold_volts );
+
+    virtual void invokeResultHandler( ResultHandler &rh ) const;
+
+    const unsigned uvThresholdValue;
 };
 
 

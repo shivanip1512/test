@@ -16,14 +16,18 @@ namespace {
 
 enum
 {
-    LcdConfiguration_CommandCode_Request  = 0x69,
+    LcdConfiguration_CommandCode_Request  = 0x70,
     LcdConfiguration_CommandCode_Response = 0x71,
 
     LcdConfiguration_Operation_Write      = 0x00,
     LcdConfiguration_Operation_Read       = 0x01,
 };
 
-std::map<unsigned, std::string> MetricNames = boost::assign::map_list_of
+const std::map<unsigned char, string> StatusItems = boost::assign::map_list_of
+        ( 0x0, "Success" )
+        ( 0x1, "Failure" );
+
+const std::map<unsigned, std::string> MetricNames = boost::assign::map_list_of
     ( 0x00, "Metric Slot Disabled"                        )
     ( 0x01, "No Segments"                                 )
     ( 0x02, "All Segments"                                )
@@ -66,28 +70,83 @@ std::map<unsigned, std::string> MetricNames = boost::assign::map_list_of
 
 
 //  Class constructor
-RfnCentronLcdConfigurationCommand::RfnCentronLcdConfigurationCommand(const metric_vector_t &display_metrics) :
-    _display_metrics_to_send(display_metrics)
+RfnCentronSetLcdConfigurationCommand::RfnCentronSetLcdConfigurationCommand(const metric_vector_t &display_metrics) :
+    display_metrics_to_send(display_metrics)
 {
 }
 
-RfnCentronLcdConfigurationCommand::RfnCentronLcdConfigurationCommand()
+RfnCentronGetLcdConfigurationCommand::RfnCentronGetLcdConfigurationCommand()
 {
 }
 
 
-void RfnCentronLcdConfigurationCommand::invokeResultHandler(RfnCommand::ResultHandler &rh) const
+void RfnCentronSetLcdConfigurationCommand::invokeResultHandler(RfnCommand::ResultHandler &rh) const
 {
     rh.handleCommandResult(*this);
 }
 
+void RfnCentronGetLcdConfigurationCommand::invokeResultHandler(RfnCommand::ResultHandler &rh) const
+{
+    rh.handleCommandResult(*this);
+}
+
+void describeMetric(std::ostringstream &metric_description, unsigned metricIndex, unsigned char metric)
+{
+    metric_description << "\nDisplay metric " << ++metricIndex << ": ";
+
+    boost::optional<std::string> metricName = mapFind(MetricNames, metric);
+
+    if( metricName )
+    {
+        metric_description << *metricName;
+    }
+    else
+    {
+        metric_description << "Unsupported metric [" << (unsigned)metric << "]";
+    }
+}
+
+std::string describeMetrics(const RfnCentronLcdConfigurationCommand::metric_vector_t &metrics)
+{
+    if( metrics.empty() )
+    {
+        return "\nNo display metrics";
+    }
+    std::ostringstream metric_description;
+
+    unsigned metricIndex = 0;
+
+    for each( unsigned char metric in metrics )
+    {
+        describeMetric(metric_description, metricIndex++, metric);
+    }
+
+    return metric_description.str();
+}
+
+std::string describeMetrics(const RfnCentronLcdConfigurationCommand::metric_map_t &metrics)
+{
+    if( metrics.empty() )
+    {
+        return "\nNo display metrics";
+    }
+
+    std::ostringstream metric_description;
+
+    for each( const RfnCentronLcdConfigurationCommand::metric_map_t::value_type &metric in metrics )
+    {
+        describeMetric(metric_description, metric.first, metric.second);
+    }
+
+    return metric_description.str();
+}
 
 //  Decode a Lcd configuration response
-RfnCommandResult RfnCentronLcdConfigurationCommand::decodeCommand(const CtiTime now, const RfnResponsePayload &response)
+RfnCommandResult RfnCentronGetLcdConfigurationCommand::decodeCommand(const CtiTime now, const RfnResponsePayload &response)
 {
     RfnCommandResult result;
 
-    if( response.size() < 2 )
+    if( response.size() < 3 )
     {
         throw CommandException(
             ErrorInvalidData,
@@ -101,47 +160,105 @@ RfnCommandResult RfnCentronLcdConfigurationCommand::decodeCommand(const CtiTime 
             "Invalid command code - (" + CtiNumStr(response[0]) + ", expecting LcdConfiguration_CommandCode_Response)");
     }
 
-    const int metrics_nbr = response[1];
+    const boost::optional<std::string> status = mapFind(StatusItems, response[1]);
 
-    if( metrics_nbr != response.size() - 2 )
+    if( ! status )
     {
         throw CommandException(
             ErrorInvalidData,
-            "Invalid number of display metrics - (" + CtiNumStr(metrics_nbr) + ", expecting " + CtiNumStr(response.size() - 2) + ")");
+            "Invalid status code - (" + CtiNumStr(response[1]) + ")");
     }
 
-    if( ! metrics_nbr )
+    const int metrics_nbr = response[2];
+
+    if( (metrics_nbr * 2) != (response.size() - 3) )
     {
-        result.description = "No display metrics";
-
-        return result;
+        throw CommandException(
+            ErrorInvalidData,
+            "Invalid display metric length - (" + CtiNumStr(response.size() - 3) + ", expecting " + CtiNumStr(metrics_nbr * 2)  + ")");
     }
 
-    std::ostringstream metric_description;
-
-    _display_metrics_received.assign(
-       response.begin() + 2,
-       response.begin() + 2 + metrics_nbr );
-
-    unsigned metricIndex = 0;
-
-    for each( unsigned char metric in _display_metrics_received )
+    for( unsigned i = 0; i < metrics_nbr; ++i )
     {
-        metric_description << "Display metric " << ++metricIndex << ": ";
+        const unsigned slot   = response[3 + i * 2];
+        const unsigned metric = response[4 + i * 2];
 
-        boost::optional<std::string> metricName = mapFind(MetricNames, metric);
+        switch( slot )
+        {
+            case Slot_CycleDelay:
+                    _cycleDelay = metric;
+                    break;
 
-        if( metricName )
-        {
-            metric_description << *metricName << "\n";
-        }
-        else
-        {
-            metric_description << "Unsupported metric [" << (unsigned)metric << "]\n";
+            case Slot_DigitConfiguration:
+                    _digitConfiguration = metric;
+                    break;
+
+            case Slot_DisconnectDisplay:
+                    _disconnectDisplay = metric;
+                    break;
+
+            default:
+                    _display_metrics_received[slot] = metric;
+                    break;
         }
     }
 
-    result.description += metric_description.str();
+    result.description = "Display metrics:" + describeMetrics(_display_metrics_received);
+
+    if( _cycleDelay )
+    {
+        result.description += "\nCycle delay        : " + CtiNumStr(*_cycleDelay);
+    }
+    if( _digitConfiguration )
+    {
+        result.description += "\nDigit configuration: " + CtiNumStr(*_digitConfiguration);
+    }
+    if( _disconnectDisplay )
+    {
+        result.description += "\nDisconnect display : " + CtiNumStr(*_disconnectDisplay);
+    }
+
+    return result;
+}
+
+//  Decode a Lcd configuration response
+RfnCommandResult RfnCentronSetLcdConfigurationCommand::decodeCommand(const CtiTime now, const RfnResponsePayload &response)
+{
+    RfnCommandResult result;
+
+    if( response.size() < 3 )
+    {
+        throw CommandException(
+            ErrorInvalidData,
+            "Response too small - (" + CtiNumStr(response.size()) + ", expecting >=2)");
+    }
+
+    if( response[0] != LcdConfiguration_CommandCode_Response )
+    {
+        throw CommandException(
+            ErrorInvalidData,
+            "Invalid command code - (" + CtiNumStr(response[0]) + ", expecting LcdConfiguration_CommandCode_Response)");
+    }
+
+    const boost::optional<std::string> status = mapFind(StatusItems, response[1]);
+
+    if( ! status )
+    {
+        throw CommandException(
+            ErrorInvalidData,
+            "Invalid status code - (" + CtiNumStr(response[1]) + ")");
+    }
+
+    const int metrics_nbr = response[2];
+
+    if( metrics_nbr != 0 )
+    {
+        throw CommandException(
+            ErrorInvalidData,
+            "Invalid number of display metrics - (" + CtiNumStr(metrics_nbr) + ", expecting 0)");
+    }
+
+    result.description = "Display metrics successfully set" + describeMetrics(display_metrics_to_send);
 
     return result;
 }
@@ -153,31 +270,43 @@ unsigned char RfnCentronLcdConfigurationCommand::getCommandCode() const
 }
 
 //  returns the operation field of a request
-unsigned char RfnCentronLcdConfigurationCommand::getOperation() const
+unsigned char RfnCentronSetLcdConfigurationCommand::getOperation() const
 {
-    return _display_metrics_to_send ? LcdConfiguration_Operation_Write : LcdConfiguration_Operation_Read;
+    return LcdConfiguration_Operation_Write;
+}
+
+//  returns the operation field of a request
+unsigned char RfnCentronGetLcdConfigurationCommand::getOperation() const
+{
+    return LcdConfiguration_Operation_Read;
 }
 
 //  returns the data portion a request
-RfnCommand::Bytes RfnCentronLcdConfigurationCommand::getCommandData()
+RfnCommand::Bytes RfnCentronSetLcdConfigurationCommand::getCommandData()
 {
     Bytes data;
 
-    if( _display_metrics_to_send )
+    data.push_back(display_metrics_to_send.size());
+
+    unsigned metric_number = 0;
+
+    for each( unsigned char display_metric in display_metrics_to_send )
     {
-        data.push_back(_display_metrics_to_send->size());
-        data.insert(data.end(), _display_metrics_to_send->begin(), _display_metrics_to_send->end());
-    }
-    else
-    {
-        data.push_back(0); // zero items
+        data.push_back(metric_number++);
+        data.push_back(display_metric);
     }
 
     return data;
 }
 
+//  returns the data portion a request
+RfnCommand::Bytes RfnCentronGetLcdConfigurationCommand::getCommandData()
+{
+    return boost::assign::list_of(0);
+}
 
-RfnCentronLcdConfigurationCommand::metric_vector_t RfnCentronLcdConfigurationCommand::getReceivedMetrics() const
+
+RfnCentronGetLcdConfigurationCommand::metric_map_t RfnCentronGetLcdConfigurationCommand::getReceivedMetrics() const
 {
     return _display_metrics_received;
 }

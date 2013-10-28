@@ -123,14 +123,12 @@ public:
     virtual RfnCommandResult decodeCommand( const CtiTime now,
                                             const RfnResponsePayload & response );
 
+    const unsigned demandInterval,
+                   loadProfileInterval;
+
 protected:
 
     virtual TlvList getTlvs();
-
-private:
-
-    const unsigned _demandInterval,
-                   _loadProfileInterval;
 };
 
 

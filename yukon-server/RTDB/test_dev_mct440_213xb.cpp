@@ -1605,7 +1605,7 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Read_1Dword)
         (empty)
         (empty)
         // memory read 30
-        (tuple_list_of(0,1,268)(1,2,269))
+        (tuple_list_of(0,1,269)(1,2,270))
         (empty)
         (empty)
         (empty)
@@ -1673,9 +1673,9 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Read_1Dword)
         (empty)
         (empty)
         (tuple_list_of(0,2,143)(2,2,144)) // holiday 1 - 2
-        (tuple_list_of(0,2,246)(2,2,247)) // holiday 7 - 9
+        (tuple_list_of(0,2,247)(2,2,248)) // holiday 7 - 9
         // memory read 210
-        (tuple_list_of(0,2,252)(2,2,253)) // holiday 13 - 14
+        (tuple_list_of(0,2,253)(2,2,254)) // holiday 13 - 14
         (empty)
         (empty)
         (empty)
@@ -1744,7 +1744,7 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Read_2Dwords)
         (empty)
         (empty)
         // memory read 30
-        (tuple_list_of(0,1,268)(1,2,269))
+        (tuple_list_of(0,1,269)(1,2,270))
         (empty)
         (empty)
         (empty)
@@ -1820,10 +1820,10 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Read_2Dwords)
         (empty)
         (empty)
         (empty)
-        (tuple_list_of(0,2,143)(2,2,144)(4,2,145)(6,2,243)) // holiday 1 - 4
-        (tuple_list_of(0,2,246)(2,2,247)(4,2,248)(6,2,249)) // holiday 7 - 11
+        (tuple_list_of(0,2,143)(2,2,144)(4,2,145)(6,2,244)) // holiday 1 - 4
+        (tuple_list_of(0,2,247)(2,2,248)(4,2,249)(6,2,250)) // holiday 7 - 11
         // memory read 210
-        (tuple_list_of(0,2,252)(2,2,253)(4,2,254))          // holiday 13 - 15
+        (tuple_list_of(0,2,253)(2,2,254)(4,2,255))          // holiday 13 - 15
         (empty)
         (empty)
         (empty)
@@ -1892,7 +1892,7 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Read_3Dwords)
         (empty)
         (empty)
         // memory read 30
-        (tuple_list_of(0,1,268)(1,2,269))
+        (tuple_list_of(0,1,269)(1,2,270))
         (empty)
         (empty)
         (empty)
@@ -1979,10 +1979,10 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Read_3Dwords)
         (empty)
         (empty)
         (empty)
-        (tuple_list_of(0,2,143)(2,2,144)(4,2,145)(6,2,243)(8,2,244)(10,2,245)) // holiday 1 - 6
-        (tuple_list_of(0,2,246)(2,2,247)(4,2,248)(6,2,249)(8,2,250)(10,2,251)) // holiday 7 - 12
+        (tuple_list_of(0,2,143)(2,2,144)(4,2,145)(6,2,244)(8,2,245)(10,2,246)) // holiday 1 - 6
+        (tuple_list_of(0,2,247)(2,2,248)(4,2,249)(6,2,250)(8,2,251)(10,2,252)) // holiday 7 - 12
         // memory read 210
-        (tuple_list_of(0,2,252)(2,2,253)(4,2,254))                             // holiday 13 - 15
+        (tuple_list_of(0,2,253)(2,2,254)(4,2,255))                             // holiday 13 - 15
         (empty)
         (empty)
         (empty)

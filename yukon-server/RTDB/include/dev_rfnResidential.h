@@ -14,49 +14,55 @@ namespace Devices   {
 class IM_EX_DEVDB RfnResidentialDevice
     :   public RfnDevice
 {
-    static const InstallMap _putConfigInstallMap;
-    static const InstallMap initPutConfigInstallMap();
-
-    static const InstallMap _getConfigInstallMap;
-    static const InstallMap initGetConfigInstallMap();
-
 protected:
 
-    virtual const InstallMap & getPutConfigInstallMap() const;
-    virtual const InstallMap & getGetConfigInstallMap() const;
+    virtual ConfigMap getConfigMethods(bool readOnly);
 
-    //int executeLoadProfileRecording              (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
-    int executeImmediateDemandFreeze             (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
-    int executeTouCriticalPeak                   (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
+    //int executeLoadProfileRecording              (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
+    int executeImmediateDemandFreeze             (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
+    int executeTouCriticalPeak                   (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
 
-    int executePutConfigTou                      (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
-    int executePutConfigHoliday                  (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
+    int executePutConfigTou                      (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
+    int executePutConfigHoliday                  (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
 
-    int executeGetConfigTou                      (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
-    int executeGetConfigHoliday                  (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
+    int executeGetConfigTou                      (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
+    int executeGetConfigHoliday                  (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
 
-    int executePutConfigDemandFreezeDay          (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
-    int executePutConfigInstallTou               (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
-    int executePutConfigVoltageAveragingInterval (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
-    int executePutConfigOvUv                     (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
+    int executePutValueTouReset                  (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
+    int executePutValueTouResetZero              (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
 
-    int executeReadDemandFreezeInfo              (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
-    int executeGetConfigInstallTou               (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
-    int executeGetConfigVoltageAveragingInterval (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
-    int executeGetConfigOvUv                     (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
+    int executePutConfigDemandFreezeDay          (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
+    int executePutConfigInstallTou               (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
+    int executePutConfigVoltageAveragingInterval (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
+    int executePutConfigOvUv                     (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
 
-    int executeGetConfigVoltageProfile           (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
-    int executePutConfigVoltageProfile           (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
-    int executeGetValueVoltageProfile            (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
+    int executeReadDemandFreezeInfo              (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
+    int executeGetStatusTou                      (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
+    int executeGetConfigInstallTou               (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
+    int executeGetConfigVoltageAveragingInterval (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
+    int executeGetConfigOvUv                     (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
 
-    virtual int executePutConfigDisplay          (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &retList, RfnCommandList &rfnRequests);
+    int executeGetConfigVoltageProfile           (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
+    int executePutConfigVoltageProfile           (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
+    int executeGetValueVoltageProfile            (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
 
-    void handleResult( const Commands::RfnVoltageProfileGetConfigurationCommand & cmd );
-    void handleResult( const Commands::RfnLoadProfileGetRecordingCommand & cmd );
-    void handleResult( const Commands::RfnGetDemandFreezeInfoCommand & cmd );
-    void handleResult( const Commands::RfnTouScheduleConfigurationCommand & cmd );
-    void handleResult( const Commands::RfnTouHolidayConfigurationCommand & cmd );
-    void handleResult( const Commands::RfnGetOvUvAlarmConfigurationCommand & cmd );
+    virtual int executeGetConfigDisplay          (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
+    virtual int executePutConfigDisplay          (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
+
+    void handleCommandResult( const Commands::RfnVoltageProfileGetConfigurationCommand  & cmd );
+    void handleCommandResult( const Commands::RfnVoltageProfileSetConfigurationCommand  & cmd );
+    void handleCommandResult( const Commands::RfnLoadProfileGetRecordingCommand         & cmd );
+    void handleCommandResult( const Commands::RfnGetDemandFreezeInfoCommand             & cmd );
+    void handleCommandResult( const Commands::RfnTouScheduleGetConfigurationCommand     & cmd );
+    void handleCommandResult( const Commands::RfnTouScheduleSetConfigurationCommand     & cmd );
+    void handleCommandResult( const Commands::RfnTouHolidayConfigurationCommand         & cmd );
+    void handleCommandResult( const Commands::RfnGetOvUvAlarmConfigurationCommand       & cmd );
+    void handleCommandResult( const Commands::RfnSetOvUvAlarmProcessingStateCommand     & cmd );
+    void handleCommandResult( const Commands::RfnSetOvUvAlarmRepeatCountCommand         & cmd );
+    void handleCommandResult( const Commands::RfnSetOvUvAlarmRepeatIntervalCommand      & cmd );
+    void handleCommandResult( const Commands::RfnSetOvUvNewAlarmReportIntervalCommand   & cmd );
+    void handleCommandResult( const Commands::RfnSetOvUvSetOverVoltageThresholdCommand  & cmd );
+    void handleCommandResult( const Commands::RfnSetOvUvSetUnderVoltageThresholdCommand & cmd );
 
 private:
 

@@ -28,23 +28,67 @@ protected:
         Operation_GetDemandFreezeInfo           = 0x03
     };
 
+public:
+
     enum TlvType
     {
-        TlvType_ScheduledDayOfDemandFreeze      = 0x01,
-        TlvType_TimeLastDemandFreezeOccured     = 0x02,
-        TlvType_FrozenPeakDemandTotal           = 0x03,
-        TlvType_FrozenPeakDemandTime            = 0x04,
-        TlvType_FrozenPeakDemandRateA           = 0x05,
-        TlvType_FrozenPeakDemandRateATime       = 0x06,
-        TlvType_FrozenPeakDemandRateB           = 0x07,
-        TlvType_FrozenPeakDemandRateBTime       = 0x08,
-        TlvType_FrozenPeakDemandRateC           = 0x09,
-        TlvType_FrozenPeakDemandRateCTime       = 0x0a,
-        TlvType_FrozenPeakDemandRateD           = 0x0b,
-        TlvType_FrozenPeakDemandRateDTime       = 0x0c,
-        TlvType_FrozenPeakDemandRateE           = 0x0d,
-        TlvType_FrozenPeakDemandRateETime       = 0x0e
+        TlvType_ScheduledDayOfDemandFreeze  = 0x01,
+        TlvType_TimeLastDemandFreezeOccured = 0x02,
+
+        TlvType_FrozenDeliveredPeakDemandTotal      = 0x03,
+        TlvType_FrozenDeliveredPeakDemandTime       = 0x04,
+        TlvType_FrozenDeliveredPeakDemandRateA      = 0x05,
+        TlvType_FrozenDeliveredPeakDemandRateATime  = 0x06,
+        TlvType_FrozenDeliveredPeakDemandRateB      = 0x07,
+        TlvType_FrozenDeliveredPeakDemandRateBTime  = 0x08,
+        TlvType_FrozenDeliveredPeakDemandRateC      = 0x09,
+        TlvType_FrozenDeliveredPeakDemandRateCTime  = 0x0a,
+        TlvType_FrozenDeliveredPeakDemandRateD      = 0x0b,
+        TlvType_FrozenDeliveredPeakDemandRateDTime  = 0x0c,
+        TlvType_FrozenDeliveredPeakDemandRateE      = 0x0d,
+        TlvType_FrozenDeliveredPeakDemandRateETime  = 0x0e,
+
+        TlvType_FrozenReceivedPeakDemandTotal       = 0x20,
+        TlvType_FrozenReceivedPeakDemandTime        = 0x21,
+        TlvType_FrozenReceivedPeakDemandRateA       = 0x22,
+        TlvType_FrozenReceivedPeakDemandRateATime   = 0x23,
+        TlvType_FrozenReceivedPeakDemandRateB       = 0x24,
+        TlvType_FrozenReceivedPeakDemandRateBTime   = 0x25,
+        TlvType_FrozenReceivedPeakDemandRateC       = 0x26,
+        TlvType_FrozenReceivedPeakDemandRateCTime   = 0x27,
+        TlvType_FrozenReceivedPeakDemandRateD       = 0x28,
+        TlvType_FrozenReceivedPeakDemandRateDTime   = 0x29,
+        TlvType_FrozenReceivedPeakDemandRateE       = 0x2a,
+        TlvType_FrozenReceivedPeakDemandRateETime   = 0x2b,
+
+        TlvType_FrozenDeliveredPeakVarTotal         = 0x30,
+        TlvType_FrozenDeliveredPeakVarTime          = 0x31,
+        TlvType_FrozenDeliveredPeakVarRateA         = 0x32,
+        TlvType_FrozenDeliveredPeakVarRateATime     = 0x33,
+        TlvType_FrozenDeliveredPeakVarRateB         = 0x34,
+        TlvType_FrozenDeliveredPeakVarRateBTime     = 0x35,
+        TlvType_FrozenDeliveredPeakVarRateC         = 0x36,
+        TlvType_FrozenDeliveredPeakVarRateCTime     = 0x37,
+        TlvType_FrozenDeliveredPeakVarRateD         = 0x38,
+        TlvType_FrozenDeliveredPeakVarRateDTime     = 0x39,
+        TlvType_FrozenDeliveredPeakVarRateE         = 0x3a,
+        TlvType_FrozenDeliveredPeakVarRateETime     = 0x3b,
+
+        TlvType_FrozenReceivedPeakVarTotal          = 0x40,
+        TlvType_FrozenReceivedPeakVarTime           = 0x41,
+        TlvType_FrozenReceivedPeakVarRateA          = 0x42,
+        TlvType_FrozenReceivedPeakVarRateATime      = 0x43,
+        TlvType_FrozenReceivedPeakVarRateB          = 0x44,
+        TlvType_FrozenReceivedPeakVarRateBTime      = 0x45,
+        TlvType_FrozenReceivedPeakVarRateC          = 0x46,
+        TlvType_FrozenReceivedPeakVarRateCTime      = 0x47,
+        TlvType_FrozenReceivedPeakVarRateD          = 0x48,
+        TlvType_FrozenReceivedPeakVarRateDTime      = 0x49,
+        TlvType_FrozenReceivedPeakVarRateE          = 0x4a,
+        TlvType_FrozenReceivedPeakVarRateETime      = 0x4b
     };
+
+protected:
 
     RfnDemandFreezeCommand( const Operation operation );
 
@@ -122,15 +166,28 @@ public:
             Rate_Count
         };
 
-        struct RateInfo
+        enum MetricTypes
         {
-            boost::optional<unsigned int>   rate;
+            Metric_FrozenPeak_Demand_Delivered,
+            Metric_FrozenPeak_Demand_Received,
+            Metric_FrozenPeak_Vars_Delivered,
+            Metric_FrozenPeak_Vars_Received,
+        };
+
+        struct PeakRecord
+        {
+            boost::optional<unsigned int>   value;
             boost::optional<unsigned int>   timestamp;
         };
 
         boost::optional<unsigned char>      dayOfFreeze;
         boost::optional<unsigned int>       lastFreezeTime;
-        std::map<DemandRates, RateInfo>     demandInfo;
+
+        typedef std::map<MetricTypes, PeakRecord> QuadrantPeakValues;
+
+        typedef std::map<DemandRates, QuadrantPeakValues> PeaksPerRate;
+
+        PeaksPerRate peakValues;
     };
 
     virtual void invokeResultHandler(RfnCommand::ResultHandler &rh) const;

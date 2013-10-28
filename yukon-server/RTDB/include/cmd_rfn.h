@@ -9,13 +9,24 @@ namespace Cti {
 namespace Devices {
 namespace Commands {
 
-class RfnCentronLcdConfigurationCommand;
+class RfnCentronSetLcdConfigurationCommand;
+class RfnCentronGetLcdConfigurationCommand;
 class RfnGetDemandFreezeInfoCommand;
 class RfnLoadProfileGetRecordingCommand;
 class RfnVoltageProfileGetRecordingCommand;
+class RfnVoltageProfileGetConfigurationCommand;
+class RfnVoltageProfileSetConfigurationCommand;
 class RfnTouConfigurationCommand;
+class RfnTouScheduleGetConfigurationCommand;
+class RfnTouScheduleSetConfigurationCommand;
 class RfnTouHolidayConfigurationCommand;
 class RfnGetOvUvAlarmConfigurationCommand;
+class RfnSetOvUvAlarmProcessingStateCommand;
+class RfnSetOvUvAlarmRepeatCountCommand;
+class RfnSetOvUvAlarmRepeatIntervalCommand;
+class RfnSetOvUvNewAlarmReportIntervalCommand;
+class RfnSetOvUvSetOverVoltageThresholdCommand;
+class RfnSetOvUvSetUnderVoltageThresholdCommand;
 
 struct RfnCommandResult
 {
@@ -36,14 +47,25 @@ public:
 
     struct ResultHandler
     {
-        virtual void handleCommandResult(const RfnCommand                           &command)  {}
-        virtual void handleCommandResult(const RfnCentronLcdConfigurationCommand    &command)  {}
-        virtual void handleCommandResult(const RfnGetDemandFreezeInfoCommand        &command)  {}
-        virtual void handleCommandResult(const RfnLoadProfileGetRecordingCommand &command)  {}
-        virtual void handleCommandResult(const RfnVoltageProfileGetRecordingCommand &command)  {}
-        virtual void handleCommandResult(const RfnTouConfigurationCommand           &command)  {}
-        virtual void handleCommandResult(const RfnTouHolidayConfigurationCommand    &command)  {}
-        virtual void handleCommandResult(const RfnGetOvUvAlarmConfigurationCommand  &command)  {}
+        virtual void handleCommandResult(const RfnCommand &)                                {}
+        virtual void handleCommandResult(const RfnCentronSetLcdConfigurationCommand &)      {}
+        virtual void handleCommandResult(const RfnCentronGetLcdConfigurationCommand &)      {}
+        virtual void handleCommandResult(const RfnGetDemandFreezeInfoCommand &)             {}
+        virtual void handleCommandResult(const RfnLoadProfileGetRecordingCommand &)         {}
+        virtual void handleCommandResult(const RfnVoltageProfileGetRecordingCommand &)      {}
+        virtual void handleCommandResult(const RfnVoltageProfileGetConfigurationCommand &)  {}
+        virtual void handleCommandResult(const RfnVoltageProfileSetConfigurationCommand &)  {}
+        virtual void handleCommandResult(const RfnTouConfigurationCommand &)                {}
+        virtual void handleCommandResult(const RfnTouScheduleGetConfigurationCommand &)     {}
+        virtual void handleCommandResult(const RfnTouScheduleSetConfigurationCommand &)     {}
+        virtual void handleCommandResult(const RfnTouHolidayConfigurationCommand &)         {}
+        virtual void handleCommandResult(const RfnGetOvUvAlarmConfigurationCommand &)       {}
+        virtual void handleCommandResult(const RfnSetOvUvAlarmProcessingStateCommand &)     {}
+        virtual void handleCommandResult(const RfnSetOvUvAlarmRepeatCountCommand &)         {}
+        virtual void handleCommandResult(const RfnSetOvUvAlarmRepeatIntervalCommand &)      {}
+        virtual void handleCommandResult(const RfnSetOvUvNewAlarmReportIntervalCommand &)   {}
+        virtual void handleCommandResult(const RfnSetOvUvSetOverVoltageThresholdCommand &)  {}
+        virtual void handleCommandResult(const RfnSetOvUvSetUnderVoltageThresholdCommand &) {}
     };
 
     //  to be overridden by children that require a result handler

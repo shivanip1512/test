@@ -32,6 +32,8 @@ public:
         TouDisable
     };
 
+    static const std::string SchedulePrefix;
+
     boost::optional<TouState> getTouStateReceived() const;
 
 protected:
@@ -56,8 +58,6 @@ class IM_EX_DEVDB RfnTouScheduleConfigurationCommand : public RfnTouConfiguratio
 {
 public:
 
-    virtual void invokeResultHandler(RfnCommand::ResultHandler &rh) const;
-
     enum ScheduleNbr
     {
         Schedule1,
@@ -81,17 +81,14 @@ public:
         Rates        _rates;
     };
 
-    RfnTouScheduleConfigurationCommand(); // read
-    RfnTouScheduleConfigurationCommand( const Schedule &schedule_to_send ); // write
+    static ScheduleNbr resolveScheduleName( const std::string & scheduleName );
 
     boost::optional<Schedule> getTouScheduleReceived() const;
 
-    static ScheduleNbr resolveScheduleName( const std::string & scheduleName );
-
 protected:
 
-    virtual unsigned char getOperation() const;
-    virtual Bytes         getCommandData();
+    virtual unsigned char getOperation() const = 0;
+    virtual Bytes         getCommandData() = 0;
 
     virtual void decodeTlv( RfnCommandResult& result, const TypeLengthValue& tlv );
 
@@ -100,12 +97,41 @@ protected:
     void decodeScheduleSwitchTimes ( RfnCommandResult& result, const Bytes& value, const ScheduleNbr schedule_nbr );
     void decodeScheduleRates       ( RfnCommandResult& result, const Bytes& value, const ScheduleNbr schedule_nbr );
 
+    boost::optional<Schedule> _schedule_received;
+};
+
+class IM_EX_DEVDB RfnTouScheduleSetConfigurationCommand : public RfnTouScheduleConfigurationCommand
+{
+public:
+
+    RfnTouScheduleSetConfigurationCommand( const Schedule &schedule_to_send );
+
+    virtual void invokeResultHandler(RfnCommand::ResultHandler &rh) const;
+
+    const Schedule schedule_to_send;
+
 private:
+
+    virtual unsigned char getOperation() const;
+    virtual Bytes         getCommandData();
 
     Bytes createCommandData( const Schedule & schedule_to_send );
 
-    boost::optional<Bytes>    const _commandData_to_send;
-    boost::optional<Schedule>       _schedule_received;
+    const Bytes _commandData_to_send;
+};
+
+class IM_EX_DEVDB RfnTouScheduleGetConfigurationCommand : public RfnTouScheduleConfigurationCommand
+{
+public:
+
+    RfnTouScheduleGetConfigurationCommand();
+
+    virtual void invokeResultHandler(RfnCommand::ResultHandler &rh) const;
+
+private:
+
+    virtual unsigned char getOperation() const;
+    virtual Bytes         getCommandData();
 };
 
 /**
@@ -186,6 +212,40 @@ class IM_EX_DEVDB RfnTouCancelHolidayActiveCommand : public RfnTouConfigurationC
 public:
 
     RfnTouCancelHolidayActiveCommand(); // write
+
+protected:
+
+    virtual unsigned char getOperation() const;
+    virtual Bytes         getCommandData();
+
+    virtual void decodeTlv( RfnCommandResult& result, const TypeLengthValue& tlv );
+};
+
+/**
+ * RFN TOU reset registers
+ */
+class IM_EX_DEVDB RfnTouResetCommand : public RfnTouConfigurationCommand
+{
+public:
+
+    RfnTouResetCommand(); // write
+
+protected:
+
+    virtual unsigned char getOperation() const;
+    virtual Bytes         getCommandData();
+
+    virtual void decodeTlv( RfnCommandResult& result, const TypeLengthValue& tlv );
+};
+
+/**
+ * RFN TOU reset registers and set to current reading
+ */
+class IM_EX_DEVDB RfnTouResetZeroCommand : public RfnTouConfigurationCommand
+{
+public:
+
+    RfnTouResetZeroCommand(); // write
 
 protected:
 

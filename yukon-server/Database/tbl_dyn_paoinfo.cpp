@@ -44,6 +44,8 @@ const CtiTableDynamicPaoInfo::key_map_t   CtiTableDynamicPaoInfo::_key_map =
             "expected freeze")
         (Key_VerificationSequence,
             "verification sequence")
+        (Key_RfnE2eRequestId,
+            "rfn e2e request id")
 
         (Key_MCT_TimeAdjustTolerance,
             "mct time adjust tolerance")

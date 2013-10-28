@@ -185,6 +185,7 @@ public:
 #define CMD_FLAG_GS_EXTERNAL     0x00000200
 #define CMD_FLAG_GS_IED          0x00000400
 #define CMD_FLAG_GS_LINK         0x00000800
+#define CMD_FLAG_GS_TOU          0x00001000
 /* Defined below.... be careful
 #define CMD_FLAG_OFFSET          0x10000000     // A specific offset is defined in the next cmd field
 */
