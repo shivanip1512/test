@@ -1428,16 +1428,8 @@
     </bean>
 
     <bean id="captchaService" class="com.cannontech.web.common.captcha.service.impl.CaptchaServiceImpl" />
-
     <bean id="passwordResetService" class="com.cannontech.web.stars.service.impl.PasswordResetServiceImpl" />
-
-    <bean id="loginService" class="com.cannontech.web.login.impl.LoginServiceImpl">
-        <property name="sessionInitializers">
-            <list>
-                <ref bean="starsSessionInitializer"/>   
-            </list>
-        </property>
-    </bean>
+    <bean id="loginService" class="com.cannontech.web.login.impl.LoginServiceImpl"/>
     
     <bean id="loginRequestHandlers" class="java.util.LinkedList">
         <constructor-arg>
@@ -1469,9 +1461,7 @@
         <property name="cryptoService" ref="cryptoService"/>    
     </bean>
     
-    <bean id="starsSessionInitializer" class="com.cannontech.web.login.impl.StarsSessionInitializer">
-        <property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-    </bean>
+    <bean id="starsSessionInitializer" class="com.cannontech.web.login.impl.StarsSessionInitializer"/>
     
     <bean id="themostatMenuOption" class="com.cannontech.web.menu.option.producer.ThermostatMenuOptionProducer">
         <property name="inventoryDao" ref="inventoryDao" />
