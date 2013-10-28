@@ -273,6 +273,6 @@ public class LoginServiceImpl implements LoginService {
 
         session.setAttribute(ServletUtil.SESSION_INFO, sessionInfo);
 
-        log.info("Created session " + session.getId() + " for " + user);
+        log.debug("Created session " + session.getId() + " for " + user);
     }
 }
