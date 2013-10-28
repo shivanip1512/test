@@ -29,8 +29,8 @@ public class GroupMetersDaoImpl implements GroupMetersDao {
     private static Map<MeterDisplayFieldEnum, String> orderByMap = new HashMap<MeterDisplayFieldEnum, String>();
     static {
         orderByMap.put(MeterDisplayFieldEnum.DEVICE_NAME, "ypo.paoName");
-        orderByMap.put(MeterDisplayFieldEnum.METER_NUMBER, "DeviceMeterGroup.meterNumber");
-        orderByMap.put(MeterDisplayFieldEnum.ADDRESS, "DeviceCarrierSettings.address");
+        orderByMap.put(MeterDisplayFieldEnum.METER_NUMBER, "dmg.meterNumber");
+        orderByMap.put(MeterDisplayFieldEnum.ADDRESS, "dcs.address");
         orderByMap.put(MeterDisplayFieldEnum.ID, "ypo.paObjectId");
     }
     
@@ -57,7 +57,7 @@ public class GroupMetersDaoImpl implements GroupMetersDao {
     private SqlFragmentSource getChildMetersByGroupSql(DeviceGroup group) {
         
         SqlFragmentSource sqlWhereClause = deviceGroupProviderDao.getChildDeviceGroupSqlWhereClause(group,
-                                                                                         "Device.deviceId");
+                                                                                         "d.deviceId");
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append(meterRowMapper.getSql());
         sql.append("where");
