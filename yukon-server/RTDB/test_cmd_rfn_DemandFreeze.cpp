@@ -3,7 +3,7 @@
 
 #include "ctidate.h"
 #include "cmd_rfn_DemandFreeze.h"
-
+#include "boost_test_helpers.h"
 
 using Cti::Devices::Commands::RfnCommand;
 using Cti::Devices::Commands::RfnCommandResult;
@@ -210,6 +210,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandFreeze_ImmediateFreeze )
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandFreeze_GetFreezeInfo_full )
 {
+    Cti::Test::set_to_central_timezone();
+
     RfnGetDemandFreezeInfoCommand   command;
 
     // execute
@@ -281,6 +283,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandFreeze_GetFreezeInfo_full )
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandFreeze_GetFreezeInfo_supplied_case_1 )
 {
+    Cti::Test::set_to_central_timezone();
+
     RfnGetDemandFreezeInfoCommand   command;
 
     // execute
@@ -347,6 +351,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandFreeze_GetFreezeInfo_supplied_case_1 )
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandFreeze_GetFreezeInfo_supplied_case_2 )
 {
+    Cti::Test::set_to_central_timezone();
+
     RfnGetDemandFreezeInfoCommand   command;
     // execute
     {

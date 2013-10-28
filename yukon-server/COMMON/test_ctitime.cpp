@@ -4,6 +4,7 @@
 #include "ctidate.h"
 #include <rw/rwtime.h>
 #include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/assign/list_of.hpp>
 
 #include "boost_test_helpers.h"
 
@@ -288,81 +289,139 @@ BOOST_AUTO_TEST_CASE(test_ctitime_DST)
 
     ct = CtiTime(ct.date(), 2, 30 ,0);
     //BOOST_CHECK_EQUAL( ct.seconds() - 4*timeduration, ctt.seconds() );
-
-
-
 }
 
+namespace { // anonymous namespace
 
-struct time_parts
+/**
+ * retrieve Time Zone registry key name
+ */
+std::string getTimeZoneKeyName()
 {
-    int year, month, day, hour, minute, second, expected_offset;
+    HKEY hKey = 0;
+
+    RegOpenKey(HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\TimeZoneInformation", &hKey);
+
+    DWORD lpType = REG_SZ;
+    TCHAR buffer[512]; // we expect ANSI
+    DWORD bufferSize = sizeof(buffer);
+
+    if( RegQueryValueEx(hKey, "TimeZoneKeyName", NULL, &lpType, (LPBYTE)buffer, &bufferSize) != ERROR_SUCCESS )
+    {
+        return std::string(); // return empty string
+    }
+
+    std::string result = std::string(buffer, bufferSize);
+
+    // the buffer size can actually exceed c string. so we resize the string
+    return result.substr(0, result.find_first_of('\0'));
+}
+
+struct TimeParts
+{
+    int year, month, day, hour, minute, second, tz_offset;
+
+    TimeParts( int year, int month, int day, int hour, int minute, int second, int tz_offset ) :
+        year(year), month(month), day(day), hour(hour), minute(minute), second(second), tz_offset(tz_offset)
+    {}
 };
 
-
-unsigned long mkGmtSeconds(const time_parts &tp)
+unsigned long mkGmtSeconds(const TimeParts &tp)
 {
-    return CtiTime(CtiDate(tp.day, tp.month, tp.year), tp.hour, tp.minute, tp.second).seconds();
+    tm tm_info = {};
+
+    tm_info.tm_year  = tp.year - 1900;
+    tm_info.tm_mon   = tp.month - 1;
+    tm_info.tm_mday  = tp.day;
+    tm_info.tm_hour  = tp.hour;
+    tm_info.tm_min   = tp.minute;
+    tm_info.tm_sec   = tp.second;
+    tm_info.tm_isdst = -1;
+
+    return mktime( &tm_info );
 }
 
-unsigned long mkLocalSeconds(const time_parts &tp)
+unsigned long mkLocalSeconds(const TimeParts &tp)
 {
-    //  local seconds = GMT seconds + TZ offset
-    return mkGmtSeconds(tp) + tp.expected_offset;
+    return mkGmtSeconds(tp) + (tp.tz_offset * 60);
 }
+
+} // anonymous namespace
 
 BOOST_AUTO_TEST_CASE(test_ctitime_fromLocalSeconds)
 {
-    Cti::Test::set_to_central_timezone();
+    std::vector<TimeParts> time_parts;
 
-    const int standard_offset = -6 * 3600;
-    const int daylight_offset = -5 * 3600;
+    const std::string timeZoneKeyName = getTimeZoneKeyName();
 
-    //  =====  2009 test cases  =====
-    time_parts tc2009[15] =
+    if( timeZoneKeyName == "Central Standard Time" )
     {
-        { 2009,  1,  1,  0, 00, 00, standard_offset },  //  known ST date
+        const long standard_offset = -6*60,
+                   daylight_offset = -5*60;
 
-        { 2009,  3,  7,  0, 00, 00, standard_offset },  //  standard -> daylight-saving-time transition
-        { 2009,  3,  8,  1, 59, 59, standard_offset },  //
+        time_parts = boost::assign::list_of
+        (TimeParts( 2009,  1,  1,  0, 00, 00, standard_offset )) //  known ST date
 
-        { 2009,  3,  8,  2, 00, 00, standard_offset },  //  nonexistent hour;  this test is here to pin the behavior
-        { 2009,  3,  8,  2, 59, 59, standard_offset },  //
+        (TimeParts( 2009,  3,  7,  0, 00, 00, standard_offset )) //  standard -> daylight-saving-time transition
+        (TimeParts( 2009,  3,  8,  1, 59, 59, standard_offset )) //
 
-        { 2009,  3,  8,  3, 00, 00, daylight_offset },  //
-        { 2009,  3,  9,  0, 00, 00, daylight_offset },  //
+        (TimeParts( 2009,  3,  8,  2, 00, 00, standard_offset )) //  nonexistent hour;  this test is here to pin the behavior
+        (TimeParts( 2009,  3,  8,  2, 59, 59, standard_offset )) //
 
-        { 2009,  7,  1,  0, 00, 00, daylight_offset },  //  known DST date
+        (TimeParts( 2009,  3,  8,  3, 00, 00, daylight_offset )) //
+        (TimeParts( 2009,  3,  9,  0, 00, 00, daylight_offset )) //
 
-        { 2009, 10, 31,  0, 00, 00, daylight_offset },  //  daylight-saving-time -> standard transition
-        { 2009, 11,  1,  0, 59, 59, daylight_offset },  //
+        (TimeParts( 2009,  7,  1,  0, 00, 00, daylight_offset )) //  known DST date
 
-        { 2009, 11,  1,  1, 00, 00, standard_offset },  //  ambiguous hour;  this test is here to pin the behavior
-        { 2009, 11,  1,  1, 59, 59, standard_offset },  //
+        (TimeParts( 2009, 10, 31,  0, 00, 00, daylight_offset )) //  daylight-saving-time -> standard transition
+        (TimeParts( 2009, 11,  1,  0, 59, 59, daylight_offset )) //
 
-        { 2009, 11,  1,  2, 00, 00, standard_offset },  //
-        { 2009, 11,  2,  0, 00, 00, standard_offset },  //
+        (TimeParts( 2009, 11,  1,  1, 00, 00, standard_offset )) //  ambiguous hour;  this test is here to pin the behavior
+        (TimeParts( 2009, 11,  1,  1, 59, 59, standard_offset )) //
 
-        { 2009, 12, 31,  0, 00, 00, standard_offset }   //  known ST date
-    };
+        (TimeParts( 2009, 11,  1,  2, 00, 00, standard_offset )) //
+        (TimeParts( 2009, 11,  2,  0, 00, 00, standard_offset )) //
 
-    BOOST_CHECK_EQUAL(mkGmtSeconds(tc2009[ 0]), CtiTime::fromLocalSeconds(mkLocalSeconds(tc2009[ 0])).seconds());
-    BOOST_CHECK_EQUAL(mkGmtSeconds(tc2009[ 1]), CtiTime::fromLocalSeconds(mkLocalSeconds(tc2009[ 1])).seconds());
-    BOOST_CHECK_EQUAL(mkGmtSeconds(tc2009[ 2]), CtiTime::fromLocalSeconds(mkLocalSeconds(tc2009[ 2])).seconds());
-    BOOST_CHECK_EQUAL(mkGmtSeconds(tc2009[ 3]), CtiTime::fromLocalSeconds(mkLocalSeconds(tc2009[ 3])).seconds());
-    BOOST_CHECK_EQUAL(mkGmtSeconds(tc2009[ 4]), CtiTime::fromLocalSeconds(mkLocalSeconds(tc2009[ 4])).seconds());
-    BOOST_CHECK_EQUAL(mkGmtSeconds(tc2009[ 5]), CtiTime::fromLocalSeconds(mkLocalSeconds(tc2009[ 5])).seconds());
-    BOOST_CHECK_EQUAL(mkGmtSeconds(tc2009[ 6]), CtiTime::fromLocalSeconds(mkLocalSeconds(tc2009[ 6])).seconds());
-    BOOST_CHECK_EQUAL(mkGmtSeconds(tc2009[ 7]), CtiTime::fromLocalSeconds(mkLocalSeconds(tc2009[ 7])).seconds());
-    BOOST_CHECK_EQUAL(mkGmtSeconds(tc2009[ 8]), CtiTime::fromLocalSeconds(mkLocalSeconds(tc2009[ 8])).seconds());
-    BOOST_CHECK_EQUAL(mkGmtSeconds(tc2009[ 9]), CtiTime::fromLocalSeconds(mkLocalSeconds(tc2009[ 9])).seconds());
-    BOOST_CHECK_EQUAL(mkGmtSeconds(tc2009[10]), CtiTime::fromLocalSeconds(mkLocalSeconds(tc2009[10])).seconds());
-    BOOST_CHECK_EQUAL(mkGmtSeconds(tc2009[11]), CtiTime::fromLocalSeconds(mkLocalSeconds(tc2009[11])).seconds());
-    BOOST_CHECK_EQUAL(mkGmtSeconds(tc2009[12]), CtiTime::fromLocalSeconds(mkLocalSeconds(tc2009[12])).seconds());
-    BOOST_CHECK_EQUAL(mkGmtSeconds(tc2009[13]), CtiTime::fromLocalSeconds(mkLocalSeconds(tc2009[13])).seconds());
-    BOOST_CHECK_EQUAL(mkGmtSeconds(tc2009[14]), CtiTime::fromLocalSeconds(mkLocalSeconds(tc2009[14])).seconds());
+        (TimeParts( 2009, 12, 31,  0, 00, 00, standard_offset )); //  known ST date
+    }
+    else if( timeZoneKeyName == "Eastern Standard Time" )
+    {
+        const long standard_offset = -5*60,
+                   daylight_offset = -4*60;
+
+        time_parts = boost::assign::list_of
+        (TimeParts( 2009,  1,  1,  0, 00, 00, standard_offset )) //  known ST date
+
+        (TimeParts( 2009,  3,  7,  0, 00, 00, standard_offset )) //  standard -> daylight-saving-time transition
+        (TimeParts( 2009,  3,  8,  1, 59, 59, standard_offset )) //
+
+        (TimeParts( 2009,  3,  8,  2, 00, 00, standard_offset )) //  nonexistent hour;  this test is here to pin the behavior
+        (TimeParts( 2009,  3,  8,  2, 59, 59, standard_offset )) //
+
+        (TimeParts( 2009,  3,  8,  3, 00, 00, daylight_offset )) //
+        (TimeParts( 2009,  3,  9,  0, 00, 00, daylight_offset )) //
+
+        (TimeParts( 2009,  7,  1,  0, 00, 00, daylight_offset )) //  known DST date
+
+        (TimeParts( 2009, 10, 31,  0, 00, 00, daylight_offset )) //  daylight-saving-time -> standard transition
+        (TimeParts( 2009, 11,  1,  0, 59, 59, daylight_offset )) //
+
+        (TimeParts( 2009, 11,  1,  1, 00, 00, standard_offset )) //  ambiguous hour;  this test is here to pin the behavior
+        (TimeParts( 2009, 11,  1,  1, 59, 59, standard_offset )) //
+
+        (TimeParts( 2009, 11,  1,  2, 00, 00, standard_offset )) //
+        (TimeParts( 2009, 11,  2,  0, 00, 00, standard_offset )) //
+
+        (TimeParts( 2009, 12, 31,  0, 00, 00, standard_offset )); //  known ST date
+    }
+
+    BOOST_REQUIRE( ! time_parts.empty() );
+
+    for each(const TimeParts & tp in time_parts )
+    {
+        BOOST_CHECK_EQUAL(mkGmtSeconds(tp), CtiTime::fromLocalSeconds(mkLocalSeconds(tp)).seconds());
+    }
 }
-
 
 BOOST_AUTO_TEST_CASE(test_ctitime_CentralTime_GMT_conversions)
 {
