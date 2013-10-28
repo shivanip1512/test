@@ -1387,7 +1387,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         {
             INMESS im;
 
-            unsigned char buf[13] = { 0x01, 0xfa, 0x00, 0x1f, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a };
+            unsigned char buf[13] = { 0x01, 0xfa, 0x00, 0x00, 0x01, 0x00, 0x02, 0x00, 0x03, 0x00, 0x04, 0x00, 0x05 };
 
             std::copy(buf,  buf + 13, im.Buffer.DSt.Message );
 
@@ -1416,7 +1416,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
                     BOOST_REQUIRE( pdata );
 
-                    BOOST_CHECK_EQUAL( pdata->getValue(), 1766 );
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 129520 );
                     BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
                     BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 5 );
                 }
@@ -1425,7 +1425,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
                     BOOST_REQUIRE( pdata );
 
-                    BOOST_CHECK_EQUAL( pdata->getValue(), 4080 );
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 129526 );
                     BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
                     BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 4 );
                 }
@@ -1434,7 +1434,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
                     BOOST_REQUIRE( pdata );
 
-                    BOOST_CHECK_EQUAL( pdata->getValue(), 5880 );
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 129530 );
                     BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
                     BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 3 );
                 }
@@ -1443,7 +1443,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
                     BOOST_REQUIRE( pdata );
 
-                    BOOST_CHECK_EQUAL( pdata->getValue(), 7166 );
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 129532 );
                     BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
                     BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 2 );
                 }
@@ -1452,7 +1452,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
                     BOOST_REQUIRE( pdata );
 
-                    BOOST_CHECK_EQUAL( pdata->getValue(), 7938 );
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 129534 );
                     BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
                     BOOST_CHECK_EQUAL( pdata->getTime(), Midnight - 1 );
                 }
@@ -1461,7 +1461,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
                     BOOST_REQUIRE( pdata );
 
-                    BOOST_CHECK_EQUAL( pdata->getValue(), 506 );
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 129536 );
                     BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
                     BOOST_CHECK_EQUAL( pdata->getTime(), Midnight );
                 }

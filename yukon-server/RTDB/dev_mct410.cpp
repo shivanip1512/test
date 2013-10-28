@@ -3439,7 +3439,7 @@ INT Mct410Device::decodeGetValueDailyRead(const INMESS *InMessage, CtiTime &Time
                 {
                     const unsigned char * const pos = DSt->Message + (day * 2) + (kwh ? 1 : 0);
 
-                    bool bad_delta = ((pos[0] & 0x3f == 0x3f) && pos[1] == 0xfa);
+                    bool bad_delta = (((pos[0] & 0x3f) == 0x3f) && pos[1] == 0xfa);
 
                     if( kwh || bad_delta )
                     {
