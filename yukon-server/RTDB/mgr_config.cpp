@@ -11,6 +11,42 @@
 
 
 
+namespace   {
+
+static const std::string configSql = 
+    "SELECT "
+        "DC.DeviceConfigurationID, "
+        "DCCM.DeviceConfigCategoryID, "
+        "DC.Name "
+    "FROM "
+        "DeviceConfiguration DC "
+        "LEFT OUTER JOIN DeviceConfigCategoryMap DCCM "
+        "ON DC.DeviceConfigurationID = DCCM.DeviceConfigurationID";
+
+
+static const std::string categorySql = 
+    "SELECT "
+        "C.DeviceConfigCategoryID, "
+        "C.CategoryType, "
+        "I.ItemName, "
+        "I.ItemValue, "
+        "C.Name "
+    "FROM "
+        "DeviceConfigCategory C "
+        "JOIN DeviceConfigCategoryItem I "
+        "ON C.DeviceConfigCategoryID = I.DeviceConfigCategoryID";
+
+
+static const std::string deviceSql = 
+    "SELECT "
+        "D.DeviceID, "
+        "D.DeviceConfigurationID "
+    "FROM "
+        "DeviceConfigurationDeviceMap D";
+
+}
+
+
 CtiConfigManager::CtiConfigManager()
 {
     // empty
@@ -33,34 +69,16 @@ void CtiConfigManager::initialize()
 
 void CtiConfigManager::loadAllConfigs()
 {
-    static const std::string sql = 
-        "SELECT "
-            "DC.DeviceConfigurationID, "
-            "DCCM.DeviceConfigCategoryID, "
-            "DC.Name "
-        "FROM "
-            "DeviceConfiguration DC "
-            "JOIN DeviceConfigCategoryMap DCCM "
-            "ON DC.DeviceConfigurationID = DCCM.DeviceConfigurationID";
-
     _configurations.clear();
 
-    executeLoadConfig( sql );
+    executeLoadConfig( configSql );
 }
 
 
 void CtiConfigManager::loadConfig( const long configID )
 {
-    const std::string sql = 
-        "SELECT "
-            "DC.DeviceConfigurationID, "
-            "DCCM.DeviceConfigCategoryID, "
-            "DC.Name "
-        "FROM "
-            "DeviceConfiguration DC "
-            "JOIN DeviceConfigCategoryMap DCCM "
-            "ON DC.DeviceConfigurationID = DCCM.DeviceConfigurationID "
-        "WHERE "
+    const std::string sql = configSql +
+        " WHERE "
             "DC.DeviceConfigurationID = " + CtiNumStr( configID );
 
     _configurations.erase( configID );
@@ -80,12 +98,10 @@ void CtiConfigManager::executeLoadConfig( const std::string & sql )
 
     while( rdr() )
     {
-        long        configID,
-                    categoryID;
+        long        configID;
         std::string name;
 
         rdr["DeviceConfigurationID"]  >> configID;
-        rdr["DeviceConfigCategoryID"] >> categoryID;
         rdr["Name"]                   >> name;
 
         ConfigurationMap::iterator  configIter;
@@ -93,45 +109,30 @@ void CtiConfigManager::executeLoadConfig( const std::string & sql )
         boost::tie( configIter, boost::tuples::ignore ) =
             _configurations.insert( configID, new Cti::Config::Configuration( configID, name ) );
 
-        configIter->second->addCategory( categoryID );
+        if ( ! rdr["DeviceConfigCategoryID"].isNull() )
+        {
+            long    categoryID;
+
+            rdr["DeviceConfigCategoryID"] >> categoryID;
+
+            configIter->second->addCategory( categoryID );
+        }
     }
 }
 
 
 void CtiConfigManager::loadAllCategoryItems()
 {
-    static const std::string sql = 
-        "SELECT "
-            "C.DeviceConfigCategoryID, "
-            "C.CategoryType, "
-            "I.ItemName, "
-            "I.ItemValue, "
-            "C.Name "
-        "FROM "
-            "DeviceConfigCategory C "
-            "JOIN DeviceConfigCategoryItem I "
-            "ON C.DeviceConfigCategoryID = I.DeviceConfigCategoryID";
-
     _categories.clear();
 
-    executeLoadItems( sql );
+    executeLoadItems( categorySql );
 }
 
 
 void CtiConfigManager::loadCategoryItems( const long categoryID )
 {
-    const std::string sql =
-        "SELECT "
-            "C.DeviceConfigCategoryID, "
-            "C.CategoryType, "
-            "I.ItemName, "
-            "I.ItemValue, "
-            "C.Name "
-        "FROM "
-            "DeviceConfigCategory C "
-            "JOIN DeviceConfigCategoryItem I "
-            "ON C.DeviceConfigCategoryID = I.DeviceConfigCategoryID "
-        "WHERE "
+    const std::string sql = categorySql +
+        " WHERE "
             "C.DeviceConfigCategoryID = " + CtiNumStr( categoryID );
 
     _categories.erase( categoryID );
@@ -175,33 +176,21 @@ void CtiConfigManager::executeLoadItems( const std::string & sql )
 
 void CtiConfigManager::loadAllDeviceAssignments()
 {
-    static const std::string sql = 
-        "SELECT "
-            "D.DeviceID, "
-            "D.DeviceConfigurationID "
-        "FROM "
-            "DeviceConfigurationDeviceMap D";
-
     _deviceAssignments.clear();
 
-    executeLoadDeviceAssignments(sql);
+    executeLoadDeviceAssignments( deviceSql );
 }
 
 
 void CtiConfigManager::loadDeviceAssignment( const long deviceID )
 {
-    static const std::string sql = 
-        "SELECT "
-            "D.DeviceID, "
-            "D.DeviceConfigurationID "
-        "FROM "
-            "DeviceConfigurationDeviceMap D "
-        "WHERE "
+    const std::string sql = deviceSql +
+        " WHERE "
             "D.DeviceID = " + CtiNumStr( deviceID );
 
     _deviceAssignments.erase( deviceID );
 
-    executeLoadDeviceAssignments(sql);
+    executeLoadDeviceAssignments( sql );
 }
 
 
