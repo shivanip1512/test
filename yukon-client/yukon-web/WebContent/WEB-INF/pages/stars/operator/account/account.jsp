@@ -9,7 +9,7 @@
 
 <cti:standardPage module="operator" page="account.${mode}">
 
-<!-- make this a picker and delete style -->
+<!-- TODO: make this a picker and delete style -->
 <style type="text/css">.group-dropdown {max-width: 260px;}</style>
 
     <cti:checkEnergyCompanyOperator showError="true" >
@@ -30,11 +30,6 @@
     
         <script type="text/javascript">
     
-            //YukonGeneral.js
-            Yukon.ui.aux.alignTableColumnsByTable('#customerContactTable', '#serviceInformationTable');
-            Yukon.ui.aux.alignTableColumnsByTable('#serviceAddressTable', '#billingAddressTable');
-            //END YukonGeneral.js
-        
             jQuery(function() {
     
                 // commercial setup
@@ -219,7 +214,7 @@
                                     <tags:yukonListEntrySelectNameValue id="accountDto.commercialTypeEntryId" nameKey=".commercialTypeLabel" path="accountDto.commercialTypeEntryId" energyCompanyId="${energyCompanyId}" listName="CI_CUST_TYPE"/>
                                 </c:if>
                                 
-                                <tags:inputNameValue nameKey=".customerNumberLabel" path="accountDto.customerNumber"/>
+                                <tags:inputNameValue nameKey=".customerNumberLabel" path="accountDto.customerNumber" nameClass="bob"/>
                                 <tags:inputNameValue nameKey=".lastNameLabel" path="accountDto.lastName"/>
                                 <tags:inputNameValue nameKey=".firstNameLabel" path="accountDto.firstName"/>
                                 <tags:inputNameValue nameKey=".homePhoneLabel" path="accountDto.homePhone"/>
@@ -267,7 +262,7 @@
                             <tags:inputNameValue nameKey=".address1Label" path="accountDto.streetAddress.locationAddress1"/>
                             <tags:inputNameValue nameKey=".address2Label" path="accountDto.streetAddress.locationAddress2"/>
                             <tags:inputNameValue nameKey=".cityLabel" path="accountDto.streetAddress.cityName"/>
-                            <tags:inputNameValue nameKey=".stateLabel" path="accountDto.streetAddress.stateCode" size="2" maxlength="2"/>
+                            <tags:inputNameValue nameKey=".stateLabel" path="accountDto.streetAddress.stateCode" size="3" maxlength="2"/>
                             <tags:inputNameValue nameKey=".zipLabel" path="accountDto.streetAddress.zipCode"/>
                             <tags:inputNameValue nameKey=".mapNumberLabel" path="accountDto.mapNumber"/>
                             <tags:inputNameValue nameKey=".countyLabel" path="accountDto.streetAddress.county"/>
@@ -292,7 +287,7 @@
                             <tags:inputNameValue nameKey=".billingAddress1Label" path="accountDto.billingAddress.locationAddress1"/>
                             <tags:inputNameValue nameKey=".billingAddress2Label" path="accountDto.billingAddress.locationAddress2"/>
                             <tags:inputNameValue nameKey=".billingCityLabel" path="accountDto.billingAddress.cityName"/>
-                            <tags:inputNameValue nameKey=".billingStateLabel" path="accountDto.billingAddress.stateCode" size="2" maxlength="2"/>
+                            <tags:inputNameValue nameKey=".billingStateLabel" path="accountDto.billingAddress.stateCode" size="3" maxlength="2"/>
                             <tags:inputNameValue nameKey=".billingZipLabel" path="accountDto.billingAddress.zipCode"/>
                             <form:hidden path="accountDto.billingAddress.county"/>
                             
