@@ -373,8 +373,14 @@ public class DeviceConfigurationCategoryController {
         
         model.addAttribute("categoryTemplate", categoryTemplate);
         
-        model.addAttribute("isDisplayItemsCategory", categoryTemplate.getCategoryType().equals("displayItems"));
-        model.addAttribute("isTouCategory", categoryTemplate.getCategoryType().toLowerCase().contains("tou"));
+        model.addAttribute("isDisplayItemsCategory", 
+                           categoryTemplate.getCategoryType().equals(CategoryType.CENTRON_DISPLAY_ITEMS.value()));
+        
+        String templateCategoryType = categoryTemplate.getCategoryType();
+        boolean isTouCategory = templateCategoryType.equals(CategoryType.MCT_440_TOU.value()) || 
+                                templateCategoryType.equals(CategoryType.TOU.value());
+        
+        model.addAttribute("isTouCategory", isTouCategory);
         
         model.addAttribute("mode", mode);
         
