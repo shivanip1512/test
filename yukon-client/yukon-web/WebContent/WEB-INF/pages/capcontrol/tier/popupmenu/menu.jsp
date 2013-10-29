@@ -44,6 +44,7 @@ jQuery('#viewCommentsOption').click(function(event) {
 
 <div id="menuPopupBoxContainer">
 	<input type="hidden" id="dialogTitle" value="${paoName}">
+    <div class="notes stacked"><i:inline key=".capBankState.note"/></div>
    
     <ul class="capcontrolMenu detail simple-list">
     

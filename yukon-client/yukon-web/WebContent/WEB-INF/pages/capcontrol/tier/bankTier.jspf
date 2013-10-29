@@ -98,19 +98,9 @@ margin: 0px;
 
                 <%-- State --%>
                 <td>
-                    <c:if test="${hasCapbankControl}">
-                        <a href="javascript:void(0);" class="f-bank-state subtle-link">
-                    </c:if>
                         <cti:capBankStateColor paoId="${bankId}" type="CAPBANK" format="CB_STATUS_COLOR" />
-                        <%--
-                            Pt:
-                            <cti:pointStatusColor pointId="${mapEntry.value}" styleClass="box stateBox" background="true">&nbsp;</cti:pointStatusColor>
-                         --%>
                         <cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_STATUS"/>
                         <cti:capControlValue paoId="${bankId}" type="CAPBANK" format="LOCAL_FLAG"/>
-                    <c:if test="${hasCapbankControl}">
-                        </a>
-                    </c:if>
                 </td>
 
                 <%-- Timestamp --%>
@@ -172,7 +162,8 @@ margin: 0px;
                     </cti:url>
                     <cm:dropdown icon="icon-cog" containerCssClass="fr">
                         <c:if test="${hasCapbankControl}">
-                            <cm:dropdownOption id="bankName_${bankId}" key=".capBank.actions" icon="icon-cog" href="javascript:void(0);" classes="f-bank-command" />
+                            <cm:dropdownOption key=".capBank.actions" icon="icon-cog" href="javascript:void(0);" classes="f-bank-command" />
+                            <cm:dropdownOption key=".capBank.state" icon="icon-pencil" href="javascript:void(0);" classes="f-bank-state" />
                         </c:if>
                          <cti:checkRolesAndProperties value="SHOW_CB_ADDINFO">
                             <cti:msg2 var="addInfoTitle" key=".addInfoTitle" arguments="${viewableCapBank.capBankDevice.ccName}" javaScriptEscape="true"/>
