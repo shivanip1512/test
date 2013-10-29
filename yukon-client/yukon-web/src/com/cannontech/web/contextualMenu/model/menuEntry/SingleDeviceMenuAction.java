@@ -1,9 +1,10 @@
 package com.cannontech.web.contextualMenu.model.menuEntry;
 
-import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.web.contextualMenu.CollectionCategory;
 
 public class SingleDeviceMenuAction extends DeviceMenuAction {
@@ -42,9 +43,15 @@ public class SingleDeviceMenuAction extends DeviceMenuAction {
      * ("deviceId={deviceId}")
      */
     @Override
-    public String getUrl(CollectionCategory collectionCategory, Map<String, String> inputs) {
+    public String getUrl(CollectionCategory collectionCategory, HttpServletRequest req) {
         if (collectionCategory == CollectionCategory.PAO_ID) {
-            return baseUrl + outputParamName + "=" + inputs.get(inputParamName);
+            
+            String paramValue = ServletUtil.getParameter(req, inputParamName);
+            String encodedParamValue = ServletUtil.urlEncode(paramValue);
+            String url = baseUrl + outputParamName + "=" + encodedParamValue;
+            String safeUrl = ServletUtil.createSafeUrl(req, url);
+            
+            return safeUrl;
         }
         throw new RuntimeException("this url doesn't support " + collectionCategory);
     }

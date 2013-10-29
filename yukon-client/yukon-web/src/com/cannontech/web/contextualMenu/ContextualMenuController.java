@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -52,11 +51,11 @@ public class ContextualMenuController {
         
         String menuBeanId = req.getParameter("menuId"); // not including the word "Bean" as a security measure, i.e. menuBeanId
         Menu menu = menuBeanMap.get(menuBeanId);
-        Map<String, String> inputParams = ServletUtil.getParameterMap(req);
+        
         JSONArray array = null;
 
         if (menu instanceof ContextualMenu) {
-            array = getMenu((ContextualMenu) menu, inputParams, req, context);
+            array = getMenu((ContextualMenu) menu, req, context);
         } else {
             throw new RuntimeException("Couldn't find menu with beanId " + menuBeanId);
         }
@@ -64,9 +63,9 @@ public class ContextualMenuController {
         return array;
     }
     
-    private JSONArray getMenu(ContextualMenu menu, Map<String, String> inputParams, HttpServletRequest req, YukonUserContext context) {
+    private JSONArray getMenu(ContextualMenu menu, HttpServletRequest req, YukonUserContext context) {
         
-        LiteYukonUser yukonUser = context.getYukonUser();
+        LiteYukonUser user = context.getYukonUser();
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
         List<MenuEntry> menuEntries = menu.getMenuEntries();
         JSONArray array = new JSONArray();
@@ -78,21 +77,19 @@ public class ContextualMenuController {
                 continue;
             } else if (menuEntry instanceof SingleDeviceMenuAction) {
                 SingleDeviceMenuAction singleDeviceMenuEntry = (SingleDeviceMenuAction) menuEntry;
-                url = singleDeviceMenuEntry.getUrl(menu.getCollectionCategory(), inputParams);
+                url = singleDeviceMenuEntry.getUrl(menu.getCollectionCategory(), req);
             } else if (menuEntry instanceof DeviceCollectionMenuAction) {
                 DeviceCollectionMenuAction deviceCollectionMenuEntry = (DeviceCollectionMenuAction) menuEntry;
-                url = deviceCollectionMenuEntry.getUrl(menu.getCollectionCategory(), inputParams);
+                url = deviceCollectionMenuEntry.getUrl(menu.getCollectionCategory(), req);
             } else {
                 throw new RuntimeException("DeviceMenu can only contain MenuEntry elements of type MenuSeperator, SingleDeviceMenuAction, and DeviceCollectionMenuAction");
             }
             
             DeviceMenuAction deviceMenuEntry = (DeviceMenuAction) menuEntry;
-            checkMenuEntrySupports(menu, deviceMenuEntry, inputParams);
-            if (!canViewMenuEntry(deviceMenuEntry, yukonUser)) continue;
+            checkMenuEntrySupports(menu, deviceMenuEntry, ServletUtil.getParameterMap(req));
+            if (!canViewMenuEntry(deviceMenuEntry, user)) continue;
             
             String text = accessor.getMessage(deviceMenuEntry.getFormatKey());
-            url = ServletUtil.createSafeUrl(req, url);
-            url = StringEscapeUtils.escapeHtml(url);
             
             addMenuEntry(array, url, text);
         }

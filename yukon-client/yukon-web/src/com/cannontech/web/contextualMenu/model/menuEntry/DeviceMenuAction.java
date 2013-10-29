@@ -3,6 +3,8 @@ package com.cannontech.web.contextualMenu.model.menuEntry;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -77,7 +79,7 @@ public abstract class DeviceMenuAction implements DeviceAction {
     }
 
     @Override
-    public abstract String getUrl(CollectionCategory collectionCategory, Map<String, String> inputs);
+    public abstract String getUrl(CollectionCategory collectionCategory, HttpServletRequest req);
 
     @Override
     public boolean supports(PaoIdentifier paoIdentifier) {

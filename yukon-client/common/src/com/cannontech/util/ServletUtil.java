@@ -1236,6 +1236,18 @@ public static synchronized Date parseDateStringLiberally(String dateStr, TimeZon
         }
     }
     
+    public static Map<String, String> urlEncode(Map<String, String> parameters) {
+        
+        Map<String, String> encoded = new HashMap<>();
+        
+        for (String name : parameters.keySet()) {
+            String encodedName = urlEncode(name);
+            String encodedValue = urlEncode(parameters.get(name));
+            encoded.put(encodedName, encodedValue);
+        }
+        
+        return encoded;
+    }
     
     /**
      * Helper method to put all String parameters with a given prefix into a map
