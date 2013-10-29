@@ -223,8 +223,15 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
     @PreDestroy
     protected abstract void shutdown();
 
+    /**
+     *  Determine which worker will handle the request by hashing the serial number.
+     *  This ensures that only one thread will ever be used to create a particular
+     *  meter, thus solving a bottleneck problem when multiple threads were trying
+     *  to create the same meter.  The trade off is that if we recieve a large amount
+     *  of readings for the same serial number in a row, only one thread will be 
+     *  doing any work during that time.
+     */
     public void handleArchiveRequest(T request) {
-        // determine which worker will handle the request by hashing the serial number
         int hashCode = request.getRfnIdentifier().getSensorSerialNumber().hashCode();
         List<? extends ConverterBase> converters = getConverters();
         int converterIndex = Math.abs(hashCode) % converters.size();

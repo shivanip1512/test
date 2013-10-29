@@ -91,9 +91,9 @@ public class PerIntervalAndLoadProfileCalculator implements PointCalculator {
      * 
      * NOTE: The calculation is only attempted if the point to calculate for actually exists.
      * 
+     * @param recentReadings the cache representing recent interval values, used to avoid querying the database. 
      * @param data the point data to base this calculation on.
      * @param pointData the list of point data update messages sent to dispatch.
-     * @param recentReadings the cache representing recent interval values, used to avoid querying the database. 
      */
     @Override
     public void calculate(Cache<CacheKey, CacheValue> recentReadings, CalculationData data, List<? super PointData> pointData) {
@@ -103,6 +103,16 @@ public class PerIntervalAndLoadProfileCalculator implements PointCalculator {
         Date timestamp = pvqh.getPointDataTimeStamp();
         CacheKey currentKey = CacheKey.of(pvqh.getId(), timestamp.getTime());
         CacheValue currentValue = recentReadings.getIfPresent(currentKey);
+        
+        if (currentValue == null) {
+            /* The current value has been taken out of the recent readings map!
+            
+             * Since it was JUST put in the map prior to queueing it up for calculation,
+             * my only guess is that we recieved duplicate archive requests and the calculation
+             * for the first one removed the value from the cache since it was no longer needed.
+             */
+            return;
+        }
         
         LitePoint perIntervalPoint = findPoint(perInterval, pao);
         LitePoint loadProfilePoint = findPoint(loadProfile, pao);

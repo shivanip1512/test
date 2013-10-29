@@ -79,7 +79,6 @@ public class CalculatedPointDataProducer {
             CacheKey currentKey = CacheKey.of(pvqh.getId(), pvqh.getPointDataTimeStamp().getTime());
             CacheValue value = CacheValue.of(pvqh.getValue(), newValue.getInterval(), false, false);
             recentReadings.put(currentKey, value);
-            log.debug("Recent readings cache size (approximate): " + recentReadings.size());
         }
     }
     
@@ -89,8 +88,13 @@ public class CalculatedPointDataProducer {
         recentReadings = CacheBuilder.newBuilder().expireAfterWrite(expireAfter, TimeUnit.HOURS).build();
         
         Set<PaoType> types = paoDefinitionDao.getPaoTypesThatSupportTag(PaoTag.RFN_POINT_CALCULATION);
-        ImmutableSet<BuiltInAttribute> attributes = ImmutableSet.of(BuiltInAttribute.SUM_KWH, BuiltInAttribute.DELIVERED_KWH, BuiltInAttribute.RECEIVED_KWH,
-                                                                    BuiltInAttribute.NET_KWH, BuiltInAttribute.SUM_KVARH, BuiltInAttribute.SUM_KVAH, BuiltInAttribute.USAGE_WATER);
+        ImmutableSet<BuiltInAttribute> attributes = ImmutableSet.of(BuiltInAttribute.SUM_KWH, 
+                                                                    BuiltInAttribute.DELIVERED_KWH, 
+                                                                    BuiltInAttribute.RECEIVED_KWH,
+                                                                    BuiltInAttribute.NET_KWH, 
+                                                                    BuiltInAttribute.SUM_KVARH, 
+                                                                    BuiltInAttribute.SUM_KVAH, 
+                                                                    BuiltInAttribute.USAGE_WATER);
         
         ImmutableMap.Builder<PaoTypePointIdentifier, PointCalculator> b = ImmutableMap.builder();
         for (PaoType type : types) {
