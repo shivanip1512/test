@@ -42,11 +42,6 @@
     <bean id="drControlAreaStartField" class="com.cannontech.dr.controlarea.model.ControlAreaStartField"/>
     <bean id="drControlAreaStopField" class="com.cannontech.dr.controlarea.model.ControlAreaStopField"/>
     <bean id="drControlAreaShowActionField" class="com.cannontech.dr.controlarea.model.ControlAreaShowActionField"/>
-    <bean id="drControlAreaConnectedLoadField" class="com.cannontech.dr.controlarea.model.ControlAreaConnectedLoadField"/>
-    <bean id="drControlAreaDiversifiedLoadField" class="com.cannontech.dr.controlarea.model.ControlAreaDiversifiedLoadField"/>
-    <bean id="drControlAreaKwSavingsField" class="com.cannontech.dr.controlarea.model.ControlAreaKwSavingsField"/>
-    <bean id="drControlAreaEstimatedLoadErrorField" class="com.cannontech.dr.controlarea.model.ControlAreaEstimatedLoadErrorField"/>
-    
 
     <bean id="drTriggerFieldService" class="com.cannontech.dr.controlarea.service.impl.TriggerFieldServiceImpl"/>
     <bean id="drTriggerValueThresholdField" class="com.cannontech.dr.controlarea.model.TriggerValueThresholdField"/>
@@ -56,10 +51,6 @@
     <bean id="drScenarioService" class="com.cannontech.dr.scenario.service.impl.ScenarioServiceImpl"/>
     <bean id="drScenarioFieldService" class="com.cannontech.dr.scenario.service.impl.ScenarioFieldServiceImpl"/>
     <bean id="drScenarioShowActionField" class="com.cannontech.dr.scenario.model.ScenarioShowActionField"/>
-    <bean id="drScenarioConnectedLoadField" class="com.cannontech.dr.scenario.model.ScenarioConnectedLoadField"/>
-    <bean id="drScenarioDiversifiedLoadField" class="com.cannontech.dr.scenario.model.ScenarioDiversifiedLoadField"/>
-    <bean id="drScenarioKwSavingsField" class="com.cannontech.dr.scenario.model.ScenarioKwSavingsField"/>
-    <bean id="drScenarioEstimatedLoadErrorField" class="com.cannontech.dr.scenario.model.ScenarioEstimatedLoadEerrorField"/>
 
     <bean id="drProgramService" class="com.cannontech.dr.program.service.impl.ProgramServiceImpl"/>
     <bean id="drProgramFieldService" class="com.cannontech.dr.program.service.impl.ProgramFieldServiceImpl"/>
@@ -74,10 +65,6 @@
     <bean id="drProgramEnabledClassnameField" class="com.cannontech.dr.program.model.ProgramEnabledClassnameField"/>
     <bean id="drProgramShowAction" class="com.cannontech.dr.program.model.ProgramShowActionField"/>
     <bean id="drProgramPriority" class="com.cannontech.dr.program.model.ProgramPriorityField"/>
-    <bean id="drProgramConnectedLoadField" class="com.cannontech.dr.program.model.ProgramConnectedLoadField"/>
-    <bean id="drProgramDiversifiedLoadField" class="com.cannontech.dr.program.model.ProgramDiversifiedLoadField"/>
-    <bean id="drProgramKwSavingsField" class="com.cannontech.dr.program.model.ProgramKwSavingsField"/>
-    <bean id="drProgramEstimatedLoadErrorField" class="com.cannontech.dr.program.model.ProgramEstimatedLoadErrorField"/>
 
     <bean id="drLoadGroupService" class="com.cannontech.dr.loadgroup.service.impl.LoadGroupServiceImpl"/>
     <bean id="drLoadGroupFieldService" class="com.cannontech.dr.loadgroup.service.impl.LoadGroupFieldServiceImpl"/>
@@ -95,9 +82,20 @@
     <bean class="com.cannontech.dr.assetavailability.service.impl.AssetAvailabilityServiceImpl"/>
     <bean class="com.cannontech.dr.assetavailability.dao.impl.DRGroupDeviceMappingDaoImpl"/>
     <bean class="com.cannontech.dr.estimatedload.service.impl.EstimatedLoadServiceImpl"/>
+    <bean class="com.cannontech.dr.estimatedload.service.impl.EstimatedLoadBackingServiceHelperImpl"/>
     <bean class="com.cannontech.dr.estimatedload.service.impl.FormulaServiceImpl"/>
     <bean class="com.cannontech.dr.estimatedload.dao.impl.EstimatedLoadDaoImpl"/>
     <bean class="com.cannontech.dr.estimatedload.dao.impl.FormulaDaoImpl"/>
+    
+    <bean class="com.cannontech.dr.estimatedload.model.ScenarioConnectedLoadField"/>
+    <bean class="com.cannontech.dr.estimatedload.model.ScenarioDiversifiedLoadField"/>
+    <bean class="com.cannontech.dr.estimatedload.model.ScenarioKwSavingsField"/>
+    <bean class="com.cannontech.dr.estimatedload.model.ScenarioEstimatedLoadEerrorField"/>
+    <bean class="com.cannontech.dr.estimatedload.model.ProgramEstimatedLoadField"/>
+    <bean class="com.cannontech.dr.estimatedload.model.ControlAreaConnectedLoadField"/>
+    <bean class="com.cannontech.dr.estimatedload.model.ControlAreaDiversifiedLoadField"/>
+    <bean class="com.cannontech.dr.estimatedload.model.ControlAreaKwSavingsField"/>
+    <bean class="com.cannontech.dr.estimatedload.model.ControlAreaEstimatedLoadErrorField"/>
 
     <bean class="com.cannontech.loadcontrol.weather.impl.WeatherDataServiceImpl"/>
     <bean class="com.cannontech.loadcontrol.weather.impl.NoaaWeatherDataServiceImpl"/>

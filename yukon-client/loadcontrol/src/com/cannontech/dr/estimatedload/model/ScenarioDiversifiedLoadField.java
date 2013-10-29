@@ -1,29 +1,33 @@
-package com.cannontech.dr.scenario.model;
+package com.cannontech.dr.estimatedload.model;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.dr.estimatedload.EstimatedLoadCalculationException;
 import com.cannontech.dr.estimatedload.EstimatedLoadReductionAmount;
 import com.cannontech.dr.estimatedload.service.EstimatedLoadService;
+import com.cannontech.dr.estimatedload.service.impl.EstimatedLoadBackingServiceHelper;
+import com.cannontech.dr.program.service.impl.EstimatedLoadBackingFieldBase;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
 
-public class ScenarioDiversifiedLoadField extends ScenarioBackingFieldBase {
+public class ScenarioDiversifiedLoadField extends EstimatedLoadBackingFieldBase {
 
-    @Autowired private EstimatedLoadService estimatedLoadService;
+    @Autowired private EstimatedLoadBackingServiceHelper backingServiceHelper;
 
     @Override
     public String getFieldName() {
-        return "DIVERSIFIED_LOAD";
+        return "SCENARIO_DIVERSIFIED_LOAD";
     }
 
     @Override
-    public Object getScenarioValue(Scenario scenario, YukonUserContext userContext) {
+    public Object getValue(int paoId, YukonUserContext userContext) {
         EstimatedLoadReductionAmount estimatedLoadAmount;
+        PaoIdentifier scenario = new PaoIdentifier(paoId, PaoType.LM_SCENARIO);
         try {
-            estimatedLoadAmount = estimatedLoadService.retrieveEstimatedLoadValue(
-                    scenario.getPaoIdentifier());
+            estimatedLoadAmount = backingServiceHelper.getScenarioValue(scenario);
         } catch (EstimatedLoadCalculationException e) {
             return blankFieldResolvable;
         }

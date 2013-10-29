@@ -1,26 +1,26 @@
 package com.cannontech.dr.estimatedload;
 
-public final class PartialEstimatedLoadReductionAmount {
+public class PartialEstimatedLoadReductionAmount {
 
-    private final Double connectedLoad;
-    private final Double diversifiedLoad;
-    private final Double maxKwSavings;
+    private final double connectedLoad;
+    private final double diversifiedLoad;
+    private final double maxKwSavings;
 
-    public PartialEstimatedLoadReductionAmount(Double connectedLoad, Double diversifiedLoad, Double maxKwSavings) {
+    public PartialEstimatedLoadReductionAmount(double connectedLoad, double diversifiedLoad, double maxKwSavings) {
         this.connectedLoad = connectedLoad;
         this.diversifiedLoad = diversifiedLoad;
         this.maxKwSavings = maxKwSavings;
     }
 
-    public Double getConnectedLoad() {
+    public double getConnectedLoad() {
         return connectedLoad;
     }
 
-    public Double getDiversifiedLoad() {
+    public double getDiversifiedLoad() {
         return diversifiedLoad;
     }
 
-    public Double getMaxKwSavings() {
+    public double getMaxKwSavings() {
         return maxKwSavings;
     }
 

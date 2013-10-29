@@ -94,6 +94,7 @@
     </bean>
 
     <bean id="longRunningExecutor" class="com.cannontech.common.util.ExecutorDelegate">
+        <qualifier value="longRunningExecutor"/>
         <constructor-arg>
             <bean class="java.util.concurrent.ThreadPoolExecutor">
                 <qualifier value="longRunning" />

@@ -545,6 +545,7 @@
 <entry key="yukon.web.modules.dr.estimatedLoad.info.connectedLoad">Connected Load</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.info.diversifiedLoad">Diversified Load</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.info.kwSavings">kW Savings (Max/Now)</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.calculating">Calculating...</entry>
 <entry key="yukon.web.modules.dr.heading.kwSavings">kW Savings (Max/Now)</entry>
 
 <entry key="yukon.web.modules.dr.formula.actions">Actions</entry>

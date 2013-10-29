@@ -26,23 +26,23 @@
                     <tags:nameValue2 nameKey="yukon.web.modules.dr.estimatedLoad.info.connectedLoad">
                         <div data-pao="${scenarioId}">
                             <cti:icon icon="icon-error" classes="dn"/>
-                            <cti:dataUpdaterValue identifier="${scenarioId}/CONNECTED_LOAD" type="DR_SCENARIO"/>
+<%--                             <cti:dataUpdaterValue identifier="${scenarioId}/SCENARIO_CONNECTED_LOAD" type="ESTIMATED_LOAD"/> --%>
                         </div>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey="yukon.web.modules.dr.estimatedLoad.info.diversifiedLoad">
                         <div data-pao="${scenarioId}">
                             <cti:icon icon="icon-error" classes="dn"/>
-                            <cti:dataUpdaterValue identifier="${scenarioId}/DIVERSIFIED_LOAD" type="DR_SCENARIO"/>
+<%--                             <cti:dataUpdaterValue identifier="${scenarioId}/SCENARIO_DIVERSIFIED_LOAD" type="DR_ESTIMATED_LOADSCENARIO"/> --%>
                         </div>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey="yukon.web.modules.dr.estimatedLoad.info.kwSavings">
                         <div data-pao="${scenarioId}">
                             <cti:icon icon="icon-error" classes="dn"/>
-                            <cti:dataUpdaterValue identifier="${scenarioId}/KW_SAVINGS" type="DR_SCENARIO"/>
-                                <cti:dataUpdaterCallback
-                                    function="Yukon.EstimatedLoad.createToolTip"
-                                    identifier="DR_SCENARIO/${scenarioId}/ESTIMATED_LOAD_ERROR"
-                                    initialize="true" />
+                             <cti:dataUpdaterValue identifier="${scenarioId}/SCENARIO_KW_SAVINGS" type="ESTIMATED_LOAD"/>
+<%--                             <cti:dataUpdaterCallback --%>
+<%--                                 function="Yukon.EstimatedLoad.createToolTip" --%>
+<%--                                 identifier="DR_SCENARIO/${scenarioId}/ESTIMATED_LOAD_ERROR" --%>
+<%--                                 initialize="false" /> --%>
                         </div>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>

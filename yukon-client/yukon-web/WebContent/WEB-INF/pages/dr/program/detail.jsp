@@ -56,26 +56,28 @@
                             </tags:nameValue2>
                         </cti:checkRolesAndProperties>
                         <cti:checkRolesAndProperties value="ENABLE_ESTIMATED_LOAD">
+                            <cti:dataUpdaterCallback
+                                function="Yukon.EstimatedLoad.createToolTip"
+                                value="ESTIMATED_LOAD/${programId}/PROGRAM"/>
                             <tags:nameValue2 nameKey="yukon.web.modules.dr.estimatedLoad.info.connectedLoad">
                                 <div data-pao="${programId}">
                                     <cti:icon icon="icon-error" classes="dn"/>
-                                    <cti:dataUpdaterValue identifier="${programId}/CONNECTED_LOAD" type="DR_PROGRAM"/>
+                                    <cti:icon icon="icon-spinner" classes="f-spinner"/>
+                                    <span class="f-connected"></span>
                                 </div>
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey="yukon.web.modules.dr.estimatedLoad.info.diversifiedLoad">
                                 <div data-pao="${programId}">
                                     <cti:icon icon="icon-error" classes="dn"/>
-                                    <cti:dataUpdaterValue identifier="${programId}/DIVERSIFIED_LOAD" type="DR_PROGRAM"/>
+                                    <cti:icon icon="icon-spinner" classes="f-spinner"/>
+                                    <span class="f-diversified"></span>
                                 </div>
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey="yukon.web.modules.dr.estimatedLoad.info.kwSavings">
                                 <div data-pao="${programId}">
                                     <cti:icon icon="icon-error" classes="dn"/>
-                                    <cti:dataUpdaterValue identifier="${programId}/KW_SAVINGS" type="DR_PROGRAM"/>
-                                    <cti:dataUpdaterCallback
-                                                function="Yukon.EstimatedLoad.createToolTip"
-                                                value="DR_PROGRAM/${programId}/ESTIMATED_LOAD_ERROR" 
-                                                initialize="true"/>
+                                    <cti:icon icon="icon-spinner" classes="f-spinner"/>
+                                    <span class="f-kwSavings"></span>
                                 </div>
                             </tags:nameValue2>
                         </cti:checkRolesAndProperties>

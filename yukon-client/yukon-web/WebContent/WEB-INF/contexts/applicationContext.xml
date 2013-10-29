@@ -757,6 +757,9 @@
                 <entry key="GROUP_METER_READ">
                     <ref local="groupMeterReadUpdateBackingService"/>
                 </entry>
+                <entry key="ESTIMATED_LOAD">
+                    <ref local="drEstimatedLoadBackingService"/>
+                </entry>
                 <entry key="DR_CONTROLAREA">
                     <ref local="drControlAreaBackingService"/>
                 </entry>
@@ -974,6 +977,7 @@
     <bean id="stateJobUpdaterHandler" class="com.cannontech.web.updater.job.handler.StateJobUpdaterHandler"/>
     <bean id="stateTextJobUpdaterHandler" class="com.cannontech.web.updater.job.handler.StateTextJobUpdaterHandler"/>
 
+    <bean id="drEstimatedLoadBackingService" class="com.cannontech.web.updater.dr.EstimatedLoadBackingService"/>
     <bean id="drControlAreaBackingService" class="com.cannontech.web.updater.dr.ControlAreaBackingService"/>
     <bean id="drTriggerBackingService" class="com.cannontech.web.updater.dr.TriggerBackingService"/>    
     <bean id="drProgramBackingService" class="com.cannontech.web.updater.dr.ProgramBackingService"/>

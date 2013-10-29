@@ -86,11 +86,11 @@ function clearFilter() {
                                     <td data-pao="${scenarioId}">
                                         <cti:icon icon="icon-error" classes="dn"/>
                                         <cti:dataUpdaterValue
-                                            identifier="${scenarioId}/KW_SAVINGS"
-                                            type="DR_SCENARIO" />
-                                        <cti:dataUpdaterCallback function="Yukon.EstimatedLoad.createToolTip"
-                                            identifier="DR_SCENARIO/${scenarioId}/ESTIMATED_LOAD_ERROR" 
-                                            initialize="true"/>
+                                             identifier="${scenarioId}/SCENARIO_KW_SAVINGS"
+                                             type="ESTIMATED_LOAD" />
+<%--                                         <cti:dataUpdaterCallback function="Yukon.EstimatedLoad.createToolTip" --%>
+<%--                                             identifier="ESTIMATED_LOAD/${scenarioId}/SCENARIO_KW_SAVINGS"  --%>
+<%--                                             initialize="false"/> --%>
                                     </td>
                                 </cti:checkRolesAndProperties>
                                 <td><dr:scenarioListActions pao="${scenario}" /></td>

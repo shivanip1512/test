@@ -1,4 +1,4 @@
-package com.cannontech.dr.program.model;
+package com.cannontech.dr.estimatedload.model;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -10,41 +10,43 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.dr.estimatedload.EstimatedLoadCalculationException;
 import com.cannontech.dr.estimatedload.EstimatedLoadReductionAmount;
 import com.cannontech.dr.estimatedload.service.EstimatedLoadService;
+import com.cannontech.dr.estimatedload.service.impl.EstimatedLoadBackingServiceHelper;
+import com.cannontech.dr.program.service.impl.EstimatedLoadBackingFieldBase;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.user.YukonUserContext;
 
-public class ProgramEstimatedLoadErrorField extends ProgramBackingFieldBase {
+public class ScenarioEstimatedLoadEerrorField extends EstimatedLoadBackingFieldBase {
 
-    @Autowired private EstimatedLoadService estimatedLoadService;
+    @Autowired private EstimatedLoadBackingServiceHelper backingServiceHelper;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceAccessor;
 
     @Override
     public String getFieldName() {
-        return "ESTIMATED_LOAD_ERROR";
+        return "SCENARIO_ESTIMATED_LOAD_ERROR";
     }
 
     @Override
-    public Object getProgramValue(LMProgramBase program, YukonUserContext userContext) {
+    public Object getValue(int paoId, YukonUserContext userContext) {
         EstimatedLoadReductionAmount estimatedLoadAmount;
+        PaoIdentifier scenario = new PaoIdentifier(paoId, PaoType.LM_SCENARIO);
         try {
-            estimatedLoadAmount = estimatedLoadService.retrieveEstimatedLoadValue(
-                    program.getPaoIdentifier());
+            estimatedLoadAmount = backingServiceHelper.getScenarioValue(scenario);
         } catch (EstimatedLoadCalculationException e) {
-            return createErrorJson(program, userContext, e);
+            return createErrorJson(scenario, userContext, e);
         }
         if (estimatedLoadAmount.isError()) {
-            return createErrorJson(program, userContext, estimatedLoadAmount.getException());
-        } else {
-            return createSuccessJson(program);
+            return createErrorJson(scenario, userContext, estimatedLoadAmount.getException());
         }
+        return createSuccessJson(scenario);
     }
 
-    private Object createErrorJson(LMProgramBase program, YukonUserContext userContext,
+    private Object createErrorJson(PaoIdentifier scenario, YukonUserContext userContext,
             EstimatedLoadCalculationException e) {
         Map<String, String> errorTooltipJSON = new HashMap<>();
         
@@ -54,13 +56,13 @@ public class ProgramEstimatedLoadErrorField extends ProgramBackingFieldBase {
         MessageSourceAccessor accessor = messageSourceAccessor.getMessageSourceAccessor(userContext);
         String errorMessage = accessor.getMessage(error);
         
-        errorTooltipJSON.put("paoId", String.valueOf(program.getPaoIdentifier().getPaoId()));
+        errorTooltipJSON.put("paoId", String.valueOf(scenario.getPaoIdentifier().getPaoId()));
         errorTooltipJSON.put("errorMessage", errorMessage);
         return JSONObject.fromObject(errorTooltipJSON).toString();
     }
-    
-    private Object createSuccessJson(LMProgramBase program) {
-        return JSONObject.fromObject(Collections.singletonMap("paoId", 
-                String.valueOf(program.getPaoIdentifier().getPaoId()))).toString();
+
+    private Object createSuccessJson(PaoIdentifier scenario) {
+        return JSONObject.fromObject(Collections.singletonMap("paoId", String.valueOf(scenario.getPaoId()))).toString();
     }
+
 }

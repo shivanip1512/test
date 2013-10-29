@@ -216,12 +216,12 @@
                                     <td data-pao="${controlAreaId}">
                                         <cti:icon icon="icon-error" classes="dn"/>
                                         <cti:dataUpdaterValue
-                                                type="DR_CONTROLAREA"
-                                                identifier="${controlAreaId}/KW_SAVINGS" /></td>
-                                        <cti:dataUpdaterCallback
-                                            function="Yukon.EstimatedLoad.createToolTip"
-                                            value="DR_CONTROLAREA/${controlAreaId}/ESTIMATED_LOAD_ERROR" 
-                                            initialize="true"/>
+                                            type="ESTIMATED_LOAD"
+                                            identifier="${controlAreaId}/CONTROL_AREA_KW_SAVINGS" /></td>
+<%--                                         <cti:dataUpdaterCallback --%>
+<%--                                             function="Yukon.EstimatedLoad.createToolTip" --%>
+<%--                                             value="DR_CONTROLAREA/${controlAreaId}/ESTIMATED_LOAD_ERROR"  --%>
+<%--                                             initialize="true"/> --%>
                                     </td>
                                 </cti:checkRolesAndProperties>
                                 <td><dr:controlAreaListActions pao="${controlArea}"/></td>

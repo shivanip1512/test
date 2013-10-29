@@ -1,30 +1,34 @@
-package com.cannontech.dr.controlarea.model;
+package com.cannontech.dr.estimatedload.model;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.dr.estimatedload.EstimatedLoadCalculationException;
 import com.cannontech.dr.estimatedload.EstimatedLoadReductionAmount;
 import com.cannontech.dr.estimatedload.service.EstimatedLoadService;
+import com.cannontech.dr.estimatedload.service.impl.EstimatedLoadBackingServiceHelper;
+import com.cannontech.dr.program.service.impl.EstimatedLoadBackingFieldBase;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.user.YukonUserContext;
 
-public class ControlAreaDiversifiedLoadField extends ControlAreaBackingFieldBase {
+public class ControlAreaDiversifiedLoadField extends EstimatedLoadBackingFieldBase {
 
-    @Autowired EstimatedLoadService estimatedLoadService;
+    @Autowired EstimatedLoadBackingServiceHelper backingServiceHelper;
 
     @Override
     public String getFieldName() {
-        return "DIVERSIFIED_LOAD";
+        return "CONTROL_AREA_DIVERSIFIED_LOAD";
     }
 
     @Override
-    public Object getControlAreaValue(LMControlArea controlArea, YukonUserContext userContext) {
-        EstimatedLoadReductionAmount estimatedLoadAmount;
+    public Object getValue(int paoId, YukonUserContext userContext) {
+        EstimatedLoadReductionAmount estimatedLoadAmount = null;
         try {
-            estimatedLoadAmount = estimatedLoadService.retrieveEstimatedLoadValue(
-                    controlArea.getPaoIdentifier());
+            PaoIdentifier controlArea = new PaoIdentifier(paoId, PaoType.LM_CONTROL_AREA);
+            estimatedLoadAmount = backingServiceHelper.getControlAreaValue(controlArea);
         } catch (EstimatedLoadCalculationException e) {
             return blankFieldResolvable;
         }

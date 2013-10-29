@@ -4,10 +4,19 @@ public class EstimatedLoadCalculationException extends Exception {
 
     private Type type;
     private Object[] args;
-    
+
+    public EstimatedLoadCalculationException(Throwable e) {
+        this.type = ((EstimatedLoadCalculationException) e).getType();
+        this.args = ((EstimatedLoadCalculationException) e).getResolvableArgs();
+    }
+
     public EstimatedLoadCalculationException(Type type, Object... args) {
         this.type = type;
         this.args = args;
+    }
+    
+    public Type getType() {
+        return type;
     }
     
     public String getResolvableKey() {

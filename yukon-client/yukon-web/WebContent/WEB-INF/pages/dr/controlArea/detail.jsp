@@ -44,23 +44,23 @@
                         <tags:nameValue2 nameKey="yukon.web.modules.dr.estimatedLoad.info.connectedLoad">
                             <div data-pao="${controlAreaId}">
                                 <cti:icon icon="icon-error" classes="dn"/>
-                                <cti:dataUpdaterValue identifier="${controlAreaId}/CONNECTED_LOAD" type="DR_CONTROLAREA"/>
+                                <cti:dataUpdaterValue identifier="${controlAreaId}/CONTROL_AREA_CONNECTED_LOAD" type="ESTIMATED_LOAD"/>
                             </div>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey="yukon.web.modules.dr.estimatedLoad.info.diversifiedLoad">
                             <div data-pao="${controlAreaId}">
                                 <cti:icon icon="icon-error" classes="dn"/>
-                                <cti:dataUpdaterValue identifier="${controlAreaId}/DIVERSIFIED_LOAD" type="DR_CONTROLAREA"/>
+                                <cti:dataUpdaterValue identifier="${controlAreaId}/CONTROL_AREA_DIVERSIFIED_LOAD" type="ESTIMATED_LOAD"/>
                             </div>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey="yukon.web.modules.dr.estimatedLoad.info.kwSavings">
                             <div data-pao="${controlAreaId}">
                                 <cti:icon icon="icon-error" classes="dn"/>
-                                <cti:dataUpdaterValue identifier="${controlAreaId}/KW_SAVINGS" type="DR_CONTROLAREA"/>
-                                <cti:dataUpdaterCallback
-                                    function="Yukon.EstimatedLoad.createToolTip"
-                                    value="DR_CONTROLAREA/${controlAreaId}/ESTIMATED_LOAD_ERROR"
-                                    initialize="true" />
+                                <cti:dataUpdaterValue identifier="${controlAreaId}/CONTROL_AREA_KW_SAVINGS" type="ESTIMATED_LOAD"/>
+<%--                                 <cti:dataUpdaterCallback --%>
+<%--                                     function="Yukon.EstimatedLoad.createToolTip" --%>
+<%--                                     value="DR_CONTROLAREA/${controlAreaId}/ESTIMATED_LOAD_ERROR" --%>
+<%--                                     initialize="true" /> --%>
                             </div>
                         </tags:nameValue2>
                     </cti:checkRolesAndProperties>

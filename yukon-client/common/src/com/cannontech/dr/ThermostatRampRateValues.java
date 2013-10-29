@@ -23,12 +23,12 @@ public final class ThermostatRampRateValues {
      *  ValueD refers to the delta change in temperature over the given time.
      *  ValueTd represents that required time in minutes. 
      *  If ValueD is 1.0 and ValueTd is 60 the ramp rate will be:
-     *      D / Td = 1.0 degree / (60 min* 1 hr/60 min) 
+     *      D / Td = 1.0 degree / (60 min / (60 min/hour)) 
      *             = 1.0 degree / 1 hour 
      *             = 1 degree per hour.
      * @return The ramp rate in degrees per hour as a double value.
      */
     public double getRampRate() {
-        return valueD / (new Double(valueTd) / 60);
+        return ((double) valueD / valueTd / 60);
     }
 }

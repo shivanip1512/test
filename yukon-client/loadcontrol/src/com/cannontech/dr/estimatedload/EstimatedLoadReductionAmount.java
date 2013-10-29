@@ -2,16 +2,16 @@ package com.cannontech.dr.estimatedload;
 
 public final class EstimatedLoadReductionAmount {
 
-    private final Double connectedLoad;
-    private final Double diversifiedLoad;
-    private final Double maxKwSavings;
-    private final Double nowKwSavings;
+    private final double connectedLoad;
+    private final double diversifiedLoad;
+    private final double maxKwSavings;
+    private final double nowKwSavings;
     
     private final boolean isError;
     private final EstimatedLoadCalculationException exception;
 
-    public EstimatedLoadReductionAmount(Double connectedLoad, Double diversifiedLoad,
-            Double maxKwSavings, Double nowKwSavings, boolean isError, EstimatedLoadCalculationException exception) {
+    public EstimatedLoadReductionAmount(double connectedLoad, double diversifiedLoad,
+            double maxKwSavings, double nowKwSavings, boolean isError, EstimatedLoadCalculationException exception) {
         this.connectedLoad = connectedLoad;
         this.diversifiedLoad = diversifiedLoad;
         this.maxKwSavings = maxKwSavings;
@@ -20,19 +20,19 @@ public final class EstimatedLoadReductionAmount {
         this.exception = exception;
     }
 
-    public Double getConnectedLoad() {
+    public double getConnectedLoad() {
         return connectedLoad;
     }
 
-    public Double getDiversifiedLoad() {
+    public double getDiversifiedLoad() {
         return diversifiedLoad;
     }
 
-    public Double getMaxKwSavings() {
+    public double getMaxKwSavings() {
         return maxKwSavings;
     }
 
-    public Double getNowKwSavings() {
+    public double getNowKwSavings() {
         return nowKwSavings;
     }
 

@@ -1,4 +1,4 @@
-package com.cannontech.dr.controlarea.model;
+package com.cannontech.dr.estimatedload.model;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -10,30 +10,35 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.dr.estimatedload.EstimatedLoadCalculationException;
 import com.cannontech.dr.estimatedload.EstimatedLoadReductionAmount;
 import com.cannontech.dr.estimatedload.service.EstimatedLoadService;
+import com.cannontech.dr.estimatedload.service.impl.EstimatedLoadBackingServiceHelper;
+import com.cannontech.dr.program.service.impl.EstimatedLoadBackingFieldBase;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.user.YukonUserContext;
 
-public class ControlAreaEstimatedLoadErrorField extends ControlAreaBackingFieldBase {
+public class ControlAreaEstimatedLoadErrorField extends EstimatedLoadBackingFieldBase {
 
-    @Autowired private EstimatedLoadService estimatedLoadService;
+    @Autowired private EstimatedLoadBackingServiceHelper backingServiceHelper;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
     @Override
     public String getFieldName() {
-        return "ESTIMATED_LOAD_ERROR";
+        return "CONTROL_AREA_ESTIMATED_LOAD_ERROR";
     }
 
     @Override
-    public Object getControlAreaValue(LMControlArea controlArea, YukonUserContext userContext) {
-        EstimatedLoadReductionAmount estimatedLoadAmount;
+    public Object getValue(int paoId, YukonUserContext userContext) {
+        EstimatedLoadReductionAmount estimatedLoadAmount = null;
+        PaoIdentifier controlArea = null;
         try {
-            estimatedLoadAmount = estimatedLoadService.retrieveEstimatedLoadValue(
-                    controlArea.getPaoIdentifier());
+            controlArea = new PaoIdentifier(paoId, PaoType.LM_CONTROL_AREA);
+            estimatedLoadAmount = backingServiceHelper.getControlAreaValue(controlArea);
         } catch (EstimatedLoadCalculationException e) {
             return createErrorJson(controlArea, userContext, e);
         }
@@ -43,7 +48,7 @@ public class ControlAreaEstimatedLoadErrorField extends ControlAreaBackingFieldB
         return createSuccessJson(controlArea);
     }
 
-    private Object createErrorJson(LMControlArea controlArea, YukonUserContext userContext,
+    private Object createErrorJson(PaoIdentifier controlArea, YukonUserContext userContext,
             EstimatedLoadCalculationException e) {
         Map<String, String> errorTooltipJSON = new HashMap<>();
         
@@ -53,13 +58,13 @@ public class ControlAreaEstimatedLoadErrorField extends ControlAreaBackingFieldB
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         String errorMessage = accessor.getMessage(error);
         
-        errorTooltipJSON.put("paoId", String.valueOf(controlArea.getPaoIdentifier().getPaoId()));
+        errorTooltipJSON.put("paoId", String.valueOf(controlArea.getPaoId()));
         errorTooltipJSON.put("errorMessage", errorMessage);
         return JSONObject.fromObject(errorTooltipJSON).toString();
     }
 
-    private Object createSuccessJson(LMControlArea controlArea) {
+    private Object createSuccessJson(PaoIdentifier controlArea) {
         return JSONObject.fromObject(Collections.singletonMap("paoId",
-                String.valueOf(controlArea.getPaoIdentifier().getPaoId()))).toString();
+                String.valueOf(controlArea.getPaoId()))).toString();
     }
 }

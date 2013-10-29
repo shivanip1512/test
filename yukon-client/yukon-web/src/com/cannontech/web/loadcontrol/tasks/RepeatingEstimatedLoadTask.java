@@ -74,7 +74,8 @@ public class RepeatingEstimatedLoadTask extends YukonTaskBase {
     private void populatePointData(List<PaoIdentifier> lmPaos) {
         for (PaoIdentifier paoIdent : lmPaos) {
             try {
-                EstimatedLoadReductionAmount estimatedLoadAmount = estimatedLoadService.retrieveEstimatedLoadValue(paoIdent);
+                //EstimatedLoadReductionAmount estimatedLoadAmount = estimatedLoadService.retrieveEstimatedLoadValue(paoIdent);
+                EstimatedLoadReductionAmount estimatedLoadAmount = null;
                 if (estimatedLoadAmount != null && !estimatedLoadAmount.isError()) {
                     LitePoint diversifiedPoint
                         = pointService.getPointForPao(new PaoPointIdentifier(paoIdent, new PointIdentifier(PointType.Analog, 1)));
@@ -86,9 +87,9 @@ public class RepeatingEstimatedLoadTask extends YukonTaskBase {
                 } else {
                     log.info("Unable to calculate estimated load data for pao: " + paoIdent);
                 }
-            } catch (EstimatedLoadCalculationException e) {
-                log.warn("Invalid Estimated Load Calculation value. Unable to archive historical calculation.");
-            }
+//            } catch (EstimatedLoadCalculationException e) {
+//                log.warn("Invalid Estimated Load Calculation value. Unable to archive historical calculation.");
+            } finally { }
         }
     }
 
