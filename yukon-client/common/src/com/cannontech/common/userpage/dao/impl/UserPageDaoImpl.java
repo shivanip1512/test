@@ -139,7 +139,8 @@ public class UserPageDaoImpl implements UserPageDao {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM UserPage");
-        sql.append("WHERE UserPageId NOT IN (");
+        sql.append("WHERE UserId").eq(userId);
+        sql.append("AND UserPageId NOT IN (");
         sql.append("  SELECT T.UserPageId FROM (");
         sql.append("    SELECT ROW_NUMBER() OVER (ORDER BY LastAccess DESC) RowNumber, UP.UserPageId, UP.Favorite");
         sql.append("    FROM UserPage UP");
