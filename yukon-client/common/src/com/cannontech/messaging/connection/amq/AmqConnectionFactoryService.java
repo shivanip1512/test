@@ -12,12 +12,6 @@ public class AmqConnectionFactoryService {
     //private static final int _8MB = 8388608; // 2^23>(8 MB)
 
     private static final String DEFAULT_CONNECTION_URI = "tcp://localhost:61616";
-    private static final String DEFAULT_CONNECTION_STRING_FORMAT = "failover:(%s)" 
-                                                                   + "?useExponentialBackOff=true"
-                                                                   + "&initialReconnectDelay=1000"
-                                                                   + "&maxReconnectDelay=30000"
-                                                                   + "&startupMaxReconnectAttempts=120"
-                                                                   + "&maxReconnectAttempts=0";
 
     private static AmqConnectionFactoryService defaultService;
 
@@ -32,18 +26,14 @@ public class AmqConnectionFactoryService {
     }
 
     public AmqConnectionFactoryService(String connectionURI) {
-        this(new ActiveMQConnectionFactory(getConnectionString(connectionURI)));
+        this(new ActiveMQConnectionFactory(connectionURI));
     }
 
     public AmqConnectionFactoryService(ConnectionFactory connectionFactory) {
         if(connectionFactory == null) {
-            connectionFactory = new ActiveMQConnectionFactory(getConnectionString(DEFAULT_CONNECTION_URI));
+            connectionFactory = new ActiveMQConnectionFactory(DEFAULT_CONNECTION_URI);
         }
         this.connectionFactory = connectionFactory;
-    }
-
-    private static String getConnectionString(String connectionURI) {
-        return String.format(DEFAULT_CONNECTION_STRING_FORMAT, connectionURI);
     }
 
     public ActiveMQConnection createConnection() throws JMSException {
