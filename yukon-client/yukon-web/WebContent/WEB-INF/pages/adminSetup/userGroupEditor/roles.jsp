@@ -41,9 +41,7 @@
                                     <p>
                                         <i:inline key="${prop.extra.description}"/>
                                         <c:if test="${!empty prop.extra.defaultValue}">
-                                            <c:if test="${command.values[prop.extra.yukonRoleProperty] != prop.extra.defaultValue}">
-                                                <span class="default"><i:inline key=".default"/>:&nbsp;(${fn:escapeXml(prop.extra.defaultValue)})</span>
-                                            </c:if>
+                                            <span class="default"><i:inline key=".default"/>:&nbsp;(${fn:escapeXml(prop.extra.defaultValue)})</span>
                                         </c:if>
                                         <form:errors path="${prop.path}" cssClass="errorMessage" element="div"/>
                                     </p>
