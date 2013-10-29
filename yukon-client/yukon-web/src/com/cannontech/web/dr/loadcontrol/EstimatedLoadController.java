@@ -238,8 +238,8 @@ public class EstimatedLoadController {
         SearchResults<GearAssignment> pagedGears
             = SearchResults.pageBasedForWholeList(page, itemsPerPage, gearAssignments);
 
-        model.addAttribute("gearSort", sort);
-        model.addAttribute("gearDescending", descending);
+        model.addAttribute("sort", sort);
+        model.addAttribute("descending", descending);
         model.addAttribute("pagedGears", pagedGears);
         model.addAttribute("gearPrograms", gearPrograms);
 
@@ -290,8 +290,8 @@ public class EstimatedLoadController {
             = SearchResults.pageBasedForWholeList(page, itemsPerPage, appCatAssignments);
 
         model.addAttribute("energyCompanyIds", energyCompanyIds);
-        model.addAttribute("appCatSort", sort);
-        model.addAttribute("appCatDescending", descending);
+        model.addAttribute("sort", sort);
+        model.addAttribute("descending", descending);
         model.addAttribute("pagedAppCats", pagedAppCats);
 
         return "dr/estimatedLoad/_appCatAssignmentsTable.jsp";

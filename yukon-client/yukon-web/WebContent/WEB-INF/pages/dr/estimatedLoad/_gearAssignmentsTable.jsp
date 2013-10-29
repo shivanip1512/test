@@ -42,8 +42,8 @@
             </table>
             <c:if test="${pagedGears.hitCount > pagedGears.count}">
                 <cti:url value="${sortUrl}" var="pagedUrl">
-                   <cti:param name="gearSort" value="${gearSort}"/>
-                   <cti:param name="gearOrderByDescending" value="${gearOrderByDescending}"/>
+                   <cti:param name="sort" value="${sort}"/>
+                   <cti:param name="descending" value="${descending}"/>
                 </cti:url>
                 <tags:pagingResultsControls baseUrl="${pagedUrl}" result="${pagedGears}"/>
             </c:if>
