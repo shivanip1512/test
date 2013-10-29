@@ -1,7 +1,9 @@
+<%@ tag trimDirectiveWhitespaces="true" %>
+
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <%@ attribute name="argument" type="java.lang.Object" %>
 <%@ attribute name="excludeColon" %>
@@ -18,15 +20,15 @@
 <cti:msgScope paths=".${nameKey},">
 <c:choose>
 	<c:when test="${nameValueContainter2}">
+		<c:set var="colonSuffix" value=":"/>
+		<c:if test="${excludeColon == true}">
+			<c:set var="colonSuffix" value=""/>
+		</c:if>
         <tr <c:if test="${!empty rowId}"> id="${rowId}"</c:if>
             <c:if test="${!empty rowClass}"> class="${rowClass}"</c:if>>
-            <td class="name <c:if test="${!empty nameClass}"> ${nameClass}</c:if>" style="<c:if test="${not empty pageScope.nameColumnWidth}">width:${pageScope.nameColumnWidth};</c:if>" title="<cti:msg2 key="${nameKey}.title" blankIfMissing="true"/>">
-            
-				<c:set var="colonSuffix" value=":"/>
-				<c:if test="${excludeColon == true}">
-					<c:set var="colonSuffix" value=""/>
-				</c:if>
-				
+            <td class="name <c:if test="${!empty nameClass}">${nameClass}</c:if>" 
+                style="<c:if test="${not empty pageScope.nameColumnWidth}">width:${pageScope.nameColumnWidth};</c:if>" 
+                title="<cti:msg2 key="${nameKey}.title" blankIfMissing="true"/>">
 				<c:choose>
 					<c:when test="${not empty pageScope.labelForId}">
                         <c:choose>
@@ -49,10 +51,9 @@
                         </c:choose>
 					</c:otherwise>
 				</c:choose>
-				
 			</td>
 			
-			<td class="value<c:if test="${!empty pageScope.valueClass}"> ${pageScope.valueClass}</c:if>"><jsp:doBody/></td>
+			<td class="value <c:if test="${!empty pageScope.valueClass}"> ${pageScope.valueClass}</c:if>"><jsp:doBody/></td>
 		</tr>
 	</c:when>
 	<c:otherwise>
