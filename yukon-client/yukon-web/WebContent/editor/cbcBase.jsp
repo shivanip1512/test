@@ -73,15 +73,19 @@
                     <x:commandButton id="hdr_submit_button_2" value="Submit" action="#{capBankEditor.update}" styleClass="stdButton" 
                         title="Writes this item to the database"  rendered = "#{capControlForm.visibleTabs['CBCCapBank'] && capControlForm.editingAuthorized}"/>
                     
-                    <x:commandButton id="hdr_reset_button"  value="Reset" action="#{capControlForm.resetForm}" styleClass="stdButton" 
-                        title="Resets all the data to the original settings" rendered = "#{capControlForm.editingAuthorized}"/>
-                    
                     <f:verbatim>
                         <cti:url var="deleteUrl" value="/editor/deleteBasePAO.jsf">
                             <cti:param name="value" value="${capControlForm.itemId}"/>
                         </cti:url>
+                        <cti:url var="copyUrl" value="/editor/copyBase.jsf">
+                            <cti:param name="itemid" value="${capControlForm.itemId}"/>
+                            <cti:param name="type" value="1"/>
+                        </cti:url>
                         <cti:msgScope paths="capcontrol.cbcBase">
                            <cti:button nameKey="delete" href="${deleteUrl}"/>
+                           <c:if test="${capControlForm.visibleTabs['CBCController']}">
+                               <cti:button nameKey="copy" href="${copyUrl}"/>
+                           </c:if>
                         </cti:msgScope>
                     </f:verbatim>
 
@@ -188,15 +192,19 @@
                             <x:commandButton id="submit_button2" value="Submit" action="#{capBankEditor.update}" styleClass="stdButton" 
                                 title="Writes this item to the database" rendered = "#{capControlForm.visibleTabs['CBCCapBank'] && capControlForm.editingAuthorized}"/>
                             
-                            <x:commandButton id="reset_button" value="Reset" action="#{capControlForm.resetForm}" styleClass="stdButton"  
-                                title="Resets all the data to the original settings" rendered="#{capControlForm.editingAuthorized}"/>
-                            
                             <f:verbatim>
                                 <cti:url var="deleteUrl" value="/editor/deleteBasePAO.jsf">
                                     <cti:param name="value" value="${capControlForm.itemId}"/>
                                 </cti:url>
+                                <cti:url var="copyUrl" value="/editor/copyBase.jsf">
+                                    <cti:param name="itemid" value="${capControlForm.itemId}"/>
+                                    <cti:param name="type" value="1"/>
+                                </cti:url>
                                 <cti:msgScope paths="capcontrol.cbcBase">
                                    <cti:button nameKey="delete" href="${deleteUrl}"/>
+                                   <c:if test="${capControlForm.visibleTabs['CBCController']}">
+                                       <cti:button nameKey="copy" href="${copyUrl}"/>
+                                   </c:if>
                                 </cti:msgScope>
                             </f:verbatim>
 
