@@ -275,23 +275,23 @@
 <entry key="yukon.web.menu.config.support.other.routeUsage">Route Usage</entry>
 
 <!-- Commander Module -->
-<entry key="yukon.web.menu.config.commander.deviceselection">Device Selection</entry>
+<entry key="yukon.web.menu.config.commander.command.deviceSelection">Device Selection</entry>
 
 <!-- Commander Select Module -->
-<entry key="yukon.web.menu.config.commanderSelect.devices">Devices</entry>
-<entry key="yukon.web.menu.config.commanderSelect.devices.mct">MCT</entry>
-<entry key="yukon.web.menu.config.commanderSelect.devices.ied">IED</entry>
-<entry key="yukon.web.menu.config.commanderSelect.devices.rtu">RTU</entry>
-<entry key="yukon.web.menu.config.commanderSelect.devices.transmitter">Transmitter</entry>
-<entry key="yukon.web.menu.config.commanderSelect.devices.group">Group</entry>
-<entry key="yukon.web.menu.config.commanderSelect.lm">Load Management</entry>
-<entry key="yukon.web.menu.config.commanderSelect.lm.group">Group</entry>
-<entry key="yukon.web.menu.config.commanderSelect.lm.xcom">Expresscom</entry>
-<entry key="yukon.web.menu.config.commanderSelect.lm.vcom">Versacom</entry>
-<entry key="yukon.web.menu.config.commanderSelect.lm.205serial">DCU-205 Serial</entry>
-<entry key="yukon.web.menu.config.commanderSelect.lm.305serial">DCU-305 Serial</entry>
-<entry key="yukon.web.menu.config.commanderSelect.capcontrol">Cap Control</entry>
-<entry key="yukon.web.menu.config.commanderSelect.capcontrol.capcontrolsub">Cap Control</entry>
+<entry key="yukon.web.menu.config.commander.select.devices">Devices</entry>
+<entry key="yukon.web.menu.config.commander.select.devices.mct">MCT</entry>
+<entry key="yukon.web.menu.config.commander.select.devices.ied">IED</entry>
+<entry key="yukon.web.menu.config.commander.select.devices.rtu">RTU</entry>
+<entry key="yukon.web.menu.config.commander.select.devices.transmitter">Transmitter</entry>
+<entry key="yukon.web.menu.config.commander.select.devices.group">Group</entry>
+<entry key="yukon.web.menu.config.commander.select.lm">Load Management</entry>
+<entry key="yukon.web.menu.config.commander.select.lm.group">Group</entry>
+<entry key="yukon.web.menu.config.commander.select.lm.xcom">Expresscom</entry>
+<entry key="yukon.web.menu.config.commander.select.lm.vcom">Versacom</entry>
+<entry key="yukon.web.menu.config.commander.select.lm.205serial">DCU-205 Serial</entry>
+<entry key="yukon.web.menu.config.commander.select.lm.305serial">DCU-305 Serial</entry>
+<entry key="yukon.web.menu.config.commander.select.capcontrol">Cap Control</entry>
+<entry key="yukon.web.menu.config.commander.select.capcontrol.capcontrolsub">Cap Control</entry>
 
 <!-- Consumer Module -->
 <entry key="yukon.web.menu.config.consumer.account">Account</entry>

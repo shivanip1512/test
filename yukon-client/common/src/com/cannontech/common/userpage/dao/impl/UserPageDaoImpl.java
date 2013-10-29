@@ -49,7 +49,7 @@ public class UserPageDaoImpl implements UserPageDao {
         if (dbPage == null) {
             page = page.withFavorite(true);
         } else {
-            page = dbPage.withFavorite( ! dbPage.isFavorite());
+            page = page.withFavorite( ! dbPage.isFavorite()).withId(dbPage.getId());
         }
         UserPage afterUpdate = save(page);
         return afterUpdate.isFavorite();
@@ -237,7 +237,8 @@ public class UserPageDaoImpl implements UserPageDao {
         }
     };
 
-    private static AdvancedFieldMapper<UserPageParameterEntry> userPageParamMapper = new AdvancedFieldMapper<UserPageParameterEntry>() {
+    private static AdvancedFieldMapper<UserPageParameterEntry> userPageParamMapper =
+    		new AdvancedFieldMapper<UserPageParameterEntry>() {
 
         @Override
         public void extractValues(SqlParameterChildSink p, UserPageParameterEntry paramEntry) {

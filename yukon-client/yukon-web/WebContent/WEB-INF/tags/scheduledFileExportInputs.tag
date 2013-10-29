@@ -4,7 +4,8 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
-<%@ attribute name="cronExpressionTagState" required="true" rtexprvalue="true" type="com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState" %>
+<%@ attribute name="cronExpressionTagState" required="true" rtexprvalue="true"
+    type="com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState" %>
 <%@ attribute name="exportData" required="true" type="java.lang.Object" %>
 
 <script type="text/javascript">
@@ -16,19 +17,19 @@ jQuery(function() {
         } else {
             jQuery(changeItemId).attr("disabled","disabled").closest("tr").hide(250);
         }
-    }
+    };
 
     toggleTimestampPatternField = function() {
         toggleField("#appendDateToFileName", "#timestampPatternField");
-    }
+    };
 
     toggleFileExtensionField = function() {
         toggleField("#overrideFileExtension", "#exportFileExtension");
-    }
+    };
 
     toggleExportPathField = function() {
         toggleField("#includeExportCopy", "#exportPath");
-    }
+    };
 
     var lastDisplayName = false;
     sameAsNameClicked = function() {
@@ -42,12 +43,12 @@ jQuery(function() {
             }
             jQuery("#exportFileName").removeAttr("disabled");
         }
-    }
+    };
     nameChanged = function() {
         if (jQuery("#sameAsSchedName").is(":checked")) {
             jQuery("#exportFileName").val(jQuery("#scheduleName").val());
         }
-    }
+    };
 
     jQuery("#appendDateToFileName").click(toggleTimestampPatternField);
     jQuery("#overrideFileExtension").click(toggleFileExtensionField);
@@ -61,11 +62,10 @@ jQuery(function() {
     toggleExportPathField();
     sameAsNameClicked();
     
-})
+});
 </script>
 
-
-<cti:msgScope paths="yukon.web.modules.amr.scheduledFileExport.inputs">
+<cti:msgScope paths="yukon.web.modules.tools.scheduledFileExport.inputs">
 <cti:url var="infoImg" value="/WebConfig/yukon/Icons/information.gif"/>
 
 	<tags:inputNameValue nameKey=".scheduleName" path="scheduleName" maxlength="100"/>

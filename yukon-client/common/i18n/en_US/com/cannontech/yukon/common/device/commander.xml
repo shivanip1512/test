@@ -9,20 +9,15 @@
     
     <entry key="yukon.common.device.commander.collectionActionOnDevicesLabel.cancelLocateButtonLabel">Cancel Commands</entry>
     <entry key="yukon.common.device.commander.collectionActionOnDevicesLabel.allResults">Choose New Operation For All Devices</entry>
-    
     <entry key="yukon.common.device.commander.collectionActionOnDevicesLabel.creResults">View Results Log</entry>
-    
     <entry key="yukon.common.device.commander.collectionActionOnDevicesLabel.successResults">Choose New Operation For These Devices</entry>
-    
     <entry key="yukon.common.device.commander.collectionActionOnDevicesLabel.failureResults">Choose New Operation For These Devices</entry>
-    
     <entry key="yukon.common.device.commander.collectionActionOnDevicesLabel.unsupportedResults">Choose New Operation For These Devices</entry>
     
     <entry key="yukon.common.device.commander.results.progressLabel">Progress</entry>
     <entry key="yukon.common.device.commander.results.inProgress">In Progress...</entry>
     <entry key="yukon.common.device.commander.results.complete">Complete.</entry>
     <entry key="yukon.common.device.commander.results.canceled">Canceled.</entry>
-    
     <entry key="yukon.common.device.commander.results.cancelCommands">Cancel Commands</entry>
     <entry key="yukon.common.device.commander.results.cancelingCommands">Canceling Commands...</entry>
     <entry key="yukon.common.device.commander.results.finishedCancelingCommands">Commands Canceled.</entry>

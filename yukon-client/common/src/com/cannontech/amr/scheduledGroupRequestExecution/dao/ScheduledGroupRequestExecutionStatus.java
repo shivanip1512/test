@@ -10,6 +10,6 @@ public enum ScheduledGroupRequestExecutionStatus implements DisplayableEnum {
 	DELETED;
 	
 	public String getFormatKey() {
-		return "yukon.common.device.scheduledGroupRequestExecution.state." + this.name();
+		return "yukon.common.device.schedules.state." + this.name();
 	}
 }

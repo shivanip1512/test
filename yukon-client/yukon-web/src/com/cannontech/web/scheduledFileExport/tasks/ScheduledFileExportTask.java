@@ -302,7 +302,7 @@ public abstract class ScheduledFileExportTask extends YukonTaskBase {
     
 	//Gets the appropriate email subject i18n key based on the type of file export.
 	private String getSubjectKey(FileExportType type) {
-		return "yukon.web.modules.amr.scheduledFileExport.notification.subject." + type.name();
+		return "yukon.web.modules.tools.scheduledFileExport.notification.subject." + type.name();
 	}
 	
 	//Gets the message String for an i18n key.
@@ -321,7 +321,7 @@ public abstract class ScheduledFileExportTask extends YukonTaskBase {
 		
 		int historyId = historyEntry == null ? 0 : historyEntry.getId();
 		String historyLink = baseUrl + HISTORY_URL_PART + historyId;
-		String body = getMessage("yukon.web.modules.amr.scheduledFileExport.notification.body", name, historyLink);
+		String body = getMessage("yukon.web.modules.tools.scheduledFileExport.notification.body", name, historyLink);
 		return body;
 	}
 }

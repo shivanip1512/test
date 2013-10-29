@@ -5,155 +5,156 @@
     <!-- ScheduledGroupRequestExecutionWidget render.jsp -->
     <!-- ================================================================================================================================================= -->
     <!-- ================================================================================================================================================= -->
-    <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.noSchedules">No Schedules</entry>
-    <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.viewDetails">View Details</entry>
-    <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.viewDetailsWithAdditional">View Details ({0} {0, choice, 1#Job|1&lt;Jobs} Not Shown)</entry>
-    <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.tableHeader.scheduleName">Name</entry>
-    <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.tableHeader.scheduleDescription">Run Schedule</entry>
-    <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.tableHeader.status">Status</entry>
-    <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.tableHeader.enabled">Enabled</entry>
-    <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.edit.hoverText">Edit Schedule Details ({0})</entry>
-    <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.tooltip.running">{0} Success / {1} Missed / {2} Total</entry>
-    <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.tooltip.notRunning">Last Run: {0} Success / {1} Missed / {2} Total</entry>
-	<entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.enable.hoverText">Click to enable ({0})</entry>
-    <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.disable.hoverText">Click to disable ({0})</entry>
-    <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.cancel.hoverText">Cancel current run of {0}</entry>
-    <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.cancelConfirm.title">Stop Scheduled Request Execution</entry>
-    <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.cancelConfirm.message">Are you sure you want to stop "{0}"?</entry>
+    <entry key="yukon.web.widgets.schedules.noSchedules">No Schedules</entry>
+    <entry key="yukon.web.widgets.schedules.viewDetails">View Details</entry>
+    <entry key="yukon.web.widgets.schedules.viewDetailsWithAdditional">View Details ({0} {0, choice, 1#Job|1&lt;Jobs} Not Shown)</entry>
+    <entry key="yukon.web.widgets.schedules.tableHeader.scheduleName">Name</entry>
+    <entry key="yukon.web.widgets.schedules.tableHeader.scheduleDescription">Run Schedule</entry>
+    <entry key="yukon.web.widgets.schedules.tableHeader.status">Status</entry>
+    <entry key="yukon.web.widgets.schedules.tableHeader.enabled">Enabled</entry>
+    <entry key="yukon.web.widgets.schedules.edit.hoverText">Edit Schedule Details ({0})</entry>
+    <entry key="yukon.web.widgets.schedules.tooltip.running">{0} Success / {1} Missed / {2} Total</entry>
+    <entry key="yukon.web.widgets.schedules.tooltip.notRunning">Last Run: {0} Success / {1} Missed / {2} Total</entry>
+	<entry key="yukon.web.widgets.schedules.enable.hoverText">Click to enable ({0})</entry>
+    <entry key="yukon.web.widgets.schedules.disable.hoverText">Click to disable ({0})</entry>
+    <entry key="yukon.web.widgets.schedules.cancel.hoverText">Cancel current run of {0}</entry>
+    <entry key="yukon.web.widgets.schedules.cancelConfirm.title">Stop Scheduled Request Execution</entry>
+    <entry key="yukon.web.widgets.schedules.cancelConfirm.message">Are you sure you want to stop "{0}"?</entry>
     
     <!-- ScheduledGroupRequestExecutionController home.jsp -->
     <!-- ================================================================================================================================================= -->
     <!-- ================================================================================================================================================= -->
-    <!-- breadcrumb placeholder -->
-    <entry key="yukon.web.modules.amr.scheduledGroupRequestProcessing.pageName">Scheduled Group Request Processing</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequestHome.CREATE.pageName">Scheduled Group Request</entry>
-  	<entry key="yukon.web.modules.amr.scheduledGroupRequestHome.CREATE.pageDescription">Create Schedule</entry>
-
-    <entry key="yukon.web.modules.amr.scheduledGroupRequestHome.EDIT.pageName">Edit Schedule</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequestHome.EDIT.pageDescription">{0}</entry>
     
-    <entry key="yukon.common.device.scheduledGroupRequestExecution.home.requestType">Request Type</entry>
-    <entry key="yukon.common.device.scheduledGroupRequestExecution.home.requestType.attribute">Attribute</entry>
-    <entry key="yukon.common.device.scheduledGroupRequestExecution.home.requestType.command">Command</entry>
-    <entry key="yukon.common.device.scheduledGroupRequestExecution.home.group">Group</entry>
-    <entry key="yukon.common.device.scheduledGroupRequestExecution.home.group.chooseGroup">Select</entry>
-    <entry key="yukon.common.device.scheduledGroupRequestExecution.home.group.changeGroup">Change</entry>
-    <entry key="yukon.common.device.scheduledGroupRequestExecution.home.group.selectDeviceGroup">Select Device Group</entry>
-    <entry key="yukon.common.device.scheduledGroupRequestExecution.home.group.selectDeviceGroupChoose">Select</entry>
-    <entry key="yukon.common.device.scheduledGroupRequestExecution.home.group.selectDeviceGroupCancel">Cancel</entry>
-    <entry key="yukon.common.device.scheduledGroupRequestExecution.home.scheduleName">Schedule Name</entry>
-    <entry key="yukon.common.device.scheduledGroupRequestExecution.home.timeFrequency">Time/Frequency</entry>
-    <entry key="yukon.common.device.scheduledGroupRequestExecution.home.retry">Retry</entry>
-    <entry key="yukon.common.device.scheduledGroupRequestExecution.home.retry.checkbox">Use Request Retry Strategy</entry>
-    <entry key="yukon.common.device.scheduledGroupRequestExecution.home.retry.queuedRetryCount">Number of queued retries.</entry>
-    <entry key="yukon.common.device.scheduledGroupRequestExecution.home.retry.nonQueuedRetryCount">Number of non-queued retries.</entry>
-    <entry key="yukon.common.device.scheduledGroupRequestExecution.home.retry.maxTotalRunTimeHours">Maximum total run-time hours, leave blank for no limit.</entry>
-    <entry key="yukon.common.device.scheduledGroupRequestExecution.home.scheduleState">Schedule Status</entry>
-    <entry key="yukon.common.device.scheduledGroupRequestExecution.home.scheduleButton">Schedule</entry>
-    <entry key="yukon.common.device.scheduledGroupRequestExecution.home.updateButton">Update</entry>
-    <entry key="yukon.common.device.scheduledGroupRequestExecution.home.enableJobButton">Enable</entry>
-    <entry key="yukon.common.device.scheduledGroupRequestExecution.home.disableJobButton">Disable</entry>
-    <entry key="yukon.common.device.scheduledGroupRequestExecution.home.disableAndDeleteJobButton">Delete</entry>
+    <entry key="yukon.web.modules.tools.schedules.home.CREATE.pageName">Scheduled Group Request</entry>
+  	<entry key="yukon.web.modules.tools.schedules.home.CREATE.pageDescription">Create Schedule</entry>
+
+    <entry key="yukon.web.modules.tools.schedules.home.EDIT.pageName">Edit Schedule</entry>
+    <entry key="yukon.web.modules.tools.schedules.home.EDIT.pageDescription">{0}</entry>
+    
+    <entry key="yukon.common.device.schedules.home.requestType">Request Type</entry>
+    <entry key="yukon.common.device.schedules.home.requestType.attribute">Attribute</entry>
+    <entry key="yukon.common.device.schedules.home.requestType.command">Command</entry>
+    <entry key="yukon.common.device.schedules.home.group">Group</entry>
+    <entry key="yukon.common.device.schedules.home.group.chooseGroup">Select</entry>
+    <entry key="yukon.common.device.schedules.home.group.changeGroup">Change</entry>
+    <entry key="yukon.common.device.schedules.home.group.selectDeviceGroup">Select Device Group</entry>
+    <entry key="yukon.common.device.schedules.home.group.selectDeviceGroupChoose">Select</entry>
+    <entry key="yukon.common.device.schedules.home.group.selectDeviceGroupCancel">Cancel</entry>
+    <entry key="yukon.common.device.schedules.home.scheduleName">Schedule Name</entry>
+    <entry key="yukon.common.device.schedules.home.timeFrequency">Time/Frequency</entry>
+    <entry key="yukon.common.device.schedules.home.retry">Retry</entry>
+    <entry key="yukon.common.device.schedules.home.retry.checkbox">Use Request Retry Strategy</entry>
+    <entry key="yukon.common.device.schedules.home.retry.queuedRetryCount">Number of queued retries.</entry>
+    <entry key="yukon.common.device.schedules.home.retry.nonQueuedRetryCount">Number of non-queued retries.</entry>
+    <entry key="yukon.common.device.schedules.home.retry.maxTotalRunTimeHours">Maximum total run-time hours, leave blank for no limit.</entry>
+    <entry key="yukon.common.device.schedules.home.scheduleState">Schedule Status</entry>
+    <entry key="yukon.common.device.schedules.home.scheduleButton">Schedule</entry>
+    <entry key="yukon.common.device.schedules.home.updateButton">Update</entry>
+    <entry key="yukon.common.device.schedules.home.enableJobButton">Enable</entry>
+    <entry key="yukon.common.device.schedules.home.disableJobButton">Disable</entry>
+    <entry key="yukon.common.device.schedules.home.disableAndDeleteJobButton">Delete</entry>
     
     <!-- ScheduledGroupRequestExecutionController jobs.jsp -->
     <!-- ================================================================================================================================================= -->
     <!-- ================================================================================================================================================= -->
-    <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.pageName">All Schedules</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.tableTitle.title">Schedules</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.filter.section">Filters</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.filter.dateRange">Date Range</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.filter.dateFrom">From</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.filter.dateTo">to</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.filter.type">Request Type</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.filter.typeAny">Any Scheduled</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.filter.enabled">Enabled</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.filter.disabled">Disabled</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.filter.excludePending">Exclude Pending</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.filter.includeOnetime">Include One-Time</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.filter.allWord">All</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.executions.section">Schedules</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.executions.tableHeader.scheduleName.linkText">Name</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.executions.tableHeader.deviceGroup.linkText">Device Group</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.executions.tableHeader.attributeOrCommand.linkText">Attribute/Command</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.executions.tableHeader.attributeOrCommand.attribute">Attribute</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.executions.tableHeader.scheduleDescription.linkText">Run Schedule</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.executions.tableHeader.nextRun.linkText">Next Run</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.executions.tableHeader.executionCount.linkText">Executions</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.executions.tableHeader.status.linkText">Status</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.executions.tableHeader.enabled">Enabled</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.enable.hoverText">Enable ({0})</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.disable.hoverText">Disable ({0})</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.cancel.hoverText">Cancel current run of {0}</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.cancelConfirm.title">Stop Scheduled Request Execution</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.cancelConfirm.message">Are you sure you want to stop "{0}"?</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.noJobs.createAccess"><![CDATA[
+    
+    <entry key="yukon.web.modules.tools.schedules.all.pageName">All Schedules</entry>
+    <entry key="yukon.web.modules.tools.schedules.all.tableTitle.title">Schedules</entry>
+    <entry key="yukon.web.modules.tools.schedules.all.filter.section">Filters</entry>
+    <entry key="yukon.web.modules.tools.schedules.all.filter.dateRange">Date Range</entry>
+    <entry key="yukon.web.modules.tools.schedules.all.filter.dateFrom">From</entry>
+    <entry key="yukon.web.modules.tools.schedules.all.filter.dateTo">to</entry>
+    <entry key="yukon.web.modules.tools.schedules.all.filter.type">Request Type</entry>
+    <entry key="yukon.web.modules.tools.schedules.all.filter.typeAny">Any Scheduled</entry>
+    <entry key="yukon.web.modules.tools.schedules.all.filter.enabled">Enabled</entry>
+    <entry key="yukon.web.modules.tools.schedules.all.filter.disabled">Disabled</entry>
+    <entry key="yukon.web.modules.tools.schedules.all.filter.excludePending">Exclude Pending</entry>
+    <entry key="yukon.web.modules.tools.schedules.all.filter.includeOnetime">Include One-Time</entry>
+    <entry key="yukon.web.modules.tools.schedules.all.filter.allWord">All</entry>
+    <entry key="yukon.web.modules.tools.schedules.all.executions.section">Schedules</entry>
+    <entry key="yukon.web.modules.tools.schedules.all.executions.tableHeader.scheduleName.linkText">Name</entry>
+    <entry key="yukon.web.modules.tools.schedules.all.executions.tableHeader.deviceGroup.linkText">Device Group</entry>
+    <entry key="yukon.web.modules.tools.schedules.all.executions.tableHeader.attributeOrCommand.linkText">Attribute/Command</entry>
+    <entry key="yukon.web.modules.tools.schedules.all.executions.tableHeader.attributeOrCommand.attribute">Attribute</entry>
+    <entry key="yukon.web.modules.tools.schedules.all.executions.tableHeader.scheduleDescription.linkText">Run Schedule</entry>
+    <entry key="yukon.web.modules.tools.schedules.all.executions.tableHeader.nextRun.linkText">Next Run</entry>
+    <entry key="yukon.web.modules.tools.schedules.all.executions.tableHeader.executionCount.linkText">Executions</entry>
+    <entry key="yukon.web.modules.tools.schedules.all.executions.tableHeader.status.linkText">Status</entry>
+    <entry key="yukon.web.modules.tools.schedules.all.executions.tableHeader.enabled">Enabled</entry>
+    <entry key="yukon.web.modules.tools.schedules.all.enable.hoverText">Enable ({0})</entry>
+    <entry key="yukon.web.modules.tools.schedules.all.disable.hoverText">Disable ({0})</entry>
+    <entry key="yukon.web.modules.tools.schedules.all.cancel.hoverText">Cancel current run of {0}</entry>
+    <entry key="yukon.web.modules.tools.schedules.all.cancelConfirm.title">Stop Scheduled Request Execution</entry>
+    <entry key="yukon.web.modules.tools.schedules.all.cancelConfirm.message">Are you sure you want to stop "{0}"?</entry>
+    <entry key="yukon.web.modules.tools.schedules.all.noJobs.createAccess"><![CDATA[
     	No schedules setup, use the "Create" link to create a schedule.
     ]]></entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.noJobs.noCreateAccess"><![CDATA[
+    <entry key="yukon.web.modules.tools.schedules.all.noJobs.noCreateAccess"><![CDATA[
     	No schedules setup.
     ]]></entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.typeMismatch.java.util.Date">Invalid date</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.groupDoesNotExist">Group does not exist</entry>
+    <entry key="yukon.web.modules.tools.schedules.all.typeMismatch.java.util.Date">Invalid date</entry>
+    <entry key="yukon.web.modules.tools.schedules.all.groupDoesNotExist">Group does not exist</entry>
     
     
     <!-- ScheduledGroupRequestExecutionController jobDetail.jsp -->
     <!-- ================================================================================================================================================= -->
     <!-- ================================================================================================================================================= -->
-    <!-- group/scheduledGroupRequestExecution/jobDetail.jsp -->    
-    <entry key="yukon.web.modules.amr.scheduledGroupRequestDetail.pageName">Schedule Detail</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequestDetail.pageDescription">{0}</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequestDetail.groupDoesNotExist">Group does not exist.</entry>
+    <!-- group/scheduledGroupRequestExecution/jobDetail.jsp -->
+    
+    <entry key="yukon.web.modules.tools.schedules.VIEW.pageName">Schedule Detail</entry>
+    <entry key="yukon.web.modules.tools.schedules.VIEW.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.tools.schedules.VIEW.groupDoesNotExist">Group does not exist.</entry>
 
-    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.pageTitle">Schedule Detail</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.section">Info</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.jobType">Job Type</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.scheduleName">Name</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.creType">Request Type</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.status">Status</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.attribute">Attribute</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.command">Command</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.scheduleDescription">Run Schedule</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.lastRun">Last Run</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.lastResults">Last Results</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.lastResults.success">Success</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.lastResults.missed">Missed</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.lastResults.total">Total</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.deviceGroup">Device Group</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.nextRun">Next Run</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.nextRunDisabled">Disabled</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.user">User</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.executions">Executions</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.executionsButton">View All Executions</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.popInfo.deviceGroup"><![CDATA[
+    <entry key="yukon.web.modules.tools.schedules.VIEW.results.jobDetail.pageTitle">Schedule Detail</entry>
+    <entry key="yukon.web.modules.tools.schedules.VIEW.results.jobDetail.info.section">Info</entry>
+    <entry key="yukon.web.modules.tools.schedules.VIEW.results.jobDetail.info.jobType">Job Type</entry>
+    <entry key="yukon.web.modules.tools.schedules.VIEW.results.jobDetail.info.scheduleName">Name</entry>
+    <entry key="yukon.web.modules.tools.schedules.VIEW.results.jobDetail.info.creType">Request Type</entry>
+    <entry key="yukon.web.modules.tools.schedules.VIEW.results.jobDetail.info.status">Status</entry>
+    <entry key="yukon.web.modules.tools.schedules.VIEW.results.jobDetail.info.attribute">Attribute</entry>
+    <entry key="yukon.web.modules.tools.schedules.VIEW.results.jobDetail.info.command">Command</entry>
+    <entry key="yukon.web.modules.tools.schedules.VIEW.results.jobDetail.info.scheduleDescription">Run Schedule</entry>
+    <entry key="yukon.web.modules.tools.schedules.VIEW.results.jobDetail.info.lastRun">Last Run</entry>
+    <entry key="yukon.web.modules.tools.schedules.VIEW.results.jobDetail.info.lastResults">Last Results</entry>
+    <entry key="yukon.web.modules.tools.schedules.VIEW.results.jobDetail.info.lastResults.success">Success</entry>
+    <entry key="yukon.web.modules.tools.schedules.VIEW.results.jobDetail.info.lastResults.missed">Missed</entry>
+    <entry key="yukon.web.modules.tools.schedules.VIEW.results.jobDetail.info.lastResults.total">Total</entry>
+    <entry key="yukon.web.modules.tools.schedules.VIEW.results.jobDetail.info.deviceGroup">Device Group</entry>
+    <entry key="yukon.web.modules.tools.schedules.VIEW.results.jobDetail.info.nextRun">Next Run</entry>
+    <entry key="yukon.web.modules.tools.schedules.VIEW.results.jobDetail.info.nextRunDisabled">Disabled</entry>
+    <entry key="yukon.web.modules.tools.schedules.VIEW.results.jobDetail.info.user">User</entry>
+    <entry key="yukon.web.modules.tools.schedules.VIEW.results.jobDetail.info.executions">Executions</entry>
+    <entry key="yukon.web.modules.tools.schedules.VIEW.results.jobDetail.info.executionsButton">View All Executions</entry>
+    <entry key="yukon.web.modules.tools.schedules.VIEW.results.jobDetail.info.popInfo.deviceGroup"><![CDATA[
     	 <br>
 	     View the device group in the Device Group Editor page.
 	     <br><br>
     ]]></entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.popInfo.executions"><![CDATA[
+    <entry key="yukon.web.modules.tools.schedules.VIEW.results.jobDetail.info.popInfo.executions"><![CDATA[
     	 <br>
 	     View a listing of every time this job has run.
 	     <br><br>
 	     Note: If this schedule is setup to retry failed requests they will be included in this detailed listing.
 	     <br><br>
     ]]></entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.popInfo.lastRun"><![CDATA[
+    <entry key="yukon.web.modules.tools.schedules.VIEW.results.jobDetail.info.popInfo.lastRun"><![CDATA[
     	 <br>
 	     View the results of the most recent execution of this job.
 	     <br><br>
 	     Note: The most recent execution may still be in progress. Its progress will be displayed and updated on the results page.
 	     <br><br>
     ]]></entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.editScheduleButton">Edit</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.queuedRetryCount">Number of queued retries</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.nonQueuedRetryCount">Number of non-queued retries.</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.maxTotalRunTimeHours">Maximum total run-time hours.</entry>
+    <entry key="yukon.web.modules.tools.schedules.VIEW.results.jobDetail.editScheduleButton">Edit</entry>
+    <entry key="yukon.web.modules.tools.schedules.VIEW.results.jobDetail.queuedRetryCount">Number of queued retries</entry>
+    <entry key="yukon.web.modules.tools.schedules.VIEW.results.jobDetail.nonQueuedRetryCount">Number of non-queued retries.</entry>
+    <entry key="yukon.web.modules.tools.schedules.VIEW.results.jobDetail.maxTotalRunTimeHours">Maximum total run-time hours.</entry>
     
     <!-- Misc -->
     <!-- ================================================================================================================================================= -->
     <!-- ================================================================================================================================================= -->
-    <entry key="yukon.common.device.scheduledGroupRequestExecution.state.ENABLED">Scheduled</entry>
-    <entry key="yukon.common.device.scheduledGroupRequestExecution.state.DISABLED">Disabled</entry>
-    <entry key="yukon.common.device.scheduledGroupRequestExecution.state.DELETED">Deleted</entry>
-    <entry key="yukon.common.device.scheduledGroupRequestExecution.state.RUNNING">Running</entry>
+    <entry key="yukon.common.device.schedules.state.ENABLED">Scheduled</entry>
+    <entry key="yukon.common.device.schedules.state.DISABLED">Disabled</entry>
+    <entry key="yukon.common.device.schedules.state.DELETED">Deleted</entry>
+    <entry key="yukon.common.device.schedules.state.RUNNING">Running</entry>
     
 </properties>

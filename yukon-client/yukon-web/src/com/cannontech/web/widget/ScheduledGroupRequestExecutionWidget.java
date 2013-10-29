@@ -56,7 +56,12 @@ public class ScheduledGroupRequestExecutionWidget extends WidgetControllerBase {
 			}
 		}
 		
-		List<ScheduledRepeatingJob> jobs = scheduledGroupRequestExecutionDao.getJobs(0, null, null, types, ScheduleGroupRequestExecutionDaoEnabledFilter.ANY, ScheduleGroupRequestExecutionDaoPendingFilter.ANY, ScheduleGroupRequestExecutionDaoOnetimeFilter.EXCLUDE_ONETIME, false);
+		List<ScheduledRepeatingJob> jobs = scheduledGroupRequestExecutionDao.getJobs(
+				0, null, null, types,
+				ScheduleGroupRequestExecutionDaoEnabledFilter.ANY,
+				ScheduleGroupRequestExecutionDaoPendingFilter.ANY,
+				ScheduleGroupRequestExecutionDaoOnetimeFilter.EXCLUDE_ONETIME,
+				false);
 		Collections.sort(jobs, getNextRunComparator());
 		
 		// Just get the top 20 jobs
@@ -123,7 +128,8 @@ public class ScheduledGroupRequestExecutionWidget extends WidgetControllerBase {
 	}
 	
 	@Autowired
-	public void setScheduledGroupRequestExecutionJobWrapperFactory(ScheduledGroupRequestExecutionJobWrapperFactory scheduledGroupRequestExecutionJobWrapperFactory) {
+	public void setScheduledGroupRequestExecutionJobWrapperFactory(
+			ScheduledGroupRequestExecutionJobWrapperFactory scheduledGroupRequestExecutionJobWrapperFactory) {
 		this.scheduledGroupRequestExecutionJobWrapperFactory = scheduledGroupRequestExecutionJobWrapperFactory;
 	}
 	
@@ -135,5 +141,10 @@ public class ScheduledGroupRequestExecutionWidget extends WidgetControllerBase {
 	@Autowired
 	public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
 		this.rolePropertyDao = rolePropertyDao;
+	}
+	
+	@Override
+	public String getTitleKey() {
+		return WidgetControllerBase.keyPrefix + "schedules";
 	}
 }

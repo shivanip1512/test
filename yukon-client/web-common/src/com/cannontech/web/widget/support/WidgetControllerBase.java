@@ -13,7 +13,7 @@ import com.cannontech.user.checker.UserChecker;
 public abstract class WidgetControllerBase implements WidgetDefinitionBean, BeanNameAware, WidgetController {
     private String shortName;
     private String identityPath;
-    private static final String keyPrefix = "yukon.web.widgets.";
+    protected static final String keyPrefix = "yukon.web.widgets.";
     private boolean lazyLoad = false;
     private Set<WidgetInput> inputs;
     private UserChecker roleAndPropertiesChecker;

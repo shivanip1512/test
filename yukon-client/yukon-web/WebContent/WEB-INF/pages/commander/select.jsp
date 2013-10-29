@@ -4,7 +4,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:standardPage module="commanderSelect" page="select">
+<cti:standardPage module="tools" page="commander.select">
 <style type="text/css">
 .secondary-menu {
     margin: -15px auto 15px auto;
@@ -12,35 +12,23 @@
     padding: 2px 5px;
 }
 </style>
-    <cti:standardMenu menuSelection="${menuSelection}" />
-    
-    <%-- BREAD CRUMBS --%>
-    <cti:breadCrumbs>
-        <cti:msg key="yukon.web.components.button.home.label" var="homeLabel"/>
-        <cti:crumbLink url="/dashboard" title="${homeLabel}" />
-        
-        <%-- bulk home --%>
-        <cti:crumbLink><i:inline key=".pageTitle"/></cti:crumbLink>
-    </cti:breadCrumbs>
-    
-    <h2 class="page-heading"><i:inline key=".pageTitle"/></h2>
-    <p>&nbsp;</p>
 
 <c:set var="isDevicesPage" value='${category == "MCT" || category == "IED" || category == "RTU" || category == "TRANSMITTER"}'/>
 <c:set var="isCapCtrlPage" value='${category == "CAP"}'/>
 <c:set var="isLoadMngtPage" value='${not (isDevicesPage or isCapCtrlPage)}'/>
+
 <cti:linkTabbedContainer mode="section" id="page_header_tab_container">
-    <cti:linkTab tabId="deviceTab" selectorKey="yukon.web.menu.config.commanderSelect.devices" 
+    <cti:linkTab tabId="deviceTab" selectorKey="yukon.web.menu.config.commander.select.devices" 
                                    initiallySelected="${isDevicesPage}">
         <c:url value="/commander/select?category=MCT" />
     </cti:linkTab>
 
-    <cti:linkTab tabId="loadMgtTab" selectorKey="yukon.web.menu.config.commanderSelect.lm" 
+    <cti:linkTab tabId="loadMgtTab" selectorKey="yukon.web.menu.config.commander.select.lm" 
                                     initiallySelected="${isLoadMngtPage}">
         <c:url value="/commander/select?category=LMGROUP" />
     </cti:linkTab>
 
-    <cti:linkTab tabId="capControlTab" selectorKey="yukon.web.menu.config.commanderSelect.capcontrol"
+    <cti:linkTab tabId="capControlTab" selectorKey="yukon.web.menu.config.commander.select.capcontrol"
                                     initiallySelected="${isCapCtrlPage}">
         <c:url value="/commander/select?category=CAP" />
     </cti:linkTab>
@@ -50,28 +38,28 @@
 <c:if test="${isDevicesPage}">
     <div id="menuL2Devices" class="secondary-menu">
         <c:url var="tab_url" value="/commander/select" />
-        <tags:displayOrLink labelKey="yukon.web.menu.config.commanderSelect.devices.mct" showPlainText='${category == "MCT"}' href="${tab_url}" />
+        <tags:displayOrLink labelKey="yukon.web.menu.config.commander.select.devices.mct" showPlainText='${category == "MCT"}' href="${tab_url}" />
         |
         <c:url var="tab_url" value="/commander/select?category=IED" />
-        <tags:displayOrLink labelKey="yukon.web.menu.config.commanderSelect.devices.ied" showPlainText='${category == "IED"}' href="${tab_url}" />
+        <tags:displayOrLink labelKey="yukon.web.menu.config.commander.select.devices.ied" showPlainText='${category == "IED"}' href="${tab_url}" />
         |
         <c:url var="tab_url" value="/commander/select?category=RTU" />
-        <tags:displayOrLink labelKey="yukon.web.menu.config.commanderSelect.devices.rtu" showPlainText='${category == "RTU"}' href="${tab_url}" />
+        <tags:displayOrLink labelKey="yukon.web.menu.config.commander.select.devices.rtu" showPlainText='${category == "RTU"}' href="${tab_url}" />
         |
         <c:url var="tab_url" value="/commander/select?category=TRANSMITTER" />
-        <tags:displayOrLink labelKey="yukon.web.menu.config.commanderSelect.devices.transmitter" showPlainText='${category == "TRANSMITTER"}' href="${tab_url}" />
+        <tags:displayOrLink labelKey="yukon.web.menu.config.commander.select.devices.transmitter" showPlainText='${category == "TRANSMITTER"}' href="${tab_url}" />
     </div>
 </c:if>
 <c:if test="${isLoadMngtPage}">
     <div id="menuL2LoadMgt" class="secondary-menu">
         <c:url var="tab_url" value="/commander/select?category=LMGROUP" />
-        <tags:displayOrLink labelKey="yukon.web.menu.config.commanderSelect.lm.group" showPlainText='${category == "LMGROUP"}' href="${tab_url}" />
+        <tags:displayOrLink labelKey="yukon.web.menu.config.commander.select.lm.group" showPlainText='${category == "LMGROUP"}' href="${tab_url}" />
         |
         <c:url var="tab_url" value="/commander/command/xcom" />
-        <tags:displayOrLink labelKey="yukon.web.menu.config.commanderSelect.lm.xcom.tab.title" showPlainText='${serialType == "xcom"}' href="${tab_url}" />
+        <tags:displayOrLink labelKey="yukon.web.menu.config.commander.select.lm.xcom.tab.title" showPlainText='${serialType == "xcom"}' href="${tab_url}" />
         |
         <c:url var="tab_url" value="/commander/command/vcom" />
-        <tags:displayOrLink labelKey="yukon.web.menu.config.commanderSelect.lm.vcom.tab.title" showPlainText='${serialType == "vcom"}' href="${tab_url}" />
+        <tags:displayOrLink labelKey="yukon.web.menu.config.commander.select.lm.vcom.tab.title" showPlainText='${serialType == "vcom"}' href="${tab_url}" />
     </div>
 </c:if>
 <%-- END Secondary Menu --%>

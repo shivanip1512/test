@@ -1,13 +1,14 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <%-- MODULE, MENU --%>
-<cti:standardPage page="bulkImporter" module="blank">
+<cti:standardPage page="bulk.bulkImporter" module="tools">
 
 <cti:url var="refreshUrl" value="/amr/bulkimporter/refreshResults" />
-
 <cti:includeScript link="/JavaScript/bulkImporter.js"/>
+
 <script type="text/javascript">
     setupRefreshStuff("${refreshUrl}", "${refreshRate}");
     jQuery(function() {
@@ -15,106 +16,97 @@
     });
 </script>
 
-<div class="warning stacked"><span class="fwb">Warning:&nbsp;</span><a href="/bulk/bulkHome">Bulk Operations</a> is the preferred method of importing or updating meters.</div>
+<div class="warning stacked"><i:inline key=".header"/></div>
 
 <form id="actionsForm" method="post" action="/amr/bulkimporter/upload" enctype="multipart/form-data">
-<tags:boxContainer title="Actions" hideEnabled="false">
 
+<cti:msg2 var="actionsHeader" key=".actions.header" />
+<cti:msg2 var="actionsLoadDataLabel" key=".actions.loadDataFromFileLabel" />
+<cti:msg2 var="actionsBulkImporterLabel" key=".actions.bulkImporterCommsLabel" />
+<cti:msg2 var="actionsClearResultsLabel" key=".actions.clearImportResultsLabel" />
+<cti:msg2 var="lastReportResultHeader" key=".lastReportResult.header" />
+<cti:msg2 var="allResultsLabel" key=".lastReportResult.allResultsLabel" />
+<cti:msg2 var="failedEntriesLabel" key=".lastReportResult.failedEntriesLabel" />
+<cti:msg2 var="pendingCommsLabel" key=".lastReportResult.pendingCommsLabel" />
+<cti:msg2 var="failedCommsLabel" key=".lastReportResult.failedCommsLabel" />
+<cti:msg2 var="importCountLabel" key=".lastReportResult.importCountLabel" />
+<cti:msg2 var="prevImportLabel" key=".lastReportResult.prevImportLabel" />
+<cti:msg2 var="nextImportLabel" key=".lastReportResult.nextImportLabel" />
+<cti:msg2 var="tabularDataLabel" key=".lastReportResult.tabularDataLabel" />
+
+<tags:boxContainer title="${actionsHeader}" hideEnabled="false">
     <tags:nameValueContainer>
-    
         <%-- UPLOAD FILE --%>
-        <tags:nameValue name="Load Data From File">
-            <input type="file" name="dataFile" size="30px">
+        <tags:nameValue name="${actionsLoadDataLabel}">
+            <input type="file" name="dataFile">
             <input type="submit" name="importFile" value="Load">
-            
             <%-- IMPORT MSG --%>
             <c:if test="${not empty msgStr}">
-                <br/>
-                <c:if test="${msgType == '1'}">
-                    ${msgStr}
-                </c:if>
-                <c:if test="${msgType == '0'}">
-                    <div class="error">${msgStr}</div>
-                </c:if>
+                <br />
+                <c:if test="${msgType == '1'}">${msgStr}</c:if>
+                <c:if test="${msgType == '0'}"><div class="error">${msgStr}</div></c:if>
             </c:if>
-        
         </tags:nameValue>
-        
         <%-- TOGGLE BULK IMPORTER COMMUNICATION --%>
-        <tags:nameValue name="Bulk Importer Communications">
+        <tags:nameValue name="${actionsBulkImporterLabel}">
         <c:choose>
             <c:when test="${importerCommunicationsEnabled}">On</c:when>
             <c:otherwise>Off</c:otherwise>
         </c:choose>
         </tags:nameValue>
-        
         <%-- CLEAR IMPORTS --%>
-        <tags:nameValue name="Clear Import Results">
+        <tags:nameValue name="${actionsClearResultsLabel}">
             <select name="clearImportsSelect">
-                <option value="all">All Results</option>
-                <option value="failed">Failed Entries</option>
-                <option value="pendingComm">Pending Communications</option>
-                <option value="failedComm">Failed Communications</option>
+                <option value="all">${allResultsLabel}</option>
+                <option value="failed">${failedEntriesLabel}</option>
+                <option value="pendingComm">${pendingCommsLabel}</option>
+                <option value="failedComm">${failedCommsLabel}</option>
             </select>
             <input type="submit" name="clearImports" value="Clear">
         </tags:nameValue>
-        
     </tags:nameValueContainer>
-    
 </tags:boxContainer>
-
-<br>
-
-
-<tags:boxContainer title="Results Of Last Import" hideEnabled="false">
-    
-    
-    <table width="100%">
-    <tr valign="top">
+<br />
+<tags:boxContainer title="${lastReportResultHeader}" hideEnabled="false">
+    <table class="full_width">
+    <tr class="vat">
     
     <%-- TABS --%>
-    <td width="40%">
+    <td>
         <table>
-        
             <tr>
-                <td><a href="javascript:void(0);" onclick="javascript:show_next('failed');">Failed Entries</a>:</td>
+                <td><a href="javascript:void(0);" onclick="javascript:show_next('failed');">${failedEntriesLabel}</a>:</td>
                 <td><div id="failureCount"></div></td>
             </tr>
-            
             <tr>
-                <td><a href="javascript:void(0);" onclick="javascript:show_next('pendingComm');">Pending Communications</a>:</td>
+                <td><a href="javascript:void(0);" onclick="javascript:show_next('pendingComm');">${pendingCommsLabel}</a>:</td>
                 <td><div id="pendingCommsCount"></div></td>
             </tr>
-            
             <tr>
-                <td><a href="javascript:void(0);" onclick="javascript:show_next('failedComm');">Failed Communications</a>:</td>
+                <td><a href="javascript:void(0);" onclick="javascript:show_next('failedComm');">${failedCommsLabel}</a>:</td>
                 <td><div id="failedCommsCount"></div></td>
             </tr>
-            
         </table>
-    
-    
     </td>
-    
     
     <%-- NEXT LAST IMPORT --%>
     <td>
         <tags:nameValueContainer>
             
-            <tags:nameValue name="Import Data Count">
+            <tags:nameValue name="${importCountLabel}">
             	<input id="prevImportDataCount" type="hidden" value="0">
                 <div id="importDataCount"></div>
             </tags:nameValue>
             
-            <tags:nameValue name="Previous Import">
+            <tags:nameValue name="${prevImportLabel}">
                 <div id="lastImportAttempt"></div>
             </tags:nameValue>
             
-            <tags:nameValue name="Next Import">
+            <tags:nameValue name="${nextImportLabel}">
                 <span id="nextImportAttempt"></span>&nbsp;&nbsp;<input type="submit" name="forceManualImportEvent" value="Import Now">
             </tags:nameValue>
             
-            <tags:nameValue name="Tabular Data">
+            <tags:nameValue name="${tabularDataLabel}">
                 <div id="failed_reports">
                         <a href="<cti:url value="/amr/reports/bulkImportResultsReport?def=bulkImportResultsDefinition&reportType=FAILURES" />">HTML</a>
                         |
@@ -143,12 +135,10 @@
     </tr>
     </table>
     
- 
-    <div id="failed_title" style="display:none;"><h4>Failed Entries</h4></div>
-    <div id="pendingComm_title" style="display:none;"><h4>Pending Communications</h4></div>
-    <div id="failedComm_title" style="display:none;"><h4>Failed Communications</h4></div>
+    <div id="failed_title" style="display:none;"><h4>${failedEntriesLabel}</h4></div>
+    <div id="pendingComm_title" style="display:none;"><h4>${pendingCommsLabel}</h4></div>
+    <div id="failedComm_title" style="display:none;"><h4>${failedCommsLabel}</h4></div>
     <div class="box">
-            
         <%-- FAILURES --%>
         <div id="failed_data" style="display:none;">
             <table id="failed_table" class="resultsTable">
@@ -161,7 +151,6 @@
                 </thead>
             </table>
         </div>
-        
         <%-- PENDING COMMS --%>
         <div id="pendingComm_data" style="display:none;">
             <table id="pendingComm_table" class="resultsTable">
@@ -172,7 +161,6 @@
                 </tr>
             </table>
         </div>
-        
         <%-- FAILURE COMMS --%>
         <div id="failedComm_data" style="display:none;">
             <table id="failedComm_table" class="resultsTable">
@@ -183,7 +171,6 @@
                 </tr>
             </table>
         </div>
-            
     </div>    
 </tags:boxContainer>
 </form>

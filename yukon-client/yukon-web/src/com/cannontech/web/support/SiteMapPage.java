@@ -29,8 +29,6 @@ public enum SiteMapPage implements DisplayableEnum {
             MatchStyle.all),
     BILLING_SCHEDULES(SiteMapCategory.AMI, "yukon.web.menu.config.amr.billing.schedules", "/billing/schedules",
             MatchStyle.all, YukonRole.APPLICATION_BILLING),
-    CREATE_BILLING_SCHEDULES(SiteMapCategory.AMI, "yukon.web.modules.amr.scheduledGroupRequestHome.CREATE.pageDescription", "/group/scheduledGroupRequestExecution/home",
-            MatchStyle.all, YukonRoleProperty.MANAGE_SCHEDULES),
     REVIEW_FLAGGED_POINTS(SiteMapCategory.AMI, "yukon.web.widgets.validationMonitorsWidget.review", "/common/veeReview/home",
             MatchStyle.all, YukonRoleProperty.MANAGE_SCHEDULES),
 
@@ -140,8 +138,11 @@ public enum SiteMapPage implements DisplayableEnum {
 
     BULK_OPERATIONS(SiteMapCategory.TOOLS, "yukon.web.modules.tools.bulk.home.pageName", "/bulk/bulkHome",
             MatchStyle.all),
-    COMMANDER(SiteMapCategory.TOOLS, "yukon.web.modules.commanderSelect.pageTitle", "/apps/SelectDevice.jsp",
+    COMMANDER(SiteMapCategory.TOOLS, "yukon.web.modules.tools.commander.select.pageName", "/commander/select",
             MatchStyle.all),
+    CREATE_BILLING_SCHEDULES(SiteMapCategory.TOOLS, "yukon.web.modules.tools.schedules.home.CREATE.pageDescription", "/group/scheduledGroupRequestExecution/home",
+            MatchStyle.all, YukonRoleProperty.MANAGE_SCHEDULES),
+    
     DATA_EXPORT(SiteMapCategory.TOOLS, "yukon.web.menu.portal.analysis.archivedDateExport", "/amr/archivedValuesExporter/view",
             MatchStyle.all, YukonRoleProperty.ARCHIVED_DATA_EXPORT),
     DEVICE_CONFIGURATION(SiteMapCategory.TOOLS, "yukon.web.menu.portal.administration.deviceConfiguration", "/deviceConfiguration/home",

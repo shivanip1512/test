@@ -4,38 +4,37 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr" %>
 
-<cti:msg var="requestTypeLabel" key="yukon.common.device.scheduledGroupRequestExecution.home.requestType"/>
-<cti:msg var="attibuteRequestTypeLabel" key="yukon.common.device.scheduledGroupRequestExecution.home.requestType.attribute"/>
-<cti:msg var="commandRequestTypeLabel" key="yukon.common.device.scheduledGroupRequestExecution.home.requestType.command"/>
-<cti:msg var="groupLabel" key="yukon.common.device.scheduledGroupRequestExecution.home.group"/>
-<cti:msg var="chooseGroupText" key="yukon.common.device.scheduledGroupRequestExecution.home.group.chooseGroup"/>
-<cti:msg var="changeGroupText" key="yukon.common.device.scheduledGroupRequestExecution.home.group.changeGroup"/>
-<cti:msg var="selectDeviceGroupText" key="yukon.common.device.scheduledGroupRequestExecution.home.group.selectDeviceGroup"/>
-<cti:msg var="selectDeviceGroupChooseText" key="yukon.common.device.scheduledGroupRequestExecution.home.group.selectDeviceGroupChoose"/>
-<cti:msg var="selectDeviceGroupCancelText" key="yukon.common.device.scheduledGroupRequestExecution.home.group.selectDeviceGroupCancel"/>
-<cti:msg var="scheduleNameLabel" key="yukon.common.device.scheduledGroupRequestExecution.home.scheduleName"/>
-<cti:msg var="timeFrequencyLabel" key="yukon.common.device.scheduledGroupRequestExecution.home.timeFrequency"/>
-<cti:msg var="retryLabel" key="yukon.common.device.scheduledGroupRequestExecution.home.retry"/>
-<cti:msg var="scheduleStateLabel" key="yukon.common.device.scheduledGroupRequestExecution.home.scheduleState"/>
-<cti:msg var="scheduleButtonText" key="yukon.common.device.scheduledGroupRequestExecution.home.scheduleButton"/>
-<cti:msg var="updateButtonText" key="yukon.common.device.scheduledGroupRequestExecution.home.updateButton"/>
-<cti:msg var="enableJobButtonText" key="yukon.common.device.scheduledGroupRequestExecution.home.enableJobButton" />
-<cti:msg var="disableJobButtonText" key="yukon.common.device.scheduledGroupRequestExecution.home.disableJobButton" />
-<cti:msg var="disableAndDeleteJobButtonText" key="yukon.common.device.scheduledGroupRequestExecution.home.disableAndDeleteJobButton" />
+<cti:msg var="requestTypeLabel" key="yukon.common.device.schedules.home.requestType"/>
+<cti:msg var="attibuteRequestTypeLabel" key="yukon.common.device.schedules.home.requestType.attribute"/>
+<cti:msg var="commandRequestTypeLabel" key="yukon.common.device.schedules.home.requestType.command"/>
+<cti:msg var="groupLabel" key="yukon.common.device.schedules.home.group"/>
+<cti:msg var="chooseGroupText" key="yukon.common.device.schedules.home.group.chooseGroup"/>
+<cti:msg var="changeGroupText" key="yukon.common.device.schedules.home.group.changeGroup"/>
+<cti:msg var="selectDeviceGroupText" key="yukon.common.device.schedules.home.group.selectDeviceGroup"/>
+<cti:msg var="selectDeviceGroupChooseText" key="yukon.common.device.schedules.home.group.selectDeviceGroupChoose"/>
+<cti:msg var="selectDeviceGroupCancelText" key="yukon.common.device.schedules.home.group.selectDeviceGroupCancel"/>
+<cti:msg var="scheduleNameLabel" key="yukon.common.device.schedules.home.scheduleName"/>
+<cti:msg var="timeFrequencyLabel" key="yukon.common.device.schedules.home.timeFrequency"/>
+<cti:msg var="retryLabel" key="yukon.common.device.schedules.home.retry"/>
+<cti:msg var="scheduleStateLabel" key="yukon.common.device.schedules.home.scheduleState"/>
+<cti:msg var="scheduleButtonText" key="yukon.common.device.schedules.home.scheduleButton"/>
+<cti:msg var="updateButtonText" key="yukon.common.device.schedules.home.updateButton"/>
+<cti:msg var="enableJobButtonText" key="yukon.common.device.schedules.home.enableJobButton" />
+<cti:msg var="disableJobButtonText" key="yukon.common.device.schedules.home.disableJobButton" />
+<cti:msg var="disableAndDeleteJobButtonText" key="yukon.common.device.schedules.home.disableAndDeleteJobButton" />
 
-<cti:standardPage page="scheduledGroupRequestHome.${mode}" module="amr">
-        <%-- JAVASCRIPT --%>
-        <script type="text/javascript">
-        </script>
-        
-        <style type="text/css">
-			.scheduleButtonDiv {border-top:solid 1px #cccccc;padding-top:6px;}
-		</style>
+<style type="text/css">
+    .scheduleButtonDiv {border-top:solid 1px #cccccc;padding-top:6px;}
+</style>
+<cti:msg var="take10" argument="10px" />
+<cti:msg var="take12" argument="12px" />
+
+<cti:standardPage page="scheduledGroupRequestHome.${mode}" module="tools">
         
         <%-- ERROR MSG --%>
         <c:if test="${not empty errorMsg}">
         	<div class="error">${errorMsg}</div>
-        	<br>
+        	<br />
         </c:if>
         
         <%-- DEVICE GROUP JSON DATA --%>
@@ -73,7 +72,7 @@
         		 			<input type="text" name="scheduleName" value="${scheduleName}">
         		 		</tags:nameValue>
         		 		
-        		 		<tags:nameValueGap gapHeight="12px"/>
+        		 		<tags:nameValueGap gapHeight="${take12}"/>
         		 		
         		 		<cti:msg var="selectAttributeLabel" key="yukon.common.device.commander.attributeSelector.selectAttribute"/>
         		 		<tags:nameValue name="${selectAttributeLabel}" nameColumnWidth="160px">
@@ -81,14 +80,14 @@
                                 selectedAttributes="${selectedAttributes}" multipleSize="8" groupItems="true"/>
         		 		</tags:nameValue>
         		 	
-        		 		<tags:nameValueGap gapHeight="10px"/>
+        		 		<tags:nameValueGap gapHeight="${take10}"/>
         		 		
         		 		<tags:nameValue id="attributeDeviceGroups" name="${groupLabel}">
         		 			<tags:deviceGroupNameSelector fieldName="deviceGroupName_${formUniqueId}" fieldValue="${deviceGroupName}" 
 												      dataJson="${groupDataJson}" linkGroupName="true" showSelectedDevicesIcon="false"/>
         		 		</tags:nameValue>
         		 		
-        		 		<tags:nameValueGap gapHeight="12px"/>
+        		 		<tags:nameValueGap gapHeight="${take12}"/>
         		 		
         		 		<tags:nameValue name="${timeFrequencyLabel}">
         		 			<tags:cronExpressionData id="${formUniqueId}" state="${cronExpressionTagState}"/>
@@ -100,7 +99,7 @@
         		 		
         		 		<cti:displayForPageEditModes modes="EDIT">
 	        		 		<tags:nameValue name="${scheduleStateLabel}">
-	        		 			<cti:msg key="yukon.common.device.scheduledGroupRequestExecution.state.${status}"/>
+	        		 			<cti:msg key="yukon.common.device.schedules.state.${status}"/>
 	        		 		</tags:nameValue>
 	        		 	</cti:displayForPageEditModes>
         		 		
@@ -150,21 +149,21 @@
         		 			<input type="text" name="scheduleName" value="${scheduleName}">
         		 		</tags:nameValue>
         		 		
-        		 		<tags:nameValueGap gapHeight="12px"/>
+        		 		<tags:nameValueGap gapHeight="${take12}"/>
         		 		
         		 		<cti:msg var="selectCommandLabel" key="yukon.common.device.commander.commandSelector.selectCommand"/>
         		 		<tags:nameValue name="${selectCommandLabel}" nameColumnWidth="160px">
         		 			<amr:commandSelector selectName="commandSelectValue" fieldName="commandString" commands="${commands}" selectedSelectValue="${commandSelectValue}" selectedCommandString="${commandString}" includeDummyOption="true"/>  
         		 		</tags:nameValue>
         		 		
-        		 		<tags:nameValueGap gapHeight="10px"/>
+        		 		<tags:nameValueGap gapHeight="${take10}"/>
         		 		
         		 		<tags:nameValue id="commandDeviceGroups" name="${groupLabel}">
 							<tags:deviceGroupNameSelector fieldName="deviceGroupName_${formUniqueId}" fieldValue="${deviceGroupName}" 
 												      dataJson="${groupDataJson}" linkGroupName="true" showSelectedDevicesIcon="false"/>
         		 		</tags:nameValue>
         		 		
-        		 		<tags:nameValueGap gapHeight="12px"/>
+        		 		<tags:nameValueGap gapHeight="${take12}"/>
         		 		
         		 		<tags:nameValue name="${timeFrequencyLabel}">
         		 			<tags:cronExpressionData id="${formUniqueId}" state="${cronExpressionTagState}"/>
@@ -176,7 +175,7 @@
         		 		
         		 		<cti:displayForPageEditModes modes="EDIT">
 	        		 		<tags:nameValue name="${scheduleStateLabel}">
-	        		 			<cti:msg key="yukon.common.device.scheduledGroupRequestExecution.state.${status}"/>
+	        		 			<cti:msg key="yukon.common.device.schedules.state.${status}"/>
 	        		 		</tags:nameValue>
 	        		 	</cti:displayForPageEditModes>
         		 		

@@ -97,23 +97,6 @@
               </page>
             </pages>
           </page>
-          <page name="scheduledGroupRequestProcessing" type="BASIC">
-            <pages>
-              <page name="scheduledGroupRequestHome.CREATE" type="DETAIL" hideFavorite="true">
-              </page>
-              <page name="scheduledGroupRequestHome.EDIT" type="DETAIL" hideFavorite="true">
-                <labelArgument>${scheduleName}</labelArgument>
-              </page>
-              <page name="scheduledGroupRequestAllJobs" type="BASIC">
-                <link>/group/scheduledGroupRequestExecutionResults/jobs</link>
-                <pages>
-                  <page name="scheduledGroupRequestDetail" type="DETAIL">
-                    <labelArgument>${jobWrapper.name}</labelArgument>
-                  </page>
-                </pages>
-              </page>
-            </pages>
-          </page>
           <page name="meterSearchResults" type="BASIC">
             <pages>
               <page name="meterDetail.electric" type="DETAIL" actions="true">
@@ -377,7 +360,32 @@
               </page>
             </pages>
           </page>
+          <page name="bulk.bulkImporter" type="BASIC">
+          </page>
         </pages>
+      </page>
+      <page name="commander.select" type="BASIC" >
+        <link>/commander/select</link>
+        <pages>
+          <page name="commander.command" type="DETAIL_CHILD">
+            <labelArgument>${deviceName}</labelArgument>
+          </page>
+        </pages>
+      </page>
+      <page name="schedules.all" type="BASIC">
+        <link>/group/scheduledGroupRequestExecutionResults/jobs</link>
+        <pages>
+          <page name="schedules.VIEW" type="DETAIL">
+            <labelArgument>${jobWrapper.name}</labelArgument>
+          </page>
+          <page name="schedules.EDIT" type="DETAIL" hideFavorite="true">
+            <labelArgument>${scheduleName}</labelArgument>
+          </page>
+          <page name="schedules.CREATE" type="DETAIL" hideFavorite="true"/>
+        </pages>
+      </page>
+      <page name="scripts" type="BASIC">
+        <link>/macsscheduler/schedules/view</link>
       </page>
     </pages>
   </module><!--  ENDS MODULE "tools" -->
@@ -695,10 +703,6 @@
 
   <module name="blank">
       <skin name="STANDARD" />
-      <pages>
-          <page name="bulkImporter" type="BASIC">
-          </page>
-      </pages>
   </module>
   
   <module name="dr_user">
@@ -1291,14 +1295,6 @@
   <module name="userlm">
     <skin name="STANDARD" />
     <css file="/WebConfig/yukon/styles/yukon.css" />
-  </module>
-
-  <module name="commander">
-    <skin name="STANDARD" />
-  </module>
-
-  <module name="commanderSelect">
-    <skin name="STANDARD" />
   </module>
 
   <module name="visualDisplays">

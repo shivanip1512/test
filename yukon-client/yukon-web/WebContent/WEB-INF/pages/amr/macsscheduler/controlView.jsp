@@ -3,51 +3,38 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:url var="submitUrl" value="/macsscheduler/schedules" />
-<cti:standardPage title="Scheduled Scripts" module="amr">
-	<cti:standardMenu menuSelection="scheduler"/>
-   	<cti:breadCrumbs>
-	    <cti:crumbLink url="/dashboard" title="Operations Home" />
-  	    <cti:crumbLink url="/macsscheduler/schedules/view" title="Scheduler" />
-	    &gt; Start Schedule
-	</cti:breadCrumbs>
+<cti:standardPage title="Scheduled Scripts" module="tools">
 
-    <h2>Start Schedule</h2>
-    <br>
-    <div style="width: 400px;">
+    <h2>Start Schedule</h2><br />
+    <div>
         <form id="startform" method="post" action="${submitUrl}/action">
         <tags:boxContainer title="Schedule Name: ${schedule.scheduleName}">
         	<c:if test="${errorMsg != null}">
-            	<div class="error">${errorMsg}</div>
+                <div class="error">${errorMsg}</div>
             </c:if>
             <h4>Start</h4>
             <table> 
                 <tr>
-                    <td><input type="radio" name="time"
-                                    id="radio" value="startnow"
-                                    checked="checked" />
-                    </td>
+                    <td><input type="radio" name="time" id="radio" value="startnow" checked="checked" /></td>
                     <td>Now</td>
                 </tr>
-
                 <tr>
-                    <td><input type="radio" name="time"
-                                    id="radio" value="starttime" />
-                    </td>
+                    <td><input type="radio" name="time" id="radio" value="starttime" /></td>
                     <td>Time</td>
                     <td>
                         <cti:formatDate value="${currentTime}" type="TIME" var="formattedCurrentTime" />
-	                    <input type="text" value="${formattedCurrentTime}"
-	                        name="starttime" onfocus="javascript:macsscheduledscripts_startFocus();"/>
-	                        ${zone}
+	                    <input type="text" value="${formattedCurrentTime}" name="starttime"
+                            onfocus="javascript:macsscheduledscripts_startFocus();"/>
+	                    ${zone}
 	                </td>
 	            </tr>
 	            <tr>
-                    <td></td>
+                    <td><!-- Empty --></td>
                     <td>Date</td>
                     <td>
                         <cti:formatDate value="${currentTime}" type="DATE" var="formattedCurrentDate" />
-                        <input type="text" value="${formattedCurrentDate}"
-                            name="startdate" onfocus="javascript:macsscheduledscripts_startFocus();"/>
+                        <input type="text" value="${formattedCurrentDate}" name="startdate"
+                            onfocus="javascript:macsscheduledscripts_startFocus();"/>
                     </td>
                 </tr>
             </table>
@@ -55,14 +42,12 @@
             <h4>Stop</h4>
             <table>
                 <tr>
-                    <td><input type="radio" name="time2" id="radio" checked="checked"/>
-                    </td>
+                    <td><input type="radio" name="time2" id="radio" checked="checked"/></td>
                     <td>Time</td>
                     <td>
                         <cti:formatDate value="${stopTime}" type="TIME" var="formattedStopTime" />
-                        <input type="text" value="${formattedStopTime}"
-                            name="stoptime" />
-                            ${zone}
+                        <input type="text" value="${formattedStopTime}" name="stoptime" />
+                        ${zone}
                     </td>
                 </tr>
                 <tr>
@@ -70,13 +55,12 @@
                     <td>Date</td>
                     <td>
                         <cti:formatDate value="${stopTime}" type="DATE" var="formattedStopDate" />
-                        <input type="text" value="${formattedStopDate}"
-                            name="stopdate" />          
+                        <input type="text" value="${formattedStopDate}" name="stopdate" />          
                     </td>
                 </tr>
             </table>
         </tags:boxContainer>
-            
+        
         <input type="submit" name="buttonAction" value="Apply" />
         <input type="submit" name="buttonAction" value="Back" />
         <input type="submit" name="buttonAction" value="Reset" />

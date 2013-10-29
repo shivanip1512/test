@@ -1,4 +1,7 @@
 <%-- A wrapper file for access to commander with a deviceID.
+  --
+  -- DEPRECATED? 10/29/2013
+  --
 --%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -15,6 +18,12 @@
 <%@page import="com.cannontech.common.pao.definition.model.PaoTag"%>
 <%@page import="com.cannontech.common.pao.definition.dao.PaoDefinitionDao"%>
 <%@page import="com.cannontech.spring.YukonSpringHook"%>
+
+<style>
+    .genericShortWidth { width:20px; }
+    .topAligned { vertical-align:top; }
+</style>
+
 <%
     LiteYukonUser lYukonUser = (LiteYukonUser) session.getAttribute(ServletUtils.ATT_YUKON_USER);
     String errorMsg = (String) session.getAttribute(ServletUtils.ATT_ERROR_MESSAGE);
@@ -29,11 +38,10 @@
 <%
 	int invNo = -1;	//used for directing to different application starting points
 	int deviceID = PAOGroups.INVALID;
-	if( request.getParameter("deviceID") != null)
-	{
+	if( request.getParameter("deviceID") != null) {
 		deviceID = Integer.parseInt(request.getParameter("deviceID"));
-        if( YC_BEAN.getLiteYukonPao() != null &&
-            YC_BEAN.getLiteYukonPao().getLiteID() != deviceID) {
+        if( YC_BEAN.getLiteYukonPao() != null
+                && YC_BEAN.getLiteYukonPao().getLiteID() != deviceID) {
             YC_BEAN.setLiteYukonPao(deviceID);
         }
 	} else if (YC_BEAN.getLiteYukonPao() != null) {
@@ -62,7 +70,6 @@
 		serialNum = request.getParameter("sa305");
 		serialType = "sa305";
 	}
-    
 %>
 
 <%@ include file="/apps/CommanderMenu.jspf" %>
@@ -86,32 +93,22 @@
     <c:set var="meterDetailDisplayable" scope="page" value="<%=meterDetailDisplayable%>"/>
     <c:set var="liteYukonPao" scope="page" value="<%=YC_BEAN.getLiteYukonPao()%>"/>
     
-    <table border="0">
-    
+    <table>
         <tr>
-        
         <%-- COMMANDER --%>
-        <td>
-            <%@ include file="Commander.jspf"%>
-        </td>
+        <td><%@ include file="Commander.jspf"%></td>
     
         <%-- SIDE MENU --%>
-        <td>
-            <div style="width:20px;"></div>
-        </td>
-        <td valign="top">
-	
+        <td><div class="genericShortWidth"><!-- Empty --></div></td>
+        
+        <td class="topAligned">
 		<div id="sideMenu">
-		
 			<div class="commanderHeader">&nbsp;</div>
-            
             <div class="titledContainer boxContainer">
                 <div class="title-bar">
                     <h3 class="title"><cti:msg key="yukon.web.apps.commandDevice.navigation"/></h3>
                 </div>
-            
                 <div id="commandDevice_content" class="content boxContainer_content">
-
                     <div class="header"><cti:msg key="yukon.web.apps.commandDevice.goTo"/></div>
 			
 			<!-- Manual side menu section -->
@@ -126,7 +123,7 @@
 			</c:if>
             </cti:checkRolesAndProperties>
       
-			<hr class="divider">
+			<hr class="divider" />
 		
 			<!-- Devices side menu section -->
 			<div class="header"><cti:msg key="yukon.web.apps.commandDevice.devices"/></div>
@@ -148,7 +145,7 @@
 				</c:if>
 			</c:forEach>
 		
-			<div class="horizontalRule" ></div>
+			<hr class="divider" />
 		
 			<!-- Load Management menu section -->
 			<div class="header"><cti:msg key="yukon.web.apps.commandDevice.loadManagement"/></div>
@@ -322,7 +319,7 @@
 %>
 			</cti:checkRolesAndProperties>
 			
-			<div class="horizontalRule" ></div>
+			<hr class="divider" />
 		
 			<!-- Cap Control menu section -->
 			<div class="header"><cti:msg key="yukon.web.apps.commandDevice.capControl"/></div>
@@ -344,9 +341,8 @@
 				</c:if>
 			</c:forEach>
 			
-			</div>    
+			    </div>    
             </div>
-			
 		</div>
         
         </td>

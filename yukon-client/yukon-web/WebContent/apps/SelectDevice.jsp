@@ -1,3 +1,8 @@
+<%--
+  --
+  -- DEPRECATED? 10/29/2013
+  --
+--%>
 <%@page import="com.cannontech.stars.util.ServletUtils"%>
 <%@page import="com.cannontech.util.ServletUtil"%>
 <%@page import="com.cannontech.database.data.lite.LiteYukonUser"%>

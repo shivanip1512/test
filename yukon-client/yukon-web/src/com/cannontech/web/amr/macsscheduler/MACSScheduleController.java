@@ -279,9 +279,8 @@ public class MACSScheduleController extends MultiActionController {
     	return rolePropertyDao.checkProperty(YukonRoleProperty.ENABLE_DISABLE_SCRIPTS, user);
     }
     
-    @SuppressWarnings("unchecked")
     private void sort(final List<Schedule> list, final String sortBy, final Boolean descending) {
-        Comparator c = null;
+        Comparator<Schedule> c = null;
         String cleanSortBy = sortBy.trim();
         
         if (cleanSortBy.equalsIgnoreCase("Schedule Name")) { 

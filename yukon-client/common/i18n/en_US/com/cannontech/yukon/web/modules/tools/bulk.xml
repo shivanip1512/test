@@ -163,7 +163,6 @@
     <entry key="yukon.common.device.bulk.collectionActions.updatePointsDescription">Update points on multiple devices.</entry>
     <entry key="yukon.common.device.bulk.collectionActions.removePointsLabel">Remove Points</entry>
     <entry key="yukon.common.device.bulk.collectionActions.removePointsDescription">Remove points from multiple devices.</entry>
-
      
     <!-- DEVICE COLLECTION REPORT -->
     <!-- ******************************************************************************************************************** -->
@@ -879,5 +878,24 @@
     <!-- ******************************************************************************************************************** -->
     <entry key="yukon.common.device.bulk.selectedDevicesResultsLimited">Results limited to first {0} devices.</entry>
     <entry key="yukon.common.device.bulk.selectedDevicesEmpty">Selected device set is empty</entry>
+    
+    <!-- Legacy Bulk Importer -->
+    <entry key="yukon.web.modules.tools.bulk.bulkImporter.pageName">Bulk Importer</entry>
+    <entry key="yukon.web.modules.tools.bulk.bulkImporter.header"><![CDATA[
+        <span class="fwb">Warning:&nbsp;</span><a href="/bulk/bulkHome">Bulk Operations</a> is the preferred method of importing or updating meters.
+    ]]></entry>
+    <entry key="yukon.web.modules.tools.bulk.bulkImporter.actions.header">Actions</entry>
+    <entry key="yukon.web.modules.tools.bulk.bulkImporter.actions.loadDataFromFileLabel">Load Data From File</entry>
+    <entry key="yukon.web.modules.tools.bulk.bulkImporter.actions.bulkImporterCommsLabel">Bulk Importer Communications</entry>
+    <entry key="yukon.web.modules.tools.bulk.bulkImporter.actions.clearImportResultsLabel">Clear Import Results</entry>
+    <entry key="yukon.web.modules.tools.bulk.bulkImporter.lastReportResult.header">Results Of Last Import</entry>
+    <entry key="yukon.web.modules.tools.bulk.bulkImporter.lastReportResult.allResultsLabel">All Results</entry>
+    <entry key="yukon.web.modules.tools.bulk.bulkImporter.lastReportResult.failedEntriesLabel">Failed Entries</entry>
+    <entry key="yukon.web.modules.tools.bulk.bulkImporter.lastReportResult.pendingCommsLabel">Pending Communications</entry>
+    <entry key="yukon.web.modules.tools.bulk.bulkImporter.lastReportResult.failedCommsLabel">Failed Communications</entry>
+    <entry key="yukon.web.modules.tools.bulk.bulkImporter.lastReportResult.importCountLabel">Import Data Count</entry>
+    <entry key="yukon.web.modules.tools.bulk.bulkImporter.lastReportResult.prevImportLabel">Previous Import</entry>
+    <entry key="yukon.web.modules.tools.bulk.bulkImporter.lastReportResult.nextImportLabel">Next Import</entry>
+    <entry key="yukon.web.modules.tools.bulk.bulkImporter.lastReportResult.tabularDataLabel">Tabular Data</entry>
     
 </properties>
