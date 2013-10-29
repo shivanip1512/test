@@ -35,6 +35,7 @@ import com.cannontech.common.bulk.filter.service.UiFilterList;
 import com.cannontech.common.events.loggers.DemandResponseEventLogService;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.search.result.SearchResults;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.IntegerRange;
 import com.cannontech.common.util.MutableRange;
 import com.cannontech.common.validator.SimpleValidator;
@@ -252,6 +253,10 @@ public class ControlAreaController extends DemandResponseControllerBase {
         List<AssetAvailabilityDetails> resultsList = getResultsList(controlArea, userContext, null);
         sortAssetDetails(resultsList, sortBy, descending, userContext);
         
+        if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE) {
+            // Limit the maximum items per page
+            itemsPerPage = CtiUtilities.MAX_ITEMS_PER_PAGE;
+        }
         SearchResults<AssetAvailabilityDetails> result = 
                 SearchResults.pageBasedForWholeList(page, itemsPerPage, resultsList);
 
@@ -290,6 +295,10 @@ public class ControlAreaController extends DemandResponseControllerBase {
         List<AssetAvailabilityDetails> resultsList = getResultsList(controlArea, userContext, filters);
         sortAssetDetails(resultsList, sortBy, descending, userContext);
 
+        if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE) {
+            // Limit the maximum items per page
+            itemsPerPage = CtiUtilities.MAX_ITEMS_PER_PAGE;
+        }
         SearchResults<AssetAvailabilityDetails> result = 
                 SearchResults.pageBasedForWholeList(page, itemsPerPage, resultsList);
         

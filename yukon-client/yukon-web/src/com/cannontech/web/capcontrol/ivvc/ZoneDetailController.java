@@ -48,6 +48,7 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.search.result.SearchResults;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.LazyList;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.PaoDao;
@@ -463,6 +464,10 @@ public class ZoneDetailController {
         List<CapBankPointDelta> pointDeltas = zoneService.getAllPointDeltasForBankIds(bankIds);
         
         int itemsPerPage = ServletRequestUtils.getIntParameter(request, "itemsPerPage", 10);
+        if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE) {
+            // Limit the maximum items per page
+            itemsPerPage = CtiUtilities.MAX_ITEMS_PER_PAGE;
+        }
         int currentPage = ServletRequestUtils.getIntParameter(request, "page", 1);
         int startIndex = (currentPage - 1) * itemsPerPage;
         

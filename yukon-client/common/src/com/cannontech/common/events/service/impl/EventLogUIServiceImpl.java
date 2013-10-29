@@ -18,6 +18,7 @@ import com.cannontech.common.events.model.EventLog;
 import com.cannontech.common.events.service.EventLogUIService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.search.result.SearchResults;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlBuilder;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
@@ -130,6 +131,11 @@ public class EventLogUIServiceImpl implements EventLogUIService {
             filters.add(eventLogSqlFilters);
         }
         UiFilter<EventLog> filter = UiFilterList.wrap(filters);
+        
+        if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE) {
+            // Limit the maximum items per page
+            itemsPerPage = CtiUtilities.MAX_ITEMS_PER_PAGE;
+        }
         
         // Process search results
         SearchResults<EventLog> searchResult =

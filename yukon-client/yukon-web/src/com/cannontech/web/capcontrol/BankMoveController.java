@@ -16,6 +16,7 @@ import com.cannontech.cbc.cache.FilterCacheFactory;
 import com.cannontech.cbc.util.UpdaterHelper;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.search.result.SearchResults;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.CapControlType;
@@ -129,9 +130,13 @@ public class BankMoveController {
             }
         }
         
-        int itemsPerPage = ServletRequestUtils.getIntParameter(request, "itemsPerPage", 25);
+        int itemsPerPage = ServletRequestUtils.getIntParameter(request, "itemsPerPage", CtiUtilities.DEFAULT_ITEMS_PER_PAGE);
         int currentPage = ServletRequestUtils.getIntParameter(request, "page", 1);
         
+        if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE) {
+            // Limit the maximum items per page
+            itemsPerPage = CtiUtilities.MAX_ITEMS_PER_PAGE;
+        }
         int startIndex = (currentPage - 1) * itemsPerPage;
         int toIndex = startIndex + itemsPerPage;
         int numberOfResults = movedCaps.size();

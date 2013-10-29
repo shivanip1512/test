@@ -57,6 +57,7 @@ import com.cannontech.common.scheduledFileExport.MeterEventsExportGenerationPara
 import com.cannontech.common.scheduledFileExport.ScheduledExportType;
 import com.cannontech.common.scheduledFileExport.ScheduledFileExportData;
 import com.cannontech.common.search.result.SearchResults;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.service.DateFormattingService;
@@ -291,8 +292,13 @@ public class MeterEventsReportController {
     }
     
     @RequestMapping
-    public String jobs(ModelMap model, @RequestParam(defaultValue="25") int itemsPerPage, @RequestParam(defaultValue="1") int page) {
+    public String jobs(ModelMap model, @RequestParam(defaultValue=CtiUtilities.DEFAULT_ITEMS_PER_PAGE_STRING) int itemsPerPage, 
+                       @RequestParam(defaultValue="1") int page) {
 		
+    if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE) {
+        // Limit the maximum items per page
+        itemsPerPage = CtiUtilities.MAX_ITEMS_PER_PAGE;
+    }
 		scheduledFileExportJobsTagService.populateModel(model, FileExportType.METER_EVENTS, ScheduledExportType.METER_EVENT, page, itemsPerPage);
 		return "meterEventsReport/jobs.jsp";
 	}

@@ -29,6 +29,7 @@ import com.cannontech.amr.device.search.model.OrderByField;
 import com.cannontech.amr.device.search.model.SearchField;
 import com.cannontech.amr.device.search.service.DeviceSearchService;
 import com.cannontech.common.search.result.SearchResults;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.CommandDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteCommand;
@@ -53,7 +54,7 @@ public class CommanderController {
             @RequestParam(value = "orderBy", defaultValue = "NAME") DeviceSearchField orderByField,
             @RequestParam(value = "descending", defaultValue = "false") Boolean orderByDescending,
             @RequestParam(defaultValue = "1") Integer page,
-            @RequestParam(defaultValue = "25") Integer itemsPerPage,
+            @RequestParam(defaultValue = CtiUtilities.DEFAULT_ITEMS_PER_PAGE_STRING) Integer itemsPerPage,
             ModelMap modelMap,
             YukonUserContext userContext,
             HttpServletRequest request) {
@@ -65,6 +66,11 @@ public class CommanderController {
         FilterBy categoryfilter = deviceSearchService.getFiltersForCategory(category);
         List<FilterBy> editableFilters = getQueryFilters(request, fields);
         
+        if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE) {
+            // Limit the maximum items per page
+            itemsPerPage = CtiUtilities.MAX_ITEMS_PER_PAGE;
+        }
+
         List<FilterBy> searchFilters = new ArrayList<FilterBy>();
         searchFilters.add(categoryfilter);
         searchFilters.addAll(editableFilters);

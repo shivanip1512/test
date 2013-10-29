@@ -26,6 +26,7 @@ import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.search.result.SearchResults;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.EnergyCompanyNotFoundException;
 import com.cannontech.core.dao.PaoDao;
@@ -100,6 +101,10 @@ public class EstimatedLoadController {
 
         List<FormulaBean> allFormulas = FormulaBean.toBeans(formulaDao.getAllFormulas(), userContext);
         allFormulas = sortFormulas(allFormulas, sort, descending, userContext);
+        if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE) {
+            // Limit the maximum items per page
+            itemsPerPage = CtiUtilities.MAX_ITEMS_PER_PAGE;
+        }
         SearchResults<FormulaBean> pagedFormulas
             = SearchResults.pageBasedForWholeList(page, itemsPerPage, allFormulas);
 
@@ -226,6 +231,10 @@ public class EstimatedLoadController {
         Map<Integer, LiteYukonPAObject> gearPrograms = getGearPrograms();
         gearAssignments = sortGearAssignments(gearAssignments, gearPrograms, sort, descending, context);
 
+        if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE) {
+            // Limit the maximum items per page
+            itemsPerPage = CtiUtilities.MAX_ITEMS_PER_PAGE;
+        }
         SearchResults<GearAssignment> pagedGears
             = SearchResults.pageBasedForWholeList(page, itemsPerPage, gearAssignments);
 
@@ -273,6 +282,10 @@ public class EstimatedLoadController {
 
         appCatAssignments = sortAppCatAssignments(appCatAssignments, sort, descending, context);
 
+        if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE) {
+            // Limit the maximum items per page
+            itemsPerPage = CtiUtilities.MAX_ITEMS_PER_PAGE;
+        }
         SearchResults<ApplianceCategoryAssignment> pagedAppCats
             = SearchResults.pageBasedForWholeList(page, itemsPerPage, appCatAssignments);
 

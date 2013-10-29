@@ -30,6 +30,7 @@ import com.cannontech.common.bulk.filter.service.UiFilterList;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.DisplayablePaoComparator;
 import com.cannontech.common.search.result.SearchResults;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
@@ -140,6 +141,10 @@ public class ScenarioController extends DemandResponseControllerBase {
         List<AssetAvailabilityDetails> resultsList = getResultsList(scenario, userContext, null);
         sortAssetDetails(resultsList, sortBy, descending, userContext);
         
+        if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE) {
+            // Limit the maximum items per page
+            itemsPerPage = CtiUtilities.MAX_ITEMS_PER_PAGE;
+        }
         SearchResults<AssetAvailabilityDetails> result = 
                 SearchResults.pageBasedForWholeList(page, itemsPerPage, resultsList);
 
@@ -184,6 +189,10 @@ public class ScenarioController extends DemandResponseControllerBase {
         List<AssetAvailabilityDetails> resultsList = getResultsList(scenario, userContext, filters);
         sortAssetDetails(resultsList, sortBy, descending, userContext);
 
+        if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE) {
+            // Limit the maximum items per page
+            itemsPerPage = CtiUtilities.MAX_ITEMS_PER_PAGE;
+        }
         SearchResults<AssetAvailabilityDetails> result = 
                 SearchResults.pageBasedForWholeList(page, itemsPerPage, resultsList);
         

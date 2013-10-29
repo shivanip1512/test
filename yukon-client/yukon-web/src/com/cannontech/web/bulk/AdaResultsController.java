@@ -17,6 +17,7 @@ import com.cannontech.common.bulk.model.Analysis;
 import com.cannontech.common.bulk.model.DeviceArchiveData;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.search.result.SearchResults;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.ArchiveDataAnalysisDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -41,7 +42,7 @@ public class AdaResultsController {
     
     @RequestMapping
     public String view(ModelMap model, int analysisId,
-            @RequestParam(defaultValue="25") int itemsPerPage, 
+            @RequestParam(defaultValue=CtiUtilities.DEFAULT_ITEMS_PER_PAGE_STRING) int itemsPerPage, 
             @RequestParam(defaultValue="1") int page, 
             YukonUserContext userContext, FlashScope flashScope) throws ServletRequestBindingException, DeviceCollectionCreationException {
         Analysis analysis = archiveDataAnalysisDao.getAnalysisById(analysisId);
@@ -59,6 +60,10 @@ public class AdaResultsController {
         
         // Page the result
         List<PaoIdentifier> deviceIds = archiveDataAnalysisDao.getRelevantDeviceIds(analysisId);
+        if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE) {
+            // Limit the maximum items per page
+            itemsPerPage = CtiUtilities.MAX_ITEMS_PER_PAGE;
+        }
         int startIndex = (page - 1) * itemsPerPage;
         int toIndex = startIndex + itemsPerPage;
         int numberOfResults = deviceIds.size();

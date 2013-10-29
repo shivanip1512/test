@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.common.search.result.SearchResults;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -37,6 +38,11 @@ public class SiteSearchController {
     public String search(@RequestParam(value="q", required=false) String searchString,
             @RequestParam(defaultValue="10") int itemsPerPage, @RequestParam(defaultValue="1") int page,
             ModelMap model, YukonUserContext userContext, FlashScope flashScope) {
+
+        if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE) {
+            // Limit the maximum items per page
+            itemsPerPage = CtiUtilities.MAX_ITEMS_PER_PAGE;
+        }
         int startIndex = (page - 1) * itemsPerPage;
         searchString = siteSearchService.sanitizeSearchStr(searchString);
 

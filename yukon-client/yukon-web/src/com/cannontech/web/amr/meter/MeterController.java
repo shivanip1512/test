@@ -35,6 +35,7 @@ import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.pao.service.PointService;
 import com.cannontech.common.search.result.SearchResults;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.roleproperties.YukonRole;
@@ -94,10 +95,14 @@ public class MeterController extends MultiActionController {
                                           url + ((urlParams != null) ? "?" + urlParams : ""));
         
         // Get the search result count
-        int itemsPerPage = ServletRequestUtils.getIntParameter(request, "itemsPerPage", 25);
+        int itemsPerPage = ServletRequestUtils.getIntParameter(request, "itemsPerPage", CtiUtilities.DEFAULT_ITEMS_PER_PAGE);
         
         // Get the search start index
         int page = ServletRequestUtils.getIntParameter(request, "page", 1);
+        if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE) {
+            // Limit the maximum items per page
+            itemsPerPage = CtiUtilities.MAX_ITEMS_PER_PAGE;
+        }
         int startIndex = (page - 1) * itemsPerPage;
         if (request.getParameter("Filter") != null) {
             startIndex = 0;

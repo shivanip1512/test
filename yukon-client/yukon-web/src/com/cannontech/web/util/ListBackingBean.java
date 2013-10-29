@@ -1,5 +1,7 @@
 package com.cannontech.web.util;
 
+import com.cannontech.common.util.CtiUtilities;
+
 public class ListBackingBean {
     private String name = null;
 
@@ -7,7 +9,7 @@ public class ListBackingBean {
     private boolean descending = false;
 
     private int page = 1;
-    private int itemsPerPage = 25;
+    private int itemsPerPage = CtiUtilities.DEFAULT_ITEMS_PER_PAGE;
 
     public String getName() {
         return name;
@@ -46,7 +48,13 @@ public class ListBackingBean {
     }
 
     public void setItemsPerPage(Integer itemsPerPage) {
-        this.itemsPerPage = itemsPerPage != null ? itemsPerPage : 25;
+        if (itemsPerPage == null) {
+            this.itemsPerPage = CtiUtilities.DEFAULT_ITEMS_PER_PAGE;
+        } else if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE) {
+            this.itemsPerPage = CtiUtilities.MAX_ITEMS_PER_PAGE;
+        } else {
+            this.itemsPerPage = itemsPerPage;
+        }
     }
 
     public int getStartIndex() {

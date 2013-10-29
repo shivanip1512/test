@@ -29,6 +29,7 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.DisplayablePaoComparator;
 import com.cannontech.common.search.result.SearchResults;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.DatedObject;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authorization.support.Permission;
@@ -126,6 +127,10 @@ public class ProgramController extends ProgramControllerBase {
         List<AssetAvailabilityDetails> resultsList = getResultsList(program, userContext, null);
         sortAssetDetails(resultsList, sortBy, descending, userContext);
         
+        if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE) {
+            // Limit the maximum items per page
+            itemsPerPage = CtiUtilities.MAX_ITEMS_PER_PAGE;
+        }
         SearchResults<AssetAvailabilityDetails> result = 
                 SearchResults.pageBasedForWholeList(page, itemsPerPage, resultsList);
 
@@ -170,6 +175,10 @@ public class ProgramController extends ProgramControllerBase {
         List<AssetAvailabilityDetails> resultsList = getResultsList(program, userContext, filters);
         sortAssetDetails(resultsList, sortBy, descending, userContext);
 
+        if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE) {
+            // Limit the maximum items per page
+            itemsPerPage = CtiUtilities.MAX_ITEMS_PER_PAGE;
+        }
         SearchResults<AssetAvailabilityDetails> result = 
                 SearchResults.pageBasedForWholeList(page, itemsPerPage, resultsList);
         

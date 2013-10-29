@@ -96,6 +96,10 @@ public final class CtiUtilities {
 
     private static GregorianCalendar gc1990 = null;
     private static GregorianCalendar gc2035 = null;
+    
+    public static final int DEFAULT_ITEMS_PER_PAGE = 25;
+    public static final String DEFAULT_ITEMS_PER_PAGE_STRING = "25";
+    public static final int MAX_ITEMS_PER_PAGE = 1000;
 
     // image names
     public static final URL GENERIC_APPLICATION_SPLASH = CtiUtilities.class

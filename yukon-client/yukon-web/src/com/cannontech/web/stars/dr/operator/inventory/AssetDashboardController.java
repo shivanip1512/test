@@ -32,6 +32,7 @@ import com.cannontech.common.inventory.Hardware;
 import com.cannontech.common.inventory.HardwareClass;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.search.result.SearchResults;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
@@ -221,7 +222,11 @@ public class AssetDashboardController {
             
             // PAGING
             if (page == null) page = 1;
-            if (itemsPerPage == null) itemsPerPage = 25;
+            if (itemsPerPage == null) {
+                itemsPerPage = CtiUtilities.DEFAULT_ITEMS_PER_PAGE;
+            } else if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE) {
+                itemsPerPage = CtiUtilities.MAX_ITEMS_PER_PAGE;
+            }
             int startIndex = (page - 1) * itemsPerPage;
             
             SearchResults<InventorySearchResult> results = inventoryDao.search(inventorySearch, 

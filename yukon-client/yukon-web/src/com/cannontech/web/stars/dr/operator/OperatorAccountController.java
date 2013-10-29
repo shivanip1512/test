@@ -41,6 +41,7 @@ import com.cannontech.common.events.loggers.SystemEventLogService;
 import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.Substation;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authentication.model.AuthType;
@@ -280,7 +281,9 @@ public class OperatorAccountController {
             page = 1;
         }
         if(itemsPerPage == null){
-            itemsPerPage = 25;
+            itemsPerPage = CtiUtilities.DEFAULT_ITEMS_PER_PAGE;
+        } else if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE) {
+            itemsPerPage = CtiUtilities.MAX_ITEMS_PER_PAGE;
         }
         int startIndex = (page - 1) * itemsPerPage;
 		

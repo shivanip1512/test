@@ -22,6 +22,7 @@ import com.cannontech.common.fileExportHistory.ExportHistoryEntry;
 import com.cannontech.common.fileExportHistory.dao.FileExportHistoryDao;
 import com.cannontech.common.fileExportHistory.service.FileExportHistoryService;
 import com.cannontech.common.search.result.SearchResults;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.i18n.WebMessageSourceResolvable;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -40,8 +41,13 @@ public class FileExportHistoryController {
 	@RequestMapping
 	public String list(ModelMap model, HttpServletRequest request, YukonUserContext userContext,
 			FlashScope flashScope, String name, String initiator, Integer entryId,
-			@RequestParam(defaultValue="25") int itemsPerPage, @RequestParam(defaultValue="1") int page) {
+			@RequestParam(defaultValue=CtiUtilities.DEFAULT_ITEMS_PER_PAGE_STRING) int itemsPerPage, 
+			@RequestParam(defaultValue="1") int page) {
 
+	    if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE) {
+	        // Limit the maximum items per page
+	        itemsPerPage = CtiUtilities.MAX_ITEMS_PER_PAGE;
+	    }
 		int startIndex = (page -1) * itemsPerPage;
 		
 		List<ExportHistoryEntry> entries;

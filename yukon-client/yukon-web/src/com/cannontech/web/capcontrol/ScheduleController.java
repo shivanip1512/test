@@ -98,8 +98,12 @@ public class ScheduleController {
 	    model.addAttribute("hasActionRoles", hasCapBankRole && hasSubbusRole);
 	    
 		//Get items per page and start index
-		int itemsPerPage = ServletRequestUtils.getIntParameter(request, "itemsPerPage", 25);
+		int itemsPerPage = ServletRequestUtils.getIntParameter(request, "itemsPerPage", CtiUtilities.DEFAULT_ITEMS_PER_PAGE);
 		int currentPage = ServletRequestUtils.getIntParameter(request, "page", 1);
+	    if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE) {
+	        // Limit the maximum items per page
+	        itemsPerPage = CtiUtilities.MAX_ITEMS_PER_PAGE;
+	    }
         int startIndex = (currentPage - 1) * itemsPerPage;
         
 		//Create filters
@@ -148,8 +152,12 @@ public class ScheduleController {
 	    List<PAOSchedule> schedList = paoScheduleDao.getAllPaoScheduleNames();
         Collections.sort(schedList);
         
-        int itemsPerPage = ServletRequestUtils.getIntParameter(request, "itemsPerPage", 25);
+        int itemsPerPage = ServletRequestUtils.getIntParameter(request, "itemsPerPage", CtiUtilities.DEFAULT_ITEMS_PER_PAGE);
         int currentPage = ServletRequestUtils.getIntParameter(request, "page", 1);
+        if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE) {
+            // Limit the maximum items per page
+            itemsPerPage = CtiUtilities.MAX_ITEMS_PER_PAGE;
+        }
         int startIndex = (currentPage - 1) * itemsPerPage;
         int toIndex = startIndex + itemsPerPage;
         int numberOfResults = schedList.size();
@@ -219,7 +227,7 @@ public class ScheduleController {
 	    String filterBySchedule = ServletRequestUtils.getStringParameter(request, "startSchedule", "");
 	    
 	    SearchResults<PaoScheduleAssignment> searchResult = 
-	        filterPaoScheduleAssignments(filterByCommand, filterBySchedule, 0, Integer.MAX_VALUE);
+	        filterPaoScheduleAssignments(filterByCommand, filterBySchedule, 0);
         
 	    int numberFailed = 0;
         String result = "";
@@ -253,7 +261,7 @@ public class ScheduleController {
         String filterBySchedule = ServletRequestUtils.getStringParameter(request, "stopSchedule", "");
 	    
         SearchResults<PaoScheduleAssignment> searchResult =
-            filterPaoScheduleAssignments(filterByCommand, filterBySchedule, 0, Integer.MAX_VALUE);
+            filterPaoScheduleAssignments(filterByCommand, filterBySchedule, 0);
         
         String result = "";
         int commandsSentCount = 0;
@@ -547,7 +555,7 @@ public class ScheduleController {
      * Helper method to simplify filtering schedule assignments.
      */
     private SearchResults<PaoScheduleAssignment> filterPaoScheduleAssignments(String filterCommand, 
-                                                    String filterSchedule, int startIndex, int itemsPerPage) {
+                                                    String filterSchedule, int startIndex) {
         //Convert filter strings into filters
         //Filtering on "All" is equivalent to no filters
         List<UiFilter<PaoScheduleAssignment>> filters = new ArrayList<UiFilter<PaoScheduleAssignment>>();
@@ -569,7 +577,7 @@ public class ScheduleController {
         
         //Filter, sort and get search results
         SearchResults<PaoScheduleAssignment> searchResult = 
-            filterService.filter(filter, sorter, startIndex, itemsPerPage, rowMapper);
+            filterService.filter(filter, sorter, startIndex, Integer.MAX_VALUE, rowMapper);
         
         return searchResult;
     }

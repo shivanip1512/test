@@ -66,6 +66,7 @@ import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.scheduledFileExport.ArchivedDataExportFileGenerationParameters;
 import com.cannontech.common.scheduledFileExport.ScheduledExportType;
 import com.cannontech.common.scheduledFileExport.ScheduledFileExportData;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.TimeZoneFormat;
 import com.cannontech.common.validator.YukonMessageCodeResolver;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -132,14 +133,12 @@ public class ArchivedValuesExporterController {
     
     private static final Integer DEFAULT_PAGES = 1;
     private static final String DEFAULT_PAGES_STRING = "1";
-    private static final Integer DEFAULT_ITEMS_PER_PAGE = 25;
-    private static final String DEFAULT_ITEMS_PER_PAGE_STRING = "25";
     private ScheduledFileExportValidator scheduledFileExportValidator;
 
     @RequestMapping
     public String view(ModelMap model, HttpServletRequest request, YukonUserContext userContext, 
                        @ModelAttribute ArchivedValuesExporter archivedValuesExporter, 
-                       @RequestParam(defaultValue=DEFAULT_ITEMS_PER_PAGE_STRING) int itemsPerPage, 
+                       @RequestParam(defaultValue=CtiUtilities.DEFAULT_ITEMS_PER_PAGE_STRING) int itemsPerPage, 
                        @RequestParam(defaultValue=DEFAULT_PAGES_STRING) int page) 
                        throws ServletRequestBindingException, DeviceCollectionCreationException {
         
@@ -173,6 +172,11 @@ public class ArchivedValuesExporterController {
             archivedValuesExporter.setDeviceCollection(deviceCollection);
         }
         
+        if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE) {
+            // Limit the maximum items per page
+            itemsPerPage = CtiUtilities.MAX_ITEMS_PER_PAGE;
+        }
+        
         //Jobs List Prep
         scheduledFileExportJobsTagService.populateModel(model, FileExportType.ARCHIVED_DATA_EXPORT, ScheduledExportType.ARCHIVED_DATA_EXPORT, page, itemsPerPage);
         
@@ -201,7 +205,7 @@ public class ArchivedValuesExporterController {
     public String selected(ModelMap model, HttpServletRequest request, YukonUserContext userContext,
                            @ModelAttribute ArchivedValuesExporter archivedValuesExporter)
                            throws DeviceCollectionCreationException, ServletException {
-        return view(model, request, userContext, archivedValuesExporter, DEFAULT_ITEMS_PER_PAGE, DEFAULT_PAGES);
+        return view(model, request, userContext, archivedValuesExporter, CtiUtilities.DEFAULT_ITEMS_PER_PAGE, DEFAULT_PAGES);
     }
 
     @RequestMapping
@@ -447,7 +451,7 @@ public class ArchivedValuesExporterController {
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setError(messages);
             
-            return view(model, request, userContext, archivedValuesExporter, DEFAULT_ITEMS_PER_PAGE, DEFAULT_PAGES);
+            return view(model, request, userContext, archivedValuesExporter, CtiUtilities.DEFAULT_ITEMS_PER_PAGE, DEFAULT_PAGES);
         }
 
         List<SimpleDevice> deviceList = archivedValuesExporter.getDeviceCollection().getDeviceList();

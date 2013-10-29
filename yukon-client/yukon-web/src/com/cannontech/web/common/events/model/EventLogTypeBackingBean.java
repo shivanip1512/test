@@ -6,6 +6,7 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 
 import com.cannontech.common.events.model.EventLogFilter;
+import com.cannontech.common.util.CtiUtilities;
 import com.google.common.collect.Lists;
 
 public class EventLogTypeBackingBean {
@@ -61,7 +62,12 @@ public class EventLogTypeBackingBean {
         return itemsPerPage;
     }
     public void setItemsPerPage(int itemsPerPage) {
-        this.itemsPerPage = itemsPerPage;
+        if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE) {
+            // Restrict the maximum value (yuk-11779)
+            this.itemsPerPage = CtiUtilities.MAX_ITEMS_PER_PAGE;
+        } else {
+            this.itemsPerPage = itemsPerPage;
+        }
     }
     
     public int getPage() {

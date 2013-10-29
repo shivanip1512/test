@@ -23,6 +23,7 @@ import com.cannontech.common.dynamicBilling.model.DynamicFormat;
 import com.cannontech.common.fileExportHistory.FileExportType;
 import com.cannontech.common.scheduledFileExport.ScheduledExportType;
 import com.cannontech.common.search.result.SearchResults;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.user.YukonUserContext;
@@ -37,7 +38,6 @@ import com.google.common.collect.Lists;
 @Controller
 @CheckRole(YukonRole.APPLICATION_BILLING)
 public class BillingController {
-    private static int DEFAULT_COUNT_ITEMS_PER_PAGE = 25;
     private static int DEFAULT_PAGE_INDEX_ONE_BASED = 1;
 
     @Autowired private DeviceGroupService deviceGroupService;
@@ -78,7 +78,10 @@ public class BillingController {
     public String showJobs(ModelMap model, Integer itemsPerPage, Integer page) {
 
         if (itemsPerPage == null) {
-            itemsPerPage = DEFAULT_COUNT_ITEMS_PER_PAGE;
+            itemsPerPage = CtiUtilities.DEFAULT_ITEMS_PER_PAGE;
+        } else if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE) {
+            // Limit the maximum items per page
+            itemsPerPage = CtiUtilities.MAX_ITEMS_PER_PAGE;
         }
         if (page == null){
             page = DEFAULT_PAGE_INDEX_ONE_BASED;
@@ -89,7 +92,7 @@ public class BillingController {
 
     
     public void setupJobs(ModelMap model) {
-        setupJobs(model, DEFAULT_PAGE_INDEX_ONE_BASED, DEFAULT_COUNT_ITEMS_PER_PAGE);
+        setupJobs(model, DEFAULT_PAGE_INDEX_ONE_BASED, CtiUtilities.DEFAULT_ITEMS_PER_PAGE);
     }
 
     /**

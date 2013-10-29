@@ -28,6 +28,7 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.scheduledFileExport.BillingFileExportGenerationParameters;
 import com.cannontech.common.scheduledFileExport.ScheduledExportType;
 import com.cannontech.common.scheduledFileExport.ScheduledFileExportData;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -154,9 +155,13 @@ public class ScheduledBillingFileExportController {
 	}
 	
 	@RequestMapping
-	public String jobs(ModelMap model, @RequestParam(defaultValue="25") int itemsPerPage,
+	public String jobs(ModelMap model, @RequestParam(defaultValue=CtiUtilities.DEFAULT_ITEMS_PER_PAGE_STRING) int itemsPerPage,
 			@RequestParam(defaultValue="1") int page) {
 		
+	    if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE) {
+	        // Limit the maximum items per page
+	        itemsPerPage = CtiUtilities.MAX_ITEMS_PER_PAGE;
+	    }
 		scheduledFileExportJobsTagService.populateModel(model, FileExportType.BILLING, ScheduledExportType.BILLING, page, itemsPerPage);
 		return "jobs.jsp";
 	}

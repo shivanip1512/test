@@ -3,6 +3,7 @@ package com.cannontech.common.search.result;
 import java.util.Collections;
 import java.util.List;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SubList;
 
 public class SearchResults<T> {
@@ -41,6 +42,10 @@ public class SearchResults<T> {
     @Deprecated
     public static  <T> SearchResults<T> pageBasedForSubList(int itemsPerPage, SubList<T> itemList) {
 
+        if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE) {
+            // Limit the maximum items per page
+            itemsPerPage = CtiUtilities.MAX_ITEMS_PER_PAGE;
+        }
         SearchResults<T> result = new SearchResults<>();
         result.setResultList(itemList);
         result.setBounds(itemList.getStartIndex(), itemsPerPage, itemList.getOriginalSize());
@@ -54,6 +59,10 @@ public class SearchResults<T> {
      * the specified page.
      */
     public static <T> SearchResults<T> pageBasedForWholeList(int currentPage, int itemsPerPage, List<T> itemList) {
+        if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE) {
+            // Limit the maximum items per page
+            itemsPerPage = CtiUtilities.MAX_ITEMS_PER_PAGE;
+        }
         int startIndex = (currentPage - 1) * itemsPerPage;
         int numberOfResults = itemList.size();
         int toIndex = Math.min(startIndex + itemsPerPage, numberOfResults);
@@ -72,6 +81,10 @@ public class SearchResults<T> {
      */
     public static <T> SearchResults<T> pageBasedForSublist(List<T> sublist, int currentPage, int itemsPerPage,
             int numberOfResults) {
+        if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE) {
+            // Limit the maximum items per page
+            itemsPerPage = CtiUtilities.MAX_ITEMS_PER_PAGE;
+        }
         int startIndex = (currentPage - 1) * itemsPerPage;
 
         SearchResults<T> result = new SearchResults<>();
