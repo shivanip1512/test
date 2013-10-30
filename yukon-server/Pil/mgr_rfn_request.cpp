@@ -31,7 +31,7 @@ using Devices::RfnIdentifier;
 
 std::ostream &operator<<(std::ostream &logger, const std::vector<unsigned char> &buf)
 {
-    logger << std::hex;
+    std::ios_base::fmtflags oldflags = logger.flags( std::ios::hex | std::ios::showbase );
 
     copy(buf.begin(), buf.end(), padded_output_iterator<int, std::ostream>(logger, '0', 2));
 
@@ -39,6 +39,31 @@ std::ostream &operator<<(std::ostream &logger, const std::vector<unsigned char> 
 
     return logger;
 }
+
+
+template<class T>
+struct formatAsHex
+{
+    const T &value;
+
+    formatAsHex(const T &t) : value(t)  {}
+};
+
+
+template<class T>
+std::ostream &operator<<(std::ostream &logger, const formatAsHex<T> &wrapper)
+{
+    std::ios_base::fmtflags oldflags = logger.flags( std::ios::hex | std::ios::showbase | std::ios::right );
+    char oldfill = logger.fill('0');
+
+    logger << wrapper.value;
+
+    logger.flags(oldflags);
+    logger.fill(oldfill);
+
+    return logger;
+}
+
 
 RfnRequestManager::RfnRequestManager() :
     _generator(std::time(0))
@@ -540,13 +565,13 @@ void RfnRequestManager::checkForNewRequest(const RfnIdentifier &rfnIdentifier)
                 dout << "request.groupMessageId  :" << newRequest.request.groupMessageId   << std::endl;
                 dout << "request.priority        :" << newRequest.request.priority         << std::endl;
                 dout << "request.rfnIdentifier   :" << newRequest.request.rfnIdentifier    << std::endl;
-                dout << "request.rfnRequestId    :" << std::hex << newRequest.request.rfnRequestId << std::dec << std::endl;
+                dout << "request.rfnRequestId    :" << formatAsHex<unsigned long>(newRequest.request.rfnRequestId) << std::endl;
                 dout << "request.userMessageId   :" << newRequest.request.userMessageId    << std::endl;
                 //dout << "request.requestMessage  :" << newRequest.requestMessage           << std::endl;
                 //dout << "request.response        :" << newRequest.response                 << std::endl;
                 dout << "retransmits             :" << newRequest.retransmits              << std::endl;
                 dout << "status                  :" << newRequest.status                   << std::endl;
-                dout << "timeout                 :" << newRequest.timeout                  << std::endl;
+                dout << "timeout                 :" << CtiTime(newRequest.timeout)         << std::endl;
             }
 
             _upcomingExpirations[newRequest.timeout].insert(request.rfnIdentifier);
