@@ -234,7 +234,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.SUM_KWH_RATE_B">Sum kWh Rate B</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SUM_KWH_RATE_C">Sum kWh Rate C</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SUM_KWH_RATE_D">Sum kWh Rate D</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.SUM_KWH_RATE_D">Sum kWh Rate E</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.SUM_KWH_RATE_E">Sum kWh Rate E</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SUM_KVAH">Sum kVAh</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SUM_KVARH">Sum kVArh</entry>
     <entry key="yukon.common.attribute.builtInAttribute.PEAK_KVAR">Peak kVAr</entry>
