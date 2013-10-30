@@ -36,19 +36,19 @@ public class ProgramEstimatedLoadField extends EstimatedLoadBackingFieldBase {
             programBase = backingServiceHelper.getLmProgramBase(programId);
             estimatedLoadAmount = backingServiceHelper.getProgramValue(programBase.getPaoIdentifier());
         } catch (EstimatedLoadCalculationException e) {
-            return createErrorJson(programBase, userContext, e);
+            return createErrorJson(programId, userContext, e);
         }
         if (null == estimatedLoadAmount) {
-            return createCalculatingJson(programBase, userContext);
+            return createCalculatingJson(programId, userContext);
         }
         if (estimatedLoadAmount.isError()) {
-            return createErrorJson(programBase, userContext, estimatedLoadAmount.getException());
+            return createErrorJson(programId, userContext, estimatedLoadAmount.getException());
         } else {
-            return createSuccessJson(programBase, estimatedLoadAmount, userContext);
+            return createSuccessJson(programId, estimatedLoadAmount, userContext);
         }
     }
 
-    private Object createCalculatingJson(LMProgramBase programBase, YukonUserContext userContext) {
+    private Object createCalculatingJson(int programId, YukonUserContext userContext) {
         Map<String, String> calculatingJson = new HashMap<>();
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         
@@ -58,13 +58,13 @@ public class ProgramEstimatedLoadField extends EstimatedLoadBackingFieldBase {
         String naMessage = accessor.getMessage(na);
         String calcMessage = accessor.getMessage(calculating);
         
-        calculatingJson.put("paoId", String.valueOf(programBase.getPaoIdentifier().getPaoId()));
+        calculatingJson.put("paoId", String.valueOf(programId));
         calculatingJson.put("calculating", calcMessage);
         calculatingJson.put("na", naMessage);
         return JSONObject.fromObject(calculatingJson).toString();
     }
 
-    private Object createErrorJson(LMProgramBase program, YukonUserContext userContext,
+    private Object createErrorJson(int programId, YukonUserContext userContext,
             EstimatedLoadCalculationException e) {
         Map<String, String> errorTooltipJson = new HashMap<>();
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
@@ -76,13 +76,13 @@ public class ProgramEstimatedLoadField extends EstimatedLoadBackingFieldBase {
         String errorMessage = accessor.getMessage(error);
         String naMessage = accessor.getMessage(na);
         
-        errorTooltipJson.put("paoId", String.valueOf(program.getPaoIdentifier().getPaoId()));
+        errorTooltipJson.put("paoId", String.valueOf(programId));
         errorTooltipJson.put("errorMessage", errorMessage);
         errorTooltipJson.put("na", naMessage);
         return JSONObject.fromObject(errorTooltipJson).toString();
     }
     
-    private Object createSuccessJson(LMProgramBase program, EstimatedLoadReductionAmount amount,
+    private Object createSuccessJson(int programId, EstimatedLoadReductionAmount amount,
             YukonUserContext userContext) {
         Map<String, String> successJson = new HashMap<>();
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
@@ -96,7 +96,7 @@ public class ProgramEstimatedLoadField extends EstimatedLoadBackingFieldBase {
                 amount.getMaxKwSavings(),
                 amount.getNowKwSavings());
         
-        successJson.put("paoId", String.valueOf(program.getPaoIdentifier().getPaoId()));
+        successJson.put("paoId", String.valueOf(programId));
         successJson.put("connected", accessor.getMessage(connectedLoad));
         successJson.put("diversified", accessor.getMessage(diversifiedLoad));
         successJson.put("kwSavings", accessor.getMessage(kwSavings));
