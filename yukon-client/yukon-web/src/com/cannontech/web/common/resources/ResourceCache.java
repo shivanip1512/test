@@ -10,6 +10,8 @@ import java.util.concurrent.ExecutionException;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.log4j.Logger;
+import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -22,6 +24,7 @@ import ro.isdc.wro.extensions.processor.css.YUICssCompressorProcessor;
 import ro.isdc.wro.model.group.processor.Injector;
 import ro.isdc.wro.model.group.processor.InjectorBuilder;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.web.admin.theme.dao.ThemeDao;
@@ -37,6 +40,8 @@ public class ResourceCache {
     @Autowired private ThemeDao themeDao;
     @Autowired private ResourceLoader loader;
     @Autowired private ConfigurationSource config;
+    
+    private static final Logger log = YukonLogManager.getLogger(ResourceCache.class);
     
     private static Cache<CachedResource, CachedResourceValue> cache = CacheBuilder.newBuilder().build();
     
@@ -73,6 +78,8 @@ public class ResourceCache {
     
     private CachedResourceValue load(CachedResource resource) throws IOException {
         
+        Instant start = Instant.now();
+        
         String regexPrefix = "(?<=@";
         String regexSuffix = ":\\s{0,5}+)[^;]+?(?=;)";
         
@@ -102,6 +109,9 @@ public class ResourceCache {
             line = br.readLine();
         }
         
+        log.info("Loading " + resource + ": theme property replacement took " + new Duration(start, Instant.now()).getMillis() + "ms");
+        start = Instant.now();
+        
         //Create the configuration object and use it for current context
         WroConfiguration wroConfig = new WroConfiguration();
         Context.set(Context.standaloneContext(), wroConfig);
@@ -119,6 +129,8 @@ public class ResourceCache {
         } finally {
             Context.unset();
         }
+        log.info("Loading " + resource + ": less compiling took " + new Duration(start, Instant.now()).getMillis() + "ms");
+        start = Instant.now();
         
         boolean devMode = config.getBoolean(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE);
         if (!devMode) {
@@ -126,6 +138,8 @@ public class ResourceCache {
             YUICssCompressorProcessor compressor = new YUICssCompressorProcessor();
             StringWriter minified = new StringWriter();
             compressor.process(new StringReader(newCss.toString()), minified);
+            
+            log.info("Loading " + resource + ": css compression took " + new Duration(start, Instant.now()).getMillis() + "ms");
             
             return CachedResourceValue.of(minified.toString(), Instant.now().getMillis());
             
