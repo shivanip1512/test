@@ -6,14 +6,14 @@
 
 <cti:standardPage module="support" page="rfnTest">
 
-	<script>
-		jQuery(document).ready(function() {
-			jQuery('.f-sendEventArchive').click(function() {
-			    combineDateAndTimeFields('timestamp');
-			    jQuery('#eventForm').submit();
-			});
-		});
-	</script>
+    <script>
+        jQuery(document).ready(function() {
+            jQuery('.f-sendEventArchive').click(function() {
+                combineDateAndTimeFields('timestamp');
+                jQuery('#eventForm').submit();
+            });
+        });
+    </script>
 
     <tags:sectionContainer2 nameKey="sendEvent">
         <form:form action="sendEvent" method="post" commandName="event" id="eventForm">
@@ -28,7 +28,7 @@
                         <form:option value="Eka">Eka</form:option>
                         <form:option value="ELO">ELO</form:option>
                         <form:option value="GE">GE</form:option>
-						<form:option value="ITRN">ITRN</form:option>
+                        <form:option value="ITRN">ITRN</form:option>
                         <form:option value="LGYR">LGYR</form:option>
                         <form:option value="SCH">SCH</form:option>
                     </form:select>
@@ -36,7 +36,7 @@
                 
                 <tags:nameValue name="Model">
                     <form:select path="model">
-                    	<!-- EE -->
+                        <!-- EE -->
                         <form:option value="A3R">A3R</form:option>
                         <form:option value="A3D">A3D</form:option>
                         <form:option value="A3T">A3T</form:option>
@@ -80,37 +80,37 @@
                     <form:input path="numAlarmPerMeter" />
                 </tags:nameValue>
                 
-		        <tags:nameValue name="Event Time">
-		            <tags:dateTimeInput path="timestamp" fieldValue="${event.timestamp}" />
-		        </tags:nameValue>
+                <tags:nameValue name="Event Time">
+                    <tags:dateTimeInput path="timestamp" fieldValue="${event.timestamp}" />
+                </tags:nameValue>
             </tags:nameValueContainer>
 
-			<tags:nameValueContainer2>
-				<strong><u>Condition Data Types (meta data)</u></strong>
-				<tags:nameValue2 nameKey=".dataType.CLEARED">
-					<form:select path="cleared">
-						<form:option value="true">True</form:option>
-						<form:option value="false">False</form:option>
-					</form:select>
-				</tags:nameValue2>
-				<tags:inputNameValue nameKey=".dataType.COUNT" path="count" />
-				<tags:inputNameValue nameKey=".dataType.DIRECTION" path="direction" />
-				<tags:inputNameValue nameKey=".dataType.MEASURED_VALUE" path="measuredValue" />
-				<tags:inputNameValue nameKey=".dataType.EVENT_START_TIME" path="outageStartTime" />
-				<tags:inputNameValue nameKey=".dataType.THRESHOLD_VALUE" path="thresholdValue" />
-				<tags:inputNameValue nameKey=".dataType.UOM" path="uom" />
-				<tags:inputNameValue nameKey=".dataType.UOM_MODIFIERS" path="uomModifiers" />
-			</tags:nameValueContainer2>
-			<br>
-			<div>Outage Start Time helper info:</div>
-			<ul>
-	            <li>-Leaving this field blank above will default it to 60 seconds from now</li>
-	            <li>-Enter a value of -1 to simulate a RESTORE event from a meter with "old" firmware (doesn't include this meta-data)</li>
-	            <li>-The current (<cti:formatDate type="TIME" value="${event.timestamp}"/>) time in milliseconds: ${event.timestampAsMillis}</li>
-	            <li>-60 seconds less than this is: ${event.timestampAsMillis - 60000}</li>
-			</ul>
+            <tags:nameValueContainer2>
+                <strong><u>Condition Data Types (meta data)</u></strong>
+                <tags:nameValue2 nameKey=".dataType.CLEARED">
+                    <form:select path="cleared">
+                        <form:option value="true">True</form:option>
+                        <form:option value="false">False</form:option>
+                    </form:select>
+                </tags:nameValue2>
+                <tags:inputNameValue nameKey=".dataType.COUNT" path="count" />
+                <tags:inputNameValue nameKey=".dataType.DIRECTION" path="direction" />
+                <tags:inputNameValue nameKey=".dataType.MEASURED_VALUE" path="measuredValue" />
+                <tags:inputNameValue nameKey=".dataType.EVENT_START_TIME" path="outageStartTime" />
+                <tags:inputNameValue nameKey=".dataType.THRESHOLD_VALUE" path="thresholdValue" />
+                <tags:inputNameValue nameKey=".dataType.UOM" path="uom" />
+                <tags:inputNameValue nameKey=".dataType.UOM_MODIFIERS" path="uomModifiers" />
+            </tags:nameValueContainer2>
+            <br>
+            <div>Outage Start Time helper info:</div>
+            <ul>
+                <li>-Leaving this field blank above will default it to 60 seconds from now</li>
+                <li>-Enter a value of -1 to simulate a RESTORE event from a meter with "old" firmware (doesn't include this meta-data)</li>
+                <li>-The current (<cti:formatDate type="TIME" value="${event.timestamp}"/>) time in milliseconds: ${event.timestampAsMillis}</li>
+                <li>-60 seconds less than this is: ${event.timestampAsMillis - 60000}</li>
+            </ul>
 
-			<div class="pageActionArea">
+            <div class="pageActionArea">
                 <cti:button nameKey="send" classes="f-blocker f-sendEventArchive"/>
             </div>
         </form:form>
