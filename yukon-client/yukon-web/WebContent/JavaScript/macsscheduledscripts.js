@@ -1,15 +1,3 @@
-// TODO: DEPRECATED: Rework this functionality into JSP.
-
-/**
- * Moved here from scheduledscripts.jsp
- */
-jQuery(function() {
-    // DEPRECATED
-    new Ajax.PeriodicalUpdater('main', '${url}?sortBy=${sortBy}&descending=${descending}', {
-        "method": 'post', "frequency": 5, "decay": 1
-    });
-});
-
 function macsscheduledscripts_startFocus() {
     $("startform").time[1].checked = true;
 }
