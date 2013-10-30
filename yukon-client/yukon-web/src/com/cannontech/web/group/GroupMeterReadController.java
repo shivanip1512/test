@@ -18,6 +18,7 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
+import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
 import com.cannontech.amr.deviceread.dao.PlcDeviceAttributeReadService;
 import com.cannontech.amr.deviceread.service.GroupMeterReadResult;
 import com.cannontech.common.alert.model.Alert;
@@ -48,13 +49,14 @@ import com.google.common.collect.Maps;
 
 public class GroupMeterReadController extends MultiActionController {
 
-    @Autowired private PlcDeviceAttributeReadService plcDeviceAttributeReadService;
 	@Autowired private AlertService alertService;
 	@Autowired private DeviceGroupService deviceGroupService;
 	@Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
 	@Autowired private AttributeSelectorHelperService attributeSelectorHelperService;
 	@Autowired private AttributeService attributeService;
     @Autowired private ObjectFormattingService objectFormattingService;
+    @Autowired private DeviceAttributeReadService deviceAttributeReadService;
+    @Autowired private PlcDeviceAttributeReadService plcDeviceAttributeReadService;
     private DeviceCollectionFactory deviceCollectionFactory;
 
 	// HOME (GROUP)
@@ -204,8 +206,11 @@ public class GroupMeterReadController extends MultiActionController {
 		
         // read
         try {
-        
-        	String resultKey = plcDeviceAttributeReadService.readDeviceCollection(deviceCollection, selectedAttributes, DeviceRequestType.GROUP_ATTRIBUTE_READ, alertCallback, userContext.getYukonUser());
+            String resultKey =  deviceAttributeReadService.readDeviceCollection(deviceCollection,
+                                          selectedAttributes,
+                                          DeviceRequestType.GROUP_ATTRIBUTE_READ,
+                                          alertCallback,
+                                          userContext);
         	mav.addObject("resultKey", resultKey);
 		
         } catch (Exception e) {

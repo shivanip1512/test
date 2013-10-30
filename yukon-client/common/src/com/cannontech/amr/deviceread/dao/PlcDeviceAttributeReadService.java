@@ -15,7 +15,6 @@ import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifier;
-import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 public interface PlcDeviceAttributeReadService {
@@ -63,13 +62,7 @@ public interface PlcDeviceAttributeReadService {
     // The methods below this line represent a distinct part of this service.
     // The String returned by the first method can be used to look up the 
     // result object that is stored in memory.
-    
-    public String readDeviceCollection(DeviceCollection deviceCollection, 
-                                       Set<? extends Attribute> attributes, 
-                                       DeviceRequestType type, 
-                                       SimpleCallback<GroupMeterReadResult> callback, 
-                                       LiteYukonUser user);
-    
+        
     public List<GroupMeterReadResult> getCompleted();
     public List<GroupMeterReadResult> getCompletedByType(DeviceRequestType type);
 
@@ -78,5 +71,5 @@ public interface PlcDeviceAttributeReadService {
 
     public GroupMeterReadResult getResult(String id);
 
-
+    public String addResult(GroupMeterReadResult groupMeterReadResult);
 }

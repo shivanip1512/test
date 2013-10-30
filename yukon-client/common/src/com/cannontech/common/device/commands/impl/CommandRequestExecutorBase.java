@@ -166,7 +166,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
                             handleUnknownReturn(userMessageId, aResult);
                         }
                     }
-
+                    
                     // last results
                     if (retMessage.getExpectMore() == 0) {
 
@@ -328,10 +328,12 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
     
     
     // EXECUTE MULTIPLE, CALLBACK, parameterDto
+
     @Override
     public CommandRequestExecutionIdentifier executeWithParameterDto(final List<T> commands,
                                                                 final CommandCompletionCallback<? super T> callback, 
-                                                                final CommandRequestExecutionParameterDto parameterDto) {
+                                                                final CommandRequestExecutionParameterDto parameterDto, 
+                                                                final CommandRequestExecution execution) {
 
         log.debug("Executing " + commands.size() + " for " + callback);
 
@@ -353,17 +355,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
         final CommandRequestExecutionContextId contextId = parameterDto.getContextId();
         final DeviceRequestType type = parameterDto.getType();
         
-        final CommandRequestExecution commandRequestExecution = new CommandRequestExecution();
-        commandRequestExecution.setContextId(contextId.getId());
-        commandRequestExecution.setStartTime(new Date());
-        commandRequestExecution.setRequestCount(commands.size());
-        commandRequestExecution.setCommandRequestExecutionType(type);
-        commandRequestExecution.setUserName(user.getUsername());
-        commandRequestExecution.setCommandRequestType(getCommandRequestType());
-        commandRequestExecution.setCommandRequestExecutionStatus(CommandRequestExecutionStatus.STARTED);
-        
-        commandRequestExecutionDao.saveOrUpdate(commandRequestExecution);
-        CommandRequestExecutionIdentifier commandRequestExecutionIdentifier = new CommandRequestExecutionIdentifier(commandRequestExecution.getId());
+        CommandRequestExecutionIdentifier commandRequestExecutionIdentifier = new CommandRequestExecutionIdentifier(execution.getId());
         
         // execute
         executor.execute(new Runnable() {
@@ -398,7 +390,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
 		        CommandResultMessageListener messageListener = new CommandResultMessageListener(commandRequests,
 		                                                                                        callback, 
 		                                                                                        groupMessageId,
-		                                                                                        commandRequestExecution);
+		                                                                                        execution);
 		        
 		        msgListeners.put(callback, messageListener);
 		        
@@ -441,7 +433,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
 		        	completeAndRemoveListener = true;
 		        	log.debug("Removing porter message listener because an exception occured: " + messageListener);
 
-		        	commandRequestExecutorEventLogService.commandFailedToTransmit(commandRequestExecution.getId(), contextId.getId(), type, currentRequestHolder.request.getCommandString(), error, user);
+		        	commandRequestExecutorEventLogService.commandFailedToTransmit(execution.getId(), contextId.getId(), type, currentRequestHolder.request.getCommandString(), error, user);
 
 		        } catch (Exception e) {
 		        	exceptionOccured = true;
@@ -449,7 +441,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
 		        	completeAndRemoveListener = true;
 		        	log.debug("Removing porter message listener because an exception occured (" + e.getMessage() + "): " + messageListener);
 
-		        	commandRequestExecutorEventLogService.commandFailedToTransmit(commandRequestExecution.getId(), contextId.getId(), type, currentRequestHolder.request.getCommandString(), e.getMessage(), user);
+		        	commandRequestExecutorEventLogService.commandFailedToTransmit(execution.getId(), contextId.getId(), type, currentRequestHolder.request.getCommandString(), e.getMessage(), user);
 
 		        } finally {
 		            if (nothingWritten && !messageListener.isCanceled()) {
@@ -460,7 +452,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
 		            if (completeAndRemoveListener) {
 		            	callback.complete();
 		            	messageListener.removeListener();
-		            	completeCommandRequestExecutionRecord(commandRequestExecution, exceptionOccured ? CommandRequestExecutionStatus.FAILED : CommandRequestExecutionStatus.COMPLETE);
+		            	completeCommandRequestExecutionRecord(execution, exceptionOccured ? CommandRequestExecutionStatus.FAILED : CommandRequestExecutionStatus.COMPLETE);
 		            }
 
 		            messageListener.getCommandsAreWritingLatch().countDown();
@@ -552,24 +544,33 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
         
         @Override
         public CommandRequestExecutionIdentifier execute(List<T> commands, CommandCompletionCallback<? super T> callback) {
-            return executeWithParameterDto(commands, callback, this.parameterDto);
+            CommandRequestExecution execution = createCommandRequestExecution(parameterDto, commands);
+            return executeWithParameterDto(commands, callback, this.parameterDto, execution);
+        }
+
+        @Override
+        public CommandRequestExecutionIdentifier execute(List<T> commands, CommandCompletionCallback<? super T> callback, CommandRequestExecution execution) {
+            return executeWithParameterDto(commands, callback, this.parameterDto, execution);
         }
 
         @Override
         public CommandRequestExecutionIdentifier execute(List<T> commands, CommandCompletionCallback<? super T> callback, boolean noqueue) {
-            return executeWithParameterDto(commands, callback, this.parameterDto.withNoqueue(noqueue));
+            CommandRequestExecution execution = createCommandRequestExecution(parameterDto, commands);
+            return executeWithParameterDto(commands, callback, this.parameterDto.withNoqueue(noqueue), execution);
         }
         
         @Override
         public CommandRequestExecutionIdentifier execute(List<T> commands, CommandCompletionCallback<? super T> callback, int priority) {
-            return executeWithParameterDto(commands, callback, this.parameterDto.withPriority(priority));
+            CommandRequestExecution execution = createCommandRequestExecution(parameterDto, commands);
+            return executeWithParameterDto(commands, callback, this.parameterDto.withPriority(priority), execution);
         }
         
         @Override
         public CommandRequestExecutionIdentifier execute(List<T> commands, CommandCompletionCallback<? super T> callback, boolean noqueue, int priority) {
-            return executeWithParameterDto(commands, callback, this.parameterDto.withNoqueue(noqueue).withPriority(priority));
+            CommandRequestExecution execution = createCommandRequestExecution(parameterDto, commands);
+            return executeWithParameterDto(commands, callback, this.parameterDto.withNoqueue(noqueue).withPriority(priority), execution);
         }
-        
+
         @Override
         public String toString() {
 
@@ -589,6 +590,23 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
         Permission permission = commandPermissionConverter.getPermission(commandString);
         boolean result = loggableCommandPermissions.contains(permission);
         return result;
+    }
+    
+    private CommandRequestExecution createCommandRequestExecution(CommandRequestExecutionParameterDto parameterDto, List<T> commands){
+        LiteYukonUser user = parameterDto.getUser();
+        CommandRequestExecution execution = new CommandRequestExecution();
+        CommandRequestExecutionContextId contextId = parameterDto.getContextId();
+        DeviceRequestType type = parameterDto.getType();
+        execution.setContextId(contextId.getId());
+        execution.setStartTime(new Date());
+        execution.setRequestCount(commands.size());
+        execution.setCommandRequestExecutionType(type);
+        execution.setUserName(user.getUsername());
+        execution.setCommandRequestType(getCommandRequestType());
+        execution.setCommandRequestExecutionStatus(CommandRequestExecutionStatus.STARTED);
+        
+        commandRequestExecutionDao.saveOrUpdate(execution);
+        return execution;
     }
     
     protected abstract void adjustRequest(Request request, T commandRequest);

@@ -15,6 +15,7 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
+import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
 import com.cannontech.amr.deviceread.dao.PlcDeviceAttributeReadService;
 import com.cannontech.amr.deviceread.service.GroupMeterReadResult;
 import com.cannontech.amr.meter.dao.GroupMetersDao;
@@ -47,14 +48,15 @@ import com.google.common.collect.ListMultimap;
 @CheckRoleProperty(YukonRoleProperty.OUTAGE_PROCESSING)
 public class OutageProcessingController extends MultiActionController {
 
-	private OutageMonitorDao outageMonitorDao;
-	private OutageMonitorService outageMonitorService;
-	private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
-	private GroupMetersDao groupMetersDao;
-	private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
-	private PlcDeviceAttributeReadService plcDeviceAttributeReadService;
-	private AlertService alertService;
+    @Autowired private OutageMonitorDao outageMonitorDao;
+	@Autowired private OutageMonitorService outageMonitorService;
+	@Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
+	@Autowired private GroupMetersDao groupMetersDao;
+	@Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
+	@Autowired private PlcDeviceAttributeReadService plcDeviceAttributeReadService;
+	@Autowired private AlertService alertService;
 	@Autowired private DeviceGroupService deviceGroupService;
+	@Autowired private DeviceAttributeReadService deviceAttributeReadService;
 	
 	private ListMultimap<Integer, String> monitorToRecentReadKeysCache = ArrayListMultimap.create();
 	
@@ -125,7 +127,7 @@ public class OutageProcessingController extends MultiActionController {
                 int total = (int)result.getOriginalDeviceCollectionCopy().getDeviceCount();
                 float percentSuccess = 100.0f;
                 if (total > 0) {
-                	percentSuccess = (float)((successCount * 100) / total);
+                    percentSuccess = (float)((successCount * 100) / total);
                 }
                 resolvableTemplate.addData("percentSuccess", percentSuccess);
                 resolvableTemplate.addData("resultKey", result.getKey());
@@ -136,7 +138,7 @@ public class OutageProcessingController extends MultiActionController {
             }
         };
 	
-        String resultKey = plcDeviceAttributeReadService.readDeviceCollection(deviceCollection, Collections.singleton(BuiltInAttribute.OUTAGE_LOG), DeviceRequestType.GROUP_OUTAGE_PROCESSING_OUTAGE_LOGS_READ, alertCallback, userContext.getYukonUser());
+        String resultKey = deviceAttributeReadService.readDeviceCollection(deviceCollection, Collections.singleton(BuiltInAttribute.OUTAGE_LOG), DeviceRequestType.GROUP_OUTAGE_PROCESSING_OUTAGE_LOGS_READ, alertCallback, userContext);
         monitorToRecentReadKeysCache.put(outageMonitorId, resultKey);
 		
 		mav.addObject("outageMonitorId", outageMonitorId);
@@ -164,40 +166,5 @@ public class OutageProcessingController extends MultiActionController {
 		mav.addObject("outageMonitorId", outageMonitorId);
 		
 		return mav;
-	}
-	
-	@Autowired
-	public void setOutageMonitorDao(OutageMonitorDao outageMonitorDao) {
-		this.outageMonitorDao = outageMonitorDao;
-	}
-	
-	@Autowired
-	public void setOutageMonitorService(OutageMonitorService outageMonitorService) {
-		this.outageMonitorService = outageMonitorService;
-	}
-	
-	@Autowired
-	public void setDeviceGroupMemberEditorDao(DeviceGroupMemberEditorDao deviceGroupMemberEditorDao) {
-		this.deviceGroupMemberEditorDao = deviceGroupMemberEditorDao;
-	}
-	
-	@Autowired
-	public void setGroupMetersDao(GroupMetersDao groupMetersDao) {
-		this.groupMetersDao = groupMetersDao;
-	}
-	
-	@Autowired
-	public void setDeviceGroupCollectionHelper(DeviceGroupCollectionHelper deviceGroupCollectionHelper) {
-		this.deviceGroupCollectionHelper = deviceGroupCollectionHelper;
-	}
-	
-	@Autowired
-	public void setPlcDeviceAttributeReadService(PlcDeviceAttributeReadService plcDeviceAttributeReadService) {
-		this.plcDeviceAttributeReadService = plcDeviceAttributeReadService;
-	}
-	
-	@Autowired
-	public void setAlertService(AlertService alertService) {
-		this.alertService = alertService;
 	}
 }

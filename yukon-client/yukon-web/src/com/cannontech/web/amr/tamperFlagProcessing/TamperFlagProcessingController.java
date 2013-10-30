@@ -14,6 +14,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
 import com.cannontech.amr.deviceread.dao.PlcDeviceAttributeReadService;
 import com.cannontech.amr.deviceread.service.GroupMeterReadResult;
 import com.cannontech.amr.meter.dao.GroupMetersDao;
@@ -49,15 +50,16 @@ import com.google.common.collect.ListMultimap;
 @CheckRoleProperty(YukonRoleProperty.TAMPER_FLAG_PROCESSING)
 public class TamperFlagProcessingController {
 
-	private TamperFlagMonitorDao tamperFlagMonitorDao;
-	private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
-	private TamperFlagMonitorService tamperFlagMonitorService;
-	private AlertService alertService;
-	private PlcDeviceAttributeReadService plcDeviceAttributeReadService;
-	private GroupCommandExecutor groupCommandExecutor;
-	private GroupMetersDao groupMetersDao;
-	private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
+    @Autowired TamperFlagMonitorDao tamperFlagMonitorDao;
+	@Autowired DeviceGroupCollectionHelper deviceGroupCollectionHelper;
+	@Autowired TamperFlagMonitorService tamperFlagMonitorService;
+	@Autowired AlertService alertService;
+	@Autowired PlcDeviceAttributeReadService plcDeviceAttributeReadService;
+	@Autowired GroupCommandExecutor groupCommandExecutor;
+	@Autowired GroupMetersDao groupMetersDao;
+	@Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
 	@Autowired private DeviceGroupService deviceGroupService;
+	@Autowired private DeviceAttributeReadService deviceAttributeReadService;
 	
 	private ListMultimap<Integer, String> monitorToRecentReadKeysCache = ArrayListMultimap.create();
 	private ListMultimap<Integer, String> monitorToRecentResetKeysCache = ArrayListMultimap.create();
@@ -138,7 +140,7 @@ public class TamperFlagProcessingController {
                 int total = (int)result.getOriginalDeviceCollectionCopy().getDeviceCount();
                 float percentSuccess = 100.0f;
                 if (total > 0) {
-                	percentSuccess = (float)((successCount * 100) / total);
+                    percentSuccess = (successCount * 100) / total;
                 }
                 resolvableTemplate.addData("percentSuccess", percentSuccess);
                 resolvableTemplate.addData("resultKey", result.getKey());
@@ -154,7 +156,7 @@ public class TamperFlagProcessingController {
             }
         };
 	
-        String resultKey = plcDeviceAttributeReadService.readDeviceCollection(tamperFlagGroupDeviceCollection, Collections.singleton(BuiltInAttribute.GENERAL_ALARM_FLAG), DeviceRequestType.GROUP_TAMPER_FLAG_PROCESSING_INTERNAL_STATUS_READ, alertCallback, userContext.getYukonUser());
+        String resultKey = deviceAttributeReadService.readDeviceCollection(tamperFlagGroupDeviceCollection, Collections.singleton(BuiltInAttribute.GENERAL_ALARM_FLAG), DeviceRequestType.GROUP_TAMPER_FLAG_PROCESSING_INTERNAL_STATUS_READ, alertCallback, userContext);
         monitorToRecentReadKeysCache.put(tamperFlagMonitorId, resultKey);
 		
 		
@@ -214,43 +216,4 @@ public class TamperFlagProcessingController {
         return "redirect:process";
 	}
 	
-	@Autowired
-	public void setTamperFlagMonitorDao(TamperFlagMonitorDao tamperFlagMonitorDao) {
-		this.tamperFlagMonitorDao = tamperFlagMonitorDao;
-	}
-	
-	@Autowired
-	public void setDeviceGroupCollectionHelper(DeviceGroupCollectionHelper deviceGroupCollectionHelper) {
-		this.deviceGroupCollectionHelper = deviceGroupCollectionHelper;
-	}
-	
-	@Autowired
-	public void setTamperFlagMonitorService(TamperFlagMonitorService tamperFlagMonitorService) {
-		this.tamperFlagMonitorService = tamperFlagMonitorService;
-	}
-	
-	@Autowired
-	public void setAlertService(AlertService alertService) {
-		this.alertService = alertService;
-	}
-	
-	@Autowired
-	public void setPlcDeviceAttributeReadService(PlcDeviceAttributeReadService plcDeviceAttributeReadService) {
-		this.plcDeviceAttributeReadService = plcDeviceAttributeReadService;
-	}
-	
-	@Autowired
-    public void setGroupCommandExecutor(GroupCommandExecutor groupCommandExecutor) {
-        this.groupCommandExecutor = groupCommandExecutor;
-    }
-	
-	@Autowired
-	public void setGroupMetersDao(GroupMetersDao groupMetersDao) {
-		this.groupMetersDao = groupMetersDao;
-	}
-	
-	@Autowired
-	public void setDeviceGroupMemberEditorDao(DeviceGroupMemberEditorDao deviceGroupMemberEditorDao) {
-		this.deviceGroupMemberEditorDao = deviceGroupMemberEditorDao;
-	}
 }

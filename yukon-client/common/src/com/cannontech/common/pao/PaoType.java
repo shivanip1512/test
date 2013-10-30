@@ -519,6 +519,10 @@ public enum PaoType implements DatabaseRepresentationSource {
         return this.paoClass == PaoClass.RFMESH;
     }
     
+    public boolean isPlc() {
+        return this.paoClass == PaoClass.CARRIER;
+    }
+    
     public boolean isTwoWayRfnLcr() {
         return twoWayLcrTypes.contains(this) 
                 && this.isRfn();

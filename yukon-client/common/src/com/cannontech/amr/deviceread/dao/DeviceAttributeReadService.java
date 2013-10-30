@@ -2,10 +2,14 @@ package com.cannontech.amr.deviceread.dao;
 
 import java.util.Set;
 
+import com.cannontech.amr.deviceread.service.GroupMeterReadResult;
+import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
+import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.user.YukonUserContext;
 
 /**
  * This is the preferred Service for "reading" PAOs. This service, unlike the ones
@@ -28,5 +32,11 @@ public interface DeviceAttributeReadService {
      * This will return false if either the devices or attributes collection is empty.
      */
     public boolean isReadable(Iterable<? extends YukonPao> devices, Set<Attribute> attributes, LiteYukonUser user);
-
+        
+    
+    public String readDeviceCollection(DeviceCollection deviceCollection, 
+                                       Set<? extends Attribute> attributes, 
+                                       DeviceRequestType type, 
+                                       final SimpleCallback<GroupMeterReadResult> callback, 
+                                       YukonUserContext userContext);
 }

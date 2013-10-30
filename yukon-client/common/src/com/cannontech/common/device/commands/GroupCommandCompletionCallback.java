@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
+import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.CancelStatus;
 import com.cannontech.common.util.Completable;
@@ -26,6 +27,7 @@ public class GroupCommandCompletionCallback implements
     private boolean canceled = false;
     private boolean processingErrorOccured = false;
     private String processingErrorReason = "";
+    private CommandRequestExecution execution;
     
     @Override
     public void receivedIntermediateError(CommandRequestDevice command, SpecificDeviceErrorDescription error) {
@@ -56,6 +58,7 @@ public class GroupCommandCompletionCallback implements
         receivedValues.add(command.getDevice(), value);
     }
     
+    @Override
     public Set<SimpleDevice> getAllDevices() {
         return Collections.unmodifiableSet(allDevices.keySet());
     }
@@ -78,10 +81,12 @@ public class GroupCommandCompletionCallback implements
         // ignore
     }
 
+    @Override
     public boolean isSuccessful(SimpleDevice device) {
         return resultStrings.containsKey(device);
     }
     
+    @Override
     public boolean isUnsuccessful(SimpleDevice device) {
         return !errors.containsKey(device);
     }
@@ -91,6 +96,7 @@ public class GroupCommandCompletionCallback implements
         return Collections.unmodifiableList(receivedValues.get(device));
     }
     
+    @Override
     public Map<SimpleDevice, List<PointValueHolder>> getValues() {
         return receivedValues.values();
     }
@@ -136,12 +142,22 @@ public class GroupCommandCompletionCallback implements
     	return processingErrorReason;
     }
 
+    @Override
     public Map<SimpleDevice, SpecificDeviceErrorDescription> getErrors() {
         return errors;
     }
 
+    @Override
     public Map<SimpleDevice, String> getResultStrings() {
         return resultStrings;
+    }
+
+    public CommandRequestExecution getExecution() {
+        return execution;
+    }
+
+    public void setExecution(CommandRequestExecution execution) {
+        this.execution = execution;
     }
 
 }

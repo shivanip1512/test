@@ -38,7 +38,7 @@
     
     <script type="text/javascript">
         function refreshResults(kind, theDiv) {
-            if (theDiv.visible()) {
+            if (theDiv.is(':visible')) {
                 var url = '/group/groupMeterRead/' + kind;
                 jQuery(theDiv).load(url, {'resultKey': '${resultWrapper.result.key}'});
             }

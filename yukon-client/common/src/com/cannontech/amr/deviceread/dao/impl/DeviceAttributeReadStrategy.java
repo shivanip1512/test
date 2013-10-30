@@ -1,11 +1,15 @@
 package com.cannontech.amr.deviceread.dao.impl;
 
+import java.util.Collection;
+
 import com.cannontech.amr.device.StrategyType;
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
 import com.cannontech.common.device.DeviceRequestType;
+import com.cannontech.common.device.commands.GroupCommandCompletionCallback;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifier;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.user.YukonUserContext;
 
 public interface DeviceAttributeReadStrategy {
     
@@ -46,6 +50,15 @@ public interface DeviceAttributeReadStrategy {
      * @param type
      * @param user passed in logging purposes, no authorization checks are expected
      */
-    public void initiateRead(Iterable<PaoMultiPointIdentifier> points, DeviceAttributeReadStrategyCallback callback, DeviceRequestType type, LiteYukonUser user);
+    
+    public void initiateRead(Iterable<PaoMultiPointIdentifier> points,
+                             DeviceAttributeReadStrategyCallback delegateCallback, DeviceRequestType type,
+                             LiteYukonUser user);
+
+    public void initiateRead(Iterable<PaoMultiPointIdentifier> points,
+                             GroupCommandCompletionCallback groupCallback, DeviceRequestType type,
+                             YukonUserContext userContext);
+
+    public int getRequestCount(Collection<PaoMultiPointIdentifier> devicesForThisStrategy);
 
 }

@@ -38,8 +38,10 @@ public enum GroupMeterReadResultFieldEnum {
             Set<SimpleDevice> completedDevices = new HashSet<>();
             completedDevices.addAll(groupMeterReadResult.getResultHolder().getSuccessfulDevices());
             completedDevices.addAll(groupMeterReadResult.getResultHolder().getFailedDevices());
-
-            return (completedDevices.size() + groupMeterReadResult.getUnsupportedCollection().getDeviceCount());
+            if(groupMeterReadResult.isComplete()){
+                completedDevices.addAll(groupMeterReadResult.getUnsupportedCollection().getDeviceList());
+            }      
+            return completedDevices.size();
         }
     }),
 

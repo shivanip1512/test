@@ -3,6 +3,7 @@ package com.cannontech.common.device.commands;
 import java.util.List;
 
 import com.cannontech.common.device.DeviceRequestType;
+import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionIdentifier;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -44,16 +45,19 @@ public interface CommandRequestExecutor<T> {
      */
     public CommandRequestExecutionIdentifier execute(List<T> commands, CommandCompletionCallback<? super T> callback,
     		DeviceRequestType type, LiteYukonUser user);
-    
-    public CommandRequestExecutionIdentifier executeWithParameterDto(List<T> commands, CommandCompletionCallback<? super T> callback, 
-            CommandRequestExecutionParameterDto context);
-    
+
     /**
-     * Attempts to cancel all remaining commands handled by the specified callback and return the number of commands cancled.
+     * Attempts to cancel all remaining commands handled by the specified callback and return the number of commands canceled.
      * If the callback has not already completed, the {@link CommandCompletionCallback#cancel()} and {@link CommandCompletionCallback#complete()}
      * methods are called in that order. 
      */
     public long cancelExecution(CommandCompletionCallback<? super T> callback, LiteYukonUser user);
     
     public CommandRequestExecutionTemplate<T> getExecutionTemplate(DeviceRequestType type, final LiteYukonUser user);
+
+    public CommandRequestExecutionIdentifier executeWithParameterDto(List<T> commands,
+                                                              CommandCompletionCallback<? super T> callback,
+                                                              CommandRequestExecutionParameterDto parameterDto,
+                                                              CommandRequestExecution execution);
+
 }

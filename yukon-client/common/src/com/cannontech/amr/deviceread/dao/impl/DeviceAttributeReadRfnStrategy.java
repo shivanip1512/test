@@ -1,5 +1,7 @@
 package com.cannontech.amr.deviceread.dao.impl;
 
+import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -10,6 +12,8 @@ import org.springframework.context.MessageSourceResolvable;
 import com.cannontech.amr.device.StrategyType;
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadError;
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadErrorType;
+import com.cannontech.amr.errors.model.DeviceErrorDescription;
+import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingDataReplyType;
@@ -18,6 +22,13 @@ import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.amr.rfn.service.RfnDeviceReadCompletionCallback;
 import com.cannontech.amr.rfn.service.RfnMeterReadService;
 import com.cannontech.common.device.DeviceRequestType;
+import com.cannontech.common.device.commands.CommandRequestDevice;
+import com.cannontech.common.device.commands.GroupCommandCompletionCallback;
+import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDao;
+import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
+import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionResult;
+import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
@@ -38,6 +49,8 @@ import com.cannontech.dr.rfn.message.unicast.RfnExpressComUnicastDataReplyType;
 import com.cannontech.dr.rfn.message.unicast.RfnExpressComUnicastReplyType;
 import com.cannontech.dr.rfn.service.RfnExpressComMessageService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
@@ -51,6 +64,8 @@ public class DeviceAttributeReadRfnStrategy implements DeviceAttributeReadStrate
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private RfnExpressComMessageService rfnExpressComMessageService;
     @Autowired private PointDao pointDao;
+    @Autowired private CommandRequestExecutionResultDao commandRequestExecutionResultDao;
+    @Autowired private YukonUserContextMessageSourceResolver resolver;
     
     @Override
     public StrategyType getType() {
@@ -59,7 +74,10 @@ public class DeviceAttributeReadRfnStrategy implements DeviceAttributeReadStrate
     
     @Override
     public boolean canRead(PaoType paoType) {
-        boolean result = paoDefinitionDao.isTagSupported(paoType, PaoTag.NETWORK_MANAGER_ATTRIBUTE_READS);
+        boolean result = false;
+        if(paoType.isRfn()){
+            result = paoDefinitionDao.isTagSupported(paoType, PaoTag.NETWORK_MANAGER_ATTRIBUTE_READS);
+        }
         return result;
     }
     
@@ -107,6 +125,75 @@ public class DeviceAttributeReadRfnStrategy implements DeviceAttributeReadStrate
         Iterable<Integer> devicePaoIds = Iterables.transform(rfnDevices, PaoUtils.getYukonPaoToPaoIdFunction());
         Multimap<Integer, Integer> devicePointIds = pointDao.getPaoPointMultimap(devicePaoIds);
         sendDeviceRequests(rfnDevices, devicePointIds, delegateCallback);
+    }
+    
+    @Override
+    public void initiateRead(Iterable<PaoMultiPointIdentifier> points,
+                             final GroupCommandCompletionCallback groupCallback, DeviceRequestType type,
+                             final YukonUserContext userContext) {
+
+        DeviceAttributeReadStrategyCallback strategyCallback = new DeviceAttributeReadStrategyCallback() {
+            MessageSourceAccessor messageSourceAccessor = resolver.getMessageSourceAccessor(userContext);
+            @Override
+            public void complete() {
+                groupCallback.complete();
+            }
+            
+            @Override
+            public void receivedError(PaoIdentifier pao, DeviceAttributeReadError error) {
+                CommandRequestDevice command = new CommandRequestDevice();
+                command.setDevice(new SimpleDevice(pao));
+                SpecificDeviceErrorDescription errorDescription = getErrorDescription(error);
+                groupCallback.receivedLastError(command, errorDescription);
+                saveCommandRequestExecutionResult(groupCallback.getExecution(), pao.getPaoId(), error.getType().getErrorCode());
+            }
+            
+            @Override
+            public void receivedValue(PaoIdentifier pao, PointValueHolder value) {
+                CommandRequestDevice command = new CommandRequestDevice();
+                command.setDevice(new SimpleDevice(pao));
+                groupCallback.receivedValue(command, value);
+            }
+                 
+            @Override
+            public void receivedException(DeviceAttributeReadError exception) {
+                SpecificDeviceErrorDescription errorDescription = getErrorDescription(exception);
+                CommandRequestDevice command = new CommandRequestDevice();
+                groupCallback.receivedLastError(command, errorDescription);
+            }
+
+            @Override
+            public void receivedLastValue(PaoIdentifier pao) {
+                //ignore the last value if this device had an error
+                if (groupCallback.getErrors().get(new SimpleDevice(pao)) == null) {
+                    CommandRequestDevice command = new CommandRequestDevice();
+                    command.setDevice(new SimpleDevice(pao));
+                    groupCallback.receivedLastResultString(command, "");
+                    saveCommandRequestExecutionResult(groupCallback.getExecution(),  pao.getPaoId(),  0);
+                }
+            }
+            
+            private SpecificDeviceErrorDescription getErrorDescription(DeviceAttributeReadError error) {
+                String summary = "";
+                String detail = "";
+                if (error.getSummary() != null) {
+                    summary = messageSourceAccessor.getMessage(error.getSummary());
+                }
+                if (error.getDetail() != null) {
+                    detail = messageSourceAccessor.getMessage(error.getDetail());
+                }
+                DeviceErrorDescription desc = new DeviceErrorDescription(error.getType().getErrorCode(), "", "", summary, detail);
+                SpecificDeviceErrorDescription errorDescription = new SpecificDeviceErrorDescription(desc,  detail);
+                return errorDescription;
+            }
+        };
+        
+        initiateRead(points, strategyCallback, type, userContext.getYukonUser());
+    }
+    
+    @Override
+    public int getRequestCount(Collection<PaoMultiPointIdentifier> devicesForThisStrategy){
+        return devicesForThisStrategy.size();
     }
     
     //Use for RFN Meters
@@ -249,5 +336,17 @@ public class DeviceAttributeReadRfnStrategy implements DeviceAttributeReadStrate
                 }
             }
         }
+    }
+    
+    private void saveCommandRequestExecutionResult(CommandRequestExecution execution,
+                                                   int deviceId, int errorCode) {
+
+        CommandRequestExecutionResult result = new CommandRequestExecutionResult();
+        result.setCommandRequestExecutionId(execution.getId());
+        result.setCommand(execution.getCommandRequestExecutionType().getShortName());
+        result.setCompleteTime(new Date());
+        result.setDeviceId(deviceId);
+        result.setErrorCode(errorCode);
+        commandRequestExecutionResultDao.saveOrUpdate(result);
     }
 }
