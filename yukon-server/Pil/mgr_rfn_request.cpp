@@ -31,11 +31,11 @@ using Devices::RfnIdentifier;
 
 std::ostream &operator<<(std::ostream &logger, const std::vector<unsigned char> &buf)
 {
-    std::ios_base::fmtflags oldflags = logger.flags( std::ios::hex | std::ios::showbase );
+    const std::ios_base::fmtflags oldflags = logger.flags( std::ios::hex | std::ios::showbase );
 
     copy(buf.begin(), buf.end(), padded_output_iterator<int, std::ostream>(logger, '0', 2));
 
-    logger << std::dec;
+    logger.flags(oldflags);
 
     return logger;
 }
@@ -53,8 +53,8 @@ struct formatAsHex
 template<class T>
 std::ostream &operator<<(std::ostream &logger, const formatAsHex<T> &wrapper)
 {
-    std::ios_base::fmtflags oldflags = logger.flags( std::ios::hex | std::ios::showbase | std::ios::right );
-    char oldfill = logger.fill('0');
+    const std::ios_base::fmtflags oldflags = logger.flags( std::ios::hex | std::ios::showbase | std::ios::right );
+    const char oldfill = logger.fill('0');
 
     logger << wrapper.value;
 
