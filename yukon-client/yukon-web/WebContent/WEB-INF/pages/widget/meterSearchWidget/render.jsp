@@ -9,10 +9,10 @@
 </script>
 
     <form id="filterForm" action="/meter/search">
-        <tags:nameValueContainer altRowOn="false" tableClass="nonwrapping">
+        <tags:nameValueContainer tableClass="nonwrapping">
 	        <c:forEach var="filter" items="${filterByList}" varStatus="status">
 	        	<cti:msg2 key="${filter.formatKey}" var="filterName"/>
-                <tags:nameValue name="${filterName}"><input size="40" type="text" id="searchField_${status.count}" name="${filter.name}" value="${filter.filterValue}"></tags:nameValue>
+                <tags:nameValue name="${filterName}" valueClass="full_width"><input class="full_width" type="text" id="searchField_${status.count}" name="${filter.name}" value="${filter.filterValue}"></tags:nameValue>
 	        </c:forEach>
         </tags:nameValueContainer>
         
