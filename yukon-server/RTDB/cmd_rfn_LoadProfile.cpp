@@ -16,12 +16,12 @@ namespace Commands   {
 
 namespace   { // anonymous namespace
 
-const std::map<unsigned char, std::string>  statusResolver = boost::assign::map_list_of
+const std::map<unsigned char, std::string>  loadProfileStatusResolver = boost::assign::map_list_of
     ( 0, "Success")
     ( 1, "Failure");
 
 
-const std::map<unsigned char, std::string>  stateResolver = boost::assign::map_list_of
+const std::map<unsigned char, std::string>  loadProfileStateResolver = boost::assign::map_list_of
     ( 0, "Disabled")
     ( 1, "Enabled");
 
@@ -85,7 +85,7 @@ RfnCommandResult RfnLoadProfileCommand::decodeResponseHeader( const CtiTime now,
     validate( Condition( response[1] == _operation, ErrorInvalidData )
             << "Invalid Operation Code (" << CtiNumStr(response[1]).xhex(2) << ")" );
 
-    boost::optional<std::string> status = Cti::mapFind( statusResolver, response[2] );
+    boost::optional<std::string> status = mapFind( loadProfileStatusResolver, response[2] );
 
     // invalid status byte -- not found in map
 
@@ -281,7 +281,7 @@ RfnCommandResult RfnLoadProfileGetRecordingCommand::decodeCommand( const CtiTime
     validate( Condition( tlv.value.size() == 1, ErrorInvalidData )
             << "Invalid TLV length (" << tlv.value.size() << ")" );
 
-    boost::optional<std::string> state = Cti::mapFind( stateResolver, tlv.value[0] );
+    boost::optional<std::string> state = Cti::mapFind( loadProfileStateResolver, tlv.value[0] );
 
     validate( Condition( state, ErrorInvalidData )
             << "Invalid State (" << tlv.value[0] << ")" );

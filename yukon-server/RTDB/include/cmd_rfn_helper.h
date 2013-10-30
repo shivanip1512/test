@@ -10,6 +10,10 @@ namespace Cti {
 namespace Devices {
 namespace Commands {
 
+
+boost::optional<std::string> findDescriptionForAscAsq( const unsigned char asc, const unsigned char asq );
+
+
 /**
  * Verify condition and save error description if condition is false
  */

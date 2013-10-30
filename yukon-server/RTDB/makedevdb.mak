@@ -52,6 +52,7 @@ cmd_lcr3102_tamperRead.obj \
 cmd_lcr3102_DemandResponseSummary.obj \
 cmd_lcr3102_hourlyDataLog.obj \
 cmd_rfn.obj \
+cmd_rfn_helper.obj \
 cmd_rfn_centronLcdConfiguration.obj \
 cmd_rfn_FocusLcdConfiguration.obj \
 cmd_rfn_DemandFreeze.obj \

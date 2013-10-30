@@ -77,29 +77,6 @@ const map<unsigned char, string> rateItems = map_list_of
         ( 0x2, "C" )
         ( 0x3, "D" );
 
-const map<unsigned char, map<unsigned char, string>> additionalStatusItems = map_list_of
-        ( 0x0, map_list_of
-                ( 0x0, "NO ADDITIONAL STATUS" )
-                ( 0x1, "REJECTED, SERVICE NOT SUPPORTED" )
-                ( 0x2, "REJECTED, INVALID FIELD IN COMMAND" )
-                ( 0x3, "REJECTED, INAPPROPRIATE ACTION REQUESTED" )
-                ( 0x4, "REJECTED, LOAD VOLTAGE HIGHER THAN THRESHOLD" )
-                ( 0x5, "REJECTED, SWITCH IS OPEN" )
-                ( 0x6, "REJECTED, TEST MODE ENABLED" )
-                ( 0x7, "REJECTED, SERVICE DISCONNECT BUTTON PRESSED BUT METER NOT ARMED" )
-                ( 0x8, "REJECTED, SERVICE DISCONNECT NOT ENABLED" )
-                ( 0x9, "REJECTED, SERVICE DISCONNECT IS CURRENTLY CHARGING" )
-                ( 0xA, "REJECTED, SERVICE DISCONNECT IN OPERATION" ))
-        ( 0x1, map_list_of
-                ( 0x0, "ACCESS DENIED, INSUFFICIENT SECURITY CLEARANCE" )
-                ( 0x1, "ACCESS DENIED, DATA LOCKED" )
-                ( 0x2, "ACCESS DENIED, INVALID SERVICE SEQUENCE STATE" )
-                ( 0x3, "ACCESS DENIED, RENEGOTIATE REQUEST" ))
-        ( 0x2, map_list_of
-                ( 0x0, "DATA NOT READY" ))
-        ( 0x3, map_list_of
-                ( 0x0, "DEVICE NOT PRESENT" ));
-
 const map<unsigned char, RfnTouConfigurationCommand::TouState> touStateItems = map_list_of
         ( 0x0, RfnTouConfigurationCommand::TouDisable )
         ( 0x1, RfnTouConfigurationCommand::TouEnable );
@@ -183,19 +160,12 @@ RfnCommandResult RfnTouConfigurationCommand::decodeCommand(const CtiTime now, co
     validate( Condition( statusDesc, ErrorInvalidData )
             << "Invalid status - (" << statusCode << ")" );
 
-    // decode acs
+    // decode asc/asq
 
-    boost::optional<map<unsigned char, string>> acsMap = mapFind( additionalStatusItems, ascCode );
+    boost::optional<std::string> additionalStatusDesc = findDescriptionForAscAsq( response[2], response[3] );
 
-    validate( Condition( acsMap, ErrorInvalidData )
-            << "Invalid additional status - (" << ascCode << ")" );
-
-    // decode acsq
-
-    boost::optional<string> acsqDesc = mapFind( *acsMap, ascqCode );
-
-    validate( Condition( acsqDesc, ErrorInvalidData )
-            << "Invalid additional status qualifier - (" << ascCode << ")" );
+    validate( Condition( additionalStatusDesc, ErrorInvalidData )
+            << "Invalid Additional Status (ASC: " << CtiNumStr(response[2]).xhex(2) << ", ASCQ: " << CtiNumStr(response[3]).xhex(2) << ")" );
 
     // decode tou state
 
@@ -207,7 +177,7 @@ RfnCommandResult RfnTouConfigurationCommand::decodeCommand(const CtiTime now, co
     string touStateDesc = ( *_touState_received == TouEnable ) ? "Enabled" : "Disabled";
 
     result.description += "Status : " + *statusDesc + "\n"
-                       +  "Additional Status : " + *acsqDesc + "\n"
+                       +  "Additional Status : " + *additionalStatusDesc + "\n"
                        +  "TOU State : " + touStateDesc + "\n";
 
     const vector<TypeLengthValue> tlvs = getTlvsFromBytes( Bytes( response.begin() + 5 , response.end() ));
