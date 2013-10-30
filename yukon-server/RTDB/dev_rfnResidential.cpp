@@ -980,22 +980,6 @@ int RfnResidentialDevice::executeGetConfigHoliday( CtiRequestMsg     * pReq,
     return NoError;
 }
 
-int RfnResidentialDevice::executeGetConfigDisplay( CtiRequestMsg     * pReq,
-                                                   CtiCommandParser  & parse,
-                                                   ReturnMsgList     & returnMsgs,
-                                                   RfnCommandList    & rfnRequests )
-{
-    return NoMethod;
-}
-
-int RfnResidentialDevice::executePutConfigDisplay( CtiRequestMsg     * pReq,
-                                                   CtiCommandParser  & parse,
-                                                   ReturnMsgList     & returnMsgs,
-                                                   RfnCommandList    & rfnRequests )
-{
-    return NoMethod;
-}
-
 int RfnResidentialDevice::executePutConfigOvUv( CtiRequestMsg    * pReq,
                                                 CtiCommandParser & parse,
                                                 ReturnMsgList    & returnMsgs,

@@ -46,9 +46,6 @@ protected:
     int executePutConfigVoltageProfile           (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
     int executeGetValueVoltageProfile            (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
 
-    virtual int executeGetConfigDisplay          (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
-    virtual int executePutConfigDisplay          (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
-
     void handleCommandResult( const Commands::RfnVoltageProfileGetConfigurationCommand  & cmd );
     void handleCommandResult( const Commands::RfnVoltageProfileSetConfigurationCommand  & cmd );
     void handleCommandResult( const Commands::RfnLoadProfileGetRecordingCommand         & cmd );

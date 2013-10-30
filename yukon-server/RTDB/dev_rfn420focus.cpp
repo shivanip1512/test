@@ -94,7 +94,7 @@ RfnDevice::ConfigMap Rfn420FocusDevice::getConfigMethods(bool readOnly)
 
     if( readOnly )
     {
-        // TODO : missing executeGetConfigDisplay()
+        m.insert( ConfigMap::value_type( ConfigPart::display, bindConfigMethod( &Rfn420FocusDevice::executeGetConfigDisplay, this )));
     }
     else
     {
