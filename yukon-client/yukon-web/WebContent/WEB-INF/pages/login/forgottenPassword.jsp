@@ -35,7 +35,7 @@
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".forgottenPasswordFields"></tags:nameValue2>
                 </tags:nameValueContainer2>
-                <form:input path="forgottenPasswordField" autofocus="autofocus" size="50"/>
+                <form:input autocomplete="off" path="forgottenPasswordField" autofocus="autofocus" size="50"/>
                 
                 <tags:captcha captchaPublicKey="${captchaPublicKey}" captchaTheme="clean" captchaEnabled="${captchaEnabled}" locale="${locale}"/>
                 <div class="pageActionArea">
