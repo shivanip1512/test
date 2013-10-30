@@ -4,6 +4,7 @@
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
@@ -203,8 +204,7 @@
                                         <cti:icon icon="icon-error" classes="dn f-error"/>
                                         <cti:icon icon="icon-spinner" classes="f-spinner"/>
                                         <span class="f-kwSavings">
-                                            <cti:msg2 var="calculatingMessage" key="yukon.web.modules.dr.estimatedLoad.calculating"/>
-                                            ${calculatingMessage}
+                                            <i:inline key="yukon.web.modules.dr.estimatedLoad.calculating"/>
                                         </span>
                                         <cti:dataUpdaterCallback
                                             function="Yukon.EstimatedLoad.createToolTip"
