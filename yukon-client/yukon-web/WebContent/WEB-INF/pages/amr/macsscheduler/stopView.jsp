@@ -11,7 +11,7 @@
     
     <cti:includeScript link="/JavaScript/macsscheduledscripts.js" />
     
-    <h2>Stop Schedule</h2><br />
+    <h2 class="stacked">Stop Schedule</h2>
     <div style="width: 400px;">
         <form id="stopform" method="post" action="${submitUrl}/action">
         <tags:boxContainer title="Schedule Name: ${schedule.scheduleName}">
@@ -32,7 +32,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td><!-- Empty --></td>
+                    <td><%-- Empty --%></td>
                     <td>Date</td>
                     <td>
                         <cti:formatDate value="${stopTime}" type="DATE" var="formattedStopDate" />

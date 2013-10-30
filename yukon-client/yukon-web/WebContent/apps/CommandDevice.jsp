@@ -21,7 +21,6 @@
 
 <style>
     .genericShortWidth { width:20px; }
-    .topAligned { vertical-align:top; }
 </style>
 
 <%
@@ -99,9 +98,9 @@
         <td><%@ include file="Commander.jspf"%></td>
     
         <%-- SIDE MENU --%>
-        <td><div class="genericShortWidth"><!-- Empty --></div></td>
+        <td><div class="genericShortWidth"><%-- Empty --%></div></td>
         
-        <td class="topAligned">
+        <td class="vat">
 		<div id="sideMenu">
 			<div class="commanderHeader">&nbsp;</div>
             <div class="titledContainer boxContainer">

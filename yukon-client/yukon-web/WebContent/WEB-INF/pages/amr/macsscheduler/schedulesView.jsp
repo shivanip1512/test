@@ -16,7 +16,7 @@
 
 <cti:msgScope paths="yukon.web.modules.tools.scripts.innerView">
 
-    <h2><cti:msg2 key=".pageName"/></h2><br />
+    <h2 class="stacked"><cti:msg2 key=".pageName"/></h2>
     <div id="schedules">
         <table class="resultsTable">
         <tr>

@@ -5,7 +5,7 @@
 <cti:url var="submitUrl" value="/macsscheduler/schedules" />
 <cti:standardPage title="Scheduled Scripts" module="tools">
 
-    <h2>Start Schedule</h2><br />
+    <h2 class="stacked">Start Schedule</h2>
     <div>
         <form id="startform" method="post" action="${submitUrl}/action">
         <tags:boxContainer title="Schedule Name: ${schedule.scheduleName}">
@@ -29,7 +29,7 @@
 	                </td>
 	            </tr>
 	            <tr>
-                    <td><!-- Empty --></td>
+                    <td><%-- Empty --%></td>
                     <td>Date</td>
                     <td>
                         <cti:formatDate value="${currentTime}" type="DATE" var="formattedCurrentDate" />

@@ -33,8 +33,7 @@
         
         <%-- ERROR MSG --%>
         <c:if test="${not empty errorMsg}">
-        	<div class="error">${errorMsg}</div>
-        	<br />
+        	<div class="error stacked">${errorMsg}</div>
         </c:if>
         
         <%-- DEVICE GROUP JSON DATA --%>
