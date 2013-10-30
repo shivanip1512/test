@@ -51,6 +51,18 @@ inline bool debugActivityInfo()
 }
 
 
+std::ostream &operator<<(std::ostream &logger, const std::vector<unsigned char> &buf)
+{
+    logger << std::hex;
+
+    copy(buf.begin(), buf.end(), padded_output_iterator<int, std::ostream>(logger, '0', 2));
+
+    logger << std::dec;
+
+    return logger;
+}
+
+
 void ActiveMQConnectionManager::releaseConnectionObjects()
 {
     _producers.clear();
@@ -151,7 +163,8 @@ void ActiveMQConnectionManager::verifyConnectionObjects()
 
         {
             CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << CtiTime() << " Registering listeners for " << ThriftInboundQueues.size() << " queues " << __FUNCTION__ << " @ " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+            dout << CtiTime() << " Registering listeners for " << ThriftInboundQueues.size()
+            << (ThriftInboundQueues.size() == 1 ? " queue " : " queues ") << __FUNCTION__ << " @ " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
         }
 
         for each( const ActiveMQ::Queues::InboundQueue *inboundQueue in ThriftInboundQueues )
@@ -301,15 +314,7 @@ void ActiveMQConnectionManager::dispatchIncomingMessages()
                 CtiLockGuard<CtiLogger> dout_guard(dout);
                 dout << CtiTime() << " Dispatching message to callbacks from queue \"" << queueMsgs_itr->first->name << "\" id " << reinterpret_cast<unsigned long>(queueMsgs_itr->first) << " " << __FUNCTION__ << " @ " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
 
-                dout << reinterpret_cast<unsigned long>(queueMsgs_itr->first) << ": ";
-
-                dout << std::hex;
-
-                copy(msg.begin(), msg.end(), padded_output_iterator<int, CtiLogger>(dout, '0', 2));
-
-                dout << std::dec;
-
-                dout << std::endl;
+                dout << reinterpret_cast<unsigned long>(queueMsgs_itr->first) << ": " << msg << std::endl;
             }
 
             for( ; cb_itr != queueCallbacks.second; ++cb_itr )
@@ -357,15 +362,7 @@ void ActiveMQConnectionManager::dispatchTempQueueReplies()
             CtiLockGuard<CtiLogger> dout_guard(dout);
             dout << CtiTime() << " Calling temp queue callback " << reinterpret_cast<unsigned long>(&(itr->second->callback)) << " for temp queue \"" << reply.first << "\" " << __FUNCTION__ << " @ " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
 
-            dout << reinterpret_cast<unsigned long>(&(itr->second->callback)) << ": ";
-
-            dout << std::hex;
-
-            copy(reply.second.begin(), reply.second.end(), padded_output_iterator<int, CtiLogger>(dout, '0', 2));
-
-            dout << std::dec;
-
-            dout << std::endl;
+            dout << reinterpret_cast<unsigned long>(&(itr->second->callback)) << ": " << reply.second << std::endl;
         }
 
         itr->second->callback(reply.second);
@@ -459,15 +456,7 @@ void ActiveMQConnectionManager::enqueueOutgoingMessage(const ActiveMQ::Queues::O
         CtiLockGuard<CtiLogger> dout_guard(dout);
         dout << CtiTime() << " Enqueuing outbound message for queue \"" << queue.name << "\" id " << reinterpret_cast<unsigned long>(&queue) << " " << __FUNCTION__ << " @ " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
 
-        dout << reinterpret_cast<unsigned long>(&queue) << ": ";
-
-        dout << std::hex;
-
-        copy(message.begin(), message.end(), padded_output_iterator<int, CtiLogger>(dout, '0', 2));
-
-        dout << std::dec;
-
-        dout << std::endl;
+        dout << reinterpret_cast<unsigned long>(&queue) << ": " << message << std::endl;
     }
 
     {
@@ -540,15 +529,7 @@ void ActiveMQConnectionManager::onInboundMessage(const ActiveMQ::Queues::Inbound
             CtiLockGuard<CtiLogger> dout_guard(dout);
             dout << CtiTime() << " Received inbound message for queue \"" << queue->name << "\" id " << reinterpret_cast<unsigned long>(queue) << " " << __FUNCTION__ << " @ " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
 
-            dout << reinterpret_cast<unsigned long>(queue) << ": ";
-
-            dout << std::hex;
-
-            copy(payload.begin(), payload.end(), padded_output_iterator<int, CtiLogger>(dout, '0', 2));
-
-            dout << std::dec;
-
-            dout << std::endl;
+            dout << reinterpret_cast<unsigned long>(queue) << ": " << payload << std::endl;
         }
     }
 }
@@ -575,15 +556,7 @@ void ActiveMQConnectionManager::onTempQueueReply(const cms::Message *message)
                 CtiLockGuard<CtiLogger> dout_guard(dout);
                 dout << CtiTime() << " Received temp queue reply for \"" << ActiveMQ::destPhysicalName(*dest) << "\" " << __FUNCTION__ << " @ " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
 
-                dout << ActiveMQ::destPhysicalName(*dest) << ": ";
-
-                dout << std::hex;
-
-                copy(payload.begin(), payload.end(), padded_output_iterator<int, CtiLogger>(dout, '0', 2));
-
-                dout << std::dec;
-
-                dout << std::endl;
+                dout << ActiveMQ::destPhysicalName(*dest) << ": " << payload << std::endl;
             }
         }
     }

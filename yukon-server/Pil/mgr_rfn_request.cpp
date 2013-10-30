@@ -29,6 +29,16 @@ enum
 
 using Devices::RfnIdentifier;
 
+std::ostream &operator<<(std::ostream &logger, const std::vector<unsigned char> &buf)
+{
+    logger << std::hex;
+
+    copy(buf.begin(), buf.end(), padded_output_iterator<int, std::ostream>(logger, '0', 2));
+
+    logger << std::dec;
+
+    return logger;
+}
 
 RfnRequestManager::RfnRequestManager() :
     _generator(std::time(0))
@@ -106,15 +116,7 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
             CtiLockGuard<CtiLogger> dout_guard(dout);
             dout << CtiTime() << " E2eIndicationMsg received for device " << activeRequest.request.rfnIdentifier << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
 
-            dout << "rfnId: " << activeRequest.request.rfnIdentifier << ": ";
-
-            dout << std::hex;
-
-            copy(indication->payload.begin(), indication->payload.end(), padded_output_iterator<int, CtiLogger>(dout, '0', 2));
-
-            dout << std::dec;
-
-            dout << std::endl;
+            dout << "rfnId: " << activeRequest.request.rfnIdentifier << ": " << indication->payload << std::endl;
         }
 
         Protocols::E2eDataTransferProtocol::EndpointResponse er;
@@ -158,15 +160,7 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
             CtiLockGuard<CtiLogger> dout_guard(dout);
             dout << CtiTime() << " Response decoded for device " << activeRequest.request.rfnIdentifier << " " << __FUNCTION__ << " @ " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
 
-            dout << "rfnId: " << activeRequest.request.rfnIdentifier << ": ";
-
-            dout << std::hex;
-
-            copy(er.data.begin(), er.data.end(), padded_output_iterator<int, CtiLogger>(dout, '0', 2));
-
-            dout << std::dec;
-
-            dout << std::endl;
+            dout << "rfnId: " << activeRequest.request.rfnIdentifier << ": " << er.data << std::endl;
         }
 
         activeRequest.response.insert(
@@ -190,15 +184,7 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
                 CtiLockGuard<CtiLogger> dout_guard(dout);
                 dout << CtiTime() << " Block continuation sent for device " << activeRequest.request.rfnIdentifier << " " << __FUNCTION__ << " @ " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
 
-                dout << "rfnId: " << activeRequest.request.rfnIdentifier << ": ";
-
-                dout << std::hex;
-
-                copy(activeRequest.requestMessage.begin(), activeRequest.requestMessage.end(), padded_output_iterator<int, CtiLogger>(dout, '0', 2));
-
-                dout << std::dec;
-
-                dout << std::endl;
+                dout << "rfnId: " << activeRequest.request.rfnIdentifier << ": " << activeRequest.requestMessage << std::endl;
             }
 
             _messages.push_back(activeRequest.requestMessage);
