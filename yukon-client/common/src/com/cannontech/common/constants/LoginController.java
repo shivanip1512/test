@@ -60,7 +60,6 @@ public interface LoginController {
 	public static final String INVALID_URI = "/login.jsp?" + FAILED_LOGIN_PARAM;
 	public static final String LOGIN_URL = "/login.jsp";
 	public static final String REMEMBER_ME_COOKIE = "REMEMBER_ME_COOKIE";
-    public static final String USER_LOGIN_INFO_COOKIE = "USER_LOGIN_INFO_COOKIE";
     public static final String REDIRECTED_FROM = "REDIRECTED_FROM";
     
 }

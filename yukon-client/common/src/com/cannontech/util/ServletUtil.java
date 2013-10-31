@@ -21,11 +21,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
 import java.util.Vector;
-import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -292,6 +292,7 @@ public static Object[][] executeSQL(String dbAlias, String query, Class<? extend
  * @return java.util.Date
  * @deprecated use TimeUtil.getMidnight
  */
+@Deprecated
 public static Date getDate(int dayOffset) {
 
 	GregorianCalendar cal = new GregorianCalendar();
@@ -515,6 +516,7 @@ public static java.util.Date getStartingDateOfInterval(Date startingDate, String
  * @return java.util.Date
  * @deprecated
  */
+@Deprecated
 public static java.util.Date getToday() {
 	return getToday(TimeZone.getDefault());
 }
@@ -525,6 +527,7 @@ public static java.util.Date getToday() {
  * @return
  * @deprecated use TimeUtil.getMidnight
  */
+@Deprecated
 public static Date getToday(TimeZone tz) {
 	GregorianCalendar cal = new GregorianCalendar();
 	cal.setTimeZone(tz);
@@ -540,6 +543,7 @@ public static Date getToday(TimeZone tz) {
  * @return java.util.Date
  * @deprecated use TimeUtil.getMidnight
  */
+@Deprecated
 public static java.util.Date getTomorrow() {
 	return getTomorrow(TimeZone.getDefault());
 	
@@ -551,6 +555,7 @@ public static java.util.Date getTomorrow() {
  * @return
  * @deprecated use TimeUtil.getMidnight
  */
+@Deprecated
 public static Date getTomorrow(TimeZone tz) {
 	GregorianCalendar cal = new GregorianCalendar();
 	cal.setTimeZone(tz);
@@ -569,6 +574,7 @@ public static Date getTomorrow(TimeZone tz) {
  * @return java.util.Date
  * @deprecated use TimeUtil.getMidnight
  */
+@Deprecated
 public static java.util.Date getYesterday() {
 	return getYesterday(TimeZone.getDefault());
 }
@@ -579,6 +585,7 @@ public static java.util.Date getYesterday() {
  * @return
  * @deprecated use TimeUtil.getMidnight
  */
+@Deprecated
 public static Date getYesterday(TimeZone tz) {
 	GregorianCalendar cal = new GregorianCalendar();
 	cal.setTimeZone(tz);
@@ -1133,6 +1140,7 @@ public static synchronized Date parseDateStringLiberally(String dateStr, TimeZon
 	    Cookie cookie = new Cookie(cookieName, cookieValue);
         cookie.setMaxAge(Integer.MAX_VALUE);
         cookie.setPath("/" + request.getContextPath());
+        cookie.setHttpOnly(true);
         response.addCookie(cookie);
 	}
 	
