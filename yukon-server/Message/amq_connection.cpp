@@ -53,11 +53,11 @@ inline bool debugActivityInfo()
 
 std::ostream &operator<<(std::ostream &logger, const std::vector<unsigned char> &buf)
 {
-    logger << std::hex;
+    const std::ios_base::fmtflags oldflags = logger.flags( std::ios::hex );
 
     copy(buf.begin(), buf.end(), padded_output_iterator<int, std::ostream>(logger, '0', 2));
 
-    logger << std::dec;
+    logger.flags(oldflags);
 
     return logger;
 }
