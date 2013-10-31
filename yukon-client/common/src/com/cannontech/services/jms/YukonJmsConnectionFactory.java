@@ -50,22 +50,17 @@ public class YukonJmsConnectionFactory implements FactoryBean<ConnectionFactory>
             }
             case INTERNAL_MESSAGING: {
                 final String applicationName = BootstrapUtils.getApplicationName();
-                String connectionBase = serverListenConnection;
-
+               
+                String internalMessageConnection;
+                
                 if (applicationName.equals("ServiceManager")) {
-                    connectionBase = "vm://ServiceManager?create=false";
+                    internalMessageConnection = "vm://ServiceManager?create=false";
+                } else {
+                    internalMessageConnection = 
+                            configurationSource.getString("JMS_INTERNAL_MESSAGING_CONNECTION", serverListenConnection);
                 }
                 
-                String internalMessageConnectionDefault = connectionBase;
-
-                String InternalConnectionString = internalMessageConnectionDefault;
-                
-                if (!applicationName.equals("ServiceManager")) {
-                    InternalConnectionString =
-                            configurationSource.getString("JMS_INTERNAL_MESSAGING_CONNECTION", 
-                                                          internalMessageConnectionDefault);
-                }
-                return new ActiveMQConnectionFactory(InternalConnectionString);
+                return new ActiveMQConnectionFactory(internalMessageConnection);
             }
             default: 
             case NORMAL: {
