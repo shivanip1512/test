@@ -277,12 +277,12 @@
     <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KVARH_RATE_A">Received kVArh Rate A</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KVARH_RATE_B">Received kVArh Rate B</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KVARH_RATE_C">Received kVArh Rate C</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KVARH_RATE_D">Received kVArh Rate C</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KVARH_RATE_D">Received kVArh Rate D</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NET_RECEIVED_KVARH">Net Received kVArh</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NET_RECEIVED_KVARH_RATE_A">Net Received kVArh Rate A</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NET_RECEIVED_KVARH_RATE_B">Net Received kVArh Rate B</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NET_RECEIVED_KVARH_RATE_C">Net Received kVArh Rate C</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.NET_RECEIVED_KVARH_RATE_D">Net Received kVArh Rate C</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.NET_RECEIVED_KVARH_RATE_D">Net Received kVArh Rate D</entry>
 
     <!-- BuiltInAttribute see note above about changing values-->
 </properties>
