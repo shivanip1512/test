@@ -383,25 +383,7 @@ void CtiCalcLogicService::Run( )
 
                 try
                 {
-                    try
-                    {
-                        calcThread.reset( tempCalcThread.release());
-                    }
-                    catch(RWxmsg &msg)
-                    {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            dout << msg.why() << endl;
-                        }
-                    }
-                    catch(...)
-                    {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
-                    }
+                    calcThread.reset( tempCalcThread.release() );
 
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1441,9 +1423,9 @@ void CtiCalcLogicService::_registerForPoints()
         //  XXX:  Possibly add the iterator and accessor functions to the calcThread class itself, rather than
         //          providing the iterator directly?
 
-        typedef RWTPtrHashMapIterator<CtiHashKey, CtiPointStoreElement, my_hash<CtiHashKey>, equal_to<CtiHashKey>> InteratorType;
+        typedef RWTPtrHashMapIterator<CtiHashKey, CtiPointStoreElement, my_hash<CtiHashKey>, equal_to<CtiHashKey>> IteratorType;
 
-        auto_ptr<InteratorType> depIter( calcThread->getPointDependencyIterator() );
+        auto_ptr<IteratorType> depIter( calcThread->getPointDependencyIterator() );
         auto_ptr<CtiPointRegistrationMsg> msgPtReg( new CtiPointRegistrationMsg(0) );
 
         for( ; (*depIter)( ); )

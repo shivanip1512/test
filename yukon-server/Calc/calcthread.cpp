@@ -34,26 +34,34 @@ extern bool _runCalcBaseline;
 
 CtiCalculateThread::~CtiCalculateThread( void )
 {
-    _auAffectedPoints.clear();
-    if( !_periodicPoints.empty() )
+    try
     {
-        delete_assoc_container(_periodicPoints);
-        _periodicPoints.clear();
+        _auAffectedPoints.clear();
+        if( !_periodicPoints.empty() )
+        {
+            delete_assoc_container(_periodicPoints);
+            _periodicPoints.clear();
+        }
+        if( !_onUpdatePoints.empty() )
+        {
+            delete_assoc_container(_onUpdatePoints);
+            _onUpdatePoints.clear();
+        }
+        if( !_constantPoints.empty() )
+        {
+            delete_assoc_container(_constantPoints);
+            _constantPoints.clear();
+        }
+        if( !_historicalPoints.empty() )
+        {
+            delete_assoc_container(_historicalPoints);
+            _historicalPoints.clear();
+        }
     }
-    if( !_onUpdatePoints.empty() )
+    catch(...)
     {
-        delete_assoc_container(_onUpdatePoints);
-        _onUpdatePoints.clear();
-    }
-    if( !_constantPoints.empty() )
-    {
-        delete_assoc_container(_constantPoints);
-        _constantPoints.clear();
-    }
-    if( !_historicalPoints.empty() )
-    {
-        delete_assoc_container(_historicalPoints);
-        _historicalPoints.clear();
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 };
 
