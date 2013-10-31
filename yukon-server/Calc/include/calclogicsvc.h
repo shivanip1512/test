@@ -30,8 +30,8 @@ protected:
 
     bool readCalcPoints( CtiCalculateThread *calcThread );
     BOOL isANewCalcPointID(const long aPointID);
-    BOOL parseMessage( CtiMessage *message, CtiCalculateThread *calcThread );
-    void dropDispatchConnection( );
+    BOOL parseMessage( const CtiMessage *message, CtiCalculateThread *calcThread );
+    void terminateThreads( );
     void pauseInputThread();
     void resumeInputThread();
     void loadConfigParameters( );
@@ -47,15 +47,18 @@ private:
     CtiTime _dispatchPingedFailed, _lastDispatchMessageTime;
     bool _dispatchConnectionBad;
     bool _ok, _restart, _update;
-    string _dispatchMachine;
-    INT _dispatchPort;
+    bool _threadsStarted;
+    
     typedef std::queue<CtiDBChangeMsg> messageQueue;
     messageQueue _dbChangeMessages;
+    
     CtiCalculateThread::CtiCalcThreadInterruptReason _interruptReason;
-    CtiCalculateThread *calcThread;
-    CtiClientConnection *_conxion;
-    void _inputThread( void );
-    void _outputThread( void );
+
+    boost::scoped_ptr<CtiCalculateThread>  calcThread;
+    boost::scoped_ptr<CtiClientConnection> dispatchConnection;
+
+    void _inputThread();
+    void _outputThread();
 
     void _registerForPoints();
 
