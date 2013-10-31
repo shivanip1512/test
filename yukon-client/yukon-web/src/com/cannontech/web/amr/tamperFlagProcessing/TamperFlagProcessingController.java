@@ -50,13 +50,13 @@ import com.google.common.collect.ListMultimap;
 @CheckRoleProperty(YukonRoleProperty.TAMPER_FLAG_PROCESSING)
 public class TamperFlagProcessingController {
 
-    @Autowired TamperFlagMonitorDao tamperFlagMonitorDao;
-	@Autowired DeviceGroupCollectionHelper deviceGroupCollectionHelper;
-	@Autowired TamperFlagMonitorService tamperFlagMonitorService;
-	@Autowired AlertService alertService;
-	@Autowired PlcDeviceAttributeReadService plcDeviceAttributeReadService;
-	@Autowired GroupCommandExecutor groupCommandExecutor;
-	@Autowired GroupMetersDao groupMetersDao;
+    @Autowired private TamperFlagMonitorDao tamperFlagMonitorDao;
+	@Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
+	@Autowired private TamperFlagMonitorService tamperFlagMonitorService;
+	@Autowired private AlertService alertService;
+	@Autowired private PlcDeviceAttributeReadService plcDeviceAttributeReadService;
+	@Autowired private GroupCommandExecutor groupCommandExecutor;
+	@Autowired private GroupMetersDao groupMetersDao;
 	@Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
 	@Autowired private DeviceGroupService deviceGroupService;
 	@Autowired private DeviceAttributeReadService deviceAttributeReadService;
