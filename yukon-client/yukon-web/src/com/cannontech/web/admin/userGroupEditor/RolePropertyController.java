@@ -118,7 +118,6 @@ public class RolePropertyController {
     public String save(HttpServletRequest request, @ModelAttribute("command")GroupRolePropertyEditorBean command, BindingResult result, 
                        YukonUserContext context, ModelMap map, FlashScope flashScope, int roleGroupId, int roleId) throws Exception {
 
-//        csrfTokenService.checkRequest(request, result);
         LiteYukonGroup liteYukonGroup = yukonGroupDao.getLiteYukonGroup(roleGroupId);
         YukonRole role = YukonRole.getForId(roleId);
         if (result.hasErrors()) {
@@ -178,12 +177,7 @@ public class RolePropertyController {
     public void setRolePropertyEditorDao(RolePropertyEditorDao rolePropertyEditorDao) {
         this.rolePropertyEditorDao = rolePropertyEditorDao;
     }
-/*    
-    @Autowired
-    public void setCsrfTokenService(CsrfTokenService csrfTokenService) {
-        this.csrfTokenService = csrfTokenService;
-    }
-*/    
+
     @Autowired
     public void setYukonGroupDao(YukonGroupDao yukonGroupDao) {
         this.yukonGroupDao = yukonGroupDao;

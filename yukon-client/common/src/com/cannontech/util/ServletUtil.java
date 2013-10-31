@@ -105,6 +105,8 @@ public class ServletUtil {
     public static final String PREVTHIRTYDAYS= "Prev 30 Days";
     public static final String EVENT = "Event";
     public static final String SESSION_INFO = "Session Info";
+    public static final String SESSION_CSRF_TOKEN = "SESSION_CSRF_TOKEN";
+    public static final String REQUEST_CSRF_TOKEN = "REQUEST_CSRF_TOKEN";
     
 	// if periods is modified, final ints representing the periods index need to be updated also, in Graph class
 	public static String[] historicalPeriods = 

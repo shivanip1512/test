@@ -50,6 +50,7 @@ import com.cannontech.web.admin.energyCompany.general.model.EnergyCompanyInfoFra
 import com.cannontech.web.admin.energyCompany.service.EnergyCompanyInfoFragmentHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
+import com.cannontech.web.security.csrf.CsrfTokenService;
 import com.cannontech.web.stars.dr.operator.model.LoginBackingBean;
 import com.cannontech.web.stars.dr.operator.validator.LoginPasswordValidator;
 import com.cannontech.web.stars.dr.operator.validator.LoginUsernameValidator;
@@ -70,7 +71,8 @@ public class OperatorLoginController {
     @Autowired private UserGroupDao userGroupDao;
     @Autowired private YukonUserDao yukonUserDao;
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
-    
+    @Autowired private CsrfTokenService csrfTokenService;
+
     private void checkPermissionsAndSetupModel(EnergyCompanyInfoFragment energyCompanyInfoFragment,
                                                ModelMap modelMap,
                                                YukonUserContext userContext) {
@@ -180,11 +182,12 @@ public class OperatorLoginController {
     }
     
     @RequestMapping(method=RequestMethod.POST, value="update", params="add")
-    public String saveOperatorLogin(YukonUserContext userContext, ModelMap modelMap, int ecId,
+    public String saveOperatorLogin(HttpServletRequest request, YukonUserContext userContext,
+                                    ModelMap modelMap, int ecId,
                                       final @ModelAttribute ("operatorLogin") LoginBackingBean operatorLogin,
                                       BindingResult bindingResult, FlashScope flashScope,
                                       EnergyCompanyInfoFragment energyCompanyInfoFragment) throws Exception {
-
+        csrfTokenService.validateToken(request);
         //check permissions
         checkPermissionsAndSetupModel(energyCompanyInfoFragment, modelMap, userContext);
 
@@ -198,11 +201,12 @@ public class OperatorLoginController {
     }
     
     @RequestMapping(method=RequestMethod.POST, value="update", params="save")
-    public String createOperatorLogin(YukonUserContext userContext, ModelMap modelMap, int ecId,
+    public String createOperatorLogin(HttpServletRequest request, YukonUserContext userContext,
+                                      ModelMap modelMap, int ecId,
                                       final @ModelAttribute ("operatorLogin") LoginBackingBean operatorLogin,
                                       BindingResult bindingResult, FlashScope flashScope,
                                       EnergyCompanyInfoFragment energyCompanyInfoFragment) throws Exception {
-
+        csrfTokenService.validateToken(request);
         //check permissions
         checkPermissionsAndSetupModel(energyCompanyInfoFragment, modelMap, userContext);
 

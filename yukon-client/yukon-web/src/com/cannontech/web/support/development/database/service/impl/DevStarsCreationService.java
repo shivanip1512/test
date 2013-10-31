@@ -204,8 +204,6 @@ public class DevStarsCreationService extends DevObjectCreationBase {
             setRoleProperty(roleGroup, YukonRoleProperty.RESIDENTIAL_WEB_LINK_FAQ, " ");
             setRoleProperty(roleGroup, YukonRoleProperty.RESIDENTIAL_WEB_LINK_THERM_INSTRUCTIONS, " ");
 
-            setRoleProperty(roleGroup, YukonRoleProperty.CSRF_TOKEN_MODE, " ");
-
             // Creating the residential user group that the group above will be mapped to.
             UserGroup userGroup = new UserGroup();
             userGroup.setUserGroupDescription(devStars.getNewEnergyCompanyName() + " Residential Grp");

@@ -46,6 +46,7 @@ import com.cannontech.web.admin.energyCompany.general.service.GeneralInfoService
 import com.cannontech.web.admin.energyCompany.service.EnergyCompanyInfoFragmentHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
+import com.cannontech.web.security.csrf.CsrfTokenService;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -66,6 +67,7 @@ public class GeneralInfoController {
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private YukonUserDao yukonUserDao;
     @Autowired private EnergyCompanyDao energyCompanyDao;
+    @Autowired private CsrfTokenService csrfTokenService;
 
     /* View Page*/
     @RequestMapping
@@ -85,7 +87,9 @@ public class GeneralInfoController {
     
     /* Edit Page */
     @RequestMapping(value="update", params="edit", method=RequestMethod.POST)
-    public String edit(YukonUserContext context, FlashScope flashScope, ModelMap model, int ecId, EnergyCompanyInfoFragment fragment) {
+    public String edit(YukonUserContext context, FlashScope flashScope,
+                       ModelMap model, int ecId, EnergyCompanyInfoFragment fragment) {
+
         energyCompanyService.verifyEditPageAccess(context.getYukonUser(), ecId);
         
         setupModelMap(model, context.getYukonUser(), ecId, fragment);
@@ -109,7 +113,10 @@ public class GeneralInfoController {
     
     /* Delete Energy Company */
     @RequestMapping(value="delete")
-    public String deleteConfirm(ModelMap model, YukonUserContext context, int ecId, EnergyCompanyInfoFragment fragment) {
+    public String deleteConfirm(HttpServletRequest request, ModelMap model,
+                                YukonUserContext context, int ecId,
+                                EnergyCompanyInfoFragment fragment) {
+
         energyCompanyService.verifyViewPageAccess(context.getYukonUser(), ecId);
         setupModelMap(model, context.getYukonUser(), ecId, fragment);
 
@@ -125,6 +132,7 @@ public class GeneralInfoController {
     @RequestMapping(value="delete", params="delete")
     public String delete(ModelMap model, YukonUserContext context, FlashScope flashScope, HttpServletRequest request,
                          int ecId, EnergyCompanyInfoFragment fragment) {
+        csrfTokenService.validateToken(request);
         LiteYukonUser user = context.getYukonUser();
         energyCompanyService.verifyViewPageAccess(user, ecId);
 

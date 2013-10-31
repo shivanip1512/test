@@ -15,17 +15,11 @@
             <cti:msg2 key=".disclaimer" argument="${energyCompanyName}"/>
         </div>
         <br>
-<%--    
-        <i:inline key=".deleteConfirm" />
-        <br><br>
---%>
         <form:form action="${deleteEnergyCompanyUrl}" id="deleteEnergyCompanyForm">
+            <cti:csrfToken/>
             <input type="hidden" name="ecId" value="${ecId}" />
-            
-<%--            <tags:csrfTokenRequest> --%>
-                <cti:button nameKey="delete" name="delete" type="submit" classes="f-blocker"/>
-                <cti:button nameKey="cancel" name="cancel" type="submit"/>
-<%--            </tags:csrfTokenRequest> --%>
+            <cti:button nameKey="delete" name="delete" type="submit" classes="f-blocker"/>
+            <cti:button nameKey="cancel" name="cancel" type="submit"/>
         </form:form>
     </div>
 

@@ -186,9 +186,10 @@
   </tag>
   
   <tag>
-  	<name>getCsrfToken</name>
+    <name>csrfToken</name>
     <body-content>empty</body-content>
-  	<tag-class>com.cannontech.web.taglib.GetCsrfTokenTag</tag-class>
+    <tag-class>com.cannontech.web.taglib.CsrfTokenTag</tag-class>
+    <description>Inserts a hidden field containing the valid CSRF token found in the current session</description>
   </tag>
   
    <tag>

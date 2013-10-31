@@ -1135,11 +1135,9 @@
 
     <bean id="pageNameTagPrototype" class="com.cannontech.web.i18n.PageNameTag"/>
 
-    <bean id="getCsrfTokenTagPrototype" class="com.cannontech.web.taglib.GetCsrfTokenTag">
-        <property name="tokenService" ref="csrfTokenService"/>
-    </bean>
-    
-    <bean id="csrfTokenService" class="com.cannontech.web.security.csrf.CsrfTokenService"/>
+    <bean id="csrfTokenTagPrototype" class="com.cannontech.web.taglib.CsrfTokenTag"/>
+
+    <bean id="csrfTokenService" class="com.cannontech.web.security.csrf.impl.CsrfTokenServiceImpl"/>
     
     <bean id="trendWidgetCachingParameterGrabber" abstract="true">
         <property name="maxCacheSize" value="50" />
