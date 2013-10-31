@@ -100,11 +100,5 @@ private:
 
 typedef RfnDevice Rfn410flDevice;  //  kWh only
 
-typedef RfnDevice Rfn430a3dDevice;
-typedef RfnDevice Rfn430a3tDevice;
-typedef RfnDevice Rfn430a3kDevice;
-typedef RfnDevice Rfn430a3rDevice;
-typedef RfnDevice Rfn430kvDevice;
-
 }
 }
