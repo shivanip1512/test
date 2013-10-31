@@ -5,14 +5,26 @@
 extern "C" {
 #include "coap/pdu.h"
 #include "coap/block.h"
+#undef E  //  CoAP define that interferes with templates
 }
 
+#include "logger.h"
 #include "std_helper.h"
+#include "ctitime.h"
 
 #include <boost/assign/list_of.hpp>
 
+#include <ctime>
+
 namespace Cti {
 namespace Protocols {
+
+
+E2eDataTransferProtocol::E2eDataTransferProtocol() :
+    _generator(std::time(0))
+{
+}
+
 
 class scoped_pdu_ptr
 {
@@ -27,16 +39,37 @@ public:
 };
 
 
-std::vector<unsigned char> E2eDataTransferProtocol::sendRequest(const std::vector<unsigned char> &payload, const unsigned short id)
+void addToken(coap_pdu_t *pdu, const unsigned long token)
+{
+    unsigned char token_buf[4];
+
+    const unsigned token_len = coap_encode_var_bytes(token_buf, token);
+
+    coap_add_token(pdu, token_len, token_buf);
+}
+
+
+unsigned short E2eDataTransferProtocol::getOutboundIdForEndpoint(long endpointId)
+{
+    if( ! _outboundIds.count(endpointId) )
+    {
+        _outboundIds[endpointId] = boost::random::uniform_int_distribution<>(0x1000, 0xf000)(_generator);
+    }
+
+    return ++_outboundIds[endpointId];
+}
+
+
+std::vector<unsigned char> E2eDataTransferProtocol::sendRequest(const std::vector<unsigned char> &payload, const long endpointId, const unsigned long token)
 {
     if( payload.size() > MaxOutboundPayload )
     {
         throw PayloadTooLarge();
     }
 
-    scoped_pdu_ptr pdu(coap_pdu_init(COAP_MESSAGE_CON, COAP_REQUEST_GET, id, COAP_MAX_PDU_SIZE));
+    scoped_pdu_ptr pdu(coap_pdu_init(COAP_MESSAGE_CON, COAP_REQUEST_GET, getOutboundIdForEndpoint(endpointId), COAP_MAX_PDU_SIZE));
 
-    //coap_add_token(pdu, len, data);
+    addToken(pdu, token);
 
     coap_add_data(pdu, payload.size(), &payload.front());
 
@@ -46,80 +79,142 @@ std::vector<unsigned char> E2eDataTransferProtocol::sendRequest(const std::vecto
 }
 
 
-std::vector<unsigned char> E2eDataTransferProtocol::sendBlockContinuation(const BlockInfo &bi, const unsigned short id)
-{
-    scoped_pdu_ptr continuation_pdu = coap_pdu_init(COAP_MESSAGE_CON, COAP_REQUEST_GET, id, COAP_MAX_PDU_SIZE);
-
-    unsigned char buf[4];
-
-    unsigned len = coap_encode_var_bytes(buf, (bi.num << 4) | bi.size);
-
-    coap_add_option(continuation_pdu, COAP_OPTION_BLOCK2, len, buf);
-
-    const unsigned char *raw_pdu = reinterpret_cast<unsigned char *>(continuation_pdu->hdr);
-
-    return std::vector<unsigned char>(raw_pdu, raw_pdu + continuation_pdu->length);
-}
-
-
-namespace {
-
-const std::map<unsigned int, E2eDataTransferProtocol::EndpointResponse::MessageType> MessageTypes = boost::assign::map_list_of
-        (COAP_MESSAGE_NON, E2eDataTransferProtocol::EndpointResponse::Nonconfirmable)
-        (COAP_MESSAGE_CON, E2eDataTransferProtocol::EndpointResponse::Confirmable)
-        (COAP_MESSAGE_ACK, E2eDataTransferProtocol::EndpointResponse::Ack)
-        (COAP_MESSAGE_RST, E2eDataTransferProtocol::EndpointResponse::Reset);
-}
-
-
-E2eDataTransferProtocol::EndpointResponse E2eDataTransferProtocol::handleIndication(const std::vector<unsigned char> &payload)
+boost::optional<E2eDataTransferProtocol::EndpointResponse> E2eDataTransferProtocol::handleIndication(const std::vector<unsigned char> &raw_indication_pdu, const long endpointId)
 {
     EndpointResponse er;
 
-    if( payload.size() > MaxInboundPayload )
+    if( raw_indication_pdu.size() > COAP_MAX_PDU_SIZE )
     {
         throw PayloadTooLarge();
     }
 
+    //  parse the payload into the CoAP packet
+    std::vector<unsigned char> mutable_raw_pdu(raw_indication_pdu);
+
     scoped_pdu_ptr indication_pdu(coap_pdu_init(COAP_MESSAGE_NON, COAP_REQUEST_GET, COAP_INVALID_TID, COAP_MAX_PDU_SIZE));
 
-    std::vector<unsigned char> mutable_payload(payload);
+    coap_pdu_parse(&mutable_raw_pdu.front(), mutable_raw_pdu.size(), indication_pdu);
 
-    coap_pdu_parse(&mutable_payload.front(), mutable_payload.size(), indication_pdu);
+    switch( indication_pdu->hdr->type )
+    {
+        case COAP_MESSAGE_ACK:
+        {
+            if( indication_pdu->hdr->id != _outboundIds[endpointId] )
+            {
+                CtiLockGuard<CtiLogger> dout_guard(dout);
+                dout << CtiTime() << " Unexpected ACK (" << indication_pdu->hdr->id << " != " << _outboundIds[endpointId] << ") for endpointId " << endpointId << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
 
-    coap_block_t block;
+                return boost::none;
+            }
 
+            break;
+        }
+        case COAP_MESSAGE_NON:
+        {
+            {
+                CtiLockGuard<CtiLogger> dout_guard(dout);
+                dout << CtiTime() << " Received NONconfirmable packet (" << indication_pdu->hdr->id << ") for endpointId " << endpointId << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
+            }
+
+            if( _inboundIds.count(endpointId) && _inboundIds[endpointId] == indication_pdu->hdr->id )
+            {
+                CtiLockGuard<CtiLogger> dout_guard(dout);
+                dout << CtiTime() << " CONfirmable packet was duplicate (" << indication_pdu->hdr->id << ") for endpointId " << endpointId << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
+
+                return boost::none;
+            }
+
+            _inboundIds[endpointId] = indication_pdu->hdr->id;
+
+            break;
+        }
+        case COAP_MESSAGE_CON:
+        {
+            {
+                CtiLockGuard<CtiLogger> dout_guard(dout);
+                dout << CtiTime() << " Received CONfirmable packet (" << indication_pdu->hdr->id << ") for endpointId " << endpointId << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
+            }
+
+            if( _inboundIds.count(endpointId) && _inboundIds[endpointId] == indication_pdu->hdr->id )
+            {
+                CtiLockGuard<CtiLogger> dout_guard(dout);
+                dout << CtiTime() << " CONfirmable packet was duplicate (" << indication_pdu->hdr->id << ") for endpointId " << endpointId << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
+            }
+
+            _inboundIds[endpointId] = indication_pdu->hdr->id;
+
+            er.ackMessage =
+                    sendAck(indication_pdu->hdr->id);
+
+            break;
+        }
+        default:
+        {
+            CtiLockGuard<CtiLogger> dout_guard(dout);
+            dout << CtiTime() << " E2eIndicationMsg ID mismatch (" << indication_pdu->hdr->id << " != " << _outboundIds[endpointId] << ") for endpointId " << endpointId << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
+
+            return boost::none;
+        }
+    }
+
+    //  Decode the token
+    er.token = coap_decode_var_bytes(indication_pdu->hdr->token, indication_pdu->hdr->token_length);
+
+    //  Extract the data from the packet
     unsigned char *data;
     size_t len;
 
     coap_get_data(indication_pdu, &len, &data);
 
-    if( const boost::optional<EndpointResponse::MessageType> mt = mapFind(MessageTypes, indication_pdu->hdr->type) )
-    {
-        er.type = *mt;
-    }
-    else
-    {
-        er.type = EndpointResponse::Unknown;
-    }
-
-    er.id = indication_pdu->hdr->id;
     er.data.assign(data, data + len);
+
+    //  Look for any block option
+    coap_block_t block;
 
     if( coap_get_block(indication_pdu, COAP_OPTION_BLOCK2, &block) )
     {
         if( block.m )
         {
-            BlockInfo bi;
-
-            bi.size = block.szx;
-            bi.num  = block.num + 1;
-
-            er.blockContinuation = bi;
+            er.blockContinuationMessage =
+                    sendBlockContinuation(block.szx, block.num + 1, endpointId, er.token);
         }
     }
 
     return er;
+}
+
+
+std::vector<unsigned char> E2eDataTransferProtocol::sendBlockContinuation(const unsigned size, const unsigned num, const long endpointId, const unsigned long token)
+{
+    scoped_pdu_ptr continuation_pdu = coap_pdu_init(COAP_MESSAGE_CON, COAP_REQUEST_GET, getOutboundIdForEndpoint(endpointId), COAP_MAX_PDU_SIZE);
+
+    addToken(continuation_pdu, token);
+
+    unsigned char buf[4];
+
+    unsigned len = coap_encode_var_bytes(buf, (num << 4) | size);
+
+    coap_add_option(continuation_pdu, COAP_OPTION_BLOCK2, len, buf);
+
+    const unsigned char *raw_pdu = reinterpret_cast<const unsigned char *>(continuation_pdu->hdr);
+
+    return std::vector<unsigned char>(raw_pdu, raw_pdu + continuation_pdu->length);
+}
+
+
+std::vector<unsigned char> E2eDataTransferProtocol::sendAck(const unsigned short id)
+{
+    scoped_pdu_ptr ack_pdu(coap_pdu_init(COAP_MESSAGE_ACK, COAP_EMPTY_MESSAGE_CODE, id, COAP_MAX_PDU_SIZE));
+
+    const unsigned char *raw_pdu = reinterpret_cast<const unsigned char *>(ack_pdu->hdr);
+
+    return std::vector<unsigned char>(raw_pdu, raw_pdu + ack_pdu->length);
+}
+
+
+void E2eDataTransferProtocol::handleTimeout(const long endpointId)
+{
+    ++_outboundIds[endpointId];  //  invalidate the ID so we ignore any late replies
 }
 
 

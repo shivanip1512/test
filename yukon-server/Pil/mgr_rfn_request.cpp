@@ -31,7 +31,7 @@ using Devices::RfnIdentifier;
 
 std::ostream &operator<<(std::ostream &logger, const std::vector<unsigned char> &buf)
 {
-    const std::ios_base::fmtflags oldflags = logger.flags( std::ios::hex | std::ios::showbase );
+    const std::ios_base::fmtflags oldflags = logger.flags( std::ios::hex );
 
     copy(buf.begin(), buf.end(), padded_output_iterator<int, std::ostream>(logger, '0', 2));
 
@@ -65,8 +65,7 @@ std::ostream &operator<<(std::ostream &logger, const formatAsHex<T> &wrapper)
 }
 
 
-RfnRequestManager::RfnRequestManager() :
-    _generator(std::time(0))
+RfnRequestManager::RfnRequestManager()
 {
     using Messaging::ActiveMQConnectionManager;
     using Messaging::ActiveMQ::Queues::InboundQueue;
@@ -144,11 +143,11 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
             dout << "rfnId: " << activeRequest.request.rfnIdentifier << ": " << indication->payload << std::endl;
         }
 
-        Protocols::E2eDataTransferProtocol::EndpointResponse er;
+        boost::optional<Protocols::E2eDataTransferProtocol::EndpointResponse> optionalResponse;
 
         try
         {
-            er = _e2edt.handleIndication(indication->payload);
+            optionalResponse = _e2edt.handleIndication(indication->payload, activeRequest.request.deviceId);
         }
         catch( Protocols::E2eDataTransferProtocol::PayloadTooLarge )
         {
@@ -158,18 +157,20 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
             continue;
         }
 
-        if( er.type != Protocols::E2eDataTransferProtocol::EndpointResponse::Ack )
+        if( ! optionalResponse )
         {
             CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << CtiTime() << " E2eIndicationMsg unexpected type (" << er.type << " != " << Protocols::E2eDataTransferProtocol::EndpointResponse::Ack << ") for device " << activeRequest.request.rfnIdentifier << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
+            dout << CtiTime() << " E2eIndicationMsg received with no payload for device " << activeRequest.request.rfnIdentifier << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
 
             continue;
         }
 
-        if( er.id != activeRequest.e2eId )
+        const Protocols::E2eDataTransferProtocol::EndpointResponse &er = *optionalResponse;
+
+        if( er.token != activeRequest.request.rfnRequestId )
         {
             CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << CtiTime() << " E2eIndicationMsg ID mismatch (" << er.id << " != " << activeRequest.e2eId << ") for device " << activeRequest.request.rfnIdentifier << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
+            dout << CtiTime() << " E2eIndicationMsg received for inactive request token " << er.token << " for device "<< activeRequest.request.rfnIdentifier << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
 
             continue;
         }
@@ -183,7 +184,7 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
 
         {
             CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << CtiTime() << " Response decoded for device " << activeRequest.request.rfnIdentifier << " " << __FUNCTION__ << " @ " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+            dout << CtiTime() << " Response received for token " << er.token << " for device " << activeRequest.request.rfnIdentifier << " " << __FUNCTION__ << " @ " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
 
             dout << "rfnId: " << activeRequest.request.rfnIdentifier << ": " << er.data << std::endl;
         }
@@ -198,12 +199,26 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
             dout << CtiTime() << " Erasing timeout " << activeRequest.timeout << " for device " << activeRequest.request.rfnIdentifier << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
         }
 
-        if( er.blockContinuation )
+        if( ! er.ackMessage.empty() )
         {
-            activeRequest.e2eId = ++_e2eIds[activeRequest.request.deviceId];
-            activeRequest.retransmits = gConfigParms.getValueAsInt("E2EDT_CON_MAX_RETX", E2EDT_CON_MAX_RETX);
+            //  ignore the return, don't set any timeouts - this is fire and forget
+            sendE2eDataRequestMessage(
+                    er.ackMessage,
+                    activeRequest.request.command->getApplicationServiceId(),
+                    activeRequest.request.rfnIdentifier);
+        }
 
-            activeRequest.requestMessage = _e2edt.sendBlockContinuation(*er.blockContinuation, activeRequest.e2eId);
+        if( ! er.blockContinuationMessage.empty() )
+        {
+            activeRequest.requestMessage =
+                    sendE2eDataRequestMessage(
+                            er.blockContinuationMessage,
+                            activeRequest.request.command->getApplicationServiceId(),
+                            activeRequest.request.rfnIdentifier);
+
+            activeRequest.retransmits = gConfigParms.getValueAsInt("E2EDT_CON_MAX_RETX", E2EDT_CON_MAX_RETX);
+            activeRequest.timeout = CtiTime::now().seconds() + gConfigParms.getValueAsInt("E2EDT_AMQ_TIMEOUT", E2EDT_AMQ_TIMEOUT);
+            activeRequest.status = ActiveRfnRequest::PendingConfirm;
 
             {
                 CtiLockGuard<CtiLogger> dout_guard(dout);
@@ -211,10 +226,6 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
 
                 dout << "rfnId: " << activeRequest.request.rfnIdentifier << ": " << activeRequest.requestMessage << std::endl;
             }
-
-            _messages.push_back(activeRequest.requestMessage);
-
-            activeRequest.timeout = CtiTime::now().seconds() + gConfigParms.getValueAsInt("E2EDT_AMQ_TIMEOUT", E2EDT_AMQ_TIMEOUT);
 
             {
                 CtiLockGuard<CtiLogger> dout_guard(dout);
@@ -232,12 +243,12 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
             try
             {
                 result->commandResult = activeRequest.request.command->decodeCommand(CtiTime::now(), activeRequest.response);
-                result->status  = NoError;
+                result->status = NoError;
             }
             catch( Devices::Commands::DeviceCommand::CommandException &ce )
             {
                 result->commandResult.description = ce.error_description;
-                result->status   = static_cast<YukonError_t>(ce.error_code);
+                result->status = static_cast<YukonError_t>(ce.error_code);
             }
 
             {
@@ -411,7 +422,7 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleTimeouts()
                 {
                     {
                         CtiLockGuard<CtiLogger> dout_guard(dout);
-                        dout << CtiTime() << " Sending retransmit (" << activeRequest.retransmits << " remaining) for device " << activeRequest.request.rfnIdentifier << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
+                        dout << CtiTime() << " Sending retransmit (" << static_cast<unsigned>(activeRequest.retransmits) << " remaining) for device " << activeRequest.request.rfnIdentifier << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
                     }
 
                     _messages.push_back(activeRequest.requestMessage);
@@ -516,48 +527,38 @@ void RfnRequestManager::checkForNewRequest(const RfnIdentifier &rfnIdentifier)
 
         try
         {
-            Devices::Commands::RfnCommand::RfnRequestPayload payload = request.command->executeCommand(CtiTime::now());
-
-            if( ! _e2eIds.count(request.deviceId) )
-            {
-                _e2eIds[request.deviceId] = boost::random::uniform_int_distribution<>(0x1000, 0xf000)(_generator);
-            }
+            Devices::Commands::RfnCommand::RfnRequestPayload rfnRequest = request.command->executeCommand(CtiTime::now());
 
             ActiveRfnRequest newRequest;
 
             newRequest.request = request;
-            newRequest.e2eId = ++_e2eIds[request.deviceId];
-            newRequest.retransmits = gConfigParms.getValueAsInt("E2EDT_CON_MAX_RETX", E2EDT_CON_MAX_RETX);
 
-            Messaging::Rfn::E2eDataRequestMsg msg;
+            std::vector<unsigned char> e2ePacket;
 
             try
             {
-                msg.payload = _e2edt.sendRequest(payload, newRequest.e2eId);
+                e2ePacket = _e2edt.sendRequest(rfnRequest, newRequest.request.deviceId, newRequest.request.rfnRequestId);
             }
             catch( Protocols::E2eDataTransferProtocol::PayloadTooLarge )
             {
                 throw Devices::Commands::DeviceCommand::CommandException(
                         ErrorRequestPayloadTooLarge,
-                        "Request payload too large (" + CtiNumStr(payload.size()) + ")");
+                        "Request payload too large (" + CtiNumStr(rfnRequest.size()) + ")");
             }
 
-            msg.applicationServiceId = request.command->getApplicationServiceId();  //  2 for Channel Manager, 6 for Event Manager, etc...
-            msg.high_priority   = false;
-            msg.rfnIdentifier   = request.rfnIdentifier;
+            newRequest.requestMessage =
+                    sendE2eDataRequestMessage(
+                            e2ePacket,
+                            request.command->getApplicationServiceId(),
+                            request.rfnIdentifier);
 
-            SerializedMessage serialized;
-
-            rfnMessageFactory.serialize(msg, serialized);
-
-            newRequest.requestMessage = serialized;
-            newRequest.status = ActiveRfnRequest::PendingConfirm;
+            newRequest.retransmits = gConfigParms.getValueAsInt("E2EDT_CON_MAX_RETX", E2EDT_CON_MAX_RETX);
             newRequest.timeout = CtiTime::now().seconds() + gConfigParms.getValueAsInt("E2EDT_AMQ_TIMEOUT", E2EDT_AMQ_TIMEOUT);
+            newRequest.status = ActiveRfnRequest::PendingConfirm;
 
             {
                 CtiLockGuard<CtiLogger> dout_guard(dout);
                 dout << CtiTime() << " Added request for device " << rfnIdentifier << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
-                dout << "e2eId                   :" << newRequest.e2eId                    << std::endl;
                 //dout << "request.command         :" << newRequest.request.command          << std::endl;
                 dout << "request.commandString   :" << newRequest.request.commandString    << std::endl;
                 dout << "request.connectionHandle:" << newRequest.request.connectionHandle << std::endl;
@@ -575,8 +576,6 @@ void RfnRequestManager::checkForNewRequest(const RfnIdentifier &rfnIdentifier)
             }
 
             _upcomingExpirations[newRequest.timeout].insert(request.rfnIdentifier);
-
-            _messages.push_back(serialized);
 
             _activeRequests[request.rfnIdentifier] = newRequest;
 
@@ -710,6 +709,31 @@ unsigned long RfnRequestManager::submitRequests(const std::vector<RfnDeviceReque
 
     return requestId;
 }
+
+
+std::vector<unsigned char>
+    RfnRequestManager::sendE2eDataRequestMessage(
+        const std::vector<unsigned char> &e2ePacket,
+        const unsigned char applicationServiceId,
+        const Devices::RfnIdentifier &rfnIdentifier)
+{
+    Messaging::Rfn::E2eDataRequestMsg msg;
+
+    msg.applicationServiceId = applicationServiceId;
+    msg.high_priority = false;
+    msg.rfnIdentifier = rfnIdentifier;
+    msg.protocol      = Messaging::Rfn::E2eMsg::Application;
+    msg.payload       = e2ePacket;
+
+    SerializedMessage serialized;
+
+    rfnMessageFactory.serialize(msg, serialized);
+
+    _messages.push_back(serialized);
+
+    return serialized;
+}
+
 
 void RfnRequestManager::sendMessages()
 {

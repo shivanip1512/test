@@ -7,8 +7,6 @@
 #include "RfnE2eDataIndicationMsg.h"
 
 #include <boost/ptr_container/ptr_deque.hpp>
-//#include <boost/multi_index_container.hpp>
-#include <boost/random.hpp>
 
 namespace Cti {
 namespace Pil {
@@ -70,6 +68,8 @@ private:
 
     Protocols::E2eDataTransferProtocol _e2edt;
 
+    std::vector<unsigned char> sendE2eDataRequestMessage(const std::vector<unsigned char> &e2ePacket, const unsigned char applicationServiceId, const Devices::RfnIdentifier &rfnIdentifier);
+
     void handleRfnE2eDataIndicationMsg(const SerializedMessage &msg);
     void handleRfnE2eDataConfirmMsg(const SerializedMessage &msg);
 
@@ -80,10 +80,6 @@ private:
     typedef std::map<long, unsigned short> DeviceIdToE2eIdMap;
     typedef std::priority_queue<RfnDeviceRequest> RequestQueue;
     typedef std::map<Devices::RfnIdentifier, RequestQueue> RfnIdToRequestQueue;
-
-    boost::random::mt19937 _generator;
-
-    DeviceIdToE2eIdMap   _e2eIds;
 
     CtiCriticalSection   _indicationMux;
     IndicationQueue      _indications;

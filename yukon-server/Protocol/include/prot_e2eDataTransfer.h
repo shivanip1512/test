@@ -3,6 +3,10 @@
 #include "dlldefs.h"
 
 #include <boost/optional.hpp>
+#include <boost/random.hpp>
+
+#include <vector>
+#include <map>
 
 namespace Cti {
 namespace Protocols {
@@ -12,45 +16,49 @@ namespace Protocols {
 //  Firmware spec: http://portal.cooperpowereas.net/sites/Ops/MarylandEngineeringGroup/Shared%20Documents/PSGT-Firmware/Features/E2EDT/Design/E2E%20Data%20Transfer%20-%20Software%20Design%20Document.docx
 //
 //  This class is designed to manage a single device's E2EDT state.
-struct IM_EX_PROT E2eDataTransferProtocol
+class IM_EX_PROT E2eDataTransferProtocol
 {
-    struct BlockInfo
-    {
-        unsigned size;
-        unsigned num;
-    };
+public:
 
     struct EndpointResponse
     {
-        enum MessageType
-        {
-            Ack,
-            Nonconfirmable,
-            Confirmable,
-            Reset,
-            Unknown
-        };
-        unsigned short id;
-        MessageType type;
+        unsigned long token;
+
         std::vector<unsigned char> data;  //  bytes payload
-        boost::optional<BlockInfo> blockContinuation;
+
+        std::vector<unsigned char> ackMessage;
+        std::vector<unsigned char> blockContinuationMessage;
+
+        bool final;
     };
 
     struct PayloadTooLarge {};
 
     enum
     {
-        MaxOutboundPayload = 1000,
-        MaxInboundPayload  = 1000
+        MaxOutboundPayload = 1000
     };
 
-    //  throws PayloadTooLarge
-    std::vector<unsigned char> sendRequest(const std::vector<unsigned char> &payload, const unsigned short id);
-
-    std::vector<unsigned char> sendBlockContinuation(const BlockInfo &bi, const unsigned short id);
+    E2eDataTransferProtocol();
 
     //  throws PayloadTooLarge
-    EndpointResponse handleIndication(const std::vector<unsigned char> &payload);
+    std::vector<unsigned char> sendRequest(const std::vector<unsigned char> &payload, const long endpointId, const unsigned long token);
+
+    //  throws PayloadTooLarge
+    boost::optional<EndpointResponse> handleIndication(const std::vector<unsigned char> &payload, const long endpointId);
+
+    void handleTimeout(const long endpointId);
+
+private:
+
+    std::map<long, unsigned short> _outboundIds;
+    std::map<long, unsigned short> _inboundIds;
+
+    boost::random::mt19937 _generator;
+
+    unsigned short getOutboundIdForEndpoint(long endpointId);
+    std::vector<unsigned char> sendBlockContinuation(const unsigned size, const unsigned num, const long endpointId, const unsigned long token);
+    std::vector<unsigned char> sendAck(const unsigned short id);
 };
 
 }

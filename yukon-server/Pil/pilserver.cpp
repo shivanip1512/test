@@ -295,7 +295,6 @@ void PilServer::mainThread()
             }
             catch(RWCancellation& c)
             {
-
                 bServerClosing = TRUE;
                 bQuit = TRUE;
 
@@ -311,6 +310,12 @@ void PilServer::mainThread()
                 {
                     // Dont really care, we are shutting down.
                 }
+
+                if( CtiDeviceSPtr systemDevice = DeviceManager->getDeviceByID(0) )
+                {
+                    systemDevice->setDynamicInfo(CtiTableDynamicPaoInfo::Key_RfnE2eRequestId, _rfnRequestId);
+                }
+
                 if( ConnThread_.join(10000) == RW_THR_TIMEOUT) // Wait for the Conn thread to die.
                 {
                     {
@@ -396,11 +401,6 @@ void PilServer::mainThread()
 
             Sleep(5000);
         }
-    }
-
-    if( CtiDeviceSPtr systemDevice = DeviceManager->getDeviceByID(0) )
-    {
-        systemDevice->setDynamicInfo(CtiTableDynamicPaoInfo::Key_RfnE2eRequestId, _rfnRequestId);
     }
 
     _broken = true;
