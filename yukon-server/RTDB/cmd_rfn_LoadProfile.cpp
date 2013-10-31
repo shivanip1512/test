@@ -616,6 +616,7 @@ unsigned RfnLoadProfileReadPointsCommand::decodePointRecord( RfnCommandResult & 
         point.quality     = pointStatusDesc->_quality;
         point.freeze_bit  = false;
         point.description = "";
+        point.tags        = TAG_POINT_LOAD_PROFILE_DATA;
 
         point.type        = AnalogPointType;
         point.offset      = PointOffset_Analog;

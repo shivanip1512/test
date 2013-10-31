@@ -768,8 +768,12 @@ struct RfnDeviceResultProcessor : Devices::DeviceHandler
                         result.request.groupMessageId,
                         result.request.userMessageId));
 
+        std::ostringstream pointDataDescription;
+
         for each( const Devices::Commands::DeviceCommand::point_data &pd in result.commandResult.points )
         {
+            pointDataDescription << "\n";
+
             if( const CtiPointSPtr p = dev.getDevicePointOffsetTypeEqual(pd.offset, pd.type) )
             {
                 retMsg->PointData().push_back(
@@ -778,15 +782,26 @@ struct RfnDeviceResultProcessor : Devices::DeviceHandler
                                 pd.value,
                                 pd.quality,
                                 p->getType(),
-                                pd.description));
+                                pd.description,
+                                pd.tags));
+
+                pointDataDescription << p->getName();
             }
             else
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Point not found for device " << dev.getName() << " / " << dev.getID()
-                        << ": " << desolvePointType(pd.type) + " " + CtiNumStr(pd.offset) << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " Point not found for device " << dev.getName() << " / " << dev.getID()
+                            << ": " << desolvePointType(pd.type) + " " + CtiNumStr(pd.offset) << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
+                pointDataDescription << "[Unknown]";
             }
+
+            pointDataDescription << " " << desolvePointType(pd.type) << " " << pd.offset << ": " << pd.value << " @ " << pd.time;
         }
+
+        retMsg->setResultString(retMsg->ResultString() + pointDataDescription.str());
 
         retList.push_back(retMsg.release());
 
