@@ -29,6 +29,7 @@ const std::map<unsigned char, std::string>  loadProfileStateResolver = boost::as
 
 
 RfnLoadProfileCommand::LongTlvList RfnLoadProfileCommand::longTlvs = boost::assign::list_of
+    (TlvType_VoltageProfileConfiguration)
     (TlvType_LoadProfileState)
     (TlvType_GetProfilePointsResponse);
 
@@ -416,29 +417,29 @@ const std::map<unsigned, PointStatusDesc> pointStatusDescriptionMap = boost::ass
 } // anonymous
 
 
-RfnLoadProfileReadPointsCommand::RfnLoadProfileReadPointsCommand( const CtiTime &now,
-                                                                  const CtiDate begin,
-                                                                  const CtiDate end )
+RfnLoadProfileReadPointsCommand::RfnLoadProfileReadPointsCommand( const CtiTime now,
+                                                                  const CtiTime begin,
+                                                                  const CtiTime end )
     :   RfnLoadProfileCommand( Operation_GetLoadProfilePoints ),
         _begin(begin),
         _end(end),
         _uomModifier1(0),
         _uomModifier2(0)
 {
-    validate( Condition( _begin < _end, BADPARAM )
-            << "End date must be before begin date (begin = " << _begin.asStringUSFormat() << ", end = " << _end.asStringUSFormat() << ")" );
+    validate( Condition( _begin <= _end, BADPARAM )
+            << "End time must be after begin time (begin = " << _begin << ", end = " << _end << ")" );
 
-    validate( Condition( _end < now.date(), BADPARAM )
-            << "End date must be before today (end = " << _begin.asStringUSFormat() << ", now = " << now.date().asStringUSFormat() << ")" );
+    validate( Condition( _end < now, BADPARAM )
+            << "End time must be before now (end = " << _end << ", now = " << now << ")" );
 }
 
 
 RfnLoadProfileReadPointsCommand::TlvList RfnLoadProfileReadPointsCommand::getTlvs()
 {
-    TypeLengthValue tlv(TlvType_GetProfilePointsRequest);
+    TypeLengthValue tlv = TypeLengthValue::makeLongTlv(TlvType_GetProfilePointsRequest);
 
-    setBits_bEndian(tlv.value,  0, 32, CtiTime(_begin).seconds());
-    setBits_bEndian(tlv.value, 32, 32, CtiTime(_end  ).seconds());
+    setBits_bEndian(tlv.value,  0, 32, _begin.seconds());
+    setBits_bEndian(tlv.value, 32, 32, _end.seconds());
 
     return boost::assign::list_of(tlv);
 }
@@ -623,7 +624,7 @@ unsigned RfnLoadProfileReadPointsCommand::decodePointRecord( RfnCommandResult & 
 
         result.points.push_back( point );
 
-        timestamp += (_profileInterval * 60);
+        timestamp += (_profileInterval * SecondsPerMinute);
     }
 
     return (pos - offset); // return the size of the point record

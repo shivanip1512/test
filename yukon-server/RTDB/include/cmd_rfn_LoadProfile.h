@@ -199,9 +199,9 @@ class IM_EX_DEVDB RfnLoadProfileReadPointsCommand : public RfnLoadProfileCommand
 {
 public:
 
-    RfnLoadProfileReadPointsCommand( const CtiTime &now,
-                                     const CtiDate begin,
-                                     const CtiDate end );
+    RfnLoadProfileReadPointsCommand( const CtiTime now,
+                                     const CtiTime begin,
+                                     const CtiTime end );
 
     virtual RfnCommandResult decodeCommand( const CtiTime now,
                                             const RfnResponsePayload & response );
@@ -212,8 +212,8 @@ protected:
 
 private:
 
-    const CtiDate _begin;
-    const CtiDate _end;
+    const CtiTime _begin;
+    const CtiTime _end;
 
     UomModifier1  _uomModifier1;
     UomModifier2  _uomModifier2;

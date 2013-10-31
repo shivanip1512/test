@@ -68,6 +68,17 @@ CtiDate getDateFromString( std::string date )
     return CtiDate(day, month, year);
 }
 
+unsigned getSecondsFromTimeString( std::string time )
+{
+    int hour, minute;
+    char sep;
+
+    std::istringstream ss(time);
+    ss >> hour >> sep >> minute;
+
+    return hour * 3600 + minute * 60;
+}
+
 } // anonymous namespace
 
 RfnDevice::ConfigMap RfnResidentialDevice::getConfigMethods(bool readOnly)
@@ -190,9 +201,13 @@ int RfnResidentialDevice::executeGetValueVoltageProfile( CtiRequestMsg     * pRe
     // date begin
     //
 
-    boost::optional<std::string> date_begin = parse.findStringForKey("read_points_date_begin");
+    CtiDate date_begin;
 
-    if( ! date_begin )
+    if( const boost::optional<std::string> dateStr = parse.findStringForKey("read_points_date_begin") )
+    {
+        date_begin = getDateFromString( *dateStr );
+    }
+    else
     {
         logInfo("Missing voltage profile start date.",
                 __FUNCTION__, __FILE__, __LINE__ );
@@ -200,23 +215,33 @@ int RfnResidentialDevice::executeGetValueVoltageProfile( CtiRequestMsg     * pRe
         return MISPARAM;
     }
 
-    CtiDate begin = getDateFromString( *date_begin );
+    CtiTime begin = date_begin;
+
+    if( const boost::optional<std::string> timeStr = parse.findStringForKey("read_points_time_begin") )
+    {
+        begin += getSecondsFromTimeString(*timeStr);
+    }
 
     //
     // date end
     //
 
-    boost::optional<std::string> date_end = parse.findStringForKey("read_points_date_end");
+    CtiTime end = date_begin + 1;  //  If no end date provided, default to end of the requested day
 
-    if( ! date_end )
+    if( const boost::optional<std::string> dateStr = parse.findStringForKey("read_points_date_end") )
     {
-        logInfo("Missing voltage profile end date.",
-                __FUNCTION__, __FILE__, __LINE__ );
+        CtiDate date_end = getDateFromString(*dateStr);
 
-        return MISPARAM;
+        if( const boost::optional<std::string> timeStr = parse.findStringForKey("read_points_time_end") )
+        {
+            end = date_end;
+            end += getSecondsFromTimeString(*timeStr);
+        }
+        else
+        {
+            end = date_end + 1;
+        }
     }
-
-    CtiDate end = getDateFromString( *date_end );
 
     rfnRequests.push_back( boost::make_shared<RfnLoadProfileReadPointsCommand>( CtiTime::now(),
                                                                                 begin,

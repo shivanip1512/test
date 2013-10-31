@@ -294,7 +294,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_DisableLoadProfileRecording_decod
 {
     const std::vector< RfnCommand::RfnResponsePayload >   responses = list_of
         ( list_of( 0x69 )( 0x03 )( 0x00 )( 0x00 ) )
-        ( list_of( 0x69 )( 0x02 )( 0x00 )( 0x01 )( 0x01 )( 0x00 ));
+        ( list_of( 0x69 )( 0x02 )( 0x00 )( 0x01 )( 0x01 )( 0x00 )( 0x00 ));
 
     const std::vector< RfnCommand::CommandException >   expected = list_of
         ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Operation Code (0x03)" ) )
@@ -372,7 +372,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_EnableLoadProfileRecording_decodi
 {
     const std::vector< RfnCommand::RfnResponsePayload >   responses = list_of
         ( list_of( 0x69 )( 0x02 )( 0x00 )( 0x00 ) )
-        ( list_of( 0x69 )( 0x03 )( 0x00 )( 0x01 )( 0x01 )( 0x00 ));
+        ( list_of( 0x69 )( 0x03 )( 0x00 )( 0x01 )( 0x01 )( 0x00 )( 0x00 ));
 
     const std::vector< RfnCommand::CommandException >   expected = list_of
         ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Operation Code (0x02)" ) )
@@ -467,7 +467,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfileRecording_decoding_
     const std::vector< RfnCommand::RfnResponsePayload >   responses = list_of
         ( list_of( 0x69 )( 0x02 )( 0x00 )( 0x01 )( 0x02 )( 0x00 )( 0x01 )( 0x00 ) )
         ( list_of( 0x69 )( 0x04 )( 0x00 )( 0x02 )( 0x00 )( 0x00 )( 0x00 )( 0x00 ) )
-        ( list_of( 0x69 )( 0x04 )( 0x00 )( 0x01 )( 0x01 )( 0x01 )( 0x00 ) )
+        ( list_of( 0x69 )( 0x04 )( 0x00 )( 0x01 )( 0x01 )( 0x00 )( 0x01 )( 0x00 ) )
         ( list_of( 0x69 )( 0x04 )( 0x00 )( 0x01 )( 0x02 )( 0x00 )( 0x02 )( 0x00 )( 0x00 ) )
         ( list_of( 0x69 )( 0x04 )( 0x00 )( 0x01 )( 0x02 )( 0x00 )( 0x01 )( 0x03 ) );
 
@@ -508,7 +508,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfilePoints_invalid_date
     {
         const CtiTime now  (CtiDate(10, 8, 2013), 8, 23, 0);
         const CtiDate begin( 7,  7, 2013);
-        const CtiDate end  ( 7,  7, 2013);
+        const CtiDate end  ( 6,  7, 2013);
 
         try
         {
@@ -519,7 +519,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfilePoints_invalid_date
         catch ( const RfnCommand::CommandException &ex )
         {
             BOOST_CHECK_EQUAL(ex.error_code, BADPARAM);
-            BOOST_CHECK_EQUAL(ex.what(), "End date must be before begin date (begin = 07/07/2013, end = 07/07/2013)");
+            BOOST_CHECK_EQUAL(ex.what(), "End time must be after begin time (begin = 07/07/2013 00:00:00, end = 07/06/2013 00:00:00)");
         }
     }
 
@@ -527,7 +527,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfilePoints_invalid_date
     {
         const CtiTime now  (CtiDate(10, 8, 2013), 8, 23, 0);
         const CtiDate begin(11, 8, 2013);
-        const CtiDate end  (11, 8, 2013);
+        const CtiDate end  (10, 8, 2013);
 
         try
         {
@@ -538,7 +538,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfilePoints_invalid_date
         catch ( const RfnCommand::CommandException &ex )
         {
             BOOST_CHECK_EQUAL(ex.error_code, BADPARAM);
-            BOOST_CHECK_EQUAL(ex.what(), "End date must be before begin date (begin = 08/11/2013, end = 08/11/2013)");
+            BOOST_CHECK_EQUAL(ex.what(), "End time must be after begin time (begin = 08/11/2013 00:00:00, end = 08/10/2013 00:00:00)");
         }
     }
 
@@ -557,7 +557,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfilePoints_invalid_date
         catch ( const RfnCommand::CommandException &ex )
         {
             BOOST_CHECK_EQUAL(ex.error_code, BADPARAM);
-            BOOST_CHECK_EQUAL(ex.what(), "End date must be before begin date (begin = 08/09/2013, end = 07/07/2013)");
+            BOOST_CHECK_EQUAL(ex.what(), "End time must be after begin time (begin = 08/09/2013 00:00:00, end = 07/07/2013 00:00:00)");
         }
     }
 
@@ -576,7 +576,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfilePoints_invalid_date
         catch ( const RfnCommand::CommandException &ex )
         {
             BOOST_CHECK_EQUAL(ex.error_code, BADPARAM);
-            BOOST_CHECK_EQUAL(ex.what(), "End date must be before begin date (begin = 08/15/2013, end = 08/12/2013)");
+            BOOST_CHECK_EQUAL(ex.what(), "End time must be after begin time (begin = 08/15/2013 00:00:00, end = 08/12/2013 00:00:00)");
         }
     }
 
@@ -595,7 +595,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfilePoints_invalid_date
         catch ( const RfnCommand::CommandException &ex )
         {
             BOOST_CHECK_EQUAL(ex.error_code, BADPARAM);
-            BOOST_CHECK_EQUAL(ex.what(), "End date must be before today (end = 08/12/2013, now = 08/10/2013)");
+            BOOST_CHECK_EQUAL(ex.what(), "End time must be before now (end = 08/15/2013 00:00:00, now = 08/10/2013 08:23:00)");
         }
     }
 }
@@ -611,7 +611,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfilePoints )
     {
         const CtiTime now  (CtiDate(10, 8, 2013), 8, 23, 0);
         const CtiDate begin( 7, 7, 2013);
-        const CtiDate end  ( 7, 8, 2013);
+        const CtiDate end  ( 6, 8, 2013);
 
         RfnLoadProfileReadPointsCommand command(now, begin, end);
 
@@ -620,9 +620,9 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfilePoints )
             const std::vector< unsigned char > exp = boost::assign::list_of
                     ( 0x68 )( 0x05 )( 0x01 )
                     ( 0x04 )
-                    ( 0x08 ) // 8 bytes
+                    ( 0x00 )( 0x08 ) // 8 bytes
                     ( 0x51 )( 0xd8 )( 0xf5 )( 0xd0 )  // start timestamp
-                    ( 0x52 )( 0x01 )( 0xd4 )( 0x50 ); // end timestamp
+                    ( 0x52 )( 0x00 )( 0x82 )( 0xd0 ); // end timestamp
 
             RfnCommand::RfnRequestPayload rcv = command.executeCommand( execute_time );
 
