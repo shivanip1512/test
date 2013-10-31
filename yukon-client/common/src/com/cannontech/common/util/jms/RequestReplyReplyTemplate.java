@@ -31,6 +31,16 @@ public class RequestReplyReplyTemplate<R1 extends Serializable, R2 extends Seria
         requestMessage.setJMSReplyTo(replyQueue);
         producer.send(requestMessage);
         
+        handleRepliesAndOrTimeouts(callback, reply1Timeout, reply2Timeout, replyConsumer);
+        
+        replyConsumer.close();
+        replyQueue.delete();
+    }
+
+    private void handleRepliesAndOrTimeouts(JmsReplyReplyHandler<R1, R2> callback,
+                                            final Duration reply1Timeout,
+                                            final Duration reply2Timeout, MessageConsumer replyConsumer)
+            throws JMSException {
         /* Blocks for status response or until timeout*/
         Message reply1 = replyConsumer.receive(reply1Timeout.getMillis());
         
@@ -48,6 +58,7 @@ public class RequestReplyReplyTemplate<R1 extends Serializable, R2 extends Seria
         Message reply2 = replyConsumer.receive(reply2Timeout.getMillis());
         if (reply2 == null) {
             callback.handleTimeout2();
+            return;
         }
         R2 reply2Payload = JmsHelper.extractObject(reply2, callback.getExpectedType2());
         callback.handleReply2(reply2Payload);

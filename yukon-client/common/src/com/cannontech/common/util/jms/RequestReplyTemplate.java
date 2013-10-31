@@ -32,6 +32,14 @@ public class RequestReplyTemplate<R extends Serializable> extends RequestReplyTe
         requestMessage.setJMSReplyTo(replyQueue);
         producer.send(requestMessage);
         
+        handleReplyOrTimeout(callback, replyTimeout, replyConsumer);
+        
+        replyConsumer.close();
+        replyQueue.delete();
+    }
+
+    private void handleReplyOrTimeout(JmsReplyHandler<R> callback, final Duration replyTimeout,
+                                      MessageConsumer replyConsumer) throws JMSException {
         // Block for status response or until timeout.
         Message reply = replyConsumer.receive(replyTimeout.getMillis());
         
