@@ -17,33 +17,33 @@ import com.cannontech.util.ServletUtil;
 
 /**
  * Filter that times how long a request takes.
- * @author alauinger
  */
 public class TimerFilter implements Filter {
     private Logger log = YukonLogManager.getLogger(TimerFilter.class);
-	/**
-	 * @see javax.servlet.Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
-	 */
-	public void doFilter(
-		ServletRequest req,
-		ServletResponse resp,
-		FilterChain chain)
-		throws IOException, ServletException {
-		
-		long before = System.currentTimeMillis();
-    	chain.doFilter(req, resp);
-	    long after = System.currentTimeMillis();
 
-    	String name = "";
-	    if (req instanceof HttpServletRequest) {
-      		name = ((HttpServletRequest)req).getRequestURI();
-    	}	
-		if (ServletUtil.isAjaxRequest(req))
-			log.debug(name + ": " + (after - before) + "ms");
-		else
-			log.info(name + ": " + (after - before) + "ms");
-  	}
+    @Override
+    public void doFilter(ServletRequest servletRequest, ServletResponse response, FilterChain chain) throws IOException,
+            ServletException {
+        long before = System.currentTimeMillis();
+        chain.doFilter(servletRequest, response);
+        long after = System.currentTimeMillis();
 
-	public void destroy() { }
-	public void init(FilterConfig arg0) throws ServletException { }
+        String name = "";
+        if (servletRequest instanceof HttpServletRequest) {
+            name = ((HttpServletRequest) servletRequest).getRequestURI();
+        }
+        if (ServletUtil.isAjaxRequest(servletRequest)) {
+            log.debug(name + ": " + (after - before) + "ms");
+        } else {
+            log.info(name + ": " + (after - before) + "ms");
+        }
+    }
+
+    @Override
+    public void destroy() {
+    }
+
+    @Override
+    public void init(FilterConfig arg0) throws ServletException {
+    }
 }
