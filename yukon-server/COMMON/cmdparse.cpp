@@ -429,7 +429,7 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
     static const boost::regex  re_lp_peak(CtiString("lp peak (day|hour|interval) channel ") + str_num + CtiString(" ") + str_date + CtiString(" ") + str_num);
 
     //  getvalue voltage profile 12/13/2005 12/15/2005
-    static const boost::regex  re_voltage_profile(CtiString("voltage profile ") +  str_date + CtiString(" ") + str_date);
+    static const boost::regex  re_voltage_profile(CtiString("voltage profile ") + str_date + CtiString("( ") + str_time + CtiString(")?( ") + str_date + CtiString("( ") + str_time + CtiString(")?)?") );
 
     //  getvalue daily read
     //  getvalue daily read 12/12/2007
@@ -637,6 +637,42 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
         else if(CmdStr.contains(" voltage"))
         {
             flag |= CMD_FLAG_GV_VOLTAGE;
+
+            if(!(token = CmdStr.match(re_voltage_profile)).empty())
+            {
+                // getvalue voltage profile 12/13/2005 [03:45] [12/15/2005 [21:35]]
+
+                _cmd["voltage_profile"] = true;
+
+                CtiTokenizer cmdtok(token);
+
+                cmdtok(); // voltage
+                cmdtok(); // profile
+
+                _cmd["read_points_date_begin"] = cmdtok();
+
+                temp = cmdtok();
+
+                //  the optional "start time" parameter
+                if( !(temp.match(re_time)).empty() )
+                {
+                    _cmd["read_points_time_begin"] = temp;
+                    temp = cmdtok();
+                }
+
+                //  the optional "end date" parameter
+                if( !(temp.match(re_date)).empty() )
+                {
+                    _cmd["read_points_date_end"] = temp;
+                    temp = cmdtok();
+
+                    //  the optional "end time" parameter
+                    if( !(temp.match(re_time)).empty() )
+                    {
+                        _cmd["read_points_time_end"] = temp;
+                    }
+                }
+            }
         }
         else if(CmdStr.contains(" outage"))
         {
@@ -879,20 +915,6 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
         else if(CmdStr.contains(" instant line data"))
         {
             _cmd["instantlinedata"] = CtiParseValue(TRUE);
-        }
-        else if(!(token = CmdStr.match(re_voltage_profile)).empty())
-        {
-            // getvalue voltage profile 12/13/2005 12/15/2005
-
-            _cmd["voltage_profile"] = true;
-
-            CtiTokenizer cmdtok(token);
-
-            cmdtok(); // voltage
-            cmdtok(); // profile
-
-            _cmd["read_points_date_begin"] = cmdtok();
-            _cmd["read_points_date_end"]   = cmdtok();
         }
         else
         {
