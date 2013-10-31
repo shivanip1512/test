@@ -5,6 +5,8 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.springframework.web.util.WebUtils;
+
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.security.csrf.CsrfTokenService;
 
@@ -13,7 +15,7 @@ public class CsrfTokenServiceImpl implements CsrfTokenService {
     @Override
     public String getTokenForSession(HttpSession session) {
         String token = null;
-        synchronized (session) {
+        synchronized (WebUtils.getSessionMutex(session)) {
             token = (String) session.getAttribute(ServletUtil.SESSION_CSRF_TOKEN);
             if (token == null) {
                 token = UUID.randomUUID().toString();
