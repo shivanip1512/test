@@ -38,7 +38,8 @@ public class CsrfTokenServiceImpl implements CsrfTokenService {
         String actualToken = getTokenForSession(request.getSession());
 
         if (!actualToken.equals(requestToken)) {
-            throw new SecurityException("Request token not found");
+            request.getSession().removeAttribute(ServletUtil.SESSION_CSRF_TOKEN); // owasp recomendation
+            throw new SecurityException("Request token not found or invalid");
         }
     }
 }
