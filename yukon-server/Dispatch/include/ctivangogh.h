@@ -156,6 +156,8 @@ public:
     virtual void  shutdown();
     int   postDBChange(const CtiDBChangeMsg &Msg);
 
+    void  shutdownAllClients();
+
     int   registration(CtiServer::ptr_type, const CtiPointRegistrationMsg &aReg);
 
     int   execute();

@@ -612,7 +612,7 @@ void CtiVanGogh::VGConnectionHandlerThread()
         {
             if( !_listenerConnection.verifyConnection() )
             {
-                mConnectionTable.clear();
+                shutdownAllClients();
 
                 _listenerConnection.start();
             }
@@ -5152,7 +5152,7 @@ void  CtiVanGogh::shutdown()
 
     try
     {
-        Inherited::shutdown();
+        shutdownAllClients();
     }
     catch(...)
     {
@@ -5161,6 +5161,22 @@ void  CtiVanGogh::shutdown()
     }
 
 }
+
+
+void CtiVanGogh::shutdownAllClients()
+{
+    CtiServer::ptr_type Mgr;
+    CtiServer::spiterator itr;
+
+    CtiServerExclusion guard(_server_exclusion);
+
+    while((itr = mConnectionTable.getMap().begin()) != mConnectionTable.getMap().end() )
+    {
+        Mgr = itr->second;
+        clientShutdown(Mgr); // expected to remove first element from mConnectionTable
+    }
+}
+
 
 void CtiVanGogh::VGRPHWriterThread()
 {
