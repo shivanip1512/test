@@ -8319,7 +8319,7 @@
         </attributes>
     </pao>
 
-    <pao id="RFN_COMMON_SENTINEL" abstract="true" inherits="RFN_EVENTS, SUPPORTS_OUTAGE_TAG"> <!-- should this inherit OUTAGE_STATUS_BASE too?  -->
+    <pao id="RFN_COMMON_SENTINEL" abstract="true" inherits="RFN_EVENTS, SUPPORTS_OUTAGE_TAG, OUTAGE_STATUS_BASE">
         <displayGroup>RFMESH</displayGroup>
         <changeGroup>rfn</changeGroup>
         <points>
@@ -8677,6 +8677,9 @@
             </attribute>
             <attribute name="POLARITY_CROSS_PHASE_ENERGY_FLOW_DIAGNOSTIC">
                 <basicLookup point="Polarity Cross-phase and Energy Flow Diagnostic"/>
+            </attribute>
+            <attribute name="POWER_FAIL_FLAG"> <!-- Shared (PLC & RFN) Attribute -->
+                <basicLookup point="Power Failure" />
             </attribute>
             <attribute name="RAM_ERROR">
                 <basicLookup point="Ram Error"/>
