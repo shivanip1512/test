@@ -507,7 +507,7 @@
 		<row><td>Porter</td><td>&lt;PATH_TO_SERVER_BIN_FILES&gt;</td><td>1</td><td>porter.exe</td><td/><td>0</td></row>
 		<row><td>Prophecy Examples</td><td>&lt;PATH_TO_EXTRAS_FILES&gt;\Prophecy Examples</td><td>1</td><td>*.*</td><td/><td>0</td></row>
 		<row><td>Scanner</td><td>&lt;PATH_TO_SERVER_BIN_FILES&gt;</td><td>1</td><td>scanner.exe</td><td/><td>0</td></row>
-		<row><td>Server Base</td><td>&lt;PATH_TO_SERVER_BASE&gt;</td><td>1</td><td>*.*</td><td>calc_logic.exe; capcontrol.exe; dispatch.exe; fdr.exe; loadmanagement.exe; macs.exe; porter.exe; scanner.exe; test_*.exe;</td><td>2</td></row>
+		<row><td>Server Base</td><td>&lt;PATH_TO_SERVER_BASE&gt;</td><td>1</td><td>*.*</td><td>calc_logic.exe; capcontrol.exe; dispatch.exe; fdr.exe; loadmanagement.exe; macs.exe; porter.exe; scanner.exe; test_*.exe; *_test.exe;</td><td>2</td></row>
 		<row><td>Service Manager</td><td>&lt;PATH_TO_WRAPPER_FILES&gt;\Client\bin</td><td>1</td><td>appserver.conf</td><td/><td>0</td></row>
 		<row><td>Tomcat XML Config</td><td>&lt;PATH_TO_TOMCAT_XML_CONFIG&gt;</td><td>1</td><td>web.xml; server.xml</td><td/><td>2</td></row>
 		<row><td>Tomcat</td><td>&lt;PATH_TO_TOMCAT_FILES&gt;</td><td>1</td><td>*.*</td><td>web.xml; server.xml</td><td>2</td></row>
