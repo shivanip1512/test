@@ -30,7 +30,7 @@ public final class SimpleAssetAvailability {
     
     /**
      * Constructor for one-way inventory (which are always considered to be in communication &
-     * running). Communication time and runtimes will be set to null.
+     * running). Communication time and runtime (but not applianceCategoryIds) will be set to null.
      */
     public SimpleAssetAvailability(int inventoryId, boolean isOptedOut, Iterable<Integer> appliances) {
         this.inventoryId = inventoryId;
@@ -69,7 +69,7 @@ public final class SimpleAssetAvailability {
     }
     
     /**
-     * Can be null if this inventory is one-way, or empty if no non-zero runtime has been reported.
+     * Runtime can be null if no non-zero runtime has been reported, if this inventory is one-way.
      */
     public ImmutableSet<ApplianceWithRuntime> getApplianceRuntimes() {
         return applianceRuntimes;

@@ -1,7 +1,9 @@
 package com.cannontech.core.dao;
 
-import static com.cannontech.common.point.PointQuality.*;
-import static com.cannontech.database.data.point.PointType.*;
+import static com.cannontech.common.point.PointQuality.Normal;
+import static com.cannontech.database.data.point.PointType.Analog;
+import static com.cannontech.database.data.point.PointType.DemandAccumulator;
+import static com.cannontech.database.data.point.PointType.PulseAccumulator;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,13 +33,18 @@ import com.cannontech.database.data.point.PointType;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.Ordering;
+import com.google.common.collect.Sets;
 
 public class MockRawPointHistoryDaoImpl extends RawPointHistoryDaoImpl {
-
     private static final DateTimeZone centralTimeZone = DateTimeZone.forOffsetHoursMinutes(5, 0);
     private static final DateTimeFormatter dateTimeFormatter = DateTimeFormat.forPattern("MM/dd/yyyy HH:mm:ss").withZone(centralTimeZone);
-
+    
+    private Map<Integer, Integer> inventoryToDeviceMap = Maps.newHashMap();
+    Multimap<Integer, Integer> groupToInventoryMap = ArrayListMultimap.create();
+    Map<Integer, Map<Attribute, Integer>> deviceToAttributeAndPointMap = Maps.newHashMap();
     private Object[][] rawPointHistoryData = 
         {
             // Usage Data
@@ -71,7 +78,7 @@ public class MockRawPointHistoryDaoImpl extends RawPointHistoryDaoImpl {
             return Double.compare(left.getValue(), right.getValue());
         }
     };
-
+    
     private List<PointValueQualityHolder> pointValueQualityHolderData;
     private Map<Long, PointValueQualityHolder> pointValueQualityHolderDataByRPHId;
     private ListMultimap<Instant, PointValueQualityHolder> pointValueQualityHolderDataByDate;
@@ -83,7 +90,19 @@ public class MockRawPointHistoryDaoImpl extends RawPointHistoryDaoImpl {
         this.rawPointHistoryData = rawPointHistoryData;
         init();
     }
+    public MockRawPointHistoryDaoImpl(Object[][] rawPointHistoryData, Map<Integer, Integer> inventoryToDeviceMap, 
+                                      Multimap<Integer, Integer> groupToInventoryMap,
+                                      Map<Integer, Map<Attribute, Integer>> deviceToAttributeAndPointMap) {
+        if(rawPointHistoryData != null) {
+            this.rawPointHistoryData = rawPointHistoryData;
+        }
+        this.inventoryToDeviceMap = inventoryToDeviceMap;
+        this.groupToInventoryMap = groupToInventoryMap;
+        this.deviceToAttributeAndPointMap = deviceToAttributeAndPointMap;
+        init();
+    }
     
+    @Override
     public void init() {
         // Converting the array data into point data.
         pointValueQualityHolderData =  new ArrayList<>();
@@ -106,6 +125,34 @@ public class MockRawPointHistoryDaoImpl extends RawPointHistoryDaoImpl {
             pointValueQualityHolderDataByRPHId.put((long)rphId, pvqHolder);
             pointValueQualityHolderDataByDate.put(new Instant(pvqHolder.getPointDataTimeStamp()), pvqHolder);
         }
+    }
+    
+    @Override
+    public Set<Integer> getCommunicatingInventoryByLoadGroups(Iterable<Integer> loadGroupIds, final ReadableRange<Instant> dateRange) {
+        Set<Integer> inventory = Sets.newHashSet();
+        for(Integer loadGroupId : loadGroupIds) {
+            Collection<Integer> inventoryInGroup = groupToInventoryMap.get(loadGroupId);
+            inventory.addAll(inventoryInGroup);
+        }
+        
+        List<PointValueQualityHolder> pointValueQualityHolders = intersectingPointValueQualityHoldersByDateRange(dateRange);
+        Set<Integer> communicatingInventory = Sets.newHashSet();
+        
+        for(Integer inventoryId : inventory) {
+            Integer deviceId = inventoryToDeviceMap.get(inventoryId);
+            Map<Attribute, Integer> attributePointMap = deviceToAttributeAndPointMap.get(deviceId);
+            if(attributePointMap != null) {
+                Collection<Integer> pointIds = attributePointMap.values();
+                for(PointValueQualityHolder pvqh : pointValueQualityHolders) {
+                    if(pointIds.contains(pvqh.getId())) {
+                        communicatingInventory.add(inventoryId);
+                        break;
+                    }
+                }
+            }
+        }
+        
+        return communicatingInventory;
     }
     
     @Override
@@ -142,7 +189,14 @@ public class MockRawPointHistoryDaoImpl extends RawPointHistoryDaoImpl {
             @SuppressWarnings("unchecked")
             List<PointValueQualityHolder> pointValueQualityHolders = ListUtils.intersection(rphPointValueQualityHolders, dateRangePointValueQualityHolders);
             
-            List<PointValueQualityHolder> pvqHolders = getPointValueQualityHoldersForAttribute(attribute, pointValueQualityHolders);
+            List<PointValueQualityHolder> pvqHolders;
+            //If we have the map, we can do a more realistic lookup for points mapped to the paos
+            if(deviceToAttributeAndPointMap.isEmpty()) {
+                pvqHolders = getPointValueQualityHoldersForAttribute(attribute, pointValueQualityHolders);
+            } else {
+                int paoId = yukonPao.getPaoIdentifier().getPaoId();
+                pvqHolders = getPointValueQualityHoldersForAttribute(attribute, paoId, pointValueQualityHolders);
+            }
             List<PointValueQualityHolder> orderedPVQHolders = orderPointValueData(pvqHolders, order);
             paoIdToPointValueQualityHolder.putAll(yukonPao.getPaoIdentifier(), orderedPVQHolders);
         } 
@@ -195,6 +249,25 @@ public class MockRawPointHistoryDaoImpl extends RawPointHistoryDaoImpl {
         }
 
         return results;
+    }
+    
+    /**
+     * Uses the deviceToAttributeAndPointMap to pick out point data that applies to the specified device & attribute.
+     */
+    private List<PointValueQualityHolder> getPointValueQualityHoldersForAttribute(Attribute attribute, int paoId, List<PointValueQualityHolder> pointValueQualityHolders) {
+        Map<Attribute, Integer> attributeMap = deviceToAttributeAndPointMap.get(paoId);
+        Integer pointId = null;
+        if(attributeMap != null) pointId = attributeMap.get(attribute);
+        
+        List<PointValueQualityHolder> returnValues = Lists.newArrayList();
+        if(pointId != null) {
+            for(PointValueQualityHolder pvqh: pointValueQualityHolders) {
+                if(pvqh.getId() == pointId) {
+                    returnValues.add(pvqh);
+                }
+            }
+        }
+        return returnValues;
     }
 
     

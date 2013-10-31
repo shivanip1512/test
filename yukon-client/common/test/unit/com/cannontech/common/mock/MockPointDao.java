@@ -1,6 +1,7 @@
 package com.cannontech.common.mock;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +25,7 @@ import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointInfo;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.PointTypes;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 
 /**
@@ -31,7 +33,36 @@ import com.google.common.collect.Multimap;
  * static value expected for unit testing
  */
 public class MockPointDao implements PointDao {
+    private Map<Integer, Map<Attribute, Integer>> paoToAttributeAndPointMap = Maps.newHashMap();
+    
+    public MockPointDao() {}
+    
+    public MockPointDao(Map<Integer, Map<Attribute, Integer>> paoToAttributeAndPointMap) {
+        this.paoToAttributeAndPointMap = paoToAttributeAndPointMap;
+    }
+    
+    @Override
+    public Map<Integer, Integer> getPointIdsForPaos(Iterable<Integer> paoIds) {
+        Map<Integer, Integer> pointsToPaosMap = Maps.newHashMap();
+        for(Integer paoId : paoIds) {
+            Collection<Integer> pointIds = paoToAttributeAndPointMap.get(paoId).values();
+            for(Integer pointId : pointIds) {
+                pointsToPaosMap.put(pointId, paoId);
+            }
+        }
+        return pointsToPaosMap;
+    }
 
+    @Override
+    public Map<Integer, Integer> getPointIdsForPaosAndAttribute(Attribute attribute, Iterable<Integer> paoIds) {
+        Map<Integer, Integer> pointsToPaosMap = Maps.newHashMap();
+        for(Integer paoId : paoIds) {
+            Integer pointId = paoToAttributeAndPointMap.get(paoId).get(attribute);
+            pointsToPaosMap.put(pointId, paoId);
+        }
+        return pointsToPaosMap;
+    }
+    
     /**
      * This method will return a point based on a fake id (ids 1 thru 4 are
      * valid)
@@ -52,7 +83,47 @@ public class MockPointDao implements PointDao {
         }
         throw new NotFoundException("point not found");
     }
+    
+    @Override
+    public LitePoint getLitePointIdByDeviceId_Offset_PointType(int deviceId, int pointOffset, int pointType) throws NotFoundException {
+        
+        int pointId = getPointIDByDeviceID_Offset_PointType(deviceId, pointOffset, pointType);
+        if (pointId == PointTypes.SYS_PID_SYSTEM) {
+            throw new NotFoundException("nope");
+        } else {
+            return getLitePoint(pointId);
+        }
+    }
+    
+    @Override
+    public List<LitePoint> getLitePointsByPaObjectId(int paObjectId) {
+        List<LitePoint> pointList = new ArrayList<LitePoint>();
+        for (int x = 1; x < 5; x++) {
+            pointList.add(getLitePoint(x));
+        }
+        return pointList;
+    }
 
+    /**
+     * This method will return a fake point id that is just the point type or
+     * the point offset if type is 2
+     */
+    @Override
+    public int getPointIDByDeviceID_Offset_PointType(int deviceID, int pointOffset, int pointType) {
+
+        switch (pointType) {
+
+        case 1:
+            return 1;
+        case 2:
+            return pointOffset;
+        case 3:
+            return 3;
+        }
+
+        return PointTypes.SYS_PID_SYSTEM;
+    }
+    
     @Override
     public List<LitePoint> getLitePoints(Iterable<Integer> pointIds) {
         return null;
@@ -81,17 +152,6 @@ public class MockPointDao implements PointDao {
     public int[] getNextPointIds(int count) {
         return null;
     }
-    
-    @Override
-    public LitePoint getLitePointIdByDeviceId_Offset_PointType(int deviceId, int pointOffset, int pointType) throws NotFoundException {
-        
-        int pointId = getPointIDByDeviceID_Offset_PointType(deviceId, pointOffset, pointType);
-        if (pointId == PointTypes.SYS_PID_SYSTEM) {
-            throw new NotFoundException("nope");
-        } else {
-            return getLitePoint(pointId);
-        }
-    }
 
     @Override
     public List<LitePoint> getLitePointsBy(Integer[] pointTypes, Integer[] uomIDs,
@@ -102,15 +162,6 @@ public class MockPointDao implements PointDao {
     @Override
     public List<LitePoint> getLitePointsByNumStates(int numStates) {
         return null;
-    }
-
-    @Override
-    public List<LitePoint> getLitePointsByPaObjectId(int paObjectId) {
-        List<LitePoint> pointList = new ArrayList<LitePoint>();
-        for (int x = 1; x < 5; x++) {
-            pointList.add(getLitePoint(x));
-        }
-        return pointList;
     }
 
     @Override
@@ -136,26 +187,6 @@ public class MockPointDao implements PointDao {
     @Override
     public LiteStateGroup getStateGroup(int stateGroupID) {
         return null;
-    }
-
-    /**
-     * This method will return a fake point id that is just the point type or
-     * the point offset if type is 2
-     */
-    @Override
-    public int getPointIDByDeviceID_Offset_PointType(int deviceID, int pointOffset, int pointType) {
-
-        switch (pointType) {
-
-        case 1:
-            return 1;
-        case 2:
-            return pointOffset;
-        case 3:
-            return 3;
-        }
-
-        return PointTypes.SYS_PID_SYSTEM;
     }
 
     @Override
@@ -244,16 +275,6 @@ public class MockPointDao implements PointDao {
 
     @Override
     public Map<LitePoint, PaoPointIdentifier> getLitePointsForPaoPointIdentifiers(Iterable<PaoPointIdentifier> paoPointIdentifiers) {
-        return null;
-    }
-
-    @Override
-    public Map<Integer, Integer> getPointIdsForPaos(Iterable<Integer> paoIds) {
-        return null;
-    }
-
-    @Override
-    public Map<Integer, Integer> getPointIdsForPaosAndAttribute(Attribute attribute, Iterable<Integer> paoIds) {
         return null;
     }
 
