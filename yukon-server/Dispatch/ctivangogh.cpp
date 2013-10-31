@@ -633,6 +633,8 @@ void CtiVanGogh::VGConnectionHandlerThread()
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " New connection established." << endl;
                 }
+
+                validateConnections();
             }
 
             reportOnThreads();
