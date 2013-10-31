@@ -41,12 +41,12 @@ const CtiTime execute_time( CtiDate( 29, 7, 2013 ) , 11 );
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_SetConfiguration )
 {
-    RfnVoltageProfileSetConfigurationCommand  command( 255, 34 );
+    RfnVoltageProfileSetConfigurationCommand  command( 4, 34 );
 
     // execute
     {
         const std::vector< unsigned char > exp = boost::assign::list_of
-            ( 0x68 )( 0x00 )( 0x01 )( 0x01 )( 0x02 )( 0x11 )( 0x22 );
+            ( 0x68 )( 0x00 )( 0x01 )( 0x01 )( 0x00 )( 0x02 )( 0x10 )( 0x22 );
 
         RfnCommand::RfnRequestPayload rcv = command.executeCommand( execute_time );
 
@@ -87,16 +87,14 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_SetConfiguration )
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_SetConfiguration_constructor_exceptions )
 {
     const std::vector< std::pair< unsigned, unsigned > > inputs = pair_list_of
-        (    0,  15 )       // demand interval of 0 seconds
-        ( 3900,  15 )       // demand interval > 255 * 15 == 3825
-        (  301,  15 )       // demand interval not divisible by 15
-        (  300,   0 )       // load profile interval of 0 minutes
-        (  300, 300 );      // load profile interval > 255
+        (  0,  15 )       // demand interval of 0 seconds
+        ( 64,  15 )       // demand interval > 255 * 15 / 60 == 63
+        (  5,   0 )       // load profile interval of 0 minutes
+        (  5, 300 );      // load profile interval > 255
 
     const std::vector< RfnCommand::CommandException >   expected = list_of
-        ( RfnCommand::CommandException( BADPARAM, "Invalid Voltage Demand Interval: (0) underflow (minimum: 15)" ) )
-        ( RfnCommand::CommandException( BADPARAM, "Invalid Voltage Demand Interval: (3900) overflow (maximum: 3825)" ) )
-        ( RfnCommand::CommandException( BADPARAM, "Invalid Voltage Demand Interval: (301) not divisible by 15" ) )
+        ( RfnCommand::CommandException( BADPARAM, "Invalid Voltage Demand Interval: (0) underflow (minimum: 1)" ) )
+        ( RfnCommand::CommandException( BADPARAM, "Invalid Voltage Demand Interval: (64) overflow (maximum: 63)" ) )
         ( RfnCommand::CommandException( BADPARAM, "Invalid Load Profile Demand Interval: (0) underflow (minimum: 1)" ) )
         ( RfnCommand::CommandException( BADPARAM, "Invalid Load Profile Demand Interval: (300) overflow (maximum: 255)" ) );
 
@@ -135,7 +133,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_SetConfiguration_decoding_excepti
 
     std::vector< RfnCommand::CommandException > actual;
 
-    RfnVoltageProfileSetConfigurationCommand command( 300, 15 );
+    RfnVoltageProfileSetConfigurationCommand command( 5, 15 );
 
     for each ( const RfnCommand::RfnResponsePayload & response in responses )
     {
@@ -174,26 +172,26 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetConfiguration )
     // decode -- success response
     {
         const std::vector< unsigned char > response = boost::assign::list_of
-            ( 0x69 )( 0x01 )( 0x00 )( 0x01 )( 0x01 )( 0x02 )( 0x04 )( 0x06 );
+            ( 0x69 )( 0x01 )( 0x00 )( 0x01 )( 0x01 )( 0x00 )( 0x02 )( 0x04 )( 0x06 );
 
-        BOOST_CHECK_EQUAL( 0, command.getDemandIntervalSeconds() );
-        BOOST_CHECK_EQUAL( 0, command.getLoadProfileIntervalMinutes() );
+        BOOST_CHECK_EQUAL( 0.0, command.getDemandIntervalMinutes() );
+        BOOST_CHECK_EQUAL(   0, command.getLoadProfileIntervalMinutes() );
 
         RfnCommandResult rcv = command.decodeCommand( execute_time, response );
 
         BOOST_CHECK_EQUAL( rcv.description,
                                  "Status: Success (0)"
-                                 "\nVoltage Demand interval: 60 seconds"
+                                 "\nVoltage Demand interval: 1.0 minutes"
                                  "\nLoad Profile Demand interval: 6 minutes" );
 
-        BOOST_CHECK_EQUAL( 60, command.getDemandIntervalSeconds() );
-        BOOST_CHECK_EQUAL(  6, command.getLoadProfileIntervalMinutes() );
+        BOOST_CHECK_EQUAL(  1.0, command.getDemandIntervalMinutes() );
+        BOOST_CHECK_EQUAL(    6, command.getLoadProfileIntervalMinutes() );
     }
 
     // decode -- failure response
     {
         const std::vector< unsigned char > response = boost::assign::list_of
-            ( 0x69 )( 0x01 )( 0x01 )( 0x01 )( 0x01 )( 0x02 )( 0x04 )( 0x06 );
+            ( 0x69 )( 0x01 )( 0x01 )( 0x01 )( 0x01 )( 0x00 )( 0x02 )( 0x04 )( 0x06 );
 
         BOOST_CHECK_THROW( command.decodeCommand( execute_time, response ), RfnCommand::CommandException );
 
@@ -215,8 +213,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetConfiguration_decoding_excepti
     const std::vector< RfnCommand::RfnResponsePayload >   responses = list_of
         ( list_of( 0x69 )( 0x00 )( 0x00 )( 0x01 )( 0x01 )( 0x02 )( 0x04 )( 0x06 ))
         ( list_of( 0x69 )( 0x01 )( 0x00 )( 0x02 )( 0x00 )( 0x00 )( 0x04 )( 0x00 ) )
-        ( list_of( 0x69 )( 0x01 )( 0x00 )( 0x01 )( 0x04 )( 0x00 ))
-        ( list_of( 0x69 )( 0x01 )( 0x00 )( 0x01 )( 0x01 )( 0x01 )( 0x04 ));
+        ( list_of( 0x69 )( 0x01 )( 0x00 )( 0x01 )( 0x04 )( 0x00 )( 0x00 ))
+        ( list_of( 0x69 )( 0x01 )( 0x00 )( 0x01 )( 0x01 )( 0x00 )( 0x01 )( 0x04 ));
 
     const std::vector< RfnCommand::CommandException >   expected = list_of
         ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Operation Code (0x00)" ) )

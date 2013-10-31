@@ -128,7 +128,7 @@ RfnVoltageProfileConfigurationCommand::RfnVoltageProfileConfigurationCommand( co
 
 RfnVoltageProfileGetConfigurationCommand::RfnVoltageProfileGetConfigurationCommand()
     :   RfnVoltageProfileConfigurationCommand( Operation_GetConfiguration ),
-        _demandInterval( 0x00 ),
+        _demandIntervalIncrements( 0x00 ),
         _loadProfileInterval( 0x00 )
 {
 }
@@ -158,19 +158,19 @@ RfnCommandResult RfnVoltageProfileGetConfigurationCommand::decodeCommand( const 
     validate( Condition( tlv.value.size() == 2, ErrorInvalidData )
             << "Invalid TLV length (" << tlv.value.size() << ")" );
 
-    _demandInterval      = tlv.value[0];
-    _loadProfileInterval = tlv.value[1];
+    _demandIntervalIncrements = tlv.value[0];
+    _loadProfileInterval      = tlv.value[1];
 
-    result.description += "\nVoltage Demand interval: " + CtiNumStr(getDemandIntervalSeconds()) + " seconds";
+    result.description += "\nVoltage Demand interval: " + CtiNumStr(getDemandIntervalMinutes(), 1) + " minutes";
     result.description += "\nLoad Profile Demand interval: " + CtiNumStr(getLoadProfileIntervalMinutes()) + " minutes";
 
     return result;
 }
 
 
-unsigned RfnVoltageProfileGetConfigurationCommand::getDemandIntervalSeconds() const
+double RfnVoltageProfileGetConfigurationCommand::getDemandIntervalMinutes() const
 {
-    return SecondsPerInterval * _demandInterval;
+    return static_cast<double>(_demandIntervalIncrements) * SecondsPerIncrement / SecondsPerMinute;
 }
 
 
@@ -184,24 +184,26 @@ unsigned RfnVoltageProfileGetConfigurationCommand::getLoadProfileIntervalMinutes
 // Voltage profile set configuration
 //
 
-RfnVoltageProfileSetConfigurationCommand::RfnVoltageProfileSetConfigurationCommand( const unsigned demand_interval_seconds,
-                                                                              const unsigned load_profile_interval_minutes )
+RfnVoltageProfileSetConfigurationCommand::RfnVoltageProfileSetConfigurationCommand( const double demand_interval_minutes,
+                                                                                    const unsigned load_profile_interval_minutes )
     :   RfnVoltageProfileConfigurationCommand( Operation_SetConfiguration ),
-        demandInterval( demand_interval_seconds / SecondsPerInterval ),
+        demandInterval( demand_interval_minutes ),
         loadProfileInterval( load_profile_interval_minutes )
 {
-    validate( Condition( demand_interval_seconds >= (1 * SecondsPerInterval), BADPARAM )
-            << "Invalid Voltage Demand Interval: (" << demand_interval_seconds
-            << ") underflow (minimum: " << (1 * SecondsPerInterval) << ")" );
+    validate( Condition( demand_interval_minutes >= 1, BADPARAM )
+            << "Invalid Voltage Demand Interval: (" << demand_interval_minutes
+            << ") underflow (minimum: 1)" );
 
-    validate( Condition( demand_interval_seconds <= (255 * SecondsPerInterval), BADPARAM )
-            << "Invalid Voltage Demand Interval: (" << demand_interval_seconds
-            << ") overflow (maximum: " << (255 * SecondsPerInterval) << ")" );
+    const unsigned MaxDemandIntervalMinutes = 255 * SecondsPerIncrement / SecondsPerMinute;
 
-    validate( Condition( ! (demand_interval_seconds % SecondsPerInterval), BADPARAM )
+    validate( Condition( demand_interval_minutes <= MaxDemandIntervalMinutes, BADPARAM )
+            << "Invalid Voltage Demand Interval: (" << demand_interval_minutes
+            << ") overflow (maximum: " << MaxDemandIntervalMinutes << ")" );
+    /*
+    validate( Condition( ! (demand_interval_seconds % SecondsPerIncrement), BADPARAM )
             << "Invalid Voltage Demand Interval: (" << demand_interval_seconds
             << ") not divisible by " << SecondsPerInterval );
-
+    */
     validate( Condition( load_profile_interval_minutes > 0, BADPARAM )
             << "Invalid Load Profile Demand Interval: (" << load_profile_interval_minutes
             << ") underflow (minimum: 1)" );
@@ -212,11 +214,19 @@ RfnVoltageProfileSetConfigurationCommand::RfnVoltageProfileSetConfigurationComma
 }
 
 
+void RfnVoltageProfileSetConfigurationCommand::invokeResultHandler(RfnCommand::ResultHandler &rh) const
+{
+    rh.handleCommandResult(*this);
+}
+
 RfnLoadProfileCommand::TlvList RfnVoltageProfileSetConfigurationCommand::getTlvs()
 {
-        TypeLengthValue tlv(TlvType_VoltageProfileConfiguration);
+        TypeLengthValue tlv = TypeLengthValue::makeLongTlv(TlvType_VoltageProfileConfiguration);
 
-        tlv.value.push_back( demandInterval );
+        const unsigned demandIntervalSeconds = demandInterval * SecondsPerMinute;
+        const unsigned demandIntervalIncrements = demandIntervalSeconds / SecondsPerIncrement;
+
+        tlv.value.push_back( demandIntervalIncrements );
         tlv.value.push_back( loadProfileInterval );
 
         return boost::assign::list_of(tlv);

@@ -106,6 +106,19 @@ boost::optional<long> DeviceConfig::findLongValueForKey( const std::string & key
 }
 
 
+boost::optional<double> DeviceConfig::findFloatValueForKey( const std::string & key ) const
+{
+    boost::optional<std::string>  result = lookup( key );
+
+    if( ! result || result->empty() )
+    {
+        return boost::none;
+    }
+
+    return std::atof( result->c_str() );
+}
+
+
 
 long DeviceConfig::getLongValueFromKey( const std::string & key ) const
 {

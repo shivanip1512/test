@@ -123,9 +123,9 @@ int RfnResidentialDevice::executePutConfigVoltageProfile( CtiRequestMsg     * pR
     // demand interval
     //
 
-    const int demand_interval_seconds = parse.getiValue("demand_interval_seconds");
+    const int demand_interval_minutes = parse.getiValue("demand_interval_minutes");
 
-    if( demand_interval_seconds < 0 )
+    if( demand_interval_minutes < 0 )
     {
         logInfo("Missing \"demandinterval\" parameter.",
                 __FUNCTION__, __FILE__, __LINE__ );
@@ -147,7 +147,7 @@ int RfnResidentialDevice::executePutConfigVoltageProfile( CtiRequestMsg     * pR
         return MISPARAM;
     }
 
-    rfnRequests.push_back( boost::make_shared<RfnVoltageProfileSetConfigurationCommand>( demand_interval_seconds,
+    rfnRequests.push_back( boost::make_shared<RfnVoltageProfileSetConfigurationCommand>( demand_interval_minutes,
                                                                                          load_profile_interval_minutes ));
 
     return NoError;
@@ -257,20 +257,20 @@ int RfnResidentialDevice::executePutConfigVoltageAveragingInterval( CtiRequestMs
 
     struct IntervalSettings
     {
-        boost::optional<unsigned>   demandInterval,
-                                    loadProfileInterval;
+        boost::optional<double>     demandInterval;
+        boost::optional<unsigned>   loadProfileInterval;
 
         bool operator==( const IntervalSettings & rhs ) const
         {
-            return demandInterval == rhs.demandInterval && loadProfileInterval == rhs.loadProfileInterval;
+            return demandInterval && rhs.demandInterval && (fabs(*demandInterval - *rhs.demandInterval) < 0.1) && loadProfileInterval == rhs.loadProfileInterval;
         }
     }
     configSettings,
     paoSettings;
 
     {
-        const std::string           configKey( Config::RfnStrings::demandInterval );
-        const boost::optional<long> configValue = deviceConfig->findLongValueForKey( configKey );
+        const std::string             configKey( Config::RfnStrings::demandInterval );
+        const boost::optional<double> configValue = deviceConfig->findFloatValueForKey( configKey );
 
         if ( ! configValue  )
         {
@@ -280,17 +280,7 @@ int RfnResidentialDevice::executePutConfigVoltageAveragingInterval( CtiRequestMs
             return NoConfigData;
         }
 
-        // Rudimentary check to see that we can coerce the 'long' into an 'unsigned'.
-        //  - the command object will perform further validation of its input.
-        if ( *configValue < 0 || *configValue > std::numeric_limits<unsigned>::max() )
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Device \"" << getName() << "\" - Invalid value (" << *configValue << ") for config key \"" << configKey << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-
-            return ErrorInvalidConfigData;
-        }
-
-        configSettings.demandInterval = static_cast<unsigned>( *configValue );
+        configSettings.demandInterval = *configValue;
     }
 
     {
@@ -317,12 +307,16 @@ int RfnResidentialDevice::executePutConfigVoltageAveragingInterval( CtiRequestMs
     }
 
     {
-        long pao_value;
+        double pao_value;
 
         if ( getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DemandInterval, pao_value ) )
         {
-            paoSettings.demandInterval = static_cast<unsigned>( pao_value );
+            paoSettings.demandInterval = pao_value;
         }
+    }
+
+    {
+        long pao_value;
 
         if ( getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_LoadProfileInterval, pao_value ) )
         {
@@ -1458,15 +1452,14 @@ void RfnResidentialDevice::handleCommandResult( const Commands::RfnSetOvUvSetUnd
 
 void RfnResidentialDevice::handleCommandResult( const Commands::RfnVoltageProfileGetConfigurationCommand & cmd )
 {
-    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DemandInterval,      cmd.getDemandIntervalSeconds() );
+    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DemandInterval,      cmd.getDemandIntervalMinutes() );
     setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_LoadProfileInterval, cmd.getLoadProfileIntervalMinutes() );
 }
 
 
 void RfnResidentialDevice::handleCommandResult( const Commands::RfnVoltageProfileSetConfigurationCommand & cmd )
 {
-    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DemandInterval, Commands::RfnVoltageProfileSetConfigurationCommand::SecondsPerInterval
-                                                                       * cmd.demandInterval );
+    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DemandInterval,      cmd.demandInterval );
     setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_LoadProfileInterval, cmd.loadProfileInterval );
 }
 

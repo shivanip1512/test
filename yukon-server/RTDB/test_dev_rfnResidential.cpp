@@ -765,7 +765,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_voltage_profile )
 {
     test_RfnResidentialDevice dut;
 
-    CtiCommandParser parse("putconfig emetcon voltage profile demandinterval 255 lpinterval 34");
+    CtiCommandParser parse("putconfig emetcon voltage profile demandinterval 17 lpinterval 34");
 
     BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
     BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
@@ -784,7 +784,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_voltage_profile )
         Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 
         std::vector<unsigned char> exp = boost::assign::list_of
-                ( 0x68 )( 0x00 )( 0x01 )( 0x01 )( 0x02 )( 0x11 )( 0x22 );
+                ( 0x68 )( 0x00 )( 0x01 )( 0x01 )( 0x00 )( 0x02 )( 0x44 )( 0x22 );
 
         BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
                                        exp.begin() , exp.end() );

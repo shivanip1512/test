@@ -16,6 +16,11 @@ class IM_EX_DEVDB RfnLoadProfileCommand : public RfnCommand
 {
 protected:
 
+    enum
+    {
+        SecondsPerMinute = 60
+    };
+
     enum CommandCode
     {
         CommandCode_Request                     = 0x68,
@@ -73,16 +78,14 @@ public:
  */
 class IM_EX_DEVDB RfnVoltageProfileConfigurationCommand : public RfnLoadProfileCommand
 {
-public:
-
-    enum
-    {
-        SecondsPerInterval = 15
-    };
-
 protected:
 
     RfnVoltageProfileConfigurationCommand( const Operation operation );
+
+    enum
+    {
+        SecondsPerIncrement = 15
+    };
 };
 
 
@@ -100,12 +103,12 @@ public:
     virtual RfnCommandResult decodeCommand( const CtiTime now,
                                             const RfnResponsePayload & response );
 
-    unsigned getDemandIntervalSeconds() const;
+    double   getDemandIntervalMinutes() const;
     unsigned getLoadProfileIntervalMinutes() const;
 
 private:
 
-    unsigned _demandInterval,
+    unsigned _demandIntervalIncrements,
              _loadProfileInterval;
 };
 
@@ -117,14 +120,16 @@ class IM_EX_DEVDB RfnVoltageProfileSetConfigurationCommand : public RfnVoltagePr
 {
 public:
 
-    RfnVoltageProfileSetConfigurationCommand( const unsigned demand_interval_seconds,
+    virtual void invokeResultHandler(RfnCommand::ResultHandler &rh) const;
+
+    RfnVoltageProfileSetConfigurationCommand( const double   demand_interval_minutes,
                                               const unsigned load_profile_interval_minutes );
 
     virtual RfnCommandResult decodeCommand( const CtiTime now,
                                             const RfnResponsePayload & response );
 
-    const unsigned demandInterval,
-                   loadProfileInterval;
+    const double   demandInterval;
+    const unsigned loadProfileInterval;
 
 protected:
 

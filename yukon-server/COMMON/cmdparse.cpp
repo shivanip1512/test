@@ -2157,7 +2157,7 @@ void  CtiCommandParser::doParsePutConfig(const string &_CmdStr)
             {
                 cmdtok(); // demandinterval
 
-                _cmd["demand_interval_seconds"] = atoi(cmdtok().c_str());
+                _cmd["demand_interval_minutes"] = atoi(cmdtok().c_str());
 
                 cmdtok(); // lpinterval
 
