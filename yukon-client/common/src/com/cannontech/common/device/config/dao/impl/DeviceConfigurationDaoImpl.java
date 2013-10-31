@@ -576,15 +576,15 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
 
     @Override
     @Transactional
-    public void removeSupportedDeviceType(int deviceConfigurationId, PaoType paoType) {
+    public void removeSupportedDeviceType(int deviceConfigurationId, PaoType paoType, List<Integer> unassignedDeviceIds) {
         // Get the categories that will be different following the removal of this pao type (if any.)
         Set<CategoryType> difference = getCategoryDifferenceForPaoTypeRemove(paoType, deviceConfigurationId);
-        
+
         Set<String> categoryTypes = new HashSet<>();
         for (CategoryType categoryType : difference) {
             categoryTypes.add(categoryType.value());
         }
-        
+
         if (!difference.isEmpty()) {
             // There are category types that need to be removed as a result of this pao type being removed.
             SqlStatementBuilder removeSql = new SqlStatementBuilder();
@@ -600,15 +600,36 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
             
             jdbcTemplate.update(removeSql);
         }
-        
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("DELETE FROM DeviceConfigDeviceTypes");
-        sql.append("WHERE DeviceConfigurationId").eq(deviceConfigurationId);
-        sql.append("   AND PaoType").eq_k(paoType);
-        
-        jdbcTemplate.update(sql);
+
+        {
+            // Remove this pao type from the list of supported types for the config.
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("DELETE FROM DeviceConfigDeviceTypes");
+            sql.append("WHERE DeviceConfigurationId").eq(deviceConfigurationId);
+            sql.append("   AND PaoType").eq_k(paoType);
+
+            jdbcTemplate.update(sql);
+        }
+
+        {
+            // Remove any device-to-config assignments that exist for devices of this type to this configuration.
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT M.DeviceId");
+            sql.append("FROM DeviceConfigurationDeviceMap M");
+            sql.append("   JOIN YukonPaObject PAO ON M.DeviceId = PAO.PaobjectId");
+            sql.append("WHERE M.DeviceConfigurationId").eq(deviceConfigurationId);
+            sql.append("   AND PAO.Type").eq_k(paoType);
+
+            unassignedDeviceIds.addAll(jdbcTemplate.query(sql, RowMapper.INTEGER));
+            
+            SqlStatementBuilder unassignSql = new SqlStatementBuilder();
+            unassignSql.append("DELETE FROM DeviceConfigurationDeviceMap");
+            unassignSql.append("WHERE DeviceId").in(unassignedDeviceIds);
+            
+            jdbcTemplate.update(unassignSql);
+        }
     }
-    
+
     @Override
     public Set<CategoryType> getCategoryDifferenceForPaoTypeRemove(PaoType paoType, int configId) {
         Set<PaoType> supportedDeviceTypes = getSupportedTypesForConfiguration(configId);

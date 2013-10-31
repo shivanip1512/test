@@ -1,5 +1,8 @@
 package com.cannontech.common.device.config.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
@@ -8,6 +11,7 @@ import com.cannontech.common.device.config.model.DeviceConfigCategory;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.device.config.model.jaxb.CategoryType;
 import com.cannontech.common.device.config.service.DeviceConfigurationService;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -107,5 +111,22 @@ public class DeviceConfigurationServiceImpl implements DeviceConfigurationServic
                                         DBChangeMsg.CAT_DEVICE_CONFIG, 
                                         CONFIG_OBJECT_TYPE, 
                                         DbChangeType.UPDATE);
+    }
+    
+    @Override
+    public void removeSupportedDeviceType(int deviceConfigurationId, PaoType paoType) {
+        List<Integer> unassignedDeviceIds = new ArrayList<>();
+        deviceConfigurationDao.removeSupportedDeviceType(deviceConfigurationId, paoType, unassignedDeviceIds);
+
+        for (Integer id : unassignedDeviceIds) {
+            // Send db change messages for all of the devices that were implicitly unassigned.
+            if (id != null) {
+                dbChangeManager.processDbChange(id.intValue(),
+                                                DBChangeMsg.CHANGE_CONFIG_DB, 
+                                                DBChangeMsg.CAT_DEVICE_CONFIG, 
+                                                DEVICE_OBJECT_TYPE, 
+                                                DbChangeType.DELETE);
+            }
+        }
     }
 }

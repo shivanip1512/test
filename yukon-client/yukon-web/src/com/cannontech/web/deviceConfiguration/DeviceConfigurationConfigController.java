@@ -237,7 +237,7 @@ public class DeviceConfigurationConfigController {
                                       YukonUserContext context, 
                                       int configId,
                                       PaoType paoType) {
-        deviceConfigurationDao.removeSupportedDeviceType(configId, paoType);
+        deviceConfigurationService.removeSupportedDeviceType(configId, paoType);
         
         String key = baseKey + ".config.removeTypeSuccess";
         flashScope.setConfirm(new YukonMessageSourceResolvable(key, paoType.getDbString()));

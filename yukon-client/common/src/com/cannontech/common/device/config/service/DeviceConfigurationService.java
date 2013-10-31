@@ -4,6 +4,7 @@ import com.cannontech.common.device.config.dao.InvalidDeviceTypeException;
 import com.cannontech.common.device.config.model.DeviceConfigCategory;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.device.config.model.jaxb.CategoryType;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
 
 public interface DeviceConfigurationService {
@@ -38,6 +39,14 @@ public interface DeviceConfigurationService {
      * @param categoryId the identifier of the category being removed.
      */
     public void deleteCategory(int categoryId);
+    
+    /**
+     * Makes the DAO call to remove a pao type from the list of supported pao types for a configuration, then sends
+     * a DBChange message corresponding to the devices that were implicitly unassigned as a result.
+     * @param deviceConfigurationId the identifier of the configuration whose supported types are being updated
+     * @param paoType the pao type being removed from the configuration.
+     */
+    public void removeSupportedDeviceType(int deviceConfigurationId, PaoType paoType);
     
     /**
      * Assign a configuration to a device.

@@ -113,8 +113,10 @@ public interface DeviceConfigurationDao {
      * Remove a pao type from the list of supported pao types for a configuration
      * @param deviceConfigurationId the identifier of the configuration whose supported types are being updated
      * @param paoType the pao type being removed from the configuration.
+     * @param unassignedDeviceIds the identifiers of the devices which were implicitly unassigned from the specified
+     *      configuration as a result of the specified device type being removed from the configuration.
      */
-    public void removeSupportedDeviceType(int deviceConfigurationId, PaoType paoType);
+    public void removeSupportedDeviceType(int deviceConfigurationId, PaoType paoType, List<Integer> unassignedDeviceIds);
     
     /**
      * Find the difference in category types for a configuration if the provided pao type were removed as a

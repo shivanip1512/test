@@ -63,8 +63,11 @@
     </form:form>
     
     <cti:displayForPageEditModes modes="VIEW,EDIT">
-        <tags:sectionContainer2 nameKey="warning"><i:inline key=".changeWarning"/></tags:sectionContainer2>
-        
+        <tags:sectionContainer2 nameKey="warning">
+            <div class="stacked"><i:inline key=".changeWarning"/></div>
+            <div><i:inline key=".unassignWarning"/></div>
+        </tags:sectionContainer2>
+
         <div class="column_6_18">
             <!-- CATEGORIES -->
             <div class="column one">

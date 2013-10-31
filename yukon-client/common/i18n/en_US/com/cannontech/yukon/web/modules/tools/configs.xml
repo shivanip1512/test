@@ -480,6 +480,7 @@
     <entry key="yukon.web.modules.tools.configs.config.configCategories">Device Configuration Categories</entry>
     <entry key="yukon.web.modules.tools.configs.config.confirmRemove.message">Are you sure you want to delete this configuration?</entry>
     <entry key="yukon.web.modules.tools.configs.config.changeWarning">Any changes made to this configuration will not update device configurations in the field. Configurations must be resent to all devices to apply any configuration changes.</entry>
+    <entry key="yukon.web.modules.tools.configs.config.unassignWarning">Removing a supported device type from a configuration will automatically unassign all devices of that type assigned this configuration.</entry>
     <entry key="yukon.web.modules.tools.configs.config.configCategories.description">Choose an existing instance of each of the categories below or create new categories to use for this configuration.</entry>
     <entry key="yukon.web.modules.tools.configs.config.missingCategories">This device configuration is missing selections for the following category types: {0}. Please assign a category for each of these types.</entry>
     <entry key="yukon.web.modules.tools.configs.config.noneSelected">(none selected)</entry>
