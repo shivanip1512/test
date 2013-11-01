@@ -48,13 +48,7 @@ public class ListBackingBean {
     }
 
     public void setItemsPerPage(Integer itemsPerPage) {
-        if (itemsPerPage == null) {
-            this.itemsPerPage = CtiUtilities.DEFAULT_ITEMS_PER_PAGE;
-        } else if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE) {
-            this.itemsPerPage = CtiUtilities.MAX_ITEMS_PER_PAGE;
-        } else {
-            this.itemsPerPage = itemsPerPage;
-        }
+        this.itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
     }
 
     public int getStartIndex() {
