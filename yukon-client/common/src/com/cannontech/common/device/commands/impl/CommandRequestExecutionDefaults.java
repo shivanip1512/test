@@ -1,40 +1,6 @@
 package com.cannontech.common.device.commands.impl;
 
-import static com.cannontech.common.device.DeviceRequestType.ARCHIVE_DATA_ANALYSIS_LP_READ;
-import static com.cannontech.common.device.DeviceRequestType.ASSET_AVAILABILITY_READ;
-import static com.cannontech.common.device.DeviceRequestType.CONTROL_CONNECT_DISCONNECT_COMAMND;
-import static com.cannontech.common.device.DeviceRequestType.DEMAND_RESET_COMMAND;
-import static com.cannontech.common.device.DeviceRequestType.DEMAND_RESET_COMMAND_VERIFY;
-import static com.cannontech.common.device.DeviceRequestType.DISCONNECT_STATUS_ATTRIBUTE_READ;
-import static com.cannontech.common.device.DeviceRequestType.GROUP_ATTRIBUTE_READ;
-import static com.cannontech.common.device.DeviceRequestType.GROUP_COMMAND;
-import static com.cannontech.common.device.DeviceRequestType.GROUP_COMMAND_VERIFY;
-import static com.cannontech.common.device.DeviceRequestType.GROUP_DEVICE_CONFIG_READ;
-import static com.cannontech.common.device.DeviceRequestType.GROUP_DEVICE_CONFIG_SEND;
-import static com.cannontech.common.device.DeviceRequestType.GROUP_DEVICE_CONFIG_VERIFY;
-import static com.cannontech.common.device.DeviceRequestType.GROUP_OUTAGE_PROCESSING_OUTAGE_LOGS_READ;
-import static com.cannontech.common.device.DeviceRequestType.GROUP_TAMPER_FLAG_PROCESSING_INTERNAL_STATUS_READ;
-import static com.cannontech.common.device.DeviceRequestType.GROUP_TAMPER_FLAG_PROCESSING_INTERNAL_STATUS_RESET;
-import static com.cannontech.common.device.DeviceRequestType.INVENTORY_RECONFIG;
-import static com.cannontech.common.device.DeviceRequestType.LM_HARDWARE_COMMAND;
-import static com.cannontech.common.device.DeviceRequestType.METER_INFORMATION_PING_COMMAND;
-import static com.cannontech.common.device.DeviceRequestType.METER_OUTAGES_WIDGET_ATTRIBUTE_READ;
-import static com.cannontech.common.device.DeviceRequestType.METER_READINGS_WIDGET_ATTRIBUTE_READ;
-import static com.cannontech.common.device.DeviceRequestType.MOVE_IN_MOVE_OUT_USAGE_READ;
-import static com.cannontech.common.device.DeviceRequestType.MULTISPEAK_FORMATTED_BLOCK_READ_EVENT;
-import static com.cannontech.common.device.DeviceRequestType.MULTISPEAK_METER_READ_EVENT;
-import static com.cannontech.common.device.DeviceRequestType.PEAK_REPORT_COMMAND;
-import static com.cannontech.common.device.DeviceRequestType.PHASE_DETECT_CLEAR;
-import static com.cannontech.common.device.DeviceRequestType.PHASE_DETECT_COMMAND;
-import static com.cannontech.common.device.DeviceRequestType.PHASE_DETECT_READ;
-import static com.cannontech.common.device.DeviceRequestType.PING_DEVICE_ON_ROUTE_COMMAND;
-import static com.cannontech.common.device.DeviceRequestType.ROUTE_DISCOVERY_PUTCONFIG_COMMAND;
-import static com.cannontech.common.device.DeviceRequestType.SCHEDULED_GROUP_ATTRIBUTE_READ;
-import static com.cannontech.common.device.DeviceRequestType.SCHEDULED_GROUP_COMMAND;
-import static com.cannontech.common.device.DeviceRequestType.SIMPLE_ATTRIBUTES_WIDGET_ATTRIBUTE_READ;
-import static com.cannontech.common.device.DeviceRequestType.TOU_SCHEDULE_COMMAND;
-import static com.cannontech.common.device.DeviceRequestType.TOU_WIDGET_ATTRIBUTE_READ;
-import static com.cannontech.common.device.DeviceRequestType.VEE_RE_READ;
+import static com.cannontech.common.device.DeviceRequestType.*;
 
 import java.util.Map;
 
@@ -111,6 +77,7 @@ public final class CommandRequestExecutionDefaults {
         b.put(MULTISPEAK_METER_READ_EVENT,                        new ExecutionInfo(true, 13, false));
         b.put(MULTISPEAK_FORMATTED_BLOCK_READ_EVENT,              new ExecutionInfo(true, 13, false));
         b.put(ASSET_AVAILABILITY_READ,                            new ExecutionInfo(false, 8, false));
+        b.put(LM_DEVICE_DETAILS_ATTRIBUTE_READ,                   new ExecutionInfo(false, 8, false));
         infoLookup = b.build();
     }
 

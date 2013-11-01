@@ -34,7 +34,7 @@ import com.cannontech.web.widget.support.WidgetParameterHelper;
 
 public class SimpleAttributesWidget extends WidgetControllerBase {
     
-    @Autowired private AttributeReadingWidgetHelper widgetHelper;
+    @Autowired private AttributeReadingHelper widgetHelper;
     @Autowired private AttributeService attributeService;
     @Autowired private DeviceAttributeReadService deviceAttributeReadService;
     @Autowired private DeviceDao deviceDao;
@@ -97,12 +97,10 @@ public class SimpleAttributesWidget extends WidgetControllerBase {
         
         Set<Attribute> allExistingAttributes = attributeService.getExistingAttributes(device, attributes);
 
-        ModelAndView mav = widgetHelper.initiateRead(request, 
-                                                     device, 
-                                                     allExistingAttributes, 
-                                                     "common/deviceAttributeReadResult.jsp", 
-                                                     DeviceRequestType.SIMPLE_ATTRIBUTES_WIDGET_ATTRIBUTE_READ);
-        
+        ModelAndView mav = new ModelAndView("common/deviceAttributeReadResult.jsp");
+        widgetHelper.initiateRead(request, device, allExistingAttributes, mav.getModelMap(), 
+                                  DeviceRequestType.SIMPLE_ATTRIBUTES_WIDGET_ATTRIBUTE_READ);
+
         return mav;
     }
 

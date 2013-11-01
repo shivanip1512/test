@@ -35,7 +35,7 @@ import com.google.common.collect.Sets;
  */
 public class MeterReadingsWidget extends WidgetControllerBase {
 
-    @Autowired private AttributeReadingWidgetHelper widgetHelper;
+    @Autowired private AttributeReadingHelper widgetHelper;
     @Autowired private DeviceAttributeReadService deviceAttributeReadService;
     @Autowired private PaoLoadingService paoLoadingService;
     @Autowired private AttributeService attributeService;
@@ -109,12 +109,11 @@ public class MeterReadingsWidget extends WidgetControllerBase {
         LiteYukonUser user = ServletUtil.getYukonUser(request);
         meteringEventLogService.readNowPushedForReadingsWidget(user, meter.getDeviceId());
         
-        return widgetHelper.initiateRead(request, 
-                                 meter,
-                                 allExistingAttributes, 
-                                 "common/deviceAttributeReadResult.jsp", 
+        ModelAndView mav = new ModelAndView("common/deviceAttributeReadResult.jsp");
+        widgetHelper.initiateRead(request, meter,allExistingAttributes, mav.getModelMap(), 
                                  DeviceRequestType.METER_READINGS_WIDGET_ATTRIBUTE_READ);
 
+        return mav;
     }
 
 }

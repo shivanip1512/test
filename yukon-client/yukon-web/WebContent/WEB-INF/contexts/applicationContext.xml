@@ -2001,7 +2001,7 @@
     <bean id="exportFieldValidator" class="com.cannontech.web.amr.archivedValuesExporter.validator.ExportFieldValidator"/>
     <bean id="dataRangeValidator" class="com.cannontech.web.amr.archivedValuesExporter.validator.DataRangeValidator"/>
     
-    <bean id="widgetHelper" class="com.cannontech.web.widget.AttributeReadingWidgetHelper"/>
+    <bean id="widgetHelper" class="com.cannontech.web.widget.AttributeReadingHelper"/>
     
     <bean id="lmReportedDataBackingService" class="com.cannontech.web.updater.dr.LmReportedDataBackingService"/>
     <jms:listener-container 

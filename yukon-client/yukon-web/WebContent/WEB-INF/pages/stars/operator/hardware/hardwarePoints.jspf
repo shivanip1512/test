@@ -6,30 +6,39 @@
 
 <script type="text/javascript">
 jQuery(function() {
-    jQuery(document).on('click', '#rfReadNow', function(event) {
-        var url = '<cti:url value="/stars/operator/hardware/rf/readNow"/>';
-        
-        jQuery.ajax({
-            url: url,
-            method: 'get',
-            data: {'deviceId': '${hardware.deviceId}'},
-            success: function(data) {
-                jQuery('#rfCommandStatus').html(data.message);
-                jQuery('#rfCommandStatus').show();
-                if (data.success ==  true) {
-                    jQuery('#rfCommandStatus').addClass('successMessage').removeClass('errorMessage');
-                } else {
-                    jQuery('#rfCommandStatus').removeClass('successMessage').addClass('errorMessage');
+    <c:if test="${hardware.hardwareType.rf}">
+        setupClickHandler('#rfReadNow', '<cti:url value="/stars/operator/hardware/rf/readNow"/>');
+    </c:if>
+    <c:if test="${hardware.hardwareType eq 'LCR_3102'}">
+        setupClickHandler('#plcReadNow', '<cti:url value="/stars/operator/hardware/plc/readNow"/>');
+    </c:if>
+    
+    function setupClickHandler(buttonId, url) {
+        jQuery(document).on('click', buttonId, function(event) {
+            jQuery.ajax({
+                url: url,
+                method: 'get',
+                data: {'deviceId': '${hardware.deviceId}'},
+                success: function(data) {
+                    jQuery('#commandStatus').html(data.message);
+                    jQuery('#commandStatus').show();
+                    if (data.success ==  true) {
+                        jQuery('#commandStatus').addClass('successMessage').removeClass('errorMessage');
+                    } else {
+                        jQuery('#commandStatus').removeClass('successMessage').addClass('errorMessage');
+                    }
+                    jQuery(buttonId).removeAttr('disabled');
+                    jQuery(buttonId + ' i').hide();
+                    jQuery(buttonId).find(".label").text('<cti:msg2 key=".readNow.label"/>');
+                },
+                error: function() {
+                    jQuery(buttonId).removeAttr('disabled');
+                    jQuery(buttonId + ' i').hide();
+                    jQuery(buttonId).find(".label").text('<cti:msg2 key=".readNow.label"/>');
                 }
-                jQuery('#rfReadNow').removeAttr('disabled');
-                jQuery('#rfReadNow i').hide();
-            },
-            error: function() {
-                jQuery('#rfReadNow').removeAttr('disabled');
-                jQuery('#rfReadNow i').hide();
-            }
+            });
         });
-    });
+    }
 });
 </script>
 
@@ -49,8 +58,8 @@ jQuery(function() {
             </div>
         </c:if>
     </c:forEach>
-        <c:if test="${hardware.hardwareType.rf}">
-            <div id="rfCommandStatus" class="dn errorMessage rfCommandMsg"></div>
+        <c:if test="${hardware.hardwareType.rf or hardware.hardwareType eq 'LCR_3102'}">
+            <div id="commandStatus" class="dn errorMessage rfCommandMsg"></div>
         </c:if>
     <div class="actionArea">
         <cti:url var="pointsUrl" value="/common/operator/points">
@@ -60,6 +69,9 @@ jQuery(function() {
         <a href="${pointsUrl}"><i:inline key="yukon.web.defaults.showAll"/></a>
         <c:if test="${hardware.hardwareType.rf}">
             <cti:button id="rfReadNow" nameKey="readNow" busy="true" classes="f-disableAfterClick"/>
+        </c:if>
+        <c:if test="${hardware.hardwareType eq 'LCR_3102'}">
+            <cti:button id="plcReadNow" nameKey="readNow" busy="true" classes="f-disableAfterClick"/>
         </c:if>
     </div>
 </tags:boxContainer2>

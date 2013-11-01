@@ -24,7 +24,7 @@ public class TouWidget extends WidgetControllerBase {
 
     @Autowired private AttributeService attributeService;
     @Autowired private DeviceAttributeReadService deviceAttributeReadService;
-    @Autowired private AttributeReadingWidgetHelper widgetHelper;
+    @Autowired private AttributeReadingHelper widgetHelper;
 
     @Override
     public ModelAndView render(HttpServletRequest request,
@@ -57,17 +57,15 @@ public class TouWidget extends WidgetControllerBase {
     public ModelAndView read(HttpServletRequest request, HttpServletResponse response)
     throws ServletRequestBindingException {
         YukonMeter meter = widgetHelper.getMeter(request);
-        
+
         // Finds the existing attributes for the supplied meter
         Set<Attribute> existingTouAttributes = 
                 attributeService.getExistingAttributes(meter, AttributeHelper.getTouAttributes());
-        
-        ModelAndView mav = widgetHelper.initiateRead(request, 
-                                 meter, 
-                                 existingTouAttributes, 
-                                 "common/deviceAttributeReadResult.jsp", 
+
+        ModelAndView mav = new ModelAndView("common/deviceAttributeReadResult.jsp");
+        widgetHelper.initiateRead(request, meter, existingTouAttributes, mav.getModelMap(),
                                  DeviceRequestType.TOU_WIDGET_ATTRIBUTE_READ);
-        
+
         if (existingTouAttributes.size() > 0) {
             mav.addObject("touAttributesAvailable", true);
             for (Attribute touAttribute : existingTouAttributes) {
@@ -76,7 +74,7 @@ public class TouWidget extends WidgetControllerBase {
         } else {
             mav.addObject("touAttributesAvailable", false);
         }
-        
+
         return mav;
     }
 

@@ -40,7 +40,7 @@ import com.google.common.collect.ListMultimap;
 public class RfnOutagesWidget extends AdvancedWidgetControllerBase {
 
     @Autowired private MeterDao meterDao;
-    @Autowired private AttributeReadingWidgetHelper widgetHelper;
+    @Autowired private AttributeReadingHelper widgetHelper;
     @Autowired private RawPointHistoryDao rphDao;
     @Autowired private AttributeService attributeService;
     
