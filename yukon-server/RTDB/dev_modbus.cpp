@@ -680,6 +680,20 @@ string ModbusDevice::getDescription(const CtiCommandParser &parse) const
    return getName();
 }
 
+string ModbusDevice::getSQLCoreStatement() const
+{
+    static const string sqlCore =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, YP.disableflag, "
+                                     "DV.deviceid, DV.alarminhibit, DV.controlinhibit, CS.portid, DUS.phonenumber, "
+                                     "DUS.minconnecttime, DUS.maxconnecttime, DUS.linesettings, DUS.baudrate, "
+                                     "AD.masteraddress, AD.slaveaddress, AD.postcommwait "
+                                   "FROM Device DV, DeviceAddress AD, DeviceDirectCommSettings CS, YukonPAObject YP "
+                                     "LEFT OUTER JOIN DeviceDialupSettings DUS ON YP.paobjectid = DUS.deviceid "
+                                   "WHERE YP.paobjectid = AD.deviceid AND YP.paobjectid = DV.deviceid AND "
+                                     "YP.paobjectid = CS.deviceid";
+
+    return sqlCore;
+}
+
 void ModbusDevice::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
    Inherited::DecodeDatabaseReader(rdr);       // get the base class handled

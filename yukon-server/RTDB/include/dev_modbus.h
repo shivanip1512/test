@@ -61,6 +61,8 @@ public:
 
     ModbusDevice& operator=(const ModbusDevice& aRef);
 
+    virtual std::string getSQLCoreStatement() const;
+
     virtual std::string getDescription(const CtiCommandParser & parse) const;
     virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
