@@ -914,29 +914,10 @@ INT PorterMainFunction (INT argc, CHAR **argv)
         }
         else
         {
-#ifdef HARDLOCK
-            time(&timeStart);
-#endif
-
             if(PeekConsoleInput(hStdIn, &inRecord, 1L, &Count) && (Count > 0))     // There is something ther if we succeed.
             {
                 if(inRecord.EventType != KEY_EVENT)
                 {
-#ifdef HARDLOCK
-                    /* HARDLOCK check once every 5 minutes */
-                    time (&timeStop);
-                    if(difftime(timeStop, timeStart) >= 300)
-                    {
-                        if(HL_AVAIL () != STATUS_OK)
-                        {
-                            fprintf(stdout, "Required Hardlock Not Detected.\n");
-                            Result = HL_LOGOUT ();
-                            CTIExit (-1, -1);
-                        }
-                        time (&timeStart);
-                    }
-#endif
-
                     ReadConsoleInput(hStdIn, &inRecord, 1L, &Count);     // Read out the offending input.
                 }
                 else    // These are to only kind we care about!
@@ -987,16 +968,10 @@ INT PorterMainFunction (INT argc, CHAR **argv)
         system->setDynamicInfo(CtiTableDynamicPaoInfo::Key_VerificationSequence, VerificationSequenceGen());
     }
 
-    DeviceManager.writeDynamicPaoInfo();
-
     PorterCleanUp(0);
     _CrtSetAllocHook(pfnOldCrtAllocHook);
 
-#ifdef HARDLOCK
-
-    // LOGOUT HARDLOCK
-    Result = HL_LOGOUT ();
-#endif
+    DeviceManager.writeDynamicPaoInfo();
 
     return 0;
 }

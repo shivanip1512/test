@@ -298,6 +298,11 @@ void PilServer::mainThread()
                 bServerClosing = TRUE;
                 bQuit = TRUE;
 
+                if( CtiDeviceSPtr systemDevice = DeviceManager->getDeviceByID(0) )
+                {
+                    systemDevice->setDynamicInfo(CtiTableDynamicPaoInfo::Key_RfnE2eRequestId, _rfnRequestId);
+                }
+
                 // Force the inherited Listener socket to close!
                 Inherited::shutdown();                   // Should cause the ConnThread_ to be closed!
                                                          //
@@ -309,11 +314,6 @@ void PilServer::mainThread()
                 catch(...)
                 {
                     // Dont really care, we are shutting down.
-                }
-
-                if( CtiDeviceSPtr systemDevice = DeviceManager->getDeviceByID(0) )
-                {
-                    systemDevice->setDynamicInfo(CtiTableDynamicPaoInfo::Key_RfnE2eRequestId, _rfnRequestId);
                 }
 
                 if( ConnThread_.join(10000) == RW_THR_TIMEOUT) // Wait for the Conn thread to die.
@@ -776,7 +776,7 @@ struct RfnDeviceResultProcessor : Devices::DeviceHandler
 
             if( const CtiPointSPtr p = dev.getDevicePointOffsetTypeEqual(pd.offset, pd.type) )
             {
-                retMsg->PointData().push_back(
+                std::auto_ptr<CtiPointDataMsg> pdMsg(
                         new CtiPointDataMsg(
                                 p->getID(),
                                 pd.value,
@@ -784,6 +784,10 @@ struct RfnDeviceResultProcessor : Devices::DeviceHandler
                                 p->getType(),
                                 pd.description,
                                 pd.tags));
+
+                pdMsg->setTime(pd.time);
+
+                retMsg->PointData().push_back(pdMsg.release());
 
                 pointDataDescription << p->getName();
             }
@@ -798,11 +802,12 @@ struct RfnDeviceResultProcessor : Devices::DeviceHandler
                 pointDataDescription << "[Unknown]";
             }
 
-            pointDataDescription << " " << desolvePointType(pd.type) << " " << pd.offset << ": " << pd.value << " @ " << pd.time;
+            pointDataDescription << " - " << desolvePointType(pd.type) << " " << pd.offset << ": " << pd.value << " @ " << pd.time;
         }
 
         retMsg->setResultString(retMsg->ResultString() + pointDataDescription.str());
 
+        vgList.push_back(retMsg->replicateMessage());
         retList.push_back(retMsg.release());
 
         if( ! result.status )
