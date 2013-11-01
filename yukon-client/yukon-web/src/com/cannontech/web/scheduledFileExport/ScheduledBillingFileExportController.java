@@ -155,13 +155,9 @@ public class ScheduledBillingFileExportController {
 	}
 	
 	@RequestMapping
-	public String jobs(ModelMap model, @RequestParam(defaultValue=CtiUtilities.DEFAULT_ITEMS_PER_PAGE_STRING) int itemsPerPage,
-			@RequestParam(defaultValue="1") int page) {
+	public String jobs(ModelMap model, Integer itemsPerPage, @RequestParam(defaultValue="1") int page) {
 		
-	    if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE) {
-	        // Limit the maximum items per page
-	        itemsPerPage = CtiUtilities.MAX_ITEMS_PER_PAGE;
-	    }
+        itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
 		scheduledFileExportJobsTagService.populateModel(model, FileExportType.BILLING, ScheduledExportType.BILLING, page, itemsPerPage);
 		return "jobs.jsp";
 	}

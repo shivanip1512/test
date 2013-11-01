@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -113,7 +114,7 @@ public class BankMoveController {
     }
     
     @RequestMapping
-    public String movedCapBanks(HttpServletRequest request, ModelMap model, YukonUserContext context) {
+    public String movedCapBanks(HttpServletRequest request, ModelMap model, YukonUserContext context) throws ServletRequestBindingException {
         CapControlCache filterCapControlCache = cacheFactory.createUserAccessFilteredCache(context.getYukonUser());
         
         List<Area> areas = filterCapControlCache.getCbcAreas();
@@ -130,13 +131,9 @@ public class BankMoveController {
             }
         }
         
-        int itemsPerPage = ServletRequestUtils.getIntParameter(request, "itemsPerPage", CtiUtilities.DEFAULT_ITEMS_PER_PAGE);
+        int itemsPerPage = CtiUtilities.itemsPerPage(ServletRequestUtils.getIntParameter(request, "itemsPerPage"));
         int currentPage = ServletRequestUtils.getIntParameter(request, "page", 1);
         
-        if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE) {
-            // Limit the maximum items per page
-            itemsPerPage = CtiUtilities.MAX_ITEMS_PER_PAGE;
-        }
         int startIndex = (currentPage - 1) * itemsPerPage;
         int toIndex = startIndex + itemsPerPage;
         int numberOfResults = movedCaps.size();

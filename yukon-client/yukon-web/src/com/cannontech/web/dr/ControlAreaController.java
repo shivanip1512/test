@@ -253,10 +253,7 @@ public class ControlAreaController extends DemandResponseControllerBase {
         List<AssetAvailabilityDetails> resultsList = getResultsList(controlArea, userContext, null);
         sortAssetDetails(resultsList, sortBy, descending, userContext);
         
-        if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE) {
-            // Limit the maximum items per page
-            itemsPerPage = CtiUtilities.MAX_ITEMS_PER_PAGE;
-        }
+        itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
         SearchResults<AssetAvailabilityDetails> result = 
                 SearchResults.pageBasedForWholeList(page, itemsPerPage, resultsList);
 
@@ -295,10 +292,7 @@ public class ControlAreaController extends DemandResponseControllerBase {
         List<AssetAvailabilityDetails> resultsList = getResultsList(controlArea, userContext, filters);
         sortAssetDetails(resultsList, sortBy, descending, userContext);
 
-        if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE) {
-            // Limit the maximum items per page
-            itemsPerPage = CtiUtilities.MAX_ITEMS_PER_PAGE;
-        }
+        itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
         SearchResults<AssetAvailabilityDetails> result = 
                 SearchResults.pageBasedForWholeList(page, itemsPerPage, resultsList);
         

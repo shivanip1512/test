@@ -40,14 +40,10 @@ public class FileExportHistoryController {
 	
 	@RequestMapping
 	public String list(ModelMap model, HttpServletRequest request, YukonUserContext userContext,
-			FlashScope flashScope, String name, String initiator, Integer entryId,
-			@RequestParam(defaultValue=CtiUtilities.DEFAULT_ITEMS_PER_PAGE_STRING) int itemsPerPage, 
+			FlashScope flashScope, String name, String initiator, Integer entryId, Integer itemsPerPage, 
 			@RequestParam(defaultValue="1") int page) {
 
-	    if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE) {
-	        // Limit the maximum items per page
-	        itemsPerPage = CtiUtilities.MAX_ITEMS_PER_PAGE;
-	    }
+        itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
 		int startIndex = (page -1) * itemsPerPage;
 		
 		List<ExportHistoryEntry> entries;

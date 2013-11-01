@@ -282,10 +282,7 @@ public class ControlAuditController {
             break;
         }
         
-        if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE) {
-            // Limit the maximum items per page
-            itemsPerPage = CtiUtilities.MAX_ITEMS_PER_PAGE;
-        }
+        itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
         SearchResults<AuditRow> pagedRows = SearchResults.pageBasedForWholeList(page, itemsPerPage, inventory);
         model.addAttribute("result", pagedRows);
         model.addAttribute("type", type);

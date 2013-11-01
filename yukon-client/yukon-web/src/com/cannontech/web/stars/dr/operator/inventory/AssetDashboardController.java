@@ -222,11 +222,7 @@ public class AssetDashboardController {
             
             // PAGING
             if (page == null) page = 1;
-            if (itemsPerPage == null) {
-                itemsPerPage = CtiUtilities.DEFAULT_ITEMS_PER_PAGE;
-            } else if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE) {
-                itemsPerPage = CtiUtilities.MAX_ITEMS_PER_PAGE;
-            }
+            itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
             int startIndex = (page - 1) * itemsPerPage;
             
             SearchResults<InventorySearchResult> results = inventoryDao.search(inventorySearch, 

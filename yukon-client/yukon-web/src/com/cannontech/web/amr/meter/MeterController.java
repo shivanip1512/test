@@ -95,14 +95,10 @@ public class MeterController extends MultiActionController {
                                           url + ((urlParams != null) ? "?" + urlParams : ""));
         
         // Get the search result count
-        int itemsPerPage = ServletRequestUtils.getIntParameter(request, "itemsPerPage", CtiUtilities.DEFAULT_ITEMS_PER_PAGE);
+        int itemsPerPage = CtiUtilities.itemsPerPage(ServletRequestUtils.getIntParameter(request, "itemsPerPage"));
         
         // Get the search start index
         int page = ServletRequestUtils.getIntParameter(request, "page", 1);
-        if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE) {
-            // Limit the maximum items per page
-            itemsPerPage = CtiUtilities.MAX_ITEMS_PER_PAGE;
-        }
         int startIndex = (page - 1) * itemsPerPage;
         if (request.getParameter("Filter") != null) {
             startIndex = 0;

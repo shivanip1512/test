@@ -103,10 +103,7 @@ public class OperatorThermostatManualController {
 
         int itemsPerPage = ServletRequestUtils.getIntParameter(request, "itemsPerPage", 10);
         int currentPage = ServletRequestUtils.getIntParameter(request, "page", 1);
-        if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE) {
-            // Limit the maximum items per page
-            itemsPerPage = CtiUtilities.MAX_ITEMS_PER_PAGE;
-        }
+        itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
 
         SearchResults<ThermostatEvent> result = SearchResults.pageBasedForWholeList(currentPage, itemsPerPage, eventHistoryList);
         modelMap.addAttribute("searchResult", result);

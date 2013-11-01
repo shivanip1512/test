@@ -127,10 +127,7 @@ public class ProgramController extends ProgramControllerBase {
         List<AssetAvailabilityDetails> resultsList = getResultsList(program, userContext, null);
         sortAssetDetails(resultsList, sortBy, descending, userContext);
         
-        if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE) {
-            // Limit the maximum items per page
-            itemsPerPage = CtiUtilities.MAX_ITEMS_PER_PAGE;
-        }
+        itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
         SearchResults<AssetAvailabilityDetails> result = 
                 SearchResults.pageBasedForWholeList(page, itemsPerPage, resultsList);
 
@@ -175,10 +172,7 @@ public class ProgramController extends ProgramControllerBase {
         List<AssetAvailabilityDetails> resultsList = getResultsList(program, userContext, filters);
         sortAssetDetails(resultsList, sortBy, descending, userContext);
 
-        if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE) {
-            // Limit the maximum items per page
-            itemsPerPage = CtiUtilities.MAX_ITEMS_PER_PAGE;
-        }
+        itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
         SearchResults<AssetAvailabilityDetails> result = 
                 SearchResults.pageBasedForWholeList(page, itemsPerPage, resultsList);
         

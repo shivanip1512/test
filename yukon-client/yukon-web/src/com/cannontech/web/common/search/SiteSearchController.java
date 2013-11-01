@@ -36,13 +36,10 @@ public class SiteSearchController {
 
     @RequestMapping(value="/search", method=RequestMethod.GET)
     public String search(@RequestParam(value="q", required=false) String searchString,
-            @RequestParam(defaultValue="10") int itemsPerPage, @RequestParam(defaultValue="1") int page,
+            Integer itemsPerPage, @RequestParam(defaultValue="1") int page,
             ModelMap model, YukonUserContext userContext, FlashScope flashScope) {
 
-        if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE) {
-            // Limit the maximum items per page
-            itemsPerPage = CtiUtilities.MAX_ITEMS_PER_PAGE;
-        }
+        itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
         int startIndex = (page - 1) * itemsPerPage;
         searchString = siteSearchService.sanitizeSearchStr(searchString);
 

@@ -292,13 +292,9 @@ public class MeterEventsReportController {
     }
     
     @RequestMapping
-    public String jobs(ModelMap model, @RequestParam(defaultValue=CtiUtilities.DEFAULT_ITEMS_PER_PAGE_STRING) int itemsPerPage, 
-                       @RequestParam(defaultValue="1") int page) {
-		
-    if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE) {
-        // Limit the maximum items per page
-        itemsPerPage = CtiUtilities.MAX_ITEMS_PER_PAGE;
-    }
+    public String jobs(ModelMap model, Integer itemsPerPage, @RequestParam(defaultValue="1") int page) {
+
+        itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
 		scheduledFileExportJobsTagService.populateModel(model, FileExportType.METER_EVENTS, ScheduledExportType.METER_EVENT, page, itemsPerPage);
 		return "meterEventsReport/jobs.jsp";
 	}

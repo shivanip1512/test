@@ -77,12 +77,7 @@ public class BillingController {
     @RequestMapping(method = RequestMethod.GET, value = "_jobs.html")
     public String showJobs(ModelMap model, Integer itemsPerPage, Integer page) {
 
-        if (itemsPerPage == null) {
-            itemsPerPage = CtiUtilities.DEFAULT_ITEMS_PER_PAGE;
-        } else if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE) {
-            // Limit the maximum items per page
-            itemsPerPage = CtiUtilities.MAX_ITEMS_PER_PAGE;
-        }
+        itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
         if (page == null){
             page = DEFAULT_PAGE_INDEX_ONE_BASED;
         }

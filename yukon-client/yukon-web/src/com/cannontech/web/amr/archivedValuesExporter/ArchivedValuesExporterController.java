@@ -137,8 +137,7 @@ public class ArchivedValuesExporterController {
 
     @RequestMapping
     public String view(ModelMap model, HttpServletRequest request, YukonUserContext userContext, 
-                       @ModelAttribute ArchivedValuesExporter archivedValuesExporter, 
-                       @RequestParam(defaultValue=CtiUtilities.DEFAULT_ITEMS_PER_PAGE_STRING) int itemsPerPage, 
+                       @ModelAttribute ArchivedValuesExporter archivedValuesExporter, Integer itemsPerPage, 
                        @RequestParam(defaultValue=DEFAULT_PAGES_STRING) int page) 
                        throws ServletRequestBindingException, DeviceCollectionCreationException {
         
@@ -172,10 +171,7 @@ public class ArchivedValuesExporterController {
             archivedValuesExporter.setDeviceCollection(deviceCollection);
         }
         
-        if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE) {
-            // Limit the maximum items per page
-            itemsPerPage = CtiUtilities.MAX_ITEMS_PER_PAGE;
-        }
+        itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
         
         //Jobs List Prep
         scheduledFileExportJobsTagService.populateModel(model, FileExportType.ARCHIVED_DATA_EXPORT, ScheduledExportType.ARCHIVED_DATA_EXPORT, page, itemsPerPage);

@@ -132,10 +132,7 @@ public class EventLogUIServiceImpl implements EventLogUIService {
         }
         UiFilter<EventLog> filter = UiFilterList.wrap(filters);
         
-        if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE) {
-            // Limit the maximum items per page
-            itemsPerPage = CtiUtilities.MAX_ITEMS_PER_PAGE;
-        }
+        itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
         
         // Process search results
         SearchResults<EventLog> searchResult =

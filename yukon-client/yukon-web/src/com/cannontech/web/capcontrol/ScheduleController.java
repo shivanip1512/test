@@ -20,6 +20,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -89,7 +90,7 @@ public class ScheduleController {
 	}
 	
 	@RequestMapping
-	public String scheduleAssignments(HttpServletRequest request, LiteYukonUser user, ModelMap model) {
+	public String scheduleAssignments(HttpServletRequest request, LiteYukonUser user, ModelMap model) throws ServletRequestBindingException {
 	    
         boolean hasEditingRole = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.CBC_DATABASE_EDIT, user);
 	    boolean hasCapBankRole = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ALLOW_CAPBANK_CONTROLS, user);
@@ -98,12 +99,8 @@ public class ScheduleController {
 	    model.addAttribute("hasActionRoles", hasCapBankRole && hasSubbusRole);
 	    
 		//Get items per page and start index
-		int itemsPerPage = ServletRequestUtils.getIntParameter(request, "itemsPerPage", CtiUtilities.DEFAULT_ITEMS_PER_PAGE);
+        int itemsPerPage = CtiUtilities.itemsPerPage(ServletRequestUtils.getIntParameter(request, "itemsPerPage"));
 		int currentPage = ServletRequestUtils.getIntParameter(request, "page", 1);
-	    if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE) {
-	        // Limit the maximum items per page
-	        itemsPerPage = CtiUtilities.MAX_ITEMS_PER_PAGE;
-	    }
         int startIndex = (currentPage - 1) * itemsPerPage;
         
 		//Create filters
@@ -146,18 +143,14 @@ public class ScheduleController {
     }
 	
 	@RequestMapping
-    public String schedules(HttpServletRequest request, LiteYukonUser user, ModelMap mav) {
+    public String schedules(HttpServletRequest request, LiteYukonUser user, ModelMap mav) throws ServletRequestBindingException {
 	    boolean hasEditingRole = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user);
 	    mav.addAttribute("hasEditingRole", hasEditingRole);
 	    List<PAOSchedule> schedList = paoScheduleDao.getAllPaoScheduleNames();
         Collections.sort(schedList);
         
-        int itemsPerPage = ServletRequestUtils.getIntParameter(request, "itemsPerPage", CtiUtilities.DEFAULT_ITEMS_PER_PAGE);
+        int itemsPerPage = CtiUtilities.itemsPerPage(ServletRequestUtils.getIntParameter(request, "itemsPerPage"));
         int currentPage = ServletRequestUtils.getIntParameter(request, "page", 1);
-        if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE) {
-            // Limit the maximum items per page
-            itemsPerPage = CtiUtilities.MAX_ITEMS_PER_PAGE;
-        }
         int startIndex = (currentPage - 1) * itemsPerPage;
         int toIndex = startIndex + itemsPerPage;
         int numberOfResults = schedList.size();

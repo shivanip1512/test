@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -28,15 +29,11 @@ public class StrategyController {
     private StrategyDao strategyDao = null;
     
     @RequestMapping
-    public String strategies(HttpServletRequest request, YukonUserContext userContext, ModelMap mav) {
+    public String strategies(HttpServletRequest request, YukonUserContext userContext, ModelMap mav) throws ServletRequestBindingException {
         List<ViewableStrategy> strategies = strategyDao.getAllViewableStrategies(userContext);
         
-        int itemsPerPage = ServletRequestUtils.getIntParameter(request, "itemsPerPage", CtiUtilities.DEFAULT_ITEMS_PER_PAGE);
+        int itemsPerPage = CtiUtilities.itemsPerPage(ServletRequestUtils.getIntParameter(request, "itemsPerPage"));
         int currentPage = ServletRequestUtils.getIntParameter(request, "page", 1);
-        if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE) {
-            // Limit the maximum items per page
-            itemsPerPage = CtiUtilities.MAX_ITEMS_PER_PAGE;
-        }
         int startIndex = (currentPage - 1) * itemsPerPage;
         int toIndex = startIndex + itemsPerPage;
         int numberOfResults = strategies.size();

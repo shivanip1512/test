@@ -19,6 +19,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
@@ -205,7 +206,7 @@ public class ZoneDetailController {
 
     @RequestMapping(method = RequestMethod.GET)
     public String voltageDeltas(ModelMap model, HttpServletRequest request,
-                                YukonUserContext context, int zoneId, Boolean isSpecialArea) {
+                                YukonUserContext context, int zoneId, Boolean isSpecialArea) throws ServletRequestBindingException {
         setupDeltas(model, request, zoneId);
         setupBreadCrumbs(model, context, zoneId, isSpecialArea);
         boolean hasEditingRole = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT,
@@ -458,16 +459,12 @@ public class ZoneDetailController {
         model.addAttribute("regulatorPointMappingsMap", pointMappingsMap);
     }
     
-    private void setupDeltas(ModelMap model, HttpServletRequest request, int zoneId) {
+    private void setupDeltas(ModelMap model, HttpServletRequest request, int zoneId) throws ServletRequestBindingException {
         List<Integer> bankIds = zoneService.getCapBankIdsForZoneId(zoneId);
         
         List<CapBankPointDelta> pointDeltas = zoneService.getAllPointDeltasForBankIds(bankIds);
         
-        int itemsPerPage = ServletRequestUtils.getIntParameter(request, "itemsPerPage", 10);
-        if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE) {
-            // Limit the maximum items per page
-            itemsPerPage = CtiUtilities.MAX_ITEMS_PER_PAGE;
-        }
+        int itemsPerPage = CtiUtilities.itemsPerPage(ServletRequestUtils.getIntParameter(request, "itemsPerPage"));
         int currentPage = ServletRequestUtils.getIntParameter(request, "page", 1);
         int startIndex = (currentPage - 1) * itemsPerPage;
         

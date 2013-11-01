@@ -41,8 +41,7 @@ public class AdaResultsController {
     @Autowired private RolePropertyDao rolePropertyDao;
     
     @RequestMapping
-    public String view(ModelMap model, int analysisId,
-            @RequestParam(defaultValue=CtiUtilities.DEFAULT_ITEMS_PER_PAGE_STRING) int itemsPerPage, 
+    public String view(ModelMap model, int analysisId, Integer itemsPerPage, 
             @RequestParam(defaultValue="1") int page, 
             YukonUserContext userContext, FlashScope flashScope) throws ServletRequestBindingException, DeviceCollectionCreationException {
         Analysis analysis = archiveDataAnalysisDao.getAnalysisById(analysisId);
@@ -60,10 +59,7 @@ public class AdaResultsController {
         
         // Page the result
         List<PaoIdentifier> deviceIds = archiveDataAnalysisDao.getRelevantDeviceIds(analysisId);
-        if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE) {
-            // Limit the maximum items per page
-            itemsPerPage = CtiUtilities.MAX_ITEMS_PER_PAGE;
-        }
+        itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
         int startIndex = (page - 1) * itemsPerPage;
         int toIndex = startIndex + itemsPerPage;
         int numberOfResults = deviceIds.size();

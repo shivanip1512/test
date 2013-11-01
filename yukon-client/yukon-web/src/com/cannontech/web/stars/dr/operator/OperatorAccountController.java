@@ -280,11 +280,7 @@ public class OperatorAccountController {
 		if(page == null){
             page = 1;
         }
-        if(itemsPerPage == null){
-            itemsPerPage = CtiUtilities.DEFAULT_ITEMS_PER_PAGE;
-        } else if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE) {
-            itemsPerPage = CtiUtilities.MAX_ITEMS_PER_PAGE;
-        }
+        itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
         int startIndex = (page - 1) * itemsPerPage;
 		
         // it is important for searching to use the energyCompany of the user

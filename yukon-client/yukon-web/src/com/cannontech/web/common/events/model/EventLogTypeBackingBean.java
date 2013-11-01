@@ -62,12 +62,7 @@ public class EventLogTypeBackingBean {
         return itemsPerPage;
     }
     public void setItemsPerPage(int itemsPerPage) {
-        if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE) {
-            // Restrict the maximum value (yuk-11779)
-            this.itemsPerPage = CtiUtilities.MAX_ITEMS_PER_PAGE;
-        } else {
-            this.itemsPerPage = itemsPerPage;
-        }
+        this.itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
     }
     
     public int getPage() {

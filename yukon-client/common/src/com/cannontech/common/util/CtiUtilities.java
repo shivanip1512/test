@@ -98,7 +98,6 @@ public final class CtiUtilities {
     private static GregorianCalendar gc2035 = null;
     
     public static final int DEFAULT_ITEMS_PER_PAGE = 25;
-    public static final String DEFAULT_ITEMS_PER_PAGE_STRING = "25";
     public static final int MAX_ITEMS_PER_PAGE = 1000;
 
     // image names
@@ -1064,4 +1063,14 @@ public final class CtiUtilities {
         };
         return Lists.transform(itemsWithTranslations, itemOutFunction);
     }
+    
+    /**
+     * Determine the number of items per page to use, given the specified number of items.  If it is null, the
+     * default will be returned.  If it is not null, it will be validated against the maximum allowed.
+     */
+    public final static int itemsPerPage(Integer specifiedItemsPerPage) {
+        return specifiedItemsPerPage == null
+                ? DEFAULT_ITEMS_PER_PAGE : Math.min(MAX_ITEMS_PER_PAGE, specifiedItemsPerPage);
+    }
+    
 }
