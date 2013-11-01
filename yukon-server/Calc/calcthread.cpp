@@ -552,6 +552,8 @@ void CtiCalculateThread::historicalThread( void )
         {
             do
             {
+                rwnow = CtiTime::now();
+
                 if(!_shutdownOnThreadTimeout)
                 {
                     threadStatus.monitorCheck();
@@ -687,7 +689,7 @@ void CtiCalculateThread::historicalThread( void )
 
             if( !reloaded )
             {
-                rwnow = rwnow.now();
+                rwnow = CtiTime::now();
                 nextCalcTime = nextScheduledTimeAlignedOnRate( rwnow, frequencyInSeconds );
             }
 
@@ -780,6 +782,8 @@ void CtiCalculateThread::baselineThread( void )
         {
             do
             {
+                rwnow = CtiTime::now();
+
                 if(!_shutdownOnThreadTimeout)
                 {
                     threadStatus.monitorCheck();
@@ -1077,7 +1081,7 @@ void CtiCalculateThread::baselineThread( void )
 
             if( !reloaded )
             {
-                rwnow = rwnow.now();
+                rwnow = CtiTime::now();
                 nextCalcTime = CtiTime(nextCalcTime.seconds() + (unsigned long)frequencyInSeconds);
             }
 
