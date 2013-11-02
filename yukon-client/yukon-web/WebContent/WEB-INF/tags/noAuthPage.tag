@@ -22,8 +22,8 @@
         <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/lib/jQuery/yukon/jquery-ui-1.9.2.custom.css"/>" >
         <link rel="stylesheet" type="text/css" href="<cti:url value="/JavaScript/lib/jQuery/plugins/tipsy/stylesheets/tipsy.css"/>" >
         
-        <%-- Include functional-overrides.css last so that, you know, they actually override.  cascade! --%>
-        <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/functional-overrides.css"/>" >
+        <%-- Include overrides.css last so that, you know, they actually override.  cascade! --%>
+        <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/overrides.css"/>" >
             
         <cti:includeScript link="MODERNIZR" force="true"/>
         

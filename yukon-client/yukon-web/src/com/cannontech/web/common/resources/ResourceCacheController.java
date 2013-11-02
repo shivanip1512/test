@@ -44,4 +44,14 @@ public class ResourceCacheController {
         resp.getWriter().write(css);
     }
     
+    @RequestMapping("/WebConfig/yukon/styles/overrides.css")
+    public void overrides(HttpServletResponse resp) throws ExecutionException, IOException {
+        
+        String css = cache.getResource(CachedResource.OVERRIDES_CSS).getValue();
+        resp.setContentType("text/css");
+        resp.setCharacterEncoding("UTF-8");
+        
+        resp.getWriter().write(css);
+    }
+    
 }

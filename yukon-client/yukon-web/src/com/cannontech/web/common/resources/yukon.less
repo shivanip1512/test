@@ -33,11 +33,12 @@
 */
 
 /* VARIABLES */
-@primary-color: #0066CC;
-@primary-font-color: #555;
+@primary-color: #06C;
+@font-color: #555;
+@visited-color: #04A;
 
 @red: #D14836;
-@green: #009933;
+@green: #093;
 @orange: #FB8521;
 
 /* HEADINGS */
@@ -51,12 +52,20 @@ h6{font-size: .8em;}
 h1, h2, h3, h4, h5, h6 {margin: .3em 0;}
 
 /* LINKS */
-a, .vertical_menu a:hover {text-decoration:none;}
-a:hover, a:focus {text-decoration:underline;outline:0;}
-a:link,a:visited {color: @primary-color;text-decoration: none;}
-a.described {margin-right: 10px;}
-a:link.subtle-link, a:visited.subtle-link {color: @primary-font-color;}
-a:link.subtle-link:hover, a:visited.subtle-link:hover {color: @primary-color; cursor: pointer;}
+a {
+    text-decoration: none;
+    outline: none;
+    &:link, &:visited {color: @primary-color;}
+    &:hover, &:focus {text-decoration:underline;outline: none;}
+    &.described {margin-right: 10px;}
+    &:link.subtle-link, &:visited.subtle-link {color: @font-color;}
+    &:link.subtle-link:hover, &:visited.subtle-link:hover {color: @primary-color; cursor: pointer;}
+}
+.show-visited, .compactResultsTable, .resultsTable, .nameValueTable {
+    a:visited {color: @visited-color;}
+}
+a.show-visited:visited {color: @visited-color;}
+.vertical_menu a:hover {text-decoration:none;}
 
 /* COLORS */
 a, .primary_color, .vertical_menu li.selected a, .vertical_menu a:hover, .ui-widget-content a, #subMenu a:visited, .perPageArea a:visited {color:@primary-color;}
@@ -161,7 +170,8 @@ table.nowrap th, table.nowrap td {white-space: nowrap;}
 .compactResultsPaging .pagingArea {float: right;margin: -1px 50px 0 0;border: 1px solid #ccc;border-style: none solid solid solid;padding: 5px 10px;background-color: white;}
 .compactResultsPaging span {line-height: 16px;}
 .compactResultsPaging .pageNumText {margin: 0 10px;}
-.nameValueTable .name, .property-list .name {color: #777;min-width: 140px;}
+.nameValueTable .name, .property-list .name {min-width: 140px;}
+.nameValueTable .name, .property-list .name, .name {color: #777;}
 .nameValueTable .value, .property-list .value {color: #333;}
 
 .rowHighlighting tr:hover, .highlighted, .undo-row {background-color:#dedede !important;}
@@ -178,7 +188,7 @@ margin: 0px;
 .two-column-split th, .two-column-split td {width:50%;}
 .removeColumn button, .removeColumn .button {float:right;margin-right:0;}
 
-.sortable-table thead th a {color: @primary-font-color;}
+.sortable-table thead th a {color: @font-color;}
 .sortable-table thead th a:hover {color: @primary-color;cursor: pointer;}
 .sortable-table thead th a i {visibility: hidden;margin: 0;}
 .sortable-table thead th a.sorted i, .sortable-table thead th a:hover i {visibility: visible;}
@@ -262,11 +272,11 @@ ul.disc li {list-style-type: disc; margin-left: 25px;}
 
 .titledContainer .filter_container, .pagedBox .filter_container, .sectionContainer .filter_container {border-bottom: 1px dashed #ccc; margin: 0 0 6px; padding: 0 0 6px;}
 .titledContainer .filter_container a:hover, .titledContainer .filter_container a:focus, .pagedBox .filter_container a:hover, .pagedBox .filter_container a:focus {background: #ddd}
-.titledContainer .filter_container a , .pagedBox .filter_container a , .sectionContainer .filter_container a {border: solid 1px #ccc; background: #EEEEEE; border-radius: 2px; color: @primary-font-color; font-size: 10px; padding:2px; margin: 0 5px 5px;} 
+.titledContainer .filter_container a , .pagedBox .filter_container a , .sectionContainer .filter_container a {border: solid 1px #ccc; background: #EEEEEE; border-radius: 2px; color: @font-color; font-size: 10px; padding:2px; margin: 0 5px 5px;} 
 .titledContainer .filter_container .value , .pagedBox .filter_container .value , .sectionContainer .filter_container .value {color: #444; font-weight: bold;}
 
 .triangleContainer {margin-bottom: 0px;}
-.triangleContainer h3.toggle-title{color: @primary-font-color;}
+.triangleContainer h3.toggle-title{color: @font-color;}
 
 .sectionContainer {border:none;}
 .sectionContainer > .titleBar {background:transparent;}
@@ -319,9 +329,9 @@ ul.pipes li.first {padding-left:0;}
 .pipe-selector {position: relative;}
 .pipe-selector .pipe {position: absolute; width:2px; background-color: @primary-color;height: 100%;visibility: hidden;}
 .pipe-selector.selected .pipe {position: absolute; width:2px; background-color: @primary-color;height: 100%;visibility: visible;}
-a.pipe-selector {color: @primary-font-color;}
+a.pipe-selector {color: @font-color;}
 a.pipe-selector:not(.selected):hover {color: @primary-color;}
-a.pipe-selector.selected {color: @primary-font-color; cursor: default;}
+a.pipe-selector.selected {color: @font-color; cursor: default;}
 .pipe-selector .pipe + * {margin-left: 5px;}
 
 /* COLOR CODING */
@@ -332,7 +342,7 @@ ol.error{list-style-type: none;}
 .orange, .warn, .warning, .warningMessage {color: @orange !important;}
 .grey, .disabled, .disabled a {color:#888 !important; cursor:default; }
 .disabled, .disabled a, .disabled:hover, .disabled a:hover {text-decoration: none;}
-.subtle, .setting .detail > span {color: @primary-font-color;}
+.subtle, .setting .detail > span {color: @font-color;}
 /* used on consumer pages, delete during consumer overhaul */
 div.message, div.userMessage {border-radius:2px; padding: 2px 30px; border-style:solid; border-width:1px; margin-bottom: 10px;}
 .userMessage.error, .userMessage.ERROR {background:pink url(../Icons/error.gif) 5px no-repeat; border-color:@red;}
@@ -534,7 +544,7 @@ input.dateTimePicker {margin: 0;}
 .dropdown-menu {display: none;position: absolute;left: auto;top: 100%;text-align: left;z-index: 1000;float: left;min-width: 200px;padding: 4px 0;margin: 1px 0 0;list-style: none;background-color: #fff;border: 1px solid #ccc;border-radius: 2px;box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);background-clip: padding-box;font-size: 13px;}
 .dropdown-menu.long-menu-list {font-size: 11px;}
 .dropdown-menu li {margin-top: 3px;}
-.dropdown-menu a, .dropdown-menu .button.naked {display: block; padding: 0 15px; clear: both; font-weight: normal; line-height: 18px; color: @primary-font-color; white-space: nowrap; text-decoration: none; cursor: pointer;}
+.dropdown-menu a, .dropdown-menu .button.naked {display: block; padding: 0 15px; clear: both; font-weight: normal; line-height: 18px; color: @font-color; white-space: nowrap; text-decoration: none; cursor: pointer;}
 .dropdown-menu li a:hover, .dropdown-menu li .button.naked:hover, .dropdown-menu .active a, .dropdown-menu .active .button.naked, .dropdown-menu .active a:hover, .dropdown-menu .active .button.naked:hover {color: @primary-color; text-decoration: none; background-color: whiteSmoke;}
 .dropdown-menu .divider {height: 1px; margin: 3px 1px; overflow: hidden; background-color: #E5E5E5; border-bottom: 1px solid white;}
 .dropdown-container a {cursor: pointer;}

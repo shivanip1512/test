@@ -3,16 +3,23 @@
  */
 package com.cannontech.web.support;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.validation.DataBinder;
 
 import com.cannontech.web.input.type.InputType;
-import com.google.common.collect.Lists;
 
 public class MappedPropertiesHelper<T> {
+    
     private final String mapField;
-    private final List<MappedPropertiesHelper.MappableProperty<T, ?>> mappableProperties = Lists.newArrayList();
+    private final List<MappedPropertiesHelper.MappableProperty<T, ?>> mappableProperties = new ArrayList<>();
+    
+    // This map is just to provide a convenient way to lookup a specific property for those
+    // times when simply looping over them is not desired.
+    private final Map<String, MappedPropertiesHelper.MappableProperty<T, ?>> map = new HashMap<>(); 
 
     public MappedPropertiesHelper(String mapField) {
         this.mapField = mapField;
@@ -20,6 +27,10 @@ public class MappedPropertiesHelper<T> {
 
     public List<MappedPropertiesHelper.MappableProperty<T, ?>> getMappableProperties() {
         return mappableProperties;
+    }
+    
+    public Map<String, MappedPropertiesHelper.MappableProperty<T, ?>> getMap() {
+        return map;
     }
 
     public String getMapField() {
@@ -31,6 +42,7 @@ public class MappedPropertiesHelper<T> {
         MappedPropertiesHelper.MappableProperty<T, V> result =
             new MappedPropertiesHelper.MappableProperty<T, V>(path, extra, valueType);
         mappableProperties.add(result);
+        map.put(keyText, result);
     }
 
     public <V> void add(String keyText, T extra, InputType<V> valueType) {
@@ -38,6 +50,7 @@ public class MappedPropertiesHelper<T> {
         MappedPropertiesHelper.MappableProperty<T, V> result =
             new MappedPropertiesHelper.MappableProperty<T, V>(path, extra, valueType);
         mappableProperties.add(result);
+        map.put(keyText, result);
     }
 
     public void register(DataBinder binder) {
@@ -48,6 +61,7 @@ public class MappedPropertiesHelper<T> {
     }
 
     public static class MappableProperty<E, V> {
+        
         private final String path;
         private final InputType<V> valueType;
         private final E extra;
@@ -70,4 +84,5 @@ public class MappedPropertiesHelper<T> {
             return valueType;
         }
     }
+    
 }

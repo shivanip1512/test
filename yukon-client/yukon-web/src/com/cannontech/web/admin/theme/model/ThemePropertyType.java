@@ -8,14 +8,22 @@ import com.cannontech.web.input.type.PixelType;
 
 public enum ThemePropertyType implements DisplayableEnum {
     
+    BUTTON_COLOR("primary-button-color", "#777", new ColorType()),
+    BUTTON_COLOR_BORDER("primary-button-color-border", "#666", new ColorType()),
+    BUTTON_COLOR_HOVER("primary-button-color-hover", "#888", new ColorType()),
+    
     PAGE_BACKGROUND("page-background", "#6e6d71", new ColorType()),
     PAGE_BACKGROUND_FONT_COLOR("page-background-font-color", "#FFF", new ColorType()),
     PAGE_BACKGROUND_SHADOW("nav-shadow", "#5a595d", new ColorType()),
-    PRIMARY_COLOR("primary-color", "#06c", new ColorType()),
+    
+    PRIMARY_COLOR("primary-color", "#06C", new ColorType()),
+    VISITED_COLOR("visited-color", "#1c49a6", new ColorType()),
+    
     LOGIN_BACKGROUND("login-background-url", "2", new ImageType("backgrounds")),
     LOGIN_FONT_COLOR("login-font-color", "#fff", new ColorType()),
     LOGIN_FONT_SHADOW("login-font-shadow", "rgba(0,0,0,0.5)", new ColorType()),
     LOGIN_TAGLINE_MARGIN("tagline-margin", "35", new PixelType()),
+    
     LOGO("logo-url", "1", new ImageType("logos")),
     LOGO_LEFT("logo-left", "0", new PixelType()),
     LOGO_TOP("logo-top", "17", new PixelType()),

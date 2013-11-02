@@ -4,17 +4,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-
 <cti:standardPage module="tools" page="search">
-    <style type="text/css">
-        .result-url {
-            color: #00802a;
-        }
-
-        .with-visited a:visited {
-            color: #04A;
-        }
-    </style>
 
     <script type="text/javascript">
         jQuery(function() {

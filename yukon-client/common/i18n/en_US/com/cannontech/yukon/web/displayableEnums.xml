@@ -16,10 +16,14 @@
 <entry key="yukon.web.mspFilterBy.SERVICE_LOCATION">Service Location</entry>
 
 <!-- Theme Property Type -->
+<entry key="yukon.common.themePropertyType.BUTTON_COLOR">Button Color</entry>
+<entry key="yukon.common.themePropertyType.BUTTON_COLOR_BORDER">Button Border Color</entry>
+<entry key="yukon.common.themePropertyType.BUTTON_COLOR_HOVER">Button Hover Color</entry>
 <entry key="yukon.common.themePropertyType.PAGE_BACKGROUND">Background Color</entry>
 <entry key="yukon.common.themePropertyType.PAGE_BACKGROUND_FONT_COLOR">Background Font Color</entry>
 <entry key="yukon.common.themePropertyType.PAGE_BACKGROUND_SHADOW">Background Shadow</entry>
 <entry key="yukon.common.themePropertyType.PRIMARY_COLOR">Primary Color</entry>
+<entry key="yukon.common.themePropertyType.VISITED_COLOR">Visited Color</entry>
 <entry key="yukon.common.themePropertyType.LOGIN_BACKGROUND">Login Page Background</entry>
 <entry key="yukon.common.themePropertyType.LOGIN_FONT_COLOR">Login Page Font Color</entry>
 <entry key="yukon.common.themePropertyType.LOGIN_FONT_SHADOW">Login Page Font Shadow</entry>

@@ -27,8 +27,8 @@
         
         <c:set var="browser" value="${header['User-Agent']}" scope="session"/>
         
-        <%-- Include functional-overrides.css last so that, you know, they actually override.  cascade! --%>
-        <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/functional-overrides.css"/>" >
+        <%-- Include overrides.css last so that, you know, they actually override.  cascade! --%>
+        <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/overrides.css"/>" >
 
         <!-- Module CSS files from module_config.xml -->
         <c:forEach items="${moduleConfigCss}" var="file">

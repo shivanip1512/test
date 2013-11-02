@@ -4,7 +4,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
-<cti:tabbedContentSelector>
+<cti:tabbedContentSelector mode="section">
     <cti:msg2 key=".deviceStatusHistory.tab" var="statusTitle"/>
     <cti:tabbedContentSelectorContent selectorName="${statusTitle}">
         <c:choose>

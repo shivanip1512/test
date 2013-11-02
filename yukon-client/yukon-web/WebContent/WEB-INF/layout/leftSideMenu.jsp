@@ -18,8 +18,8 @@
         <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/consumer/LeftMenuStyles.css"/>" >
         <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/lib/jQuery/yukon/jquery-ui-1.9.2.custom.css"/>" >
         
-        <%-- Include functional-overrides.css last so that, you know, they actually override.  cascade! --%>
-        <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/functional-overrides.css"/>" >
+        <%-- Include overrides.css last so that, you know, they actually override.  cascade! --%>
+        <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/overrides.css"/>" >
         
         <!-- Module CSS files from module_config.xml -->
         <c:forEach items="${moduleConfigCss}" var="file"><link rel="stylesheet" type="text/css" href="<cti:url value="${file}"/>" >

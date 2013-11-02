@@ -34,7 +34,7 @@ jQuery(function() {
         <div class="category fl">
             <a href="theme" class="icon icon-32 fl icon-32-brush"></a>
             <div class="fl meta">
-                <div><a class="title" href="/adminSetup/config/theme"><i:inline key="yukon.common.setting.subcategory.THEMES"/></a></div>
+                <div><a class="title" href="/adminSetup/config/themes"><i:inline key="yukon.common.setting.subcategory.THEMES"/></a></div>
                 <div class="detail"><i:inline key="yukon.common.setting.subcategory.THEMES.description"/></div>
             </div>
         </div>
@@ -43,13 +43,13 @@ jQuery(function() {
     <div class="column_6_18">
         
         <div class="column one">
-            <tags:sectionContainer title="Themes">
+            <tags:sectionContainer2 nameKey="themes">
                 <ul class="side-tabs">
                     <c:forEach var="theme" items="${themes}">
                         <li class="<c:if test="${theme.currentTheme}">current</c:if> <c:if test="${command.themeId == theme.themeId}">selected</c:if>">
                             <div><a href="/adminSetup/config/themes/${theme.themeId}">${fn:escapeXml(theme.name)}</a></div>
                             <c:if test="${theme.currentTheme}">
-                                <div class="detail">(current theme)</div>
+                                <div class="detail"><i:inline key=".current"/></div>
                             </c:if>
                         </li>
                     </c:forEach>
@@ -59,11 +59,11 @@ jQuery(function() {
                         </div>
                     </li>
                 </ul>
-            </tags:sectionContainer>
+            </tags:sectionContainer2>
         </div>
     
         <div class="column two nogutter">
-            <tags:sectionContainer title="Settings">
+            <tags:sectionContainer2 nameKey="settings">
                 
                 <c:if test="${mode == 'EDIT'}">
                     <c:set var="action" value="/adminSetup/config/themes/${command.themeId}"/>
@@ -80,35 +80,142 @@ jQuery(function() {
                     <tags:hidden path="currentTheme"/>
                     
                     <div class="separated-sections">
+                    
                         <div class="section">
-                            <div class="column_8_16 clearfix">
+                            <div class="column_6_18 clearfix">
                                 <div class="column one">
-                                    Theme Name:
+                                    <i:inline key=".name"/>
                                 </div>
                                 <div class="column two nogutter">
                                     <tags:input path="name"/>
                                 </div>
                             </div>
                         </div>
-                        
-                        <c:forEach items="${mappedPropertiesHelper.mappableProperties}" var="prop">
-                            <div class="section">
-                                <div class="column_8_16 clearfix">
-                                    <div class="column one">
-                                        <i:inline key="${prop.extra}"/>:
-                                    </div>
-                                    <div class="column two nogutter">
-                                        <tags:simpleInputType id="${prop.extra}" input="${prop.valueType}" path="${prop.path}" pageEditMode="${mode}"/>
+
+                        <div class="section">
+                            <div class="column_6_18 clearfix">
+                                <div class="column one"><i:inline key=".primaryColors"/></div>
+                                <div class="column two nogutter">
+                                    <div class="column_12_12 clearfix">
+                                        <div class="column one">
+                                            <c:set var="prop" value="${mappedPropertiesHelper.map['PRIMARY_COLOR']}"/>
+                                            <div><span class="name"><i:inline key=".primary"/></span>&nbsp;<tags:simpleInputType id="${prop.extra}" input="${prop.valueType}" path="${prop.path}" pageEditMode="${mode}"/></div>
+                                        </div>
+                                        <div class="column two nogutter">
+                                            <c:set var="prop" value="${mappedPropertiesHelper.map['VISITED_COLOR']}"/>
+                                            <div><span class="name"><i:inline key=".visited"/></span>&nbsp;<tags:simpleInputType id="${prop.extra}" input="${prop.valueType}" path="${prop.path}" pageEditMode="${mode}"/></div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </c:forEach>
+                        </div>
+                        
+                        <div class="section">
+                            <div class="column_6_18 clearfix">
+                                <div class="column one"><i:inline key=".buttons"/></div>
+                                <div class="column two nogutter">
+                                    <div class="column_8_8_8 clearfix">
+                                        <div class="column one">
+                                            <c:set var="prop" value="${mappedPropertiesHelper.map['BUTTON_COLOR']}"/>
+                                            <div><span class="name"><i:inline key=".color"/></span>&nbsp;<tags:simpleInputType id="${prop.extra}" input="${prop.valueType}" path="${prop.path}" pageEditMode="${mode}"/></div>
+                                        </div>
+                                        <div class="column two">
+                                            <c:set var="prop" value="${mappedPropertiesHelper.map['BUTTON_COLOR_BORDER']}"/>
+                                            <div><span class="name"><i:inline key=".border"/></span>&nbsp;<tags:simpleInputType id="${prop.extra}" input="${prop.valueType}" path="${prop.path}" pageEditMode="${mode}"/></div>
+                                        </div>
+                                        <div class="column three nogutter">
+                                            <c:set var="prop" value="${mappedPropertiesHelper.map['BUTTON_COLOR_HOVER']}"/>
+                                            <div><span class="name"><i:inline key=".hover"/></span>&nbsp;<tags:simpleInputType id="${prop.extra}" input="${prop.valueType}" path="${prop.path}" pageEditMode="${mode}"/></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="section">
+                            <div class="column_6_18 clearfix">
+                                <div class="column one"><i:inline key=".background"/></div>
+                                <div class="column two nogutter">
+                                    <div class="column_8_8_8 clearfix">
+                                        <div class="column one">
+                                            <c:set var="prop" value="${mappedPropertiesHelper.map['PAGE_BACKGROUND']}"/>
+                                            <div><span class="name"><i:inline key=".color"/></span>&nbsp;<tags:simpleInputType id="${prop.extra}" input="${prop.valueType}" path="${prop.path}" pageEditMode="${mode}"/></div>
+                                        </div>
+                                        <div class="column two">
+                                            <c:set var="prop" value="${mappedPropertiesHelper.map['PAGE_BACKGROUND_SHADOW']}"/>
+                                            <div><span class="name"><i:inline key=".shadow"/></span>&nbsp;<tags:simpleInputType id="${prop.extra}" input="${prop.valueType}" path="${prop.path}" pageEditMode="${mode}"/></div>
+                                        </div>
+                                        <div class="column three nogutter">
+                                            <c:set var="prop" value="${mappedPropertiesHelper.map['PAGE_BACKGROUND_FONT_COLOR']}"/>
+                                            <div><span class="name"><i:inline key=".fontColor"/></span>&nbsp;<tags:simpleInputType id="${prop.extra}" input="${prop.valueType}" path="${prop.path}" pageEditMode="${mode}"/></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="section">    
+                            <div class="column_6_18 clearfix">
+                                <div class="column one"><i:inline key=".login"/></div>
+                                <div class="column two nogutter">
+                                    <div class="column_10_14 clearfix">
+                                        <div class="column one">
+                                            <c:set var="prop" value="${mappedPropertiesHelper.map['LOGIN_BACKGROUND']}"/>
+                                            <div><span class="name"><i:inline key=".backgroundImage"/></span></div>
+                                            <div><tags:simpleInputType id="${prop.extra}" input="${prop.valueType}" path="${prop.path}" pageEditMode="${mode}"/></div>
+                                        </div>
+                                        <div class="column two nogutter">
+                                            <div class="column_12_12 clearfix stacked">
+                                                <div class="column one">
+                                                    <c:set var="prop" value="${mappedPropertiesHelper.map['LOGIN_FONT_COLOR']}"/>
+                                                    <div><span class="name"><i:inline key=".fontColor"/></span>&nbsp;<tags:simpleInputType id="${prop.extra}" input="${prop.valueType}" path="${prop.path}" pageEditMode="${mode}"/></div>
+                                                </div>
+                                                <div class="column two nogutter">
+                                                    <c:set var="prop" value="${mappedPropertiesHelper.map['LOGIN_FONT_SHADOW']}"/>
+                                                    <div><span class="name"><i:inline key=".fontShadow"/></span>&nbsp;<tags:simpleInputType id="${prop.extra}" input="${prop.valueType}" path="${prop.path}" pageEditMode="${mode}"/></div>
+                                                </div>
+                                            </div>
+                                            <div class="column_24 clearfix">
+                                                <div class="column one nogutter">
+                                                    <c:set var="prop" value="${mappedPropertiesHelper.map['LOGIN_TAGLINE_MARGIN']}"/>
+                                                    <div><span class="name"><i:inline key=".taglineMargin"/></span>&nbsp;<tags:simpleInputType id="${prop.extra}" input="${prop.valueType}" path="${prop.path}" pageEditMode="${mode}"/></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="section">    
+                            <div class="column_6_18 clearfix">
+                                <div class="column one"><i:inline key=".logo"/></div>
+                                <div class="column two nogutter">
+                                    <div class="column_10_14 clearfix">
+                                        <div class="column one">
+                                            <c:set var="prop" value="${mappedPropertiesHelper.map['LOGO']}"/>
+                                            <div><span class="name"><i:inline key=".image"/></span></div>
+                                            <div><tags:simpleInputType id="${prop.extra}" input="${prop.valueType}" path="${prop.path}" pageEditMode="${mode}"/></div>
+                                        </div>
+                                        <div class="column two nogutter">
+                                            <c:set var="prop" value="${mappedPropertiesHelper.map['LOGO_WIDTH']}"/>
+                                            <div class="stacked"><span class="name"><i:inline key=".width"/></span>&nbsp;<tags:simpleInputType id="${prop.extra}" input="${prop.valueType}" path="${prop.path}" pageEditMode="${mode}"/></div>
+                                            <c:set var="prop" value="${mappedPropertiesHelper.map['LOGO_LEFT']}"/>
+                                            <div class="stacked"><span class="name"><i:inline key=".offsetX"/></span>&nbsp;<tags:simpleInputType id="${prop.extra}" input="${prop.valueType}" path="${prop.path}" pageEditMode="${mode}"/></div>
+                                            <c:set var="prop" value="${mappedPropertiesHelper.map['LOGO_TOP']}"/>
+                                            <div><span class="name"><i:inline key=".offsetY"/></span>&nbsp;<tags:simpleInputType id="${prop.extra}" input="${prop.valueType}" path="${prop.path}" pageEditMode="${mode}"/></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
                     </div>
                     
                     <div class="pageActionArea">
                         <c:if test="${mode == 'VIEW' and !command.currentTheme}">
-                                <cti:url value="/adminSetup/config/themes/${command.themeId}/use" var="useUrl"/>
-                                <cti:button nameKey="use" icon="icon-tick" href="${useUrl}"/>
+                            <cti:url value="/adminSetup/config/themes/${command.themeId}/use" var="useUrl"/>
+                            <cti:button nameKey="use" icon="icon-tick" href="${useUrl}"/>
                         </c:if>
                         
                         <c:if test="${command.editable and mode == 'VIEW'}">
@@ -135,10 +242,9 @@ jQuery(function() {
                     
                 </form:form>
                 
-            </tags:sectionContainer>
+            </tags:sectionContainer2>
         </div>
     
     </div>
         
-
 </cti:standardPage>
