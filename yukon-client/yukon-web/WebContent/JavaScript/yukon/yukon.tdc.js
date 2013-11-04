@@ -3,9 +3,19 @@ var Yukon = (function (yukonMod) {
 })(Yukon || {});
 Yukon.namespace('Yukon.Tdc');
 Yukon.Tdc = (function () {
-
+        
     tdcMod = {
+        toggleAlarm : function (alarms) {
+            if(jQuery('#alarm-audio')[0].mute == null || jQuery('#alarm-audio')[0].mute == false){
+                if (alarms.value == 'MULT_ALARMS') {
+                    jQuery('#alarm-audio')[0].play();
+                } else if (alarms.value == 'NO_ALARMS') {
+                    jQuery('#alarm-audio')[0].pause();
+                }
+            }
+        },
         init : function () {
+            
             jQuery('#latestData').load('/tdc/refresh');
             setInterval(function () {
                 jQuery('#latestData').load('/tdc/refresh');
@@ -19,11 +29,14 @@ Yukon.Tdc = (function () {
             jQuery('#b_mute').click(function (e) {
                 jQuery('#b_mute').hide();
                 jQuery('#b_unmute').show();
+                jQuery('#alarm-audio')[0].pause();
+                jQuery('#alarm-audio')[0].mute = true;
             });
 
             jQuery('#b_unmute').click(function (e) {
                 jQuery('#b_mute').show();
                 jQuery('#b_unmute').hide();
+                jQuery('#alarm-audio')[0].mute = false;
             });
             
             jQuery('.f-ack-all').click(function () {

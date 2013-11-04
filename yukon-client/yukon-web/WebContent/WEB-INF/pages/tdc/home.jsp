@@ -82,9 +82,10 @@
                 <cti:button nameKey="tdc.alarm.acknowledgeAll" icon="icon-tick" classes="f-ack-all dn" />
             </tags:dynamicChooseOption>
         </tags:dynamicChoose>
-        <%-- TODO 
+   
         <cti:button id="b_mute" nameKey="mute" icon="icon-sound" renderMode="buttonImage"/>
         <cti:button id="b_unmute" nameKey="unmute" icon="icon-sound-mute" renderMode="buttonImage" classes="dn"/>
-        --%>
+      
+        <cti:dataUpdaterCallback function="Yukon.Tdc.toggleAlarm" initialize="true"  value="TDC/ALARM/${display.displayId}"/>
     </div>
 </cti:standardPage>
