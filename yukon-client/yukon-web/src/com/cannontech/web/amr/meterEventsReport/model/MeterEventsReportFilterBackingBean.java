@@ -32,8 +32,8 @@ public class MeterEventsReportFilterBackingBean extends ListBackingBean {
     private Instant fromInstant = new Instant().minus(Duration.standardDays(NUM_DAYS_PREVIOUS));
     private Instant toInstant = new Instant();
     private Map<BuiltInAttribute, Boolean> meterEventTypesMap;
-    private boolean onlyAbnormalEvents = true;
-    private boolean onlyLatestEvent = true;
+    private boolean onlyAbnormalEvents;
+    private boolean onlyLatestEvent;
     private boolean includeDisabledPaos;
     
     public MeterEventsReportFilterBackingBean() {
