@@ -25,9 +25,10 @@ public class JnlpExtensionController extends JnlpControllerBase {
         Document doc = new Document();
         Element jnlpElem = new Element("jnlp");
         doc.addContent(jnlpElem);
+        jnlpElem.setAttribute("spec", "1.0+");
         // determine code base
         String url = request.getRequestURL().toString();
-        String codebase = url.substring(0, url.lastIndexOf("/"));
+        String codebase = url.substring(0, url.lastIndexOf("/")) + "/";
         jnlpElem.setAttribute("codebase", codebase);
 
         Element securityElem = new Element("security");
@@ -36,7 +37,7 @@ public class JnlpExtensionController extends JnlpControllerBase {
 
         Element infoElem = new Element("information");
         jnlpElem.addContent(infoElem);
-        infoElem.addContent(new Element("title").setText("Yukon® " + title));
+        infoElem.addContent(new Element("title").setText("Yukon(TODO) " + title));
         infoElem.addContent(new Element("vendor").setText("Cooper Industries plc."));
         infoElem.addContent(new Element("homepage").setAttribute("href", "http://www.cannontech.com/"));
         infoElem.addContent(new Element("description").setText(description));

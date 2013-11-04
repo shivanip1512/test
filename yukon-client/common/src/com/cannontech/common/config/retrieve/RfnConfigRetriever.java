@@ -24,9 +24,9 @@ public class RfnConfigRetriever implements ConfigFileRetriever {
     @Override
     public Resource retrieve() {
         
-        String host = System.getProperty("yukon.jws.host");
-        String username = System.getProperty("yukon.jws.user");
-        String password = System.getProperty("yukon.jws.pass");
+        String host = System.getProperty("jnlp.yukon.host");
+        String username = System.getProperty("jnlp.yukon.user");
+        String password = System.getProperty("jnlp.yukon.pass");
         boolean isJavaWebstart = StringUtils.isNotBlank(host);
         
         if (isJavaWebstart) {

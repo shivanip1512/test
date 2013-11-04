@@ -9,14 +9,12 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.web.servlet.handler.AbstractUrlHandlerMapping;
 
 public class JnlpHandlerMapping extends AbstractUrlHandlerMapping {
-    
     @PostConstruct
     public void init() throws Exception {
         ApplicationContext context = getApplicationContext();
-        Map<?, ?> beansOfType = context.getBeansOfType(JnlpControllerBase.class);
-        Collection<?> jnlpBeans = beansOfType.values();
-        for (Object object : jnlpBeans) {
-            JnlpControllerBase jnlpController = (JnlpControllerBase) object;
+        Map<String, JnlpControllerBase> beansOfType = context.getBeansOfType(JnlpControllerBase.class);
+        Collection<JnlpControllerBase> jnlpBeans = beansOfType.values();
+        for (JnlpControllerBase jnlpController : jnlpBeans) {
             String path = "/" + jnlpController.getPath();
             registerHandler(path, jnlpController);
         }

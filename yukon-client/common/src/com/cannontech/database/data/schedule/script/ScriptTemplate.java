@@ -93,7 +93,7 @@ public class ScriptTemplate {
     
     private void init(){
         String yukonPath = "";
-        String jwsYukonBase = System.getProperty("yukon.jws.server.base");
+        String jwsYukonBase = System.getProperty("jnlp.yukon.server.base");
         if (jwsYukonBase != null) {
             yukonPath = jwsYukonBase;
         } else {

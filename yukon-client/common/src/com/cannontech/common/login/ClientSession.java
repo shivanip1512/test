@@ -111,7 +111,7 @@ public class ClientSession {
         
 		boolean success = false;
         
-        boolean isJws = StringUtils.isNotBlank(System.getProperty("yukon.jws.host"));
+        boolean isJws = StringUtils.isNotBlank(System.getProperty("jnlp.yukon.host"));
         CTILogger.info("Java Web Start property found: " + isJws);
         // "getBoolean" has to be the oddest Java method ever, but it is exactly what I want
         boolean forceRemoteLogin = Boolean.getBoolean("com.cannontech.yukon.forceRemoteLogin");
@@ -222,8 +222,8 @@ public class ClientSession {
 	}
 	
 	private boolean doJwsLogin(Frame p) {
-	    String jwsHost = System.getProperty("yukon.jws.host");
-	    String jwsUser = System.getProperty("yukon.jws.user");
+	    String jwsHost = System.getProperty("jnlp.yukon.host");
+	    String jwsUser = System.getProperty("jnlp.yukon.user");
 	    LoginPanel lp = makeJwsLoginPanel(jwsHost, jwsUser);
 	    
         return doLoginLoop(p, lp);
@@ -236,7 +236,7 @@ public class ClientSession {
             try {
                 // test host                
                 MasterConfigHelper.setRemoteHostAndPort(lp.getYukonHost(), lp.getUsername(), lp.getPassword());
-                System.setProperty("yukon.jws.pass", lp.getPassword());
+                System.setProperty("jnlp.yukon.pass", lp.getPassword());
                 
                 ConfigurationSource configuration = MasterConfigHelper.getConfiguration();
                 // test the config by getting something that should always exist

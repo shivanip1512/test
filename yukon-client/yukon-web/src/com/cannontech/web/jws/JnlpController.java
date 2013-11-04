@@ -44,14 +44,15 @@ public class JnlpController extends JnlpControllerBase {
         Document doc = new Document();
         Element jnlpElem = new Element("jnlp");
         doc.addContent(jnlpElem);
+        jnlpElem.setAttribute("spec", "1.0+");
         // determine code base
         String url = request.getRequestURL().toString();
-        String codebase = url.substring(0, url.lastIndexOf("/"));
+        String codebase = url.substring(0, url.lastIndexOf("/")) + "/";
         jnlpElem.setAttribute("codebase", codebase);
         
         Element infoElem = new Element("information");
         jnlpElem.addContent(infoElem);
-        infoElem.addContent(new Element("title").setText("Yukon� " + title));
+        infoElem.addContent(new Element("title").setText("Yukon(TODO) " + title));
         infoElem.addContent(new Element("vendor").setText("Cooper Industries plc."));
         infoElem.addContent(new Element("homepage").setAttribute("href", "http://www.cannontech.com/"));
         infoElem.addContent(new Element("description").setText(description));
@@ -87,26 +88,30 @@ public class JnlpController extends JnlpControllerBase {
         }
 
         addExtension(request, resourcesElem, "bc");
+        addExtension(request, resourcesElem, "thirdparty_libs_1");
+        addExtension(request, resourcesElem, "thirdparty_libs_2");
+        addExtension(request, resourcesElem, "thirdparty_libs_3");
+        addExtension(request, resourcesElem, "thirdparty_libs_4");
         addExtension(request, resourcesElem, "client_libs");
 
         // add some properties to ease log in
         LiteYukonUser user = ServletUtil.getYukonUser(request.getSession());
-        if(user != null) {
+        if (user != null) {
             Element userPropElem = new Element("property");
-            userPropElem.setAttribute("name", "yukon.jws.user");
+            userPropElem.setAttribute("name", "jnlp.yukon.user");
             userPropElem.setAttribute("value", user.getUsername());
             resourcesElem.addContent(userPropElem);
         }
 
         Element userPropElem = new Element("property");
-        userPropElem.setAttribute("name", "yukon.jws.server.base");
+        userPropElem.setAttribute("name", "jnlp.yukon.server.base");
         userPropElem.setAttribute("value", CtiUtilities.getYukonBase());
         resourcesElem.addContent(userPropElem);
 
         // add server info
         URL hostUrl = ServletUtil.getHostURL(request);
         Element hostPropElem = new Element("property");
-        hostPropElem.setAttribute("name", "yukon.jws.host");
+        hostPropElem.setAttribute("name", "jnlp.yukon.host");
         hostPropElem.setAttribute("value", hostUrl.toString());
         resourcesElem.addContent(hostPropElem);
 
