@@ -73,14 +73,14 @@ std::string DeviceConfig::getValueFromKey( const std::string & key ) const
     return *result;
 }
 
-
-boost::optional<std::string> DeviceConfig::findValueForKey( const std::string & key ) const
+template <>
+boost::optional<std::string> DeviceConfig::findValueForKey<std::string>( const std::string & key ) const
 {
     return lookup( key );
 }
 
-
-boost::optional<bool> DeviceConfig::findBoolValueForKey( const std::string & key ) const
+template <>
+boost::optional<bool> DeviceConfig::findValueForKey<bool>( const std::string & key ) const
 {
     boost::optional<std::string> value = lookup( key );
 
@@ -92,8 +92,8 @@ boost::optional<bool> DeviceConfig::findBoolValueForKey( const std::string & key
     return *value == BoolTrue;
 }
 
-
-boost::optional<long> DeviceConfig::findLongValueForKey( const std::string & key ) const
+template <>
+boost::optional<long> DeviceConfig::findValueForKey<long>( const std::string & key ) const
 {
     long value;
 
@@ -105,8 +105,8 @@ boost::optional<long> DeviceConfig::findLongValueForKey( const std::string & key
     return value;
 }
 
-
-boost::optional<double> DeviceConfig::findFloatValueForKey( const std::string & key ) const
+template <>
+boost::optional<double> DeviceConfig::findValueForKey<double>( const std::string & key ) const
 {
     boost::optional<std::string>  result = lookup( key );
 

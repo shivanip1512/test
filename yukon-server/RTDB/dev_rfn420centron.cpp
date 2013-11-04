@@ -108,7 +108,7 @@ int Rfn420CentronDevice::executePutConfigDisplay(CtiRequestMsg *pReq, CtiCommand
 
     for each( const std::string configKey in displayMetricConfigKeys )
     {
-        const boost::optional<long> configValue = deviceConfig->findLongValueForKey(configKey);
+        const boost::optional<long> configValue = deviceConfig->findValueForKey<long>(configKey);
 
         if( ! configValue  )
         {

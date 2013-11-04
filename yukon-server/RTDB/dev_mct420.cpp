@@ -523,7 +523,7 @@ int Mct420Device::executePutConfigMeterParameters(CtiRequestMsg *pReq,
             display_digits = 0x00;
         }
 
-        const boost::optional<bool> disconnectDisplayDisabled = deviceConfig->findBoolValueForKey(MCTStrings::DisconnectDisplayDisabled);
+        const boost::optional<bool> disconnectDisplayDisabled = deviceConfig->findValueForKey<bool>(MCTStrings::DisconnectDisplayDisabled);
 
         if( ! disconnectDisplayDisabled )
         {

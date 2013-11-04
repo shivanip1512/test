@@ -3450,10 +3450,10 @@ int Mct470Device::executePutConfigPrecannedTable(CtiRequestMsg *pReq,CtiCommandP
     {
         if( ! readsOnly )
         {
-            const boost::optional<long> tableReadInterval = deviceConfig->findLongValueForKey(MCTStrings::TableReadInterval);
-            const boost::optional<long> meterNumber       = deviceConfig->findLongValueForKey(MCTStrings::MeterNumber);
-            const boost::optional<long> tableType         = deviceConfig->findLongValueForKey(MCTStrings::TableType);
-            const boost::optional<long> spid              = deviceConfig->findLongValueForKey(MCTStrings::ServiceProviderID);
+            const boost::optional<long> tableReadInterval = deviceConfig->findValueForKey<long>(MCTStrings::TableReadInterval);
+            const boost::optional<long> meterNumber       = deviceConfig->findValueForKey<long>(MCTStrings::MeterNumber);
+            const boost::optional<long> tableType         = deviceConfig->findValueForKey<long>(MCTStrings::TableType);
+            const boost::optional<long> spid              = deviceConfig->findValueForKey<long>(MCTStrings::ServiceProviderID);
 
             if( ! tableReadInterval || ! tableType || ! spid  //  if we don't have TableReadInterval, TableType, or SPID...
                 || (isMct470(getType()) && ! meterNumber) )   //  or we're an MCT-470 and we don't have MeterNumber

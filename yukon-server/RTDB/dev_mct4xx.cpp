@@ -2583,8 +2583,8 @@ int Mct4xxDevice::executePutConfigConfigurationByte(CtiRequestMsg *pReq, CtiComm
 
     if( ! readsOnly )
     {
-        const boost::optional<bool> dstEnabled          = deviceConfig->findBoolValueForKey(MCTStrings::EnableDst);
-        const boost::optional<long> electronicMeterType = deviceConfig->findLongValueForKey(MCTStrings::ElectronicMeter);
+        const boost::optional<bool> dstEnabled          = deviceConfig->findValueForKey<bool>(MCTStrings::EnableDst);
+        const boost::optional<long> electronicMeterType = deviceConfig->findValueForKey<long>(MCTStrings::ElectronicMeter);
 
         long dynamicPaoConfigByte = getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration);
         boost::optional<long> configuration;

@@ -37,10 +37,8 @@ public:
 
     DeviceConfig( const long ID, const std::string & name );
 
-    boost::optional<std::string> findValueForKey( const std::string & key ) const;
-    boost::optional<bool>   findBoolValueForKey( const std::string & key ) const;
-    boost::optional<long>   findLongValueForKey( const std::string & key ) const;
-    boost::optional<double> findFloatValueForKey( const std::string & key ) const;
+    template <typename T>
+    boost::optional<T> findValueForKey( const std::string & key ) const;
 
     std::string getValueFromKey( const std::string & key ) const;
     bool        getLongValue( const std::string & key, long & value ) const;
@@ -49,6 +47,11 @@ public:
 };
 
 typedef boost::shared_ptr< DeviceConfig > DeviceConfigSPtr;
+
+template<> IM_EX_CONFIG boost::optional<std::string> DeviceConfig::findValueForKey<std::string> ( const std::string & key ) const;
+template<> IM_EX_CONFIG boost::optional<bool>        DeviceConfig::findValueForKey<bool>        ( const std::string & key ) const;
+template<> IM_EX_CONFIG boost::optional<long>        DeviceConfig::findValueForKey<long>        ( const std::string & key ) const;
+template<> IM_EX_CONFIG boost::optional<double>      DeviceConfig::findValueForKey<double>      ( const std::string & key ) const;
 
 ///////////////////
 

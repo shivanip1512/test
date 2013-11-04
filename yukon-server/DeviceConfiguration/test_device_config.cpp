@@ -19,7 +19,7 @@ BOOST_AUTO_TEST_CASE(test_findLongValueForKey)
     {
         boost::optional<long> value;
 
-        value = dc.findLongValueForKey("foo");
+        value = dc.findValueForKey<long>("foo");
 
         BOOST_CHECK( ! value );
     }
@@ -29,7 +29,7 @@ BOOST_AUTO_TEST_CASE(test_findLongValueForKey)
     {
         boost::optional<long> value;
 
-        value = dc.findLongValueForKey("foo");
+        value = dc.findValueForKey<long>("foo");
 
         BOOST_REQUIRE( value );
         BOOST_CHECK_EQUAL( *value, 17 );
@@ -46,14 +46,14 @@ BOOST_AUTO_TEST_CASE(test_findBoolValueForKey)
 
     {
         const boost::optional<bool> value =
-            dc.findBoolValueForKey("foo_nonexistent");
+            dc.findValueForKey<bool>("foo_nonexistent");
 
         BOOST_CHECK( ! value );
     }
 
     {
         const boost::optional<bool> value =
-            dc.findBoolValueForKey("foo_false");
+            dc.findValueForKey<bool>("foo_false");
 
         BOOST_REQUIRE( value );
         BOOST_CHECK_EQUAL( *value, false );
@@ -61,7 +61,7 @@ BOOST_AUTO_TEST_CASE(test_findBoolValueForKey)
 
     {
         const boost::optional<bool> value =
-            dc.findBoolValueForKey("foo_true_titlecase");
+            dc.findValueForKey<bool>("foo_true_titlecase");
 
         BOOST_REQUIRE( value );
         BOOST_CHECK_EQUAL( *value, false );
@@ -69,7 +69,7 @@ BOOST_AUTO_TEST_CASE(test_findBoolValueForKey)
 
     {
         const boost::optional<bool> value =
-            dc.findBoolValueForKey("foo_true_lowercase");
+            dc.findValueForKey<bool>("foo_true_lowercase");
 
         BOOST_REQUIRE( value );
         BOOST_CHECK_EQUAL( *value, true );

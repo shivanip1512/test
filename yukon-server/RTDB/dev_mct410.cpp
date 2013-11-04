@@ -1598,7 +1598,7 @@ int Mct410Device::executePutConfigInstallDisconnect(CtiRequestMsg *pReq, CtiComm
             return NoConfigData;
         }
 
-        boost::optional<long> disconnectLoadLimitDelay = deviceConfig->findLongValueForKey(MCTStrings::DisconnectLoadLimitConnectDelay);
+        boost::optional<long> disconnectLoadLimitDelay = deviceConfig->findValueForKey<long>(MCTStrings::DisconnectLoadLimitConnectDelay);
         if( !disconnectLoadLimitDelay )
         {
             if( getMCTDebugLevel(DebugLevel_Configs) )
@@ -1619,7 +1619,7 @@ int Mct410Device::executePutConfigInstallDisconnect(CtiRequestMsg *pReq, CtiComm
             return BADPARAM;
         }
 
-        boost::optional<long> disconnectMinutes = deviceConfig->findLongValueForKey(MCTStrings::DisconnectMinutes);
+        boost::optional<long> disconnectMinutes = deviceConfig->findValueForKey<long>(MCTStrings::DisconnectMinutes);
         if( !disconnectMinutes )
         {
             if( getMCTDebugLevel(DebugLevel_Configs) )
@@ -1640,7 +1640,7 @@ int Mct410Device::executePutConfigInstallDisconnect(CtiRequestMsg *pReq, CtiComm
             return BADPARAM;
         }
 
-        boost::optional<long> connectMinutes = deviceConfig->findLongValueForKey(MCTStrings::ConnectMinutes);
+        boost::optional<long> connectMinutes = deviceConfig->findValueForKey<long>(MCTStrings::ConnectMinutes);
         if( !connectMinutes )
         {
             if( getMCTDebugLevel(DebugLevel_Configs) )
@@ -1661,7 +1661,7 @@ int Mct410Device::executePutConfigInstallDisconnect(CtiRequestMsg *pReq, CtiComm
             return BADPARAM;
         }
 
-        const boost::optional<bool> reconnectButtonRequired = deviceConfig->findBoolValueForKey(MCTStrings::ReconnectButton);
+        const boost::optional<bool> reconnectButtonRequired = deviceConfig->findValueForKey<bool>(MCTStrings::ReconnectButton);
         if( ! reconnectButtonRequired )
         {
             if( getMCTDebugLevel(DebugLevel_Configs) )
