@@ -6,12 +6,12 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr"%>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
 
 <cti:standardPage module="dr" page="surveyList">
+    <dt:pickerIncludes/>
+    
     <tags:simpleDialog id="ajaxDialog"/>
-    <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
-    <cti:includeScript link="/JavaScript/calendarControl.js"/>
-    <cti:includeScript link="/JavaScript/calendarTagFuncs.js"/>
     <cti:includeScript link="/JavaScript/picker.js"/>
     <cti:includeScript link="/JavaScript/simpleDialog.js"/>
     <cti:includeScript link="/JavaScript/tableCreation.js"/>
@@ -89,7 +89,7 @@
         <form id="addForm" action="${addUrl}">
             <div class="actionArea">
                 <cti:url var="addUrl" value="/stars/optOutSurvey/edit"/>
-                <cti:button nameKey="add" onclick="openSimpleDialog('ajaxDialog', '${addUrl}', addSurveyTitle)"/>
+                <cti:button icon="icon-plus-green" nameKey="add" onclick="openSimpleDialog('ajaxDialog', '${addUrl}', addSurveyTitle)"/>
             </div>
         </form>
     </tags:pagedBox>

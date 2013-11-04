@@ -8,9 +8,6 @@
 
 <cti:standardPage module="dr" page="home">
     <tags:simpleDialog id="drDialog"/>
-    <cti:includeScript link="/JavaScript/calendarControl.js"/>
-    <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
-    <cti:includeScript link="/JavaScript/calendarTagFuncs.js"/>
 
     <div class="column_12_12">
         <div class="column one">

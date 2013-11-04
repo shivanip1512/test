@@ -16,17 +16,6 @@
 <c:set var="stopDate" scope="page" value="stopDate${channelNum}"/>
 <c:set var="stopHour" scope="page" value="stopHour${channelNum}"/>
 
-<script>
-//needed for ajaxed date pickers
-jQuery(function(){
-	try{
-		Yukon.ui.dateTimePickers.init();
-	}catch(err){
-		//this page does not include dateTime Pickers
-	}
-});
-</script>
-
 <c:choose>
     <c:when test="${newToggleVal}">
         <cti:msg2 var="toggleDesc" key="yukon.web.defaults.start"/>

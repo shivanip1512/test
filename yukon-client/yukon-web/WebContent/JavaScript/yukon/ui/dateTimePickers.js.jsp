@@ -46,16 +46,5 @@ jQuery(function(){
             closeText: "<cti:msg key="yukon.common.js.timePicker.closeText"/>",
             ampm: <cti:msg key="yukon.common.js.timePicker.ampm"/>
         };
-    Yukon.namespace('Yukon.modules.dateTimePickers');
-    try {
-        Sandbox ('dateTimePickers', function (mod) {
-            Yukon.ui.dateTimePickers = mod;
-        });
-    } catch (sandboxex) {
-        return;
-    }
-    try {
-        Yukon.ui.dateTimePickers.init(cfgLocalization, cfgTimepickerArgs);
-    } catch (datetimepickerex) {
-    }
+    Yukon.ui.initDateTimePickers(cfgLocalization, cfgTimepickerArgs);
 });

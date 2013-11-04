@@ -7,9 +7,6 @@
 <cti:standardPage module="dr" page="programList">
     
     <tags:simpleDialog id="drDialog"/>
-    <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
-    <cti:includeScript link="/JavaScript/calendarControl.js"/>
-    <cti:includeScript link="/JavaScript/calendarTagFuncs.js"/>
 
     <c:set var="baseUrl" value="/dr/program/list"/>
     <%@ include file="programList.jspf" %>

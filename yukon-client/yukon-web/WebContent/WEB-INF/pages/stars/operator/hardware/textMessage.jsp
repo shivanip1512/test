@@ -4,14 +4,18 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
 
 <cti:msgScope paths="modules.operator.hardware">
 
 <script type="text/javascript">
 submitForm = function() {
-    combineDateAndTimeFields('startTime');
     return submitFormViaAjax('textMsgDialog', 'myform');
 }
+jQuery( function () {
+    // init dateTime fields dynamically brought onto page after initial page load
+    Yukon.ui.initDateTimePickers();
+});
 </script>
 
 <cti:flashScopeMessages/>
@@ -36,7 +40,7 @@ submitForm = function() {
         </tags:nameValue2>
         
         <tags:nameValue2 nameKey=".startTime">
-            <tags:dateTimeInput path="startTime" inline="true" fieldValue="${textMessage.startTime}"/>
+            <dt:dateTime id="startTime" path="startTime" value="${textMessage.startTime}"/>
         </tags:nameValue2>
     </tags:nameValueContainer2>
     <div class="actionArea">

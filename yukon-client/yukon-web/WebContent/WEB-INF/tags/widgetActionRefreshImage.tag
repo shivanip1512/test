@@ -25,35 +25,26 @@
 </c:if>
 
 <script type="text/javascript">
-	${widgetParameters.jsWidget}.setupLink('${uniqueId}', ${cti:jsonString(pageScope.linkParameters)});
+    ${widgetParameters.jsWidget}.setupLink('${uniqueId}', ${cti:jsonString(pageScope.linkParameters)});
 
-	widgetActionRefreshImageConfirm_${uniqueId} = function() {
+    widgetActionRefreshImageConfirm_${uniqueId} = function() {
 
-		var confirmText = '${cti:escapeJavaScript(pageScope.confirmText)}';
-		var confirmed = true;
-		if (confirmText != null && confirmText.strip() != '') {
-			var confirmed = confirm(confirmText);
-		}
-		// generate mouseleave event so tipsy tooltip lib knows to close tooltip
-	    jQuery('#' + 'linkImg_' + '${uniqueId}').trigger('mouseleave');
-		if (confirmed) {
-			${widgetParameters.jsWidget}.doActionRefresh({
-			    command:     '${method}', 
-			    buttonID:    '${thisId}', 
-			    waitingText: "", 
-			    key:         '${uniqueId}',
-			    disableInputs: ${disableInputs}});
-		}
-	}
-	
-	//needed for ajaxed date pickers
-	jQuery(function(){
-		try{
-			Yukon.ui.dateTimePickers.init();
-		}catch(err){
-			//This page does not include dateTime Pickers
-		}
-	});
+        var confirmText = '${cti:escapeJavaScript(pageScope.confirmText)}';
+        var confirmed = true;
+        if (confirmText != null && confirmText.strip() != '') {
+            var confirmed = confirm(confirmText);
+        }
+        // generate mouseleave event so tipsy tooltip lib knows to close tooltip
+        jQuery('#' + 'linkImg_' + '${uniqueId}').trigger('mouseleave');
+        if (confirmed) {
+            ${widgetParameters.jsWidget}.doActionRefresh({
+                command:     '${method}', 
+                buttonID:    '${thisId}', 
+                waitingText: "", 
+                key:         '${uniqueId}',
+                disableInputs: ${disableInputs}});
+        }
+    }
 </script>
 
 <span id="${thisId}">

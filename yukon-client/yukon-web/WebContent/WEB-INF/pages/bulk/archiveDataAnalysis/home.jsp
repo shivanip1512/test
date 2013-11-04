@@ -4,31 +4,23 @@
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
 
 <cti:standardPage module="tools" page="bulk.analysis.home">
-    
-<cti:includeScript link="/JavaScript/CalendarTagFuncs.js"/>
-
-<script type="text/javascript">
-function prepareDateTimeFields() {
-  combineDateAndTimeFields('startDate');
-  combineDateAndTimeFields('stopDate');
-}
-</script>
 
     <tags:bulkActionContainer key="yukon.web.modules.tools.bulk.analysis.home" deviceCollection="${deviceCollection}">
-        <form:form id="analyzeIntervalDataForm" commandName="backingBean" action="/bulk/archiveDataAnalysis/home/analyze" onsubmit="prepareDateTimeFields();">
+        <form:form id="analyzeIntervalDataForm" commandName="backingBean" action="/bulk/archiveDataAnalysis/home/analyze">
             <cti:deviceCollection deviceCollection="${deviceCollection}" />            
             
             <div class="stacked">
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".startDateLabel">
-                        <tags:dateTimeInput path="startDate" inline="true" fieldValue="${startDateInitialValue}"/>
+                        <dt:dateTime id="startDate" path="startDate" value="${startDateInitialValue}"/>
                         <i:inline key="yukon.web.modules.tools.bulk.analysis.home.exclusive"/>
                     </tags:nameValue2>
                     
                     <tags:nameValue2 nameKey=".stopDateLabel">
-                        <tags:dateTimeInput path="stopDate" inline="true" fieldValue="${stopDateInitialValue}"/>
+                        <dt:dateTime id="stopDate" path="stopDate" value="${stopDateInitialValue}"/>
                         <i:inline key="yukon.web.modules.tools.bulk.analysis.home.inclusive"/>
                     </tags:nameValue2>
                     

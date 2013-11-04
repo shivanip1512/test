@@ -3,13 +3,13 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
 
 <cti:msgScope paths="modules.dr.program.stopProgram">
 
 <script type="text/javascript">
 submitForm = function() {
-    combineDateAndTimeFields('stopDate');
-    url = '<cti:url value="/dr/program/stop/stop"/>';
+    var url = '<cti:url value="/dr/program/stop/stop"/>';
     <c:if test="${stopGearAllowed}">
         if (!document.getElementById('stopNowCheckbox').checked && document.getElementById('useStopGearCheckbox').checked) {
             url = '<cti:url value="/dr/program/stop/constraints"/>';
@@ -19,7 +19,11 @@ submitForm = function() {
 }
 
 updateComponentAvailability = function() {
-    setDateTimeInputEnabled('stopDate', !document.getElementById('stopNowCheckbox').checked);
+    // reset date value to now if checkbox checked, since it may have been changed
+    if (true === jQuery('#stopNowCheckbox').prop('checked')) {
+        jQuery('#stopDate').val(Yukon.ui.initialNowVal);
+    }
+    jQuery('#stopDate').prop('disabled', jQuery('#stopNowCheckbox').prop('checked'));
     <c:if test="${stopGearAllowed}">
     document.getElementById('useStopGearCheckbox').disabled = document.getElementById('stopNowCheckbox').checked;
 
@@ -34,6 +38,12 @@ updateComponentAvailability = function() {
         }
     </c:if>
 }
+jQuery( function () {
+    // init dateTime fields dynamically brought onto page after initial page load
+    Yukon.ui.initDateTimePickers();
+    // save off initial value of date in case we must reinstate later
+    Yukon.ui.initialNowVal = jQuery('#stopDate').val();
+});
 </script>
 
 <cti:flashScopeMessages/>
@@ -70,8 +80,7 @@ updateComponentAvailability = function() {
                             </label>
                         </td></tr>
                         <tr><td>
-                            <tags:dateTimeInput path="stopDate" fieldValue="${backingBean.stopDate}"
-                                disabled="true"/>
+                            <dt:dateTime id="stopDate" path="stopDate" disabled="true" value="${backingBean.stopDate}"/>
                         </td></tr>
                     </table>
                 </td>
@@ -111,6 +120,8 @@ updateComponentAvailability = function() {
 </form:form>
 
 <script type="text/javascript">
-updateComponentAvailability();
+jQuery( function () {
+    updateComponentAvailability();
+});
 </script>
 </cti:msgScope>

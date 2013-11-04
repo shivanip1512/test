@@ -9,9 +9,6 @@
 <cti:standardPage module="dr" page="searchResults">
 
 	<tags:simpleDialog id="drDialog" />
-	<cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css" />
-	<cti:includeScript link="/JavaScript/calendarControl.js" />
-	<cti:includeScript link="/JavaScript/calendarTagFuncs.js" />
 
 	<c:set var="baseUrl" value="/dr/search" />
         

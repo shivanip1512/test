@@ -9,7 +9,7 @@
 <script type="text/javascript">
 overrideConstraintsChecked = function() {
     <%-- never called if there are no violations so we don't have to check that --%>
-    document.getElementById('okButton').disabled = !$('overrideConstraints').checked;
+    jQuery('#okButton').prop('disabled', !jQuery('#overrideConstraints').prop('checked'));
 }
 </script>
 

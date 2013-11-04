@@ -203,4 +203,20 @@ Yukon.modules.dateTimePickers = function (box) {
         }).removeClass('f-timePickerUI');
         _initialized = true;
     };
+    box.initialNowVal = null;
+};
+Yukon.ui.initDateTimePickers = function (cfgLocalization, cfgTimepickerArgs) {
+    Yukon.namespace('Yukon.modules.dateTimePickers');
+    try {
+        Sandbox ('dateTimePickers', function (mod) {
+            Yukon.ui.dateTimePickers = mod;
+        });
+    } catch (sandboxex) {
+        alert('dateTimePickers init: sandbox exception: ' + sandboxex);
+    }
+    try {
+        Yukon.ui.dateTimePickers.init(cfgLocalization, cfgTimepickerArgs);
+    } catch (datetimepickerex) {
+        alert('dateTimePickers: exception in Yukon.ui.dateTimePickers.init: ' + datetimepickerex);
+    }
 };

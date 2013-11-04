@@ -6,20 +6,23 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
 
 
 <cti:msgScope paths="modules.dr.surveyEdit">
 
 <script type="text/javascript">
-specifyStopDateChecked = function() {
-    setDateTimeInputEnabled('stopDate', jQuery('#specifyStopDateCheckbox').is(":checked");
+specifyStopDateChecked = function () {
+    jQuery('#stopDate').prop('disabled', !jQuery('#specifyStopDateCheckbox').is(":checked"));
 }
 
-submitForm = function() {
-    combineDateAndTimeFields('startDate');
-    combineDateAndTimeFields('stopDate');
+submitForm = function () {
     return submitFormViaAjax('ajaxDialog', 'optOutSurveyForm');
 }
+jQuery( function () {
+    // init dateTime fields dynamically brought onto page after initial page load
+    Yukon.ui.initDateTimePickers();
+});
 </script>
 
 <cti:flashScopeMessages/>
@@ -49,14 +52,14 @@ submitForm = function() {
         </tags:nameValue2>
 
         <tags:nameValue2 nameKey=".startDate">
-            <tags:dateTimeInput path="startDate" fieldValue="${optOutSurveyDto.startDate}"/>
+            <dt:dateTime id="startDate" path="startDate" value="${optOutSurveyDto.startDate}"/>
         </tags:nameValue2>
 
         <tags:nameValue2 nameKey=".stopDate" labelForId="specifyStopDateCheckbox">
             <form:checkbox id="specifyStopDateCheckbox" path="specifyStopDate"
                 onclick="specifyStopDateChecked()"/>
             <label for="specifyStopDateCheckbox"><i:inline key=".specifyStopDate"/></label>
-            <tags:dateTimeInput path="stopDate" fieldValue="${optOutSurveyDto.stopDate}"/>
+            <dt:dateTime id="stopDate" path="stopDate" value="${optOutSurveyDto.stopDate}"/>
         </tags:nameValue2>
     </tags:nameValueContainer2>
 
@@ -69,5 +72,7 @@ submitForm = function() {
 </cti:msgScope>
 
 <script type="text/javascript">
-specifyStopDateChecked();
+jQuery( function () {
+    specifyStopDateChecked();
+});
 </script>

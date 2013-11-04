@@ -9,9 +9,7 @@
 
 <script type="text/javascript">
 jQuery(document).on('click', '.bulkInject', function(event) {
-    combineDateAndTimeFields('start');
-    combineDateAndTimeFields('stop');
-    $('populateDbForm').submit();
+    jQuery('#populateDbForm').submit();
 });
 </script>
 
@@ -34,11 +32,9 @@ jQuery(document).on('click', '.bulkInject', function(event) {
                 is the point we will push at dispatch to save to the db.</span>
         </tags:nameValue2>
         <tags:nameValue2 nameKey=".startTime">
-<%--             <tags:dateTimeInput path="start" fieldValue="${bulkInjection.start}" /> --%>
             <date:dateTime path="start" value="${bulkInjection.start}" />
         </tags:nameValue2>
         <tags:nameValue2 nameKey=".stopTime">
-<%--             <tags:dateTimeInput path="stop" fieldValue="${bulkInjection.stop}" /> --%>
             <date:dateTime path="stop" value="${bulkInjection.stop}" />
             
         </tags:nameValue2>

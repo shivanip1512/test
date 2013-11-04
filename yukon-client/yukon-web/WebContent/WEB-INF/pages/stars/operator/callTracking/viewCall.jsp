@@ -3,21 +3,13 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
 
 <cti:standardPage module="operator" page="viewCall.${mode}">
 <tags:setFormEditMode mode="${mode}"/>
 
-    <script type="text/javascript">
-
-        var combineDateAndTimeFieldsAndSubmit = function() {
-            combineDateAndTimeFields('dateTaken');
-            return true;
-        }
-
-    </script>
-
     <cti:url var="submitUrl" value="/stars/operator/callTracking/updateCall"/>
-    <form:form commandName="callReport" action="${submitUrl}" onsubmit="combineDateAndTimeFieldsAndSubmit()">
+    <form:form commandName="callReport" action="${submitUrl}">
     
         <input type="hidden" name="accountId" value="${accountId}">
     
@@ -37,7 +29,7 @@
                 </c:choose>
             
                 <tags:nameValue2 nameKey=".date">
-                    <tags:dateTimeInput path="dateTaken" inline="true" fieldValue="${callReport.dateTaken}"/>
+                    <dt:dateTime id="dateTaken" path="dateTaken" value="${callReport.dateTaken}"/>
                 </tags:nameValue2>
                 
                 <tags:yukonListEntrySelectNameValue nameKey=".type" path="callTypeId" energyCompanyId="${energyCompanyId}" listName="CALL_TYPE"/>

@@ -4,46 +4,43 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
 
 <cti:standardPage module="operator" page="workOrder.${mode}">
 <tags:setFormEditMode mode="${mode}"/>
 
     <script type="text/javascript">
-        jQuery(function() {
-            var curStateSel = jQuery('select[name="workOrderBase.currentStateId"]');
+        jQuery(function () {
+            var curStateSel = jQuery('select[name="workOrderBase.currentStateId"]'),
+                initialState;
             if ( curStateSel.length > 0 ) {
-                var initialState = curStateSel.val();
-                jQuery(curStateSel).bind('change', function(ev) {
+                initialState = curStateSel.val();
+                jQuery(curStateSel).on('change', function (ev) {
                     var newState = curStateSel.val(),
                         enabled = initialState !== newState;
-                    // see http://stackoverflow.com/questions/31044/is-there-an-exists-function-for-jquery?rq=1
-                    // for raging debate on how to do this best
-                    if ( 0 !== jQuery("#eventDateDatePart").length &&
-                        0 !== jQuery("#eventDateTimePart").length ) {
-                        setDateTimeInputEnabled('eventDate', enabled);
+                    // check if the element even exists
+                    if (0 !== jQuery('#eventDate').length) {
+                        jQuery('#eventDate').prop('disabled', !enabled);
                     }
                 });
             }
         });
 
-        jQuery('#workOrderConfirmCancel', function() {
+        jQuery('#workOrderConfirmCancel', function () {
             jQuery('#confirmDeleteWorkOrderDialog').dialog('close');
         });
 
-        var assignedServiceCompanyChanged = function() {
-            var curStateSel = jQuery('select[name="workOrderBase.currentStateId"]');
-            if (curStateSel.val() != ${assignedEntryId} ) {
-                curStateSel.val(${assignedEntryId});
+        var assignedServiceCompanyChanged = function () {
+            var curStateSel = jQuery('select[name="workOrderBase.currentStateId"]'),
+                curStateSelVal = curStateSel.val();
+            if (curStateSelVal != "${assignedEntryId}") {
+                curStateSel.val("${assignedEntryId}");
                 jQuery('#currentStateChangedDialog').dialog('open');
             }
-            setDateTimeInputEnabled('eventDate', true);
+            jQuery('#eventDate').prop('disabled', false);
         }
 
-        var combineDateAndTimeFieldsAndSubmit = function() {
-            var dateReported = jQuery('#eventDateDatePart');
-            if (0 !== dateReported.length) {
-                combineDateAndTimeFields('eventDate');
-            }
+        var submitWorkOrder = function () {
             return true;
         }
 
@@ -62,7 +59,7 @@
     </i:simplePopup>
 
     <cti:url var="submitUrl" value="/stars/operator/workOrder/updateWorkOrder"/>
-    <form:form commandName="workOrderDto" action="${submitUrl}" onsubmit="combineDateAndTimeFieldsAndSubmit()">
+    <form:form commandName="workOrderDto" action="${submitUrl}" onsubmit="submitWorkOrder()">
         <input type="hidden" name="accountId" value="${accountId}">
         <form:hidden path="workOrderBase.accountId"/>
         <form:hidden path="workOrderBase.orderId"/>
@@ -102,7 +99,7 @@
                             <tags:yukonListEntrySelectNameValue nameKey=".currentState" path="workOrderBase.currentStateId" energyCompanyId="${energyCompanyId}" listName="SERVICE_STATUS" />
                         
                             <tags:nameValue2 nameKey=".eventDate">
-                                <tags:dateTimeInput path="eventDate" inline="true" fieldValue="${workOrderDto.eventDate}"/>
+                                <dt:dateTime id="eventDate" path="eventDate" value="${workOrderDto.eventDate}"/>
                             </tags:nameValue2>
                         </cti:displayForPageEditModes>
                         
@@ -135,9 +132,8 @@
                                                                 energyCompanyId="${energyCompanyId}" listName="SERVICE_STATUS"/>
                             
                             <tags:nameValue2 nameKey=".eventDate">
-                                <tags:dateTimeInput path="eventDate" inline="true" fieldValue="${workOrderDto.eventDate}" disabled="true"/>
+                                <dt:dateTime id="eventDate" path="eventDate" value="${workOrderDto.eventDate}" disabled="true"/>
                             </tags:nameValue2>
-            
                             <tags:textareaNameValue nameKey=".actionTaken" path="workOrderBase.actionTaken" rows="4" cols="23"/>
                         </tags:nameValueContainer2>
                         <div class="actionArea stacked">
@@ -203,7 +199,6 @@
                 <cti:button nameKey="edit" icon="icon-pencil" href="${editUrl}"/>
             </cti:checkRolesAndProperties>
         </cti:displayForPageEditModes>
-        
     </form:form>
     
 </cti:standardPage>

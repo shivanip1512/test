@@ -3,13 +3,13 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
 
 <cti:standardPage module="support" page="rfnTest">
 
     <script>
         jQuery(document).ready(function() {
             jQuery('.f-sendEventArchive').click(function() {
-                combineDateAndTimeFields('timestamp');
                 jQuery('#eventForm').submit();
             });
         });
@@ -81,7 +81,7 @@
                 </tags:nameValue>
                 
                 <tags:nameValue name="Event Time">
-                    <tags:dateTimeInput path="timestamp" fieldValue="${event.timestamp}" />
+                    <dt:dateTime id="timestamp" path="timestamp" value="${event.timestamp}"/>
                 </tags:nameValue>
             </tags:nameValueContainer>
 

@@ -3,6 +3,7 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
 
 <cti:msgScope paths="modules.dr.program.startProgram">
 
@@ -17,9 +18,7 @@ targetCycleGears = {
     </c:forEach>
 };
 
-submitForm = function() {
-    combineDateAndTimeFields('startDate');
-    combineDateAndTimeFields('stopDate');
+submitForm = function () {
     if (targetCycleGears[document.getElementById('gearNumber').value] && document.getElementById('addAdjustmentsCheckbox').checked) {
         url = '<cti:url value="/dr/program/start/gearAdjustments"/>';
     } else {
@@ -28,15 +27,15 @@ submitForm = function() {
     return submitFormViaAjax('drDialog', 'startProgramForm', url);
 }
 
-startNowChecked = function() {
-    setDateTimeInputEnabled('startDate', !document.getElementById('startNowCheckbox').checked);
+startNowChecked = function () {
+    jQuery('#startDate').prop('disabled', jQuery('#startNowCheckbox').prop('checked'));
 }
 
-scheduleStopChecked = function() {
-    setDateTimeInputEnabled('stopDate', document.getElementById('scheduleStopCheckbox').checked);
+scheduleStopChecked = function () {
+    jQuery('#stopDate').prop('disabled', !jQuery('#scheduleStopCheckbox').prop('checked'));
 }
 
-gearChanged = function() {
+gearChanged = function () {
     if (targetCycleGears[document.getElementById('gearNumber').value]) {
         jQuery('#addAdjustmentsArea').show();
     } else {
@@ -46,7 +45,7 @@ gearChanged = function() {
     }
 }
 
-updateSubmitButtons = function() {
+updateSubmitButtons = function () {
     var autoObservingConstraints = false;
     if (${autoObserveConstraintsAllowed}) {
         autoObservingConstraints = true;
@@ -63,6 +62,10 @@ updateSubmitButtons = function() {
 	    jQuery('#nextButton').hide();
 	}
 }
+jQuery( function () {
+    // init dateTime fields dynamically brought onto page after initial page load
+    Yukon.ui.initDateTimePickers();
+})
 </script>
 
 <cti:flashScopeMessages/>
@@ -117,10 +120,11 @@ updateSubmitButtons = function() {
                                 <cti:msg2 key=".startNow"/>
                             </label><br>
                         </td></tr>
-                        <tr><td>
-                            <tags:dateTimeInput path="startDate" fieldValue="${backingBean.startDate}"
-                                disabled="true"/>
-                        </td></tr>
+                        <tr>
+                            <td>
+                                <dt:dateTime id="startDate" path="startDate" value="${backingBean.startDate}" disabled="true"/>
+                            </td>
+                        </tr>
                     </table>
                 </td>
                 <td width="33%">
@@ -131,9 +135,11 @@ updateSubmitButtons = function() {
                                 <cti:msg2 key=".scheduleStop"/>
                             </label><br>
                         </td></tr>
-                        <tr><td>
-                            <tags:dateTimeInput path="stopDate" fieldValue="${backingBean.stopDate}"/>
-                        </td></tr>
+                        <tr>
+                            <td>
+                                <dt:dateTime id="stopDate" path="stopDate" value="${backingBean.stopDate}"/>
+                            </td>
+                        </tr>
                     </table>
                 </td>
             </tr>

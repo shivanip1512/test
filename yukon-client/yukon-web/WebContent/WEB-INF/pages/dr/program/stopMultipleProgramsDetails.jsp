@@ -3,15 +3,15 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
 
 <cti:msgScope paths="modules.dr.program.stopMultiplePrograms">
 
 <script type="text/javascript">
 
-jQuery(function(){
+jQuery(function (){
     
     submitForm = function() {
-        combineDateAndTimeFields('stopDate');
         var url;
 
         if (jQuery("#autoObserveConstraints").is(":checked") 
@@ -33,8 +33,8 @@ jQuery(function(){
     
     // Check-All type checkbox for Stop Program checkboxes
     updateStopAllProgramCheckbox = function() {
-        var stopAll = true;
-        var allDisabled = true;
+        var stopAll = true,
+            allDisabled = true;
         
         jQuery(".f-singleProgramChecked").each(function(index,element) {
             // Stopall should be checked if all the valid checkboxes are checked
@@ -67,8 +67,8 @@ jQuery(function(){
     
     // Check-All type checkbox for Use Stop Gear checkboxes
     updateUseStopGearsAllCheckbox = function() {
-        var stopAll = true;
-        var allDisabled = true;
+        var stopAll = true,
+            allDisabled = true;
         
         if (jQuery("#stopNowCheckbox").is(':checked')) {
             jQuery("#allProgramsUseStopGearsCheckbox").removeAttr("checked");
@@ -95,8 +95,8 @@ jQuery(function(){
     }
     
     allStopProgramChecked = function() {
-        var index;
-        allChecked = jQuery("#allProgramsCheckbox").is(":checked");
+        var index,
+            allChecked = jQuery("#allProgramsCheckbox").is(":checked");
         for (index = 0; index < ${fn:length(programs)}; index++) {
             if (allChecked && !jQuery("#stopProgramCheckbox"+index).is(":disabled")) {
                 jQuery("#stopProgramCheckbox"+index).attr("checked","checked");
@@ -108,8 +108,8 @@ jQuery(function(){
     }
     
     allUseStopGearChecked = function() {
-        var index;
-        allChecked = jQuery("#allProgramsUseStopGearsCheckbox").is(":checked");
+        var index,
+            allChecked = jQuery("#allProgramsUseStopGearsCheckbox").is(":checked");
         for (index = 0; index < ${fn:length(programs)}; index++) {
             if (allChecked) {
                 jQuery("#useStopGear" + index).attr("checked","checked");
@@ -127,7 +127,7 @@ jQuery(function(){
     updateComponents = function() {
         var stopNow = jQuery("#stopNowCheckbox").is(':checked'),
             index;
-        setDateTimeInputEnabled('stopDate', !stopNow);
+        jQuery('#stopDate').prop('disabled', stopNow);
         
         for (index = 0; index < ${fn:length(programs)}; index++) {
 
@@ -199,7 +199,10 @@ jQuery(function(){
     }
 
 });
-
+jQuery( function () {
+    // init dateTime fields dynamically brought onto page after initial page load
+    Yukon.ui.initDateTimePickers();
+});
 </script>
 
 <cti:flashScopeMessages/>
@@ -231,8 +234,7 @@ jQuery(function(){
                     </label>
                 </td></tr>
                 <tr><td>
-                    <tags:dateTimeInput path="stopDate" fieldValue="${backingBean.stopDate}"
-                        disabled="true"/>
+                    <dt:dateTime id="stopDate" path="stopDate" value="${backingBean.stopDate}"/>
                 </td></tr>
             </table>
         </td></tr>

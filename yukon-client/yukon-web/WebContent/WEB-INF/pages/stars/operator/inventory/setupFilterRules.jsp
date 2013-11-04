@@ -9,12 +9,9 @@
 
 <cti:standardPage module="operator" page="filterSelection">
     <cti:includeCss link="/WebConfig/yukon/styles/operator/inventory.css"/>
-    <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
     <cti:includeScript link="/JavaScript/simpleDialog.js"/>
     <cti:includeScript link="/JavaScript/tableCreation.js" />
     <cti:includeScript link="/JavaScript/picker.js" />
-    <cti:includeScript link="/JavaScript/calendarControl.js"/>
-    <cti:includeScript link="/JavaScript/calendarTagFuncs.js"/>
 
     <cti:msg key="yukon.common.calendarcontrol.months" var="months" />
     <cti:msg key="yukon.common.calendarcontrol.days" var="days" />
@@ -26,10 +23,6 @@
             jQuery('#removeRule').val(row);
             jQuery('#selectionForm').submit();
         }
-        jQuery(document).on('click', 'a.f-show-calendar', function(event) {
-            var inputId = jQuery(event.target).prev('input').attr('id');
-            showCalendarControl(inputId, '${months}', '${days}', '${clear}', '${close}');
-        });
     </script>
     
     <tags:simpleDialog id="addRuleDialog"/>
@@ -91,13 +84,11 @@
                                             </c:when>
     
                                             <c:when test="${rule.ruleType eq 'DEVICE_STATUS_DATE_RANGE'}">
-                                                <form:input path="filterRules[${row.index}].deviceStateDateFrom" id="deviceStateDateFrom_${row.index}" size="10" maxlength="10" cssClass="fl"/>
-                                                <a href="javascript:void(0);" class="icon icon-calendar-view-day f-show-calendar"></a>
+                                                <dt:date path="filterRules[${row.index}].deviceStateDateFrom" id="deviceStateDateFrom_${row.index}"/>
                                                                                             
                                                 <div class="fl"><i:inline key=".deviceStateDateRangeSeperator"/>&nbsp;</div>
                                                                                             
-                                                <form:input path="filterRules[${row.index}].deviceStateDateTo" id="deviceStateDateTo_${row.index}" size="10" maxlength="10" cssClass="fl"/>
-                                                <a href="javascript:void(0);" class="icon icon-calendar-view-day f-show-calendar"></a>
+                                                <dt:date path="filterRules[${row.index}].deviceStateDateTo" id="deviceStateDateTo_${row.index}"/>
                                                                                             
                                                 <div><form:errors path="filterRules[${row.index}].deviceStateDateFrom" cssClass="errorMessage"/></div>
                                                 <div><form:errors path="filterRules[${row.index}].deviceStateDateTo" cssClass="errorMessage"/></div>
