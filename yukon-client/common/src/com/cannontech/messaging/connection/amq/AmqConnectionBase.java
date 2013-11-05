@@ -30,10 +30,10 @@ public abstract class AmqConnectionBase<T extends AmqTransport> extends Connecti
 
     private static int conID = 0;
 
-    private static final long RECONNECT_DELAY_INITIAL = 1000;
-    private static final long RECONNECT_DELAY_MAX     = 30000;
-    private static final int  RECONNECT_ATTEMPT_MAX   = 120;
-    private static final int  RECONNECT_LOGGING_FREQ  = 10; // number of attempt
+    private static final long RECONNECT_DELAY_INITIAL_MILLIS = 1000;
+    private static final long RECONNECT_DELAY_MAX_MILLIS     = 30000;
+    private static final int  RECONNECT_ATTEMPT_MAX          = 120;
+    private static final int  RECONNECT_LOGGING_FREQ         = 10; // number of attempt
     
     protected AmqConnectionBase(String name) {
         super(name);
@@ -76,7 +76,7 @@ public abstract class AmqConnectionBase<T extends AmqTransport> extends Connecti
 
                 if (connection == null) {
 
-                    long delay = RECONNECT_DELAY_INITIAL;
+                    long delay = RECONNECT_DELAY_INITIAL_MILLIS;
                     int attempt = 0;
                     boolean started = false;
                     String prevMessage = "";
@@ -104,7 +104,7 @@ public abstract class AmqConnectionBase<T extends AmqTransport> extends Connecti
 
                         if (! started) {
                             Thread.sleep(delay);
-                            delay = Math.min(2*delay, RECONNECT_DELAY_MAX); // using exponential backoff
+                            delay = Math.min(2*delay, RECONNECT_DELAY_MAX_MILLIS); // using exponential backoff
                         }
                     }
                 }
