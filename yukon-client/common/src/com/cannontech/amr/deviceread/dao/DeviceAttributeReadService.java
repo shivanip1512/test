@@ -1,5 +1,6 @@
 package com.cannontech.amr.deviceread.dao;
 
+import java.util.List;
 import java.util.Set;
 
 import com.cannontech.amr.deviceread.service.GroupMeterReadResult;
@@ -34,9 +35,25 @@ public interface DeviceAttributeReadService {
     public boolean isReadable(Iterable<? extends YukonPao> devices, Set<Attribute> attributes, LiteYukonUser user);
         
     
+    // The methods below this line represent a distinct part of this service.
+    // The String returned by the first method can be used to look up the 
+    // result object that is stored in memory.
+    
+    /*
+     * This method will attempt to read device collection
+     */
+       
     public String readDeviceCollection(DeviceCollection deviceCollection, 
                                        Set<? extends Attribute> attributes, 
                                        DeviceRequestType type, 
                                        final SimpleCallback<GroupMeterReadResult> callback, 
                                        YukonUserContext userContext);
+
+    public List<GroupMeterReadResult> getCompleted();
+    public List<GroupMeterReadResult> getCompletedByType(DeviceRequestType type);
+
+    public List<GroupMeterReadResult> getPending();
+    public List<GroupMeterReadResult> getPendingByType(DeviceRequestType type);
+
+    public GroupMeterReadResult getResult(String id);
 }

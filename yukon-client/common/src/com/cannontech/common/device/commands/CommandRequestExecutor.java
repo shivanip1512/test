@@ -55,6 +55,9 @@ public interface CommandRequestExecutor<T> {
     
     public CommandRequestExecutionTemplate<T> getExecutionTemplate(DeviceRequestType type, final LiteYukonUser user);
 
+    /*
+     * This method is used to execute commands. CommandRequestExecution should be created prior to calling this method.
+     */
     public CommandRequestExecutionIdentifier executeWithParameterDto(List<T> commands,
                                                               CommandCompletionCallback<? super T> callback,
                                                               CommandRequestExecutionParameterDto parameterDto,

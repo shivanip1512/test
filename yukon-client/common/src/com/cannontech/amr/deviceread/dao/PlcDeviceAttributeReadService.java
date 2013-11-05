@@ -62,6 +62,8 @@ public interface PlcDeviceAttributeReadService {
     // The methods below this line represent a distinct part of this service.
     // The String returned by the first method can be used to look up the 
     // result object that is stored in memory.
+    
+    public String addResult(GroupMeterReadResult groupMeterReadResult);
         
     public List<GroupMeterReadResult> getCompleted();
     public List<GroupMeterReadResult> getCompletedByType(DeviceRequestType type);
@@ -71,5 +73,4 @@ public interface PlcDeviceAttributeReadService {
 
     public GroupMeterReadResult getResult(String id);
 
-    public String addResult(GroupMeterReadResult groupMeterReadResult);
 }

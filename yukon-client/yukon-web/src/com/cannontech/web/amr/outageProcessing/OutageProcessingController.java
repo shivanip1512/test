@@ -16,7 +16,6 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
-import com.cannontech.amr.deviceread.dao.PlcDeviceAttributeReadService;
 import com.cannontech.amr.deviceread.service.GroupMeterReadResult;
 import com.cannontech.amr.meter.dao.GroupMetersDao;
 import com.cannontech.amr.outageProcessing.OutageMonitor;
@@ -53,7 +52,6 @@ public class OutageProcessingController extends MultiActionController {
 	@Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
 	@Autowired private GroupMetersDao groupMetersDao;
 	@Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
-	@Autowired private PlcDeviceAttributeReadService plcDeviceAttributeReadService;
 	@Autowired private AlertService alertService;
 	@Autowired private DeviceGroupService deviceGroupService;
 	@Autowired private DeviceAttributeReadService deviceAttributeReadService;
@@ -70,8 +68,8 @@ public class OutageProcessingController extends MultiActionController {
 		
 		// read results
 		List<GroupMeterReadResult> allReadsResults = new ArrayList<GroupMeterReadResult>();
-		allReadsResults.addAll(plcDeviceAttributeReadService.getPendingByType(DeviceRequestType.GROUP_OUTAGE_PROCESSING_OUTAGE_LOGS_READ));
-		allReadsResults.addAll(plcDeviceAttributeReadService.getCompletedByType(DeviceRequestType.GROUP_OUTAGE_PROCESSING_OUTAGE_LOGS_READ));
+		allReadsResults.addAll(deviceAttributeReadService.getPendingByType(DeviceRequestType.GROUP_OUTAGE_PROCESSING_OUTAGE_LOGS_READ));
+		allReadsResults.addAll(deviceAttributeReadService.getCompletedByType(DeviceRequestType.GROUP_OUTAGE_PROCESSING_OUTAGE_LOGS_READ));
 		
 		List<GroupMeterReadResult> readResults = new ArrayList<GroupMeterReadResult>();
 		List<String> readResultKeysForMonitor = monitorToRecentReadKeysCache.get(outageMonitorId);
@@ -127,7 +125,7 @@ public class OutageProcessingController extends MultiActionController {
                 int total = (int)result.getOriginalDeviceCollectionCopy().getDeviceCount();
                 float percentSuccess = 100.0f;
                 if (total > 0) {
-                    percentSuccess = (float)((successCount * 100) / total);
+                    percentSuccess = (successCount * 100) / total;
                 }
                 resolvableTemplate.addData("percentSuccess", percentSuccess);
                 resolvableTemplate.addData("resultKey", result.getKey());

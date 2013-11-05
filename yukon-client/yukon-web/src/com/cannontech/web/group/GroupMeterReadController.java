@@ -19,7 +19,6 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
-import com.cannontech.amr.deviceread.dao.PlcDeviceAttributeReadService;
 import com.cannontech.amr.deviceread.service.GroupMeterReadResult;
 import com.cannontech.common.alert.model.Alert;
 import com.cannontech.common.alert.model.AlertType;
@@ -56,7 +55,6 @@ public class GroupMeterReadController extends MultiActionController {
 	@Autowired private AttributeService attributeService;
     @Autowired private ObjectFormattingService objectFormattingService;
     @Autowired private DeviceAttributeReadService deviceAttributeReadService;
-    @Autowired private PlcDeviceAttributeReadService plcDeviceAttributeReadService;
     private DeviceCollectionFactory deviceCollectionFactory;
 
 	// HOME (GROUP)
@@ -238,8 +236,8 @@ public class GroupMeterReadController extends MultiActionController {
 		
 		// results
 		List<GroupMeterReadResult> allReads = new ArrayList<GroupMeterReadResult>();
-		allReads.addAll(plcDeviceAttributeReadService.getPending());
-		allReads.addAll(plcDeviceAttributeReadService.getCompleted());
+		allReads.addAll(deviceAttributeReadService.getPending());
+		allReads.addAll(deviceAttributeReadService.getCompleted());
 		Collections.sort(allReads);
 		
 		// result wrappers
@@ -270,7 +268,7 @@ public class GroupMeterReadController extends MultiActionController {
 		ModelAndView mav = new ModelAndView("groupMeterRead/groupMeterReadResultDetail.jsp");
 		
 		String resultKey = ServletRequestUtils.getRequiredStringParameter(request, "resultKey");
-		GroupMeterReadResult result = plcDeviceAttributeReadService.getResult(resultKey);
+		GroupMeterReadResult result = deviceAttributeReadService.getResult(resultKey);
 
 		// friendly exception
 		if (result == null) {
@@ -286,7 +284,7 @@ public class GroupMeterReadController extends MultiActionController {
     public ModelAndView errorsList(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		
 		String resultKey = ServletRequestUtils.getRequiredStringParameter(request, "resultKey");
-		GroupMeterReadResult result = plcDeviceAttributeReadService.getResult(resultKey);
+		GroupMeterReadResult result = deviceAttributeReadService.getResult(resultKey);
 		
 		ModelAndView mav = new ModelAndView("commander/errorsList.jsp");
 		mav.addObject("definitionName", "groupMeterReadFailureResultDefinition");
@@ -297,7 +295,7 @@ public class GroupMeterReadController extends MultiActionController {
 	public ModelAndView successList(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		
 		String resultKey = ServletRequestUtils.getRequiredStringParameter(request, "resultKey");
-		GroupMeterReadResult result = plcDeviceAttributeReadService.getResult(resultKey);
+		GroupMeterReadResult result = deviceAttributeReadService.getResult(resultKey);
 		
 		ModelAndView mav = new ModelAndView("commander/successList.jsp");
 		mav.addObject("definitionName", "groupMeterReadSuccessResultDefinition");

@@ -592,6 +592,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
         return result;
     }
     
+    /* This method creates CommandRequestExecution. The start date is set to now. */
     private CommandRequestExecution createCommandRequestExecution(CommandRequestExecutionParameterDto parameterDto, List<T> commands){
         LiteYukonUser user = parameterDto.getUser();
         CommandRequestExecution execution = new CommandRequestExecution();

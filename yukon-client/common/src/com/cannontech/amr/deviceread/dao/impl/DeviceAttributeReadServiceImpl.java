@@ -72,6 +72,7 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
     @Autowired private CommandRequestExecutionDao commandRequestExecutionDao;
     @Autowired private CommandRequestExecutionResultDao commandRequestExecutionResultDao;
     @Autowired private NextValueHelper nextValueHelper;
+    /*plcDeviceAttributeReadService should be deleted by YUK-12715 and replaced by DeviceAttributeReadService*/
     @Autowired private PlcDeviceAttributeReadService plcDeviceAttributeReadService;
 
     private ImmutableMap<StrategyType, DeviceAttributeReadStrategy> strategies = ImmutableMap.of();
@@ -202,6 +203,8 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
                              DeviceRequestType type, 
                              YukonUserContext userContext) {
                         
+        log.debug("initiateRead of %s called for %.3s and %s", type, devices, attributes);
+        
         // this will represent the "plan" for how all of the input devices will be read
         Map<StrategyType, Collection<PaoMultiPointIdentifier>> thePlan = 
             Maps.newEnumMap(StrategyType.class);
@@ -231,6 +234,7 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
                 thePlan.put(strategy, devicesForThisStrategy);
                 requestCount += impl.getRequestCount(devicesForThisStrategy);
             }
+            log.debug("%s strategy will be used to read %.3s", strategy, devicesForThisStrategy);
         }
              
         CommandRequestExecution execution = createExecution(type, requestCount, userContext.getYukonUser());
@@ -256,15 +260,16 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
                                         final SimpleCallback<GroupMeterReadResult> callback, 
                                         YukonUserContext userContext) {
         
-        log.debug("readDeviceCollection of %s called for %.3s and %s", type, deviceCollection.getDeviceList(), attributes);
-        
+        log.debug("readDeviceCollection");
+        log.debug("Type:"+ type + " Attributes:" + attributes +" Devices:" + deviceCollection.getDeviceList());
         PaoMultiPointIdentifierWithUnsupported paoPointIdentifiers = 
             attributeService.findPaoMultiPointIdentifiersForAttributes(deviceCollection, attributes);
         Map<YukonPao, Set<Attribute>> unsupportedDevices =
             paoPointIdentifiers.getUnsupportedDevices();
+        log.debug("Attributes are not supported:" + attributes + " for  " + unsupportedDevices.keySet());
         Map<YukonPao, Set<Attribute>> unreadableDevices =
             getUnreadableDevices(deviceCollection.getDeviceList(), Sets.newHashSet(attributes));
-        
+        log.debug("There is no strategy found for  " + unreadableDevices.keySet());
         unsupportedDevices.putAll(unreadableDevices);
    
         // result 
@@ -292,7 +297,7 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
                         }
                         callback.handle(groupMeterReadResult);
                     } catch (Exception e) {
-                        log.warn("There was an error executing the callback", e);
+                        log.debug("There was an error executing the callback", e);
                     }
                 }
 
@@ -327,6 +332,9 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
         groupMeterReadResult.setOriginalDeviceCollectionCopy(originalDeviceCollectionCopy);
         groupMeterReadResult.setStartTime(new Date());
 
+        /*Add to cache. The cache should be moved to this impl by YUK-12715*/
+        String key = plcDeviceAttributeReadService.addResult(groupMeterReadResult);
+        groupMeterReadResult.setKey(key);
         int id = initiateRead(deviceCollection.getDeviceList(), attributes, commandCompletionCallback, DeviceRequestType.GROUP_ATTRIBUTE_READ, userContext);
         CommandRequestExecutionIdentifier identifier = new CommandRequestExecutionIdentifier(id);
 
@@ -338,12 +346,34 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
 
             commandRequestExecutionResultDao.saveUnsupported(unsupportedCmd);
         }
-        // add to cache
-        String key = plcDeviceAttributeReadService.addResult(groupMeterReadResult);
-        groupMeterReadResult.setKey(key);
-
         return key;
     }
+    
+    @Override
+    public List<GroupMeterReadResult> getCompleted() {
+        return plcDeviceAttributeReadService.getCompleted();
+    }
+
+    @Override
+    public List<GroupMeterReadResult> getCompletedByType(DeviceRequestType type) {
+        return plcDeviceAttributeReadService.getCompletedByType(type);
+    }
+
+    @Override
+    public List<GroupMeterReadResult> getPending() {
+        return plcDeviceAttributeReadService.getPending();
+    }
+
+    @Override
+    public List<GroupMeterReadResult> getPendingByType(DeviceRequestType type) {
+        return plcDeviceAttributeReadService.getPendingByType(type);
+    }
+
+    @Override
+    public GroupMeterReadResult getResult(String id) {
+        return plcDeviceAttributeReadService.getResult(id);
+    }
+
 
     @Autowired
     public void setStrategies(List<DeviceAttributeReadStrategy> strategyList) {
@@ -356,8 +386,11 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
     }
     
 
+    /*
+     * This method returns a list of devices that do not have a strategy.
+     */
     private Map<YukonPao, Set<Attribute>> getUnreadableDevices(Iterable<? extends YukonPao> devices,
-                                                                      Set<Attribute> attributes) {
+                                                                      Set<Attribute> attributes) {        
         Map<YukonPao, Set<Attribute>> unreadableDevices = new HashMap<>();
         Iterator<? extends YukonPao> iterator = devices.iterator();
         while (iterator.hasNext()) {
@@ -372,9 +405,6 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
             }
             if (!isReadable) {
                 unreadableDevices.put(pao, attributes);
-            }else{
-                log.debug("It isn't possible to read " + attributes + " for  "
-                        + pao + ". There is no strategy found for the device type "+ pao.getPaoIdentifier().getPaoType());
             }
         }
         return unreadableDevices;

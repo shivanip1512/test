@@ -15,7 +15,6 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
-import com.cannontech.amr.deviceread.dao.PlcDeviceAttributeReadService;
 import com.cannontech.amr.deviceread.service.GroupMeterReadResult;
 import com.cannontech.amr.meter.dao.GroupMetersDao;
 import com.cannontech.amr.tamperFlagProcessing.TamperFlagMonitor;
@@ -54,7 +53,6 @@ public class TamperFlagProcessingController {
 	@Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
 	@Autowired private TamperFlagMonitorService tamperFlagMonitorService;
 	@Autowired private AlertService alertService;
-	@Autowired private PlcDeviceAttributeReadService plcDeviceAttributeReadService;
 	@Autowired private GroupCommandExecutor groupCommandExecutor;
 	@Autowired private GroupMetersDao groupMetersDao;
 	@Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
@@ -78,8 +76,8 @@ public class TamperFlagProcessingController {
 		
 		// read results
 		List<GroupMeterReadResult> allReadsResults = new ArrayList<GroupMeterReadResult>();
-		allReadsResults.addAll(plcDeviceAttributeReadService.getPendingByType(DeviceRequestType.GROUP_TAMPER_FLAG_PROCESSING_INTERNAL_STATUS_READ));
-		allReadsResults.addAll(plcDeviceAttributeReadService.getCompletedByType(DeviceRequestType.GROUP_TAMPER_FLAG_PROCESSING_INTERNAL_STATUS_READ));
+		allReadsResults.addAll(deviceAttributeReadService.getPendingByType(DeviceRequestType.GROUP_TAMPER_FLAG_PROCESSING_INTERNAL_STATUS_READ));
+		allReadsResults.addAll(deviceAttributeReadService.getCompletedByType(DeviceRequestType.GROUP_TAMPER_FLAG_PROCESSING_INTERNAL_STATUS_READ));
 		
 		List<GroupMeterReadResult> readResults = new ArrayList<GroupMeterReadResult>();
 		List<String> readResultKeysForMonitor = monitorToRecentReadKeysCache.get(tamperFlagMonitorId);
@@ -140,7 +138,7 @@ public class TamperFlagProcessingController {
                 int total = (int)result.getOriginalDeviceCollectionCopy().getDeviceCount();
                 float percentSuccess = 100.0f;
                 if (total > 0) {
-                    percentSuccess = (successCount * 100) / total;
+                    percentSuccess = (float)((successCount * 100) / total);
                 }
                 resolvableTemplate.addData("percentSuccess", percentSuccess);
                 resolvableTemplate.addData("resultKey", result.getKey());
