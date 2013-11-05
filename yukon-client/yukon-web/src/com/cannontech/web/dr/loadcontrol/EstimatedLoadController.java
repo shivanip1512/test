@@ -82,6 +82,8 @@ public class EstimatedLoadController {
     private FormulaBeanValidator formulaBeanValidator = new FormulaBeanValidator(baseKey);
     public static enum SortBy {NAME, CALCULATION_TYPE, TYPE, GEAR_CONTROL_METHOD,
                                APP_CAT_AVERAGE_LOAD, IS_ASSIGNED, PROGRAM_NAME}
+    
+    private static final String ITEMS_PER_PAGE = "10";
 
     @RequestMapping("home")
     public String home(ModelMap model,YukonUserContext context) {
@@ -96,15 +98,14 @@ public class EstimatedLoadController {
     @RequestMapping
     public String listPageAjax(ModelMap model, YukonUserContext userContext,
                        @RequestParam(defaultValue="NAME") SortBy sort, final boolean descending,
-                       @RequestParam(defaultValue="10") int itemsPerPage, 
+                       @RequestParam(defaultValue=ITEMS_PER_PAGE) int itemsPerPage, 
                        @RequestParam(defaultValue="1") int page) {
 
+        itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
+        
         List<FormulaBean> allFormulas = FormulaBean.toBeans(formulaDao.getAllFormulas(), userContext);
         allFormulas = sortFormulas(allFormulas, sort, descending, userContext);
-        if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE) {
-            // Limit the maximum items per page
-            itemsPerPage = CtiUtilities.MAX_ITEMS_PER_PAGE;
-        }
+
         SearchResults<FormulaBean> pagedFormulas
             = SearchResults.pageBasedForWholeList(page, itemsPerPage, allFormulas);
 
@@ -221,20 +222,17 @@ public class EstimatedLoadController {
     @RequestMapping
     public String gearAssignmentsPage(ModelMap model, YukonUserContext context,
                        @RequestParam(defaultValue="NAME") SortBy sort, final boolean descending,
-                       @RequestParam(defaultValue="10") int itemsPerPage, 
+                       @RequestParam(defaultValue=ITEMS_PER_PAGE) int itemsPerPage, 
                        @RequestParam(defaultValue="1") int page) {
 
-
+        itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
+        
         Map<Integer, LMProgramDirectGear> allGears = gearDao.getAllGears();
         List<GearAssignment> gearAssignments = formulaDao.getAssignmentsForGears(allGears.keySet());
 
         Map<Integer, LiteYukonPAObject> gearPrograms = getGearPrograms();
         gearAssignments = sortGearAssignments(gearAssignments, gearPrograms, sort, descending, context);
 
-        if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE) {
-            // Limit the maximum items per page
-            itemsPerPage = CtiUtilities.MAX_ITEMS_PER_PAGE;
-        }
         SearchResults<GearAssignment> pagedGears
             = SearchResults.pageBasedForWholeList(page, itemsPerPage, gearAssignments);
 
@@ -265,9 +263,11 @@ public class EstimatedLoadController {
     @RequestMapping
     public String appCatAssignmentsPage(ModelMap model, YukonUserContext context,
                        @RequestParam(defaultValue="NAME") SortBy sort, final boolean descending,
-                       @RequestParam(defaultValue="10") int itemsPerPage, 
+                       @RequestParam(defaultValue=ITEMS_PER_PAGE) int itemsPerPage, 
                        @RequestParam(defaultValue="1") int page) {
 
+        itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
+        
         YukonEnergyCompany yec = null;
         try {
             yec = yukonEnergyCompanyService.getEnergyCompanyByOperator(context.getYukonUser());
@@ -282,10 +282,6 @@ public class EstimatedLoadController {
 
         appCatAssignments = sortAppCatAssignments(appCatAssignments, sort, descending, context);
 
-        if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE) {
-            // Limit the maximum items per page
-            itemsPerPage = CtiUtilities.MAX_ITEMS_PER_PAGE;
-        }
         SearchResults<ApplianceCategoryAssignment> pagedAppCats
             = SearchResults.pageBasedForWholeList(page, itemsPerPage, appCatAssignments);
 
