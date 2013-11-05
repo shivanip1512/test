@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     10/15/2013 4:07:43 PM                        */
+/* Created on:     11/5/2013 11:03:26 AM                        */
 /*==============================================================*/
 
 
@@ -7953,6 +7953,10 @@ INSERT INTO ThemeProperty VALUES (-1, 'LOGO', '1');
 INSERT INTO ThemeProperty VALUES (-1, 'LOGO_LEFT', '0');
 INSERT INTO ThemeProperty VALUES (-1, 'LOGO_TOP', '17');
 INSERT INTO ThemeProperty VALUES (-1, 'LOGO_WIDTH', '163');
+INSERT INTO ThemeProperty VALUES (-1, 'VISITED_COLOR', '#1c49a6');
+INSERT INTO ThemeProperty VALUES (-1, 'BUTTON_COLOR', '#777');
+INSERT INTO ThemeProperty VALUES (-1, 'BUTTON_COLOR_BORDER', '#666');
+INSERT INTO ThemeProperty VALUES (-1, 'BUTTON_COLOR_HOVER', '#888');
 
 /*==============================================================*/
 /* Table: ThermostatEventHistory                                */
