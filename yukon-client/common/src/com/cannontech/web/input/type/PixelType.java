@@ -9,13 +9,15 @@ import org.springframework.beans.propertyeditors.CustomNumberEditor;
  */
 public class PixelType extends DefaultValidatedType<Integer> {
 
-    private int minValue = 0;
-    private int maxValue = 0;
+    private int min = 0;
+    private int max = 0;
+    private String renderer = "pixelType.jsp";
 
-    private String renderer = null;
-
-    public PixelType() {
-        setRenderer("pixelType.jsp");
+    public PixelType() {}
+    
+    public PixelType(int min, int max) {
+        this.min = min;
+        this.max = max;
     }
 
     public String getRenderer() {
@@ -26,20 +28,20 @@ public class PixelType extends DefaultValidatedType<Integer> {
         this.renderer = renderer;
     }
 
-    public int getMaxValue() {
-        return maxValue;
+    public int getMin() {
+        return min;
     }
-
-    public void setMaxValue(int maxValue) {
-        this.maxValue = maxValue;
+    
+    public void setMin(int min) {
+        this.min = min;
     }
-
-    public int getMinValue() {
-        return minValue;
+    
+    public int getMax() {
+        return max;
     }
-
-    public void setMinValue(int minValue) {
-        this.minValue = minValue;
+    
+    public void setMax(int max) {
+        this.max = max;
     }
 
     public Class<Integer> getTypeClass() {

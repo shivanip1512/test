@@ -32,7 +32,7 @@ import com.cannontech.web.admin.theme.dao.ThemeDao;
 import com.cannontech.web.admin.theme.model.Theme;
 import com.cannontech.web.admin.theme.model.ThemePropertyType;
 import com.cannontech.web.common.flashScope.FlashScope;
-import com.cannontech.web.common.resources.ResourceCache;
+import com.cannontech.web.common.resources.ThemeableResourceCache;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.support.MappedPropertiesHelper;
 import com.google.common.collect.ImmutableMap;
@@ -41,7 +41,7 @@ import com.google.common.collect.ImmutableMap;
 @CheckRoleProperty(YukonRoleProperty.ADMIN_SUPER_USER)
 public class ThemeController {
 
-    @Autowired private ResourceCache resourceCache;
+    @Autowired private ThemeableResourceCache themeableResourceCache;
     @Autowired private ThemeDao themeDao;
     @Autowired private YukonUserContextMessageSourceResolver resolver;
     @Autowired private ResourceLoader loader;
@@ -141,7 +141,7 @@ public class ThemeController {
         
         themeDao.saveTheme(theme);
         if (theme.isCurrentTheme()) {
-            resourceCache.reloadAll();
+            themeableResourceCache.reloadAll();
         }
         flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.config.themes.updated", theme.getName()));
         return "redirect:/adminSetup/config/themes/" + theme.getThemeId();
@@ -163,7 +163,7 @@ public class ThemeController {
     public String use(ModelMap model, YukonUserContext context, @PathVariable int id) throws IOException {
         
         themeDao.setCurrentTheme(id);
-        resourceCache.reloadAll();
+        themeableResourceCache.reloadAll();
         
         return "redirect:/adminSetup/config/themes/" + id;
     }

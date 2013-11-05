@@ -10,14 +10,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-public class ResourceCacheController {
+public class ThemeableResourceController {
 
-    @Autowired ResourceCache cache;
+    @Autowired ThemeableResourceCache cache;
 
     @RequestMapping("/WebConfig/yukon/styles/layout.css")
     public void layout(HttpServletResponse resp) throws ExecutionException, IOException {
         
-        String css = cache.getResource(CachedResource.LAYOUT_CSS).getValue();
+        String css = cache.getResource(ThemeableResource.LAYOUT_CSS).getValue();
         resp.setContentType("text/css");
         resp.setCharacterEncoding("UTF-8");
             
@@ -27,7 +27,17 @@ public class ResourceCacheController {
     @RequestMapping("/WebConfig/yukon/styles/yukon.css")
     public void yukon(HttpServletResponse resp) throws ExecutionException, IOException {
         
-        String css = cache.getResource(CachedResource.YUKON_CSS).getValue();
+        String css = cache.getResource(ThemeableResource.YUKON_CSS).getValue();
+        resp.setContentType("text/css");
+        resp.setCharacterEncoding("UTF-8");
+        
+        resp.getWriter().write(css);
+    }
+    
+    @RequestMapping("/WebConfig/yukon/styles/yukon.default.css")
+    public void yukonDefault(HttpServletResponse resp) throws ExecutionException, IOException {
+        
+        String css = cache.getResource(ThemeableResource.YUKON_DEFAULT_CSS).getValue();
         resp.setContentType("text/css");
         resp.setCharacterEncoding("UTF-8");
         
@@ -37,7 +47,17 @@ public class ResourceCacheController {
     @RequestMapping("/WebConfig/yukon/styles/buttons.css")
     public void buttons(HttpServletResponse resp) throws ExecutionException, IOException {
         
-        String css = cache.getResource(CachedResource.BUTTONS_CSS).getValue();
+        String css = cache.getResource(ThemeableResource.BUTTONS_CSS).getValue();
+        resp.setContentType("text/css");
+        resp.setCharacterEncoding("UTF-8");
+        
+        resp.getWriter().write(css);
+    }
+    
+    @RequestMapping("/WebConfig/yukon/styles/buttons.default.css")
+    public void buttonsDefault(HttpServletResponse resp) throws ExecutionException, IOException {
+        
+        String css = cache.getResource(ThemeableResource.BUTTONS_DEFAULT_CSS).getValue();
         resp.setContentType("text/css");
         resp.setCharacterEncoding("UTF-8");
         
@@ -47,7 +67,7 @@ public class ResourceCacheController {
     @RequestMapping("/WebConfig/yukon/styles/overrides.css")
     public void overrides(HttpServletResponse resp) throws ExecutionException, IOException {
         
-        String css = cache.getResource(CachedResource.OVERRIDES_CSS).getValue();
+        String css = cache.getResource(ThemeableResource.OVERRIDES_CSS).getValue();
         resp.setContentType("text/css");
         resp.setCharacterEncoding("UTF-8");
         

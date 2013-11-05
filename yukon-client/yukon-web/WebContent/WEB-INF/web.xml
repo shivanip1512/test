@@ -869,7 +869,9 @@
         <url-pattern>/autocomplete.json</url-pattern>
         <url-pattern>/WebConfig/yukon/styles/layout.css</url-pattern>
         <url-pattern>/WebConfig/yukon/styles/yukon.css</url-pattern>
+        <url-pattern>/WebConfig/yukon/styles/yukon.default.css</url-pattern>
         <url-pattern>/WebConfig/yukon/styles/buttons.css</url-pattern>
+        <url-pattern>/WebConfig/yukon/styles/buttons.default.css</url-pattern>
         <url-pattern>/WebConfig/yukon/styles/overrides.css</url-pattern>
     </servlet-mapping>
 

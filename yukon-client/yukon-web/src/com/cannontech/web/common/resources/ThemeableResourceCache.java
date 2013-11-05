@@ -3,6 +3,7 @@ package com.cannontech.web.common.resources;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.concurrent.Callable;
@@ -35,17 +36,19 @@ import com.cannontech.web.input.type.PixelType;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
-public class ResourceCache {
+public class ThemeableResourceCache {
     
     @Autowired private ThemeDao themeDao;
     @Autowired private ResourceLoader loader;
     @Autowired private ConfigurationSource config;
     
-    private static final Logger log = YukonLogManager.getLogger(ResourceCache.class);
+    private static final Logger log = YukonLogManager.getLogger(ThemeableResourceCache.class);
     
-    private static Cache<CachedResource, CachedResourceValue> cache = CacheBuilder.newBuilder().build();
+    private LessCssProcessor processor = new LessCssProcessor();;
+    private YUICssCompressorProcessor compressor = new YUICssCompressorProcessor();
+    private static Cache<ThemeableResource, CachedResourceValue> cache = CacheBuilder.newBuilder().build();
     
-    public CachedResourceValue getResource(final CachedResource resource) throws ExecutionException, IOException {
+    public CachedResourceValue getResource(final ThemeableResource resource) throws ExecutionException, IOException {
         
         CachedResourceValue value = cache.get(resource, new Callable<CachedResourceValue>() {
             @Override
@@ -67,28 +70,65 @@ public class ResourceCache {
     
     @PostConstruct
     private void init() throws IOException {
+        
+        Context.set(Context.standaloneContext(), new WroConfiguration());
+        Injector injector = new InjectorBuilder().build();
+        injector.inject(processor);
+        
         reloadAll();
     }
 
     public void reloadAll() throws IOException {
-        for (CachedResource resource : CachedResource.values()) {
+        for (ThemeableResource resource : ThemeableResource.values()) {
             cache.put(resource, load(resource));
         }
     }
     
-    private CachedResourceValue load(CachedResource resource) throws IOException {
+    private CachedResourceValue load(ThemeableResource resource) throws IOException {
         
         Instant start = Instant.now();
         
+        Resource file = loader.getResource(resource.getPath());
+        
+        Reader less;
+        if (resource.isDefaultFile()) {
+            less = new InputStreamReader(file.getInputStream());
+        } else {
+            less = applyThemeProperties(file);
+        }
+        
+        log.info("Loading " + resource + ": theme property replacement took " + new Duration(start, Instant.now()).getMillis() + "ms");
+        start = Instant.now();
+        
+        StringWriter css = new StringWriter();
+        processor.process(less, css);
+        
+        log.info("Loading " + resource + ": less compiling took " + new Duration(start, Instant.now()).getMillis() + "ms");
+        start = Instant.now();
+        
+        boolean devMode = config.getBoolean(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE);
+        if (!devMode) {
+            
+            StringWriter minified = new StringWriter();
+            compressor.process(new StringReader(css.toString()), minified);
+            
+            log.info("Loading " + resource + ": css compression took " + new Duration(start, Instant.now()).getMillis() + "ms");
+            
+            return CachedResourceValue.of(minified.toString(), Instant.now().getMillis());
+            
+        }
+        
+        return CachedResourceValue.of(css.toString(), Instant.now().getMillis());
+    }
+
+    private Reader applyThemeProperties(Resource file) throws IOException {
+        
+        Theme theme = themeDao.getCurrentTheme();
+        StringBuilder less = new StringBuilder();
+        BufferedReader br = new BufferedReader(new InputStreamReader(file.getInputStream()));
+        
         String regexPrefix = "(?<=@";
         String regexSuffix = ":\\s{0,5}+)[^;]+?(?=;)";
-        
-        Resource layout = loader.getResource(resource.getPath());
-        Theme theme = themeDao.getCurrentTheme();
-        BufferedReader br = new BufferedReader(new InputStreamReader(layout.getInputStream()));
-        
-        StringBuilder newLess = new StringBuilder(); 
-        StringWriter newCss = new StringWriter();
         
         String line = br.readLine();
         while (line != null) {
@@ -104,48 +144,12 @@ public class ResourceCache {
                 }
                 line = line.replaceAll(regex, replacement);
             }
-            newLess.append(line).append("\n");
+            less.append(line).append("\n");
             
             line = br.readLine();
         }
         
-        log.info("Loading " + resource + ": theme property replacement took " + new Duration(start, Instant.now()).getMillis() + "ms");
-        start = Instant.now();
-        
-        //Create the configuration object and use it for current context
-        WroConfiguration wroConfig = new WroConfiguration();
-        Context.set(Context.standaloneContext(), wroConfig);
-        try {
-            //Create injector which will inject all dependencies of the processor
-            Injector injector = new InjectorBuilder().build();
-
-            LessCssProcessor processor = new LessCssProcessor();
-          
-            //this will inject all required fields, after this point it is safe to use processor outside of wro4j context.
-            injector.inject(processor);
-
-            //Do the actual processing
-            processor.process(new StringReader(newLess.toString()), newCss);
-        } finally {
-            Context.unset();
-        }
-        log.info("Loading " + resource + ": less compiling took " + new Duration(start, Instant.now()).getMillis() + "ms");
-        start = Instant.now();
-        
-        boolean devMode = config.getBoolean(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE);
-        if (!devMode) {
-            
-            YUICssCompressorProcessor compressor = new YUICssCompressorProcessor();
-            StringWriter minified = new StringWriter();
-            compressor.process(new StringReader(newCss.toString()), minified);
-            
-            log.info("Loading " + resource + ": css compression took " + new Duration(start, Instant.now()).getMillis() + "ms");
-            
-            return CachedResourceValue.of(minified.toString(), Instant.now().getMillis());
-            
-        }
-        
-        return CachedResourceValue.of(newCss.toString(), Instant.now().getMillis());
+        return new StringReader(less.toString());
     }
     
 }
