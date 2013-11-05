@@ -330,15 +330,23 @@ void CtiFDR_ValmetMulti::cleanupTranslationPoint(CtiFDRPointSPtr & translationPo
 
 CtiFDRClientServerConnectionSPtr CtiFDR_ValmetMulti::createNewConnection(SOCKET newSocket)
 {
-    sockaddr_in sockAddr;
-    int sockAddrSize = sizeof(sockAddr);
-    getsockname(newSocket, (SOCKADDR*) &sockAddr, &sockAddrSize);
-    int port = ntohs(sockAddr.sin_port);
+    Cti::SocketAddress addr( Cti::SocketAddress::STORAGE_SIZE );
+
+    if( getsockname(newSocket, &addr._addr.sa, &addr._addrlen) == SOCKET_ERROR )
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << "CtiFDR_ValmetMulti::createNewConnection - getsockname() has failed" << endl;
+        }
+        return CtiFDRClientServerConnectionSPtr(); // return NULL pointer if there is an error
+    }
+
+    const int port = ntohs(addr._addr.sa_in.sin_port);
 
     std::stringstream ss;
     ss << "port_" << port;
 
-    std::string connName = ss.str();
+    const std::string connName = ss.str();
     CtiFDRClientServerConnectionSPtr newConnection(new CtiFDRClientServerConnection(connName.c_str(), newSocket, this));
 
     newConnection->setRegistered(true); //ACS doesn't have a separate registration message

@@ -7,6 +7,7 @@
 #include "unsolicited_handler.h"
 #include "port_udp.h"
 #include "EncodingFilterFactory.h"
+#include "socket_helper.h"
 
 #define BOOST_MULTI_INDEX_DISABLE_SERIALIZATION
 
@@ -25,7 +26,7 @@ private:
 
     EncodingFilterFactory::EncodingFilterSPtr _encodingFilter;
 
-    SOCKET _udp_socket;
+    Cti::ServerSockets _udp_sockets;
     unsigned short _connected_port;
 
     typedef std::pair<unsigned short, unsigned short> dnp_address_pair;
@@ -41,7 +42,7 @@ private:
     type_serial_id_bimap _typeAndSerial_to_id;
     dnp_address_id_bimap _dnpAddress_to_id;
 
-    typedef std::map<long, u_long>  ip_map;
+    typedef std::map<long, string>  ip_map;
     typedef std::map<long, u_short> port_map;
 
     ip_map   _ip_addresses;
@@ -67,12 +68,10 @@ private:
     void updateDeviceIpAndPort( device_record &dr, const packet &p );
     void loadStaticRdsIPAndPort( const CtiDeviceSingle &device);
 
-    void setDeviceIp  ( const long device_id, const u_long ip );
+    void setDeviceIp  ( const long device_id, const string  ip );
     void setDevicePort( const long device_id, const u_short port );
 
-    static u_long string_to_ip(std::string ip_string);
-
-    static void sendDeviceIpAndPort( const CtiDeviceSingleSPtr &device, u_long ip, u_short port );
+    static void sendDeviceIpAndPort( const CtiDeviceSingleSPtr &device, string ip, u_short port );
 
     void loadEncodingFilter();
 
@@ -95,10 +94,8 @@ protected:
 
     virtual bool isDeviceDisconnected( const long device_id ) const;
 
-    virtual u_long  getDeviceIp  ( const long device_id ) const;
+    virtual string  getDeviceIp  ( const long device_id ) const;
     virtual u_short getDevicePort( const long device_id ) const;
-
-    virtual string ip_to_string(u_long ip) const;
 
 public:
 

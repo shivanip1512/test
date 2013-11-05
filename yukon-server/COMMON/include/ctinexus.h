@@ -7,6 +7,7 @@
 #include "cticonnect.h"
 #include "dlldefs.h"
 #include "netports.h"
+#include "socket_helper.h"
 
 #include <windows.h>
 #include <limits.h>
@@ -24,8 +25,8 @@ public:
    ULONG          NexusType;        // What is this connection??
    CHAR           Name[64];         // Text Description of connection
    SOCKET         sockt;            // Nexuset ID/Handle
-   SOCKADDR_IN    saServer;
-   LPHOSTENT      lpHostEntry;
+
+   Cti::ServerSockets listeningSockets;
 
    ULONG          NexusState;
    ULONG          NexusFlags;       // set ONLY by CTINexusOpen

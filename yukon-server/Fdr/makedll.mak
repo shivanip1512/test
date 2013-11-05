@@ -158,7 +158,7 @@ $(FDR_DLL_FULLBUILD) :
 cti_fdr.dll: $(FDR_DLL_FULLBUILD) $(FDRINTERFACEOBJS) $(OBJ)\cti_fdr.res
                 @echo Building  ..\$@
                 @%cd $(OBJ)
-                $(CC) $(DLLFLAGS) $(FDRINTERFACEOBJS) $(INCLPATHS) $(RWLIBS) $(BOOST_LIBS) $(CTIFDRLIBS) /Fe..\$@ $(LINKFLAGS) cti_fdr.res
+                $(CC) $(DLLFLAGS) $(FDRINTERFACEOBJS) $(INCLPATHS) $(RWLIBS) $(BOOST_LIBS) $(CTIFDRLIBS) Ws2_32.lib /Fe..\$@ $(LINKFLAGS) cti_fdr.res
                 @if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                 @if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
                 @%cd $(CWD)
@@ -198,7 +198,7 @@ fdrdsm2filein.dll: fdrdsm2filein.obj Makefile $(OBJ)\fdrdsm2filein.res
 fdrrdex.dll: fdrrdex.obj Makefile $(OBJ)\fdrrdex.res
                 @%cd $(OBJ)
                 @echo Building  ..\$@
-                $(CC) $(DLLFLAGS) fdrrdex.obj $(INCLPATHS) $(RWLIBS) $(BOOST_LIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib /Fe..\$@ $(LINKFLAGS) fdrrdex.res
+                $(CC) $(DLLFLAGS) fdrrdex.obj $(INCLPATHS) $(RWLIBS) $(BOOST_LIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib Ws2_32.lib /Fe..\$@ $(LINKFLAGS) fdrrdex.res
                 @if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                 @if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
                 @%cd $(CWD)
@@ -223,7 +223,7 @@ fdracs.dll:     fdracs.obj Makefile $(OBJ)\fdracs.res
 fdracsmulti.dll: fdracsmulti.obj Makefile $(OBJ)\fdracsmulti.res
                 @%cd $(OBJ)
                 @echo Building  ..\$@
-                $(CC) $(DLLFLAGS) $(<F) $(INCLPATHS) $(RWLIBS) $(BOOST_LIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib /Fe..\$@ $(LINKFLAGS) fdracsmulti.res
+                $(CC) $(DLLFLAGS) $(<F) $(INCLPATHS) $(RWLIBS) $(BOOST_LIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib Ws2_32.lib /Fe..\$@ $(LINKFLAGS) fdracsmulti.res
                 @if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                 @if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
                 @%cd $(CWD)
@@ -255,7 +255,7 @@ fdrvalmetmulti.dll: fdrvalmetmulti.obj $(FDRINTERFACES)  Makefile $(OBJ)\fdrvalm
 fdrinet.dll: fdrinet.obj Makefile $(OBJ)\fdrinet.res
                 @%cd $(OBJ)
                 @echo Building  ..\$@
-                $(CC) $(DLLFLAGS) fdrinet.obj $(INCLPATHS) $(RWLIBS) $(BOOST_LIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib /Fe..\$@ $(LINKFLAGS) fdrinet.res
+                $(CC) $(DLLFLAGS) fdrinet.obj $(INCLPATHS) $(RWLIBS) $(BOOST_LIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib Ws2_32.lib /Fe..\$@ $(LINKFLAGS) fdrinet.res
                 @if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                 @if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
                 @%cd $(CWD)
@@ -279,7 +279,7 @@ fdrtristate.dll: fdrtristate.obj Makefile $(OBJ)\fdrtristate.res
 fdrrccs.dll: fdrrccs.obj Makefile $(OBJ)\fdrrccs.res
                 @%cd $(OBJ)
                 @echo Building  ..\$@
-                $(CC) $(DLLFLAGS) fdrrccs.obj $(INCLPATHS) $(RWLIBS) $(BOOST_LIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib $(COMPILEBASE)\lib\fdrinet.lib /Fe..\$@ $(LINKFLAGS) fdrrccs.res
+                $(CC) $(DLLFLAGS) fdrrccs.obj $(INCLPATHS) $(RWLIBS) $(BOOST_LIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib $(COMPILEBASE)\lib\fdrinet.lib Ws2_32.lib /Fe..\$@ $(LINKFLAGS) fdrrccs.res
                 @if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                 @if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
                 @%cd $(CWD)
@@ -331,7 +331,7 @@ fdrpi.dll: $(FDRPIOBJS) Makefile $(OBJ)\fdrpi.res
 fdrxa21lm.dll: fdrxa21lm.obj Makefile $(OBJ)\fdrxa21lm.res
                 @%cd $(OBJ)
                 @echo Building  ..\$@
-                $(CC) $(DLLFLAGS) fdrxa21lm.obj $(INCLPATHS) $(RWLIBS) $(BOOST_LIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib /Fe..\$@ $(LINKFLAGS) fdrxa21lm.res
+                $(CC) $(DLLFLAGS) fdrxa21lm.obj $(INCLPATHS) $(RWLIBS) $(BOOST_LIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib Ws2_32.lib /Fe..\$@ $(LINKFLAGS) fdrxa21lm.res
                 @if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                 @if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
                 @%cd $(CWD)
@@ -363,7 +363,7 @@ fdrtristatesub.dll: fdrtristatesub.obj Makefile $(OBJ)\fdrtristatesub.res
 fdrdnpslave.dll: fdrdnpslave.obj Makefile $(OBJ)\fdrdnpslave.res
                 @%cd $(OBJ)
                 @echo Building  ..\$@
-                $(CC) $(DLLFLAGS) fdrdnpslave.obj $(INCLPATHS) $(RWLIBS) $(BOOST_LIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib /Fe..\$@ $(LINKFLAGS) fdrdnpslave.res
+                $(CC) $(DLLFLAGS) fdrdnpslave.obj $(INCLPATHS) $(RWLIBS) $(BOOST_LIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib Ws2_32.lib /Fe..\$@ $(LINKFLAGS) fdrdnpslave.res
                 @if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                 @if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
                 @%cd $(CWD)

@@ -18,19 +18,17 @@
 CtiFDRSocketConnection::CtiFDRSocketConnection(CtiFDRSocketLayer * aParent)
 :    iParent (aParent),
      iConnectionStatus (Uninitialized)
-
 {
     iConnection = NULL;
 }
-CtiFDRSocketConnection::CtiFDRSocketConnection(CtiFDRSocketLayer * aParent, SOCKADDR_IN aAddr)
+
+CtiFDRSocketConnection::CtiFDRSocketConnection(CtiFDRSocketLayer * aParent, const Cti::SocketAddress& aAddr )
 :    iParent (aParent),
-     iAddr (aAddr),
-     iConnectionStatus (Uninitialized)
-
+     iConnectionStatus (Uninitialized),
+     iAddr (aAddr)
 {
     iConnection = NULL;
 }
-
 
 CtiFDRSocketConnection::~CtiFDRSocketConnection( )
 {
@@ -48,12 +46,12 @@ CtiFDRSocketConnection& CtiFDRSocketConnection::setParent (CtiFDRSocketLayer * a
     return *this;
 }
 
-SOCKADDR_IN &    CtiFDRSocketConnection::getAddr()
+const Cti::SocketAddress& CtiFDRSocketConnection::getAddr() const
 {
     return iAddr;
 }
 
-CtiFDRSocketConnection& CtiFDRSocketConnection::setAddr (SOCKADDR_IN aAddr)
+CtiFDRSocketConnection& CtiFDRSocketConnection::setAddr(const Cti::SocketAddress& aAddr)
 {
     iAddr = aAddr;
     return *this;

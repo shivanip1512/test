@@ -2,6 +2,7 @@
 
 #include "ctitime.h"
 #include <vector>
+#include <string>
 
 namespace Cti    {
 namespace Porter {
@@ -9,12 +10,12 @@ namespace Connections {
 
 struct SocketAddress
 {
-    SocketAddress(unsigned long ip_, unsigned short port_) :
+    SocketAddress(std::string ip_, unsigned short port_) :
         ip  (ip_),
         port(port_)
     { }
 
-    const unsigned long  ip;
+    const std::string    ip;
     const unsigned short port;
 
     bool operator==(const SocketAddress &other) const
@@ -64,6 +65,9 @@ protected:
     TcpSocketStream(const SocketStream &other);
     TcpSocketStream(TcpSocketStream &other);
     ~TcpSocketStream();
+
+    // wrapper to create socket
+    void createSocket(int af, int type, int protocol);
 
     const SOCKET &sock() const { return s; }
 

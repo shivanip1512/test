@@ -27,8 +27,10 @@
 #include "fdrsocketinterface.h"
 #include "fdrscadahelper.h"
 #include "utility.h"
+#include "socket_helper.h"
 // this class header
 #include "fdracsmulti.h"
+#include "std_helper.h"
 
 using std::string;
 using std::endl;
@@ -203,20 +205,23 @@ int CtiFDRAcsMulti::readConfig()
 
 CtiFDRClientServerConnectionSPtr CtiFDRAcsMulti::createNewConnection(SOCKET newSocket)
 {
-    sockaddr_in peerAddr;
-    int peerAddrSize = sizeof(peerAddr);
-    getpeername(newSocket, (SOCKADDR*) &peerAddr, &peerAddrSize);
-    std::string ipString(inet_ntoa(peerAddr.sin_addr));
-    std::string connName;
-    ServerNameMap::const_iterator iter = _serverNameLookup.find(ipString);
-    if (iter == _serverNameLookup.end())
+    Cti::SocketAddress peerAddr( Cti::SocketAddress::STORAGE_SIZE );
+
+    if( getpeername(newSocket, &peerAddr._addr.sa, &peerAddr._addrlen) == SOCKET_ERROR )
     {
-        connName = ipString;
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << "CtiFDRAcsMulti::createNewConnection - getpeername() has failed" << endl;
+        }
+        return CtiFDRClientServerConnectionSPtr();
     }
-    else
-    {
-        connName = _serverNameLookup[ipString];
-    }
+
+    const string ipString = peerAddr.toString();
+
+    const boost::optional<string> nameFound = Cti::mapFind(_serverNameLookup, ipString);
+
+    const string connName = (!nameFound) ? ipString : *nameFound;
+
     CtiFDRClientServerConnectionSPtr newConnection(new CtiFDRClientServerConnection(connName.c_str(),newSocket,this));
     newConnection->setRegistered(true); //ACS doesn't have a separate registration message
 

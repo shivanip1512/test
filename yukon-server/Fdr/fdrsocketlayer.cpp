@@ -2,6 +2,7 @@
 
 #include "logger.h"
 #include "guard.h"
+#include "socket_helper.h"
 
 #include "fdrinterface.h"
 #include "fdrsocketinterface.h"
@@ -71,29 +72,21 @@ CtiFDRSocketLayer::CtiFDRSocketLayer(string & interfaceName,
 {
     if (aInBound != NULL)
     {
-        SOCKADDR addr;
-        int length = sizeof (SOCKADDR);
-        getpeername (aInBound, &addr, &length);
+        Cti::SocketAddress addr( Cti::SocketAddress::STORAGE_SIZE );
 
-        // compiler won't let me cast this even though help says its possible
-        SOCKADDR_IN tmp;
-        memcpy (&tmp,&addr,sizeof(SOCKADDR));
+        getpeername(aInBound, &addr._addr.sa, &addr._addrlen);
 
-        iInBoundConnection = new CtiFDRServerConnection (aInBound, tmp, this);
+        iInBoundConnection = new CtiFDRServerConnection(aInBound, addr, this);
     }
 
     if (aOutBound != NULL)
     {
-        SOCKADDR addr;
-        int length = sizeof (SOCKADDR);
-        getpeername (aInBound, &addr, &length);
+        Cti::SocketAddress addr( Cti::SocketAddress::STORAGE_SIZE );
 
-        // compiler won't let me cast this even though help says its possible
-        SOCKADDR_IN tmp;
-        memcpy (&tmp,&addr,sizeof(SOCKADDR));
+        getpeername(aInBound, &addr._addr.sa, &addr._addrlen);
 
-        iOutBoundConnection = new CtiFDRClientConnection (aOutBound, this);
-        iOutBoundConnection->setAddr(tmp);
+        iOutBoundConnection = new CtiFDRClientConnection(aOutBound, this);
+        iOutBoundConnection->setAddr(addr);
     }
     iSemaphore = NULL;
 }
@@ -314,32 +307,27 @@ int CtiFDRSocketLayer::init ()
 
     if (iConnectionType == Client_Multiple)
     {
-        SOCKADDR_IN addr;
-        struct hostent *entry=NULL;
-
-        entry = gethostbyname(iName.c_str());
-        if(entry == NULL)
+        Cti::AddrInfo pAddrInfo = Cti::makeTcpClientSocketAddress(iName.c_str(), CtiNumStr(getPortNumber()).toString().c_str());
+        if( !pAddrInfo )
         {
             if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Server " << iName << " is not defined in the hosts file " << endl;
+                dout << CtiTime() << __FILE__ << " (" << __LINE__ << ") Failed to retrieve address info for \"" << iName << "\" port " << CtiNumStr(getPortNumber()).toString() << "(Error: " << pAddrInfo.getError() << ")" << endl;
             }
             retVal = !NORMAL;
         }
         else
         {
-            addr.sin_addr = *((LPIN_ADDR)*entry->h_addr_list);
-
             if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Attempting to connect to "<< iName << " at " <<  string (inet_ntoa(addr.sin_addr)) << endl;
+                dout << CtiTime() << " Attempting to connect to "<< iName << " at " << pAddrInfo.toString() << endl;
             }
 
             // must be in this order because we need address info from server
-            iOutBoundConnection = new CtiFDRClientConnection (addr,this);
-            retVal = iOutBoundConnection->init();
+            iOutBoundConnection = new CtiFDRClientConnection(Cti::SocketAddress(pAddrInfo->ai_addr, pAddrInfo->ai_addrlen), this);
+            retVal              = iOutBoundConnection->init();
         }
     }
     else if (iConnectionType == Server_Single)
@@ -563,7 +551,7 @@ void CtiFDRSocketLayer::threadFunctionConnectionStatus( void )
                         {
                             {
                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                               dout << CtiTime() << " Valid connection exists to " << getName() << " at " << string (inet_ntoa(getInBoundConnection()->getAddr().sin_addr)) << endl;
+                               dout << CtiTime() << " Valid connection exists to " << getName() << " at " << getInBoundConnection()->getAddr().toString() << endl;
                             }
                             sendLinkState (FDR_CONNECTED);
                             logTime =CtiTime().now();
@@ -615,7 +603,7 @@ int CtiFDRSocketLayer::initializeClientConnection ()
         */
         if (iOutBoundConnection == NULL)
         {
-            iOutBoundConnection = new CtiFDRClientConnection (iInBoundConnection->getAddr(), this);
+            iOutBoundConnection = new CtiFDRClientConnection( iInBoundConnection->getAddr(), this );
             retVal = iOutBoundConnection->init();
 
             if (retVal)

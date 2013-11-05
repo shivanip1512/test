@@ -11,7 +11,7 @@ class IM_EX_FDRBASE CtiFDRServerConnection : public CtiFDRSocketConnection
     typedef CtiFDRSocketConnection Inherited;
 
     public:
-        CtiFDRServerConnection(SOCKET aSocket, SOCKADDR_IN aAddr, CtiFDRSocketLayer * aParent=NULL);
+        CtiFDRServerConnection(SOCKET aSocket, const Cti::SocketAddress& aAddr, CtiFDRSocketLayer * aParent=NULL);
         ~CtiFDRServerConnection();
 
         int initializeConnection (int aPortNumber);

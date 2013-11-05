@@ -31,7 +31,7 @@ protected:
         int len;
         int used;
 
-        u_long  ip;
+        string  ip;
         u_short port;
 
         enum ProtocolType
@@ -176,7 +176,7 @@ protected:
 
     virtual bool isDeviceDisconnected( const long device_id ) const = 0;
 
-    virtual u_long  getDeviceIp  ( const long device_id ) const = 0;
+    virtual string  getDeviceIp  ( const long device_id ) const = 0;
     virtual u_short getDevicePort( const long device_id ) const = 0;
 
     device_record *getDeviceRecordById( long device_id );
@@ -184,13 +184,11 @@ protected:
     void addInboundWork(device_record *dr, packet *&p);
 
     void traceOutbound( const device_record &dr, int socket_status );
-    void traceInbound ( unsigned long ip, unsigned short port, int status, const unsigned char *message, int count, const device_record *dr = 0 );
+    void traceInbound ( string ip, unsigned short port, int status, const unsigned char *message, int count, const device_record *dr = 0 );
 
     static bool isDnpDevice  (const CtiDeviceSingle &ds);
     static bool isGpuffDevice(const CtiDeviceSingle &ds);
     static bool isRdsDevice (const CtiDeviceSingle &ds);
-
-    virtual std::string ip_to_string(u_long ip) const = 0;
 
 public:
 

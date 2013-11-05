@@ -4,6 +4,7 @@
 #include "queues.h"
 #include "fdrclientserverconnection.h"
 #include "fdrinterface.h"
+#include "socket_helper.h"
 
 class CtiTime;
 
@@ -60,7 +61,7 @@ class IM_EX_FDRBASE CtiFDRSocketServer : public CtiFDRInterface
         void removePortToPointsMap(int portId, int pointId);
 
         void clearFailedLayers();
-        SOCKET createBoundListener(unsigned short listeningPort);
+        bool createBoundListener(unsigned short listeningPort, Cti::ServerSockets &listeningSockets);
 
         virtual CtiFDRClientServerConnectionSPtr createNewConnection(SOCKET newConnection) = 0;
 
@@ -86,7 +87,7 @@ class IM_EX_FDRBASE CtiFDRSocketServer : public CtiFDRInterface
 
         CtiMutex _socketMutex;
 
-        typedef std::map<unsigned short, SOCKET*> PortSocketMap;
+        typedef std::map<unsigned short, Cti::ServerSockets*> PortSocketMap;
         typedef PortSocketMap::iterator PortSocketMap_itr;
 
         PortSocketMap _socketConnections;

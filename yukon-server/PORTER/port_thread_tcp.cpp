@@ -163,7 +163,7 @@ void TcpPortHandler::loadDeviceTcpProperties(const set<long> &device_ids)
     if(rdr.isValid())
     {
         map<long, unsigned short> tmp_ports;
-        map<long, unsigned long>  tmp_ip_addresses;
+        map<long, string>         tmp_ip_addresses;
 
         while( rdr() )
         {
@@ -175,36 +175,12 @@ void TcpPortHandler::loadDeviceTcpProperties(const set<long> &device_ids)
             }
             else if( paoProperty.getPropertyName() == "TcpIpAddress" )
             {
-                const unsigned long ip_address = resolveIp(paoProperty.getPropertyValue());
-
-                if( ip_address == INADDR_NONE )
-                {
-                    const CtiDeviceSPtr device = DeviceManager.getDeviceByID(paoProperty.getPaoId());
-
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << describePort() << " cannot resolve IP for device ";
-
-                        if( device )
-                        {
-                            dout << "\"" << device->getName() << "\"";
-                        }
-                        else
-                        {
-                            dout << "id " << paoProperty.getPaoId();
-                        }
-
-                        dout << " from entry \"" << paoProperty.getPropertyValue() << "\"" << endl;
-                    }
-                }
-
-                tmp_ip_addresses[paoProperty.getPaoId()] = ip_address;
+                tmp_ip_addresses[paoProperty.getPaoId()] = paoProperty.getPropertyValue();
             }
         }
 
         map<long, unsigned short>::iterator port_itr = tmp_ports.begin();
-        map<long, unsigned long >::iterator ip_itr   = tmp_ip_addresses.begin();
+        map<long, string>::iterator         ip_itr   = tmp_ip_addresses.begin();
 
         while( port_itr != tmp_ports.end() &&
                ip_itr   != tmp_ip_addresses.end() )
@@ -245,33 +221,6 @@ void TcpPortHandler::loadDeviceTcpProperties(const set<long> &device_ids)
         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for Dynamic PAO Info" << endl;
     }
 }
-
-
-u_long TcpPortHandler::resolveIp(const string &ip)
-{
-    if( ip.empty() )
-    {
-        return INADDR_NONE;
-    }
-
-    //  looks like a hostname - try to resolve it
-    if( isalpha(ip[0]) )
-    {
-        LPHOSTENT lpHostEntry = gethostbyname(ip.c_str());
-
-        if( ! lpHostEntry )
-        {
-            return INADDR_NONE;
-        }
-
-        return *(u_long *)(lpHostEntry->h_addr_list[0]);
-    }
-    else
-    {
-        return inet_addr(ip.c_str());
-    }
-}
-
 
 void TcpPortHandler::addDeviceProperties(const CtiDeviceSingle &device)
 {
@@ -330,7 +279,7 @@ int TcpPortHandler::sendOutbound( device_record &dr )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Cti::Porter::TcpPortHandler::sendOutbound() - sending packet to "
-                          << ip_to_string(sa.ip) << ":" << sa.port << " "
+                          << sa.ip << ":" << sa.port << " "
                           << __FILE__ << " (" << __LINE__ << ")" << endl;
 
         dout << hex;
@@ -457,12 +406,11 @@ Connections::SocketAddress TcpPortHandler::getDeviceAddress( const long device_i
     }
     catch( TcpConnectionManager::no_record &ex )
     {
-        return Connections::SocketAddress(numeric_limits<u_long>::max(),
-                                          numeric_limits<u_short>::max());
+        return Connections::SocketAddress(string(), numeric_limits<u_short>::max());
     }
 }
 
-u_long TcpPortHandler::getDeviceIp( const long device_id ) const
+string TcpPortHandler::getDeviceIp( const long device_id ) const
 {
     return getDeviceAddress(device_id).ip;
 }
@@ -476,19 +424,6 @@ u_short TcpPortHandler::getDevicePort( const long device_id ) const
 bool TcpPortHandler::isDeviceDisconnected( const long device_id ) const
 {
     return !_connectionManager.isConnected(device_id);
-}
-
-
-string TcpPortHandler::ip_to_string(u_long ip) const
-{
-    ostringstream ostr;
-
-    ostr << ((ip >>  0) & 0xff) << ".";
-    ostr << ((ip >>  8) & 0xff) << ".";
-    ostr << ((ip >> 16) & 0xff) << ".";
-    ostr << ((ip >> 24) & 0xff);
-
-    return ostr.str();
 }
 
 

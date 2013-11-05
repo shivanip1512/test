@@ -23,8 +23,6 @@ private:
 
     void loadDeviceTcpProperties(const std::set<long> &device_ids);
 
-    static u_long resolveIp(const std::string &ip);
-
     Connections::SocketAddress getDeviceAddress( const long device_id ) const;
 
     void updateDeviceCommStatus(const long device_id, int status);
@@ -50,10 +48,8 @@ protected:
 
     virtual bool isDeviceDisconnected( const long device_id ) const;
 
-    virtual u_long  getDeviceIp  ( const long device_id ) const;
+    virtual string  getDeviceIp  ( const long device_id ) const;
     virtual u_short getDevicePort( const long device_id ) const;
-
-    virtual std::string ip_to_string(u_long ip) const;
 
 public:
 

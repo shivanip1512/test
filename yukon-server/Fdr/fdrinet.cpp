@@ -230,6 +230,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "fdrserverconnection.h"
 #include "fdrclientconnection.h"
 #include "fdrsocketlayer.h"
+#include "socket_helper.h"
 
 // this class header
 #include "fdrinet.h"
@@ -1063,30 +1064,26 @@ int CtiFDR_Inet::findConnectionByNameInList(string aName)
     return foundIndex;
 }
 
-int CtiFDR_Inet::findClientInList(SOCKADDR_IN aAddr)
+int CtiFDR_Inet::findClientInList(const Cti::SocketAddress& aAddr)
 {
-    bool                    foundFlag= false;
-    int                     index = 0, foundIndex=-1;
-    int                     entries;
-
-    // list must be protected outside of this call
-    entries = iConnectionList.size();
-
-    while ((index < entries) && !foundFlag)
+    if( !aAddr )
     {
-        // make sure this isn't still null and trying to initialize
-        if (iConnectionList[index]->getOutBoundConnection() != NULL)
+        return -1;
+    }
+
+    int index = 0;
+
+    for each( CtiFDRSocketLayer* conn in iConnectionList )
+    {
+        if( conn->getOutBoundConnection() && conn->getOutBoundConnection()->getAddr() == aAddr )
         {
-            // find the point id
-            if (aAddr.sin_addr.S_un.S_addr == iConnectionList[index]->getOutBoundConnection()->getAddr().sin_addr.S_un.S_addr)
-            {
-                foundFlag = true;
-                foundIndex = index;
-            }
+            return index;
         }
+
         index++;
     }
-    return foundIndex;
+
+    return -1; // client not found
 }
 
 /**************************************************************************
@@ -1357,13 +1354,15 @@ bool  CtiFDR_Inet::findAndInitializeClients( void )
                 }
                 else
                 {
+                    const string AddrStr = layer->getOutBoundConnection()->getAddr().toString();
+
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " Client connection initialized for " << iClientList[x] << endl;
-                        dout << string (inet_ntoa(layer->getOutBoundConnection()->getAddr().sin_addr)) << endl;
+                        dout << AddrStr << endl;
                     }
 
-                    desc = iClientList[x] + string ("'s client link has been established at ") + string (inet_ntoa(layer->getOutBoundConnection()->getAddr().sin_addr));
+                    desc = iClientList[x] + string ("'s client link has been established at ") + AddrStr;
                     logEvent (desc,action, true);
                     iConnectionList.push_back (layer);
                 }
@@ -1388,17 +1387,9 @@ bool  CtiFDR_Inet::findAndInitializeClients( void )
 
 void CtiFDR_Inet::threadFunctionServerConnection( void )
 {
-    RWRunnableSelf  pSelf = rwRunnable( );
-    INT retVal=0;
-    CtiFDRServerConnection   *connection;
-    int connectionIndex;
-    string            desc;
-    string           action;
-
-    SOCKET tmpListener,tmpConnection;
-    SOCKADDR_IN             socketAddr, returnAddr;
-    int                   returnLength;
-    LPHOSTENT               hostEntry;
+    RWRunnableSelf pSelf = rwRunnable( );
+    string desc, action;
+    SOCKET tmpConnection = INVALID_SOCKET;
 
     try
     {
@@ -1408,172 +1399,148 @@ void CtiFDR_Inet::threadFunctionServerConnection( void )
             dout << CtiTime() << " Initializing CtiFDR_Inet::threadFunctionServerConnection " << endl;
         }
 
-        tmpListener = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-        if (tmpListener == INVALID_SOCKET)
+        // retrieve socket addrinfo for listener sockets
+        Cti::AddrInfo pAddrInfo = Cti::makeTcpServerSocketAddress(NULL,CtiNumStr(getPortNumber()).toString().c_str());
+        if( !pAddrInfo )
         {
             if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Failed to create listener socket FDRInet " << endl;
+                dout << CtiTime() << " CtiFDR_Inet::threadFunctionServerConnection : Failed in host name to address translation " << endl;
             }
+            return;
         }
-        else
+
+        Cti::ServerSockets listeningSockets;
+
+        try
         {
+            // create sockets from the addrinfo
+            listeningSockets.createSockets(pAddrInfo.get());
+
+            // set sockets options to allows socket to bind to an address and port already in use
             BOOL ka = TRUE;
-            if (setsockopt(tmpListener, SOL_SOCKET, SO_REUSEADDR, (char*)&ka, sizeof(BOOL)))
+            listeningSockets.setOption(SOL_SOCKET, SO_REUSEADDR, (char*)&ka, sizeof(BOOL));
+
+            // bind the socket
+            listeningSockets.bind(pAddrInfo.get());
+
+            // set sockets in listening state
+            listeningSockets.listen(SOMAXCONN);
+        }
+        catch( Cti::SocketException& e )
+        {
+            if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " CtiFDR_Inet::threadFunctionServerConnection : Failed to setup listener sockets: " << e.what() << endl;
+            }
+            return;
+        }
+
+        for ( ; ; )
+        {
+            pSelf.serviceCancellation( );
+            pSelf.sleep(500);
+
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Listening for connection on port " << getPortNumber() << endl;
+            }
+
+            Cti::SocketAddress returnAddr( Cti::SocketAddress::STORAGE_SIZE );
+
+            // accept a new socket connection
+            tmpConnection = listeningSockets.accept( returnAddr );
+
+            if( tmpConnection == INVALID_SOCKET )
             {
                 if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Failed to set reuse option for listener socket in  FDRInet " << endl;
+                    dout << CtiTime() << " Accept call failed in FDRInet with error code: " << listeningSockets.getLastError() << endl;
                 }
-
-                shutdown(tmpListener, 2);
-                closesocket(tmpListener);
+                continue;
             }
-            else
+
+            // set to non blocking mode
+            ULONG param=1;
+            ioctlsocket(tmpConnection, FIONBIO, &param);
+
+            auto_ptr<CtiFDRServerConnection> connection( new CtiFDRServerConnection( tmpConnection, returnAddr ));
+
+            string connAddrStr = connection->getAddr().toString();
             {
-                // Fill in the address structure
-                socketAddr.sin_family = AF_INET;
-                socketAddr.sin_addr.s_addr = INADDR_ANY; // Let WinNexus supply address
-                socketAddr.sin_port = htons(getPortNumber());      // Use port from command line
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Server connection processed for client at " << connAddrStr << endl;
+            }
 
-                if (bind(tmpListener, (LPSOCKADDR)&(socketAddr), sizeof(struct sockaddr)))
+            {
+                CtiLockGuard<CtiMutex> guard(iConnectionListMux);
+
+                //-----------------------------------------------------
+                // check our list for a possible client
+                //-----------------------------------------------------
+                const int connectionIndex = findClientInList (connection->getAddr());
+
+                // if it returns -1, the client wasn't found
+                if (connectionIndex == -1)
                 {
-                    if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Failed to bind listener socket in  FDRInet " << endl;
-                    }
+                    auto_ptr<CtiFDRSocketLayer> layer(new CtiFDRSocketLayer(string(), connection.release(), CtiFDRSocketLayer::Server_Multiple, this));
 
-                    shutdown(tmpListener, 2);
-                    closesocket(tmpListener);
-                }
-                else
-                {
-                    getListener()->setConnection(tmpListener);
-                    for ( ; ; )
+                    // this will start everything appropriately
+                    if (!layer->init())
                     {
-                        pSelf.serviceCancellation( );
-                        pSelf.sleep (500);
-
-                        if (listen(getListener()->getConnection(), SOMAXCONN))
+                        if (!layer->run())
                         {
-                            shutdown(getListener()->getConnection(), 2);
-                            closesocket(getListener()->getConnection());
+                            iConnectionList.push_back (layer.release());
                         }
                         else
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " Listening for connection on port " << getPortNumber() << endl;
+                                dout << CtiTime() << " Return client connection to " << connAddrStr << " failed" << endl;
                             }
-
-                            // new socket
-                            returnLength = sizeof (returnAddr);
-                            tmpConnection = accept(getListener()->getConnection(), (struct sockaddr *) &returnAddr, &returnLength);
-
-                            if (tmpConnection == INVALID_SOCKET)
-                            {
-                                shutdown(tmpConnection, 2);
-                                closesocket(tmpConnection);
-                                if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " Accept call failed in FDRInet " <<endl;
-                                }
-                            }
-                            else
-                            {
-                                // set to non blocking mode
-                                ULONG param=1;
-                                ioctlsocket(tmpConnection, FIONBIO, &param);
-
-                                connection = new CtiFDRServerConnection (tmpConnection, returnAddr);
-
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " Server connection processed for client at " << string (inet_ntoa(connection->getAddr().sin_addr)) << endl;
-                                }
-
-                                {
-                                    /**********************
-                                    * check our list for a possible client
-                                    ***********************
-                                    */
-                                    CtiLockGuard<CtiMutex> guard(iConnectionListMux);
-                                    connectionIndex = findClientInList (connection->getAddr());
-
-                                    // if it returns -1, the client wasn't found
-                                    if (connectionIndex == -1)
-                                    {
-                                        CtiFDRSocketLayer *layer = new CtiFDRSocketLayer(string(), connection, CtiFDRSocketLayer::Server_Multiple, this);
-
-                                        // this will start everything appropriately
-                                        if (!layer->init())
-                                        {
-                                            retVal = layer->run();
-                                            if (!retVal)
-                                            {
-                                                iConnectionList.push_back (layer);
-                                            }
-                                            else
-                                            {
-                                                // we failed, layer is consumed in here
-                                                {
-                                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                                    dout << CtiTime() << " Return client connection to " << string (inet_ntoa(connection->getAddr().sin_addr)) << " failed" << endl;
-                                                }
-                                                desc = string (" Client connection to ") + string (inet_ntoa(connection->getAddr().sin_addr)) + string (" has failed");
-                                                logEvent (desc,action, true);
-                                                delete layer;
-                                            }
-                                        }
-                                        else
-                                        {
-                                            // we failed, layer is consumed in here
-                                            {
-                                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                                dout << CtiTime() << " Return client connection to " << string (inet_ntoa(connection->getAddr().sin_addr)) << " failed" << endl;
-                                            }
-                                            desc = string (" Client connection to ") + string (inet_ntoa(connection->getAddr().sin_addr)) + string (" has failed");
-                                            logEvent (desc,action, true);
-                                            delete layer;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        // found the client so put the server connection there
-                                        if (iConnectionList[connectionIndex]->getInBoundConnection() == NULL)
-                                        {
-                                            // set the parent to the found connection
-                                            connection->setParent (iConnectionList[connectionIndex]);
-                                            connection->init();
-
-                                            // attach it to the client and start it up
-                                            iConnectionList[connectionIndex]->setInBoundConnection (connection);
-                                            iConnectionList[connectionIndex]->getInBoundConnection()->run();
-                                        }
-                                        else
-                                        {
-                                            {
-                                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                                dout << CtiTime() << " Server connection for " << iConnectionList[connectionIndex]->getName() << " already established " << endl;
-                                            }
-                                            desc = string (" Server connection for ") + iConnectionList[connectionIndex]->getName() + string (" already established ");
-                                            logEvent (desc,action, true);
-                                            delete connection;
-                                        }
-                                    }
-                                }
-                            }
+                            desc = string (" Client connection to ") + connAddrStr + string (" has failed");
+                            logEvent (desc,action, true);
                         }
+                    }
+                    else
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " Return client connection to " << connAddrStr << " failed" << endl;
+                        }
+                        desc = string (" Client connection to ") + connAddrStr + string (" has failed");
+                        logEvent (desc,action, true);
+                    }
+                }
+                else
+                {
+                    // found the client so put the server connection there
+                    if (iConnectionList[connectionIndex]->getInBoundConnection() == NULL)
+                    {
+                        // set the parent to the found connection
+                        connection->setParent (iConnectionList[connectionIndex]);
+                        connection->init();
+
+                        // attach it to the client and start it up
+                        iConnectionList[connectionIndex]->setInBoundConnection (connection.release());
+                        iConnectionList[connectionIndex]->getInBoundConnection()->run();
+                    }
+                    else
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " Server connection for " << iConnectionList[connectionIndex]->getName() << " already established " << endl;
+                        }
+                        desc = string (" Server connection for ") + iConnectionList[connectionIndex]->getName() + string (" already established ");
+                        logEvent (desc,action, true);
                     }
                 }
             }
         }
     }
-
     catch ( RWCancellation &cancellationMsg )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);

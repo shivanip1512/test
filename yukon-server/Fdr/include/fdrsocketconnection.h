@@ -2,6 +2,7 @@
 
 #include "dlldefs.h"
 #include "queues.h"
+#include "socket_helper.h"
 
 class CtiFDRSocketLayer;
 
@@ -9,7 +10,7 @@ class IM_EX_FDRBASE CtiFDRSocketConnection
 {                                    
     public:
         CtiFDRSocketConnection(CtiFDRSocketLayer * aParent=NULL);
-        CtiFDRSocketConnection(CtiFDRSocketLayer * aParent, SOCKADDR_IN aType);
+        CtiFDRSocketConnection(CtiFDRSocketLayer * aParent, const Cti::SocketAddress& aAddr );
         ~CtiFDRSocketConnection();
 
         typedef enum {
@@ -21,8 +22,8 @@ class IM_EX_FDRBASE CtiFDRSocketConnection
         CtiFDRSocketLayer * getParent ();
         CtiFDRSocketConnection& setParent (CtiFDRSocketLayer * aParent);
 
-        SOCKADDR_IN &    getAddr();
-        CtiFDRSocketConnection& setAddr (SOCKADDR_IN aType);
+        const Cti::SocketAddress& getAddr() const;
+        CtiFDRSocketConnection&   setAddr( const Cti::SocketAddress& aAddr );
 
         SOCKET  & getConnection();
         SOCKET  getConnection() const;
@@ -36,7 +37,8 @@ class IM_EX_FDRBASE CtiFDRSocketConnection
 
         SOCKET                  iConnection;            
         FDRConnectionStatus     iConnectionStatus;
-        SOCKADDR_IN             iAddr;
+
+        Cti::SocketAddress      iAddr;
 
         CtiFDRSocketLayer         *iParent;
 };

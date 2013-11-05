@@ -6,6 +6,7 @@
 #include "fdrsocketlayer.h"
 #include "fdrserverconnection.h"
 #include "fdrdebuglevel.h"
+#include "socket_helper.h"
 
 using std::string;
 using std::endl;
@@ -17,12 +18,11 @@ CtiFDRServerConnection::CtiFDRServerConnection(CtiFDRSocketLayer * aParent)
 {
 }
 */
-CtiFDRServerConnection::CtiFDRServerConnection(SOCKET aConnection, SOCKADDR_IN aAddr, CtiFDRSocketLayer * aParent)
-:    Inherited(aParent)
+CtiFDRServerConnection::CtiFDRServerConnection( SOCKET aConnection, const Cti::SocketAddress& aAddr, CtiFDRSocketLayer * aParent )
+:    Inherited(aParent, aAddr)
 
 {
     setConnection (aConnection);
-    setAddr (aAddr);
 }
 
 
@@ -186,7 +186,7 @@ void CtiFDRServerConnection::threadFunctionGetDataFrom( void )
                                         closeAndFailConnection();
                                         {
                                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << CtiTime() << " Return client connection to " << string (inet_ntoa(getAddr().sin_addr)) << " failed" << endl;
+                                            dout << CtiTime() << " Return client connection to " << getAddr().toString() << " failed" << endl;
                                         }
                                     }
                                     else

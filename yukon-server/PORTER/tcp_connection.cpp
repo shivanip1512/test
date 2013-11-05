@@ -2,6 +2,7 @@
 
 #include "cparms.h"
 #include "logger.h"
+#include "socket_helper.h"
 
 #include "tcp_connection.h"
 
@@ -17,7 +18,27 @@ using std::endl;
 TcpSocketStream::TcpSocketStream(const SocketStream &other) :
     SocketStream(other)
 {
-    s = socket(AF_INET, SOCK_STREAM, 0);
+}
+
+TcpSocketStream::TcpSocketStream(TcpSocketStream &other) :
+    SocketStream(other),
+    s(other.s)
+{
+    other.s = INVALID_SOCKET;  //  transfer of ownership
+}
+
+
+TcpSocketStream::~TcpSocketStream()
+{
+    if( s != INVALID_SOCKET && closesocket(s) )
+    {
+        reportSocketError("closesocket", __FUNCTION__, __FILE__, __LINE__);
+    }
+}
+
+void TcpSocketStream::createSocket(int af, int type, int protocol)
+{
+    s = socket(af, type, protocol);
 
     if( s == INVALID_SOCKET)
     {
@@ -39,24 +60,6 @@ TcpSocketStream::TcpSocketStream(const SocketStream &other) :
         throw cannot_set_nonblocking(error);
     }
 }
-
-
-TcpSocketStream::TcpSocketStream(TcpSocketStream &other) :
-    SocketStream(other),
-    s(other.s)
-{
-    other.s = INVALID_SOCKET;  //  transfer of ownership
-}
-
-
-TcpSocketStream::~TcpSocketStream()
-{
-    if( s != INVALID_SOCKET && closesocket(s) )
-    {
-        reportSocketError("closesocket", __FUNCTION__, __FILE__, __LINE__);
-    }
-}
-
 
 void TcpSocketStream::add_to(fd_set *fds) const
 {
@@ -85,16 +88,27 @@ PendingTcpConnection::PendingTcpConnection(const InactiveSocketStream &inactive)
     TcpSocketStream(inactive),
     timeout(CtiTime::now() + gConfigParms.getValueAsULong("PORTER_TCP_CONNECT_TIMEOUT", 15))
 {
-    sockaddr_in inet_socket_address = { AF_INET, htons(address.port), *(in_addr*)&address.ip, 0 };
+    Cti::AddrInfo pAddrInfo = Cti::makeTcpClientSocketAddress(address.ip.c_str(), CtiNumStr(address.port).toString().c_str());
+    if( ! pAddrInfo )
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " " << __FUNCTION__ << " cannot resolve IP \"" << address.ip << ":" << address.port << "\""
+                    " (getaddrinfo failed with error: " << pAddrInfo.getError() << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
 
-    if( connect(sock(), reinterpret_cast<sockaddr *>(&inet_socket_address), sizeof(inet_socket_address)) == SOCKET_ERROR )
+        throw cannot_connect(pAddrInfo.getError());
+    }
+
+    createSocket(pAddrInfo->ai_family, pAddrInfo->ai_socktype, pAddrInfo->ai_protocol);
+
+    if( connect(sock(), pAddrInfo->ai_addr, pAddrInfo->ai_addrlen) == SOCKET_ERROR )
     {
         int error = WSAGetLastError();
 
         if( error != WSAEWOULDBLOCK )
         {
             reportSocketError("connect", __FUNCTION__, __FILE__, __LINE__);
-
             throw cannot_connect(error);
         }
     }

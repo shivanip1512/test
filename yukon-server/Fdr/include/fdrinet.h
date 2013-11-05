@@ -152,7 +152,7 @@ class IM_EX_FDRINET CtiFDR_Inet : public CtiFDRSocketInterface
         virtual int   readConfig( void );
         virtual void setCurrentClientLinkStates();
         int   findConnectionByNameInList(std::string aName);
-        int   findClientInList(SOCKADDR_IN aAddr);
+        int   findClientInList(const Cti::SocketAddress& aAddr);
         virtual bool  findAndInitializeClients( void );
 
         CHAR *buildForeignSystemMsg ( CtiMessage *aMessage );

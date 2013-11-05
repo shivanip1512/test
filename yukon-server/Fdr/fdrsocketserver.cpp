@@ -30,6 +30,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "fdrsocketserver.h"
 #include "ctitime.h"
 #include "ctidate.h"
+#include "socket_helper.h"
 
 using std::pair;
 using std::multimap;
@@ -143,11 +144,9 @@ BOOL CtiFDRSocketServer::stop( void )
 {
     {
         CtiLockGuard<CtiMutex> guard(_socketMutex);
-        for (PortSocketMap_itr iter = _socketConnections.begin();
-             iter != _socketConnections.end();
-             iter++)
+        for (PortSocketMap_itr iter = _socketConnections.begin(); iter != _socketConnections.end(); iter++)
         {
-            closesocket(*iter->second);
+            iter->second->shutdownAndClose();
         }
     }
 
@@ -364,7 +363,7 @@ void CtiFDRSocketServer::threadFunctionSendHeartbeat( void )
 void CtiFDRSocketServer::threadFunctionConnection( unsigned short listeningPort, int startupDelaySeconds )
 {
     RWRunnableSelf  pSelf = rwRunnable( );
-    SOCKET listenerSocket;
+    Cti::ServerSockets listeningSockets;
 
     try {
 
@@ -395,13 +394,16 @@ void CtiFDRSocketServer::threadFunctionConnection( unsigned short listeningPort,
             // just in case
             pSelf.serviceCancellation( );
 
-            listenerSocket = createBoundListener(listeningPort);
-            if (listenerSocket == NULL) {
-                if (getDebugLevel() & CONNECTION_HEALTH_DEBUGLEVEL) {
+            if( !createBoundListener( listeningPort, listeningSockets ))
+            {
+                if (getDebugLevel() & CONNECTION_HEALTH_DEBUGLEVEL)
+                {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     logNow() << "Failed to open listener socket for port: " << listeningPort << endl;
                 }
-            } else {
+            }
+            else
+            {
                 if (getDebugLevel() & CONNECTION_INFORMATION_DEBUGLEVEL)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -412,34 +414,32 @@ void CtiFDRSocketServer::threadFunctionConnection( unsigned short listeningPort,
                 {
                     CtiLockGuard<CtiMutex> guard(_socketMutex);
                     _socketConnections.erase(listeningPort); // Remove the last guy if we had a bad connection.
-                    _socketConnections.insert(std::make_pair(listeningPort, &listenerSocket));
+                    _socketConnections.insert(std::make_pair(listeningPort, &listeningSockets));
                 }
 
                 while (true) {
+                    
+                    Cti::SocketAddress addr( Cti::SocketAddress::STORAGE_SIZE );
+
                     // new socket
-                    SOCKADDR_IN returnAddr;
-                    int returnLength = sizeof (returnAddr);
-                    SOCKET tmpConnection = NULL;
-                    tmpConnection = accept(listenerSocket,
-                                           (struct sockaddr *) &returnAddr,
-                                           &returnLength);
+                    SOCKET tmpConnection = listeningSockets.accept(addr);
+
                     // when this thread is to be shutdown, requestCancellation()
                     // will be called, then the listener socket will be shutdown
                     // which will cause accept() to return.
                     pSelf.serviceCancellation( );
 
-                    if (tmpConnection == INVALID_SOCKET) {
-                        shutdown(tmpConnection, SD_BOTH);
-                        closesocket(tmpConnection);
+                    if( tmpConnection == INVALID_SOCKET )
+                    {
                         {
-                            int errorCode = WSAGetLastError();
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            logNow() << "Accept call failed "
-                            << " (Error: " << errorCode << ")" << endl;
+                            logNow() << "Accept call failed " << " (Error: " << listeningSockets.getLastError() << ")" << endl;
                         }
                         // go back to outer loop (will create new listener)
                         break;
-                    } else {
+                    }
+                    else
+                    {
                         // Before anything else, clear any of our old
                         // layers that have failed (because the client
                         // reconnecting now may be one of the failed
@@ -447,9 +447,7 @@ void CtiFDRSocketServer::threadFunctionConnection( unsigned short listeningPort,
                         if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            logNow() << "Connection accepted from "
-                               << inet_ntoa(returnAddr.sin_addr)
-                               << endl;
+                            logNow() << "Connection accepted from " << addr.toString() << endl;
                         }
 
 
@@ -468,7 +466,7 @@ void CtiFDRSocketServer::threadFunctionConnection( unsigned short listeningPort,
                     }
                 } // accept loop
 
-                closesocket(listenerSocket);
+                listeningSockets.shutdownAndClose();
 
             } // else listener != null
         } // thread loop
@@ -486,73 +484,40 @@ void CtiFDRSocketServer::threadFunctionConnection( unsigned short listeningPort,
     }
 }
 
-SOCKET CtiFDRSocketServer::createBoundListener(unsigned short listeningPort) {
-
-    SOCKET listener = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-    if (listener == INVALID_SOCKET) {
+/**
+ * Creates, bind and listening sockets on sockets for each family (IPv4 and IPv6)
+ * @param listeningPort port number common to all sockets
+ * @param listeningSockets manages sockets return by getAddrInfo
+ * @return true if listenning sockets where creates sucessfully, false otherwise
+ */
+bool CtiFDRSocketServer::createBoundListener(unsigned short listeningPort, Cti::ServerSockets &listeningSockets)
+{
+    Cti::AddrInfo ai = Cti::makeTcpServerSocketAddress(NULL, CtiNumStr(listeningPort).toString().c_str());
+    if( !ai )
+    {
         {
-            int errorCode = WSAGetLastError();
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            logNow() << "Failed to create listener socket"
-                <<" (Error: " << errorCode << ")" << endl;
+            logNow() << "createBoundListener: Failed to retrieve address info (Error: " << ai.getError() << ")" << endl;
         }
-        return NULL;
+        return false;
     }
 
-    BOOL ka = TRUE;
-//    //This seams like a really bad idea!!!
-//    int sockoptresult = setsockopt(listener,
-//                                   SOL_SOCKET, SO_REUSEADDR,
-//                                   (char*)&ka, sizeof(BOOL));
-//    if (sockoptresult == SOCKET_ERROR) {
-//        // setsockopt failed
-//        if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL) {
-//            int errorCode = WSAGetLastError();
-//            CtiLockGuard<CtiLogger> doubt_guard(dout);
-//            logNow() << "Failed to set reuse option for listener socket "
-//                <<" (Error: " << errorCode << ")" << endl;
-//
-//        }
-//
-//        shutdown(listener, SD_BOTH);
-//        closesocket(listener);
-//        return NULL;
-//    }
-    // Fill in the address structure
-    sockaddr_in socketAddr;
-    socketAddr.sin_family = AF_INET;
-    socketAddr.sin_addr.s_addr = INADDR_ANY; // allow connections from any interface
-    socketAddr.sin_port = htons(listeningPort);
-
-    int bindresult = bind(listener, (SOCKADDR*)&socketAddr, sizeof(socketAddr));
-    if (bindresult == SOCKET_ERROR) {
+    try
+    {
+        listeningSockets.createSockets ( ai.get() );
+        listeningSockets.bind          ( ai.get() );
+        listeningSockets.listen        ( SOMAXCONN );
+    }
+    catch( Cti::SocketException& e )
+    {
         {
-            int errorCode = WSAGetLastError();
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            logNow() << "Failed to bind listener socket "
-                <<" (Error: " << errorCode << ")" << endl;
+            logNow() << "createBoundListener: " << e.what() << endl;
         }
-
-        shutdown(listener, SD_BOTH);
-        closesocket(listener);
-        return NULL;
+        return false;
     }
 
-    int listenresult = listen(listener, SOMAXCONN);
-    if (listenresult == SOCKET_ERROR) {
-        {
-            int errorCode = WSAGetLastError();
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            logNow() << "Failed to listen on listener socket "
-                << " (Error: " << errorCode << ")" << endl;
-
-        }
-        shutdown(listener, SD_BOTH);
-        closesocket(listener);
-    }
-
-    return listener;
-
+    return true;
 }
 
 bool CtiFDRSocketServer::sendAllPoints(int portNumber)

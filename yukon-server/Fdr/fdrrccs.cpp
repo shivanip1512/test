@@ -162,6 +162,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "fdrclientconnection.h"
 #include "fdrsocketlayer.h"
 #include "fdrinet.h"
+#include "socket_helper.h"
 
 // this class header
 #include "fdrrccs.h"
@@ -574,12 +575,13 @@ bool  CtiFDR_Rccs::findAndInitializeClients( void )
                     }
                     else
                     {
+                        const string connAddrStr = layer->getOutBoundConnection()->getAddr().toString();
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " Client connection initialized for " << destinationName << " at ";
-                            dout << string (inet_ntoa(layer->getOutBoundConnection()->getAddr().sin_addr)) << endl;
+                            dout << connAddrStr << endl;
                         }
-                        desc = destinationName + string ("'s client link has been established at ") + string (inet_ntoa(layer->getOutBoundConnection()->getAddr().sin_addr));
+                        desc = destinationName + string ("'s client link has been established at ") + connAddrStr;
                         logEvent (desc,action, true);
                         getConnectionList().push_back (layer);
                     }

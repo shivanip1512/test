@@ -27,6 +27,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "fdrpointlist.h"
 #include "fdrsocketlayer.h"
 #include "fdrserverconnection.h"
+#include "socket_helper.h"
 
 // this class header
 #include "fdrsinglesocket.h"
@@ -487,7 +488,7 @@ int CtiFDRSingleSocket::processMessageFromForeignSystem(CHAR *aBuffer)
                 if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Heartbeat message received from " << getInterfaceName() << " at " << string (inet_ntoa(iLayer->getInBoundConnection()->getAddr().sin_addr)) <<  endl;
+                    dout << CtiTime() << " Heartbeat message received from " << getInterfaceName() << " at " << iLayer->getInBoundConnection()->getAddr().toString() << endl;
                 }
                 break;
             }
@@ -569,12 +570,9 @@ void CtiFDRSingleSocket::threadFunctionConnection( void )
     int connectionIndex;
     string            desc;
     string           action;
-    SOCKADDR_IN tmp;
 
-    SOCKET listener, tmpConnection;
-    SOCKADDR_IN             socketAddr, returnAddr;
-    int                   returnLength;
-    LPHOSTENT               hostEntry;
+    SOCKET tmpConnection = INVALID_SOCKET;
+
     bool continueFlag;
 
     try
@@ -606,130 +604,110 @@ void CtiFDRSingleSocket::threadFunctionConnection( void )
             // see if we've died
             if (continueFlag)
             {
-                listener = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-                if (listener == INVALID_SOCKET)
+                Cti::AddrInfo pAddrInfo = Cti::makeTcpServerSocketAddress(NULL, CtiNumStr(getPortNumber()).toString().c_str());
+                if( !pAddrInfo )
                 {
                     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Failed to create listener socket for " << getInterfaceName() << endl;
+                        dout << CtiTime() << __FILE__ << " (" << __LINE__ << ") Failed to retrieve address info (Error: " << pAddrInfo.getError() << ")" << endl;
+                    }
+                    continue;
+                }
+
+                // listening sockets will shutdown and close when they are out of scope
+                Cti::ServerSockets listeningSockets;
+
+                try
+                {
+                    // create sockets from the addrinfo
+                    listeningSockets.createSockets(pAddrInfo.get());
+
+                    // set sockets options to allows socket to bind to an address and port already in use
+                    BOOL ka = TRUE;
+                    listeningSockets.setOption(SOL_SOCKET, SO_REUSEADDR, (char*)&ka, sizeof(BOOL));
+
+                    // bind the socket
+                    listeningSockets.bind(pAddrInfo.get());
+
+                    // set sockets in listening state
+                    listeningSockets.listen(SOMAXCONN);
+                }
+                catch( Cti::SocketException& e )
+                {
+                    if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " Failed to setup listener socket for " << getInterfaceName() << " : " << e.what() << endl;
+                    }
+                    continue;
+                }
+
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout <<  CtiTime() << " Listening for connection on port " << getPortNumber() << endl;
+                }
+
+                // if the interface needs a registration
+                if (isRegistrationNeeded())
+                {
+                    setRegistered(false);
+                }
+
+                // delete the old connection if its there
+                if (iLayer != NULL)
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " " << iLayer->getName() << "'s link has failed" << endl;
+                    }
+                    desc = iLayer->getName() + "'s link has failed";
+                    logEvent (desc,action,true);
+                    delete iLayer;
+                    iLayer = NULL;
+                }
+
+                Cti::SocketAddress returnAddr( Cti::SocketAddress::STORAGE_SIZE );
+
+                // new socket
+                tmpConnection = listeningSockets.accept( returnAddr );
+
+                if( tmpConnection == INVALID_SOCKET )
+                {
+                    if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " Accept call failed in " << getInterfaceName() <<endl;
                     }
                 }
                 else
                 {
-                    BOOL ka = TRUE;
-                    if (setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, (char*)&ka, sizeof(BOOL)))
+                    // set to non blocking mode
+                    ULONG param=1;
+                    ioctlsocket(tmpConnection, FIONBIO, &param);
+
+                    /***************************
+                    * note:  acs, valmet both have decodeclientname funcs that return
+                    * their interface names
+                    * rdex does not because its client name doesn't exist until
+                    * the registration msg comes thru
+                    ****************************
+                    */
+                    iLayer = new CtiFDRSocketLayer (decodeClientName(NULL), tmpConnection, tmpConnection, CtiFDRSocketLayer::Server_Single, this);
+                    iLayer->setLinkStatusID(getClientLinkStatusID(decodeClientName(NULL)));
+                    iLayer->init();
+                    iLayer->run();
+
+                    const string returnAddrStr = returnAddr.toString();
+
+//                    if(getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
                     {
-                        if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Failed to set reuse option for listener socket in "<< getInterfaceName() << endl;
-                        }
-
-                        shutdown(listener, 2);
-                        closesocket(listener);
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " Connection established to " << decodeClientName(NULL) << " at " << returnAddrStr << endl;
                     }
-                    else
-                    {
-                        // Fill in the address structure
-                        socketAddr.sin_family = AF_INET;
-                        socketAddr.sin_addr.s_addr = INADDR_ANY; // Let WinNexus supply address
-                        socketAddr.sin_port = htons(getPortNumber());      // Use port from command line
 
-                        if (bind(listener, (LPSOCKADDR)&(socketAddr), sizeof(struct sockaddr)))
-                        {
-                            if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " Failed to bind listener socket in " << getInterfaceName() << endl;
-                            }
-
-                            shutdown(listener, 2);
-                            closesocket(listener);
-                        }
-                        else
-                        {
-                            // if the interface needs a registration
-                            if (isRegistrationNeeded())
-                            {
-                                setRegistered(false);
-                            }
-                            // delete the old connection if its there
-                            if (iLayer != NULL)
-                            {
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " " << iLayer->getName() << "'s link has failed" << endl;
-                                }
-                                desc = iLayer->getName() + "'s link has failed";
-                                logEvent (desc,action,true);
-                                delete iLayer;
-                                iLayer = NULL;
-                            }
-
-
-                            // listening
-                            getListener()->setConnection(listener);
-                            if (listen(getListener()->getConnection(), SOMAXCONN))
-                            {
-                                shutdown(getListener()->getConnection(), 2);
-                                closesocket(getListener()->getConnection());
-                            }
-                            else
-                            {
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout <<  CtiTime() << " Listening for connection on port " << getPortNumber() << endl;
-                                }
-
-                                // new socket
-                                returnLength = sizeof (returnAddr);
-                                tmpConnection = accept(getListener()->getConnection(), (struct sockaddr *) &returnAddr, &returnLength);
-
-                                shutdown(getListener()->getConnection(), 2);
-                                closesocket(getListener()->getConnection());
-                                listener = NULL;
-
-                                if (tmpConnection == INVALID_SOCKET)
-                                {
-                                    shutdown(tmpConnection, 2);
-                                    closesocket(tmpConnection);
-                                    if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << CtiTime() << " Accept call failed in " << getInterfaceName() <<endl;
-                                    }
-                                }
-                                else
-                                {
-                                    // set to non blocking mode
-                                    ULONG param=1;
-                                    ioctlsocket(tmpConnection, FIONBIO, &param);
-
-                                    /***************************
-                                    * note:  acs, valmet both have decodeclientname funcs that return
-                                    * their interface names
-                                    * rdex does not because its client name doesn't exist until
-                                    * the registration msg comes thru
-                                    ****************************
-                                    */
-                                    iLayer = new CtiFDRSocketLayer (decodeClientName(NULL), tmpConnection, tmpConnection, CtiFDRSocketLayer::Server_Single, this);
-                                    iLayer->setLinkStatusID(getClientLinkStatusID(decodeClientName(NULL)));
-                                    iLayer->init();
-                                    iLayer->run();
-
-//                                    if(getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
-                                    {
-                                       CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                       dout << CtiTime() << " Connection established to " << decodeClientName(NULL) << " at " << string (inet_ntoa(returnAddr.sin_addr)) << endl;
-                                    }
-
-                                    desc = decodeClientName(NULL) + string ("'s client link has been established at ") + string (inet_ntoa(returnAddr.sin_addr));
-                                    logEvent (desc,action, true);
-                                }
-                            }
-                        }
-                    }
+                    desc = decodeClientName(NULL) + string ("'s client link has been established at ") + returnAddrStr;
+                    logEvent (desc,action, true);
                 }
             }
         }

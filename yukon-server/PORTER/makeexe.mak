@@ -124,7 +124,7 @@ porter.exe:     $(PORTER_EXE_FULLBUILD) $(BASEOBJS) Makefile $(OBJ)\porter.res
                 @echo:
                 @echo Compiling ..\$@
                 @%cd $(OBJ)
-                $(RWCPPINVOKE) $(CFLAGS) $(BASEOBJS) id_porter.obj $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ -link $(LIBS) $(RWLIBS) $(PORTERLIBS) $(BOOST_LIBS) $(LINKFLAGS) porter.res
+                $(RWCPPINVOKE) $(CFLAGS) $(BASEOBJS) id_porter.obj $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ -link $(LIBS) $(RWLIBS) $(PORTERLIBS) $(BOOST_LIBS) Ws2_32.lib $(LINKFLAGS) porter.res
                 @echo:
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                $(MANIFEST_TOOL) -manifest ..\$@.manifest -outputresource:..\$@;1

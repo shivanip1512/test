@@ -6,6 +6,7 @@
 #include "logger.h"
 #include "port_tcpipdirect.h"
 #include "utility.h"
+#include "socket_helper.h"
 
 #include "boost/scoped_array.hpp"
 
@@ -85,43 +86,20 @@ INT CtiPortTCPIPDirect::openPort(INT rate, INT bits, INT parity, INT stopbits)
         return NORMAL;
     }
 
-    const unsigned short ipport = getIPPort();
-
-    /* Take a crack at hooking up */
-    /* set up client for stuff we will send */
-    struct sockaddr_in   server;
-    memset (&server, 0, sizeof (server));
-    unsigned long ip;
-
-    if( isalpha(getIPAddress()[(size_t)0]) )
+    Cti::AddrInfo pAddrInfo = Cti::makeTcpClientSocketAddress(getIPAddress().c_str(), CtiNumStr(getIPPort()).toString().c_str());
+    if( !pAddrInfo )
     {
-        LPHOSTENT lpHostEntry = gethostbyname(getIPAddress().data());
-
-        if( ! lpHostEntry )
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Port " << getName() << " could not resolve IP for DNS name \"" << getIPAddress() << "\"" << endl;
-            }
-
-            return ErrorDnsLookupFailed;
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Port " << getName() << " could not resolve IP for DNS name \"" << getIPAddress() << "\"" << endl;
         }
-
-        ip = *(unsigned long*)(lpHostEntry->h_addr);
+        return ErrorDnsLookupFailed;
     }
-    else
-    {
-        ip = inet_addr ( getIPAddress().data() );
-    }
-
-    server.sin_family = AF_INET;
-    server.sin_port = htons( ipport );
-    server.sin_addr = *(in_addr*)&ip;
 
     INT status = NORMAL;
 
     /* get a stream socket. */
-    if((_socket = socket (AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET)
+    if((_socket = socket(pAddrInfo->ai_family, pAddrInfo->ai_socktype, pAddrInfo->ai_protocol)) == INVALID_SOCKET)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -163,7 +141,7 @@ INT CtiPortTCPIPDirect::openPort(INT rate, INT bits, INT parity, INT stopbits)
             CTISleep(connect_delay * 1000);
         }
 
-        if( connect(_socket, (const struct sockaddr*)&server, sizeof(server)) == SOCKET_ERROR)
+        if( connect(_socket, pAddrInfo->ai_addr, pAddrInfo->ai_addrlen) == SOCKET_ERROR )
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);

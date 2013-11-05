@@ -211,37 +211,41 @@ INT CTINEXUS::CTINexusClose()
 
 INT CTINEXUS::CTINexusCreate(SHORT nPort)
 {
-    int nRet;
-    int nLen;
     char szBuf[256];
 
     //
-    // Create a TCP/IP stream socket to "listen" with
+    // Create AddrInfo for TCP server
     //
-    sockt = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-
-    if(sockt == INVALID_SOCKET)
+    Cti::AddrInfo pAddrInfo = Cti::makeTcpServerSocketAddress(NULL, CtiNumStr(nPort).toString().c_str());
+    if( !pAddrInfo )
     {
-        CTINexusReportError(__FILE__, __LINE__, CTIGetLastError());
+        CTINexusReportError(__FILE__, __LINE__, pAddrInfo.getError());
         return -1;
     }
 
     //
-    // Fill in the address structure
+    // Create a TCP/IP stream socket to "listen" with
     //
-
-    saServer.sin_family = AF_INET;
-    saServer.sin_addr.s_addr = INADDR_ANY; // Let WinNexus supply address
-    saServer.sin_port = htons(nPort);      // Use port from command line
+    try
+    {
+        listeningSockets.createSockets(pAddrInfo.get());
+    }
+    catch( Cti::SocketException &e )
+    {
+        CTINexusReportError(__FILE__, __LINE__, listeningSockets.getLastError());
+        return -1;
+    }
 
     //
     // bind the name to the socket
     //
-
-    nRet = bind(sockt, (LPSOCKADDR)&(saServer), sizeof(struct sockaddr));
-    if(nRet == SOCKET_ERROR)
+    try
     {
-        CTINexusReportError(__FILE__, __LINE__, CTIGetLastError());
+        listeningSockets.bind(pAddrInfo.get());
+    }
+    catch( Cti::SocketException &e )
+    {
+        CTINexusReportError(__FILE__, __LINE__, listeningSockets.getLastError());
         CTINexusClose();
         return -1;
     }
@@ -251,10 +255,7 @@ INT CTINEXUS::CTINexusCreate(SHORT nPort)
     // example we're printing out where the server is waiting
     // so that you can connect the example client.
     //
-    nLen = sizeof(SOCKADDR);
-
-    nRet = gethostname(szBuf, sizeof(szBuf));
-    if(nRet == SOCKET_ERROR)
+    if( gethostname(szBuf, sizeof(szBuf)) == SOCKET_ERROR )
     {
         CTINexusReportError(__FILE__, __LINE__, CTIGetLastError());
         CTINexusClose();
@@ -262,13 +263,15 @@ INT CTINEXUS::CTINexusCreate(SHORT nPort)
     }
 
     //
-    // set the socket to listen.  This initializes the wsock queues
+    // set the sockets to listen.  This initializes the wsock queues
     //
-
-    nRet = listen(sockt, SOMAXCONN);                 // Number of connection request queue
-    if(nRet == SOCKET_ERROR)
+    try
     {
-        CTINexusReportError(__FILE__, __LINE__, CTIGetLastError());
+        listeningSockets.listen(SOMAXCONN); // Number of connection request queue
+    }
+    catch( Cti::SocketException &e )
+    {
+        CTINexusReportError(__FILE__, __LINE__, listeningSockets.getLastError());
         CTINexusClose();
         return -1;
     }
@@ -299,26 +302,33 @@ INT CTINEXUS::CTINexusConnect(CTINEXUS *RemoteNexus, HANDLE *hAbort, LONG timeou
 
     RemoteNexus->sockt = INVALID_SOCKET;
 
-    if(hAbort != NULL || loops != LONG_MAX)
+    try
     {
-        // Set to non-blocking mode...
-        ioctlsocket(sockt, FIONBIO, &param);
-
-        while( loops-- > 0 && (RemoteNexus->sockt = accept(sockt, NULL, NULL)) == INVALID_SOCKET )
+        if(hAbort != NULL || loops != LONG_MAX)
         {
-            if( hAbort != NULL && WAIT_OBJECT_0 == (dwWait = WaitForSingleObject(*hAbort, 250L)) )
+            // Set to non-blocking mode...
+            listeningSockets.setIOMode(FIONBIO, &param);
+
+            while( loops-- > 0 && (RemoteNexus->sockt = listeningSockets.accept()) == INVALID_SOCKET )
             {
-                break;      // hAbort has been posted!
-            }
-            else
-            {
-                CTISleep( 250L );
+                if( hAbort != NULL && WAIT_OBJECT_0 == (dwWait = WaitForSingleObject(*hAbort, 250L)) )
+                {
+                    break;      // hAbort has been posted!
+                }
+                else
+                {
+                    CTISleep( 250L );
+                }
             }
         }
+        else
+        {
+            RemoteNexus->sockt = listeningSockets.accept();
+        }
     }
-    else
+    catch( Cti::SocketException& e )
     {
-        RemoteNexus->sockt = accept(sockt, NULL, NULL);
+        CTINexusReportError(__FILE__, __LINE__, listeningSockets.getLastError() );
     }
 
     if(WAIT_OBJECT_0 == dwWait)
@@ -363,11 +373,10 @@ INT CTINEXUS::CTINexusOpen(CHAR *szServer, SHORT nPort, ULONG Flags)
     //
     // Find the server
     //
-
-    lpHostEntry = gethostbyname(szServer);
-    if(lpHostEntry == NULL)
+    Cti::AddrInfo pAddrInfo = Cti::makeTcpClientSocketAddress(szServer, CtiNumStr(nPort).toString().c_str());
+    if( !pAddrInfo )
     {
-        CTINexusReportError(__FILE__, __LINE__, CTIGetLastError());
+        CTINexusReportError(__FILE__, __LINE__, pAddrInfo.getError());
         return !0;
     }
 
@@ -385,8 +394,7 @@ INT CTINEXUS::CTINexusOpen(CHAR *szServer, SHORT nPort, ULONG Flags)
     //
     // Create a TCP/IP stream socket
     //
-    sockt = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-
+    sockt = socket(pAddrInfo->ai_family, pAddrInfo->ai_socktype, pAddrInfo->ai_protocol);
     if(sockt == INVALID_SOCKET)
     {
         CTINexusReportError(__FILE__, __LINE__, CTIGetLastError());
@@ -394,17 +402,9 @@ INT CTINEXUS::CTINexusOpen(CHAR *szServer, SHORT nPort, ULONG Flags)
     }
 
     //
-    // Fill in the address structure
-    //
-    saServer.sin_family = AF_INET;
-    saServer.sin_addr = *((LPIN_ADDR)*lpHostEntry->h_addr_list);
-    saServer.sin_port = htons(nPort);   // Port number
-
-    //
     // connect to the server
     //
-
-    nRet = connect(sockt, (LPSOCKADDR)&saServer, sizeof(struct sockaddr));
+    nRet = connect(sockt, pAddrInfo->ai_addr, pAddrInfo->ai_addrlen);
     if(nRet == SOCKET_ERROR)
     {
         // CTINexusReportError(__FILE__, __LINE__, CTIGetLastError());

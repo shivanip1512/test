@@ -735,7 +735,7 @@ string UnsolicitedHandler::describeDevice( const device_record &dr ) const
 {
     ostringstream ostr;
 
-    ostr << dr.device->getName() << " (" << ip_to_string(getDeviceIp(dr.device->getID())) << ":" << getDevicePort(dr.device->getID()) << ")";
+    ostr << dr.device->getName() << " (" << getDeviceIp(dr.device->getID()) << ":" << getDevicePort(dr.device->getID()) << ")";
 
     return ostr.str();
 }
@@ -786,7 +786,7 @@ void UnsolicitedHandler::traceOutbound( const device_record &dr, int status )
 }
 
 
-void UnsolicitedHandler::traceInbound( unsigned long ip, unsigned short port, int status, const unsigned char *message, int mCount, const device_record *dr )
+void UnsolicitedHandler::traceInbound( string ip, unsigned short port, int status, const unsigned char *message, int mCount, const device_record *dr )
 {
     CtiTraceMsg mTrace;
     string msg;
@@ -812,7 +812,7 @@ void UnsolicitedHandler::traceInbound( unsigned long ip, unsigned short port, in
     }
     else
     {
-        msg = " (" + ip_to_string(ip) + ":" + CtiNumStr(port) + ")";
+        msg = " (" + ip + ":" + CtiNumStr(port) + ")";
     }
     mTrace.setTrace(msg);
     mTrace.setEnd(false);

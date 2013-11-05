@@ -12,11 +12,11 @@ class IM_EX_FDRBASE CtiFDRClientConnection : public CtiFDRSocketConnection
     typedef CtiFDRSocketConnection Inherited;
 
     public:
-        CtiFDRClientConnection(SOCKADDR_IN aAddr, CtiFDRSocketLayer * aParent);
+        CtiFDRClientConnection(const Cti::SocketAddress& aAddr, CtiFDRSocketLayer * aParent);
         CtiFDRClientConnection(SOCKET aSocket, CtiFDRSocketLayer * aParent=NULL);
         ~CtiFDRClientConnection();
 
-        int initializeConnection (SOCKADDR_IN aAddr);
+        int initializeConnection (const Cti::SocketAddress& aAddr);
         INT writeSocket (CHAR *aBuffer, ULONG length, ULONG &aBytesRead);
         HCTIQUEUE & getQueueHandle();
 

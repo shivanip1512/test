@@ -29,6 +29,7 @@
 #include "fdrscadaserver.h"
 #include "fdrdnphelper.h"
 #include "utility.h"
+#include "socket_helper.h"
 // this class header
 #include "fdrdnpslave.h"
 #include "prot_dnp.h"
@@ -170,20 +171,23 @@ int CtiFDRDnpSlave::readConfig()
 
 CtiFDRClientServerConnectionSPtr CtiFDRDnpSlave::createNewConnection(SOCKET newSocket)
 {
-    sockaddr_in peerAddr;
-    int peerAddrSize = sizeof(peerAddr);
-    getpeername(newSocket, (SOCKADDR*) &peerAddr, &peerAddrSize);
-    std::string ipString(inet_ntoa(peerAddr.sin_addr));
-    std::string connName;
+    Cti::SocketAddress peerAddr( Cti::SocketAddress::STORAGE_SIZE );
+
+    if( getpeername(newSocket, &peerAddr._addr.sa, &peerAddr._addrlen) == SOCKET_ERROR )
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << "CtiFDRDnpSlave::createNewConnection - getpeername() has failed" << endl;
+        }
+        return CtiFDRClientServerConnectionSPtr();
+    }
+
+    const string ipString = peerAddr.toString();
+
     ServerNameMap::const_iterator iter = _serverNameLookup.find(ipString);
-    if (iter == _serverNameLookup.end())
-    {
-        connName = ipString;
-    }
-    else
-    {
-        connName = _serverNameLookup[ipString];
-    }
+
+    const string connName = (iter == _serverNameLookup.end())? ipString : iter->second;
+
     CtiFDRClientServerConnectionSPtr newConnection(new CtiFDRClientServerConnection(connName.c_str(),newSocket,this));
     newConnection->setRegistered(true); //DNPSLAVE doesn't have a separate registration message
 

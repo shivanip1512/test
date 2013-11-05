@@ -99,7 +99,7 @@ CTIPROGS=\
 ctibase.dll
 
 
-WINLIBS=kernel32.lib user32.lib advapi32.lib wsock32.lib winmm.lib
+WINLIBS=kernel32.lib user32.lib advapi32.lib wsock32.lib winmm.lib shlwapi.lib Ws2_32.lib
 
 SQLAPILIB=$(SQLAPI)\lib\$(SQLAPI_LIB).lib
 
@@ -123,7 +123,7 @@ $(COMMON_FULLBUILD):
 ctibase.dll:    $(COMMON_FULLBUILD) $(BASEOBJS) Makefile $(OBJ)\ctibase.res
                 @build -nologo -f $(_InputFile) id
                 @%cd $(OBJ)
-                $(CC) $(BASEOBJS) id_ctibase.obj $(WINLIBS) $(SQLAPILIB) $(XERCESCLIB) $(OPENSSL_LIBS) $(DLLFLAGS) $(RWLIBS) $(BOOST_LIBS) $(DBGHELP_LIBS) shlwapi.lib /Fe..\$@ $(LINKFLAGS) ctibase.res
+                $(CC) $(BASEOBJS) id_ctibase.obj $(WINLIBS) $(SQLAPILIB) $(XERCESCLIB) $(OPENSSL_LIBS) $(DLLFLAGS) $(RWLIBS) $(BOOST_LIBS) $(DBGHELP_LIBS) /Fe..\$@ $(LINKFLAGS) ctibase.res
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                 -copy ..\$@ $(YUKONOUTPUT)
                 -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib

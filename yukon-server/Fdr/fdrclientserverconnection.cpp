@@ -190,11 +190,18 @@ bool CtiFDRClientServerConnection::queueMessage(CHAR *aBuffer,
 
 int CtiFDRClientServerConnection::getPortNumber()
 {
-    sockaddr_in peerAddr;
-    int peerAddrSize = sizeof(peerAddr);
-    getsockname(getRawSocket(), (SOCKADDR*) &peerAddr, &peerAddrSize);
+    Cti::SocketAddress addr( Cti::SocketAddress::STORAGE_SIZE );
 
-    return ntohs(peerAddr.sin_port);
+    if( getsockname(getRawSocket(), &addr._addr.sa, &addr._addrlen) == SOCKET_ERROR )
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            logNow() << "CtiFDRClientServerConnection::getPortNumber - getsockname() has fail" << endl;
+        }
+        return -1; // return invalid port
+    }
+
+    return ntohs(addr._addr.sa_in.sin_port);
 }
 
 ULONG CtiFDRClientServerConnection::getDebugLevel()

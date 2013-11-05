@@ -6,12 +6,13 @@
 #include "fdrsocketlayer.h"
 #include "fdrclientconnection.h"
 #include "fdrdebuglevel.h"
+#include "socket_helper.h"
 
 using std::string;
 using std::endl;
 
-CtiFDRClientConnection::CtiFDRClientConnection(SOCKADDR_IN aAddr, CtiFDRSocketLayer * aParent)
-:    Inherited(aParent,aAddr)
+CtiFDRClientConnection::CtiFDRClientConnection(const Cti::SocketAddress& aAddr, CtiFDRSocketLayer * aParent)
+:    Inherited(aParent, aAddr)
 {
     iQueueHandle = NULL;
 }
@@ -20,13 +21,7 @@ CtiFDRClientConnection::CtiFDRClientConnection(SOCKET aSocket, CtiFDRSocketLayer
 :    Inherited(aParent)
 {
     setConnection (aSocket);
-
-    SOCKADDR_IN addr;
-    // address can't be zero
-    addr.sin_addr.S_un.S_addr = 0;
-
     iQueueHandle = NULL;
-    setAddr (addr);
 }
 
 
@@ -50,14 +45,14 @@ int CtiFDRClientConnection::init ()
     iThreadHeartbeat = rwMakeThreadFunction(*this,
                                           &CtiFDRClientConnection::threadFunctionSendHeartbeat);
 
-    // this will be zero only if the client and server are using the same socket
-    if (getAddr().sin_addr.S_un.S_addr == 0)
+    // this will be false only if the client and server are using the same socket
+    if( !getAddr() )
     {
         retVal = NORMAL;
     }
     else
     {
-        retVal = initializeConnection (getAddr());
+        retVal = initializeConnection( getAddr() );
     }
 
     return retVal;
@@ -339,7 +334,7 @@ void CtiFDRClientConnection::threadFunctionSendHeartbeat( void )
                         if (getParent()->getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Error sending heartbeat to "<< getParent()->getName() << " at " <<  string (inet_ntoa(getAddr().sin_addr)) << endl;
+                            dout << CtiTime() << " Error sending heartbeat to "<< getParent()->getName() << " at " <<  getAddr().toString() << endl;
                         }
                     }
                     else
@@ -347,7 +342,7 @@ void CtiFDRClientConnection::threadFunctionSendHeartbeat( void )
                         if (getParent()->getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Sending heartbeat to  "<< getParent()->getName()<< " at " <<  string (inet_ntoa(getAddr().sin_addr)) << endl;
+                            dout << CtiTime() << " Sending heartbeat to  "<< getParent()->getName()<< " at " <<   getAddr().toString() << endl;
                         }
                     }
                 }
@@ -371,80 +366,69 @@ void CtiFDRClientConnection::threadFunctionSendHeartbeat( void )
     }
 }
 
-int CtiFDRClientConnection::initializeConnection (SOCKADDR_IN aAddr)
+int CtiFDRClientConnection::initializeConnection( const Cti::SocketAddress& aAddr )
 {
-    int retVal = NORMAL;
-    SOCKET tmpConnection;
-    int                   returnLength;
-    LPHOSTENT               hostEntry;
-
     // do this so we have time to get shut down properly
     CTISleep (2000);
 
     // create a socket
-    tmpConnection = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-    if (tmpConnection == INVALID_SOCKET)
+    SOCKET tmpConnection = socket(aAddr._addr.sa.sa_family, SOCK_STREAM, IPPROTO_TCP);
+    if( tmpConnection == INVALID_SOCKET )
     {
-        shutdown(tmpConnection, 2);
+        return SOCKET_ERROR;
+    }
+
+    BOOL ka=true;
+    if( setsockopt(tmpConnection, SOL_SOCKET, SO_REUSEADDR, (char*)&ka, sizeof(BOOL) ))
+    {
+        shutdown(tmpConnection, SD_BOTH);
         closesocket(tmpConnection);
-        retVal = SOCKET_ERROR;
+        return SOCKET_ERROR;
     }
-    else
+
+    const string hostIp = getParent()->getIpMask();
+    if( hostIp != "" )
     {
-        BOOL ka=true;
-        if (setsockopt(tmpConnection, SOL_SOCKET, SO_REUSEADDR, (char*)&ka, sizeof(BOOL)))
+        Cti::AddrInfo ai = Cti::makeTcpClientSocketAddress( hostIp.c_str(), CtiNumStr(getParent()->getConnectPortNumber()).toString().c_str() );
+        if( !ai )
         {
-            shutdown(tmpConnection, 2);
-            retVal = closesocket(tmpConnection);
-            tmpConnection = NULL;
-            retVal = SOCKET_ERROR;
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Error, " << ai.getError() << ", while resolving host IP: " << hostIp << endl;
+            }
+            shutdown(tmpConnection, SD_BOTH);
+            closesocket(tmpConnection);
+            return SOCKET_ERROR;
         }
-        else
+
+        if( bind( tmpConnection, ai->ai_addr, ai->ai_addrlen ) == SOCKET_ERROR )
         {
-            aAddr.sin_addr.s_addr = aAddr.sin_addr.s_addr;
-            aAddr.sin_family = AF_INET;
-            aAddr.sin_port = htons(getParent()->getConnectPortNumber());
-
-            string hostIp;
-            if ((hostIp = getParent()->getIpMask()) != "")
+            const int errorCode = WSAGetLastError();
             {
-                /* We need to bind this to the given address from master.cfg */
-                SOCKADDR_IN hostAddr;
-                hostAddr.sin_family = AF_INET;
-                hostAddr.sin_addr.s_addr = inet_addr(hostIp.c_str());
-                hostAddr.sin_port = htons(getParent()->getConnectPortNumber());
-
-                retVal = bind(tmpConnection,(struct sockaddr *) &hostAddr,sizeof (hostAddr));
-
-                if (retVal == SOCKET_ERROR)
-                {
-                    int errorCode = WSAGetLastError();
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Error, " << errorCode << ", binding to " << string (inet_ntoa(hostAddr.sin_addr)) << endl;
-                }
-                else
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Successfull bind on the return connection to " << string (inet_ntoa(hostAddr.sin_addr)) << endl;
-                }
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Error, " << errorCode << ", binding to " << ai.toString() << endl;
             }
+            shutdown(tmpConnection, SD_BOTH);
+            closesocket(tmpConnection);
+            return SOCKET_ERROR;
+        }
 
-            retVal = connect (tmpConnection,(struct sockaddr *) &aAddr,sizeof (aAddr));
-
-            if (retVal == SOCKET_ERROR)
-            {
-                shutdown(tmpConnection, 2);
-                closesocket(tmpConnection);
-                tmpConnection = NULL;
-            }
-            else
-            {
-                setConnection(tmpConnection);
-                retVal = NORMAL;
-            }
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Successful bind on the return connection to " << ai.toString() << endl;
         }
     }
-    return retVal;
+
+    if( connect( tmpConnection, &aAddr._addr.sa, aAddr._addrlen ) == SOCKET_ERROR )
+    {
+        shutdown(tmpConnection, SD_BOTH);
+        closesocket(tmpConnection);
+        return SOCKET_ERROR;
+    }
+
+    setConnection(tmpConnection);
+
+    return NORMAL;
 }
 
 INT CtiFDRClientConnection::writeSocket (CHAR *aBuffer, ULONG length, ULONG &aBytesWritten)

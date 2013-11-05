@@ -18,6 +18,7 @@
 #include "dev_rds.h"
 #include "cparms.h"
 #include "numstr.h"
+#include "socket_helper.h"
 
 #include "portfield.h"
 
@@ -66,7 +67,6 @@ void PortUdpThread(void *pid)
 UdpPortHandler::UdpPortHandler( Ports::UdpPortSPtr &udp_port, CtiDeviceManager &deviceManager ) :
     UnsolicitedHandler(boost::static_pointer_cast<CtiPort>(udp_port), deviceManager),
     _udp_port(udp_port),
-    _udp_socket(INVALID_SOCKET),
     _connected_port(0)
 {
     loadEncodingFilter();
@@ -177,7 +177,7 @@ void UdpPortHandler::addDeviceProperties(const CtiDeviceSingle &device)
     string ip_string;
     device.getDynamicInfo(CtiTableDynamicPaoInfo::Key_UDP_IP, ip_string);
 
-    _ip_addresses[device_id] = string_to_ip(ip_string);
+    _ip_addresses[device_id] = ip_string;
     _ports       [device_id] = device.getDynamicInfo(CtiTableDynamicPaoInfo::Key_UDP_Port);
 
     if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
@@ -185,7 +185,7 @@ void UdpPortHandler::addDeviceProperties(const CtiDeviceSingle &device)
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Cti::Porter::UdpPortHandler::addDeviceProperties - loading device "
              << device.getName() << " "
-             << ip_to_string(_ip_addresses[device_id]) << ":" << _ports[device_id] << " "
+             << _ip_addresses[device_id] << ":" << _ports[device_id] << " "
              << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 }
@@ -287,7 +287,7 @@ void UdpPortHandler::loadStaticRdsIPAndPort(const CtiDeviceSingle &device)
     string ip_string;
     device.getStaticInfo(CtiTableStaticPaoInfo::Key_RDS_IP_Address, ip_string);
 
-    _ip_addresses[device_id] = string_to_ip(ip_string);
+    _ip_addresses[device_id] = ip_string;
     _ports       [device_id] = device.getStaticInfo(CtiTableStaticPaoInfo::Key_RDS_IP_Port);
 
     if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
@@ -295,7 +295,7 @@ void UdpPortHandler::loadStaticRdsIPAndPort(const CtiDeviceSingle &device)
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Cti::Porter::UdpPortHandler::addDeviceProperties - loading device "
              << device.getName() << " "
-             << ip_to_string(_ip_addresses[device_id]) << ":" << _ports[device_id] << " "
+             << _ip_addresses[device_id] << ":" << _ports[device_id] << " "
              << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 }
@@ -315,7 +315,7 @@ void UdpPortHandler::updatePortProperties( void )
             teardownSocket();
         }
 
-        if( _udp_socket == INVALID_SOCKET )
+        if( _udp_sockets.areSocketsValid() )
         {
             bindSocket();
         }
@@ -327,75 +327,58 @@ void UdpPortHandler::updatePortProperties( void )
 
 void UdpPortHandler::teardownSocket()
 {
-    if( _udp_socket != INVALID_SOCKET )
-    {
-        closesocket(_udp_socket);
-
-        _udp_socket = INVALID_SOCKET;
-    }
+    _udp_sockets.shutdownAndClose();
 }
 
 
 bool UdpPortHandler::tryBindSocket( void )
 {
-    sockaddr_in local;
-
-    _udp_socket = socket(AF_INET, SOCK_DGRAM, 0);    // UDP socket for outbound.
-
-    if( _udp_socket == INVALID_SOCKET )
+    Cti::AddrInfo pAddrInfo = Cti::makeUdpServerSocketAddress(NULL, CtiNumStr(_udp_port->getIPPort()).toString().c_str());
+    if( !pAddrInfo )
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Cti::Porter::UdpPortHandler::bindSocket() - **** Checkpoint - socket() failed with error " << WSAGetLastError() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " Cti::Porter::UdpPortHandler::bindSocket() - **** Checkpoint - failed to retrieve address info with error " << pAddrInfo.getError() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+        return false;
+    }
+
+    try
+    {
+        // create sockets
+        _udp_sockets.createSockets(pAddrInfo.get());
+
+        //  associates a local address and port combination with the socket
+        _udp_sockets.bind(pAddrInfo.get());
+
+        // set to non blocking mode
+        unsigned long on = 1;
+        _udp_sockets.setIOMode(FIONBIO, &on);
+
+        int rcvbuf;
+        int rcvbuf_size = sizeof(int);
+
+        if( rcvbuf = gConfigParms.getValueAsULong("PORTER_UDP_RCVBUF") )
+        {
+            _udp_sockets.setOption(SOL_SOCKET, SO_RCVBUF, (char *)&rcvbuf, rcvbuf_size);
+
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Cti::Porter::UdpPortHandler::bindSocket() - **** Checkpoint - new SO_RCVBUF is " << rcvbuf << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+        }
+    }
+    catch( Cti::SocketException & e )
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Cti::Porter::UdpPortHandler::tryBindSocket() - **** Checkpoint - socket error: " << e.what() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         return false;
     }
-
-    local.sin_family      = AF_INET;
-    local.sin_addr.s_addr = INADDR_ANY;
-    local.sin_port        = htons(_udp_port->getIPPort());
-
-    //  bind() associates a local address and port combination with the socket
-    if( bind(_udp_socket, (sockaddr *)&local, sizeof(local)) == SOCKET_ERROR )
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Cti::Porter::UdpPortHandler::bindSocket() - **** Checkpoint - bind() failed with error " << WSAGetLastError() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-
-        teardownSocket();
-
-        return false;
-    }
-
-    unsigned long on = 1;
-
-    ioctlsocket(_udp_socket, FIONBIO, &on);
 
     _connected_port = _udp_port->getIPPort();
-
-    int rcvbuf;
-    int rcvbuf_size = sizeof(int);
-
-    getsockopt(_udp_socket, SOL_SOCKET, SO_RCVBUF, (char *)&rcvbuf, &rcvbuf_size);
-
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Cti::Porter::UdpPortHandler::bindSocket() - **** Checkpoint - original SO_RCVBUF is " << rcvbuf << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-
-    if( rcvbuf = gConfigParms.getValueAsULong("PORTER_UDP_RCVBUF") )
-    {
-        setsockopt(_udp_socket, SOL_SOCKET, SO_RCVBUF, (char *)&rcvbuf, rcvbuf_size);
-
-        getsockopt(_udp_socket, SOL_SOCKET, SO_RCVBUF, (char *)&rcvbuf, &rcvbuf_size);
-
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Cti::Porter::UdpPortHandler::bindSocket() - **** Checkpoint - new SO_RCVBUF is " << rcvbuf << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-    }
 
     return true;
 }
@@ -403,7 +386,7 @@ bool UdpPortHandler::tryBindSocket( void )
 
 void UdpPortHandler::updateDeviceIpAndPort(device_record &dr, const packet &p)
 {
-    u_long  old_device_ip   = getDeviceIp  (dr.device->getID());
+    string  old_device_ip   = getDeviceIp  (dr.device->getID());
     u_short old_device_port = getDevicePort(dr.device->getID());
 
     if( old_device_ip   != p.ip ||
@@ -418,7 +401,7 @@ void UdpPortHandler::updateDeviceIpAndPort(device_record &dr, const packet &p)
         setDeviceIp  (dr.device->getID(), p.ip);
         setDevicePort(dr.device->getID(), p.port);
 
-        dr.device->setDynamicInfo(CtiTableDynamicPaoInfo::Key_UDP_IP,   ip_to_string(p.ip));
+        dr.device->setDynamicInfo(CtiTableDynamicPaoInfo::Key_UDP_IP,   p.ip);
         dr.device->setDynamicInfo(CtiTableDynamicPaoInfo::Key_UDP_Port, p.port);
     }
 
@@ -427,7 +410,7 @@ void UdpPortHandler::updateDeviceIpAndPort(device_record &dr, const packet &p)
 }
 
 
-void UdpPortHandler::sendDeviceIpAndPort( const CtiDeviceSingleSPtr &device, u_long ip, u_short port )
+void UdpPortHandler::sendDeviceIpAndPort( const CtiDeviceSingleSPtr &device, string ip, u_short port )
 {
     if( !device )
     {
@@ -439,7 +422,53 @@ void UdpPortHandler::sendDeviceIpAndPort( const CtiDeviceSingleSPtr &device, u_l
 
     if( point = device->getDevicePointOffsetTypeEqual(CtiDeviceSingle::PointOffset_Analog_IPAddress, AnalogPointType) )
     {
-        vgMsg->PointData().push_back(CTIDBG_new CtiPointDataMsg(point->getID(), ip, NormalQuality, AnalogPointType));
+        ////////////// PATCH FOR DISPACHER //////////////
+        // for now we remap string address into ipv4 format (compatibility mode)
+        unsigned long ul_addr = 0;
+
+        { // PATCH: convert string ip to unsigned long
+            ADDRINFOA hints = {};
+
+            // Set requirements
+            hints.ai_family  = AF_UNSPEC; // IPv4 or IPv6
+            hints.ai_flags  |= AI_NUMERICHOST;
+
+            Cti::AddrInfo ai = Cti::AddrInfo(ip.c_str(), NULL, &hints);
+
+            if(ai->ai_family == AF_INET)
+            {
+                SOCKADDR_IN* addr = (SOCKADDR_IN*)ai->ai_addr;
+                ul_addr = addr->sin_addr.S_un.S_addr;
+            }
+            else if(ai->ai_family == AF_INET6)
+            {
+                SOCKADDR_IN6* addr = (SOCKADDR_IN6*)ai->ai_addr;
+
+                // in6_addr doesnt provide an array of unsigned long, so we declare a union to do it
+                union IPV6_CONVERT_ADDR
+                {
+                    unsigned char uc_byte[16];
+                    unsigned long ul_word[4];
+                };
+
+                IPV6_CONVERT_ADDR* u_tmp = (IPV6_CONVERT_ADDR*)addr->sin6_addr.u.Byte;
+
+                if( u_tmp->ul_word[0] == 0x0 &&
+                    u_tmp->ul_word[1] == 0x0 &&
+                    u_tmp->ul_word[2] == 0xffff )
+                {
+                    // IPv4 mapped into IPv6
+                    ul_addr = u_tmp->ul_word[3]; 
+                }
+                else
+                {
+                    // other IPv6 address are not supported
+                    ul_addr = 0x0; 
+                }
+            }
+        }
+
+        vgMsg->PointData().push_back(CTIDBG_new CtiPointDataMsg(point->getID(), ul_addr, NormalQuality, AnalogPointType));
     }
 
     if( point = device->getDevicePointOffsetTypeEqual(CtiDeviceSingle::PointOffset_Analog_Port, AnalogPointType) )
@@ -458,14 +487,14 @@ void UdpPortHandler::sendDeviceIpAndPort( const CtiDeviceSingleSPtr &device, u_l
 
 int UdpPortHandler::sendOutbound( device_record &dr )
 {
-    u_long  device_ip   = getDeviceIp  (dr.device->getID());
+    string  device_ip   = getDeviceIp  (dr.device->getID());
     u_short device_port = getDevicePort(dr.device->getID());
 
     if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Cti::Porter::UdpPortHandler::generateOutbound() - sending packet to "
-                          << ip_to_string(device_ip) << ":" << device_port << " "
+                          << device_ip << ":" << device_port << " "
                           << __FILE__ << " (" << __LINE__ << ")" << endl;
 
         for( int xx = 0; xx < dr.xfer.getOutCount(); xx++ )
@@ -476,19 +505,22 @@ int UdpPortHandler::sendOutbound( device_record &dr )
         dout << endl;
     }
 
-    sockaddr_in to;
-
-    to.sin_family           = AF_INET;
-    to.sin_addr.S_un.S_addr = htonl(device_ip);
-    to.sin_port             = htons(device_port);
+    Cti::AddrInfo pAddrInfo = Cti::makeUdpClientSocketAddress(device_ip.c_str(), CtiNumStr(device_port).toString().c_str());
+    if( !pAddrInfo )
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Cti::Porter::UdpPortHandler::sendOutbound() - **** SENDTO: Checkpoint (error : " << pAddrInfo.getError() << " )**** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+        return PORTWRITE;
+    }
 
     /* This is not tested until I get a Lantronix device. */
     vector<unsigned char> cipher;
     _encodingFilter->encode((unsigned char *)dr.xfer.getOutBuffer(),dr.xfer.getOutCount(),cipher);
 
-    int err = sendto(_udp_socket, (const char*) &*cipher.begin(), cipher.size(), 0, (sockaddr *)&to, sizeof(to));
-
-    if( SOCKET_ERROR == err )
+    // send data with the socket of the same family
+    if( sendto(_udp_sockets.getFamilySocket(pAddrInfo->ai_family), (const char*) &*cipher.begin(), cipher.size(), 0, pAddrInfo->ai_addr, pAddrInfo->ai_addrlen) == SOCKET_ERROR )
     {
         if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
         {
@@ -536,27 +568,41 @@ bool UdpPortHandler::collectInbounds( const MillisecondTimer & timer, const unsi
 
 UdpPortHandler::packet *UdpPortHandler::recvPacket(unsigned char * const recv_buf, unsigned max_len)
 {
-    if( _udp_socket == INVALID_SOCKET )
+    if( !_udp_sockets.areSocketsValid() )
     {
         return 0;
     }
 
-    sockaddr_in from;
+    Cti::SocketAddress from;
 
-    int fromlen = sizeof(from);
-    int recv_len = recvfrom(_udp_socket, (char *)recv_buf, max_len, 0, (sockaddr *)&from, &fromlen);
+    int recv_len = SOCKET_ERROR;
 
-    if( recv_len == SOCKET_ERROR )
+    // check if we receive data from each family of sockets
+    std::vector<SOCKET> const& sockets = _udp_sockets.getSockets();
+    for(std::vector<SOCKET>::const_iterator socket_it = sockets.begin() ; socket_it != sockets.end() ; ++socket_it)
     {
+        from.reset( Cti::SocketAddress::STORAGE_SIZE );
+
+        recv_len = recvfrom(*socket_it, (char*)recv_buf, max_len, 0, &from._addr.sa, &from._addrlen);
+        if( recv_len != SOCKET_ERROR )
+        {
+            break; // break from the loop
+        }
+
         if( WSAGetLastError() != WSAEWOULDBLOCK )
         {
             if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " Cti::Porter::UdpPortHandler::recvPacket() - **** Checkpoint - error " << WSAGetLastError() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-        }
 
+            }
+            return 0;
+        }
+    }
+
+    if( recv_len == SOCKET_ERROR )
+    {
         return 0;
     }
 
@@ -573,8 +619,8 @@ UdpPortHandler::packet *UdpPortHandler::recvPacket(unsigned char * const recv_bu
         return 0;
     }
 
-    p->ip   = ntohl(from.sin_addr.S_un.S_addr);
-    p->port = ntohs(from.sin_port);
+    p->ip   = from.toString();
+    p->port = ntohs(from._addr.sa_in.sin_port);
 
     p->len  = recv_len;
     p->used = 0;
@@ -593,7 +639,7 @@ UdpPortHandler::packet *UdpPortHandler::recvPacket(unsigned char * const recv_bu
         CtiLockGuard<CtiLogger> doubt_guard(dout);
 
         dout << CtiTime() << " Cti::Porter::UdpPortHandler::recvPacket() - packet received from "
-             << ip_to_string(p->ip) << ":" << p->port << " "
+             << p->ip << ":" << p->port << " "
              << __FILE__ << " (" << __LINE__ << ")" << endl;
 
         for( int xx = 0; xx < pText.size(); xx++ )
@@ -624,7 +670,7 @@ bool UdpPortHandler::validatePacket(packet *&p)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << __FUNCTION__ << "() - incoming packet from " << ip_to_string(p->ip) <<  ":" << p->port << " is invalid " << __FILE__ << "(" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " " << __FUNCTION__ << "() - incoming packet from " << p->ip <<  ":" << p->port << " is invalid " << __FILE__ << "(" << __LINE__ << ")" << endl;
         }
 
         //  this packet was unhandled, so we trace it
@@ -726,7 +772,7 @@ void UdpPortHandler::handleGpuffPacket(packet *&p)
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - incoming packet from " << ip_to_string(p->ip) << ":" << p->port << ": " << endl;
+        dout << CtiTime() << " **** Checkpoint - incoming packet from " << p->ip << ":" << p->port << ": " << endl;
     }
 
     GpuffProtocol::describeFrame(p->data, p->len, len, crc_included, ack_required, devt, ser);
@@ -810,8 +856,8 @@ UdpPortHandler::device_record *UdpPortHandler::getDeviceRecordByGpuffDeviceTypeS
 
 bool UdpPortHandler::isDeviceDisconnected( const long device_id ) const
 {
-    return _udp_socket == INVALID_SOCKET
-            || getDeviceIp  (device_id) < 0
+    return !_udp_sockets.areSocketsValid()
+            || getDeviceIp(device_id).empty()
             || getDevicePort(device_id) < 0;
 }
 
@@ -830,9 +876,16 @@ typename Map::value_type::second_type find_or_return_numeric_limits_max(const Ma
 }
 
 
-u_long UdpPortHandler::getDeviceIp( const long device_id ) const
+string UdpPortHandler::getDeviceIp( const long device_id ) const
 {
-    return find_or_return_numeric_limits_max(_ip_addresses, device_id);
+    ip_map::const_iterator itr = _ip_addresses.find(device_id);
+
+    if( itr == _ip_addresses.end() )
+    {
+        return string(); // return empty string
+    }
+
+    return itr->second;
 }
 
 u_short UdpPortHandler::getDevicePort( const long device_id ) const
@@ -840,7 +893,7 @@ u_short UdpPortHandler::getDevicePort( const long device_id ) const
     return find_or_return_numeric_limits_max(_ports, device_id);
 }
 
-void UdpPortHandler::setDeviceIp( const long device_id, const u_long ip )
+void UdpPortHandler::setDeviceIp( const long device_id, const string ip )
 {
     _ip_addresses[device_id] = ip;
 }
@@ -848,41 +901,6 @@ void UdpPortHandler::setDeviceIp( const long device_id, const u_long ip )
 void UdpPortHandler::setDevicePort( const long device_id, const u_short port )
 {
     _ports[device_id] = port;
-}
-
-
-string UdpPortHandler::ip_to_string(u_long ip) const
-{
-    ostringstream ostr;
-
-    ostr << ((ip >> 24) & 0xff) << ".";
-    ostr << ((ip >> 16) & 0xff) << ".";
-    ostr << ((ip >>  8) & 0xff) << ".";
-    ostr << ((ip >>  0) & 0xff);
-
-    return ostr.str();
-}
-
-u_long UdpPortHandler::string_to_ip(string ip_string)
-{
-    int pos = 0;
-    u_long ip = 0;
-
-    while( pos < ip_string.length() )
-    {
-        ip <<= 8;
-
-        ip |= atoi(ip_string.c_str() + pos);
-
-        pos = ip_string.find_first_of(".", pos + 1);
-
-        if( pos != string::npos )
-        {
-            pos++;  //  move past the dot if we found one
-        }
-    }
-
-    return ip;
 }
 
 void UdpPortHandler::loadEncodingFilter()

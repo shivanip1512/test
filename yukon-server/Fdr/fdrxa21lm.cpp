@@ -40,6 +40,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "fdrsinglesocket.h"
 #include "fdrsocketlayer.h"
 #include "fdrserverconnection.h"
+#include "socket_helper.h"
 
 // this class header
 #include "fdrxa21lm.h"
@@ -564,7 +565,7 @@ int CtiFDR_XA21LM::processMessageFromForeignSystem(CHAR *aBuffer)
         if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Heartbeat message received from " << getLayer()->getName() << " at " << string (inet_ntoa(getLayer()->getInBoundConnection()->getAddr().sin_addr)) <<  endl;;
+            dout << CtiTime() << " Heartbeat message received from " << getLayer()->getName() << " at " << getLayer()->getInBoundConnection()->getAddr().toString() << endl;
         }
         break;
 
