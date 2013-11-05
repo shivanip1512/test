@@ -138,7 +138,7 @@ public class TamperFlagProcessingController {
                 int total = (int)result.getOriginalDeviceCollectionCopy().getDeviceCount();
                 float percentSuccess = 100.0f;
                 if (total > 0) {
-                    percentSuccess = (float)((successCount * 100) / total);
+                    percentSuccess = ((float) successCount * 100) / total;
                 }
                 resolvableTemplate.addData("percentSuccess", percentSuccess);
                 resolvableTemplate.addData("resultKey", result.getKey());
