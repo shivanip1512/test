@@ -37,7 +37,7 @@ public class JnlpExtensionController extends JnlpControllerBase {
 
         Element infoElem = new Element("information");
         jnlpElem.addContent(infoElem);
-        infoElem.addContent(new Element("title").setText("Yukon(TODO) " + title));
+        infoElem.addContent(new Element("title").setText("Yukon\u00AE " + title));
         infoElem.addContent(new Element("vendor").setText("Cooper Industries plc."));
         infoElem.addContent(new Element("homepage").setAttribute("href", "http://www.cannontech.com/"));
         infoElem.addContent(new Element("description").setText(description));
