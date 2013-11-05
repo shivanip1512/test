@@ -1,5 +1,7 @@
 package com.cannontech.messaging.connection.amq;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import javax.jms.BytesMessage;
 import javax.jms.ExceptionListener;
 import javax.jms.JMSException;
@@ -28,7 +30,7 @@ public abstract class AmqConnectionBase<T extends AmqTransport> extends Connecti
     private AmqConnectionFactoryService connectionService;
     private MessageFactory messageFactory;
 
-    private static int conID = 0;
+    private static AtomicInteger conID = new AtomicInteger(0);
 
     private static final long RECONNECT_DELAY_INITIAL_MILLIS = 1000;
     private static final long RECONNECT_DELAY_MAX_MILLIS     = 30000;
@@ -47,7 +49,7 @@ public abstract class AmqConnectionBase<T extends AmqTransport> extends Connecti
     }
 
     protected AmqConnectionBase() {
-        this("AMQConn_" + conID++);
+        this("AMQConn_" + conID.getAndIncrement());
     }
 
     protected AmqConnectionBase(String name, String queueName) {
