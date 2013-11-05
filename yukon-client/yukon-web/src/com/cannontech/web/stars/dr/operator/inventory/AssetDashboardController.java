@@ -38,6 +38,7 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.core.dao.YukonListDao;
+import com.cannontech.core.roleproperties.UserNotInRoleException;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -80,7 +81,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 
 @Controller
-@CheckRole(YukonRole.INVENTORY)
+@CheckRole({YukonRole.CONSUMER_INFO, YukonRole.INVENTORY})
 @RequestMapping("/operator/inventory/*")
 public class AssetDashboardController {
     
@@ -107,8 +108,7 @@ public class AssetDashboardController {
     public String home(ModelMap model, YukonUserContext context) {
         
         LiteYukonUser user = context.getYukonUser();
-        rpDao.verifyRole(YukonRole.INVENTORY, user);
-        
+
         boolean ecOperator = yukonEnergyCompanyService.isEnergyCompanyOperator(context.getYukonUser());
         
         if (ecOperator) {
@@ -136,8 +136,19 @@ public class AssetDashboardController {
             model.addAttribute("showAccountSearch", showAccountSearch);
             
             /** Hardware Creation */
-            boolean hasAddHardwareByRange = rpDao.getPropertyBooleanValue(YukonRoleProperty.SN_ADD_RANGE, user);
-            boolean hasCreateHardware = rpDao.getPropertyBooleanValue(YukonRoleProperty.INVENTORY_CREATE_HARDWARE, user);
+            boolean hasAddHardwareByRange = false;
+            boolean hasCreateHardware = false;
+
+            try {
+                /*
+                 * These will throw a UserNotInRoleException when the user is not in the Inventory role.
+                 * This can happen if the user only has the Consumer Info role,
+                 * which means they don't have these permissions
+                 */
+                hasAddHardwareByRange = rpDao.getPropertyBooleanValue(YukonRoleProperty.SN_ADD_RANGE, user);
+                hasCreateHardware = rpDao.getPropertyBooleanValue(YukonRoleProperty.INVENTORY_CREATE_HARDWARE, user);
+            } catch (UserNotInRoleException e) {}
+
             boolean showHardwareCreate = hasAddHardwareByRange || hasCreateHardware;
             model.addAttribute("showHardwareCreate", showHardwareCreate);
             

@@ -29,8 +29,7 @@
 <%@ page import="java.util.Iterator" %>
 <%@ page import="java.util.Collections" %>
 
- 
-<cti:isPropertyTrue property="DIRECT_CONTROL">
+<cti:verifyRolesAndProperties value="DIRECT_CONTROL"/>
 <%
    String pending = request.getParameter("pending");
       
@@ -369,4 +368,3 @@
 </table>
 </body>
 </html>
-</cti:isPropertyTrue>

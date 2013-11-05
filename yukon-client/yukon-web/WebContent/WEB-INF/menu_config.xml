@@ -35,7 +35,7 @@
       </option>
       <option name="import" section="true">
         <permissions>
-          <roleProperty name="IMPORTER_ENABLED" />
+          <roleProperty name="BULK_IMPORT_OPERATION" />
         </permissions>
         <link>/bulk/import/upload</link>
       </option>
@@ -194,6 +194,9 @@
         <link>/bulk/deviceSelection</link>
       </option>
       <option name="commander">
+        <permissions>
+          <roleProperty name="ENABLE_WEB_COMMANDER" />
+        </permissions>
         <link>/commander/select</link>
       </option>
       <option name="dataExport">
