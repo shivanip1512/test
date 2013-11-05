@@ -143,19 +143,11 @@ function loadTarget(form)
                                     </tr>
                                     <tr height="100"> 
                                       <td width="47%" valign="top" align="right"><font face="Arial, Helvetica, sans-serif" size="1">Start Date:</font> 
-                                        
-                                        <tags:dateInputCalendar fieldId="startCal"
-                                                                fieldName="start"
-                                                                fieldValue="<%= datePart.format(ServletUtil.getToday()) %>" />
-                                        
+                                        <input id='startCal' name='start' value="<%= datePart.format(ServletUtil.getToday()) %>" />
                                       </td>
                                       <td>&nbsp;&nbsp;</td>
                                       <td width="47%" valign="top"><font face="Arial, Helvetica, sans-serif" size="1">Stop Date:</font> 
-                                        
-                                        <tags:dateInputCalendar fieldId="stopCal"
-                                                                fieldName="stop"
-                                                                fieldValue="<%= datePart.format(ServletUtil.getTomorrow()) %>" />
-                                        
+                                        <input id='stopCal' name='stop' value="<%= datePart.format(ServletUtil.getTomorrow()) %>" />
                                       </td>
                                     </tr>
                                   </table>

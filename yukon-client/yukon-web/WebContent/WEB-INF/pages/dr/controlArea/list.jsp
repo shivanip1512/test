@@ -4,13 +4,11 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
 
 <cti:standardPage module="dr" page="controlAreaList">
 
     <tags:simpleDialog id="drDialog" />
-    <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css" />
-    <cti:includeScript link="/JavaScript/calendarControl.js" />
-    <cti:includeScript link="/JavaScript/calendarTagFuncs.js" />
     <cti:includeScript link="/JavaScript/hideReveal.js"/>
     <cti:includeScript link="/JavaScript/drEstimatedLoad.js"/>
 
@@ -235,7 +233,8 @@
 
     <c:if test="${hasFilterErrors}">
         <script type="text/javascript">
-            $('filterPopup').show();
+            jQuery('#filterPopup').show();
         </script>
     </c:if>
+    <dt:pickerIncludes/>
 </cti:standardPage>

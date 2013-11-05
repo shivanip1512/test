@@ -1,14 +1,12 @@
 <html>
 <!-- Java script needed for the Calender Function--->
 <%@ include file="../include/user_header.jsp" %>
-<SCRIPT type="text/javascript" src="../../JavaScript/calendarControl.js"></SCRIPT>
 
 <%@ include file="../../include/trending_functions.jspf" %>
 <head>
 <title>Consumer Energy Services</title>
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty property="STYLE_SHEET" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
-<link rel="stylesheet" href="../../WebConfig/yukon/styles/calendarControl.css" type="text/css">
 <META NAME="robots" CONTENT="noindex, nofollow">
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 

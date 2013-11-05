@@ -13,7 +13,6 @@
 <cti:msg2 key=".noneSelectOption" var="noneSelectOption"/>
 
 <cti:includeCss link="/WebConfig/yukon/styles/operator/hardware.css"/>
-<cti:includeScript link="/JavaScript/calendarTagFuncs.js"/>
 
 <script type="text/javascript">
 jQuery(function(){

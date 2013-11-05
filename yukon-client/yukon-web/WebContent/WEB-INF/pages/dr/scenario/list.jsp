@@ -8,9 +8,6 @@
 <cti:standardPage module="dr" page="scenarioList">
 
     <tags:simpleDialog id="drDialog" />
-    <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css" />
-    <cti:includeScript link="/JavaScript/calendarControl.js" />
-    <cti:includeScript link="/JavaScript/calendarTagFuncs.js" />
     <cti:includeScript link="/JavaScript/hideReveal.js"/>
     <cti:includeScript link="/JavaScript/drEstimatedLoad.js"/>
 
@@ -86,11 +83,11 @@ function clearFilter() {
                                     <td data-pao="${scenarioId}">
                                         <cti:icon icon="icon-error" classes="dn"/>
                                         <cti:dataUpdaterValue
-                                             identifier="${scenarioId}/SCENARIO_KW_SAVINGS"
-                                             type="ESTIMATED_LOAD" />
-<%--                                         <cti:dataUpdaterCallback function="Yukon.EstimatedLoad.createToolTip" --%>
-<%--                                             identifier="ESTIMATED_LOAD/${scenarioId}/SCENARIO_KW_SAVINGS"  --%>
-<%--                                             initialize="false"/> --%>
+                                            identifier="${scenarioId}/SCENARIO_KW_SAVINGS"
+                                            type="ESTIMATED_LOAD" />
+<%--                                        <cti:dataUpdaterCallback function="Yukon.EstimatedLoad.createToolTip" --%>
+<%--                                            identifier="ESTIMATED_LOAD/${scenarioId}/SCENARIO_KW_SAVINGS" --%> 
+<%--                                            initialize="false"/> --%>
                                     </td>
                                 </cti:checkRolesAndProperties>
                                 <td><dr:scenarioListActions pao="${scenario}" /></td>

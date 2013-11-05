@@ -8,9 +8,6 @@
 <cti:standardPage module="dr" page="scenarioDetail">
 
     <tags:simpleDialog id="drDialog"/>
-    <cti:includeScript link="/JavaScript/calendarControl.js"/>
-    <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
-    <cti:includeScript link="/JavaScript/calendarTagFuncs.js"/>
     <cti:includeScript link="/JavaScript/hideReveal.js"/>
     <cti:includeScript link="/JavaScript/drEstimatedLoad.js"/>
     
@@ -27,13 +24,13 @@
                     <tags:nameValue2 nameKey="yukon.web.modules.dr.estimatedLoad.info.connectedLoad">
                         <div data-pao="${scenarioId}">
                             <cti:icon icon="icon-error" classes="dn"/>
-<%--                             <cti:dataUpdaterValue identifier="${scenarioId}/SCENARIO_CONNECTED_LOAD" type="ESTIMATED_LOAD"/> --%>
+<%--                            <cti:dataUpdaterValue identifier="${scenarioId}/SCENARIO_CONNECTED_LOAD" type="ESTIMATED_LOAD"/> --%>
                         </div>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey="yukon.web.modules.dr.estimatedLoad.info.diversifiedLoad">
                         <div data-pao="${scenarioId}">
                             <cti:icon icon="icon-error" classes="dn"/>
-<%--                             <cti:dataUpdaterValue identifier="${scenarioId}/SCENARIO_DIVERSIFIED_LOAD" type="DR_ESTIMATED_LOADSCENARIO"/> --%>
+<%--                            <cti:dataUpdaterValue identifier="${scenarioId}/SCENARIO_DIVERSIFIED_LOAD" type="DR_ESTIMATED_LOADSCENARIO"/> --%>
                         </div>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey="yukon.web.modules.dr.estimatedLoad.info.kwSavings">

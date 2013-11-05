@@ -4,14 +4,14 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<cti:includeScript link="/JavaScript/calendarControl.js"/>
-<cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
-
 <script>
-	//reinit the datepickers
-	jQuery(function(){
-		Yukon.ui.dateTimePickers.init();
-	});
+//reinit the datepickers
+    jQuery( function () {
+        console.log('render.jsp');
+        if ('undefined' !== typeof Yukon.ui.dateTimePickers) {
+            Yukon.ui.dateTimePickers.init();
+        }
+    });
 </script>
 
 <c:choose>
@@ -68,7 +68,7 @@
     <%--PAST PROFILES, don't display if the device does not support --%>
     <cti:checkRolesAndProperties value="METERING">
     <cti:checkRolesAndProperties value="PROFILE_COLLECTION">
-    	<tags:sectionContainer2 nameKey="requestPastProfile">
+        <tags:sectionContainer2 nameKey="requestPastProfile">
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".channel">
                     <select name="channel">

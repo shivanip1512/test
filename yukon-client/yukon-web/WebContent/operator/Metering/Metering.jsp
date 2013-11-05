@@ -1,13 +1,11 @@
 <%@page import="com.cannontech.core.roleproperties.YukonRoleProperty"%>
 <html>
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
-<SCRIPT type="text/javascript" src="../../JavaScript/calendarControl.js"></SCRIPT>
 <%@ include file="include/metering_header.jsp" %>
 <%@ include file="../../include/trending_functions.jspf" %>
 <head>
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty property="STYLE_SHEET" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
-<link rel="stylesheet" href="../../WebConfig/yukon/styles/calendarControl.css" type="text/css">
 <title>Metering</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 </head>

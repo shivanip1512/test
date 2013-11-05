@@ -15,11 +15,8 @@
 
 <cti:includeScript link="/JavaScript/cronExpressionData.js" />
 <cti:includeScript link="/JavaScript/dynamicBillingFileGenerator.js"/>
-<cti:includeScript link="/JavaScript/calendarControl.js"/>
 <cti:includeScript link="/JavaScript/yukon.metering.billing.js"/>
 <cti:includeScript link="/JavaScript/yukon/ui/confirm_dialog_manager.js"/>
-
-<cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
 
 
 <cti:tabbedContentSelector id="billing_tab_container" mode="section">

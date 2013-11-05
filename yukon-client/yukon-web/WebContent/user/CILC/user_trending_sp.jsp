@@ -4,8 +4,6 @@
 <cti:standardMenu />
 
 <%@ include file="../include/user_header.jsp" %>
-<cti:includeScript link="/JavaScript/calendarControl.js"/>
-<cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
 
 <%@ include file="../../include/trending_functions.jspf" %>
 

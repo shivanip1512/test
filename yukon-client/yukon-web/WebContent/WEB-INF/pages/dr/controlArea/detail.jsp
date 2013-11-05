@@ -8,9 +8,6 @@
 <cti:standardPage module="dr" page="controlAreaDetail">
 
     <tags:simpleDialog id="drDialog"/>
-    <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
-    <cti:includeScript link="/JavaScript/calendarControl.js"/>
-    <cti:includeScript link="/JavaScript/calendarTagFuncs.js"/>
     <cti:includeScript link="/JavaScript/hideReveal.js"/>
     <cti:includeScript link="/JavaScript/drEstimatedLoad.js"/>
 
@@ -57,10 +54,10 @@
                             <div data-pao="${controlAreaId}">
                                 <cti:icon icon="icon-error" classes="dn"/>
                                 <cti:dataUpdaterValue identifier="${controlAreaId}/CONTROL_AREA_KW_SAVINGS" type="ESTIMATED_LOAD"/>
-<%--                                 <cti:dataUpdaterCallback --%>
-<%--                                     function="Yukon.EstimatedLoad.createToolTip" --%>
-<%--                                     value="DR_CONTROLAREA/${controlAreaId}/ESTIMATED_LOAD_ERROR" --%>
-<%--                                     initialize="true" /> --%>
+<%--                                <cti:dataUpdaterCallback --%>
+<%--                                    function="Yukon.EstimatedLoad.createToolTip" --%>
+<%--                                    value="DR_CONTROLAREA/${controlAreaId}/ESTIMATED_LOAD_ERROR" --%>
+<%--                                    initialize="true" /> --%>
                             </div>
                         </tags:nameValue2>
                     </cti:checkRolesAndProperties>
