@@ -73,7 +73,7 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     
     
     private final static ImmutableSet<HardwareType> rfTypes;
-    private final static ImmutableSet<HardwareType> twoWayPlcTypes = ImmutableSet.of(LCR_3102);
+    private final static ImmutableSet<HardwareType> twoWayPlcLcrTypes = ImmutableSet.of(LCR_3102);
     private final static ImmutableSet<HardwareType> saTypes = ImmutableSet.of(SA_205, SA_305, SA_SIMPLE);
     private final static ImmutableSet<HardwareType> zigbeeTypes;
     private final static ImmutableSet<HardwareType> zigbeeEndpointTypes;
@@ -222,8 +222,8 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
         return rfTypes.contains(this);
     }
     
-    public boolean isTwoWayPlc() {
-        return twoWayPlcTypes.contains(this);
+    public boolean isTwoWayPlcLcr() {
+        return twoWayPlcLcrTypes.contains(this);
     }
     
     /**
