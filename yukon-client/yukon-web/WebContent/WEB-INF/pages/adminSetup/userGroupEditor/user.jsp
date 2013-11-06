@@ -39,6 +39,7 @@ jQuery(function() {
             <cti:flashScopeMessages/>
         </c:if>
         <form:form commandName="password" action="changePassword" method="post">
+            <cti:csrfToken/>
             <input type="hidden" value="${userId}" name="userId">
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".password">

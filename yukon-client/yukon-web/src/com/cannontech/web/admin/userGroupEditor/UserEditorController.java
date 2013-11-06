@@ -3,6 +3,8 @@ package com.cannontech.web.admin.userGroupEditor;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
@@ -47,6 +49,7 @@ import com.cannontech.web.admin.userGroupEditor.model.User;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.security.csrf.CsrfTokenService;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
@@ -61,6 +64,7 @@ public class UserEditorController {
     @Autowired private UserGroupDao userGroupDao;
     @Autowired private YukonUserDao yukonUserDao;
     @Autowired private PasswordPolicyService passwordPolicyService;
+    @Autowired private CsrfTokenService csrfTokenService;
 
     private UserValidator userValidator = new UserValidator();
 
@@ -161,8 +165,9 @@ public class UserEditorController {
     }
 
     @RequestMapping(method=RequestMethod.POST)
-    public String changePassword(YukonUserContext userContext, ModelMap model, FlashScope flash, int userId, 
-                                 @ModelAttribute Password password, BindingResult result) {
+    public String changePassword(HttpServletRequest request, YukonUserContext userContext, ModelMap model,
+                                FlashScope flash, int userId, @ModelAttribute Password password, BindingResult result) {
+        csrfTokenService.validateToken(request);
         LiteYukonUser yukonUser = yukonUserDao.getLiteYukonUser(userId);
         PasswordValidator validator = new PasswordValidator(yukonUser,  "password", "confirmPassword");
         validator.validate(password, result);
