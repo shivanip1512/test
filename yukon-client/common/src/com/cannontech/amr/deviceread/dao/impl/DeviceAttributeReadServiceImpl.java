@@ -386,7 +386,7 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
     }
     
 
-    /*
+    /**
      * This method returns a list of devices that do not have a strategy.
      */
     private Map<YukonPao, Set<Attribute>> getUnreadableDevices(Iterable<? extends YukonPao> devices,
