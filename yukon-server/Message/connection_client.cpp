@@ -156,11 +156,14 @@ bool CtiClientConnection::establishConnection()
             }
             catch( cms::CMSException& e )
             {
-                initialized = false;
+                if( !_dontReconnect )
+                {
+                    initialized = false;
 
-                logException( __FILE__, __LINE__, typeid(e).name(), e.getMessage() );
+                    logException( __FILE__, __LINE__, typeid(e).name(), e.getMessage() );
 
-                Sleep( 1000 ); // Don't pound the system....
+                    Sleep( 1000 ); // Don't pound the system....
+                }
             }
             catch( ConnectionException& e )
             {
@@ -212,12 +215,29 @@ bool CtiClientConnection::establishConnection()
 }
 
 /**
- * Terminate an ongoing connection thread and closes the connection
+ * Abort the connection
  */
-void CtiClientConnection::endConnection()
+void CtiClientConnection::abortConnection()
 {
-    // Close the connection as well as any child session, consumer, producer
-    _connection->close();
+    try
+    {
+        // Close the connection as well as any child session, consumer, producer
+        _connection->close();
+    }
+    catch(...)
+    {
+        // since we are shutting down, we dont care about exceptions
+    }
+}
+
+/**
+ * delete cms resources and destroy connection object
+ */
+void CtiClientConnection::deleteResources()
+{
+    CtiConnection::deleteResources();
+
+    _connection.reset();
 }
 
 /**

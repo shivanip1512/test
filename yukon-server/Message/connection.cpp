@@ -457,8 +457,6 @@ void CtiConnection::cleanConnection()
     {
         logException( __FILE__, __LINE__, "", "error cleaning the outbound queue for connection." );
     }
-
-    deleteResources();
 }
 
 /**
@@ -469,6 +467,11 @@ void CtiConnection::close()
     try
     {
         WriterGuard guard( _connLock );
+
+        if( _closed )
+        {
+            return;
+        }
 
         logStatus( __FUNCTION__, "closing connection." );
 
@@ -508,20 +511,12 @@ void CtiConnection::close()
 
         outthread.requestCancellation(1);
 
+        // if we are currently trying to establish a connection :
+        // 1.  abort the connection attempt
+        // 2.  wait for the thread to end by itself
         if( !_bConnected )
         {
-            // if we are currently trying to establish a connection :
-            // 1.  abort the connection attempt
-            // 2.  wait for the thread to end by itself
-
-            try
-            {
-                endConnection(); // close activemq connection or/and end sessions
-            }
-            catch(...)
-            {
-                // since we are shutting down, we dont care about exceptions
-            }
+            abortConnection();
         }
 
         if( outthread.join(100) == RW_THR_TIMEOUT )
@@ -551,6 +546,10 @@ void CtiConnection::close()
         {
             _inQueue->clearAndDestroy();      // Get rid of the evidence...
         }
+
+        deleteResources();
+
+        _closed = true;
 
         logDebug( __FUNCTION__, "has closed." );
     }
@@ -968,11 +967,11 @@ void CtiConnection::logException( string fileName, int line, string exceptionNam
 }
 
 /**
- * Terminate an ongoing connection thread and closes the connection
+ * Abort the connection
  */
-void CtiConnection::endConnection()
+void CtiConnection::abortConnection()
 {
-    // implemented in client connection to forcefully terminate a connection attempt
+ 	// implemented in client connection to terminate a connection attempt
 }
 
 /**

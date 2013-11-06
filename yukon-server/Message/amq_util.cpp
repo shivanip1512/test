@@ -102,6 +102,9 @@ void ManagedConnection::start()
     const int initialReconnectDelay = 1;    // 1 sec
     const int maxReconnectDelay     = 30;   // 30 sec
     const int maxReconnectAttempts  = 120;  // 120 attempts (about 1 hour, considering 30 sec/attempt)
+    const int loggingFreq           = 10;   // every 10 attempt (about 5 min, considering 30 sec/attempt)
+
+    string prevMessage;
 
     int reconnectDelay = initialReconnectDelay;
 
@@ -123,9 +126,15 @@ void ManagedConnection::start()
         }
         catch( cms::CMSException& e )
         {
+            // print exception about every 5 min or if exception message changes
+            if( connAttempt % loggingFreq == 1 || e.getMessage() != prevMessage )
             {
-                CtiLockGuard<CtiLogger> dout_guard(dout);
-                dout << CtiTime::now() << "Error starting ActiveMQ connection: \"" << e.what() << "\" "<< __FILE__ << " ("<< __LINE__ << ")" << endl;
+                {
+                    CtiLockGuard<CtiLogger> dout_guard(dout);
+                    dout << CtiTime::now() << "Error starting ActiveMQ connection: \"" << e.what() << "\" "<< __FILE__ << " ("<< __LINE__ << ")" << endl;
+                }
+
+                prevMessage = e.getMessage();
             }
 
             // re-throw if the connection is either closed or if we reach the maximum number of attempts

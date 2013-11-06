@@ -91,6 +91,7 @@ protected:
             UINT _dontReconnect      : 1;
             UINT _localQueueAlloc    : 1;
             UINT _bConnected         : 1;
+            UINT _closed             : 1;
         };
     };
 
@@ -98,7 +99,7 @@ protected:
     void receiveAllMessages();
 
     virtual bool establishConnection         () = 0;
-    virtual void endConnection               ();
+    virtual void abortConnection             ();
     virtual void deleteResources             ();
     virtual void writeIncomingMessageToQueue ( CtiMessage* msg );
     virtual void messagePeek                 ( const CtiMessage& msg );

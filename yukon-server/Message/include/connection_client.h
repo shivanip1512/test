@@ -6,7 +6,7 @@ class IM_EX_MSG CtiClientConnection : public CtiConnection
 {
     const std::string _serverQueueName;
 
-    const boost::scoped_ptr<Cti::Messaging::ActiveMQ::ManagedConnection> _connection;
+    boost::scoped_ptr<Cti::Messaging::ActiveMQ::ManagedConnection> _connection;
 
     std::auto_ptr<CtiRegistrationMsg>      _regMsg;
     std::auto_ptr<CtiPointRegistrationMsg> _ptRegMsg;
@@ -18,7 +18,8 @@ class IM_EX_MSG CtiClientConnection : public CtiConnection
     virtual void messagePeek ( const CtiMessage& msg );
 
     virtual bool establishConnection ();
-    virtual void endConnection       ();
+    virtual void abortConnection     ();
+    virtual void deleteResources     ();
 
     std::auto_ptr<cms::ExceptionListener> _exceptionListener;
 
