@@ -11,67 +11,67 @@
 <cti:standardPage title="${pageTitle}" module="support">
 
     <cti:breadCrumbs>
-	    <cti:crumbLink url="/dashboard" title="Operations Home"  />
-	    <cti:crumbLink url="/support" title="Support" />
-	    <cti:crumbLink url="/support/database/migration/home" title="${homePageTitle}">
-	    	<cti:param name="import" value="true"/>
-	    </cti:crumbLink>
-	    <cti:crumbLink>${pageTitle}</cti:crumbLink>
-	</cti:breadCrumbs>
-	
-	<cti:standardMenu menuSelection="database|migration"/>
+        <cti:crumbLink url="/dashboard" title="Operations Home"  />
+        <cti:crumbLink url="/support" title="Support" />
+        <cti:crumbLink url="/support/database/migration/home" title="${homePageTitle}">
+            <cti:param name="import" value="true"/>
+        </cti:crumbLink>
+        <cti:crumbLink>${pageTitle}</cti:crumbLink>
+    </cti:breadCrumbs>
+    
+    <cti:standardMenu menuSelection="database|migration"/>
 
     <h2>${pageTitle}</h2>
     <br>
     
     <script type="text/javascript">
 
-    	var buttonHasBeenEnabled = false;
+        var buttonHasBeenEnabled = false;
     
-    	jQuery(function() {
+        jQuery(function() {
 
-	    	<c:choose>
-			    <c:when test="${not status.complete}">
-			    	$('validateButton').disable();
-			    </c:when>
-			    <c:otherwise>
-			    	buttonHasBeenEnabled = true;
-			    </c:otherwise>
-			</c:choose>
-	    });
+            <c:choose>
+                <c:when test="${not status.complete}">
+                    $('validateButton').disable();
+                </c:when>
+                <c:otherwise>
+                    buttonHasBeenEnabled = true;
+                </c:otherwise>
+            </c:choose>
+        });
 
-		
-	    function enableMigrationImportValidateButton() {
-		    try {
-			    if (!buttonHasBeenEnabled) {
-	    			$('validateButton').enable();
-			    }
-	    		// may not be rendered yet
-		    } catch(e){}
-	    }
+        
+        function enableMigrationImportValidateButton() {
+            try {
+                if (!buttonHasBeenEnabled) {
+                    $('validateButton').enable();
+                }
+                // may not be rendered yet
+            } catch(e){}
+        }
     
     </script>
     
     <tags:boxContainer title="${boxTitle}" hideEnabled="false">
     
-	    <%-- PROGRESS BAR --%>
-	    <tags:resultProgressBar totalCount="${status.totalCount}"
-	        						 countKey="DATABASE_MIGRATION/${status.id}/VALIDATION_COMPLETED_ITEMS"
-	        						 progressLabelTextKey="yukon.web.modules.support.databaseMigration.validationProgress.progressLabel"
-	        						 statusTextKey="DATABASE_MIGRATION/${status.id}/VALIDATION_STATUS_TEXT"
-									 hideCount="true"
-	        						 completionCallback="enableMigrationImportValidateButton"/>
-	        						 
-	    <%-- VALIDATE --%>
-	    <br>
-		<form id="importValidateForm" action="/support/database/migration/importValidate" method="get">
-	    	<input type="hidden" name="statusKey" value="${status.id}">
-	    </form>
-	    
-	    <tags:slowInput id="validateButton" myFormId="importValidateForm" label="${viewResultButton}" />
+        <%-- PROGRESS BAR --%>
+        <tags:resultProgressBar totalCount="${status.totalCount}"
+                                     countKey="DATABASE_MIGRATION/${status.id}/VALIDATION_COMPLETED_ITEMS"
+                                     progressLabelTextKey="yukon.web.modules.support.databaseMigration.validationProgress.progressLabel"
+                                     statusTextKey="DATABASE_MIGRATION/${status.id}/VALIDATION_STATUS_TEXT"
+                                     hideCount="true"
+                                     completionCallback="enableMigrationImportValidateButton"/>
+                                     
+        <%-- VALIDATE --%>
+        <br>
+        <form id="importValidateForm" action="/support/database/migration/importValidate" method="get">
+            <input type="hidden" name="statusKey" value="${status.id}">
+        </form>
+        
+        <tags:slowInput id="validateButton" myFormId="importValidateForm" label="${viewResultButton}" />
 
    </tags:boxContainer>
-   	
+       
    
     
     
