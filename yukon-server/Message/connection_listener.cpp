@@ -56,14 +56,7 @@ void CtiListenerConnection::start()
         {
             logDebug( __FUNCTION__, "connecting to the broker." );
 
-            try
-            {
-                closeConnection();
-            }
-            catch(...)
-            {
-                // catch all exception, no throw
-            }
+            closeConnection();
 
             deleteResources();
 
@@ -106,18 +99,16 @@ void CtiListenerConnection::start()
  */
 void CtiListenerConnection::close()
 {
+    if( _closed )
+    {
+        return;
+    }
+
     // once the connection has been closed, it cannot be restarted
     _closed = true;
     _valid  = false;
 
-    try
-    {
-        closeConnection();
-    }
-    catch(...)
-    {
-        // catch all exception, no throw
-    }
+    closeConnection();
 
     deleteResources();
 }
@@ -281,9 +272,16 @@ void CtiListenerConnection::deleteResources()
  */
 void CtiListenerConnection::closeConnection()
 {
-    if( _connection )
+    try
     {
-        // Close the connection as well as any child session, consumer, producer, destinations
-        _connection->close();
+        if( _connection )
+        {
+            // Close the connection as well as any child session, consumer, producer, destinations
+            _connection->close();
+        }
+    }
+    catch(...)
+    {
+        // catch all exception, no throw
     }
 }

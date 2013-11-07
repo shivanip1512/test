@@ -98,3 +98,13 @@ bool CtiServerConnection::establishConnection()
         throw;
     }
 }
+
+/**
+ * delete cms resources and destroy connection object
+ */
+void CtiServerConnection::deleteResources()
+{
+    CtiConnection::deleteResources();
+
+    _connection.reset();
+}
