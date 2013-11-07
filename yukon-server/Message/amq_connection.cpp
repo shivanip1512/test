@@ -372,7 +372,7 @@ void ActiveMQConnectionManager::dispatchTempQueueReplies()
 }
 
 
-void ActiveMQConnectionManager::enqueueMessage(const ActiveMQ::Queues::OutboundQueue &queue, auto_ptr<StreamableMessage> message)
+void ActiveMQConnectionManager::enqueueMessage(const ActiveMQ::Queues::OutboundQueue &queue, auto_ptr<const StreamableMessage> message)
 {
     gActiveMQConnection->enqueueOutgoingMessage(queue, message);
 }
@@ -389,7 +389,7 @@ void ActiveMQConnectionManager::enqueueMessages(const ActiveMQ::Queues::Outbound
 }
 
 
-void ActiveMQConnectionManager::enqueueOutgoingMessage(const ActiveMQ::Queues::OutboundQueue &queue, auto_ptr<StreamableMessage> message)
+void ActiveMQConnectionManager::enqueueOutgoingMessage(const ActiveMQ::Queues::OutboundQueue &queue, auto_ptr<const StreamableMessage> message)
 {
     //  ensure the message is not null
     if( ! message.get() )
@@ -399,7 +399,7 @@ void ActiveMQConnectionManager::enqueueOutgoingMessage(const ActiveMQ::Queues::O
 
     struct StreamableEnvelope : Envelope
     {
-        boost::scoped_ptr<StreamableMessage> message;
+        boost::scoped_ptr<const StreamableMessage> message;
 
         cms::Message *extractMessage(cms::Session &session) const
         {

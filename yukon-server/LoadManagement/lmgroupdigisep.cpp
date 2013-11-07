@@ -92,14 +92,16 @@ bool LMGroupDigiSEP::sendSEPCycleControl(long controlMinutes, long cyclePercent,
     using namespace Cti::Messaging::LoadManagement;
     using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
 
-    std::auto_ptr<StreamableMessage> msg(LMSepControlMessage::createCycleMessage(getPAOId(),
-                                                                                 0,
-                                                                                 controlMinutes,
-                                                                                 criticality,
-                                                                                 cyclePercent,
-                                                                                 isTrueCycle,
-                                                                                 randomizeStart,
-                                                                                 randomizeStop));
+    std::auto_ptr<const StreamableMessage> msg(
+            LMSepControlMessage::createCycleMessage(
+                    getPAOId(),
+                    0,
+                    controlMinutes,
+                    criticality,
+                    cyclePercent,
+                    isTrueCycle,
+                    randomizeStart,
+                    randomizeStop));
 
     ActiveMQConnectionManager::enqueueMessage(OutboundQueue::SmartEnergyProfileControl, msg);
 
@@ -162,14 +164,16 @@ bool LMGroupDigiSEP::sendSEPTempOffsetControl(long controlMinutes, long heatOffs
         dout << CtiTime() << " - Invalid temperature settings, both heat and cool offset have non zero values, defaulting to cool: " << getPAOName() << endl;
     }
 
-    std::auto_ptr<StreamableMessage> msg(LMSepControlMessage::createTempOffsetMessage(getPAOId(),
-                                                                                      0,
-                                                                                      controlMinutes,
-                                                                                      criticality,
-                                                                                      tempOffset,
-                                                                                      isCoolOffset,
-                                                                                      randomizeStart,
-                                                                                      randomizeStop));
+    std::auto_ptr<const StreamableMessage> msg(
+            LMSepControlMessage::createTempOffsetMessage(
+                    getPAOId(),
+                    0,
+                    controlMinutes,
+                    criticality,
+                    tempOffset,
+                    isCoolOffset,
+                    randomizeStart,
+                    randomizeStop));
 
     ActiveMQConnectionManager::enqueueMessage(OutboundQueue::SmartEnergyProfileControl, msg);
 
@@ -200,7 +204,7 @@ bool LMGroupDigiSEP::sendStopControl(bool stopImmediately)
     using namespace Cti::Messaging::LoadManagement;
     using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
 
-    std::auto_ptr<StreamableMessage> msg(new LMSepRestoreMessage(getPAOId(), 0, stopImmediately ? 0 : 1));
+    std::auto_ptr<const StreamableMessage> msg(new LMSepRestoreMessage(getPAOId(), 0, stopImmediately ? 0 : 1));
     ActiveMQConnectionManager::enqueueMessage(OutboundQueue::SmartEnergyProfileRestore, msg);
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
@@ -223,7 +227,7 @@ bool LMGroupDigiSEP::sendShedControl(long controlMinutes)
     using namespace Cti::Messaging::LoadManagement;
     using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
 
-    std::auto_ptr<StreamableMessage> msg(LMSepControlMessage::createSimpleShedMessage(getPAOId(), 0, controlMinutes));
+    std::auto_ptr<const StreamableMessage> msg(LMSepControlMessage::createSimpleShedMessage(getPAOId(), 0, controlMinutes));
     ActiveMQConnectionManager::enqueueMessage(OutboundQueue::SmartEnergyProfileControl, msg);
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )

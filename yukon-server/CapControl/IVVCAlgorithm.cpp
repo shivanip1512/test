@@ -2463,7 +2463,7 @@ void IVVCAlgorithm::sendIVVCAnalysisMessage( Cti::Messaging::CapControl::IVVCAna
     using namespace Cti::Messaging;
     using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
 
-    std::auto_ptr<StreamableMessage> msg( message );
+    std::auto_ptr<const StreamableMessage> msg( message );
     ActiveMQConnectionManager::enqueueMessage( OutboundQueue::IvvcAnalysisMessage, msg );
 }
 

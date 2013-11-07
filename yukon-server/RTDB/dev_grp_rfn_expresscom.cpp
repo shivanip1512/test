@@ -129,7 +129,7 @@ void CtiDeviceGroupRfnExpresscom::sendDRMessage(int priority, int expirationDura
     using namespace Cti::Messaging::Rfn;
     using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
 
-    std::auto_ptr<StreamableMessage> message(
+    std::auto_ptr<const StreamableMessage> message(
         RfnBroadcastMessage::createMessage(
            priority,
            RfnBroadcastMessage::RfnMessageClass::DemandResponse,

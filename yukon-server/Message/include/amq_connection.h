@@ -73,14 +73,14 @@ public:
     ActiveMQConnectionManager(const std::string &broker_uri);
     virtual ~ActiveMQConnectionManager();
 
-    static void enqueueMessage (const ActiveMQ::Queues::OutboundQueue &queue, std::auto_ptr<StreamableMessage> message);
+    static void enqueueMessage (const ActiveMQ::Queues::OutboundQueue &queue, std::auto_ptr<const StreamableMessage> message);
     static void enqueueMessages(const ActiveMQ::Queues::OutboundQueue &queue, const std::vector<SerializedMessage> &messages, MessageCallback callback);
 
     static void registerHandler(const ActiveMQ::Queues::InboundQueue &queue, const MessageCallback callback);
 
 protected:
 
-    virtual void enqueueOutgoingMessage(const ActiveMQ::Queues::OutboundQueue &queue, std::auto_ptr<StreamableMessage> message);
+    virtual void enqueueOutgoingMessage(const ActiveMQ::Queues::OutboundQueue &queue, std::auto_ptr<const StreamableMessage> message);
     virtual void enqueueOutgoingMessage(const ActiveMQ::Queues::OutboundQueue &queue, const SerializedMessage &message, MessageCallback callback);
 
     void addNewCallback(const ActiveMQ::Queues::InboundQueue &queue, const MessageCallback callback);

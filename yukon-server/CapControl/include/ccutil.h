@@ -114,7 +114,7 @@ void static sendCapControlOperationMessage( Cti::Messaging::CapControl::CapContr
     using namespace Cti::Messaging;
     using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
 
-    std::auto_ptr<StreamableMessage> msg( message );
+    std::auto_ptr<const StreamableMessage> msg( message );
     ActiveMQConnectionManager::enqueueMessage( OutboundQueue::CapControlOperationMessage, msg );
 }
 

@@ -483,7 +483,7 @@ void PilServer::copyReturnMessageToResponseMonitorQueue(const CtiReturnMsg &retu
     using namespace Cti::Messaging;
     using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
 
-    std::auto_ptr<StreamableMessage> msg(new PorterResponseMessage(returnMsg, connectionHandle));
+    std::auto_ptr<const StreamableMessage> msg(new PorterResponseMessage(returnMsg, connectionHandle));
 
     ActiveMQConnectionManager::enqueueMessage(OutboundQueue::PorterResponses, msg);
 }
