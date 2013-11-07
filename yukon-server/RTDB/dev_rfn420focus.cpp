@@ -64,7 +64,7 @@ const std::vector<std::string> displayAlphamericConfigKeys = boost::assign::list
 template <typename T>
 T getConfigValue( const Config::DeviceConfigSPtr & deviceConfig, const std::string & configKey )
 {
-    boost::optional<T> val = deviceConfig->findValueForKey<T>( configKey );
+    boost::optional<T> val = deviceConfig->findValue<T>( configKey );
 
     if( ! val )
     {

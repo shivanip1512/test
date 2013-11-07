@@ -4059,7 +4059,7 @@ int Mct440_213xBDevice::executePutConfigInstallDST(CtiRequestMsg     *pReq,
 
     if( !readsOnly )
     {
-        const boost::optional<bool> enable_dst = deviceConfig->findValueForKey<bool>(MCTStrings::EnableDst);
+        const boost::optional<bool> enable_dst = deviceConfig->findValue<bool>(MCTStrings::EnableDst);
 
         if( ! enable_dst )
         {

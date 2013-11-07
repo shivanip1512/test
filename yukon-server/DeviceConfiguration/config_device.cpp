@@ -74,13 +74,13 @@ std::string DeviceConfig::getValueFromKey( const std::string & key ) const
 }
 
 template <>
-boost::optional<std::string> DeviceConfig::findValueForKey<std::string>( const std::string & key ) const
+boost::optional<std::string> DeviceConfig::findValue<std::string>( const std::string & key ) const
 {
     return lookup( key );
 }
 
 template <>
-boost::optional<bool> DeviceConfig::findValueForKey<bool>( const std::string & key ) const
+boost::optional<bool> DeviceConfig::findValue<bool>( const std::string & key ) const
 {
     boost::optional<std::string> value = lookup( key );
 
@@ -93,7 +93,7 @@ boost::optional<bool> DeviceConfig::findValueForKey<bool>( const std::string & k
 }
 
 template <>
-boost::optional<long> DeviceConfig::findValueForKey<long>( const std::string & key ) const
+boost::optional<long> DeviceConfig::findValue<long>( const std::string & key ) const
 {
     long value;
 
@@ -106,7 +106,7 @@ boost::optional<long> DeviceConfig::findValueForKey<long>( const std::string & k
 }
 
 template <>
-boost::optional<double> DeviceConfig::findValueForKey<double>( const std::string & key ) const
+boost::optional<double> DeviceConfig::findValue<double>( const std::string & key ) const
 {
     boost::optional<std::string>  result = lookup( key );
 

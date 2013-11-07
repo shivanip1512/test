@@ -28,7 +28,7 @@ namespace { // anonymous namespace
  */
 std::string getConfigData( const Config::DeviceConfigSPtr & deviceConfig, const std::string & configKey )
 {
-    boost::optional<std::string> val = deviceConfig->findValueForKey<std::string>( configKey );
+    boost::optional<std::string> val = deviceConfig->findValue<std::string>( configKey );
 
     if( ! val )
     {
@@ -295,7 +295,7 @@ int RfnResidentialDevice::executePutConfigVoltageAveragingInterval( CtiRequestMs
 
     {
         const std::string             configKey( Config::RfnStrings::demandInterval );
-        const boost::optional<double> configValue = deviceConfig->findValueForKey<double>( configKey );
+        const boost::optional<double> configValue = deviceConfig->findValue<double>( configKey );
 
         if ( ! configValue  )
         {
@@ -310,7 +310,7 @@ int RfnResidentialDevice::executePutConfigVoltageAveragingInterval( CtiRequestMs
 
     {
         const std::string           configKey( Config::RfnStrings::profileInterval );
-        const boost::optional<long> configValue = deviceConfig->findValueForKey<long>( configKey );
+        const boost::optional<long> configValue = deviceConfig->findValue<long>( configKey );
 
         if ( ! configValue  )
         {
@@ -422,7 +422,7 @@ int RfnResidentialDevice::executePutConfigDemandFreezeDay( CtiRequestMsg     * p
 
     {
         const std::string           configKey( Config::RfnStrings::demandFreezeDay );
-        const boost::optional<long> configValue = deviceConfig->findValueForKey<long>( configKey );
+        const boost::optional<long> configValue = deviceConfig->findValue<long>( configKey );
 
         if ( ! configValue  )
         {
@@ -1016,7 +1016,7 @@ int RfnResidentialDevice::executePutConfigOvUv( CtiRequestMsg    * pReq,
                                 paoOvUvEnabled;
         {
             const std::string           configKey( Config::RfnStrings::OvUvEnabled );
-            const boost::optional<bool> configValue = deviceConfig->findValueForKey<bool>( configKey );
+            const boost::optional<bool> configValue = deviceConfig->findValue<bool>( configKey );
 
             if ( ! configValue  )
             {
@@ -1070,7 +1070,7 @@ int RfnResidentialDevice::executePutConfigOvUv( CtiRequestMsg    * pReq,
                                     paoOvUvReportingInterval;
         {
             const std::string           configKey( Config::RfnStrings::OvUvAlarmReportingInterval );
-            const boost::optional<long> configValue = deviceConfig->findValueForKey<long>( configKey );
+            const boost::optional<long> configValue = deviceConfig->findValue<long>( configKey );
 
             if ( ! configValue  )
             {
@@ -1126,7 +1126,7 @@ int RfnResidentialDevice::executePutConfigOvUv( CtiRequestMsg    * pReq,
                                     paoOvUvRepeatInterval;
         {
             const std::string           configKey( Config::RfnStrings::OvUvAlarmRepeatInterval );
-            const boost::optional<long> configValue = deviceConfig->findValueForKey<long>( configKey );
+            const boost::optional<long> configValue = deviceConfig->findValue<long>( configKey );
 
             if ( ! configValue  )
             {
@@ -1182,7 +1182,7 @@ int RfnResidentialDevice::executePutConfigOvUv( CtiRequestMsg    * pReq,
                                     paoOvUvRepeatCount;
         {
             const std::string           configKey( Config::RfnStrings::OvUvRepeatCount );
-            const boost::optional<long> configValue = deviceConfig->findValueForKey<long>( configKey );
+            const boost::optional<long> configValue = deviceConfig->findValue<long>( configKey );
 
             if ( ! configValue  )
             {
