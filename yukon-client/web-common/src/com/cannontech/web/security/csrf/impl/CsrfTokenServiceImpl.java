@@ -16,10 +16,10 @@ public class CsrfTokenServiceImpl implements CsrfTokenService {
     public String getTokenForSession(HttpSession session) {
         String token = null;
         synchronized (WebUtils.getSessionMutex(session)) {
-            token = (String) session.getAttribute(ServletUtil.SESSION_CSRF_TOKEN);
+            token = (String) session.getAttribute(SESSION_CSRF_TOKEN);
             if (token == null) {
                 token = UUID.randomUUID().toString();
-                session.setAttribute(ServletUtil.SESSION_CSRF_TOKEN, token);
+                session.setAttribute(SESSION_CSRF_TOKEN, token);
             }
         }
         return token;
@@ -27,7 +27,7 @@ public class CsrfTokenServiceImpl implements CsrfTokenService {
 
     @Override
     public String getTokenFromRequest(HttpServletRequest request) {
-        return request.getParameter(ServletUtil.REQUEST_CSRF_TOKEN);
+        return request.getParameter(REQUEST_CSRF_TOKEN);
     }
 
     @Override
@@ -40,7 +40,7 @@ public class CsrfTokenServiceImpl implements CsrfTokenService {
         String actualToken = getTokenForSession(request.getSession());
 
         if (!actualToken.equals(requestToken)) {
-            request.getSession().removeAttribute(ServletUtil.SESSION_CSRF_TOKEN); // owasp recomendation
+            request.getSession().removeAttribute(SESSION_CSRF_TOKEN); // owasp recomendation
             throw new SecurityException("Request token not found or invalid");
         }
     }
