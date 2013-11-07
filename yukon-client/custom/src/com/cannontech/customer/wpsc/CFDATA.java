@@ -26,8 +26,7 @@ public class CFDATA extends FileInterface {
     }
 
     /**
-     * Line format as documented by WPS: Code,Switch,Utility
-     *   Address,Division,District,R1,R2,R3,???
+     * Line format as documented by WPS: Code,Switch,Utility Address,Division,District,R1,R2,R3,???
      * Example:
      *   04,502938,222,1,010,3,0,0,3
      * Code (aka Functions) as documented by WPS: 
@@ -35,15 +34,18 @@ public class CFDATA extends FileInterface {
      *   2/3 - re-program relays on an existing switch 
      *   4 -turn switch on 
      *   5 - turn switch off
+     *   spid geo substation program splinter
+     *   find out which expresscom parameters go with this.
      * @return String - command string
      * @param line String - line from file
      */
     private String decodeLine(String line) {
 
-        StringBuffer buf = new StringBuffer();
+        StringBuffer buf = new StringBuffer("putconfig ");
 
         try {
 
+            boolean isExpresscom = false;
             StringTokenizer tok = new StringTokenizer(line, " ");
 
             // DLC Func
@@ -51,12 +53,13 @@ public class CFDATA extends FileInterface {
 
             String serialNumberStr = tok.nextToken();
             if (serialNumberStr.startsWith("4")) { // "4000 "series switches at WPS are all expressCom
-                buf.append("putconfig xcom serial ");
+                isExpresscom = true;
+                buf.append("xcom ");
             } else { // "5000" series switches, or assume everything else, is versacom
-                buf.append("putconfig versacom serial ");
+                buf.append("versacom ");
             }
             // SerialNumber
-            buf.append(Integer.parseInt(serialNumberStr));
+            buf.append("serial ").append(Integer.parseInt(serialNumberStr));
 
             if (func == 4) { // turn switch on
                 buf.append(" service in");
@@ -66,73 +69,107 @@ public class CFDATA extends FileInterface {
                 return buf.toString();
             }
 
-            // Utility ID
-            int utilityId = Integer.parseInt(tok.nextToken());
-
-            if (func != 2) {
-                buf.append(" utility ");
-                buf.append(utilityId);
+            if (isExpresscom) { //expresscom addressing
+                buf.append(buildExpressComAddressingString(tok));
+            } else {    //assume versacom addressing
+                boolean includeUtility = (func != 2);
+                buf.append(buildVersacomAddressingString(tok, includeUtility));
             }
-
-            // Division Code
-            int division = Integer.parseInt(tok.nextToken());
-            buf.append(" aux ");
-            buf.append(division);
-
-            // Operating District - section
-            int district = Integer.parseInt(tok.nextToken());
-            buf.append(" section ");
-            buf.append(district);
-
-            int classID = 0;
-            // Class #1
-            int relay = Integer.parseInt(tok.nextToken());
-            if (relay > 0)
-                classID |= (1 << (relay - 1));
-
-            // Class #2
-            relay = Integer.parseInt(tok.nextToken());
-            if (relay > 0)
-                classID |= (1 << (relay - 1));
-
-            // Class #3
-            relay = Integer.parseInt(tok.nextToken());
-            if (relay > 0)
-                classID |= (1 << (relay - 1));
-
-            if (classID > 65535) // Can only allow 16bits here
-                return null;
-
-            int temp = 0;
-            for (int i = 0; i < 16; i++)
-                temp |= (((classID >> i) & 0x0001) << (15 - i));
-
-            classID = temp;
-
-            buf.append(" class 0x" + Long.toHexString(classID));
-
-            int divID = 0;
-            // DLC Division
-            int dlcDivision = Integer.parseInt(tok.nextToken());
-            if (dlcDivision > 0)
-                divID |= (1 << (dlcDivision - 1));
-
-            if (divID > 65535)
-                return null;
-
-            temp = 0;
-            for (int i = 0; i < 16; i++)
-                temp |= (((divID >> i) & 0x0001) << (15 - i));
-
-            divID = temp;
-
-            buf.append(" division 0x" + Long.toHexString(divID));
         } catch (Exception e) {
             return null;
         }
 
         return buf.toString();
+    }
+    
+    private String buildVersacomAddressingString(StringTokenizer tok, Boolean includeUtility) {
+        StringBuffer buf = new StringBuffer();
+        
+        // Utility ID
+        if (includeUtility) {
+            int utilityId = Integer.parseInt(tok.nextToken());
+            buf.append(" utility ");
+            buf.append(utilityId);
+        }
 
+        // Division Code
+        int division = Integer.parseInt(tok.nextToken());
+        buf.append(" aux ");
+        buf.append(division);
+
+        // Operating District - section
+        int district = Integer.parseInt(tok.nextToken());
+        buf.append(" section ");
+        buf.append(district);
+
+        int classID = 0;
+        // Class #1
+        int relay = Integer.parseInt(tok.nextToken());
+        if (relay > 0)
+            classID |= (1 << (relay - 1));
+
+        // Class #2
+        relay = Integer.parseInt(tok.nextToken());
+        if (relay > 0)
+            classID |= (1 << (relay - 1));
+
+        // Class #3
+        relay = Integer.parseInt(tok.nextToken());
+        if (relay > 0)
+            classID |= (1 << (relay - 1));
+
+        if (classID > 65535) // Can only allow 16bits here
+            return null;
+
+        int temp = 0;
+        for (int i = 0; i < 16; i++)
+            temp |= (((classID >> i) & 0x0001) << (15 - i));
+
+        classID = temp;
+
+        buf.append(" class 0x" + Long.toHexString(classID));
+
+        int divID = 0;
+        // DLC Division
+        int dlcDivision = Integer.parseInt(tok.nextToken());
+        if (dlcDivision > 0)
+            divID |= (1 << (dlcDivision - 1));
+
+        if (divID > 65535)
+            return null;
+
+        temp = 0;
+        for (int i = 0; i < 16; i++)
+            temp |= (((divID >> i) & 0x0001) << (15 - i));
+
+        divID = temp;
+
+        buf.append(" division 0x" + Long.toHexString(divID));
+        return buf.toString();
+    }
+    
+    private String buildExpressComAddressingString(StringTokenizer tok) {
+        StringBuffer buf = new StringBuffer();
+        
+        // example message from Jason Henry @ WPS for expressCom message he sends out
+        // putconfig xcom serial 400400 assign p 3, 0, 0 load 1, 2, 3
+        tok.nextToken();    //ignore utility address
+        tok.nextToken();    //ignore division
+        tok.nextToken();    //ignore district
+        
+        int relay = Integer.valueOf(tok.nextToken());   //relay 1
+        buf.append(" assign p ").append(relay);
+        
+        relay = Integer.valueOf(tok.nextToken());       //relay 2
+        buf.append(", ").append(relay);
+        
+        relay = Integer.valueOf(tok.nextToken());   //relay 3
+        buf.append(", ").append(relay);
+        
+        buf.append(" load 1, 2, 3");
+        
+        tok.nextToken();    //ignore whatever this last value is
+        return buf.toString();
     }
 
     @Override
