@@ -19,29 +19,29 @@ struct CCMessageFactoryRegister
 {
     CCMessageFactoryRegister()
     {
-        g_messageFactory.registerSerializer <::CtiCCShutdown,           Thrift::CCShutdown>             ( &serialize, &deserialize, "CCShutdown"       );
-        g_messageFactory.registerSerializer <::CtiCCServerResponse,     Thrift::CCServerResponse>       ( &serialize, &deserialize, "CCServerResponse" );
+        g_messageFactory.registerSerializer <::CtiCCShutdown,           Thrift::CCShutdown>             ( &populateThrift, &populateMessage, "CCShutdown"       );
+        g_messageFactory.registerSerializer <::CtiCCServerResponse,     Thrift::CCServerResponse>       ( &populateThrift, &populateMessage, "CCServerResponse" );
 
         // base message are removed from the factory:
-        // g_messageFactory.registerSerializer <::CapControlMessage,       Thrift::CCMessage>              ( &serialize, &deserialize, "CCMessage" );
-        g_messageFactory.registerSerializer <::CtiCCCapBankStatesMsg,   Thrift::CCCapBankStates>        ( &serialize, &deserialize, "CCCapBankStates"  );
-        g_messageFactory.registerSerializer <::CtiCCObjectMoveMsg,      Thrift::CCObjectMove>           ( &serialize, &deserialize, "CCObjectMove" );
-        g_messageFactory.registerSerializer <::CtiCCGeoAreasMsg,        Thrift::CCGeoAreas>             ( &serialize, &deserialize, "CCGeoAreas" );
-        g_messageFactory.registerSerializer <::CtiCCSpecialAreasMsg,    Thrift::CCSpecialAreas>         ( &serialize, &deserialize, "CCSpecialAreas" );
-        g_messageFactory.registerSerializer <::CtiCCSubstationBusMsg,   Thrift::CCSubstationBus>        ( &serialize, &deserialize, "CCSubstationBus" );
-        g_messageFactory.registerSerializer <::CtiCCSubstationsMsg,     Thrift::CCSubstations>          ( &serialize, &deserialize, "CCSubstations" );
-        g_messageFactory.registerSerializer <::DeleteItem,              Thrift::CCDeleteItem>           ( &serialize, &deserialize, "CCDeleteItem" );
-        g_messageFactory.registerSerializer <::SystemStatus,            Thrift::CCSystemStatus>         ( &serialize, &deserialize, "CCSystemStatus" );
-        g_messageFactory.registerSerializer <::VoltageRegulatorMessage, Thrift::CCVoltageRegulator>     ( &serialize, &deserialize, "CCVoltageRegulator" );
+        // g_messageFactory.registerSerializer <::CapControlMessage,       Thrift::CCMessage>              ( &populateThrift, &populateMessage, "CCMessage" );
+        g_messageFactory.registerSerializer <::CtiCCCapBankStatesMsg,   Thrift::CCCapBankStates>        ( &populateThrift, &populateMessage, "CCCapBankStates"  );
+        g_messageFactory.registerSerializer <::CtiCCObjectMoveMsg,      Thrift::CCObjectMove>           ( &populateThrift, &populateMessage, "CCObjectMove" );
+        g_messageFactory.registerSerializer <::CtiCCGeoAreasMsg,        Thrift::CCGeoAreas>             ( &populateThrift, &populateMessage, "CCGeoAreas" );
+        g_messageFactory.registerSerializer <::CtiCCSpecialAreasMsg,    Thrift::CCSpecialAreas>         ( &populateThrift, &populateMessage, "CCSpecialAreas" );
+        g_messageFactory.registerSerializer <::CtiCCSubstationBusMsg,   Thrift::CCSubstationBus>        ( &populateThrift, &populateMessage, "CCSubstationBus" );
+        g_messageFactory.registerSerializer <::CtiCCSubstationsMsg,     Thrift::CCSubstations>          ( &populateThrift, &populateMessage, "CCSubstations" );
+        g_messageFactory.registerSerializer <::DeleteItem,              Thrift::CCDeleteItem>           ( &populateThrift, &populateMessage, "CCDeleteItem" );
+        g_messageFactory.registerSerializer <::SystemStatus,            Thrift::CCSystemStatus>         ( &populateThrift, &populateMessage, "CCSystemStatus" );
+        g_messageFactory.registerSerializer <::VoltageRegulatorMessage, Thrift::CCVoltageRegulator>     ( &populateThrift, &populateMessage, "CCVoltageRegulator" );
 
-        g_messageFactory.registerSerializer <::CapControlCommand,       Thrift::CCCommand>              ( &serialize, &deserialize, "CCCommand" );
-        g_messageFactory.registerSerializer <::DynamicCommand,          Thrift::CCDynamicCommand>       ( &serialize, &deserialize, "CCDynamicCommand" );
-        g_messageFactory.registerSerializer <::ItemCommand,             Thrift::CCItemCommand>          ( &serialize, &deserialize, "CCItemCommand" );
-        g_messageFactory.registerSerializer <::ChangeOpState,           Thrift::CCChangeOpState>        ( &serialize, &deserialize, "CCChangeOpState" );
-        g_messageFactory.registerSerializer <::CtiCCCapBankMoveMsg,     Thrift::CCCapBankMove>          ( &serialize, &deserialize, "CCCapBankMove" );
-        g_messageFactory.registerSerializer <::VerifyBanks,             Thrift::CCVerifyBanks>          ( &serialize, &deserialize, "CCVerifyBanks" );
-        g_messageFactory.registerSerializer <::VerifyInactiveBanks,     Thrift::CCVerifyInactiveBanks>  ( &serialize, &deserialize, "CCVerifyInactiveBanks" );
-        g_messageFactory.registerSerializer <::VerifySelectedBank,      Thrift::CCVerifySelectedBank>   ( &serialize, &deserialize, "CCVerifySelectedBank" );
+        g_messageFactory.registerSerializer <::CapControlCommand,       Thrift::CCCommand>              ( &populateThrift, &populateMessage, "CCCommand" );
+        g_messageFactory.registerSerializer <::DynamicCommand,          Thrift::CCDynamicCommand>       ( &populateThrift, &populateMessage, "CCDynamicCommand" );
+        g_messageFactory.registerSerializer <::ItemCommand,             Thrift::CCItemCommand>          ( &populateThrift, &populateMessage, "CCItemCommand" );
+        g_messageFactory.registerSerializer <::ChangeOpState,           Thrift::CCChangeOpState>        ( &populateThrift, &populateMessage, "CCChangeOpState" );
+        g_messageFactory.registerSerializer <::CtiCCCapBankMoveMsg,     Thrift::CCCapBankMove>          ( &populateThrift, &populateMessage, "CCCapBankMove" );
+        g_messageFactory.registerSerializer <::VerifyBanks,             Thrift::CCVerifyBanks>          ( &populateThrift, &populateMessage, "CCVerifyBanks" );
+        g_messageFactory.registerSerializer <::VerifyInactiveBanks,     Thrift::CCVerifyInactiveBanks>  ( &populateThrift, &populateMessage, "CCVerifyInactiveBanks" );
+        g_messageFactory.registerSerializer <::VerifySelectedBank,      Thrift::CCVerifySelectedBank>   ( &populateThrift, &populateMessage, "CCVerifySelectedBank" );
     }
 };
 
@@ -53,20 +53,20 @@ const CCMessageFactoryRegister g_ccMessageFactoryRegister;
 //  CCShutdown
 //=============================================================================
 
-MessagePtr<Thrift::CCShutdown>::type serialize( const ::CtiCCShutdown& imsg )
+MessagePtr<Thrift::CCShutdown>::type populateThrift( const ::CtiCCShutdown& imsg )
 {
     MessagePtr<Thrift::CCShutdown>::type omsg( new Thrift::CCShutdown );
 
-    omsg->__set__baseMessage                    ( *serialize( static_cast<const ::CtiMessage&>(imsg) ));
+    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CtiMessage&>(imsg) ));
 
     return omsg;
 }
 
-MessagePtr<::CtiCCShutdown>::type deserialize( const Thrift::CCShutdown& imsg )
+MessagePtr<::CtiCCShutdown>::type populateMessage( const Thrift::CCShutdown& imsg )
 {
     MessagePtr<::CtiCCShutdown>::type omsg( new ::CtiCCShutdown );
 
-    static_cast<::CtiMessage&>(*omsg)           = *deserialize( imsg._baseMessage );
+    static_cast<::CtiMessage&>(*omsg)           = *populateMessage( imsg._baseMessage );
 
     return omsg;
 }
@@ -75,11 +75,11 @@ MessagePtr<::CtiCCShutdown>::type deserialize( const Thrift::CCShutdown& imsg )
 //  CCServerResponse
 //=============================================================================
 
-MessagePtr<Thrift::CCServerResponse>::type serialize( const ::CtiCCServerResponse& imsg )
+MessagePtr<Thrift::CCServerResponse>::type populateThrift( const ::CtiCCServerResponse& imsg )
 {
     MessagePtr<Thrift::CCServerResponse>::type omsg( new Thrift::CCServerResponse );
 
-    omsg->__set__baseMessage                    ( *serialize( static_cast<const ::CtiMessage&>(imsg) ));
+    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CtiMessage&>(imsg) ));
     omsg->__set__messageId                      ( imsg.getMessageId() );
     omsg->__set__responseType                   ( imsg.getResponseType() );
     omsg->__set__response                       ( imsg.getResponse() );
@@ -87,14 +87,14 @@ MessagePtr<Thrift::CCServerResponse>::type serialize( const ::CtiCCServerRespons
     return omsg;
 }
 
-MessagePtr<::CtiCCServerResponse>::type deserialize( const Thrift::CCServerResponse& imsg )
+MessagePtr<::CtiCCServerResponse>::type populateMessage( const Thrift::CCServerResponse& imsg )
 {
     MessagePtr<::CtiCCServerResponse>::type omsg( new ::CtiCCServerResponse(
                                                   imsg._messageId,
                                                   imsg._responseType,
                                                   imsg._response ));
 
-    static_cast<::CtiMessage&>(*omsg)           = *deserialize( imsg._baseMessage );
+    static_cast<::CtiMessage&>(*omsg)           = *populateMessage( imsg._baseMessage );
 
     return omsg;
 }
@@ -103,20 +103,20 @@ MessagePtr<::CtiCCServerResponse>::type deserialize( const Thrift::CCServerRespo
 //  CCMessage
 //=============================================================================
 
-MessagePtr<Thrift::CCMessage>::type serialize( const ::CapControlMessage& imsg )
+MessagePtr<Thrift::CCMessage>::type populateThrift( const ::CapControlMessage& imsg )
 {
     MessagePtr<Thrift::CCMessage>::type omsg( new Thrift::CCMessage );
 
-    omsg->__set__baseMessage                    ( *serialize( static_cast<const ::CtiMessage&>(imsg) ));
+    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CtiMessage&>(imsg) ));
 
     return omsg;
 }
 
-MessagePtr<::CapControlMessage>::type deserialize( const Thrift::CCMessage& imsg )
+MessagePtr<::CapControlMessage>::type populateMessage( const Thrift::CCMessage& imsg )
 {
     MessagePtr<::CapControlMessage>::type omsg( new ::CapControlMessage );
 
-    static_cast<::CtiMessage&>(*omsg)           = *deserialize( imsg._baseMessage );
+    static_cast<::CtiMessage&>(*omsg)           = *populateMessage( imsg._baseMessage );
 
     return omsg;
 }
@@ -125,22 +125,22 @@ MessagePtr<::CapControlMessage>::type deserialize( const Thrift::CCMessage& imsg
 //  CCCapBankStates
 //=============================================================================
 
-MessagePtr<Thrift::CCCapBankStates>::type serialize( const ::CtiCCCapBankStatesMsg& imsg )
+MessagePtr<Thrift::CCCapBankStates>::type populateThrift( const ::CtiCCCapBankStatesMsg& imsg )
 {
     MessagePtr<Thrift::CCCapBankStates>::type omsg( new Thrift::CCCapBankStates );
 
-    omsg->__set__baseMessage                    ( *serialize( static_cast<const ::CapControlMessage&>(imsg) ));
-    omsg->__set__ccCapBankStates                ( transformContainer<vector<Thrift::CCState>>( *imsg.getCCCapBankStates(), serialize ));
+    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CapControlMessage&>(imsg) ));
+    omsg->__set__ccCapBankStates                ( transformContainer<vector<Thrift::CCState>>( *imsg.getCCCapBankStates(), populateThrift ));
 
     return omsg;
 }
 
-MessagePtr<::CtiCCCapBankStatesMsg>::type deserialize( const Thrift::CCCapBankStates& imsg )
+MessagePtr<::CtiCCCapBankStatesMsg>::type populateMessage( const Thrift::CCCapBankStates& imsg )
 {
     MessagePtr<::CtiCCCapBankStatesMsg>::type omsg( new ::CtiCCCapBankStatesMsg(
-                                                  transformContainer<::CtiCCState_vec>( imsg._ccCapBankStates, deserialize )));
+                                                  transformContainer<::CtiCCState_vec>( imsg._ccCapBankStates, populateMessage )));
 
-    static_cast<::CapControlMessage&>(*omsg)    = *deserialize( imsg._baseMessage );
+    static_cast<::CapControlMessage&>(*omsg)    = *populateMessage( imsg._baseMessage );
 
     return omsg;
 }
@@ -149,7 +149,7 @@ MessagePtr<::CtiCCCapBankStatesMsg>::type deserialize( const Thrift::CCCapBankSt
 //  CCState
 //=============================================================================
 
-MessagePtr<Thrift::CCState>::type serialize( const ::CtiCCState& imsg )
+MessagePtr<Thrift::CCState>::type populateThrift( const ::CtiCCState& imsg )
 {
     MessagePtr<Thrift::CCState>::type omsg( new Thrift::CCState );
 
@@ -160,7 +160,7 @@ MessagePtr<Thrift::CCState>::type serialize( const ::CtiCCState& imsg )
     return omsg;
 }
 
-MessagePtr<::CtiCCState>::type deserialize( const Thrift::CCState& imsg )
+MessagePtr<::CtiCCState>::type populateMessage( const Thrift::CCState& imsg )
 {
     MessagePtr<::CtiCCState>::type omsg( new ::CtiCCState );
 
@@ -175,11 +175,11 @@ MessagePtr<::CtiCCState>::type deserialize( const Thrift::CCState& imsg )
 //  CCObjectMove
 //=============================================================================
 
-MessagePtr<Thrift::CCObjectMove>::type serialize( const ::CtiCCObjectMoveMsg& imsg )
+MessagePtr<Thrift::CCObjectMove>::type populateThrift( const ::CtiCCObjectMoveMsg& imsg )
 {
     MessagePtr<Thrift::CCObjectMove>::type omsg( new Thrift::CCObjectMove );
 
-    omsg->__set__baseMessage                    ( *serialize( static_cast<const ::CapControlMessage&>(imsg) ));
+    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CapControlMessage&>(imsg) ));
     omsg->__set__permanentFlag                  ( imsg.getPermanentFlag() );
     omsg->__set__oldParentId                    ( imsg.getOldParentId() );
     omsg->__set__objectId                       ( imsg.getObjectId() );
@@ -191,7 +191,7 @@ MessagePtr<Thrift::CCObjectMove>::type serialize( const ::CtiCCObjectMoveMsg& im
     return omsg;
 }
 
-MessagePtr<::CtiCCObjectMoveMsg>::type deserialize( const Thrift::CCObjectMove& imsg )
+MessagePtr<::CtiCCObjectMoveMsg>::type populateMessage( const Thrift::CCObjectMove& imsg )
 {
     MessagePtr<::CtiCCObjectMoveMsg>::type omsg( new ::CtiCCObjectMoveMsg(
                                                   imsg._permanentFlag,
@@ -202,7 +202,7 @@ MessagePtr<::CtiCCObjectMoveMsg>::type deserialize( const Thrift::CCObjectMove& 
                                                   imsg._closeOrder,
                                                   imsg._tripOrder ));
 
-    static_cast<::CapControlMessage&>(*omsg)    = *deserialize( imsg._baseMessage );
+    static_cast<::CapControlMessage&>(*omsg)    = *populateMessage( imsg._baseMessage );
 
     return omsg;
 }
@@ -211,24 +211,24 @@ MessagePtr<::CtiCCObjectMoveMsg>::type deserialize( const Thrift::CCObjectMove& 
 //  CCGeoAreas
 //=============================================================================
 
-MessagePtr<Thrift::CCGeoAreas>::type serialize( const ::CtiCCGeoAreasMsg& imsg )
+MessagePtr<Thrift::CCGeoAreas>::type populateThrift( const ::CtiCCGeoAreasMsg& imsg )
 {
     MessagePtr<Thrift::CCGeoAreas>::type omsg( new Thrift::CCGeoAreas );
 
-    omsg->__set__baseMessage                    ( *serialize( static_cast<const ::CapControlMessage&>(imsg) ));
+    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CapControlMessage&>(imsg) ));
     omsg->__set__msgInfoBitMask                 ( imsg.getBitMask() );
-    omsg->__set__ccGeoAreas                     ( transformContainer<vector<Thrift::CCArea>>( *imsg.getCCGeoAreas(), serialize ));
+    omsg->__set__ccGeoAreas                     ( transformContainer<vector<Thrift::CCArea>>( *imsg.getCCGeoAreas(), populateThrift ));
 
     return omsg;
 }
 
-MessagePtr<::CtiCCGeoAreasMsg>::type deserialize( const Thrift::CCGeoAreas& imsg )
+MessagePtr<::CtiCCGeoAreasMsg>::type populateMessage( const Thrift::CCGeoAreas& imsg )
 {
     MessagePtr<::CtiCCGeoAreasMsg>::type omsg( new ::CtiCCGeoAreasMsg(
-                                                  transformContainer<::CtiCCArea_vec>( imsg._ccGeoAreas, deserialize ),
+                                                  transformContainer<::CtiCCArea_vec>( imsg._ccGeoAreas, populateMessage ),
                                                   imsg._msgInfoBitMask ));
 
-    static_cast<::CapControlMessage&>(*omsg)    = *deserialize( imsg._baseMessage );
+    static_cast<::CapControlMessage&>(*omsg)    = *populateMessage( imsg._baseMessage );
 
     return omsg;
 }
@@ -237,11 +237,11 @@ MessagePtr<::CtiCCGeoAreasMsg>::type deserialize( const Thrift::CCGeoAreas& imsg
 //  CCArea
 //=============================================================================
 
-MessagePtr<Thrift::CCArea>::type serialize( const ::CtiCCArea& imsg )
+MessagePtr<Thrift::CCArea>::type populateThrift( const ::CtiCCArea& imsg )
 {
     MessagePtr<Thrift::CCArea>::type omsg( new Thrift::CCArea );
 
-    omsg->__set__baseMessage                    ( *serialize( static_cast<const ::CapControlPao&>(imsg) ));
+    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CapControlPao&>(imsg) ));
     omsg->__set__ovUvDisabledFlag               ( imsg.getOvUvDisabledFlag() );
     omsg->__set__substationIds                  ( transformContainer<vector<int32_t>>( imsg.getSubstationIds() ));
 
@@ -266,7 +266,7 @@ MessagePtr<Thrift::CCArea>::type serialize( const ::CtiCCArea& imsg )
     return omsg;
 }
 
-MessagePtr<::CtiCCArea>::type deserialize( const Thrift::CCArea& imsg )
+MessagePtr<::CtiCCArea>::type populateMessage( const Thrift::CCArea& imsg )
 {
     MessagePtr<::CtiCCArea>::type omsg( new ::CtiCCArea );
 
@@ -279,11 +279,11 @@ MessagePtr<::CtiCCArea>::type deserialize( const Thrift::CCArea& imsg )
 //  CCSpecialAreas
 //=============================================================================
 
-MessagePtr<Thrift::CCSpecialAreas>::type serialize( const ::CtiCCSpecialAreasMsg& imsg )
+MessagePtr<Thrift::CCSpecialAreas>::type populateThrift( const ::CtiCCSpecialAreasMsg& imsg )
 {
     MessagePtr<Thrift::CCSpecialAreas>::type omsg( new Thrift::CCSpecialAreas );
 
-    omsg->__set__baseMessage                    ( *serialize( static_cast<const ::CapControlMessage&>(imsg) ));
+    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CapControlMessage&>(imsg) ));
 
 //    if( _CC_DEBUG & CC_DEBUG_RIDICULOUS )
 //    {
@@ -301,17 +301,17 @@ MessagePtr<Thrift::CCSpecialAreas>::type serialize( const ::CtiCCSpecialAreasMsg
 //        }
 //    }
 
-    omsg->__set__ccSpecialAreas                 ( transformContainer<vector<Thrift::CCSpecial>>( *imsg.getCCSpecialAreas(), serialize ));
+    omsg->__set__ccSpecialAreas                 ( transformContainer<vector<Thrift::CCSpecial>>( *imsg.getCCSpecialAreas(), populateThrift ));
 
     return omsg;
 }
 
-MessagePtr<::CtiCCSpecialAreasMsg>::type deserialize( const Thrift::CCSpecialAreas& imsg )
+MessagePtr<::CtiCCSpecialAreasMsg>::type populateMessage( const Thrift::CCSpecialAreas& imsg )
 {
     MessagePtr<::CtiCCSpecialAreasMsg>::type omsg( new ::CtiCCSpecialAreasMsg(
-                                                   transformContainer<::CtiCCSpArea_vec>( imsg._ccSpecialAreas, deserialize )));
+                                                   transformContainer<::CtiCCSpArea_vec>( imsg._ccSpecialAreas, populateMessage )));
 
-    static_cast<::CapControlMessage&>(*omsg)    = *deserialize( imsg._baseMessage );
+    static_cast<::CapControlMessage&>(*omsg)    = *populateMessage( imsg._baseMessage );
 
     return omsg;
 }
@@ -320,11 +320,11 @@ MessagePtr<::CtiCCSpecialAreasMsg>::type deserialize( const Thrift::CCSpecialAre
 //  CCSpecial
 //=============================================================================
 
-MessagePtr<Thrift::CCSpecial>::type serialize( const ::CtiCCSpecial& imsg )
+MessagePtr<Thrift::CCSpecial>::type populateThrift( const ::CtiCCSpecial& imsg )
 {
     MessagePtr<Thrift::CCSpecial>::type omsg( new Thrift::CCSpecial );
 
-    omsg->__set__baseMessage                    ( *serialize( static_cast<const ::CapControlPao&>(imsg) ));
+    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CapControlPao&>(imsg) ));
     omsg->__set__substationIds                  ( transformContainer<vector<int32_t>>( imsg.getSubstationIds() ));
 
     double pfDisplayValue    = imsg.getPFactor();
@@ -348,7 +348,7 @@ MessagePtr<Thrift::CCSpecial>::type serialize( const ::CtiCCSpecial& imsg )
     return omsg;
 }
 
-MessagePtr<::CtiCCSpecial>::type deserialize( const Thrift::CCSpecial& imsg )
+MessagePtr<::CtiCCSpecial>::type populateMessage( const Thrift::CCSpecial& imsg )
 {
     MessagePtr<::CtiCCSpecial>::type omsg( new ::CtiCCSpecial );
 
@@ -361,24 +361,24 @@ MessagePtr<::CtiCCSpecial>::type deserialize( const Thrift::CCSpecial& imsg )
 //  CCSubstationBus
 //=============================================================================
 
-MessagePtr<Thrift::CCSubstationBus>::type serialize( const ::CtiCCSubstationBusMsg& imsg )
+MessagePtr<Thrift::CCSubstationBus>::type populateThrift( const ::CtiCCSubstationBusMsg& imsg )
 {
     MessagePtr<Thrift::CCSubstationBus>::type omsg( new Thrift::CCSubstationBus );
 
-    omsg->__set__baseMessage                    ( *serialize( static_cast<const ::CapControlMessage&>(imsg) ));
+    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CapControlMessage&>(imsg) ));
     omsg->__set__msgInfoBitMask                 ( imsg.getMsgInfoBitMask() );
-    omsg->__set__ccSubstationBuses              ( transformContainer<vector<Thrift::CCSubstationBusItem>>( *imsg.getCCSubstationBuses(), serialize ));
+    omsg->__set__ccSubstationBuses              ( transformContainer<vector<Thrift::CCSubstationBusItem>>( *imsg.getCCSubstationBuses(), populateThrift ));
 
     return omsg;
 }
 
-MessagePtr<::CtiCCSubstationBusMsg>::type deserialize( const Thrift::CCSubstationBus& imsg )
+MessagePtr<::CtiCCSubstationBusMsg>::type populateMessage( const Thrift::CCSubstationBus& imsg )
 {
     MessagePtr<::CtiCCSubstationBusMsg>::type omsg( new ::CtiCCSubstationBusMsg(
-                                                  transformContainer<CtiCCSubstationBus_vec>( imsg._ccSubstationBuses, deserialize ),
+                                                  transformContainer<CtiCCSubstationBus_vec>( imsg._ccSubstationBuses, populateMessage ),
                                                   imsg._msgInfoBitMask ));
 
-    static_cast<::CapControlMessage&>(*omsg)    = *deserialize( imsg._baseMessage );
+    static_cast<::CapControlMessage&>(*omsg)    = *populateMessage( imsg._baseMessage );
 
     return omsg;
 }
@@ -387,11 +387,11 @@ MessagePtr<::CtiCCSubstationBusMsg>::type deserialize( const Thrift::CCSubstatio
 //  CCSubstationBusItem
 //=============================================================================
 
-MessagePtr<Thrift::CCSubstationBusItem>::type serialize( const ::CtiCCSubstationBus& imsg )
+MessagePtr<Thrift::CCSubstationBusItem>::type populateThrift( const ::CtiCCSubstationBus& imsg )
 {
     MessagePtr<Thrift::CCSubstationBusItem>::type omsg( new Thrift::CCSubstationBusItem );
 
-    omsg->__set__baseMessage                    ( *serialize( static_cast<const ::CapControlPao&>(imsg) ));
+    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CapControlPao&>(imsg) ));
 
     double tempVar;
     double tempVolt;
@@ -488,12 +488,12 @@ MessagePtr<Thrift::CCSubstationBusItem>::type serialize( const ::CtiCCSubstation
     omsg->__set__altSubId                        ( tempAltSubId );
     omsg->__set__dualBusEnabled                  ( tempDualBusEnabled );
     omsg->__set__strategyId                      ( imsg.getStrategyId() );
-    omsg->__set__ccFeeders                       ( transformContainer<vector<Thrift::CCFeeder>>( imsg.getCCFeeders(), serialize ));
+    omsg->__set__ccFeeders                       ( transformContainer<vector<Thrift::CCFeeder>>( imsg.getCCFeeders(), populateThrift ));
 
     return omsg;
 }
 
-MessagePtr<::CtiCCSubstationBus>::type deserialize( const Thrift::CCSubstationBusItem& imsg )
+MessagePtr<::CtiCCSubstationBus>::type populateMessage( const Thrift::CCSubstationBusItem& imsg )
 {
     MessagePtr<::CtiCCSubstationBus>::type omsg( new ::CtiCCSubstationBus );
 
@@ -506,11 +506,11 @@ MessagePtr<::CtiCCSubstationBus>::type deserialize( const Thrift::CCSubstationBu
 //  CCFeeder
 //=============================================================================
 
-MessagePtr<Thrift::CCFeeder>::type serialize( const ::CtiCCFeeder& imsg )
+MessagePtr<Thrift::CCFeeder>::type populateThrift( const ::CtiCCFeeder& imsg )
 {
     MessagePtr<Thrift::CCFeeder>::type omsg( new Thrift::CCFeeder );
 
-    omsg->__set__baseMessage                    ( *serialize( static_cast<const ::CapControlPao&>(imsg) ));
+    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CapControlPao&>(imsg) ));
 
     double temppowerfactorvalue          = imsg.getPowerFactorValue();
     double tempestimatedpowerfactorvalue = imsg.getEstimatedPowerFactorValue();
@@ -575,12 +575,12 @@ MessagePtr<Thrift::CCFeeder>::type serialize( const ::CtiCCFeeder& imsg )
     omsg->__set__likeDayControlFlag              ( imsg.getLikeDayControlFlag() );
     omsg->__set__usePhaseData                    ( imsg.getUsePhaseData() );
     omsg->__set__originalParentId                ( imsg.getOriginalParent().getOriginalParentId() );
-    omsg->__set__ccCapbanks                      ( transformContainer<vector<Thrift::CCCapBank>>( imsg.getCCCapBanks(), serialize ));
+    omsg->__set__ccCapbanks                      ( transformContainer<vector<Thrift::CCCapBank>>( imsg.getCCCapBanks(), populateThrift ));
 
     return omsg;
 }
 
-MessagePtr<::CtiCCFeeder>::type deserialize( const Thrift::CCFeeder& imsg )
+MessagePtr<::CtiCCFeeder>::type populateMessage( const Thrift::CCFeeder& imsg )
 {
     MessagePtr<::CtiCCFeeder>::type omsg( new ::CtiCCFeeder );
 
@@ -593,11 +593,11 @@ MessagePtr<::CtiCCFeeder>::type deserialize( const Thrift::CCFeeder& imsg )
 //  CCCapBank
 //=============================================================================
 
-MessagePtr<Thrift::CCCapBank>::type serialize( const ::CtiCCCapBank& imsg )
+MessagePtr<Thrift::CCCapBank>::type populateThrift( const ::CtiCCCapBank& imsg )
 {
     MessagePtr<Thrift::CCCapBank>::type omsg( new Thrift::CCCapBank );
 
-    omsg->__set__baseMessage                    ( *serialize( static_cast<const ::CapControlPao&>(imsg) ));
+    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CapControlPao&>(imsg) ));
     omsg->__set__parentId                       ( imsg.getParentId() );
     omsg->__set__maxDailyOps                    ( imsg.getMaxDailyOps() );
     omsg->__set__maxOpsDisableFlag              ( imsg.getMaxOpsDisableFlag() );
@@ -638,7 +638,7 @@ MessagePtr<Thrift::CCCapBank>::type serialize( const ::CtiCCCapBank& imsg )
     return omsg;
 }
 
-MessagePtr<::CtiCCCapBank>::type deserialize( const Thrift::CCCapBank& imsg )
+MessagePtr<::CtiCCCapBank>::type populateMessage( const Thrift::CCCapBank& imsg )
 {
     MessagePtr<::CtiCCCapBank>::type omsg( new ::CtiCCCapBank );
 
@@ -651,24 +651,24 @@ MessagePtr<::CtiCCCapBank>::type deserialize( const Thrift::CCCapBank& imsg )
 //  CCSubstations
 //=============================================================================
 
-MessagePtr<Thrift::CCSubstations>::type serialize( const ::CtiCCSubstationsMsg& imsg )
+MessagePtr<Thrift::CCSubstations>::type populateThrift( const ::CtiCCSubstationsMsg& imsg )
 {
     MessagePtr<Thrift::CCSubstations>::type omsg( new Thrift::CCSubstations );
 
-    omsg->__set__baseMessage                    ( *serialize( static_cast<const ::CapControlMessage&>(imsg) ));
+    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CapControlMessage&>(imsg) ));
     omsg->__set__msgInfoBitMask                 ( imsg.getMsgInfoBitMask() );
-    omsg->__set__ccSubstations                  ( transformContainer<vector<Thrift::CCSubstationItem>>( *imsg.getCCSubstations(), serialize ));
+    omsg->__set__ccSubstations                  ( transformContainer<vector<Thrift::CCSubstationItem>>( *imsg.getCCSubstations(), populateThrift ));
 
     return omsg;
 }
 
-MessagePtr<::CtiCCSubstationsMsg>::type deserialize( const Thrift::CCSubstations& imsg )
+MessagePtr<::CtiCCSubstationsMsg>::type populateMessage( const Thrift::CCSubstations& imsg )
 {
     MessagePtr<::CtiCCSubstationsMsg>::type omsg( new ::CtiCCSubstationsMsg(
-                                                  transformContainer<CtiCCSubstation_vec>( imsg._ccSubstations, deserialize ),
+                                                  transformContainer<CtiCCSubstation_vec>( imsg._ccSubstations, populateMessage ),
                                                   imsg._msgInfoBitMask ));
 
-    static_cast<::CapControlMessage&>(*omsg)    = *deserialize( imsg._baseMessage );
+    static_cast<::CapControlMessage&>(*omsg)    = *populateMessage( imsg._baseMessage );
 
     return omsg;
 }
@@ -677,11 +677,11 @@ MessagePtr<::CtiCCSubstationsMsg>::type deserialize( const Thrift::CCSubstations
 //  CCSubstationItem
 //=============================================================================
 
-MessagePtr<Thrift::CCSubstationItem>::type serialize( const ::CtiCCSubstation& imsg )
+MessagePtr<Thrift::CCSubstationItem>::type populateThrift( const ::CtiCCSubstation& imsg )
 {
     MessagePtr<Thrift::CCSubstationItem>::type omsg( new Thrift::CCSubstationItem );
 
-    omsg->__set__baseMessage                    ( *serialize( static_cast<const ::CapControlPao&>(imsg) ));
+    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CapControlPao&>(imsg) ));
     omsg->__set__parentId                       ( imsg.getParentId() );
     omsg->__set__ovUvDisabledFlag               ( imsg.getOvUvDisabledFlag() );
     omsg->__set__subBusIds                      ( transformContainer<vector<int32_t>>( imsg.getCCSubIds() ));
@@ -710,7 +710,7 @@ MessagePtr<Thrift::CCSubstationItem>::type serialize( const ::CtiCCSubstation& i
     return omsg;
 }
 
-MessagePtr<::CtiCCSubstation>::type deserialize( const Thrift::CCSubstationItem& imsg )
+MessagePtr<::CtiCCSubstation>::type populateMessage( const Thrift::CCSubstationItem& imsg )
 {
     MessagePtr<::CtiCCSubstation>::type omsg( new ::CtiCCSubstation );
 
@@ -723,22 +723,22 @@ MessagePtr<::CtiCCSubstation>::type deserialize( const Thrift::CCSubstationItem&
 //  CCDeleteItem
 //=============================================================================
 
-MessagePtr<Thrift::CCDeleteItem>::type serialize( const ::DeleteItem& imsg )
+MessagePtr<Thrift::CCDeleteItem>::type populateThrift( const ::DeleteItem& imsg )
 {
     MessagePtr<Thrift::CCDeleteItem>::type omsg( new Thrift::CCDeleteItem );
 
-    omsg->__set__baseMessage                    ( *serialize( static_cast<const ::CapControlMessage&>(imsg) ));
+    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CapControlMessage&>(imsg) ));
     omsg->__set__itemId                         ( imsg.getItemId() );
 
     return omsg;
 }
 
-MessagePtr<::DeleteItem>::type deserialize( const Thrift::CCDeleteItem& imsg )
+MessagePtr<::DeleteItem>::type populateMessage( const Thrift::CCDeleteItem& imsg )
 {
     MessagePtr<::DeleteItem>::type omsg( new ::DeleteItem(
                                                   imsg._itemId ));
 
-    static_cast<::CapControlMessage&>(*omsg)    = *deserialize( imsg._baseMessage );
+    static_cast<::CapControlMessage&>(*omsg)    = *populateMessage( imsg._baseMessage );
 
     return omsg;
 }
@@ -747,22 +747,22 @@ MessagePtr<::DeleteItem>::type deserialize( const Thrift::CCDeleteItem& imsg )
 //  CCSystemStatus
 //=============================================================================
 
-MessagePtr<Thrift::CCSystemStatus>::type serialize( const ::SystemStatus& imsg )
+MessagePtr<Thrift::CCSystemStatus>::type populateThrift( const ::SystemStatus& imsg )
 {
     MessagePtr<Thrift::CCSystemStatus>::type omsg( new Thrift::CCSystemStatus );
 
-    omsg->__set__baseMessage                    ( *serialize( static_cast<const ::CapControlMessage&>(imsg) ));
+    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CapControlMessage&>(imsg) ));
     omsg->__set__systemState                    ( imsg.getState() );
 
     return omsg;
 }
 
-MessagePtr<::SystemStatus>::type deserialize( const Thrift::CCSystemStatus& imsg )
+MessagePtr<::SystemStatus>::type populateMessage( const Thrift::CCSystemStatus& imsg )
 {
     MessagePtr<::SystemStatus>::type omsg( new ::SystemStatus(
                                                   imsg._systemState ));
 
-    static_cast<::CapControlMessage&>(*omsg)    = *deserialize( imsg._baseMessage );
+    static_cast<::CapControlMessage&>(*omsg)    = *populateMessage( imsg._baseMessage );
 
     return omsg;
 }
@@ -771,17 +771,17 @@ MessagePtr<::SystemStatus>::type deserialize( const Thrift::CCSystemStatus& imsg
 //  CCVoltageRegulator
 //=============================================================================
 
-MessagePtr<Thrift::CCVoltageRegulator>::type serialize( const ::VoltageRegulatorMessage& imsg )
+MessagePtr<Thrift::CCVoltageRegulator>::type populateThrift( const ::VoltageRegulatorMessage& imsg )
 {
     MessagePtr<Thrift::CCVoltageRegulator>::type omsg( new Thrift::CCVoltageRegulator );
 
-    omsg->__set__baseMessage                    ( *serialize( static_cast<const ::CapControlMessage&>(imsg) ));
-    omsg->__set__regulators                     ( transformContainer<vector<Thrift::CCVoltageRegulatorItem>>( imsg.getVoltageRegulators(), serialize ));
+    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CapControlMessage&>(imsg) ));
+    omsg->__set__regulators                     ( transformContainer<vector<Thrift::CCVoltageRegulatorItem>>( imsg.getVoltageRegulators(), populateThrift ));
 
     return omsg;
 }
 
-MessagePtr<::VoltageRegulatorMessage>::type deserialize( const Thrift::CCVoltageRegulator& imsg )
+MessagePtr<::VoltageRegulatorMessage>::type populateMessage( const Thrift::CCVoltageRegulator& imsg )
 {
     MessagePtr<::VoltageRegulatorMessage>::type omsg( new ::VoltageRegulatorMessage );
 
@@ -794,11 +794,11 @@ MessagePtr<::VoltageRegulatorMessage>::type deserialize( const Thrift::CCVoltage
 //  CCVoltageRegulatorItem
 //=============================================================================
 
-MessagePtr<Thrift::CCVoltageRegulatorItem>::type serialize( const ::Cti::CapControl::VoltageRegulator& imsg )
+MessagePtr<Thrift::CCVoltageRegulatorItem>::type populateThrift( const ::Cti::CapControl::VoltageRegulator& imsg )
 {
     MessagePtr<Thrift::CCVoltageRegulatorItem>::type omsg( new Thrift::CCVoltageRegulatorItem );
 
-    omsg->__set__baseMessage                    ( *serialize( static_cast<const ::CapControlPao&>(imsg) ));
+    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CapControlPao&>(imsg) ));
     omsg->__set__parentId                       ( 0 ); //parentId Must be here for clients...
     omsg->__set__lastTapOperation               ( imsg.getLastTapOperation() );
     omsg->__set__lastTapOperationTime           ( CtiTimeToMilliseconds( imsg.getLastTapOperationTime() ));
@@ -814,24 +814,24 @@ MessagePtr<Thrift::CCVoltageRegulatorItem>::type serialize( const ::Cti::CapCont
 //  CCCommand
 //=============================================================================
 
-MessagePtr<Thrift::CCCommand>::type serialize( const ::CapControlCommand& imsg )
+MessagePtr<Thrift::CCCommand>::type populateThrift( const ::CapControlCommand& imsg )
 {
     MessagePtr<Thrift::CCCommand>::type omsg( new Thrift::CCCommand );
 
-    omsg->__set__baseMessage                    ( *serialize( static_cast<const ::CtiMessage&>(imsg) ));
+    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CtiMessage&>(imsg) ));
     omsg->__set__messageId                      ( imsg.getMessageId() );
     omsg->__set__commandId                      ( imsg.getCommandId() );
 
     return omsg;
 }
 
-MessagePtr<::CapControlCommand>::type deserialize( const Thrift::CCCommand& imsg )
+MessagePtr<::CapControlCommand>::type populateMessage( const Thrift::CCCommand& imsg )
 {
     MessagePtr<::CapControlCommand>::type omsg( new ::CapControlCommand(
                                                   imsg._commandId,
                                                   imsg._messageId ));
 
-    static_cast<::CtiMessage&>(*omsg)           = *deserialize( imsg._baseMessage );
+    static_cast<::CtiMessage&>(*omsg)           = *populateMessage( imsg._baseMessage );
 
     return omsg;
 }
@@ -840,7 +840,7 @@ MessagePtr<::CapControlCommand>::type deserialize( const Thrift::CCCommand& imsg
 //  CCDynamicCommand
 //=============================================================================
 
-MessagePtr<Thrift::CCDynamicCommand>::type serialize( const ::DynamicCommand& imsg )
+MessagePtr<Thrift::CCDynamicCommand>::type populateThrift( const ::DynamicCommand& imsg )
 {
     MessagePtr<Thrift::CCDynamicCommand>::type omsg( new Thrift::CCDynamicCommand );
 
@@ -849,11 +849,11 @@ MessagePtr<Thrift::CCDynamicCommand>::type serialize( const ::DynamicCommand& im
     return omsg;
 }
 
-MessagePtr<::DynamicCommand>::type deserialize( const Thrift::CCDynamicCommand& imsg )
+MessagePtr<::DynamicCommand>::type populateMessage( const Thrift::CCDynamicCommand& imsg )
 {
     MessagePtr<::DynamicCommand>::type omsg( new ::DynamicCommand );
 
-    static_cast<::CapControlCommand&>(*omsg)    = *deserialize( imsg._baseMessage );
+    static_cast<::CapControlCommand&>(*omsg)    = *populateMessage( imsg._baseMessage );
     omsg->setCommandType                        ( (DynamicCommand::CommandType)imsg._commandType );
     omsg->setLongParameters                     ( transformContainer<::DynamicCommand::LongParameterMap>( imsg._longParameters ));
     omsg->setDoubleParameters                   ( transformContainer<::DynamicCommand::DoubleParameterMap>( imsg._doubleParameters ));
@@ -865,21 +865,21 @@ MessagePtr<::DynamicCommand>::type deserialize( const Thrift::CCDynamicCommand& 
 //  CCItemCommand
 //=============================================================================
 
-MessagePtr<Thrift::CCItemCommand>::type serialize( const ::ItemCommand& imsg )
+MessagePtr<Thrift::CCItemCommand>::type populateThrift( const ::ItemCommand& imsg )
 {
     MessagePtr<Thrift::CCItemCommand>::type omsg( new Thrift::CCItemCommand );
 
-    omsg->__set__baseMessage                    ( *serialize( static_cast<const ::CapControlCommand&>(imsg) ));
+    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CapControlCommand&>(imsg) ));
     omsg->__set__itemId                         ( imsg.getItemId() );
 
     return omsg;
 }
 
-MessagePtr<::ItemCommand>::type deserialize( const Thrift::CCItemCommand& imsg )
+MessagePtr<::ItemCommand>::type populateMessage( const Thrift::CCItemCommand& imsg )
 {
     MessagePtr<::ItemCommand>::type omsg( new ::ItemCommand );
 
-    static_cast<::CapControlCommand&>(*omsg)    = *deserialize( imsg._baseMessage );
+    static_cast<::CapControlCommand&>(*omsg)    = *populateMessage( imsg._baseMessage );
     omsg->setItemId                             ( imsg._itemId );
 
     return omsg;
@@ -889,21 +889,21 @@ MessagePtr<::ItemCommand>::type deserialize( const Thrift::CCItemCommand& imsg )
 //  CCChangeOpState
 //=============================================================================
 
-MessagePtr<Thrift::CCChangeOpState>::type serialize( const ::ChangeOpState& imsg )
+MessagePtr<Thrift::CCChangeOpState>::type populateThrift( const ::ChangeOpState& imsg )
 {
     MessagePtr<Thrift::CCChangeOpState>::type omsg( new Thrift::CCChangeOpState );
 
-    omsg->__set__baseMessage                    ( *serialize( static_cast<const ::ItemCommand&>(imsg) ));
+    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::ItemCommand&>(imsg) ));
     omsg->__set__opStateName                    ( imsg.getOpStateName() );
 
     return omsg;
 }
 
-MessagePtr<::ChangeOpState>::type deserialize( const Thrift::CCChangeOpState& imsg )
+MessagePtr<::ChangeOpState>::type populateMessage( const Thrift::CCChangeOpState& imsg )
 {
     MessagePtr<::ChangeOpState>::type omsg( new ::ChangeOpState );
 
-    static_cast<::ItemCommand&>(*omsg)          = *deserialize( imsg._baseMessage );
+    static_cast<::ItemCommand&>(*omsg)          = *populateMessage( imsg._baseMessage );
     omsg->setOpStateName                        ( imsg._opStateName );
 
     return omsg;
@@ -913,11 +913,11 @@ MessagePtr<::ChangeOpState>::type deserialize( const Thrift::CCChangeOpState& im
 //  CCCapBankMove
 //=============================================================================
 
-MessagePtr<Thrift::CCCapBankMove>::type serialize( const ::CtiCCCapBankMoveMsg& imsg )
+MessagePtr<Thrift::CCCapBankMove>::type populateThrift( const ::CtiCCCapBankMoveMsg& imsg )
 {
     MessagePtr<Thrift::CCCapBankMove>::type omsg( new Thrift::CCCapBankMove );
 
-    omsg->__set__baseMessage                    ( *serialize( static_cast<const ::ItemCommand&>(imsg) ));
+    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::ItemCommand&>(imsg) ));
     omsg->__set__permanentFlag                  ( imsg.getPermanentFlag() );
     omsg->__set__oldFeederId                    ( imsg.getOldFeederId() );
     omsg->__set__newFeederId                    ( imsg.getNewFeederId() );
@@ -928,7 +928,7 @@ MessagePtr<Thrift::CCCapBankMove>::type serialize( const ::CtiCCCapBankMoveMsg& 
     return omsg;
 }
 
-MessagePtr<::CtiCCCapBankMoveMsg>::type deserialize( const Thrift::CCCapBankMove& imsg )
+MessagePtr<::CtiCCCapBankMoveMsg>::type populateMessage( const Thrift::CCCapBankMove& imsg )
 {
     MessagePtr<::CtiCCCapBankMoveMsg>::type omsg( new ::CtiCCCapBankMoveMsg(
                                                   imsg._permanentFlag,
@@ -938,7 +938,7 @@ MessagePtr<::CtiCCCapBankMoveMsg>::type deserialize( const Thrift::CCCapBankMove
                                                   imsg._closeOrder,
                                                   imsg._tripOrder ));
 
-    static_cast<::ItemCommand&>(*omsg)          = *deserialize( imsg._baseMessage );
+    static_cast<::ItemCommand&>(*omsg)          = *populateMessage( imsg._baseMessage );
 
     return omsg;
 }
@@ -947,22 +947,22 @@ MessagePtr<::CtiCCCapBankMoveMsg>::type deserialize( const Thrift::CCCapBankMove
 //  CCVerifyBanks
 //=============================================================================
 
-MessagePtr<Thrift::CCVerifyBanks>::type serialize( const ::VerifyBanks& imsg )
+MessagePtr<Thrift::CCVerifyBanks>::type populateThrift( const ::VerifyBanks& imsg )
 {
     MessagePtr<Thrift::CCVerifyBanks>::type omsg( new Thrift::CCVerifyBanks );
 
-    omsg->__set__baseMessage                    ( *serialize( static_cast<const ::ItemCommand&>(imsg) ));
+    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::ItemCommand&>(imsg) ));
     omsg->__set__disableOvUv                    ( imsg.getDisableOvUv() );
 
     return omsg;
 }
 
 
-MessagePtr<::VerifyBanks>::type deserialize( const Thrift::CCVerifyBanks& imsg )
+MessagePtr<::VerifyBanks>::type populateMessage( const Thrift::CCVerifyBanks& imsg )
 {
     MessagePtr<::VerifyBanks>::type omsg( new ::VerifyBanks );
 
-    static_cast<::ItemCommand&>(*omsg)          = *deserialize( imsg._baseMessage );
+    static_cast<::ItemCommand&>(*omsg)          = *populateMessage( imsg._baseMessage );
     omsg->setDisableOvUv                        ( imsg._disableOvUv );
 
     return omsg;
@@ -972,21 +972,21 @@ MessagePtr<::VerifyBanks>::type deserialize( const Thrift::CCVerifyBanks& imsg )
 //  CCVerifyInactiveBanks
 //=============================================================================
 
-MessagePtr<Thrift::CCVerifyInactiveBanks>::type serialize( const ::VerifyInactiveBanks& imsg )
+MessagePtr<Thrift::CCVerifyInactiveBanks>::type populateThrift( const ::VerifyInactiveBanks& imsg )
 {
     MessagePtr<Thrift::CCVerifyInactiveBanks>::type omsg( new Thrift::CCVerifyInactiveBanks );
 
-    omsg->__set__baseMessage                    ( *serialize( static_cast<const ::VerifyBanks&>(imsg) ));
+    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::VerifyBanks&>(imsg) ));
     omsg->__set__bankInactiveTime               ( imsg.getBankInactiveTime() );
 
     return omsg;
 }
 
-MessagePtr<::VerifyInactiveBanks>::type deserialize( const Thrift::CCVerifyInactiveBanks& imsg )
+MessagePtr<::VerifyInactiveBanks>::type populateMessage( const Thrift::CCVerifyInactiveBanks& imsg )
 {
     MessagePtr<::VerifyInactiveBanks>::type omsg( new ::VerifyInactiveBanks );
 
-    static_cast<::VerifyBanks&>(*omsg)          = *deserialize( imsg._baseMessage );
+    static_cast<::VerifyBanks&>(*omsg)          = *populateMessage( imsg._baseMessage );
     omsg->setBankInactiveTime                   ( imsg._bankInactiveTime );
 
     return omsg;
@@ -996,21 +996,21 @@ MessagePtr<::VerifyInactiveBanks>::type deserialize( const Thrift::CCVerifyInact
 //  CCVerifySelectedBank
 //=============================================================================
 
-MessagePtr<Thrift::CCVerifySelectedBank>::type serialize( const ::VerifySelectedBank& imsg )
+MessagePtr<Thrift::CCVerifySelectedBank>::type populateThrift( const ::VerifySelectedBank& imsg )
 {
     MessagePtr<Thrift::CCVerifySelectedBank>::type omsg( new Thrift::CCVerifySelectedBank );
 
-    omsg->__set__baseMessage                    ( *serialize( static_cast<const ::VerifyBanks&>(imsg) ));
+    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::VerifyBanks&>(imsg) ));
     omsg->__set__bankId                         ( imsg.getBankId() );
 
     return omsg;
 }
 
-MessagePtr<::VerifySelectedBank>::type deserialize( const Thrift::CCVerifySelectedBank& imsg )
+MessagePtr<::VerifySelectedBank>::type populateMessage( const Thrift::CCVerifySelectedBank& imsg )
 {
     MessagePtr<::VerifySelectedBank>::type omsg( new ::VerifySelectedBank );
 
-    static_cast<::VerifyBanks&>(*omsg)          = *deserialize( imsg._baseMessage );
+    static_cast<::VerifyBanks&>(*omsg)          = *populateMessage( imsg._baseMessage );
     omsg->setBankId                             ( imsg._bankId );
 
     return omsg;
@@ -1020,7 +1020,7 @@ MessagePtr<::VerifySelectedBank>::type deserialize( const Thrift::CCVerifySelect
 //  CCPao
 //=============================================================================
 
-MessagePtr<Thrift::CCPao>::type serialize( const ::CapControlPao& imsg )
+MessagePtr<Thrift::CCPao>::type populateThrift( const ::CapControlPao& imsg )
 {
     MessagePtr<Thrift::CCPao>::type omsg( new Thrift::CCPao );
 

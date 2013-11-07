@@ -23,48 +23,48 @@ namespace Messaging {
 namespace Serialization {
 
 
-MessagePtr<Thrift::LMMessage>::type                 serialize   ( const ::CtiLMMessage& imsg );
-MessagePtr<::CtiLMMessage>::type                    deserialize ( const Thrift::LMMessage& imsg );
+MessagePtr<Thrift::LMMessage>::type                 populateThrift  ( const ::CtiLMMessage& imsg );
+MessagePtr<::CtiLMMessage>::type                    populateMessage ( const Thrift::LMMessage& imsg );
 
-MessagePtr<Thrift::LMCommand>::type                 serialize   ( const ::CtiLMCommand& imsg );
-MessagePtr<::CtiLMCommand>::type                    deserialize ( const Thrift::LMCommand& imsg );
+MessagePtr<Thrift::LMCommand>::type                 populateThrift  ( const ::CtiLMCommand& imsg );
+MessagePtr<::CtiLMCommand>::type                    populateMessage ( const Thrift::LMCommand& imsg );
 
-MessagePtr<Thrift::LMManualControlRequest>::type    serialize   ( const ::CtiLMManualControlRequest& imsg );
-MessagePtr<::CtiLMManualControlRequest>::type       deserialize ( const Thrift::LMManualControlRequest& imsg );
+MessagePtr<Thrift::LMManualControlRequest>::type    populateThrift  ( const ::CtiLMManualControlRequest& imsg );
+MessagePtr<::CtiLMManualControlRequest>::type       populateMessage ( const Thrift::LMManualControlRequest& imsg );
 
-MessagePtr<Thrift::LMManualControlResponse>::type   serialize   ( const ::CtiLMManualControlResponse& imsg );
-MessagePtr<::CtiLMManualControlResponse>::type      deserialize ( const Thrift::LMManualControlResponse& imsg );
+MessagePtr<Thrift::LMManualControlResponse>::type   populateThrift  ( const ::CtiLMManualControlResponse& imsg );
+MessagePtr<::CtiLMManualControlResponse>::type      populateMessage ( const Thrift::LMManualControlResponse& imsg );
 
-MessagePtr<Thrift::LMEnergyExchangeControl>::type   serialize   ( const ::CtiLMEnergyExchangeControlMsg& imsg );
-MessagePtr<::CtiLMEnergyExchangeControlMsg>::type   deserialize ( const Thrift::LMEnergyExchangeControl& imsg );
+MessagePtr<Thrift::LMEnergyExchangeControl>::type   populateThrift  ( const ::CtiLMEnergyExchangeControlMsg& imsg );
+MessagePtr<::CtiLMEnergyExchangeControlMsg>::type   populateMessage ( const Thrift::LMEnergyExchangeControl& imsg );
 
-MessagePtr<Thrift::LMEnergyExchangeAccept>::type    serialize   ( const ::CtiLMEnergyExchangeAcceptMsg& imsg );
-MessagePtr<::CtiLMEnergyExchangeAcceptMsg>::type    deserialize ( const Thrift::LMEnergyExchangeAccept& imsg );
+MessagePtr<Thrift::LMEnergyExchangeAccept>::type    populateThrift  ( const ::CtiLMEnergyExchangeAcceptMsg& imsg );
+MessagePtr<::CtiLMEnergyExchangeAcceptMsg>::type    populateMessage ( const Thrift::LMEnergyExchangeAccept& imsg );
 
-MessagePtr<Thrift::LMControlAreas>::type            serialize   ( const ::CtiLMControlAreaMsg& imsg );
+MessagePtr<Thrift::LMControlAreas>::type            populateThrift  ( const ::CtiLMControlAreaMsg& imsg );
 
-MessagePtr<Thrift::LMCurtailmentAcknowledge>::type  serialize   ( const ::CtiLMCurtailmentAcknowledgeMsg& imsg );
-MessagePtr<::CtiLMCurtailmentAcknowledgeMsg>::type  deserialize ( const Thrift::LMCurtailmentAcknowledge& imsg );
+MessagePtr<Thrift::LMCurtailmentAcknowledge>::type  populateThrift  ( const ::CtiLMCurtailmentAcknowledgeMsg& imsg );
+MessagePtr<::CtiLMCurtailmentAcknowledgeMsg>::type  populateMessage ( const Thrift::LMCurtailmentAcknowledge& imsg );
 
-MessagePtr<Thrift::LMDynamicGroupData>::type        serialize   ( const ::CtiLMDynamicGroupDataMsg& imsg );
+MessagePtr<Thrift::LMDynamicGroupData>::type        populateThrift  ( const ::CtiLMDynamicGroupDataMsg& imsg );
 
-MessagePtr<Thrift::LMDynamicProgramData>::type      serialize   ( const ::CtiLMDynamicProgramDataMsg& imsg );
+MessagePtr<Thrift::LMDynamicProgramData>::type      populateThrift  ( const ::CtiLMDynamicProgramDataMsg& imsg );
 
-MessagePtr<Thrift::LMDynamicControlAreaData>::type  serialize   ( const ::CtiLMDynamicControlAreaDataMsg& imsg );
+MessagePtr<Thrift::LMDynamicControlAreaData>::type  populateThrift  ( const ::CtiLMDynamicControlAreaDataMsg& imsg );
 
-MessagePtr<Thrift::LMDynamicTriggerData>::type      serialize   ( const ::CtiLMDynamicTriggerDataMsg& imsg );
+MessagePtr<Thrift::LMDynamicTriggerData>::type      populateThrift  ( const ::CtiLMDynamicTriggerDataMsg& imsg );
 
-MessagePtr<Thrift::LMConstraintViolation>::type     serialize   ( const ::ConstraintViolation& imsg );
-MessagePtr<::ConstraintViolation>::type             deserialize ( const Thrift::LMConstraintViolation& imsg );
+MessagePtr<Thrift::LMConstraintViolation>::type     populateThrift  ( const ::ConstraintViolation& imsg );
+MessagePtr<::ConstraintViolation>::type             populateMessage ( const Thrift::LMConstraintViolation& imsg );
 
-MessagePtr<Thrift::LMControlAreaTrigger>::type      serialize   ( const ::CtiLMControlAreaTrigger& imsg );
+MessagePtr<Thrift::LMControlAreaTrigger>::type      populateThrift  ( const ::CtiLMControlAreaTrigger& imsg );
 
-MessagePtr<Thrift::LMProgramControlWindow>::type    serialize   ( const ::CtiLMProgramControlWindow& imsg );
+MessagePtr<Thrift::LMProgramControlWindow>::type    populateThrift  ( const ::CtiLMProgramControlWindow& imsg );
 
-MessagePtr<Thrift::LMProgramBase>::type             serialize   ( const ::CtiLMProgramBase& imsg );
+MessagePtr<Thrift::LMProgramBase>::type             populateThrift  ( const ::CtiLMProgramBase& imsg );
 
-MessagePtr<Thrift::LMControlAreaItem>::type         serialize   ( const ::CtiLMControlArea& imsg );
-MessagePtr<::CtiLMControlArea>::type                deserialize ( const Thrift::LMControlAreaItem& imsg );
+MessagePtr<Thrift::LMControlAreaItem>::type         populateThrift  ( const ::CtiLMControlArea& imsg );
+MessagePtr<::CtiLMControlArea>::type                populateMessage ( const Thrift::LMControlAreaItem& imsg );
 
 }
 }

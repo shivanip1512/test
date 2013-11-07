@@ -50,68 +50,68 @@ namespace Cti {
 namespace Messaging {
 namespace Serialization {
 
-IM_EX_MSG MessagePtr<Thrift::Message>::type               serialize   ( const ::CtiMessage& imsg );
-IM_EX_MSG MessagePtr<::CtiMessage>::type                  deserialize ( const Thrift::Message& imsg );
+IM_EX_MSG MessagePtr<Thrift::Message>::type               populateThrift  ( const ::CtiMessage& imsg );
+IM_EX_MSG MessagePtr<::CtiMessage>::type                  populateMessage ( const Thrift::Message& imsg );
 
-IM_EX_MSG MessagePtr<Thrift::Command>::type               serialize   ( const ::CtiCommandMsg& imsg );
-IM_EX_MSG MessagePtr<::CtiCommandMsg>::type               deserialize ( const Thrift::Command& imsg );
+IM_EX_MSG MessagePtr<Thrift::Command>::type               populateThrift  ( const ::CtiCommandMsg& imsg );
+IM_EX_MSG MessagePtr<::CtiCommandMsg>::type               populateMessage ( const Thrift::Command& imsg );
 
-IM_EX_MSG MessagePtr<Thrift::DBChange>::type              serialize   ( const ::CtiDBChangeMsg& imsg );
-IM_EX_MSG MessagePtr<::CtiDBChangeMsg>::type              deserialize ( const Thrift::DBChange& imsg );
+IM_EX_MSG MessagePtr<Thrift::DBChange>::type              populateThrift  ( const ::CtiDBChangeMsg& imsg );
+IM_EX_MSG MessagePtr<::CtiDBChangeMsg>::type              populateMessage ( const Thrift::DBChange& imsg );
 
-IM_EX_MSG MessagePtr<Thrift::LMControlHistory>::type      serialize   ( const ::CtiLMControlHistoryMsg& imsg );
-IM_EX_MSG MessagePtr<::CtiLMControlHistoryMsg>::type      deserialize ( const Thrift::LMControlHistory& imsg );
+IM_EX_MSG MessagePtr<Thrift::LMControlHistory>::type      populateThrift  ( const ::CtiLMControlHistoryMsg& imsg );
+IM_EX_MSG MessagePtr<::CtiLMControlHistoryMsg>::type      populateMessage ( const Thrift::LMControlHistory& imsg );
 
-IM_EX_MSG MessagePtr<Thrift::Multi>::type                 serialize   ( const ::CtiMultiMsg& imsg );
-IM_EX_MSG MessagePtr<::CtiMultiMsg>::type                 deserialize ( const Thrift::Multi& imsg );
+IM_EX_MSG MessagePtr<Thrift::Multi>::type                 populateThrift  ( const ::CtiMultiMsg& imsg );
+IM_EX_MSG MessagePtr<::CtiMultiMsg>::type                 populateMessage ( const Thrift::Multi& imsg );
 
-IM_EX_MSG MessagePtr<Thrift::NotifAlarm>::type            serialize   ( const ::CtiNotifAlarmMsg& imsg );
-IM_EX_MSG MessagePtr<::CtiNotifAlarmMsg>::type            deserialize ( const Thrift::NotifAlarm& imsg );
+IM_EX_MSG MessagePtr<Thrift::NotifAlarm>::type            populateThrift  ( const ::CtiNotifAlarmMsg& imsg );
+IM_EX_MSG MessagePtr<::CtiNotifAlarmMsg>::type            populateMessage ( const Thrift::NotifAlarm& imsg );
 
-IM_EX_MSG MessagePtr<Thrift::NotifEmail>::type            serialize   ( const ::CtiNotifEmailMsg& imsg );
-IM_EX_MSG MessagePtr<::CtiNotifEmailMsg>::type            deserialize ( const Thrift::NotifEmail& imsg );
+IM_EX_MSG MessagePtr<Thrift::NotifEmail>::type            populateThrift  ( const ::CtiNotifEmailMsg& imsg );
+IM_EX_MSG MessagePtr<::CtiNotifEmailMsg>::type            populateMessage ( const Thrift::NotifEmail& imsg );
 
-IM_EX_MSG MessagePtr<Thrift::NotifCustomerEmail>::type    serialize   ( const ::CtiCustomerNotifEmailMsg& imsg );
-IM_EX_MSG MessagePtr<::CtiCustomerNotifEmailMsg>::type    deserialize ( const Thrift::NotifCustomerEmail& imsg );
+IM_EX_MSG MessagePtr<Thrift::NotifCustomerEmail>::type    populateThrift  ( const ::CtiCustomerNotifEmailMsg& imsg );
+IM_EX_MSG MessagePtr<::CtiCustomerNotifEmailMsg>::type    populateMessage ( const Thrift::NotifCustomerEmail& imsg );
 
-IM_EX_MSG MessagePtr<Thrift::NotifLMControl>::type        serialize   ( const ::CtiNotifLMControlMsg& imsg );
-IM_EX_MSG MessagePtr<::CtiNotifLMControlMsg>::type        deserialize ( const Thrift::NotifLMControl& imsg );
+IM_EX_MSG MessagePtr<Thrift::NotifLMControl>::type        populateThrift  ( const ::CtiNotifLMControlMsg& imsg );
+IM_EX_MSG MessagePtr<::CtiNotifLMControlMsg>::type        populateMessage ( const Thrift::NotifLMControl& imsg );
 
-IM_EX_MSG MessagePtr<Thrift::Request>::type               serialize   ( const ::CtiRequestMsg& imsg );
-IM_EX_MSG MessagePtr<::CtiRequestMsg>::type               deserialize ( const Thrift::Request& imsg );
+IM_EX_MSG MessagePtr<Thrift::Request>::type               populateThrift  ( const ::CtiRequestMsg& imsg );
+IM_EX_MSG MessagePtr<::CtiRequestMsg>::type               populateMessage ( const Thrift::Request& imsg );
 
-IM_EX_MSG MessagePtr<Thrift::Return>::type                serialize   ( const ::CtiReturnMsg& imsg );
-IM_EX_MSG MessagePtr<::CtiReturnMsg>::type                deserialize ( const Thrift::Return& imsg );
+IM_EX_MSG MessagePtr<Thrift::Return>::type                populateThrift  ( const ::CtiReturnMsg& imsg );
+IM_EX_MSG MessagePtr<::CtiReturnMsg>::type                populateMessage ( const Thrift::Return& imsg );
 
-IM_EX_MSG MessagePtr<Thrift::PointData>::type             serialize   ( const ::CtiPointDataMsg& imsg );
-IM_EX_MSG MessagePtr<::CtiPointDataMsg>::type             deserialize ( const Thrift::PointData& imsg );
+IM_EX_MSG MessagePtr<Thrift::PointData>::type             populateThrift  ( const ::CtiPointDataMsg& imsg );
+IM_EX_MSG MessagePtr<::CtiPointDataMsg>::type             populateMessage ( const Thrift::PointData& imsg );
 
-IM_EX_MSG MessagePtr<Thrift::PointRegistration>::type     serialize   ( const ::CtiPointRegistrationMsg& imsg );
-IM_EX_MSG MessagePtr<::CtiPointRegistrationMsg>::type     deserialize ( const Thrift::PointRegistration& imsg );
+IM_EX_MSG MessagePtr<Thrift::PointRegistration>::type     populateThrift  ( const ::CtiPointRegistrationMsg& imsg );
+IM_EX_MSG MessagePtr<::CtiPointRegistrationMsg>::type     populateMessage ( const Thrift::PointRegistration& imsg );
 
-IM_EX_MSG MessagePtr<Thrift::QueueData>::type             serialize   ( const ::CtiQueueDataMsg& imsg );
-IM_EX_MSG MessagePtr<::CtiQueueDataMsg>::type             deserialize ( const Thrift::QueueData& imsg );
+IM_EX_MSG MessagePtr<Thrift::QueueData>::type             populateThrift  ( const ::CtiQueueDataMsg& imsg );
+IM_EX_MSG MessagePtr<::CtiQueueDataMsg>::type             populateMessage ( const Thrift::QueueData& imsg );
 
-IM_EX_MSG MessagePtr<Thrift::Registration>::type          serialize   ( const ::CtiRegistrationMsg& imsg );
-IM_EX_MSG MessagePtr<::CtiRegistrationMsg>::type          deserialize ( const Thrift::Registration& imsg );
+IM_EX_MSG MessagePtr<Thrift::Registration>::type          populateThrift  ( const ::CtiRegistrationMsg& imsg );
+IM_EX_MSG MessagePtr<::CtiRegistrationMsg>::type          populateMessage ( const Thrift::Registration& imsg );
 
-IM_EX_MSG MessagePtr<Thrift::RequestCancel>::type         serialize   ( const ::CtiRequestCancelMsg& imsg );
-IM_EX_MSG MessagePtr<::CtiRequestCancelMsg>::type         deserialize ( const Thrift::RequestCancel& imsg );
+IM_EX_MSG MessagePtr<Thrift::RequestCancel>::type         populateThrift  ( const ::CtiRequestCancelMsg& imsg );
+IM_EX_MSG MessagePtr<::CtiRequestCancelMsg>::type         populateMessage ( const Thrift::RequestCancel& imsg );
 
-IM_EX_MSG MessagePtr<Thrift::ServerRequest>::type         serialize   ( const ::CtiServerRequestMsg& imsg );
-IM_EX_MSG MessagePtr<::CtiServerRequestMsg>::type         deserialize ( const Thrift::ServerRequest& imsg );
+IM_EX_MSG MessagePtr<Thrift::ServerRequest>::type         populateThrift  ( const ::CtiServerRequestMsg& imsg );
+IM_EX_MSG MessagePtr<::CtiServerRequestMsg>::type         populateMessage ( const Thrift::ServerRequest& imsg );
 
-IM_EX_MSG MessagePtr<Thrift::ServerResponse>::type        serialize   ( const ::CtiServerResponseMsg& imsg );
-IM_EX_MSG MessagePtr<::CtiServerResponseMsg>::type        deserialize ( const Thrift::ServerResponse& imsg );
+IM_EX_MSG MessagePtr<Thrift::ServerResponse>::type        populateThrift  ( const ::CtiServerResponseMsg& imsg );
+IM_EX_MSG MessagePtr<::CtiServerResponseMsg>::type        populateMessage ( const Thrift::ServerResponse& imsg );
 
-IM_EX_MSG MessagePtr<Thrift::Signal>::type                serialize   ( const ::CtiSignalMsg& imsg );
-IM_EX_MSG MessagePtr<::CtiSignalMsg>::type                deserialize ( const Thrift::Signal& imsg );
+IM_EX_MSG MessagePtr<Thrift::Signal>::type                populateThrift  ( const ::CtiSignalMsg& imsg );
+IM_EX_MSG MessagePtr<::CtiSignalMsg>::type                populateMessage ( const Thrift::Signal& imsg );
 
-IM_EX_MSG MessagePtr<Thrift::Tag>::type                   serialize   ( const ::CtiTagMsg& imsg );
-IM_EX_MSG MessagePtr<::CtiTagMsg>::type                   deserialize ( const Thrift::Tag& imsg );
+IM_EX_MSG MessagePtr<Thrift::Tag>::type                   populateThrift  ( const ::CtiTagMsg& imsg );
+IM_EX_MSG MessagePtr<::CtiTagMsg>::type                   populateMessage ( const Thrift::Tag& imsg );
 
-IM_EX_MSG MessagePtr<Thrift::Trace>::type                 serialize   ( const ::CtiTraceMsg& imsg );
-IM_EX_MSG MessagePtr<::CtiTraceMsg>::type                 deserialize ( const Thrift::Trace& imsg );
+IM_EX_MSG MessagePtr<Thrift::Trace>::type                 populateThrift  ( const ::CtiTraceMsg& imsg );
+IM_EX_MSG MessagePtr<::CtiTraceMsg>::type                 populateMessage ( const Thrift::Trace& imsg );
 
 }
 }

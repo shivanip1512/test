@@ -64,20 +64,20 @@ public:
 
     // registration method
     template <typename Msg_t, typename ThriftMsg_t>
-    void registerSerializer( typename MessagePtr<ThriftMsg_t>::type (*serializeFn) (const Msg_t&),
-                             typename MessagePtr<Msg_t>::type (*deserializeFn) (const ThriftMsg_t&),
+    void registerSerializer( typename MessagePtr<ThriftMsg_t>::type (*thriftPopulator) (const Msg_t&),
+                             typename MessagePtr<Msg_t>::type (*messagePopulator) (const ThriftMsg_t&),
                              const std::string &msgType )
     {
         const std::string qualifiedMsgType = _prefix + msgType;
 
-        if( serializeFn != NULL )
+        if( thriftPopulator != NULL )
         {
-            _serializers[typeid(Msg_t).name()] = new Serializer<MessageBase_t, Msg_t, ThriftMsg_t>( serializeFn, qualifiedMsgType );
+            _serializers[typeid(Msg_t).name()] = new Serializer<MessageBase_t, Msg_t, ThriftMsg_t>( thriftPopulator, qualifiedMsgType );
         }
 
-        if( deserializeFn != NULL )
+        if( messagePopulator != NULL )
         {
-            _deserializers[qualifiedMsgType] = new Deserializer<MessageBase_t, Msg_t, ThriftMsg_t>( deserializeFn );
+            _deserializers[qualifiedMsgType] = new Deserializer<MessageBase_t, Msg_t, ThriftMsg_t>( messagePopulator );
         }
     }
 
@@ -138,14 +138,14 @@ public:
 template <typename MessageBase_t, typename Msg_t, typename ThriftMsg_t>
 class Serializer : public SerializerBase<MessageBase_t>
 {
-    typedef typename MessagePtr<ThriftMsg_t>::type (*serializeFunction) (const Msg_t&);
+    typedef typename MessagePtr<ThriftMsg_t>::type (*ThriftMsgPopulator) (const Msg_t&);
 
-    const serializeFunction _serializeFn;
-    const std::string       _msgType;
+    const ThriftMsgPopulator _thriftPopulateFn;
+    const std::string        _msgType;
 
 public:
-    Serializer( serializeFunction fn, const std::string& msgType ) :
-        _serializeFn(fn),
+    Serializer( ThriftMsgPopulator fn, const std::string& msgType ) :
+        _thriftPopulateFn(fn),
         _msgType(msgType)
     {
     }
@@ -159,7 +159,7 @@ public:
             apache::thrift::protocol::TBinaryProtocol protocol( transport );
 
             // call function pointer to translate from MessageBase_t to thrift message
-            MessagePtr<ThriftMsg_t>::type omsg = _serializeFn( *p_imsg );
+            MessagePtr<ThriftMsg_t>::type omsg = _thriftPopulateFn( *p_imsg );
 
             if( !omsg.get() )
             {
@@ -216,12 +216,12 @@ ThriftMsg_t DeserializeThriftBytes( const std::vector<unsigned char>& ibytes )
 template <typename MessageBase_t, typename Msg_t, typename ThriftMsg_t>
 class Deserializer : public DeserializerBase<MessageBase_t>
 {
-    typedef typename MessagePtr<Msg_t>::type (*deserializeFunction) (const ThriftMsg_t&);
-    const deserializeFunction _deserializeFn;
+    typedef typename MessagePtr<Msg_t>::type (*MessagePopulator) (const ThriftMsg_t&);
+    const MessagePopulator _messagePopulateFn;
 
 public:
-    Deserializer(deserializeFunction fn) :
-        _deserializeFn(fn)
+    Deserializer(MessagePopulator fn) :
+        _messagePopulateFn(fn)
     {
     }
 
@@ -232,7 +232,7 @@ public:
         ThriftMsg_t imsg = DeserializeThriftBytes<ThriftMsg_t>( ibytes );
 
         // call function pointer to translate from thrift message to MessageBase_t
-        return typename MessagePtr<MessageBase_t>::type( _deserializeFn( imsg ).release() );
+        return typename MessagePtr<MessageBase_t>::type( _messagePopulateFn( imsg ).release() );
     }
 };
 

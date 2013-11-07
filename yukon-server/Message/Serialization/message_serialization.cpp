@@ -18,27 +18,27 @@ struct MessageFactoryRegister
 {
     MessageFactoryRegister()
     {
-        g_messageFactory.registerSerializer <::CtiMessage,                 Thrift::Message>              ( &serialize, &deserialize, "Message" );
-        g_messageFactory.registerSerializer <::CtiCommandMsg,              Thrift::Command>              ( &serialize, &deserialize, "Command" );
-        g_messageFactory.registerSerializer <::CtiDBChangeMsg,             Thrift::DBChange>             ( &serialize, &deserialize, "DBChange" );
-        g_messageFactory.registerSerializer <::CtiLMControlHistoryMsg,     Thrift::LMControlHistory>     ( &serialize, &deserialize, "LMControlHistory" );
-        g_messageFactory.registerSerializer <::CtiMultiMsg,                Thrift::Multi>                ( &serialize, &deserialize, "Multi" );
-        g_messageFactory.registerSerializer <::CtiNotifAlarmMsg,           Thrift::NotifAlarm>           ( &serialize, &deserialize, "NotifAlarm" );
-        g_messageFactory.registerSerializer <::CtiNotifEmailMsg,           Thrift::NotifEmail>           ( &serialize, &deserialize, "NotifEmail" );
-        g_messageFactory.registerSerializer <::CtiCustomerNotifEmailMsg,   Thrift::NotifCustomerEmail>   ( &serialize, &deserialize, "NotifCustomerEmail" );
-        g_messageFactory.registerSerializer <::CtiNotifLMControlMsg,       Thrift::NotifLMControl>       ( &serialize, &deserialize, "NotifLMControl" );
-        g_messageFactory.registerSerializer <::CtiRequestMsg,              Thrift::Request>              ( &serialize, &deserialize, "Request" );
-        g_messageFactory.registerSerializer <::CtiReturnMsg,               Thrift::Return>               ( &serialize, &deserialize, "Return" );
-        g_messageFactory.registerSerializer <::CtiPointDataMsg,            Thrift::PointData>            ( &serialize, &deserialize, "PointData" );
-        g_messageFactory.registerSerializer <::CtiPointRegistrationMsg,    Thrift::PointRegistration>    ( &serialize, &deserialize, "PointRegistration" );
-        g_messageFactory.registerSerializer <::CtiQueueDataMsg,            Thrift::QueueData>            ( &serialize, &deserialize, "QueueData" );
-        g_messageFactory.registerSerializer <::CtiRegistrationMsg,         Thrift::Registration>         ( &serialize, &deserialize, "Registration" );
-        g_messageFactory.registerSerializer <::CtiRequestCancelMsg,        Thrift::RequestCancel>        ( &serialize, &deserialize, "RequestCancel" );
-        g_messageFactory.registerSerializer <::CtiServerRequestMsg,        Thrift::ServerRequest>        ( &serialize, &deserialize, "ServerRequest" );
-        g_messageFactory.registerSerializer <::CtiServerResponseMsg,       Thrift::ServerResponse>       ( &serialize, &deserialize, "ServerResponse" );
-        g_messageFactory.registerSerializer <::CtiSignalMsg,               Thrift::Signal>               ( &serialize, &deserialize, "Signal" );
-        g_messageFactory.registerSerializer <::CtiTagMsg,                  Thrift::Tag>                  ( &serialize, &deserialize, "Tag" );
-        g_messageFactory.registerSerializer <::CtiTraceMsg,                Thrift::Trace>                ( &serialize, &deserialize, "Trace" );
+        g_messageFactory.registerSerializer <::CtiMessage,                 Thrift::Message>              ( &populateThrift, &populateMessage, "Message" );
+        g_messageFactory.registerSerializer <::CtiCommandMsg,              Thrift::Command>              ( &populateThrift, &populateMessage, "Command" );
+        g_messageFactory.registerSerializer <::CtiDBChangeMsg,             Thrift::DBChange>             ( &populateThrift, &populateMessage, "DBChange" );
+        g_messageFactory.registerSerializer <::CtiLMControlHistoryMsg,     Thrift::LMControlHistory>     ( &populateThrift, &populateMessage, "LMControlHistory" );
+        g_messageFactory.registerSerializer <::CtiMultiMsg,                Thrift::Multi>                ( &populateThrift, &populateMessage, "Multi" );
+        g_messageFactory.registerSerializer <::CtiNotifAlarmMsg,           Thrift::NotifAlarm>           ( &populateThrift, &populateMessage, "NotifAlarm" );
+        g_messageFactory.registerSerializer <::CtiNotifEmailMsg,           Thrift::NotifEmail>           ( &populateThrift, &populateMessage, "NotifEmail" );
+        g_messageFactory.registerSerializer <::CtiCustomerNotifEmailMsg,   Thrift::NotifCustomerEmail>   ( &populateThrift, &populateMessage, "NotifCustomerEmail" );
+        g_messageFactory.registerSerializer <::CtiNotifLMControlMsg,       Thrift::NotifLMControl>       ( &populateThrift, &populateMessage, "NotifLMControl" );
+        g_messageFactory.registerSerializer <::CtiRequestMsg,              Thrift::Request>              ( &populateThrift, &populateMessage, "Request" );
+        g_messageFactory.registerSerializer <::CtiReturnMsg,               Thrift::Return>               ( &populateThrift, &populateMessage, "Return" );
+        g_messageFactory.registerSerializer <::CtiPointDataMsg,            Thrift::PointData>            ( &populateThrift, &populateMessage, "PointData" );
+        g_messageFactory.registerSerializer <::CtiPointRegistrationMsg,    Thrift::PointRegistration>    ( &populateThrift, &populateMessage, "PointRegistration" );
+        g_messageFactory.registerSerializer <::CtiQueueDataMsg,            Thrift::QueueData>            ( &populateThrift, &populateMessage, "QueueData" );
+        g_messageFactory.registerSerializer <::CtiRegistrationMsg,         Thrift::Registration>         ( &populateThrift, &populateMessage, "Registration" );
+        g_messageFactory.registerSerializer <::CtiRequestCancelMsg,        Thrift::RequestCancel>        ( &populateThrift, &populateMessage, "RequestCancel" );
+        g_messageFactory.registerSerializer <::CtiServerRequestMsg,        Thrift::ServerRequest>        ( &populateThrift, &populateMessage, "ServerRequest" );
+        g_messageFactory.registerSerializer <::CtiServerResponseMsg,       Thrift::ServerResponse>       ( &populateThrift, &populateMessage, "ServerResponse" );
+        g_messageFactory.registerSerializer <::CtiSignalMsg,               Thrift::Signal>               ( &populateThrift, &populateMessage, "Signal" );
+        g_messageFactory.registerSerializer <::CtiTagMsg,                  Thrift::Tag>                  ( &populateThrift, &populateMessage, "Tag" );
+        g_messageFactory.registerSerializer <::CtiTraceMsg,                Thrift::Trace>                ( &populateThrift, &populateMessage, "Trace" );
     }
 };
 
@@ -50,7 +50,7 @@ const IM_EX_MSG MessageFactoryRegister g_messageFactoryRegister;
 //  Message
 //=============================================================================
 
-IM_EX_MSG MessagePtr<Thrift::Message>::type serialize( const ::CtiMessage& imsg )
+IM_EX_MSG MessagePtr<Thrift::Message>::type populateThrift( const ::CtiMessage& imsg )
 {
     MessagePtr<Thrift::Message>::type omsg( new Thrift::Message );
 
@@ -64,7 +64,7 @@ IM_EX_MSG MessagePtr<Thrift::Message>::type serialize( const ::CtiMessage& imsg 
     return omsg;
 }
 
-IM_EX_MSG MessagePtr<::CtiMessage>::type deserialize( const Thrift::Message& imsg )
+IM_EX_MSG MessagePtr<::CtiMessage>::type populateMessage( const Thrift::Message& imsg )
 {
     MessagePtr<::CtiMessage>::type omsg( new ::CtiMessage );
 
@@ -82,11 +82,11 @@ IM_EX_MSG MessagePtr<::CtiMessage>::type deserialize( const Thrift::Message& ims
 //  Command
 //=============================================================================
 
-IM_EX_MSG MessagePtr<Thrift::Command>::type serialize( const ::CtiCommandMsg& imsg )
+IM_EX_MSG MessagePtr<Thrift::Command>::type populateThrift( const ::CtiCommandMsg& imsg )
 {
     MessagePtr<Thrift::Command>::type omsg( new Thrift::Command );
 
-    omsg->__set__baseMessage            ( *serialize( static_cast<const ::CtiMessage&>(imsg) ));
+    omsg->__set__baseMessage            ( *populateThrift( static_cast<const ::CtiMessage&>(imsg) ));
     omsg->__set__operation              ( imsg.getOperation() );
     omsg->__set__opString               ( imsg.getOpString()  );
     omsg->__set__opArgCount             ( imsg.getOpArgList().size() );
@@ -95,11 +95,11 @@ IM_EX_MSG MessagePtr<Thrift::Command>::type serialize( const ::CtiCommandMsg& im
     return omsg;
 }
 
-IM_EX_MSG MessagePtr<::CtiCommandMsg>::type deserialize( const Thrift::Command& imsg )
+IM_EX_MSG MessagePtr<::CtiCommandMsg>::type populateMessage( const Thrift::Command& imsg )
 {
     MessagePtr<::CtiCommandMsg>::type omsg( new ::CtiCommandMsg );
 
-    static_cast<::CtiMessage&>(*omsg)   = *deserialize( imsg._baseMessage );
+    static_cast<::CtiMessage&>(*omsg)   = *populateMessage( imsg._baseMessage );
     omsg->setOperation                  ( imsg._operation );
     omsg->setOpString                   ( imsg._opString );
     omsg->setOpArgList                  ( imsg._opArgList );
@@ -111,11 +111,11 @@ IM_EX_MSG MessagePtr<::CtiCommandMsg>::type deserialize( const Thrift::Command& 
 //  DBChange
 //=============================================================================
 
-IM_EX_MSG MessagePtr<Thrift::DBChange>::type serialize( const ::CtiDBChangeMsg& imsg )
+IM_EX_MSG MessagePtr<Thrift::DBChange>::type populateThrift( const ::CtiDBChangeMsg& imsg )
 {
     MessagePtr<Thrift::DBChange>::type omsg( new Thrift::DBChange );
 
-    omsg->__set__baseMessage            ( *serialize( static_cast<const ::CtiMessage&>(imsg) ));
+    omsg->__set__baseMessage            ( *populateThrift( static_cast<const ::CtiMessage&>(imsg) ));
     omsg->__set__id                     ( imsg.getId() );
     omsg->__set__database               ( imsg.getDatabase() );
     omsg->__set__category               ( imsg.getCategory() );
@@ -125,10 +125,10 @@ IM_EX_MSG MessagePtr<Thrift::DBChange>::type serialize( const ::CtiDBChangeMsg& 
     return omsg;
 }
 
-IM_EX_MSG MessagePtr<::CtiDBChangeMsg>::type deserialize( const Thrift::DBChange& imsg )
+IM_EX_MSG MessagePtr<::CtiDBChangeMsg>::type populateMessage( const Thrift::DBChange& imsg )
 {
     MessagePtr<::CtiDBChangeMsg>::type omsg ( new ::CtiDBChangeMsg(
-                                          *deserialize( imsg._baseMessage ),
+                                          *populateMessage( imsg._baseMessage ),
                                           imsg._id,
                                           imsg._database,
                                           imsg._category,
@@ -142,11 +142,11 @@ IM_EX_MSG MessagePtr<::CtiDBChangeMsg>::type deserialize( const Thrift::DBChange
 //  LMControlHistory
 //=============================================================================
 
-IM_EX_MSG MessagePtr<Thrift::LMControlHistory>::type serialize( const ::CtiLMControlHistoryMsg& imsg )
+IM_EX_MSG MessagePtr<Thrift::LMControlHistory>::type populateThrift( const ::CtiLMControlHistoryMsg& imsg )
 {
     MessagePtr<Thrift::LMControlHistory>::type omsg( new Thrift::LMControlHistory );
 
-    omsg->__set__baseMessage            ( *serialize( static_cast<const ::CtiMessage&>(imsg) ));
+    omsg->__set__baseMessage            ( *populateThrift( static_cast<const ::CtiMessage&>(imsg) ));
     omsg->__set__paoId                  ( imsg.getPAOId() );
     omsg->__set__pointId                ( imsg.getPointId() );
     omsg->__set__rawState               ( imsg.getRawState() );
@@ -162,11 +162,11 @@ IM_EX_MSG MessagePtr<Thrift::LMControlHistory>::type serialize( const ::CtiLMCon
     return omsg;
 }
 
-IM_EX_MSG MessagePtr<::CtiLMControlHistoryMsg>::type deserialize( const Thrift::LMControlHistory& imsg )
+IM_EX_MSG MessagePtr<::CtiLMControlHistoryMsg>::type populateMessage( const Thrift::LMControlHistory& imsg )
 {
     MessagePtr<::CtiLMControlHistoryMsg>::type omsg( new ::CtiLMControlHistoryMsg );
 
-    static_cast<::CtiMessage&>(*omsg)   = *deserialize( imsg._baseMessage );
+    static_cast<::CtiMessage&>(*omsg)   = *populateMessage( imsg._baseMessage );
     omsg->setPAOId                      ( imsg._paoId );
     omsg->setPointId                    ( imsg._pointId );
     omsg->setRawState                   ( imsg._rawState );
@@ -186,11 +186,11 @@ IM_EX_MSG MessagePtr<::CtiLMControlHistoryMsg>::type deserialize( const Thrift::
 //  Multi
 //=============================================================================
 
-IM_EX_MSG MessagePtr<Thrift::Multi>::type serialize( const ::CtiMultiMsg& imsg )
+IM_EX_MSG MessagePtr<Thrift::Multi>::type populateThrift( const ::CtiMultiMsg& imsg )
 {
     MessagePtr<Thrift::Multi>::type omsg( new Thrift::Multi );
 
-    omsg->__set__baseMessage( *serialize( static_cast<const ::CtiMessage&>(imsg) ));
+    omsg->__set__baseMessage( *populateThrift( static_cast<const ::CtiMessage&>(imsg) ));
 
     vector<Thrift::GenericMessage> bag;
 
@@ -209,11 +209,11 @@ IM_EX_MSG MessagePtr<Thrift::Multi>::type serialize( const ::CtiMultiMsg& imsg )
     return omsg;
 }
 
-IM_EX_MSG MessagePtr<::CtiMultiMsg>::type deserialize( const Thrift::Multi& imsg )
+IM_EX_MSG MessagePtr<::CtiMultiMsg>::type populateMessage( const Thrift::Multi& imsg )
 {
     MessagePtr<::CtiMultiMsg>::type omsg( new ::CtiMultiMsg );
 
-    static_cast<::CtiMessage&>(*omsg) = *deserialize( imsg._baseMessage );
+    static_cast<::CtiMessage&>(*omsg) = *populateMessage( imsg._baseMessage );
 
     for each( const Thrift::GenericMessage generic_msg in imsg._bag )
     {
@@ -232,11 +232,11 @@ IM_EX_MSG MessagePtr<::CtiMultiMsg>::type deserialize( const Thrift::Multi& imsg
 //  NotifAlarm
 //=============================================================================
 
-IM_EX_MSG MessagePtr<Thrift::NotifAlarm>::type serialize( const ::CtiNotifAlarmMsg& imsg )
+IM_EX_MSG MessagePtr<Thrift::NotifAlarm>::type populateThrift( const ::CtiNotifAlarmMsg& imsg )
 {
     MessagePtr<Thrift::NotifAlarm>::type omsg( new Thrift::NotifAlarm );
 
-    omsg->__set__baseMessage            ( *serialize( static_cast<const ::CtiMessage&>(imsg) ));
+    omsg->__set__baseMessage            ( *populateThrift( static_cast<const ::CtiMessage&>(imsg) ));
     omsg->__set__notifGroupIds          ( imsg.getNotifGroupIDs() );
     omsg->__set__categoryId             ( imsg.getCategoryID() );
     omsg->__set__pointId                ( imsg.getPointID() );
@@ -249,11 +249,11 @@ IM_EX_MSG MessagePtr<Thrift::NotifAlarm>::type serialize( const ::CtiNotifAlarmM
     return omsg;
 }
 
-IM_EX_MSG MessagePtr<::CtiNotifAlarmMsg>::type deserialize( const Thrift::NotifAlarm& imsg )
+IM_EX_MSG MessagePtr<::CtiNotifAlarmMsg>::type populateMessage( const Thrift::NotifAlarm& imsg )
 {
     MessagePtr<::CtiNotifAlarmMsg>::type omsg( new ::CtiNotifAlarmMsg );
 
-    static_cast<::CtiMessage&>(*omsg)   = *deserialize( imsg._baseMessage );
+    static_cast<::CtiMessage&>(*omsg)   = *populateMessage( imsg._baseMessage );
     omsg->setNotifGroupIDs              ( imsg._notifGroupIds );
     omsg->setCategoryID                 ( imsg._categoryId );
     omsg->setPointID                    ( imsg._pointId );
@@ -270,11 +270,11 @@ IM_EX_MSG MessagePtr<::CtiNotifAlarmMsg>::type deserialize( const Thrift::NotifA
 //  NotifEmail
 //=============================================================================
 
-IM_EX_MSG MessagePtr<Thrift::NotifEmail>::type serialize( const ::CtiNotifEmailMsg& imsg )
+IM_EX_MSG MessagePtr<Thrift::NotifEmail>::type populateThrift( const ::CtiNotifEmailMsg& imsg )
 {
     MessagePtr<Thrift::NotifEmail>::type omsg( new Thrift::NotifEmail );
 
-    omsg->__set__baseMessage            ( *serialize( static_cast<const ::CtiMessage&>(imsg) ));
+    omsg->__set__baseMessage            ( *populateThrift( static_cast<const ::CtiMessage&>(imsg) ));
     omsg->__set__to                     ( imsg.getTo() );
     omsg->__set__notifGroupId           ( imsg.getNotifGroupId() );
     omsg->__set__subject                ( imsg.getSubject() );
@@ -285,11 +285,11 @@ IM_EX_MSG MessagePtr<Thrift::NotifEmail>::type serialize( const ::CtiNotifEmailM
     return omsg;
 }
 
-IM_EX_MSG MessagePtr<::CtiNotifEmailMsg>::type deserialize( const Thrift::NotifEmail& imsg )
+IM_EX_MSG MessagePtr<::CtiNotifEmailMsg>::type populateMessage( const Thrift::NotifEmail& imsg )
 {
     MessagePtr<::CtiNotifEmailMsg>::type omsg( new ::CtiNotifEmailMsg );
 
-    static_cast<::CtiMessage&>(*omsg)   = *deserialize( imsg._baseMessage );
+    static_cast<::CtiMessage&>(*omsg)   = *populateMessage( imsg._baseMessage );
     omsg->setTo                         ( imsg._to );
     omsg->setNotifGroupId               ( imsg._notifGroupId );
     omsg->setSubject                    ( imsg._subject );
@@ -304,11 +304,11 @@ IM_EX_MSG MessagePtr<::CtiNotifEmailMsg>::type deserialize( const Thrift::NotifE
 //  CustomerNotifEmail
 //=============================================================================
 
-IM_EX_MSG MessagePtr<Thrift::NotifCustomerEmail>::type serialize( const ::CtiCustomerNotifEmailMsg& imsg )
+IM_EX_MSG MessagePtr<Thrift::NotifCustomerEmail>::type populateThrift( const ::CtiCustomerNotifEmailMsg& imsg )
 {
     MessagePtr<Thrift::NotifCustomerEmail>::type omsg( new Thrift::NotifCustomerEmail );
 
-    omsg->__set__baseMessage            ( *serialize( static_cast<const ::CtiMessage&>(imsg) ));
+    omsg->__set__baseMessage            ( *populateThrift( static_cast<const ::CtiMessage&>(imsg) ));
     omsg->__set__to                     ( imsg.getTo() );
     omsg->__set__customerId             ( imsg.getCustomerId() );
     omsg->__set__subject                ( imsg.getSubject() );
@@ -319,11 +319,11 @@ IM_EX_MSG MessagePtr<Thrift::NotifCustomerEmail>::type serialize( const ::CtiCus
     return omsg;
 }
 
-IM_EX_MSG MessagePtr<::CtiCustomerNotifEmailMsg>::type deserialize( const Thrift::NotifCustomerEmail& imsg )
+IM_EX_MSG MessagePtr<::CtiCustomerNotifEmailMsg>::type populateMessage( const Thrift::NotifCustomerEmail& imsg )
 {
     MessagePtr<::CtiCustomerNotifEmailMsg>::type omsg( new ::CtiCustomerNotifEmailMsg );
 
-    static_cast<::CtiMessage&>(*omsg)   = *deserialize( imsg._baseMessage );
+    static_cast<::CtiMessage&>(*omsg)   = *populateMessage( imsg._baseMessage );
     omsg->setTo                         ( imsg._to );
     omsg->setCustomerId                 ( imsg._customerId );
     omsg->setSubject                    ( imsg._subject );
@@ -338,11 +338,11 @@ IM_EX_MSG MessagePtr<::CtiCustomerNotifEmailMsg>::type deserialize( const Thrift
 //  NotifLMControl
 //=============================================================================
 
-IM_EX_MSG MessagePtr<Thrift::NotifLMControl>::type serialize( const ::CtiNotifLMControlMsg& imsg )
+IM_EX_MSG MessagePtr<Thrift::NotifLMControl>::type populateThrift( const ::CtiNotifLMControlMsg& imsg )
 {
     MessagePtr<Thrift::NotifLMControl>::type omsg( new Thrift::NotifLMControl );
 
-    omsg->__set__baseMessage            ( *serialize( static_cast<const ::CtiMessage&>(imsg) ));
+    omsg->__set__baseMessage            ( *populateThrift( static_cast<const ::CtiMessage&>(imsg) ));
     omsg->__set__notifGroupIds          ( imsg.getNotifGroupIDs() );
     omsg->__set__notifType              ( imsg.getNotifType() );
     omsg->__set__programId              ( imsg.getProgramID() );
@@ -352,11 +352,11 @@ IM_EX_MSG MessagePtr<Thrift::NotifLMControl>::type serialize( const ::CtiNotifLM
     return omsg;
 }
 
-IM_EX_MSG MessagePtr<::CtiNotifLMControlMsg>::type deserialize( const Thrift::NotifLMControl& imsg )
+IM_EX_MSG MessagePtr<::CtiNotifLMControlMsg>::type populateMessage( const Thrift::NotifLMControl& imsg )
 {
     MessagePtr<::CtiNotifLMControlMsg>::type omsg( new ::CtiNotifLMControlMsg );
 
-    static_cast<::CtiMessage&>(*omsg)   = *deserialize( imsg._baseMessage );
+    static_cast<::CtiMessage&>(*omsg)   = *populateMessage( imsg._baseMessage );
     omsg->setNotifGroupIDs              ( imsg._notifGroupIds );
     omsg->setNotifType                  ( imsg._notifType );
     omsg->setProgramID                  ( imsg._programId );
@@ -370,11 +370,11 @@ IM_EX_MSG MessagePtr<::CtiNotifLMControlMsg>::type deserialize( const Thrift::No
 //  Request
 //=============================================================================
 
-IM_EX_MSG MessagePtr<Thrift::Request>::type serialize( const ::CtiRequestMsg& imsg )
+IM_EX_MSG MessagePtr<Thrift::Request>::type populateThrift( const ::CtiRequestMsg& imsg )
 {
     MessagePtr<Thrift::Request>::type omsg( new Thrift::Request );
 
-    omsg->__set__baseMessage            ( *serialize( static_cast<const ::CtiMessage&>(imsg) ));
+    omsg->__set__baseMessage            ( *populateThrift( static_cast<const ::CtiMessage&>(imsg) ));
     omsg->__set__deviceId               ( imsg.DeviceId() );
     omsg->__set__commandString          ( imsg.CommandString() );
     omsg->__set__routeId                ( imsg.RouteId() );
@@ -387,11 +387,11 @@ IM_EX_MSG MessagePtr<Thrift::Request>::type serialize( const ::CtiRequestMsg& im
     return omsg;
 }
 
-IM_EX_MSG MessagePtr<::CtiRequestMsg>::type deserialize( const Thrift::Request& imsg )
+IM_EX_MSG MessagePtr<::CtiRequestMsg>::type populateMessage( const Thrift::Request& imsg )
 {
     MessagePtr<::CtiRequestMsg>::type omsg( new ::CtiRequestMsg );
 
-    static_cast<::CtiMessage&>(*omsg)   = *deserialize( imsg._baseMessage );
+    static_cast<::CtiMessage&>(*omsg)   = *populateMessage( imsg._baseMessage );
     omsg->setDeviceId                   ( imsg._deviceId );
     omsg->setCommandString              ( imsg._commandString );
     omsg->setRouteId                    ( imsg._routeId );
@@ -408,11 +408,11 @@ IM_EX_MSG MessagePtr<::CtiRequestMsg>::type deserialize( const Thrift::Request& 
 //  Return
 //=============================================================================
 
-IM_EX_MSG MessagePtr<Thrift::Return>::type serialize( const ::CtiReturnMsg& imsg )
+IM_EX_MSG MessagePtr<Thrift::Return>::type populateThrift( const ::CtiReturnMsg& imsg )
 {
     MessagePtr<Thrift::Return>::type omsg( new Thrift::Return );
 
-    omsg->__set__baseMessage            ( *serialize( static_cast<const ::CtiMultiMsg&>(imsg) ));
+    omsg->__set__baseMessage            ( *populateThrift( static_cast<const ::CtiMultiMsg&>(imsg) ));
     omsg->__set__deviceId               ( imsg.DeviceId() );
     omsg->__set__commandString          ( imsg.CommandString() );
     omsg->__set__resultString           ( imsg.ResultString() );
@@ -427,11 +427,11 @@ IM_EX_MSG MessagePtr<Thrift::Return>::type serialize( const ::CtiReturnMsg& imsg
     return omsg;
 }
 
-IM_EX_MSG MessagePtr<::CtiReturnMsg>::type deserialize( const Thrift::Return& imsg )
+IM_EX_MSG MessagePtr<::CtiReturnMsg>::type populateMessage( const Thrift::Return& imsg )
 {
     MessagePtr<::CtiReturnMsg>::type omsg( new ::CtiReturnMsg );
 
-    static_cast<::CtiMultiMsg&>(*omsg)  = *deserialize( imsg._baseMessage );
+    static_cast<::CtiMultiMsg&>(*omsg)  = *populateMessage( imsg._baseMessage );
     omsg->setDeviceId                   ( imsg._deviceId );
     omsg->setCommandString              ( imsg._commandString );
     omsg->setResultString               ( imsg._resultString );
@@ -450,11 +450,11 @@ IM_EX_MSG MessagePtr<::CtiReturnMsg>::type deserialize( const Thrift::Return& im
 //  PointData
 //=============================================================================
 
-IM_EX_MSG MessagePtr<Thrift::PointData>::type serialize( const ::CtiPointDataMsg& imsg )
+IM_EX_MSG MessagePtr<Thrift::PointData>::type populateThrift( const ::CtiPointDataMsg& imsg )
 {
     MessagePtr<Thrift::PointData>::type omsg( new Thrift::PointData );
 
-    omsg->__set__baseMessage            ( *serialize( static_cast<const ::CtiMessage&>(imsg) ));
+    omsg->__set__baseMessage            ( *populateThrift( static_cast<const ::CtiMessage&>(imsg) ));
     omsg->__set__id                     ( imsg.getId() );
     omsg->__set__type                   ( imsg.getType() );
     omsg->__set__quality                ( imsg.getQuality() );
@@ -470,11 +470,11 @@ IM_EX_MSG MessagePtr<Thrift::PointData>::type serialize( const ::CtiPointDataMsg
     return omsg;
 }
 
-IM_EX_MSG MessagePtr<::CtiPointDataMsg>::type deserialize( const Thrift::PointData& imsg )
+IM_EX_MSG MessagePtr<::CtiPointDataMsg>::type populateMessage( const Thrift::PointData& imsg )
 {
     MessagePtr<::CtiPointDataMsg>::type omsg( new ::CtiPointDataMsg );
 
-    static_cast<::CtiMessage&>(*omsg)   = *deserialize( imsg._baseMessage );
+    static_cast<::CtiMessage&>(*omsg)   = *populateMessage( imsg._baseMessage );
     omsg->setId                         ( imsg._id );
     omsg->setType                       ( omsg->resolveType( imsg._type ));
     omsg->setQuality                    ( imsg._quality );
@@ -494,22 +494,22 @@ IM_EX_MSG MessagePtr<::CtiPointDataMsg>::type deserialize( const Thrift::PointDa
 //  PointRegistration
 //=============================================================================
 
-IM_EX_MSG MessagePtr<Thrift::PointRegistration>::type serialize( const ::CtiPointRegistrationMsg& imsg )
+IM_EX_MSG MessagePtr<Thrift::PointRegistration>::type populateThrift( const ::CtiPointRegistrationMsg& imsg )
 {
     MessagePtr<Thrift::PointRegistration>::type omsg( new Thrift::PointRegistration );
 
-    omsg->__set__baseMessage            ( *serialize( static_cast<const ::CtiMessage&>(imsg) ));
+    omsg->__set__baseMessage            ( *populateThrift( static_cast<const ::CtiMessage&>(imsg) ));
     omsg->__set__regFlags               ( imsg.getFlags() );
     omsg->__set__pointList              ( transformContainer<vector<int32_t>>( imsg.getPointList() ));
 
     return omsg;
 }
 
-IM_EX_MSG MessagePtr<::CtiPointRegistrationMsg>::type deserialize( const Thrift::PointRegistration& imsg )
+IM_EX_MSG MessagePtr<::CtiPointRegistrationMsg>::type populateMessage( const Thrift::PointRegistration& imsg )
 {
     MessagePtr<::CtiPointRegistrationMsg>::type omsg( new ::CtiPointRegistrationMsg );
 
-    static_cast<::CtiMessage&>(*omsg)   = *deserialize( imsg._baseMessage );
+    static_cast<::CtiMessage&>(*omsg)   = *populateMessage( imsg._baseMessage );
     omsg->setFlags                      ( imsg._regFlags );
     omsg->setPointList                  ( transformContainer<vector<LONG>>( imsg._pointList ));
 
@@ -520,11 +520,11 @@ IM_EX_MSG MessagePtr<::CtiPointRegistrationMsg>::type deserialize( const Thrift:
 //  QueueData
 //=============================================================================
 
-IM_EX_MSG MessagePtr<Thrift::QueueData>::type serialize( const ::CtiQueueDataMsg& imsg )
+IM_EX_MSG MessagePtr<Thrift::QueueData>::type populateThrift( const ::CtiQueueDataMsg& imsg )
 {
     MessagePtr<Thrift::QueueData>::type omsg( new Thrift::QueueData );
 
-    omsg->__set__baseMessage            ( *serialize( static_cast<const ::CtiMessage&>(imsg) ));
+    omsg->__set__baseMessage            ( *populateThrift( static_cast<const ::CtiMessage&>(imsg) ));
     omsg->__set__id                     ( imsg.getId() );
     omsg->__set__queueCount             ( imsg.getQueueCount() );
     omsg->__set__rate                   ( imsg.getRate() );
@@ -536,11 +536,11 @@ IM_EX_MSG MessagePtr<Thrift::QueueData>::type serialize( const ::CtiQueueDataMsg
     return omsg;
 }
 
-IM_EX_MSG MessagePtr<::CtiQueueDataMsg>::type deserialize( const Thrift::QueueData& imsg )
+IM_EX_MSG MessagePtr<::CtiQueueDataMsg>::type populateMessage( const Thrift::QueueData& imsg )
 {
     MessagePtr<::CtiQueueDataMsg>::type omsg( new ::CtiQueueDataMsg );
 
-    static_cast<::CtiMessage&>(*omsg)   = *deserialize( imsg._baseMessage );
+    static_cast<::CtiMessage&>(*omsg)   = *populateMessage( imsg._baseMessage );
     omsg->setId                         ( imsg._id );
     omsg->setQueueCount                 ( imsg._queueCount );
     omsg->setRate                       ( imsg._rate );
@@ -556,11 +556,11 @@ IM_EX_MSG MessagePtr<::CtiQueueDataMsg>::type deserialize( const Thrift::QueueDa
 //  Registration
 //=============================================================================
 
-IM_EX_MSG MessagePtr<Thrift::Registration>::type serialize( const ::CtiRegistrationMsg& imsg )
+IM_EX_MSG MessagePtr<Thrift::Registration>::type populateThrift( const ::CtiRegistrationMsg& imsg )
 {
     MessagePtr<Thrift::Registration>::type omsg( new Thrift::Registration );
 
-    omsg->__set__baseMessage            ( *serialize( static_cast<const ::CtiMessage&>(imsg) ));
+    omsg->__set__baseMessage            ( *populateThrift( static_cast<const ::CtiMessage&>(imsg) ));
     omsg->__set__appName                ( imsg.getAppName() );
     omsg->__set__appId                  ( imsg.getAppId() );
     omsg->__set__appIsUnique            ( imsg.getAppIsUnique() );
@@ -570,11 +570,11 @@ IM_EX_MSG MessagePtr<Thrift::Registration>::type serialize( const ::CtiRegistrat
     return omsg;
 }
 
-IM_EX_MSG MessagePtr<::CtiRegistrationMsg>::type deserialize( const Thrift::Registration& imsg )
+IM_EX_MSG MessagePtr<::CtiRegistrationMsg>::type populateMessage( const Thrift::Registration& imsg )
 {
     MessagePtr<::CtiRegistrationMsg>::type omsg( new ::CtiRegistrationMsg );
 
-    static_cast<::CtiMessage&>(*omsg)   = *deserialize( imsg._baseMessage );
+    static_cast<::CtiMessage&>(*omsg)   = *populateMessage( imsg._baseMessage );
     omsg->setAppName                    ( imsg._appName );
     omsg->setAppID                      ( imsg._appId );
     omsg->setAppIsUnique                ( imsg._appIsUnique );
@@ -588,11 +588,11 @@ IM_EX_MSG MessagePtr<::CtiRegistrationMsg>::type deserialize( const Thrift::Regi
 //  RequestCancel
 //=============================================================================
 
-IM_EX_MSG MessagePtr<Thrift::RequestCancel>::type serialize( const ::CtiRequestCancelMsg& imsg )
+IM_EX_MSG MessagePtr<Thrift::RequestCancel>::type populateThrift( const ::CtiRequestCancelMsg& imsg )
 {
     MessagePtr<Thrift::RequestCancel>::type omsg( new Thrift::RequestCancel );
 
-    omsg->__set__baseMessage            ( *serialize( static_cast<const ::CtiMessage&>(imsg) ));
+    omsg->__set__baseMessage            ( *populateThrift( static_cast<const ::CtiMessage&>(imsg) ));
     omsg->__set__RequestId              ( imsg.getRequestId() );
     omsg->__set__RequestIdCount         ( imsg.getRequestIdCount() );
     omsg->__set__Time                   ( CtiTimeToMilliseconds( imsg.getTime() ));
@@ -601,11 +601,11 @@ IM_EX_MSG MessagePtr<Thrift::RequestCancel>::type serialize( const ::CtiRequestC
     return omsg;
 }
 
-IM_EX_MSG MessagePtr<::CtiRequestCancelMsg>::type deserialize( const Thrift::RequestCancel& imsg )
+IM_EX_MSG MessagePtr<::CtiRequestCancelMsg>::type populateMessage( const Thrift::RequestCancel& imsg )
 {
     MessagePtr<::CtiRequestCancelMsg>::type omsg( new ::CtiRequestCancelMsg );
 
-    static_cast<::CtiMessage&>(*omsg)   = *deserialize( imsg._baseMessage );
+    static_cast<::CtiMessage&>(*omsg)   = *populateMessage( imsg._baseMessage );
     omsg->setRequestId                  ( imsg._RequestId );
     omsg->setRequestIdCount             ( imsg._RequestIdCount );
     omsg->setTime                       ( MillisecondsToCtiTime( imsg._Time ));
@@ -618,22 +618,22 @@ IM_EX_MSG MessagePtr<::CtiRequestCancelMsg>::type deserialize( const Thrift::Req
 //  ServerRequest
 //=============================================================================
 
-IM_EX_MSG MessagePtr<Thrift::ServerRequest>::type serialize( const ::CtiServerRequestMsg& imsg )
+IM_EX_MSG MessagePtr<Thrift::ServerRequest>::type populateThrift( const ::CtiServerRequestMsg& imsg )
 {
     MessagePtr<Thrift::ServerRequest>::type omsg( new Thrift::ServerRequest );
 
-    omsg->__set__baseMessage            ( *serialize( static_cast<const ::CtiMessage&>(imsg) ));
+    omsg->__set__baseMessage            ( *populateThrift( static_cast<const ::CtiMessage&>(imsg) ));
     omsg->__set__id                     ( imsg.getID() );
     omsg->__set__payload                ( serializeGenericMessage( imsg.getPayload() )); // if the payload is null, an empty generic message is created
 
     return omsg;
 }
 
-IM_EX_MSG MessagePtr<::CtiServerRequestMsg>::type deserialize( const Thrift::ServerRequest& imsg )
+IM_EX_MSG MessagePtr<::CtiServerRequestMsg>::type populateMessage( const Thrift::ServerRequest& imsg )
 {
     MessagePtr<::CtiServerRequestMsg>::type omsg( new ::CtiServerRequestMsg );
 
-    static_cast<::CtiMessage&>(*omsg)   = *deserialize( imsg._baseMessage );
+    static_cast<::CtiMessage&>(*omsg)   = *populateMessage( imsg._baseMessage );
     omsg->setID                         ( imsg._id );
     omsg->setPayload                    ( deserializeGenericMessage( imsg._payload ).release() );
 
@@ -644,11 +644,11 @@ IM_EX_MSG MessagePtr<::CtiServerRequestMsg>::type deserialize( const Thrift::Ser
 //  ServerResponse
 //=============================================================================
 
-IM_EX_MSG MessagePtr<Thrift::ServerResponse>::type serialize( const ::CtiServerResponseMsg& imsg )
+IM_EX_MSG MessagePtr<Thrift::ServerResponse>::type populateThrift( const ::CtiServerResponseMsg& imsg )
 {
     MessagePtr<Thrift::ServerResponse>::type omsg( new Thrift::ServerResponse );
 
-    omsg->__set__baseMessage            ( *serialize( static_cast<const ::CtiMessage&>(imsg) ));
+    omsg->__set__baseMessage            ( *populateThrift( static_cast<const ::CtiMessage&>(imsg) ));
     omsg->__set__id                     ( imsg.getID() );
     omsg->__set__status                 ( imsg.getStatus() );
     omsg->__set__message                ( imsg.getMessage() );
@@ -658,11 +658,11 @@ IM_EX_MSG MessagePtr<Thrift::ServerResponse>::type serialize( const ::CtiServerR
     return omsg;
 }
 
-IM_EX_MSG MessagePtr<::CtiServerResponseMsg>::type deserialize( const Thrift::ServerResponse& imsg )
+IM_EX_MSG MessagePtr<::CtiServerResponseMsg>::type populateMessage( const Thrift::ServerResponse& imsg )
 {
     MessagePtr<::CtiServerResponseMsg>::type omsg( new ::CtiServerResponseMsg );
 
-    static_cast<::CtiMessage&>(*omsg)   = *deserialize( imsg._baseMessage );
+    static_cast<::CtiMessage&>(*omsg)   = *populateMessage( imsg._baseMessage );
     omsg->setID                         ( imsg._id );
     omsg->setStatus                     ( imsg._status );
     omsg->setMessage                    ( imsg._message );
@@ -675,11 +675,11 @@ IM_EX_MSG MessagePtr<::CtiServerResponseMsg>::type deserialize( const Thrift::Se
 //  Signal
 //=============================================================================
 
-IM_EX_MSG MessagePtr<Thrift::Signal>::type serialize( const ::CtiSignalMsg& imsg )
+IM_EX_MSG MessagePtr<Thrift::Signal>::type populateThrift( const ::CtiSignalMsg& imsg )
 {
     MessagePtr<Thrift::Signal>::type omsg( new Thrift::Signal );
 
-    omsg->__set__baseMessage            ( *serialize( static_cast<const ::CtiMessage&>(imsg) ));
+    omsg->__set__baseMessage            ( *populateThrift( static_cast<const ::CtiMessage&>(imsg) ));
     omsg->__set__id                     ( imsg.getId() );
     omsg->__set__logType                ( imsg.getLogType() );
     omsg->__set__signalCategory         ( imsg.getSignalCategory() );
@@ -693,11 +693,11 @@ IM_EX_MSG MessagePtr<Thrift::Signal>::type serialize( const ::CtiSignalMsg& imsg
     return omsg;
 }
 
-IM_EX_MSG MessagePtr<::CtiSignalMsg>::type deserialize( const Thrift::Signal& imsg )
+IM_EX_MSG MessagePtr<::CtiSignalMsg>::type populateMessage( const Thrift::Signal& imsg )
 {
     MessagePtr<::CtiSignalMsg>::type omsg( new ::CtiSignalMsg );
 
-    static_cast<::CtiMessage&>(*omsg)   = *deserialize( imsg._baseMessage );
+    static_cast<::CtiMessage&>(*omsg)   = *populateMessage( imsg._baseMessage );
     omsg->setId                         ( imsg._id );
     omsg->setLogType                    ( imsg._logType );
     omsg->setSignalCategory             ( imsg._signalCategory );
@@ -715,11 +715,11 @@ IM_EX_MSG MessagePtr<::CtiSignalMsg>::type deserialize( const Thrift::Signal& im
 //  Tag
 //=============================================================================
 
-IM_EX_MSG MessagePtr<Thrift::Tag>::type serialize( const ::CtiTagMsg& imsg )
+IM_EX_MSG MessagePtr<Thrift::Tag>::type populateThrift( const ::CtiTagMsg& imsg )
 {
     MessagePtr<Thrift::Tag>::type omsg( new Thrift::Tag );
 
-    omsg->__set__baseMessage            ( *serialize( static_cast<const ::CtiMessage&>(imsg) ));
+    omsg->__set__baseMessage            ( *populateThrift( static_cast<const ::CtiMessage&>(imsg) ));
     omsg->__set__instanceId             ( imsg.getInstanceID() );
     omsg->__set__pointId                ( imsg.getPointID() );
     omsg->__set__tagId                  ( imsg.getTagID() );
@@ -733,11 +733,11 @@ IM_EX_MSG MessagePtr<Thrift::Tag>::type serialize( const ::CtiTagMsg& imsg )
     return omsg;
 }
 
-IM_EX_MSG MessagePtr<::CtiTagMsg>::type deserialize( const Thrift::Tag& imsg )
+IM_EX_MSG MessagePtr<::CtiTagMsg>::type populateMessage( const Thrift::Tag& imsg )
 {
     MessagePtr<::CtiTagMsg>::type omsg( new ::CtiTagMsg );
 
-    static_cast<::CtiMessage&>(*omsg)   = *deserialize( imsg._baseMessage );
+    static_cast<::CtiMessage&>(*omsg)   = *populateMessage( imsg._baseMessage );
     omsg->setInstanceID                 ( imsg._instanceId );
     omsg->setPointID                    ( imsg._pointId );
     omsg->setTagID                      ( imsg._tagId );
@@ -755,11 +755,11 @@ IM_EX_MSG MessagePtr<::CtiTagMsg>::type deserialize( const Thrift::Tag& imsg )
 //  Trace
 //=============================================================================
 
-IM_EX_MSG MessagePtr<Thrift::Trace>::type serialize( const ::CtiTraceMsg& imsg )
+IM_EX_MSG MessagePtr<Thrift::Trace>::type populateThrift( const ::CtiTraceMsg& imsg )
 {
     MessagePtr<Thrift::Trace>::type omsg( new Thrift::Trace );
 
-    omsg->__set__baseMessage            ( *serialize( static_cast<const ::CtiMessage&>(imsg) ));
+    omsg->__set__baseMessage            ( *populateThrift( static_cast<const ::CtiMessage&>(imsg) ));
     omsg->__set__end                    ( imsg.isEnd() );
     omsg->__set__attributes             ( imsg.getAttributes() );
     omsg->__set__trace                  ( imsg.getTrace() );
@@ -767,11 +767,11 @@ IM_EX_MSG MessagePtr<Thrift::Trace>::type serialize( const ::CtiTraceMsg& imsg )
     return omsg;
 }
 
-IM_EX_MSG MessagePtr<::CtiTraceMsg>::type deserialize( const Thrift::Trace& imsg )
+IM_EX_MSG MessagePtr<::CtiTraceMsg>::type populateMessage( const Thrift::Trace& imsg )
 {
     MessagePtr<::CtiTraceMsg>::type omsg( new ::CtiTraceMsg );
 
-    static_cast<::CtiMessage&>(*omsg)   = *deserialize( imsg._baseMessage );
+    static_cast<::CtiMessage&>(*omsg)   = *populateMessage( imsg._baseMessage );
     omsg->setEnd                        ( imsg._end );
     omsg->setAttributes                 ( imsg._attributes );
     omsg->setTrace                      ( imsg._trace );

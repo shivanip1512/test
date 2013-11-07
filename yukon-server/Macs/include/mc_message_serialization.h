@@ -20,32 +20,32 @@ namespace Cti {
 namespace Messaging {
 namespace Serialization {
 
-MessagePtr<Thrift::MCUpdateSchedule>::type    serialize   ( const ::CtiMCUpdateSchedule& imsg );
-MessagePtr<::CtiMCUpdateSchedule>::type       deserialize ( const Thrift::MCUpdateSchedule& imsg );
+MessagePtr<Thrift::MCUpdateSchedule>::type    populateThrift  ( const ::CtiMCUpdateSchedule& imsg );
+MessagePtr<::CtiMCUpdateSchedule>::type       populateMessage ( const Thrift::MCUpdateSchedule& imsg );
 
-MessagePtr<Thrift::MCAddSchedule>::type       serialize   ( const ::CtiMCAddSchedule& imsg );
-MessagePtr<::CtiMCAddSchedule>::type          deserialize ( const Thrift::MCAddSchedule& imsg );
+MessagePtr<Thrift::MCAddSchedule>::type       populateThrift  ( const ::CtiMCAddSchedule& imsg );
+MessagePtr<::CtiMCAddSchedule>::type          populateMessage ( const Thrift::MCAddSchedule& imsg );
 
-MessagePtr<Thrift::MCDeleteSchedule>::type    serialize   ( const ::CtiMCDeleteSchedule& imsg );
-MessagePtr<::CtiMCDeleteSchedule>::type       deserialize ( const Thrift::MCDeleteSchedule& imsg );
+MessagePtr<Thrift::MCDeleteSchedule>::type    populateThrift  ( const ::CtiMCDeleteSchedule& imsg );
+MessagePtr<::CtiMCDeleteSchedule>::type       populateMessage ( const Thrift::MCDeleteSchedule& imsg );
 
-MessagePtr<Thrift::MCRetrieveSchedule>::type  serialize   ( const ::CtiMCRetrieveSchedule& imsg );
-MessagePtr<::CtiMCRetrieveSchedule>::type     deserialize ( const Thrift::MCRetrieveSchedule& imsg );
+MessagePtr<Thrift::MCRetrieveSchedule>::type  populateThrift  ( const ::CtiMCRetrieveSchedule& imsg );
+MessagePtr<::CtiMCRetrieveSchedule>::type     populateMessage ( const Thrift::MCRetrieveSchedule& imsg );
 
-MessagePtr<Thrift::MCRetrieveScript>::type    serialize   ( const ::CtiMCRetrieveScript& imsg );
-MessagePtr<::CtiMCRetrieveScript>::type       deserialize ( const Thrift::MCRetrieveScript& imsg );
+MessagePtr<Thrift::MCRetrieveScript>::type    populateThrift  ( const ::CtiMCRetrieveScript& imsg );
+MessagePtr<::CtiMCRetrieveScript>::type       populateMessage ( const Thrift::MCRetrieveScript& imsg );
 
-MessagePtr<Thrift::MCOverrideRequest>::type   serialize   ( const ::CtiMCOverrideRequest& imsg );
-MessagePtr<::CtiMCOverrideRequest>::type      deserialize ( const Thrift::MCOverrideRequest& imsg );
+MessagePtr<Thrift::MCOverrideRequest>::type   populateThrift  ( const ::CtiMCOverrideRequest& imsg );
+MessagePtr<::CtiMCOverrideRequest>::type      populateMessage ( const Thrift::MCOverrideRequest& imsg );
 
-MessagePtr<Thrift::MCInfo>::type              serialize   ( const ::CtiMCInfo& imsg );
-MessagePtr<::CtiMCInfo>::type                 deserialize ( const Thrift::MCInfo& imsg );
+MessagePtr<Thrift::MCInfo>::type              populateThrift  ( const ::CtiMCInfo& imsg );
+MessagePtr<::CtiMCInfo>::type                 populateMessage ( const Thrift::MCInfo& imsg );
 
-MessagePtr<Thrift::MCSchedule>::type          serialize   ( const ::CtiMCSchedule& imsg );
-MessagePtr<::CtiMCSchedule>::type             deserialize ( const Thrift::MCSchedule& imsg );
+MessagePtr<Thrift::MCSchedule>::type          populateThrift  ( const ::CtiMCSchedule& imsg );
+MessagePtr<::CtiMCSchedule>::type             populateMessage ( const Thrift::MCSchedule& imsg );
 
-MessagePtr<Thrift::MCScript>::type            serialize   ( const ::CtiMCScript& imsg );
-MessagePtr<::CtiMCScript>::type               deserialize ( const Thrift::MCScript& imsg );
+MessagePtr<Thrift::MCScript>::type            populateThrift  ( const ::CtiMCScript& imsg );
+MessagePtr<::CtiMCScript>::type               populateMessage ( const Thrift::MCScript& imsg );
 
 }
 }

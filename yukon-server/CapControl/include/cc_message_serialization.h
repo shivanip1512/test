@@ -59,91 +59,91 @@ namespace Cti {
 namespace Messaging {
 namespace Serialization {
 
-MessagePtr<Thrift::CCCapBankMove>::type           serialize   ( const ::CtiCCCapBankMoveMsg& imsg );
-MessagePtr<::CtiCCCapBankMoveMsg>::type           deserialize ( const Thrift::CCCapBankMove& imsg );
+MessagePtr<Thrift::CCCapBankMove>::type           populateThrift  ( const ::CtiCCCapBankMoveMsg& imsg );
+MessagePtr<::CtiCCCapBankMoveMsg>::type           populateMessage ( const Thrift::CCCapBankMove& imsg );
 
-MessagePtr<Thrift::CCCapBankStates>::type         serialize   ( const ::CtiCCCapBankStatesMsg& imsg );
-MessagePtr<::CtiCCCapBankStatesMsg>::type         deserialize ( const Thrift::CCCapBankStates& imsg );
+MessagePtr<Thrift::CCCapBankStates>::type         populateThrift  ( const ::CtiCCCapBankStatesMsg& imsg );
+MessagePtr<::CtiCCCapBankStatesMsg>::type         populateMessage ( const Thrift::CCCapBankStates& imsg );
 
-MessagePtr<Thrift::CCChangeOpState>::type         serialize   ( const ::ChangeOpState& imsg );
-MessagePtr<::ChangeOpState>::type                 deserialize ( const Thrift::CCChangeOpState& imsg );
+MessagePtr<Thrift::CCChangeOpState>::type         populateThrift  ( const ::ChangeOpState& imsg );
+MessagePtr<::ChangeOpState>::type                 populateMessage ( const Thrift::CCChangeOpState& imsg );
 
-MessagePtr<Thrift::CCCommand>::type               serialize   ( const ::CapControlCommand& imsg );
-MessagePtr<::CapControlCommand>::type             deserialize ( const Thrift::CCCommand& imsg );
+MessagePtr<Thrift::CCCommand>::type               populateThrift  ( const ::CapControlCommand& imsg );
+MessagePtr<::CapControlCommand>::type             populateMessage ( const Thrift::CCCommand& imsg );
 
-MessagePtr<Thrift::CCDeleteItem>::type            serialize   ( const ::DeleteItem& imsg );
-MessagePtr<::DeleteItem>::type                    deserialize ( const Thrift::CCDeleteItem& imsg );
+MessagePtr<Thrift::CCDeleteItem>::type            populateThrift  ( const ::DeleteItem& imsg );
+MessagePtr<::DeleteItem>::type                    populateMessage ( const Thrift::CCDeleteItem& imsg );
 
-MessagePtr<Thrift::CCDynamicCommand>::type        serialize   ( const ::DynamicCommand& imsg );
-MessagePtr<::DynamicCommand>::type                deserialize ( const Thrift::CCDynamicCommand& imsg );
+MessagePtr<Thrift::CCDynamicCommand>::type        populateThrift  ( const ::DynamicCommand& imsg );
+MessagePtr<::DynamicCommand>::type                populateMessage ( const Thrift::CCDynamicCommand& imsg );
 
-MessagePtr<Thrift::CCGeoAreas>::type              serialize   ( const ::CtiCCGeoAreasMsg& imsg );
-MessagePtr<::CtiCCGeoAreasMsg>::type              deserialize ( const Thrift::CCGeoAreas& imsg );
+MessagePtr<Thrift::CCGeoAreas>::type              populateThrift  ( const ::CtiCCGeoAreasMsg& imsg );
+MessagePtr<::CtiCCGeoAreasMsg>::type              populateMessage ( const Thrift::CCGeoAreas& imsg );
 
-MessagePtr<Thrift::CCItemCommand>::type           serialize   ( const ::ItemCommand& imsg );
-MessagePtr<::ItemCommand>::type                   deserialize ( const Thrift::CCItemCommand& imsg );
+MessagePtr<Thrift::CCItemCommand>::type           populateThrift  ( const ::ItemCommand& imsg );
+MessagePtr<::ItemCommand>::type                   populateMessage ( const Thrift::CCItemCommand& imsg );
 
-MessagePtr<Thrift::CCMessage>::type               serialize   ( const ::CapControlMessage& imsg );
-MessagePtr<::CapControlMessage>::type             deserialize ( const Thrift::CCMessage& imsg );
+MessagePtr<Thrift::CCMessage>::type               populateThrift  ( const ::CapControlMessage& imsg );
+MessagePtr<::CapControlMessage>::type             populateMessage ( const Thrift::CCMessage& imsg );
 
-MessagePtr<Thrift::CCObjectMove>::type            serialize   ( const ::CtiCCObjectMoveMsg& imsg );
-MessagePtr<::CtiCCObjectMoveMsg>::type            deserialize ( const Thrift::CCObjectMove& imsg );
+MessagePtr<Thrift::CCObjectMove>::type            populateThrift  ( const ::CtiCCObjectMoveMsg& imsg );
+MessagePtr<::CtiCCObjectMoveMsg>::type            populateMessage ( const Thrift::CCObjectMove& imsg );
 
-MessagePtr<Thrift::CCServerResponse>::type        serialize   ( const ::CtiCCServerResponse& imsg );
-MessagePtr<::CtiCCServerResponse>::type           deserialize ( const Thrift::CCServerResponse& imsg );
+MessagePtr<Thrift::CCServerResponse>::type        populateThrift  ( const ::CtiCCServerResponse& imsg );
+MessagePtr<::CtiCCServerResponse>::type           populateMessage ( const Thrift::CCServerResponse& imsg );
 
-MessagePtr<Thrift::CCShutdown>::type              serialize   ( const ::CtiCCShutdown& imsg );
-MessagePtr<::CtiCCShutdown>::type                 deserialize ( const Thrift::CCShutdown& imsg );
+MessagePtr<Thrift::CCShutdown>::type              populateThrift  ( const ::CtiCCShutdown& imsg );
+MessagePtr<::CtiCCShutdown>::type                 populateMessage ( const Thrift::CCShutdown& imsg );
 
-MessagePtr<Thrift::CCSpecialAreas>::type          serialize   ( const ::CtiCCSpecialAreasMsg& imsg );
-MessagePtr<::CtiCCSpecialAreasMsg>::type          deserialize ( const Thrift::CCSpecialAreas& imsg );
+MessagePtr<Thrift::CCSpecialAreas>::type          populateThrift  ( const ::CtiCCSpecialAreasMsg& imsg );
+MessagePtr<::CtiCCSpecialAreasMsg>::type          populateMessage ( const Thrift::CCSpecialAreas& imsg );
 
-MessagePtr<Thrift::CCSubstationBus>::type         serialize   ( const ::CtiCCSubstationBusMsg& imsg );
-MessagePtr<::CtiCCSubstationBusMsg>::type         deserialize ( const Thrift::CCSubstationBus& imsg );
+MessagePtr<Thrift::CCSubstationBus>::type         populateThrift  ( const ::CtiCCSubstationBusMsg& imsg );
+MessagePtr<::CtiCCSubstationBusMsg>::type         populateMessage ( const Thrift::CCSubstationBus& imsg );
 
-MessagePtr<Thrift::CCSubstations>::type           serialize   ( const ::CtiCCSubstationsMsg& imsg );
-MessagePtr<::CtiCCSubstationsMsg>::type           deserialize ( const Thrift::CCSubstations& imsg );
+MessagePtr<Thrift::CCSubstations>::type           populateThrift  ( const ::CtiCCSubstationsMsg& imsg );
+MessagePtr<::CtiCCSubstationsMsg>::type           populateMessage ( const Thrift::CCSubstations& imsg );
 
-MessagePtr<Thrift::CCSystemStatus>::type          serialize   ( const ::SystemStatus& imsg );
-MessagePtr<::SystemStatus>::type                  deserialize ( const Thrift::CCSystemStatus& imsg );
+MessagePtr<Thrift::CCSystemStatus>::type          populateThrift  ( const ::SystemStatus& imsg );
+MessagePtr<::SystemStatus>::type                  populateMessage ( const Thrift::CCSystemStatus& imsg );
 
-MessagePtr<Thrift::CCVerifyBanks>::type           serialize   ( const ::VerifyBanks& imsg );
-MessagePtr<::VerifyBanks>::type                   deserialize ( const Thrift::CCVerifyBanks& imsg );
+MessagePtr<Thrift::CCVerifyBanks>::type           populateThrift  ( const ::VerifyBanks& imsg );
+MessagePtr<::VerifyBanks>::type                   populateMessage ( const Thrift::CCVerifyBanks& imsg );
 
-MessagePtr<Thrift::CCVerifyInactiveBanks>::type   serialize   ( const ::VerifyInactiveBanks& imsg );
-MessagePtr<::VerifyInactiveBanks>::type           deserialize ( const Thrift::CCVerifyInactiveBanks& imsg );
+MessagePtr<Thrift::CCVerifyInactiveBanks>::type   populateThrift  ( const ::VerifyInactiveBanks& imsg );
+MessagePtr<::VerifyInactiveBanks>::type           populateMessage ( const Thrift::CCVerifyInactiveBanks& imsg );
 
-MessagePtr<Thrift::CCVerifySelectedBank>::type    serialize   ( const ::VerifySelectedBank& imsg );
-MessagePtr<::VerifySelectedBank>::type            deserialize ( const Thrift::CCVerifySelectedBank& imsg );
+MessagePtr<Thrift::CCVerifySelectedBank>::type    populateThrift  ( const ::VerifySelectedBank& imsg );
+MessagePtr<::VerifySelectedBank>::type            populateMessage ( const Thrift::CCVerifySelectedBank& imsg );
 
-MessagePtr<Thrift::CCVoltageRegulator>::type      serialize   ( const ::VoltageRegulatorMessage& imsg );
-MessagePtr<::VoltageRegulatorMessage>::type       deserialize ( const Thrift::CCVoltageRegulator& imsg );
+MessagePtr<Thrift::CCVoltageRegulator>::type      populateThrift  ( const ::VoltageRegulatorMessage& imsg );
+MessagePtr<::VoltageRegulatorMessage>::type       populateMessage ( const Thrift::CCVoltageRegulator& imsg );
 
-MessagePtr<Thrift::CCVoltageRegulatorItem>::type  serialize   ( const ::Cti::CapControl::VoltageRegulator& imsg );
+MessagePtr<Thrift::CCVoltageRegulatorItem>::type  populateThrift  ( const ::Cti::CapControl::VoltageRegulator& imsg );
 
-MessagePtr<Thrift::CCPao>::type                   serialize   ( const ::CapControlPao& imsg );
-MessagePtr<::CapControlPao>::type                 deserialize ( const Thrift::CCPao& imsg );
+MessagePtr<Thrift::CCPao>::type                   populateThrift  ( const ::CapControlPao& imsg );
+MessagePtr<::CapControlPao>::type                 populateMessage ( const Thrift::CCPao& imsg );
 
-MessagePtr<Thrift::CCArea>::type                  serialize   ( const ::CtiCCArea& imsg );
-MessagePtr<::CtiCCArea>::type                     deserialize ( const Thrift::CCArea& imsg );
+MessagePtr<Thrift::CCArea>::type                  populateThrift  ( const ::CtiCCArea& imsg );
+MessagePtr<::CtiCCArea>::type                     populateMessage ( const Thrift::CCArea& imsg );
 
-MessagePtr<Thrift::CCSpecial>::type               serialize   ( const ::CtiCCSpecial& imsg );
-MessagePtr<::CtiCCSpecial>::type                  deserialize ( const Thrift::CCSpecial& imsg );
+MessagePtr<Thrift::CCSpecial>::type               populateThrift  ( const ::CtiCCSpecial& imsg );
+MessagePtr<::CtiCCSpecial>::type                  populateMessage ( const Thrift::CCSpecial& imsg );
 
-MessagePtr<Thrift::CCSubstationItem>::type        serialize   ( const ::CtiCCSubstation& imsg );
-MessagePtr<::CtiCCSubstation>::type               deserialize ( const Thrift::CCSubstationItem& imsg );
+MessagePtr<Thrift::CCSubstationItem>::type        populateThrift  ( const ::CtiCCSubstation& imsg );
+MessagePtr<::CtiCCSubstation>::type               populateMessage ( const Thrift::CCSubstationItem& imsg );
 
-MessagePtr<Thrift::CCFeeder>::type                serialize   ( const ::CtiCCFeeder& imsg );
-MessagePtr<::CtiCCFeeder>::type                   deserialize ( const Thrift::CCFeeder& imsg );
+MessagePtr<Thrift::CCFeeder>::type                populateThrift  ( const ::CtiCCFeeder& imsg );
+MessagePtr<::CtiCCFeeder>::type                   populateMessage ( const Thrift::CCFeeder& imsg );
 
-MessagePtr<Thrift::CCCapBank>::type               serialize   ( const ::CtiCCCapBank& imsg );
-MessagePtr<::CtiCCCapBank>::type                  deserialize ( const Thrift::CCCapBank& imsg );
+MessagePtr<Thrift::CCCapBank>::type               populateThrift  ( const ::CtiCCCapBank& imsg );
+MessagePtr<::CtiCCCapBank>::type                  populateMessage ( const Thrift::CCCapBank& imsg );
 
-MessagePtr<Thrift::CCState>::type                 serialize   ( const ::CtiCCState& imsg );
-MessagePtr<::CtiCCState>::type                    deserialize ( const Thrift::CCState& imsg );
+MessagePtr<Thrift::CCState>::type                 populateThrift  ( const ::CtiCCState& imsg );
+MessagePtr<::CtiCCState>::type                    populateMessage ( const Thrift::CCState& imsg );
 
-MessagePtr<Thrift::CCSubstationBusItem>::type     serialize   ( const ::CtiCCSubstationBus& imsg );
-MessagePtr<::CtiCCSubstationBus>::type            deserialize ( const Thrift::CCSubstationBusItem& imsg );
+MessagePtr<Thrift::CCSubstationBusItem>::type     populateThrift  ( const ::CtiCCSubstationBus& imsg );
+MessagePtr<::CtiCCSubstationBus>::type            populateMessage ( const Thrift::CCSubstationBusItem& imsg );
 
 }
 }

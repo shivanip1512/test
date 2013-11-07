@@ -16,15 +16,15 @@ struct MCMessageFactoryRegister
 {
     MCMessageFactoryRegister()
     {
-        g_messageFactory.registerSerializer <::CtiMCUpdateSchedule,   Thrift::MCUpdateSchedule>   ( &serialize, &deserialize, "MCUpdateSchedule" );
-        g_messageFactory.registerSerializer <::CtiMCAddSchedule,      Thrift::MCAddSchedule>      ( &serialize, &deserialize, "MCAddSchedule" );
-        g_messageFactory.registerSerializer <::CtiMCDeleteSchedule,   Thrift::MCDeleteSchedule>   ( &serialize, &deserialize, "MCDeleteSchedule" );
-        g_messageFactory.registerSerializer <::CtiMCRetrieveSchedule, Thrift::MCRetrieveSchedule> ( &serialize, &deserialize, "MCRetrieveSchedule" );
-        g_messageFactory.registerSerializer <::CtiMCRetrieveScript,   Thrift::MCRetrieveScript>   ( &serialize, &deserialize, "MCRetrieveScript" );
-        g_messageFactory.registerSerializer <::CtiMCOverrideRequest,  Thrift::MCOverrideRequest>  ( &serialize, &deserialize, "MCOverrideRequest" );
-        g_messageFactory.registerSerializer <::CtiMCInfo,             Thrift::MCInfo>             ( &serialize, &deserialize, "MCInfo" );
-        g_messageFactory.registerSerializer <::CtiMCSchedule,         Thrift::MCSchedule>         ( &serialize, &deserialize, "MCSchedule" );
-        g_messageFactory.registerSerializer <::CtiMCScript,           Thrift::MCScript>           ( &serialize, &deserialize, "MCScript" );
+        g_messageFactory.registerSerializer <::CtiMCUpdateSchedule,   Thrift::MCUpdateSchedule>   ( &populateThrift, &populateMessage, "MCUpdateSchedule" );
+        g_messageFactory.registerSerializer <::CtiMCAddSchedule,      Thrift::MCAddSchedule>      ( &populateThrift, &populateMessage, "MCAddSchedule" );
+        g_messageFactory.registerSerializer <::CtiMCDeleteSchedule,   Thrift::MCDeleteSchedule>   ( &populateThrift, &populateMessage, "MCDeleteSchedule" );
+        g_messageFactory.registerSerializer <::CtiMCRetrieveSchedule, Thrift::MCRetrieveSchedule> ( &populateThrift, &populateMessage, "MCRetrieveSchedule" );
+        g_messageFactory.registerSerializer <::CtiMCRetrieveScript,   Thrift::MCRetrieveScript>   ( &populateThrift, &populateMessage, "MCRetrieveScript" );
+        g_messageFactory.registerSerializer <::CtiMCOverrideRequest,  Thrift::MCOverrideRequest>  ( &populateThrift, &populateMessage, "MCOverrideRequest" );
+        g_messageFactory.registerSerializer <::CtiMCInfo,             Thrift::MCInfo>             ( &populateThrift, &populateMessage, "MCInfo" );
+        g_messageFactory.registerSerializer <::CtiMCSchedule,         Thrift::MCSchedule>         ( &populateThrift, &populateMessage, "MCSchedule" );
+        g_messageFactory.registerSerializer <::CtiMCScript,           Thrift::MCScript>           ( &populateThrift, &populateMessage, "MCScript" );
     }
 };
 
@@ -36,23 +36,23 @@ const MCMessageFactoryRegister g_mcMessageFactoryRegister;
 //  MCUpdateSchedule
 //=============================================================================
 
-MessagePtr<Thrift::MCUpdateSchedule>::type serialize( const ::CtiMCUpdateSchedule& imsg )
+MessagePtr<Thrift::MCUpdateSchedule>::type populateThrift( const ::CtiMCUpdateSchedule& imsg )
 {
     MessagePtr<Thrift::MCUpdateSchedule>::type omsg( new Thrift::MCUpdateSchedule );
 
-    omsg->__set__baseMessage            ( *serialize( static_cast<const ::CtiMessage&>(imsg) ));
-    omsg->__set__schedule               ( *serialize( imsg.getSchedule() ));
+    omsg->__set__baseMessage            ( *populateThrift( static_cast<const ::CtiMessage&>(imsg) ));
+    omsg->__set__schedule               ( *populateThrift( imsg.getSchedule() ));
     omsg->__set__script                 ( imsg.getScript() );
 
     return omsg;
 }
 
-MessagePtr<::CtiMCUpdateSchedule>::type deserialize( const Thrift::MCUpdateSchedule& imsg )
+MessagePtr<::CtiMCUpdateSchedule>::type populateMessage( const Thrift::MCUpdateSchedule& imsg )
 {
     MessagePtr<::CtiMCUpdateSchedule>::type omsg( new ::CtiMCUpdateSchedule );
 
-    static_cast<::CtiMessage&>(*omsg)   = *deserialize( imsg._baseMessage );
-    omsg->setSchedule                   ( *deserialize( imsg._schedule ));
+    static_cast<::CtiMessage&>(*omsg)   = *populateMessage( imsg._baseMessage );
+    omsg->setSchedule                   ( *populateMessage( imsg._schedule ));
     omsg->setScript                     ( imsg._script );
 
     return omsg;
@@ -62,23 +62,23 @@ MessagePtr<::CtiMCUpdateSchedule>::type deserialize( const Thrift::MCUpdateSched
 //  MCAddSchedule
 //=============================================================================
 
-MessagePtr<Thrift::MCAddSchedule>::type serialize( const ::CtiMCAddSchedule& imsg )
+MessagePtr<Thrift::MCAddSchedule>::type populateThrift( const ::CtiMCAddSchedule& imsg )
 {
     MessagePtr<Thrift::MCAddSchedule>::type omsg( new Thrift::MCAddSchedule );
 
-    omsg->__set__baseMessage            ( *serialize( static_cast<const ::CtiMessage&>(imsg) ));
-    omsg->__set__schedule               ( *serialize( imsg.getSchedule() ));
+    omsg->__set__baseMessage            ( *populateThrift( static_cast<const ::CtiMessage&>(imsg) ));
+    omsg->__set__schedule               ( *populateThrift( imsg.getSchedule() ));
     omsg->__set__script                 ( imsg.getScript() );
 
     return omsg;
 }
 
-MessagePtr<::CtiMCAddSchedule>::type deserialize( const Thrift::MCAddSchedule& imsg )
+MessagePtr<::CtiMCAddSchedule>::type populateMessage( const Thrift::MCAddSchedule& imsg )
 {
     MessagePtr<::CtiMCAddSchedule>::type omsg( new ::CtiMCAddSchedule );
 
-    static_cast<::CtiMessage&>(*omsg)   = *deserialize( imsg._baseMessage );
-    omsg->setSchedule                   ( *deserialize( imsg._schedule ));
+    static_cast<::CtiMessage&>(*omsg)   = *populateMessage( imsg._baseMessage );
+    omsg->setSchedule                   ( *populateMessage( imsg._schedule ));
     omsg->setScript                     ( imsg._script );
 
     return omsg;
@@ -88,21 +88,21 @@ MessagePtr<::CtiMCAddSchedule>::type deserialize( const Thrift::MCAddSchedule& i
 //  MCDeleteSchedule
 //=============================================================================
 
-MessagePtr<Thrift::MCDeleteSchedule>::type serialize( const ::CtiMCDeleteSchedule& imsg )
+MessagePtr<Thrift::MCDeleteSchedule>::type populateThrift( const ::CtiMCDeleteSchedule& imsg )
 {
     MessagePtr<Thrift::MCDeleteSchedule>::type omsg( new Thrift::MCDeleteSchedule );
 
-    omsg->__set__baseMessage            ( *serialize( static_cast<const ::CtiMessage&>(imsg) ));
+    omsg->__set__baseMessage            ( *populateThrift( static_cast<const ::CtiMessage&>(imsg) ));
     omsg->__set__id                     ( imsg.getScheduleID() );
 
     return omsg;
 }
 
-MessagePtr<::CtiMCDeleteSchedule>::type deserialize( const Thrift::MCDeleteSchedule& imsg )
+MessagePtr<::CtiMCDeleteSchedule>::type populateMessage( const Thrift::MCDeleteSchedule& imsg )
 {
     MessagePtr<::CtiMCDeleteSchedule>::type omsg( new ::CtiMCDeleteSchedule );
 
-    static_cast<::CtiMessage&>(*omsg)   = *deserialize( imsg._baseMessage );
+    static_cast<::CtiMessage&>(*omsg)   = *populateMessage( imsg._baseMessage );
     omsg->setScheduleID                 ( imsg._id );
 
     return omsg;
@@ -112,21 +112,21 @@ MessagePtr<::CtiMCDeleteSchedule>::type deserialize( const Thrift::MCDeleteSched
 //  MCRetrieveSchedule
 //=============================================================================
 
-MessagePtr<Thrift::MCRetrieveSchedule>::type serialize( const ::CtiMCRetrieveSchedule& imsg )
+MessagePtr<Thrift::MCRetrieveSchedule>::type populateThrift( const ::CtiMCRetrieveSchedule& imsg )
 {
     MessagePtr<Thrift::MCRetrieveSchedule>::type omsg( new Thrift::MCRetrieveSchedule );
 
-    omsg->__set__baseMessage            ( *serialize( static_cast<const ::CtiMessage&>(imsg) ));
+    omsg->__set__baseMessage            ( *populateThrift( static_cast<const ::CtiMessage&>(imsg) ));
     omsg->__set__id                     ( imsg.getScheduleID() );
 
     return omsg;
 }
 
-MessagePtr<::CtiMCRetrieveSchedule>::type deserialize( const Thrift::MCRetrieveSchedule& imsg )
+MessagePtr<::CtiMCRetrieveSchedule>::type populateMessage( const Thrift::MCRetrieveSchedule& imsg )
 {
     MessagePtr<::CtiMCRetrieveSchedule>::type omsg( new ::CtiMCRetrieveSchedule );
 
-    static_cast<::CtiMessage&>(*omsg)   = *deserialize( imsg._baseMessage );
+    static_cast<::CtiMessage&>(*omsg)   = *populateMessage( imsg._baseMessage );
     omsg->setScheduleID                 ( imsg._id );
 
     return omsg;
@@ -136,21 +136,21 @@ MessagePtr<::CtiMCRetrieveSchedule>::type deserialize( const Thrift::MCRetrieveS
 //  MCRetrieveScript
 //=============================================================================
 
-MessagePtr<Thrift::MCRetrieveScript>::type serialize( const ::CtiMCRetrieveScript& imsg )
+MessagePtr<Thrift::MCRetrieveScript>::type populateThrift( const ::CtiMCRetrieveScript& imsg )
 {
     MessagePtr<Thrift::MCRetrieveScript>::type omsg( new Thrift::MCRetrieveScript );
 
-    omsg->__set__baseMessage            ( *serialize( static_cast<const ::CtiMessage&>(imsg) ));
+    omsg->__set__baseMessage            ( *populateThrift( static_cast<const ::CtiMessage&>(imsg) ));
     omsg->__set__name                   ( imsg.getScriptName() );
 
     return omsg;
 }
 
-MessagePtr<::CtiMCRetrieveScript>::type deserialize( const Thrift::MCRetrieveScript& imsg )
+MessagePtr<::CtiMCRetrieveScript>::type populateMessage( const Thrift::MCRetrieveScript& imsg )
 {
     MessagePtr<::CtiMCRetrieveScript>::type omsg( new ::CtiMCRetrieveScript );
 
-    static_cast<::CtiMessage&>(*omsg)   = *deserialize( imsg._baseMessage );
+    static_cast<::CtiMessage&>(*omsg)   = *populateMessage( imsg._baseMessage );
     omsg->setScriptName                 ( imsg._name );
 
     return omsg;
@@ -160,11 +160,11 @@ MessagePtr<::CtiMCRetrieveScript>::type deserialize( const Thrift::MCRetrieveScr
 //  MCOverrideRequest
 //=============================================================================
 
-MessagePtr<Thrift::MCOverrideRequest>::type serialize( const ::CtiMCOverrideRequest& imsg )
+MessagePtr<Thrift::MCOverrideRequest>::type populateThrift( const ::CtiMCOverrideRequest& imsg )
 {
     MessagePtr<Thrift::MCOverrideRequest>::type omsg( new Thrift::MCOverrideRequest );
 
-    omsg->__set__baseMessage            ( *serialize( static_cast<const ::CtiMessage&>(imsg) ));
+    omsg->__set__baseMessage            ( *populateThrift( static_cast<const ::CtiMessage&>(imsg) ));
     omsg->__set__action                 ( imsg.getAction() );
     omsg->__set__id                     ( imsg.getID() );
     omsg->__set__startTime              ( CtiTimeToMilliseconds( imsg.getStartTime() ));
@@ -173,11 +173,11 @@ MessagePtr<Thrift::MCOverrideRequest>::type serialize( const ::CtiMCOverrideRequ
     return omsg;
 }
 
-MessagePtr<::CtiMCOverrideRequest>::type deserialize( const Thrift::MCOverrideRequest& imsg )
+MessagePtr<::CtiMCOverrideRequest>::type populateMessage( const Thrift::MCOverrideRequest& imsg )
 {
     MessagePtr<::CtiMCOverrideRequest>::type omsg( new ::CtiMCOverrideRequest );
 
-    static_cast<::CtiMessage&>(*omsg)   = *deserialize( imsg._baseMessage );
+    static_cast<::CtiMessage&>(*omsg)   = *populateMessage( imsg._baseMessage );
     omsg->setAction                     ( (::CtiMCOverrideRequest::Action)imsg._action );
     omsg->setID                         ( imsg._id );
     omsg->setStartTime                  ( MillisecondsToCtiTime( imsg._startTime ));
@@ -190,22 +190,22 @@ MessagePtr<::CtiMCOverrideRequest>::type deserialize( const Thrift::MCOverrideRe
 //  MCInfo
 //=============================================================================
 
-MessagePtr<Thrift::MCInfo>::type serialize( const ::CtiMCInfo& imsg )
+MessagePtr<Thrift::MCInfo>::type populateThrift( const ::CtiMCInfo& imsg )
 {
     MessagePtr<Thrift::MCInfo>::type omsg( new Thrift::MCInfo );
 
-    omsg->__set__baseMessage            ( *serialize( static_cast<const ::CtiMessage&>(imsg) ));
+    omsg->__set__baseMessage            ( *populateThrift( static_cast<const ::CtiMessage&>(imsg) ));
     omsg->__set__id                     ( imsg.getID() );
     omsg->__set__info                   ( imsg.getInfo() );
 
     return omsg;
 }
 
-MessagePtr<::CtiMCInfo>::type deserialize( const Thrift::MCInfo& imsg )
+MessagePtr<::CtiMCInfo>::type populateMessage( const Thrift::MCInfo& imsg )
 {
     MessagePtr<::CtiMCInfo>::type omsg( new ::CtiMCInfo );
 
-    static_cast<::CtiMessage&>(*omsg)   = *deserialize( imsg._baseMessage );
+    static_cast<::CtiMessage&>(*omsg)   = *populateMessage( imsg._baseMessage );
     omsg->setID                         ( imsg._id );
     omsg->setInfo                       ( imsg._info );
 
@@ -216,11 +216,11 @@ MessagePtr<::CtiMCInfo>::type deserialize( const Thrift::MCInfo& imsg )
 //  MCSchedule
 //=============================================================================
 
-MessagePtr<Thrift::MCSchedule>::type serialize( const ::CtiMCSchedule& imsg )
+MessagePtr<Thrift::MCSchedule>::type populateThrift( const ::CtiMCSchedule& imsg )
 {
     MessagePtr<Thrift::MCSchedule>::type omsg( new Thrift::MCSchedule );
 
-    omsg->__set__baseMessage            ( *serialize( static_cast<const ::CtiMessage&>(imsg) ));
+    omsg->__set__baseMessage            ( *populateThrift( static_cast<const ::CtiMessage&>(imsg) ));
     omsg->__set__scheduleId             ( imsg.getScheduleID() );
     omsg->__set__scheduleName           ( imsg.getScheduleName() );
     omsg->__set__categoryName           ( imsg.getCategoryName() );
@@ -258,11 +258,11 @@ MessagePtr<Thrift::MCSchedule>::type serialize( const ::CtiMCSchedule& imsg )
     return omsg;
 }
 
-MessagePtr<::CtiMCSchedule>::type deserialize( const Thrift::MCSchedule& imsg )
+MessagePtr<::CtiMCSchedule>::type populateMessage( const Thrift::MCSchedule& imsg )
 {
     MessagePtr<::CtiMCSchedule>::type omsg( new ::CtiMCSchedule );
 
-    static_cast<::CtiMessage&>(*omsg)   = *deserialize( imsg._baseMessage );
+    static_cast<::CtiMessage&>(*omsg)   = *populateMessage( imsg._baseMessage );
     omsg->setScheduleID                 ( imsg._scheduleId );
     omsg->setScheduleName               ( imsg._scheduleName );
     omsg->setCategoryName               ( imsg._categoryName );
@@ -311,22 +311,22 @@ MessagePtr<::CtiMCSchedule>::type deserialize( const Thrift::MCSchedule& imsg )
 //  MCScript
 //=============================================================================
 
-MessagePtr<Thrift::MCScript>::type serialize( const ::CtiMCScript& imsg )
+MessagePtr<Thrift::MCScript>::type populateThrift( const ::CtiMCScript& imsg )
 {
     MessagePtr<Thrift::MCScript>::type omsg( new Thrift::MCScript );
 
-    omsg->__set__baseMessage            ( *serialize( static_cast<const ::CtiMessage&>(imsg) ));
+    omsg->__set__baseMessage            ( *populateThrift( static_cast<const ::CtiMessage&>(imsg) ));
     omsg->__set__name                   ( imsg.getScriptName() );
     omsg->__set__contents               ( imsg.getContents() );
 
     return omsg;
 }
 
-MessagePtr<::CtiMCScript>::type deserialize( const Thrift::MCScript& imsg )
+MessagePtr<::CtiMCScript>::type populateMessage( const Thrift::MCScript& imsg )
 {
     MessagePtr<::CtiMCScript>::type omsg( new ::CtiMCScript );
 
-    static_cast<::CtiMessage&>(*omsg)   = *deserialize( imsg._baseMessage );
+    static_cast<::CtiMessage&>(*omsg)   = *populateMessage( imsg._baseMessage );
     omsg->setScriptName                 ( imsg._name );
     omsg->setContents                   ( imsg._contents );
 

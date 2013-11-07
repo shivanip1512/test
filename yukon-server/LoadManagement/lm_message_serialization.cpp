@@ -17,24 +17,24 @@ struct LMMessageFactoryRegister
 {
     LMMessageFactoryRegister()
     {
-        g_messageFactory.registerSerializer <::CtiLMMessage,                   Thrift::LMMessage>                ( &serialize, &deserialize, "LMMessage" );
-        g_messageFactory.registerSerializer <::CtiLMCommand,                   Thrift::LMCommand>                ( &serialize, &deserialize, "LMCommand" );
-        g_messageFactory.registerSerializer <::CtiLMManualControlRequest,      Thrift::LMManualControlRequest>   ( &serialize, &deserialize, "LMManualControlRequest" );
-        g_messageFactory.registerSerializer <::CtiLMManualControlResponse,     Thrift::LMManualControlResponse>  ( &serialize, &deserialize, "LMManualControlResponse" );
-        g_messageFactory.registerSerializer <::CtiLMEnergyExchangeControlMsg,  Thrift::LMEnergyExchangeControl>  ( &serialize, &deserialize, "LMEnergyExchangeControl" );
-        g_messageFactory.registerSerializer <::CtiLMEnergyExchangeAcceptMsg,   Thrift::LMEnergyExchangeAccept>   ( &serialize, &deserialize, "LMEnergyExchangeAccept" );
-        g_messageFactory.registerSerializer <::CtiLMControlAreaMsg,            Thrift::LMControlAreas>           ( &serialize, NULL,         "LMControlAreas" );
-        g_messageFactory.registerSerializer <::CtiLMCurtailmentAcknowledgeMsg, Thrift::LMCurtailmentAcknowledge> ( &serialize, &deserialize, "LMCurtailmentAcknowledge" );
-        g_messageFactory.registerSerializer <::CtiLMDynamicGroupDataMsg,       Thrift::LMDynamicGroupData>       ( &serialize, NULL,         "LMDynamicGroupData" );
-        g_messageFactory.registerSerializer <::CtiLMDynamicProgramDataMsg,     Thrift::LMDynamicProgramData>     ( &serialize, NULL,         "LMDynamicProgramData" );
-        g_messageFactory.registerSerializer <::CtiLMDynamicTriggerDataMsg,     Thrift::LMDynamicTriggerData>     ( &serialize, NULL,         "LMDynamicTriggerData" );
-        g_messageFactory.registerSerializer <::CtiLMDynamicControlAreaDataMsg, Thrift::LMDynamicControlAreaData> ( &serialize, NULL,         "LMDynamicControlAreaData" );
+        g_messageFactory.registerSerializer <::CtiLMMessage,                   Thrift::LMMessage>                ( &populateThrift, &populateMessage, "LMMessage" );
+        g_messageFactory.registerSerializer <::CtiLMCommand,                   Thrift::LMCommand>                ( &populateThrift, &populateMessage, "LMCommand" );
+        g_messageFactory.registerSerializer <::CtiLMManualControlRequest,      Thrift::LMManualControlRequest>   ( &populateThrift, &populateMessage, "LMManualControlRequest" );
+        g_messageFactory.registerSerializer <::CtiLMManualControlResponse,     Thrift::LMManualControlResponse>  ( &populateThrift, &populateMessage, "LMManualControlResponse" );
+        g_messageFactory.registerSerializer <::CtiLMEnergyExchangeControlMsg,  Thrift::LMEnergyExchangeControl>  ( &populateThrift, &populateMessage, "LMEnergyExchangeControl" );
+        g_messageFactory.registerSerializer <::CtiLMEnergyExchangeAcceptMsg,   Thrift::LMEnergyExchangeAccept>   ( &populateThrift, &populateMessage, "LMEnergyExchangeAccept" );
+        g_messageFactory.registerSerializer <::CtiLMControlAreaMsg,            Thrift::LMControlAreas>           ( &populateThrift, NULL,         "LMControlAreas" );
+        g_messageFactory.registerSerializer <::CtiLMCurtailmentAcknowledgeMsg, Thrift::LMCurtailmentAcknowledge> ( &populateThrift, &populateMessage, "LMCurtailmentAcknowledge" );
+        g_messageFactory.registerSerializer <::CtiLMDynamicGroupDataMsg,       Thrift::LMDynamicGroupData>       ( &populateThrift, NULL,         "LMDynamicGroupData" );
+        g_messageFactory.registerSerializer <::CtiLMDynamicProgramDataMsg,     Thrift::LMDynamicProgramData>     ( &populateThrift, NULL,         "LMDynamicProgramData" );
+        g_messageFactory.registerSerializer <::CtiLMDynamicTriggerDataMsg,     Thrift::LMDynamicTriggerData>     ( &populateThrift, NULL,         "LMDynamicTriggerData" );
+        g_messageFactory.registerSerializer <::CtiLMDynamicControlAreaDataMsg, Thrift::LMDynamicControlAreaData> ( &populateThrift, NULL,         "LMDynamicControlAreaData" );
     }
 };
 
 const LMMessageFactoryRegister g_lmMessageFactoryRegister;
 
-// serialize program base pointer (boost::shared_ptr) to generic message
+// populateThrift program base pointer (boost::shared_ptr) to generic message
 Thrift::GenericMessage serializeGenericProgramPtr( const ::CtiLMProgramBaseSPtr program )
 {
     return serializeGeneric( *program, g_lmProgramFactory );
@@ -46,22 +46,22 @@ Thrift::GenericMessage serializeGenericProgramPtr( const ::CtiLMProgramBaseSPtr 
 //  LMMessage
 //=============================================================================
 
-MessagePtr<Thrift::LMMessage>::type serialize( const ::CtiLMMessage& imsg )
+MessagePtr<Thrift::LMMessage>::type populateThrift( const ::CtiLMMessage& imsg )
 {
     MessagePtr<Thrift::LMMessage>::type omsg( new Thrift::LMMessage );
 
-    omsg->__set__baseMessage                    ( *serialize( static_cast<const ::CtiMessage&>(imsg) ));
+    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CtiMessage&>(imsg) ));
     omsg->__set__message                        ( imsg.getMessage() );
 
     return omsg;
 }
 
-MessagePtr<::CtiLMMessage>::type deserialize( const Thrift::LMMessage& imsg )
+MessagePtr<::CtiLMMessage>::type populateMessage( const Thrift::LMMessage& imsg )
 {
     MessagePtr<::CtiLMMessage>::type omsg( new ::CtiLMMessage(
                                                   imsg._message ));
 
-    static_cast<::CtiMessage&>(*omsg)           = *deserialize( imsg._baseMessage );
+    static_cast<::CtiMessage&>(*omsg)           = *populateMessage( imsg._baseMessage );
 
     return omsg;
 }
@@ -70,11 +70,11 @@ MessagePtr<::CtiLMMessage>::type deserialize( const Thrift::LMMessage& imsg )
 //  LMCommand
 //=============================================================================
 
-MessagePtr<Thrift::LMCommand>::type serialize( const ::CtiLMCommand& imsg )
+MessagePtr<Thrift::LMCommand>::type populateThrift( const ::CtiLMCommand& imsg )
 {
     MessagePtr<Thrift::LMCommand>::type omsg( new Thrift::LMCommand );
 
-    omsg->__set__baseMessage                    ( *serialize( static_cast<const ::CtiLMMessage&>(imsg) ));
+    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CtiLMMessage&>(imsg) ));
     omsg->__set__command                        ( imsg.getCommand() );
     omsg->__set__paoId                          ( imsg.getPAOId() );
     omsg->__set__number                         ( imsg.getNumber() );
@@ -85,7 +85,7 @@ MessagePtr<Thrift::LMCommand>::type serialize( const ::CtiLMCommand& imsg )
     return omsg;
 }
 
-MessagePtr<::CtiLMCommand>::type deserialize( const Thrift::LMCommand& imsg )
+MessagePtr<::CtiLMCommand>::type populateMessage( const Thrift::LMCommand& imsg )
 {
     MessagePtr<::CtiLMCommand>::type omsg( new ::CtiLMCommand(
                                                   imsg._command,
@@ -95,7 +95,7 @@ MessagePtr<::CtiLMCommand>::type deserialize( const Thrift::LMCommand& imsg )
                                                   imsg._count,
                                                   imsg._auxId ));
 
-    static_cast<::CtiLMMessage&>(*omsg)         = *deserialize( imsg._baseMessage );
+    static_cast<::CtiLMMessage&>(*omsg)         = *populateMessage( imsg._baseMessage );
 
     return omsg;
 }
@@ -104,11 +104,11 @@ MessagePtr<::CtiLMCommand>::type deserialize( const Thrift::LMCommand& imsg )
 //  LMManualControlRequest
 //=============================================================================
 
-MessagePtr<Thrift::LMManualControlRequest>::type serialize( const ::CtiLMManualControlRequest& imsg )
+MessagePtr<Thrift::LMManualControlRequest>::type populateThrift( const ::CtiLMManualControlRequest& imsg )
 {
     MessagePtr<Thrift::LMManualControlRequest>::type omsg( new Thrift::LMManualControlRequest );
 
-    omsg->__set__baseMessage                    ( *serialize( static_cast<const ::CtiLMMessage&>(imsg) ));
+    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CtiLMMessage&>(imsg) ));
     omsg->__set__command                        ( imsg.getCommand() );
     omsg->__set__paoId                          ( imsg.getPAOId() );
     omsg->__set__notifyTime                     ( CtiTimeToMilliseconds( imsg.getNotifyTime() ));
@@ -122,7 +122,7 @@ MessagePtr<Thrift::LMManualControlRequest>::type serialize( const ::CtiLMManualC
     return omsg;
 }
 
-MessagePtr<::CtiLMManualControlRequest>::type deserialize( const Thrift::LMManualControlRequest& imsg )
+MessagePtr<::CtiLMManualControlRequest>::type populateMessage( const Thrift::LMManualControlRequest& imsg )
 {
     MessagePtr<::CtiLMManualControlRequest>::type omsg( new ::CtiLMManualControlRequest(
                                                   imsg._command,
@@ -135,7 +135,7 @@ MessagePtr<::CtiLMManualControlRequest>::type deserialize( const Thrift::LMManua
                                                   imsg._additionalInfo,
                                                   imsg._constraintCmd ));
 
-    static_cast<::CtiLMMessage&>(*omsg)         = *deserialize( imsg._baseMessage );
+    static_cast<::CtiLMMessage&>(*omsg)         = *populateMessage( imsg._baseMessage );
 
     return omsg;
 }
@@ -144,26 +144,26 @@ MessagePtr<::CtiLMManualControlRequest>::type deserialize( const Thrift::LMManua
 //  LMManualControlResponse
 //=============================================================================
 
-MessagePtr<Thrift::LMManualControlResponse>::type serialize( const ::CtiLMManualControlResponse& imsg )
+MessagePtr<Thrift::LMManualControlResponse>::type populateThrift( const ::CtiLMManualControlResponse& imsg )
 {
     MessagePtr<Thrift::LMManualControlResponse>::type omsg( new Thrift::LMManualControlResponse );
 
-    omsg->__set__baseMessage                    ( *serialize( static_cast<const ::CtiLMMessage&>(imsg) ));
+    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CtiLMMessage&>(imsg) ));
     omsg->__set__paoId                          ( imsg.getPAOId() );
-    omsg->__set__constraintViolations           ( transformContainer<vector<Thrift::LMConstraintViolation>>( imsg.getConstraintViolations(), serialize ));
+    omsg->__set__constraintViolations           ( transformContainer<vector<Thrift::LMConstraintViolation>>( imsg.getConstraintViolations(), populateThrift ));
     omsg->__set__bestFitAction                  ( imsg.getBestFitAction() );
 
     return omsg;
 }
 
-MessagePtr<::CtiLMManualControlResponse>::type deserialize( const Thrift::LMManualControlResponse& imsg )
+MessagePtr<::CtiLMManualControlResponse>::type populateMessage( const Thrift::LMManualControlResponse& imsg )
 {
     MessagePtr<::CtiLMManualControlResponse>::type omsg( new ::CtiLMManualControlResponse );
 
     omsg->setPAOId                              ( imsg._paoId );
-    omsg->setConstraintViolations               ( transformContainer<vector<::ConstraintViolation>>( imsg._constraintViolations, deserialize ));
+    omsg->setConstraintViolations               ( transformContainer<vector<::ConstraintViolation>>( imsg._constraintViolations, populateMessage ));
     omsg->setBestFitAction                      ( imsg._bestFitAction );
-    static_cast<::CtiLMMessage&>(*omsg)         = *deserialize( imsg._baseMessage );
+    static_cast<::CtiLMMessage&>(*omsg)         = *populateMessage( imsg._baseMessage );
 
     return omsg;
 }
@@ -172,7 +172,7 @@ MessagePtr<::CtiLMManualControlResponse>::type deserialize( const Thrift::LMManu
 //  LMConstraintViolation
 //=============================================================================
 
-MessagePtr<Thrift::LMConstraintViolation>::type serialize( const ::ConstraintViolation& imsg )
+MessagePtr<Thrift::LMConstraintViolation>::type populateThrift( const ::ConstraintViolation& imsg )
 {
     MessagePtr<Thrift::LMConstraintViolation>::type omsg( new Thrift::LMConstraintViolation );
 
@@ -185,7 +185,7 @@ MessagePtr<Thrift::LMConstraintViolation>::type serialize( const ::ConstraintVio
     return omsg;
 }
 
-MessagePtr<::ConstraintViolation>::type deserialize( const Thrift::LMConstraintViolation& imsg )
+MessagePtr<::ConstraintViolation>::type populateMessage( const Thrift::LMConstraintViolation& imsg )
 {
     MessagePtr<::ConstraintViolation>::type omsg( new ::ConstraintViolation(
                                                   imsg._errorCode,
@@ -201,11 +201,11 @@ MessagePtr<::ConstraintViolation>::type deserialize( const Thrift::LMConstraintV
 //  LMEnergyExchangeControl
 //=============================================================================
 
-MessagePtr<Thrift::LMEnergyExchangeControl>::type serialize( const ::CtiLMEnergyExchangeControlMsg& imsg )
+MessagePtr<Thrift::LMEnergyExchangeControl>::type populateThrift( const ::CtiLMEnergyExchangeControlMsg& imsg )
 {
     MessagePtr<Thrift::LMEnergyExchangeControl>::type omsg( new Thrift::LMEnergyExchangeControl );
 
-    omsg->__set__baseMessage                    ( *serialize( static_cast<const ::CtiLMMessage&>(imsg) ));
+    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CtiLMMessage&>(imsg) ));
     omsg->__set__command                        ( imsg.getCommand() );
     omsg->__set__paoId                          ( imsg.getPAOId() );
     omsg->__set__offerId                        ( imsg.getOfferId() );
@@ -219,7 +219,7 @@ MessagePtr<Thrift::LMEnergyExchangeControl>::type serialize( const ::CtiLMEnergy
     return omsg;
 }
 
-MessagePtr<::CtiLMEnergyExchangeControlMsg>::type deserialize( const Thrift::LMEnergyExchangeControl& imsg )
+MessagePtr<::CtiLMEnergyExchangeControlMsg>::type populateMessage( const Thrift::LMEnergyExchangeControl& imsg )
 {
     MessagePtr<::CtiLMEnergyExchangeControlMsg>::type omsg( new ::CtiLMEnergyExchangeControlMsg(
                                                   imsg._command,
@@ -232,7 +232,7 @@ MessagePtr<::CtiLMEnergyExchangeControlMsg>::type deserialize( const Thrift::LME
                                                   imsg._amountsRequested,
                                                   transformContainer<vector<LONG>>( imsg._pricesOffered )));
 
-    static_cast<::CtiLMMessage&>(*omsg)         = *deserialize( imsg._baseMessage );
+    static_cast<::CtiLMMessage&>(*omsg)         = *populateMessage( imsg._baseMessage );
 
     return omsg;
 }
@@ -241,11 +241,11 @@ MessagePtr<::CtiLMEnergyExchangeControlMsg>::type deserialize( const Thrift::LME
 //  LMEnergyExchangeAccept
 //=============================================================================
 
-MessagePtr<Thrift::LMEnergyExchangeAccept>::type serialize( const ::CtiLMEnergyExchangeAcceptMsg& imsg )
+MessagePtr<Thrift::LMEnergyExchangeAccept>::type populateThrift( const ::CtiLMEnergyExchangeAcceptMsg& imsg )
 {
     MessagePtr<Thrift::LMEnergyExchangeAccept>::type omsg( new Thrift::LMEnergyExchangeAccept );
 
-    omsg->__set__baseMessage                    ( *serialize( static_cast<const ::CtiLMMessage&>(imsg) ));
+    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CtiLMMessage&>(imsg) ));
     omsg->__set__paoId                          ( imsg.getPAOId() );
     omsg->__set__offerId                        ( imsg.getOfferId() );
     omsg->__set__revisionNumber                 ( imsg.getRevisionNumber() );
@@ -259,7 +259,7 @@ MessagePtr<Thrift::LMEnergyExchangeAccept>::type serialize( const ::CtiLMEnergyE
     return omsg;
 }
 
-MessagePtr<::CtiLMEnergyExchangeAcceptMsg>::type deserialize( const Thrift::LMEnergyExchangeAccept& imsg )
+MessagePtr<::CtiLMEnergyExchangeAcceptMsg>::type populateMessage( const Thrift::LMEnergyExchangeAccept& imsg )
 {
     MessagePtr<::CtiLMEnergyExchangeAcceptMsg>::type omsg( new ::CtiLMEnergyExchangeAcceptMsg(
                                                   imsg._paoId,
@@ -272,7 +272,7 @@ MessagePtr<::CtiLMEnergyExchangeAcceptMsg>::type deserialize( const Thrift::LMEn
                                                   imsg._energyExchangeNotes,
                                                   imsg._amountsCommitted ));
 
-    static_cast<::CtiLMMessage&>(*omsg)         = *deserialize( imsg._baseMessage );
+    static_cast<::CtiLMMessage&>(*omsg)         = *populateMessage( imsg._baseMessage );
 
     return omsg;
 }
@@ -281,13 +281,13 @@ MessagePtr<::CtiLMEnergyExchangeAcceptMsg>::type deserialize( const Thrift::LMEn
 //  LMControlAreas
 //=============================================================================
 
-MessagePtr<Thrift::LMControlAreas>::type serialize( const ::CtiLMControlAreaMsg& imsg )
+MessagePtr<Thrift::LMControlAreas>::type populateThrift( const ::CtiLMControlAreaMsg& imsg )
 {
     MessagePtr<Thrift::LMControlAreas>::type omsg( new Thrift::LMControlAreas );
 
-    omsg->__set__baseMessage                    ( *serialize( static_cast<const ::CtiLMMessage&>(imsg) ));
+    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CtiLMMessage&>(imsg) ));
     omsg->__set__msgInfoBitMask                 ( imsg.getMsgInfoBitMask() );
-    omsg->__set__controlAreas                   ( transformContainer<vector<Thrift::LMControlAreaItem>>( *imsg.getControlAreas(), serialize ));
+    omsg->__set__controlAreas                   ( transformContainer<vector<Thrift::LMControlAreaItem>>( *imsg.getControlAreas(), populateThrift ));
 
     return omsg;
 }
@@ -296,7 +296,7 @@ MessagePtr<Thrift::LMControlAreas>::type serialize( const ::CtiLMControlAreaMsg&
 //  LMControlAreaItem
 //=============================================================================
 
-MessagePtr<Thrift::LMControlAreaItem>::type serialize( const ::CtiLMControlArea& imsg )
+MessagePtr<Thrift::LMControlAreaItem>::type populateThrift( const ::CtiLMControlArea& imsg )
 {
     MessagePtr<Thrift::LMControlAreaItem>::type omsg( new Thrift::LMControlAreaItem );
 
@@ -321,7 +321,7 @@ MessagePtr<Thrift::LMControlAreaItem>::type serialize( const ::CtiLMControlArea&
     omsg->__set__currentPriority                ( imsg.getCurrentPriority() );
     omsg->__set__currentDailyStartTime          ( imsg.getCurrentStartSecondsFromDayBegin() );
     omsg->__set__currentDailyStopTime           ( imsg.getCurrentStopSecondsFromDayBegin() );
-    omsg->__set__lmControlAreaTriggers          ( transformContainer<vector<Thrift::LMControlAreaTrigger>>( imsg.getLMControlAreaTriggers(), serialize ));
+    omsg->__set__lmControlAreaTriggers          ( transformContainer<vector<Thrift::LMControlAreaTrigger>>( imsg.getLMControlAreaTriggers(), populateThrift ));
     omsg->__set__lmPrograms                     ( transformContainer<vector<Thrift::GenericMessage>>( imsg.getLMPrograms(), serializeGenericProgramPtr ));
 
     return omsg;
@@ -331,7 +331,7 @@ MessagePtr<Thrift::LMControlAreaItem>::type serialize( const ::CtiLMControlArea&
 //  LMControlAreaTrigger
 //=============================================================================
 
-MessagePtr<Thrift::LMControlAreaTrigger>::type serialize( const ::CtiLMControlAreaTrigger& imsg )
+MessagePtr<Thrift::LMControlAreaTrigger>::type populateThrift( const ::CtiLMControlAreaTrigger& imsg )
 {
     MessagePtr<Thrift::LMControlAreaTrigger>::type omsg( new Thrift::LMControlAreaTrigger );
 
@@ -360,11 +360,11 @@ MessagePtr<Thrift::LMControlAreaTrigger>::type serialize( const ::CtiLMControlAr
 //  LMCurtailmentAcknowledge
 //=============================================================================
 
-MessagePtr<Thrift::LMCurtailmentAcknowledge>::type serialize( const ::CtiLMCurtailmentAcknowledgeMsg& imsg )
+MessagePtr<Thrift::LMCurtailmentAcknowledge>::type populateThrift( const ::CtiLMCurtailmentAcknowledgeMsg& imsg )
 {
     MessagePtr<Thrift::LMCurtailmentAcknowledge>::type omsg( new Thrift::LMCurtailmentAcknowledge );
 
-    omsg->__set__baseMessage                    ( *serialize( static_cast<const ::CtiLMMessage&>(imsg) ));
+    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CtiLMMessage&>(imsg) ));
     omsg->__set__paoId                          ( imsg.getPAOId() );
     omsg->__set__curtailReferenceId             ( imsg.getCurtailReferenceId() );
     omsg->__set__acknowledgeStatus              ( imsg.getAcknowledgeStatus() );
@@ -376,7 +376,7 @@ MessagePtr<Thrift::LMCurtailmentAcknowledge>::type serialize( const ::CtiLMCurta
     return omsg;
 }
 
-MessagePtr<::CtiLMCurtailmentAcknowledgeMsg>::type deserialize( const Thrift::LMCurtailmentAcknowledge& imsg )
+MessagePtr<::CtiLMCurtailmentAcknowledgeMsg>::type populateMessage( const Thrift::LMCurtailmentAcknowledge& imsg )
 {
     MessagePtr<::CtiLMCurtailmentAcknowledgeMsg>::type omsg( new ::CtiLMCurtailmentAcknowledgeMsg(
                                                   imsg._paoId,
@@ -387,7 +387,7 @@ MessagePtr<::CtiLMCurtailmentAcknowledgeMsg>::type deserialize( const Thrift::LM
                                                   imsg._nameOfAckPerson,
                                                   imsg._curtailmentNotes ));
 
-    static_cast<::CtiLMMessage&>(*omsg)         = *deserialize( imsg._baseMessage );
+    static_cast<::CtiLMMessage&>(*omsg)         = *populateMessage( imsg._baseMessage );
 
     return omsg;
 }
@@ -396,7 +396,7 @@ MessagePtr<::CtiLMCurtailmentAcknowledgeMsg>::type deserialize( const Thrift::LM
 //  LMDynamicGroupData
 //=============================================================================
 
-MessagePtr<Thrift::LMDynamicGroupData>::type serialize( const ::CtiLMDynamicGroupDataMsg& imsg )
+MessagePtr<Thrift::LMDynamicGroupData>::type populateThrift( const ::CtiLMDynamicGroupDataMsg& imsg )
 {
     MessagePtr<Thrift::LMDynamicGroupData>::type omsg( new Thrift::LMDynamicGroupData );
 
@@ -421,7 +421,7 @@ MessagePtr<Thrift::LMDynamicGroupData>::type serialize( const ::CtiLMDynamicGrou
 //  LMDynamicProgramData
 //=============================================================================
 
-MessagePtr<Thrift::LMDynamicProgramData>::type serialize( const ::CtiLMDynamicProgramDataMsg& imsg )
+MessagePtr<Thrift::LMDynamicProgramData>::type populateThrift( const ::CtiLMDynamicProgramDataMsg& imsg )
 {
     MessagePtr<Thrift::LMDynamicProgramData>::type omsg( new Thrift::LMDynamicProgramData );
 
@@ -444,7 +444,7 @@ MessagePtr<Thrift::LMDynamicProgramData>::type serialize( const ::CtiLMDynamicPr
 //  LMDynamicControlAreaData
 //=============================================================================
 
-MessagePtr<Thrift::LMDynamicControlAreaData>::type serialize( const ::CtiLMDynamicControlAreaDataMsg& imsg )
+MessagePtr<Thrift::LMDynamicControlAreaData>::type populateThrift( const ::CtiLMDynamicControlAreaDataMsg& imsg )
 {
     MessagePtr<Thrift::LMDynamicControlAreaData>::type omsg( new Thrift::LMDynamicControlAreaData );
 
@@ -455,7 +455,7 @@ MessagePtr<Thrift::LMDynamicControlAreaData>::type serialize( const ::CtiLMDynam
     omsg->__set__currentPriority                ( imsg.getCurrentPriority() );
     omsg->__set__currentDailyStartTime          ( imsg.getCurrentDailyStartTime() );
     omsg->__set__currentDailyStopTime           ( imsg.getCurrentDailyStopTime() );
-    omsg->__set__triggers                       ( transformContainer<vector<Thrift::LMDynamicTriggerData>>( imsg.getTriggers(), serialize ));
+    omsg->__set__triggers                       ( transformContainer<vector<Thrift::LMDynamicTriggerData>>( imsg.getTriggers(), populateThrift ));
 
     return omsg;
 }
@@ -464,7 +464,7 @@ MessagePtr<Thrift::LMDynamicControlAreaData>::type serialize( const ::CtiLMDynam
 //  LMDynamicTriggerDataMsg
 //=============================================================================
 
-MessagePtr<Thrift::LMDynamicTriggerData>::type serialize( const ::CtiLMDynamicTriggerDataMsg& imsg )
+MessagePtr<Thrift::LMDynamicTriggerData>::type populateThrift( const ::CtiLMDynamicTriggerDataMsg& imsg )
 {
     MessagePtr<Thrift::LMDynamicTriggerData>::type omsg( new Thrift::LMDynamicTriggerData );
 
