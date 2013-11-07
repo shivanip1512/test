@@ -27,8 +27,8 @@ public CFDATA(String dirToWatch, String fileExt) {
  */
 private String decodeLine(String line) {
 
-	StringBuffer buf = new StringBuffer("PutConfig versacom serial ");
-	
+    StringBuffer buf = new StringBuffer();
+    
 	try
 	{
 		int func;
@@ -42,7 +42,14 @@ private String decodeLine(String line) {
 		func = Integer.parseInt( (String) tok.nextElement() );
 
 		//SerialNumber
-		temp = Integer.parseInt( (String) tok.nextElement() );
+        String serialNumberStr = tok.nextToken();
+        if (serialNumberStr.startsWith("4")) { // "4000 "series switches at WPS are all expressCom
+            buf.append("putconfig xcom serial ");
+        } else { // "5000" series switches, or assume everything else, is versacom
+            buf.append("putconfig versacom serial ");
+        }
+		
+		temp = Integer.parseInt(serialNumberStr);
 		buf.append( temp );
 		
 		if( func == 4 )
@@ -100,7 +107,7 @@ private String decodeLine(String line) {
 
 		classID = temp;
 		
-		buf.append(" class 0x" + Long.toHexString( (long) classID ) );
+		buf.append(" class 0x" + Long.toHexString( classID ) );
 
 		//DLC Division
 		temp = Integer.parseInt( (String) tok.nextElement() );
@@ -116,7 +123,7 @@ private String decodeLine(String line) {
 
 		divID = temp;
 
-		buf.append(" division 0x" + Long.toHexString( (long) divID ) );		
+		buf.append(" division 0x" + Long.toHexString( divID ) );		
 	}
 	catch( Exception e )
 	{		
@@ -129,6 +136,7 @@ private String decodeLine(String line) {
 /**
  * handleFile method comment.
  */
+@Override
 protected void handleFile(java.io.InputStream in) 
 {
 	try
