@@ -11,12 +11,17 @@
 #include "utility.h"
 #include "devicetypes.h"
 #include "amq_connection.h"
-#include "rfnbroadcastmessage.h"
+#include "RfnBroadcastMessage.h"
+#include "RfnBroadcastReplyMessage.h"
 #include "ctistring.h"
+
+#include "std_helper.h"
 
 using std::string;
 using std::endl;
 using std::list;
+
+using Cti::Logging::Vector::Hex::operator<<;
 
 
 INT CtiDeviceGroupRfnExpresscom::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList)
@@ -123,20 +128,49 @@ INT CtiDeviceGroupRfnExpresscom::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandP
     }
 }
 
+void logResponse(const unsigned short outboundMessageId, const std::vector<unsigned char> outboundMessagePayload, const Cti::Messaging::Rfn::RfnBroadcastReplyMessage &reply)
+{
+    CtiLockGuard<CtiLogger> dout_guard(dout);
+    dout << CtiTime() << " Received RFN broadcast reply message " << __FUNCTION__ << " @ " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+    dout << "Outbound ID " << outboundMessageId << ", outbound payload [" << outboundMessagePayload << "];" << std::endl;
+    dout << "Reply results: ";
+
+    if( reply.gatewayResults.empty() )
+    {
+        dout << "[empty]";
+    }
+    else
+    {
+        std::map<boost::int64_t, const Cti::Messaging::Rfn::BroadcastResult *>::const_iterator itr;
+
+        for( itr = reply.gatewayResults.begin(); itr != reply.gatewayResults.end(); ++itr )
+        {
+            dout << "[GW ID: " << itr->first << ", " << itr->second->description << "] ";
+        }
+    }
+
+    dout << std::endl;
+}
+
 void CtiDeviceGroupRfnExpresscom::sendDRMessage(int priority, int expirationDuration, std::vector<unsigned char> &payload)
 {
     using namespace Cti::Messaging;
     using namespace Cti::Messaging::Rfn;
     using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
 
-    std::auto_ptr<const StreamableMessage> message(
-        RfnBroadcastMessage::createMessage(
-           priority,
-           RfnBroadcastMessage::RfnMessageClass::DemandResponse,
-           expirationDuration,
-           payload));
+    std::auto_ptr<const RfnBroadcastMessage> rfnBroadcastMessage(
+            RfnBroadcastMessage::createMessage(
+                    priority,
+                    RfnBroadcastMessage::RfnMessageClass::DemandResponse,
+                    expirationDuration,
+                    payload));
 
-    ActiveMQConnectionManager::enqueueMessage(OutboundQueue::RfnBroadcast, message);
+    ActiveMQConnectionManager::CallbackFor<RfnBroadcastReplyMessage>::type callback =
+            boost::bind(&logResponse, rfnBroadcastMessage->messageId, rfnBroadcastMessage->payload, _1);
+
+    std::auto_ptr<const StreamableMessage> streamableMessage(rfnBroadcastMessage);
+
+    ActiveMQConnectionManager::enqueueMessageWithCallbackFor<RfnBroadcastReplyMessage>(OutboundQueue::RfnBroadcast, streamableMessage, callback);
 }
 
 string CtiDeviceGroupRfnExpresscom::getSQLCoreStatement() const

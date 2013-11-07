@@ -1,13 +1,17 @@
 #pragma once
 
-#include <string>
-#include <map>
+#include "message.h"
+#include "amq_constants.h"
+
 #include <thrift/thrift.h>
 #include <thrift/transport/TBufferTransports.h>
 #include <thrift/protocol/tBinaryProtocol.h>
+
 #include <boost/shared_ptr.hpp>
-#include "message.h"
-#include "amq_constants.h"
+#include <boost/optional.hpp>
+
+#include <string>
+#include <map>
 
 namespace Cti {
 namespace Messaging {
@@ -188,6 +192,24 @@ public:
    }
 };
 
+
+//  Throws apache::thrift::TException
+template<class ThriftMsg_t>
+ThriftMsg_t DeserializeThriftBytes( const std::vector<unsigned char>& ibytes )
+{
+    ThriftMsg_t imsg;
+
+    // create memory buffer and binary protocol
+    boost::shared_ptr<apache::thrift::transport::TMemoryBuffer> transport( new apache::thrift::transport::TMemoryBuffer( const_cast<uint8_t*>(&(ibytes.front())), ibytes.size() ));
+    apache::thrift::protocol::TBinaryProtocol protocol( transport );
+
+    // read protocol and populate thrift message
+    imsg.read( &protocol );
+
+    return imsg;
+}
+
+
 /*-----------------------------------------------------------------------------
     Message deserializer derived class
 -----------------------------------------------------------------------------*/
@@ -203,22 +225,25 @@ public:
     {
     }
 
+    //  Throws apache::thrift::TException
     virtual typename MessagePtr<MessageBase_t>::type deserialize( const std::vector<unsigned char>& ibytes ) const
     {
-        // create memory buffer and binary protocol
-        boost::shared_ptr<apache::thrift::transport::TMemoryBuffer> transport( new apache::thrift::transport::TMemoryBuffer( const_cast<uint8_t*>(&(ibytes.front())), ibytes.size() ));
-        apache::thrift::protocol::TBinaryProtocol protocol( transport );
-
-        // thrift message
-        ThriftMsg_t imsg;
-
-        // read protocol and populate thrift message
-        imsg.read( &protocol );
+        // deserialize bytes into Thrift message - may throw apache::thrift::TException
+        ThriftMsg_t imsg = DeserializeThriftBytes<ThriftMsg_t>( ibytes );
 
         // call function pointer to translate from thrift message to MessageBase_t
         return typename MessagePtr<MessageBase_t>::type( _deserializeFn( imsg ).release() );
     }
 };
+
+
+template<typename Msg>
+struct IM_EX_MSG MessageSerializer
+{
+    static std::vector<unsigned char> &serialize( const Msg &m );
+    static boost::optional<Msg> deserialize( const std::vector<unsigned char> &buf );
+};
+
 
 IM_EX_MSG extern MessageFactory<::CtiMessage> g_messageFactory;
 

@@ -10,24 +10,26 @@ namespace Cti {
 namespace Messaging {
 namespace Rfn {
 
-class IM_EX_MSG RfnBroadcastMessage : public StreamableMessage
+struct IM_EX_MSG RfnBroadcastMessage : StreamableMessage
 {
 private:
-    short             _messageId;
-    int               _messagePriority;
-    std::string       _rfnMessageClass;
-    unsigned int      _expirationDuration;
-    std::vector<unsigned char> _payload;
 
     RfnBroadcastMessage();
 
 public:
 
+    short             messageId;
+    int               messagePriority;
+    std::string       rfnMessageClass;
+    unsigned int      expirationDuration;
+    std::vector<unsigned char> payload;
+
     // Helper method to fill out the standard fields.
-    static RfnBroadcastMessage* createMessage(int messagePriority,
-                                              const std::string &rfnMessageClass,
-                                              unsigned int expirationDuration,
-                                              const std::vector<unsigned char> &payload);
+    static std::auto_ptr<const RfnBroadcastMessage>
+            createMessage(int messagePriority,
+                          const std::string &rfnMessageClass,
+                          unsigned int expirationDuration,
+                          const std::vector<unsigned char> &payload);
 
     void streamInto(cms::StreamMessage &message) const;
 
@@ -36,7 +38,6 @@ public:
         static const std::string DemandResponse;
         static const std::string none;
     };
-    
 };
 
 

@@ -39,6 +39,7 @@ PorterResponseMessage.obj \
 LMSepControlMessage.obj \
 LMSepRestoreMessage.obj \
 RfnBroadcastMessage.obj \
+RfnBroadcastReplyMessage.obj \
 ControlHistoryAssociationResponse.obj \
 amq_connection.obj \
 amq_util.obj \

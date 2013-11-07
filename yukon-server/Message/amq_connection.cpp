@@ -12,6 +12,9 @@
 #include "dllbase.h"  //  for getDebugLevel() and DEBUGLEVEL_ACTIVITY_INFO
 
 #include "amq_util.h"
+
+#include "message_factory.h"
+
 #include "std_helper.h"
 
 #include <boost/optional.hpp>
@@ -364,11 +367,43 @@ void ActiveMQConnectionManager::dispatchTempQueueReplies()
 
 void ActiveMQConnectionManager::enqueueMessage(const ActiveMQ::Queues::OutboundQueue &queue, auto_ptr<const StreamableMessage> message)
 {
-    gActiveMQConnection->enqueueOutgoingMessage(queue, message);
+    gActiveMQConnection->enqueueOutgoingMessage(queue, message, boost::none);
 }
 
 
-void ActiveMQConnectionManager::enqueueMessages(const ActiveMQ::Queues::OutboundQueue &queue, const std::vector<SerializedMessage> &messages, MessageCallback callback)
+template<typename Msg>
+struct DeserializationHelper
+{
+    typedef typename ActiveMQConnectionManager::CallbackFor<Msg>::type CallbackForMsg;
+    const CallbackForMsg &callback;
+
+    DeserializationHelper(const CallbackForMsg &callback_) : callback(callback_) {}
+
+    void operator()(const ActiveMQConnectionManager::SerializedMessage &buf) const
+    {
+        if( const boost::optional<Msg> msg = Serialization::MessageSerializer<Msg>::deserialize(buf) )
+        {
+            callback(*msg);
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> dout_guard(dout);
+            dout << CtiTime() << " Failed to deserialize " << typeid(Msg).name() << " from payload [" << buf << "] " << __FUNCTION__ << " @ " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+        }
+    }
+};
+
+
+template<typename Msg>
+void ActiveMQConnectionManager::enqueueMessageWithCallbackFor(const ActiveMQ::Queues::OutboundQueue &queue, auto_ptr<const StreamableMessage> message, typename CallbackFor<Msg>::type callback)
+{
+    SerializedMessageCallback callbackWrapper = DeserializationHelper<Msg>(callback);
+
+    gActiveMQConnection->enqueueOutgoingMessage(queue, message, callbackWrapper);
+}
+
+
+void ActiveMQConnectionManager::enqueueMessagesWithCallback(const ActiveMQ::Queues::OutboundQueue &queue, const std::vector<SerializedMessage> &messages, SerializedMessageCallback callback)
 {
     for each( const SerializedMessage &message in messages )
     {
@@ -379,7 +414,7 @@ void ActiveMQConnectionManager::enqueueMessages(const ActiveMQ::Queues::Outbound
 }
 
 
-void ActiveMQConnectionManager::enqueueOutgoingMessage(const ActiveMQ::Queues::OutboundQueue &queue, auto_ptr<const StreamableMessage> message)
+void ActiveMQConnectionManager::enqueueOutgoingMessage(const ActiveMQ::Queues::OutboundQueue &queue, auto_ptr<const StreamableMessage> message, boost::optional<SerializedMessageCallback> callback)
 {
     //  ensure the message is not null
     if( ! message.get() )
@@ -405,6 +440,7 @@ void ActiveMQConnectionManager::enqueueOutgoingMessage(const ActiveMQ::Queues::O
 
     e->queue = &queue;
     e->message.reset(message.release());
+    e->callback = callback;
 
     {
         CtiLockGuard<CtiCriticalSection> lock(_outgoingMessagesMux);
@@ -419,7 +455,7 @@ void ActiveMQConnectionManager::enqueueOutgoingMessage(const ActiveMQ::Queues::O
 }
 
 
-void ActiveMQConnectionManager::enqueueOutgoingMessage(const ActiveMQ::Queues::OutboundQueue &queue, const SerializedMessage &message, MessageCallback callback)
+void ActiveMQConnectionManager::enqueueOutgoingMessage(const ActiveMQ::Queues::OutboundQueue &queue, const SerializedMessage &message, boost::optional<SerializedMessageCallback> callback)
 {
     struct BytesEnvelope : Envelope
     {
@@ -437,7 +473,7 @@ void ActiveMQConnectionManager::enqueueOutgoingMessage(const ActiveMQ::Queues::O
 
     std::auto_ptr<BytesEnvelope> e(new BytesEnvelope);
 
-    e->queue  = &queue;
+    e->queue    = &queue;
     e->message  = message;
     e->callback = callback;
 
@@ -486,13 +522,13 @@ ActiveMQ::QueueProducer &ActiveMQConnectionManager::getQueueProducer(cms::Sessio
 }
 
 
-void ActiveMQConnectionManager::registerHandler(const ActiveMQ::Queues::InboundQueue &queue, MessageCallback callback)
+void ActiveMQConnectionManager::registerHandler(const ActiveMQ::Queues::InboundQueue &queue, SerializedMessageCallback callback)
 {
     gActiveMQConnection->addNewCallback(queue, callback);
 }
 
 
-void ActiveMQConnectionManager::addNewCallback(const ActiveMQ::Queues::InboundQueue &queue, MessageCallback callback)
+void ActiveMQConnectionManager::addNewCallback(const ActiveMQ::Queues::InboundQueue &queue, SerializedMessageCallback callback)
 {
     CtiLockGuard<CtiCriticalSection> lock(_newCallbackMux);
 

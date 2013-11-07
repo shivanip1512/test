@@ -4,6 +4,8 @@
 #include "critical_section.h"
 #include "StreamableMessage.h"
 
+#include "RfnBroadcastReplyMessage.h"
+
 #include <boost/function.hpp>
 #include <boost/optional.hpp>
 #include <boost/scoped_ptr.hpp>
@@ -68,22 +70,30 @@ class IM_EX_MSG ActiveMQConnectionManager :
 public:
 
     typedef std::vector<unsigned char> SerializedMessage;
-    typedef boost::function<void (const std::vector<unsigned char> &)> MessageCallback;
+    typedef boost::function<void (const SerializedMessage &)> SerializedMessageCallback;
+
+    template<class Msg>
+    struct CallbackFor
+    {
+        typedef boost::function<void (const Msg &)> type;
+    };
 
     ActiveMQConnectionManager(const std::string &broker_uri);
     virtual ~ActiveMQConnectionManager();
 
-    static void enqueueMessage (const ActiveMQ::Queues::OutboundQueue &queue, std::auto_ptr<const StreamableMessage> message);
-    static void enqueueMessages(const ActiveMQ::Queues::OutboundQueue &queue, const std::vector<SerializedMessage> &messages, MessageCallback callback);
+    static void enqueueMessage(const ActiveMQ::Queues::OutboundQueue &queue, std::auto_ptr<const StreamableMessage> message);
+    template<class Msg>
+    static void enqueueMessageWithCallbackFor(const ActiveMQ::Queues::OutboundQueue &queue, std::auto_ptr<const StreamableMessage> message, typename CallbackFor<Msg>::type callback);
+    static void enqueueMessagesWithCallback(const ActiveMQ::Queues::OutboundQueue &queue, const std::vector<SerializedMessage> &messages, SerializedMessageCallback callback);
 
-    static void registerHandler(const ActiveMQ::Queues::InboundQueue &queue, const MessageCallback callback);
+    static void registerHandler(const ActiveMQ::Queues::InboundQueue &queue, const SerializedMessageCallback callback);
 
 protected:
 
-    virtual void enqueueOutgoingMessage(const ActiveMQ::Queues::OutboundQueue &queue, std::auto_ptr<const StreamableMessage> message);
-    virtual void enqueueOutgoingMessage(const ActiveMQ::Queues::OutboundQueue &queue, const SerializedMessage &message, MessageCallback callback);
+    virtual void enqueueOutgoingMessage(const ActiveMQ::Queues::OutboundQueue &queue, std::auto_ptr<const StreamableMessage> message, boost::optional<SerializedMessageCallback> callback);
+    virtual void enqueueOutgoingMessage(const ActiveMQ::Queues::OutboundQueue &queue, const SerializedMessage &message, boost::optional<SerializedMessageCallback> callback);
 
-    void addNewCallback(const ActiveMQ::Queues::InboundQueue &queue, const MessageCallback callback);
+    void addNewCallback(const ActiveMQ::Queues::InboundQueue &queue, const SerializedMessageCallback callback);
 
     void onInboundMessage(const ActiveMQ::Queues::InboundQueue *queue, const cms::Message *message);
     void onTempQueueReply(const cms::Message *message);
@@ -97,7 +107,7 @@ private:
     void releaseConnectionObjects();
 
     void updateCallbacks();
-    bool addQueueCallback(const ActiveMQ::Queues::InboundQueue &queue, const MessageCallback callback);
+    bool addQueueCallback(const ActiveMQ::Queues::InboundQueue &queue, const SerializedMessageCallback callback);
 
     void sendOutgoingMessages();
     ActiveMQ::QueueProducer &getQueueProducer(cms::Session &session, const std::string &queue);
@@ -117,7 +127,7 @@ private:
     {
         const ActiveMQ::Queues::OutboundQueue *queue;
 
-        boost::optional<MessageCallback> callback;
+        boost::optional<SerializedMessageCallback> callback;
 
         virtual cms::Message *extractMessage(cms::Session &session) const = 0;
     };
@@ -133,7 +143,7 @@ private:
     typedef boost::ptr_map<const std::string, ActiveMQ::QueueProducer> ProducersByQueueName;
     ProducersByQueueName _producers;
 
-    typedef std::multimap<const ActiveMQ::Queues::InboundQueue *, MessageCallback> CallbacksPerQueue;
+    typedef std::multimap<const ActiveMQ::Queues::InboundQueue *, SerializedMessageCallback> CallbacksPerQueue;
     CtiCriticalSection _newCallbackMux;
     CallbacksPerQueue  _newCallbacks;
     CallbacksPerQueue  _callbacks;
@@ -153,7 +163,7 @@ private:
     {
         boost::scoped_ptr<ActiveMQ::TempQueueConsumer> managedConsumer;
         boost::scoped_ptr<cms::MessageListener> listener;
-        MessageCallback callback;
+        SerializedMessageCallback callback;
     };
 
     typedef boost::ptr_map<std::string, TempQueueConsumerWithCallback> TemporaryConsumersByDestination;
@@ -169,6 +179,7 @@ private:
     };
 };
 
+template void IM_EX_MSG ActiveMQConnectionManager::enqueueMessageWithCallbackFor<Rfn::RfnBroadcastReplyMessage>(const ActiveMQ::Queues::OutboundQueue &queue, std::auto_ptr<const StreamableMessage> message, CallbackFor<Rfn::RfnBroadcastReplyMessage>::type callback);
 
 }
 }

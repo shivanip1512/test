@@ -729,7 +729,7 @@ void RfnRequestManager::sendMessages()
 {
     using Messaging::ActiveMQ::Queues::OutboundQueue;
 
-    Messaging::ActiveMQConnectionManager::enqueueMessages(
+    Messaging::ActiveMQConnectionManager::enqueueMessagesWithCallback(
             OutboundQueue::NetworkManagerE2eDataRequest,
             _messages,
             boost::bind(&RfnRequestManager::handleRfnE2eDataConfirmMsg, this, _1));
