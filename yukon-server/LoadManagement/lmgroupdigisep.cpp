@@ -92,7 +92,7 @@ bool LMGroupDigiSEP::sendSEPCycleControl(long controlMinutes, long cyclePercent,
     using namespace Cti::Messaging::LoadManagement;
     using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
 
-    std::auto_ptr<const StreamableMessage> msg(
+    StreamableMessage::auto_type msg(
             LMSepControlMessage::createCycleMessage(
                     getPAOId(),
                     0,
@@ -164,7 +164,7 @@ bool LMGroupDigiSEP::sendSEPTempOffsetControl(long controlMinutes, long heatOffs
         dout << CtiTime() << " - Invalid temperature settings, both heat and cool offset have non zero values, defaulting to cool: " << getPAOName() << endl;
     }
 
-    std::auto_ptr<const StreamableMessage> msg(
+    StreamableMessage::auto_type msg(
             LMSepControlMessage::createTempOffsetMessage(
                     getPAOId(),
                     0,
@@ -204,7 +204,7 @@ bool LMGroupDigiSEP::sendStopControl(bool stopImmediately)
     using namespace Cti::Messaging::LoadManagement;
     using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
 
-    std::auto_ptr<const StreamableMessage> msg(new LMSepRestoreMessage(getPAOId(), 0, stopImmediately ? 0 : 1));
+    StreamableMessage::auto_type msg(new LMSepRestoreMessage(getPAOId(), 0, stopImmediately ? 0 : 1));
     ActiveMQConnectionManager::enqueueMessage(OutboundQueue::SmartEnergyProfileRestore, msg);
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
@@ -227,7 +227,7 @@ bool LMGroupDigiSEP::sendShedControl(long controlMinutes)
     using namespace Cti::Messaging::LoadManagement;
     using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
 
-    std::auto_ptr<const StreamableMessage> msg(LMSepControlMessage::createSimpleShedMessage(getPAOId(), 0, controlMinutes));
+    StreamableMessage::auto_type msg(LMSepControlMessage::createSimpleShedMessage(getPAOId(), 0, controlMinutes));
     ActiveMQConnectionManager::enqueueMessage(OutboundQueue::SmartEnergyProfileControl, msg);
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )

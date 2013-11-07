@@ -365,7 +365,7 @@ void ActiveMQConnectionManager::dispatchTempQueueReplies()
 }
 
 
-void ActiveMQConnectionManager::enqueueMessage(const ActiveMQ::Queues::OutboundQueue &queue, auto_ptr<const StreamableMessage> message)
+void ActiveMQConnectionManager::enqueueMessage(const ActiveMQ::Queues::OutboundQueue &queue, StreamableMessage::auto_type message)
 {
     gActiveMQConnection->enqueueOutgoingMessage(queue, message, boost::none);
 }
@@ -395,7 +395,7 @@ struct DeserializationHelper
 
 
 template<typename Msg>
-void ActiveMQConnectionManager::enqueueMessageWithCallbackFor(const ActiveMQ::Queues::OutboundQueue &queue, auto_ptr<const StreamableMessage> message, typename CallbackFor<Msg>::type callback)
+void ActiveMQConnectionManager::enqueueMessageWithCallbackFor(const ActiveMQ::Queues::OutboundQueue &queue, StreamableMessage::auto_type message, typename CallbackFor<Msg>::type callback)
 {
     SerializedMessageCallback callbackWrapper = DeserializationHelper<Msg>(callback);
 
@@ -414,7 +414,7 @@ void ActiveMQConnectionManager::enqueueMessagesWithCallback(const ActiveMQ::Queu
 }
 
 
-void ActiveMQConnectionManager::enqueueOutgoingMessage(const ActiveMQ::Queues::OutboundQueue &queue, auto_ptr<const StreamableMessage> message, boost::optional<SerializedMessageCallback> callback)
+void ActiveMQConnectionManager::enqueueOutgoingMessage(const ActiveMQ::Queues::OutboundQueue &queue, StreamableMessage::auto_type message, boost::optional<SerializedMessageCallback> callback)
 {
     //  ensure the message is not null
     if( ! message.get() )

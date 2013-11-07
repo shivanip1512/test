@@ -11,6 +11,8 @@ namespace Messaging {
 
 struct IM_EX_MSG StreamableMessage
 {
+    typedef std::auto_ptr<const StreamableMessage> auto_type;
+
     virtual ~StreamableMessage() { };
 
     virtual void streamInto(cms::StreamMessage &message) const = 0;

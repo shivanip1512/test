@@ -81,16 +81,16 @@ public:
     ActiveMQConnectionManager(const std::string &broker_uri);
     virtual ~ActiveMQConnectionManager();
 
-    static void enqueueMessage(const ActiveMQ::Queues::OutboundQueue &queue, std::auto_ptr<const StreamableMessage> message);
+    static void enqueueMessage(const ActiveMQ::Queues::OutboundQueue &queue, StreamableMessage::auto_type message);
     template<class Msg>
-    static void enqueueMessageWithCallbackFor(const ActiveMQ::Queues::OutboundQueue &queue, std::auto_ptr<const StreamableMessage> message, typename CallbackFor<Msg>::type callback);
+    static void enqueueMessageWithCallbackFor(const ActiveMQ::Queues::OutboundQueue &queue, StreamableMessage::auto_type message, typename CallbackFor<Msg>::type callback);
     static void enqueueMessagesWithCallback(const ActiveMQ::Queues::OutboundQueue &queue, const std::vector<SerializedMessage> &messages, SerializedMessageCallback callback);
 
     static void registerHandler(const ActiveMQ::Queues::InboundQueue &queue, const SerializedMessageCallback callback);
 
 protected:
 
-    virtual void enqueueOutgoingMessage(const ActiveMQ::Queues::OutboundQueue &queue, std::auto_ptr<const StreamableMessage> message, boost::optional<SerializedMessageCallback> callback);
+    virtual void enqueueOutgoingMessage(const ActiveMQ::Queues::OutboundQueue &queue, StreamableMessage::auto_type message, boost::optional<SerializedMessageCallback> callback);
     virtual void enqueueOutgoingMessage(const ActiveMQ::Queues::OutboundQueue &queue, const SerializedMessage &message, boost::optional<SerializedMessageCallback> callback);
 
     void addNewCallback(const ActiveMQ::Queues::InboundQueue &queue, const SerializedMessageCallback callback);
@@ -179,7 +179,7 @@ private:
     };
 };
 
-template void IM_EX_MSG ActiveMQConnectionManager::enqueueMessageWithCallbackFor<Rfn::RfnBroadcastReplyMessage>(const ActiveMQ::Queues::OutboundQueue &queue, std::auto_ptr<const StreamableMessage> message, CallbackFor<Rfn::RfnBroadcastReplyMessage>::type callback);
+template void IM_EX_MSG ActiveMQConnectionManager::enqueueMessageWithCallbackFor<Rfn::RfnBroadcastReplyMessage>(const ActiveMQ::Queues::OutboundQueue &queue, StreamableMessage::auto_type message, CallbackFor<Rfn::RfnBroadcastReplyMessage>::type callback);
 
 }
 }

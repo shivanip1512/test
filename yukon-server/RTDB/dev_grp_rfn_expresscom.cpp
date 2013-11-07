@@ -168,7 +168,7 @@ void CtiDeviceGroupRfnExpresscom::sendDRMessage(int priority, int expirationDura
     ActiveMQConnectionManager::CallbackFor<RfnBroadcastReplyMessage>::type callback =
             boost::bind(&logResponse, rfnBroadcastMessage->messageId, rfnBroadcastMessage->payload, _1);
 
-    std::auto_ptr<const StreamableMessage> streamableMessage(rfnBroadcastMessage);
+    StreamableMessage::auto_type streamableMessage(rfnBroadcastMessage);
 
     ActiveMQConnectionManager::enqueueMessageWithCallbackFor<RfnBroadcastReplyMessage>(OutboundQueue::RfnBroadcast, streamableMessage, callback);
 }
