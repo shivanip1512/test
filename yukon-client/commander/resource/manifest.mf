@@ -1,6 +1,7 @@
 Manifest-Version: 1.0
 Main-Class: com.cannontech.clientutils.commander.YukonCommander
 Permissions: all-permissions
+Trusted-Only: true
 Class-Path: ./ 
  common.jar 
  jradius-client.jar 
