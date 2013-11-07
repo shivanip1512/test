@@ -22,6 +22,8 @@ using std::auto_ptr;
 using std::string;
 using boost::scoped_ptr;
 
+using Cti::Logging::Vector::Hex::operator<<;
+
 namespace Cti {
 namespace Messaging {
 
@@ -48,18 +50,6 @@ ActiveMQConnectionManager::~ActiveMQConnectionManager()
 inline bool debugActivityInfo()
 {
     return getDebugLevel() & DEBUGLEVEL_ACTIVITY_INFO;
-}
-
-
-std::ostream &operator<<(std::ostream &logger, const std::vector<unsigned char> &buf)
-{
-    const std::ios_base::fmtflags oldflags = logger.flags( std::ios::hex );
-
-    copy(buf.begin(), buf.end(), padded_output_iterator<int, std::ostream>(logger, '0', 2));
-
-    logger.flags(oldflags);
-
-    return logger;
 }
 
 
