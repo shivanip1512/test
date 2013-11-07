@@ -7,11 +7,11 @@
 
 <script type="text/javascript">
 function useRandom() {
-    var checked = $('random').checked;
+    var checked = jQuery('#random').prop('checked');
     if (checked) {
-        $('static').disable();
+        jQuery('#static').prop('disabled', true);
     } else {
-        $('static').enable();
+        jQuery('#static').prop('disabled', false);
     }
 }
 </script>

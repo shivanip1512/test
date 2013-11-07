@@ -9,18 +9,22 @@
 <cti:standardPage module="operator" page="optOut.inventoryList">
 
 <script type="text/javascript">
-function createJSON() {
-    var array = new Array();
-    var index = 0;
+function createJSON () {
+    var array = [],
+        index = 0,
+        inputElement;
 
-    $$('INPUT').each(function(input) {
+    jQuery('input').each(function (index, input) {
+        var name,
+            inventoryId,
+            checked;
         if (input) {
-            var name = input.name;
+            name = jQuery(input).attr('name');
             if (name == 'inventoryId') {
-                var inventoryId = input.value;
-                var checked = $('check_' + inventoryId).checked;
+                inventoryId = jQuery(input).val();
+                checked = jQuery('#check_' + inventoryId).prop('checked');
                 if (checked) {
-                    array[index++] = input.value;
+                    array[index++] = inventoryId;
                 }    
             }
         }
@@ -29,12 +33,12 @@ function createJSON() {
 
     // error message here
     
-    var inputElement = document.createElement('input');
+    inputElement = document.createElement('input');
     inputElement.type = 'hidden';
     inputElement.name = 'jsonInventoryIds';
-    inputElement.value = Object.toJSON(array);
+    inputElement.value = JSON.stringify(array);
     
-    $('form').appendChild(inputElement);
+    jQuery('form')[0].appendChild(inputElement);
 }
 </script>    
 
@@ -49,58 +53,58 @@ function createJSON() {
         <div id="controlEventsDiv" style="height: auto;">
             <table class="compact-results-table row-highlighting selectDeviceTable dashed">
                 <thead>
-                    <tr>
-                        <th><i:inline key=".device"/></th>
-                        <th><i:inline key=".programAssigned"/></th>
-                        <th><i:inline key=".information"/></th>
-                    </tr>
+                <tr>
+                    <th><i:inline key=".device"/></th>
+                    <th><i:inline key=".programAssigned"/></th>
+                    <th><i:inline key=".information"/></th>
+                </tr>
                 </thead>
                 <tfoot></tfoot>
                 <tbody>
-                    <c:forEach var="displayableInventory" items="${displayableInventories}">
-                        <c:set var="inventoryId" value="${displayableInventory.inventoryId}"/>
-                        <c:set var="optOutCount" value="${optOutCounts[inventoryId]}"/>
-    
-                        <tr>
-                            <td title="${displayableInventory.serialNumber}">
-                                <label for="inventory_${inventoryId}">
-                                    <c:choose>
-                                        <c:when test="${displayableInventory.currentlyOptedOut && isSameDay}">
-                                            <input type="checkbox" disabled="disabled" >
-                                        </c:when>
-                                        <c:otherwise>
-                                            <c:set var="showNextButton" value="true" />
-                                            <input type="checkbox" id="inventory_${inventoryId}" name="inventoryIds" value="${inventoryId}"/>
-                                        </c:otherwise>
-                                    </c:choose>
-                                    <spring:escapeBody htmlEscape="true">${displayableInventory.displayName}</spring:escapeBody>
-                                </label>
-                            </td>
-                            <td>
-                                <c:set var="programsList" value="${displayableInventory.programs}"/>
-                                <c:set var="count" value="0"/>
-    
-                                <c:forEach var="program" items="${programsList}">
-                                    <c:set var="count" value="${count + 1}"/>
-                                    <spring:escapeBody htmlEscape="true">
-                                        <cti:msg key="${program.displayName}"/>
-                                    </spring:escapeBody>
-                                    <c:if test="${fn:length(programsList) != count}"><br></c:if>
-                                </c:forEach>
-                            </td>
-                            <td>
-                                <c:if test="${!optOutCount.optOutsRemaining}">
-                                    <i:inline key=".noMoreOptOutsAvailable"/><br>
-                                </c:if>
-                                <c:if test="${displayableInventory.currentlyOptedOut}">
-                                   <i:inline key=".currentlyOptedOut"/><br>
-                                </c:if>
-                                <c:if test="${not empty displayableInventory.currentlyScheduledOptOut}">
-                                   <i:inline key=".currentlyScheduledOptOut"/><br>
-                                </c:if>
-                            </td>
-                        </tr>
-                    </c:forEach>
+                <c:forEach var="displayableInventory" items="${displayableInventories}">
+                    <c:set var="inventoryId" value="${displayableInventory.inventoryId}"/>
+                    <c:set var="optOutCount" value="${optOutCounts[inventoryId]}"/>
+
+                    <tr>
+                        <td title="${displayableInventory.serialNumber}">
+                            <label for="inventory_${inventoryId}">
+                                <c:choose>
+                                    <c:when test="${displayableInventory.currentlyOptedOut && isSameDay}">
+                                        <input type="checkbox" disabled="disabled" >
+                                    </c:when>
+                                    <c:otherwise>
+                                        <c:set var="showNextButton" value="true" />
+                                        <input type="checkbox" id="inventory_${inventoryId}" name="inventoryIds" value="${inventoryId}"/>
+                                    </c:otherwise>
+                                </c:choose>
+                                <spring:escapeBody htmlEscape="true">${displayableInventory.displayName}</spring:escapeBody>
+                            </label>
+                        </td>
+                        <td>
+                            <c:set var="programsList" value="${displayableInventory.programs}"/>
+                            <c:set var="count" value="0"/>
+
+                            <c:forEach var="program" items="${programsList}">
+                                <c:set var="count" value="${count + 1}"/>
+                                <spring:escapeBody htmlEscape="true">
+                                    <cti:msg key="${program.displayName}"/>
+                                </spring:escapeBody>
+                                <c:if test="${fn:length(programsList) != count}"><br></c:if>
+                            </c:forEach>
+                        </td>
+                        <td>
+                            <c:if test="${!optOutCount.optOutsRemaining}">
+                                <i:inline key=".noMoreOptOutsAvailable"/><br>
+                            </c:if>
+                            <c:if test="${displayableInventory.currentlyOptedOut}">
+                               <i:inline key=".currentlyOptedOut"/><br>
+                            </c:if>
+                            <c:if test="${not empty displayableInventory.currentlyScheduledOptOut}">
+                               <i:inline key=".currentlyScheduledOptOut"/><br>
+                            </c:if>
+                        </td>
+                    </tr>
+                </c:forEach>
                 </tbody>
             </table>
         </div>

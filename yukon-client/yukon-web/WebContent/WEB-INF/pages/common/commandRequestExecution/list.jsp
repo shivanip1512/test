@@ -42,7 +42,7 @@
     <script type="text/javascript">
 
         function forwardToCreDetail(row, id) {
-            $('cresTable').removeClassName('activeResultsTable');
+            jQuery('#cresTable').removeClass('activeResultsTable');
             window.location = "/common/commandRequestExecutionResults/detail?commandRequestExecutionId=" + id + "&jobId=" + ${jobId};
         }
     

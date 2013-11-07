@@ -7,28 +7,27 @@
 
 <script type="text/javascript">
 
-jQuery(function() {
-    $$('td.used').each( function (element) {
-        
-        Event.observe(element, 'mouseout', function(e) {
-            var td = Event.element(e);
-            td.removeClassName('highlighted');
-            td.siblings().each(function (item) {
-                item.removeClassName('highlighted');
+jQuery(function () {
+    jQuery('td.used').each( function (index, element) {
+
+        jQuery(element).on('mouseout', function (e) {
+            var td = e.target;
+            jQuery(td).removeClass('highlighted');
+            jQuery(td).siblings().each(function (index, item) {
+                jQuery(item).removeClass('highlighted');
             });
         });
-        
-        Event.observe(element, 'mouseover', function(e) {
-            
-            var td = Event.element(e);
-            var routeId = td.readAttribute('routeId');
-            td.addClassName('highlighted');
-            td.siblings().each(function (item) {
-                if (item.readAttribute('routeId') == routeId) {
-                    item.addClassName('highlighted');
+
+        jQuery(element).on('mouseover', function (e) {
+            var td = e.target,
+                routeId;
+            routeId = jQuery(td).attr('routeId');
+            jQuery(td).addClass('highlighted');
+            jQuery(td).siblings().each(function (index, item) {
+                if (jQuery(item).attr('routeId') == routeId) {
+                    jQuery(item).addClass('highlighted');
                 }
             });
-            
         });
     });
 });

@@ -361,7 +361,7 @@ button
 &lt;button type="submit" name="button1" value="who cares?" class="f-blocker"&gt;standard&lt;/button&gt;
         </pre> <br /> <br /> To clear this blocked page you must create your own event handler as such:
                         <br /> <br /> <pre class="code">
-$("myCloseButton").observe('click', function(){
+jQuery('#myCloseButton').on('click', function () {
     Yukon.ui.unblockPage();
 });
         </pre></td>

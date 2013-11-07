@@ -13,9 +13,17 @@
 
     function checkOddsForControlEmail() {
 
-	    var enabled = $F('oddsForControlNotification');
-	    var email = $F('oddsForControlEmail');
-	    if(enabled && email.empty()) {
+	    var enabled,
+	        email,
+	        controlNotificationObj = jQuery('#oddsForControlNotification'),
+	        controlEmailObj = jQuery("[name='oddsForControlEmail']");
+	    if (0 !== controlNotificationObj.length) {
+	        enabled = controlNotificationObj.val();
+	    }
+	    if (0 !== controlEmailObj.length) {
+	        email = controlEmailObj.val();
+	    }
+	    if('undefined' !== typeof enabled && ('undefined' === typeof email || 0 === email.length)) {
 		    alert('${emailWarning}');
 		    return false;
 	    } else {

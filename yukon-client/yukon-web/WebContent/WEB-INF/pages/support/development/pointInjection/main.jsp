@@ -9,8 +9,10 @@
 jQuery(function() {
     var tempArray;
     if (localStorage.pointInjectionIds) {
-        tempArray = localStorage.pointInjectionIds.evalJSON();
-        tempArray.each(addRow);
+        tempArray = JSON.parse(localStorage.pointInjectionIds);
+        jQuery(tempArray).each( function (index, rowEntry) {
+            addRow(rowEntry);
+        });
     }
 });
 
@@ -20,37 +22,40 @@ function addRowHandler(selectedPointInfo) {
         tempArray;
     addRow(newRowData);
     if (!localStorage.pointInjectionIds) {
-        localStorage.pointInjectionIds = Object.toJSON(new Array());
+        localStorage.pointInjectionIds = JSON.stringify(new Array);
     }
-    tempArray = localStorage.pointInjectionIds.evalJSON();
+    tempArray = JSON.parse(localStorage.pointInjectionIds);
     tempArray.push(newRowData);
-    localStorage.pointInjectionIds = Object.toJSON(tempArray);
+    localStorage.pointInjectionIds = JSON.stringify(tempArray);
     return true;
 }
 
 function addRow(newRowData) {
-    var newRow = $("dummyRow").cloneNode(true);
-    $('pointTableBody').appendChild(newRow);
-    new Ajax.Request("addRow",{
-        parameters: {'pointId': newRowData.pointId, 'forceArchive': newRowData.forceArchive},
-        onSuccess: function(transport) {
-            var dummyHolder = document.createElement('div');
-            dummyHolder.innerHTML = transport.responseText;
-            var replacementRow = $(dummyHolder).getElementsBySelector('tr')[0];
-            $('pointTableBody').replaceChild(replacementRow, newRow);
-        }
-    });
+    var newRow = jQuery('#dummyRow')[0].cloneNode(true);
+    jQuery('#pointTableBody')[0].appendChild(newRow);
+    jQuery.ajax({
+        type: 'POST',
+        url: 'addRow',
+        data: {'pointId': newRowData.pointId, 'forceArchive': newRowData.forceArchive}
+    }).success(function (data) {
+        var dummyHolder = document.createElement('div'),
+            replacementRow;
+        dummyHolder.innerHTML = data;
+        replacementRow = jQuery(jQuery(dummyHolder)[0]).find('tr')[0];
+        jQuery('#pointTableBody')[0].replaceChild(replacementRow, newRow);
+   });
 }
 
 function forceArchiveChecked(box, pointId) {
-	var tempArray = localStorage.pointInjectionIds.evalJSON();
-	for (var index = 0; index < tempArray.length; index++) {
-		if (tempArray[index].pointId == pointId) {
-			tempArray[index].forceArchive = box.checked;
-			break;
-		}
-	}
-    localStorage.pointInjectionIds = Object.toJSON(tempArray);
+    var tempArray = JSON.parse(localStorage.pointInjectionIds),
+        index;
+    for (index = 0; index < tempArray.length; index += 1) {
+        if (tempArray[index].pointId == pointId) {
+            tempArray[index].forceArchive = box.checked;
+            break;
+        }
+    }
+    localStorage.pointInjectionIds = JSON.stringify(tempArray);
 }
 
 jQuery(document).on('click', '.removeRow', function(event) {
@@ -96,7 +101,6 @@ jQuery(document).on('click', '.sendData', function(event) {
         type: "POST",
         url: "sendData",
         data: newparams,
-    }).done(function(data) {
     }).fail(function(jqXHR, textStatus) {
         alert( "Request failed: " + textStatus );
     });

@@ -4,8 +4,8 @@
 
 <script type="text/javascript">
     jQuery(function() {
-	  $('searchField_1').focus();
-	});
+        jQuery('#searchField_1').focus();
+    });
 </script>
 
     <form id="filterForm" action="/meter/search">

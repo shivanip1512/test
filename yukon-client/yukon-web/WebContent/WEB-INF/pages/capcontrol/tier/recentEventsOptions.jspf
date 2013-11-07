@@ -1,8 +1,10 @@
 <script type="text/javascript">
-jQuery(document).on('click', '#recentEventsView', function(event){
-    $('recentEventsOptions').hide();
-    var values = $$('table.recentEventsCheckboxes input:checkbox:checked').pluck('value').join(',');
-    window.location.href = '/capcontrol/search/recentEvents?value=' + encodeURIComponent(values);
+jQuery(document).on('click', '#recentEventsView', function (event) {
+    jQuery('#recentEventsOptions').hide();
+    var values = jQuery.map(jQuery('table.recentEventsCheckboxes input[type=checkbox][checked]'), function (elem, index) {
+        return jQuery(elem).val();
+    });
+    window.location.href = '/capcontrol/search/recentEvents?value=' + encodeURIComponent(values.join(','));
 });
 </script>
 

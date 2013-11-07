@@ -221,7 +221,7 @@
     </tags:pagedBox>
     <c:if test="${hasFilterErrors}">
         <script type="text/javascript">
-            $('filterPopup').show();
+            jQuery('#filterPopup').show();
         </script>
     </c:if>
 </cti:msgScope>

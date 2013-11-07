@@ -8,7 +8,7 @@
     <script type="text/javascript">
 
     function startSpinner() {
-        $('spinner').show();
+        jQuery('#spinner').show();
     }
 
     </script>
