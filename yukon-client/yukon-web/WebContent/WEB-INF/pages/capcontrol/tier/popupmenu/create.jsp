@@ -5,7 +5,7 @@
 
 <cti:msgScope paths="yukon.web.modules.capcontrol">
     <input type="hidden" class="title" value="${title}">
-    <div class="column_12_12">
+    <div class="column-12-12">
         <div class="column one">
             <div class="stacked"><a href="/editor/cbcWizBase.jsf?type=4002"><i:inline key=".type.AREA"/></a></div>
             <div class="stacked"><a href="/editor/cbcWizBase.jsf?type=4003"><i:inline key=".type.SPECIAL_AREA"/></a></div>

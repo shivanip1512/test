@@ -578,7 +578,7 @@ public class StatisticModel extends ReportModelBase {
 		html += "    <td>" + LINE_SEPARATOR;
 		html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
 		html += "        <tr>" + LINE_SEPARATOR;
-		html += "          <td valign='top' class='TitleHeader'>&nbsp;Statistic Type</td>" +LINE_SEPARATOR;
+		html += "          <td valign='top' class='title-header'>&nbsp;Statistic Type</td>" +LINE_SEPARATOR;
 		html += "        </tr>" + LINE_SEPARATOR;
 		for (int i = 0; i < statTypes.length; i++)
 		{
@@ -593,7 +593,7 @@ public class StatisticModel extends ReportModelBase {
 		html += "    <td valign='top'>" + LINE_SEPARATOR;
 		html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
 		html += "        <tr>" + LINE_SEPARATOR;
-		html += "          <td class='TitleHeader'>&nbsp;Period</td>" +LINE_SEPARATOR;
+		html += "          <td class='title-header'>&nbsp;Period</td>" +LINE_SEPARATOR;
 		html += "        </tr>" + LINE_SEPARATOR;
 		for (int i = 0; i < statPeriodTypes.length; i++)
 		{

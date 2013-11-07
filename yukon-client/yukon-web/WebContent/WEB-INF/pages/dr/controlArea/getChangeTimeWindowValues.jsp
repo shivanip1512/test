@@ -30,7 +30,7 @@
             <cti:msg2 key=".noteText"/>
         </p>
         
-        <div class="actionArea">
+        <div class="action-area">
             <cti:button nameKey="ok" classes="primary action" type="submit"/>
             <cti:button nameKey="cancel" onclick="jQuery('#drDialog').dialog('close');"/>
         </div>

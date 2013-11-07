@@ -7,7 +7,7 @@
 <cti:msgScope paths="modules.operator.accountImport">
 
     <tags:boxContainer2 nameKey="importErrorsContainer" hideEnabled="true" showInitially="true">
-        <table class="compactResultsTable">
+        <table class="compact-results-table">
             <tr>
                 <th nowrap="nowrap"><i:inline key="yukon.web.modules.operator.accountImport.lineNo"/></th>
                 <th><i:inline key="yukon.web.modules.operator.accountImport.errorMessage"/></th>

@@ -37,7 +37,7 @@
     <i:inline key=".infoPopup"/>
 </tags:simplePopup>
 
-<div class="column_10_14">
+<div class="column-10-14">
     <div class="column one">
         <tags:sectionContainer2 nameKey="options">
             <form id="uploadForm" method="post" action="/group/updater/parseUpload" enctype="multipart/form-data">
@@ -49,7 +49,7 @@
                         <label><input type="checkbox" name="createGroups" class="fl"><span class="fl"><i:inline key=".autoCreate"/></span><cti:icon icon="icon-help" id="help_icon"/></label>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
-                <div class="actionArea">
+                <div class="action-area">
                     <cti:button nameKey="upload" type="submit" classes="primary action"/>
                 </div>
             </form>
@@ -72,7 +72,7 @@
     </div>
 </div>
 
-       <table class="resultsTable">
+       <table class="results-table">
            <thead>
                <tr>
                    <th style="width:20%;"><i:inline key=".colHeader"/></th>

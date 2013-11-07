@@ -7,13 +7,13 @@
 
 <%-- ERROR --%>
 <c:if test="${not empty statusPointMonitorsWidgetError}">
-  	<div class="errorMessage"><i:inline key="${statusPointMonitorsWidgetError}"/></div>
+  	<div class="error"><i:inline key="${statusPointMonitorsWidgetError}"/></div>
 </c:if>
 
 <%-- TABLE --%>
 <c:choose>
     <c:when test="${fn:length(monitors) > 0}">
-        <table class="compactResultsTable">
+        <table class="compact-results-table">
             <thead>
             	<tr>
             		<th style="width:20px;">&nbsp;</th>
@@ -76,7 +76,7 @@
     </c:otherwise>
 </c:choose>
 
-<div class="actionArea">
+<div class="action-area">
     <%-- CREATE NEW STATUS POINT MONITOR FORM --%>
     <form action="/amr/statusPointMonitoring/creationPage" method="get">
         <cti:button nameKey="create" icon="icon-plus-green" type="submit" classes="f-blocker fr"/>

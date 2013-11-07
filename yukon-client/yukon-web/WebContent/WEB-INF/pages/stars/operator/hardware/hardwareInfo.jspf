@@ -69,7 +69,7 @@ jQuery(function() { updateServiceCompanyInfo();});
     </c:if>
 
     <%-- DEVICE INFO --%>
-    <tags:formElementContainer nameKey="deviceInfoSection">
+    <tags:sectionContainer2 nameKey="deviceInfoSection">
         
         <tags:nameValueContainer2>
         
@@ -141,7 +141,7 @@ jQuery(function() { updateServiceCompanyInfo();});
                 <dt:date path="fieldRemoveDate" />
             </tags:nameValue2>
             
-            <tags:textareaNameValue nameKey=".deviceNotes" path="deviceNotes" rows="4" cols="35" rowClass="wall_of_text"/>
+            <tags:textareaNameValue nameKey=".deviceNotes" path="deviceNotes" rows="4" cols="35" rowClass="wall-of-text"/>
             
             <c:if test="${showGateway}">
                 
@@ -187,7 +187,7 @@ jQuery(function() { updateServiceCompanyInfo();});
                             
                         <cti:displayForPageEditModes modes="CREATE,EDIT">
                             <cti:button nameKey="new" id="newButton"/>
-                        </cti:displayForPageEditModes><form:errors path="deviceId" cssClass="errorMessage"/>
+                        </cti:displayForPageEditModes><form:errors path="deviceId" cssClass="error"/>
                         
                     </div>
                     
@@ -198,7 +198,7 @@ jQuery(function() { updateServiceCompanyInfo();});
                             <cti:button nameKey="choose" id="chooseButton"/>
                             <c:if test="${status.error}">
                                 <br>
-                                <form:errors path="twoWayDeviceName" cssClass="errorMessage"/>
+                                <form:errors path="twoWayDeviceName" cssClass="error"/>
                             </c:if>
                         </spring:bind>
                     </div>
@@ -270,10 +270,10 @@ jQuery(function() { updateServiceCompanyInfo();});
         </cti:checkRolesAndProperties>
         
         </tags:nameValueContainer2>
-    </tags:formElementContainer>
+    </tags:sectionContainer2>
     
     <%--SERVICE AND STORAGE --%>
-    <tags:formElementContainer nameKey="serviceAndStorageSection">
+    <tags:sectionContainer2 nameKey="serviceAndStorageSection">
     
         <tags:nameValueContainer2>
                 
@@ -291,16 +291,16 @@ jQuery(function() { updateServiceCompanyInfo();});
             </cti:displayForPageEditModes>
              
              <c:if test="${showInstallNotes}">
-                <tags:textareaNameValue nameKey=".installNotes" path="installNotes" rows="4" cols="35"  rowClass="wall_of_text"/>
+                <tags:textareaNameValue nameKey=".installNotes" path="installNotes" rows="4" cols="35"  rowClass="wall-of-text"/>
              </c:if>
             
         </tags:nameValueContainer2>
         
-    </tags:formElementContainer>
+    </tags:sectionContainer2>
     
     <cti:displayForPageEditModes modes="EDIT,CREATE">
         <cti:checkRolesAndProperties value="${editingRoleProperty}">
-            <cti:button nameKey="save" type="submit" name="save" classes="f-disableAfterClick primary action"/>
+            <cti:button nameKey="save" type="submit" name="save" classes="f-disable-after-click primary action"/>
             <cti:displayForPageEditModes modes="EDIT">
                 <c:choose>
                     <c:when test="${not empty accountId}">

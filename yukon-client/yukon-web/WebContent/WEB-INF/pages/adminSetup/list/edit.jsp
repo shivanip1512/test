@@ -48,7 +48,7 @@ jQuery(document).ready(function() {
 <tags:sectionContainer2 nameKey="entries" id="selectionListEntries">
     <tags:dynamicTable id="entryTable" items="${list.entries}" nameKey="entries"
         addItemParameters="{'listId': ${list.listId}}">
-        <table class="compactResultsTable rowHighlighting">
+        <table class="compact-results-table row-highlighting">
             <tr>
                 <th><i:inline key=".entryText"/></th>
                 <c:if test="${usesType}">
@@ -88,7 +88,7 @@ jQuery(document).ready(function() {
     </tags:dynamicTable>
 </tags:sectionContainer2>
 
-<div class="pageActionArea">
+<div class="page-action-area">
     <cti:button nameKey="save" name="save" type="submit" classes="primary action"/>
     <cti:button id="restoreDefaultBtn" nameKey="restoreDefault" name="restoreDefault" type="submit"/>
     <cti:msg2 var="listType" key="${list.type}"/>

@@ -40,8 +40,8 @@ public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingSer
     	
     	Builder<MultispeakDeviceGroupSyncProgressStatus, String> builder = ImmutableMap.builder();
     	builder.put(MultispeakDeviceGroupSyncProgressStatus.RUNNING, "");
-    	builder.put(MultispeakDeviceGroupSyncProgressStatus.FAILED, "errorMessage");
-    	builder.put(MultispeakDeviceGroupSyncProgressStatus.CANCELED, "errorMessage");
+    	builder.put(MultispeakDeviceGroupSyncProgressStatus.FAILED, "error");
+    	builder.put(MultispeakDeviceGroupSyncProgressStatus.CANCELED, "error");
     	builder.put(MultispeakDeviceGroupSyncProgressStatus.FINISHED, "success");
     	statusStyleClassNameMap = builder.build();
     }

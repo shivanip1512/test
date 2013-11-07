@@ -33,7 +33,7 @@ function showSelectedDevices(divId, url) {
 <cti:msg var="warning" key="yukon.common.device.bulk.selectedDevicesPopup.warning" />
 
     <%-- DEVICE CONFIGURATIONS --%>
-    <div class="column_12_12">
+    <div class="column-12-12">
         <div class="column one">
             <cti:msg2 key=".existingConfigs" var="configTitle"/>
             <tags:sectionContainer title="${configTitle}">
@@ -43,7 +43,7 @@ function showSelectedDevices(divId, url) {
                         <div><i:inline key=".configDetails.table.noConfigs"/></div>
                     </c:when>
                     <c:otherwise>
-                        <table id="configList" class="compactResultsTable rowHighlighting has-actions">
+                        <table id="configList" class="compact-results-table row-highlighting has-actions">
                             <thead>
                                 <tr>
                                     <th><i:inline key=".configDetails.table.configName"/></th>
@@ -101,7 +101,7 @@ function showSelectedDevices(divId, url) {
                     </c:otherwise>
                 </c:choose>
                 <cti:checkRolesAndProperties value="${editingRoleProperty}">
-                    <div class="actionArea">
+                    <div class="action-area">
                         <cti:url var="setupUrl" value="config/create"/>
                         <cti:button nameKey="create" href="${setupUrl}" icon="icon-plus-green"/>
                     </div>
@@ -119,7 +119,7 @@ function showSelectedDevices(divId, url) {
                         <div><i:inline key=".categoryDetails.table.noCategories"/></div>
                     </c:when>
                     <c:otherwise>
-                        <table id="categoryList" class="compactResultsTable rowHighlighting">
+                        <table id="categoryList" class="compact-results-table row-highlighting">
                             <thead>
                                 <tr>
                                     <th><i:inline key=".categoryDetails.table.categoryName"/></th>
@@ -158,7 +158,7 @@ function showSelectedDevices(divId, url) {
                     </c:otherwise>
                 </c:choose>
                 <cti:checkRolesAndProperties value="${editingRoleProperty}">
-                    <div class="actionArea">
+                    <div class="action-area">
                         <form action="category/create">
                             <cti:button nameKey="create" type="submit" icon="icon-plus-green"/>
                             <select name="categoryType" id="categoryTypesSelect">

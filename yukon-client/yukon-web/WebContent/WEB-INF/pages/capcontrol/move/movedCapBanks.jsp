@@ -31,7 +31,7 @@
 				<i:inline key=".noRecentMoves"/>
 			</c:when>
 			<c:otherwise>
-				<table id="movedCBTable" class="compactResultsTable activeResultsTable">
+				<table id="movedCBTable" class="compact-results-table activeResultsTable">
                     <tr>
 		                <th><i:inline key=".recentFeeder"/></th>
 		                <th><i:inline key=".originalFeeder"/></th>

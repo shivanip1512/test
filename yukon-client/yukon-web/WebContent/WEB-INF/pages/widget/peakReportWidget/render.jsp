@@ -28,7 +28,7 @@
                               endName="stopDateStr" endValue="${stopDate}" />
             </tags:nameValue2 >
         </tags:nameValueContainer2>
-        <div class="actionArea">
+        <div class="action-area">
             <tags:widgetActionUpdate method="requestReport" nameKey="getReport" container="${widgetParameters.widgetId}_results"/>  
         </div>
 		

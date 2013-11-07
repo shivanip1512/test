@@ -7,7 +7,7 @@
 
 <%-- ERROR --%>
 <c:if test="${not empty tamperFlagMonitorsWidgetError}">
-  	<div class="errorMessage">${tamperFlagMonitorsWidgetError}</div>
+  	<div class="error">${tamperFlagMonitorsWidgetError}</div>
 </c:if>
 
 <%-- TABLE --%>
@@ -18,7 +18,7 @@
 </c:if>
 <c:if test="${not empty monitors}">
 
-<table class="compactResultsTable">
+<table class="compact-results-table">
     <thead>
     	<tr>
     		<th style="width:20px;">&nbsp;</th>
@@ -90,7 +90,7 @@
 </c:if>
 
 
-<div class="actionArea">
+<div class="action-area">
     <cti:button nameKey="create" icon="icon-plus-green" type="submit" classes="f-blocker fr"/>
 </div>
 </form>

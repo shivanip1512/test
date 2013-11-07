@@ -8,7 +8,7 @@
 
 <cti:standardPage module="support" page="testAll">
     <cti:standardMenu menuSelection="events" />
-    <table class="compactResultsTable">
+    <table class="compact-results-table">
     <tr><th>Key</th><th>Message</th></tr>
     <c:forEach items="${allKeys}" var="key">
     <tr>

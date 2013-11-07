@@ -83,7 +83,7 @@
                                 customActions="true"
                                 omitEditor="true">
                                 
-        <div class="actions pageActionArea">
+        <div class="actions page-action-area">
             <cti:button nameKey="edit" icon="icon-pencil" renderMode="labeledImage" classes="editDefaultSchedule edit_${schedule.accountThermostatScheduleId}" />
         </div>
     </tags:thermostatScheduleWidget>
@@ -103,7 +103,7 @@
                     </div>
                 </div>
             
-                <div class="actionArea">
+                <div class="action-area">
                     <div class="fr">
                         <cti:button nameKey="next" classes="f-next"/>
                     </div>

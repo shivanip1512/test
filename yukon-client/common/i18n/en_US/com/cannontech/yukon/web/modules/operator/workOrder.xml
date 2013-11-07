@@ -19,7 +19,7 @@
     <entry key="yukon.web.modules.operator.workOrder.list.header.eventDate">Date/Time</entry>
     <entry key="yukon.web.modules.operator.workOrder.list.header.assigned">Assigned</entry>
     <entry key="yukon.web.modules.operator.workOrder.list.header.remove">Remove</entry>
-    <entry key="yukon.web.modules.operator.workOrder.list.noWorkOrders">No Work Orders</entry>
+    <entry key="yukon.web.modules.operator.workOrder.list.noWorkOrders">No work orders for this account</entry>
 
     <entry key="yukon.web.modules.operator.workOrder.workOrderNumber">Work Order Number</entry>
     <entry key="yukon.web.modules.operator.workOrder.serviceType">Service Type</entry>
@@ -40,7 +40,7 @@
     <entry key="yukon.web.modules.operator.workOrder.pdfExport.label">Printable Work Order</entry>
     <entry key="yukon.web.modules.operator.workOrder.pdfExport.hoverText">Click to open a printable pdf.</entry>
 
-    <entry key="yukon.web.modules.operator.workOrder.workOrderContainer.title">Work Order</entry>
+    <entry key="yukon.web.modules.operator.workOrder.workOrderContainer.title">Work Order Details</entry>
     <entry key="yukon.web.modules.operator.workOrder.additionalOrderNumber">Additional Order Number</entry>
     <entry key="yukon.web.modules.operator.workOrder.currentState">Current State</entry>
     <entry key="yukon.web.modules.operator.workOrder.eventDate">Event Date</entry>

@@ -176,7 +176,7 @@ location="control.jsp?pointid=<%= pointID %>&instanceid=" + instanceID + "&actio
   <tbody>
     <tr align="center">
       <td style="vertical-align: top;" class="esubHeaderCell">
-      <div class="TitleHeader"><% if(!controlConfirm) { %>Control<% } else { %>Confirm Control<% } %></div>
+      <div class="title-header"><% if(!controlConfirm) { %>Control<% } else { %>Confirm Control<% } %></div>
       </td>
     </tr>
     <tr>
@@ -236,7 +236,7 @@ location="control.jsp?pointid=<%= pointID %>&instanceid=" + instanceID + "&actio
             </td>
             <td
  style="width: 33%; text-align: center; vertical-align: middle; background-color: rgb(255, 255, 255);">
-            <div class="TitleHeader">CURRENT
+            <div class="title-header">CURRENT
 TAGS</div>
             </td>
             <td

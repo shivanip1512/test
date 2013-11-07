@@ -25,23 +25,33 @@ import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.Lists;
 
 public class PageDetailProducer {
-    private static final Logger log = YukonLogManager.getLogger(PageDetailProducer.class);
-    private static final String CRUMB_SEPERATOR = " &gt; ";
-    
-    private HttpExpressionLanguageResolver expressionLanguageResolver;
 
-    public PageDetail render(PageInfo pageInfo, HttpServletRequest request, MessageSourceAccessor messageSourceAccessor) {
+    private static final String CRUMB_SEPERATOR = " &gt; ";
+    private static final String MODULE_NAME = "moduleName";
+    private static final String NAVIGATION_TITLE = "navigationTitle"; // used for left side menu
+    private static final String CRUMB_TITLE = "crumbTitle";
+    private static final String PAGE_TITLE = "pageTitle";
+    private static final String PAGE_HEADING = "pageHeading";
+    private static final String PAGE_NAME = "pageName";
+    private static final String PAGE_DESCRIPTION = "pageDescription";
+    private static final String CONTEXTUAL_PAGE_NAME = "contextualPageName";
+    
+    private static final Logger log = YukonLogManager.getLogger(PageDetailProducer.class);
+    @Autowired private HttpExpressionLanguageResolver resolver;
+
+    public PageDetail render(PageInfo pageInfo, HttpServletRequest req, MessageSourceAccessor accessor) {
+        
         PageDetail pageDetail = new PageDetail();
 
-        PageContext pageContext = createPageContext(pageInfo, request, messageSourceAccessor);
+        PageContext pageContext = createPageContext(pageInfo, req, accessor);
         
-        String pageTitle = getPagePart("pageTitle", pageContext, messageSourceAccessor);
+        String pageTitle = getPagePart(PAGE_TITLE, pageContext, accessor);
         pageDetail.setPageTitle(pageTitle);
         
-        String pageHeading = getPagePart("pageHeading", pageContext, messageSourceAccessor);
+        String pageHeading = getPagePart(PAGE_HEADING, pageContext, accessor);
         pageDetail.setPageHeading(pageHeading);
         
-        String crumbs = renderCrumbsFinal(pageContext, request, messageSourceAccessor);
+        String crumbs = renderCrumbsFinal(pageContext, req, accessor);
         
         StringBuffer buf = new StringBuffer();
         // the following should replicate com.cannontech.web.taglib.nav.BreadCrumbsTag
@@ -53,7 +63,7 @@ public class PageDetailProducer {
         pageDetail.setBreadCrumbText(buf.toString());
         
         if (pageInfo.isShowContextualNavigation()) {
-            pageDetail.setContextualNavigationText(renderContextualNavigation(pageContext, request, messageSourceAccessor));
+            pageDetail.setContextualNavigationText(renderContextualNavigation(pageContext, req, accessor));
 
             PageInfo contextualNavigationRoot = pageInfo.findContextualNavigationRoot();
             if (contextualNavigationRoot != null) {
@@ -65,19 +75,20 @@ public class PageDetailProducer {
         return pageDetail;
     }
     
-    private String renderContextualNavigation(PageContext pageContext, HttpServletRequest request, MessageSourceAccessor messageSourceAccessor) {
+    private String renderContextualNavigation(PageContext pageContext, HttpServletRequest req, MessageSourceAccessor accessor) {
+        
         PageInfo root = pageContext.pageInfo.findContextualNavigationRoot();
         
         List<PageInfo> pageInfosForMenu = Lists.newArrayListWithExpectedSize(15);
         collectPageInfosForMenu(root, pageInfosForMenu);
         
-        LiteYukonUser yukonUser = ServletUtil.getYukonUser(request);
+        LiteYukonUser yukonUser = ServletUtil.getYukonUser(req);
         
         List<PageContext> pageContextsForMenu = Lists.newArrayListWithCapacity(pageInfosForMenu.size());
         for (PageInfo pageInfo : pageInfosForMenu) {
             // apply security checks
             if (pageInfo.getUserChecker().check(yukonUser)) {
-                pageContextsForMenu.add(createPageContext(pageInfo, request, messageSourceAccessor));
+                pageContextsForMenu.add(createPageContext(pageInfo, req, accessor));
             }
         }
         
@@ -91,9 +102,9 @@ public class PageDetailProducer {
         StringBuilder result = new StringBuilder();
         result.append("<ul>\n");
         for (PageContext page : pageContextsForMenu) {
-            String label = getPagePart("navigationTitle", page, messageSourceAccessor);
+            String label = getPagePart(NAVIGATION_TITLE, page, accessor);
 
-            String link = expressionLanguageResolver.resolveElExpression(page.pageInfo.getLinkExpression(), request);
+            String link = resolver.resolveElExpression(page.pageInfo.getLinkExpression(), req);
 
             String linkText = createLink(label, link);
             if (page == pageToSelect) {
@@ -111,6 +122,7 @@ public class PageDetailProducer {
     }
 
     private void collectPageInfosForMenu(PageInfo root, Collection<PageInfo> pageInfosForMenu) {
+        
         if (root.isContributeToMenu()) {
             pageInfosForMenu.add(root);
         }
@@ -130,28 +142,30 @@ public class PageDetailProducer {
         return one.equals(two) || isPageDescendantOf(one.getParent(), two);
     }
 
-    public String renderCrumbsFinal(PageContext pageContext, HttpServletRequest request, MessageSourceAccessor messageSourceAccessor) {
-        String previousCrumbs = renderCrumbs(pageContext.parent, request, messageSourceAccessor);
+    public String renderCrumbsFinal(PageContext pageContext, HttpServletRequest req, MessageSourceAccessor accessor) {
+        
+        String previousCrumbs = renderCrumbs(pageContext.parent, req, accessor);
         previousCrumbs += CRUMB_SEPERATOR;
         
-        String label = getPagePart("crumbTitle", pageContext, messageSourceAccessor);
+        String label = getPagePart(CRUMB_TITLE, pageContext, accessor);
         
         String thisCrumb = createLink(label, null);
         String result = previousCrumbs + thisCrumb;
         return result;
     }
 
-    private String renderCrumbs(PageContext pageContext, HttpServletRequest request, MessageSourceAccessor messageSourceAccessor) {
+    private String renderCrumbs(PageContext pageContext, HttpServletRequest req, MessageSourceAccessor accessor) {
+        
         if (pageContext == null) {
-            return renderHomeCrumb(messageSourceAccessor);
+            return renderHomeCrumb(accessor);
         }
-        String previousCrumbs = renderCrumbs(pageContext.parent, request, messageSourceAccessor);
+        String previousCrumbs = renderCrumbs(pageContext.parent, req, accessor);
         previousCrumbs += CRUMB_SEPERATOR;
         
-        String label = getPagePart("crumbTitle", pageContext, messageSourceAccessor);
+        String label = getPagePart(CRUMB_TITLE, pageContext, accessor);
         String link = null;
         try {
-            link = expressionLanguageResolver.resolveElExpression(pageContext.pageInfo.getLinkExpression(), request);
+            link = resolver.resolveElExpression(pageContext.pageInfo.getLinkExpression(), req);
         } catch (Exception e) {
             // Sometimes we can't resolve a link for a crumb, ie collection actions link
             // for a collection that was just deleted.
@@ -164,100 +178,101 @@ public class PageDetailProducer {
         return result;
     }
     
-    public String getPagePart(String pagePart, PageContext pageContext, MessageSourceAccessor messageSourceAccessor) {
+    public String getPagePart(String pagePart, PageContext pageContext, MessageSourceAccessor accessor) {
+        
         // look for specific override message
         PageInfo pageInfo = pageContext.pageInfo;
         String pagePrefix = "yukon.web.modules." + pageInfo.getModuleName() + "." + pageInfo.getName() + ".";
         String specificLabelKey = pagePrefix + pagePart;
         MessageSourceResolvable resolvable = YukonMessageSourceResolvable.createSingleCodeWithArgumentList(specificLabelKey, pageContext.labelArguments);
         try {
-            String result = messageSourceAccessor.getMessage(resolvable);
+            String result = accessor.getMessage(resolvable);
             return result;
         } catch (NoSuchMessageException e) {
             LogHelper.trace(log, "no specific label found for %s on %s", pagePart, pageInfo);
         }
         
-        String pagePartTemplate = messageSourceAccessor.getMessage("yukon.web.layout.standard.pageType." + pageInfo.getPageType() + ".pagePart." + pagePart);
+        String pagePartTemplate = accessor.getMessage("yukon.web.layout.standard.pageType." + pageInfo.getPageType() + ".pagePart." + pagePart);
         
         String result = new SimpleTemplateProcessor().process(pagePartTemplate, pageContext.pageLabels);
         return result;
     }
     
-    private String renderHomeCrumb(MessageSourceAccessor messageSourceAccessor) {
-        String message = messageSourceAccessor.getMessage("yukon.web.menu.home");
+    private String renderHomeCrumb(MessageSourceAccessor accessor) {
         
+        String message = accessor.getMessage("yukon.web.menu.home");
         String link = "/home";
+        
         return createLink(message, link );
     }
 
     private String createLink(String label, String link) {
+        
         // abbreviate label to prevent bread crumbs from being too long
         label = com.cannontech.common.util.StringUtils.elideCenter(label, 60);
         String safeLabel = StringEscapeUtils.escapeHtml(label);
         if (link == null) return safeLabel;
         String safeLink = StringEscapeUtils.escapeHtml(link);
+        
         return "<a href=\"" + safeLink + "\">" + safeLabel + "</a>";
     }
     
-    private PageContext createPageContext(PageInfo pageInfo, HttpServletRequest request, MessageSourceAccessor messageSourceAccessor) {
+    private PageContext createPageContext(PageInfo pageInfo, HttpServletRequest req, MessageSourceAccessor accessor) {
+        
         if (pageInfo == null) return null;
         
         PageContext result = new PageContext();
         result.pageInfo = pageInfo;
-        result.parent = createPageContext(pageInfo.getParent(), request, messageSourceAccessor);
+        result.parent = createPageContext(pageInfo.getParent(), req, accessor);
         
-        result.labelArguments = expressionLanguageResolver.resolveElExpressions(pageInfo.getLabelArgumentExpressions(), request);
-        fillInPageLabels(result, messageSourceAccessor);
+        result.labelArguments = resolver.resolveElExpressions(pageInfo.getLabelArgumentExpressions(), req);
+        fillInPageLabels(result, accessor);
         
         return result;
     }
     
     // use standard.xml to figure out the relevant page labels
-    public void fillInPageLabels(PageContext pageContext, MessageSourceAccessor messageSourceAccessor) {
+    public void fillInPageLabels(PageContext pageContext, MessageSourceAccessor accessor) {
+        
         Builder<String, String> resultBuilder = ImmutableMap.builder();
         
         PageInfo pageInfo = pageContext.pageInfo;
         String pagePrefix = "yukon.web.modules." + pageInfo.getModuleName() + "." + pageInfo.getName() + ".";
         
-        String pageNameKey = pagePrefix + "pageName";
-        String pageName = messageSourceAccessor.getMessageWithDefault(pageNameKey, pageInfo.getName());
-        resultBuilder.put("pageName", pageName);
+        String pageNameKey = pagePrefix + PAGE_NAME;
+        String pageName = accessor.getMessageWithDefault(pageNameKey, pageInfo.getName());
+        resultBuilder.put(PAGE_NAME, pageName);
         
-        String contextualPageNameKey = pagePrefix + "contextualPageName";
-        String contextualPageName = messageSourceAccessor.getMessageWithDefault(contextualPageNameKey, pageName,
-                                                                                pageContext.labelArguments.toArray());
-        resultBuilder.put("contextualPageName", contextualPageName);
+        String contextualPageNameKey = pagePrefix + CONTEXTUAL_PAGE_NAME;
+        String contextualPageName = accessor.getMessageWithDefault(contextualPageNameKey, pageName, pageContext.labelArguments.toArray());
+        resultBuilder.put(CONTEXTUAL_PAGE_NAME, contextualPageName);
         
-        String pageDescriptionKey = pagePrefix + "pageDescription";
+        String pageDescriptionKey = pagePrefix + PAGE_DESCRIPTION;
         MessageSourceResolvable pageDescriptionResolvable = YukonMessageSourceResolvable.createSingleCodeWithArgumentList(pageDescriptionKey, pageContext.labelArguments);
         String pageDescription;
         try {
-            pageDescription = messageSourceAccessor.getMessage(pageDescriptionResolvable);
+            pageDescription = accessor.getMessage(pageDescriptionResolvable);
         } catch (NoSuchMessageException e) {
-            pageDescription = findParentLabel(pageContext.parent, "pageDescription");
+            pageDescription = findParentLabel(pageContext.parent, PAGE_DESCRIPTION);
         }
         if (pageDescription == null) {
             pageDescription = "";
         }
-        resultBuilder.put("pageDescription", pageDescription);
+        resultBuilder.put(PAGE_DESCRIPTION, pageDescription);
         
-        String moduleName = messageSourceAccessor.getMessage("yukon.web.modules." + pageInfo.getModuleName() + ".moduleName");
-        resultBuilder.put("moduleName", moduleName);
+        String moduleName = accessor.getMessage("yukon.web.modules." + pageInfo.getModuleName() + ".moduleName");
+        resultBuilder.put(MODULE_NAME, moduleName);
         
         pageContext.pageLabels = resultBuilder.build();
     }
     
     private String findParentLabel(PageContext pageContext, String labelName) {
+        
         if (pageContext == null) return null;
+        
         return pageContext.pageLabels.get(labelName);
     }
     
-    @Autowired
-    public void setExpressionLanguageResolver(
-            HttpExpressionLanguageResolver expressionLanguageResolver) {
-        this.expressionLanguageResolver = expressionLanguageResolver;
-    }
-
     public static class PageContext {
         public List<String> labelArguments;
         public PageContext parent;

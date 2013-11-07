@@ -27,7 +27,7 @@ jQuery(document).on('click', '.bulkInject', function(event) {
                 <tags:selectWithItems path="attribute" items="${groupedAttributes}" itemLabel="message" itemValue="key"
                     groupItems="true"/>
             </span>
-            <span class="focusedFieldDescription">We will go through each device in the
+            <span class="focused-field-description">We will go through each device in the
                 device group selected above and find the point for the selected attribute. This
                 is the point we will push at dispatch to save to the db.</span>
         </tags:nameValue2>
@@ -42,7 +42,7 @@ jQuery(document).on('click', '.bulkInject', function(event) {
             <span class="focusableFieldHolder">
                 <form:input path="period"/>
             </span>
-            <span class="focusedFieldDescription">The interval that should be used when
+            <span class="focused-field-description">The interval that should be used when
                 iterating between our range. Input format for this is a shorthand notation
                 defined in SimplePeriodFormat.java. For example: "1w", or "1h15m"</span>
         </tags:nameValue2>
@@ -50,7 +50,7 @@ jQuery(document).on('click', '.bulkInject', function(event) {
             <span class="focusableFieldHolder">
                 <form:input path="periodWindow"/>
             </span>
-            <span class="focusedFieldDescription">The maximum random interval period that
+            <span class="focused-field-description">The maximum random interval period that
                 should be added onto the timestamp we will send to dispatch. Same shorthand
                 notation as a Period above. This is calculated by converting the Period Window
                 to milliseconds, then calculating a random number between 0 and that number.
@@ -64,7 +64,7 @@ jQuery(document).on('click', '.bulkInject', function(event) {
                     </c:forEach>
                 </form:select>
             </span>
-            <span class="focusedFieldDescription">The point quality. If more than 1 is
+            <span class="focused-field-description">The point quality. If more than 1 is
                 selected than a random quality between those selected is used per point
                 injection.</span>
         </tags:nameValue2>
@@ -75,7 +75,7 @@ jQuery(document).on('click', '.bulkInject', function(event) {
                     <form:option value="uniform">Uniform</form:option>
                 </form:select>
             </span>
-            <span class="focusedFieldDescription">Normal
+            <span class="focused-field-description">Normal
                 (http://en.wikipedia.org/wiki/Normal_distribution), which better represents
                 reads coming in from the field or Uniform Distribution.</span>
         </tags:nameValue2>
@@ -83,7 +83,7 @@ jQuery(document).on('click', '.bulkInject', function(event) {
             <span class="focusableFieldHolder">
                 <form:checkbox path="incremental" />
             </span>
-            <span class="focusedFieldDescription">If checked, then each value generated
+            <span class="focused-field-description">If checked, then each value generated
                 per point will be treated as a delta of the total. Main reason for this is for
                 the attribute "Usage" (kWh) </span>
         </tags:nameValue2>
@@ -91,7 +91,7 @@ jQuery(document).on('click', '.bulkInject', function(event) {
             <span class="focusableFieldHolder">
                 <form:input path="valueLow"/>
             </span>
-            <span class="focusedFieldDescription">Values generated will never be less
+            <span class="focused-field-description">Values generated will never be less
                 than this. If Normal Distribution is used then this value is treated as the -3rd
                 standard deviation from the mean.</span>
         </tags:nameValue2>
@@ -99,7 +99,7 @@ jQuery(document).on('click', '.bulkInject', function(event) {
             <span class="focusableFieldHolder">
                 <form:input path="valueHigh"/>
             </span>
-            <span class="focusedFieldDescription">Values generated will never be greater
+            <span class="focused-field-description">Values generated will never be greater
                 than this. If Normal Distribution is used then this value is treated as the 3rd
                 standard deviation from the mean.</span>
         </tags:nameValue2>
@@ -108,18 +108,18 @@ jQuery(document).on('click', '.bulkInject', function(event) {
             <span class="focusableFieldHolder">
                 <form:input path="decimalPlaces"/>
             </span>
-            <span class="focusedFieldDescription">The number of decimal places to round
+            <span class="focused-field-description">The number of decimal places to round
                 the calculated value to</span>
         </tags:nameValue2>
         <tags:nameValue2 nameKey=".archive">
             <span class="focusableFieldHolder">
                 <form:checkbox path="archive" />
             </span>
-            <span class="focusedFieldDescription">Whether or not the value should be forced to be
+            <span class="focused-field-description">Whether or not the value should be forced to be
                 archived.</span>
         </tags:nameValue2>
     </tags:nameValueContainer2>
-    <div class="pageActionArea">
+    <div class="page-action-area">
         <cti:button nameKey="send" type="submit" classes="bulkInject f-blocker" />
     </div>
 </form:form>

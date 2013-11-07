@@ -35,8 +35,8 @@
                 
             <%-- SUBMIT BUTTONS --%>
             <cti:url var="cancelUrl" value="/bulk/update/upload"/>
-            <div class="pageActionArea">
-                <cti:button nameKey="update" type="submit" classes="f-disableAfterClick primary action" busy="true"/>
+            <div class="page-action-area">
+                <cti:button nameKey="update" type="submit" classes="primary action" busy="true"/>
                 <cti:button nameKey="cancel" id="cancelButton" onclick="window.location='${cancelUrl}'"/>
             </div>
             

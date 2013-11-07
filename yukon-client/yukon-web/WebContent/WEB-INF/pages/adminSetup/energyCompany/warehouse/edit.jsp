@@ -35,7 +35,7 @@
             <tags:textareaNameValue nameKey=".notes" rows="3" cols="40" path="warehouse.notes"></tags:textareaNameValue>
         </tags:nameValueContainer2>
         
-        <div class="pageActionArea">
+        <div class="page-action-area">
             <!-- Save/Update -->
             <cti:displayForPageEditModes modes="CREATE">
                 <cti:button nameKey="save" name="create" type="submit" classes="action primary"/>

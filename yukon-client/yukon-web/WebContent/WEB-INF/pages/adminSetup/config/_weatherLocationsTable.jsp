@@ -18,7 +18,7 @@
         <div id="dispatchError" class="error" style="display:none">
             <i:inline key=".error.dispatchNotConnected"/>
         </div>
-        <table class="compactResultsTable sortable-table">
+        <table class="compact-results-table sortable-table">
             <thead>
                 <th><i:inline key=".name"/></th>
                 <th><i:inline key=".stationId"/></th>

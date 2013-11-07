@@ -78,7 +78,7 @@ moveDownDisabledIcon = templateIcons[4];
 </c:if>
 </script>
 
-<div class="column_12_12">
+<div class="column-12-12">
     <div class="column one">
                 <tags:boxContainer2 nameKey="info">
                     <tags:nameValueContainer2>
@@ -99,7 +99,7 @@ moveDownDisabledIcon = templateIcons[4];
                     <c:if test="${hasBeenTaken}">
                         <div id="takenNote"><i:inline key=".hasBeenTaken"/></div>
                     </c:if>
-                    <ul class="buttonStack">
+                    <ul class="button-stack">
                         <c:if test="${!hasBeenTaken}">
 	                        <li>
                                 <cti:button id="editDetailsBtn" nameKey="edit" icon="icon-pencil"
@@ -129,14 +129,14 @@ moveDownDisabledIcon = templateIcons[4];
                 </tags:boxContainer2>
     </div>
 </div>
-<div class="column_24">
+<div class="column-24">
     <div class="column one nogutter">
                 <tags:boxContainer2 nameKey="questions">
 					<c:if test="${empty questions}">
 					    <i:inline key=".noQuestions"/>
 					</c:if>
 					<c:if test="${!empty questions}">
-					    <table class="compactResultsTable rowHighlighting">
+					    <table class="compact-results-table row-highlighting">
                             <thead>
 					        <tr>
 					            <th><i:inline key=".questionKey"/></th>

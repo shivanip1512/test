@@ -40,7 +40,7 @@ jQuery(function() {
         </div>
     </div>
     
-    <div class="column_6_18">
+    <div class="column-6-18">
         
         <div class="column one">
             <tags:sectionContainer2 nameKey="themes">
@@ -54,7 +54,7 @@ jQuery(function() {
                         </li>
                     </c:forEach>
                     <li>
-                        <div class="pageActionArea">
+                        <div class="page-action-area">
                             <cti:button nameKey="create" icon="icon-plus-green" href="/adminSetup/config/themes/create"/>
                         </div>
                     </li>
@@ -82,7 +82,7 @@ jQuery(function() {
                     <div class="separated-sections">
                     
                         <div class="section">
-                            <div class="column_6_18 clearfix">
+                            <div class="column-6-18 clearfix">
                                 <div class="column one">
                                     <i:inline key=".name"/>
                                 </div>
@@ -93,10 +93,10 @@ jQuery(function() {
                         </div>
 
                         <div class="section">
-                            <div class="column_6_18 clearfix">
+                            <div class="column-6-18 clearfix">
                                 <div class="column one"><i:inline key=".primaryColors"/></div>
                                 <div class="column two nogutter">
-                                    <div class="column_12_12 clearfix">
+                                    <div class="column-12-12 clearfix">
                                         <div class="column one">
                                             <c:set var="prop" value="${mappedPropertiesHelper.map['PRIMARY_COLOR']}"/>
                                             <div><span class="name"><i:inline key=".primary"/></span>&nbsp;<tags:simpleInputType id="${prop.extra}" input="${prop.valueType}" path="${prop.path}" pageEditMode="${mode}"/></div>
@@ -111,10 +111,10 @@ jQuery(function() {
                         </div>
                         
                         <div class="section">
-                            <div class="column_6_18 clearfix">
+                            <div class="column-6-18 clearfix">
                                 <div class="column one"><i:inline key=".buttons"/></div>
                                 <div class="column two nogutter">
-                                    <div class="column_8_8_8 clearfix">
+                                    <div class="column-8-8-8 clearfix">
                                         <div class="column one">
                                             <c:set var="prop" value="${mappedPropertiesHelper.map['BUTTON_COLOR']}"/>
                                             <div><span class="name"><i:inline key=".color"/></span>&nbsp;<tags:simpleInputType id="${prop.extra}" input="${prop.valueType}" path="${prop.path}" pageEditMode="${mode}"/></div>
@@ -133,10 +133,10 @@ jQuery(function() {
                         </div>
                         
                         <div class="section">
-                            <div class="column_6_18 clearfix">
+                            <div class="column-6-18 clearfix">
                                 <div class="column one"><i:inline key=".background"/></div>
                                 <div class="column two nogutter">
-                                    <div class="column_8_8_8 clearfix">
+                                    <div class="column-8-8-8 clearfix">
                                         <div class="column one">
                                             <c:set var="prop" value="${mappedPropertiesHelper.map['PAGE_BACKGROUND']}"/>
                                             <div><span class="name"><i:inline key=".color"/></span>&nbsp;<tags:simpleInputType id="${prop.extra}" input="${prop.valueType}" path="${prop.path}" pageEditMode="${mode}"/></div>
@@ -155,17 +155,17 @@ jQuery(function() {
                         </div>
                         
                         <div class="section">    
-                            <div class="column_6_18 clearfix">
+                            <div class="column-6-18 clearfix">
                                 <div class="column one"><i:inline key=".login"/></div>
                                 <div class="column two nogutter">
-                                    <div class="column_10_14 clearfix">
+                                    <div class="column-10-14 clearfix">
                                         <div class="column one">
                                             <c:set var="prop" value="${mappedPropertiesHelper.map['LOGIN_BACKGROUND']}"/>
                                             <div><span class="name"><i:inline key=".backgroundImage"/></span></div>
                                             <div><tags:simpleInputType id="${prop.extra}" input="${prop.valueType}" path="${prop.path}" pageEditMode="${mode}"/></div>
                                         </div>
                                         <div class="column two nogutter">
-                                            <div class="column_12_12 clearfix stacked">
+                                            <div class="column-12-12 clearfix stacked">
                                                 <div class="column one">
                                                     <c:set var="prop" value="${mappedPropertiesHelper.map['LOGIN_FONT_COLOR']}"/>
                                                     <div><span class="name"><i:inline key=".fontColor"/></span>&nbsp;<tags:simpleInputType id="${prop.extra}" input="${prop.valueType}" path="${prop.path}" pageEditMode="${mode}"/></div>
@@ -175,7 +175,7 @@ jQuery(function() {
                                                     <div><span class="name"><i:inline key=".fontShadow"/></span>&nbsp;<tags:simpleInputType id="${prop.extra}" input="${prop.valueType}" path="${prop.path}" pageEditMode="${mode}"/></div>
                                                 </div>
                                             </div>
-                                            <div class="column_24 clearfix">
+                                            <div class="column-24 clearfix">
                                                 <div class="column one nogutter">
                                                     <c:set var="prop" value="${mappedPropertiesHelper.map['LOGIN_TAGLINE_MARGIN']}"/>
                                                     <div><span class="name"><i:inline key=".taglineMargin"/></span>&nbsp;<tags:simpleInputType id="${prop.extra}" input="${prop.valueType}" path="${prop.path}" pageEditMode="${mode}"/></div>
@@ -188,10 +188,10 @@ jQuery(function() {
                         </div>
                         
                         <div class="section">    
-                            <div class="column_6_18 clearfix">
+                            <div class="column-6-18 clearfix">
                                 <div class="column one"><i:inline key=".logo"/></div>
                                 <div class="column two nogutter">
-                                    <div class="column_10_14 clearfix">
+                                    <div class="column-10-14 clearfix">
                                         <div class="column one">
                                             <c:set var="prop" value="${mappedPropertiesHelper.map['LOGO']}"/>
                                             <div><span class="name"><i:inline key=".image"/></span></div>
@@ -212,7 +212,7 @@ jQuery(function() {
                         
                     </div>
                     
-                    <div class="pageActionArea">
+                    <div class="page-action-area">
                         <c:if test="${mode == 'VIEW' and !command.currentTheme}">
                             <cti:url value="/adminSetup/config/themes/${command.themeId}/use" var="useUrl"/>
                             <cti:button nameKey="use" icon="icon-tick" href="${useUrl}"/>

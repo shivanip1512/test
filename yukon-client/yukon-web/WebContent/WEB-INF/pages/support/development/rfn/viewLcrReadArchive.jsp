@@ -21,7 +21,7 @@
                 </select>
             </tags:nameValue>
         </tags:nameValueContainer>
-        <div class="pageActionArea">
+        <div class="page-action-area">
             <cti:button nameKey="send" type="submit" classes="f-blocker"/>
         </div>
     </form>

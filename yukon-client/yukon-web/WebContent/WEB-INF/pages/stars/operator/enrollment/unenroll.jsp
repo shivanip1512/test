@@ -10,7 +10,7 @@
 
     <p class="stacked"><i:inline key=".confirmUnenroll" arguments="${assignedProgram.name.displayName}"/></p>
 
-    <div class="actionArea">
+    <div class="action-area">
         <cti:button nameKey="ok" classes="primary action" type="submit"/>
         <cti:button nameKey="cancel" onclick="jQuery('#peDialog').dialog('close');"/>
     </div>

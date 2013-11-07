@@ -35,7 +35,7 @@ jQuery(function () {
 			graphType="${graphType}"/>
 
         <div class="fr"><a href="javascript:void(0);" class="trend-settings-anchor"><i class="icon icon-cog"></i></a></div>
-		<table class="compactResultsTable trend-settings ${keepSettingsOpen ? '' : 'dn'}">
+		<table class="compact-results-table trend-settings ${keepSettingsOpen ? '' : 'dn'}">
 		
     		<%-- ATTRIBUTES GRAPH TYPES --%>
     		<tr>

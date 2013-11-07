@@ -21,19 +21,19 @@ ${id}.idFieldName = '${cti:escapeJavaScript(idFieldName)}';
 	            <a id="picker_${id}_showAllLink" href="javascript:${id}.showAll.call(${id})" style="margin-left: 3px;"><i:inline key=".showAll"/></a>
 	        </div>
 	    </div>
-	    <div class="fr pagingArea">
+	    <div class="fr paging-area">
 	        <tags:nextPrevLinks previousUrl="javascript:${id}.previous.call(${id})" nextUrl="javascript:${id}.next.call(${id})" mode="javascript"/>
 	    </div>
     </div>
     
-    <div id="picker_${id}_nothingSelected" style="display:none" class="errorMessage"><i:inline key=".nothingSelected"/></div>
-    <div class="f-block_this">
+    <div id="picker_${id}_nothingSelected" style="display:none" class="error"><i:inline key=".nothingSelected"/></div>
+    <div class="f-block-this">
         <div id="picker_${id}_results" class="pickerResults"></div>
         <div id="picker_${id}_noResults" style="display: none" class="pickerResults"><i:inline key=".noResults"/></div>
     </div>
 
     <c:if test="${multiSelectMode}">
-	    <div class="actionArea">
+	    <div class="action-area">
             <input type="checkbox" id="picker_${id}_selectAll" onclick="javascript:${id}.selectAll.call(${id})">
             <label for="picker_${id}_selectAll" class="simpleLink pointer"><i:inline key=".selectAll"/></label>
             &nbsp;&nbsp;

@@ -157,7 +157,7 @@
         
             <%-- General Info --%>
             <cti:dataGridCell>
-                <tags:formElementContainer nameKey="generalInfoSection">
+                <tags:sectionContainer2 nameKey="generalInfoSection">
                     <tags:nameValueContainer2 id="generalInfoTable">
                         <tags:inputNameValue nameKey=".name" path="companyName" inputClass="string" size="45" maxlength="60"/>
                         <tags:inputPhone nameKey=".mainPhone" path="mainPhoneNumber" inputClass="f-formatPhone" maxlength="16"/>
@@ -165,11 +165,11 @@
                         <tags:inputNameValue nameKey=".email" path="emailContactNotification" inputClass="String" maxlength="130"/>
                         <tags:inputNameValue nameKey=".HIType" path="hiType" size="35" maxlength="40"/>
                     </tags:nameValueContainer2>
-                </tags:formElementContainer>
+                </tags:sectionContainer2>
                 <br/>
                 <br/>
                 <c:if test="${canViewDesignationCodes}">
-                    <tags:formElementContainer nameKey="designationCodeSection">
+                    <tags:sectionContainer2 nameKey="designationCodeSection">
                         <!-- Contractor Zip Codes -->
                         <input type="text" id="findDesignationCode" value="<cti:msg key="yukon.web.modules.adminSetup.serviceCompany.findZipCode" javaScriptEscape="true" />" class="default" />
                         <div class="vertical_scrollbox search_list">
@@ -206,12 +206,12 @@
                                 id="addDesignationCodeButton" /></div>
                             </c:if>
                         </cti:displayForPageEditModes>
-                    </tags:formElementContainer>
+                    </tags:sectionContainer2>
                 </c:if>
             </cti:dataGridCell>
             
             <cti:dataGridCell>                        
-                <tags:formElementContainer nameKey="addressSection">
+                <tags:sectionContainer2 nameKey="addressSection">
                     <tags:nameValueContainer2>
                         <tags:hidden path="address.addressID"/>
                         <tags:inputNameValue nameKey=".locationAddress1" path="address.locationAddress1" inputClass="string" maxlength="40"/>
@@ -221,10 +221,10 @@
                         <tags:inputNameValue nameKey=".zipCode" path="address.zipCode" inputClass="zip" maxlength="12"/>
                         <tags:hidden path="address.county"/>
                     </tags:nameValueContainer2>
-                </tags:formElementContainer>
+                </tags:sectionContainer2>
                 <br/>
                 <br/>
-                <tags:formElementContainer nameKey="primaryContactSection">
+                <tags:sectionContainer2 nameKey="primaryContactSection">
                     <tags:nameValueContainer2>
                         <tags:hidden path="primaryContact.contactID"/>
                         <tags:inputNameValue nameKey=".primaryContact.firstName" path="primaryContact.contFirstName" inputClass="string" maxlength="120"/>
@@ -232,11 +232,11 @@
                         <tags:selectNameValue items="${availableLogins}" itemLabel="username" itemValue="userID"
                                     nameKey=".availableUsers" path="primaryContact.loginID" />
                     </tags:nameValueContainer2>
-                </tags:formElementContainer>
+                </tags:sectionContainer2>
             </cti:dataGridCell>
         </cti:dataGrid>
         
-        <div class="pageActionArea">
+        <div class="page-action-area">
         
             <!-- Edit Link -->
             <cti:displayForPageEditModes modes="VIEW">

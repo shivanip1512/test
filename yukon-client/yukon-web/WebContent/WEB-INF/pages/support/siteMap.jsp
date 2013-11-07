@@ -5,7 +5,7 @@
 
 <cti:standardPage module="support" page="siteMap">
 
-    <div class="column_8_8_8 tiles">
+    <div class="column-8-8-8 tiles">
         <c:forEach items="${pageMap}" var="category" varStatus="index">
             
             <c:if test="${index.index %3 == 0}"><c:set var="column" value="column one" /></c:if>

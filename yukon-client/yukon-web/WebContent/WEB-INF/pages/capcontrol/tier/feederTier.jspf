@@ -18,10 +18,10 @@
 </c:if>
 
 <c:if test="${fn:length(feederList) > 1}">
-    <c:set var="styleClass" value="with_footer"/>
+    <c:set var="styleClass" value="with-footer"/>
 </c:if>
 <tags:boxContainer2 nameKey="feedersContainer" hideEnabled="true" showInitially="true" styleClass="${styleClass}">
-    <table id="fdrTable" class="compactResultsTable rowHighlighting has-actions">
+    <table id="fdrTable" class="compact-results-table row-highlighting has-actions">
         <thead>
             <tr>
                 <th width="16px">&nbsp;</th>
@@ -69,7 +69,7 @@
                     <c:if test="${not hasFeederControl}">
                         <span id="feederState_${feederId}">
                     </c:if>
-                        <span id="feederState_box_${feederId}" class="box stateBox">
+                        <span id="feederState_box_${feederId}" class="box state-box">
                             &nbsp;
                         </span>
 

@@ -29,8 +29,8 @@
 </c:choose>
 
 <br>
-<tags:formElementContainer nameKey="relays">
-<table class="compactResultsTable">
+<tags:sectionContainer2 nameKey="relays">
+<table class="compact-results-table">
     <tr>
         <td>
         <table>
@@ -73,4 +73,4 @@
         </td>
     </tr>
 </table>
-</tags:formElementContainer>
+</tags:sectionContainer2>

@@ -296,19 +296,19 @@ function makeFirstSelectedFilterValueVisible () {
       <input type="hidden" name="ACTION" value="DownloadReport">
       
       <cti:msg key="yukon.web.reportSelection" var="reportSelectionTitle"/>
-    <div class="titledContainer boxContainer">
+    <div class="titled-container box-container">
 
         <div class="title-bar clearfix"><h3 class="title">${reportSelectionTitle}</h3></div>
         <div class="content">
             <table style="width:100%;">
               <tr>
-                <td class="columnHeader"><cti:msg key="yukon.web.reports"/></td>
-                <td class="columnHeader">&nbsp;</td>
-                <td class="columnHeader"><cti:msg key="yukon.common.date.start"/></td>
-                <td class="columnHeader">&nbsp;</td>
-                <td class="columnHeader"><cti:msg key="yukon.common.date.stop"/></td>
-                <td class="columnHeader">&nbsp;</td>
-                <td class="columnHeader"><cti:msg key="yukon.web.format"/></td>
+                <td class="column-header"><cti:msg key="yukon.web.reports"/></td>
+                <td class="column-header">&nbsp;</td>
+                <td class="column-header"><cti:msg key="yukon.common.date.start"/></td>
+                <td class="column-header">&nbsp;</td>
+                <td class="column-header"><cti:msg key="yukon.common.date.stop"/></td>
+                <td class="column-header">&nbsp;</td>
+                <td class="column-header"><cti:msg key="yukon.web.format"/></td>
               </tr>
               <tr>
                 <td class="main">&nbsp;</td>
@@ -456,7 +456,7 @@ function makeFirstSelectedFilterValueVisible () {
       <br>
       
         <cti:msg key="yukon.web.options" var="optionsTitle"/>
-        <div class="titledContainer boxContainer">
+        <div class="titled-container box-container">
             <div class="title-bar clearfix"><h3 class="title">${optionsTitle}</h3></div>
             <div class="content">
                 <%=REPORT_BEAN.buildOptionsHTML()%>
@@ -468,7 +468,7 @@ function makeFirstSelectedFilterValueVisible () {
           <br>
           
           <cti:msg key="yukon.web.options" var="filterTitle"/>
-          <div class="titledContainer boxContainer">
+          <div class="titled-container box-container">
             <div class="title-bar clearfix"><h3 class="title">${filterTitle}</h3></div>
             <div class="content">
             <SCRIPT>

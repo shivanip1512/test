@@ -37,8 +37,8 @@ function submitForm(id) {
             <%-- LOCATE BUTTON --%>
             <cti:checkRolesAndProperties value="DEVICE_ACTIONS">
             <cti:checkRolesAndProperties value="LOCATE_ROUTE">
-                <div class="pageActionArea">
-                    <cti:button nameKey="locateRoute" type="submit" classes="f-disableAfterClick primary action" busy="true"/>
+                <div class="page-action-area">
+                    <cti:button nameKey="locateRoute" type="submit" classes="primary action" busy="true"/>
                 </div>
             </cti:checkRolesAndProperties>
             </cti:checkRolesAndProperties>
@@ -57,7 +57,7 @@ function submitForm(id) {
             <cti:msg var="performNewActionLinkTitle" key="yukon.web.modules.tools.bulk.routeLocateHome.recentRouteLocateResults.performNewActionLinkTitle"/>
             
             <div style="width:75%">
-            <table class="compactResultsTable" style="vertial-align:bottom;border-width:40px;">
+            <table class="compact-results-table" style="vertial-align:bottom;border-width:40px;">
     
                 <tr>
                     <th><cti:msg key="yukon.web.modules.tools.bulk.routeLocateHome.recentRouteLocateResults.updateTime"/></th>

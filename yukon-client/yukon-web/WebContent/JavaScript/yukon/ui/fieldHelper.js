@@ -102,10 +102,10 @@ Yukon.modules.FieldHelper = function (mod) {
 
         if (!popup.length) {
             popupString = [];
-            popupString.push('<div class="pointingPopup_container" id="descriptionPopup" style="display:none;">');
-                popupString.push('<div class="pointingPopup_chevron ov pr">');
+            popupString.push('<div class="pointing-popup-container" id="descriptionPopup" style="display:none;">');
+                popupString.push('<div class="pointing-popup-chevron ov pr">');
                 popupString.push('</div>');
-                popupString.push('<div class="pointingPopup_content" id="descriptionPopup_content">');
+                popupString.push('<div class="pointing-popup-content" id="descriptionPopup_content">');
                 popupString.push('</div>');
             popupString.push('</div>');
             jQuery('body').append(popupString.join(''));
@@ -117,7 +117,7 @@ Yukon.modules.FieldHelper = function (mod) {
 
         jQuery('#descriptionPopup').css({left:left, top:top});
 
-        fieldDesc = target.closest('.focusableFieldHolder').nextAll('span.focusedFieldDescription');
+        fieldDesc = target.closest('.focusableFieldHolder').nextAll('span.focused-field-description');
         jQuery('#descriptionPopup_content').html(fieldDesc.html());
         jQuery('#descriptionPopup').show();
     };

@@ -19,7 +19,7 @@
             </c:forEach>
         </select>
         
-        <div class="actionArea">
+        <div class="action-area">
             <cti:button nameKey="cancel" onclick="jQuery('#drDialog').dialog('close');"/>
             <cti:button nameKey="ok" classes="primary action" onclick="submitFormViaAjax('drDialog', 'sendEnableForm');"/>
         </div>
@@ -29,7 +29,7 @@
 <c:if test="${fn:length(gears) < 2}">
     <p><cti:msg2 key=".notEnoughGears" argument="${program.name}"/></p>
 
-    <div class="actionArea">
+    <div class="action-area">
         <cti:button nameKey="ok" onclick="jQuery('#drDialog').dialog('close');"/>
     </div>
 </c:if>

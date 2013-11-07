@@ -12,7 +12,7 @@
 </script>
 
     <tags:widgetContainer deviceId="${deviceId}">
-        <div class="column_12_12 clearfix">
+        <div class="column-12-12 clearfix">
             <div class="one column">
                 <tags:widget bean="meterInformationWidget" />
             </div>
@@ -44,12 +44,12 @@
                     <input type="text" id="command" name="command" <cti:isPropertyFalse property="EXECUTE_MANUAL_COMMAND">readonly</cti:isPropertyFalse> size="60" value="${YC_BEAN.commandString}">
                 </tags:nameValue2>
             </tags:nameValueContainer2>  
-            <div class="pageActionArea">
-                <cti:button nameKey="execute" name="execute" onclick="disableButton(this)" type="submit" classes="primary action f-disableAfterClick"/>
+            <div class="page-action-area">
+                <cti:button nameKey="execute" name="execute" onclick="disableButton(this)" type="submit" classes="primary action f-disable-after-click"/>
                 <cti:button nameKey="clear" name="clearText" type="submit"/>
                 <cti:button nameKey="refresh" name="refresh" onclick="window.location.reload()"/>
             </div>
-            <div id="command_results" class="liteContainer stacked code scrollingContainer_large" style="min-height: 200px;">
+            <div id="command_results" class="lite-container stacked code scroll-large" style="min-height: 200px;">
                 <div class="console"><h4><i:inline key="yukon.common.console"/></h4></div>
                 <c:out value="${YC_BEAN.resultText}" escapeXml="false"/>
             </div>

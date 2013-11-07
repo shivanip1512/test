@@ -16,7 +16,7 @@
     <form id="sendEnableForm" action="/dr/program/setEnabled">
         <input type="hidden" name="programId" value="${program.paoIdentifier.paoId}"/>
         <input type="hidden" name="isEnabled" value="${isEnabled}"/>
-        <div class="actionArea">
+        <div class="action-area">
             <cti:button nameKey="ok" classes="primary action" onclick="submitFormViaAjax('drDialog', 'sendEnableForm')"/>
             <cti:button nameKey="cancel" onclick="jQuery('#drDialog').dialog('close');"/>
         </div>

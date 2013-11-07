@@ -58,8 +58,8 @@ jQuery(function() {
 
     <form:form commandName="settlementDto" method="post" action="${edit}">
         
-        <tags:formElementContainer nameKey="configurations">
-            <table class="nameValueTable naturalWidth">
+        <tags:sectionContainer2 nameKey="configurations">
+            <table class="name-value-table natural-width">
                 <c:forEach var="liteSettlementConfig" items="${settlementDto.editableLiteSettlementConfigs}" varStatus="status">
                     <tr>
                         <td class="name"><label>${liteSettlementConfig.fieldName}:</label></td>
@@ -68,17 +68,17 @@ jQuery(function() {
                                 <tags:input path="editableLiteSettlementConfigs[${status.index}].fieldValue"/>
                             </span>
                             <tags:hidden path="editableLiteSettlementConfigs[${status.index}].configID"/>
-                            <span class="focusedFieldDescription">${liteSettlementConfig.description}</span>
+                            <span class="focused-field-description">${liteSettlementConfig.description}</span>
                         </td>
                     </tr>
                 </c:forEach>
             </table>
-        </tags:formElementContainer>
+        </tags:sectionContainer2>
         
-        <tags:formElementContainer nameKey="availableRates">
+        <tags:sectionContainer2 nameKey="availableRates">
             <c:forEach var="availableRate" items="${settlementDto.availableRates}" varStatus="availRatesStatus">
                 <tags:hidden path="availableRates[${availRatesStatus.index}].entryId"/>
-                <table class="nameValueTable naturalWidth">
+                <table class="name-value-table natural-width">
                     <tr>
                         <td colspan="3" class="availableRateCheckBoxTd"><tags:checkbox path="availableRates[${availRatesStatus.index}].enabled" onclick="toggleAvailableRatesInputs(this);" /> ${availableRate.availableRateName}</td>
                     </tr>
@@ -94,16 +94,16 @@ jQuery(function() {
                                 <tags:hidden path="availableRates[${availRatesStatus.index}].rateConfigurations[${rateConfigStatus.index}].fieldName"/>
                                 <tags:hidden path="availableRates[${availRatesStatus.index}].rateConfigurations[${rateConfigStatus.index}].description"/>
                                 <tags:hidden path="availableRates[${availRatesStatus.index}].rateConfigurations[${rateConfigStatus.index}].refEntryID"/>
-                                <span class="focusedFieldDescription">${liteSettlementConfig.description}</span>
+                                <span class="focused-field-description">${liteSettlementConfig.description}</span>
                             </td>
                         </tr>
                     </c:forEach>
                 </table>
                 <br>
             </c:forEach>
-        </tags:formElementContainer>
+        </tags:sectionContainer2>
     
-        <div class="pageActionArea">
+        <div class="page-action-area">
             <cti:displayForPageEditModes modes="EDIT">
                 <cti:button nameKey="save" type="submit" name="save"/>
                 <cti:button nameKey="cancel" type="submit" name="cancel"/>

@@ -10,10 +10,15 @@
 <%@ attribute name="nameKey" required="true" %>
 <%@ attribute name="onchange" %>
 <%@ attribute name="path" required="true" %>
+<%@ attribute name="nameClass" %>
+<%@ attribute name="valueClass" %>
 
-<tags:nameValue2 nameKey="${nameKey}">
-	<tags:yukonListEntrySelect id="${pageScope.id}" path="${path}" energyCompanyId="${energyCompanyId}" listName="${listName}"
+<tags:nameValue2 nameKey="${nameKey}" valueClass="${pageScope.valueClass}" nameClass="${pageScope.nameClass}">
+	<tags:yukonListEntrySelect id="${pageScope.id}" 
+                               path="${path}" 
+                               energyCompanyId="${energyCompanyId}" 
+                               listName="${listName}"
 	                           defaultItemValue="${pageScope.defaultItemValue}"
 	                           defaultItemLabel="${pageScope.defaultItemLabel}"
-	                           onchange="${pageScope.onchange}" />
+	                           onchange="${pageScope.onchange}"/>
 </tags:nameValue2>

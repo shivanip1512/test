@@ -22,12 +22,12 @@ jQuery(document).on('click', 'button.loginButton',function() {
     <form action="parentLogin" method="post" id="parentLoginForm">
         <input type="hidden" name="loginAsUserId" id="loginAsUserId">
     </form>
-    <div class="column_8_16">
+    <div class="column-8-16">
         <div class="column one nogutter">
             <tags:boxContainer2 nameKey="companiesContainer">
                 
                 <div class="membersContainer">
-                    <table class="energyCompaniesTable rowHighlighting">
+                    <table class="energyCompaniesTable row-highlighting">
                         <c:forEach items="${companies}" var="company" varStatus="status">
                             <tr>
                                 <td>
@@ -49,7 +49,7 @@ jQuery(document).on('click', 'button.loginButton',function() {
                 </div>
                 
                 <cti:checkRolesAndProperties value="ADMIN_SUPER_USER">
-                    <div class="actionArea">
+                    <div class="action-area">
                         <form action="/adminSetup/energyCompany/new">
                             <cti:button nameKey="create" icon="icon-plus-green" type="submit" name="create"/>
                         </form>

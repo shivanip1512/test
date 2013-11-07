@@ -3,7 +3,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 
-<table class="resultsTable">
+<table class="results-table">
 					    			
 	<tr>
 		<th>

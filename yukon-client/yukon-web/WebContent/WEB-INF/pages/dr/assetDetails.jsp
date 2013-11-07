@@ -21,9 +21,9 @@
     <cti:button id="dd-download" icon="icon-page-white-excel" nameKey="download"/>
 </div>
     
-    <div class="column_12_12">
+    <div class="column-12-12">
         <div class="column one">
-            <div class="pageActionArea stacked">
+            <div class="page-action-area stacked">
                 <strong class="fl">Filter:</strong>
                 <button data-filter="ACTIVE" class="left on">
                     <span class="label green"><cti:msg2 key=".active"/></span></button>

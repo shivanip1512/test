@@ -24,7 +24,7 @@ function rateChanged() {
 }
 </script>
 
-<tags:formElementContainer nameKey="sa305Addresses">
+<tags:sectionContainer2 nameKey="sa305Addresses">
     <tags:nameValueContainer2>
         <tags:nameValue2 nameKey=".utility">
             <tags:input path="addressingInfo.utility" size="6" maxlength="15"/>
@@ -49,5 +49,5 @@ function rateChanged() {
             <span id="rateFamily">${rateFamily}</span>
         </tags:nameValue2>
     </tags:nameValueContainer2>
-</tags:formElementContainer>
+</tags:sectionContainer2>
 <script type="text/javascript">rateChanged();</script>

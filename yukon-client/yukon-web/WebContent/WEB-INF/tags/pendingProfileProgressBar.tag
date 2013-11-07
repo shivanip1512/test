@@ -23,13 +23,13 @@
         <table cellpadding="0px" border="0px">
             <tr>
                 <td>
-                    <div id="progressBorder_${requestId}" class="progressBarBorder" align="left">
-                        <div id="progressInner_${requestId}" class="progressBarInner" style="width: ${percentDone}px;">
+                    <div id="progressBorder_${requestId}" class="progressbar-border" align="left">
+                        <div id="progressInner_${requestId}" class="progressbar-inner" style="width: ${percentDone}px;">
                         </div>
                     </div>
                 </td>
                 <td>
-                    <div id="percentDone_${requestId}" class="progressBarPercentComplete">
+                    <div id="percentDone_${requestId}" class="progressbar-percent-complete">
                         ${percentDone}%
                     </div>
                 </td>

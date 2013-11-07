@@ -65,7 +65,7 @@
     <%-- Event Log Results --%>
     <cti:msg var="eventsTitle" key="yukon.common.events.title"/>
     <tags:pagedBox title="${eventsTitle}" searchResult="${searchResult}" baseUrl="${baseUrl}" pageByHundereds="true">
-        <table class="compactResultsTable rowHighlighting">
+        <table class="compact-results-table row-highlighting">
             <tr>
                 <th>
                     <cti:msg key="yukon.common.events.columnHeader.event"/>

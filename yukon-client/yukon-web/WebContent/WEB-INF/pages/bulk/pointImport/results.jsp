@@ -34,7 +34,7 @@
             </div>
         </tags:boxContainer2>
         <br>
-        <div id="downloadFailedSection" class="pageActionArea" style="display:none">
+        <div id="downloadFailedSection" class="page-action-area" style="display:none">
             <i:inline key=".downloadFailedLabel"/>
             <cti:url var="downloadUrl" value="/bulk/pointImport/downloadFailed">
                 <cti:param name="resultId" value="${resultId}"/>

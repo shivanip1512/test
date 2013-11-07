@@ -53,8 +53,8 @@
 
     <cti:msg2 var="boxTitle" key=".gearAdjustments"/>
     <tags:boxContainer title="${boxTitle}">
-	    <div class="dialogScrollArea">
-		    <table class="compactResultsTable">
+	    <div class="scroll-medium">
+		    <table class="compact-results-table">
                 <thead>
 			        <tr>
 			            <th><cti:msg2 key=".timeFrame"/></th>
@@ -82,7 +82,7 @@
 	    </div>
     </tags:boxContainer>
 
-    <div class="actionArea">
+    <div class="action-area">
         <c:if test="${empty errors}">
             <cti:url var="backUrl" value="/dr/program/start/details">
                 <cti:param name="fromBack" value="true"/>

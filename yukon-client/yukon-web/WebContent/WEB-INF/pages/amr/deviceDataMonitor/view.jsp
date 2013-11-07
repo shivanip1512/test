@@ -10,7 +10,7 @@
 <cti:standardPage module="amr" page="deviceDataMonitor.${mode}">
     <%@ include file="shared.jspf"%>
 
-    <div class="column_12_12 clearfix">
+    <div class="column-12-12 clearfix">
             <div class="column one">
                 <tags:sectionContainer2 nameKey="settings" styleClass="${settings_section_class}">
                     <input type="hidden" id="monitorId" value="${monitor.id}"/>
@@ -49,8 +49,8 @@
                             <span class="empty-list"><i:inline key=".noProcessors" /></span>
                         </c:when>
                         <c:otherwise>
-                            <div class="smallDialogScrollArea">
-                                <table class="compactResultsTable">
+                            <div class="scroll-small">
+                                <table class="compact-results-table">
                                     <thead>
                                         <tr>
                                             <th><i:inline key=".processors.attribute" /></th>
@@ -76,7 +76,7 @@
     </div>
 
     <%-- update / enable_disable / delete / cancel --%>
-    <div class="pageActionArea">
+    <div class="page-action-area">
         <cti:url value="/amr/deviceDataMonitor/editPage" var="editUrl">
             <cti:param name="monitorId" value="${monitor.id}"/>
         </cti:url>

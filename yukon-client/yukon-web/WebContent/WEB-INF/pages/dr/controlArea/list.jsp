@@ -95,7 +95,7 @@
                 </cti:checkRolesAndProperties>
             </table>
 
-            <div class="actionArea">
+            <div class="action-area">
                 <cti:button nameKey="filter" type="submit" classes="action primary"/>
                 <cti:button nameKey="showAll" onclick="javascript:clearFilter()"/>
             </div>
@@ -115,7 +115,7 @@
                 <cti:msg key="yukon.web.modules.dr.controlAreaList.noResults" />
             </c:when>
             <c:otherwise>
-                <table id="controlAreaList" class="compactResultsTable rowHighlighting has-actions">
+                <table id="controlAreaList" class="compact-results-table row-highlighting has-actions">
                     <thead>
                         <tr>
                             <%-- Table headers - columns are hidden/shown based on role props --%>

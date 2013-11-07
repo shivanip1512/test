@@ -585,7 +585,7 @@ public class ScheduledMeterReadModel extends ReportModelBase<ScheduledMeterReadM
 		html += "    <td valign='top'>" + LINE_SEPARATOR;		
 		html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
 		html += "        <tr>" + LINE_SEPARATOR;
-		html += "          <td valign='top' class='TitleHeader'>Scheduled Meter Read Status</td>" +LINE_SEPARATOR;
+		html += "          <td valign='top' class='title-header'>Scheduled Meter Read Status</td>" +LINE_SEPARATOR;
 		html += "        </tr>" + LINE_SEPARATOR;
 
 		String checkedStr = "checked";	//set to empty string after first iteration
@@ -604,7 +604,7 @@ public class ScheduledMeterReadModel extends ReportModelBase<ScheduledMeterReadM
 		html += "    <td valign='top'>" + LINE_SEPARATOR;
 		html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
 		html += "        <tr>" + LINE_SEPARATOR;
-		html += "          <td class='TitleHeader'>&nbsp;Group By</td>" +LINE_SEPARATOR;
+		html += "          <td class='title-header'>&nbsp;Group By</td>" +LINE_SEPARATOR;
 		html += "        </tr>" + LINE_SEPARATOR;
 		
 		checkedStr = "checked";	//set to empty string after first iteration
@@ -622,7 +622,7 @@ public class ScheduledMeterReadModel extends ReportModelBase<ScheduledMeterReadM
 		html += "    <td valign='top'>" + LINE_SEPARATOR;
 		html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
 		html += "        <tr>" + LINE_SEPARATOR;
-		html += "          <td class='TitleHeader'>&nbsp;Order By</td>" +LINE_SEPARATOR;
+		html += "          <td class='title-header'>&nbsp;Order By</td>" +LINE_SEPARATOR;
 		html += "        </tr>" + LINE_SEPARATOR;
 		checkedStr = "checked";	//set to empty string after first iteration
 		for (OrderBy orderBy : OrderBy.values()) {

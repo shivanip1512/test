@@ -11,7 +11,7 @@
     <cti:url var="fullErrorCodesURL" value="/support/errorCodes/view"/>
 
     <i:simplePopup titleKey=".errorCodesPopup" id="errorCodesHelpPopup" on="#errorHelp" options="{'height': 600}">
-        <table id="errorCodes" class="compactResultsTable stacked">
+        <table id="errorCodes" class="compact-results-table stacked">
             <thead>
             <tr>
                 <th><i:inline key=".errorCodesPopup.header.code" /></th>
@@ -128,8 +128,8 @@ jQuery(document).on('click', '.f-add-rule', function(event) {
         </table>
 
         <tags:boxContainer2 nameKey="rulesTable" hideEnabled="false" showInitially="true" styleClass="fixedMediumWidth">
-            <div class="smallDialogScrollArea">
-            <table id="rulesTable" class="compactResultsTable">
+            <div class="scroll-small">
+            <table id="rulesTable" class="compact-results-table">
                 <thead>
                     <tr>
                         <th class="orderColumn"><i:inline key=".rulesTable.header.ruleOrder" /></th>
@@ -187,14 +187,14 @@ jQuery(document).on('click', '.f-add-rule', function(event) {
                 </tbody>
             </table>
             </div>
-            <div class="actionArea">
+            <div class="action-area">
                 <cti:button nameKey="rulesTable.add" classes="f-add-rule" icon="icon-add"/>
             </div>
         </tags:boxContainer2>
 
         <%-- update / enable_disable / delete / cancel --%>
-        <div class="pageActionArea">
-            <cti:button nameKey="update" type="submit" busy="true"  classes="primary action f-disableAfterClick" data-disable-group="actionButtons"/>
+        <div class="page-action-area">
+            <cti:button nameKey="update" type="submit" busy="true"  classes="primary action" data-disable-group="actionButtons"/>
 
             <c:set var="monitoringKey" value="enable"/>
             <c:if test="${monitorDto.evaluatorStatus eq 'ENABLED'}">
@@ -202,12 +202,12 @@ jQuery(document).on('click', '.f-add-rule', function(event) {
             </c:if>
             <cti:button id="deleteButton" nameKey="delete" name="delete" type="submit" busy="true" data-disable-group="actionButtons" classes="delete"/>
             <d:confirm on="#deleteButton" nameKey="confirmDelete" argument="${monitorDto.name}"/>
-            <cti:button nameKey="${monitoringKey}" type="submit" name="toggleEnabled" busy="true" classes="f-disableAfterClick" data-disable-group="actionButtons"/>
+            <cti:button nameKey="${monitoringKey}" type="submit" name="toggleEnabled" busy="true" data-disable-group="actionButtons"/>
 
             <cti:url value="/amr/porterResponseMonitor/viewPage" var="viewUrl">
                 <cti:param name="monitorId" value="${monitorDto.monitorId}"/>
             </cti:url>
-            <cti:button nameKey="cancel" type="button" href="${viewUrl}" busy="true" classes="f-disableAfterClick" data-disable-group="actionButtons" />
+            <cti:button nameKey="cancel" type="button" href="${viewUrl}" busy="true" data-disable-group="actionButtons" />
         </div>
     </form:form>
 

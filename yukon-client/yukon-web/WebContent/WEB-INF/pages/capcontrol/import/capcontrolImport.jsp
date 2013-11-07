@@ -26,7 +26,7 @@
     }
     </script>
 
-    <div class="column_10_14">
+    <div class="column-10-14">
         <div class="column one">
             <tags:sectionContainer2 nameKey="importContainer" styleClass="stacked">
                 <form id="importForm" method="post" action="/capcontrol/import/cbcFile" enctype="multipart/form-data">
@@ -47,7 +47,7 @@
                         </tags:nameValue>
                     </tags:nameValueContainer>
                     
-                    <div class="actionArea">
+                    <div class="action-area">
                         <cti:button type="submit" nameKey="importSubmitButton" id="importSubmitButton" classes="f-blocker primary action" />
                     </div>
                 </form>
@@ -59,10 +59,10 @@
                         <c:forEach var="result" items="${results}">
                             <c:choose>
                                 <c:when test="${result.success}">
-                                    <c:set var="fontColor" value="successMessage"/>
+                                    <c:set var="fontColor" value="success"/>
                                 </c:when>
                                 <c:otherwise>
-                                    <c:set var="fontColor" value="errorMessage"/>
+                                    <c:set var="fontColor" value="error"/>
                                 </c:otherwise>
                             </c:choose>
                             <li>
@@ -77,7 +77,7 @@
         <div class="column two nogutter">
             <c:forEach var="importType" items="${importTypes}">
                 <div class="importType_${importType}" style="display: none;">
-                    <table class="resultsTable detail ">
+                    <table class="results-table detail ">
                         <tr>
                             <td colspan="2" style="background-color: #CDCDCD;">
                                 <cti:msg2 var="displayImportType" key="${importType}" />

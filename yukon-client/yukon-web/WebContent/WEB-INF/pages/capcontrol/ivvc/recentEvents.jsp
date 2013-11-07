@@ -5,7 +5,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <tags:standardPageFragment pageName="ivvc" module="capcontrol" fragmentName="recentEvents">
-<table class="compactResultsTable ">
+<table class="compact-results-table ">
     <c:forEach var="ccEvent" items="${events}">
         <tr>
             <td><spring:escapeBody htmlEscape="true">${ccEvent.deviceName}</spring:escapeBody></td>

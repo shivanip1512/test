@@ -15,7 +15,7 @@
     
         <form:hidden path="statusPointMonitorId"/>
                     
-        <tags:formElementContainer nameKey="setup">
+        <tags:sectionContainer2 nameKey="setup">
             <tags:nameValueContainer2 style="border-collapse:separate;border-spacing:5px;">
             
                 <%-- name --%>
@@ -33,10 +33,10 @@
                 </tags:nameValue2>
                 
             </tags:nameValueContainer2>
-        </tags:formElementContainer>
+        </tags:sectionContainer2>
             
         <%-- create / cancel --%>
-        <div class="pageActionArea">
+        <div class="page-action-area">
             <cti:button nameKey="create" icon="icon-plus-green" type="submit" classes="f-blocker"/>
             <input type="submit" name="cancel" class="button" value="<cti:msg2 key=".cancel"/>">
         </div>

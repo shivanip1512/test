@@ -8,28 +8,20 @@
 
 <cti:standardPage module="operator" page="completeControlHistory">
     
-    <table width="100%">
-        <tr>
-            <td style="text-align: right">
-                <i:inline key=".viewTitle"/>
-                <select onchange="javascript:updateControlEvents(this.options[this.options.selectedIndex].value)">
-                    <c:forEach var="controlPeriod" items="${controlPeriods}" >
-                        <option value="${controlPeriod}">
-                            <i:inline key="${controlPeriod.formatKey}"/>
-                        </option>
-                    </c:forEach>
-                </select>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <cti:msg key="${program.displayName}" var="controlEventsTitle" />
-                <tags:boxContainer2 nameKey="controlEventsTitle" hideEnabled="false">
-                    <div id="controlEventsDiv"><i:inline key=".loading"/></div>
-                </tags:boxContainer2>
-            </td>
-        </tr>
-    </table>
+    <c:set var="controls">
+        <i:inline key=".viewTitle"/>
+        <select onchange="updateControlEvents(this.options[this.options.selectedIndex].value)">
+            <c:forEach var="controlPeriod" items="${controlPeriods}" >
+                <option value="${controlPeriod}">
+                    <i:inline key="${controlPeriod.formatKey}"/>
+                </option>
+            </c:forEach>
+        </select>
+    </c:set>
+    
+    <tags:sectionContainer2 nameKey="controlEventsTitle" controls="${controls}" styleClass="form-controls">
+        <div id="controlEventsDiv" class="f-block-this"><i:inline key=".loading"/></div>
+    </tags:sectionContainer2>
 
 <script type="text/javascript">
 jQuery(function() {
@@ -37,6 +29,7 @@ jQuery(function() {
 });
 
 function updateControlEvents(controlPeriod) {
+    Yukon.ui.elementGlass.show(jQuery('#controlEventsDiv'));
     jQuery.ajax({
         url: '${innerViewUrl}',
         method: 'POST',
@@ -45,13 +38,11 @@ function updateControlEvents(controlPeriod) {
             'past': '${past}',
             'accountId': '${accountId}',
             'controlPeriod': controlPeriod
-        },
-        success: function(data){
-            jQuery('#controlEventsDiv').html(data);
-        },
-        error: function(){
-            //do nothing, log maybe?
         }
+    }).done(function(data){
+        jQuery('#controlEventsDiv').html(data);
+    }).always(function() {
+        Yukon.ui.elementGlass.hide(jQuery('#controlEventsDiv'));
     });
 }
 </script>  

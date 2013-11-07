@@ -23,7 +23,7 @@
 
 <cti:msgScope paths="widgetClasses.DeviceDataMonitorsWidget">
     <c:if test="${not empty deviceDataMonitors}">
-    <table class="compactResultsTable monitor-subs dashed stacked" data-undo-text="${undoText}">
+    <table class="compact-results-table monitor-subs dashed stacked" data-undo-text="${undoText}">
         <thead>
             <tr>
                 <th class="name"><i:inline key=".name"/></th>
@@ -91,7 +91,7 @@
 
 <cti:msgScope paths="widgets.outageMonitorsWidget">
     <c:if test="${not empty outageMonitors}">
-    <table class="compactResultsTable monitor-subs dashed stacked" data-removed-text="${removedText}" data-undo-text="${undoText}">
+    <table class="compact-results-table monitor-subs dashed stacked" data-removed-text="${removedText}" data-undo-text="${undoText}">
         <thead>
             <tr>
                 <th class="name"><i:inline key=".tableHeader.name"/></th>
@@ -158,11 +158,11 @@
 
 <cti:msgScope paths="widgets.tamperFlagMonitorsWidget">
     <c:if test="${not empty tamperFlagMonitorsWidgetError }">
-        <div class="errorMessage">${tamperFlagMonitorsWidgetError}</div>
+        <div class="error">${tamperFlagMonitorsWidgetError}</div>
     </c:if>
 
     <c:if test="${not empty tamperFlagMonitors}">
-    <table class="compactResultsTable monitor-subs dashed stacked" data-removed-text="${removedText}" data-undo-text="${undoText}">
+    <table class="compact-results-table monitor-subs dashed stacked" data-removed-text="${removedText}" data-undo-text="${undoText}">
         <thead>
             <tr>
                 <th class="name"><i:inline key=".tableHeader.name"/></th>
@@ -230,10 +230,10 @@
 
 <cti:msgScope paths="widgets.statusPointMonitorsWidget">
     <c:if test="${not empty statusPointMonitorsWidgetError}">
-        <div class="errorMessage"><i:inline key="${statusPointMonitorsWidgetError}"/></div>
+        <div class="error"><i:inline key="${statusPointMonitorsWidgetError}"/></div>
     </c:if>
     <c:if test="${not empty statusPointMonitors}">
-    <table class="compactResultsTable monitor-subs dashed stacked" data-removed-text="${removedText}" data-undo-text="${undoText}">
+    <table class="compact-results-table monitor-subs dashed stacked" data-removed-text="${removedText}" data-undo-text="${undoText}">
         <thead>
             <tr>
                 <th class="name"><i:inline key=".tableHeader.name"/></th>
@@ -295,11 +295,11 @@
 
 <cti:msgScope paths="widgets.porterResponseMonitorsWidget">
     <c:if test="${not empty porterResponseMonitorError}">
-        <div class="errorMessage">${porterResponseMonitorError}</div>
+        <div class="error">${porterResponseMonitorError}</div>
     </c:if>
 
     <c:if test="${not empty porterResponseMonitors}">
-    <table class="compactResultsTable monitor-subs dashed stacked" data-removed-text="${removedText}" data-undo-text="${undoText}">
+    <table class="compact-results-table monitor-subs dashed stacked" data-removed-text="${removedText}" data-undo-text="${undoText}">
         <thead>
             <tr>
                 <th class="name"><i:inline key=".name"/></th>
@@ -357,11 +357,11 @@
 
 <cti:msgScope paths="widgets.validationMonitorsWidget">
     <c:if test="${not empty validationMonitorsWidgetError}">
-        <div class="errorMessage">${validationMonitorsWidgetError}</div>
+        <div class="error">${validationMonitorsWidgetError}</div>
     </c:if>
 
     <c:if test="${not empty validationMonitors}">
-    <table class="compactResultsTable monitor-subs dashed stacked" data-removed-text="${removedText}" data-undo-text="${undoText}">
+    <table class="compact-results-table monitor-subs dashed stacked" data-removed-text="${removedText}" data-undo-text="${undoText}">
         <thead>
             <tr>
                 <th class="name"><i:inline key=".tableHeader.name"/></th>
@@ -438,7 +438,7 @@
 </c:if>
 
 <c:if test="${not isSubscribedWidget}">
-    <div class="actionArea">
+    <div class="action-area">
         <cti:button id="createMonitorBtn" nameKey="create" icon="icon-plus-green"/>
     </div>
 

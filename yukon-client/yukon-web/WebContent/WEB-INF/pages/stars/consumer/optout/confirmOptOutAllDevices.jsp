@@ -19,7 +19,7 @@
         <br>
 
         <form:form id="form" action="${actionUrl}" method="POST" commandName="optOutBackingBean">
-            <table class="resultsTable" align="center" width="99%">
+            <table class="results-table" align="center" width="99%">
                 <tr>
                     <th><cti:msg key="yukon.dr.consumer.confirmOptOutAllDevices.hardware"/></th>
                     <th><cti:msg key="yukon.dr.consumer.confirmOptOutAllDevices.programAssigned"/></th>

@@ -291,7 +291,7 @@ public class TdcServiceImpl implements TdcService{
             String color = stateColorMap.get((int) signal.getCategoryID() - 1);
             if (!color.isEmpty()) {
                 StringBuilder classes = new StringBuilder();
-                classes.append("stateBox");
+                classes.append("state-box");
                 classes.append(" " + color.toLowerCase());
                 if (TagUtils.isAlarmUnacked(signal.getTags())) {
                     classes.append(" blink-shadow");

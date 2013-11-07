@@ -13,7 +13,7 @@
             </span>
         </c:when>
         <c:otherwise>
-            <table class="compactResultsTable">
+            <table class="compact-results-table">
                 <thead>
                     <tr>
                         <th><i:inline key=".table.timestamp"/></th>
@@ -35,7 +35,7 @@
             </table>
         </c:otherwise>
     </c:choose>
-    <div class="actionArea">
+    <div class="action-area">
     	<cti:url value="/amr/meterEventsReport/reportAll" var="meterEventsReportUrl">
     		<cti:param name="collectionType" value="idList"/>
     		<cti:param name="idList.ids" value="${deviceId}"/>

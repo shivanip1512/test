@@ -1,12 +1,15 @@
 package com.cannontech.stars.dr.program.model;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.i18n.MessageCodeGenerator;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 
 public class Program {
+    
     // must match prefix in adminSetup/applianceCategory/editAssignedProgram.jsp
     public static final String PROGAM_PREFIX = "yukon.dr.program.displayname";
     private int programId;
@@ -21,13 +24,8 @@ public class Program {
     private String chanceOfControl;
     private int applianceCategoryId;
     private PaoType paoType;
-    
     private String descriptionUrl;
     
-    public Program() {
-        
-    }
-
     /**
      * Get the assigned (STARS) program id.
      * @return the assigned program id.
@@ -93,8 +91,7 @@ public class Program {
         return controlPercentDescriptionIcon;
     }
 
-    public void setControlPercentDescriptionIcon(
-            String controlPercentDescriptionIcon) {
+    public void setControlPercentDescriptionIcon(String controlPercentDescriptionIcon) {
         this.controlPercentDescriptionIcon = controlPercentDescriptionIcon;
     }
 
@@ -150,6 +147,17 @@ public class Program {
         String code = MessageCodeGenerator.generateCode(PROGAM_PREFIX, programName);
         MessageSourceResolvable messageSourceResolvable = YukonMessageSourceResolvable.createDefault(code, programName);
         return messageSourceResolvable;
+    }
+    
+    public boolean isLogoAssigned() {
+        
+        if (applianceCategoryLogo.equalsIgnoreCase(CtiUtilities.STRING_NONE)
+                || applianceCategoryLogo.equalsIgnoreCase(",,") // just why
+                || StringUtils.isBlank(applianceCategoryLogo)) {
+            return false;
+        }
+        
+        return true;
     }
 
 	@Override

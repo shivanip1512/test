@@ -46,7 +46,7 @@ jQuery(function() {
 });
 </script>
 
-<div class="column_8_8_8 clearfix">
+<div class="column-8-8-8 clearfix">
     <div class="column one">
         <tags:sectionContainer2 nameKey="pageList">
             <ul class="simple-list">
@@ -102,7 +102,7 @@ jQuery(function() {
     </div>
 </div>
 
-<div class="column_12_12 clearfix">
+<div class="column-12-12 clearfix">
     <div class="column one">
         <tags:sectionContainer2 nameKey="bundle">
             <cti:tabbedContentSelector mode="section">
@@ -136,7 +136,7 @@ jQuery(function() {
                                 <form:textarea rows="6" cols="40" path="comments"/>
                             </tags:nameValue2>
                         </tags:nameValueContainer2>
-                        <div class="pageActionArea"> 
+                        <div class="page-action-area"> 
                             <c:if test="${!inProgress}">
                                 <cti:button nameKey="supportBundle.createBundleBtn" type="submit"/>
                             </c:if>
@@ -164,7 +164,7 @@ jQuery(function() {
                                 </c:forEach>
                             </ul>
                         </c:if>
-                        <div class="pageActionArea">
+                        <div class="page-action-area">
                             <cti:button nameKey="supportBundle.downloadBtn" type="submit" disabled="${empty bundleList}" icon="icon-bullet-go-down"/>
                             <cti:button nameKey="supportBundle.ftpUploadBtn" id="ftpUploadBtn" href="javascript:void(0);" disabled="${empty bundleList}" icon="icon-bullet-go-up"/>
                         </div>

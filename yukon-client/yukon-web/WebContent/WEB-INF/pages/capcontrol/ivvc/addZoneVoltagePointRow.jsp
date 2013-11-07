@@ -6,7 +6,7 @@
 
 <tags:standardPageFragment pageName="ivvc" module="capcontrol" fragmentName="zoneWizard">
 
-<table class="compactResultsTable">
+<table class="compact-results-table">
 <tr>
 	<td>
         <spring:escapeBody>${row.name}</spring:escapeBody>

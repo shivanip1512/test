@@ -24,7 +24,7 @@
     
 </c:if>
 
-<span class="smallBoldLabel">
+<span class="strong-label-small">
     <i:inline key="yukon.common.collection.inventory.selectedInventoryPopup.linkLabel"/>
 </span>
 <span class="smallLink">
@@ -38,6 +38,6 @@
 </span>
 
 <br>
-<span class="smallBoldLabel">
+<span class="strong-label-small">
     <cti:msg key="yukon.common.collection.inventory.selectedInventoryPopup.count" argument="${count}"/>
 </span>

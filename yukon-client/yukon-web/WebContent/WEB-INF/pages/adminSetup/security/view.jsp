@@ -62,7 +62,7 @@
     <cti:dataGrid cols="2" tableClasses="collectionActionAlignment collectionActionCellPadding">
         <cti:dataGridCell>
             <tags:boxContainer2 nameKey="routesBox" styleClass="largeContainer">
-                <table id="routesBoxTable" class="compactResultsTable rowHighlighting">
+                <table id="routesBoxTable" class="compact-results-table row-highlighting">
                     <thead>
                         <tr>
                             <th><i:inline key=".paoName" /></th>
@@ -133,12 +133,12 @@
                     <div><i:inline key=".noKeysAvailable" /></div>
                 </c:if>
                 <c:if test="${fn:length(encryptionKeys) > 0}">
-                    <table id="keyBoxTable" class="compactResultsTable rowHighlighting">
+                    <table id="keyBoxTable" class="compact-results-table row-highlighting">
                         <tr>
                             <th><i:inline key=".key" /> </th>
                             <th><i:inline key=".status" /> </th>
                             <th><i:inline key=".assigned" /> </th>
-                            <th class="removeColumn"><i:inline key=".remove" /></th>
+                            <th class="remove-column"><i:inline key=".remove" /></th>
                         </tr>
                         <c:forEach items="${encryptionKeys}" var="key">
                             <dialog:confirm on="#deleteKeyBtn_${key.encryptionKeyId}" nameKey="confirmDelete" argument="${key.name}" />
@@ -148,10 +148,10 @@
                                     <td>${fn:escapeXml(key.name)}</td>
                                     <td id="keyStatus_${key.encryptionKeyId}">
                                         <c:if test="${key.isValid}">
-                                            <span class="successMessage"><i:inline key=".validKey" /></span>
+                                            <span class="success"><i:inline key=".validKey" /></span>
                                         </c:if>
                                         <c:if test="${not key.isValid}">
-                                            <span class="errorMessage"><i:inline key=".invalidKey" /></span>
+                                            <span class="error"><i:inline key=".invalidKey" /></span>
                                         </c:if>
                                     </td>
                                     <td>
@@ -164,7 +164,7 @@
                                             </c:otherwise>
                                         </c:choose>
                                     </td>
-                                    <td class="removeColumn">
+                                    <td class="remove-column">
                                         <c:choose>
 	                                        <c:when test="${key.currentlyUsed}">
 												<a class="button naked" disabled="disabled" title="<cti:msg2 key=".deleteKeyBtnDisabledTitle"/>">
@@ -185,7 +185,7 @@
                         </c:forEach>
                     </table>
                 </c:if>
-                <div class="pageActionArea">
+                <div class="page-action-area">
 	                <cti:button id="addNewKeyBtn" nameKey="addKeyBtn" disabled="${blockingError}" />
 	                <cti:button id="importKeyFileBtn" nameKey="importKeyFileBtn" disabled="${blockingError}" />
 	                <cti:button id="viewPublicKeyBtn" nameKey="viewPublicKeyBtn"  classes="f-blocker2" />

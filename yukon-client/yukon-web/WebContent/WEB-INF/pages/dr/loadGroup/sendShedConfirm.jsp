@@ -18,7 +18,7 @@
             </select>
         </div>
         <p><i:inline key=".shedTimeNotes"/></p>
-        <div class="actionArea">
+        <div class="action-area">
             <cti:button nameKey="ok" type="submit" classes="primary action"/>
             <cti:button nameKey="cancel" onclick="jQuery('#drDialog').dialog('close');"/>
         </div>

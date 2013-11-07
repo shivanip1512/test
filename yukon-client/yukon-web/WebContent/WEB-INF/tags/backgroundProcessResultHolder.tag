@@ -25,7 +25,7 @@
 <%-- NOTE --%>
 <table>
     <tr>
-        <td valign="top" class="smallBoldLabel"><cti:msg key="yukon.common.device.bulk.${resultsTypeMsgKey}Results.noteLabel"/></td>
+        <td valign="top" class="strong-label-small"><cti:msg key="yukon.common.device.bulk.${resultsTypeMsgKey}Results.noteLabel"/></td>
         <td style="font-size:11px;">
             <cti:msg key="yukon.common.device.bulk.${resultsTypeMsgKey}Results.noteText"/><br><br>
         </td>

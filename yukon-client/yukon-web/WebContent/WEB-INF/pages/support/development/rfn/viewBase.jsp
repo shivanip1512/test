@@ -27,7 +27,7 @@ jQuery(function() {
    });
 });
 </script>
-<div class="column_8_16">
+<div class="column-8-16">
         <div class="column one">
             <ul>
                 <li><a href="viewMeterReadArchiveRequest"><i:inline key=".meterReadArchiveRequest.label"/></a></li>
@@ -37,7 +37,7 @@ jQuery(function() {
             </ul>
         </div>
         <div class="column two nogutter">
-            <div class="actionArea">
+            <div class="action-area">
                 <button id="clearCache">Clear Cache</button>
                 <button id="calcStressTest" class="action red"><span class="label">Calc Stress Test, DO NOT CLICK</span></button>
                 <button id="startupNotif">Resend Startup Notif</button>

@@ -28,7 +28,7 @@
 		<form name="PForm" method="post" action="<%=request.getContextPath()%>/servlet/InventoryManager" onsubmit="return prepareSubmit(this)">
 	    	<input type="hidden" name="action" value="DeliveryScheduleChange"> 
 	    	<div align="center">
-	    		<span class="TitleHeader">DELIVERY SCHEDULE</span>
+	    		<span class="title-header">DELIVERY SCHEDULE</span>
 			</div>
 			<br>
 			<br>

@@ -4,7 +4,7 @@
 
 <cti:standardPage module="amr" page="meterDetailProfile">
     <tags:widgetContainer deviceId="${deviceId}">
-        <div class="column_12_12">
+        <div class="column-12-12">
             <div class="column one">
                 <c:if test="${lpSupported}">
                     <tags:widget bean="profileWidget" />

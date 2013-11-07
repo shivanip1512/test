@@ -123,7 +123,7 @@
             <table width="640" border="0" cellspacing="0" cellpadding="0" align="left">
               <tr>
                 <td width="640">
-                  <p align="center" class="TitleHeader"><br>Notification - CUSTOMER PROFILE</p>
+                  <p align="center" class="title-header"><br>Notification - CUSTOMER PROFILE</p>
                 </td>
               </tr>
               <%@include file="cust_profile.jspf"%>

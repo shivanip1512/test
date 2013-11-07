@@ -72,7 +72,7 @@ div.scroll { font-size: 12px;
 	    <input id="redirect" type="hidden" name="REDIRECT" value="<%= redirect %>">
 	    <input id="referrer" type="hidden" name="REFERRER" value="<%= redirect %>">
 					
-		<table class="nameValueTable">
+		<table class="name-value-table">
 	    	<tr> 
 	          	<td class="name"><cti:msg key="yukon.web.apps.commander.type"/></td>
 	            <td class="value"><%=YC_BEAN.getDeviceType()%></td>

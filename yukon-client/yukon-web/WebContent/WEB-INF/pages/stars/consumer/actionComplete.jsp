@@ -10,7 +10,7 @@
         <cti:msg key="yukon.dr.consumer.actionComplete.header" /><br>
     </h3>
     
-    <div class="message">
+    <div>
         <div style="text-align: left;">
             <cti:msg key="${message}" />
         </div>

@@ -12,7 +12,7 @@
             <span class="empty-list"><i:inline key=".none"/></span>
         </c:if>
         <c:if test="${!empty warehouses}">
-            <table class="compactResultsTable rowHighlighting">
+            <table class="compact-results-table row-highlighting">
                 <c:forEach items="${warehouses}" var="warehouse">
                 <tr>
                     <td style="width:30%">
@@ -38,7 +38,7 @@
             </table>
         </c:if>
 
-        <div class="actionArea">
+        <div class="action-area">
             <cti:url var="createWarehouseUrl" value="${baseUrl}/new">
                 <cti:param name="ecId" value="${ecId}"/>
             </cti:url>

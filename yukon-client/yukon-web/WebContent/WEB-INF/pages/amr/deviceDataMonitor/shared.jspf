@@ -55,7 +55,7 @@
                 <tags:sectionContainer2 nameKey="missingPoints.helpDialog.addPoints" hideInitially="true" hideEnabled="true" styleClass="stacked">
                     <p><i:inline key=".missingPoints.helpDialog.addPointsBody"/></p>
                 </tags:sectionContainer2>
-                <div class="actionArea">
+                <div class="action-area">
                     <a class="button naked f-add_points_btn" href="${addPointsLink}" style="margin-right: 20px;">
                         <i class="icon icon-add"></i><span class="label"><i:inline key=".addPoints.label"/></span>
                     </a>

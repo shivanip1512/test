@@ -30,7 +30,7 @@
 	<%-- HOURLY DATA TABLE: Current Day vs Peak Day --%>
 	<c:set var="hourNumberCellWidth" value="60" />
 	<c:set var="powerSuplierCellWidth" value="${fn:length(powerSuppliers) * 200 + hourNumberCellWidth}" />
-	<table class="resultsTable" style="width:${powerSuplierCellWidth}px">
+	<table class="results-table" style="width:${powerSuplierCellWidth}px">
 
 		<%-- header row (hr + power supplier names) --%>
 		<tr>

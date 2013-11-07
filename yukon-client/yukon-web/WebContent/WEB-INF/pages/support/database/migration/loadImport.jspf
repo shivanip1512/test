@@ -16,7 +16,7 @@
 <br>
 	
 <%-- NOTE --%>
-<span class="smallBoldLabel">${noteLabel}</span>
+<span class="strong-label-small">${noteLabel}</span>
 <span style="font-size:11px;">${noteText}</span>
 <br><br>
 
@@ -55,7 +55,7 @@
 
 <br>
 <tags:sectionContainer title="Recent Imports">
-	<table class="compactResultsTable">
+	<table class="compact-results-table">
 		
 		<tr>
 			<th style="width:60%;">File Path</th>
@@ -91,7 +91,7 @@
 
 <br>
 <tags:sectionContainer title="Recent Validations">
-	<table class="compactResultsTable">
+	<table class="compact-results-table">
 		
 		<tr>
 			<th style="width:60%;">File Path</th>

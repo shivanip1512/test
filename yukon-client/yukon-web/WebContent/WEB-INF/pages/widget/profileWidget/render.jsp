@@ -5,13 +5,13 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <script>
-//reinit the datepickers
-    jQuery( function () {
+	//reinit the datepickers
+	jQuery(function(){
         console.log('render.jsp');
         if ('undefined' !== typeof Yukon.ui.dateTimePickers) {
-            Yukon.ui.dateTimePickers.init();
+		Yukon.ui.dateTimePickers.init();
         }
-    });
+	});
 </script>
 
 <c:choose>
@@ -49,8 +49,8 @@
     <%-- CHANNEL SCANNING --%>
     <c:if test="${not empty toggleErrorMsg}">
         <cti:msg2 var="errorToggleChannel" key=".errorToggleChannel"/>
-        <tags:hideReveal title="${errorToggleChannel}" styleClass="errorMessage" escapeTitle="true" showInitially="true">
-            <div class="errorMessage">${toggleErrorMsg}</div>
+        <tags:hideReveal title="${errorToggleChannel}" styleClass="error" escapeTitle="true" showInitially="true">
+            <div class="error">${toggleErrorMsg}</div>
         </tags:hideReveal>
     </c:if>
     
@@ -68,7 +68,7 @@
     <%--PAST PROFILES, don't display if the device does not support --%>
     <cti:checkRolesAndProperties value="METERING">
     <cti:checkRolesAndProperties value="PROFILE_COLLECTION">
-        <tags:sectionContainer2 nameKey="requestPastProfile">
+    	<tags:sectionContainer2 nameKey="requestPastProfile">
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".channel">
                     <select name="channel">
@@ -88,16 +88,16 @@
                 </tags:nameValue2>
             
             </tags:nameValueContainer2>
-            <div class="actionArea">
+            <div class="action-area">
 	            <tags:widgetActionRefresh method="initiateLoadProfile" nameKey="start"/>
             </div>
         </tags:sectionContainer2>
 
         <c:if test="${not empty errorMsgRequest}">
             <cti:msg2 var="errorPastProfile" key=".errorPastProfile"/>
-            <tags:hideReveal title="${errorPastProfile}" styleClass="errorMessage" escapeTitle="true" showInitially="true">
+            <tags:hideReveal title="${errorPastProfile}" styleClass="error" escapeTitle="true" showInitially="true">
                 <c:forEach items="${errorMsgRequest}" var="errorMsg" varStatus="msgNum">
-                    <div class="errorMessage">${errorMsg}</div>
+                    <div class="error">${errorMsg}</div>
                 </c:forEach>
             </tags:hideReveal>
         </c:if>
@@ -118,16 +118,16 @@
                 <dt:date name="dailyUsageStopDate" value="${dailyUsageStopDate}" />
             </tags:nameValue2>
         </tags:nameValueContainer2>
-        <div class="actionArea">
+        <div class="action-area">
             <tags:widgetActionRefresh method="viewDailyUsageReport" nameKey="viewReport"/>
         </div>
     </tags:sectionContainer2>
     
     <c:if test="${not empty errorMsgDailyUsage}">
         <cti:msg2 var="errorDailyReport" key=".errorDailyReport"/>
-        <tags:hideReveal title="${errorDailyReport}" styleClass="errorMessage" escapeTitle="true" showInitially="true">
+        <tags:hideReveal title="${errorDailyReport}" styleClass="error" escapeTitle="true" showInitially="true">
             <c:forEach items="${errorMsgDailyUsage}" var="errorMsg" varStatus="msgNum">
-                <div class="errorMessage">${errorMsg}</div>
+                <div class="error">${errorMsg}</div>
             </c:forEach>
         </tags:hideReveal>
     </c:if>

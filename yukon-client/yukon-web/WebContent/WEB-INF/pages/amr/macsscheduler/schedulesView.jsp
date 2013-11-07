@@ -18,7 +18,7 @@
 
     <h2 class="stacked"><cti:msg2 key=".pageName"/></h2>
     <div id="schedules">
-        <table class="resultsTable">
+        <table class="results-table">
         <tr>
             <th id="Schedule Name">
                 <form id="form_scheduleName" action="${viewUrl}" method="POST">

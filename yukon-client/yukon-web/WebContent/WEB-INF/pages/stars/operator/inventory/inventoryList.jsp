@@ -13,7 +13,7 @@
     <tags:boxContainer2 nameKey="inventorySearch">
         <form:form commandName="inventorySearch" action="search" method="post">
             <div class="fl" style="width:33%;">
-                <tags:nameValueContainer2 tableClass="nonwrapping">
+                <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".serialNumber">
                         <form:input path="serialNumber" size="20" class="f-focus"/>
                     </tags:nameValue2>
@@ -26,7 +26,7 @@
                 </tags:nameValueContainer2>
             </div>
             <div class="fl" style="width:33%;">
-                <tags:nameValueContainer2 tableClass="nonwrapping">
+                <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".phoneNumber">
                         <form:input path="phoneNumber" size="20"/>
                     </tags:nameValue2>
@@ -36,7 +36,7 @@
                 </tags:nameValueContainer2>
             </div>
             <div class="fl" style="width:33%;">
-                <tags:nameValueContainer2 tableClass="nonwrapping">
+                <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".workOrderNumber">
                         <form:input path="workOrderNumber" size="20"/>
                     </tags:nameValue2>
@@ -45,7 +45,7 @@
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
             </div>
-            <div class="actionArea clear"><cti:button type="submit" nameKey="search"/></div>
+            <div class="action-area clear"><cti:button type="submit" nameKey="search"/></div>
         </form:form>
     </tags:boxContainer2>
     
@@ -54,7 +54,7 @@
 
         <tags:pagedBox2 baseUrl="search" nameKey="inventorySearchContainer" searchResult="${results}">
             <c:if test="${results.hitCount > 0}">
-                <table class="compactResultsTable rowHighlighting">
+                <table class="compact-results-table row-highlighting">
                     <thead>
 	                    <tr>
 	                        <th><i:inline key=".serialOrMeterNumber"/></th>

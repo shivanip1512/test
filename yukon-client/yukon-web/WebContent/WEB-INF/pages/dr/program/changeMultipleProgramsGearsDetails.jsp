@@ -45,8 +45,8 @@ jQuery(function() {
     <input type="hidden" value="true" name=fromBack"/>
     <cti:msg2 var="boxTitle" key=".programs"/>
     <tags:boxContainer title="${boxTitle}">
-    <div class="dialogScrollArea">
-    <table class="compactResultsTable">
+    <div class="scroll-medium">
+    <table class="compact-results-table">
         <thead>
 	        <tr>
 	            <th><cti:msg2 key=".programLbl"/></th>
@@ -99,7 +99,7 @@ jQuery(function() {
     </div>
     </tags:boxContainer>
 
-    <div class="actionArea">
+    <div class="action-area">
         <cti:button id="okButton" nameKey="ok" classes="primary action" type="submit"/>
         <cti:button nameKey="cancel" onclick="jQuery('#drDialog').dialog('close');"/>
     </div>

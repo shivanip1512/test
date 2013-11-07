@@ -22,7 +22,7 @@
               <tr>
                 <td width="640">
                   <br>
-                  <p align="center" class="TitleHeader">Primary Contact<br clear="ALL">
+                  <p align="center" class="title-header">Primary Contact<br clear="ALL">
                   <div align="center" class="MainText">
                   <%= liteContact.getContFirstName() + " " + liteContact.getContLastName() %><br clear="ALL">
                   <%
@@ -43,7 +43,7 @@
               <tr>
                 <td width="640">
                   <br>
-                  <p align="center" class="TitleHeader">Additional Contacts<br clear="ALL">
+                  <p align="center" class="title-header">Additional Contacts<br clear="ALL">
                   <div align="center" class="MainText">
                     <%
                       for (int i = 0; i < contactids.length; i++){

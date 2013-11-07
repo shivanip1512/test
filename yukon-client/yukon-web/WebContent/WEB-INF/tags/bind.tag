@@ -15,6 +15,6 @@
     <jsp:doBody/>
 	<c:if test="${status.error}">
 		<br>
-		<form:errors path="${path}" cssClass="errorMessage"/>
+		<form:errors path="${path}" cssClass="error"/>
 	</c:if>
 </spring:bind>

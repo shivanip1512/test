@@ -19,7 +19,7 @@
     <form id="sendEnableForm" action="${submitUrl}" onsubmit="return submitFormViaAjax('drDialog', 'sendEnableForm');">
         <input type="hidden" name="loadGroupId" value="${loadGroup.paoIdentifier.paoId}"/>
         <input type="hidden" name="isEnabled" value="${isEnabled}"/>
-        <div class="actionArea">
+        <div class="action-area">
             <cti:button nameKey="ok" type="submit" classes="primary action"/>
             <cti:button nameKey="cancel" onclick="jQuery('#drDialog').dialog('close');"/>
         </div>

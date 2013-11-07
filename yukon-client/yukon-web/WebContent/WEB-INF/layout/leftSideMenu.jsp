@@ -39,11 +39,10 @@
     </head>
     
 	<body class="<c:out value="${module.moduleName}"/>_module">
-    <div id="modal_glass" style="display:none;">
+    <div id="modal-glass" style="display:none;">
         <div class="tint"></div>
         <div class="loading">
-            <!-- The lookup for your own custom message would be: $$("#modal_glass .message")[0] -->
-            <div class="box message">
+            <div class="box load-message">
                 <cti:msg key="yukon.web.components.pageloading"/>
             </div>
         </div>

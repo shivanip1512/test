@@ -10,7 +10,7 @@
 
     <cti:includeScript link="/JavaScript/tableCreation.js" />
 
-    <table class="resultsTable drivingDirections">
+    <table class="results-table drivingDirections">
         <thead>
             <tr id="header">
                 <th><i:inline key=".capbankName"/></th>

@@ -11,7 +11,7 @@
         </div>
     </c:when>
     <c:otherwise>
-        <table class="compactResultsTable">
+        <table class="compact-results-table">
             <thead>
                 <tr>
                     <th><i:inline key="yukon.web.widgets.commandScheduleWidget.start"/></th>
@@ -58,7 +58,7 @@
     </c:otherwise>
 </c:choose>
 
-<div class="actionArea">
+<div class="action-area">
     <form id="createNewScheduleForm_${widgetParameters.widgetId}" action="/stars/operator/inventory/commandSchedule" method="get">
         <tags:widgetActionRefresh nameKey="disableAll" method="disableAll"/>
         <input type="hidden" value="0" name="scheduleId">

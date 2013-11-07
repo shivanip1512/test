@@ -7,7 +7,7 @@
 
 	<ct:widgetContainer identify="false">
 
-		<div class="column_12_12">
+		<div class="column-12-12">
             <div class="column one">
 
                 <ct:widget bean="allMonitorsWidget"/>

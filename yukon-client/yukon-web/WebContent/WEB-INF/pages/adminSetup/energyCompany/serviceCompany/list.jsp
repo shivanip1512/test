@@ -9,7 +9,7 @@
 <cti:standardPage module="adminSetup" page="serviceCompany.list">
         <tags:boxContainer2 nameKey="infoContainer">
             
-            <table class="compactResultsTable rowHighlighting">
+            <table class="compact-results-table row-highlighting">
                 <thead>
                 <tr>
                     <th><cti:msg key="yukon.web.modules.adminSetup.serviceCompany.companyName"/></th>
@@ -64,7 +64,7 @@
             </table>
             
             <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_HARDWARES">
-                <div class="actionArea">
+                <div class="action-area">
                     <cti:url var="createserviceCompanyUrl" value="${baseUrl}/new">
                         <cti:param name="ecId" value="${ecId}"/>
                     </cti:url>

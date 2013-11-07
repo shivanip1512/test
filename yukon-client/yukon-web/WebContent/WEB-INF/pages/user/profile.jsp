@@ -14,7 +14,7 @@
 
 <dialog:confirm on="#reset_all_preferences" nameKey="preferences.confirmResetAll" argument=""/>
 
-<div class="column_12_12">
+<div class="column-12-12">
     <div class="column one">
     
         <%-- LEFT SIDE COLUMN --%>
@@ -64,7 +64,7 @@
 	                    </c:forEach>
 	                </tags:nameValueContainer2>
 	                <cti:displayForPageEditModes modes="EDIT">
-	                    <div class="actionArea">
+	                    <div class="action-area">
 	                        <cti:button nameKey="add" icon="icon-add" id="btn_addContactInfo"/>
 	                    </div>
 	                </cti:displayForPageEditModes>
@@ -73,13 +73,13 @@
 
 
             <cti:displayForPageEditModes modes="EDIT">
-                <div class="pageActionArea">
+                <div class="page-action-area">
                     <cti:button nameKey="save" name="update" type="submit" classes="primary action"/>
                     <cti:button nameKey="cancel" name="cancel" href="/user/profile"/>
                 </div>
             </cti:displayForPageEditModes>
             <cti:displayForPageEditModes modes="VIEW">
-                <div class="actionArea">
+                <div class="action-area">
                     <cti:button nameKey="edit" icon="icon-pencil" name="edit" href="/user/profile/edit"/>
                     <c:if test="${canResetPassword}">
                         <cti:button id="btnChangePassword" icon="icon-key" nameKey="changePassword.button"/>
@@ -91,7 +91,7 @@
         <cti:displayForPageEditModes modes="VIEW">
             <c:if test="${canResetPassword}">
                 <dialog:inline on="#btnChangePassword" id="dlg_change_password" okEvent="evt_ajaxsubmit_confirm_password" nameKey="profile.changePassword" options="{width: 750}">
-                    <div class="column_12_12">
+                    <div class="column-12-12">
                         <div class="column one">
                             <form id="loginBackingBean">
                                 <input type="hidden" name="k" value="${changePwdKey}">
@@ -113,7 +113,7 @@
                                     <tr>
                                         <td></td>
                                         <td>
-                                            <div class="no_match errorMessage"><i:inline key="yukon.web.modules.passwordPolicy.noMatch.description"/></div>
+                                            <div class="no_match error"><i:inline key="yukon.web.modules.passwordPolicy.noMatch.description"/></div>
                                             <div class="password_errors dn"></div>
                                         </td>
                                     </tr>
@@ -199,7 +199,7 @@
             <c:otherwise>
                 <div class="rolesContainer wsnw">
                     <c:forEach var="category" items="${categoryRoleMap}">
-                        <ul class="groupedList">
+                        <ul class="grouped-list">
                             <li><span class="group"><cti:formatObject value="${category.key}"/></span>
                                 <ul class="groupedItem">
                                     <c:forEach var="role" items="${category.value}">

@@ -414,10 +414,8 @@
 		</x:column>
 	</x:panelGrid>
 	<f:verbatim>
-        <div id="orphanedCBCContent" class="popUpDiv simplePopup" style="display: none;">
-            <!--  fix for IE6 bug (see YukonGeneralStyles.css ".simplePopup iframe" for more info) -->
-            <!--[if lte IE 6.5]><iframe></iframe><![endif]-->
-            <div class="titledContainer boxContainer">
+        <div id="orphanedCBCContent" class="popup simple-popup" style="display: none;">
+            <div class="titled-container box-container">
 
                 <div class="title-bar">
                     <h3 class="title">Orphaned CBC's</h3>

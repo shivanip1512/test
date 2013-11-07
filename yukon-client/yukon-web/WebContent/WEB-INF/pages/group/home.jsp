@@ -106,7 +106,7 @@ function confirmRemoveAllDevices(confirmText) {
         <div class="error">${fn:escapeXml(param.errorMessage)}</div>
     </c:if>
     
-    <div class="column_12_12 clear">
+    <div class="column-12-12 clear">
         <div class="column one">
             <%-- GROUPS HIERARCHY BOX --%>
 	        <cti:msg2 key="yukon.web.deviceGroups.editor.groupsContainer.title" var="groupsTitle"/>
@@ -163,7 +163,7 @@ function confirmRemoveAllDevices(confirmText) {
 		                                            <input id="newGroupName" name="newGroupName" type="text" value="${fn:escapeXml(group.name)}" />
 		                                        </tags:nameValue>
 		                                    </tags:nameValueContainer>
-		                                    <div class="actionArea">
+		                                    <div class="action-area">
 		                                        <button id="editGroupNameSaveButton" type="button" value="${changeNameButtonText}" onclick="checkAndSubmitNewName('newGroupName', 'editGroupNameForm', 'editGroupNameSaveButton');">
 		                                            <span class="label">${changeNameButtonText}</span>
 		                                        </button>
@@ -257,7 +257,7 @@ function confirmRemoveAllDevices(confirmText) {
 		                                                </select>
 		                                            </tags:nameValue>
 		                                        </tags:nameValueContainer>
-		                                        <div class="actionArea">
+		                                        <div class="action-area">
 		                                            <button id="addSubGroupSaveButton" value="${subgroupNameSaveText}" onclick="checkAndSubmitNewName('childGroupName', 'addSubGroupForm', 'addSubGroupSaveButton');">
 		                                                <span class="label">${subgroupNameSaveText}</span>
 		                                            </button>
@@ -384,7 +384,7 @@ function confirmRemoveAllDevices(confirmText) {
 	                    <%-- SUBGROUPS --%>
 	                    <cti:msg2 var="subGroupsTitle" key="yukon.web.deviceGroups.editor.memberContainer.subGroups"/>
 	                    <tags:sectionContainer title="${subGroupsTitle}" styleClass="groupEditorContentDetail">
-	                        <div class="scrollingContainer_small">
+	                        <div class="scroll-small">
 	                            <c:choose>
 	                                <c:when test="${fn:length(subGroupMap) > 0}">
 	                                    <%-- User must have DEVICE_GROUP_EDIT to delete groups. Set once for use in loop. --%>
@@ -393,7 +393,7 @@ function confirmRemoveAllDevices(confirmText) {
 	                                        <c:set var="hasEditRoleProperty" value="true"/>
 	                                    </cti:checkRolesAndProperties>
                                         </cti:checkRolesAndProperties>
-	                                    <table class="compactResultsTable rowHighlighting">
+	                                    <table class="compact-results-table row-highlighting">
 	                                        <thead></thead>
 	                                        <tfoot></tfoot>
 	                                        <tbody>
@@ -448,7 +448,7 @@ function confirmRemoveAllDevices(confirmText) {
 	                                <c:when test="${not showImmediately && (showDevices == false )}">
 	                                    <i:inline key="yukon.web.deviceGroups.editor.membersContainer.groupContainsCountLabel" arguments="${childDeviceCount}"/>
 	                                    <c:if test="${childDeviceCount > 0}">
-	                                        <div class="actionArea">
+	                                        <div class="action-area">
 	                                            <cti:msg2 var="showDevicesLimitText" key="yukon.web.deviceGroups.editor.membersContainer.showDevicesLimitText" arguments="${maxGetDevicesSize}"/>
 	                                            <cti:msg2 var="showDeviceslabel" key="yukon.web.deviceGroups.editor.membersContainer.showDeviceslabel"/>
 	                                            <button id="showDevicesButton" onclick="showDevices()" value="${showDeviceslabel}" title="${showDevicesLimitText}"><span class="label">${showDeviceslabel}</span></button>

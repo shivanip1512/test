@@ -43,7 +43,7 @@ jQuery( function () {
             <dt:dateTime id="startTime" path="startTime" value="${textMessage.startTime}"/>
         </tags:nameValue2>
     </tags:nameValueContainer2>
-    <div class="actionArea">
+    <div class="action-area">
         <cti:button nameKey="send" type="submit" classes="primary action"/>
         <cti:button nameKey="cancel" onclick="jQuery('#textMsgDialog').dialog('close');"/>
     </div>

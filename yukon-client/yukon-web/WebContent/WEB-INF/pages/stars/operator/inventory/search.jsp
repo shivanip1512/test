@@ -7,29 +7,29 @@
     <form:form commandName="inventorySearch" action="search" method="post">
         <tags:nameValueContainer2 id="inventorySearch" naturalWidth="false">
             <tags:nameValue2 nameKey=".serialNumber">
-                <form:input path="serialNumber" class="full_width f-focus"/>
+                <form:input path="serialNumber" class="full-width f-focus"/>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".meterNumber">
-                <form:input path="meterNumber" class="full_width"/>
+                <form:input path="meterNumber" class="full-width"/>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".accountNumber">
-                <form:input path="accountNumber" class="full_width"/>
+                <form:input path="accountNumber" class="full-width"/>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".phoneNumber">
-                <form:input path="phoneNumber" class="full_width"/>
+                <form:input path="phoneNumber" class="full-width"/>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".lastName">
-                <form:input path="lastName" class="full_width"/>
+                <form:input path="lastName" class="full-width"/>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".workOrderNumber">
-                <form:input path="workOrderNumber" class="full_width"/>
+                <form:input path="workOrderNumber" class="full-width"/>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".altTrackingNumber">
-                <form:input path="altTrackingNumber" class="full_width"/>
+                <form:input path="altTrackingNumber" class="full-width"/>
             </tags:nameValue2>
         </tags:nameValueContainer2>
         
-        <div class="actionArea"><cti:button type="submit" nameKey="search"/></div>
+        <div class="action-area"><cti:button type="submit" nameKey="search"/></div>
     </form:form>
     
 </tags:sectionContainer2>

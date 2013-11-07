@@ -94,7 +94,7 @@
                 <jsp:doBody/>
             </c:when>
             <c:otherwise>
-                <div class="actions pageActionArea">
+                <div class="actions page-action-area">
                     <cti:button nameKey="edit" icon="icon-pencil" renderMode="labeledImage" classes="f-edit edit_${schedule.accountThermostatScheduleId}" />
                     <cti:button nameKey="sendNow" renderMode="labeledImage" classes="f-send" icon="icon-date-go" data-form="#send_${schedule.accountThermostatScheduleId}"/>
                     <cti:button nameKey="copy" renderMode="labeledImage" classes="f-copy copy_${schedule.accountThermostatScheduleId}" icon="icon-page-copy"/>
@@ -128,7 +128,7 @@
                                         thermostatType="${thermostatType}"
                                         styleClass="${pageScope.styleClass}"/>
             </div>
-            <div class="actionArea">
+            <div class="action-area">
                 <cti:button nameKey="save" classes="f-blocker primary action f-save"/>
                 <form action="${actionPath}/delete" method="POST">
                     <input type="hidden" name="scheduleId" value="${schedule.accountThermostatScheduleId}">

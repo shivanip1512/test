@@ -12,7 +12,7 @@
     <div class="stacked">
         <%-- SELECTED DEVICES POPUP, NOTE TO USER --%>
         <c:if test="${not empty pageScope.deviceCollection}">
-            <div class="smallBoldLabel vat">
+            <div class="fwb vat">
                 <tags:selectedDevices deviceCollection="${pageScope.deviceCollection}" id="selectedDevices"/>
             </div>
         </c:if>
@@ -22,8 +22,8 @@
         <cti:msg var="noteText" key="${key}.noteText" arguments="${pageScope.noteTextArguments}" />
         
         <c:if test="${not empty noteLabel && not empty noteText}">
-                <span class="smallBoldLabel vat" <c:if test="${not empty pageScope.noteLabelStyle}">style="${pageScope.noteLabelStyle}"</c:if>>${noteLabel}</span>
-                <span class="notes">${noteText}</span>
+            <span class="fwb vat" <c:if test="${not empty pageScope.noteLabelStyle}">style="${pageScope.noteLabelStyle}"</c:if>>${noteLabel}</span>
+            <span class="notes">${noteText}</span>
         </c:if>
     </div>
     

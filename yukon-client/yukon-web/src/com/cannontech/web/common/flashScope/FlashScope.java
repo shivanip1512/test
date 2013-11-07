@@ -30,10 +30,10 @@ public class FlashScope {
 	}
 	
 	public void setConfirm(List<MessageSourceResolvable> messages) {
-		setMessage(FlashScopeMessageType.CONFIRM, messages);
+		setMessage(FlashScopeMessageType.SUCCESS, messages);
 	}
 	public void setConfirm(MessageSourceResolvable message) {
-		setMessage(FlashScopeMessageType.CONFIRM, Collections.singletonList(message));
+		setMessage(FlashScopeMessageType.SUCCESS, Collections.singletonList(message));
 	}
 	public void setWarning(List<MessageSourceResolvable> messages) {
 		setMessage(FlashScopeMessageType.WARNING, messages);

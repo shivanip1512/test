@@ -128,7 +128,7 @@
     <tags:sectionContainer2 nameKey="phaseDetectionTest">
         <table>
             <tr>
-                <td valign="top" class="smallBoldLabel"><i:inline key=".noteLabel"/></td>
+                <td valign="top" class="strong-label-small"><i:inline key=".noteLabel"/></td>
                 <td style="font-size:11px;">
                     <i:inline key=".noteText"/>
                 </td>

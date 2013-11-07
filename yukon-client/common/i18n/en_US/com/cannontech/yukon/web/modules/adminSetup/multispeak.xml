@@ -72,7 +72,7 @@
                 Examples:
                 <br><br>
                 
-                <table class="compactResultsTable">
+                <table class="compact-results-table">
                 
                     <tr>
                         <th>Substation</th>
@@ -108,7 +108,7 @@
             </li>
             
             <li>
-                <span class="errorMessage" style="font-weight:bold;">Note:</span> 
+                <span class="error" style="font-weight:bold;">Note:</span> 
                 Retrieving meters from the Primary CIS Vendor may take some time.
                 You may leave this page after initiating a synchronization and come back later to check for results.
             </li>

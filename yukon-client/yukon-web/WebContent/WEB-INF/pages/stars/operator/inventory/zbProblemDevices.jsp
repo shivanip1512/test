@@ -11,7 +11,7 @@
         <cti:button nameKey="csv" renderMode="labeledImage" href="/stars/operator/inventory/zbProblemDevices/csv" icon="icon-csv"/>
     </div>
     
-    <table class="resultsTable" style="width:100%;">
+    <table class="results-table" style="width:100%;">
         <tr>
             <th><i:inline key=".serialNumber"/></th>
             <th><i:inline key=".accountNumber"/></th>

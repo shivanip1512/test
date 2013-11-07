@@ -16,10 +16,10 @@ jQuery(function() {
     </c:when>
     <c:otherwise>
         <%@ include file="accountInfoPartial.jspf" %>
-        <div class="actionArea">
+        <div class="action-area">
             <a href="javascript:void(0);" id="cisDetailsLink" class="fl"><i:inline key=".viewDetails"/></a>
         </div>
-        <div id="cisDetails" class="dn scrollingContainer_large dialog-no-buttons" title="<cti:msg2 key=".cisDetails.title"/>" style="min-width: 400px;">
+        <div id="cisDetails" class="dn scroll-large dialog-no-buttons" title="<cti:msg2 key=".cisDetails.title"/>" style="min-width: 400px;">
             <jsp:include page="/WEB-INF/pages/widget/accountInformationWidget/moreInfo.jsp" />
         </div>
     </c:otherwise>

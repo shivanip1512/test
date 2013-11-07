@@ -24,7 +24,7 @@
             <tags:sectionContainer2 nameKey="warning"><i:inline key=".changeWarning"/></tags:sectionContainer2>
         </cti:displayForPageEditModes>
         
-        <div class="column_6_18 clearfix">
+        <div class="column-6-18 clearfix">
             <div class="column one">
                 <tags:sectionContainer2 nameKey="assignments">
                     <c:choose>
@@ -47,7 +47,7 @@
         </div>
         
         <cti:displayForPageEditModes modes="VIEW">
-            <div class="pageActionArea clear">
+            <div class="page-action-area clear">
                 <cti:checkRolesAndProperties value="${editingRoleProperty}">
                     <cti:url var="editUrl" value="edit">
                         <cti:param name="categoryId" value="${categoryEditBean.categoryId}"/>
@@ -59,7 +59,7 @@
         </cti:displayForPageEditModes>
         <cti:displayForPageEditModes modes="EDIT">
             <cti:checkRolesAndProperties value="${editingRoleProperty}">
-                <div class="pageActionArea clear">
+                <div class="page-action-area clear">
                     <cti:url var="viewUrl" value="view">
                         <cti:param name="categoryId" value="${categoryEditBean.categoryId}"/>
                     </cti:url>
@@ -77,7 +77,7 @@
         </cti:displayForPageEditModes>
         <cti:displayForPageEditModes modes="CREATE">
             <cti:checkRolesAndProperties value="${editingRoleProperty}">
-                <div class="pageActionArea clear">
+                <div class="page-action-area clear">
                     <cti:button nameKey="cancel" href="/deviceConfiguration/home"/>
                     <cti:button nameKey="create" type="submit" classes="primary action"/>
                 </div>

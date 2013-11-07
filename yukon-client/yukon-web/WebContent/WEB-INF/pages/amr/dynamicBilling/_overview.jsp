@@ -20,7 +20,7 @@
         
              </select>
         </div>
-        <div class="pageActionArea">
+        <div class="page-action-area">
             <cti:button id="btnCreateFormat" nameKey="create"/>
             <cti:button id="btnEditFormat" nameKey="edit" disabled="true"/>
             <cti:button id="btnCopyFormat" nameKey="copy" disabled="true"/>

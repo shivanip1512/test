@@ -4,8 +4,8 @@ import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 
 public enum ChangeLoginMessage implements DisplayableEnum {
-    LOGIN_USERNAME_CHANGED(FlashScopeMessageType.CONFIRM),
-    LOGIN_PASSWORD_CHANGED(FlashScopeMessageType.CONFIRM),
+    LOGIN_USERNAME_CHANGED(FlashScopeMessageType.SUCCESS),
+    LOGIN_PASSWORD_CHANGED(FlashScopeMessageType.SUCCESS),
     NO_CHANGE(FlashScopeMessageType.WARNING),
     NO_USERNAME_CHANGE(FlashScopeMessageType.WARNING),
     NO_PASSWORD_CHANGE(FlashScopeMessageType.WARNING),

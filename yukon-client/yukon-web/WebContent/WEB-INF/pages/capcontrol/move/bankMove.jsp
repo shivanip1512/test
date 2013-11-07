@@ -93,7 +93,7 @@ function getTreeStructure() {
 
         <div id="controlOrders"></div>
         
-        <div class="actionArea">
+        <div class="action-area">
             <cti:button nameKey="tempMove" type="submit" name="tempMove"/>
             <cti:button nameKey="move" type="submit" name="move"/>
             <span><i:inline key=".controlOrder"/>&nbsp;<form:input path="displayOrder" size="1" maxlength="3"/></span>

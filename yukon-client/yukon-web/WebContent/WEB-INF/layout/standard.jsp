@@ -61,11 +61,10 @@
 <body class="<c:out value="${module.moduleName}"/>_module">
 <cti:msgScope paths="layout.standard">
 
-<div id="modal_glass" style="display:none;">
+<div id="modal-glass" style="display:none;">
     <div class="tint"></div>
     <div class="loading">
-        <!-- The lookup for your own custom message would be: $$("#modal_glass .message")[0] -->
-        <div class="box message">
+        <div class="box load-message">
             <cti:msg key="yukon.web.components.pageloading"/>
         </div>
     </div>
@@ -80,7 +79,7 @@
                 <form accept-charset="ISO-8859-1" enctype="application/x-www-form-urlencoded" method="get" action="/search" class="yukon-search-form">
                     <input type="text" placeholder="<cti:msg2 key='yukon.common.search.placeholder'/>" role="search" name="q" class="search-field">
                 </form>
-                <cti:button id="yukon_alert_button" classes="action dn" label="0"/>
+                <cti:button id="yukon-alert-button" classes="action dn" label="0"/>
                 <cm:dropdown containerCssClass="b-user-menu fl" icon="icon-user" label="${fn:escapeXml(displayName)}" type="button">
                     <cti:checkRolesAndProperties value="ADMIN_SUPER_USER">
                         <cti:url value="/adminSetup/user/view?userId=${sessionScope.YUKON_USER.userID}" var="userEditUrl"/>
@@ -141,7 +140,7 @@
 
 <section id="content" role="main">
 
-<c:set var="layout" value="${showContextualNavigation ? 'column_4_20' : 'column_24'}"/>
+<c:set var="layout" value="${showContextualNavigation ? 'column-4-20' : 'column-24'}"/>
 <c:set var="columnNum" value="${showContextualNavigation ? 'two nogutter' : 'one nogutter'}"/>
 <div class="${layout} clearfix" style="margin-bottom: 10px;">
 
@@ -149,7 +148,7 @@
 <c:if test="${showContextualNavigation}">
     <div id="LeftColumn" class="column one">
         <jsp:include page="${pageDetail.detailInfoIncludePath}" />
-        <div class="contextualMenu vertical_menu">
+        <div class="contextual-menu vertical-menu">
             <cti:outputContent writable="${contextualNavigationMenu}" />
         </div>
         <div class="bumper"></div>
@@ -159,22 +158,22 @@
 
 <div class="column ${columnNum} main-container">
 
-<%-- FLASH SCOPE MESSAGES --%>
-<cti:flashScopeMessages/>
-<noscript>
-    <div class="page_error">
-        <cti:msg2 key="yukon.web.error.noJs"/>
-    </div>
-</noscript>
-
-<cti:outputContent writable="${bodyContent}"/>
+    <%-- FLASH SCOPE MESSAGES --%>
+    <cti:flashScopeMessages/>
+    <noscript>
+        <div class="page-error">
+            <cti:msg2 key="yukon.web.error.noJs"/>
+        </div>
+    </noscript>
+    
+    <cti:outputContent writable="${bodyContent}"/>
 </div>
 </div>
 
 <cti:msg2 key="yukon.web.alerts.heading" var="alertTitle"/>
 <tags:simplePopup title="${alertTitle}" id="yukon_alert_popup">
-    <div id="alert_body" class="scrollingContainer_large"></div>
-    <div class="actionArea">
+    <div id="alert_body" class="scroll-large"></div>
+    <div class="action-area">
         <button id="yukon_clear_alerts_button"><span class="label"><cti:msg2 key="yukon.web.alerts.clearall"/></span></button>
     </div>
 </tags:simplePopup>

@@ -61,7 +61,7 @@
         <%-- NOTE --%>
         <table>
             <tr>
-                <td valign="top" class="smallBoldLabel">${noteLabel}</td>
+                <td valign="top" class="strong-label-small">${noteLabel}</td>
                 <td style="font-size:11px;">
                     ${noteText}
                 </td>

@@ -47,7 +47,7 @@ jQuery(function(){
         <jsp:include page="/WEB-INF/pages/stars/operator/operatorThermostat/selectedThermostatsFragment.jsp" />
     </div>
     
-    <tags:formElementContainer nameKey="manualUiContainerHeader" styleClass="oh">
+    <tags:sectionContainer2 nameKey="manualUiContainerHeader" styleClass="oh">
     
         <%-- INSTRUCTIONS --%>
         <div class="stacked">
@@ -120,6 +120,6 @@ jQuery(function(){
             <div class="clearfix stacked"><cti:button nameKey="history" href="${historyUrl}" /></div>
         </div>
     
-    </tags:formElementContainer>
+    </tags:sectionContainer2>
      
 </cti:standardPage>

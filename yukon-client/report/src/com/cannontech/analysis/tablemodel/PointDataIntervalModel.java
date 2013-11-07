@@ -434,7 +434,7 @@ public class PointDataIntervalModel extends ReportModelBase<MeterAndPointData>
 		html += "    <td>" + LINE_SEPARATOR;
 		html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
 		html += "        <tr>" + LINE_SEPARATOR;
-		html += "          <td valign='top' class='TitleHeader'>Point Type</td>" +LINE_SEPARATOR;
+		html += "          <td valign='top' class='title-header'>Point Type</td>" +LINE_SEPARATOR;
 		html += "        </tr>" + LINE_SEPARATOR;
 		for (int i = 0; i < getAllPointTypes().length; i++)
 		{
@@ -449,7 +449,7 @@ public class PointDataIntervalModel extends ReportModelBase<MeterAndPointData>
 		html += "    <td valign='top'>" + LINE_SEPARATOR;
 		html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
 		html += "        <tr>" + LINE_SEPARATOR;
-		html += "          <td class='TitleHeader'>&nbsp;Order By</td>" +LINE_SEPARATOR;
+		html += "          <td class='title-header'>&nbsp;Order By</td>" +LINE_SEPARATOR;
 		html += "        </tr>" + LINE_SEPARATOR;
 		for (int i = 0; i < getAllOrderBys().length; i++)
 		{
@@ -464,7 +464,7 @@ public class PointDataIntervalModel extends ReportModelBase<MeterAndPointData>
 		html += "    <td valign='top'>" + LINE_SEPARATOR;
 		html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;		
 		html += "        <tr>" + LINE_SEPARATOR;
-		html += "          <td class='TitleHeader'>&nbsp;Order Direction</td>" +LINE_SEPARATOR;
+		html += "          <td class='title-header'>&nbsp;Order Direction</td>" +LINE_SEPARATOR;
 		html += "        </tr>" + LINE_SEPARATOR;
 		for (int i = 0; i < getAllSortOrders().length; i++)
 		{
@@ -480,7 +480,7 @@ public class PointDataIntervalModel extends ReportModelBase<MeterAndPointData>
         html += "    <td valign='top'>" + LINE_SEPARATOR;
         html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
         html += "        <tr>" + LINE_SEPARATOR;
-        html += "          <td class='TitleHeader'>Disabled Devices</td>" +LINE_SEPARATOR;
+        html += "          <td class='title-header'>Disabled Devices</td>" +LINE_SEPARATOR;
         html += "        </tr>" + LINE_SEPARATOR;        
         html += "        <tr>" + LINE_SEPARATOR;
         html += "          <td><input type='checkbox' name='" +ATT_EXCLUDE_DISABLED_DEVICES + "' value='true'> Exclude Disabled Devices" + LINE_SEPARATOR;

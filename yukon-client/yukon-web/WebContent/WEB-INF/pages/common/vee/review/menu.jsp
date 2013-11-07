@@ -31,10 +31,10 @@ Please restart the Yukon Service Manager to resume processing.
 </div>
 </c:if>
 	
-<div class="column_12_12">
+<div class="column-12-12">
     <div class="column one">
-            <tags:boxContainer title="Accept All" styleClass="widgetContainer">
-                <p class="warningMessage">
+            <tags:boxContainer title="Accept All" styleClass="widget-container">
+                <p class="warning">
                 This will insert the OK tag for the any RawPointHistory value that has the identical
                 set of tags as are checked. This has the same effect as the Accept selection
                 on the Review page.
@@ -51,8 +51,8 @@ Please restart the Yukon Service Manager to resume processing.
                     <input type="submit" value="Accept">
                 </form>
             </tags:boxContainer>	
-            <tags:boxContainer title="Delete All" styleClass="widgetContainer">
-                <p class="warningMessage">
+            <tags:boxContainer title="Delete All" styleClass="widget-container">
+                <p class="warning">
                 This will delete any RawPointHistory value that has the identical set of tags
                 as are selected tags (but has not already been marked as Accepted). This has the same effect as the Delete selection
                 on the Review page. <b>Archived usage readings will be removed
@@ -72,12 +72,12 @@ Please restart the Yukon Service Manager to resume processing.
             </tags:boxContainer>	
     </div>
     <div class="column two nogutter">
-            <tags:boxContainer title="Recalculate Tags" styleClass="widgetContainer">
-                <p class="warningMessage">
+            <tags:boxContainer title="Recalculate Tags" styleClass="widget-container">
+                <p class="warning">
                 The following options will reset the validation engine so that it reprocesses
                 all of the RawPointHistory rows from the beginning or from 12 months ago.
                 </p>
-                <p class="warningMessage">
+                <p class="warning">
                 Before selecting one of these options, shut down the Yukon Service Manager service.
                 After pressing the Delete button, the service may be restarted.
                 </p>

@@ -90,7 +90,7 @@
                 <br>
                 <%-- TODO: br doesn't work here since this date/time element will be taller than
                      than line height br will only bump you down line height, need figure out best way to fix. --%>
-				<form:errors path="${pageScope.path}" cssClass="${cssErrorClass} errorMessage" />
+				<form:errors path="${pageScope.path}" cssClass="${cssErrorClass} error" />
 			</c:if>
 		</spring:bind>
 	</c:when>

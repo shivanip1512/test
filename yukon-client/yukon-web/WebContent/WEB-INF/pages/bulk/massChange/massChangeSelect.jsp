@@ -24,7 +24,7 @@ function submitForm(selectMassChangeField) {
         <cti:checkRolesAndProperties value="MASS_CHANGE">
           <input type="hidden" id="massChangeBulkFieldName" name="massChangeBulkFieldName" value="">
           <c:forEach var="bulkField" items="${massChangableBulkFields}">
-            <div class="pageActionArea">
+            <div class="page-action-area">
               <button id="massChangeTypeButton" onclick="submitForm('${bulkField.inputSource.field}');">
                 <span class="label"><cti:msg key="${bulkField.displayKey}"/></span>
               </button>

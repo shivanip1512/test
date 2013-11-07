@@ -97,7 +97,7 @@
             <input type="hidden" name="accountId" value="${accountId}">
             <input type="hidden" id="thermostatIds" name="thermostatIds" value="${thermostatIds}">
             
-            <table class="compactResultsTable selectThermostatsTable">
+            <table class="compact-results-table selectThermostatsTable">
             
                 <tr>
                     <th class="name">

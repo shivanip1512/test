@@ -65,7 +65,7 @@
     </tr>
 </table>
 <c:if test="${status.error}">
-    <form:errors path="${path}" cssClass="errorMessage"/>
+    <form:errors path="${path}" cssClass="error"/>
 </c:if>
 
 <script type="text/javascript">

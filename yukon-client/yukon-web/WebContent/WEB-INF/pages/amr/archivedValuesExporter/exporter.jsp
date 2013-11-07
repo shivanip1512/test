@@ -110,14 +110,14 @@
     };
     
     function renderFields(query , element){
-        jQuery(".sectionContainer", element).show();
+        jQuery(".section-container", element).show();
         
         jQuery(".f-renderFields tr").hide();
         jQuery(".f-renderFields tr").find("input,select,textarea").attr('disabled', 'disabled');
         jQuery(".f-renderFields " + query).show();
         jQuery(".f-renderFields " + query).find("input,select,textarea").removeAttr('disabled');
         
-        jQuery(".sectionContainer", element).each(function(index, sectionContainer){
+        jQuery(".section-container", element).each(function(index, sectionContainer){
             var container = jQuery(sectionContainer);
             if(container.find("tr:visible").length == 0){
                 container.hide();
@@ -354,7 +354,7 @@
         <c:if test="${showAttributeSection}">
             <tags:boxContainer2 nameKey="attributeSetup" id="attributes" styleClass="stacked attributeSetupContainer">
                 <c:set var="attributes" value="${backingBean.format.attributes}"/>
-                <table class="compactResultsTable nowrap">
+                <table class="compact-results-table nowrap">
                     <thead>
                         <tr>
                             <th><i:inline key=".attribute" /></th>
@@ -381,7 +381,7 @@
                         </c:forEach>
                     </tbody>
                 </table>
-                <div class="actionArea">
+                <div class="action-area">
                     <cti:button id="addAttributeBtn" nameKey="add" classes="f-blocker" icon="icon-add"/>
                 </div>
             </tags:boxContainer2>
@@ -389,7 +389,7 @@
 
         <tags:boxContainer2 nameKey="fieldSetup" id="selectedFields" styleClass="stacked">
             <c:set var="fields" value="${backingBean.format.fields}"/>
-            <table class="compactResultsTable nowrap">
+            <table class="compact-results-table nowrap">
                 <thead>
                     <tr>
                         <th><i:inline key=".field" /></th>
@@ -463,7 +463,7 @@
                     </c:forEach>
                 </tbody>
             </table>
-            <div class="actionArea">
+            <div class="action-area">
                 <cti:button id="addFieldBtn" nameKey="add" classes="f-blocker" icon="icon-add"/>
             </div>
         </tags:boxContainer2>
@@ -477,8 +477,8 @@
                </div>
             </tags:boxContainer2>
         </c:if>
-        <div class="pageActionArea">
-            <cti:button id="saveBtn" nameKey="save" classes="f-blocker f-disableAfterClick primary action"/>
+        <div class="page-action-area">
+            <cti:button id="saveBtn" nameKey="save" classes="f-blocker f-disable-after-click primary action"/>
             <dialog:confirm on="#deleteBtn" nameKey="confirmDelete" argument="${backingBean.format.formatName}" />
             <c:if test="${backingBean.format.formatId != 0}">
                 <cti:button id="deleteBtn" nameKey="delete" />

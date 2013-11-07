@@ -12,7 +12,7 @@
     </script>
 
 	<c:if test="${not empty param.processError}">
-		<div class="errorMessage">${param.processError}</div>
+		<div class="error">${param.processError}</div>
 	</c:if>
 	
 	<%-- MAIN DETAILS --%>
@@ -92,7 +92,7 @@
 			<%-- note --%>
 			<table cellpadding="2">
 	            <tr>
-	                <td valign="top" class="smallBoldLabel">
+	                <td valign="top" class="strong-label-small">
                         <i:inline key=".readOutageLogs.noteLabel" />
 	                </td>
 	                <td style="font-size:11px;">
@@ -123,7 +123,7 @@
 				<div class="fwb"><i:inline key=".recentReadLogsResults"/></div>
 				<br>
 				
-				<table class="resultsTable">
+				<table class="results-table">
                     <thead>
     					<tr>
     						<th><i:inline key=".recentReadLogsResults.dateTime"/></th>

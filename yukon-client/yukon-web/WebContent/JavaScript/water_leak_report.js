@@ -234,14 +234,14 @@ Yukon.WaterLeakReport = (function() {
                 _init_interval_data_form();
                 
                 /* report.jsp filter labels */
-                jQuery(".filter_container .f-filter_group_clicked").bind("click", _filter_group_clicked);
-                jQuery(".filter_container .f-filter_individual_clicked").bind("click", _filter_individual_clicked);
-                jQuery(".filter_container .f-filter_date_range .f-filter_to_date_clicked").bind("click", _filter_to_date_clicked);
-                jQuery(".filter_container .f-filter_date_range").bind("click", _filter_date_range_clicked);
-                jQuery(".filter_container .f-filter_threshold_clicked").bind("click", _filter_threshold_clicked);
-                jQuery(".filter_container .f-filter_reset_disabled_devices_clicked").bind("click", _filter_reset_disabled_devices_clicked);
-                jQuery(".filter_container .f-disabled_devices").bind("click", _filter_disabled_devices_clicked);
-                jQuery(".filter_container .f-reset_filter_submit").bind("click", this.reset_filter_submit);
+                jQuery(".filter-settings .f-filter_group_clicked").bind("click", _filter_group_clicked);
+                jQuery(".filter-settings .f-filter_individual_clicked").bind("click", _filter_individual_clicked);
+                jQuery(".filter-settings .f-filter_date_range .f-filter_to_date_clicked").bind("click", _filter_to_date_clicked);
+                jQuery(".filter-settings .f-filter_date_range").bind("click", _filter_date_range_clicked);
+                jQuery(".filter-settings .f-filter_threshold_clicked").bind("click", _filter_threshold_clicked);
+                jQuery(".filter-settings .f-filter_reset_disabled_devices_clicked").bind("click", _filter_reset_disabled_devices_clicked);
+                jQuery(".filter-settings .f-disabled_devices").bind("click", _filter_disabled_devices_clicked);
+                jQuery(".filter-settings .f-reset_filter_submit").bind("click", this.reset_filter_submit);
 
                 /* intervalData.jsp */
                 jQuery("#exportIntervalCsv").bind("click", _export_interval_csv);

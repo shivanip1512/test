@@ -77,7 +77,7 @@ jQuery(function() {
 
 <div class="dn" data-pao-id="${substationId}"></div>
 
-<div class="column_12_12">
+<div class="column-12-12">
     <div class="column one">
         <tags:sectionContainer2 nameKey="infoContainer" hideEnabled="true" styleClass="stacked">
             <div class="clearfix">
@@ -106,7 +106,7 @@ jQuery(function() {
                         <tags:nameValue2 nameKey=".state" rowClass="wsnw">
                                 <c:if test="${hasSubstationControl}"><a id="substationState_${substationId}" class="subtle-link" href="javascript:void(0);"></c:if>
                                 <c:if test="${not hasSubstationControl}"><span id="substationState_${substationId}"></c:if>
-                                    <span id="substationState_box_${substationId}" class="box stateBox">
+                                    <span id="substationState_box_${substationId}" class="box state-box">
                                         &nbsp;
                                     </span>
                                     <cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="STATE"/>
@@ -138,7 +138,7 @@ jQuery(function() {
 
     <div class="column two nogutter">
         <tags:sectionContainer2 nameKey="statsContainer" hideEnabled="true" styleClass="stacked">
-            <div class="column_12_12">
+            <div class="column-12-12">
                 <div class="column one">
                     <tags:nameValueContainer2 tableClass="infoContainer">
                         <tags:nameValue2 nameKey=".availableKvars">

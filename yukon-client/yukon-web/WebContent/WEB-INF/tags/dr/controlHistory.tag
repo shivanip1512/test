@@ -15,9 +15,8 @@
         <c:otherwise><cti:msg2 var="displayName" key=".deviceRemoved" /></c:otherwise>
     </c:choose>
     
-    <tags:sectionContainer title="${displayName}" escapeTitle="true">
+    <tags:sectionContainer title="${displayName}" escapeTitle="true" styleClass="dashed stacked">
         <dr:controlHistoryEvents groupedHistoryEventList="${groupedControlHistory.groupedHistory}" showControlSummary="true" consumer="${pageScope.consumer}" showGroupedHistory="${pageScope.showGroupedHistory}"/>
     </tags:sectionContainer>
-    <br />
 
 </c:forEach>

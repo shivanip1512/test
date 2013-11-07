@@ -13,41 +13,34 @@ jQuery(function() {
         setupClickHandler('#plcReadNow', '<cti:url value="/stars/operator/hardware/plc/readNow"/>');
     </c:if>
     
-    function setupClickHandler(buttonId, url) {
-        jQuery(document).on('click', buttonId, function(event) {
+    function setupClickHandler(selector, url) {
+        jQuery(document).on('click', selector, function(event) {
             jQuery.ajax({
                 url: url,
                 method: 'get',
-                data: {'deviceId': '${hardware.deviceId}'},
-                success: function(data) {
-                    jQuery('#commandStatus').html(data.message);
-                    jQuery('#commandStatus').show();
-                    if (data.success ==  true) {
-                        jQuery('#commandStatus').addClass('successMessage').removeClass('errorMessage');
-                    } else {
-                        jQuery('#commandStatus').removeClass('successMessage').addClass('errorMessage');
-                    }
-                    jQuery(buttonId).removeAttr('disabled');
-                    jQuery(buttonId + ' i').hide();
-                    jQuery(buttonId).find(".label").text('<cti:msg2 key=".readNow.label"/>');
-                },
-                error: function() {
-                    jQuery(buttonId).removeAttr('disabled');
-                    jQuery(buttonId + ' i').hide();
-                    jQuery(buttonId).find(".label").text('<cti:msg2 key=".readNow.label"/>');
+                data: {'deviceId': '${hardware.deviceId}'}
+            }).done(function(data) {
+                jQuery('#commandStatus').html(data.message);
+                jQuery('#commandStatus').show();
+                if (data.success ==  true) {
+                    jQuery('#commandStatus').addClass('success').removeClass('error');
+                } else {
+                    jQuery('#commandStatus').removeClass('success').addClass('error');
                 }
+            }).always(function() {
+                Yukon.ui.unbusy(jQuery(selector));
             });
         });
     }
 });
 </script>
 
-<tags:boxContainer2 nameKey="hardwarePoints">
+<tags:sectionContainer2 nameKey="hardwarePoints">
     <c:forEach var="entry" items="${points}">
         <c:if test="${fn:length(entry.value) > 0}">
             <span><i:inline key="${entry.key}" /></span>
-            <div class="scrollingContainer_small liteContainer stacked">
-                <table class="compactResultsTable">
+            <div class="scroll-small lite-container stacked dashed">
+                <table class="compact-results-table">
                     <c:forEach var="point" items="${entry.value}">
                         <tr>
                             <td>${fn:escapeXml(point.pointName)}</td>
@@ -59,19 +52,19 @@ jQuery(function() {
         </c:if>
     </c:forEach>
         <c:if test="${hardware.hardwareType.rf or hardware.hardwareType.twoWayPlcLcr}">
-            <div id="commandStatus" class="dn errorMessage rfCommandMsg"></div>
+            <div id="commandStatus" class="dn error"></div>
         </c:if>
-    <div class="actionArea">
+    <div class="action-area">
         <cti:url var="pointsUrl" value="/common/operator/points">
             <cti:param name="deviceId" value="${hardware.deviceId}"/>
             <cti:param name="accountId" value="${accountId}"/>
         </cti:url>
         <a href="${pointsUrl}"><i:inline key="yukon.web.defaults.showAll"/></a>
         <c:if test="${hardware.hardwareType.rf}">
-            <cti:button id="rfReadNow" nameKey="readNow" busy="true" classes="f-disableAfterClick"/>
+            <cti:button id="rfReadNow" nameKey="readNow" busy="true"/>
         </c:if>
         <c:if test="${hardware.hardwareType.twoWayPlcLcr}">
-            <cti:button id="plcReadNow" nameKey="readNow" busy="true" classes="f-disableAfterClick"/>
+            <cti:button id="plcReadNow" nameKey="readNow" busy="true"/>
         </c:if>
     </div>
-</tags:boxContainer2>
+</tags:sectionContainer2>

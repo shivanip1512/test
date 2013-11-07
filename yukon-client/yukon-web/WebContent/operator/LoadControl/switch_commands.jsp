@@ -231,7 +231,7 @@ dropDownRouteIDArray[<%=ii%>] = <%=nameSerial[i][3]%>;
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <p><br>
             <center>
-                <p align="center" class="TitleHeader">INDIVIDUAL SWITCH COMMANDS</p>
+                <p align="center" class="title-header">INDIVIDUAL SWITCH COMMANDS</p>
                 <span align="center" class="MainText">Enter or select a switch serial number:</span>
                 <table width="345" border="1" cellspacing = "0" cellpadding = "3" height="66" >
 <%  if( showSerialNumberTextField ) {       %>

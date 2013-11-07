@@ -7,60 +7,48 @@
 <cti:url var="innerViewUrl" value="${controlHistoryView}/innerCompleteHistoryView"/>
 
 <cti:standardPage module="consumer" page="completecontrolhistory">
-    <cti:standardMenu />
-    <cti:includeCss link="/WebConfig/yukon/styles/controlHistory.css"/>
-    
-    <h3><i:inline key="yukon.dr.consumer.completecontrolhistory.header" /></h3>
-    <table width="100%">
-        <tr>
-            <td align="right">
-                <br>
-                <i:inline key="yukon.dr.consumer.completecontrolhistory.viewTitle"/>
-                <select onchange="javascript:updateControlEvents(this.options[this.options.selectedIndex].value)">
-                    <c:forEach var="controlPeriod" items="${controlPeriods}" >
-                        <option value="${controlPeriod}">
-                            <i:inline key="${controlPeriod.formatKey}"/>
-                        </option>
-                    </c:forEach>
-                </select>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <cti:msg key="yukon.dr.consumer.completecontrolhistory.controlEventsTitle" var="controlEventsTitle" />
-                <cti:msg key="${program.displayName}" var="controlEventsTitle" />
-                <tags:boxContainer title="${controlEventsTitle}" escapeTitle="true" hideEnabled="false">
-                    <div id="controlEventsDiv"><cti:msg key="yukon.dr.consumer.completecontrolhistory.loading"/></div>
-                </tags:boxContainer>
-            </td>
-        </tr>
-        <tr>
-            <td align="right">
-                <br>
-                <input type="button" value="<cti:msg key="yukon.dr.consumer.completecontrolhistory.back"/>" onclick="javascript:location.href='${controlHistoryView}';"/>
-            </td>
-        </tr>            
-    </table>
+
+    <c:set var="controls">    
+        <i:inline key="yukon.dr.consumer.completecontrolhistory.viewTitle"/>
+        <select onchange="updateControlEvents(this.options[this.options.selectedIndex].value)">
+            <c:forEach var="controlPeriod" items="${controlPeriods}" >
+                <option value="${controlPeriod}">
+                    <i:inline key="${controlPeriod.formatKey}"/>
+                </option>
+            </c:forEach>
+        </select>
+    </c:set>
+
+    <cti:msg key="${program.displayName}" var="controlEventsTitle"/>
+    <tags:sectionContainer title="${controlEventsTitle}" escapeTitle="true" controls="${controls}" styleClass="form-controls">
+        <div id="controlEventsDiv" class="f-block-this"><cti:msg key="yukon.dr.consumer.completecontrolhistory.loading"/></div>
+    </tags:sectionContainer>
+
+    <div class="page-action-area">
+        <cti:msg key="yukon.dr.consumer.completecontrolhistory.back" var="backText"/>
+        <cti:button label="${backText}" onclick="location.href='${controlHistoryView}';"/>
+    </div>
     
 <script type="text/javascript">
 jQuery(function() {
-    updateControlEvents('PAST_DAY');       
+    updateControlEvents('PAST_DAY');
 });
 
 function updateControlEvents(controlPeriod) {
-
+    Yukon.ui.elementGlass.show(jQuery('#controlEventsDiv'));
     jQuery.ajax({
-        type: "POST",
         url: '${innerViewUrl}',
+        method: 'POST',
         data: { 
             'programId': '${program.programId}',
             'controlPeriod': controlPeriod
         }
-    }).done(function(data) {
-            jQuery('#controlEventsDiv').html(data).show();
-        });
+    }).done(function(data){
+        jQuery('#controlEventsDiv').html(data);
+    }).always(function() {
+        Yukon.ui.elementGlass.hide(jQuery('#controlEventsDiv'));
+    });
 }
-
 </script>  
         
 </cti:standardPage>    

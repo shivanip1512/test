@@ -10,7 +10,7 @@
 
     <tags:setFormEditMode mode="${mode}"/>
 
-    <div class="column_12_12">
+    <div class="column-12-12">
         <div class="column one">
             <form:form commandName="userGroup" action="edit" method="post">
                 <form:hidden path="userGroupId"/>
@@ -20,7 +20,7 @@
                     <tags:inputNameValue nameKey=".userGroupDescription" path="userGroupDescription"/>
                 </tags:nameValueContainer2>
                 
-                <div class="pageActionArea">
+                <div class="page-action-area">
                     <cti:displayForPageEditModes modes="EDIT,CREATE">
                         <cti:button nameKey="save" name="update" type="submit"/>
                         <c:if test="${isUserGroupDeletable}">
@@ -53,7 +53,7 @@
                             <div class="rolesContainer">
                                 <c:forEach var="category" items="${roles}">
                                     <c:if test="${not empty category.key}">
-                                        <ul class="groupedList">
+                                        <ul class="grouped-list">
                                             <li><span class="group"><cti:formatObject value="${category.key}"/></span>
                                                 <ul class="groupedItem">
                                                     <c:forEach var="roleGroupPair" items="${category.value}">

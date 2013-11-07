@@ -470,7 +470,7 @@ public class UpdaterHelper {
         
         case SUB_SP_AREA_ENABLED: {
             if (substation.getSpecialAreaEnabled()) {
-                return "errorMessage";
+                return "error";
             } else {
                 return "normalText";
             }

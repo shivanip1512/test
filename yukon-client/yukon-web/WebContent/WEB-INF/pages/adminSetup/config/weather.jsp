@@ -32,7 +32,7 @@
         <div id="weatherLocations">
             <!-- Not loaded initially to increase page load speed -->
         </div>
-        <div class="actionArea">
+        <div class="action-area">
            <cti:button icon="icon-plus-green" nameKey="createWeatherLocation" id="newWeatherLocationBtn"/>
         </div>
     </div>

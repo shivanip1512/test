@@ -39,17 +39,17 @@
                   <input type="hidden" name="resultId" value="${resultId}">
                   
                   <%-- cancel commands --%>
-                  <div id="cancelLocateDiv" class="actionArea">
+                  <div id="cancelLocateDiv" class="action-area">
                       <c:url var="cancelUrl" value="/bulk/routeLocate/cancelCommands" />
                       <cti:msg var="cancelText" key="yukon.web.modules.tools.bulk.routeLocateResults.cancelLocateButton.label" />
                       <tags:cancelCommands resultId="${resultId}" cancelUrl="${cancelUrl}" cancelButtonText="${cancelText}"/>
                   </div>
                   <c:choose>
                       <c:when test="${result.autoUpdateRoute}">
-                          <cti:button nameKey="viewRoutesButton" type="submit" classes="f-disableAfterClick" disabled="${not result.complete}"/>
+                          <cti:button nameKey="viewRoutesButton" type="submit" classes="f-disable-after-click" disabled="${not result.complete}"/>
                       </c:when>
                       <c:otherwise>
-                          <cti:button nameKey="setRoutesButton" type="submit" classes="f-disableAfterClick" disabled="${not result.complete}"/>
+                          <cti:button nameKey="setRoutesButton" type="submit" classes="f-disable-after-click" disabled="${not result.complete}"/>
                       </c:otherwise>
                   </c:choose>
               </form>

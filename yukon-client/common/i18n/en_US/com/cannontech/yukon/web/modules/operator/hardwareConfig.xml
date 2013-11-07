@@ -41,11 +41,11 @@
 
     <entry key="yukon.web.modules.operator.hardwareConfig.virtualProgramName">Virtual Program {0}</entry>
     <entry key="yukon.web.modules.operator.hardwareConfig.groupNotApplicable">Not Applicable</entry>
-    <entry key="yukon.web.modules.operator.hardwareConfig.config">Config</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.config.label">Config</entry>
     <entry key="yukon.web.modules.operator.hardwareConfig.config.description">Send device configuration out to the field device immediately.</entry>
-    <entry key="yukon.web.modules.operator.hardwareConfig.saveToBatch">Save to Batch</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.saveToBatch.label">Save to Batch</entry>
     <entry key="yukon.web.modules.operator.hardwareConfig.saveToBatch.description">Queue up the device configuration to be sent to the field at a later time. (The default is midnight.)</entry>
-    <entry key="yukon.web.modules.operator.hardwareConfig.saveConfigOnly">Save Config Only</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.saveConfigOnly.label">Save Config Only</entry>
     <entry key="yukon.web.modules.operator.hardwareConfig.saveConfigOnly.description">Save device configuration to the database only.  (No command is sent to the field device.)</entry>
     <entry key="yukon.web.modules.operator.hardwareConfig.cancel">Cancel</entry>
 

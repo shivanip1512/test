@@ -15,7 +15,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
-<div class="titledContainer boxContainer manualThermostat box fl">
+<div class="titled-container box-container manualThermostat box fl">
     <div class="title-bar clearfix">
         <h3 class="title">
             <c:set var="multipleThermostatsSelected" value="${fn:length(fn:split(thermostatIds, ',')) > 1}"></c:set>
@@ -129,7 +129,7 @@
             <label for="holdCheck"><i:inline key="yukon.web.modules.operator.thermostatManual.hold" /></label>
         </div>
         
-        <div class="actionArea">
+        <div class="action-area">
             <cti:msg2 var="saveText" key="yukon.web.modules.operator.thermostatManual.submit" />
             <button id="sendSettingsSubmit" popup_id="confirmPopup_${event.eventId}" class="primary action">
                 <span class="label">${saveText}</span>
@@ -179,7 +179,7 @@
             </tags:nameValue2>
         </tags:nameValueContainer2>
         
-        <div class="actionArea">
+        <div class="action-area">
             <cti:button nameKey="ok" type="submit" classes="f-blocker"/> 
             <cti:button nameKey="cancel" id="confirmCancel" onclick="jQuery('#confirmPopup_${event.eventId}').dialog('close')"/>
         </div>

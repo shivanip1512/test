@@ -18,7 +18,7 @@
 
 <cti:includeScript link="/JavaScript/simpleCookies.js" />
 
-<div class="titledContainer pagedBox <c:if test="${!empty pageScope.styleClass}">${pageScope.styleClass}</c:if>" <c:if test="${!empty pageScope.id}">id="${pageScope.id}"</c:if>>
+<div class="titled-container paged-container <c:if test="${!empty pageScope.styleClass}">${pageScope.styleClass}</c:if>" <c:if test="${!empty pageScope.id}">id="${pageScope.id}"</c:if>>
     <div class="title-bar clearfix">
         <h3 class="title">${pageScope.title}</h3>
         <tags:nextPrevLinks searchResult="${pageScope.searchResult}" baseUrl="${pageScope.baseUrl}" mode="jsp"/>
@@ -42,7 +42,7 @@
     </div>
     <div class="content"><jsp:doBody/></div>
     <div class="footer clearfix">
-        <span class="pagingArea fr">
+        <span class="paging-area fr">
             <tags:nextPrevLinks searchResult="${pageScope.searchResult}" baseUrl="${pageScope.baseUrl}" mode="jsp"/>
         </span>
         <span class="perPageArea fr">

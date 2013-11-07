@@ -47,7 +47,7 @@
         <form:hidden path="evaluatorStatus"/>
         <form:hidden path="stateGroup"/>
 		
-		<tags:formElementContainer nameKey="sectionHeader">
+		<tags:sectionContainer2 nameKey="sectionHeader">
 			<tags:nameValueContainer2 style="border-collapse:separate;border-spacing:5px;">
 			
 				<%-- name --%>
@@ -95,11 +95,11 @@
 				</tags:nameValue2>
                 
 			</tags:nameValueContainer2>
-		</tags:formElementContainer>
+		</tags:sectionContainer2>
         
         <tags:boxContainer2 id="actionsBox" nameKey="stateActionsTable" styleClass="mediumContainer">
-            <div class="dialogScrollArea stacked">
-                <table id="actionsTable" class="compactResultsTable">
+            <div class="scroll-medium stacked">
+                <table id="actionsTable" class="compact-results-table">
                     <thead>
                     <tr>
                         <th><i:inline key=".stateActionsTable.prevState"/></th>
@@ -119,20 +119,20 @@
         </tags:boxContainer2>
 		
 		<%-- create / update / delete --%>
-		<div class="pageActionArea">
-            <cti:button nameKey="update" type="submit" busy="true" classes="primary action f-disableAfterClick" data-disable-group="actionButtons"/>
+		<div class="page-action-area">
+            <cti:button nameKey="update" type="submit" busy="true" classes="primary action" data-disable-group="actionButtons"/>
             <c:set var="enableDisableKey" value="disable"/>
             <c:if test="${statusPointMonitor.evaluatorStatus eq 'DISABLED'}">
                 <c:set var="enableDisableKey" value="enable"/>
             </c:if>
-            <cti:button nameKey="${enableDisableKey}" busy="true" classes="f-disableAfterClick" data-disable-group="actionButtons"
+            <cti:button nameKey="${enableDisableKey}" busy="true" data-disable-group="actionButtons"
                 onclick="jQuery('#toggleEnabledForm').submit()"/>
             <cti:button id="deleteButton" nameKey="delete" busy="true" onclick="jQuery('#deleteStatusPointMonitor').submit();" data-disable-group="actionButtons"/>
             <d:confirm on="#deleteButton" nameKey="confirmDelete" argument="${statusPointMonitor.statusPointMonitorName}"/>
             <cti:url var="backUrl" value="/amr/statusPointMonitoring/viewPage">
                 <cti:param name="statusPointMonitorId" value="${statusPointMonitor.statusPointMonitorId}" />
             </cti:url>
-            <cti:button nameKey="cancel" type="button" href="${backUrl }"  busy="true" classes="f-disableAfterClick" data-disable-group="actionButtons"/>
+            <cti:button nameKey="cancel" type="button" href="${backUrl }"  busy="true" data-disable-group="actionButtons"/>
         </div>
 	</form:form>
     

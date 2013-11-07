@@ -11,7 +11,7 @@
     
     <tags:setFormEditMode mode="${mode}"/>
 
-    <div class="column_14_10">
+    <div class="column-14-10">
 
         <div class="column one">
             <form:form commandName="group" action="/adminSetup/roleGroup/edit" method="post">
@@ -35,7 +35,7 @@
                 
                 </tags:nameValueContainer2>
                 
-                <div class="pageActionArea">
+                <div class="page-action-area">
                     <cti:displayForPageEditModes modes="EDIT">
                         <cti:button nameKey="save" name="update" type="submit"/>
                         <%-- TODO implement this later 
@@ -66,7 +66,7 @@
                         <c:otherwise>
                             <div class="rolesContainer wsnw">
                                 <c:forEach var="category" items="${categoryRoleMap}">
-                                    <ul class="groupedList">
+                                    <ul class="grouped-list">
                                         <li><span class="group"><cti:formatObject value="${category.key}"/></span>
                                             <ul class="groupedItem">
                                                 <c:forEach var="role" items="${category.value}">
@@ -85,7 +85,7 @@
                             </div>
                         </c:otherwise>
                     </c:choose>
-                    <div class="actionArea">
+                    <div class="action-area">
                         <form action="/adminSetup/roleGroup/addRole" method="post">
                             <input type="hidden" value="${roleGroupId}" name="roleGroupId">
                             <cti:button nameKey="add" type="submit" id="addButton" icon="icon-add"/>

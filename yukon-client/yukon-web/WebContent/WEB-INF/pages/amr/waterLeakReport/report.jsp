@@ -55,7 +55,7 @@
 						<span class="focusableFieldHolder">
                             <a><cti:icon icon="icon-help cp fn"/></a>
 						</span>
-						<span class="focusedFieldDescription"><i:inline key=".filter.threshold.helpText"/></span>
+						<span class="focused-field-description"><i:inline key=".filter.threshold.helpText"/></span>
                     </tags:nameValue2>
 
 					<tags:nameValue2 nameKey=".filter.includeDisabledDevices">
@@ -125,7 +125,7 @@
 			<c:set var="click_here">
 				<a href="javascript:void(0);" class="f-open_filter_dialog"><i:inline key=".clickHere"/></a>
 			</c:set>
-			<div class="page_help">
+			<div class="page-help">
 			    <cti:list var="arguments">
 			        <cti:item value="${detection_algorithm}"/>
 			        <cti:item value="${click_here}"/>
@@ -134,7 +134,7 @@
 			</div>
 		</c:when>
 		<c:when test="${not empty from_toInstant_breach}">
-		    <div class="page_error">
+		    <div class="page-error">
 				<cti:list var="arguments">
                     <cti:item value="${current_filter}"/>
 					<cti:item value="${from_toInstant_breach}"/>
@@ -145,7 +145,7 @@
 		    </div>
 		</c:when>
 		<c:when test="${not empty toInstant_now_breach}">
-		    <div class="page_error">
+		    <div class="page-error">
 				<cti:list var="arguments">
                     <cti:item value="${current_filter}"/>
 					<cti:item value="${toInstant_now_breach}"/>
@@ -155,7 +155,7 @@
 		    </div>
 		</c:when>
 		<c:when test="${filterResult.hitCount == 0}">
-			<div class="page_warning">
+			<div class="page-warning">
                 <cti:list var="arguments">
                     <cti:item value="${detection_algorithm}"/>
                     <cti:item value="${current_filter}"/>
@@ -164,7 +164,7 @@
 			</div>
 		</c:when>
 		<c:when test="${filterResult.hitCount > 0}">
-			<div class="page_help">
+			<div class="page-help">
                 <cti:list var="arguments">
                     <cti:item value="${filterResult.hitCount}"/>
                     <cti:item value="${detection_algorithm}"/>
@@ -249,7 +249,7 @@
                 <tags:filteredBy labelKey="yukon.common.filteredBy.reset.label" value="${reset_value}" isClearable="false" isReset="true" cssClass="f-reset_filter_submit"/>
 			</c:if>
         </tags:filteredByContainer>
-		<table id="leaksTable" class="compactResultsTable f-traversable has-actions">
+		<table id="leaksTable" class="compact-results-table f-traversable has-actions">
             <c:choose>
                 <c:when test="${fn:length(filterResult.resultList) > 0}">
 					<thead>

@@ -7,7 +7,7 @@
     <div class="stacked">
         <i:inline key="yukon.web.components.updatedWarning.text"/>
     </div>
-    <div class="actionArea">
+    <div class="action-area">
         <cti:button nameKey="refresh" classes="primary action" onclick="window.location.reload();"/>
         <cti:button nameKey="ignore" onclick="jQuery('#updatedWarning').dialog('close');"/>
     </div>

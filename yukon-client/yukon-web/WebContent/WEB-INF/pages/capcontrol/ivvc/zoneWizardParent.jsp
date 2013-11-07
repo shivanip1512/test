@@ -39,7 +39,7 @@
             </form:select>
         </tags:nameValue2>
     </tags:nameValueContainer2>
-    <div class="actionArea">
+    <div class="action-area">
         <cti:button nameKey="next" onclick="submitParentSelect()" classes="primary action"/>
         <cti:button nameKey="cancel" onclick="cancelZoneWizard()"/>
     </div>

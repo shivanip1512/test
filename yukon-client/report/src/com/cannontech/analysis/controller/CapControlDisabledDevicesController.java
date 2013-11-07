@@ -55,7 +55,7 @@ public class CapControlDisabledDevicesController extends CapControlReportControl
         String html = "";
         html += "<table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell' checked>" + LINE_SEPARATOR;
         html += "<tr>" + LINE_SEPARATOR;
-        html += "<td class='TitleHeader'>&nbsp;Device Types</td>" +LINE_SEPARATOR;
+        html += "<td class='title-header'>&nbsp;Device Types</td>" +LINE_SEPARATOR;
         html += "</tr>" + LINE_SEPARATOR;
         html += "<tr>" + LINE_SEPARATOR;
         html += "<td><input type='checkbox' name='"+ATT_DEVICE_TYPES+"' value='Area' checked>Area"+ LINE_SEPARATOR;

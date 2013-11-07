@@ -38,9 +38,9 @@
 			<form:hidden path="enabled" />
 		</cti:displayForPageEditModes>
 
-	    <div class="column_12_12 clearfix">
+	    <div class="column-12-12 clearfix">
             <div class="column one">
-				<tags:formElementContainer nameKey="settings" styleClass="${settings_section_class}">
+				<tags:sectionContainer2 nameKey="settings" styleClass="${settings_section_class}">
 					<tags:nameValueContainer2>
 
 						<%-- name --%>
@@ -79,7 +79,7 @@
                             </a>
                         </tags:nameValue2>
 					</tags:nameValueContainer2>
-				</tags:formElementContainer>
+				</tags:sectionContainer2>
                 <div id="pointUnknownNumberHelp" class="dn" target-title="<i:inline key=".missingPOINT.limitedQuery.help.title" />"><i:inline key=".missingPOINT.limitedQuery.help" /></div>
             </div>
             <div class="column two nogutter">
@@ -92,13 +92,13 @@
                         noBlockOnAdd="true" 
                         disableAddButton="${disableAddProcessAtStart}">
                     <div>
-					<table class="inputTable f-processors_table device_data_processors full_width">
+					<table class="inputTable f-processors_table device_data_processors full-width">
 						<thead>
 							<tr>
 								<th><i:inline key=".processors.attribute" /></th>
 		                        <th><i:inline key=".processors.stateGroup" /></th>
 		                        <th><i:inline key=".processors.state" /></th>
-								<th class="removeColumn"></th>
+								<th class="remove-column"></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -207,16 +207,16 @@
     <c:set var="nameKey" value="areYouSureUpdateOrCreateDialog"/>
     <c:set var="options" value="{width: 550}"/>
 	<dialog:inline id="update_loading_dialog" okEvent="${okEvent}" nameKey="${nameKey}" options="${options}" arguments="${updateCreateTitleVerb}">
-        <h3 class="errorMessage"><i:inline key="yukon.common.warning"/></h3>
+        <h3 class="error"><i:inline key="yukon.common.warning"/></h3>
         <cti:msg2 key=".areYouSureLoading" arguments="${updateCreateMsgVerb}"/>
 	</dialog:inline>
 	<dialog:inline id="update_missing_dialog" okEvent="${okEvent}" nameKey="${nameKey}" options="${options}" arguments="${updateCreateTitleVerb}">
-        <h3 class="errorMessage"><i:inline key="yukon.common.warning"/></h3>
+        <h3 class="error"><i:inline key="yukon.common.warning"/></h3>
         <cti:msg2 key=".areYouSureMissing" arguments="${updateCreateMsgVerb}"/>
 	</dialog:inline>
 
 	<%-- update / enable_disable / delete / cancel --%>
-	<div class="pageActionArea">
+	<div class="page-action-area">
 		<cti:displayForPageEditModes modes="EDIT">
             <cti:button nameKey="update" classes="f-update_monitor primary action"/>
 			<c:if test="${monitor.enabled}">

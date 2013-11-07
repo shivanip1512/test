@@ -8,7 +8,7 @@
 
     <form id="sendResetPeakForm" action="/dr/controlArea/resetPeak" onsubmit="return submitFormViaAjax('drDialog', 'sendResetPeakForm');">
         <input type="hidden" name="controlAreaId" value="${controlArea.paoIdentifier.paoId}"/>
-        <div class="actionArea">
+        <div class="action-area">
             <cti:button nameKey="cancel" onclick="jQuery('#drDialog').dialog('close');"/>
             <cti:button nameKey="ok" classes="primary action" type="submit"/>
         </div>

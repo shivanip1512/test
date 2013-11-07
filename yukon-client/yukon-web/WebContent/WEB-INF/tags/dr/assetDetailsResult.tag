@@ -16,21 +16,21 @@
 <cti:msgScope paths="modules.operator.hardware.assetAvailability">
 
 <div class="f-table-container">
-    <table class="compactResultsTable sortable-table rowHighlighting">
+    <table class="compact-results-table sortable-table row-highlighting">
         <thead>
             <tr>
                 <th><tags:sortLink nameKey="serialNumber" baseUrl="${sortUrl}" fieldName="SERIAL_NUM" 
-                                   sortParam="sortBy" styleClass="f-sortLink" isDefault="true" /></th>
+                                   sortParam="sortBy" styleClass="f-sort-link" isDefault="true" /></th>
                 <th><tags:sortLink nameKey="type" baseUrl="${sortUrl}" fieldName="TYPE" 
-                                   sortParam="sortBy" styleClass="f-sortLink" /></th>
+                                   sortParam="sortBy" styleClass="f-sort-link" /></th>
                 <th><tags:sortLink nameKey="lastCommunication" baseUrl="${sortUrl}" fieldName="LAST_COMM" 
-                                   sortParam="sortBy" styleClass="f-sortLink" /></th>
+                                   sortParam="sortBy" styleClass="f-sort-link" /></th>
                 <th><tags:sortLink nameKey="lastRuntime" baseUrl="${sortUrl}" fieldName="LAST_RUN" 
-                                   sortParam="sortBy" styleClass="f-sortLink" /></th>
+                                   sortParam="sortBy" styleClass="f-sort-link" /></th>
                 <th><tags:sortLink nameKey="appliances" baseUrl="${sortUrl}" fieldName="APPLIANCES" 
-                                   sortParam="sortBy" styleClass="f-sortLink" /></th>
+                                   sortParam="sortBy" styleClass="f-sort-link" /></th>
                 <th><tags:sortLink nameKey="availability" baseUrl="${sortUrl}" fieldName="AVAILABILITY" 
-                                   sortParam="sortBy" styleClass="f-sortLink" /></th>
+                                   sortParam="sortBy" styleClass="f-sort-link" /></th>
             </tr>
         </thead>
         

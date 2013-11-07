@@ -4,8 +4,8 @@
 
 <cti:standardPage module="operator" page="optOut.history">
     
-    <tags:boxContainer2 nameKey="optOutHistory">
+    <tags:sectionContainer2 nameKey="optOutHistory">
         <dr:optOutHistory previousOptOutList="${previousOptOutList}" />
-    </tags:boxContainer2>
+    </tags:sectionContainer2>
 
 </cti:standardPage>

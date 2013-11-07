@@ -25,7 +25,7 @@
                 <tags:selectNameValue emptyValueKey="true" nameKey=".manualControl.control" path="stateId" items="${stateList}" itemValue="liteID" itemLabel="stateText" />
             </c:if>            
         </tags:nameValueContainer2>
-        <div class="actionArea">
+        <div class="action-area">
             <cti:button nameKey="ok" classes="primary f-manualControl-send"/>
             <cti:button nameKey="close" onclick="jQuery('#tdc-popup').dialog('close');" />
         </div>

@@ -61,7 +61,7 @@
 </c:if>
 <%-- END Secondary Menu --%>
 
-    <div class="column_16_8">
+    <div class="column-16-8">
         <div class="column one">
             <form name="commandForm" method="POST" action="/servlet/CommanderServlet">
                 <input type="hidden" name="deviceID" value="${deviceId}">
@@ -108,12 +108,12 @@
                         <input type="text" id="command" name="command" size="40" <cti:isPropertyFalse property="EXECUTE_MANUAL_COMMAND">readonly</cti:isPropertyFalse> value="${currentCommand}">
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
-                <div class="pageActionArea stacked">
+                <div class="page-action-area stacked">
                     <cti:button nameKey="execute" type="submit" name="execute" classes="primary action"/>
                     <cti:button nameKey="clear" type="submit" name="clearText"/>
                     <cti:button nameKey="refresh" name="refresh" onclick="window.location.reload()"/>
                 </div>
-                <div id="command_results" class="liteContainer stacked code scrollingContainer_large" style="min-height: 200px;">
+                <div id="command_results" class="lite-container stacked code scroll-large" style="min-height: 200px;">
                     <div class="console"><h4><i:inline key="yukon.common.console"/></h4></div>
                     <c:out value="${resultText}" escapeXml="false"/>
                 </div>

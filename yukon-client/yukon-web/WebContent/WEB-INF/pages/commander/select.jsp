@@ -66,7 +66,7 @@
 
     <script>
         jQuery(function() {
-            jQuery('.f-show_all').click(function () {
+            jQuery('.f-show-all').click(function () {
                 <c:forEach var="filter" items="${filters}">
                   jQuery('#${filter.name}').val('');
                 </c:forEach>
@@ -85,7 +85,7 @@
             <input type="hidden" name="orderBy" value="${orderBy}">
             <input type="hidden" name="category" value="${category}">
 
-            <div class="column_8_8_8 tiles clearfix">
+            <div class="column-8-8-8 tiles clearfix">
                 <c:set var="count" value="1"/>
                 <c:forEach var="filter" items="${filters}">
                     <c:if test="${count == 1}"><c:set var="clazz" value="one"/></c:if>
@@ -103,9 +103,9 @@
                 </c:forEach>
             </div>
 
-            <div class="actionArea">
+            <div class="action-area">
                 <cti:button nameKey="search" type="submit" />
-                <cti:button nameKey="showAll" classes="f-show_all" />
+                <cti:button nameKey="showAll" classes="f-show-all" />
             </div>
         </form>
     </tags:boxContainer2>
@@ -115,7 +115,7 @@
             <span class="empty-list"><i:inline key="yukon.common.search.noResultsFound"/></span>
         </c:if>
         <c:if test="${deviceSearchResults.hitCount > 0}">
-            <table class="compactResultsTable rowHighlighting">
+            <table class="compact-results-table row-highlighting">
                 <thead>
 	                <tr>
 		                <c:forEach var="field" items="${fields}">

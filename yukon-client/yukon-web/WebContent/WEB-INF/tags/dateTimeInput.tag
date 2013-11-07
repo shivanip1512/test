@@ -81,6 +81,6 @@
     <form:hidden id="${fieldId}" path="${path}"/>
     <c:if test="${status.error}">
         <br>
-        <form:errors path="${path}" cssClass="errorMessage"/>
+        <form:errors path="${path}" cssClass="error"/>
     </c:if>
 </spring:bind>

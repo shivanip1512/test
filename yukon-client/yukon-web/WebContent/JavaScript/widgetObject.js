@@ -6,7 +6,7 @@ function JsWidgetObject(shortName, parameters) {
   // Don't use $() up here because this is called before page is fully loaded
   this.shortName = shortName;
   this.parameters = parameters;
-  this.container = "widgetContainer_" + this.parameters.widgetId;
+  this.container = "widget-container-" + this.parameters.widgetId;
   this.linkInfo = {};
 
   this.render = function() {

@@ -51,7 +51,7 @@ jQuery("#reasonSelect").change(function(event) {
 				</c:forEach>
 			</select>
 		</div>
-		<div class="actionArea">
+		<div class="action-area">
 			<cti:button nameKey="execute"
 				onclick="doChangeOpState(${bankId}, $F('newOpState'), $F('coReason'), 'true')" />
 		</div>

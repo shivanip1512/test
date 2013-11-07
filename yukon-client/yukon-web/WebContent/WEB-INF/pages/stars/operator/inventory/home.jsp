@@ -91,7 +91,7 @@ function showFileUpload() {
         
         <tags:widgetContainer identify="false">
         
-        <div class="column_14_10">
+        <div class="column-14-10">
             <div class="one column">
             
                 <tags:sectionContainer2 nameKey="deviceSelection" hideEnabled="false" styleClass="stacked">

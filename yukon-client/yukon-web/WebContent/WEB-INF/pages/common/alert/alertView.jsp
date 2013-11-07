@@ -3,7 +3,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <div id="alertView" >
-    <table id="alertTable" class="compactResultsTable">
+    <table id="alertTable" class="compact-results-table">
       <thead>
         <tr class="wsnw">
             <th><cti:msg key="yukon.web.alerts.table.type"/></th>

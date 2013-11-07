@@ -9,7 +9,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr"%>
 
-<tags:formElementContainer nameKey="versaComAddresses">
+<tags:sectionContainer2 nameKey="versaComAddresses">
     <tags:nameValueContainer2>
         <tags:nameValue2 nameKey=".utility">
             <tags:input path="addressingInfo.utility" size="6" maxlength="15"/>
@@ -24,4 +24,4 @@
             <dr:bitSetter path="addressingInfo.divisionBits"/>
         </tags:nameValue2>
     </tags:nameValueContainer2>
-</tags:formElementContainer>
+</tags:sectionContainer2>

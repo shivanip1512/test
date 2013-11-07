@@ -35,7 +35,7 @@ If it's "javascript", nextUrl and previousUrl are required.
     </c:if>
 </c:if>
 <input type="hidden" class="f-current_page_index_from_1" value="${currentPage}" />
-<span class="pagingArea clearfix">
+<span class="paging-area clearfix">
     <c:if test="${pageScope.mode == 'javascript' || !previousEnabled}">
         <tags:pageNumberLink direction="previous" enabled="false" classes="dn"/>
     </c:if>
@@ -47,7 +47,7 @@ If it's "javascript", nextUrl and previousUrl are required.
             <tags:pageNumberLink direction="previous" url="${pageScope.previousUrl}" enabled="true"/>
         </c:if>
     </c:if>
-    <span class="pageNumText">
+    <span class="page-num-text">
         <c:if test="${!empty pageScope.searchResult && pageScope.searchResult.hitCount > 0}">
             <cti:msg key="yukon.common.paging.viewing" arguments="${pageScope.searchResult.startIndex + 1},${pageScope.searchResult.endIndex},${pageScope.searchResult.hitCount}"/>
         </c:if>

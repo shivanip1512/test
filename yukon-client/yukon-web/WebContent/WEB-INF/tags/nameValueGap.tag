@@ -10,7 +10,7 @@
 		</tr>
 	</c:when>
 	<c:otherwise>
-		<div class="errorMessage" style="font-weight: bold">
+		<div class="error" style="font-weight: bold">
 			ERROR: The &lt;nameValueGap&gt; tag must be enclosed in a &lt;nameValueContainer&gt; tag
 		</div>
 	</c:otherwise>

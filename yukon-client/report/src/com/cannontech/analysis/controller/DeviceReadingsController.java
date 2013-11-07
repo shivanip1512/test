@@ -125,7 +125,7 @@ public class DeviceReadingsController extends ReportControllerBase {
         sb.append("<table style='padding: 10px;' class='TableCell'>" + LINE_SEPARATOR);
         sb.append("  <tr>" + LINE_SEPARATOR);
         
-        sb.append("    <td class='TitleHeader' style='padding-right: 5px;'>Data Attribute: </td>");
+        sb.append("    <td class='title-header' style='padding-right: 5px;'>Data Attribute: </td>");
         sb.append("    <td class='main'>" + LINE_SEPARATOR);
         sb.append("      <select id=\"dataAttribute\" name=\"dataAttribute\">" + LINE_SEPARATOR);
         sb.append("        <optgroup label=\"Measured Attributes\">" + LINE_SEPARATOR);
@@ -157,7 +157,7 @@ public class DeviceReadingsController extends ReportControllerBase {
         sb.append("    <td valign='top' style='padding-left: 30px;'>" + LINE_SEPARATOR);        
         sb.append("      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR);
         sb.append("        <tr>" + LINE_SEPARATOR);
-        sb.append("          <td valign='top' class='TitleHeader'>Disabled Devices</td>" +LINE_SEPARATOR);
+        sb.append("          <td valign='top' class='title-header'>Disabled Devices</td>" +LINE_SEPARATOR);
         sb.append("        </tr>" + LINE_SEPARATOR);
         sb.append("        <tr>" + LINE_SEPARATOR);
         sb.append("          <td><input type='Checkbox' name='excludeDisabledDevices' value='true'> Exclude Disabled Devices" + LINE_SEPARATOR);

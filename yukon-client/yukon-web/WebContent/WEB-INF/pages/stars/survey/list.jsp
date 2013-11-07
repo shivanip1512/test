@@ -34,7 +34,7 @@
             <cti:msg2 key=".noResults"/>
         </c:if>
         <c:if test="${surveys.hitCount > 0}">
-            <table id="surveyList" class="compactResultsTable rowHighlighting">
+            <table id="surveyList" class="compact-results-table row-highlighting">
                 <thead>
 	                <tr>
 	                    <th><cti:msg2 key=".name"/></th>
@@ -66,7 +66,7 @@
             </table>
         </c:if>
 
-        <div class="actionArea">
+        <div class="action-area">
             <cti:url var="sampleXmlUrl" value="sampleXml"/>
             <cti:button nameKey="sampleXml" href="${sampleXmlUrl}" icon="icon-page-code"/>
             <cti:button id="addSurveyBtn" nameKey="add" classes="f-blocker" icon="icon-add"/>

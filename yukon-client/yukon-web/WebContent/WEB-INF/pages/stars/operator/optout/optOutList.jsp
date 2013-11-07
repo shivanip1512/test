@@ -38,7 +38,7 @@ function createJSON() {
 
     <div align="center">
 		<c:if test="${!empty error}">
-			<span class="errorMessage"><cti:msg key="${error}"/></span><br>
+			<span class="error"><cti:msg key="${error}"/></span><br>
 		</c:if>
 
         <h3><cti:msg key="yukon.dr.operator.optoutlist.header"/></h3>
@@ -53,7 +53,7 @@ function createJSON() {
 
         <form id="form" action="${actionUrl}" method="POST" onsubmit="createJSON();">
             <div id="controlEventsDiv" style="height: auto;">
-                <table class="resultsTable" align="center" width="99%">
+                <table class="results-table" align="center" width="99%">
                     <tr>
                         <th></th>
                         <th align="left"><cti:msg key="yukon.dr.operator.optoutlist.hardware"/></th>

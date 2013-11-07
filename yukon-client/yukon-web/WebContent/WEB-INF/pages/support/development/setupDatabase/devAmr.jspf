@@ -38,7 +38,7 @@
                 </c:forEach>
             </ul>
         </div>
-   <div class="pageActionArea">
+   <div class="page-action-area">
        <cti:button type="submit" nameKey="runSetup" classes="action primary"/>
    </div>
    </form:form>

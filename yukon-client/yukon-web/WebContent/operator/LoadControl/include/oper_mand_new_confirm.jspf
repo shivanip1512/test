@@ -90,7 +90,7 @@
             <table width="657" border="0" cellspacing="0" cellpadding="0" align="left">
               <tr>      
                 <td width="650"> 
-                  <div align="center" class="TitleHeader"><br>
+                  <div align="center" class="title-header"><br>
                   <form action="oper_mand.jsp?tab=newconfirm" method="post">
                     <input type=hidden name="confirmed" value="true">
                     <input type=hidden name="program" value="<%= programStr %>">

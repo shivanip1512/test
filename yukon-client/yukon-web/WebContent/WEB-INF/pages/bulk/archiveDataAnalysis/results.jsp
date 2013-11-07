@@ -11,11 +11,11 @@
         <tags:selectedDevices id="deviceColletion" deviceCollection="${deviceCollection}" />
     </div>
     
-    <div class="column_12_12">
+    <div class="column-12-12">
     
         <%-- Analysis Info --%>
         <div class="column one">
-            <tags:formElementContainer nameKey="analysisInfo">
+            <tags:sectionContainer2 nameKey="analysisInfo">
                 
                 <tags:nameValueContainer2>
                     
@@ -44,15 +44,15 @@
                     
                 </tags:nameValueContainer2>
                 
-            </tags:formElementContainer>
+            </tags:sectionContainer2>
         </div>
         
         <%-- Actions --%>
 
         <div class="column two nogutter">
-            <tags:formElementContainer nameKey="actions">
+            <tags:sectionContainer2 nameKey="actions">
                 
-                <ul class="buttonStack">
+                <ul class="button-stack">
                     <%-- READ LP BUTTON --%>
                     <c:if test="${showReadOption}">
                         <c:url var="readUrl" value="/bulk/archiveDataAnalysis/read/readNow">
@@ -99,7 +99,7 @@
                     <li><cti:button nameKey="collectionActions" renderMode="labeledImage" href="${collectionActionsUrl}" icon="icon-wrench"/></li>
                 
                 </ul>
-            </tags:formElementContainer>
+            </tags:sectionContainer2>
         </div>
     
     </div>
@@ -108,7 +108,7 @@
     <div class="clear">
     <tags:pagedBox2 nameKey="resultsTable" searchResult="${result.searchResult}" baseUrl="view" >
         
-        <table class="compactResultsTable">
+        <table class="compact-results-table">
             <thead>
 	            <tr>
 	                <th><i:inline key=".deviceName"/></th>

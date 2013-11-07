@@ -89,7 +89,7 @@
 											<a href="javascript:void(0);" class="f-removeNotification"><i class="icon icon-cross"></i></a>
 										</p>
 										<p>
-											<form:errors path="liteContactNotifications[${row.index}].notification" cssClass="errorMessage fl" />
+											<form:errors path="liteContactNotifications[${row.index}].notification" cssClass="error fl" />
 										</p>
 									</div>
 								</div>

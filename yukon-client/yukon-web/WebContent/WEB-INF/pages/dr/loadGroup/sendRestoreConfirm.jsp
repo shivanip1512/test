@@ -10,7 +10,7 @@
     <form id="sendRestoreForm" action="${submitUrl}"
         onsubmit="return submitFormViaAjax('drDialog', 'sendRestoreForm');">
         <input type="hidden" name="loadGroupId" value="${loadGroup.paoIdentifier.paoId}"/>
-        <div class="actionArea">
+        <div class="action-area">
             <cti:button nameKey="ok" type="submit" classes="primary action"/>
             <cti:button nameKey="cancel" onclick="jQuery('#drDialog').dialog('close');"/>
         </div>

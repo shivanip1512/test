@@ -13,7 +13,7 @@
                 <input id="newOpCount" type="text" value="0" maxlength="4" size="4">
             </tags:nameValue2>
         </tags:nameValueContainer2>
-        <div class="actionArea">
+        <div class="action-area">
             <cti:button nameKey="reset" onclick="doResetBankOpCount(${bankId}, $F('newOpCount'))"/>
         </div>
     </div>

@@ -41,7 +41,7 @@
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
 		  <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"><br> 
-              <span class="TitleHeader">MESSAGE</span><br>
+              <span class="title-header">MESSAGE</span><br>
 			  <p>
               <table width="450" border="1" cellspacing="0" cellpadding="5">
                 <tr> 

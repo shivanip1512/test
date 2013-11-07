@@ -9,7 +9,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr"%>
 
-<tags:formElementContainer nameKey="slotAddresses">
+<tags:sectionContainer2 nameKey="slotAddresses">
     <table>
         <c:forEach var="slotNum" begin="0" end="5">
             <tr>
@@ -17,4 +17,4 @@
             </tr>
         </c:forEach>
     </table>
-</tags:formElementContainer>
+</tags:sectionContainer2>

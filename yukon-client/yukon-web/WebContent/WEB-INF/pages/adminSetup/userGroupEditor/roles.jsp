@@ -21,7 +21,7 @@
         <tags:sectionContainer title="${title}" controls="${legend}">
             <c:forEach items="${mappedPropertiesHelper.mappableProperties}" var="prop">
                 <div class="setting">
-                    <div class="column_6_12_6 clearfix">
+                    <div class="column-6-12-6 clearfix">
                         <div class="column one">
                             <label for="${prop.extra.yukonRoleProperty}"><i:inline key="${prop.extra.key}"/></label>
                         </div>
@@ -43,7 +43,7 @@
                                         <c:if test="${!empty prop.extra.defaultValue}">
                                             <span class="default"><i:inline key=".default"/>:&nbsp;(${fn:escapeXml(prop.extra.defaultValue)})</span>
                                         </c:if>
-                                        <form:errors path="${prop.path}" cssClass="errorMessage" element="div"/>
+                                        <form:errors path="${prop.path}" cssClass="error" element="div"/>
                                     </p>
                                 </div>
                             </div>

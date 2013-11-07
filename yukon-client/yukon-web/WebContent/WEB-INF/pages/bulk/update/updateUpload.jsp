@@ -8,7 +8,7 @@
     <cti:msg var="headerTitle" key="yukon.common.device.bulk.updateUpload.header"/>
     <form id="uploadForm" method="post" action="/bulk/update/parseUpload" enctype="multipart/form-data">
     <tags:sectionContainer title="${headerTitle}" id="updateUploadContainer" hideEnabled="false">
-        <div class="column_12_12 stacked clearfix">
+        <div class="column-12-12 stacked clearfix">
             <div class="column one">
                 <div class="stacked">
                     <strong><cti:msg key="yukon.common.device.bulk.updateUpload.noteLabel"/></strong>
@@ -21,7 +21,7 @@
                 </div>
                 <%-- file errors --%>
                 <c:if test="${not empty fileErrorKeysList}">
-                    <div class="stacked scrollingContainer_medium">
+                    <div class="stacked scroll-medium">
                         <c:forEach var="fileErrorKey" items="${fileErrorKeysList}">
                             <div class="error"><cti:msg key="${fileErrorKey}"/></div>
                         </c:forEach>
@@ -29,7 +29,7 @@
                 </c:if>
                 <%-- header errors --%>
                 <c:if test="${not empty headersErrorResolverList}">
-                    <div class="stacked liteContainer scrollingContainer_medium">
+                    <div class="stacked lite-container scroll-medium">
                         <c:forEach var="headersErrorResolver" items="${headersErrorResolverList}">
                             <div class="error"><cti:msg key="${headersErrorResolver}"/></div>
                         </c:forEach>
@@ -47,8 +47,8 @@
                     <%-- file select --%>
                     <strong><i:inline key="yukon.common.device.bulk.updateUpload.updateFileLabel"/></strong>
                     <input type="file" name="dataFile" size="30px">
-                    <div class="actionArea">
-                        <cti:button nameKey="load" type="submit" classes="f-disableAfterClick primary action" busy="true"/>
+                    <div class="action-area">
+                        <cti:button nameKey="load" type="submit" classes="primary action" busy="true"/>
                     </div> 
                 </div>
             </div>
@@ -58,10 +58,10 @@
                 <ul><i:inline key="yukon.common.device.bulk.updateUpload.instructions.description"/></ul>
             </div>
         </div>
-        <div class="column_24">
+        <div class="column-24">
             <div class="column one">
                 <%-- field descriptions --%>
-                <table class="resultsTable detail">
+                <table class="results-table detail">
                     <tr>
                         <th><cti:msg key="yukon.common.device.bulk.columnHeader.tableHeader.update.columnHeader"/></th>
                         <th><cti:msg key="yukon.common.device.bulk.columnHeader.tableHeader.update.descriptionInstruction"/></th>
@@ -69,7 +69,7 @@
                     </tr>
                     <c:forEach var="field" items="${allFields}">
                         <tr valign="top">
-                            <td class="smallBoldLabel">${field}</td>
+                            <td class="strong-label-small">${field}</td>
                             <td>
                                 <cti:msg var="description" key="yukon.common.device.bulk.columnHeader.update.description.${field}"/>
                                 <cti:msg var="instruction" key="yukon.common.device.bulk.columnHeader.update.instruction.${field}"/>

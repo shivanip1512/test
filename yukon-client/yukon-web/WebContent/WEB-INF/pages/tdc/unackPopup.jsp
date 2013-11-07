@@ -5,7 +5,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 
 <cti:msgScope paths="modules.tools.tdc">
-    <table class="compactResultsTable has-actions with-form-controls">
+    <table class="compact-results-table has-actions with-form-controls">
         <thead></thead>
         <tfoot></tfoot>
         <tbody>
@@ -17,7 +17,7 @@
             </c:forEach>
         </tbody>
     </table>
-    <div class="actionArea">
+    <div class="action-area">
         <cti:button nameKey="alarm.acknowledgeAll" pointId="${alarms.get(0).pointId}" classes="f-ack-alarms-for-point"/>
         <cti:button nameKey="close" onclick="jQuery('#tdc-popup').dialog('close');"/>
     </div>

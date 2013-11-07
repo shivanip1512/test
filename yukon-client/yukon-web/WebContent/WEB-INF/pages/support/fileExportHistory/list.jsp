@@ -18,14 +18,14 @@
 					<input type="text" name="initiator" value="${searchInitiator}">
 				</tags:nameValue2>
 			</tags:nameValueContainer2>
-			<div class="actionArea">
+			<div class="action-area">
 				<cti:button nameKey="searchButton" type="submit"/>
 			</div>
 		</form>
 	</i:simplePopup>
 	
 	<tags:pagedBox2 nameKey="mainBox" searchResult="${searchResult}" baseUrl="list" filterDialog="searchPopup">
-		<table id="mainTable" class="compactResultsTable">
+		<table id="mainTable" class="compact-results-table">
 			<thead>
 				<th><i:inline key=".columns.name"/></th>
 				<th><i:inline key=".columns.type"/></th>

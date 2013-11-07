@@ -11,7 +11,7 @@ var Yukon = (function (yukonMod) {
 Yukon.namespace('Yukon.Alerts');
 Yukon.Alerts = (function () {
     var initialized = false, 
-        _alert_button = "#yukon_alert_button",
+        _alert_button = "#yukon-alert-button",
         _clear_button = "#yukon_clear_alerts_button",
         _viewAlertUrl = "/common/alert/view",
         _clearAlertUrl = "/common/alert/clear",
@@ -30,7 +30,7 @@ Yukon.Alerts = (function () {
         },
 
         _updateCount = function (count) {
-            var button = jQuery("#yukon_alert_button");
+            var button = jQuery("#yukon-alert-button");
             button.children(".label").html(count);
             if (count > 0) {
                 button.addClass('red');

@@ -22,13 +22,13 @@
         <div>
     </c:if>
 
-    <div class="scrollingContainer_large">
+    <div class="scroll-large">
         <c:choose>
             <c:when test="${points.size() == 0}">
                 <i:inline key=".notFound" />
             </c:when>
             <c:otherwise>
-                <table id="pointValueList" class="compactResultsTable rowHighlighting">
+                <table id="pointValueList" class="compact-results-table row-highlighting">
                     <tr>
                         <th>
                             <tags:sortLink nameKey="tableHeader.timestamp" 

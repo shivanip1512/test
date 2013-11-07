@@ -131,7 +131,7 @@ Yukon.UserPreferences = (function () {
             jQuery(document).on("change", "select.f-contactNotif-type", this.update_contact_notif_input_formatting);
 
             // NEW PAGINATION
-            jQuery(document).on('click', '.f-ajaxPaging', this.paginate_activity_stream);
+            jQuery(document).on('click', '.f-ajax-paging', this.paginate_activity_stream);
 
             jQuery(document).on('yukonDialogConfirmOk', '#yukon_dialog_confirm', this.reset_all_preferences);
 

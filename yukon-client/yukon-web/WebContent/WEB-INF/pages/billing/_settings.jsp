@@ -7,16 +7,8 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<style type="text/css">
-<!--
-div#internalTreeContainer_billingTree.error > div.tree_container > div.treeCanvas > ul {
-    background-color: #FFEEEE;
-}
-
--->
-</style>
-
 <input id="in_formatType_itronEvent" type="hidden" value="${TYPE_CURTAILMENT_EVENTS_ITRON}" />
+
 <p id="txt_selectGroup" class="error dn"><cti:msg key="yukon.web.billing.mustSelectGroup"/></p>
 
     <c:set var="origEndDate" value="${BILLING_BEAN.endDate}"></c:set>
@@ -68,9 +60,11 @@ div#internalTreeContainer_billingTree.error > div.tree_container > div.treeCanva
                 </tags:nameValue>
 
             </tags:nameValueContainer>
-            <cti:msg key="yukon.web.generate" var="generateLabel" />
-            <cti:msg key="yukon.web.billing.schedule" var="scheduleLabel" />
-            <input type="button" name="generate" value="${generateLabel}">
-            <input type="button" name="schedule" value="${scheduleLabel}">
+            <div class="page-action-area">
+                <cti:msg key="yukon.web.generate" var="generateLabel" />
+                <cti:msg key="yukon.web.billing.schedule" var="scheduleLabel" />
+                <cti:button label="${generateLabel}" name="generate" icon="icon-page-white-excel"/>
+                <cti:button label="${scheduleLabel}" name="schedule" icon="icon-calendar-view-day"/>
+            </div>
         </form>
     </tags:sectionContainer>

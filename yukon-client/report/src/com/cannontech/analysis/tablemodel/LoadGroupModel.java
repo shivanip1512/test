@@ -527,7 +527,7 @@ public class LoadGroupModel extends ReportModelBase<LoadGroupModel.TempLMControl
 		html += "    <td valign='top'>" + LINE_SEPARATOR;
 		html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;		
 		html += "        <tr>" + LINE_SEPARATOR;
-		html += "          <td class='TitleHeader'>&nbsp;Display</td>" +LINE_SEPARATOR;
+		html += "          <td class='title-header'>&nbsp;Display</td>" +LINE_SEPARATOR;
 		html += "        </tr>" + LINE_SEPARATOR;
 		html += "        <tr>" + LINE_SEPARATOR;
 		html += "          <td><input type='checkbox' name='" +ATT_ALL_RESTORE_TYPES + "' value='true'>Show Additional Detail (Multiple entries for one control)" + LINE_SEPARATOR;
@@ -544,7 +544,7 @@ public class LoadGroupModel extends ReportModelBase<LoadGroupModel.TempLMControl
 		html += "    <td valign='top'>" + LINE_SEPARATOR;
 		html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;		
 		html += "        <tr>" + LINE_SEPARATOR;
-		html += "          <td class='TitleHeader'>&nbsp;Show Control Totals</td>" +LINE_SEPARATOR;
+		html += "          <td class='title-header'>&nbsp;Show Control Totals</td>" +LINE_SEPARATOR;
 		html += "        </tr>" + LINE_SEPARATOR;
 		html += "        <tr>" + LINE_SEPARATOR;
 		html += "          <td><input type='checkbox' checked name='" +ATT_SHOW_DAILY_TOTAL + "' value='true'>Daily" + LINE_SEPARATOR;
@@ -568,7 +568,7 @@ public class LoadGroupModel extends ReportModelBase<LoadGroupModel.TempLMControl
 		html += "    <td valign='top'>" + LINE_SEPARATOR;
 		html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;		
 		html += "        <tr>" + LINE_SEPARATOR;
-		html += "          <td class='TitleHeader'>&nbsp;Sort By Load Group</td>" +LINE_SEPARATOR;
+		html += "          <td class='title-header'>&nbsp;Sort By Load Group</td>" +LINE_SEPARATOR;
 		html += "        </tr>" + LINE_SEPARATOR;
 		for (int i = 0; i < getAllSortOrders().length; i++)
 		{

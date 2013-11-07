@@ -106,7 +106,7 @@ System.out.println("revisionNumber: " + revisionNumber);
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"> 
-              <p class="TitleHeader"><br>
+              <p class="title-header"><br>
                 Energy Buyback - HISTORY DETAIL <BR>
                 OFFER <%= offerId %> - <%= revisionNumber %></p>
             </div>

@@ -82,7 +82,7 @@ th.variableColumn {
     
     <c:forEach var="level" items="${routeTables}" varStatus="levelStatus">
         <tags:hideReveal title="${levelLabel} ${levelStatus.index + 1}">
-            <table id="level${levelStatus.index + 1}" class="resultsTable routeTable">
+            <table id="level${levelStatus.index + 1}" class="results-table routeTable">
                 <thead>
                     <tr>
                         <th class="fixedColumn"><i:inline key=".fixedBit"/></th>

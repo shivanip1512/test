@@ -324,9 +324,9 @@ Yukon.CapControl = (function () {
             var contents = jQuery('#alertMessageContents');
 
             if (success) {
-                contents.addClass('successMessage').removeClass('errorMessage');
+                contents.addClass('success').removeClass('error');
             } else {
-                contents.removeClass('successMessage').addClass('errorMessage');
+                contents.removeClass('success').addClass('error');
             }
             contents.html(message);
             jQuery('#alertMessageContainer').show();

@@ -9,7 +9,7 @@
 <%@ attribute name="argumentSeparator" %>
 
 <cti:checkGlobalRolesAndProperties value="I18N_DESIGN_MODE">
-	<span class="i18nInline">
+	<span class="i18n-inline">
 		<c:choose>
 			<c:when test="${not empty argumentSeparator}">
 				<cti:msg2 key="${key}" arguments="${arguments}"
@@ -19,7 +19,7 @@
 				<cti:msg2 key="${key}" arguments="${arguments}" debug="true" fallback="true"/>
 			</c:otherwise>
 		</c:choose>
-		<span class="i18nInlineDebug">
+		<span class="i18n-inline-debug">
 			<c:forEach var="entry" items="${msg2TagDebugMap}">${entry.key}=${entry.value}<br></c:forEach>
 		</span>
 	</span>

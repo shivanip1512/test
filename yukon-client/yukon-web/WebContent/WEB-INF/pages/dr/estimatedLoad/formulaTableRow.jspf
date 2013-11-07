@@ -12,7 +12,7 @@
         name="tables[${tableIndex}].inputPointId"
         value="${formulaBean.tables[tableIndex].pointType ? pointId : ''}"/>
 
-    <div class="column_6_6_12 clearfix">
+    <div class="column-6-6-12 clearfix">
         <div class="column one">
             <tags:nameValueStacked nameKey=".name">
                 <tags:inputBindOptional bindPath="${not dummyRow}" pathOrName="tables[${tableIndex}].name" size="20"/>
@@ -142,7 +142,7 @@
         </div>
         <div class="column three nogutter">
             <cti:displayForPageEditModes modes="VIEW">
-                <div class="column_12_12 clearfix">
+                <div class="column-12-12 clearfix">
                     <div class="column one">
                         <tags:nameValueStacked nameKey=".entries">
                             ${formulaBean.tables[tableIndex].numberOfEntries}
@@ -179,12 +179,12 @@
                     </h4>
                 </div>
                 <input class="tableIndex " type="hidden" value="${tableIndex}"/>
-                <div class="column_10_14 clearfix">
+                <div class="column-10-14 clearfix">
                     <div class="column one"><i:inline key=".input"/></div>
                     <div class="column two nogutter"><i:inline key=".output"/></div>
                 </div>
-                <div class="liteContainer">
-                    <div class="scrollingContainer_medium">
+                <div class="lite-container">
+                    <div class="scroll-medium">
                         <div id="tableEntries_${dummyRow ? '' : tableIndex}"
                             class="clearfix separated-sections no-lines f-drFormula-tableEntries f-drFormula-appendTableId">
                             <c:if test="${not dummyRow}">
@@ -205,7 +205,7 @@
                                      </c:forEach>
                                 </c:if>
                             </c:if>
-                            <div class="f-drFormula-inputMax column_10_14 section clearfix stacked">
+                            <div class="f-drFormula-inputMax column-10-14 section clearfix stacked">
                                 <div class="column one">
                                     <div class="f-drFormula-timeInput_${dummyRow ? '' : tableIndex}"
                                      style="${formulaBean.tables[tableIndex].timeInput ? '' : 'display:none'}">
@@ -225,7 +225,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="actionArea stacked">
+                <div class="action-area stacked">
                     <cti:button classes="f-drFormula-newEntryButton"
                         icon="icon-plus-green"
                         nameKey="newEntry"

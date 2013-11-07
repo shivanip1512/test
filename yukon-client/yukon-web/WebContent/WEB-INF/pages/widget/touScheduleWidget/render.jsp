@@ -11,7 +11,7 @@
             </c:forEach>
         </select>
 
-        <div class="actionArea">
+        <div class="action-area">
             <tags:widgetActionUpdate method="downloadTouSchedule" nameKey="downloadSchedule" 
                                      container="${widgetParameters.widgetId}_results"/>
         </div>

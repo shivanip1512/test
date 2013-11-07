@@ -48,7 +48,7 @@
                     </div>
                 </c:forEach>
             </div>
-            <div class="actionArea clear">
+            <div class="action-area clear">
                 <cti:button nameKey="search" name="filter" value="true" type="submit" classes="primary"/>
                 <cti:button nameKey="showAll" onclick="javascript:clearFilter()" />
             </div>
@@ -70,7 +70,7 @@
     <cti:msg2 var="meterSearchTitle" key=".meterSearchResultsTitle" />
     <tags:pagedBox title="${meterSearchTitle}" searchResult="${meterSearchResults}" baseUrl="${baseUrl}"
         pageByHundereds="true" titleLinkHtml="${linkHeaderHtml}">
-        <table class="compactResultsTable f-traversable rowHighlighting has-actions">
+        <table class="compact-results-table f-traversable row-highlighting has-actions">
             <c:if test="${meterSearchResults.hitCount > 0}">
                 <thead>
                     <tr>

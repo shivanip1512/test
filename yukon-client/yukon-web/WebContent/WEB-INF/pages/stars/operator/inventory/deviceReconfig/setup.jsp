@@ -19,14 +19,14 @@
 	                <tags:selectedInventory inventoryCollection="${inventoryCollection}" id="inventoryCollection"/>
                 </div>
                 
-                <tags:formElementContainer nameKey="configurationOptions">
+                <tags:sectionContainer2 nameKey="configurationOptions">
                     <tags:nameValueContainer2>
                         <tags:inputNameValue nameKey=".name" path="name" size="45" maxlength="250"/>
                         <tags:checkboxNameValue nameKey=".sendInServiceLabel" checkBoxDescriptionNameKey=".sendInService" path="sendInService"/>
                     </tags:nameValueContainer2>
-                </tags:formElementContainer>
+                </tags:sectionContainer2>
                 
-                <div class="pageActionArea">
+                <div class="page-action-area">
                     <cti:button nameKey="save" type="submit" classes="primary action"/>
                     <cti:button nameKey="cancel" name="cancelButton" type="submit"/>
                 </div>
@@ -46,7 +46,7 @@
                 
                     <c:otherwise>
                     
-                        <table class="compactResultsTable">
+                        <table class="compact-results-table">
                             <thead>
 	                            <tr>
 	                                <th><i:inline key="yukon.web.widgets.commandScheduleWidget.start"/></th>
@@ -65,10 +65,10 @@
 	                                    <td>
 	                                        <c:choose>
 	                                            <c:when test="${schedule.enabled}">
-	                                                <span class="successMessage"><i:inline key=".scheduleEnabled"/></span>
+	                                                <span class="success"><i:inline key=".scheduleEnabled"/></span>
 	                                            </c:when>
 	                                            <c:otherwise>
-	                                                <span class="errorMessage"><i:inline key=".scheduleDisabled"/></span>
+	                                                <span class="error"><i:inline key=".scheduleDisabled"/></span>
 	                                            </c:otherwise>
 	                                        </c:choose>
 	                                    </td>

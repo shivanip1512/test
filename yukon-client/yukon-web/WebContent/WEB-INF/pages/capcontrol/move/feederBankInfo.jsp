@@ -12,7 +12,7 @@
         <span class="empty-list"><i:inline key=".noBanks"/></span>
     </c:if>
     <c:if test="${not empty capBankList}">
-        <table class="compactResultsTable">
+        <table class="compact-results-table">
             <thead>
                 <tr>
                     <th><i:inline key=".bankName"/></th>

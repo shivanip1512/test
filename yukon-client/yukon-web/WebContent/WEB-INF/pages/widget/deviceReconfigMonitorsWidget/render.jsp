@@ -12,7 +12,7 @@
     </c:when>
 
     <c:otherwise>
-        <table class="compactResultsTable">
+        <table class="compact-results-table">
             <thead>
                 <tr>
                     <th><i:inline key=".taskName"/></th>

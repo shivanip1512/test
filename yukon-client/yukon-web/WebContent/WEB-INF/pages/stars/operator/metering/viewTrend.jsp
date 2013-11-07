@@ -66,7 +66,7 @@ final SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");
                         <tags:sectionContainer title="${selectedTrendName}"/>
                     </c:when>
                     <c:otherwise> <%-- there is some weirdness in the graphbean caching the selected trend so it is possible the graph shown after an available trends change wont match, this is a default header --%>
-                        <tags:formElementContainer nameKey="trend"/> 
+                        <tags:sectionContainer2 nameKey="trend"/> 
                     </c:otherwise>
                 </c:choose>
                 
@@ -117,7 +117,7 @@ final SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");
             <c:if test="${hasTrends}">
             <td class="trendsListingTd">
             
-                <tags:formElementContainer nameKey="trends">
+                <tags:sectionContainer2 nameKey="trends">
                 
                     <table class="trendList">
                     <c:forEach var="customerGraphWrapper" items="${customerGraphWrappers}" varStatus="status">
@@ -149,7 +149,7 @@ final SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");
                     </c:forEach>
                     </table>
                 
-                </tags:formElementContainer>
+                </tags:sectionContainer2>
             
             </td>
             </c:if>

@@ -59,7 +59,7 @@
             </div>
         </c:if>
         <c:if test="${!empty compareResults}">
-            <table class="resultsTable">
+            <table class="results-table">
                 <thead>
                     <tr>
                         <th><i:inline key=".key" /></th>

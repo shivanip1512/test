@@ -14,100 +14,100 @@
 var programIdsAlreadyEnrolled = [];
 </script>
 
-<tags:boxContainer2 nameKey="enrolledPrograms" styleClass="stacked">
+<tags:sectionContainer2 nameKey="enrolledPrograms" styleClass="stacked">
     <c:if test="${empty enrollmentPrograms}">
         <i:inline key=".noEnrolledPrograms"/>
     </c:if>
     <c:if test="${!empty enrollmentPrograms}">
-    <table class="compactResultsTable rowHighlighting">
-        <thead>
-            <tr>
-                <th class="programName"><i:inline key=".name"/></th>
-                <th class="applianceCategory"><i:inline key=".applianceCategory"/></th>
-                <cti:checkEnergyCompanySetting value="!TRACK_HARDWARE_ADDRESSING" energyCompanyId="${energyCompanyId}">
-                    <th class="loadGroup"><i:inline key=".group"/></th>
-                </cti:checkEnergyCompanySetting>
-                <th class="hardware"><i:inline key=".hardware"/></th>
-                <th class="relay"><i:inline key=".relay"/></th>
-                <th class="status"><i:inline key=".status"/></th>
-                <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-                    <th class="actions"><i:inline key=".actions"/></th>
-                </cti:checkRolesAndProperties>
-            </tr>
-        </thead>
-        <tfoot></tfoot>
-        <tbody>
-            <c:forEach var="enrollmentProgram" items="${enrollmentPrograms}">
+        <table class="compact-results-table row-highlighting dashed">
+            <thead>
                 <tr>
-                    <td class="programName">
-                        <c:set var="programId" value="${enrollmentProgram.program.programId}"/>
-                        <script type="text/javascript">programIdsAlreadyEnrolled.push(${programId});</script>
-                        <spring:escapeBody htmlEscape="true">
-                            ${enrollmentProgram.program.programName}
-                        </spring:escapeBody>
-                    </td>
-                    <td class="applianceCategory">
-                        <spring:escapeBody htmlEscape="true">
-                            ${enrollmentProgram.applianceCategory.name}
-                        </spring:escapeBody>
-                    </td>
+                    <th class="programName"><i:inline key=".name"/></th>
+                    <th class="applianceCategory"><i:inline key=".applianceCategory"/></th>
                     <cti:checkEnergyCompanySetting value="!TRACK_HARDWARE_ADDRESSING" energyCompanyId="${energyCompanyId}">
-                        <td class="loadGroup">
-                            <c:if test="${enrollmentProgram.loadGroupId != 0}">
-                                <spring:escapeBody htmlEscape="true">
-                                    ${loadGroupNames[enrollmentProgram.loadGroupId]}
-                                </spring:escapeBody><br>
-                            </c:if>
-                        </td>
+                        <th class="loadGroup"><i:inline key=".group"/></th>
                     </cti:checkEnergyCompanySetting>
-                    <td class="hardware">
-                        <c:forEach var="hardware" items="${enrollmentProgram.inventory}">
-                            <c:if test="${hardware.enrolled}">
-                                <spring:escapeBody htmlEscape="true">
-                                    ${hardware.displayName}
-                                </spring:escapeBody><br>
-                            </c:if>
-                        </c:forEach>
-                    </td>
-                    <td class="relay">
-                        <c:forEach var="hardware" items="${enrollmentProgram.inventory}">
-                            <c:if test="${hardware.enrolled}">
-                                <c:set var="relayStr" value="${hardware.relay}"/>
-                                <c:if test="${hardware.relay == 0}">
-                                    <cti:msg2 var="relayStr" key=".noRelay"/>
-                                </c:if>
-                                ${relayStr}<br>
-                            </c:if>
-                        </c:forEach>
-                    </td>
-                    <td class="status">
-                        <c:forEach var="hardware" items="${enrollmentProgram.inventory}">
-                            <c:if test="${hardware.enrolled}">
-                                <i:inline key="${hardware.inService.shortFormatKey}"/><br>
-                            </c:if>
-                        </c:forEach>
-                    </td>
+                    <th class="hardware"><i:inline key=".hardware"/></th>
+                    <th class="relay"><i:inline key=".relay"/></th>
+                    <th class="status"><i:inline key=".status"/></th>
                     <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-                        <td class="actions">
-                            <cti:url var="editUrl" value="/stars/operator/enrollment/edit">
-                                <cti:param name="accountId" value="${accountId}"/>
-                                <cti:param name="assignedProgramId" value="${programId}"/>
-                            </cti:url>
-                            <tags:simpleDialogLink2 dialogId="peDialog" nameKey="edit"
-                                skipLabel="true" actionUrl="${editUrl}" icon="icon-pencil"/>
-    
-                            <cti:url var="unenrollUrl" value="/stars/operator/enrollment/confirmUnenroll">
-                                <cti:param name="accountId" value="${accountId}"/>
-                                <cti:param name="assignedProgramId" value="${programId}"/>
-                            </cti:url>
-                            <tags:simpleDialogLink2 dialogId="peDialog" nameKey="remove"
-                                skipLabel="true" actionUrl="${unenrollUrl}" icon="icon-cross"/>
-                        </td>
+                        <th class="actions"><i:inline key=".actions"/></th>
                     </cti:checkRolesAndProperties>
                 </tr>
-            </c:forEach>
-        </tbody>
-    </table>
+            </thead>
+            <tfoot></tfoot>
+            <tbody>
+                <c:forEach var="enrollmentProgram" items="${enrollmentPrograms}">
+                    <tr>
+                        <td class="programName">
+                            <c:set var="programId" value="${enrollmentProgram.program.programId}"/>
+                            <script type="text/javascript">programIdsAlreadyEnrolled.push(${programId});</script>
+                            <spring:escapeBody htmlEscape="true">
+                                ${enrollmentProgram.program.programName}
+                            </spring:escapeBody>
+                        </td>
+                        <td class="applianceCategory">
+                            <spring:escapeBody htmlEscape="true">
+                                ${enrollmentProgram.applianceCategory.name}
+                            </spring:escapeBody>
+                        </td>
+                        <cti:checkEnergyCompanySetting value="!TRACK_HARDWARE_ADDRESSING" energyCompanyId="${energyCompanyId}">
+                            <td class="loadGroup">
+                                <c:if test="${enrollmentProgram.loadGroupId != 0}">
+                                    <spring:escapeBody htmlEscape="true">
+                                        ${loadGroupNames[enrollmentProgram.loadGroupId]}
+                                    </spring:escapeBody><br>
+                                </c:if>
+                            </td>
+                        </cti:checkEnergyCompanySetting>
+                        <td class="hardware">
+                            <c:forEach var="hardware" items="${enrollmentProgram.inventory}">
+                                <c:if test="${hardware.enrolled}">
+                                    <spring:escapeBody htmlEscape="true">
+                                        ${hardware.displayName}
+                                    </spring:escapeBody><br>
+                                </c:if>
+                            </c:forEach>
+                        </td>
+                        <td class="relay">
+                            <c:forEach var="hardware" items="${enrollmentProgram.inventory}">
+                                <c:if test="${hardware.enrolled}">
+                                    <c:set var="relayStr" value="${hardware.relay}"/>
+                                    <c:if test="${hardware.relay == 0}">
+                                        <cti:msg2 var="relayStr" key=".noRelay"/>
+                                    </c:if>
+                                    ${relayStr}<br>
+                                </c:if>
+                            </c:forEach>
+                        </td>
+                        <td class="status">
+                            <c:forEach var="hardware" items="${enrollmentProgram.inventory}">
+                                <c:if test="${hardware.enrolled}">
+                                    <i:inline key="${hardware.inService.shortFormatKey}"/><br>
+                                </c:if>
+                            </c:forEach>
+                        </td>
+                        <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
+                            <td class="actions">
+                                <cti:url var="editUrl" value="/stars/operator/enrollment/edit">
+                                    <cti:param name="accountId" value="${accountId}"/>
+                                    <cti:param name="assignedProgramId" value="${programId}"/>
+                                </cti:url>
+                                <tags:simpleDialogLink2 dialogId="peDialog" nameKey="edit"
+                                    skipLabel="true" actionUrl="${editUrl}" icon="icon-pencil"/>
+        
+                                <cti:url var="unenrollUrl" value="/stars/operator/enrollment/confirmUnenroll">
+                                    <cti:param name="accountId" value="${accountId}"/>
+                                    <cti:param name="assignedProgramId" value="${programId}"/>
+                                </cti:url>
+                                <tags:simpleDialogLink2 dialogId="peDialog" nameKey="remove"
+                                    skipLabel="true" actionUrl="${unenrollUrl}" icon="icon-cross"/>
+                            </td>
+                        </cti:checkRolesAndProperties>
+                    </tr>
+                </c:forEach>
+            </tbody>
+        </table>
     </c:if>
 
     <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
@@ -135,7 +135,7 @@ var programIdsAlreadyEnrolled = [];
         <cti:url var="editUrl" value="/stars/operator/enrollment/add"/>
         <form id="addEnrollmentForm" action="${editUrl}">
             <input type="hidden" name="accountId" value="${accountId}"/>
-            <div class="actionArea">
+            <div class="action-area">
                 <tags:pickerDialog type="assignedProgramPicker" id="programPicker"
                     memoryGroup="programPicker"
                     destinationFieldName="assignedProgramId"
@@ -148,7 +148,7 @@ var programIdsAlreadyEnrolled = [];
             </div>
         </form>
     </cti:checkRolesAndProperties>
-</tags:boxContainer2>
+</tags:sectionContainer2>
 
 <dr:enrollmentHistory hardwareConfigActions="${hardwareConfigActions}"/>
 

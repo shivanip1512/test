@@ -30,7 +30,7 @@
         <cti:button nameKey="download" href="${download}" icon="icon-page-white-excel" />
     </div>
 
-    <table class="compactResultsTable pointHighlighting has-actions separated">
+    <table class="compact-results-table pointHighlighting has-actions separated">
         <thead>
             <tr>
                 <th></th>
@@ -88,7 +88,7 @@
                         </c:if>
                         <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.POINT_VALUE')}">
                             <td class="state-indicator tar"><c:if test="${row.pointType.status}">
-                                    <cti:pointStatusColor pointId="${row.pointId}" styleClass="box stateBox" background="true">&nbsp;</cti:pointStatusColor>
+                                    <cti:pointStatusColor pointId="${row.pointId}" styleClass="box state-box" background="true">&nbsp;</cti:pointStatusColor>
                                 </c:if></td>
                             <td><cti:pointValue pointId="${row.pointId}" format="VALUE_UNIT" /></td>
                         </c:if>

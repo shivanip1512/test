@@ -78,7 +78,7 @@
           </td>
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
-            <p align="center" class="TitleHeader"><br>NOTIFICATION - HISTORY</p>
+            <p align="center" class="title-header"><br>NOTIFICATION - HISTORY</p>
             <p align="center" class="MainText">Click on a program name to view the program details.</p>
       <table width="600" border="1" cellspacing="0" cellpadding="2" align="center">
           <tr> 

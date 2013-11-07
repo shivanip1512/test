@@ -34,7 +34,7 @@
 		<form name="PForm" method="post" action="<%=request.getContextPath()%>/servlet/InventoryManager" onsubmit="return validate(this)">
 	    	<input type="hidden" name="action" value="TimePeriodChange"> 
 	    	<div align="center">
-	    		<span class="TitleHeader">TIME PROJECTION FOR DELIVERY</span>
+	    		<span class="title-header">TIME PROJECTION FOR DELIVERY</span>
 			</div>
 			<br>
 			<br>

@@ -17,7 +17,7 @@
     <input type="hidden" name="accountId" value="${accountId}"/>
     <tags:hiddenArray name="inventoryIds" items="${optOutBackingBean.inventoryIds}"/>
 
-    <tags:formElementContainer nameKey="optOuts">
+    <tags:sectionContainer2 nameKey="optOuts">
 
         <table id="questionTable">
             <c:forEach var="question" varStatus="status" items="${questions}">
@@ -36,13 +36,13 @@
             </c:forEach>
         </table>
 
-     <div class="pageActionArea">
+     <div class="page-action-area">
          <cti:button nameKey="save" type="submit" classes="f-blocker"/>
          
          <button type="submit" name="cancel"><i:inline key=".cancel"/></button>
      </div>
 
-    </tags:formElementContainer>
+    </tags:sectionContainer2>
 </form:form>
 
 </cti:standardPage>

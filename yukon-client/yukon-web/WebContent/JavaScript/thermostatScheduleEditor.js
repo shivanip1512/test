@@ -171,9 +171,9 @@ Yukon.ThermostatScheduleEditor = {
                         for(error in errors){
                             var input = jQuery("input[name="+ error +"]", form);
                             if(input[0]){
-                                jQuery("input[name="+ error +"]", form).addClass('error').after("<div class='errorMessage box'><small>" + errors[error] + "</small></div>");
+                                jQuery("input[name="+ error +"]", form).addClass('error').after("<div class='error box'><small>" + errors[error] + "</small></div>");
                             }else{
-                                jQuery(".rows", form).parent().prepend("<div class='errorMessage box'><small>" + errors[error] + "</small></div>");
+                                jQuery(".rows", form).parent().prepend("<div class='error box'><small>" + errors[error] + "</small></div>");
                             }
                         }
                     }else{
@@ -289,7 +289,7 @@ Yukon.ThermostatScheduleEditor = {
     
     clearErrors: function(element){
         jQuery(".error", element).removeClass('error');
-        jQuery(".errorMessage", element).remove();
+        jQuery(".error", element).remove();
     },
     
     prepForm: function(form) {

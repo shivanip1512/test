@@ -13,7 +13,7 @@ ${id}.idFieldName = '${cti:escapeJavaScript(idFieldName)}';
 </script>
 
 <div id="${id}">
-    <div class="column_12_12 clear">
+    <div class="column-12-12 clear">
         <div class="column one">
             <label>
                 <i:inline key=".query"/> <input type="text" id="picker_${id}_ss" name="ss" onkeyup="${id}.doKeyUp.call(${id});false;"/>
@@ -22,13 +22,13 @@ ${id}.idFieldName = '${cti:escapeJavaScript(idFieldName)}';
                 <i:inline key=".showAll"/>
             </a>
         </div>
-        <div class="column two nogutter pagingArea">
+        <div class="column two nogutter paging-area">
             <tags:nextPrevLinks previousUrl="javascript:${id}.previous.call(${id})" nextUrl="javascript:${id}.next.call(${id})" mode="javascript"/>
         </div>
     </div>
 
-    <div id="picker_${id}_nothingSelected" style="display:none" class="errorMessage"><i:inline key=".nothingSelected"/></div>
-    <div class="f-block_this">
+    <div id="picker_${id}_nothingSelected" style="display:none" class="error"><i:inline key=".nothingSelected"/></div>
+    <div class="f-block-this">
         <div id="picker_${id}_results" class="pickerResults"></div>
         <div id="picker_${id}_noResults" style="display: none" class="pickerResults"><i:inline key=".noResults"/></div>
     </div>

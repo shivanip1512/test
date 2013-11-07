@@ -64,10 +64,10 @@
         <c:set var="updaterType" value="CBCAREA" />
     </c:if>
 
-    <div class="column_12_12 clearfix">
+    <div class="column-12-12 clearfix">
         <div class="column one">
             <tags:sectionContainer2 nameKey="infoContainer" hideEnabled="true">
-                <div class="column_12_12 clearfix">
+                <div class="column-12-12 clearfix">
                     <div class="column one">
                         <tags:nameValueContainer2 tableClass="infoContainer">
                             <tags:nameValue2 nameKey=".name">
@@ -82,7 +82,7 @@
                         <tags:nameValueContainer2 tableClass="infoContainer">
                             <tags:nameValue2 nameKey=".state" rowClass="wsnw">
                                 <a id="areaState_${bc_areaId}" href="javascript:void(0);" class="subtle-link">
-                                    <span id="areaState_box_${bc_areaId}" class="box stateBox">&nbsp;</span>
+                                    <span id="areaState_box_${bc_areaId}" class="box state-box">&nbsp;</span>
                                     <cti:capControlValue paoId="${bc_areaId}" type="${updaterType}" format="STATE" />
                                 </a>
                                 <cti:dataUpdaterCallback function="updateStateColorGenerator('areaState_box_${bc_areaId}')" initialize="true" value="${updaterType}/${bc_areaId}/STATE"/>
@@ -99,7 +99,7 @@
 
         <div class="column two nogutter">
             <tags:sectionContainer2 nameKey="statsContainer" hideEnabled="true">
-                <div class="column_12_12">
+                <div class="column-12-12">
                     <div class="column one">
                         <tags:nameValueContainer2 tableClass="infoContainer">
                             <tags:nameValue2 nameKey=".availableKvars">
@@ -134,7 +134,7 @@
 
     <tags:boxContainer2 nameKey="substationsContainer"  arguments="${bc_areaName}">
         
-        <table id="subTable" class="compactResultsTable">
+        <table id="subTable" class="compact-results-table">
             <thead>
                 <tr>
                     <c:set var="clazz" value="tar" />
@@ -173,7 +173,7 @@
     				<td class="wsnw">
                         <c:if test="${hasSubstationControl}"><a id="substationState_${substationId}" href="javascript:void(0);" class="subtle-link"></c:if>
                         <c:if test="${not hasSubstationControl}"><span id="substationState_${substationId}"></c:if>
-                            <span id="substationState_box_${substationId}" class="box stateBox">&nbsp;</span>
+                            <span id="substationState_box_${substationId}" class="box state-box">&nbsp;</span>
                             <cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="STATE" />
                         <c:if test="${hasSubstationControl}"></a></c:if>
                         <c:if test="${not hasSubstationControl}"></span></c:if>

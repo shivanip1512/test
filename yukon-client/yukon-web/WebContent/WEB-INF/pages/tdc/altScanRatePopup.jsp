@@ -20,7 +20,7 @@
                 </form:select>
             </tags:nameValue2>
         </tags:nameValueContainer2>
-        <div class="actionArea">
+        <div class="action-area">
             <cti:button nameKey="ok" classes="primary f-altScanRate-send" />
             <cti:button nameKey="close" onclick="jQuery('#tdc-popup').dialog('close');" />
         </div>

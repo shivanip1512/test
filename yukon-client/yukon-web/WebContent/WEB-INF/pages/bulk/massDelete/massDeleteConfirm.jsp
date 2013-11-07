@@ -11,14 +11,14 @@
         <table cellpadding="2">
         
             <tr>
-                <td valign="top" colspan="2" class="smallBoldLabel">
+                <td valign="top" colspan="2" class="strong-label-small">
                     <tags:selectedDevices deviceCollection="${deviceCollection}" id="selectedDevices"/>
                 </td>
             </tr>
             
             <%-- NOTE --%>
             <tr>
-                <td valign="top" class="smallBoldLabel error">
+                <td valign="top" class="strong-label-small error">
                     <cti:msg key="yukon.common.device.bulk.massDeleteConfirm.noteLabel"/>
                 </td>
                 <td>
@@ -27,7 +27,7 @@
             </tr>
         </table>
         
-        <div class="pageActionArea">
+        <div class="page-action-area">
             <form id="massDeleteForm" method="post" action="/bulk/massDelete/doMassDelete">
                 <cti:deviceCollection deviceCollection="${deviceCollection}" />
                 <cti:button nameKey="delete" type="submit" name="deleteButton" classes="primary action"/>

@@ -115,7 +115,7 @@
         
     </script>
     
-    <div id="comment_editor" class="scrollingContainer_large stacked">
+    <div id="comment_editor" class="scroll-large stacked">
         <form id="commentForm" action="/capcontrol/comments/" method="POST">
             <input type="hidden" name="paoId" value="${paoId}">
             <input type="hidden" name="commentId" id="commentId" value="">
@@ -127,14 +127,14 @@
                 <span class="empty-list"><i:inline key=".noComments"/></span>
             </c:if>
             <c:if test="${not empty comments}">
-                <table id="commentsTable" class="compactResultsTable">
+                <table id="commentsTable" class="compact-results-table">
                     <thead>
                         <tr>
                             <th><i:inline key=".comment"/></th>
                             <th><i:inline key=".user"/></th>
                             <th><i:inline key=".time"/></th>
                             <th><i:inline key=".altered"/></th>
-                            <th class="removeColumn"><i:inline key=".delete.label"/></th>
+                            <th class="remove-column"><i:inline key=".delete.label"/></th>
                         </tr>
                     </thead>
                     <tfoot></tfoot>
@@ -168,7 +168,7 @@
                                         <c:otherwise><i:inline key="yukon.web.defaults.no"/></c:otherwise>
                                     </c:choose>
                                 </td>
-                                <td class="removeColumn">
+                                <td class="remove-column">
                                     <cti:button nameKey="remove" renderMode="image" onclick="deleteComment(${comment.id})" classes="center" icon="icon-cross"/>
                                 </td>
                             </tr>

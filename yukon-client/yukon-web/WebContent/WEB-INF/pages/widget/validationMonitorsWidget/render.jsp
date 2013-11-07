@@ -7,7 +7,7 @@
 
 <%-- ERROR --%>
 <c:if test="${not empty validationMonitorsWidgetError}">
-    <div class="errorMessage">${validationMonitorsWidgetError}</div>
+    <div class="error">${validationMonitorsWidgetError}</div>
 </c:if>
         
 <%-- TABLE --%>
@@ -16,7 +16,7 @@
 <c:choose>
 <c:when test="${fn:length(monitors) > 0}">
 
-<table class="compactResultsTable">
+<table class="compact-results-table">
     <thead>
         <tr>
             <th style="width:20px;">&nbsp;</th>
@@ -90,7 +90,7 @@
 </c:otherwise>
 </c:choose>
 
-<div class="actionArea">
+<div class="action-area">
     <cti:url var="reviewUrl" value="/common/veeReview/home"/>
     <a href="${reviewUrl}"><i:inline key=".review"/></a>
     <cti:button nameKey="create" icon="icon-plus-green" type="submit" classes="f-blocker fr"/>

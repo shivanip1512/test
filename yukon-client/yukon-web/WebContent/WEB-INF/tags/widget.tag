@@ -54,8 +54,8 @@
     </c:if>
 
     <c:if test="${empty container or container eq 'box' }">
-        <tags:boxContainer title="${containerTitle}" id="widgetTitledContainer_${widgetParameters.widgetId}" styleClass="widgetContainer" showInitially="true" hideEnabled="${empty pageScope.hideEnabled ? true : pageScope.hideEnabled}" helpText="${pageScope.helpText}">
-            <div id="widgetContainer_${widgetParameters.widgetId}" style="height: ${widgetParameters.height};">
+        <tags:boxContainer title="${containerTitle}" id="widget-titled-container-${widgetParameters.widgetId}" styleClass="widget-container" showInitially="true" hideEnabled="${empty pageScope.hideEnabled ? true : pageScope.hideEnabled}" helpText="${pageScope.helpText}">
+            <div id="widget-container-${widgetParameters.widgetId}" style="height: ${widgetParameters.height};">
                 <c:choose>
                 <c:when test="${beanInst.lazyLoad}">
                     <img src="<c:url value="/WebConfig/yukon/Icons/spinner.gif"/>">
@@ -68,8 +68,8 @@
         </tags:boxContainer>
     </c:if>
     <c:if test="${container eq 'section'}">
-        <tags:sectionContainer title="${containerTitle}" id="widgetTitledContainer_${widgetParameters.widgetId}" styleClass="widgetContainer" helpText="${pageScope.helpText}">
-            <div id="widgetContainer_${widgetParameters.widgetId}" style="height: ${widgetParameters.height};">
+        <tags:sectionContainer title="${containerTitle}" id="widget-titled-container-${widgetParameters.widgetId}" styleClass="widget-container" helpText="${pageScope.helpText}">
+            <div id="widget-container-${widgetParameters.widgetId}" style="height: ${widgetParameters.height};">
                 <c:choose>
                 <c:when test="${beanInst.lazyLoad}">
                     <img src="<c:url value="/WebConfig/yukon/Icons/spinner.gif"/>">

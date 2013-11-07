@@ -50,7 +50,7 @@
                         </c:if>
                        
                         <cti:displayForPageEditModes modes="VIEW">
-                            <div class="actionArea">
+                            <div class="action-area">
                                 <c:if test="${(not empty selection.otherCategoriesExist && selection.otherCategoriesExist) || 
                                               empty selection.categoryId}">
                                     <tags:pickerDialog
@@ -70,10 +70,10 @@
                                     
                                 <cti:msg2 var="i18nCatType" key=".${catType}.title"/>
                                 <cti:msg2 var="createBtnTitle" key=".createCategory" argument="${i18nCatType}"/>                            
-                                <cti:button nameKey="create" data-config-id="${configurationCategoriesBackingBean.configId}" data-category-type="${catType}" classes="f-createBtn f-disableAfterClick" busy="true" icon="icon-plus-green" title="${createBtnTitle}"/>
+                                <cti:button nameKey="create" data-config-id="${configurationCategoriesBackingBean.configId}" data-category-type="${catType}" classes="f-createBtn" busy="true" icon="icon-plus-green" title="${createBtnTitle}"/>
                                 <c:if test="${not empty selection.categoryId}">
                                     <cti:msg2 var="editBtnTitle" key=".editAssignedCategory" argument="${selection.categoryName}"/>
-                                    <cti:button nameKey="edit" data-config-id="${configurationCategoriesBackingBean.configId}" data-category-type="${catType}" classes="f-editBtn f-disableAfterClick" busy="true" icon="icon-pencil" title="${editBtnTitle}"/>
+                                    <cti:button nameKey="edit" data-config-id="${configurationCategoriesBackingBean.configId}" data-category-type="${catType}" classes="f-editBtn" busy="true" icon="icon-pencil" title="${editBtnTitle}"/>
                                 </c:if>
                             </div>
                         </cti:displayForPageEditModes>

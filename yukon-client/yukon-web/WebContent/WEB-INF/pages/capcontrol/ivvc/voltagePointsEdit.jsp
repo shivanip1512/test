@@ -12,7 +12,7 @@
 	
 	<script>
 		jQuery(document).ready(function() {
-			jQuery("table.compactResultsTable tbody tr td input:checkbox").change(function() {
+			jQuery("table.compact-results-table tbody tr td input:checkbox").change(function() {
 				jQuery(this).closest("tr").find("input:text").toggleDisabled();
 			});
 			
@@ -33,7 +33,7 @@
 	<tags:boxContainer2 nameKey=".title">
 		<form:form id="voltagePointsForm" action="updateVoltagePoints" commandName="zoneVoltagePointsHolder">
 			<input name="zoneId" value="${zoneId}" type="hidden"/>
-			<table class="compactResultsTable ">
+			<table class="compact-results-table ">
 				<thead>
 				<tr>
 					<th><i:inline key=".table.header.deviceName"/></th>
@@ -114,7 +114,7 @@
 				</c:forEach>
 				</tbody>
 			</table>
-			<div class="pageActionArea">
+			<div class="page-action-area">
                 <c:if test="${hasEditingRole}">
 					<cti:button nameKey="save" type="submit" classes="primary action"/>
 					

@@ -40,7 +40,8 @@
     <entry key="yukon.web.modules.operator.account.EDIT.contextualPageName">Edit</entry>
     <entry key="yukon.web.modules.operator.account.EDIT.pageDescription">{0}</entry>
     <entry key="yukon.web.modules.operator.account.VIEW.pageName">Account</entry>
-    <entry key="yukon.web.modules.operator.account.VIEW.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.operator.account.VIEW.pageDescription">Account: {0}</entry>
+    <entry key="yukon.web.modules.operator.account.VIEW.crumbTitle">{0}</entry>
     <entry key="yukon.web.modules.operator.account.customerContactSection.title">Customer Contact</entry>
     <entry key="yukon.web.modules.operator.account.serviceAddressSection.title">Service Address</entry>
     <entry key="yukon.web.modules.operator.account.serviceInformationSection.title">Service Information</entry>

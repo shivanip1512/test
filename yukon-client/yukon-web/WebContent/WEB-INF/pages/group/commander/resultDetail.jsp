@@ -55,7 +55,7 @@
         <%-- NOTE --%>
         <table>
             <tr>
-                <td valign="top" class="smallBoldLabel">Note:</td>
+                <td valign="top" class="strong-label-small">Note:</td>
                 <td style="font-size:11px;">
                     Progress is updated periodically. Processing will continue if you wish to navigate away from this page at any time.<br>
                     You may view the progress of all recent and ongoing processes from the <a href="/group/commander/resultList">Group Command Processing Results</a> page.<br><br>

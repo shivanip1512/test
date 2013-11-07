@@ -6,7 +6,7 @@
 
 <cti:standardPage module="tools" page="bulk.analysis.list">
 
-        <table class="compactResultsTable">
+        <table class="compact-results-table">
             <thead>
 	            <tr>
 	                <th><i:inline key="yukon.web.modules.tools.bulk.analysis.list.runDate"/></th>

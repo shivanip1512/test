@@ -60,7 +60,7 @@
 	<c:forEach var="logSection" items="${logList}">
 		<div class="vat dib stacked">
 			<tags:sectionContainer title="${logSection.key}" hideEnabled="true">
-				<table class="contentTable rowHighlighting">
+				<table class="contentTable row-highlighting">
 					<c:forEach var="logFile" items="${logSection.value}" varStatus="logFileIndex">
 						<cti:url value="view" var="url"><cti:param name="file" value="${file}${logFile.name}"/></cti:url>
 						<tr title="${logFile.name}">

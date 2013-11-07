@@ -43,8 +43,8 @@
             </table>
                 
             <%-- SUBMIT BUTTONS --%>
-            <div class="pageActionArea">
-                <cti:button nameKey="import" classes="primary action f-disableAfterClick" busy="true" type="submit"/>
+            <div class="page-action-area">
+                <cti:button nameKey="import" classes="primary action" busy="true" type="submit"/>
                 <cti:url var="cancelUrl" value="/bulk/import/upload"/>
                 <cti:button nameKey="cancel" onclick="window.location='${cancelUrl}'"/>
             </div>

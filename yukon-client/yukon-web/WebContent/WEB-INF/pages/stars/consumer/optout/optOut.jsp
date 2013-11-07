@@ -82,7 +82,7 @@
         
         <c:choose>
             <c:when test="${fn:length(currentOptOutList) > 0}">
-		        <table id="deviceTable" class="resultsTable">
+		        <table id="deviceTable" class="results-table">
                     <thead>
     		        	<tr>
     		        		<th><cti:msg key="yukon.dr.consumer.optout.device"/></th>
@@ -135,7 +135,7 @@
         <!-- Opt Out Limits -->
         <cti:msg key="yukon.dr.consumer.optout.optOutLimits"/>
         
-        <table id="deviceTable" class="resultsTable">
+        <table id="deviceTable" class="results-table">
             <thead>
                 <tr>
                     <th><cti:msg key="yukon.dr.consumer.optout.device"/></th>
@@ -173,7 +173,7 @@
         <cti:msg key="yukon.dr.consumer.optout.optOutHistory"/>
         <c:choose>
             <c:when test="${fn:length(previousOptOutList) > 0}">
-		        <table id="deviceTable" class="resultsTable">
+		        <table id="deviceTable" class="results-table">
                     <thead>
     		        	<tr>
     		        		<th><cti:msg key="yukon.dr.consumer.optout.device"/></th>

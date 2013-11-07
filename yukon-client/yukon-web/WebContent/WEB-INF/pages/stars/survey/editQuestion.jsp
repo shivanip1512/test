@@ -73,8 +73,8 @@ jQuery(document).ready(function() {
 
     <div id="additionalInfo_DROP_DOWN" class="additionalInfo">
 		<tags:boxContainer2 id="answersBox" nameKey="answers">
-	        <div class="dialogScrollArea">
-			    <table id="answerTable" class="compactResultsTable rowHighlighting">
+	        <div class="scroll-medium">
+			    <table id="answerTable" class="compact-results-table row-highlighting">
                     <thead>
     			        <tr>
     			            <th><i:inline key=".answerKey"/></th>

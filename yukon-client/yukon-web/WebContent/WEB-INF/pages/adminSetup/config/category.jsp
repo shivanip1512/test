@@ -35,12 +35,12 @@ jQuery(function() {
 	        <div class="legend"><cti:icon icon="icon-asterisk-orange"/><i:inline key=".legend"/></div>
         </div>
         
-        <div class="liteContainer">
+        <div class="lite-container">
         
             <c:forEach items="${mappedPropertiesHelper.mappableProperties}" var="setting" varStatus="loopStatus">
                 
                 <div class="setting">
-                    <div class="column_6_12_6 clearfix">
+                    <div class="column-6-12-6 clearfix">
                         <div class="column one">
                             <i:inline key="${setting.extra.type}"/>
                         </div>
@@ -67,7 +67,7 @@ jQuery(function() {
                                         <c:if test="${setting.extra.nonDefault}">
                                             <span class="default"><i:inline key=".default"/>(${fn:escapeXml(setting.extra.type.defaultValue)})</span>
                                         </c:if>
-                                        <form:errors path="${setting.path}" cssClass="errorMessage" element="div"/>
+                                        <form:errors path="${setting.path}" cssClass="error" element="div"/>
                                     </p>
                                 </div>
                             </div>
@@ -84,13 +84,13 @@ jQuery(function() {
                                     path="comments[${setting.extra.type}]"
                                     style="${style}"
                                     class="f-commentsShowHide ${inputClass}"/>
-                            <form:errors path="comments[${setting.extra.type}]" cssClass="errorMessage" element="div"/>
+                            <form:errors path="comments[${setting.extra.type}]" cssClass="error" element="div"/>
                         </div>
                     </div>
                 </div>
             </c:forEach>
         </div>
-        <div class="pageActionArea">
+        <div class="page-action-area">
             <cti:button nameKey="save" name="save" type="submit" classes="primary action"/>
             <cti:button nameKey="cancel" name="cancel" href="view"/>
         </div>

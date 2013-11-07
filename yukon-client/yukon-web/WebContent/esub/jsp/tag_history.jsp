@@ -62,7 +62,7 @@ location="control.jsp?pointid=" + id + "&action=display";
             </td>
             <td
  style="width: 33%; text-align: center; vertical-align: middle; background-color: rgb(255, 255, 255);">
-            <div class="TitleHeader">TAG HISTORY<br>Device: <%= lDevice.getPaoName() %><br>Point: <%= lPoint.getPointName() %></div>
+            <div class="title-header">TAG HISTORY<br>Device: <%= lDevice.getPaoName() %><br>Point: <%= lPoint.getPointName() %></div>
             </td>
             <td
  style="width: 33%; text-align: right; background-color: rgb(255, 255, 255); vertical-align: middle;"><input

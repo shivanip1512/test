@@ -15,7 +15,7 @@
     </c:if>
      
 	<tags:boxContainer2 nameKey="areasContainer" hideEnabled="false">
-		<table id="areaTable" class="compactResultsTable">
+		<table id="areaTable" class="compact-results-table">
         
 			<thead>
     			<tr>
@@ -63,7 +63,7 @@
                         <td>
                             <c:if test="${hasAreaControl}"><a id="areaState_${thisAreaId}" href="javascript:void(0);" class="subtle-link"></c:if>
                             <c:if test="${!hasAreaControl}"><span id="areaState_${thisAreaId}"></c:if>
-                                <span id="areaState_box_${thisAreaId}" class="box stateBox">&nbsp;</span>
+                                <span id="areaState_box_${thisAreaId}" class="box state-box">&nbsp;</span>
 								<cti:capControlValue paoId="${thisAreaId}" type="${updaterType}" format="STATE" />
 							<c:if test="${hasAreaControl}"></a></c:if>
 							<c:if test="${!hasAreaControl}"></span></c:if>

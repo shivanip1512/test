@@ -14,7 +14,7 @@ checkConstraintsAllowed = ${checkConstraintsAllowed};
 targetPrograms = ${cti:jsonString(targetGearMap)};
 numPrograms = ${fn:length(programs)};
 
-submitForm = function () {
+submitForm = function() {
     if (document.getElementById('addAdjustmentsCheckbox').checked) {
         url = '<cti:url value="/dr/program/start/multipleGearAdjustments"/>';
     } else {
@@ -24,15 +24,15 @@ submitForm = function () {
     return submitFormViaAjax('drDialog', 'startMultipleProgramsForm', url);
 }
 
-startNowChecked = function () {
+startNowChecked = function() {
     jQuery('#startDate').prop('disabled', jQuery('#startNowCheckbox').prop('checked'));
 }
 
-scheduleStopChecked = function () {
+scheduleStopChecked = function() {
     jQuery('#stopDate').prop('disabled', !jQuery('#scheduleStopCheckbox').prop('checked'));
 }
 
-updateSubmitButtons = function () {
+updateSubmitButtons = function() {
     var autoObservingConstraints = false;
     if (autoObserveConstraintsAllowed) {
         autoObservingConstraints = true;
@@ -50,9 +50,9 @@ updateSubmitButtons = function () {
     }
 }
 
-allProgramsChecked = function () {
+allProgramsChecked = function() {
     var index,
-        allChecked = document.getElementById('allProgramsCheckbox').checked;
+    allChecked = document.getElementById('allProgramsCheckbox').checked;
     for (index = 0; index < numPrograms; index++) {
         document.getElementById('startProgramCheckbox' + index).checked =
             allChecked && !document.getElementById('startProgramCheckbox' + index).disabled;
@@ -60,9 +60,9 @@ allProgramsChecked = function () {
     gearChanged();
 }
 
-updateAllProgramsChecked = function () {
+updateAllProgramsChecked = function() {
     var index,
-        allChecked = true;
+    allChecked = true;
     for (index = 0; index < numPrograms; index++) {
         if (!document.getElementById('startProgramCheckbox' + index).disabled
                 && !document.getElementById('startProgramCheckbox' + index).checked) {
@@ -73,7 +73,7 @@ updateAllProgramsChecked = function () {
     document.getElementById('allProgramsCheckbox').checked = allChecked;
 }
 
-singleProgramChecked = function (boxChecked) {
+singleProgramChecked = function(boxChecked) {
     if (document.getElementById(boxChecked).checked) {
         updateAllProgramsChecked();
     } else {
@@ -82,7 +82,7 @@ singleProgramChecked = function (boxChecked) {
     gearChanged();
 }
 
-gearChanged = function () {
+gearChanged = function() {
     var adjustButtonShown = false,
         index,
         gearNum,
@@ -91,11 +91,11 @@ gearChanged = function () {
     for (index = 0; index < numPrograms; index++) {
         gearNum = document.getElementById('programGear' + index).value;
         programChecked = document.getElementById('startProgramCheckbox' + index).checked;
-        if (targetPrograms[index]) {
-            if (targetPrograms[index][gearNum] && programChecked) {
-                adjustButtonShown = true;
-                break;
-            }
+        if(targetPrograms[index]) {
+	        if (targetPrograms[index][gearNum] && programChecked) {
+	            adjustButtonShown = true;
+	            break;
+	        }
         }
     }
 
@@ -130,45 +130,45 @@ jQuery( function () {
     <input type="hidden" name="from" value="details"/>
     <form:hidden path="now"/>
 
-    <table class="compactResultsTable">
+    <table class="compact-results-table">
         <thead>
-            <tr>
-                <th><cti:msg2 key=".startTime"/></th>
-                <th><cti:msg2 key=".stopTime"/></th>
-            </tr>
+	        <tr>
+	            <th><cti:msg2 key=".startTime"/></th>
+	            <th><cti:msg2 key=".stopTime"/></th>
+	        </tr>
         </thead>
         <tfoot></tfoot>
         <tbody>
-            <tr valign="top">
-                <td width="50%">
-                    <table>
-                        <tr><td>
-                            <form:checkbox path="startNow" id="startNowCheckbox" onclick="startNowChecked()"/>
-                            <label for="startNowCheckbox">
-                                <cti:msg2 key=".startNow"/>
-                            </label>
-                        </td></tr>
+	        <tr valign="top">
+	            <td width="50%">
+	                <table>
+	                    <tr><td>
+	                        <form:checkbox path="startNow" id="startNowCheckbox" onclick="startNowChecked()"/>
+	                        <label for="startNowCheckbox">
+	                            <cti:msg2 key=".startNow"/>
+	                        </label>
+	                    </td></tr>
                         <tr>
                             <td>
                                 <dt:dateTime id="startDate" path="startDate" value="${backingBean.startDate}" disabled="true"/>
                             </td>
                         </tr>
-                    </table>
-                </td>
-                <td width="50%">
-                    <table>
-                        <tr><td>
-                            <form:checkbox path="scheduleStop" id="scheduleStopCheckbox" onclick="scheduleStopChecked()"/>
-                            <label for="scheduleStopCheckbox">
-                                <cti:msg2 key=".scheduleStop"/>
-                            </label>
-                        </td></tr>
-                        <tr><td>
+	                </table>
+	            </td>
+	            <td width="50%">
+	                <table>
+	                    <tr><td>
+	                        <form:checkbox path="scheduleStop" id="scheduleStopCheckbox" onclick="scheduleStopChecked()"/>
+	                        <label for="scheduleStopCheckbox">
+	                            <cti:msg2 key=".scheduleStop"/>
+	                        </label>
+	                    </td></tr>
+	                    <tr><td>
                             <dt:dateTime id="stopDate" path="stopDate" value="${backingBean.stopDate}"/>
-                        </td></tr>
-                    </table>
-                </td>
-            </tr>
+	                    </td></tr>
+	                </table>
+	            </td>
+	        </tr>
         </tbody>
     </table>
     <br>
@@ -180,45 +180,45 @@ jQuery( function () {
 
     <cti:msg2 var="boxTitle" key=".programs"/>
     <tags:sectionContainer title="${boxTitle}">
-    <div class="scrollingContainer_medium">
-    <table class="compactResultsTable">
+    <div class="scroll-medium">
+    <table class="compact-results-table">
         <thead>
-            <tr>
-                <th><cti:msg2 key=".startProgramName"/></th>
-                <th><cti:msg2 key=".gear"/></th>
-                <th><cti:msg2 key=".currentState"/></th>
-                <c:if test="${!empty scenarioPrograms}">
-                    <th><cti:msg2 key=".startOffset"/></th>
-                    <th><cti:msg2 key=".stopOffset"/></th>
-                </c:if>
-            </tr>
-        </thead>
-        <tfoot></tfoot>
-        <tbody>
-            <c:forEach var="program" varStatus="status" items="${programs}">
-                <c:set var="programId" value="${program.paoIdentifier.paoId}"/>
-                <c:set var="gears" value="${gearsByProgramId[programId]}"/>
-                <tr>
-                    <td>
-                    <form:hidden path="programStartInfo[${status.index}].programId"/>
-                    <form:checkbox path="programStartInfo[${status.index}].startProgram"
-                        id="startProgramCheckbox${status.index}"
-                        onclick="singleProgramChecked(this);"/>
-                    <label for="startProgramCheckbox${status.index}"><spring:escapeBody htmlEscape="true">${program.name}</spring:escapeBody></label></td>
-                    <td><form:select path="programStartInfo[${status.index}].gearNumber" onchange="gearChanged()" id="programGear${status.index}">
-                        <c:forEach var="gear" varStatus="gearStatus" items="${gears}">
-                            <form:option value="${gearStatus.index + 1}"><spring:escapeBody htmlEscape="true">${gear.gearName}</spring:escapeBody></form:option>
-                        </c:forEach>
-                    </form:select></td>
-                    <td><cti:dataUpdaterValue identifier="${programId}/STATE" type="DR_PROGRAM"/></td>
-                    <c:if test="${!empty scenarioPrograms}">
-                        <c:set var="scenarioProgram" value="${scenarioPrograms[programId]}"/>
-                        <td><cti:formatPeriod type="HM_SHORT" value="${scenarioProgram.startOffset}"/></td>
-                        <td><cti:formatPeriod type="HM_SHORT" value="${scenarioProgram.stopOffset}"/></td>
-                    </c:if>
-                </tr>
-            </c:forEach>
-        </tbody>
+	        <tr>
+	            <th><cti:msg2 key=".startProgramName"/></th>
+	            <th><cti:msg2 key=".gear"/></th>
+	            <th><cti:msg2 key=".currentState"/></th>
+	            <c:if test="${!empty scenarioPrograms}">
+	                <th><cti:msg2 key=".startOffset"/></th>
+	                <th><cti:msg2 key=".stopOffset"/></th>
+	            </c:if>
+	        </tr>
+	    </thead>
+	    <tfoot></tfoot>
+	    <tbody>
+	        <c:forEach var="program" varStatus="status" items="${programs}">
+	            <c:set var="programId" value="${program.paoIdentifier.paoId}"/>
+	            <c:set var="gears" value="${gearsByProgramId[programId]}"/>
+	            <tr>
+	                <td>
+	                <form:hidden path="programStartInfo[${status.index}].programId"/>
+	                <form:checkbox path="programStartInfo[${status.index}].startProgram"
+	                    id="startProgramCheckbox${status.index}"
+	                    onclick="singleProgramChecked(this);"/>
+	                <label for="startProgramCheckbox${status.index}"><spring:escapeBody htmlEscape="true">${program.name}</spring:escapeBody></label></td>
+	                <td><form:select path="programStartInfo[${status.index}].gearNumber" onchange="gearChanged()" id="programGear${status.index}">
+	                    <c:forEach var="gear" varStatus="gearStatus" items="${gears}">
+	                        <form:option value="${gearStatus.index + 1}"><spring:escapeBody htmlEscape="true">${gear.gearName}</spring:escapeBody></form:option>
+	                    </c:forEach>
+	                </form:select></td>
+	                <td><cti:dataUpdaterValue identifier="${programId}/STATE" type="DR_PROGRAM"/></td>
+	                <c:if test="${!empty scenarioPrograms}">
+	                    <c:set var="scenarioProgram" value="${scenarioPrograms[programId]}"/>
+	                    <td><cti:formatPeriod type="HM_SHORT" value="${scenarioProgram.startOffset}"/></td>
+	                    <td><cti:formatPeriod type="HM_SHORT" value="${scenarioProgram.stopOffset}"/></td>
+	                </c:if>
+	            </tr>
+	        </c:forEach>
+	    </tbody>
     </table>
     </div>
     </tags:sectionContainer>
@@ -251,7 +251,7 @@ jQuery( function () {
     </c:if>
     <br>
 
-    <div class="actionArea">
+    <div class="action-area">
         <c:if test="${autoObserveConstraintsAllowed || checkConstraintsAllowed}">
             <cti:button id="nextButton" nameKey="next" classes="primary action" type="submit"/>
             <cti:button id="okButton" nameKey="ok" classes="primary action" type="submit"/>

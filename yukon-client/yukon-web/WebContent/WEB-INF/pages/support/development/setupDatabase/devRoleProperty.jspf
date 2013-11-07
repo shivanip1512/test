@@ -34,7 +34,7 @@
 	                </form:select>
 	            </tags:nameValue2>
             </tags:nameValueContainer2>
-            <div class="pageActionArea">
+            <div class="page-action-area">
                 <cti:button type="submit" nameKey="runSetup" classes="action primary"/>
             </div>
         </div>

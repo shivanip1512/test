@@ -151,7 +151,7 @@ jQuery(function(){
                 </div>
             </div>
         
-            <div class="actionArea">
+            <div class="action-area">
                 <div class="fr">
                     <cti:button nameKey="next" classes="f-next"/>
                 </div>

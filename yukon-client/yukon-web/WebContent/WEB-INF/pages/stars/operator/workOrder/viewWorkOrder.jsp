@@ -10,7 +10,7 @@
 <tags:setFormEditMode mode="${mode}"/>
 
     <script type="text/javascript">
-        jQuery(function () {
+        jQuery(function() {
             var curStateSel = jQuery('select[name="workOrderBase.currentStateId"]'),
                 initialState;
             if ( curStateSel.length > 0 ) {
@@ -26,11 +26,11 @@
             }
         });
 
-        jQuery('#workOrderConfirmCancel', function () {
+        jQuery('#workOrderConfirmCancel', function() {
             jQuery('#confirmDeleteWorkOrderDialog').dialog('close');
         });
 
-        var assignedServiceCompanyChanged = function () {
+        var assignedServiceCompanyChanged = function() {
             var curStateSel = jQuery('select[name="workOrderBase.currentStateId"]'),
                 curStateSelVal = curStateSel.val();
             if (curStateSelVal != "${assignedEntryId}") {
@@ -51,7 +51,7 @@
          <form id="deleteForm" action="/stars/operator/workOrder/deleteWorkOrder" method="post">
           <input type="hidden" name="accountId" value="${accountId}">
           <input type="hidden" name="deleteWorkOrderId" value="${workOrderDto.workOrderBase.orderId}">
-          <div class="actionArea">
+          <div class="action-area">
             <cti:button id="workOrderConfirmDelete" type="submit" nameKey="delete" classes="primary action"/>
             <cti:button id="workOrderConfirmCancel" type="button" nameKey="cancel"/>  
           </div>
@@ -64,10 +64,9 @@
         <form:hidden path="workOrderBase.accountId"/>
         <form:hidden path="workOrderBase.orderId"/>
 
-        <cti:dataGrid cols="2" rowStyle="vertical-align:top;" cellStyle="padding-right:20px;">
-            <cti:dataGridCell>
-
-                <tags:formElementContainer nameKey="workOrderContainer">
+        <div class="column-12-12 clearfix">
+            <div class="column one">
+                <tags:sectionContainer2 nameKey="workOrderContainer">
                     <tags:nameValueContainer2>
                         
                         <cti:displayForPageEditModes modes="CREATE">
@@ -104,10 +103,10 @@
                         </cti:displayForPageEditModes>
                         
                         <i:simplePopup titleKey=".currentStateChangedTitle" id="currentStateChangedDialog">
-                        	<cti:msg2 key=".currentStateChanged"/>
-                        	<div class="actionArea">
-                        		<cti:button nameKey="ok" onclick="jQuery('#currentStateChangedDialog').hide()"/>
-                       		</div>
+                            <cti:msg2 key=".currentStateChanged"/>
+                            <div class="action-area">
+                                <cti:button nameKey="ok" onclick="jQuery('#currentStateChangedDialog').dialog('close');" classes="primary action"/>
+                            </div>
                         </i:simplePopup>
                         
                         <tags:nameValue2 nameKey=".assignTo">
@@ -120,12 +119,11 @@
         
                     </tags:nameValueContainer2>
                 
-                </tags:formElementContainer>
-
-            </cti:dataGridCell>
-            <cti:displayForPageEditModes modes="VIEW,EDIT">
-                <cti:dataGridCell>
-                    <tags:formElementContainer nameKey="statusContainer">
+                </tags:sectionContainer2>
+            </div>
+            <div class="column two nogutter">
+                <cti:displayForPageEditModes modes="VIEW,EDIT">
+                    <tags:sectionContainer2 nameKey="statusContainer">
                         <tags:nameValueContainer2>
                         
                             <tags:yukonListEntrySelectNameValue nameKey=".currentState" path="workOrderBase.currentStateId" 
@@ -134,9 +132,11 @@
                             <tags:nameValue2 nameKey=".eventDate">
                                 <dt:dateTime id="eventDate" path="eventDate" value="${workOrderDto.eventDate}" disabled="true"/>
                             </tags:nameValue2>
+            
                             <tags:textareaNameValue nameKey=".actionTaken" path="workOrderBase.actionTaken" rows="4" cols="23"/>
                         </tags:nameValueContainer2>
-                        <div class="actionArea stacked">
+                        
+                        <div class="action-area stacked">
                             <%-- GENERATE REPORTS --%>
                             <cti:url var="pdfExportUrl" value="/stars/operator/workOrder/generateWorkOrderReport">
                                 <cti:param name="export" value="PDF"/>
@@ -146,59 +146,64 @@
                             <cti:button nameKey="pdfExport" href="${pdfExportUrl}" icon="icon-pdf"/>
                         </div>
 
-                        <tags:boxContainer2 nameKey="eventHistory">
-                            <table class="compactResultsTable">
+                    </tags:sectionContainer2>
+                            
+                    <tags:sectionContainer2 nameKey="eventHistory">
+                        <table class="compact-results-table dashed">
+                            <thead>
                                 <tr>
                                     <th><i:inline key=".eventHistory.date"/></th>
                                     <th><i:inline key=".eventHistory.state"/></th>
                                 </tr>
-                                
+                            </thead>
+                            <tfoot></tfoot>
+                            <tbody>
                                 <c:forEach var="eventBase" items="${eventHistory}">
                                     <tr>
-                                        <td class="nonwrapping" ><cti:formatDate value="${eventBase.eventTimestamp}" type="BOTH"/></td>
+                                        <td ><cti:formatDate value="${eventBase.eventTimestamp}" type="BOTH"/></td>
                                         <td><tags:yukonListEntry value="${eventBase.actionId}" energyCompanyId="${energyCompanyId}" listName="SERVICE_STATUS" /></td>
                                     </tr>
                                 </c:forEach>
-                                
-                            </table>
-                        </tags:boxContainer2>
-                            
-                    </tags:formElementContainer>
-                </cti:dataGridCell>
-            </cti:displayForPageEditModes>
-        </cti:dataGrid>
-        <br>
-        
+                            </tbody>
+                        </table>
+                    </tags:sectionContainer2>
+                    
+                </cti:displayForPageEditModes>
+            </div>
+        </div>
+
         <%-- buttons --%>
-        <cti:displayForPageEditModes modes="CREATE,EDIT">
-            <cti:button nameKey="save" type="submit" classes="f-blocker"/>
-            <cti:displayForPageEditModes modes="CREATE">
-                <cti:url value="/stars/operator/workOrder/workOrderList" var="cancelUrl">
-                    <cti:param name="accountId" value="${accountId}"/>
-                </cti:url>
+        <div class="page-action-area">
+            <cti:displayForPageEditModes modes="CREATE,EDIT">
+                <cti:button nameKey="save" type="submit" classes="f-blocker primary action"/>
+                <cti:displayForPageEditModes modes="CREATE">
+                    <cti:url value="/stars/operator/workOrder/workOrderList" var="cancelUrl">
+                        <cti:param name="accountId" value="${accountId}"/>
+                    </cti:url>
+                </cti:displayForPageEditModes>
+               
+                <cti:displayForPageEditModes modes="EDIT">
+                    <cti:url value="/stars/operator/workOrder/view" var="cancelUrl">
+                        <cti:param name="accountId" value="${accountId}"/>
+                        <cti:param name="workOrderId" value="${workOrderDto.workOrderBase.orderId}"/>
+                    </cti:url>
+                    <cti:button nameKey="delete" id="confirmDelete" classes="delete"/>
+                </cti:displayForPageEditModes>
+               
+               <cti:button nameKey="cancel" href="${cancelUrl}"/>
             </cti:displayForPageEditModes>
+            
            
-            <cti:displayForPageEditModes modes="EDIT">
-                <cti:url value="/stars/operator/workOrder/view" var="cancelUrl">
-                    <cti:param name="accountId" value="${accountId}"/>
-                    <cti:param name="workOrderId" value="${workOrderDto.workOrderBase.orderId}"/>
-                </cti:url>
-                <cti:button nameKey="delete" id="confirmDelete"/>
+            <cti:displayForPageEditModes modes="VIEW">
+                <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
+                    <cti:url value="/stars/operator/workOrder/edit" var="editUrl">
+                        <cti:param name="accountId" value="${accountId}"/>
+                        <cti:param name="workOrderId" value="${workOrderDto.workOrderBase.orderId}"/>
+                    </cti:url>
+                    <cti:button nameKey="edit" icon="icon-pencil" href="${editUrl}"/>
+                </cti:checkRolesAndProperties>
             </cti:displayForPageEditModes>
-           
-           <cti:button nameKey="cancel" href="${cancelUrl}"/>
-        </cti:displayForPageEditModes>
-        
-       
-        <cti:displayForPageEditModes modes="VIEW">
-            <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-                <cti:url value="/stars/operator/workOrder/edit" var="editUrl">
-                    <cti:param name="accountId" value="${accountId}"/>
-                    <cti:param name="workOrderId" value="${workOrderDto.workOrderBase.orderId}"/>
-                </cti:url>
-                <cti:button nameKey="edit" icon="icon-pencil" href="${editUrl}"/>
-            </cti:checkRolesAndProperties>
-        </cti:displayForPageEditModes>
+        </div>
     </form:form>
     
 </cti:standardPage>

@@ -9,7 +9,7 @@
     <tags:bulkActionContainer key="yukon.web.modules.tools.bulk.assignConfig" deviceCollection="${deviceCollection}">
         <c:choose>
             <c:when test="${fn:length(existingConfigs) > 0}">
-                <div class="pageActionArea">
+                <div class="page-action-area">
                     <form id="assignConfigForm" method="post" action="/bulk/config/doAssignConfig">
                     
                         <%-- DEVICE COLLECTION --%>
@@ -22,13 +22,13 @@
                                 </c:forEach>
                             </select>
                         </label>
-                        <cti:button nameKey="assign" type="submit" name="assignButton" classes="f-disableAfterClick primary action" busy="true"/>
+                        <cti:button nameKey="assign" type="submit" name="assignButton" classes="primary action" busy="true"/>
                     </form>
                 </div>
             </c:when>
             <c:otherwise>
                 <span><i:inline key=".none"/></span>
-                <div class="pageActionArea">
+                <div class="page-action-area">
                     <cti:button nameKey="back" onclick="history.back(-1);"/>
                 </div>
             </c:otherwise>

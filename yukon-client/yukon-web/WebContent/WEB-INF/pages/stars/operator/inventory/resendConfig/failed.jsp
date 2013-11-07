@@ -6,7 +6,7 @@
 
 <cti:msgScope paths="yukon.web.modules.operator.resendConfig">
     <tags:boxContainer2 nameKey="failedItems" id="failedItems">
-        <table class="compactResultsTable">
+        <table class="compact-results-table">
             <tr>
                 <th><i:inline key=".displayableLmHardware"/></th>
                 <th><i:inline key=".reason"/></th>

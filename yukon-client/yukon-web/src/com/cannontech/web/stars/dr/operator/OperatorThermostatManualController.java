@@ -251,6 +251,6 @@ public class OperatorThermostatManualController {
         String key = "yukon.dr.consumer.manualevent.result.OPERATOR_" + result.name();
         MessageSourceResolvable messageResolvable = new YukonMessageSourceResolvable(key, thermostatLabelString);
         
-        flashScope.setMessage(messageResolvable, result.isFailed() ? FlashScopeMessageType.ERROR : FlashScopeMessageType.CONFIRM);
+        flashScope.setMessage(messageResolvable, result.isFailed() ? FlashScopeMessageType.ERROR : FlashScopeMessageType.SUCCESS);
     }
 }

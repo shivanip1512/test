@@ -36,29 +36,29 @@ div.messageSample {
     margin-bottom: 7px;
 }
 
-table.resultsTable th.functionality {
+table.results-table th.functionality {
     width: 200px;
 }
 
-table.resultsTable td.functionality {
+table.results-table td.functionality {
     vertical-align: top;
     text-align: center;
 }
 
-table.resultsTable th.doc {
+table.results-table th.doc {
     width: 200px;
 }
 
-table.resultsTable td.doc {
+table.results-table td.doc {
     vertical-align: top;
     text-align: center;
 }
 
-table.resultsTable td.xmlTest {
+table.results-table td.xmlTest {
     
 }
 
-table.resultsTable td.inputTest {
+table.results-table td.inputTest {
     vertical-align: top;
 }
 

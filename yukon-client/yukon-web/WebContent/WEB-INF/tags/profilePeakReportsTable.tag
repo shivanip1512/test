@@ -16,7 +16,7 @@
             <td>
                 <div style="font-size:11px;font-weight:bold;padding-top:10px;padding-bottom:5px;">${title}</div>
                 
-                <table class="resultsTable">
+                <table class="results-table">
                         <thead>
                             <tr>
                                 <th>Period</th>

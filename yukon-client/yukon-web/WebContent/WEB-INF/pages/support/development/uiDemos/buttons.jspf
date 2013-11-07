@@ -76,45 +76,45 @@
     </div>
 </tags:sectionContainer>
 
-<tags:sectionContainer title="f-disableAfterClick and busy buttons" styleClass="separated-sections">
+<tags:sectionContainer title="f-disable-after-click and busy buttons" styleClass="separated-sections">
     <h4>All of these buttons can be submit buttons and whatever form them maybe inside of will still be submitted on button click</h4>
     <div class="button-example section">
         <div class="clearfix">
-            <cti:button nameKey="save" classes="action primary f-disableAfterClick"/>
+            <cti:button nameKey="save" classes="action primary f-disable-after-click"/>
             <span class="description">primary action button that will disable after clicking</span>
         </div>
-        <pre class="code prettyprint">&lt;cti:button nameKey=&quot;save&quot; classes=&quot;action primary f-disableAfterClick&quot;/&gt;</pre>
+        <pre class="code prettyprint">&lt;cti:button nameKey=&quot;save&quot; classes=&quot;action primary f-disable-after-click&quot;/&gt;</pre>
     </div>
     <div class="button-example section">
         <div class="clearfix">
-            <cti:button nameKey="readNow" classes="action primary f-disableAfterClick" busy="true"/>
+            <cti:button nameKey="readNow" classes="action primary" busy="true"/>
             <span class="description">primary action button that will disable after clicking with busy text</span>
         </div>
-        <pre class="code prettyprint">&lt;cti:button nameKey=&quot;readNow&quot; classes=&quot;action primary f-disableAfterClick&quot; busy=&quot;true&quot;/&gt;</pre>
+        <pre class="code prettyprint">&lt;cti:button nameKey=&quot;readNow&quot; classes=&quot;action primary f-disable-after-click&quot; busy=&quot;true&quot;/&gt;</pre>
     </div>
     <div class="button-example section">
         <div class="clearfix">
-	        <cti:button nameKey="readNow" classes="f-disableAfterClick" busy="true" icon="icon-bullet-go"/>
+	        <cti:button nameKey="readNow" busy="true" icon="icon-bullet-go"/>
             <span class="description">button that will disable after clicking with busy text and busy icon</span>
 	    </div>
-        <pre class="code prettyprint">&lt;cti:button nameKey=&quot;readNow&quot; classes=&quot;f-disableAfterClick&quot; busy=&quot;true&quot; icon=&quot;icon-bullet-go&quot;/&gt;</pre>
+        <pre class="code prettyprint">&lt;cti:button nameKey=&quot;readNow&quot; classes=&quot;f-disable-after-click&quot; busy=&quot;true&quot; icon=&quot;icon-bullet-go&quot;/&gt;</pre>
     </div>
     <div class="button-example section">
         <div class="clearfix">
-            <cti:button nameKey="delete" classes="f-disableAfterClick" busy="true" icon="icon-cross" renderMode="buttonImage"/>
+            <cti:button nameKey="delete" busy="true" icon="icon-cross" renderMode="buttonImage"/>
             <span class="description">button with no text that will disable after clicking with busy icon</span>
         </div>
-        <pre class="code prettyprint">&lt;cti:button nameKey=&quot;delete&quot; classes=&quot;f-disableAfterClick&quot; busy=&quot;true&quot; icon=&quot;icon-cross&quot; renderMode=&quot;buttonImage&quot;/&gt;</pre>
+        <pre class="code prettyprint">&lt;cti:button nameKey=&quot;delete&quot; classes=&quot;f-disable-after-click&quot; busy=&quot;true&quot; icon=&quot;icon-cross&quot; renderMode=&quot;buttonImage&quot;/&gt;</pre>
     </div>
     <div class="button-example section">
         <div class="clearfix">
-            <cti:button nameKey="update" classes="f-disableAfterClick action primary" data-disable-group="them-buttons"/>
-            <cti:button nameKey="delete" classes="f-disableAfterClick delete" data-disable-group="them-buttons"/>
-            <cti:button nameKey="cancel" classes="f-disableAfterClick" data-disable-group="them-buttons"/>
+            <cti:button nameKey="update" classes="f-disable-after-click action primary" data-disable-group="them-buttons"/>
+            <cti:button nameKey="delete" classes="f-disable-after-click delete" data-disable-group="them-buttons"/>
+            <cti:button nameKey="cancel" classes="f-disable-after-click" data-disable-group="them-buttons"/>
             <span class="description">a group of buttons that will all disable after clicking any one of them</span>
         </div>
         <div class="clearfix">
-            <pre class="code prettyprint">&lt;cti:button nameKey=&quot;update&quot; classes=&quot;f-disableAfterClick action primary&quot; data-disable-group=&quot;them-buttons&quot;/&gt;<br/>&lt;cti:button nameKey=&quot;delete&quot; classes=&quot;f-disableAfterClick delete&quot; data-disable-group=&quot;them-buttons&quot;/&gt;<br/>&lt;cti:button nameKey=&quot;cancel&quot; classes=&quot;f-disableAfterClick&quot; data-disable-group=&quot;them-buttons&quot;/&gt;</pre>
+            <pre class="code prettyprint">&lt;cti:button nameKey=&quot;update&quot; classes=&quot;f-disable-after-click action primary&quot; data-disable-group=&quot;them-buttons&quot;/&gt;<br/>&lt;cti:button nameKey=&quot;delete&quot; classes=&quot;f-disable-after-click delete&quot; data-disable-group=&quot;them-buttons&quot;/&gt;<br/>&lt;cti:button nameKey=&quot;cancel&quot; classes=&quot;f-disable-after-click&quot; data-disable-group=&quot;them-buttons&quot;/&gt;</pre>
         </div>
     </div>
 </tags:sectionContainer>

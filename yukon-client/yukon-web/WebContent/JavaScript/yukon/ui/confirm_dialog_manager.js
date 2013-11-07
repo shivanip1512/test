@@ -25,7 +25,7 @@ Yukon.modules.DialogConfirmationManager = function (mod) {
         /*---------------------*/
         _init = function () {
             if (!_initialized) {
-                jQuery('html').append('<div id="yukon_dialog_confirm" style="display:none;"><span class="message"></span></div>');
+                jQuery('html').append('<div id="yukon_dialog_confirm" style="display:none;"><span class="confirm-message"></span></div>');
                 _initialized = true;
             }
         },
@@ -97,7 +97,7 @@ Yukon.modules.DialogConfirmationManager = function (mod) {
             }
 
             //inject the message into the dialog
-            jQuery("#yukon_dialog_confirm .message").html(args.strings.message);
+            jQuery("#yukon_dialog_confirm .confirm-message").html(args.strings.message);
             //show the dialog
             _current_dialog = jQuery('#yukon_dialog_confirm').dialog(jQuery.extend(defaults, args));
             
@@ -105,7 +105,7 @@ Yukon.modules.DialogConfirmationManager = function (mod) {
             if (args.disable_group) {
                 jQuery('#yukon_dialog_confirm').closest('.ui-dialog').find('.ui-dialog-buttonset button').each(function (idx, button) {
                     var b = jQuery(button);
-                    b.addClass('f-disableAfterClick');
+                    b.addClass('f-disable-after-click');
                     b.attr('data-disable-group', args.disable_group);
                     
                 });

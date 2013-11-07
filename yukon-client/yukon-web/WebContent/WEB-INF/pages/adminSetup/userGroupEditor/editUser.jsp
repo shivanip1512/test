@@ -8,11 +8,11 @@
 
     <tags:widgetContainer userId="${param.userId}" identify="true">
   
-        <div class="column_12_12">
+        <div class="column-12-12">
             
             <div class="column one">
                 <div>
-                    <span class="smallBoldLabel"><i:inline key=".instructions"/></span>
+                    <span class="strong-label-small"><i:inline key=".instructions"/></span>
                     <span class="notes"><i:inline key=".lm.notes"/></span>
                 </div>
                 <tags:widget bean="userPermissionEditorWidget" pickerType="lmDevicePicker"
@@ -21,7 +21,7 @@
             
             <div class="column two nogutter">
                 <div>
-                    <span class="smallBoldLabel"><i:inline key=".instructions"/></span>
+                    <span class="strong-label-small"><i:inline key=".instructions"/></span>
                     <span class="notes"><i:inline key=".cc.notes"/></span>
                 </div>
                 <tags:widget bean="userPermissionEditorWidget" pickerType="capControlAreaPicker"

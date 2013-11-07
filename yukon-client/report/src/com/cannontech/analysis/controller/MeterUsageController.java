@@ -80,7 +80,7 @@ public class MeterUsageController extends ReportControllerBase {
         sb.append("    <td valign='top'>" + LINE_SEPARATOR);
         sb.append("      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR);
         sb.append("        <tr>" + LINE_SEPARATOR);
-        sb.append("    		<td class='TitleHeader' style='padding-right: 5px;'>Data Attribute: </td>");
+        sb.append("    		<td class='title-header' style='padding-right: 5px;'>Data Attribute: </td>");
         sb.append("        </tr>" + LINE_SEPARATOR);
 
         sb.append("        <tr>" + LINE_SEPARATOR);
@@ -99,7 +99,7 @@ public class MeterUsageController extends ReportControllerBase {
         sb.append("    <td valign='top'>" + LINE_SEPARATOR);        
         sb.append("      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR);
         sb.append("        <tr>" + LINE_SEPARATOR);
-        sb.append("          <td valign='top' class='TitleHeader'>Disabled Devices</td>" +LINE_SEPARATOR);
+        sb.append("          <td valign='top' class='title-header'>Disabled Devices</td>" +LINE_SEPARATOR);
         sb.append("        </tr>" + LINE_SEPARATOR);
         sb.append("        <tr>" + LINE_SEPARATOR);
         sb.append("          <td><input type='checkbox' name='" + ATT_EXCLUDE_DISABLED_DEVICES +"' value='true'> Exclude Disabled Devices" + LINE_SEPARATOR);

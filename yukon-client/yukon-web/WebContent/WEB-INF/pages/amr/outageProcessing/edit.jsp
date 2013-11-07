@@ -39,7 +39,7 @@
 	</script>
 	
 	<c:if test="${not empty editError}">
-    	<div class="errorMessage">${editError}</div>
+    	<div class="error">${editError}</div>
     </c:if>
     
     <c:if test="${saveOk}">
@@ -139,7 +139,7 @@
     	
     		<%-- note --%>
     		<div class="stacked">
-                <span class="smallBoldLabel">
+                <span class="strong-label-small">
                     <i:inline key=".popupInfo.scheduleReadNoteLabelText"/>
                 </span>
                 <span class="notes">
@@ -181,12 +181,12 @@
     	<%-- create / update / delete --%>
     	<c:choose>
     		<c:when test="${outageMonitorId > 0}">
-                <cti:button nameKey="update" busy="true" type="submit" classes="primary action f-disableAfterClick" data-disable-group="actionButtons" />
+                <cti:button nameKey="update" busy="true" type="submit" classes="primary action" data-disable-group="actionButtons" />
                 <c:set var="toggleText" value="enable"/>
                 <c:if test="${outageMonitor.evaluatorStatus eq 'ENABLED'}">
                     <c:set var="toggleText" value="disable"/>
     			</c:if>
-                <cti:button nameKey="${toggleText}" onclick="jQuery('#toggleEnabledForm').submit();" busy="true" classes="f-disableAfterClick" data-disable-group="actionButtons"/>
+                <cti:button nameKey="${toggleText}" onclick="jQuery('#toggleEnabledForm').submit();" busy="true" data-disable-group="actionButtons"/>
                 <cti:button id="deleteButton" nameKey="delete" type="button" onclick="deleteOutageMonitor();" busy="true" data-disable-group="actionButtons"/>
     		    <d:confirm on="#deleteButton" nameKey="confirmDelete"/>
                 <cti:url var="backUrl" value="/amr/outageProcessing/process/process">
@@ -194,10 +194,10 @@
                 </cti:url>
             </c:when>
     		<c:otherwise>
-                <cti:button nameKey="save" type="submit" busy="true" classes="f-disableAfterClick" data-disable-group="actionButtons" />
+                <cti:button nameKey="save" type="submit" busy="true" data-disable-group="actionButtons" />
                 <cti:url var="backUrl" value="/meter/start"/>
     		</c:otherwise>
     	</c:choose>
-        <cti:button nameKey="cancel" type="button" href="${backUrl}" busy="true" classes="f-disableAfterClick" data-disable-group="actionButtons" />
+        <cti:button nameKey="cancel" type="button" href="${backUrl}" busy="true" data-disable-group="actionButtons" />
     </form>
 </cti:standardPage>

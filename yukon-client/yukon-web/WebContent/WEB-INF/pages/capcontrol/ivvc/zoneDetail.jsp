@@ -116,10 +116,10 @@
         <cti:param name="zoneId" value="${zoneId}"/>
     </cti:url>
     
-    <div class="column_12_12">
+    <div class="column-12-12">
         <div class="column one">
             <tags:boxContainer2 nameKey="details" hideEnabled="true" showInitially="true">
-                <table class="compactResultsTable">
+                <table class="compact-results-table">
                     <thead>
                     <tr>
                         <th></th>
@@ -131,7 +131,7 @@
                     <tfoot></tfoot>
                     <tbody>
                     <tr>
-                        <td><span class="smallBoldLabel"><i:inline key=".details.table.zone"/></span></td>
+                        <td><span class="strong-label-small"><i:inline key=".details.table.zone"/></span></td>
                         <td>
                             <spring:escapeBody htmlEscape="true">${zoneName}</spring:escapeBody>
                         </td>
@@ -155,7 +155,7 @@
                         <c:set value="${regulator.key}" var="phaseKey"/>
                         <tr>
                             <td>
-                                <span class="smallBoldLabel">
+                                <span class="strong-label-small">
                                     <i:inline key=".details.table.regulator"/>
                                     <c:if test="${zoneDto.zoneType != gangOperated}"> - 
                                         <i:inline key="${phaseKey}"/>
@@ -192,7 +192,7 @@
             </tags:boxContainer2>
             
             <tags:boxContainer2 nameKey="actions" hideEnabled="true" showInitially="true" styleClass="regulatorActions">
-                <table class="compactResultsTable">
+                <table class="compact-results-table">
                     <thead>
                     <tr>
                         <c:if test="${zoneDto.zoneType != gangOperated}">
@@ -208,7 +208,7 @@
                         <c:forEach items="${zoneDto.regulators}" var="regulator">
                             <c:set var="phaseKey" value="${regulator.key}"/>
                             <td>
-                                <ul class="buttonStack">
+                                <ul class="button-stack">
                                     <li>
                                         <cti:button renderMode="labeledImage" nameKey="scan" classes="commandButton" icon="icon-transmit-blue"/>
                                         <input type="hidden" class="paoId" value="${regulatorIdMap[phaseKey]}">
@@ -250,7 +250,7 @@
                     </c:when>
                     <c:otherwise>
                         <div class="historyContainer">
-                            <table id="recentEventsTable" class="compactResultsTable">
+                            <table id="recentEventsTable" class="compact-results-table">
                                 <thead>
                                 <tr id="recentEventsHeaderRow">
                                     <th><i:inline key=".ivvcEvents.deviceName"/></th>
@@ -278,7 +278,7 @@
                     <cti:tabbedContentSelector>
                         <cti:msg2 var="tabName" key=".ivvc.zoneDetail.attributesRegAll.title" />
                         <cti:tabbedContentSelectorContent selectorName="${tabName}">
-                            <table class="compactResultsTable">
+                            <table class="compact-results-table">
                                 <thead>
                                 <tr style="text-align: left;">
                                     <th><i:inline key=".attributes.name"/></th>
@@ -327,7 +327,7 @@
                             <c:set var="phaseKey" value="${regulator.key}"/>
                             <cti:msg2 var="tabName" key=".ivvc.zoneDetail.attributesReg${phaseKey}.title" />
                             <cti:tabbedContentSelectorContent selectorName="${tabName}">
-                                <table class="compactResultsTable">
+                                <table class="compact-results-table">
                                     <thead>
                                     <tr style="text-align: left;">
                                         <th><i:inline key=".attributes.name"/></th>
@@ -378,7 +378,7 @@
                 </c:when>
                 <c:otherwise>
                     <tags:boxContainer2 nameKey="attributes" hideEnabled="true" showInitially="true">
-                        <table class="compactResultsTable">
+                        <table class="compact-results-table">
                             <thead>
                             <tr style="text-align: left;">
                                <th><i:inline key=".attributes.name"/></th>
@@ -456,7 +456,7 @@
                 </cti:tabbedContentSelectorContent>
                 <cti:msg2 var="voltagePointsTab" key=".voltagePoints.title" />
                 <cti:tabbedContentSelectorContent selectorName="${voltagePointsTab}">
-                    <div class="scrollingContainer_large">
+                    <div class="scroll-large">
                         <cti:url var="zoneVoltagePointsUrl" value="/capcontrol/ivvc/zone/voltagePoints">
                            <cti:param name="zoneId" value="${zoneId}"/>
                        </cti:url>
@@ -466,7 +466,7 @@
             </cti:tabbedContentSelector>
 
             <tags:boxContainer2 nameKey="capBanks" hideEnabled="true" showInitially="true">
-                <table class="compactResultsTable">
+                <table class="compact-results-table">
                     <thead>
                     <tr>
                         <th><i:inline key=".capBanks.cbcName"/></th>

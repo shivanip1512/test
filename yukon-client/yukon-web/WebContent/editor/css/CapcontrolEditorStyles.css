@@ -23,7 +23,7 @@ a.submenuLink:hover, legend, .editorHeader, .legendLikeLabel {
 	color: #000000;
 }
 
-.tableHeader, .columnHeader, .staticLabel,
+.tableHeader, .column-header, .staticLabel,
 .staticNumberLabel, .medStaticLabel {
 	font-weight: bold;
 	background-color: #FFFFFF;

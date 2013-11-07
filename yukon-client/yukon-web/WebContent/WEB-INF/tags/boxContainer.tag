@@ -17,12 +17,12 @@
 <cti:includeScript link="/JavaScript/simpleCookies.js"/>
 <cti:includeScript link="/JavaScript/hideReveal.js"/>
 
-<cti:uniqueIdentifier prefix="titledContainer_" var="thisId"/>
+<cti:uniqueIdentifier prefix="titled-container-" var="thisId"/>
 <c:if test="${!empty pageScope.id}">
     <c:set var="thisId" value="${id}"/>
 </c:if>
 
-<div class="titledContainer boxContainer clearfix ${pageScope.styleClass}" <c:if test="${!empty pageScope.id}">id="${id}"</c:if>>
+<div class="titled-container box-container clearfix ${pageScope.styleClass}" <c:if test="${!empty pageScope.id}">id="${id}"</c:if>>
 
     <div class="title-bar clearfix">
         <c:if test="${!empty pageScope.titleLinkHtml}">${pageScope.titleLinkHtml}</c:if>
@@ -59,5 +59,5 @@
 </c:if>
 
 <c:if test="${not empty pageScope.helpText}">
-    <tags:simplePopup title="${pageScope.title}" id="boxContainerInfoPopup_${thisId}" on="#help_icon_${thisId}" options="{width: 600}">${helpText}</tags:simplePopup>
+    <tags:simplePopup title="${pageScope.title}" id="box-container-info-popup-${thisId}" on="#help_icon_${thisId}" options="{width: 600}">${helpText}</tags:simplePopup>
 </c:if>

@@ -77,7 +77,7 @@ jQuery( function () {
     <input type="hidden" name="from" value="details"/>
     <form:hidden path="now"/>
 
-    <table class="compactResultsTable">
+    <table class="compact-results-table">
         <thead>
             <tr class="headerRow">
                 <th><cti:msg2 key=".gear"/></th>
@@ -170,7 +170,7 @@ jQuery( function () {
     </c:if>
     <br>
 
-    <div class="actionArea">
+    <div class="action-area">
         <c:if test="${autoObserveConstraintsAllowed || checkConstraintsAllowed}">
             <cti:button id="nextButton" nameKey="next" classes="primary action" type="submit"/>
             <cti:button id="okButton" nameKey="ok" classes="primary action" type="submit"/>

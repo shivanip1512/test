@@ -103,7 +103,7 @@
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center">
-              <p class="TitleHeader"><br>NOTIFICATION - PROGRAM HISTORY FOR:<br> <%= programs[i].getProgramName() %><br>
+              <p class="title-header"><br>NOTIFICATION - PROGRAM HISTORY FOR:<br> <%= programs[i].getProgramName() %><br>
               </p>
             </div>
             <div align="center">

@@ -50,7 +50,7 @@
                         </c:forEach>
                         
                     </tags:nameValueContainer2>
-                    <div class="actionArea">
+                    <div class="action-area">
                         <cti:button nameKey="filter" type="submit" classes="action primary"/>
                     </div>
                 </form:form>
@@ -101,7 +101,7 @@
         </tr>
         
     </table>
-    <div class="actionArea stacked">
+    <div class="action-area stacked">
 	    <c:choose>
 	        <c:when test="${maxCsvRows > searchResult.hitCount}">
 	            <cti:button nameKey="csvExport" href="${csvLink}" icon="icon-page-excel"/>
@@ -120,7 +120,7 @@
                 <span class="empty-list"><i:inline key="yukon.common.events.noResults"/></span>
             </c:when>
             <c:otherwise>
-                <table class="compactResultsTable rowHighlighting" style="width: 100%;">
+                <table class="compact-results-table row-highlighting" style="width: 100%;">
                     <tr>
                       <th><i:inline key=".dateAndTime"/></th>
                         <c:forEach items="${columnNames}" var="column">

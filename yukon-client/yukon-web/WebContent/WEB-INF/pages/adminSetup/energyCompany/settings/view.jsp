@@ -31,7 +31,7 @@ jQuery(function() {
                     <div class="setting">
                         <form:hidden path="settings[${setting.extra}].type"/>
                         
-                        <div class="column_6_12_6 clearfix">
+                        <div class="column-6-12-6 clearfix">
                             <div class="column one">
                                 <i:inline key="${setting.extra}"/>
                             </div>
@@ -48,7 +48,7 @@ jQuery(function() {
                                                 <form:option value="true"><cti:msg2 key="yukon.common.enabled"/></form:option>
                                                 <form:option value="false"><cti:msg2 key="yukon.common.disabled"/></form:option>
                                             </form:select>
-                                            <form:errors path="settings['${setting.extra}'].enabled" cssClass="errorMessage" element="span"/>
+                                            <form:errors path="settings['${setting.extra}'].enabled" cssClass="error" element="span"/>
                                         </c:if>
                                         <c:if test="${!setting.extra.usesEnabledField}">
                                             <form:hidden path="settings['${setting.extra}'].enabled"/>
@@ -61,7 +61,7 @@ jQuery(function() {
                                             <c:if test="${settingsBean.settings[setting.extra].nonDefault}">
                                                 <span class="default"><i:inline key=".default"/>:&nbsp;(${fn:escapeXml(setting.extra.defaultValue)})</span>
                                              </c:if>
-                                            <form:errors path="${setting.path}" cssClass="errorMessage" element="div"/>
+                                            <form:errors path="${setting.path}" cssClass="error" element="div"/>
                                         </p>
                                     </div>
                                 </div>
@@ -83,7 +83,7 @@ jQuery(function() {
                                     path="settings[${setting.extra}].comments"
                                     style="${style};"
                                     class="f-commentsShowHide ${inputClass}"/> 
-                                <form:errors path="settings[${setting.extra}].comments" cssClass="errorMessage" element="div"/>
+                                <form:errors path="settings[${setting.extra}].comments" cssClass="error" element="div"/>
                             </div>
                         </div>
                     </div>
@@ -92,7 +92,7 @@ jQuery(function() {
             </c:forEach>
         </tags:sectionContainer>
     </c:forEach>
-    <div class="pageActionArea stickyPanel" style="min-height: 24px;">
+    <div class="page-action-area stickyPanel" style="min-height: 24px;">
         <cti:button nameKey="save" name="save" type="submit" classes="primary action"/>
         <cti:button nameKey="cancel" name="cancel" href="view?ecId=${ecId}"/>
     </div>

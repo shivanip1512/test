@@ -7,13 +7,13 @@
 
 <%-- ERROR --%>
 <c:if test="${not empty porterResponseMonitorError}">
-	<div class="errorMessage">${porterResponseMonitorError}</div>
+	<div class="error">${porterResponseMonitorError}</div>
 </c:if>
 
 <%-- TABLE --%>
 <c:choose>
 	<c:when test="${fn:length(monitors) > 0}">
-		<table class="compactResultsTable">
+		<table class="compact-results-table">
             <thead>
     			<tr>
     				<th style="width: 20px;">&nbsp;</th>
@@ -69,7 +69,7 @@
     </c:otherwise>
 </c:choose>
 
-<div class="actionArea">
+<div class="action-area">
 	<%-- CREATE NEW MONITOR FORM --%>
 	<form action="/amr/porterResponseMonitor/createPage" method="get">
         <cti:button nameKey="create" icon="icon-plus-green" type="submit" classes="f-blocker fr"/>

@@ -17,7 +17,7 @@
 		</c:choose>
 	</strong>
 	(<a href="${zoneVoltagePointsUrl}"><i:inline key=".editPoints"/></a>)
-	<table class="compactResultsTable zoneVoltagePoints">
+	<table class="compact-results-table zoneVoltagePoints">
 		<tr>
 			<th></th>
 			<th><i:inline key=".table.header.phase"/></th>

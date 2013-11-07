@@ -7,7 +7,6 @@
 
 <cti:standardPage module="operator" page="meterProfile.${mode}">
 <tags:setFormEditMode mode="${mode}"/>
-    <cti:includeCss link="/WebConfig/yukon/styles/operator/hardware.css"/>
     
 <script type="text/javascript">
 jQuery(document).on('click', '#deleteBtn', function() {
@@ -60,7 +59,7 @@ jQuery(document).on('click', '#cancelDeleteBtn', function() {
             <%-- METER INFO --%>
             <cti:dataGridCell>
             
-                <tags:formElementContainer nameKey="meterInfoSection">
+                <tags:sectionContainer2 nameKey="meterInfoSection">
                 
                     <tags:nameValueContainer2>
                     
@@ -76,18 +75,18 @@ jQuery(document).on('click', '#cancelDeleteBtn', function() {
                     
                     </tags:nameValueContainer2>
                 
-                </tags:formElementContainer>
+                </tags:sectionContainer2>
                 
             </cti:dataGridCell>
             
             <%-- GENERAL INVENTORY INFO --%>
             <cti:dataGridCell>
             
-                <tags:formElementContainer nameKey="availableSwitchesSection">
+                <tags:sectionContainer2 nameKey="availableSwitchesSection">
                     <c:choose>
                         <c:when test="${not empty hardware.switchAssignments}">
                             
-                            <table class="compactResultsTable">
+                            <table class="compact-results-table">
                                 <tr>
                                     <th nowrap="nowrap"><i:inline key="yukon.web.modules.operator.hardware.serialNumber"/></th>
                                     <th nowrap="nowrap"><i:inline key="yukon.web.modules.operator.hardware.label"/></th>
@@ -114,14 +113,14 @@ jQuery(document).on('click', '#cancelDeleteBtn', function() {
                         </c:otherwise>
                     </c:choose>
                 
-                </tags:formElementContainer>
+                </tags:sectionContainer2>
                 
             </cti:dataGridCell>
             
         </cti:dataGrid>
         
         <%-- BUTTONS --%>
-        <div class="pageActionArea">
+        <div class="page-action-area">
             <cti:displayForPageEditModes modes="VIEW">
                 <cti:checkRolesAndProperties value="${editingRoleProperty}">
                     <cti:url value="/stars/operator/hardware/mp/edit" var="editUrl">

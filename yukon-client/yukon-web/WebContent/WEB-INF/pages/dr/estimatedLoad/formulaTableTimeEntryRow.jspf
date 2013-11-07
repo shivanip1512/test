@@ -3,7 +3,7 @@
 
 <c:set var="dummyEntryRow" value="${entryIndex lt 0}"/>
 
-<div id="tableEntry_${tableIndex}_${entryIndex}" class="column_10_14 section clearfix stacked"
+<div id="tableEntry_${tableIndex}_${entryIndex}" class="column-10-14 section clearfix stacked"
     style="${dummyEntryRow ? 'display:none' : ''}">
     <div class="column one f-drFormula-tableEntryKey_${dummyEntryRow ? '' : tableIndex}">
         <tags:inputBindOptional

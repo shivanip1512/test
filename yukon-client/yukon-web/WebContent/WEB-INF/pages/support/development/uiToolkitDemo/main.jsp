@@ -76,14 +76,14 @@ jQuery(function() {
         if (e.which == 27) { // esc
             Yukon.ui.unblockPage();
         
-            jQuery(".f-block_this").each(function() {
+            jQuery(".f-block-this").each(function() {
                 Yukon.ui.elementGlass.hide(jQuery(this));
             });
         }
     });
     
     jQuery("button.blockElement").click(function(e){
-		var elem = jQuery(e.target).closest(".f-block_this");
+		var elem = jQuery(e.target).closest(".f-block-this");
 		if(elem) {
 		    Yukon.ui.elementGlass.show(elem);
 		}
@@ -157,36 +157,36 @@ button
                 <tr>
                     <td>
                         Disable a button after clicking on it.<br/>
-                        <button class="f-disableAfterClick">Button Tag</button>
+                        <button class="f-disable-after-click">Button Tag</button>
                     </td>
                     <td>
-                        Add the <strong>'f-disableAfterClick'</strong> class to any input element - though this is of little use on text, password, select and textarea elements.
+                        Add the <strong>'f-disable-after-click'</strong> class to any input element - though this is of little use on text, password, select and textarea elements.
                         <pre class="code">
-&lt;button class="f-disableAfterClick"&gt;Button Tag&lt;/button&gt;
+&lt;button class="f-disable-after-click"&gt;Button Tag&lt;/button&gt;
                         </pre>
                     </td>
                 </tr>
                 <tr>
                     <td>
                         Disable an input after clicking on it.<br/>
-                        <input type="button" class="f-disableAfterClick" value="Input Tag" />
+                        <input type="button" class="f-disable-after-click" value="Input Tag" />
                     </td>
                     <td>
                         Also works on <strong>inputs</strong> of type <strong>button</strong>.
                         <pre class="code">
-&lt;input type="button" class="f-disableAfterClick"&gt;Input Tag&lt;/button&gt;
+&lt;input type="button" class="f-disable-after-click"&gt;Input Tag&lt;/button&gt;
                         </pre>
                     </td>
                 </tr>
                 <tr>
                     <td>
                         Disable a checkbox after clicking on it.<br/>
-                        <input type="checkbox" class="f-disableAfterClick" />
+                        <input type="checkbox" class="f-disable-after-click" />
                     </td>
                     <td>
                         Sort of pointless here, but it you can see it does work.
                         <pre class="code">
-&lt;input type="checkbox" class="f-disableAfterClick" /&gt;
+&lt;input type="checkbox" class="f-disable-after-click" /&gt;
                         </pre>
                     </td>
                 </tr>
@@ -278,10 +278,10 @@ button
 					</td>
                 </tr>
             </table>
-		    <div class="column_12_12 clearfix">
+		    <div class="column-12-12 clearfix">
 		            <div class="column one">
-                        <div class="columnHeader"><h2>Inside A Table</h2></div><br/>
-                        <table class="compactResultsTable rowHighlighting has-actions">
+                        <div class="column-header"><h2>Inside A Table</h2></div><br/>
+                        <table class="compact-results-table row-highlighting has-actions">
                             <thead>
                                 <tr>
                                     <th>Some Column 1</th>
@@ -309,13 +309,13 @@ button
                         </table>
                        </div>
                        <div class="column two nogutter">
-                           <div class="columnHeader"><h2>Relavent Markup</h2></div><br/>
+                           <div class="column-header"><h2>Relavent Markup</h2></div><br/>
 							The only real "required" markup for this to work correctly is to
 							have a class of <strong>has-actions</strong> on the table, a class of
 							<strong>contextual-menu</strong> on the td that will contain the menu, and the
 							<strong>&lt;cm:dropdown</strong> tag within that td
 							<pre class="code">
-&lt;table class="compactResultsTable rowHighlighting has-actions"&gt;
+&lt;table class="compact-results-table row-highlighting has-actions"&gt;
     &lt;thead&gt;
         &lt;tr&gt;
             &lt;th&gt;Some Column 1&lt;/th&gt;
@@ -368,7 +368,7 @@ $("myCloseButton").observe('click', function(){
                 </tr>
                 <tr>
                     <td>
-                        <div class="f-block_this box"
+                        <div class="f-block-this box"
                             style="border: solid 1px #ccc; background: white; padding: 10px 20px;" />
                         <span class="info">In this example, clicking the block button will
                             block only this white box (hit esc key to unblock).</span> Dynamic content is so cool. <br /> <br />
@@ -382,13 +382,13 @@ $("myCloseButton").observe('click', function(){
                         the handler looks like this: <br /> <br /> <pre class="code">
 jQuery("button.blockElement").click( function() {
     ...
-    var elem = jQuery(this).closest('.f-block_this');
+    var elem = jQuery(this).closest('.f-block-this');
     Yukon.ui.elementGlass.show(elem);
     ...
 });
         </pre> <br /> Similarly, we need to tell the library to unblock the element: <pre class="code">
 ...
-    var elem = jQuery('.f-block_this');
+    var elem = jQuery('.f-block-this');
     Yukon.ui.elementGlass.hide(elem);
 ...
         </pre>

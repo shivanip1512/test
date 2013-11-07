@@ -172,11 +172,11 @@ function validateAddressRange() {
 };
 </script>
 
-<div class="column_12_12">
+<div class="column-12-12">
     <div class="column one">
     
         <%-- DEVICES --%>
-        <div class="pageActionArea">
+        <div class="page-action-area">
             <form id="selectDevicesForm" method="post" action="${action}" class="dn">
                 <input type="hidden" id="deviceIds" name="idList.ids" />
                 <input type="hidden" name="collectionType" value="idList" />
@@ -193,7 +193,7 @@ function validateAddressRange() {
         </div>
         
         <%-- GROUP --%>
-        <div class="pageActionArea">
+        <div class="page-action-area">
             <cti:msg2 var="addDeviceTitle" key=".selectDevicesByGroupTitle" />
             <cti:msg2 var="rootLabel" key=".selectDevicesByGroupTree.rootLabel" />
             <cti:msg2 var="submitButtonText" key=".selectDevicesByGroupTree.submitButtonText" />
@@ -222,7 +222,7 @@ function validateAddressRange() {
     <div class="column two nogutter">
         
         <%-- ADDRESS RANGE --%>
-        <div class="pageActionArea">
+        <div class="page-action-area">
         
             <cti:msg2 var="selectAddressPopupTitle" key=".selectAddressPopupTitle" />
 
@@ -262,7 +262,7 @@ function validateAddressRange() {
                             <input type="text" id="${byAddrPopupId}_endRange" name="addressRange.end" class="undefinedEndAddress outOfRange endTooHigh" />
                         </tags:nameValue>
                     </tags:nameValueContainer>
-                    <div class="actionArea">
+                    <div class="action-area">
                         <cti:button nameKey="select" classes="primary action f-blocker"/>
                     </div>
                     <tags:mapToHiddenInputs values="${pageScope.extraInputs}"/>
@@ -273,7 +273,7 @@ function validateAddressRange() {
         </div>
         
         <%-- FILE UPLOAD --%>
-        <div class="pageActionArea">
+        <div class="page-action-area">
             <c:set var="byFileUploadId" value="byFileUpload" />
             <cti:msg2 var="selectDataFilePopupTitle" key=".selectDataFilePopupTitle" />
             

@@ -73,8 +73,8 @@ singleOverrideChecked = function(boxChecked) {
 
     <cti:msg2 var="boxTitle" key=".programs"/>
     <tags:sectionContainer title="${boxTitle}">
-    <div class="scrollingContainer_medium">
-    <table class="compactResultsTable" id="startMultipleProgramsOverridePrograms">
+    <div class="scroll-medium">
+    <table class="compact-results-table" id="startMultipleProgramsOverridePrograms">
         <thead>
 	        <tr>
 	            <c:if test="${constraintsViolated}">
@@ -152,7 +152,7 @@ singleOverrideChecked = function(boxChecked) {
     </c:if>
     <br>
 
-    <div class="actionArea">
+    <div class="action-area">
         <c:if test="${!constraintsViolated || overrideAllowed}">
             <cti:button id="okButton" nameKey="ok" classes="primary action" type="submit"/>
         </c:if>

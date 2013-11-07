@@ -55,7 +55,7 @@
     </c:if>
     <br>
 
-    <div class="actionArea">
+    <div class="action-area">
         <c:if test="${empty violations.constraintContainers || overrideAllowed}">
             <cti:button nameKey="ok" id="okButton" classes="primary action" type="submit"/>
         </c:if>

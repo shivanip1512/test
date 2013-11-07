@@ -33,7 +33,7 @@
 		<form name="PForm" method="post" action="<%=request.getContextPath()%>/servlet/InventoryManager" onsubmit="return prepareSubmit(this)">
 	    	<input type="hidden" name="action" value="PurchaseChange"> 
 	    	<div align="center">
-	    		<span class="TitleHeader">PURCHASE PLAN</span>
+	    		<span class="title-header">PURCHASE PLAN</span>
 			</div>
 			<br>
 			<br>

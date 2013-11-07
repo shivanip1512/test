@@ -31,7 +31,7 @@
         <tags:sectionContainer2 nameKey="selectBroadcastRoutes">
             <table style="padding-bottom: 5px;">
                 <tr>
-                    <td valign="top" class="smallBoldLabel">
+                    <td valign="top" class="strong-label-small">
                         <i:inline key=".noteLabel"/>
                     </td>
                     <td style="font-size:11px;">
@@ -41,12 +41,12 @@
             </table>
             
             <div id="errorDiv" style="display: none;padding-bottom: 5px;">
-                <span id="errorSpan" class="errorMessage">
+                <span id="errorSpan" class="error">
                     <i:inline key=".noRouteSelected"/>
                 </span>
             </div>
             
-            <table class="resultsTable" style="padding-top: 5px;width: 10%;">
+            <table class="results-table" style="padding-top: 5px;width: 10%;">
                 <thead>
                     <tr>
                         <th nowrap="nowrap">

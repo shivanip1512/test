@@ -35,9 +35,9 @@
 	
 	<!-- optOut -->
 	<!-- Program Opt Out Section -->
-	<entry key="yukon.web.modules.operator.optOut.main.title">Opt Out</entry>
 	<entry key="yukon.web.modules.operator.optOut.main.pageName">Opt Out</entry>
     <entry key="yukon.web.modules.operator.optOut.main.description">Select the time frame to temporarily opt out.</entry>
+    <entry key="yukon.web.modules.operator.optOut.main.createOptOut.title">Create Opt Out</entry>
 	<entry key="yukon.web.modules.operator.optOut.main.allOptedOut">All devices have already been opted out.</entry>
 	<entry key="yukon.web.modules.operator.optOut.main.noOptOutsAvailable">All opt outs for all devices have been used.</entry>
 	<entry key="yukon.web.modules.operator.optOut.main.header">Programs - Opt Out</entry>

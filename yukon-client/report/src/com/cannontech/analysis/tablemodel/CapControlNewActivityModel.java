@@ -375,7 +375,7 @@ public class CapControlNewActivityModel extends FilterObjectsReportModelBase<Obj
 		html += "    <td valign='top'>" + LINE_SEPARATOR;
 		html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
 		html += "        <tr>" + LINE_SEPARATOR;
-		html += "          <td class='TitleHeader'>&nbsp;Order By</td>" +LINE_SEPARATOR;
+		html += "          <td class='title-header'>&nbsp;Order By</td>" +LINE_SEPARATOR;
 		html += "        </tr>" + LINE_SEPARATOR;
 		for (int i = 0; i < getAllOrderBys().length; i++)
 		{
@@ -391,7 +391,7 @@ public class CapControlNewActivityModel extends FilterObjectsReportModelBase<Obj
 		html += "    <td valign='top'>" + LINE_SEPARATOR;
 		html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;		
 		html += "        <tr>" + LINE_SEPARATOR;
-		html += "          <td class='TitleHeader'>&nbsp;Order Direction</td>" +LINE_SEPARATOR;
+		html += "          <td class='title-header'>&nbsp;Order Direction</td>" +LINE_SEPARATOR;
 		html += "        </tr>" + LINE_SEPARATOR;
 		for (int i = 0; i < getAllSortOrders().length; i++)
 		{

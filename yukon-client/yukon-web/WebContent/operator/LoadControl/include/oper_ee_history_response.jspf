@@ -174,17 +174,17 @@
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF">
             <div align="center">
-              <p class="TitleHeader"><br>
+              <p class="title-header"><br>
                 Energy Buyback - CUSTOMER SUMMARY HISTORY<br><%= customer.getCustomerName() %></p>
             </div>
             <div align="center"> 
           <table width="480" border="0" cellspacing="0" cellpadding="5">
             <tr> 
-              <td class="TitleHeader"><p align=RIGHT>Offer ID:</td>
+              <td class="title-header"><p align=RIGHT>Offer ID:</td>
               <td class="MainText"><%= offerId + "-" + revisionNumber %></td>
-              <td class="TitleHeader"><p align=RIGHT>Control Date:</td>
+              <td class="title-header"><p align=RIGHT>Control Date:</td>
               <td class="MainText"><%= eeTimeFormat.format( offer.getOfferDate() ) + " " + tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) + "  " + eeDateFormat.format( offer.getOfferDate() ) %></td>
-              <td class="TitleHeader"><p align=RIGHT>Accept User:</td>
+              <td class="title-header"><p align=RIGHT>Accept User:</td>
               <td class="MainText"><%= reply.getNameOfAcceptPerson() %></td>
             </tr>
           </table>

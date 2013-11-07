@@ -19,9 +19,9 @@
 
 <c:choose>
     <c:when test="${fn:length(jobWrappers) > 0}">
-        <div class="scrollingContainer_large">
+        <div class="scroll-large">
         
-<table class="compactResultsTable">
+<table class="compact-results-table">
     <thead>
         <th><i:inline key=".tableHeader.scheduleName"/></th>
         <th><i:inline key=".tableHeader.scheduleDescription"/></th>
@@ -60,7 +60,7 @@
                             totalCountKey="SCHEDULED_GROUP_REQUEST_EXECUTION/${jobWrapper.job.id}/LAST_REQUEST_COUNT_FOR_JOB"
                             countKey="SCHEDULED_GROUP_REQUEST_EXECUTION/${jobWrapper.job.id}/LAST_SUCCESS_RESULTS_COUNT_FOR_JOB"
                             failureCountKey="SCHEDULED_GROUP_REQUEST_EXECUTION/${jobWrapper.job.id}/LAST_FAILURE_RESULTS_COUNT_FOR_JOB"
-                            borderClasses="scheduledRequestProgressBarBorder" 
+                            borderClasses="scheduled-request" 
                             hideCount="true" 
                             hidePercent="true"/>
                         <cti:button nameKey="cancel" id="cancel_${jobWrapper.job.id}" classes="stopButton fn M0"
@@ -71,7 +71,7 @@
     
                 <%-- enable/disable --%>
                 <c:if test="${canManage}">
-                    <td class="removeColumn">
+                    <td class="remove-column">
                         <span id="disableSpan_${jobWrapper.job.id}" <c:if test="${jobWrapper.jobStatus eq 'DISABLED'
                                 || jobWrapper.jobStatus eq 'RUNNING'}">style="display:none;"</c:if>>
                             <tags:widgetActionRefreshImage method="toggleEnabled" jobId="${jobWrapper.job.id}" 
@@ -101,7 +101,7 @@
     <c:otherwise><i:inline key=".noSchedules"/></c:otherwise>
 </c:choose>
 
-<div class="actionArea">
+<div class="action-area">
     <a href="/group/scheduledGroupRequestExecutionResults/jobs" class="fl">
         <c:choose>
             <c:when test="${numAdditionalJobs != null}">

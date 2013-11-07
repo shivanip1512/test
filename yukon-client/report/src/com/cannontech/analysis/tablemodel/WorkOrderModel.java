@@ -969,7 +969,7 @@ public class WorkOrderModel extends ReportModelBase<WorkOrder> {
 		html += "    <td valign='top'>" + LINE_SEPARATOR;
 		html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
 		html += "        <tr>" + LINE_SEPARATOR;
-		html += "          <td valign='top' class='TitleHeader'>Search BY Column</td>" +LINE_SEPARATOR;
+		html += "          <td valign='top' class='title-header'>Search BY Column</td>" +LINE_SEPARATOR;
 		html += "        </tr>" + LINE_SEPARATOR;
 		html += "        <tr>" + LINE_SEPARATOR;
 		html += "          <td><input type='radio' name='" + ATT_SEARCH_COL +"' value='" + SEARCH_COL_DATE_CLOSED + "'>Date Closed" + LINE_SEPARATOR;

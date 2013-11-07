@@ -6,7 +6,7 @@
 
 <cti:msgScope paths="yukon.web.modules.operator.abr">
     <tags:boxContainer2 nameKey="failedItems" id="failedItems">
-        <table class="compactResultsTable">
+        <table class="compact-results-table">
             <tr>
                 <th><i:inline key=".serialNumber"/></th>
                 <th><i:inline key=".reason"/></th>

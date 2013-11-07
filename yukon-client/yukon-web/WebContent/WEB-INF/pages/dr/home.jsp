@@ -9,14 +9,14 @@
 <cti:standardPage module="dr" page="home">
     <tags:simpleDialog id="drDialog"/>
 
-    <div class="column_12_12">
+    <div class="column-12-12">
         <div class="column one">
             <tags:boxContainer2 nameKey="favorites">
                 <c:if test="${empty favorites}">
                     <span class="empty-list"><i:inline key=".noFavorites"/></span>
                 </c:if>
                 <c:if test="${!empty favorites}">
-                    <table class="compactResultsTable rowHighlighting has-actions">
+                    <table class="compact-results-table row-highlighting has-actions">
                         <thead>
                         <tr>
                             <th>
@@ -78,7 +78,7 @@
                     <span class="empty-list"><i:inline key=".noRecents" /></span>
                 </c:if>
                 <c:if test="${!empty recents}">
-                    <table class="compactResultsTable rowHighlighting has-actions">
+                    <table class="compact-results-table row-highlighting has-actions">
                         <thead>
                         <tr>
                             <th>
@@ -111,7 +111,7 @@
                                 <td>
                                     <dr:stateText pao="${pao}"/>
                                 </td>
-                                <td class="nonwrapping">
+                                <td>
                                     <dr:listActions pao="${pao}"/>
                                 </td>
                             </tr>

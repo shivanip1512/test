@@ -463,16 +463,16 @@ span.dynatree-icon { background-image:url("tree/folder.gif"); background-positio
 ul.dynatree-container .found a { color: blue !important; }
 
 /* YUKON STYLES */
-.inlineTree {
+.inline-tree {
 /*     margin-bottom: 10px; */
     border: solid 1px #ccc;
 }
 
-.inlineTree.bn, .popupTree, .inlineTree.contained{
+.inline-tree.bn, .popupTree, .inline-tree.contained{
     border: none;
 }
 
-.inlineTree .treeCanvas {
+.inline-tree .treeCanvas {
     background: white;
 }
 

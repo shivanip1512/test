@@ -27,8 +27,8 @@
     </tags:nameValueContainer2>
 
     <tags:boxContainer2 nameKey="programs" id="programListBox">
-    <div class="dialogScrollArea">
-        <table class="compactResultsTable">
+    <div class="scroll-medium">
+        <table class="compact-results-table">
             <tr>
                 <th><i:inline key=".programName"/></th>
             </tr>
@@ -43,7 +43,7 @@
     </div>
     </tags:boxContainer2>
 
-    <div class="actionArea">
+    <div class="action-area">
         <cti:button nameKey="ok" onclick="parent.jQuery('#ajaxDialog').hide()"/>
     </div>
 

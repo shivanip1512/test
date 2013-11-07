@@ -36,7 +36,7 @@
                     <i:inline key=".noEvents"/>
                 </c:when>
                 <c:otherwise>
-                    <table id="resTable${eventSet.paoId}" class="compactResultsTable">
+                    <table id="resTable${eventSet.paoId}" class="compact-results-table">
                     
                         <thead>
                             <tr>

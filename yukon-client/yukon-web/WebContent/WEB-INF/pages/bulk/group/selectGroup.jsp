@@ -51,7 +51,7 @@ function validateGroupIsSelected(btn, alertText) {
                                                  maxHeight="400"
                                                  includeControlBar="true"/>
                             
-            <div class="pageActionArea">
+            <div class="page-action-area">
                 <button name="addRemoveButton" onclick="return validateGroupIsSelected(this, '${noDeviceGroupSelectedAlertText}');">
                     <span class="label">${buttonText}</span>
                 </button>

@@ -90,12 +90,12 @@
             <%-- create / update / delete --%>
             <c:choose>
                 <c:when test="${tamperFlagMonitorId > 0}">
-                    <cti:button nameKey="update" busy="true" type="submit" classes="primary action f-disableAfterClick" data-disable-group="actionButtons" />
+                    <cti:button nameKey="update" busy="true" type="submit" classes="primary action" data-disable-group="actionButtons" />
                     <c:set var="toggleText" value="enable"/>
                     <c:if test="${tamperFlagMonitor.evaluatorStatus eq 'ENABLED'}">
                         <c:set var="toggleText" value="disable"/>
                     </c:if>
-                    <cti:button nameKey="${toggleText}" onclick="jQuery('#toggleEnabledForm').submit();" busy="true" classes="f-disableAfterClick" data-disable-group="actionButtons"/>
+                    <cti:button nameKey="${toggleText}" onclick="jQuery('#toggleEnabledForm').submit();" busy="true" data-disable-group="actionButtons"/>
                     <cti:button id="deleteButton" type="button" nameKey="delete" onclick="deleteTamperFlagMonitor(${tamperFlagMonitorId});" busy="true" data-disable-group="actionButtons"/>
                     <d:confirm on="#deleteButton" nameKey="confirmDelete" />
                     <cti:url var="backUrl" value="/amr/tamperFlagProcessing/process/process">
@@ -103,10 +103,10 @@
                     </cti:url>
                 </c:when>
                 <c:otherwise>
-                    <cti:button nameKey="save" type="submit" busy="true" classes="f-disableAfterClick" data-disable-group="actionButtons" />
+                    <cti:button nameKey="save" type="submit" busy="true" data-disable-group="actionButtons" />
                     <cti:url var="backUrl" value="/meter/start" />
                 </c:otherwise>
             </c:choose>
-            <cti:button nameKey="cancel" type="button" href="${backUrl}" busy="true" classes="f-disableAfterClick" data-disable-group="actionButtons" />
+            <cti:button nameKey="cancel" type="button" href="${backUrl}" busy="true" data-disable-group="actionButtons" />
         </form>
 </cti:standardPage>

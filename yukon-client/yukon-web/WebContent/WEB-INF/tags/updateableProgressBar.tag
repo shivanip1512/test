@@ -31,26 +31,26 @@
 	<c:set var="hideCount" value="false"/>
 </c:if>
 
-<div id="progressContainer_${pbarId}" class="progressBar ${pageScope.containerClasses}">
-    <div class="progressBarBorder ${pageScope.borderClasses}">
+<div id="progressContainer_${pbarId}" class="progressbar ${pageScope.containerClasses}">
+    <div class="progressbar-border ${pageScope.borderClasses}">
         <c:choose>
             <c:when test="${empty pageScope.failureCountKey}">
-                <div class="progressBarInner ${pageScope.barClasses}"></div>
+                <div class="progressbar-inner ${pageScope.barClasses}"></div>
             </c:when>
             <c:otherwise>
-                <div class="progressBarInnerFailure ${pageScope.barClasses} ${pageScope.barSuccessClasses}"></div>
-                <div class="progressBarInnerSuccess ${pageScope.barClasses} ${pageScope.barFailureClasses}"></div>
+                <div class="progressbar-inner-fail ${pageScope.barClasses} ${pageScope.barSuccessClasses}"></div>
+                <div class="progressbar-inner-success ${pageScope.barClasses} ${pageScope.barFailureClasses}"></div>
             </c:otherwise>
         </c:choose>
     </div>
     <c:if test="${!hidePercent}">
-        <div class="progressBarPercentComplete ${pageScope.percentClasses}">0%</div>
+        <div class="progressbar-percent-complete ${pageScope.percentClasses}">0%</div>
     </c:if>
     <c:if test="${!hideCount}">
         <span class="${pageScope.countClasses}">
-            <span class="progressBarCompletedCount"></span>
+            <span class="progressbar-completed-count"></span>
             <span>/</span>
-            <span class="progressBarTotal">
+            <span class="progressbar-total">
                 <c:if test="${empty totalCountKey}">
                     ${totalCount}
                 </c:if>

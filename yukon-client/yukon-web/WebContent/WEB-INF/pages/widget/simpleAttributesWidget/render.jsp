@@ -30,7 +30,7 @@
 
 <c:if test="${isReadable}">
     <div class="widgetInternalSection" id="${widgetParameters.widgetId}_results"></div>
-    <div class="actionArea">
+    <div class="action-area">
         <tags:widgetActionUpdate method="read" nameKey="read" container="${widgetParameters.widgetId}_results" />
     </div>
 </c:if>

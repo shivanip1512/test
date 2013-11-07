@@ -1,11 +1,12 @@
 Yukon.namespace('Yukon.MeteringBilling');
 
 Yukon.MeteringBilling = (function() {
+    
     /**
      * Singleton that manages the javascript in User Preferences
      * 
      * @class User Preferences javascript
-     * @requires jQuery 1.6+
+     * @requires jQuery 1.8+
      */
     /* PRIVATE VARIABLES METHODS */
 
@@ -58,7 +59,7 @@ Yukon.MeteringBilling = (function() {
             if (maybeNewPane.length > 0) { // Exists
                 maybeNewPane.html(new_html);
             } else { // Must create it
-                maybeNewPane = jQuery('<div id="billing_generation_schedule" class="dn">\n'+ new_html +'\n</div>');
+                maybeNewPane = jQuery('<div id="billing_generation_schedule" class="dn clearfix stacked">\n'+ new_html +'\n</div>');
                 maybeNewPane.insertAfter(settingsPane);
             }
             settingsPane.hide();
@@ -71,7 +72,6 @@ Yukon.MeteringBilling = (function() {
                 type: 'get',
                 data: send_data
             }).done( function(html) {
-    //            jQuery("#tab_schedules").click();
                 jQuery("#billing_tab_container").tabs("option","active",2); // THIRD tab
                 jQuery("#billing_schedules_jobs").html(html);
                 if (after_function != null && after_function != undefined) {
@@ -82,8 +82,7 @@ Yukon.MeteringBilling = (function() {
 
         _get_pagination_state = function(jQueryContainer) {
             var countPerPage = jQueryContainer.find(".perPageArea .selectedItem").text();
-            var currPage = jQueryContainer.find(".pagingArea .f-current_page_index_from_1").val();
-            //return "page="+ currPage +"&itemsPerPage="+ countPerPage;
+            var currPage = jQueryContainer.find(".paging-area .f-current_page_index_from_1").val();
             return {"page": currPage, "itemsPerPage": countPerPage};
         },
 
@@ -96,7 +95,6 @@ Yukon.MeteringBilling = (function() {
                 if (results.success) {
                     _do_refresh_schedules_jobs_list(
                         _get_pagination_state(jQuery("#billing_schedules_jobs")), function() {
-    //                    alert(results.message);
                     });
                 } else { // ?
                     alert("An error prevented deleting this job: \n\t"+ results.error);
@@ -369,7 +367,7 @@ Yukon.MeteringBilling = (function() {
                 data: form.serialize(),
             }).done( function(data) {
                 // Clear existing error indicators + messages
-                form.find("input").removeClass("error").closest("td").find("div.errorMessage").remove();
+                form.find("input").removeClass("error").closest("td").find("div.error").remove();
                 // anything else?
 
                 if (data.success) {
@@ -400,7 +398,7 @@ Yukon.MeteringBilling = (function() {
                         field.addClass("error");
                     }
                     var row = field.closest("td");
-                    var errTd = jQuery('<div class="errorMessage">'+ err.message +'</div>');
+                    var errTd = jQuery('<div class="error">'+ err.message +'</div>');
                     errTd.appendTo(row);
                 }
             });

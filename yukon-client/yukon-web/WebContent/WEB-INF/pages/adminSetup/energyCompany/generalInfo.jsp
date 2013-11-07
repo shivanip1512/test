@@ -27,7 +27,7 @@ jQuery(function() {
 </script>
 </cti:displayForPageEditModes>
     
-        <div class="column_10_14">
+        <div class="column-10-14">
         
             <%-- LEFT SIDE COLUMN --%>
             <div class="column one">
@@ -64,7 +64,7 @@ jQuery(function() {
                         </c:if>
                     </tags:nameValueContainer2>
                     
-                    <div class="pageActionArea">
+                    <div class="page-action-area">
                         <cti:displayForPageEditModes modes="VIEW">
                             <c:if test="${canEdit}">
                                 <cti:button nameKey="edit" icon="icon-pencil" type="submit" name="edit"/>
@@ -100,12 +100,12 @@ jQuery(function() {
                                 </c:when>
                                 <c:otherwise>
                                     <div class="membersContainer">
-                                        <table class="compactResultsTable listTable">
+                                        <table class="compact-results-table listTable">
                                             <thead>
                                                 <tr>
                                                     <th><i:inline key=".companyName"/></th>
                                                     <c:if test="${canManageMembers}">
-                                                        <th class="removeColumn"><i:inline key=".remove"/></th>
+                                                        <th class="remove-column"><i:inline key=".remove"/></th>
                                                     </c:if>
                                                 </tr>
                                             </thead>
@@ -118,7 +118,7 @@ jQuery(function() {
                                                     <tr>
                                                         <td><a href="${viewEcUrl}">${company.name}</a></td>
                                                         <c:if test="${canManageMembers}">
-                                                            <td class="removeColumn">
+                                                            <td class="remove-column">
                                                                 <div class="dib">
                                                                     <cti:button nameKey="remove" type="submit" name="remove" value="${company.energyCompanyId}" renderMode="image" icon="icon-cross"/>
                                                                 </div>
@@ -132,7 +132,7 @@ jQuery(function() {
                                 </c:otherwise>
                             </c:choose>
                             
-                            <div class="actionArea" style="min-width: 380px;">
+                            <div class="action-area" style="min-width: 380px;">
                                 <c:if test="${canCreateMembers}">
                                     <cti:button nameKey="create" icon="icon-plus-green" type="submit" name="create" classes="fl"/>
                                 </c:if>
@@ -153,11 +153,11 @@ jQuery(function() {
                             <input name="ecId" type="hidden" value="${ecId}">
                             <input type="hidden" name="operatorUserGroupIds" id="operatorUserGroupIds">
                             <div class="operatorGroupTable">
-                                <table class="compactResultsTable listTable">
+                                <table class="compact-results-table listTable">
                                     <thead>
                                         <tr>
                                             <th><i:inline key=".operatorGroups"/></th>
-                                            <c:if test="${fn:length(operatorUserGroups) > 1}"><th class="removeColumn"><i:inline key=".remove"/></th></c:if>
+                                            <c:if test="${fn:length(operatorUserGroups) > 1}"><th class="remove-column"><i:inline key=".remove"/></th></c:if>
                                         </tr>
                                     </thead>
                                     <tfoot></tfoot>
@@ -166,7 +166,7 @@ jQuery(function() {
                                             <tr>
                                                 <td><spring:escapeBody htmlEscape="true">${userGroup.userGroupName}</spring:escapeBody></td>
                                                 <c:if test="${fn:length(operatorUserGroups) > 1}">
-                                                    <td class="removeColumn">
+                                                    <td class="remove-column">
                                                         <div class="dib">
                                                             <cti:button nameKey="remove" type="submit" name="removeOperatorUserGroup" value="${userGroup.userGroupId}" renderMode="image" icon="icon-cross"/>
                                                         </div>
@@ -177,7 +177,7 @@ jQuery(function() {
                                     </tbody>
                                 </table>
                             </div>
-                            <div class="actionArea">
+                            <div class="action-area">
                                 <tags:pickerDialog type="userGroupPicker" id="operatorUserGroupPicker" linkType="button" nameKey="add"
                                     destinationFieldId="operatorUserGroupIds" multiSelectMode="true" endAction="addOperatorUserGroups" icon="icon-add"/>
                             </div>
@@ -189,11 +189,11 @@ jQuery(function() {
                             <input name="ecId" type="hidden" value="${ecId}">
                             <input type="hidden" name="customerUserGroupIds" id="customerUserGroupIds">
                             <div class="customerGroupTable">
-                                <table class="compactResultsTable listTable">
+                                <table class="compact-results-table listTable">
                                     <thead>
                                         <tr>
                                             <th><i:inline key=".customerGroups"/></th>
-                                            <c:if test="${not empty customerUserGroups}"><th class="removeColumn"><i:inline key=".remove"/></th></c:if>
+                                            <c:if test="${not empty customerUserGroups}"><th class="remove-column"><i:inline key=".remove"/></th></c:if>
                                         </tr>
                                     </thead>
                                     <tfoot></tfoot>
@@ -203,7 +203,7 @@ jQuery(function() {
                                                 <c:forEach var="userGroup" items="${customerUserGroups}">
                                                     <tr>
                                                         <td><spring:escapeBody htmlEscape="true">${userGroup.userGroupName}</spring:escapeBody></td>
-                                                        <td class="removeColumn">
+                                                        <td class="remove-column">
                                                             <div class="dib">
                                                                 <cti:button nameKey="remove" type="submit" name="removeCustomerUserGroup" value="${userGroup.userGroupId}" renderMode="image" icon="icon-cross"/>
                                                             </div>
@@ -220,7 +220,7 @@ jQuery(function() {
                                     </tbody>
                                 </table>
                             </div>
-                            <div class="actionArea">
+                            <div class="action-area">
                                 <tags:pickerDialog type="userGroupPicker" id="customerUserGroupPicker" linkType="button" nameKey="add" icon="icon-add"
                                     destinationFieldId="customerUserGroupIds" multiSelectMode="true" endAction="addCustomerUserGroups"/>
                             </div>

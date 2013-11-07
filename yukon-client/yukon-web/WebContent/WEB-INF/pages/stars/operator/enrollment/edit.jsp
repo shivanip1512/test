@@ -86,9 +86,9 @@
         </tags:nameValueContainer2>
     </cti:checkEnergyCompanySetting>
 
-    <tags:boxContainer2 nameKey="hardwareAssigned">
-        <div class="dialogScrollArea">
-        <table id="hardwareAssignedTable" class="compactResultsTable rowHighlighting">
+    <tags:sectionContainer2 nameKey="hardwareAssigned">
+        <div class="scroll-medium">
+        <table id="hardwareAssignedTable" class="compact-results-table with-form-controls">
             <thead>
                 <tr>
                     <th></th>
@@ -129,9 +129,9 @@
             </tbody>
         </table>
         </div>
-    </tags:boxContainer2>
+    </tags:sectionContainer2>
 
-    <div class="actionArea">
+    <div class="action-area">
         <cti:button id="okBtn" nameKey="ok" type="submit" classes="primary action"/>
         <cti:button nameKey="cancel" onclick="jQuery('#peDialog').dialog('close');"/>
     </div>

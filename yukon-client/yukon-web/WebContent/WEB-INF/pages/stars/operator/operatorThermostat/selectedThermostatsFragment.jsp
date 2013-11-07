@@ -20,14 +20,14 @@
 <%-- THERMOSTAT NAMES --%>
 <c:choose>
 	<c:when test="${fn:length(thermostatNames) > 1}">
-		<c:set var="formElementContainerNameKey" value="selectedThermostatsHeaderMultiple"/>
+		<c:set var="nameKey" value="selectedThermostatsHeaderMultiple"/>
 	</c:when>
 	<c:otherwise>
-		<c:set var="formElementContainerNameKey" value="selectedThermostatsHeader"/>
+		<c:set var="nameKey" value="selectedThermostatsHeader"/>
 	</c:otherwise>
 </c:choose>
 			
-<tags:formElementContainer nameKey="${formElementContainerNameKey}">
+<tags:sectionContainer2 nameKey="${nameKey}">
 
 	<table class="selectedThermostatList">
 		<c:forEach var="thermostatName" items="${thermostatNames}" varStatus="status">
@@ -53,6 +53,6 @@
 	    </c:forEach>
 	</table>
 	
-</tags:formElementContainer>
+</tags:sectionContainer2>
 
 </cti:msgScope>

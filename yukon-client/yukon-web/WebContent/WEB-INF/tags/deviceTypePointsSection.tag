@@ -9,9 +9,9 @@
 <%@ attribute name="deviceTypeDeviceCollection" type="com.cannontech.common.bulk.collection.device.DeviceCollection"%>
 <%@ attribute name="paoTypeMasks" required="true" type="com.cannontech.web.bulk.model.PaoTypeMasks"%>
 
-<cti:uniqueIdentifier prefix="sectionContainer_" var="thisId"/>
+<cti:uniqueIdentifier prefix="section-container-" var="thisId"/>
 
-<div class="titledContainer sectionContainer" id="${thisId}">
+<div class="titled-container section-container" id="${thisId}">
 
     <div class="title-bar clearfix">
             

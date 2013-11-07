@@ -19,7 +19,7 @@
             <br/>
         </c:if>
     
-    <div class="pageActionArea">
+    <div class="page-action-area">
     <cti:checkRolesAndProperties value="ADMIN_MULTI_WAREHOUSE">
         <cti:url var="warehouseEditUrl" value="${baseUrl}/edit">
             <cti:param name="ecId" value="${ecId}"/>

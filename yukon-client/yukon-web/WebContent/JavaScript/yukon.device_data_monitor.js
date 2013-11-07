@@ -17,7 +17,7 @@ Yukon.DeviceDataMonitor = (function () {
         _deviceViolationEnum_point =         "POINT",
 
         _monitor_update_btn =                ".f-update_monitor",
-        _monitor_btns_to_disable =           ".pageActionArea button, .ui-dialog-buttonset button",
+        _monitor_btns_to_disable =           ".page-action-area button, .ui-dialog-buttonset button",
         _monitor_delete_form =               ".f-delete_form",
         _monitor_delete_btn =                "button.f-delete_btn",
         _undo_row_links =                    ".undoRemoveBtn, .removeBtn",
@@ -49,7 +49,7 @@ Yukon.DeviceDataMonitor = (function () {
         _missing_field_selector =            ".f-showProblem",
         _missing_field_help_selector =       ".f-showViolationHelp",
 
-        _btn_create_update =                 ".pageActionArea button.f-update_monitor",
+        _btn_create_update =                 ".page-action-area button.f-update_monitor",
 
         // supported count "missing" text
         _missing_or_no_group_text =       ".f-missing_or_no_stategroup_text",
@@ -102,7 +102,7 @@ Yukon.DeviceDataMonitor = (function () {
 
         _show_update_dialog = function () {
             var count_status = jQuery(_supported_count).attr(_count_status);
-            jQuery(_update_dialog_ids).find(".userMessage").remove();
+            jQuery(_update_dialog_ids).find(".user-message").remove();
             if (count_status === _count_status_loading) {
                 open_update_loading_dialog();
             } else if (count_status === _count_status_missing) {

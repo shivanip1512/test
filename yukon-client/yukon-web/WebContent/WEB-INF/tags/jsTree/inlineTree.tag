@@ -129,7 +129,7 @@
     });
 </script>
 
-<div id="internalTreeContainer_${id}" class="inlineTree contained ${pageScope.styleClass}">
+<div id="internalTreeContainer_${id}" class="inline-tree contained ${pageScope.styleClass}">
 
     <c:if test="${not empty pageScope.includeControlBar and pageScope.includeControlBar}">
         <div class="tree_helper_controls">

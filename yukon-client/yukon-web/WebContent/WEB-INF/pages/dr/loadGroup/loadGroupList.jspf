@@ -81,7 +81,7 @@
             </cti:checkRolesAndProperties>
         </tags:nameValueContainer2>
 
-        <div class="actionArea">
+        <div class="action-area">
             <cti:button nameKey="filter" classes="primary action" type="submit"/>
             <cti:button nameKey="showAll" onclick="javascript:clearFilter()"/>
         </div>
@@ -99,7 +99,7 @@
             <cti:msg2 key=".noResults" />
         </c:when>
         <c:otherwise>
-            <table id="loadGroupList" class="compactResultsTable rowHighlighting has-actions">
+            <table id="loadGroupList" class="compact-results-table row-highlighting has-actions">
                 <thead>
                     <tr>
                         <th><tags:sortLink nameKey="heading.name" baseUrl="${baseUrl}" fieldName="NAME"/></th>
@@ -139,24 +139,24 @@
                                  update the class of the row instead --%>
 
                             <cti:checkRolesAndProperties value="LOAD_GROUP_STATE">
-                                <td class="nonwrapping"><dr:loadGroupState
+                                <td><dr:loadGroupState
                                     loadGroupId="${loadGroupId}" /></td>
                             </cti:checkRolesAndProperties>
 
 
                             <cti:checkRolesAndProperties value="LOAD_GROUP_LAST_ACTION">
-                                <td class="nonwrapping"><cti:dataUpdaterValue
+                                <td><cti:dataUpdaterValue
                                     type="DR_LOADGROUP" identifier="${loadGroupId}/LAST_ACTION" /></td>
                             </cti:checkRolesAndProperties>
 
                             <cti:checkRolesAndProperties value="LOAD_GROUP_CONTROL_STATISTICS">
-                                <td class="nonwrapping"><cti:dataUpdaterValue
+                                <td><cti:dataUpdaterValue
                                     type="DR_LOADGROUP"
                                     identifier="${loadGroupId}/CONTROL_STATISTICS" /></td>
                             </cti:checkRolesAndProperties>
 
                             <cti:checkRolesAndProperties value="LOAD_GROUP_REDUCTION">
-                                <td class="nonwrapping"><cti:dataUpdaterValue
+                                <td><cti:dataUpdaterValue
                                     type="DR_LOADGROUP" identifier="${loadGroupId}/REDUCTION" /></td>
                             </cti:checkRolesAndProperties>
 

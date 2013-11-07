@@ -15,20 +15,20 @@
             <input type="hidden" name="parentId" value="${parentId}">
         </c:if>
     
-        <div class="column_12_12">
+        <div class="column-12-12">
         
             <div class="column one">
                     
-                <tags:formElementContainer nameKey="generalInfo">
+                <tags:sectionContainer2 nameKey="generalInfo">
                     <tags:nameValueContainer2>
                         <tags:inputNameValue nameKey=".name" path="name" size="35" maxlength="60"/>
                         <tags:inputNameValue nameKey=".email" path="email" size="35" maxlength="130"/>
                         <tags:selectNameValue items="${routes}" itemLabel="paoName" itemValue="yukonID"
                             nameKey=".defaultRoute" path="defaultRouteId" defaultItemLabel="${none}" defaultItemValue="-1"/>
                     </tags:nameValueContainer2>
-                </tags:formElementContainer>
+                </tags:sectionContainer2>
                 
-                <tags:formElementContainer nameKey="groups">
+                <tags:sectionContainer2 nameKey="groups">
                     
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".primaryOperatorGroup" rowClass="pickerRow">
@@ -49,13 +49,13 @@
                         
                     </tags:nameValueContainer2>
                     
-                </tags:formElementContainer>
+                </tags:sectionContainer2>
                 
             </div>
             <div class="column two nogutter">
                 
-                <tags:formElementContainer nameKey="defaultOperatorUser">
-                    <div><span class="smallBoldLabel"><i:inline key=".note"/></span>&nbsp;<span class="notes"><i:inline key=".defaultOperatorUser.note"/></span></div>
+                <tags:sectionContainer2 nameKey="defaultOperatorUser">
+                    <div><span class="strong-label-small"><i:inline key=".note"/></span>&nbsp;<span class="notes"><i:inline key=".defaultOperatorUser.note"/></span></div>
                     <tags:nameValueContainer2>
                         <tags:inputNameValue nameKey=".username" path="adminUsername"/>
                         <tags:nameValue2 nameKey=".password">
@@ -65,12 +65,12 @@
                             <tags:password path="adminPassword2"/>
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
-                </tags:formElementContainer>
+                </tags:sectionContainer2>
                 
             </div>
         </div>
         
-        <div class="pageActionArea">
+        <div class="page-action-area">
             <cti:button nameKey="save" type="submit" name="save"/>
             <cti:button nameKey="cancel" type="submit" name="cancel"/>
         </div>

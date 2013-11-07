@@ -32,7 +32,7 @@
     <i:simplePopup id="${uniqueId}" styleClass="${style}" titleKey=".title" on="${pageScope.on}" arguments="${pageScope.argument}">
         <p>${confirmationMsg}<p>
 
-        <div class="actionArea">
+        <div class="action-area">
             <c:choose>
                 <c:when test="${empty pageScope.endAction || pageScope.endAction == 'nothing'}">
                     <c:if test="${empty pageScope.submitName}">

@@ -35,7 +35,7 @@
     	</c:if>
 	
         <form id="groupMeterReadForm" action="/group/groupMeterRead/readGroup" method="post">
-        <div class="column_12_12">
+        <div class="column-12-12">
             <div class="column one">
                 <%-- GROUPS HIERARCHY BOX --%>
                 <cti:msg2 key="yukon.web.deviceGroups.editor.groupsContainer.title" var="groupsTitle"/>
@@ -54,7 +54,7 @@
                 </tags:boxContainer>
 
     			<%-- READ BUTTON --%>
-                <div class="actionArea stacked">
+                <div class="action-area stacked">
                     <tags:slowInput myFormId="groupMeterReadForm" labelBusy="${readButtonText}" label="${readButtonText}"/>
                 </div>
     

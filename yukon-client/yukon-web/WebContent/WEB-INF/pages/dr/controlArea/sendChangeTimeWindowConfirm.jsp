@@ -17,7 +17,7 @@
 	    <input type="hidden" name="controlAreaId" value="${controlArea.paoIdentifier.paoId}"/>
 	    <input type="hidden" name="startTime" value="${controlAreaTimeWindowDto.startTime}"/>
 	    <input type="hidden" name="stopTime" value="${controlAreaTimeWindowDto.stopTime}"/>
-	    <div class="actionArea">
+	    <div class="action-area">
 	        <cti:button nameKey="cancel" onclick="jQuery('#drDialog').dialog('close');"/>
 	        <cti:button nameKey="ok" classes="primary action" type="submit"/>
 	    </div>

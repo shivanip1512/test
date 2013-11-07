@@ -7,11 +7,11 @@
 <cti:standardPage module="adminSetup" page="groupPermissions">
     <tags:widgetContainer userGroupId="${userGroupId}" identify="true">
         
-        <div class="column_12_12">
+        <div class="column-12-12">
             
             <div class="column one">
                 <div>
-                    <span class="smallBoldLabel"><i:inline key=".instructions"/></span>
+                    <span class="strong-label-small"><i:inline key=".instructions"/></span>
                     <span class="notes"><i:inline key=".lm.notes"/></span>
                 </div>
         		<tags:widget bean="groupPermissionEditorWidget" pickerType="lmDevicePicker" permission="LM_VISIBLE" allow="true"/>
@@ -19,7 +19,7 @@
     		
             <div class="column two nogutter">
                 <div>
-                    <span class="smallBoldLabel"><i:inline key=".instructions"/></span>
+                    <span class="strong-label-small"><i:inline key=".instructions"/></span>
                     <span class="notes"><i:inline key=".cc.notes"/></span>
                 </div>
         		<tags:widget bean="groupPermissionEditorWidget" pickerType="capControlAreaPicker"

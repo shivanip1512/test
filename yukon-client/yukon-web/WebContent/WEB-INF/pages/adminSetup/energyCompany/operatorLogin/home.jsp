@@ -52,8 +52,8 @@
         });
 </script>
     <div style="min-width: 400px;" class="fl">
-            <div id="operatorLoginList" class="scrollingContainer_large">
-                <table class="compactResultsTable rowHighlighting with-form-controls">
+            <div id="operatorLoginList" class="scroll-large">
+                <table class="compact-results-table row-highlighting with-form-controls">
                     <thead>
                     <th><i:inline key=".username" /></th>
                     <th><i:inline key=".loginEnabled" /></th>
@@ -109,7 +109,7 @@
                 <cti:param name="ecId" value="${ecId}" />
             </cti:url>
             <cti:url var="operatorLoginAddUrl" value="${baseUrl}/add" />
-            <div class="actionArea">
+            <div class="action-area">
                 <form id="operatorLoginAddForm" action="${operatorLoginAddUrl}">
                     <input type="hidden" name="ecId" value="${ecId}" /> <input type="hidden" name="userId" id="userId" />
                     <tags:pickerDialog type="ecOperatorCandidatePicker" id="ecOperatorCandidatePicker" destinationFieldId="userId" linkType="button" nameKey="add" icon="icon-add" endAction="addUser" immediateSelectMode="true" />

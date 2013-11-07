@@ -6,7 +6,7 @@
 
 <cti:standardPage module="${module}" page="${page}">
     <cti:msgScope paths="modules.amr.meterPoints">
-         <table class="compactResultsTable rowHighlighting"> 
+         <table class="compact-results-table row-highlighting"> 
              <thead> 
                  <tr> 
                      <th><tags:sortLink nameKey="columnHeader.attribute" baseUrl="${baseUrl}" fieldName="ATTRIBUTE" sortParam="orderBy" /></th> 
@@ -33,7 +33,7 @@
                          <td>${fn:escapeXml(pointResultRow.pointName)}</td>
                          <td class="state-indicator tar">
                             <c:if test="${pointResultRow.paoPointIdentifier.pointIdentifier.pointType.status}">
-                                <cti:pointStatusColor pointId="${pointResultRow.pointId}" styleClass="box stateBox" background="true">&nbsp;</cti:pointStatusColor>
+                                <cti:pointStatusColor pointId="${pointResultRow.pointId}" styleClass="box state-box" background="true">&nbsp;</cti:pointStatusColor>
                             </c:if>
                          </td>
                          <td><cti:pointValue pointId="${pointResultRow.pointId}" format="VALUE_UNIT"/></td> 

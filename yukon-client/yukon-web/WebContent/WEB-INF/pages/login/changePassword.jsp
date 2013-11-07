@@ -8,13 +8,13 @@
 
 <tags:noAuthPage module="login" page="changePassword">
     <section id="content" style="min-height: 420px;">
-    <div class="column_24 clear">
+    <div class="column-24 clear">
         <div class="one column nogutter">
             <div class="page-title-bar">
                 <h1><i:inline key=".pageName"/></h1>
             </div>    
             <form:form commandName="loginBackingBean" action="changePassword">
-                <div class="column_12_12">
+                <div class="column-12-12">
                     <div class="column one">
                         <input type="hidden" name="k" value="${k}" >
                         <form:hidden path="userId" />
@@ -35,7 +35,7 @@
                                 <td>
                                 </td>
                                 <td>
-                                <span class="no_match errorMessage"><i:inline key="yukon.web.modules.passwordPolicy.noMatch.description"/></span>
+                                <span class="no_match error"><i:inline key="yukon.web.modules.passwordPolicy.noMatch.description"/></span>
                                 </td>
                             </tr>
                             <tags:nameValue2 nameKey="defaults.blank" excludeColon="true">
@@ -48,7 +48,7 @@
                     </div>
                 </div>
                 
-                <div class="pageActionArea">
+                <div class="page-action-area">
                     <cti:button nameKey="changePassword" type="submit" name="changePassword" classes="primary action unlock" />
                     <cti:url value="/login.jsp" var="loginPage"/>
                     <cti:button href="${loginPage}" nameKey="cancel"/>

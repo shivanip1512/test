@@ -10,10 +10,10 @@
                 <c:if test="${not empty thingsDoneMap[writer.name]}"> 
                     <tags:nameValue2 nameKey=".writerName.${writer.name}">
                         <c:if test="${thingsDoneMap[writer.name]}">
-                            <span class="successMessage"><i:inline key='.bundleCreationStatus.doneMsg'/></span>
+                            <span class="success"><i:inline key='.bundleCreationStatus.doneMsg'/></span>
                         </c:if>
                         <c:if test="${not thingsDoneMap[writer.name]}">
-                            <span class="errorMessage"><i:inline key='.bundleCreationStatus.pendingMsg'/></span>
+                            <span class="error"><i:inline key='.bundleCreationStatus.pendingMsg'/></span>
                         </c:if>
                     </tags:nameValue2>
                 </c:if>
@@ -24,12 +24,12 @@
     <tags:nameValueContainer2>
         <tags:nameValue2 nameKey=".bundleCreationStatus.label">
             <c:if test="${inProgress}">
-                <span class="errorMessage">
+                <span class="error">
                     <i:inline key='.bundleCreationStatus.inProgressMsg'/>
                 </span>               
             </c:if>
             <c:if test="${not inProgress}">
-                <span class="successMessage">
+                <span class="success">
                     <i:inline key='.bundleCreationStatus.finishedMsg'/>
                 </span>
             </c:if>

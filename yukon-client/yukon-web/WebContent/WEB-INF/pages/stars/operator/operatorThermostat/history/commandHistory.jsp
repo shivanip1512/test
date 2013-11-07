@@ -39,10 +39,10 @@ jQuery(function(){
 
 <c:choose>
     <c:when test="${searchResult.hitCount == 0}">
-        <i:inline key="yukon.web.modules.operator.thermostatManual.noItems"/>
+        <span class="empty-list"><i:inline key="yukon.web.modules.operator.thermostatManual.noItems"/></span>
     </c:when>
     <c:otherwise>
-        <table class="compactResultsTable smallPadding">
+        <table class="compact-results-table dashed">
             <thead>
                 <tr>
                     <c:if test="${multipleThermostatsSelected}">

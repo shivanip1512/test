@@ -16,7 +16,7 @@
     <input id="assetId" type="hidden" value="${scenarioId}"/>
     <cti:includeScript link="/JavaScript/drAssetDetails.js"/>
 
-    <div class="column_12_12">
+    <div class="column-12-12">
         <div class="column one">
         <cti:checkRolesAndProperties value="ENABLE_ESTIMATED_LOAD">
             <tags:sectionContainer2 nameKey="heading.info">
@@ -175,7 +175,7 @@
         </div>
     </div>
 
-    <div class="column_24">
+    <div class="column-24">
         <div class="column one nogutter">
             <c:set var="baseUrl" value="/dr/scenario/detail"/>
             <%@ include file="../program/programList.jspf" %>

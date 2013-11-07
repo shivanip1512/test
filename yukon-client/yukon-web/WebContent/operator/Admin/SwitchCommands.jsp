@@ -119,7 +119,7 @@ function validate(form) {
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" height="400" valign="top" bgcolor="#FFFFFF">
             <div align="center"> <br>
-              <span class="TitleHeader">ADMINISTRATION - SWITCH COMMANDS</span><br>
+              <span class="title-header">ADMINISTRATION - SWITCH COMMANDS</span><br>
                 <cti:checkEnergyCompanyOperator showError="true" >
                   <%
                       if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>");
@@ -271,7 +271,7 @@ function validate(form) {
                     </tr>
                   </table>
                   </form>
-                <div align="center"><span class="TitleHeader">Last Batch Submission</span><br>
+                <div align="center"><span class="title-header">Last Batch Submission</span><br>
     <%
         Map<Integer,Object[]> batchConfig = InventoryManagerUtil.getBatchConfigSubmission();
     	if (showEnergyCompany) {

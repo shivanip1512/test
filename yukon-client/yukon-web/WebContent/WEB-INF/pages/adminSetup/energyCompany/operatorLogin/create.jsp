@@ -111,7 +111,7 @@
 
         </tags:nameValueContainer2>
         
-        <div class="pageActionArea">
+        <div class="page-action-area">
             <!-- Save/Update -->
             <cti:displayForPageEditModes modes="CREATE">
                 <c:choose>

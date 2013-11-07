@@ -30,12 +30,12 @@ ${pageScope.addPao} = function() {
             </c:when>
             <c:otherwise>
                 <div class="permissionsContainer">
-                    <table class="compactResultsTable rowHighlighting">
+                    <table class="compact-results-table row-highlighting">
                         <thead>
                             <tr>
                                 <th>Name</th>
                                 <th>Type</th>
-                                <th class="removeColumn">Remove</th>
+                                <th class="remove-column">Remove</th>
                             </tr>
                         </thead>
                         <tfoot></tfoot>
@@ -48,7 +48,7 @@ ${pageScope.addPao} = function() {
                                     <td>
                                         <c:out value="${pao.type}" />
                                     </td>
-                                    <td class="removeColumn">
+                                    <td class="remove-column">
                                         <tags:widgetActionRefreshImage nameKey="remove" method="removePao" paoId="${pao.paoId}" icon="icon-cross"/>
                                     </td>
                                 </tr>
@@ -60,7 +60,7 @@ ${pageScope.addPao} = function() {
             </c:otherwise>
         </c:choose>
 		
-        <div class="actionArea">
+        <div class="action-area">
             <c:if test="${showSave}">
                 <span id="${widgetParameters.widgetId}_results">
                     <tags:widgetActionUpdate method="save" nameKey="save" container="${widgetParameters.widgetId}_results"/>

@@ -6,7 +6,7 @@
 
 <cti:standardPage module="operations" page="dashboard">
 
-    <div class="column_12_12">
+    <div class="column-12-12">
         <div class="column one section">
             <cti:tabbedContentSelector mode="section">
                 <cti:msg2 var="favoritesTab" key=".favorites" />

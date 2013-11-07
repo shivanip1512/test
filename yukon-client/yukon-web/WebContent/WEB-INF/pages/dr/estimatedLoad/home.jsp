@@ -14,23 +14,23 @@
             <div class="f-drFormula-replaceViaAjax clearfix">
                <%@ include file="_formulasTable.jsp" %>
             </div>
-            <div class="actionArea">
+            <div class="action-area">
                <cti:button icon="icon-plus-green" nameKey="newFormula" href="formula/create"/>
             </div>
         </cti:tabbedContentSelectorContent>
 
         <cti:msg2 var="assignmentsTab" key='.assignments'/>
         <cti:tabbedContentSelectorContent selectorName="${assignmentsTab}">
-           <tags:formElementContainer nameKey="applianceCategories">
+           <tags:sectionContainer2 nameKey="applianceCategories">
                 <div class="f-drFormula-replaceViaAjax">
                    <%@ include file="_appCatAssignmentsTable.jsp" %>
                 </div>
-            </tags:formElementContainer>
-            <tags:formElementContainer nameKey="gears">
+            </tags:sectionContainer2>
+            <tags:sectionContainer2 nameKey="gears">
                 <div class="f-drFormula-replaceViaAjax">
                    <%@ include file="_gearAssignmentsTable.jsp" %>
                 </div>
-            </tags:formElementContainer>
+            </tags:sectionContainer2>
         </cti:tabbedContentSelectorContent>
     </cti:tabbedContentSelector>
 </cti:standardPage>

@@ -1,5 +1,5 @@
 <div class="reportedConfig">
-    <tags:nameValueContainer2 tableClass="sectionContainerNameValue">
+    <tags:nameValueContainer2>
         <tags:nameValue2 nameKey=".deviceClass" rowClass="first">
             <cti:dataUpdaterValue type="LM_REPORTED_ADDRESS" identifier="${deviceId}/DEVICE_CLASS"/>
         </tags:nameValue2>

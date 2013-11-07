@@ -6,7 +6,7 @@ jQuery(document).on('click', '#recentEventsView', function(event){
 });
 </script>
 
-<tags:formElementContainer nameKey="busContainer" styleClass="padBottom">
+<tags:sectionContainer2 nameKey="busContainer" styleClass="padBottom">
     <div>
         <input type="checkbox" id="recentEventsBusSelectAll" onclick="checkAll(this, 'table.recentEventsBuses input[type=checkbox]');">
         <label for="recentEventsBusSelectAll"><i:inline key=".selectAllBuses"/></label>
@@ -19,9 +19,9 @@ jQuery(document).on('click', '#recentEventsView', function(event){
             </cti:dataGridCell>
         </c:forEach>
     </cti:dataGrid>
-</tags:formElementContainer>
+</tags:sectionContainer2>
 
-<tags:formElementContainer nameKey="feedersContainer" styleClass="padBottom">
+<tags:sectionContainer2 nameKey="feedersContainer" styleClass="padBottom">
     <div>
         <input type="checkbox" id="recentEventsFeederSelectAll" onclick="checkAll(this, 'table.recentEventsFeeders input[type=checkbox]');">
         <label for="recentEventsFeederSelectAll"><i:inline key=".selectAllFeeders"/></label>
@@ -34,9 +34,9 @@ jQuery(document).on('click', '#recentEventsView', function(event){
             </cti:dataGridCell>
         </c:forEach>
     </cti:dataGrid>
-</tags:formElementContainer>
+</tags:sectionContainer2>
 
-<tags:formElementContainer nameKey="banksContainer">
+<tags:sectionContainer2 nameKey="banksContainer">
     <div>
         <input type="checkbox" id="recentEventsBankSelectAll" onclick="checkAll(this, 'table.recentEventsBanks input[type=checkbox]');">
         <label for="recentEventsBankSelectAll"><i:inline key=".selectAllBanks"/></label>
@@ -49,8 +49,8 @@ jQuery(document).on('click', '#recentEventsView', function(event){
             </cti:dataGridCell>
         </c:forEach>
     </cti:dataGrid>
-</tags:formElementContainer>
+</tags:sectionContainer2>
 
-<div class="actionArea">
+<div class="action-area">
     <cti:button nameKey="recentEvents.view" id="recentEventsView" classes="f-blocker"/>
 </div>

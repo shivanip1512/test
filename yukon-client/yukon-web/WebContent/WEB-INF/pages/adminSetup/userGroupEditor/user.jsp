@@ -49,7 +49,7 @@ jQuery(function() {
                     <tags:password path="confirmPassword"/>
                 </tags:nameValue2>
             </tags:nameValueContainer2>
-            <div class="actionArea">
+            <div class="action-area">
                 <cti:button nameKey="save" type="submit"/>
                 <cti:button nameKey="cancel" type="button" id="cancelChangePassword"/>
             </div>
@@ -59,7 +59,7 @@ jQuery(function() {
     <tags:setFormEditMode mode="${mode}"/>
     <cti:msg2 var="none" key="yukon.web.defaults.none"/>
 
-    <div class="column_12_12">
+    <div class="column-12-12">
 
         <div class="column one">
 
@@ -119,7 +119,7 @@ jQuery(function() {
                     
                 </tags:nameValueContainer2>
                 
-                <div class="pageActionArea">
+                <div class="page-action-area">
                     <cti:displayForPageEditModes modes="EDIT,CREATE">
                         <cti:button nameKey="save" name="update" type="submit"/>
                         <%-- TODO implement this later <cti:button nameKey="delete" name="delete" type="submit"/> --%>
@@ -152,7 +152,7 @@ jQuery(function() {
                         <c:otherwise>
                             <div class="rolesContainer">
                                 <c:forEach var="category" items="${roles}">
-                                    <ul class="groupedList">
+                                    <ul class="grouped-list">
                                         <li><span class="group"><cti:formatObject value="${category.key}"/></span>
                                             <ul class="groupedItem">
                                                 <c:forEach var="roleGroupPair" items="${category.value}">

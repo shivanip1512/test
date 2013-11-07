@@ -34,7 +34,7 @@ jQuery(function(){
 	<cti:dataGrid cols="2">
 		<cti:dataGridCell>
 		    <tags:boxContainer2 nameKey="maintenanceJobs" hideEnabled="false">
-		    	<table class="compactResultsTable">
+		    	<table class="compact-results-table">
 			
 					<tr>
 						<th>&nbsp;</th>
@@ -51,12 +51,12 @@ jQuery(function(){
 							<td>
 			                	<a href="${editScheduleDetailsUrl}" title="<cti:msg2 key=".edit.hoverText" arguments="${jobNameMsg}"/>"><i class="icon icon-script"></i></a>
 							</td>
-							<td class="nonwrapping">
+							<td>
 								<a href="${editScheduleDetailsUrl}" title="<cti:msg2 key=".edit.hoverText" arguments="${jobNameMsg}"/>">
 									<i:inline key=".${job.beanName}.title"/>
 								</a>
 							</td>
-							<td class="nonwrapping">
+							<td>
 								<cti:dataUpdaterValue type="JOB" identifier="${job.id}/SCHEDULE_DESCRIPTION"/>
 							</td>
 							<cti:msg2 key="yukon.web.modules.adminSetup.maintenance.enable.circle.hoverText" argument="${jobNameMsg}" var="enableMsg" />

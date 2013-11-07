@@ -9,7 +9,7 @@
     <cti:checkEnergyCompanyOperator showError="true" >
         <cti:checkRolesAndProperties value="OPERATOR_IMPORT_CUSTOMER_ACCOUNT" />
         
-    	<div class="column_12_12">
+    	<div class="column-12-12">
     		<div class="column one">
                 <form:form id="importForm" commandName="accountImportData" action="/stars/operator/account/uploadImportFiles" enctype="multipart/form-data">
                 
@@ -25,7 +25,7 @@
                         <tags:inputNameValue nameKey=".email" path="email" size="35"/>
                     </tags:nameValueContainer2>
                     
-                    <div class="actionArea stacked">
+                    <div class="action-area stacked">
                         <cti:button nameKey="prescan" type="submit" classes="f-blocker action primary"/>
                     </div>
                 </form:form>
@@ -53,7 +53,7 @@
             </div>
         </div>
             
-        <div class="column_12_12">    
+        <div class="column-12-12">    
             <div class="column one">
                 <div class="box" style="background-color:#CDCDCD;padding:10px;">
                     <div class="fl"><cti:icon icon="icon-shape-handles"/></div>
@@ -62,7 +62,7 @@
                         <span class="detail"><i:inline key=".importAccountTableDescription"/></span>
                     </div>
                 </div>
-                <table class="resultsTable bulkImport">
+                <table class="results-table bulkImport">
                     <thead>
                         <tr>
                             <th><i:inline key=".accountColumnHeader"/></th>
@@ -106,7 +106,7 @@
                         <span class="detail"><i:inline key=".importHardwareTableDescription"/></span>
                     </div>
                 </div>
-                <table class="resultsTable bulkImport">
+                <table class="results-table bulkImport">
                     <thead>
                         <tr>
                             <th><i:inline key=".hardwareColumnHeader"/></th>

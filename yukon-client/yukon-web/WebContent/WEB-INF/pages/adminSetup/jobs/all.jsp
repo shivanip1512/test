@@ -14,7 +14,7 @@
         <cti:linkTab selectorName="${statusName}" ><c:url value="status" /></cti:linkTab>
     </cti:linkTabbedContainer>
 <h4><i:inline key=".repeatingJobs"/></h2>
-  <table class="resultsTable">
+  <table class="results-table">
     <tr>
       <th width="15%"><i:inline key=".column.jobName"/></th>
       <th><i:inline key=".column.beanName"/></th>
@@ -52,7 +52,7 @@
 
 
 <h4><i:inline key=".oneTimeJobs"/></h2>
-  <table class="resultsTable">
+  <table class="results-table">
     <tr>
       <th width="15%"><i:inline key=".column.jobName"/></th>
       <th><i:inline key=".column.beanName"/></th>

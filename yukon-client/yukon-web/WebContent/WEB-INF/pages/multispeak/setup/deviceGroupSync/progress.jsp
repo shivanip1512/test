@@ -7,7 +7,7 @@
 
     <cti:includeScript link="/JavaScript/progressbar.js"/>
 
-    <tags:formElementContainer nameKey="progressDetailContainer">
+    <tags:sectionContainer2 nameKey="progressDetailContainer">
     
         <%-- INFO --%>
         <tags:nameValueContainer2>
@@ -61,7 +61,7 @@
             
            </form>
     
-    </tags:formElementContainer>
+    </tags:sectionContainer2>
     
     <cti:dataUpdaterCallback function="Yukon.ui.progressBar.toggleElementsWhenTrue(['cancelButton'], true)" initialize="true" value="MSP_DEVICE_GROUP_SYNC/IS_RUNNING" />
     <cti:dataUpdaterCallback function="Yukon.ui.progressBar.toggleElementsWhenTrue(['cancelButton'], false)" initialize="true" value="MSP_DEVICE_GROUP_SYNC/IS_NOT_RUNNING" />

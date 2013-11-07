@@ -14,7 +14,7 @@
 
         <input type="hidden" name="stateGroup" value="${monitor.stateGroup}">
 
-		<tags:formElementContainer nameKey="setup">
+		<tags:sectionContainer2 nameKey="setup">
 			<tags:nameValueContainer2
 				style="border-collapse:separate;border-spacing:5px;">
 
@@ -22,10 +22,10 @@
 				<tags:inputNameValue nameKey=".name" path="name" size="50" maxlength="50" />
 
             </tags:nameValueContainer2>
-        </tags:formElementContainer>
+        </tags:sectionContainer2>
 
 		<%-- create / cancel --%>
-		<div class="pageActionArea">
+		<div class="page-action-area">
             <cti:button nameKey="create" icon="icon-plus-green" type="submit" classes="f-blocker"/>
             <cti:button nameKey="cancel" type="submit" name="cancel"/>
 		</div>

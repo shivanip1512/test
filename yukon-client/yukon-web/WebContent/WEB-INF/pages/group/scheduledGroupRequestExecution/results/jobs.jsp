@@ -70,7 +70,7 @@ jQuery(document).ready(function() {
             </tags:nameValue2>
         </tags:nameValueContainer2>
 
-        <div class="actionArea">
+        <div class="action-area">
             <cti:button nameKey="filter" type="submit" classes="f-blocker" />
             <cti:button nameKey="clear" href="clear" classes="f-blocker" />
         </div>
@@ -78,7 +78,7 @@ jQuery(document).ready(function() {
 </i:simplePopup>
 
 <tags:pagedBox2 nameKey="tableTitle" searchResult="${filterResult}" baseUrl="jobs" filterDialog="filterPopup">
-<table class="compactResultsTable">
+<table class="compact-results-table">
     <thead>
         <th><tags:sortLink nameKey="executions.tableHeader.scheduleName" baseUrl="jobs" fieldName="NAME" isDefault="false" /></th>
         <th><tags:sortLink nameKey="executions.tableHeader.deviceGroup" baseUrl="jobs" fieldName="DEVICE_GROUP" /></th>
@@ -113,7 +113,7 @@ jQuery(document).ready(function() {
                             <a href="${deviceGroupUrl}">${jobWrapper.deviceGroupName}</a>
                         </c:when>
                         <c:otherwise>
-                            <span class="errorMessage"><i:inline key=".groupDoesNotExist"/></span>
+                            <span class="error"><i:inline key=".groupDoesNotExist"/></span>
                         </c:otherwise>
                     </c:choose>
                 </td>
@@ -139,7 +139,7 @@ jQuery(document).ready(function() {
                         <tags:updateableProgressBar totalCountKey="SCHEDULED_GROUP_REQUEST_EXECUTION/${jobWrapper.job.id}/LAST_REQUEST_COUNT_FOR_JOB"
                             countKey="SCHEDULED_GROUP_REQUEST_EXECUTION/${jobWrapper.job.id}/LAST_SUCCESS_RESULTS_COUNT_FOR_JOB"
                             failureCountKey="SCHEDULED_GROUP_REQUEST_EXECUTION/${jobWrapper.job.id}/LAST_FAILURE_RESULTS_COUNT_FOR_JOB"
-                            borderClasses="scheduledRequestProgressBarBorder" hideCount="true" hidePercent="true"/>
+                            borderClasses="scheduled-request" hideCount="true" hidePercent="true"/>
                         <cti:button nameKey="cancel" id="cancel_${jobWrapper.job.id}" classes="stopButton fn M0"
                             renderMode="image" arguments="${jobWrapper.name}" icon="icon-cross"/>
                         <d:confirm on="#cancel_${jobWrapper.job.id}" nameKey="cancelConfirm" argument="${jobWrapper.name}" />
@@ -187,7 +187,7 @@ jQuery(document).ready(function() {
     </tbody>
 </table>
 <c:if test="${canManage}">
-    <div class="actionArea">
+    <div class="action-area">
         <cti:button nameKey="create" icon="icon-plus-green" href="/group/scheduledGroupRequestExecution/home"/>
     </div>
 </c:if>

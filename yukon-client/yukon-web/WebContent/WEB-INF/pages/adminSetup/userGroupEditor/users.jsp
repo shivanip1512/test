@@ -24,13 +24,13 @@ function addUsers() {
                 <form action="/adminSetup/userGroup/removeUser" method="post">
                     <input type="hidden" name="userGroupId" value="${userGroupId}">
                     <div class="usersContainer">
-                        <table class="compactResultsTable rowHighlighting">
+                        <table class="compact-results-table row-highlighting">
                             <thead>
                                 <tr>
                                     <th><i:inline key=".username"/></th>
                                     <th><i:inline key=".authentication"/></th>
                                     <th><i:inline key=".userStatus"/></th>
-                                    <th class="removeColumn"><i:inline key=".remove"/></th>
+                                    <th class="remove-column"><i:inline key=".remove"/></th>
                                 </tr>
                             </thead>
                             <tfoot></tfoot>
@@ -41,10 +41,10 @@ function addUsers() {
                                     </cti:url>
                                     <c:choose>
                                         <c:when test="${user.loginStatus == 'ENABLED'}">
-                                            <c:set  var="styleClass" value="successMessage"/>
+                                            <c:set  var="styleClass" value="success"/>
                                         </c:when>
                                         <c:otherwise>
-                                            <c:set  var="styleClass" value="errorMessage"/>
+                                            <c:set  var="styleClass" value="error"/>
                                         </c:otherwise>
                                     </c:choose>
                                     <tr>
@@ -53,7 +53,7 @@ function addUsers() {
                                         <td><span class="${styleClass}"><cti:formatObject value="${user.loginStatus}"/></span></td>
     
                                         <dialog:confirm on="#remove_${user.userID}" nameKey="confirmRemove" argument="${fn:escapeXml(user.username)}" />
-                                        <td class="removeColumn">
+                                        <td class="remove-column">
                                             <div class="dib">
                                                 <cti:button id="remove_${user.userID}" nameKey="remove" name="remove" value="${user.userID}" type="submit" renderMode="image" icon="icon-cross"/>
                                             </div>
@@ -69,7 +69,7 @@ function addUsers() {
                 <i:inline key=".noUsers"/>
             </c:otherwise>
         </c:choose>
-        <div class="actionArea">
+        <div class="action-area">
             <form id="addUsersForm" action="/adminSetup/userGroup/addUsers" method="post">
                 <input type="hidden" name="userIds" id="userIds">
                 <input type="hidden" name="userGroupId" value="${userGroupId}">

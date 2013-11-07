@@ -63,11 +63,11 @@
 		}
  	</script>
     
-    <div class="column_12_12">
+    <div class="column-12-12">
         <div class="column one">
         
 			<tags:boxContainer2 nameKey="zoneList" hideEnabled="true" showInitially="true">
-                <table class="zoneListTable compactResultsTable">
+                <table class="zoneListTable compact-results-table">
                     <tr>
                         <th class="zoneName"><i:inline key=".zoneList.name" /></th>
                         <th class="zoneType"><i:inline key="modules.capcontrol.zoneType"/></th>
@@ -126,7 +126,7 @@
                 </table>
 
 				<c:if test="${hasEditingRole}">
-					<div class="actionArea">
+					<div class="action-area">
         				<c:if test="${unassignedBanksExist}">
         					<span class="warning fl"><i:inline key=".zoneList.unassignedBanks"/></span>
         				</c:if>
@@ -138,7 +138,7 @@
 
 			<tags:boxContainer2 nameKey="busDetail" hideEnabled="true" showInitially="true">
 					
-				<table class="compactResultsTable">
+				<table class="compact-results-table">
 					<thead>
 						<tr>
 							<th><i:inline key=".busDetail.table.point"/></th>
@@ -151,7 +151,7 @@
                         <td class="wsnw">
                             <c:if test="${hasSubBusControl}"><a id="subbusState_${subBusId}" href="javascript:void(0);" class="subtle-link"></c:if>
                             <c:if test="${!hasSubBusControl}"><span id="subbusState_${subBusId}"></c:if>
-                                <span id="subbusState_box_${subBusId}" class="box stateBox">&nbsp;</span>
+                                <span id="subbusState_box_${subBusId}" class="box state-box">&nbsp;</span>
                                 <cti:capControlValue paoId="${subBusId}" type="SUBBUS" format="STATE"/>
                             <c:if test="${hasSubBusControl}"></a></c:if>
                             <c:if test="${!hasSubBusControl}"></span></c:if>
@@ -199,7 +199,7 @@
                     </c:forEach>
 				</table>
                 <c:if test="${hasEditingRole}">
-	                <div class="actionArea">
+	                <div class="action-area">
                         <a href="javascript:void(0);" class="f-show-strategy-details">Strategy Details</a>
 	                    <cti:url var="editorUrl" value="/editor/cbcBase.jsf">
 	                        <cti:param name="type" value="2"/>
@@ -212,7 +212,7 @@
 			
 			<cti:msg2 key=".strategyDetails.title" arguments="${strategyName}" argumentSeparator=":" var="strategyTitle"/>
             <tags:simplePopup id="strategyDetails" title="${strategyTitle}" on=".f-show-strategy-details">
-                <table class="compactResultsTable" >
+                <table class="compact-results-table" >
                     <thead>
                         <tr>
                             <th><i:inline key=".strategyDetails.table.setting"/></th>
@@ -234,7 +234,7 @@
                     </tbody>
                 </table>
                 <c:if test="${hasEditingRole}">
-                    <div class="actionArea">
+                    <div class="action-area">
                         <cti:url var="editorUrl" value="/editor/cbcBase.jsf">
                             <cti:param name="type" value="5"/>
                             <cti:param name="itemid" value="${strategyId}"/>
@@ -264,7 +264,7 @@
 				</cti:tabbedContentSelectorContent>
 				<cti:msg2 var="voltagePointsTab" key=".voltagePoints.title" />
 				<cti:tabbedContentSelectorContent selectorName="${voltagePointsTab}">
-					<div class="scrollingContainer_large">
+					<div class="scroll-large">
 						<c:forEach items="${zoneVoltagePointsHolders}" var="zoneVoltagePointsHolder">
 							<c:set var="zoneName" value="${zoneVoltagePointsHolder.zoneName}"/>
 	    					<cti:url var="zoneDetailUrl" value="/capcontrol/ivvc/zone/detail">

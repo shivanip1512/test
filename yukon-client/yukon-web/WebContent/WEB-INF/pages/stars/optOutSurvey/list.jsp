@@ -32,7 +32,7 @@
             <i:inline key=".noResults"/>
         </c:if>
         <c:if test="${optOutSurveys.hitCount > 0}">
-            <table id="optOutSurveyList" class="compactResultsTable rowHighlighting">
+            <table id="optOutSurveyList" class="compact-results-table row-highlighting">
                 <tr>
                     <th><i:inline key=".surveyName"/></th>
                     <th><i:inline key=".programs"/></th>
@@ -87,7 +87,7 @@
 
         <cti:url var="addUrl" value="/stars/optOutSurvey/edit"/>
         <form id="addForm" action="${addUrl}">
-            <div class="actionArea">
+            <div class="action-area">
                 <cti:url var="addUrl" value="/stars/optOutSurvey/edit"/>
                 <cti:button icon="icon-plus-green" nameKey="add" onclick="openSimpleDialog('ajaxDialog', '${addUrl}', addSurveyTitle)"/>
             </div>

@@ -11,7 +11,7 @@
         <div class="error tac"><i:inline key="yukon.common.device.bulk.selectedDevicesEmpty"/></div>
     </c:when>
     <c:otherwise>
-		<table class="compactResultsTable">
+		<table class="compact-results-table">
 		    <thead>
 		        <tr>
 		            <th class="wsnw"><i:inline key="yukon.common.collection.inventory.serialNumber"/></th>

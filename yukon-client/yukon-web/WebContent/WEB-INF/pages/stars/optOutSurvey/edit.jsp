@@ -63,7 +63,7 @@ jQuery( function () {
         </tags:nameValue2>
     </tags:nameValueContainer2>
 
-    <div class="actionArea">
+    <div class="action-area">
         <cti:button nameKey="ok" type="submit" classes="primary action"/>
         <cti:button nameKey="cancel" onclick="jQuery('#ajaxDialog').dialog('close');"/>
     </div>

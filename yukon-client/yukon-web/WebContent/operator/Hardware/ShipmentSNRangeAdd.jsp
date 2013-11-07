@@ -28,7 +28,7 @@
 		<form name="PForm" method="post" action="<%=request.getContextPath()%>/servlet/InventoryManager" onsubmit="return validate(this)">
 	    	<input type="hidden" name="action" value="ShipmentSNRangeAdd"> 
 	    	<div align="center">
-	    		<span class="TitleHeader">SERIAL RANGE DETAIL</span>
+	    		<span class="title-header">SERIAL RANGE DETAIL</span>
 			</div>
 			<br>
 			<table width="500" border="1" cellspacing="0" cellpadding="5" align="center">

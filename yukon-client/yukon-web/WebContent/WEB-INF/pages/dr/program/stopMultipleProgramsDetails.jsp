@@ -9,7 +9,7 @@
 
 <script type="text/javascript">
 
-jQuery(function (){
+jQuery(function(){
     
     submitForm = function() {
         var url;
@@ -96,7 +96,7 @@ jQuery(function (){
     
     allStopProgramChecked = function() {
         var index,
-            allChecked = jQuery("#allProgramsCheckbox").is(":checked");
+        allChecked = jQuery("#allProgramsCheckbox").is(":checked");
         for (index = 0; index < ${fn:length(programs)}; index++) {
             if (allChecked && !jQuery("#stopProgramCheckbox"+index).is(":disabled")) {
                 jQuery("#stopProgramCheckbox"+index).attr("checked","checked");
@@ -109,7 +109,7 @@ jQuery(function (){
     
     allUseStopGearChecked = function() {
         var index,
-            allChecked = jQuery("#allProgramsUseStopGearsCheckbox").is(":checked");
+        allChecked = jQuery("#allProgramsUseStopGearsCheckbox").is(":checked");
         for (index = 0; index < ${fn:length(programs)}; index++) {
             if (allChecked) {
                 jQuery("#useStopGear" + index).attr("checked","checked");
@@ -221,7 +221,7 @@ jQuery( function () {
     <form:hidden path="controlAreaId"/>
     <form:hidden path="scenarioId"/>
 
-    <table class="compactResultsTable">
+    <table class="compact-results-table">
         <tr>
             <th><cti:msg2 key=".stopTime"/></th>
         </tr>
@@ -243,8 +243,8 @@ jQuery( function () {
 
     <cti:msg2 var="boxTitle" key=".programs"/>
     <tags:boxContainer title="${boxTitle}">
-    <div class="dialogScrollArea">
-    <table class="compactResultsTable">
+    <div class="scroll-medium">
+    <table class="compact-results-table">
         <tr>
             <th><cti:msg2 key=".stopProgramName"/></th>
             
@@ -328,7 +328,7 @@ jQuery( function () {
     </c:if>
     <br>
 
-    <div class="actionArea">
+    <div class="action-area">
         <cti:button nameKey="cancel" onclick="jQuery('#drDialog').dialog('close');"/>
         <c:if test="${autoObserveConstraintsAllowed || checkConstraintsAllowed}">
             <cti:button nameKey="next" id="nextButton" classes="primary action" type="submit"/>

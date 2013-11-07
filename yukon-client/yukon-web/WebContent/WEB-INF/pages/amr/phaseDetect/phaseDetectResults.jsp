@@ -39,10 +39,10 @@
                                                         <span style="font-weight: bold;">${phaseAReading.last}</span> <i:inline key=".delta"/>
                                                         <c:choose >
                                                             <c:when test="${phaseAReading.delta gt 0}">
-                                                                <c:set var="spanClass" value="successMessage"/>
+                                                                <c:set var="spanClass" value="success"/>
                                                             </c:when>
                                                             <c:otherwise>
-                                                                <c:set var="spanClass" value="errorMessage"/>
+                                                                <c:set var="spanClass" value="error"/>
                                                             </c:otherwise>
                                                         </c:choose>
                                                         <span style="font-weight: bold;" class="${spanClass}">${phaseAReading.delta}</span>
@@ -82,10 +82,10 @@
                                                         <span style="font-weight: bold;">${phaseBReading.last}</span> <i:inline key=".delta"/>
                                                         <c:choose >
                                                             <c:when test="${phaseBReading.delta gt 0}">
-                                                                <c:set var="spanClass" value="successMessage"/>
+                                                                <c:set var="spanClass" value="success"/>
                                                             </c:when>
                                                             <c:otherwise>
-                                                                <c:set var="spanClass" value="errorMessage"/>
+                                                                <c:set var="spanClass" value="error"/>
                                                             </c:otherwise>
                                                         </c:choose> 
                                                         <span style="font-weight: bold;" class="${spanClass}">${phaseBReading.delta}</span>
@@ -125,10 +125,10 @@
                                                         <span style="font-weight: bold;">${phaseCReading.last}</span> <i:inline key=".delta"/>
                                                         <c:choose >
                                                             <c:when test="${phaseCReading.delta gt 0}">
-                                                                <c:set var="spanClass" value="successMessage"/>
+                                                                <c:set var="spanClass" value="success"/>
                                                             </c:when>
                                                             <c:otherwise>
-                                                                <c:set var="spanClass" value="errorMessage"/>
+                                                                <c:set var="spanClass" value="error"/>
                                                             </c:otherwise>
                                                         </c:choose> 
                                                         <span style="font-weight: bold;" class="${spanClass}">${phaseCReading.delta}</span>
@@ -170,10 +170,10 @@
                                                         <span style="font-weight: bold;">${phaseAReading.last}</span> <i:inline key=".delta"/>
                                                         <c:choose >
                                                             <c:when test="${phaseAReading.delta gt 0}">
-                                                                <c:set var="spanClass" value="successMessage"/>
+                                                                <c:set var="spanClass" value="success"/>
                                                             </c:when>
                                                             <c:otherwise>
-                                                                <c:set var="spanClass" value="errorMessage"/>
+                                                                <c:set var="spanClass" value="error"/>
                                                             </c:otherwise>
                                                         </c:choose> 
                                                         <span style="font-weight: bold;" class="${spanClass}">${phaseAReading.delta}</span><br>
@@ -182,10 +182,10 @@
                                                         <span style="font-weight: bold;">${phaseBReading.last}</span> <i:inline key=".delta"/>
                                                         <c:choose >
                                                             <c:when test="${phaseBReading.delta gt 0}">
-                                                                <c:set var="spanClass" value="successMessage"/>
+                                                                <c:set var="spanClass" value="success"/>
                                                             </c:when>
                                                             <c:otherwise>
-                                                                <c:set var="spanClass" value="errorMessage"/>
+                                                                <c:set var="spanClass" value="error"/>
                                                             </c:otherwise>
                                                         </c:choose> 
                                                         <span style="font-weight: bold;" class="${spanClass}">${phaseBReading.delta}</span>
@@ -224,10 +224,10 @@
                                                         <span style="font-weight: bold;">${phaseAReading.last}</span> <i:inline key=".delta"/>
                                                         <c:choose >
                                                             <c:when test="${phaseAReading.delta gt 0}">
-                                                                <c:set var="spanClass" value="successMessage"/>
+                                                                <c:set var="spanClass" value="success"/>
                                                             </c:when>
                                                             <c:otherwise>
-                                                                <c:set var="spanClass" value="errorMessage"/>
+                                                                <c:set var="spanClass" value="error"/>
                                                             </c:otherwise>
                                                         </c:choose> 
                                                         <span style="font-weight: bold;" class="${spanClass}">${phaseAReading.delta}</span><br>
@@ -236,10 +236,10 @@
                                                         <span style="font-weight: bold;">${phaseCReading.last}</span> <i:inline key=".delta"/>
                                                         <c:choose >
                                                             <c:when test="${phaseCReading.delta gt 0}">
-                                                                <c:set var="spanClass" value="successMessage"/>
+                                                                <c:set var="spanClass" value="success"/>
                                                             </c:when>
                                                             <c:otherwise>
-                                                                <c:set var="spanClass" value="errorMessage"/>
+                                                                <c:set var="spanClass" value="error"/>
                                                             </c:otherwise>
                                                         </c:choose> 
                                                         <span style="font-weight: bold;" class="${spanClass}">${phaseCReading.delta}</span>
@@ -278,10 +278,10 @@
                                                         <span style="font-weight: bold;">${phaseBReading.last}</span> <i:inline key=".delta"/>
                                                         <c:choose >
                                                             <c:when test="${phaseBReading.delta gt 0}">
-                                                                <c:set var="spanClass" value="successMessage"/>
+                                                                <c:set var="spanClass" value="success"/>
                                                             </c:when>
                                                             <c:otherwise>
-                                                                <c:set var="spanClass" value="errorMessage"/>
+                                                                <c:set var="spanClass" value="error"/>
                                                             </c:otherwise>
                                                         </c:choose> 
                                                         <span style="font-weight: bold;" class="${spanClass}">${phaseBReading.delta}</span><br>
@@ -290,10 +290,10 @@
                                                         <span style="font-weight: bold;">${phaseCReading.last}</span> <i:inline key=".delta"/>
                                                         <c:choose >
                                                             <c:when test="${phaseCReading.delta gt 0}">
-                                                                <c:set var="spanClass" value="successMessage"/>
+                                                                <c:set var="spanClass" value="success"/>
                                                             </c:when>
                                                             <c:otherwise>
-                                                                <c:set var="spanClass" value="errorMessage"/>
+                                                                <c:set var="spanClass" value="error"/>
                                                             </c:otherwise>
                                                         </c:choose> 
                                                         <span style="font-weight: bold;" class="${spanClass}">${phaseCReading.delta}</span>
@@ -333,10 +333,10 @@
                                                         <span style="font-weight: bold;">${phaseAReading.last}</span> <i:inline key=".delta"/>
                                                         <c:choose >
                                                             <c:when test="${phaseAReading.delta gt 0}">
-                                                                <c:set var="spanClass" value="successMessage"/>
+                                                                <c:set var="spanClass" value="success"/>
                                                             </c:when>
                                                             <c:otherwise>
-                                                                <c:set var="spanClass" value="errorMessage"/>
+                                                                <c:set var="spanClass" value="error"/>
                                                             </c:otherwise>
                                                         </c:choose> 
                                                         <span style="font-weight: bold;" class="${spanClass}">${phaseAReading.delta}</span><br>
@@ -345,10 +345,10 @@
                                                         <span style="font-weight: bold;">${phaseBReading.last}</span> <i:inline key=".delta"/>
                                                         <c:choose >
                                                             <c:when test="${phaseBReading.delta gt 0}">
-                                                                <c:set var="spanClass" value="successMessage"/>
+                                                                <c:set var="spanClass" value="success"/>
                                                             </c:when>
                                                             <c:otherwise>
-                                                                <c:set var="spanClass" value="errorMessage"/>
+                                                                <c:set var="spanClass" value="error"/>
                                                             </c:otherwise>
                                                         </c:choose> 
                                                         <span style="font-weight: bold;" class="${spanClass}">${phaseBReading.delta}</span><br>
@@ -357,10 +357,10 @@
                                                         <span style="font-weight: bold;">${phaseCReading.last}</span> <i:inline key=".delta"/>
                                                         <c:choose >
                                                             <c:when test="${phaseCReading.delta gt 0}">
-                                                                <c:set var="spanClass" value="successMessage"/>
+                                                                <c:set var="spanClass" value="success"/>
                                                             </c:when>
                                                             <c:otherwise>
-                                                                <c:set var="spanClass" value="errorMessage"/>
+                                                                <c:set var="spanClass" value="error"/>
                                                             </c:otherwise>
                                                         </c:choose> 
                                                         <span style="font-weight: bold;" class="${spanClass}">${phaseCReading.delta}</span>

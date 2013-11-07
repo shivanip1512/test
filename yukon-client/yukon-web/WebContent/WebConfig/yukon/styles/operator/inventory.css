@@ -8,8 +8,8 @@ table.selectionTable td.selectionTypeCol {
     font-weight:bold;
 }
 
-table.selectionTable th.removeColumn,
-table.selectionTable td.removeColumn {
+table.selectionTable th.remove-column,
+table.selectionTable td.remove-column {
     width:100px;
 }
 

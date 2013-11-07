@@ -16,14 +16,14 @@
 
 <tags:noAuthPage module="login" page="forgottenPassword">
 <section id="content" style="min-height: 420px;">
-    <div class="column_24 clear">
+    <div class="column-24 clear">
         <div class="one column nogutter">
             <div class="page-title-bar">
                 <h1><i:inline key=".pageName"/></h1>
             </div>
             <cti:flashScopeMessages/>
             <noscript>
-                <div class="page_error">
+                <div class="page-error">
                     <cti:msg2 key="yukon.web.error.noJs"/>
                 </div>
             </noscript>
@@ -38,8 +38,8 @@
                 <form:input autocomplete="off" path="forgottenPasswordField" autofocus="autofocus" size="50"/>
                 
                 <tags:captcha captchaPublicKey="${captchaPublicKey}" captchaTheme="clean" captchaEnabled="${captchaEnabled}" locale="${locale}"/>
-                <div class="pageActionArea">
-                    <cti:button type="submit" nameKey="resetPassword" name="resetPassword" classes="f-disableAfterClick primary action"/>
+                <div class="page-action-area">
+                    <cti:button type="submit" nameKey="resetPassword" name="resetPassword" classes="f-disable-after-click primary action"/>
                     <cti:url value="/login.jsp" var="loginPage"/>
                     <cti:button href="${loginPage}" nameKey="cancel"/>
                 </div>

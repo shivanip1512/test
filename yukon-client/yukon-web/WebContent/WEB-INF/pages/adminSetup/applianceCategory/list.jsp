@@ -14,7 +14,7 @@
         <i:inline key=".noApplianceCategories"/>
     </c:if>
     <c:if test="${!empty applianceCategories}">
-        <table class="compactResultsTable rowHighlighting">
+        <table class="compact-results-table row-highlighting">
             <c:forEach var="applianceCategory" items="${applianceCategories}">
                 <tr>
                     <td valign="top">
@@ -49,7 +49,7 @@
     <cti:url var="createUrl" value="create">
         <cti:param name="ecId" value="${ecId}"/>
     </cti:url>
-    <div class="actionArea">
+    <div class="action-area">
         <cti:button nameKey="create" icon="icon-plus-green" href="${createUrl}"/>
     </div>
 </tags:boxContainer2>

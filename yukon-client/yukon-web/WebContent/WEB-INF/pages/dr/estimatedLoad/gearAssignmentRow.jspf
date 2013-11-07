@@ -1,5 +1,5 @@
 <input id="assignmentInput_${assignmentId}" type="hidden" name="assignments" value="${assignmentId}"/> 
-<div id="assignmentAdd_${assignmentId}" class="column_8_8_8 f-drFormula-removeable f-drFormula-show-on-hover-target clearfix">
+<div id="assignmentAdd_${assignmentId}" class="column-8-8-8 f-drFormula-removeable f-drFormula-show-on-hover-target clearfix">
     <div class="column one f-drFormula-name">${fn:escapeXml(assignments[assignmentId].gearName)}</div>
     <div class="column two f-drFormula-control-method"><i:inline key="${assignments[assignmentId].controlMethod}"/></div>
     <div class="column three nogutter">
@@ -16,7 +16,7 @@
         </cti:displayForPageEditModes>
     </div>
 </div>
-<div id="assignmentRemove_${assignmentId}" class="column_24" style="display:none">
+<div id="assignmentRemove_${assignmentId}" class="column-24" style="display:none">
     <div class="column one nogutter">
         <div class="fl undorow"><i:inline key=".gearWillBeUnassigned"/></div>
         <div class="fr undorow">

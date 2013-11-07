@@ -6,7 +6,7 @@
 
 <tags:standardPageFragment module="amr"	pageName="porterResponseMonitor" fragmentName="addRule">
 
-	<table class="compactResultsTable">
+	<table class="compact-results-table">
 		<tr id="rule_${newMapKey}" class="ruleTableRow">
 			<td class="orderColumn">
                 <input name="rules[${newMapKey}].ruleOrder" type="text" value="${nextOrder}" class="ruleOrder" maxlength="2" size="2"/>

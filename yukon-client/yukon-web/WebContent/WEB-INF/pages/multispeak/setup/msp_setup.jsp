@@ -73,7 +73,7 @@
 
 	</script>
     
-    	<tags:formElementContainer nameKey="mspSetup">	
+    	<tags:sectionContainer2 nameKey="mspSetup">	
 			<cti:dataGrid cols="2" rowStyle="vertical-align:top;" cellStyle="padding-right:40px;">
 			<cti:dataGridCell>
 			<form name="mspForm" method="post" action="/multispeak/setup/save">
@@ -268,6 +268,6 @@
 				</td>
 			  </tr>
 			</table>				
-		</tags:formElementContainer> 
+		</tags:sectionContainer2> 
 
 </cti:standardPage>

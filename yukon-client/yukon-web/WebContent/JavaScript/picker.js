@@ -79,11 +79,11 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
     },
 
     block = function () {
-        Yukon.ui.elementGlass.show(document.getElementById(this.pickerId + ' .f-block_this'));
+        Yukon.ui.elementGlass.show(document.getElementById(this.pickerId + ' .f-block-this'));
     },
 
     unblock = function () {
-        Yukon.ui.elementGlass.hide(document.getElementById(this.pickerId + ' .f-block_this'));
+        Yukon.ui.elementGlass.hide(document.getElementById(this.pickerId + ' .f-block-this'));
     },
 
     updateSelectAllCheckbox = function () {
@@ -238,7 +238,7 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
 
             resultTable = createHtmlTableFromJson(hitList, outputColumns,
                 processRowForRender);
-            resultTable.className = 'compactResultsTable pickerResultTable';
+            resultTable.className = 'compact-results-table pickerResultTable';
             resultAreaFixed.appendChild(resultTable);
         } else {
             this.noResultsDiv.show();
@@ -261,21 +261,21 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
         }
         if (json && json.hits.startIndex > 0) {
             this.previousIndex = json.hits.previousStartIndex;
-            jQuery('.previousLink.enabledAction', jQuery(pickerDiv)).show();
-            jQuery('.previousLink.disabledAction', jQuery(pickerDiv)).hide();
+            jQuery('.previous-link.f-enabled-action', jQuery(pickerDiv)).show();
+            jQuery('.previous-link.f-disabled-action', jQuery(pickerDiv)).hide();
         } else {
-            jQuery('.previousLink.enabledAction', jQuery(pickerDiv)).hide();
-            jQuery('.previousLink.disabledAction', jQuery(pickerDiv)).show();
+            jQuery('.previous-link.f-enabled-action', jQuery(pickerDiv)).hide();
+            jQuery('.previous-link.f-disabled-action', jQuery(pickerDiv)).show();
         }
         if (json && json.hits.endIndex < json.hits.hitCount) {
             this.nextIndex = json.hits.endIndex;
-            jQuery('.nextLink.enabledAction', jQuery(pickerDiv)).show();
-            jQuery('.nextLink.disabledAction', jQuery(pickerDiv)).hide();
+            jQuery('.next-link.f-enabled-action', jQuery(pickerDiv)).show();
+            jQuery('.next-link.f-disabled-action', jQuery(pickerDiv)).hide();
         } else {
-            jQuery('.nextLink.enabledAction', jQuery(pickerDiv)).hide();
-            jQuery('.nextLink.disabledAction', jQuery(pickerDiv)).show();
+            jQuery('.next-link.f-enabled-action', jQuery(pickerDiv)).hide();
+            jQuery('.next-link.f-disabled-action', jQuery(pickerDiv)).show();
         }
-        jQuery('.pageNumText', jQuery(pickerDiv))[0].innerHTML = json ? json.pages : '';
+        jQuery('.page-num-text', jQuery(pickerDiv))[0].innerHTML = json ? json.pages : '';
     },
 
     /**
@@ -871,9 +871,9 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
         });
 
         resultTable = createHtmlTableFromJson(this.selectedItems, outputColumns);
-        jQuery(resultTable).addClass('compactResultsTable');
+        jQuery(resultTable).addClass('compact-results-table');
         jQuery(resultTable).addClass('pickerResultTable');
-        jQuery(resultTable).addClass('rowHighlighting');
+        jQuery(resultTable).addClass('row-highlighting');
         this.selectedItemsDisplayArea.innerHTML = '';
         this.selectedItemsDisplayArea.appendChild(resultTable);
         jQuery(this.selectedItemsPopup).dialog({minWidth: 400});

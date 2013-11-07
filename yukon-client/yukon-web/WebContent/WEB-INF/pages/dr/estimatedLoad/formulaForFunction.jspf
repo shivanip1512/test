@@ -5,7 +5,7 @@
 
 <c:set var="formulaId" value="${formulaBean.formulaId}"/>
 <form:form id="formulaForm" commandName="formulaBean" action="edit?formulaId=${formulaBean.formulaId}">
-    <div class="column_12_12 clearfix">
+    <div class="column-12-12 clearfix">
         <div class="column one">
             <tags:sectionContainer2 nameKey="formulaSettings">
                 <tags:nameValueContainer2>
@@ -24,9 +24,9 @@
 
         <div class="column two nogutter">
             <tags:sectionContainer2 nameKey="assignments">
-                <div id="assignments" class="scrollingContainer_medium" style="${empty formulaBean.assignments ? 'display:none':''}">
+                <div id="assignments" class="scroll-medium" style="${empty formulaBean.assignments ? 'display:none':''}">
                     <c:if test="${formulaBean.appCatFormula}">
-                        <div class="column_8_8_8">
+                        <div class="column-8-8-8">
                             <div class="column one"><h4><i:inline key=".name"/></h4></div>
                             <div class="column two"><h4><i:inline key=".appCatType"/></h4></div>
                             <div class="column three nogutter"><h4><i:inline key=".applianceLoad"/></h4></div>
@@ -36,7 +36,7 @@
                         </c:forEach>
                     </c:if>
                     <c:if test="${formulaBean.gearFormula}">
-                        <div class="column_8_8_8">
+                        <div class="column-8-8-8">
                             <div class="column one"><h4><i:inline key=".name"/></h4></div>
                             <div class="column two"><h4><i:inline key=".gearControlMethod"/></h4></div>
                             <div class="column three nogutter"><h4><i:inline key=".program"/></h4></div>
@@ -50,7 +50,7 @@
                    <span id="noAssignments" class="empty-list"><i:inline key=".noAssignments"/></span>
                </c:if>
                <cti:displayForPageEditModes modes="EDIT">
-                   <div class="actionArea">
+                   <div class="action-area">
                       <c:if test="${formulaBean.appCatFormula}">
                            <tags:pickerDialog
                                id="unassignedApplianceCategoryPicker" type="unassignedApplianceCategoryPicker"
@@ -83,12 +83,12 @@
         </div>
         <cti:displayForPageEditModes modes="EDIT">
             <hr>
-            <div class="actionArea">
+            <div class="action-area">
                 <cti:button id="newFunctionBtn" icon="icon-plus-green" nameKey="newFunction"/>
             </div>
         </cti:displayForPageEditModes>
     </tags:sectionContainer2>
-    <div class="pageActionArea">
+    <div class="page-action-area">
         <cti:displayForPageEditModes modes="VIEW">
             <cti:button nameKey="edit" icon="icon-pencil" href="edit?formulaId=${formulaBean.formulaId}"/>
         </cti:displayForPageEditModes>

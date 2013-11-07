@@ -85,7 +85,7 @@ public class DeviceReadStatisticsSummaryController extends ReportControllerBase{
         
         sb.append("    <tr>" + LINE_SEPARATOR);
         
-        sb.append("        <td class='TitleHeader' style='padding-right: 5px;'>Data Attribute: </td>");
+        sb.append("        <td class='title-header' style='padding-right: 5px;'>Data Attribute: </td>");
         sb.append("        <td class='main' style='padding-right: 5px;'>" + LINE_SEPARATOR);
         sb.append("            <select id=\"dataAttribute\" name=\"dataAttribute\">" + LINE_SEPARATOR);
         sb.append("                <optgroup label=\"Measured Attributes\">" + LINE_SEPARATOR);

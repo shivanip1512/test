@@ -113,7 +113,7 @@ function ${widgetParameters.widgetId}_updateDifference() {
 <cti:url var="meterPointsUrl" value="/common/device/points">
     <cti:param name="deviceId">${device.deviceId}</cti:param>
 </cti:url>
-<div class="actionArea">
+<div class="action-area">
     <a href="${meterPointsUrl}" class="fl"><i:inline key="yukon.web.defaults.showAll"/></a>
     <a href="javascript:void(0);" class="fl" style="margin-left: 10px;" id="readings_quick_view"><i:inline key="yukon.web.defaults.quickView"/></a>
     <tags:widgetActionUpdate hide="${!readable}" method="read" nameKey="readNow" container="${widgetParameters.widgetId}_results"/>
@@ -121,7 +121,7 @@ function ${widgetParameters.widgetId}_updateDifference() {
 
 <%--TODO make this into a tag --%>
 <i:simplePopup id="poinvalues-quickview" titleKey="yukon.web.components.dialog.devicePoints.title" arguments="${deviceName}" on="#readings_quick_view" options="{'modal' : false, 'width' : 600, 'height' : 500}">
-    <table class="compactResultsTable rowHighlighting">
+    <table class="compact-results-table row-highlighting">
         <thead>
             <tr>
                 <th><i:inline key="yukon.web.components.dialog.devicePoints.pointName"/></th>
@@ -137,7 +137,7 @@ function ${widgetParameters.widgetId}_updateDifference() {
                  <td>${fn:escapeXml(pointResultRow.pointName)}</td>
                  <td class="state-indicator tar">
                     <c:if test="${pointResultRow.paoPointIdentifier.pointIdentifier.pointType.status}">
-                        <cti:pointStatusColor pointId="${pointResultRow.pointId}" styleClass="box stateBox" background="true">&nbsp;</cti:pointStatusColor>
+                        <cti:pointStatusColor pointId="${pointResultRow.pointId}" styleClass="box state-box" background="true">&nbsp;</cti:pointStatusColor>
                     </c:if>
                  </td>
                  <td><cti:pointValue pointId="${pointResultRow.pointId}" format="SHORT"/></td>

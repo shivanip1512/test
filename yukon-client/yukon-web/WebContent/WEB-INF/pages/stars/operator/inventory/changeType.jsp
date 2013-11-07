@@ -19,7 +19,7 @@
                 </tr>
           
                 <tr>
-                    <td class="smallBoldLabel errorMessage"><i:inline key=".instructionsLabel"/></td>
+                    <td class="strong-label-small error"><i:inline key=".instructionsLabel"/></td>
                     <td><i:inline key=".instructions"/></td>
                 </tr>
             </table>
@@ -39,7 +39,7 @@
                         </select>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
-                <div class="pageActionArea">
+                <div class="page-action-area">
                     <cti:button nameKey="start" type="submit" name="start"/>
                     <cti:button nameKey="cancel" type="submit" name="cancel"/>
                 </div>
@@ -61,7 +61,7 @@
                     <tags:updateableProgressBar totalCount="${task.totalItems}" countKey="INVENTORY_TASK/${task.taskId}/ITEMS_PROCESSED"/>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".successful">
-                    <cti:dataUpdaterValue type="INVENTORY_TASK" identifier="${task.taskId}/SUCCESS_COUNT" styleClass="successMessage fwb"/>
+                    <cti:dataUpdaterValue type="INVENTORY_TASK" identifier="${task.taskId}/SUCCESS_COUNT" styleClass="success fwb"/>
                     <cti:classUpdater type="INVENTORY_TASK" identifier="${task.taskId}/NEW_OPERATION_FOR_SUCCESS">
                         <ul class="resultList">
                             <li>
@@ -71,7 +71,7 @@
                     </cti:classUpdater>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".unsupported">
-                    <cti:dataUpdaterValue type="INVENTORY_TASK" identifier="${task.taskId}/UNSUPPORTED_COUNT" styleClass="warningMessage fwb"/>
+                    <cti:dataUpdaterValue type="INVENTORY_TASK" identifier="${task.taskId}/UNSUPPORTED_COUNT" styleClass="warning fwb"/>
                     <cti:classUpdater type="INVENTORY_TASK" identifier="${task.taskId}/NEW_OPERATION_FOR_UNSUPPORTED">
                         <ul class="resultList">
                             <li>

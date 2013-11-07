@@ -107,7 +107,7 @@
 
 	<tags:widgetContainer deviceId="${deviceId}" identify="false">
 
-		<div class="column_12_12 clear">
+		<div class="column-12-12 clear">
             <div class="one column">
 				
 				    <tags:widget bean="meterInformationWidget" />

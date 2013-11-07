@@ -9,12 +9,12 @@
 </script>
 
     <form id="filterForm" action="/meter/search">
-        <tags:nameValueContainer tableClass="nonwrapping">
+        <tags:nameValueContainer>
 	        <c:forEach var="filter" items="${filterByList}" varStatus="status">
 	        	<cti:msg2 key="${filter.formatKey}" var="filterName"/>
-                <tags:nameValue name="${filterName}" valueClass="full_width"><input class="full_width" type="text" id="searchField_${status.count}" name="${filter.name}" value="${filter.filterValue}"></tags:nameValue>
+                <tags:nameValue name="${filterName}" valueClass="full-width"><input class="full-width" type="text" id="searchField_${status.count}" name="${filter.name}" value="${filter.filterValue}"></tags:nameValue>
 	        </c:forEach>
         </tags:nameValueContainer>
         
-        <div class="actionArea"><cti:button type="submit" classes="button" nameKey="search"/></div>
+        <div class="action-area"><cti:button type="submit" classes="button" nameKey="search"/></div>
     </form>

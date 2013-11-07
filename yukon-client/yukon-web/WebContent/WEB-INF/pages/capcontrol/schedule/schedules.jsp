@@ -49,7 +49,7 @@ jQuery(function () {
             </c:when>
         
             <c:otherwise>
-                <table class="compactResultsTable" id="scheduleTable">
+                <table class="compact-results-table" id="scheduleTable">
                 
                     <thead>
                         <tr id="header">

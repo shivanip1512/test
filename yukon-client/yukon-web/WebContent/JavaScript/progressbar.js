@@ -12,9 +12,9 @@ Yukon.ui.progressBar = (function () {
         try {
             innerWidth = getBarWidth(pbarId, completedCount, totalCount);
             progressContainer = getProgressBarContainer(pbarId);
-            progressContainer.find('.progressBarInner').css('width', innerWidth + 'px');
-            progressContainer.find('.progressBarPercentComplete').html(percentDone + '%');
-            progressContainer.find('.progressBarCompletedCount').html(completedCount);
+            progressContainer.find('.progressbar-inner').css('width', innerWidth + 'px');
+            progressContainer.find('.progressbar-percent-complete').html(percentDone + '%');
+            progressContainer.find('.progressbar-completed-count').html(completedCount);
         } catch (e) {};
 
         if (completionCallback != null && percentDone == 100) {
@@ -41,10 +41,10 @@ Yukon.ui.progressBar = (function () {
             successWidth = getBarWidth(pbarId, successCompletedCount, totalCount);
             failureWidth = getBarWidth(pbarId, failureCompletedCount, totalCount);
 
-            progressContainer.find('.progressBarInnerSuccess').css('width', successWidth + 'px');
-            progressContainer.find('.progressBarInnerFailure').css('width', failureWidth + 'px');
-            progressContainer.find('.progressBarCompletedCount').html(totalCompletedCount);
-            progressContainer.find('.progressBarPercentComplete').html(percentDone + '%');
+            progressContainer.find('.progressbar-inner-success').css('width', successWidth + 'px');
+            progressContainer.find('.progressbar-inner-fail').css('width', failureWidth + 'px');
+            progressContainer.find('.progressbar-completed-count').html(totalCompletedCount);
+            progressContainer.find('.progressbar-percent-complete').html(percentDone + '%');
         } catch (e) {};
 
         // completionCallback
@@ -57,7 +57,7 @@ Yukon.ui.progressBar = (function () {
         if (progressContainer.length === 0) {
             return;
         }
-        progressContainer.find('.progressBarTotal').html(totalCount);
+        progressContainer.find('.progressbar-total').html(totalCount);
     },
     getBarWidth = function (pbarId, completed, total) {
         var progressContainer,
@@ -69,7 +69,7 @@ Yukon.ui.progressBar = (function () {
             return 0;
         }
         progressContainer = getProgressBarContainer(pbarId);
-        progressBorder = progressContainer.find('.progressBarBorder');
+        progressBorder = progressContainer.find('.progressbar-border');
         width = progressBorder.width(); // subtract 1 px for each border
         percentDecimal = parseFloat(completed / total);
         length = Math.floor(percentDecimal * width);
@@ -153,11 +153,11 @@ Yukon.ui.progressBar = (function () {
                     progressContainer = getProgressBarContainer(pbarId);
 
                     // Check if we are a normal progress bar or success / fail progress bar
-                    if (progressContainer.find('.progressBarInner').length < 0) {
-                        progressContainer.find('.progressBarInner').addClass('progressBarInnerFailure');
-                        progressContainer.find('.progressBarInner').css('width', '100%');
+                    if (progressContainer.find('.progressbar-inner').length < 0) {
+                        progressContainer.find('.progressbar-inner').addClass('progressbar-inner-fail');
+                        progressContainer.find('.progressbar-inner').css('width', '100%');
                     } else {
-                        progressContainer.find('.progressBarInnerFailure').css('width', '100%');
+                        progressContainer.find('.progressbar-inner-fail').css('width', '100%');
                     }
                 }
             };

@@ -19,7 +19,7 @@
 
         
     <div class="containerHeader">
-        <span class="smallBoldLabel"><i:inline key=".notesLabel"/></span>
+        <span class="strong-label-small"><i:inline key=".notesLabel"/></span>
         <span><i:inline key=".notes"/></span>
     </div>
 
@@ -48,7 +48,7 @@
     <tags:nameValueContainer2>
         
         <tags:nameValue2 nameKey=".successCount">
-            <cti:dataUpdaterValue type="DEVICE_RECONFIG" identifier="${task.inventoryConfigTaskId}/SUCCESS_COUNT" styleClass="successMessage fwb"/>
+            <cti:dataUpdaterValue type="DEVICE_RECONFIG" identifier="${task.inventoryConfigTaskId}/SUCCESS_COUNT" styleClass="success fwb"/>
         </tags:nameValue2>
         
     </tags:nameValueContainer2>
@@ -64,7 +64,7 @@
     <tags:nameValueContainer2>
         
         <tags:nameValue2 nameKey=".failedCount">
-            <cti:dataUpdaterValue type="DEVICE_RECONFIG" identifier="${task.inventoryConfigTaskId}/FAILED_COUNT" styleClass="errorMessage fwb"/>
+            <cti:dataUpdaterValue type="DEVICE_RECONFIG" identifier="${task.inventoryConfigTaskId}/FAILED_COUNT" styleClass="error fwb"/>
         </tags:nameValue2>
         
     </tags:nameValueContainer2>
@@ -77,7 +77,7 @@
         </ul>
     </cti:classUpdater>
     
-    <div class="pageActionArea">    
+    <div class="page-action-area">    
         <form action="/stars/operator/inventory/inventoryActions/deviceReconfig/delete" method="post">
             <input type="hidden" value="${task.inventoryConfigTaskId}" name="taskId">
             

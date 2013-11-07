@@ -15,7 +15,7 @@ Required variables:
 %>
 <table width="180" border="1" cellspacing="0" cellpadding="3" bgcolor="#CCCCCC">
   <tr> 
-    <td class="TitleHeader" align="center">Operational Address<br>
+    <td class="title-header" align="center">Operational Address<br>
       <table width="80%" border="0" cellspacing="3" cellpadding="0">
         <tr> 
           <td width="60%" align="center"> 
@@ -43,7 +43,7 @@ Required variables:
 %>
 <table width="180" border="1" cellspacing="0" cellpadding="3" bgcolor="#CCCCCC">
   <tr> 
-    <td class="TitleHeader" align="center">Slot Addresses<br>
+    <td class="title-header" align="center">Slot Addresses<br>
       <table width="80%" border="0" cellspacing="3" cellpadding="0">
         <tr> 
           <td width="60%" align="center"> 
@@ -88,7 +88,7 @@ Required variables:
 %>
 <table width="180" border="1" cellspacing="0" cellpadding="3" bgcolor="#CCCCCC">
   <tr> 
-    <td align="center" class="TitleHeader">SA305 Addresses<br>
+    <td align="center" class="title-header">SA305 Addresses<br>
       <table width="100%" border="0" cellspacing="3" cellpadding="0">
         <tr> 
           <td align="right" class="MainText" width="55%">Utility:</td>
@@ -115,7 +115,7 @@ Required variables:
           </td>
         </tr>
         <tr> 
-          <td align="right" class="TitleHeader" width="55%"> 
+          <td align="right" class="title-header" width="55%"> 
              </td>
           <td width="45%"></td>
         </tr>
@@ -161,7 +161,7 @@ Required variables:
 %>
 <table width="240" border="1" cellspacing="0" cellpadding="3" bgcolor="#CCCCCC">
   <tr> 
-    <td align="center" class="TitleHeader" height="69">VERSACOM 
+    <td align="center" class="title-header" height="69">VERSACOM 
       Addresses<br>
       <table width="100%" border="0" cellspacing="3" cellpadding="0">
         <tr> 
@@ -364,7 +364,7 @@ Required variables:
 %>
 <table width="240" border="1" cellspacing="0" cellpadding="3" bgcolor="#CCCCCC">
   <tr> 
-    <td align="center" class="TitleHeader" height="69">EXPRESSCOM 
+    <td align="center" class="title-header" height="69">EXPRESSCOM 
       Addresses<br>
       <table width="100%" border="0" cellspacing="3" cellpadding="0">
         <tr> 

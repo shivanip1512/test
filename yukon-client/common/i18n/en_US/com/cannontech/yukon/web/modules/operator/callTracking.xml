@@ -5,14 +5,13 @@
 	<!-- callList.jsp -->
     <entry key="yukon.web.modules.operator.callList.pageName">Call Tracking</entry>
     <entry key="yukon.web.modules.operator.callList.pageDescription">{0}</entry>
-    <entry key="yukon.web.modules.operator.callList.callsBox.title">Calls</entry>
     <entry key="yukon.web.modules.operator.callList.header.callNumber">Call Number</entry>
     <entry key="yukon.web.modules.operator.callList.header.dateTime">Date/Time</entry>
     <entry key="yukon.web.modules.operator.callList.header.type">Type</entry>
     <entry key="yukon.web.modules.operator.callList.header.description">Description</entry>
     <entry key="yukon.web.modules.operator.callList.header.takenBy">Taken By</entry>
     <entry key="yukon.web.modules.operator.callList.header.remove">Remove</entry>
-    <entry key="yukon.web.modules.operator.callList.noCalls">No Calls</entry>
+    <entry key="yukon.web.modules.operator.callList.noCalls">No calls for this account</entry>
 
 	<!-- viewCall.jsp -->
     <entry key="yukon.web.modules.operator.viewCall.EDIT.pageName">View Call</entry>
@@ -20,7 +19,7 @@
     <entry key="yukon.web.modules.operator.viewCall.CREATE.pageName">Create Call</entry>
     <entry key="yukon.web.modules.operator.viewCall.EDIT.pageDescription">{0}</entry>
     <entry key="yukon.web.modules.operator.viewCall.VIEW.pageDescription">{0}</entry>
-    <entry key="yukon.web.modules.operator.viewCall.callContainer.title">Call</entry>
+    <entry key="yukon.web.modules.operator.viewCall.callContainer.title">Call Details</entry>
     <entry key="yukon.web.modules.operator.viewCall.callNumber">Tracking Number</entry>
     <entry key="yukon.web.modules.operator.viewCall.date">Date/Time</entry>
     <entry key="yukon.web.modules.operator.viewCall.type">Type</entry>

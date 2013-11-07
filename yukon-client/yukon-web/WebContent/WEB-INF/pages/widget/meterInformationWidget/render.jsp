@@ -32,7 +32,7 @@
 </tags:nameValueContainer2>
 
 <c:if test="${supportsPing}">
-    <div class="actionArea">
+    <div class="action-area">
         <div id="${widgetParameters.widgetId}_results"></div>
         <tags:widgetActionUpdate method="ping" nameKey="ping" container="${widgetParameters.widgetId}_results" />
     </div>

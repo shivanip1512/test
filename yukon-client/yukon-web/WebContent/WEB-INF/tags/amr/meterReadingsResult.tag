@@ -10,10 +10,10 @@
 <div style="max-height: 240px; overflow: auto">
     <c:choose>
         <c:when test="${not empty pageScope.errorMsg}">
-            <span class="errorMessage">${pageScope.errorMsg}</span>
+            <span class="error">${pageScope.errorMsg}</span>
         </c:when>
         <c:otherwise>
-            <span class="errorMessage"><i:inline key=".errorReading"/></span>
+            <span class="error"><i:inline key=".errorReading"/></span>
         </c:otherwise>
     </c:choose>
     <br>

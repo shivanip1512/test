@@ -192,7 +192,7 @@ jQuery(function() {
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
             </form:form>
-            <div class="actionArea">
+            <div class="action-area">
                 <c:if test="${not empty allFormats}">
                     <c:choose>
                         <c:when test="${empty deviceCollection}">
@@ -216,9 +216,9 @@ jQuery(function() {
 
     <%-- Jobs  --%>
         <tags:boxContainer2 nameKey="jobsBox"> 
-            <div class="scrollingContainer_small" style="max-height: 249px;">
+            <div style="overflow-y: auto;max-height: 249px;">
                 <c:if test="${fn:length(filterResult.resultList) > 0}">
-                    <table class="compactResultsTable">
+                    <table class="compact-results-table">
                         <thead>
                             <th><i:inline key=".nameHeader"/></th>
                             <th><i:inline key=".scheduleHeader"/></th>

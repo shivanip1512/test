@@ -22,8 +22,8 @@
                 <div class="warning stacked"><i:inline key="yukon.web.deviceGroups.editor.membersContainer.showDevicesLimitText" arguments="${maxGetDevicesSize}"/></div>
             </c:if>
         </div>
-        <div class="scrollingContainer_small">
-            <table class="compactResultsTable rowHighlighting">
+        <div class="scroll-small">
+            <table class="compact-results-table row-highlighting">
                 <thead></thead>
                 <tfoot></tfoot>
                 <tbody>
@@ -55,7 +55,7 @@
             <cti:msg2 var="removeAllDevicesFromGroupLabel" key=".membersContainer.removeAllDevicesFromGroupLabel"/>
             <cti:msg2 var="removeAllDevicesFromGroupDescription" key=".membersContainer.removeAllDevicesFromGroupDescription"/>
             <cti:msg2 var="confirmRemoveText" key=".membersContainer.confirmRemoveText" javaScriptEscape="true"/>
-            <div class="actionArea stacked">
+            <div class="action-area stacked">
                 <button id="removeAllDevicesButton" onclick="removeAllDevices('${confirmRemoveText}')" value="${removeAllDevicesFromGroupLabel}" title="${removeAllDevicesFromGroupDescription}">
                     <i class="icon icon-cross"></i><span class="label">${removeAllDevicesFromGroupLabel}</span>
                 </button>

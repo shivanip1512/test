@@ -7,7 +7,7 @@
 
 <c:if test="${touAttributesAvailable}">
 <cti:url var="touSpecificsUrl" value="/meter/touPreviousReadings"><cti:param name="deviceId" value="${meter.deviceId}"/></cti:url>
-<div id="touDialog" title="<cti:msg2 key=".title"/>" class="scrollingContainer_large dn"></div>
+<div id="touDialog" title="<cti:msg2 key=".title"/>" class="scroll-large dn"></div>
 <script type="text/javascript">
 jQuery(function() {
     jQuery('#touPopupLink').click(function(event) {
@@ -43,7 +43,7 @@ jQuery(function() {
 			                 peakAttribute="${PEAK_DEMAND_RATE_D}" />
 		</div>
 		<div id="${widgetParameters.widgetId}_results"></div>
-		<div class="actionArea clearfix full_width">
+		<div class="action-area clearfix full-width">
             <a id="touPopupLink" href="javascript:void(0)" class="fl"><cti:msg2 key=".previousReadingsLink"/></a>
             <tags:widgetActionUpdate hide="${!readable}" method="read" nameKey="read" container="${widgetParameters.widgetId}_results"/>
         </div>

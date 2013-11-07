@@ -43,7 +43,7 @@
     <entry key="yukon.web.modules.amr.deviceDataMonitor.missingPoints.helpDialog.whatDoesThisMeanBody"><![CDATA[
         Points contained in this list either do not have the point created for a given device or the point is created, however it has a different state group than what is assigned in your monitor's processor.  For example, say the following is displayed in your list:
         <br><br>
-        <span style="margin-left: 20px; background-color: #f2f2f2; border: 1px dashed #aaa; padding: 5px">Current Loss (TrueFalse - default: Event Status) : <span class="errorMessage">247</span></span>
+        <span style="margin-left: 20px; background-color: #f2f2f2; border: 1px dashed #aaa; padding: 5px">Current Loss (TrueFalse - default: Event Status) : <span class="error">247</span></span>
         <br><br>
         This means that 247 of your total supported monitoring devices either:
         <br><br>
@@ -78,7 +78,7 @@
     <entry key="yukon.web.modules.amr.deviceDataMonitor.fullySupported.noDevices">No devices selected</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.fullySupported.noProcessors">No processors added</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.fullySupported.noAttributes">No attributes selected</entry>
-    <entry key="yukon.web.modules.amr.deviceDataMonitor.fullySupported.message"><![CDATA[<span class={0,choice,-1#'success'>all devices|0#'error'>No devices|1#'warn'>1 device|1<'warn'>{0,number,integer} devices}</span> are supported by all processors.]]></entry>
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.fullySupported.message"><![CDATA[<span class={0,choice,-1#'success'>all devices|0#'error'>No devices|1#'warning'>1 device|1<'warning'>{0,number,integer} devices}</span> are supported by all processors.]]></entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.fullySupported.help.title">Supported by Processors Help</entry>
 
     <entry key="yukon.web.modules.amr.deviceDataMonitor.fullySupported.help.msg.noDevices">You need to select a Device Group (see above) which contains devices before we can verify that the devices support the given attributes, state groups, and underlying points.</entry>

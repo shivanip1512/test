@@ -15,7 +15,7 @@
             <span class="empty-list"><i:inline key=".noApplianceCategories"/></span>
         </c:when>
         <c:otherwise>
-            <table class="compactResultsTable rowHighlighting sortable-table">
+            <table class="compact-results-table row-highlighting sortable-table">
                 <thead>
                     <tr>
                         <th width="25%"><tags:sortLink nameKey="name" fieldName="NAME" baseUrl="${sortUrl}" styleClass="f-drFormula-sortLink" isDefault="true" /></th>

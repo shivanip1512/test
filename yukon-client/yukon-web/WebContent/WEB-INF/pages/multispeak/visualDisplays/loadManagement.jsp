@@ -28,7 +28,7 @@
     <br>
 
 	<%-- POWER SUPPLIER DATA TABLE: Current Load, Currnt IH, Load To Peak, Peak IH Load --%>
-	<table class="resultsTable" style="width:800px;">
+	<table class="results-table" style="width:800px;">
 	
 		<%-- header row --%>
 		<tr>
@@ -57,7 +57,7 @@
 	<c:set var="hourNumberCellWidth" value="60" />
 	<c:set var="powerSuplierCellWidth" value="${fn:length(powerSuppliers) * 300 + hourNumberCellWidth}" />
 	
-	<table class="resultsTable" style="width:${powerSuplierCellWidth}px">
+	<table class="results-table" style="width:${powerSuplierCellWidth}px">
 
 		<%-- header row (hr + power supplier names) --%>
 		<tr>

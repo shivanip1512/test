@@ -9,7 +9,7 @@
         <tags:backgroundProcessResultHolder resultsTypeMsgKey="update" callbackResult="${callbackResult}" />
         <form id="updateResultsForm" type="post" action="/bulk/update/upload">
             <cti:msg var="backToUploadButton" key="yukon.common.device.bulk.updateResults.backToUpload"/>
-            <div class="pageActionArea">
+            <div class="page-action-area">
                 <button type="submit" class="button"><span class="label">${backToUploadButton}</span></button>
             </div>
             <input type="hidden" name="ignoreInvalidCols" value="${ignoreInvalidCols}">

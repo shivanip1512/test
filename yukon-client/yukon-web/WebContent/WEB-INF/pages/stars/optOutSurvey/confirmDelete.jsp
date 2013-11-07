@@ -12,7 +12,7 @@
 <form id="confirmForm" action="${deleteUrl}">
     <input type="hidden" name="optOutSurveyId" value="${optOutSurvey.optOutSurveyId}"/>
 
-    <div class="actionArea">
+    <div class="action-area">
         <cti:button nameKey="ok" onclick="submitFormViaAjax('ajaxDialog', 'confirmForm')" classes="primary action"/>
         <cti:button nameKey="cancel" onclick="jQuery('#ajaxDialog').dialog('close');"/>
     </div>

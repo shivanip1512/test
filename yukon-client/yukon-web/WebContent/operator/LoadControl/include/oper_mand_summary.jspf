@@ -81,7 +81,7 @@
 <table width="657" border="0" cellspacing="0" cellpadding="0">
   <tr> 
     <td width="650" valign="top"> 
-      <p align="center" class="TitleHeader"><br>NOTIFICATION - CURRENT</p>
+      <p align="center" class="title-header"><br>NOTIFICATION - CURRENT</p>
       <p align="center" class="MainText">Click on a program name to view the program details.</p>
       <p align="center" class="SubtitleHeader">Today's Notification Summary - <%= datePart.format(today) %>
       <center>

@@ -31,7 +31,7 @@ function updateImportTypeSelection() {
     <cti:msg var="headerTitle" key="yukon.common.device.bulk.importUpload.header"/>
     <form id="uploadForm" method="post" action="/bulk/import/parseUpload" enctype="multipart/form-data">
     <tags:sectionContainer title="${headerTitle}" id="importUploadContainer" hideEnabled="false">
-        <div class="column_12_12">
+        <div class="column-12-12">
             <div class="column one">
                 
                 <div class="stacked">
@@ -70,7 +70,7 @@ function updateImportTypeSelection() {
                     <strong><i:inline key="yukon.common.device.bulk.importUpload.importFileLabel"/></strong>
                     <input type="file" name="dataFile">
                 </div>
-                <div class="actionArea"><cti:button nameKey="load" classes="f-disableAfterClick primary action" busy="true" type="submit"/></div>
+                <div class="action-area"><cti:button nameKey="load" classes="primary action" busy="true" type="submit"/></div>
             </div>
             <div class="column two nogutter">
                 <%-- INSTRUCTIONS --%>
@@ -102,7 +102,7 @@ function updateImportTypeSelection() {
                 </div>
             </div>
         </div>
-        <div class="column_24 stacked">
+        <div class="column-24 stacked">
             <div class="column one">
                 <label>
                     <strong><cti:msg2 key="yukon.common.device.bulk.options.deviceTypeSelect.text" /></strong>
@@ -116,7 +116,7 @@ function updateImportTypeSelection() {
                 </label>
             </div>
         </div>
-        <div class="column_12_12">
+        <div class="column-12-12">
             <c:forEach var="method" items="${importMethods}" varStatus="status">
                 <c:choose>
                     <c:when test="${status.count % 2 > 0}">
@@ -130,7 +130,7 @@ function updateImportTypeSelection() {
                     <div class="bulkImportType_${method.type}" style="display: none;">
                         <h4><i:inline key="yukon.common.device.bulk.columnHeader.tableHeader.import.method.tableLabel.${method.name}"/></h4>
                         <div><i:inline key="yukon.common.device.bulk.columnHeader.tableHeader.import.method.tableDescription.${method.name}"/></div>
-                        <table class="resultsTable detail">
+                        <table class="results-table detail">
                             <thead>
                                 <tr>
                                     <th><cti:msg key="yukon.common.device.bulk.columnHeader.tableHeader.import.requiredColumnHeaders"/></th>
@@ -139,7 +139,7 @@ function updateImportTypeSelection() {
                             <thead>
                             <c:forEach var="field" items="${method.requiredColumns}">
                                 <tr>
-                                    <td class="smallBoldLabel">${field}</td>
+                                    <td class="strong-label-small">${field}</td>
                                     <td>
                                         <cti:msg var="description" key="yukon.common.device.bulk.columnHeader.import.description.${field}"/>
                                         <cti:msg var="instruction" key="yukon.common.device.bulk.columnHeader.import.instruction.${field}"/>
@@ -153,7 +153,7 @@ function updateImportTypeSelection() {
                             </tr>
                             <c:forEach var="field" items="${methodUpdateableFieldsMap[method]}">
                                 <tr>
-                                    <td class="smallBoldLabel">${field}</td>
+                                    <td class="strong-label-small">${field}</td>
                                     <td>
                                         <cti:msg var="description" key="yukon.common.device.bulk.columnHeader.import.description.${field}"/>
                                         <cti:msg var="instruction" key="yukon.common.device.bulk.columnHeader.import.instruction.${field}"/>

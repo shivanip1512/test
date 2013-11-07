@@ -132,7 +132,7 @@ function newScheduleAssignmentPopup(schedule, command) {
 
     <div class="fl">
         <tags:boxContainer2 nameKey="actionsContainer">
-            <ul class="buttonStack">
+            <ul class="button-stack">
                 <li>
                     <c:choose>
                         <c:when test="${hasActionRoles == true}">
@@ -180,7 +180,7 @@ function newScheduleAssignmentPopup(schedule, command) {
                 </c:when>
                 
                 <c:otherwise>
-                    <table class="compactResultsTable rowHighlighting" id="scheduledTable">
+                    <table class="compact-results-table row-highlighting" id="scheduledTable">
                         
                         <thead>
                             <tr id="header">

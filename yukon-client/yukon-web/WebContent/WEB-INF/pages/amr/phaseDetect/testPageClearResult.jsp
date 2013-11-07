@@ -3,9 +3,9 @@
 
 <c:choose>
     <c:when test="${not empty errorReason}">
-        <span class="errorMessage" style="font-weight: bold;"><i:inline key="yukon.web.modules.amr.phaseDetect.errorSending" arguments="${errorReason}"/></span>
+        <span class="error" style="font-weight: bold;"><i:inline key="yukon.web.modules.amr.phaseDetect.errorSending" arguments="${errorReason}"/></span>
     </c:when>
     <c:otherwise>
-        <span class="successMessage" style="font-weight: bold;"><i:inline key="yukon.web.modules.amr.phaseDetect.clearSuccess"/></span>
+        <span class="success" style="font-weight: bold;"><i:inline key="yukon.web.modules.amr.phaseDetect.clearSuccess"/></span>
     </c:otherwise>
 </c:choose>

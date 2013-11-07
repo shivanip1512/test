@@ -24,7 +24,7 @@
                 <i:inline key=".noStrategies"/>
             </c:when>
             <c:otherwise>
-                <table class="compactResultsTable" id="strategyTable">
+                <table class="compact-results-table" id="strategyTable">
                     
                     <thead>
                         <tr id="header">

@@ -10,7 +10,7 @@
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 
 <style type="text/css">
-.compactResultsTable tr td:first-child i.icon:first-child {
+.compact-results-table tr td:first-child i.icon:first-child {
 margin: 0px;
 }
 </style>
@@ -25,7 +25,7 @@ margin: 0px;
 
     <tags:boxContainer2 nameKey="banksContainer" hideEnabled="true" showInitially="true">
 
-    <table id="capBankTable" class="compactResultsTable rowHighlighting has-actions">
+    <table id="capBankTable" class="compact-results-table row-highlighting has-actions">
         <thead>
             <tr>
                 <th width="16px"></th>
@@ -106,7 +106,7 @@ margin: 0px;
                 <%-- Timestamp --%>
                 <td>
                     <div class="f-tooltip dn">
-                        <table class='compactResultsTable'>
+                        <table class='compact-results-table'>
                             <tr>
                                 <th><i:inline key=".kvar"/></th>
                                 <th><i:inline key=".phaseA"/></th>

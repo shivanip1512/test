@@ -85,7 +85,7 @@
 
 </script>
 
-<table class="resultsTable">
+<table class="results-table">
 
     <%--  HEADERS --%>
     <thead>

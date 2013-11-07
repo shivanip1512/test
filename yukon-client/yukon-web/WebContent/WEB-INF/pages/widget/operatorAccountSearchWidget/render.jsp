@@ -6,10 +6,10 @@
 <cti:checkRolesAndProperties value="OPERATOR_ACCOUNT_SEARCH">
     <cti:url var="submitUrl" value="/stars/operator/account/search"/>
     <form action="${submitUrl}" method="get">
-        <table class="full_width">
+        <table class="full-width">
             <tr>
                 <td>
-            		<select name="searchBy" class="full_width">
+            		<select name="searchBy" class="full-width">
             			<c:forEach var="operatorAccountSearchBy" items="${operatorAccountSearchBys}">
             				<option value="${operatorAccountSearchBy}" <c:if test="${operatorAccountSearchBy == searchBy}">selected</c:if>>
             					<i:inline key="${operatorAccountSearchBy.formatKey}"/>
@@ -18,11 +18,11 @@
             		</select>
                 </td>
                 <td>
-            		<input id="account-search-field" type="text" name="searchValue" value="${searchValue}" class="full_width">
+            		<input id="account-search-field" type="text" name="searchValue" value="${searchValue}" class="full-width">
                 </td>
             </tr>
         </table>
-    	<div class="actionArea">
+    	<div class="action-area">
             <cti:button nameKey="search" type="submit" classes="f-blocker fr"/>
     	</div>
     	

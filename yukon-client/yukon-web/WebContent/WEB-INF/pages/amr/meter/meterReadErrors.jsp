@@ -5,13 +5,13 @@
 
 <c:if test="${not empty errorMsg}">
     <br>
-    <div class="errorMessage">${errorMsg}</div>
+    <div class="error">${errorMsg}</div>
 </c:if>
 
 <c:if test="${not empty results}">
 
     <br>
-    <div class="errorMessage"><i:inline key="yukon.web.modules.amr.meterReadErrors.errorLabel"/></div>
+    <div class="error"><i:inline key="yukon.web.modules.amr.meterReadErrors.errorLabel"/></div>
     
     <c:forEach items="${results}" var="result">
     

@@ -379,7 +379,7 @@ Yukon.DrFormula = (function() {
             jQuery("#formulaForm")
                 .submit(_beforeFormSubmit);
             jQuery(".f-drFormula-replaceViaAjax")
-                .on('click', '.f-ajaxPaging', _ajaxPagingBtnClick)
+                .on('click', '.f-ajax-paging', _ajaxPagingBtnClick)
                 .on('click', ".f-drFormula-sortLink", _sortBtnClick);
 
             _initialized = true;

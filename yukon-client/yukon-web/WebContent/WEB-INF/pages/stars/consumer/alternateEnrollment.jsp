@@ -27,7 +27,7 @@
             <c:set var="multiple" value="${fn:length(available) > 1 ? true : false}"/>
             <form action="enroll" method="post">
                 <input type="hidden" name="accountId" value="${customerAccount.accountId}">
-                <table class="compactResultsTable">
+                <table class="compact-results-table">
                     <thead>
                         <tr>
                             <th><i:inline key=".device"/></th>
@@ -58,7 +58,7 @@
                         </c:forEach>
                     </tbody>
                 </table>
-                <div class="actionArea">
+                <div class="action-area">
                     <cti:button nameKey="switch" id="enroll_alternate" type="submit" icon="icon-arrow-swap"/>
                 </div>
             </form>
@@ -75,7 +75,7 @@
             <c:set var="multiple" value="${fn:length(active) > 1 ? true : false}"/>
             <form action="enroll" method="post">
                 <input type="hidden" name="accountId" value="${customerAccount.accountId}">
-                <table class="compactResultsTable">
+                <table class="compact-results-table">
                     <thead>
                         <tr>
                             <th><i:inline key=".device"/></th>
@@ -108,7 +108,7 @@
                         </c:forEach>
                     </tbody>
                 </table>
-                <div class="actionArea">
+                <div class="action-area">
                     <cti:button nameKey="revert" id="enroll_normal" type="submit" icon="icon-arrow-swap"/>
                 </div>
             </form>

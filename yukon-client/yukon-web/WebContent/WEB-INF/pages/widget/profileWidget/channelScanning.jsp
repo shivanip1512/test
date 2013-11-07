@@ -14,7 +14,7 @@
 <%--CHANNELS PROFILING--%>
 <input type="hidden" name="channelNum" id="channelNum" value="">
 <input type="hidden" name="newToggleVal" id="newToggleVal" value="">
-<table class="compactResultsTable">
+<table class="compact-results-table">
     <thead>
     <tr align="left">
       <th align="left"><i:inline key=".scanning.channel"/></th>

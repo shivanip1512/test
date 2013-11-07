@@ -14,5 +14,5 @@
     <cti:url var="pageUrl" value="${baseUrl}">
         <cti:param name="itemsPerPage" value="${itemsPerPage}"/>
     </cti:url>
-    <a href="javascript:void(0);" class="f-ajaxPaging" data-url="${pageUrl}">${itemsPerPage}</a>
+    <a href="javascript:void(0);" class="f-ajax-paging" data-url="${pageUrl}">${itemsPerPage}</a>
 </c:if>

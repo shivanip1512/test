@@ -7,10 +7,10 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <cti:standardPage module="amr" page="statusPointMonitorView">
-    <div class="column_12_12">
+    <div class="column-12-12">
             <div class="column one">
                 <%-- MAIN DETAILS --%>
-                <tags:formElementContainer nameKey="sectionHeader">
+                <tags:sectionContainer2 nameKey="sectionHeader">
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".name">
                             <spring:escapeBody htmlEscape="true">${statusPointMonitor.statusPointMonitorName}</spring:escapeBody>
@@ -43,19 +43,19 @@
                         
                     </tags:nameValueContainer2>
                     
-                    <div class="pageActionArea">        
+                    <div class="page-action-area">        
                         <form action="/amr/statusPointMonitoring/editPage" method="get">
                             <input type="hidden" name="statusPointMonitorId" value="${statusPointMonitor.statusPointMonitorId}">
                             <cti:button nameKey="edit" icon="icon-pencil" type="submit" classes="f-blocker"/>
                         </form>
                     </div>
                 
-                </tags:formElementContainer>
+                </tags:sectionContainer2>
             </div>
             <div class="column two nogutter">
                 <c:if test="${not empty statusPointMonitor.processors}">
                     <tags:boxContainer2 nameKey="stateActionsTable" id="resTable" styleClass="mediumContainer">
-                        <table class="compactResultsTable">
+                        <table class="compact-results-table">
                             <thead>
                                 <tr>
                                     <th><i:inline key=".stateActionsTable.header.prevState"/></th>

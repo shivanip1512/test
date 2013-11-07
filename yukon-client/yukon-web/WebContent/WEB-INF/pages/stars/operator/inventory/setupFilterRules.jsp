@@ -40,7 +40,7 @@
                     <span class="empty-list"><i:inline key=".noRules"/></span>
                 </c:when>
                 <c:otherwise>
-                    <table class="compactResultsTable">
+                    <table class="compact-results-table">
                         <thead>
                             <tr>
                                 <th colspan="2"><i:inline key=".tableHeader.rules"/></th>
@@ -90,8 +90,8 @@
                                                                                             
                                                 <dt:date path="filterRules[${row.index}].deviceStateDateTo" id="deviceStateDateTo_${row.index}"/>
                                                                                             
-                                                <div><form:errors path="filterRules[${row.index}].deviceStateDateFrom" cssClass="errorMessage"/></div>
-                                                <div><form:errors path="filterRules[${row.index}].deviceStateDateTo" cssClass="errorMessage"/></div>
+                                                <div><form:errors path="filterRules[${row.index}].deviceStateDateFrom" cssClass="error"/></div>
+                                                <div><form:errors path="filterRules[${row.index}].deviceStateDateTo" cssClass="error"/></div>
                                             </c:when>
     
                                                                                     
@@ -123,7 +123,7 @@
                                                         </c:otherwise>
                                                     </c:choose>
                                                 </spring:bind>
-                                                <div><form:errors path="filterRules[${row.index}].postalCode" cssClass="errorMessage"/></div>
+                                                <div><form:errors path="filterRules[${row.index}].postalCode" cssClass="error"/></div>
                                             </c:when>
                                             
                                             <c:when test="${rule.ruleType eq 'PROGRAM'}">
@@ -161,8 +161,8 @@
                                                         </c:otherwise>
                                                     </c:choose>
                                                 </spring:bind>
-                                                <div><form:errors path="filterRules[${row.index}].serialNumberFrom" cssClass="errorMessage"/></div>
-                                                <div><form:errors path="filterRules[${row.index}].serialNumberTo" cssClass="errorMessage"/></div>
+                                                <div><form:errors path="filterRules[${row.index}].serialNumberFrom" cssClass="error"/></div>
+                                                <div><form:errors path="filterRules[${row.index}].serialNumberTo" cssClass="error"/></div>
                                             </c:when>
                                             
                                             <c:when test="${rule.ruleType eq 'SERVICE_COMPANY'}">
@@ -195,14 +195,14 @@
                                             </c:when>
                                         </c:choose>
                                     </td>
-                                    <td class="removeColumn"><cti:icon nameKey="remove" href="javascript:removeRule(${row.index})" icon="icon-cross"/></td>
+                                    <td class="remove-column"><cti:icon nameKey="remove" href="javascript:removeRule(${row.index})" icon="icon-cross"/></td>
                                 </tr>
                             </c:forEach>
                         </tbody>
                     </table>
                 </c:otherwise>
             </c:choose>
-            <div class="actionArea">
+            <div class="action-area">
                 <cti:button nameKey="add" type="submit" name="addButton" classes="f-allowSubmitViaEnterKey" icon="icon-add"/>
                 <select name="ruleType" class="f-allowSubmitViaEnterKey fr">
                     <c:forEach items="${ruleTypes}" var="ruleType">
@@ -212,7 +212,7 @@
             </div>
         </tags:boxContainer2>
         
-        <div class="pageActionArea">
+        <div class="page-action-area">
             <c:choose>
                 <c:when test="${empty filterModel.filterRules}">
                     <cti:button nameKey="select" type="submit" name="apply" classes="primary action" disabled="true"/>

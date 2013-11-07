@@ -8,7 +8,7 @@
 <cti:msgScope paths="modules.support.localization">
     <form:form action="view" modelAttribute="localizationBackingBean" enctype="multipart/form-data">
 
-        <div class="column_8_16">
+        <div class="column-8-16">
                 <div class="column one">
                     <div>
                         <label>

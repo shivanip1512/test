@@ -22,7 +22,7 @@
         </div>
         
         <br>
-        <table class="compactResultsTable">
+        <table class="compact-results-table">
             <tr>
 	            <th>Device Name</th>
 	            <th>Error Description</th>

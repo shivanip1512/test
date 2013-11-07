@@ -54,7 +54,7 @@ public class CapControlOperationsController extends CapControlReportControllerBa
         html += "<td style='vertical-align:top;'>" + LINE_SEPARATOR;
         html += "<table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell' checked>" + LINE_SEPARATOR;
         html += "<tr>" + LINE_SEPARATOR;
-        html += "<td class='TitleHeader'>&nbsp;Cap Bank Status Quality</td>" +LINE_SEPARATOR;
+        html += "<td class='title-header'>&nbsp;Cap Bank Status Quality</td>" +LINE_SEPARATOR;
         html += "</tr>" + LINE_SEPARATOR;
         html += "<tr>" + LINE_SEPARATOR;
         html += "<td><input type='checkbox' name='"+ATT_STATUS_QUALITIES+"' value='Normal' checked>Normal"+ LINE_SEPARATOR;
@@ -96,7 +96,7 @@ public class CapControlOperationsController extends CapControlReportControllerBa
         html += "    <td valign='top'>" + LINE_SEPARATOR;
         html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
         html += "        <tr>" + LINE_SEPARATOR;
-        html += "          <td valign='top' class='TitleHeader'>Sort By</td>" +LINE_SEPARATOR;
+        html += "          <td valign='top' class='title-header'>Sort By</td>" +LINE_SEPARATOR;
         html += "        </tr>" + LINE_SEPARATOR;
         for( int i = 0; i < orderByTypes.length; i++) {
             html += "        <tr>" + LINE_SEPARATOR;

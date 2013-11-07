@@ -30,7 +30,7 @@ function taskFinished() {
 
     <cti:includeCss link="/WebConfig/yukon/styles/operator/inventory.css"/>
     
-            <tags:formElementContainer nameKey="settings">
+            <tags:sectionContainer2 nameKey="settings">
                 <form:form action="do" commandName="abr">
                     <tags:hidden path="hardwareTypeId"/>
                     <tags:nameValueContainer2>
@@ -57,8 +57,8 @@ function taskFinished() {
                                 </cti:displayForPageEditModes>
                                 <cti:displayForPageEditModes modes="VIEW">${abr.to}</cti:displayForPageEditModes>
                             </spring:bind>
-                            <form:errors path="from" cssClass="errorMessage" element="div"/>
-                            <form:errors path="to" cssClass="errorMessage" element="div"/>
+                            <form:errors path="from" cssClass="error" element="div"/>
+                            <form:errors path="to" cssClass="error" element="div"/>
                         </tags:nameValue2>
                         
                         <tags:yukonListEntrySelectNameValue nameKey=".status" path="statusTypeId" energyCompanyId="${ecId}" listName="DEVICE_STATUS"/>
@@ -71,13 +71,13 @@ function taskFinished() {
                     </tags:nameValueContainer2>
                     
                     <cti:displayForPageEditModes modes="CREATE">
-                        <div class="pageActionArea">
+                        <div class="page-action-area">
                             <cti:button nameKey="start" type="submit" name="start"/>
                             <cti:button nameKey="cancel" type="submit" name="cancel"/>
                         </div>
                     </cti:displayForPageEditModes>
                 </form:form>
-            </tags:formElementContainer>
+            </tags:sectionContainer2>
     
             <cti:displayForPageEditModes modes="VIEW">
                 
@@ -87,7 +87,7 @@ function taskFinished() {
             
                 <form action="do" method="post">
                     <input type="hidden" name="taskId" value="${task.taskId}">
-                    <tags:formElementContainer nameKey="progress">
+                    <tags:sectionContainer2 nameKey="progress">
                         <tags:nameValueContainer2>
                             <tags:nameValue2 nameKey=".progress">
                                 <c:if test="${not empty task}">
@@ -95,7 +95,7 @@ function taskFinished() {
                                 </c:if>
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey=".successful">
-                                <cti:dataUpdaterValue type="INVENTORY_TASK" identifier="${task.taskId}/SUCCESS_COUNT" styleClass="successMessage fwb"/>
+                                <cti:dataUpdaterValue type="INVENTORY_TASK" identifier="${task.taskId}/SUCCESS_COUNT" styleClass="success fwb"/>
                                 <cti:classUpdater type="INVENTORY_TASK" identifier="${task.taskId}/NEW_OPERATION_FOR_SUCCESS">
                                     <ul class="resultList">
                                         <li>
@@ -106,7 +106,7 @@ function taskFinished() {
                             </tags:nameValue2>
                             
                             <tags:nameValue2 nameKey=".failed">
-                                <cti:dataUpdaterValue type="INVENTORY_TASK" identifier="${task.taskId}/FAILED_COUNT" styleClass="errorMessage fwb"/>
+                                <cti:dataUpdaterValue type="INVENTORY_TASK" identifier="${task.taskId}/FAILED_COUNT" styleClass="error fwb"/>
                                 
                                 <cti:classUpdater type="INVENTORY_TASK" identifier="${task.taskId}/NEW_OPERATION_FOR_FAILED">
                                     <ul class="resultList">
@@ -119,7 +119,7 @@ function taskFinished() {
                             
                         </tags:nameValueContainer2>
                         
-                        <div class="pageActionArea stacked">
+                        <div class="page-action-area stacked">
                             <c:if test="${!task.complete}">
                                 <c:set var="buttonClass" value="db"/>
                                 <c:set var="linkClass" value="dn"/>
@@ -133,7 +133,7 @@ function taskFinished() {
                         </div>
                         <cti:dataUpdaterEventCallback function="taskFinished" id="INVENTORY_TASK/${task.taskId}/IS_COMPLETE" />
                         
-                    </tags:formElementContainer>
+                    </tags:sectionContainer2>
                 </form>
             </cti:displayForPageEditModes>
     

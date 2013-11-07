@@ -1,6 +1,6 @@
 <input id="assignmentInput_${assignmentId}" type="hidden" name="assignments" value="${assignmentId}"/> 
 <div id="assignmentAdd_${assignmentId}" style="${assignmentId eq -1 ? 'display:none' : ''}"
-    class="column_8_8_8 f-drFormula-removeable f-drFormula-show-on-hover-target f-drFormula-appendAssignId clearfix">
+    class="column-8-8-8 f-drFormula-removeable f-drFormula-show-on-hover-target f-drFormula-appendAssignId clearfix">
     <div class="column one f-drFormula-name">${fn:escapeXml(assignments[assignmentId].name)}</div>
     <div class="column two f-drFormula-type"><i:inline key="${assignments[assignmentId].applianceType}"/></div>
     <div class="column three nogutter">
@@ -17,7 +17,7 @@
         </cti:displayForPageEditModes>
     </div>
 </div>
-<div id="assignmentRemove_${assignmentId}" class="column_24" style="display:none">
+<div id="assignmentRemove_${assignmentId}" class="column-24" style="display:none">
     <div class="column one nogutter">
         <div class="fl undorow"><i:inline key=".appCatWillBeUnassigned"/></div>
         <div class="fr undorow">

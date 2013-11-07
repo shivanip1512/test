@@ -48,7 +48,7 @@ jQuery("#reasonSelect").change(function(event) {
 				</c:forEach>
 			</select>
 		</div>
-		<div class="actionArea">
+		<div class="action-area">
 			<cti:button nameKey="submit" id="executeCommand"/>
 		</div>
 	</div>

@@ -34,7 +34,7 @@
 
 <%-- PURE HTML EXPORT OPTIONS --%>
 <c:if test="${pureHtml}">
-	<div class="actionArea stacked">
+	<div class="action-area stacked">
         <cti:button nameKey="csv" href="${csvUrl}" icon="icon-page-white-excel"/>
         <cti:button nameKey="pdf" href="${pdfUrl}" icon="icon-pdf"/>
 	</div>
@@ -64,7 +64,7 @@
 	<%-- PURE HTML REPORT TABLE --%>
 	<c:otherwise>
 		
-		<table class="resultsTable">
+		<table class="results-table">
 		
 		    <!-- header -->
             <thead>

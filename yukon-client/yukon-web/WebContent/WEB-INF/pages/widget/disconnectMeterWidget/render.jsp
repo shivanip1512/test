@@ -43,7 +43,7 @@
 
 <div id="disconnectInfo" class="dn" title="<cti:msg2 key=".infoLink"/>"></div>
 
-<div class="actionArea">
+<div class="action-area">
 
     <a href="javascript:void(0);" class="f-showDisconnectInfo fl"><i:inline key=".infoLink"/></a>
 

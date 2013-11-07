@@ -110,7 +110,7 @@ function assignPrograms(devices) {
                 </tr>
             </table>
 
-            <div class="actionArea">
+            <div class="action-area">
                 <cti:button type="submit" nameKey="filterButton" classes="primary action"/>
                 <cti:button nameKey="showAllButton" onclick="clearFilter();"/>
             </div>
@@ -218,7 +218,7 @@ function assignPrograms(devices) {
             <i:inline key=".noAssignedPrograms"/>
         </c:if>
         <c:if test="${!empty assignedPrograms.resultList}">
-        <table id="programList" class="compactResultsTable rowHighlighting">
+        <table id="programList" class="compact-results-table row-highlighting">
             <thead>
 	            <tr>
 	                <th>
@@ -299,7 +299,7 @@ function assignPrograms(devices) {
         </table>
         </c:if>
         <c:if test="${isEditable}">
-            <div class="actionArea">
+            <div class="action-area">
                 <cti:button nameKey="assignPrograms" onclick="programPicker.show.call(programPicker)" icon="icon-add"/>
 
                 <c:if test="${canAddVirtual}">
@@ -315,7 +315,7 @@ function assignPrograms(devices) {
     </tags:pagedBox>
 </cti:displayForPageEditModes>
 
-<div class="pageActionArea">
+<div class="page-action-area">
     <c:set var="ecId" value="${applianceCategory.energyCompanyId}"/>
     <cti:displayForPageEditModes modes="VIEW">
         <c:if test="${isEditable}">

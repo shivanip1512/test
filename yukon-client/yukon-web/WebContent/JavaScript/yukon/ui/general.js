@@ -315,7 +315,7 @@ Yukon.modules.ui = function (mod) {
         });
 
         /* initialize our keyboard table traversal (j/k keys) */
-        jQuery(".compactResultsTable.f-traversable").traverse('tr', {
+        jQuery(".compact-results-table.f-traversable").traverse('tr', {
             table_row_helper: true
         });
         
@@ -330,14 +330,14 @@ Yukon.modules.ui = function (mod) {
         jQuery(document).on('click', 'button[data-href]', function (event){window.location = jQuery(this).attr("data-href");});
         
         // page blockers
-        jQuery(document).on('click', 'a.f-blocker, button.f-blocker', mod.block);
-        jQuery(document).on('resize', '#modal_glass', mod.blockPage);
+        jQuery(document).on('click', '.f-blocker', mod.block);
+        jQuery(document).on('resize', '#modal-glass', mod.blockPage);
         
         // clear page blocker
         jQuery(document).on('click', '.f-clearBlocker', mod.unblockPage);
     
         // Disable a form element after clicked
-        jQuery(document).on('click', '.f-disableAfterClick', function () {
+        jQuery(document).on('click', '.f-disable-after-click', function () {
             var button = jQuery(this),
                 group,
                 form;
@@ -380,11 +380,6 @@ Yukon.modules.ui = function (mod) {
             }
         });
     
-        // close popup on submit event
-        jQuery(document).on('click', 'button.f-closePopupOnSubmit', function (event) {
-            jQuery(event).closest('.popUpDiv').dialog('close');
-        });
-
         jQuery(document).on('click', '.f-setHomePage', function (event) {
             var userId = jQuery("#changeHomepage_userId").val(),
                 send = document.location.href;
@@ -503,7 +498,7 @@ Yukon.modules.ui = function (mod) {
     };
 
     mod.block = function (event) {
-       var blockElement = jQuery(event.target).closest(".f-block_this")[0];
+       var blockElement = jQuery(event.target).closest(".f-block-this")[0];
        if (blockElement) {
            mod.elementGlass.show(blockElement);
        } else {
@@ -511,8 +506,8 @@ Yukon.modules.ui = function (mod) {
        }
     };
 
-    mod.unblock = function (element) {
-        var blockElement = jQuery(event.target).closest(".f-block_this")[0];
+    mod.unblock = function (event) {
+        var blockElement = jQuery(event.target).closest(".f-block-this")[0];
         if (blockElement) {
             mod.elementGlass.hide(blockElement);
         } else {
@@ -529,11 +524,11 @@ Yukon.modules.ui = function (mod) {
     };
 
     mod.flashSuccess = function (markup) {
-        jQuery(".main-container").addMessage({message: markup, messageClass: "userMessage CONFIRM"});
+        jQuery(".main-container").addMessage({message: markup, messageClass: "success"});
     };
 
     mod.flashError = function (markup) {
-        jQuery(".main-container").addMessage({message: markup, messageClass: "userMessage ERROR"});
+        jQuery(".main-container").addMessage({message: markup, messageClass: "error"});
     };
 
     mod.formatPhone = function (input) {
@@ -720,7 +715,7 @@ Yukon.modules.ui = function (mod) {
         },
 
         redraw: function (glass) {
-            var container = glass.closest(".f-block_this");
+            var container = glass.closest(".f-block-this");
             // resize the glass
             glass.css('width', container.outerWidth()).css('height', container.outerHeight()).fadeIn(200);
         },
@@ -733,10 +728,10 @@ Yukon.modules.ui = function (mod) {
     mod.pageGlass = {
         show : function (args) {
             var defaults = jQuery.extend({color:'#000', alpha: 0.25}, args),
-                glass = jQuery("#modal_glass");
+                glass = jQuery("#modal-glass");
             
             if (glass == null) {
-                glass = jQuery('<div>').attr("id", "modal_glass").append(
+                glass = jQuery('<div>').attr("id", "modal-glass").append(
                             jQuery('<div>').addClass('tint').append(
                                 jQuery('<div>').addClass('loading')));
                 jQuery('body').prepend(glass);
@@ -746,7 +741,7 @@ Yukon.modules.ui = function (mod) {
         },
 
         hide : function () {
-            jQuery("#modal_glass").fadeOut(200);
+            jQuery("#modal-glass").fadeOut(200);
         }
     };
 

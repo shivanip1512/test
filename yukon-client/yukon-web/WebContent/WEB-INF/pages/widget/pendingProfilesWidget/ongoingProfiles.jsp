@@ -6,7 +6,7 @@
 <div id="${divId}">
 <c:choose>
     <c:when test="${not empty pendingRequests}">
-        <table class="compactResultsTable">
+        <table class="compact-results-table">
             <tr>
                 <td>
                     <table>
@@ -15,7 +15,7 @@
                                 <%-- MORE INFO HIDE REVEAL --%>
                                 <td>
                                     <%-- <tags:hideReveal title="${pendingRequest.from} - ${pendingRequest.to}" showInitially="true"> --%>
-                                        <table class="compactResultsTable">
+                                        <table class="compact-results-table">
                                             <tr>
                                                 <td nowrap colspan="2">${pendingRequest.from} - ${pendingRequest.to}</td>
                                             </tr>

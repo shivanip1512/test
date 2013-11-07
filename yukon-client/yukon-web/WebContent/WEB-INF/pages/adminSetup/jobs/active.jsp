@@ -14,7 +14,7 @@
         <cti:linkTab selectorName="${statusName}" ><c:url value="status" /></cti:linkTab>
     </cti:linkTabbedContainer>
   
-  <table class="resultsTable">
+  <table class="results-table">
     <tr>
       <th><i:inline key=".column.jobName"/></th>
       <th><i:inline key=".column.startTime"/></th>

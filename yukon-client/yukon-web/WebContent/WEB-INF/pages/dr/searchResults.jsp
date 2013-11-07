@@ -12,7 +12,7 @@
 
 	<c:set var="baseUrl" value="/dr/search" />
         
-	<div id="findForm" class="box actionArea">
+	<div id="findForm" class="box action-area">
 	   <form accept-charset="ISO-8859-1" method="get" action="/dr/search" enctype="application/x-www-form-urlencoded">
             <label class="box fl">
                 <cti:msg key="yukon.web.modules.dr.searchResults.searchBoxLabel" />
@@ -34,7 +34,7 @@
 				<cti:msg key="yukon.web.modules.dr.searchResults.noResults" />
 			</c:when>
 			<c:otherwise>
-				<table class="compactResultsTable rowHighlighting">
+				<table class="compact-results-table row-highlighting">
 					<tr>
 						<th><tags:sortLink nameKey="nameHeader" baseUrl="${baseUrl}" fieldName="NAME"/></th>
 						<th><tags:sortLink nameKey="typeHeader" baseUrl="${baseUrl}" fieldName="TYPE"/></th>
@@ -51,7 +51,7 @@
 								key="yukon.web.modules.dr.paoType.${pao.paoIdentifier.paoType}" />
 							</td>
 							<td><dr:stateText pao="${pao}" /></td>
-							<td class="nonwrapping"><dr:listActions pao="${pao}" /></td>
+							<td><dr:listActions pao="${pao}" /></td>
 						</tr>
 					</c:forEach>
 				</table>

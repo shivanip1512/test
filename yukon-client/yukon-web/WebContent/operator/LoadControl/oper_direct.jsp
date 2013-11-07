@@ -224,7 +224,7 @@
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
 <table width="657" border="0" cellspacing="0" cellpadding="0">
   <tr> 
-    <td width="650" class="TitleHeader">
+    <td width="650" class="title-header">
       <center>
                     <p align="center"><br>
                       DIRECT CONTROL - PROGRAM SUMMARY<br>

@@ -20,13 +20,13 @@ vertical-align: top;padding-right: 1px;padding-bottom: 10px;
             <tags:selectedInventory inventoryCollection="${inventoryCollection}" id="inventoryCollection"/>
         </div>
         <div>
-            <span class="smallBoldLabel dib fl"><i:inline key=".instructionsLabel"/></span>
+            <span class="strong-label-small dib fl"><i:inline key=".instructionsLabel"/></span>
             <span class="dib fl" style="margin-left: 5px;"><i:inline key=".instructions" /></span>
         </div>
     </div>
 
     <tags:sectionContainer2 nameKey="actionsContainer">
-        <div class="column_12_12 clear">
+        <div class="column-12-12 clear">
             <div class="column one stacked">
                 <table>
                 <cti:checkRolesAndProperties value="DEVICE_RECONFIG">

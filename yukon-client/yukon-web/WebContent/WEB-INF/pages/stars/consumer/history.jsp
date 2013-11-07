@@ -43,7 +43,7 @@ jQuery(function() {
                 <cti:msg key="yukon.web.modules.operator.thermostatManual.noItems"/>
             </c:when>
             <c:otherwise>
-                <table class="compactResultsTable smallPadding">
+                <table class="compact-results-table smallPadding">
                     <thead>
                         <tr>
                             <c:if test="${multipleThermostatsSelected}">

@@ -15,7 +15,7 @@
     <c:forEach var="image" items="${images}">
         <div class="section">
             
-            <div class="column_12_12 clearfix image<c:if test="${not empty selected and image.imageID == selected}"> selected</c:if>" data-image-id="${image.imageID}">
+            <div class="column-12-12 clearfix image<c:if test="${not empty selected and image.imageID == selected}"> selected</c:if>" data-image-id="${image.imageID}">
                 <div class="column one">
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".name" valueClass="f-name-value">${fn:escapeXml(image.imageName)}</tags:nameValue2>

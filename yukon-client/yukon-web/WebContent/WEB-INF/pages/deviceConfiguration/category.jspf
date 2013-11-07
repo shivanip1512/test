@@ -23,7 +23,7 @@
             <c:set var="classes" value="dn"/>
         </c:if>
         
-        <div class="setting clearfix column_6_18 ${classes}" id="${field.fieldName}">
+        <div class="setting clearfix column-6-18 ${classes}" id="${field.fieldName}">
             <div class="column one">${field.displayName}</div>
             <div class="column two detail nogutter">
                 <c:choose>
@@ -53,7 +53,7 @@
                                                     <tags:simpleInputType input="${rate.timeType}" path="scheduleInputs[${field.fieldName}].rateInputs[${rate.field}].time"/>
                                                     <spring:bind path="scheduleInputs[${field.fieldName}].rateInputs[${rate.field}].time">
                                                         <c:if test="${status.error}">
-                                                            <form:errors path="scheduleInputs[${field.fieldName}].rateInputs[${rate.field}].time" cssClass="errorMessage"/>
+                                                            <form:errors path="scheduleInputs[${field.fieldName}].rateInputs[${rate.field}].time" cssClass="error"/>
                                                         </c:if>
                                                     </spring:bind>
                                                 </cti:displayForPageEditModes>
@@ -109,7 +109,7 @@
                 <div id="fieldErrors">
                     <spring:bind path="categoryInputs[${field.fieldName}]">
                         <c:if test="${status.error}">
-                            <form:errors path="categoryInputs[${field.fieldName}]" cssClass="errorMessage"/>
+                            <form:errors path="categoryInputs[${field.fieldName}]" cssClass="error"/>
                         </c:if>
                     </spring:bind>
                 </div>
@@ -121,7 +121,7 @@
     </c:forEach>
     <cti:displayForPageEditModes modes="CREATE,EDIT">
         <c:if test="${isDisplayItemsCategory}">
-            <div class="pageActionArea stacked dn" id="showNextDiv">
+            <div class="page-action-area stacked dn" id="showNextDiv">
                 <cti:msg2 var="addTitle" key=".addDisplayItem"/>
                 <cti:button nameKey="addDisplayItem" icon="icon-add" id="showNextFieldBtn" title="${addTitle}" classes="fr"/>
             </div>

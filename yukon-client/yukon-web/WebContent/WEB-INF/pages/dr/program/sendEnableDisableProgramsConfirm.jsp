@@ -44,8 +44,8 @@ jQuery(function() {
 <form id="disableProgramsForm" action="${submitUrl}" onsubmit="return submitFormViaAjax('drDialog', 'disableProgramsForm');">
     <input type="hidden" name="enable" value="${enable}">
     <tags:boxContainer title="${boxTitle}">
-        <div class="scrollingContainer_medium">
-            <table class="compactResultsTable">
+        <div class="scroll-medium">
+            <table class="compact-results-table">
                 <thead>
 	                <tr>
 	                    <th><i:inline key=".sendDisableProgramsConfirm.programName"/></th>
@@ -89,7 +89,7 @@ jQuery(function() {
         </label>
     </c:if>
     
-    <div class="actionArea">
+    <div class="action-area">
         <cti:button nameKey="ok" classes="primary action" type="submit"/>
         <cti:button nameKey="cancel" onclick="jQuery('#drDialog').dialog('close');"/>
     </div>

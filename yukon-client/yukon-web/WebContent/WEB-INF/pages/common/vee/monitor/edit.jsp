@@ -104,25 +104,25 @@
             
        </tags:sectionContainer2>
 
-        <div class="pageActionArea">
+        <div class="page-action-area">
             <c:choose>
                 <c:when test="${validationMonitorId >= 0}">
-                    <cti:button nameKey="update" busy="true" type="submit" classes="primary action f-disableAfterClick" data-disable-group="actionButtons" />
+                    <cti:button nameKey="update" busy="true" type="submit" classes="primary action" data-disable-group="actionButtons" />
                     <c:set var="toggleText" value="enable"/>
                     <c:if test="${validationMonitor.evaluatorStatus eq 'ENABLED'}">
                         <c:set var="toggleText" value="disable"/>
                     </c:if>
-                     <cti:button nameKey="${toggleText}" onclick="jQuery('#toggleEnabledForm').submit();" busy="true" classes="f-disableAfterClick" data-disable-group="actionButtons"/>
+                     <cti:button nameKey="${toggleText}" onclick="jQuery('#toggleEnabledForm').submit();" busy="true" data-disable-group="actionButtons"/>
                    
                     <cti:button id="deleteButton" nameKey="delete" type="button" onclick="deleteValidationMonitor();" busy="true" data-disable-group="actionButtons"/>
                     <d:confirm on="#deleteButton" nameKey="confirmDelete"/>
                 </c:when>
                 <c:otherwise>
-                    <cti:button nameKey="save" type="submit" busy="true" classes="f-disableAfterClick" data-disable-group="actionButtons" />
+                    <cti:button nameKey="save" type="submit" busy="true" data-disable-group="actionButtons" />
                 </c:otherwise>
             </c:choose>
             <cti:url var="backUrl" value="/meter/start"/>
-            <cti:button nameKey="cancel" type="button" href="${backUrl}" busy="true" classes="f-disableAfterClick" data-disable-group="actionButtons" />
+            <cti:button nameKey="cancel" type="button" href="${backUrl}" busy="true" data-disable-group="actionButtons" />
         </div>
     </form>
         

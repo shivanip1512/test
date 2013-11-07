@@ -294,7 +294,7 @@ function flashYellow(element, duration) {
 /** Section containers with show/hide behavior */
 jQuery(function() {
     jQuery(document).on('click', '.toggle-title', function (event) {
-        jQuery(event.currentTarget).closest('.titledContainer').each(function(index, elem){
+        jQuery(event.currentTarget).closest('.titled-container').each(function(index, elem){
             jQuery(elem).toggleClass("collapsed");
        });
     });

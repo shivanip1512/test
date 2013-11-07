@@ -72,7 +72,7 @@ public class MeterReadPercentageController extends ReportControllerBase{
         sb.append("<tr>" + LINE_SEPARATOR);
         sb.append("<table style='padding: 5px;' class='TableCell' align='center'>" + LINE_SEPARATOR);
         sb.append("        <tr>" + LINE_SEPARATOR);
-        sb.append("          <td class='TitleHeader'>&nbsp;Period</td>");
+        sb.append("          <td class='title-header'>&nbsp;Period</td>");
         sb.append("        </tr>" + LINE_SEPARATOR);
         for (MeterReadPercentagePeriod period : MeterReadPercentagePeriod.values()) {
             sb.append("        <tr>" + LINE_SEPARATOR);

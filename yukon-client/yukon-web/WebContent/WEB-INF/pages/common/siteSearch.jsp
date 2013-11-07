@@ -16,7 +16,7 @@
                     });
 
             // Make all paging work
-            jQuery(document).on('click', '.f-ajaxPaging', function(event) {
+            jQuery(document).on('click', '.f-ajax-paging', function(event) {
                 event.stopPropagation();
                 var url = jQuery(event.currentTarget).data('url');
                 document.location.href = url;
@@ -58,7 +58,7 @@
         <hr>
         <div class="stacked">
             <table
-                class="compactResultTable sortable-table dashed full_width with-visited">
+                class="compactResultTable sortable-table dashed full-width with-visited">
                 <thead>
                     <tr>
                         <th><i:inline key=".results.page.title"/></th>

@@ -7,28 +7,17 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 
 <cti:standardPage module="operator" page="contact.${mode}">
+
+<script type="text/javascript">
+jQuery(function() {
+    jQuery(document).on('click', '.f-delete', function(e) {
+        jQuery(e.currentTarget).closest('tr').remove();
+    });
+});
+</script>
     
     <tags:setFormEditMode mode="${mode}"/>
 
-    <script type="text/javascript">
-        jQuery(function() {
-            var jqAdditionalNotificationTrs = jQuery('tr.additionalNotificationTr');
-            jqAdditionalNotificationTrs.each(flashYellow);
-        });
-    
-        function removeNotification(it) {
-            var itParents = jQuery(it).parents('tr'),
-                parentTag;
-            if(0 < itParents.length) {
-                parentTag = itParents[0].tagName; // assume 1st tr is the target
-                if('tr' === parentTag.toLowerCase()) {
-                    itParents[0].remove();
-                    jQuery('#contactsUpdateForm').submit();
-                }
-            }
-        }
-        
-    </script>
     
     <form:form id="contactsUpdateForm" commandName="contactDto" action="/stars/operator/contacts/contactUpdate" method="post">
     
@@ -39,7 +28,7 @@
         <c:if test="${contactDto.primary}">
             <c:set var="contactInformationSectionTitleKey" value="contactInformationSection_isPrimary"/>
         </c:if>
-        <tags:formElementContainer nameKey="${contactInformationSectionTitleKey}">
+        <tags:sectionContainer2 nameKey="${contactInformationSectionTitleKey}" styleClass="stacked">
         
             <tags:nameValueContainer2>
             
@@ -54,103 +43,80 @@
             
             </tags:nameValueContainer2>
             
+        </tags:sectionContainer2>
+        
             <%-- NOTIFICATIONS TABLE --%>
-            <c:if test="${mode == 'EDIT' || not empty contactDto.otherNotifications}">
-            <br>
-            <table class="resultsTable">
-            
-                <tr>
-                    <th style="width:160px;"><i:inline key=".notificationTable.notificationMethodHeader"/></th>
-                    <th><i:inline key=".notificationTable.valueHeader"/></th>
-                    <cti:displayForPageEditModes modes="EDIT">
-                        <th style="text-align:center;width:100px;"><i:inline key=".notificationTable.removeHeader"/></th>
-                    </cti:displayForPageEditModes>
-                </tr>
-            
+        <c:if test="${mode == 'EDIT' || not empty contactDto.otherNotifications}">
+            <tags:sectionContainer2 nameKey="additionalNotifications">
+                
                 <%-- EXISTING NOTIFICATIONS --%>
-                <cti:msg2 var="noneText" key=".notificationTable.none"/>
-                <c:forEach var="notif" items="${contactDto.otherNotifications}" varStatus="notifRow">
+                <tags:nameValueContainer2>
                 
-                    <c:set var="newNotification" value="${notif.notificationId <= 0}"/>
-                    
-                    <c:choose>
-                        <c:when test="${mode == 'EDIT' && newNotification}">
-                            <tr class="additionalNotificationTr" style="vertical-align: top">
-                        </c:when>
-                        <c:otherwise>
-                            <tr style="vertical-align: top">
-                        </c:otherwise>
-                    </c:choose>
-                
-                        <td>
-                            <c:choose>
-                                <c:when test="${newNotification}">
-                                    <tags:selectWithItems items="${notificationTypes}" itemValue="contactNotificationType" itemLabel="displayName" path="otherNotifications[${notifRow.index}].contactNotificationType" defaultItemLabel="${noneText}" defaultItemValue=""/>
-                                </c:when>
-                                <c:otherwise>
-                                    <tags:selectWithItems items="${notificationTypes}" itemValue="contactNotificationType" itemLabel="displayName" path="otherNotifications[${notifRow.index}].contactNotificationType"/>
-                                </c:otherwise>
-                            </c:choose>
-                        
-                            <form:hidden path="otherNotifications[${notifRow.index}].notificationId"/>
-                        </td>
-                        
-                        <td <c:if test="${newNotification}">colspan="2"</c:if>><tags:input path="otherNotifications[${notifRow.index}].notificationValue"></tags:input></td>
-                        
-                        <c:if test="${mode == 'EDIT' && !newNotification}">
-                            <td style="text-align:center;">
-                                <img src="${delete}" onclick="removeNotification(this)" onmouseover="javascript:this.src='${deleteOver}'" onmouseout="javascript:this.src='${delete}'">
-                            </td>
-                        </c:if>
-                        
-                    </tr>
-                </c:forEach>
-            
-                <%-- ADD NOTIFICATION --%>
-                <cti:displayForPageEditModes modes="EDIT">
-                    <tfoot>
+                    <cti:msg2 var="noneText" key=".notificationTable.none"/>
+                    <c:forEach var="notif" items="${contactDto.otherNotifications}" varStatus="notifRow">
+                        <c:set var="newNotification" value="${notif.notificationId <= 0}"/>
                         <tr>
-                            <td colspan="3">
-                                 <cti:button nameKey="addNotification" type="submit" name="newNotification" icon="icon-add"/>
+                            <td class="name">
+                                <form:hidden path="otherNotifications[${notifRow.index}].notificationId"/>
+                                <c:choose>
+                                    <c:when test="${newNotification}">
+                                        <tags:selectWithItems items="${notificationTypes}" itemValue="contactNotificationType" itemLabel="displayName" path="otherNotifications[${notifRow.index}].contactNotificationType" defaultItemLabel="${noneText}" defaultItemValue=""/>:
+                                    </c:when>
+                                    <c:otherwise>
+                                        <tags:selectWithItems items="${notificationTypes}" itemValue="contactNotificationType" itemLabel="displayName" path="otherNotifications[${notifRow.index}].contactNotificationType"/>:
+                                    </c:otherwise>
+                                </c:choose>
                             </td>
-                        </tr>
-                    </tfoot>
-                </cti:displayForPageEditModes>
-                
-            </table>
-            </c:if>
-        </tags:formElementContainer>
-        
-        <%-- BUTTONS --%>
-        <br>
-        <cti:displayForPageEditModes modes="EDIT,CREATE">
-        
-            <cti:button nameKey="save" type="submit" classes="f-blocker"/>
+                            
+                            <td class="value">
+                                <tags:input path="otherNotifications[${notifRow.index}].notificationValue" inputClass="fl"/>
+                                <c:if test="${mode == 'EDIT' && !newNotification}">
+                                    <cti:button nameKey="delete" icon="icon-cross" renderMode="buttonImage" classes="f-delete fn"/>
+                                </c:if>
+                            </td>
+                    </c:forEach>
+                    
+                </tags:nameValueContainer2>
+            </tags:sectionContainer2>
             
             <cti:displayForPageEditModes modes="EDIT">
-                <cti:url value="/stars/operator/contacts/view" var="cancelUrl">
-                    <cti:param name="accountId" value="${accountId}"/>
-                    <cti:param name="contactId" value="${contactId}"/>
-                </cti:url>
+                <div class="action-area">
+                    <cti:button nameKey="addNotification" type="submit" name="newNotification" icon="icon-add"/>
+                </div>
             </cti:displayForPageEditModes>
-            <cti:displayForPageEditModes modes="CREATE">
-                <cti:url value="/stars/operator/contacts/contactList" var="cancelUrl">
-                    <cti:param name="accountId" value="${accountId}"/>
-                </cti:url>
+        </c:if>
+        
+        <%-- BUTTONS --%>
+        <div class="page-action-area">
+            <cti:displayForPageEditModes modes="EDIT,CREATE">
+            
+                <cti:button nameKey="save" type="submit" classes="primary action"/>
+                
+                <cti:displayForPageEditModes modes="EDIT">
+                    <cti:url value="/stars/operator/contacts/view" var="cancelUrl">
+                        <cti:param name="accountId" value="${accountId}"/>
+                        <cti:param name="contactId" value="${contactId}"/>
+                    </cti:url>
+                </cti:displayForPageEditModes>
+                <cti:displayForPageEditModes modes="CREATE">
+                    <cti:url value="/stars/operator/contacts/contactList" var="cancelUrl">
+                        <cti:param name="accountId" value="${accountId}"/>
+                    </cti:url>
+                </cti:displayForPageEditModes>
+                
+                <cti:button nameKey="cancel" href="${cancelUrl}"/>
+                
             </cti:displayForPageEditModes>
-            
-            <cti:button nameKey="cancel" href="${cancelUrl}"/>
-            
-        </cti:displayForPageEditModes>
-        <cti:displayForPageEditModes modes="VIEW">
-            <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-                <cti:url value="/stars/operator/contacts/edit" var="editUrl">
-                    <cti:param name="accountId" value="${accountId}"/>
-                    <cti:param name="contactId" value="${contactId}"/>
-                </cti:url>
-                <cti:button nameKey="edit" icon="icon-pencil" href="${editUrl}"/>
-            </cti:checkRolesAndProperties>
-        </cti:displayForPageEditModes>
+            <cti:displayForPageEditModes modes="VIEW">
+                <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
+                    <cti:url value="/stars/operator/contacts/edit" var="editUrl">
+                        <cti:param name="accountId" value="${accountId}"/>
+                        <cti:param name="contactId" value="${contactId}"/>
+                    </cti:url>
+                    <cti:button nameKey="edit" icon="icon-pencil" href="${editUrl}"/>
+                </cti:checkRolesAndProperties>
+            </cti:displayForPageEditModes>
+        </div>
     </form:form>
     
 </cti:standardPage>

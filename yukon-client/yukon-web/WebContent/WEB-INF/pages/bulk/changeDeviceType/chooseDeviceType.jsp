@@ -18,7 +18,7 @@
                 </c:forEach>
             </select>
             
-            <div class="pageActionArea">
+            <div class="page-action-area">
               <cti:button nameKey="change" type="submit" name="changeButton" classes="primary action"/>
             </div>
         </form>

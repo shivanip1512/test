@@ -102,7 +102,7 @@
 		<form:form id="deltaForm" action="/capcontrol/ivvc/zone/deltaUpdate" method="POST" commandName="zoneVoltageDeltas">
 			<input type="hidden" name="zoneId" id="zoneId" value="${zoneId}">
 
-			<table id="deltaTable" class="compactResultsTable">
+			<table id="deltaTable" class="compact-results-table">
 				<tr>
 					<th><i:inline key=".deltas.cbcName" /></th>
 					<th><i:inline key=".deltas.bankName" /></th>
@@ -184,7 +184,7 @@
 					</tr>
 				</c:forEach>
 			</table>
-			<div id="deltaFormButtons" class="actionArea dn">
+			<div id="deltaFormButtons" class="action-area dn">
 				<cti:button id="deltaSubmitBtn" nameKey="update" type="submit" classes="primary action"/>
 			    <cti:button nameKey="cancel" type="reset" id="deltaReset"/>
 			</div>

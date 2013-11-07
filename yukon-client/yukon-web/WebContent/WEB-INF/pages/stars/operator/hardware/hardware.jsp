@@ -1,9 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <cti:standardPage module="operator" page="hardware.${mode}">
 
@@ -12,15 +10,13 @@
 <tags:setFormEditMode mode="${mode}"/>
 <cti:msg2 key=".noneSelectOption" var="noneSelectOption"/>
 
-<cti:includeCss link="/WebConfig/yukon/styles/operator/hardware.css"/>
 
 <script type="text/javascript">
 jQuery(function(){
 
     jQuery(document).on('click', '#refresh, button[name=commissionSubmit], button[name=decommissionSubmit]', function(event) {
         var url = '/stars/operator/hardware/zb/',
-            button = event.currentTarget,
-            elementToBlock;
+            button = event.currentTarget;
         if (button.id === 'refresh') {
             url += 'refresh';
         } else if (button.name === 'commissionSubmit') {
@@ -30,8 +26,7 @@ jQuery(function(){
             url += 'decommission';
         }
 
-        elementToBlock = event.currentTarget;
-        Yukon.ui.block(elementToBlock);
+        Yukon.ui.block(event);
 
         jQuery.ajax({
             type: 'GET',
@@ -41,13 +36,13 @@ jQuery(function(){
             jQuery('#zbCommandStatus').html(data.message);
             jQuery('#zbCommandStatus').show();
             if (data.success ===  true) {
-                jQuery('#zbCommandStatus').addClass('successMessage').removeClass('errorMessage');
+                jQuery('#zbCommandStatus').addClass('success').removeClass('error');
             } else {
-                jQuery('#zbCommandStatus').removeClass('successMessage').addClass('errorMessage');
+                jQuery('#zbCommandStatus').removeClass('success').addClass('error');
             }
-            Yukon.ui.unblock(elementToBlock);
+            Yukon.ui.unblock(event);
         }).fail( function (jqXHR, textStatus, errorThrown) {
-            Yukon.ui.unblock(elementToBlock);
+            Yukon.ui.unblock(event);
         });
     });
 
@@ -55,8 +50,7 @@ jQuery(function(){
         var url = '/stars/operator/hardware/zb/',
             button = event.currentTarget,
             name,
-            deviceId,
-            elementToBlock;
+            deviceId;
 
         name = button.name.split('_')[0];
         deviceId = button.name.split('_')[1];
@@ -67,8 +61,7 @@ jQuery(function(){
             url += 'decommission';
         }
 
-        elementToBlock = event.currentTarget;
-        Yukon.ui.block(elementToBlock);
+        Yukon.ui.block(event);
 
         jQuery.ajax({
             type: 'GET',
@@ -78,13 +71,13 @@ jQuery(function(){
             jQuery('#zbAssignedStatus').html(data.message);
             jQuery('#zbAssignedStatus').show();
             if (data.success ===  true) {
-                jQuery('#zbAssignedStatus').addClass('successMessage').removeClass('errorMessage');
+                jQuery('#zbAssignedStatus').addClass('success').removeClass('error');
             } else {
-                jQuery('#zbAssignedStatus').removeClass('successMessage').addClass('errorMessage');
+                jQuery('#zbAssignedStatus').removeClass('success').addClass('error');
             }
-            Yukon.ui.unblock(elementToBlock);
+            Yukon.ui.unblock(event);
         }).fail( function (jqXHR, textStatus, errorThrown) {
-                Yukon.ui.unblock(elementToBlock);
+            Yukon.ui.unblock(event);
         });
     });
 
@@ -192,17 +185,13 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
             <br>
             <input type="radio" name="deleteOption" value="delete" id="deleteRadio">
             <label for="deleteRadio" class="radioLabel"><i:inline key=".deleteOption2"/></label>
-            <br><br>
-            <table class="popupButtonTable">
-                <tr>
-                    <td>
-                        <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-                            <cti:button nameKey="delete" type="submit" name="delete" classes="f-blocker" />
-                        </cti:checkRolesAndProperties>
-                        <cti:button nameKey="cancel" onclick="hideDeletePopup()"/>
-                    </td>
-                </tr>
-            </table>
+            
+            <div class="action-area">
+                <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
+                    <cti:button nameKey="delete" type="submit" name="delete" classes="f-blocker action primary"/>
+                </cti:checkRolesAndProperties>
+                <cti:button nameKey="cancel" onclick="hideDeletePopup()"/>
+            </div>
         </form>
     </i:simplePopup>
     
@@ -213,7 +202,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
         <cti:url value="create" var="action"/>
     </cti:displayForPageEditModes>
     
-    <div class="column_12_12 clearfix">
+    <div class="column-12-12 clearfix">
     
         <%-- COMMON HARDWARE INFO --%>
         <div class="column one">
@@ -225,9 +214,9 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
             <div class="column two nogutter">
             
                 <%--DEVICE ACTIONS --%>
-                <tags:formElementContainer nameKey="actions">
+                <tags:sectionContainer2 nameKey="actions" styleClass="stacked">
                     
-                    <ul class="buttonStack">
+                    <ul class="button-stack">
                         
                         <%-- COMMON ACTIONS --%>
                         <c:if test="${showSwitchAndTstatConfigAction}">
@@ -351,12 +340,12 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                         
                     </ul>
                     
-                </tags:formElementContainer>
+                </tags:sectionContainer2>
                 
                 <c:if test="${showZigbeeState}">
                     <cti:displayForPageEditModes modes="VIEW">
-                        <tags:boxContainer2 nameKey="zigbeeStatus" styleClass="statusContainer f-block_this" id="zigbeeStatus">
-                            <table class="compactResultsTable">
+                        <tags:sectionContainer2 nameKey="zigbeeStatus" styleClass="statusContainer f-block-this stacked" id="zigbeeStatus">
+                            <table class="compact-results-table dashed">
                                 <thead>
                                 <tr>
                                     <th><i:inline key=".status"/></th>
@@ -379,8 +368,8 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                                 </tr>
                                 </tbody>
                             </table>
-                            <div id="zbCommandStatus" class="dn errorMessage zbCommandMsg"></div>
-                            <div class="pageActionArea">
+                            <div id="zbCommandStatus" class="dn error zbCommandMsg"></div>
+                            <div class="page-action-area">
                                 <c:choose>
                                     <c:when test="${showDisabledRefresh}">
                                         <cti:button nameKey="refreshDisabled" disabled="true"/>
@@ -400,11 +389,11 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                                                 <div id="decommissionedConfirmMsg">
                                                     <i:inline key=".message"/>
                                                 </div>
-                                                <div id="commissionedConfirmMsg" class="errorMessage" style="display:none">
+                                                <div id="commissionedConfirmMsg" class="error" style="display:none">
                                                     <i:inline key=".warnMessage"/>
                                                 </div>
                                             <p>
-                                            <div class="actionArea">
+                                            <div class="action-area">
                                                 <cti:button nameKey="ok" name="commissionSubmit" type="submit" classes="primary action"/>
                                                 <cti:button nameKey="cancel" onclick="jQuery('#confirmCommissionPopup').dialog('close')" />
                                             </div>
@@ -423,20 +412,20 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                                     <cti:button nameKey="decommission.disabled" disabled="true"/>
                                 </c:if>
                             </div>
-                        </tags:boxContainer2>
+                        </tags:sectionContainer2>
                     </cti:displayForPageEditModes>
                 </c:if>
                 
                 <c:if test="${showAssignedDevices}">
-                    <tags:boxContainer2 nameKey="assignedDevices" id="assignedDevices" styleClass="f-block_this">
-                        <div class="scrollingContainer_small">
+                    <tags:sectionContainer2 nameKey="assignedDevices" id="assignedDevices" styleClass="f-block-this stacked">
+                        <div class="scroll-small">
                             <c:choose>
                                 <c:when test="${not empty assignedDevices}">
-                                    <table class="compactResultsTable">
+                                    <table class="compact-results-table dashed">
                                         <tr>
-                                            <th class="wsnw"><i:inline key=".serialNumber"/></th>
-                                            <th class="wsnw"><i:inline key=".status"/></th>
-                                            <th class="wsnw"><i:inline key=".actions"/></th>
+                                            <th><i:inline key=".serialNumber"/></th>
+                                            <th><i:inline key=".status"/></th>
+                                            <th><i:inline key=".actions"/></th>
                                         </tr>
                                         <c:forEach var="device" items="${assignedDevices}">
                                             <tr>
@@ -459,11 +448,11 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                                                                 <div id="decommissionedConfirmMsg_${device.deviceId}">
                                                                     <i:inline key=".message"/>
                                                                 </div>
-                                                                <div id="commissionedConfirmMsg_${device.deviceId}" class="errorMessage" style="display:none">
+                                                                <div id="commissionedConfirmMsg_${device.deviceId}" class="error" style="display:none">
                                                                     <i:inline key=".warnMessage"/>
                                                                 </div>
                                                             <p>
-                                                            <div class="actionArea">
+                                                            <div class="action-area">
                                                                 <cti:button name="assignedDevicesCommissionSubmit_${device.deviceId}" nameKey="ok" type="submit" classes="primary action"/>
                                                                 <cti:button nameKey="cancel" onclick="jQuery('#confirmCommissionPopup_${device.deviceId}').dialog('close')" />
                                                             </div>
@@ -496,7 +485,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                         <div id="zbAssignedStatus" class="dn zbCommandMsg"></div>
                         
                         <c:if test="${not empty availableDevices}">
-                            <div class="actionArea">
+                            <div class="action-area">
                                 <form action="/stars/operator/hardware/zb/addDeviceToGateway" method="post">
                                     <input type="hidden" name="accountId" value="${accountId}">
                                     <input type="hidden" name="inventoryId" value="${inventoryId}">
@@ -510,7 +499,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                                 </form>
                             </div>
                         </c:if>
-                    </tags:boxContainer2>
+                    </tags:sectionContainer2>
                 </c:if>
                 
                 <c:if test="${showPoints}">
@@ -522,9 +511,9 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                 </c:if>
                     
                 <%-- COMMON HARDWARE HISTORY --%>
-                <tags:formElementContainer nameKey="history">
+                <tags:sectionContainer2 nameKey="history" styleClass="stacked">
                     <%@ include file="hardwareHistory.jspf" %>
-                </tags:formElementContainer>
+                </tags:sectionContainer2>
                 
             </div>
             
@@ -534,7 +523,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
         
     <cti:displayForPageEditModes modes="VIEW">
         <cti:checkRolesAndProperties value="${editingRoleProperty}">
-            <div class="pageActionArea">
+            <div class="page-action-area">
                 <cti:url value="/stars/operator/hardware/edit" var="editUrl">
                     <cti:param name="accountId" value="${accountId}"/>
                     <cti:param name="inventoryId" value="${inventoryId}"/>

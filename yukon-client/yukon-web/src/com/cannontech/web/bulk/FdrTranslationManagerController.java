@@ -266,7 +266,7 @@ public class FdrTranslationManagerController {
         JSONObject jsonObject = new JSONObject();
         
         for(String line : logLines) {
-            String quality = "successMessage"; //these match red and green text CSS classes
+            String quality = "success"; //these match red and green text CSS classes
             if(failedLines.contains(index)) quality = "errorMessage";
             jsonObject.put(line, quality);
             index++;

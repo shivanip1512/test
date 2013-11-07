@@ -13,7 +13,7 @@
 <dialog:confirm nameKey="confirmAlternate" on="#enroll_alternate" disableGroup="alternate_confirm"/>
 <dialog:confirm nameKey="confirmNormal" on="#enroll_normal" disableGroup="normal_confirm"/>
 
-<tags:boxContainer2 nameKey="available">
+<tags:sectionContainer2 nameKey="available">
     <c:choose>
         <c:when test="${empty available}">
             <span class="empty-list"><i:inline key=".available.none"/></span>
@@ -22,7 +22,7 @@
             <c:set var="multiple" value="${fn:length(available) > 1 ? true : false}"/>
             <form action="enroll" method="post">
                 <input type="hidden" name="accountId" value="${accountId}">
-	            <table class="compactResultsTable">
+	            <table class="compact-results-table dashed">
 	                <thead>
 	                    <tr>
 	                        <th><i:inline key=".device"/></th>
@@ -53,14 +53,14 @@
 	                    </c:forEach>
 	                </tbody>
 	            </table>
-	            <div class="actionArea">
-	                <cti:button nameKey="switch" id="enroll_alternate" type="submit"/>
+	            <div class="action-area">
+	                <cti:button nameKey="switch" id="enroll_alternate" type="submit" classes="primary action"/>
 	            </div>
             </form>
         </c:otherwise>
     </c:choose>
-</tags:boxContainer2>
-<tags:boxContainer2 nameKey="active">
+</tags:sectionContainer2>
+<tags:sectionContainer2 nameKey="active">
     <c:choose>
         <c:when test="${empty active}">
             <span class="empty-list"><i:inline key=".active.none"/></span>
@@ -69,7 +69,7 @@
             <c:set var="multiple" value="${fn:length(active) > 1 ? true : false}"/>
             <form action="enroll" method="post">
                 <input type="hidden" name="accountId" value="${accountId}">
-	            <table class="compactResultsTable">
+	            <table class="compact-results-table dashed">
 	                <thead>
 	                    <tr>
 	                        <th><i:inline key=".device"/></th>
@@ -102,12 +102,12 @@
 	                    </c:forEach>
 	                </tbody>
 	            </table>
-	            <div class="actionArea">
+	            <div class="action-area">
 	                <cti:button nameKey="revert" id="enroll_normal" type="submit"/>
 	            </div>
             </form>
         </c:otherwise>
     </c:choose>
-</tags:boxContainer2>
+</tags:sectionContainer2>
 
 </cti:standardPage>

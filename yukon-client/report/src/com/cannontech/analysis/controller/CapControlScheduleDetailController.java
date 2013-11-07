@@ -39,7 +39,7 @@ String html = "";
         html += "    <td valign='top'>" + LINE_SEPARATOR;
         html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
         html += "        <tr>" + LINE_SEPARATOR;
-        html += "          <td valign='top' class='TitleHeader'>Sort By</td>" +LINE_SEPARATOR;
+        html += "          <td valign='top' class='title-header'>Sort By</td>" +LINE_SEPARATOR;
         html += "        </tr>" + LINE_SEPARATOR;
         for( int i = 0; i < orderByTypes.length; i++)
         {

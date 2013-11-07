@@ -13,7 +13,7 @@
             <tags:selectedInventory inventoryCollection="${inventoryCollection}" id="inventoryCollection" />
         </div>
         <div>
-            <span class="smallBoldLabel dib fl"><i:inline key=".instructionsLabel"/></span>
+            <span class="strong-label-small dib fl"><i:inline key=".instructionsLabel"/></span>
             <span class="dib fl" style="margin-left: 5px;"><i:inline key=".instructions" /></span>
         </div>
     </div>
@@ -40,7 +40,7 @@
 				
 	</tags:sectionContainer2>
 	
-	<div class="pageActionArea">
+	<div class="page-action-area">
 		<cti:url value="/stars/operator/inventory/inventoryActions?" var="cancelUrl" />
 		<cti:button href="${cancelUrl}${pageContext.request.queryString}" nameKey="cancel"/>
 	</div>

@@ -95,7 +95,7 @@ This page should be tested at 1024x768.
 
 <%-- LINK PICKERS --%>
 <tags:sectionContainer2 nameKey="linkPickers">
-<table class="compactResultsTable">
+<table class="compact-results-table">
 <tr>
   <th>Picker</th>
   <th>Input</th>
@@ -198,7 +198,7 @@ This page should be tested at 1024x768.
 
 <%-- BUTTON PICKERS --%>
 <tags:sectionContainer2 nameKey="buttonPickers">
-<table class="compactResultsTable">
+<table class="compact-results-table">
 <tr>
   <th>Picker</th>
   <th>Input</th>
@@ -310,7 +310,7 @@ This page should be tested at 1024x768.
 
 <%-- MEMORY GROUPED PICKERS --%>
 <tags:sectionContainer2 nameKey="memoryGroupedPickers">
-<table class="compactResultsTable">
+<table class="compact-results-table">
 <tr>
   <th>Picker</th>
   <th>Input</th>
@@ -376,7 +376,7 @@ This page should be tested at 1024x768.
 
 <%-- SELECTION PICKERS --%>
 <tags:sectionContainer2 nameKey="selectionPickers">
-<table class="compactResultsTable">
+<table class="compact-results-table">
 <tr>
   <th>Picker</th>
   <th>Input</th>

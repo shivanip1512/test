@@ -59,7 +59,7 @@
                     <td>
                         <ct:nameValueContainer2>
                             <ct:nameValue2 nameKey=".deviceConfigurations">
-                                <select id="configuration" name="configuration" class="full_width">
+                                <select id="configuration" name="configuration" class="full-width">
                                     <c:forEach var="config" items="${existingConfigs}">
                                         <option value="${config.configurationId}" <c:if test="${config.configurationId == currentConfigId}">selected</c:if>>${fn:escapeXml(config.name)}</option>
                                     </c:forEach>

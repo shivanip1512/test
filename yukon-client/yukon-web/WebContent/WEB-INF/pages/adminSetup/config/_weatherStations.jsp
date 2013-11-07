@@ -19,7 +19,7 @@
             <i:inline key=".weatherStations.search"/>
         </div>
         <form:form id="findCloseStationsForm" commandName="weatherLocationBean" action="findCloseStations">
-            <div class="column_12_12 clearfix">
+            <div class="column-12-12 clearfix">
                 <div class="column one">
                     <tags:nameValueStacked nameKey=".latitude">
                         <tags:input path="latitude"/>
@@ -32,10 +32,9 @@
                 </div>
             </div>
         </form:form>
-        <div class="actionArea">
+        <div class="action-area">
             <cti:button
                 nameKey="weatherStations.search"
-                classes="f-disableAfterClick"
                 id="searchWeatherStations"
                 busy="true"
                 icon="icon-magnifier"/>
@@ -59,7 +58,7 @@
             </c:forEach>
             <tags:bind path="stationId"></tags:bind>
         </form:form>
-        <div class="actionArea">
+        <div class="action-area">
             <cti:button id="saveWeatherStationBtn" classes="action primary" label="Save Weather Location"/>
             <cti:button id="searchWeatherStationsAgain" icon="icon-magnifier" label="Search again"/>
         </div>

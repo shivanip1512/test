@@ -22,7 +22,7 @@
         <i:inline key=".entries.noItems"/>
     </c:if>
     <c:if test="${!empty list.yukonListEntries}">
-        <table class="compactResultsTable rowHighlighting">
+        <table class="compact-results-table row-highlighting">
             <c:if test="${usesType}">
                 <tr>
                     <th><i:inline key=".entryText"/></th>
@@ -51,7 +51,7 @@
 </tags:sectionContainer2>
 
 <c:if test="${!isInherited}">
-    <div class="pageActionArea">
+    <div class="page-action-area">
         <cti:url var="editUrl" value="edit">
             <cti:param name="ecId" value="${param.ecId}"/>
             <cti:param name="listId" value="${param.listId}"/>

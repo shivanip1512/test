@@ -216,14 +216,14 @@
                         <tags:dynamicTable items="${zoneDto.bankAssignments}" nameKey="dynamicTable"
                             id="bankTable" addButtonClass="bankAddItem" noBlockOnAdd="true">
                         <div class="zoneWizardTableScrollArea">
-                        <table class="compactResultsTable">
+                        <table class="compact-results-table">
                             <thead>
                                 <tr>
                                     <th><i:inline key=".table.bank.name"/></th>
                                     <th><i:inline key=".table.bank.device"/></th>
                                     <th><i:inline key=".table.position"/></th>
                                     <th><i:inline key=".table.distance"/></th>
-                                    <th class="removeColumn"><i:inline key=".table.remove"/></th>
+                                    <th class="remove-column"><i:inline key=".table.remove"/></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -276,7 +276,7 @@
                         id="pointTable" addItemParameters="${addItemParameters}" addButtonClass="pointAddItem"  
                         noBlockOnAdd="true">
                     <div class="zoneWizardTableScrollArea">
-                    <table class="compactResultsTable">
+                    <table class="compact-results-table">
                         <thead>
                             <tr>
                                 <th><i:inline key=".table.point.name"/></th>
@@ -284,7 +284,7 @@
                                 <th><i:inline key=".table.phase"/></th>
                                 <th><i:inline key=".table.position"/></th>
                                 <th><i:inline key=".table.distance"/></th>
-                                <th class="removeColumn"><i:inline key=".table.remove"/></th>
+                                <th class="remove-column"><i:inline key=".table.remove"/></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -348,7 +348,7 @@
         </tr>
     </table>
 
-    <div class="actionArea">
+    <div class="action-area">
         <cti:displayForPageEditModes modes="EDIT">
             <cti:button nameKey="save" onclick="zoneSubmit()" classes="primary action"/>
             <cti:button nameKey="cancel" onclick="cancelZoneWizard()"/>

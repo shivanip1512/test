@@ -8,12 +8,17 @@
 <cti:standardPage module="operator" page="viewCall.${mode}">
 <tags:setFormEditMode mode="${mode}"/>
 
+    <form id="delete-call" action="/stars/operator/callTracking/deleteCall" method="post" class="dn">
+        <input type="hidden" name="accountId" value="${accountId}">
+        <input type="hidden" name="deleteCallId" value="${callReport.callId}">
+    </form>
+
     <cti:url var="submitUrl" value="/stars/operator/callTracking/updateCall"/>
     <form:form commandName="callReport" action="${submitUrl}">
     
         <input type="hidden" name="accountId" value="${accountId}">
     
-        <tags:formElementContainer nameKey="callContainer">
+        <tags:sectionContainer2 nameKey="callContainer">
     
             <tags:nameValueContainer2>
             
@@ -40,19 +45,20 @@
             
             </tags:nameValueContainer2>
         
-        </tags:formElementContainer>
+        </tags:sectionContainer2>
         
         <br>
         
         <%-- buttons --%>
         <cti:displayForPageEditModes modes="EDIT,CREATE">
-            <cti:button nameKey="save" type="submit" classes="f-blocker"/>
+            <cti:button nameKey="save" type="submit" classes="primary action"/>
             
             <cti:displayForPageEditModes modes="EDIT">
                 <cti:url value="/stars/operator/callTracking/view" var="cancelUrl">
                     <cti:param name="accountId" value="${accountId}"/>
                     <cti:param name="callId" value="${callReport.callId}"/>
                 </cti:url>
+                <cti:button nameKey="delete" classes="delete" onclick="jQuery('#delete-call').submit();"/>
             </cti:displayForPageEditModes>
         
             <cti:displayForPageEditModes modes="CREATE">

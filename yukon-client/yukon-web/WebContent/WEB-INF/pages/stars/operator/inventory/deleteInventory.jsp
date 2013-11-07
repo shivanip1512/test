@@ -19,7 +19,7 @@
                 </tr>
           
                 <tr>
-                    <td class="smallBoldLabel errorMessage"><i:inline key=".instructionsLabel"/></td>
+                    <td class="strong-label-small error"><i:inline key=".instructionsLabel"/></td>
                     <td><i:inline key=".instructions"/></td>
                 </tr>
             </table>
@@ -28,7 +28,7 @@
         <br>
         
         <c:if test="${empty task}">
-            <div class="pageActionArea">
+            <div class="page-action-area">
                 <form action="delete" method="post">
                     <cti:inventoryCollection inventoryCollection="${inventoryCollection}"/>
                     <cti:button nameKey="start" type="submit" name="start"/>

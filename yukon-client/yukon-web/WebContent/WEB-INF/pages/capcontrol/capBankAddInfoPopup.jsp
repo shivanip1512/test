@@ -7,7 +7,7 @@
 
 <cti:msgScope paths="modules.capcontrol.cbAddInfo">
     <c:if test="${capBankAdd.paoId > 0}">
-        <table class="compactResultsTable">
+        <table class="compact-results-table">
             <thead>
                 <tr>
                     <th><i:inline key=".setting"/></th>

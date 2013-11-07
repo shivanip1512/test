@@ -11,7 +11,7 @@
 
     <div style="overflow-y:auto;overflow-x:hidden;">
 
-        <table class="compactResultsTable rowHighlighting cbcPointTable stacked">
+        <table class="compact-results-table row-highlighting cbcPointTable stacked">
             <thead>
                 <tr>
                     <th><i:inline key=".analogPoints"/></th>
@@ -54,7 +54,7 @@
             </tbody>            
         </table>
         
-        <table class="compactResultsTable rowHighlighting cbcPointTable stacked">
+        <table class="compact-results-table row-highlighting cbcPointTable stacked">
             <thead>
                 <tr>
                     <th><i:inline key=".accumulatorPoints"/></th>
@@ -74,7 +74,7 @@
             </tbody>    
         </table>
         
-        <table class="compactResultsTable rowHighlighting cbcPointTable stacked">
+        <table class="compact-results-table row-highlighting cbcPointTable stacked">
             <thead>
                 <tr>
                     <th><i:inline key=".statusPoints"/></th>
@@ -98,7 +98,7 @@
             </tbody>
         </table>
         
-        <table class="compactResultsTable rowHighlighting cbcPointTable stacked">
+        <table class="compact-results-table row-highlighting cbcPointTable stacked">
             <thead>
                 <tr>
                     <th><i:inline key=".configParams"/></th>
@@ -119,7 +119,7 @@
         </table>
         
         <c:if test="${fn:length(pointMap.MISC) > 0 }">
-            <table class="compactResultsTable rowHighlighting cbcPointTable stacked">
+            <table class="compact-results-table row-highlighting cbcPointTable stacked">
                 <thead>
                     <tr>
                         <th><i:inline key=".misc"/></th>

@@ -484,7 +484,7 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
         sb.append("    <td valign='top'>" + LINE_SEPARATOR);		
         sb.append("      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR);
         sb.append("        <tr>" + LINE_SEPARATOR);
-        sb.append("          <td valign='top' class='TitleHeader'>Meter Read Status</td>" +LINE_SEPARATOR);
+        sb.append("          <td valign='top' class='title-header'>Meter Read Status</td>" +LINE_SEPARATOR);
         sb.append("        </tr>" + LINE_SEPARATOR);
 
         sb.append("        <tr>" + LINE_SEPARATOR);
@@ -501,7 +501,7 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
         sb.append("    <td valign='top'>" + LINE_SEPARATOR);
         sb.append("      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR);
         sb.append("        <tr>" + LINE_SEPARATOR);
-        sb.append("          <td class='TitleHeader'>&nbsp;Order By</td>" +LINE_SEPARATOR);
+        sb.append("          <td class='title-header'>&nbsp;Order By</td>" +LINE_SEPARATOR);
         sb.append("        </tr>" + LINE_SEPARATOR);
 		for (int i = 0; i < getAllOrderBys().length; i++)
 		{
@@ -517,7 +517,7 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
         sb.append("    <td valign='top'>" + LINE_SEPARATOR);        
         sb.append("      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR);
         sb.append("        <tr>" + LINE_SEPARATOR);
-        sb.append("          <td valign='top' class='TitleHeader'>Disabled Devices</td>" +LINE_SEPARATOR);
+        sb.append("          <td valign='top' class='title-header'>Disabled Devices</td>" +LINE_SEPARATOR);
         sb.append("        </tr>" + LINE_SEPARATOR);
         sb.append("        <tr>" + LINE_SEPARATOR);
         sb.append("          <td><input type='checkbox' name='" + ATT_EXCLUDE_DISABLED_DEVICES +"' value='true'> Exclude Disabled Devices" + LINE_SEPARATOR);

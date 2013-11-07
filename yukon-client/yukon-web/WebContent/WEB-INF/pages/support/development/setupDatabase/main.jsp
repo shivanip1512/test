@@ -114,10 +114,10 @@
                     widget.find(".widgetMessage").html("").removeClass("resultMessage");
                     jQuery('a[href$="#'+widget.attr("id")+'Tab"]').removeAttr("style");
                 } else {
-                    widget.find(".userMessage").remove();
+                    widget.find(".user-message").remove();
                     widget.find(":input").attr("disabled","disabled");
                     widget.find(".error").removeClass("error");
-                    widget.find(".errorMessage").removeClass("errorMessage");
+                    widget.find(".error").removeClass("error");
                     if (progress) {
                         widget.find(".widgetMessage").html("Setup is currently " + progress + "% complete...").addClass("resultMessage");
                     } else {

@@ -23,12 +23,12 @@
 </c:if>
 
 
-<cti:uniqueIdentifier prefix="sectionContainer_" var="thisId"/>
+<cti:uniqueIdentifier prefix="section-container-" var="thisId"/>
 <c:if test="${!empty pageScope.id}">
     <c:set var="thisId" value="${id}"/>
 </c:if>
 
-<div class="titledContainer sectionContainer clearfix ${collapsed} ${pageScope.styleClass}" <c:if test="${!empty pageScope.id}">id="${id}"</c:if>>
+<div class="titled-container section-container clearfix ${collapsed} ${pageScope.styleClass}" <c:if test="${!empty pageScope.id}">id="${id}"</c:if>>
     
     <div class="title-bar clearfix">
         
@@ -55,5 +55,5 @@
 </div>
 
 <c:if test="${not empty pageScope.helpText}">
-    <tags:simplePopup id="sectionContainerInfoPopup_${thisId}" title="${pageScope.title}" on="#help_icon_${thisId}" options="{width:600}">${helpText}</tags:simplePopup>	
+    <tags:simplePopup id="section-container-info-popup-${thisId}" title="${pageScope.title}" on="#help_icon_${thisId}" options="{width:600}">${helpText}</tags:simplePopup>	
 </c:if>

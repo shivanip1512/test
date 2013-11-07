@@ -11,16 +11,16 @@
 <form:form id="form" commandName="optOutBackingBean" method="POST"
     action="/stars/operator/program/optOut/optOutQuestions">
 
-    <tags:formElementContainer nameKey="optOuts">
+    <tags:sectionContainer2 nameKey="optOuts">
         <input type="hidden" name="accountId" value="${accountId}"/>
 
         <%@ include file="../../../consumer/optout/survey.jspf" %>
 
-        <div class="pageActionArea">
+        <div class="page-action-area">
             <cti:button nameKey="save" type="submit" classes="f-blocker"/>
             <button type="submit" name="cancel"><i:inline key=".cancel"/></button>
         </div>
-    </tags:formElementContainer>
+    </tags:sectionContainer2>
 </form:form>
 
 </cti:standardPage>

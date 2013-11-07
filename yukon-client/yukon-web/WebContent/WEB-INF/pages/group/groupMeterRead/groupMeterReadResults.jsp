@@ -12,7 +12,7 @@
         <p><i:inline key="yukon.common.search.noResultsFound"/></p>
     </c:if>
     <c:if test="${not empty resultWrappers}">
-        <table class="compactResultsTable">
+        <table class="compact-results-table">
             <cti:msgScope paths=".tableHeader">
             <tr>
                 <th><i:inline key=".attributes"/></th>

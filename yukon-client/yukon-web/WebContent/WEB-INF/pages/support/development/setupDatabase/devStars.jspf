@@ -74,7 +74,7 @@
                    </li>
                </c:forEach>
            </ul>
-           <div class="pageActionArea">
+           <div class="page-action-area">
                <cti:button type="submit" nameKey="runSetup" classes="action primary"/>
            </div>
         </div>

@@ -23,13 +23,13 @@
     <c:if test="${not empty results}">
         <ul>
         <c:forEach items="${results}" var="result">
-            <li><div class="successMessage">${result}</div></li>
+            <li><div class="success">${result}</div></li>
         </c:forEach>
         </ul>
     <br><br>
     </c:if>
     
-    <table class="resultsTable">
+    <table class="results-table">
     
         <tr>
             <th class="functionality"><i:inline key=".functionality"/></th>

@@ -66,7 +66,7 @@
             
                 <c:otherwise>
                 
-                    <table id="resTable" class="compactResultsTable rowHighlighting" align="center">
+                    <table id="resTable" class="compact-results-table row-highlighting" align="center">
                         <tr>
                             <th><i:inline key=".name"/></th>
                             <th nowrap="nowrap"><i:inline key=".itemType"/></th>

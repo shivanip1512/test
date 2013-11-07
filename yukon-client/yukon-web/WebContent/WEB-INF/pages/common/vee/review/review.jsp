@@ -66,7 +66,7 @@
     <c:choose>
     
     <c:when test="${fn:length(groupedExtendedReviewPoints) == 0}">
-    	<table class="resultsTable">
+    	<table class="results-table">
     	<tr><td style="text-align:center;font-style:italic;" class="subtle">
 			<br>
 			<b>No More Points to Review<b>
@@ -93,7 +93,7 @@
 				
 					<tags:sectionContainer title="${displayTypesSectionHeader}">
 					
-						<cti:dataGrid cols="2" tableClasses="compactResultsTable" tableStyle="width:90%;">
+						<cti:dataGrid cols="2" tableClasses="compact-results-table" tableStyle="width:90%;">
 						
 							<c:forEach var="displayType" items="${displayTypes}">
 	
@@ -120,7 +120,7 @@
 				<%-- INSTRUCTION --%>
 				<td style="vertical-align:top;">
 					<tags:sectionContainer title="${instructionsHeader}">
-					<table class="compactResultsTable" style="width:100%;">
+					<table class="compact-results-table" style="width:100%;">
 				    	
 				    	<tr>
 				    		<td><b>${delete}</b></td>
@@ -140,18 +140,18 @@
 	    </c:if>
 	    
 	    <%-- REVIEW TABLE --%>
-	    <table class="resultsTable rowHighlighting">
+	    <table class="results-table row-highlighting">
 	    
 	    	<tr>
 	    		<th>${device}</th>
 	    		<th>${previous}</th>
 	    		<th>${flagged}</th>
 	    		<th>${next}</th>
-	    		<th align="center" class="nonwrapping">
+	    		<th align="center">
 	    			${delete}
                     <cti:icon icon="icon-cross" title="Check/Uncheck All" onclick="checkUncheckAll('DELETE');" classes="pointer"/>
 	    		</th>
-	    		<th align="center"  class="nonwrapping">
+	    		<th align="center" >
 	    			${accept}
                     <cti:icon icon="icon-tick" title="Check/Uncheck All" onclick="checkUncheckAll('ACCEPT');" classes="pointer"/>
 	    		</th>
@@ -177,11 +177,11 @@
 			    			</td>
 			    		</c:if>
 			    	
-			    		<td class="nonwrapping">
+			    		<td>
 			    			<cti:pointValueFormatter value="${p.prevPointValue}" format="FULL"/>
 			    		</td>
 			    		
-			    		<td title="${p.reviewPoint.changeId}" class="nonwrapping">
+			    		<td title="${p.reviewPoint.changeId}">
 			    		
 			    			<div style="float:left;">
 			    				<cti:pointValueFormatter value="${p.reviewPoint.pointValue}" format="FULL"/> 
@@ -195,13 +195,13 @@
 			    			</div>
 			    		</td>
 			    		
-			    		<td class="nonwrapping"><cti:pointValueFormatter value="${p.nextPointValue}" format="FULL"/></td>
+			    		<td><cti:pointValueFormatter value="${p.nextPointValue}" format="FULL"/></td>
 			    		
-			    		<td align="center" class="ACTION_TD pointer nonwrapping">
+			    		<td align="center" class="ACTION_TD pointer">
                             <cti:icon icon="icon-cross" disabled="disabled" id="ACTION_DELETE_IMG_${changeId}"/>
 			    		</td>
 			    		
-			    		<td align="center" class="ACTION_TD pointer nonwrapping">
+			    		<td align="center" class="ACTION_TD pointer">
                             <cti:icon icon="icon-tick" disabled="disabled" id="ACTION_ACCEPT_IMG_${changeId}"/>
 			    			<input id="ACTION_${changeId}" name="ACTION_${changeId}" type="hidden" value="">
 			    		</td>

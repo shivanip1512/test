@@ -6,7 +6,7 @@
 <tags:noAuthPage module="login" page="login">
     <section id="content" style="min-height: 420px;">
         <div class="login-content">
-            <div class="column_12_12">
+            <div class="column-12-12">
                 <div class="one column">
                     <div><h1 class="tagline">Optimizing Energy Delivery</h1></div>
                 </div>
@@ -34,7 +34,7 @@
                                 <input type="password" id="login_password" name="PASSWORD" autocomplete="off" placeholder="<cti:msg2 key="yukon.web.login.password"/>" class="fl">
                                 <button type="button" id="forgot-btn" class="fl" data-href="/login/forgottenPassword"><span class="label"><cti:msg2 key="yukon.web.login.forgot"/></span></button>
                             </div>
-                            <div class="actionArea">
+                            <div class="action-area">
                                 <label class="fl remember-me"><input type="checkbox" id="remember_me"><cti:msg2 key="yukon.web.login.rememberMe"/></label>
                                 <button type="submit" name="login" class="action primary">
                                     <span class="label"><cti:msg2 key="yukon.web.login.login"/></span>

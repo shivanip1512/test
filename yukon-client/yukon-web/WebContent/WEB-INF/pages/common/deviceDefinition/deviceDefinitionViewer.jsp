@@ -143,7 +143,7 @@
 				<tags:boxContainer title="${deviceInfo.definition.displayName}" id="${deviceInfo.definition.type}" hideEnabled="true">
 				
 					<%-- BASICS --%>
-					<table class="compactResultsTable">
+					<table class="compact-results-table">
 					    <tr>
 					        <td width="15%" class="label"><i:inline key=".type"/></td>
 					        <td>${deviceInfo.definition.type}</td>
@@ -164,7 +164,7 @@
 					<c:if test="${fn:length(deviceInfo.points) > 0}">
                     <cti:msgScope paths=".points">
 						<br>
-						<table class="resultsTable" style="width:900px">
+						<table class="results-table" style="width:900px">
                             <thead>
     							<tr>
 								<th><i:inline key=".index"/></th>
@@ -205,7 +205,7 @@
 					<c:if test="${fn:length(deviceInfo.attributes) > 0}">
                     <cti:msgScope paths=".attributes">
 						<br>
-						<table class="resultsTable" style="width:900px">
+						<table class="results-table" style="width:900px">
                             <thead>
     							<tr>
 								<th><i:inline key=".index"/></th>
@@ -233,7 +233,7 @@
 					<c:if test="${fn:length(deviceInfo.commands) > 0}">
                     <cti:msgScope paths=".commands">
 						<br>
-						<table class="resultsTable" style="width:900px">
+						<table class="results-table" style="width:900px">
                             <thead>
     							<tr>
 								<th><i:inline key=".index"/></th>
@@ -273,7 +273,7 @@
 					<c:if test="${fn:length(deviceInfo.tagDefinitions) > 0}">
                     <cti:msgScope paths=".tags">
 						<br>
-						<table class="resultsTable" style="width:900px">
+						<table class="results-table" style="width:900px">
                             <thead>
     							<tr>
 								<th><i:inline key=".index"/></th>

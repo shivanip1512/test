@@ -6,7 +6,7 @@
 <cti:standardPage module="tools" page="bulk.pointImport">
     <cti:includeScript link="/JavaScript/pointImport.js"/>
     
-        <div class="column_12_12">
+        <div class="column-12-12">
                 <div class="column one">
                     <cti:msg2 var="importTitle" key=".importHeader"/>
                     <tags:sectionContainer title="${importTitle}">
@@ -35,8 +35,8 @@
                                     <i:inline key=".ignoreInvalidText"/>
                                 </tags:nameValue2>
                             </tags:nameValueContainer2>
-                            <div class="actionArea">
-                                <cti:button type="submit" nameKey="importSubmitButton" classes="primary action f-disableAfterClick" busy="true"/>
+                            <div class="action-area">
+                                <cti:button type="submit" nameKey="importSubmitButton" classes="primary action" busy="true"/>
                             </div>
                         </form>
                         </tags:sectionContainer>

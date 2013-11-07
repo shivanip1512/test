@@ -357,7 +357,7 @@ public class ScanRateSetupDBModel extends ReportModelBase<ScanRateMeterData> imp
         sb.append("    <td valign='top'>" + LINE_SEPARATOR);
         sb.append("      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR);
         sb.append("        <tr>" + LINE_SEPARATOR);
-        sb.append("          <td class='TitleHeader'>&nbsp;Order By</td>" +LINE_SEPARATOR);
+        sb.append("          <td class='title-header'>&nbsp;Order By</td>" +LINE_SEPARATOR);
         sb.append("        </tr>" + LINE_SEPARATOR);
 		for (int i = 0; i < getAllOrderBys().length; i++)
 		{

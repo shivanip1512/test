@@ -57,7 +57,7 @@ location="new_tag.jsp?pointid=<%= pointID %>&tagid=" + tagid + "&description=" +
   <tbody>
     <tr>
       <td class="esubHeaderCell" style="text-align: center;">
-      <div class="TitleHeader">New
+      <div class="title-header">New
 Tag</div>
       </td>
     </tr>

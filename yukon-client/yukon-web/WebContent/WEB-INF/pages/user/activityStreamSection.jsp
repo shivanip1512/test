@@ -4,12 +4,12 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <cti:msgScope paths="yukon.common.events">
-    <div class="scrollingContainer_large" id="divActivityStream">
+    <div class="scroll-large" id="divActivityStream">
         <c:if test="${empty userEvents.resultList}">
             <span class="empty-list"><i:inline key=".noResults"/></span>
         </c:if>
         <c:if test="${not empty userEvents.resultList}">
-            <table class="compactResultsTable rowHighlighting">
+            <table class="compact-results-table row-highlighting">
                 <thead>
                     <tr>
                         <th><i:inline key=".columnHeader.dateAndTime"/></th>

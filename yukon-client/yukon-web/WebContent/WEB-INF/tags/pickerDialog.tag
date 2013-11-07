@@ -104,7 +104,7 @@
 </script>
 
 <c:if test="${pageScope.linkType != 'selection' && !empty pageScope.selectionProperty}">
-    <span class="errorMessage">The "selectionProperty" attribute is
+    <span class="error">The "selectionProperty" attribute is
         only valid when using "selection" linkType on tags:pickerDialog.</span>
 </c:if>
 
@@ -148,7 +148,7 @@
                 </c:when>
                 <c:when test="${pageScope.linkType == 'selection'}">
                     <c:if test="${empty pageScope.selectionProperty}">
-                        <span class="errorMessage">The "selectionProperty" attribute is
+                        <span class="error">The "selectionProperty" attribute is
                             required when using "selection" linkType on tags:pickerDialog.</span>
                     </c:if>
                     <c:if test="${empty pageScope.nameKey}">

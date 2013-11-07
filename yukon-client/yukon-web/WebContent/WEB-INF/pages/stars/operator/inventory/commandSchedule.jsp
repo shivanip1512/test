@@ -55,8 +55,8 @@
                 </spring:bind>
                 
                 
-                <div><form:errors path="runPeriodHours" cssClass="errorMessage"/></div>
-                <div><form:errors path="runPeriodMinutes" cssClass="errorMessage"/></div>
+                <div><form:errors path="runPeriodHours" cssClass="error"/></div>
+                <div><form:errors path="runPeriodMinutes" cssClass="error"/></div>
                 <br>
 
             </tags:nameValue2>

@@ -5,7 +5,7 @@
 <%@ taglib prefix="debug" tagdir="/WEB-INF/tags/debug"%>
 
 <cti:standardPage module="support" page="development">
-    <div class="column_8_8_8">
+    <div class="column-8-8-8">
         <div class="column one">
             <tags:sectionContainer title="UI Demos">
                 <ul class="simple-list">

@@ -80,7 +80,7 @@
         <div style="color: red;margin: 10px 0px;"><i:inline key=".error" arguments="${errorMsg}"/></div>
     </c:if>
     
-    <div class="column_12_12">
+    <div class="column-12-12">
         <div class="column one">
     
             <c:choose>
@@ -101,7 +101,7 @@
                     </tags:nameValueContainer2>
                     
                     <c:if test="${readable}">
-                        <div class="actionArea">
+                        <div class="action-area">
                             <cti:url var="getReportUrl" value="/meter/highBill/getReport"/>
                             <cti:url var="hbcRedirectUrl" value="/meter/highBill/view"/>
                             <cti:msg2 key=".getReport" var="buttonText"/>
@@ -194,7 +194,7 @@
                             <cti:param name="chartRange" value="ENTIRE"/>
                         </cti:url>
                         
-                        <div class="smallBoldLabel" style="display:inline;"><i:inline key=".chartRange"/></div>
+                        <div class="strong-label-small" style="display:inline;"><i:inline key=".chartRange"/></div>
                         <c:if test="${chartRange == 'PEAK'}"><div style="display:inline;"><i:inline key=".peakDay"/></div></c:if> 
                         <c:if test="${chartRange != 'PEAK'}"><a href="${prePeakDayChartUrl}"><i:inline key=".peakDay"/></a></c:if> 
                         |
@@ -230,7 +230,7 @@
                         <br>
                         
                         <%-- tabular data links --%>
-                        <div class="smallBoldLabel" style="display:inline;"><i:inline key=".tabularData"/> </div>
+                        <div class="strong-label-small" style="display:inline;"><i:inline key=".tabularData"/> </div>
                         
                         <cti:url var="preHbcArchivedDataReportUrl" value="/amr/reports/hbcArchivedDataReport">
                             <cti:param name="def" value="rawPointHistoryDefinition"/>
@@ -254,7 +254,7 @@
                         
                         <%-- daily usage links --%>
                         <br>
-                        <div class="smallBoldLabel" style="display:inline;"><i:inline key=".dailyUsage"/> </div>
+                        <div class="strong-label-small" style="display:inline;"><i:inline key=".dailyUsage"/> </div>
                         <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="extView" module="amr" showMenu="true" menuSelection="meters" pointId="${pointId}" startDate="${preChartStartDate}" stopDate="${preChartStopDate}"><i:inline key="yukon.web.modules.amr.fileFormatHtml"/></cti:simpleReportLinkFromNameTag>
                         |
                         <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="csvView" module="amr" showMenu="true" menuSelection="meters" pointId="${pointId}" startDate="${preChartStartDate}" stopDate="${preChartStopDate}"><i:inline key="yukon.web.modules.amr.fileFormatCsv"/></cti:simpleReportLinkFromNameTag>
@@ -292,7 +292,7 @@
                         <br>
                         
                         <%-- tabular data links --%>
-                        <div class="smallBoldLabel" style="display:inline;"><i:inline key=".tabularData"/> </div>
+                        <div class="strong-label-small" style="display:inline;"><i:inline key=".tabularData"/> </div>
                         
                         <cti:url var="postHbcArchivedDataReportUrl" value="/amr/reports/hbcArchivedDataReport">
                             <cti:param name="def" value="rawPointHistoryDefinition"/>
@@ -316,7 +316,7 @@
                         
                         <%-- daily usage links --%>
                         <br>
-                        <div class="smallBoldLabel" style="display:inline;"><i:inline key=".dailyUsage"/></div>
+                        <div class="strong-label-small" style="display:inline;"><i:inline key=".dailyUsage"/></div>
                         <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="extView" module="amr" showMenu="true" menuSelection="meters" pointId="${pointId}" startDate="${postChartStartDate}" stopDate="${postChartStopDate}"><i:inline key="yukon.web.modules.amr.fileFormatHtml"/></cti:simpleReportLinkFromNameTag>
                         |
                         <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="csvView" module="amr" showMenu="true" menuSelection="meters" pointId="${pointId}" startDate="${postChartStartDate}" stopDate="${postChartStopDate}"><i:inline key="yukon.web.modules.amr.fileFormatCsv"/></cti:simpleReportLinkFromNameTag>

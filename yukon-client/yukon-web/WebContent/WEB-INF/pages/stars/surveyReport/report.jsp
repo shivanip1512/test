@@ -54,7 +54,7 @@
     <cti:button renderMode="labeledImage" nameKey="pdfReport" href="${pdfUrl}" icon="icon-csv"/> |
 </div>
 
-<table class="resultsTable">
+<table class="results-table">
     <tr>
         <c:forEach var="ci" items="${columnInfo}">
             <th style="text-align:${ci.align};width:${ci.columnWidthPercentage}%"><i:inline key=".${ci.name}"/></th>
@@ -87,7 +87,7 @@
     <form:hidden path="stopDate"/>
     <form:hidden path="surveyId"/>
 
-    <div class="pageActionArea">
+    <div class="page-action-area">
         <cti:button type="submit" nameKey="configureReport"/>
     </div>
 </form:form>

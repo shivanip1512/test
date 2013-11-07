@@ -24,7 +24,7 @@
 <c:if test="${alertBox}">
     <div id="warning_${paoId}_ok" style="display: none;">
     </div>
-    <div id="warning_${paoId}_alert" class="userMessage ERROR" style="display: none;">
+    <div id="warning_${paoId}_alert" class="user-message error" style="display: none;">
         <cti:capControlValue paoId="${paoId}" type="${type}" format="WARNING_FLAG_MESSAGE"/> 
     </div>
 </c:if>

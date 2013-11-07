@@ -17,7 +17,7 @@
 <c:set var="optedOutSize" value="${assetAvailabilitySummary.optedOutSize}"/>
 <c:set var="unavailableSize" value="${assetAvailabilitySummary.unavailableSize}"/>
 
-<div class="column_12_12 clearfix">
+<div class="column-12-12 clearfix">
     <div class="column one">
         <tags:nameValueContainer2>
             <tags:nameValue2 nameKey=".active">
@@ -50,7 +50,7 @@
     </div>
 </div>
 
-<div class="column_24 clearfix">
+<div class="column-24 clearfix">
     <div class="column one nogutter">
         <c:if test="${showDetails}">
             <cti:url var="assetsUrl" value="assetDetails">
@@ -61,8 +61,8 @@
             </div>
         </c:if>
         
-        <div class="actionArea">
-            <cti:button id="pingButton" nameKey="pingDevices" busy="true" classes="f-disableAfterClick"/>
+        <div class="action-area">
+            <cti:button id="pingButton" nameKey="pingDevices" busy="true"/>
             <span id="pingResults" style="display:none" >
                 <span class="dib fl" style="padding-right:10px">
                     <i:inline key="yukon.web.modules.operator.hardware.assetAvailability.pingResults"/>

@@ -40,7 +40,7 @@ Required variables:
   <tr> 
     <td> 
       <table border="0" cellspacing="3" cellpadding="0">
-        <tr class="TitleHeader" valign="top" align="center"> 
+        <tr class="title-header" valign="top" align="center"> 
           <td width="30" class="HeaderCell">Relay</td>
           <td width="<%= hasProgramSplinter?65:130 %>" class="HeaderCell">Cold Load 
             Pickup (seconds)</td>

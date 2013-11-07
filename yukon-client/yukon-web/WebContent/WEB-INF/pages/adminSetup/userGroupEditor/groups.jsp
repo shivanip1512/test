@@ -19,12 +19,12 @@
             <c:when test="${!empty groups}">
                 <form action="/adminSetup/userGroup/removeRoleGroup" method="post">
                     <input type="hidden" name="userGroupId" value="${userGroupId}">
-                    <table class="compactResultsTable rowHighlighting">
+                    <table class="compact-results-table row-highlighting">
                         <thead>
                             <tr>
                                 <th><i:inline key=".groupName"/></th>
                                 <th><i:inline key=".description"/></th>
-                                <th class="removeColumn"><i:inline key=".remove"/></th>
+                                <th class="remove-column"><i:inline key=".remove"/></th>
                             </tr>
                         </thead>
                         <tfoot></tfoot>
@@ -36,7 +36,7 @@
                                 <tr>
                                     <td><a href="${editGroupUrl}">${fn:escapeXml(group.groupName)}</a></td>
                                     <td>${fn:escapeXml(group.groupDescription)}</td>
-                                    <td class="removeColumn">
+                                    <td class="remove-column">
                                         <div class="dib">
                                             <cti:button nameKey="remove" name="remove" value="${group.groupID}" type="submit" renderMode="image" icon="icon-cross"/>
                                         </div>
@@ -51,7 +51,7 @@
                 <i:inline key=".noGroups"/>
             </c:otherwise>
         </c:choose>
-        <div class="actionArea">
+        <div class="action-area">
             <form id="addGroupsForm" action="/adminSetup/userGroup/addRoleGroups" method="post">
                 <input type="hidden" name="roleGroupIds" id="roleGroupIds">
                 <input type="hidden" name="userGroupId" value="${userGroupId}">

@@ -110,7 +110,7 @@
                 <li>-60 seconds less than this is: ${event.timestampAsMillis - 60000}</li>
             </ul>
 
-            <div class="pageActionArea">
+            <div class="page-action-area">
                 <cti:button nameKey="send" classes="f-blocker f-sendEventArchive"/>
             </div>
         </form:form>

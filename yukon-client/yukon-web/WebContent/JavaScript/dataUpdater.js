@@ -15,7 +15,7 @@ function initiateCannonDataUpdate(url, delayMs) {
 
         responseStruc = transport;
         // looks like stuff is working, hide error div
-        jQuery('#dataUpdaterErrorDiv').hide();
+        jQuery('#data-updater-error').hide();
         failureCount = 0;
         
         // find all of the updateable elements
@@ -146,9 +146,9 @@ function initiateCannonDataUpdate(url, delayMs) {
     var failureCallback = function() {
         // something bad happened, show user that updates are off
         failureCount += 1;
-        jQuery('#dataUpdaterErrorDivCount').innerHTML = failureCount;
+        jQuery('#data-updater-errorCount').innerHTML = failureCount;
         if (failureCount > 1) {
-            jQuery('#dataUpdaterErrorDiv').show();
+            jQuery('#data-updater-error').show();
         }
         // schedule another update in case the server comes back, but slow it down a bit
         if (_updaterTimeout) {

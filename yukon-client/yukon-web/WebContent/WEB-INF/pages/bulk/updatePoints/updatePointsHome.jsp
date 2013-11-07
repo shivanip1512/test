@@ -102,7 +102,7 @@ function fieldToModifyChanged() {
             </div>
             
             <%-- UPDATE POINTS OPTIONS --%>
-            <div id="updateOptionsDiv" class="pageActionArea">
+            <div id="updateOptionsDiv" class="page-action-area">
                 <span class="fl">Select update type: </span>
                 <select id="fieldToModify" name="fieldToModify" class="fl" style="margin-left: 10px;">
                     <c:forEach var="pointField" items="${pointFields}">

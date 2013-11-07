@@ -41,7 +41,7 @@ function clearFilter() {
                     <form:input path="name" size="40" />
                 </tags:nameValue>
             </tags:nameValueContainer>
-            <div class="actionArea">
+            <div class="action-area">
                 <cti:button nameKey="filter" classes="primary action" type="submit"/>
                 <cti:button nameKey="showAll" onclick="javascript:clearFilter()"/>
             </div>
@@ -57,7 +57,7 @@ function clearFilter() {
                 <cti:msg key="yukon.web.modules.dr.scenarioList.noResults" />
             </c:when>
             <c:otherwise>
-                <table id="scenarioList" class="compactResultsTable rowHighlighting has-actions">
+                <table id="scenarioList" class="compact-results-table row-highlighting has-actions">
                     <thead>
                         <tr>
                             <th><tags:sortLink nameKey="heading.name"
@@ -83,11 +83,11 @@ function clearFilter() {
                                     <td data-pao="${scenarioId}">
                                         <cti:icon icon="icon-error" classes="dn"/>
                                         <cti:dataUpdaterValue
-                                            identifier="${scenarioId}/SCENARIO_KW_SAVINGS"
-                                            type="ESTIMATED_LOAD" />
-<%--                                        <cti:dataUpdaterCallback function="Yukon.EstimatedLoad.createToolTip" --%>
-<%--                                            identifier="ESTIMATED_LOAD/${scenarioId}/SCENARIO_KW_SAVINGS" --%> 
-<%--                                            initialize="false"/> --%>
+                                             identifier="${scenarioId}/SCENARIO_KW_SAVINGS"
+                                             type="ESTIMATED_LOAD" />
+<%--                                         <cti:dataUpdaterCallback function="Yukon.EstimatedLoad.createToolTip" --%>
+<%--                                             identifier="ESTIMATED_LOAD/${scenarioId}/SCENARIO_KW_SAVINGS"  --%>
+<%--                                             initialize="false"/> --%>
                                     </td>
                                 </cti:checkRolesAndProperties>
                                 <td><dr:scenarioListActions pao="${scenario}" /></td>

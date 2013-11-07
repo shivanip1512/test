@@ -9,7 +9,7 @@
 
 <c:choose>
     <c:when test="${pointId == 0}">
-        <span class="errorMessage">
+        <span class="error">
             <i:inline key="yukon.common.attributes.pointNotFound"/>
         </span>
     </c:when>

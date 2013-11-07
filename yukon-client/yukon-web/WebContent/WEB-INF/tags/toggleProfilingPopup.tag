@@ -26,7 +26,7 @@
 </c:choose>
 
 <a title="${toggleDesc}" href="javascript:toggleChanPopup('${popupName}')">${toggleDesc}</a>
-<div id="${popupName}" class="popUpDiv" style="width: 280px; display: none; background-color: white; border: 1px solid black;padding: 5px 5px;">
+<div id="${popupName}" class="popup" style="width: 280px; display: none; background-color: white; border: 1px solid black;padding: 5px 5px;">
     <%-- CANCEL --%>
     <div style="width: 100%; text-align: right;margin-bottom: 0px;">
         <a href="javascript:toggleChanPopup('${popupName}');"><i:inline key="yukon.common.cancel"/></a>

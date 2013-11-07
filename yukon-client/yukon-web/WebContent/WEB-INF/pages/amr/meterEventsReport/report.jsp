@@ -264,11 +264,11 @@
     </dialog:inline>
     
 	<form:form id="eventsFilterForm" action="report" method="get" commandName="backingBean" cssClass="eventForm stacked">
-        <div class="column_12_12 clearfix">
+        <div class="column-12-12 clearfix">
             
             <%-- LEFT SIDE COLUMN --%>
             <div class="column one">
-				<tags:formElementContainer nameKey="filterSectionHeader">
+				<tags:sectionContainer2 nameKey="filterSectionHeader">
 					<tags:nameValueContainer2>
 						<tags:nameValue2 nameKey=".filter.dateFrom">
                             <dt:date path="fromInstant" value="${backingBean.fromInstant}"/>
@@ -283,7 +283,7 @@
 							<span class="focusableFieldHolder">
                                 <a id="latestEventsHelp"><i class="icon icon-help"></i></a>
 							</span>
-							<span class="focusedFieldDescription"><i:inline key=".filter.onlyLatestEvents.help.text"/></span>
+							<span class="focused-field-description"><i:inline key=".filter.onlyLatestEvents.help.text"/></span>
 						</tags:nameValue2>
 			
 						<tags:nameValue2 nameKey=".filter.onlyAbnormalEvents">
@@ -291,7 +291,7 @@
 							<span class="focusableFieldHolder">
                                 <a id="activeEventsHelp"><i class="icon icon-help"></i></a>
 							</span>
-				            <span class="focusedFieldDescription"><i:inline key=".filter.onlyAbnormalEvents.help.text"/></span>
+				            <span class="focused-field-description"><i:inline key=".filter.onlyAbnormalEvents.help.text"/></span>
 						</tags:nameValue2>
 			
 						<tags:nameValue2 nameKey=".filter.includeDisabledDevices">
@@ -309,7 +309,7 @@
                             </a>
 						</tags:nameValue2>
 					</tags:nameValueContainer2>
-				</tags:formElementContainer>
+				</tags:sectionContainer2>
 				
 				<i:simplePopup titleKey=".filter.eventTypes" id="filterPopupEventTypes" onClose="updateEventTypesNum()" on="#eventTypesCogFilter, #eventTypesCogSchedule">
 		
@@ -318,12 +318,12 @@
 						treeParameters="{checkbox: true, selectMode: 3, onPostInit: treeInit()}"
 						includeControlBar="true" />
 		
-					<div class="actionArea">
+					<div class="action-area">
 						<cti:button nameKey="ok" onclick="updateEventTypesNum()" classes="primary action"/>
 					</div>
 				</i:simplePopup>
 				
-				<div class="pageActionArea">
+				<div class="page-action-area">
 					<cti:button nameKey="update" type="submit" classes="primary action"/>
 					<cti:button nameKey="reset" id="resetButton"/>
 					<cti:button nameKey="schedule" id="scheduleButton" icon="icon-calendar-view-day"/>
@@ -337,7 +337,7 @@
             <div class="column two nogutter">
 				<tags:sortFields backingBean="${backingBean}" />
 				<cti:deviceCollection deviceCollection="${backingBean.deviceCollection}" />
-			    <tags:formElementContainer nameKey="deviceSectionHeader">
+			    <tags:sectionContainer2 nameKey="deviceSectionHeader">
 					<tags:nameValueContainer2>
 						<tags:nameValue2 nameKey="yukon.web.modules.amr.meterEventsReport.report.selectedDevices">
 							<c:set var="isDeviceGroup" value="${backingBean.deviceCollection.collectionParameters['collectionType'] == 'group'}"/>
@@ -370,7 +370,7 @@
 							${backingBean.deviceCollection.deviceCount}
 						</tags:nameValue2>
 					</tags:nameValueContainer2>
-				</tags:formElementContainer>
+				</tags:sectionContainer2>
             </div>
         </div>
 	</form:form>
@@ -389,7 +389,7 @@
 	</c:if>
 
 	<tags:pagedBox2 nameKey="tableTitle" searchResult="${filterResult}" baseUrl="report" titleLinkHtml="${linkHeaderHtml}">
-		<table id="eventsTable" class="compactResultsTable f-traversable has-actions sortable-table">
+		<table id="eventsTable" class="compact-results-table f-traversable has-actions sortable-table">
             <thead>
     			<tr>
     				<th><tags:sortLink nameKey="tableHeader.deviceName" baseUrl="report" fieldName="NAME" isDefault="false" /></th>

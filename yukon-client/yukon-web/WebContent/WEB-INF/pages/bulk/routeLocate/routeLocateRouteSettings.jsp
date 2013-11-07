@@ -41,7 +41,7 @@
         </c:if>
     </div>
     
-    <table class="resultsTable stacked">
+    <table class="results-table stacked">
         <thead>
             <tr>
                 <th><cti:msg key="yukon.web.modules.tools.bulk.routeLocateSettings.tableHeader.deviceName" /></th>
@@ -84,7 +84,7 @@
                         </c:when>
                         <c:otherwise>
                             <div id="${d.id}">
-                                <cti:button nameKey="updateButtonText" classes="f-disableAfterClick" onclick="setRoute(${d.device.deviceId}, ${d.routeId}, '${resultId}', ${d.id}, '${d.id}', this);"/>
+                                <cti:button nameKey="updateButtonText" classes="f-disable-after-click" onclick="setRoute(${d.device.deviceId}, ${d.routeId}, '${resultId}', ${d.id}, '${d.id}', this);"/>
                             </div>
                         </c:otherwise>
                     </c:choose>
@@ -107,7 +107,7 @@
         </c:if>
     </div>
         
-    <table class="resultsTable">
+    <table class="results-table">
         <thead>
             <tr>
                 <th><cti:msg key="yukon.web.modules.tools.bulk.routeLocateSettings.tableHeader.deviceName" /></th>

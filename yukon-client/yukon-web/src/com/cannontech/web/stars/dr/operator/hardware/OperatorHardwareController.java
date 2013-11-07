@@ -656,7 +656,7 @@ public class OperatorHardwareController {
         Hardware oldInventory = hardwareUiService.getHardware(oldInventoryId);
         LiteYukonUser user = context.getYukonUser();
         String changeOutMessage = "yukon.web.modules.operator.hardware.hardwareChangeOut";
-        FlashScopeMessageType messageType =  FlashScopeMessageType.CONFIRM;
+        FlashScopeMessageType messageType =  FlashScopeMessageType.SUCCESS;
 
         if (isMeter) {
             LiteYukonPAObject oldLiteYukonPAO = paoDao.getLiteYukonPAO(oldInventory.getDeviceId());

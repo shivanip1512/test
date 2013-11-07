@@ -68,7 +68,7 @@
 </tags:boxContainer>
 <br />
 <tags:boxContainer title="${lastReportResultHeader}" hideEnabled="false">
-    <table class="full_width">
+    <table class="full-width">
     <tr class="vat">
     
     <%-- TABS --%>
@@ -141,7 +141,7 @@
     <div class="box">
         <%-- FAILURES --%>
         <div id="failed_data" style="display:none;">
-            <table id="failed_table" class="resultsTable">
+            <table id="failed_table" class="results-table">
                 <thead>
                     <tr>
                         <c:forEach var="colName" items="${failureColumnNames}">
@@ -153,7 +153,7 @@
         </div>
         <%-- PENDING COMMS --%>
         <div id="pendingComm_data" style="display:none;">
-            <table id="pendingComm_table" class="resultsTable">
+            <table id="pendingComm_table" class="results-table">
                 <tr>
                     <c:forEach var="colName" items="${pendingCommsColumnNames}">
                         <th>${colName}</th>
@@ -163,7 +163,7 @@
         </div>
         <%-- FAILURE COMMS --%>
         <div id="failedComm_data" style="display:none;">
-            <table id="failedComm_table" class="resultsTable">
+            <table id="failedComm_table" class="results-table">
                 <tr>
                     <c:forEach var="colName" items="${failureCommsColumnNames}">
                         <th>${colName}</th>

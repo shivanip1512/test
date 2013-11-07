@@ -17,14 +17,14 @@
     <cti:includeScript link="JQUERY_COOKIE" />
     <cti:includeScript link="/JavaScript/yukon/yukon.tdc.js" />
 
-    <div class="column_8_16">
+    <div class="column-8-16">
         <div class="column one">
             <div id="display_tabs" class="section">
                 <ul>
                     <li><a href="#custom_displays"><i:inline key=".display.custom" /></a></li>
                     <li><a href="#events_displays"><i:inline key=".display.event" /></a></li>
                 </ul>
-                <div id="events_displays" class="clearfix scrollingContainer_large liteContainer">
+                <div id="events_displays" class="clearfix scroll-large lite-container">
                     <ul class="simple-list display-list">
                         <c:forEach var="topEvent" items="${topEvents}">
                             <cti:url var="view" value="/tdc/${topEvent.displayId}" />
@@ -54,7 +54,7 @@
                     </ul>
                 </div>
 
-                <div id="custom_displays" class="clearfix scrollingContainer_large">
+                <div id="custom_displays" class="clearfix scroll-large">
                     <ul class="display-list simple-list">
                         <c:forEach var="customEvent" items="${customEvents}">
                             <cti:url var="view" value="/tdc/${customEvent.displayId}" />

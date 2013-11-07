@@ -27,7 +27,7 @@
 
     <div class="widgetInternalSection">
         <c:if test="${not empty data.outageData}">
-            <table class="compactResultsTable">
+            <table class="compact-results-table">
                 <thead>
                     <tr>
                         <th><i:inline key=".log" /></th>
@@ -51,6 +51,6 @@
         </c:if>
     </div>
 </c:if>
-<div class="actionArea">
+<div class="action-area">
     <tags:widgetActionRefresh hide="${!readable}" method="read" nameKey="read"/>
 </div>

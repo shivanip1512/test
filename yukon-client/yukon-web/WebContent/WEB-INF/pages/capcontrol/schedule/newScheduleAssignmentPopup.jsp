@@ -50,7 +50,7 @@
     			</tr>
     		</table>
     	</div>
-    	<div class="actionArea">
+    	<div class="action-area">
     		<input type="submit" value="Add"/>
     		<input type="button" value="Cancel" onclick="Yukon.CapControl.hideContentPopup();" />
     	</div>

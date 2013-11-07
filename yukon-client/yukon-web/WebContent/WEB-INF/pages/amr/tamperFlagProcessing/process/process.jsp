@@ -8,7 +8,7 @@
 <cti:standardPage module="amr" page="tamperFlagProcessing">
 	
 	<c:if test="${not empty param.processError}">
-		<div class="errorMessage">${param.processError}</div>
+		<div class="error">${param.processError}</div>
 	</c:if>
 	
 	<%-- MAIN DETAILS --%>
@@ -78,7 +78,7 @@
 			<%-- note --%>
 			<table cellpadding="2">
 	            <tr>
-	                <td valign="top" class="smallBoldLabel">
+	                <td valign="top" class="strong-label-small">
 	                	<i:inline key=".section.readInternalFlags.noteLabel"/>
 	                </td>
 	                <td style="font-size:11px;">
@@ -112,7 +112,7 @@
 				<div class="fwb"><i:inline key=".section.readFlags.recentReadFlagsResults"/></div>
 				<br>	
 				
-				<table class="resultsTable">
+				<table class="results-table">
                     <thead>
     					<tr>
     						<th><i:inline key=".section.readFlags.recentReadFlagsResults.tableHeader.dateTime"/></th>
@@ -172,7 +172,7 @@
 			<%-- note --%>
 			<table cellpadding="2">
 	            <tr>
-	                <td valign="top" class="smallBoldLabel">
+	                <td valign="top" class="strong-label-small">
 	                	<i:inline key=".section.resetInternalFlags.noteLabel"/>
 	                </td>
 	                <td style="font-size:11px;">
@@ -198,7 +198,7 @@
 				<div class="fwb"><i:inline key=".section.resetFlags.recentResetFlagsResults"/></div>
 				<br>
 				
-				<table class="resultsTable">
+				<table class="results-table">
                     <thead>
     					<tr>
     						<th><i:inline key=".section.resetFlags.recentResetFlagsResults.tableHeader.dateTime"/></th>

@@ -42,13 +42,13 @@
                     </td>
                 </tr>
                 <tr>
-                    <td class="smallBoldLabel errorMessage"><i:inline key=".instructionsLabel"/></td>
+                    <td class="strong-label-small error"><i:inline key=".instructionsLabel"/></td>
                     <td><i:inline key=".instructions"/></td>
                 </tr>
                 <c:if test="${empty task}">
                     <c:if test="${!uniformHardwareConfigType}">
                         <tr>
-                            <td class="smallBoldLabel errorMessage"><i:inline key=".note"/></td>
+                            <td class="strong-label-small error"><i:inline key=".note"/></td>
                             <td><i:inline key=".multipleHardwareConfigTypes"/></td>
                         </tr>
                         <tr>
@@ -64,7 +64,7 @@
             <form:form action="do" commandName="saveToBatchInfo">
                 <cti:inventoryCollection inventoryCollection="${inventoryCollection}"/>
                 <form:hidden path="ecDefaultRoute"/>
-                <div class="formElementContainer">
+                <div class="clearfix">
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".route">
                             <div id="routes">

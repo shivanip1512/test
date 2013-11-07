@@ -6,7 +6,6 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <cti:standardPage module="operator" page="inventory.${mode}">
-<cti:includeCss link="/WebConfig/yukon/styles/operator/hardware.css"/>
 <cti:msgScope paths=",modules.operator.hardware">
 
     <tags:setFormEditMode mode="${mode}"/>
@@ -18,7 +17,7 @@
         <cti:url value="/stars/operator/inventory/create" var="action"/>
     </cti:displayForPageEditModes>
 
-    <div class="column_12_12">
+    <div class="column-12-12">
         <div class="column one">
             <%@ include file="../hardware/hardwareInfo.jspf" %>
         </div>
@@ -36,7 +35,7 @@
             <cti:url value="/stars/operator/inventory/edit" var="editUrl">
                 <cti:param name="inventoryId" value="${hardware.inventoryId}"/>
             </cti:url>
-		    <div class="pageActionArea clear">
+		    <div class="page-action-area clear">
                 <cti:button nameKey="edit" icon="icon-pencil" href="${editUrl}"/>
 		    </div>
         </cti:checkRolesAndProperties>

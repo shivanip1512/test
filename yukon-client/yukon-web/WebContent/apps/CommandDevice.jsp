@@ -103,11 +103,11 @@
         <td class="vat">
 		<div id="sideMenu">
 			<div class="commanderHeader">&nbsp;</div>
-            <div class="titledContainer boxContainer">
+            <div class="titled-container box-container">
                 <div class="title-bar">
                     <h3 class="title"><cti:msg key="yukon.web.apps.commandDevice.navigation"/></h3>
                 </div>
-                <div id="commandDevice_content" class="content boxContainer_content">
+                <div id="commandDevice_content" class="content">
                     <div class="header"><cti:msg key="yukon.web.apps.commandDevice.goTo"/></div>
 			
 			<!-- Manual side menu section -->

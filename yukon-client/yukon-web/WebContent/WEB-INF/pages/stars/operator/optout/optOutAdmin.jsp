@@ -73,7 +73,7 @@
         <c:set var="change">
             <i:inline key=".countOptOuts.byProgramName.instruction.change" />
         </c:set>
-        <div class="column_12_12">
+        <div class="column-12-12">
             <div class="column one">
                 <!-- System Information -->
                 <cti:checkRolesAndProperties value="OPERATOR_OPT_OUT_ADMIN_STATUS">
@@ -124,12 +124,12 @@
                         <tags:boxContainer2 nameKey="disableOptOuts" hideEnabled="false">
                             
                             <div>
-                                <span class="smallBoldLabel"><i:inline key=".disableOptOuts.note.label"/></span>
+                                <span class="strong-label-small"><i:inline key=".disableOptOuts.note.label"/></span>
                                 <span class="notes"><i:inline key=".disableOptOuts.note.text"/></span>
                             </div>
                             
                             <b><i:inline key=".disableOptOuts.currentDisabledPrograms"/></b>
-                            <table class="compactResultsTable">
+                            <table class="compact-results-table">
                                 <thead>
                                 <tr>
                                     <th><i:inline key=".disableOptOuts.currentDisabledPrograms.header.programName"/></th>
@@ -187,7 +187,7 @@
                                     </div>
                                 </div>
                                 <div class="box fl">
-	                                <ul class="buttonStack">
+	                                <ul class="button-stack">
 	                                    <li><cti:button nameKey="disableOptOuts.currentDisabledPrograms.disableOptOutsButton" type="submit" name="disableOptOuts" classes="button"/></li>
 	                                    <li><cti:button nameKey="disableOptOuts.currentDisabledPrograms.disableOptOutsAndCommsButton" type="submit" name="disableOptOutsAndComms" classes="button"/></li>
 	                                    <li><cti:button nameKey="disableOptOuts.currentDisabledPrograms.enableOptOutsButton" type="submit" name="enableOptOuts" classes="button"/></li>
@@ -202,7 +202,7 @@
                         <tags:boxContainer2 nameKey="cancelOptOuts" hideEnabled="false">
                         
                             <div class="stacked">
-                                <span class="smallBoldLabel"><i:inline key=".cancelOptOuts.note.label"/></span>
+                                <span class="strong-label-small"><i:inline key=".cancelOptOuts.note.label"/></span>
                                 <span class="notes"><i:inline key=".cancelOptOuts.note.text"/></span>
                             </div>
                             <div class="stacked">
@@ -246,13 +246,13 @@
                         <tags:boxContainer2 nameKey="countOptOuts" hideEnabled="false">
                             
                             <div class="stacked">
-                                <span class="smallBoldLabel"><i:inline key=".countOptOuts.note.label"/></span>
+                                <span class="strong-label-small"><i:inline key=".countOptOuts.note.label"/></span>
                                 <span class="notes"><i:inline key=".countOptOuts.note.text"/></span>
                             </div>
                             <div class="stacked">
                                 <b><i:inline key=".countOptOuts.currentLimits"/></b>
                             </div>
-                            <table class="compactResultsTable stacked">
+                            <table class="compact-results-table stacked">
                                 <thead>
                                 <tr>
                                     <th><i:inline key=".countOptOuts.currentLimits.header.programName"/></th>
@@ -324,7 +324,7 @@
                     <tags:boxContainer2 nameKey="scheduledEvents" hideEnabled="false">
                         <c:choose>
                             <c:when test="${fn:length(scheduledEvents) > 0}">
-                                <table class="compactResultsTable">
+                                <table class="compact-results-table">
                                     <thead>
                                     <tr>
                                         <th><i:inline key="yukon.web.modules.dr.scheduledEvents.startDateTime" /></th>

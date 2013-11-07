@@ -80,8 +80,8 @@ jQuery(function () {
 
     <cti:msg2 var="boxTitle" key=".programs"/>
     <tags:boxContainer title="${boxTitle}">
-    <div class="dialogScrollArea">
-    <table class="compactResultsTable" id="stopMultipleProgramsOverridePrograms">
+    <div class="scroll-medium">
+    <table class="compact-results-table" id="stopMultipleProgramsOverridePrograms">
         <thead>
 	        <tr>
 	            <c:if test="${constraintsViolated}">
@@ -159,7 +159,7 @@ jQuery(function () {
     </c:if>
     <br>
 
-    <div class="actionArea">
+    <div class="action-area">
         <cti:url var="backUrl" value="/dr/program/stop/multipleDetails"/>
         
         <cti:button nameKey="back" onclick="submitFormViaAjax('drDialog', 'stopMultipleProgramsForm', '${backUrl}')"/>

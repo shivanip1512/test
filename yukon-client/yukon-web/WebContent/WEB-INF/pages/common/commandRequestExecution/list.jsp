@@ -123,7 +123,7 @@
 		<cti:button nameKey="filter" classes="navlink" renderMode="labeledImage" id="filterButton" icon="icon-filter"/>
     </div>
 
-    <table id="cresTable" class="resultsTable activeResultsTable rowHighlighting">
+    <table id="cresTable" class="results-table activeResultsTable row-highlighting">
         <thead>
             <tr>
                 <c:if test="${!singleJob}">

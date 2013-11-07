@@ -122,14 +122,14 @@
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporterScheduleSetup.scheduleSuccess">File export "{0}" scheduled successfully.</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporterScheduleSetup.updateSuccess">File export "{0}" updated successfully.</entry>
     
-    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.jobsBox.title">Scheduled Archived Data Exports</entry>
+    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.jobsBox.title">Scheduled Data Exports</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.nameHeader">Name</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.scheduleHeader">Schedule</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.nextRunHeader">Next Run</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.actionsHeader">Actions</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.history.hoverText">View export history</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.remove.hoverText">Delete this schedule</entry>
-    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.noJobs">No archived data exports have been scheduled.</entry>
+    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.noJobs">No data exports have been scheduled.</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.deletedJobSuccess">Job "{0}" successfully deleted.</entry>
 
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.endDate">End Date</entry>
@@ -147,7 +147,7 @@
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.generateReport.label">Generate Report</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.saveFormatAndGenerateReport.label">Save Format and Generate Report</entry>
     
-    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.pageName">Archived Data Export</entry>
+    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.pageName">Data Export</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.EDIT.pageName">Edit Format</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.EDIT.pageDescription">{0}</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.EDIT.contextualPageName">Edit</entry>
@@ -347,9 +347,9 @@
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.previewAttributeName">Usage</entry>
 
     <!-- DEVICE COLLECTION SELECTION selectDevices.jsp -->
-    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.selectDevices.pageName">Archived Data Export Device Selection</entry>
+    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.selectDevices.pageName">Data Export Device Selection</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.selectDevices.contextualPageName">Device Selection</entry>
-    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.selectDevices.pageDescription">Archived Data Export Device Selection</entry>
+    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.selectDevices.pageDescription">Data Export Device Selection</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.selectDevices.selectionContainer.title">Select Devices</entry>
         
 </properties>

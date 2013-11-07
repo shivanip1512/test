@@ -11,7 +11,7 @@
     <h3><cti:msg key="yukon.dr.consumer.enrollment.header" /></h3>
     <br>
     <c:if test="${!empty errorMessage}">
-        <div class="userMessage ERROR"><cti:msg key="${errorMessage}"/></div>
+        <div class="user-message error"><cti:msg key="${errorMessage}"/></div>
     </c:if>
 
     <cti:msg var="programName" key="${displayableEnrollmentProgram.program.displayName}"/>

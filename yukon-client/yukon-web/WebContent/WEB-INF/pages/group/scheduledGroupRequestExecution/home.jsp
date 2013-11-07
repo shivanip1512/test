@@ -106,7 +106,7 @@
         			
         		</form>
         			
-                <div class="pageActionArea">	
+                <div class="page-action-area">	
 					<cti:displayForPageEditModes modes="CREATE">
 						<tags:slowInput myFormId="scheduledGroupRequestExecutionForm_attr" labelBusy="${scheduleButtonText}" label="${scheduleButtonText}" />
 					</cti:displayForPageEditModes>
@@ -182,7 +182,7 @@
         			
         		</form>
         			
-                <div class="pageActionArea">
+                <div class="page-action-area">
 					<cti:displayForPageEditModes modes="CREATE">
 						<tags:slowInput myFormId="scheduledGroupRequestExecutionForm_cmd" labelBusy="${scheduleButtonText}" label="${scheduleButtonText}" />
 					</cti:displayForPageEditModes>

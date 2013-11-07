@@ -51,7 +51,7 @@
                 <td class="syncNow">
                     <br>
                     <form id="startForm" action="/multispeak/setup/deviceGroupSync/start" method="post">
-                        <span id="syncNowContent" class="nonwrapping">
+                        <span id="syncNowContent">
                         <select name="deviceGroupSyncType" id="deviceGroupSyncTypeSelect">
                             <c:forEach var="type" items="${deviceGroupSyncTypes}">
                                 <option value="${type}"><cti:msg key="${type.formatKey}"/></option>
@@ -65,7 +65,7 @@
                     
                     <%-- last run --%>
                     <br>
-                    <table class="compactResultsTable lastSync">
+                    <table class="compact-results-table lastSync">
                     
                         <tr><th colspan="2"><i:inline key=".lastSyncCompleted"/></th></tr>
                     
@@ -82,9 +82,9 @@
                 
                 <%-- instructions --%>
                 <td class="instructions">
-                    <tags:formElementContainer nameKey="instructionsContainer">
+                    <tags:sectionContainer2 nameKey="instructionsContainer">
                         <cti:msg2 key=".instructions"/>
-                    </tags:formElementContainer>
+                    </tags:sectionContainer2>
                 </td>
             
             </tr>

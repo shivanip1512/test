@@ -9,6 +9,6 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr"%>
 
-<tags:formElementContainer nameKey="operationalAddress">
+<tags:sectionContainer2 nameKey="operationalAddress">
     <tags:input path="addressingInfo.operationalAddress" size="15" maxlength="15"/>
-</tags:formElementContainer>
+</tags:sectionContainer2>

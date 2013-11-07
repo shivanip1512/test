@@ -70,7 +70,7 @@
         <tags:sectionContainer2 nameKey="selectSubstation">
             <table style="padding-bottom: 5px;">
                 <tr>
-                    <td valign="top" class="smallBoldLabel" style="padding-right: 5px;"><span class="errorMessage">
+                    <td valign="top" class="strong-label-small" style="padding-right: 5px;"><span class="error">
                         <i:inline key=".noteLabel"/>
                     </span></td>
                     <td style="font-size:11px;"><span>
@@ -82,12 +82,12 @@
             
             <%-- Error Divs --%>
             <div id="noRouteSelectedErrorDiv" style="display: none;">
-                <span id="errorSpan" class="errorMessage">
+                <span id="errorSpan" class="error">
                     <i:inline key=".noRouteSelected"/>
                 </span>
             </div>
             <div id="subWithNoRoutesSelectedErrorDiv" style="display: none;">
-                <span id="errorSpan" class="errorMessage">
+                <span id="errorSpan" class="error">
                     <i:inline key=".subWithNoRoutesSelected"/>
                 </span>
             </div>

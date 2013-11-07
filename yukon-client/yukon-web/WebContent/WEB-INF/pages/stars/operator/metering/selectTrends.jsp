@@ -6,7 +6,7 @@
 
 <cti:standardPage module="operator" page="selectTrends">
 
-	<tags:formElementContainer nameKey="availableTrends">
+	<tags:sectionContainer2 nameKey="availableTrends">
 	
 		<c:choose>
 		
@@ -37,7 +37,7 @@
 						</div>
 					</c:forEach>
 
-					<div class="pageActionArea">
+					<div class="page-action-area">
                         <cti:button nameKey="save" type="submit" classes="f-blocker"/>
                     </div>
 
@@ -47,6 +47,6 @@
 		
 		</c:choose>
 	
-	</tags:formElementContainer>
+	</tags:sectionContainer2>
 
 </cti:standardPage>

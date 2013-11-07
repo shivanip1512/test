@@ -18,7 +18,7 @@
 	</div>
 
 	<div style="overflow:auto; height:300px;">
-	<table class="compactResultsTable" style="width:95%;">
+	<table class="compact-results-table" style="width:95%;">
 	
 		<tr>
 			<th>Substation Name</th>

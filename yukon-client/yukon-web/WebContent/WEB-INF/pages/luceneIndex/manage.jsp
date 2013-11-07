@@ -5,7 +5,7 @@
 
     <cti:includeScript link="/JavaScript/indexManager.js" />
 
-    <table class="compactResultsTable">
+    <table class="compact-results-table">
         <thead>
 	    	<tr>
 		        <th>Database</th>

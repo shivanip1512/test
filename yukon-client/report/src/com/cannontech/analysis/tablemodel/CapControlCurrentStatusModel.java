@@ -484,7 +484,7 @@ public class CapControlCurrentStatusModel extends FilterObjectsReportModelBase<O
 		html += "    <td valign='top'>" + LINE_SEPARATOR;
 		html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
 		html += "        <tr>" + LINE_SEPARATOR;
-		html += "          <td class='TitleHeader'>&nbsp;Control Status</td>" +LINE_SEPARATOR;
+		html += "          <td class='title-header'>&nbsp;Control Status</td>" +LINE_SEPARATOR;
 		html += "        </tr>" + LINE_SEPARATOR;
 		LiteState [] liteStates = YukonSpringHook.getBean(StateDao.class).getLiteStates( StateGroupUtils.STATEGROUPID_CAPBANK );
 		for (int i = 0; i < liteStates.length; i++)
@@ -505,7 +505,7 @@ public class CapControlCurrentStatusModel extends FilterObjectsReportModelBase<O
         html += "    <td valign='top'>" + LINE_SEPARATOR;
         html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
         html += "        <tr>" + LINE_SEPARATOR;
-        html += "          <td valign='top' class='TitleHeader'>Order By</td>" +LINE_SEPARATOR;
+        html += "          <td valign='top' class='title-header'>Order By</td>" +LINE_SEPARATOR;
         html += "        </tr>" + LINE_SEPARATOR;
         for( int i = 0; i < ORDER_TYPE_STRINGS.length; i++)
         {

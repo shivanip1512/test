@@ -72,8 +72,8 @@ Yukon.DrAssetDetails = (function() {
 
     _pingDevices = function(event) {
         jQuery('#pingResults').show();
-        jQuery('.progressBarPercentComplete').text("0%");
-        jQuery('.progressBarInnerFailure,.progressBarInnerSuccess').width(0);
+        jQuery('.progressbar-percent-complete').text("0%");
+        jQuery('.progressbar-inner-fail,.progressbar-inner-success').width(0);
         var url = "pingDevices?assetId=" + _assetId;
         jQuery.ajax({
             url: url,
@@ -96,8 +96,8 @@ Yukon.DrAssetDetails = (function() {
                 .click(_doFilterTable);
 
             jQuery(".device-detail-table")
-                .on('click', '.f-sortLink', _doSortingWithFilter)
-                .on('click', '.f-ajaxPaging', _doPagingWithFilter);
+                .on('click', '.f-sort-link', _doSortingWithFilter)
+                .on('click', '.f-ajax-paging', _doPagingWithFilter);
             
             jQuery("#dd-download")
                 .click(_downloadToCsv);
@@ -111,7 +111,6 @@ Yukon.DrAssetDetails = (function() {
         unbusyPingButton: function() {
             Yukon.ui.unbusy(jQuery('#pingButton'));
         }
-
 
     };
     

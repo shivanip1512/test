@@ -114,7 +114,7 @@
                 </cti:checkRolesAndProperties>
             </tags:nameValueContainer>
 
-            <div class="actionArea">
+            <div class="action-area">
                 <cti:button nameKey="filter" classes="primary action" type="submit" />
                 <cti:button nameKey="showAll" onclick="javascript:clearFilter()" />
             </div>
@@ -132,7 +132,7 @@
                 <cti:msg key="yukon.web.modules.dr.programList.noResults" />
             </c:when>
             <c:otherwise>
-                <table id="programList" class="compactResultsTable rowHighlighting has-actions">
+                <table id="programList" class="compact-results-table row-highlighting has-actions">
 
                     <thead>
                         <tr>

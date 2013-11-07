@@ -33,7 +33,7 @@
     
     <!-- ScheduledFileExportJobs tag -->
     <entry key="yukon.web.modules.tools.scheduledFileExport.jobs.tableTitle.BILLING.title">Billing Schedules</entry>
-    <entry key="yukon.web.modules.tools.scheduledFileExport.jobs.tableTitle.ARCHIVED_DATA_EXPORT.title">Scheduled Archived Data Exports</entry>
+    <entry key="yukon.web.modules.tools.scheduledFileExport.jobs.tableTitle.ARCHIVED_DATA_EXPORT.title">Scheduled Data Exports</entry>
     <entry key="yukon.web.modules.tools.scheduledFileExport.jobs.tableTitle.WATER_LEAK.title">Scheduled Exports</entry>
     <entry key="yukon.web.modules.tools.scheduledFileExport.jobs.tableTitle.METER_EVENTS.title">Scheduled Exports</entry>
     <entry key="yukon.web.modules.tools.scheduledFileExport.jobs.nameHeader">Name</entry>

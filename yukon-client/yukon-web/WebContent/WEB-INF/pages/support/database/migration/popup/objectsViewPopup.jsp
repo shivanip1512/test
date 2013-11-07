@@ -10,7 +10,7 @@
 	<div style="overflow:auto; height:500px;">
 </c:if>
 
-<table class="compactResultsTable">
+<table class="compact-results-table">
 	
 	<c:forEach var="item" items="${itemList}">
 		<tr>

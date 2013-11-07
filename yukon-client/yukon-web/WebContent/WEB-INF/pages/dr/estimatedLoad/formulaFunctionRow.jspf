@@ -11,7 +11,7 @@
         class="f-drFormula-appendTableId"
         name="functions[${functionIndex}].inputPointId"
         value="${formulaBean.functions[functionIndex].inputPointId}"/>
-    <div class="column_8_8_8 clearfix">
+    <div class="column-8-8-8 clearfix">
         <div class="column one">
             <tags:nameValueStacked nameKey=".name">
                 <tags:inputBindOptional pathOrName="functions[${functionIndex}].name" size="20" bindPath="${not dummyRow}"/>
@@ -19,7 +19,7 @@
             <tags:nameValueStacked nameKey=".input">
                 <cti:displayForPageEditModes modes="EDIT">
                 <c:if test="${dummyRow}">
-                    <div class="column_12_12">
+                    <div class="column-12-12">
                         <div class="column one">
                             <select name="functions[].inputType"
                                 id="formulaInputSelect_"
@@ -66,7 +66,7 @@
                      </div>
                 </c:if>
                 <c:if test="${not dummyRow}">
-                    <div class="column_12_12">
+                    <div class="column-12-12">
                         <div class="column one">
                             <tags:selectWithItems id="formulaInputSelect_${functionIndex}"
                                  items="${formulaInputs}" 

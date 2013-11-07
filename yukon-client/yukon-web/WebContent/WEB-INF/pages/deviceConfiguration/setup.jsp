@@ -17,10 +17,10 @@
         
         <h3 class="stacked"><i:inline key=".supportedTypes"/></h3>
         
-        <div class="column_8_8_8">
+        <div class="column-8-8-8">
             <div class="column one">
                 <tags:sectionContainer2 nameKey="meter" styleClass="stacked">
-                    <div class="column_12_12">
+                    <div class="column-12-12">
                         <div class="column one">
                             <%-- FOR EVENS --%>
                             <c:forEach items="${meters}" begin="0" step="2" end="${fn:length(meters)}" var="meter" varStatus="status">
@@ -50,7 +50,7 @@
             </div>
             <div class="column two">
                 <tags:sectionContainer2 nameKey="rtu" styleClass="stacked">
-                    <div class="column_12_12">
+                    <div class="column-12-12">
                         <div class="column one">
                             <%-- FOR EVENS --%>
                             <c:forEach items="${rtus}" begin="0" step="2" end="${fn:length(rtus)}" var="rtu" varStatus="status">
@@ -80,7 +80,7 @@
             </div>
             <div class="column three nogutter">
                 <tags:sectionContainer2 nameKey="cbc" styleClass="stacked">
-                    <div class="column_12_12">
+                    <div class="column-12-12">
                         <div class="column one">
                             <%-- FOR EVENS --%>
                             <c:forEach items="${cbcs}" begin="0" step="2" end="${fn:length(cbcs)}" var="cbc" varStatus="status">

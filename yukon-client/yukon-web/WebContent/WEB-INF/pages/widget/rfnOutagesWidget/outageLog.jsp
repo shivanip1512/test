@@ -10,11 +10,11 @@ jQuery(document).ready(flashYellow(jQuery('#reloadedAt')[0], 2));
 <cti:msgScope paths="widgets.rfnOutagesWidget">
 
 <tags:sectionContainer2 nameKey="outageLog">
-    <div class="smallDialogScrollArea">
+    <div class="scroll-small">
         <c:choose>
             <c:when test="${empty logs}"><i><i:inline key=".noLogs"/></i></c:when>
             <c:otherwise>
-                <table class="compactResultsTable rowHighlighting">
+                <table class="compact-results-table row-highlighting">
                 	<thead>
                         <tr>
                             <th><i:inline key=".start"/></th>

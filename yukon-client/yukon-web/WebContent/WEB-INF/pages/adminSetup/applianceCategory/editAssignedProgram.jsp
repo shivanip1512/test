@@ -230,7 +230,7 @@ function showProgramEditor() {
     </c:if>
     </cti:displayForPageEditModes>
 
-    <div class="actionArea">
+    <div class="action-area">
         <cti:displayForPageEditModes modes="EDIT,CREATE">
             <cti:button type="submit" nameKey="ok" classes="primary action"/>
         </cti:displayForPageEditModes>

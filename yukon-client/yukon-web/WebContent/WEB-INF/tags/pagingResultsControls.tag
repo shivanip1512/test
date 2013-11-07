@@ -11,8 +11,8 @@
 
 <cti:default var="adjustPageCount" value="false"/>
 
-<div class="compactResultsPaging">
-    <div class="pagingArea">
+<div class="compact-results-paging">
+    <div class="paging-area">
         <c:if test="${adjustPageCount == 'true'}">
             <span class="fl perPageArea">
                 <i:inline key="yukon.common.paging.itemsPerPage"/>&nbsp;
@@ -21,14 +21,14 @@
                 <tags:ajaxItemsPerPageLink result="${result}" itemsPerPage="50" baseUrl="${baseUrl}"/>&nbsp;
             </span>
         </c:if>
-        <span class="fl previousLink">
+        <span class="fl previous-link">
             <c:choose>
                 <c:when test="${result.previousNeeded}">
                     <cti:url value="${baseUrl}" var="prevUrl">
                         <cti:param name="page" value="${result.currentPage - 1}"/>
                         <cti:param name="itemsPerPage" value="${result.count}"/>
                     </cti:url>
-                    <button class="naked f-ajaxPaging" data-url="${prevUrl}">
+                    <button class="naked f-ajax-paging" data-url="${prevUrl}">
                         <i class="icon icon-resultset-previous"></i>
                         <span class="label"><i:inline key="yukon.common.paging.previous"/></span>
                     </button>
@@ -41,15 +41,15 @@
                 </c:otherwise>
             </c:choose>
         </span>
-        <span class="fl pageNumText"><i:inline key="yukon.common.paging.viewing" arguments="${result.startIndex + 1},${result.endIndex},${result.hitCount}" argumentSeparator=","/></span>
-        <span class="fl nextLink">
+        <span class="fl page-num-text"><i:inline key="yukon.common.paging.viewing" arguments="${result.startIndex + 1},${result.endIndex},${result.hitCount}" argumentSeparator=","/></span>
+        <span class="fl next-link">
             <c:choose>
                 <c:when test="${result.nextNeeded}">
                     <cti:url value="${baseUrl}" var="nextUrl">
                         <cti:param name="page" value="${result.currentPage + 1}"/>
                         <cti:param name="itemsPerPage" value="${result.count}"/>
                     </cti:url>
-                    <button class="naked f-ajaxPaging" data-url="${nextUrl}">
+                    <button class="naked f-ajax-paging" data-url="${nextUrl}">
                         <span class="label"><i:inline key="yukon.common.paging.next"/></span>
                         <i class="icon icon-resultset-next"></i>
                     </button>

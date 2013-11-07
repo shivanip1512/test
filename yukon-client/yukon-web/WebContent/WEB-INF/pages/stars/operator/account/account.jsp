@@ -1,9 +1,8 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
-<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
-<%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
-<%@ taglib tagdir="/WEB-INF/tags/i18n" prefix="i"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
@@ -105,16 +104,15 @@
                 
                 new jQuery.ajax({
                     url: '${generatedPasswordUrl}',
-                    data: dataHash,
-                    success: function(data) {
-                         jQuery(".password_editor_field").each(function(){
-                             this.value = data;
-                         });
-                        // Check and show the password fields
-                        jQuery('#showPasswordCheckbox').attr('checked', true);
-                        showPassword();
-                    }
-                });
+                    data: dataHash
+                }).done(function(data) {
+                    jQuery(".password_editor_field").each(function(){
+                        this.value = data;
+                    });
+                   // Check and show the password fields
+                   jQuery('#showPasswordCheckbox').attr('checked', true);
+                   showPassword();
+               });
     
             }
     
@@ -135,14 +133,14 @@
             
             function updatePassword(event){
                 jQuery("#passwordDialog").removeMessage();
-                jQuery("#passwordDialog .ERROR").removeClass('ERROR');
+                jQuery("#passwordDialog .error").removeClass('error');
                 
                 prepPasswordFields();
                 
                  if(jQuery("#password1").val() !== jQuery("#password2").val()){
                     jQuery("#passwordDialog").addMessage({
                         message: '<cti:msg2 key=".loginInfoError.passwordNoMatch" javaScriptEscape="true"/>', 
-                        messageClass: 'ERROR'});
+                        messageClass: 'error'});
                     jQuery("#password1, #password2").addClass('error');
                 }else{
                     jQuery("#updatePasswordForm").ajaxSubmit({
@@ -159,7 +157,7 @@
                             if(data.password1 === data.password2){
                                 delete data.password2;
                             }
-                            jQuery("#passwordDialog").addMessage({message: data, messageClass: 'ERROR'});
+                            jQuery("#passwordDialog").addMessage({message: data, messageClass: 'error'});
                     }});
                 }
             }
@@ -197,65 +195,61 @@
             <input type="hidden" name="accountId" value="${accountId}">
             <input type="hidden" name="loginMode" value="${loginMode}">
             
-            <cti:dataGrid cols="2" rowStyle="vertical-align:top;" cellStyle="padding-right:20px;">
-            
-                <%-- CUSTOMER CONTACT --%>
-                <cti:dataGridCell>
+            <div class="column-12-12 clearfix">
+                <div class="column one">
                 
-                    <tags:formElementContainer nameKey="customerContactSection">
-                        
-                            <tags:nameValueContainer2 id="customerContactTable">
-                            
-                                <tags:inputNameValue nameKey=".accountNumberLabel" path="accountDto.accountNumber"/>
-                                
-                                <c:if test="${mode == 'EDIT' || mode == 'CREATE' || accountGeneral.accountDto.isCommercial}">
-                                    <tags:checkboxNameValue nameKey=".commercialLabel" path="accountDto.isCommercial" onclick="toggleCommercialInputs(this.checked);" id="isCommercialCheckbox"/>
-                                    <tags:inputNameValue nameKey=".companyLabel" path="accountDto.companyName"/>
-                                    <tags:yukonListEntrySelectNameValue id="accountDto.commercialTypeEntryId" nameKey=".commercialTypeLabel" path="accountDto.commercialTypeEntryId" energyCompanyId="${energyCompanyId}" listName="CI_CUST_TYPE"/>
-                                </c:if>
-                                
-                                <tags:inputNameValue nameKey=".customerNumberLabel" path="accountDto.customerNumber" nameClass="bob"/>
-                                <tags:inputNameValue nameKey=".lastNameLabel" path="accountDto.lastName"/>
-                                <tags:inputNameValue nameKey=".firstNameLabel" path="accountDto.firstName"/>
-                                <tags:inputNameValue nameKey=".homePhoneLabel" path="accountDto.homePhone"/>
-                                <tags:inputNameValue nameKey=".workPhoneLabel" path="accountDto.workPhone"/>
-                                <tags:inputNameValue nameKey=".emailLabel" path="accountDto.emailAddress"/>
-                                <tags:inputNameValue nameKey=".altTrackingNumberLabel" path="accountDto.altTrackingNumber"/>
-                                <cti:checkRolesAndProperties value="ODDS_FOR_CONTROL">
-                                    <tags:checkboxNameValue nameKey=".notifyOddsForControlLabel" path="operatorGeneralUiExtras.notifyOddsForControl" id="notifyOddsForControlCheckbox"/>
-                                </cti:checkRolesAndProperties>
-                                <tags:textareaNameValue nameKey=".notesLabel" path="accountDto.accountNotes" rows="3" cols="20"/>
-                            
-                            </tags:nameValueContainer2>
-                        
-                        </tags:formElementContainer>
-                        
-                        <br>
-                        
-                        <%-- SERVICE INFORMATION --%>
-                        <tags:formElementContainer nameKey="serviceInformationSection">
+                    <%-- CUSTOMER CONTACT --%>
+                    <tags:sectionContainer2 nameKey="customerContactSection" styleClass="stacked">
                     
-                            <tags:nameValueContainer2 id="serviceInformationTable">
+                        <tags:nameValueContainer2 id="customerContactTable">
+                        
+                            <tags:inputNameValue nameKey=".accountNumberLabel" path="accountDto.accountNumber"/>
                             
-                                <tags:yukonListEntrySelectNameValue nameKey=".rateScheduleLabel" path="accountDto.rateScheduleEntryId" energyCompanyId="${energyCompanyId}" listName="RATE_SCHEDULE" defaultItemValue="0" defaultItemLabel="${naLabel}"/>
-                                <tags:checkboxNameValue nameKey=".presenceRequiredLabel" path="accountDto.isCustAtHome" id="isCustAtHomeCheckbox"/>
-                                <tags:inputNameValue nameKey=".customerStatusLabel" path="accountDto.customerStatus" size="1" maxlength="1"/>
-                                <tags:selectNameValue nameKey=".substationLabel" path="accountDto.siteInfo.substationName" items="${substations}" itemValue="name" itemLabel="name" defaultItemValue="(none)" defaultItemLabel="${naLabel}"/>
-                                <tags:inputNameValue nameKey=".feederLabel" path="accountDto.siteInfo.feeder"/>
-                                <tags:inputNameValue nameKey=".poleLabel" path="accountDto.siteInfo.pole"/>
-                                <tags:inputNameValue nameKey=".transformerSizeLabel" path="accountDto.siteInfo.transformerSize"/>
-                                <tags:inputNameValue nameKey=".serviceVoltageLabel" path="accountDto.siteInfo.serviceVoltage"/>
-                                
-                            </tags:nameValueContainer2>
+                            <c:if test="${mode == 'EDIT' || mode == 'CREATE' || accountGeneral.accountDto.isCommercial}">
+                                <tags:checkboxNameValue nameKey=".commercialLabel" path="accountDto.isCommercial" onclick="toggleCommercialInputs(this.checked);" id="isCommercialCheckbox"/>
+                                <tags:inputNameValue nameKey=".companyLabel" path="accountDto.companyName"/>
+                                <tags:yukonListEntrySelectNameValue id="accountDto.commercialTypeEntryId" nameKey=".commercialTypeLabel" path="accountDto.commercialTypeEntryId" energyCompanyId="${energyCompanyId}" listName="CI_CUST_TYPE"/>
+                            </c:if>
                             
-                        </tags:formElementContainer>
+                            <tags:inputNameValue nameKey=".customerNumberLabel" path="accountDto.customerNumber" nameClass="bob"/>
+                            <tags:inputNameValue nameKey=".lastNameLabel" path="accountDto.lastName"/>
+                            <tags:inputNameValue nameKey=".firstNameLabel" path="accountDto.firstName"/>
+                            <tags:inputNameValue nameKey=".homePhoneLabel" path="accountDto.homePhone"/>
+                            <tags:inputNameValue nameKey=".workPhoneLabel" path="accountDto.workPhone"/>
+                            <tags:inputNameValue nameKey=".emailLabel" path="accountDto.emailAddress"/>
+                            <tags:inputNameValue nameKey=".altTrackingNumberLabel" path="accountDto.altTrackingNumber"/>
+                            <cti:checkRolesAndProperties value="ODDS_FOR_CONTROL">
+                                <tags:checkboxNameValue nameKey=".notifyOddsForControlLabel" path="operatorGeneralUiExtras.notifyOddsForControl" id="notifyOddsForControlCheckbox"/>
+                            </cti:checkRolesAndProperties>
+                            <tags:textareaNameValue nameKey=".notesLabel" path="accountDto.accountNotes" rows="3" cols="20"/>
+                        
+                        </tags:nameValueContainer2>
+                    
+                    </tags:sectionContainer2>
+                    
+                    <%-- SERVICE INFORMATION --%>
+                    <tags:sectionContainer2 nameKey="serviceInformationSection" styleClass="stacked">
                 
-                </cti:dataGridCell>
-                
-                <cti:dataGridCell>
+                        <tags:nameValueContainer2 id="serviceInformationTable">
+                        
+                            <tags:yukonListEntrySelectNameValue nameKey=".rateScheduleLabel" path="accountDto.rateScheduleEntryId" energyCompanyId="${energyCompanyId}" listName="RATE_SCHEDULE" defaultItemValue="0" defaultItemLabel="${naLabel}"/>
+                            <tags:checkboxNameValue nameKey=".presenceRequiredLabel" path="accountDto.isCustAtHome" id="isCustAtHomeCheckbox"/>
+                            <tags:inputNameValue nameKey=".customerStatusLabel" path="accountDto.customerStatus" size="1" maxlength="1"/>
+                            <tags:selectNameValue nameKey=".substationLabel" path="accountDto.siteInfo.substationName" items="${substations}" itemValue="name" itemLabel="name" defaultItemValue="(none)" defaultItemLabel="${naLabel}"/>
+                            <tags:inputNameValue nameKey=".feederLabel" path="accountDto.siteInfo.feeder"/>
+                            <tags:inputNameValue nameKey=".poleLabel" path="accountDto.siteInfo.pole"/>
+                            <tags:inputNameValue nameKey=".transformerSizeLabel" path="accountDto.siteInfo.transformerSize"/>
+                            <tags:inputNameValue nameKey=".serviceVoltageLabel" path="accountDto.siteInfo.serviceVoltage"/>
+                            
+                        </tags:nameValueContainer2>
+                        
+                    </tags:sectionContainer2>
+                    
+                </div>
+                <div class="column two nogutter">
                 
                     <%--SERVICE ADDRESS --%>
-                    <tags:formElementContainer nameKey="serviceAddressSection">
+                    <tags:sectionContainer2 nameKey="serviceAddressSection" styleClass="stacked">
                         
                         <tags:nameValueContainer2 id="serviceAddressTable">
                         
@@ -270,12 +264,10 @@
                         
                         </tags:nameValueContainer2>
                     
-                    </tags:formElementContainer>
+                    </tags:sectionContainer2>
                     
-                    <br>
-                
                     <%-- BILLING ADDRESS --%>
-                    <tags:formElementContainer nameKey="billingAddressSection">
+                    <tags:sectionContainer2 nameKey="billingAddressSection" styleClass="stacked">
                         
                         <tags:nameValueContainer2 id="billingAddressTable">
                         
@@ -300,14 +292,12 @@
                             
                         </tags:nameValueContainer2>
                         
-                    </tags:formElementContainer>
-                
+                    </tags:sectionContainer2>
+                    
                     <c:if test="${showLoginSection}">
                     
-                        <br>
-                    
                         <%-- LOGIN INFO --%>
-                        <tags:formElementContainer nameKey="userInfoSection">
+                        <tags:sectionContainer2 nameKey="userInfoSection" styleClass="stacked">
                             
                             <tags:nameValueContainer2>
                                 <cti:msg2 var="none" key="defaults.none"/>
@@ -365,7 +355,7 @@
                             <cti:displayForPageEditModes modes="CREATE,EDIT">
                                 <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_ADMIN_CHANGE_LOGIN_PASSWORD">
                                     <c:if test="${supportsPasswordSet and empty passwordBean}">
-                                        <div class="actionArea">
+                                        <div class="action-area">
                                             <label><input id="showPasswordCheckbox" type="checkbox" onclick="showPassword()"/><i:inline key=".showPassword"/></label>
                                             <button type="button" class="f-generatePassword">
                                                 <i:inline key=".generatePassword" />
@@ -377,50 +367,52 @@
                             
                             <cti:displayForPageEditModes modes="EDIT">
                                 <c:if test="${loginMode eq 'EDIT'}">
-                                    <div class="actionArea">
+                                    <div class="action-area">
                                         <cti:button nameKey="delete.user" data-form="#deleteUserForm" classes="f-delete-user"/>
                                     </div>
                                 </c:if>
                             </cti:displayForPageEditModes>
                             
-                        </tags:formElementContainer>
+                        </tags:sectionContainer2>
                     </c:if>
+                
+                </div>
+            </div>
             
-                </cti:dataGridCell>
-            </cti:dataGrid>
-            
-            <br>
-            <br>
-    
             <%-- BUTTONS --%>
-            <cti:displayForPageEditModes modes="CREATE,EDIT">
-                <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-                    <cti:displayForPageEditModes modes="EDIT">
-                        <cti:button nameKey="save" type="submit" classes="f-blocker f-prepPasswordFields primary action"/>
-                        
-                        <cti:button nameKey="delete" classes="f-delete" data-form="#deleteAccountForm"/>
-                        
-                         <cti:url value="/stars/operator/account/view" var="viewUrl">
+            <div class="page-action-area">
+            
+                <cti:displayForPageEditModes modes="CREATE,EDIT">
+                    <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
+                        <cti:displayForPageEditModes modes="EDIT">
+                            <cti:button nameKey="save" type="submit" classes="f-blocker f-prepPasswordFields primary action"/>
+                            
+                            <cti:button nameKey="delete" classes="f-delete" data-form="#deleteAccountForm"/>
+                            
+                             <cti:url value="/stars/operator/account/view" var="viewUrl">
+                                <cti:param name="accountId" value="${accountId}"/>
+                            </cti:url>
+                            <cti:button nameKey="cancel" href="${viewUrl}"/>
+                        </cti:displayForPageEditModes>
+                    </cti:checkRolesAndProperties>
+                    
+                    <cti:displayForPageEditModes modes="CREATE">
+                        <cti:button nameKey="create" type="submit" classes="f-blocker f-prepPasswordFields primary action"/>
+                        <cti:url value="/stars/operator/inventory/home" var="homeUrl"/>
+                        <cti:button nameKey="cancel" href="${homeUrl}"/>
+                    </cti:displayForPageEditModes>
+                </cti:displayForPageEditModes>
+                
+                <cti:displayForPageEditModes modes="VIEW">
+                    <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
+                        <cti:url value="/stars/operator/account/edit" var="editUrl">
                             <cti:param name="accountId" value="${accountId}"/>
                         </cti:url>
-                        <cti:button nameKey="cancel" href="${viewUrl}"/>
-                    </cti:displayForPageEditModes>
-                </cti:checkRolesAndProperties>
-                <cti:displayForPageEditModes modes="CREATE">
-                    <cti:button nameKey="create" type="submit" classes="f-blocker f-prepPasswordFields primary action"/>
-                    <cti:url value="/stars/operator/inventory/home" var="homeUrl"/>
-                    <cti:button nameKey="cancel" href="${homeUrl}"/>
+                        <cti:button nameKey="edit" icon="icon-pencil" href="${editUrl}"/>
+                    </cti:checkRolesAndProperties>
                 </cti:displayForPageEditModes>
-            </cti:displayForPageEditModes>
+            </div>
             
-            <cti:displayForPageEditModes modes="VIEW">
-                <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-                    <cti:url value="/stars/operator/account/edit" var="editUrl">
-                        <cti:param name="accountId" value="${accountId}"/>
-                    </cti:url>
-                    <cti:button nameKey="edit" icon="icon-pencil" href="${editUrl}"/>
-                </cti:checkRolesAndProperties>
-            </cti:displayForPageEditModes>
         </form:form>
     
         <!-- Password Fields -->
@@ -447,7 +439,7 @@
                                     <tags:password path="password2" cssClass="password_editor_field" autocomplete="false" maxlength="64" />
                                 </tags:nameValue2>
                             </tags:nameValueContainer2>
-                            <div class="actionArea">
+                            <div class="action-area">
                                 <label><input id="showPasswordCheckbox" type="checkbox" onclick="showPassword()"/><i:inline key=".showPassword"/></label>
                                 <button type="button" class="f-generatePassword">
                                     <i:inline key=".generatePassword" />
@@ -458,5 +450,6 @@
                 </c:if>
             </cti:checkRolesAndProperties>
         </cti:displayForPageEditModes>
+        
     </cti:checkEnergyCompanyOperator>
 </cti:standardPage>

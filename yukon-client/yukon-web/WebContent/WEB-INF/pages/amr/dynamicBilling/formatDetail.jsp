@@ -88,7 +88,7 @@ BILLING_ERRORS = {
         <br>
         
         <!--  start Field pair columns -->
-        <div class="column_12_12">
+        <div class="column-12-12">
                 <div class="column one">
             <%--  FIELD SETUP --%>
                     <ct:sectionContainer2 nameKey=".fieldSetup" id="dbgFieldSetup">
@@ -105,7 +105,7 @@ BILLING_ERRORS = {
                                 </c:forEach>
                             </select>
                         </div>
-                        <div class="actionArea">
+                        <div class="action-area">
                             <cti:msg2 key=".moveUp" var="moveUp"/>
                             <cti:msg2 key=".moveDown" var="moveDown"/>
                             <cti:msg2 key=".remove" var="remove"/>
@@ -295,7 +295,7 @@ BILLING_ERRORS = {
             </script>
             
         </ct:sectionContainer2>
-        <div class="pageActionArea stacked">
+        <div class="page-action-area stacked">
             <cti:button nameKey="save" classes="primary action" onclick="saveButton();"/>
             <cti:button nameKey="cancel" id="btnCancelSetup" />
             

@@ -5,7 +5,7 @@
 
 <cti:standardPage module="support" page="errorCodes">
 
-    <table id="errorCodes" class="resultsTable">
+    <table id="errorCodes" class="results-table">
         <thead>
 	        <tr>
 	            <th><i:inline key=".header.code"/></th>

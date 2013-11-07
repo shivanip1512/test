@@ -51,11 +51,11 @@
     <style>
         div.migrationSection {width:80%;}
         img.componentInfo {vertical-align:middle;padding-left:4px;}
-        table.compactResultsTable td.component {padding-top:10px;}
-        table.compactResultsTable th.basic {text-align:right;}
-        table.compactResultsTable td.basic {width:100px;text-align:right;vertical-align:middle;}
-        table.compactResultsTable th.warnings {text-align:right;}
-        table.compactResultsTable td.warnings {white-space:nowrap;text-align:right;vertical-align:middle;}
+        table.compact-results-table td.component {padding-top:10px;}
+        table.compact-results-table th.basic {text-align:right;}
+        table.compact-results-table td.basic {width:100px;text-align:right;vertical-align:middle;}
+        table.compact-results-table th.warnings {text-align:right;}
+        table.compact-results-table td.warnings {white-space:nowrap;text-align:right;vertical-align:middle;}
     </style>
     
     <script type="text/javascript">
@@ -148,7 +148,7 @@
             </tags:nameValueContainer>      
 
             <%-- NOTE --%>
-            <span class="smallBoldLabel">${noteLabel}</span>
+            <span class="strong-label-small">${noteLabel}</span>
             <span style="font-size:11px;">${noteText}</span>
 
         </tags:sectionContainer>

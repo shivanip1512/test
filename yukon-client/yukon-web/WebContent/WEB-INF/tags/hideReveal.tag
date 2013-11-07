@@ -14,7 +14,7 @@
     <c:set var="collapsed" value="collapsed"/>
 </c:if>
 
-<div class="titledContainer triangleContainer ${pageScope.styleClass} ${pageScope.collapsed}" <c:if test="${!empty pageScope.id}" >id="${pageScope.id}"</c:if>>
+<div class="titled-container hide-reveal-container ${pageScope.styleClass} ${pageScope.collapsed}" <c:if test="${!empty pageScope.id}" >id="${pageScope.id}"</c:if>>
     <div class="title-bar clearfix">
         <c:choose>
             <c:when test="${pageScope.escapeTitle}"><h3 class="title toggle-title">${fn:escapeXml(pageScope.title)}</h3></c:when>

@@ -12,22 +12,22 @@
                 <span class="empty-list"><i:inline key=".deviceStatusHistory.none"/></span>
             </c:when>
             <c:otherwise>
-                <div class="scrollingContainer_small">
-                    <table class="compactResultsTable">
+                <div class="scroll-small">
+                    <table class="compact-results-table dashed">
                         <thead>
                             <tr>
-                                <th class="wsnw"><i:inline key=".deviceStatusHistory.event"/></th>
-                                <th class="wsnw"><i:inline key=".deviceStatusHistory.userName"/></th>
-                                <th class="wsnw"><i:inline key=".deviceStatusHistory.timeOfEvent"/></th>
+                                <th><i:inline key=".deviceStatusHistory.event"/></th>
+                                <th><i:inline key=".deviceStatusHistory.userName"/></th>
+                                <th><i:inline key=".deviceStatusHistory.timeOfEvent"/></th>
                             </tr>
                         </thead>
                         <tfoot></tfoot>
                         <tbody>
                             <c:forEach var="event" items="${deviceStatusHistory}">
                                 <tr>
-                                    <td class="wsnw"><spring:escapeBody htmlEscape="true">${event.actionText}</spring:escapeBody></td>
-                                    <td class="wsnw"><spring:escapeBody htmlEscape="true">${event.userName}</spring:escapeBody></td>
-                                    <td class="wsnw last"><cti:formatDate value="${event.eventBase.eventTimestamp}" type="BOTH"/></td>
+                                    <td><spring:escapeBody htmlEscape="true">${event.actionText}</spring:escapeBody></td>
+                                    <td><spring:escapeBody htmlEscape="true">${event.userName}</spring:escapeBody></td>
+                                    <td><cti:formatDate value="${event.eventBase.eventTimestamp}" type="BOTH"/></td>
                                 </tr>
                             </c:forEach>
                         </tbody>
@@ -44,8 +44,8 @@
                     <span class="empty-list"><i:inline key=".hardwareHistory.none"/></span>
                 </c:when>
                 <c:otherwise>
-                    <div class="scrollingContainer_small">
-                        <table class="compactResultsTable">
+                    <div class="scroll-small">
+                        <table class="compact-results-table dashed">
                             <thead>
                                 <tr>
                                     <th><i:inline key=".hardwareHistory.date"/></th>

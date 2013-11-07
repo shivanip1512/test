@@ -30,25 +30,25 @@ function taskFinished() {
     <c:set var="newTask" value="${empty taskId}"/>
     
     <c:if test="${empty task}">
-        <tags:formElementContainer nameKey="resendConfigContainer">
+        <tags:sectionContainer2 nameKey="resendConfigContainer">
             <form action="do">
                 <cti:inventoryCollection inventoryCollection="${inventoryCollection}"/>
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".disclaimerLabel"><i:inline key=".disclaimer"/></tags:nameValue2>
                 </tags:nameValueContainer2>
                 
-                <div class="pageActionArea">
+                <div class="page-action-area">
                     <cti:button nameKey="start" type="submit" name="start"/>
                     <cti:button nameKey="cancel" type="submit" name="cancel"/>
                 </div>
             </form>
-        </tags:formElementContainer>
+        </tags:sectionContainer2>
     </c:if>
 
     <c:if test="${not empty task}">
         <form action="do" method="post">
             <input type="hidden" name="taskId" value="${task.taskId}">
-            <tags:formElementContainer nameKey="progress">
+            <tags:sectionContainer2 nameKey="progress">
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".progress">
                         <tags:updateableProgressBar totalCount="${task.totalItems}" countKey="INVENTORY_TASK/${task.taskId}/ITEMS_PROCESSED"/>
@@ -58,7 +58,7 @@ function taskFinished() {
                             <cti:param name="taskId" value="${task.taskId}"/>
                             <cti:param name="type" value="SUCCESS"/>
                         </cti:url>
-                        <cti:dataUpdaterValue type="INVENTORY_TASK" identifier="${task.taskId}/SUCCESS_COUNT" styleClass="successMessage fwb"/>
+                        <cti:dataUpdaterValue type="INVENTORY_TASK" identifier="${task.taskId}/SUCCESS_COUNT" styleClass="success fwb"/>
                         <cti:classUpdater type="INVENTORY_TASK" identifier="${task.taskId}/NEW_OPERATION_FOR_SUCCESS">
                             <ul class="resultList">
                                 <li>
@@ -73,7 +73,7 @@ function taskFinished() {
                             <cti:param name="taskId" value="${task.taskId}"/>
                             <cti:param name="type" value="UNSUPPORTED"/>
                         </cti:url>
-                        <cti:dataUpdaterValue type="INVENTORY_TASK" identifier="${task.taskId}/UNSUPPORTED_COUNT" styleClass="warningMessage fwb"/>
+                        <cti:dataUpdaterValue type="INVENTORY_TASK" identifier="${task.taskId}/UNSUPPORTED_COUNT" styleClass="warning fwb"/>
                         <cti:classUpdater type="INVENTORY_TASK" identifier="${task.taskId}/NEW_OPERATION_FOR_UNSUPPORTED">
                             <ul class="resultList">
                                 <li>
@@ -88,7 +88,7 @@ function taskFinished() {
                             <cti:param name="taskId" value="${task.taskId}"/>
                             <cti:param name="type" value="FAILED"/>
                         </cti:url>
-                        <cti:dataUpdaterValue type="INVENTORY_TASK" identifier="${task.taskId}/FAILED_COUNT" styleClass="errorMessage fwb"/>
+                        <cti:dataUpdaterValue type="INVENTORY_TASK" identifier="${task.taskId}/FAILED_COUNT" styleClass="error fwb"/>
                         
                         <cti:classUpdater type="INVENTORY_TASK" identifier="${task.taskId}/NEW_OPERATION_FOR_FAILED">
                             <ul class="resultList">
@@ -104,7 +104,7 @@ function taskFinished() {
                     
                 </tags:nameValueContainer2>
                 
-                <div class="pageActionArea stacked">
+                <div class="page-action-area stacked">
                     <c:if test="${!task.complete}">
                         <c:set var="buttonClass" value="db"/>
                         <c:set var="linkClass" value="dn"/>
@@ -117,7 +117,7 @@ function taskFinished() {
                 </div>
                 <cti:dataUpdaterEventCallback function="taskFinished" id="INVENTORY_TASK/${task.taskId}/IS_COMPLETE" />
                 
-            </tags:formElementContainer>
+            </tags:sectionContainer2>
         </form>
     </c:if>
         

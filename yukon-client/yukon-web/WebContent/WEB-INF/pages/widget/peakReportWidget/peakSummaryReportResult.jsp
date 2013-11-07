@@ -13,7 +13,7 @@
 	<br/>
 	<c:choose>
 		<c:when test="${!peakResult.noData && peakResult.deviceError == ''}">
-			<table class="compactResultsTable">
+			<table class="compact-results-table">
 				<tr>
 					<cti:msg2 key="${peakResult.peakType.reportTypeDisplayNameKey}" var="reportType"/>
 					<th align="left"><i:inline key=".report" arguments="${reportType}"/></th>
@@ -56,7 +56,7 @@
 		</c:when>
 		<c:otherwise>
 			<cti:msg2 var="errorPeakReport" key=".errorRead"/>
-			<tags:hideReveal styleClass="errorMessage" title="${errorPeakReport}" showInitially="true">
+			<tags:hideReveal styleClass="error" title="${errorPeakReport}" showInitially="true">
       			<c:forEach items="${peakResult.errors}" var="error">
         			${error.description} (${error.errorCode})<br>
                     ${error.porter}<br>

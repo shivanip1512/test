@@ -27,7 +27,7 @@
         </tags:nameValueContainer2>
 
         <!-- PAGE ACTION BUTTONS -->
-        <div class="pageActionArea clear" style="margin-bottom: 20px;">
+        <div class="page-action-area clear" style="margin-bottom: 20px;">
             <cti:displayForPageEditModes modes="VIEW">
                 <cti:checkRolesAndProperties value="${editingRoleProperty}">
                     <cti:url value="edit" var="editUrl">
@@ -68,7 +68,7 @@
             <div><i:inline key=".unassignWarning"/></div>
         </tags:sectionContainer2>
 
-        <div class="column_6_18">
+        <div class="column-6-18">
             <!-- CATEGORIES -->
             <div class="column one">
                 <form:form commandName="configurationDeviceTypesBackingBean" action="addSupportedType">
@@ -105,7 +105,7 @@
                     <cti:displayForPageEditModes modes="VIEW">
                         <cti:checkRolesAndProperties value="${editingRoleProperty}">
                             <c:if test="${! empty configurationDeviceTypesBackingBean.availableTypes}">
-                                <div class="actionArea">
+                                <div class="action-area">
                                     <cti:button nameKey="addTypes" data-config-id="${deviceConfigurationBackingBean.configId}" id="addTypeBtn" icon="icon-add" renderMode="button"/>
                                 </div>
                             </c:if>

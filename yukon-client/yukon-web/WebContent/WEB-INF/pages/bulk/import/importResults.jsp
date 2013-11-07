@@ -10,7 +10,7 @@
 
     <tags:backgroundProcessResultHolder resultsTypeMsgKey="import" callbackResult="${callbackResult}" />
     <form id="importResultsForm" type="post" action="/bulk/import/upload">
-      <div class="pageActionArea">
+      <div class="page-action-area">
         <button type="submit">
           <span class="label"><i:inline key="yukon.common.device.bulk.importResults.backToUpload" /></span>
         </button>

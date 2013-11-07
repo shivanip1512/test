@@ -19,8 +19,8 @@
         <tags:nameValue2 nameKey="yukon.common.device">${fn:escapeXml(deviceName)}</tags:nameValue2>
         <tags:nameValue2 nameKey="yukon.common.point">${fn:escapeXml(pointName)}</tags:nameValue2>
         </tags:nameValueContainer2>
-        <div class="scrollingContainer_large">
-            <table id="tagList" class="compactResultsTable rowHighlighting with-form-controls">
+        <div class="scroll-large">
+            <table id="tagList" class="compact-results-table row-highlighting with-form-controls">
                 <thead>
                     <tr>
                         <th><i:inline key=".tags.group"/></th>
@@ -52,13 +52,13 @@
                 </tbody>
             </table>
         </div>
-        <div class="actionArea">
+        <div class="action-area">
             <cti:button id="newTag" nameKey="tags.newTagButton" icon="icon-add" classes="f-tags-add" var="tagsPopupTitle"/>
         </div>
-        <div class="actionArea">
+        <div class="action-area">
             <form:checkbox path="deviceControlInhibited" />&nbsp;<i:inline key=".tags.cntrDisabledOnDevice"/>
         </div>
-        <div class="actionArea">
+        <div class="action-area">
             <cti:button id="save"  nameKey="save" classes="primary action f-tags-save"/>
             <cti:button nameKey="close" onclick="jQuery('#tdc-popup').dialog('close');" />
         </div>

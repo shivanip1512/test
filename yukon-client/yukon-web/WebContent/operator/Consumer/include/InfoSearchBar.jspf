@@ -1,6 +1,6 @@
 <table width="100%" border="0" cellpadding="3">
   <tr> 
-    <td width="50%" valign = "top" align = "left"><span class="TitleHeader">Acct 
+    <td width="50%" valign = "top" align = "left"><span class="title-header">Acct 
       #<%= account.getAccountNumber() %></span><br>
 <%
 	ContactNotification contHomePhone = ServletUtils.getContactNotification(primContact, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE);
@@ -23,7 +23,7 @@ if (contWorkPhone != null)
       </span><br>
       <span class="NavText"><%= ServletUtils.getOneLineAddress(propAddr) %></span><br>
     </td>
-    <td align = "right" width="50%"><span class="TitleHeader"> 
+    <td align = "right" width="50%"><span class="title-header"> 
 	  <form name="searchForm" method="POST" action="<%= request.getContextPath() %>/servlet/SOAPClient">
 		<input type="hidden" name="action" value="SearchCustAccount">
         <select name="SearchBy" onchange="document.searchForm.SearchValue.value=''">
@@ -52,7 +52,7 @@ if (contWorkPhone != null)
  %>
 	<table width="100%" border="0" cellspacing="0" cellpadding="3">
 	  <tr>
-	    <td align="center" class="TitleHeader"><%= header %></td>
+	    <td align="center" class="title-header"><%= header %></td>
 	  </tr>
 	</table>
 <%

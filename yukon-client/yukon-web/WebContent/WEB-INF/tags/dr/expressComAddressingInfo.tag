@@ -9,7 +9,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr"%>
 
-<tags:formElementContainer nameKey="expressComAddresses">
+<tags:sectionContainer2 nameKey="expressComAddresses">
     <tags:nameValueContainer2>
         <tags:nameValue2 nameKey=".serviceProvider">
             <tags:input path="addressingInfo.serviceProvider" size="6" maxlength="15"/>
@@ -30,4 +30,4 @@
             <tags:input path="addressingInfo.userAddress" size="6" maxlength="15"/>
         </tags:nameValue2>
     </tags:nameValueContainer2>
-</tags:formElementContainer>
+</tags:sectionContainer2>

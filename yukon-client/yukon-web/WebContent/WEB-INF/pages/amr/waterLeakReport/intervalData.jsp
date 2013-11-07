@@ -41,13 +41,13 @@
     <c:set var="detection_algorithm">
         <a href="javascript:void(0);" class="f-open_detection_algorithm"><i:inline key="yukon.web.modules.amr.waterLeakReport.report.leakDetectionAlgorithm"/></a>
     </c:set>
-	<div class="page_help">
+	<div class="page-help">
 		<cti:msg2 key=".leakIndicationDescription" arguments="${detection_algorithm}" htmlEscapeArguments="false"/>
 	</div>
 
 	<tags:pagedBox2 nameKey="tableTitle" searchResult="${filterResult}"
 		baseUrl="intervalData" titleLinkHtml="${actionsMenu}">
-		<table class="compactResultsTable f-traversable has-actions">
+		<table class="compact-results-table f-traversable has-actions">
 			<tr>
 				<th>
                     <tags:sortLink nameKey="tableHeader.deviceName" baseUrl="intervalData" fieldName="DEVICE_NAME" isDefault="false" />

@@ -16,7 +16,7 @@
 
 <script type="text/javascript">
 jQuery(function() {
-    jQuery(document).on('click', '.f-ajaxPaging', function(event) {
+    jQuery(document).on('click', '.f-ajax-paging', function(event) {
         
         event.stopPropagation();
         var url = jQuery(event.currentTarget).data('url');
@@ -32,9 +32,9 @@ jQuery(function() {
 });
 </script>
 
-<div class="column_12_12">
+<div class="column-12-12">
     <div class="column one">
-        <tags:formElementContainer nameKey="settings">
+        <tags:sectionContainer2 nameKey="settings">
             <tags:selectedInventory inventoryCollection="${inventoryCollection}" id="inventoryCollection"/>
             <form:form commandName="settings" action="runAudit">
                 <cti:inventoryCollection inventoryCollection="${settings.collection}"/>
@@ -46,9 +46,9 @@ jQuery(function() {
                         <dt:dateTime path="to" value="${settings.to}"/>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
-                <div class="pageActionArea"><cti:button type="submit" nameKey="runAudit"/></div>
+                <div class="page-action-area"><cti:button type="submit" nameKey="runAudit"/></div>
             </form:form>
-        </tags:formElementContainer>
+        </tags:sectionContainer2>
     </div>
     <div class="column two nogutter">
         <c:if test="${not empty auditId}">
@@ -65,16 +65,16 @@ jQuery(function() {
 
 <c:if test="${fn:length(audit.controlledRows) > 0}">
     <tags:sectionContainer2 nameKey="controlledDevices" styleClass="stacked cl" hideEnabled="true">
-        <div class="column_18_6">
+        <div class="column-18-6">
                 <div class="column one">
                     <dr:controlAuditResult result="${audit.controlledPaged}" type="CONTROLLED" auditId="${auditId}"/>
                 </div>
                 <div class="column two nogutter">
-                    <tags:nameValueContainer2 tableClass="sectionContainerNameValue stats">
+                    <tags:nameValueContainer2 tableClass="stats">
                         <c:set var="percent" value="${fn:length(audit.controlledRows) / fn:length(settings.collection.list)}"/>
                         <tags:nameValue2 nameKey=".deviceCount">${fn:length(audit.controlledRows)} (<fmt:formatNumber value="${percent}" type="percent" maxFractionDigits="1"/>)</tags:nameValue2>
                     </tags:nameValueContainer2>
-                    <ul class="labeledImageStack">
+                    <ul class="labeled-image-stack">
                         <li class="clearfix">
                             <cti:url var="newOperationControlled" value="newOperation">
                                 <cti:param name="auditId" value="${audit.auditId}"/>
@@ -97,7 +97,7 @@ jQuery(function() {
 
 <c:if test="${fn:length(audit.uncontrolledRows) > 0}">
     <tags:sectionContainer2 nameKey="uncontrolledDevices"  hideEnabled="true" styleClass="stacked cl">
-        <div class="column_18_6">
+        <div class="column-18-6">
                 <div class="column one">
                     <dr:controlAuditResult result="${audit.uncontrolledPaged}" type="UNCONTROLLED" auditId="${auditId}"/>
                 </div>
@@ -106,7 +106,7 @@ jQuery(function() {
                         <c:set var="percent" value="${fn:length(audit.uncontrolledRows) / fn:length(settings.collection.list)}"/>
                         <tags:nameValue2 nameKey=".deviceCount">${fn:length(audit.uncontrolledRows)} (<fmt:formatNumber value="${percent}" type="percent" maxFractionDigits="1"/>)</tags:nameValue2>
                     </tags:nameValueContainer2>
-                    <ul class="labeledImageStack">
+                    <ul class="labeled-image-stack">
                         <li class="clearfix">
                             <cti:url var="newOperationUncontrolled" value="newOperation">
                                 <cti:param name="auditId" value="${audit.auditId}"/>
@@ -129,7 +129,7 @@ jQuery(function() {
     
 <c:if test="${fn:length(audit.unknownRows) > 0}">
     <tags:sectionContainer2 nameKey="unknownDevices" hideEnabled="true" styleClass="stacked cl">
-        <div class="column_18_6">
+        <div class="column-18-6">
                 <div class="column one">
                     <dr:controlAuditResult result="${audit.unknownPaged}" type="UNKNOWN" auditId="${auditId}"/>
                 </div>
@@ -138,7 +138,7 @@ jQuery(function() {
                         <c:set var="percent" value="${fn:length(audit.unknownRows) / fn:length(settings.collection.list)}"/>
                         <tags:nameValue2 nameKey=".deviceCount">${fn:length(audit.unknownRows)} (<fmt:formatNumber value="${percent}" type="percent" maxFractionDigits="1"/>)</tags:nameValue2>
                     </tags:nameValueContainer2>
-                    <ul class="labeledImageStack">
+                    <ul class="labeled-image-stack">
                         <li class="clearfix">
                             <cti:url var="newOperationUnknown" value="newOperation">
                                 <cti:param name="auditId" value="${audit.auditId}"/>
@@ -161,16 +161,16 @@ jQuery(function() {
 
 <c:if test="${fn:length(audit.unsupportedRows) > 0}">
     <tags:sectionContainer2 nameKey="unsupportedDevices" styleClass="stacked cl" hideEnabled="true">
-        <div class="column_18_6">
+        <div class="column-18-6">
                 <div class="column one">
                     <dr:controlAuditResult result="${audit.unsupportedPaged}" type="UNSUPPORTED" auditId="${auditId}"/>
                 </div>
                 <div class="column two nogutter">
-                    <tags:nameValueContainer2 tableClass="sectionContainerNameValue stats">
+                    <tags:nameValueContainer2 tableClass="stats">
                         <c:set var="percent" value="${fn:length(audit.unsupportedRows) / fn:length(settings.collection.list)}"/>
                         <tags:nameValue2 nameKey=".deviceCount">${fn:length(audit.unsupportedRows)} (<fmt:formatNumber value="${percent}" type="percent" maxFractionDigits="1"/>)</tags:nameValue2>
                     </tags:nameValueContainer2>
-                    <ul class="labeledImageStack">
+                    <ul class="labeled-image-stack">
                         <li class="clearfix">
                             <cti:url var="newOperationControlled" value="newOperation">
                                 <cti:param name="auditId" value="${audit.auditId}"/>

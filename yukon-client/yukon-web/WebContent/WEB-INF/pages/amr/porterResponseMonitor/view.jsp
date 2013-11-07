@@ -74,8 +74,8 @@
     </i:simplePopup>
 
     <i:simplePopup titleKey=".errorCodesPopup" id="errorCodesHelpPopup" on="#errorHelp">
-        <div class="scrollingContainer_large">
-            <table id="errorCodes" class="compactResultsTable stacked">
+        <div class="scroll-large">
+            <table id="errorCodes" class="compact-results-table stacked">
                 <thead>
                     <tr>
                         <th><i:inline key=".errorCodesPopup.header.code" /></th>
@@ -100,7 +100,7 @@
     </i:simplePopup>
 
 	<%-- MAIN DETAILS --%>
-	<tags:formElementContainer nameKey="sectionHeader">
+	<tags:sectionContainer2 nameKey="sectionHeader">
 		<tags:nameValueContainer2>
 
 			<%-- monitor name --%>
@@ -138,11 +138,11 @@
 				<i:inline key="${monitorDto.evaluatorStatus}"/>
 			</tags:nameValue2>
         </tags:nameValueContainer2>
-    </tags:formElementContainer>
+    </tags:sectionContainer2>
 	<c:choose>
 		<c:when test="${not empty monitorDto.rules}">
 			<tags:boxContainer2 nameKey="rulesTable" id="rulesTable">
-				<table class="compactResultsTable">
+				<table class="compact-results-table">
                     <thead>
     					<tr>
     						<th><i:inline key=".rulesTable.header.ruleOrder" /></th>
@@ -162,10 +162,10 @@
     							<td nowrap="nowrap">
                                     <c:choose>
                                         <c:when test="${rule.value.success}">
-                                            <span class="successMessage"><i:inline key=".rule.success"/></span>
+                                            <span class="success"><i:inline key=".rule.success"/></span>
                                         </c:when>
                                         <c:otherwise>
-                                            <span class="errorMessage"><i:inline key=".rule.failure"/></span>
+                                            <span class="error"><i:inline key=".rule.failure"/></span>
                                         </c:otherwise>
                                     </c:choose>
                                 </td>
@@ -180,7 +180,7 @@
 		</c:when>
 	</c:choose>
 
-	<div class="pageActionArea">
+	<div class="page-action-area">
 		<form id="editMonitorForm" action="/amr/porterResponseMonitor/editPage" method="get">
 			<input type="hidden" name="monitorId" value="${monitorDto.monitorId}">
             <cti:button nameKey="edit" icon="icon-pencil" type="submit" classes="f-blocker"/>

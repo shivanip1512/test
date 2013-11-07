@@ -16,7 +16,7 @@
 
 <c:set var="pageMe" value="${result.hitCount > 10}"/>
 <div id="${type}_Content box">
-    <table class="compactResultsTable rowHighlighting">
+    <table class="compact-results-table row-highlighting">
         <thead>
             <tr>
                 <th><i:inline key=".serialNumber"/></th>

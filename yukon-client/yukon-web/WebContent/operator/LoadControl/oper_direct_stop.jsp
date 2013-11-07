@@ -213,7 +213,7 @@
 		  <table width="657" border="0" cellspacing="0" cellpadding="0">
 <struts:form name="checker" type="com.cannontech.web.validate.PageBean" action="oper_direct_stop.jsp" onSubmit="return validForm(this)"> 
   <tr> 
-                <td width="650" class="TitleHeader"> 
+                <td width="650" class="title-header"> 
                   <div align="center"><br>DIRECT CONTROL - STOP PROGRAM<br><br>
                   </div>
                   <table width="225" border="1" cellspacing="0" cellpadding="5" align="center">

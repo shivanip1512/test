@@ -59,7 +59,7 @@ jQuery( function () {
         <form:hidden path="gearNumber"/>
     </c:if>
 
-    <table class="compactResultsTable">
+    <table class="compact-results-table">
         <thead>
             <tr>
                 <th><cti:msg2 key=".stopTime"/></th>
@@ -109,7 +109,7 @@ jQuery( function () {
     </table>
 
 
-    <div class="actionArea">
+    <div class="action-area">
         <cti:button nameKey="ok" classes="primary action" type="submit"/>
         <c:if test="${stopGearAllowed}">
             <cti:button id="nextButton" nameKey="next" classes="primary action" type="submit"/>

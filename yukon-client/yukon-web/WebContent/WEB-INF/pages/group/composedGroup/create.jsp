@@ -82,7 +82,7 @@
      </h3>
     <br>
     <%-- RULES TABLE --%>
-    <table id="groupsTable" class="resultsTable">
+    <table id="groupsTable" class="results-table">
         <thead>
             <tr>
                 <th>${headerRulesText}</th>

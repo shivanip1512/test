@@ -104,7 +104,7 @@
         <c:if test="${jobWrapper.retrySetup}">
             <tags:nameValue name="Retry Options">
                 
-                <table class="compactResultsTable">
+                <table class="compact-results-table">
                     <c:if test="${not empty jobWrapper.queuedRetryCount}">
                     <tr>
                         <td style="width:15px;">${jobWrapper.queuedRetryCount}</td>
@@ -211,7 +211,7 @@
                 
 <%-- EDIT --%>
 <c:if test="${canManage}">
-    <div class="pageActionArea">
+    <div class="page-action-area">
         <cti:url value="/group/scheduledGroupRequestExecution/home" var="editUrl">
             <cti:param name="editJobId" value="${jobWrapper.job.id}"/>
         </cti:url>

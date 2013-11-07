@@ -1,24 +1,21 @@
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
-<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
-<%@ taglib tagdir="/WEB-INF/tags" prefix="tags" %>
-<%@ taglib tagdir="/WEB-INF/tags/i18n" prefix="i" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="operator" page="appliance.edit">
     
     <tags:setFormEditMode mode="${mode}"/>
 
     <script type="text/javascript">
-
         Yukon.ui.aux.alignTableColumnsByTable('#enrollmentTable', '#hardwareSummaryTable');
-    
     </script>
     
-    <table>
-      <tr>
-        <td rowspan="3" valign="top">
-            <tags:formElementContainer nameKey="applianceInfo">
+    <div class="column-12-12">
+        <div class="column one">
+            <tags:sectionContainer2 nameKey="applianceInfo">
 
                 <form:form commandName="starsAppliance" action="/stars/operator/appliances/applianceUpdate">
                     <tags:nameValueContainer2>
@@ -28,7 +25,7 @@
                         <form:hidden path="applianceID"/>
                         <form:hidden path="applianceCategory.applianceCategoryId"/>
                         <tags:nameValue2 nameKey=".applianceCategory">
-                            <spring:escapeBody htmlEscape="true">${starsAppliance.applianceCategory.name}</spring:escapeBody>
+                            ${fn:escapeXml(starsAppliance.applianceCategory.name)}
                         </tags:nameValue2>
                 
                         <tags:inputNameValue nameKey=".modelNumber" path="modelNumber"/>
@@ -114,15 +111,15 @@
                     
                     <cti:displayForPageEditModes modes="CREATE,EDIT">
                         <cti:displayForPageEditModes modes="CREATE">
-                            <cti:button nameKey="save" name="create" type="submit"/>
+                            <cti:button nameKey="save" name="create" type="submit" classes="primary action"/>
                             <cti:url value="/stars/operator/appliances/applianceList" var="cancelUrl">
                                 <cti:param name="accountId" value="${accountId}"/>
                             </cti:url>
                         </cti:displayForPageEditModes>
                         
                         <cti:displayForPageEditModes modes="EDIT">
-                            <cti:button nameKey="save" name="update" type="submit"/>
-                            <cti:button nameKey="delete" name="delete" type="submit"/>
+                            <cti:button nameKey="save" name="update" type="submit" classes="primary action"/>
+                            <cti:button nameKey="delete" name="delete" type="submit" classes="delete"/>
                             <cti:url value="/stars/operator/appliances/view" var="cancelUrl">
                                 <cti:param name="accountId" value="${accountId}"/>
                                 <cti:param name="applianceId" value="${starsAppliance.applianceID}"/>
@@ -143,48 +140,41 @@
                     </cti:displayForPageEditModes>
                     
                 </form:form>
-
-                <br>
-            </tags:formElementContainer>
-        </td>
-        <td rowspan="3" width="50px"></td>
-        <td valign="top">
+            </tags:sectionContainer2>
+        </div>
+        <div class="column two nogutter">
             <c:if test="${not empty displayableInventoryEnrollment}">
-                <tags:formElementContainer nameKey="enrollment">
+                <tags:sectionContainer2 nameKey="enrollment" styleClass="stacked">
                     <tags:nameValueContainer2 id="enrollmentTable">
                         <tags:nameValue2 nameKey=".program">
-                            <spring:escapeBody htmlEscape="true">${displayableInventoryEnrollment.programName.displayName}</spring:escapeBody>
+                            ${fn:escapeXml(displayableInventoryEnrollment.programName.displayName)}
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".loadGroup">
-                            <spring:escapeBody htmlEscape="true">${displayableInventoryEnrollment.loadGroupName}</spring:escapeBody>
+                            ${fn:escapeXml(displayableInventoryEnrollment.loadGroupName)}
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".relay">
-                            <spring:escapeBody htmlEscape="true">${displayableInventoryEnrollment.relay}</spring:escapeBody>
+                            ${fn:escapeXml(displayableInventoryEnrollment.relay)}
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
-                </tags:formElementContainer>
+                </tags:sectionContainer2>
             </c:if>
-        </td>
-      </tr>
-      <tr><td></td></tr>
-      <tr>
-        <td valign="top">
+            
             <c:if test="${not empty hardware}">
-                <tags:formElementContainer nameKey="hardwareSummary">
+                <tags:sectionContainer2 nameKey="hardwareSummary">
                     <tags:nameValueContainer2 id="hardwareSummaryTable">
                         <tags:nameValue2 nameKey=".category">
-                            <spring:escapeBody htmlEscape="true">${hardware.categoryName}</spring:escapeBody>
+                            ${fn:escapeXml(hardware.categoryName)}
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".hardwareType">
-                            <spring:escapeBody htmlEscape="true">${hardware.displayType}</spring:escapeBody>
+                            ${fn:escapeXml(hardware.displayType)}
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".serialNumber">
-                            <spring:escapeBody htmlEscape="true">${hardware.serialNumber}</spring:escapeBody>
+                            ${fn:escapeXml(hardware.serialNumber)}
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
-                </tags:formElementContainer>
+                </tags:sectionContainer2>
             </c:if>          
-        </td>
-      </tr>
-    </table>
+        </div>
+    </div>
+            
 </cti:standardPage>

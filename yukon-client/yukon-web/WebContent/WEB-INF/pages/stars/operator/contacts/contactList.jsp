@@ -8,26 +8,11 @@
 
 	<tags:setFormEditMode mode="${mode}"/>
 	
-<script type="text/javascript">
-function deleteAdditionalContact(id) {
-	jQuery('#deleteAdditionalContactId').val(id);
-	jQuery('#deleteAdditionalContactForm').submit();
-}
-</script>
-	
-	<form id="deleteAdditionalContactForm" action="/stars/operator/contacts/deleteAdditionalContact" method="post">
-		<input type="hidden" name="deleteAdditionalContactId" id="deleteAdditionalContactId"/>
-		<input type="hidden" name="accountId" value="${accountId}"/>
-	</form>
-	
-	<table class="resultsTable contactListTable">
+	<table class="compact-results-table no-stripes">
         <thead>
     		<tr>
     			<th><i:inline key=".header.contact"/></th>
     			<th><i:inline key=".header.notifications"/></th>
-    			<cti:displayForPageEditModes modes="EDIT,CREATE">
-    				<th class="removeCol"><i:inline key=".header.remove"/></th>
-    			</cti:displayForPageEditModes>
     		</tr>
         </thead>
 		
@@ -36,7 +21,7 @@ function deleteAdditionalContact(id) {
     		
     			<tr>
     			
-    				<td class="nameCol">
+    				<td>
     				
     					<cti:displayForPageEditModes modes="EDIT,CREATE,VIEW">
     						<cti:url var="contactEditUrl" value="/stars/operator/contacts/view">
@@ -51,7 +36,7 @@ function deleteAdditionalContact(id) {
     				
     				<td>
     					
-    					<table class="noStyle contactNotificationListTable">
+    					<table class="dib fl">
     						<c:if test="${not empty contact.homePhone}">
     							<tr>
     								<td class="type"><i:inline key="yukon.web.modules.operator.contactNotificationEnum.HOME_PHONE"/>:</td>
@@ -78,32 +63,17 @@ function deleteAdditionalContact(id) {
     						</c:forEach>
     					</table>
     					
-    					
+						<c:if test="${contact.primary}">
+							<span class="fr"><i:inline key=".isPrimary"/></span>
+						</c:if>
     				</td>
-    				
-    				<%-- REMOVE COLUMN --%>
-    				<cti:displayForPageEditModes modes="EDIT,CREATE">
-    				<td class="removeCol">
-    				
-    					<c:choose>
-    						<c:when test="${!contact.primary}">
-                                <cti:button nameKey="deleteContact" onclick="deleteAdditionalContact(${contact.contactId});" renderMode="labeledImage" icon="icon-cross"/>
-    						</c:when>
-    						<c:otherwise>
-    							<i:inline key=".isPrimary"/>
-    						</c:otherwise>
-    					</c:choose>
-    					
-    				</td>
-    				</cti:displayForPageEditModes>
-    			
     			</tr>
-    			
     		</c:forEach>
         </tbody>
-        
-        <%-- ADD CONTACT --%>
-    	<cti:displayForPageEditModes modes="EDIT,CREATE">
+	</table>
+    
+    <div class="page-action-area">
+        <cti:displayForPageEditModes modes="EDIT,CREATE">
             <tfoot>
                 <tr>
                     <td colspan="3">
@@ -115,8 +85,7 @@ function deleteAdditionalContact(id) {
                     </td>
                 </tr>
             </tfoot>
-    	</cti:displayForPageEditModes>
-	
-	</table>
+        </cti:displayForPageEditModes>
+    </div>
     
 </cti:standardPage>

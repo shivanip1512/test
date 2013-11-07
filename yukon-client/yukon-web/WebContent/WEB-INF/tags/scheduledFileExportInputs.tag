@@ -71,13 +71,13 @@ jQuery(function() {
 	<tags:inputNameValue nameKey=".scheduleName" path="scheduleName" maxlength="100"/>
 	
     <tags:nameValue2 nameKey=".exportFileName">
-        <tags:input path="exportFileName" id="exportFileName" maxlength="100"/>
-        <img src="${infoImg}" title="<cti:msg2 key=".exportFileNameInfo"/>"/>
         <c:if test="${exportData.scheduleName == exportData.exportFileName}">
             <c:set var="checked" value=" checked=\"true\""/>
         </c:if>
         <input id="sameAsSchedName" type="checkbox" ${checked}/>
         <label for="sameAsSchedName"><cti:msg2 key=".sameAsScheduleName"/></label>
+        <tags:input path="exportFileName" id="exportFileName" maxlength="100"/>
+        <img src="${infoImg}" title="<cti:msg2 key=".exportFileNameInfo"/>"/>
     </tags:nameValue2>
 
     <tags:nameValue2 nameKey="yukon.web.defaults.blank" excludeColon="true">

@@ -11,7 +11,7 @@
             <tags:nameValue2 nameKey=".deviceCount">${deviceCount}</tags:nameValue2>
         </tags:nameValueContainer2>
         <br>
-        <table class="resultsTable" style="padding-top: 5px;">
+        <table class="results-table" style="padding-top: 5px;">
             <thead>
                 <tr>
                     <th nowrap="nowrap">

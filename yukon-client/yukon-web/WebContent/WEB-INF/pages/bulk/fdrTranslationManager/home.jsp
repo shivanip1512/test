@@ -44,7 +44,7 @@
     }
     </script>
     
-    <div class="column_12_12">
+    <div class="column-12-12">
         <div class="column one">
             <div class="stacked clearfix">
                 <h3><i:inline key=".addRemoveTitle"/></h3>
@@ -62,7 +62,7 @@
                             <input type="checkbox" name="ignoreInvalidColumns">&nbsp;<i:inline key=".ignoreInvalidText"/>
                         </tags:nameValue>
                     </tags:nameValueContainer>
-                    <div class="actionArea">
+                    <div class="action-area">
                         <cti:button type="submit" nameKey="import" classes="primary action"/>
                     </div>
                 </form>
@@ -72,7 +72,7 @@
                 <i:inline key=".reportText"/>
             </div>
             <form id="downloadReportForm" method="post" action="/bulk/fdrTranslationManager/report" class="clearfix">
-                <div class="actionArea">
+                <div class="action-area">
                   <cti:button type="submit" nameKey="download" icon="icon-bullet-go-down"/>
                   <label>
                     <select name="reportInterface">
@@ -94,13 +94,13 @@
             <i:inline key=".defaultColumnsText"/><br>
             
             <div class="stacked">
-                <table class="resultsTable detail">
+                <table class="results-table detail">
                     <tr>
                         <th><i:inline key=".defaultColumnsHeader"/></th>
                         <th><i:inline key=".defaultColumnsDescriptionHeader"/></th>
                     </tr>
                     <tr>
-                        <td class="smallBoldLabel">
+                        <td class="strong-label-small">
                             ACTION
                         </td>
                         <td>
@@ -108,7 +108,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td class="smallBoldLabel">
+                        <td class="strong-label-small">
                             DEVICE_NAME
                         </td>
                         <td>
@@ -116,7 +116,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td class="smallBoldLabel">
+                        <td class="strong-label-small">
                             DEVICE_TYPE
                         </td>
                         <td>
@@ -124,7 +124,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td class="smallBoldLabel">
+                        <td class="strong-label-small">
                             POINT_NAME
                         </td>
                         <td>
@@ -133,7 +133,7 @@
                     </tr>
                     <c:forEach var="interfaceType" items="${interfaceTypes}">
                         <tr class="interface_${interfaceType}" style="display:none;">
-                            <td class="smallBoldLabel">
+                            <td class="strong-label-small">
                                 DIRECTION
                             </td>
                             <td>
@@ -153,7 +153,7 @@
                 </c:forEach>
             </select>
             <div class="stacked">
-            <table class="resultsTable detail">
+            <table class="results-table detail">
                 <c:forEach var="displayableInterface" items="${displayableInterfaces}">
                     <tr class="interface_${displayableInterface.name}" style="display: none;">
                         <th>
@@ -165,7 +165,7 @@
                     </tr>
                     <c:forEach var="colEntry" items="${displayableInterface.columnsAndDescriptions}">
                         <tr class="interface_${displayableInterface.name}" style="display:none;">
-                            <td class="smallBoldLabel">
+                            <td class="strong-label-small">
                                 ${colEntry.key}
                             </td>
                             <td>

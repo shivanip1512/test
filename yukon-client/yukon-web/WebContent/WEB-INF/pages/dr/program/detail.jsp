@@ -15,7 +15,7 @@
 
     <input id="assetId" type="hidden" value="${programId}"/>
 
-    <div class="column_12_12 clear">
+    <div class="column-12-12 clear">
         <div class="column one">
 
                 <%-- Program Info section --%>
@@ -402,7 +402,7 @@
     </div>
 
     <%-- Child Load Groups for the Program --%>
-    <div class="column_24">
+    <div class="column-24">
         <div class="column one nogutter">
             <c:set var="baseUrl" value="/dr/program/detail"/>
             <%@ include file="../loadGroup/loadGroupList.jspf" %>
@@ -417,7 +417,7 @@
             <c:set var="showScenarios" value="true"/>
         </cti:checkRolesAndProperties>
 
-        <div class="column_12_12">
+        <div class="column-12-12">
             <div class="column one">
             <c:if test="${showControlAreas}">
                     <%-- 

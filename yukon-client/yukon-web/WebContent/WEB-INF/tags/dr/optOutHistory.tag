@@ -9,21 +9,21 @@
 
 <c:choose>
     <c:when test="${fn:length(previousOptOutList) > 0}">
-        <table id="deviceTable" class="compactResultsTable rowHighlighting">
+        <table id="deviceTable" class="compact-results-table row-highlighting dashed">
             <thead>
 	            <tr>
-	                <th class="nonwrapping"><i:inline key=".device"/></th>
+	                <th><i:inline key=".device"/></th>
 	                <th><i:inline key=".program"/></th>
-	                <th class="nonwrapping"><i:inline key=".dateActive"/></th>
-	                <th class="nonwrapping"><i:inline key=".durationHeader"/></th>
-	                <th class="nonwrapping"><i:inline key=".actionLog"/></th>
+	                <th><i:inline key=".dateActive"/></th>
+	                <th><i:inline key=".durationHeader"/></th>
+	                <th><i:inline key=".actionLog"/></th>
 	            </tr>
 	        </thead>
 	        <tfoot></tfoot>
 	        <tbody>
 	            <c:forEach var="optOut" items="${previousOptOutList}">
 	                <tr>
-	                    <td valign="top" class="nonwrapping">
+	                    <td valign="top">
 	                        <spring:escapeBody htmlEscape="true">${optOut.inventory.displayName}</spring:escapeBody>
 	                    </td>
 	                    <td valign="top">
@@ -32,10 +32,10 @@
 	                            <spring:escapeBody htmlEscape="true">${program.programName}</spring:escapeBody>  
 	                        </c:forEach>
 	                    </td>
-	                    <td valign="top" class="nonwrapping">
+	                    <td valign="top">
 	                       <cti:formatDate value="${optOut.startDate}" type="DATEHM"/>
 	                    </td>
-	                    <td valign="top" class="nonwrapping">
+	                    <td valign="top">
 	                        <c:choose>
 	                            <c:when test="${optOut.state == 'SCHEDULE_CANCELED'}">
 	                                <i:inline key=".canceled"/>
@@ -45,7 +45,7 @@
 	                            </c:otherwise>
 	                        </c:choose>
 	                    </td>
-	                    <td valign="top" class="nonwrapping">
+	                    <td valign="top">
 	                        <c:forEach var="actionLogMessage" items="${previousOptOutDetails[optOut.eventId]}">
 	                            <cti:msg2 key="${actionLogMessage}"/><br>
 	                        </c:forEach>

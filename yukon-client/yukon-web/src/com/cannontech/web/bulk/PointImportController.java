@@ -212,9 +212,9 @@ public class PointImportController {
         JSONObject jsonObject = new JSONObject();
         
         for(String line : logLines) {
-            String quality = "successMessage";
+            String quality = "success";
             if(failedLines.contains(index)) {
-                quality = "errorMessage";
+                quality = "error";
             }
             jsonObject.put(line, quality);
             index++;

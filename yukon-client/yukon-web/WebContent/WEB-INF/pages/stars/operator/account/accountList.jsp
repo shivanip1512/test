@@ -8,7 +8,7 @@
 <cti:standardPage module="operator" page="accountList">
 
     <cti:checkEnergyCompanyOperator showError="true" >
-        <div class="column_12_12 stacked">
+        <div class="column-12-12 stacked">
             <div class="column one">
                 <tags:widget bean="operatorAccountSearchWidget" container="section"/>
             </div>
@@ -20,7 +20,7 @@
             <cti:msg2 var="resultBoxtitleText" key=".resultBoxtitle" arguments="${searchResultTitleArguments}"/>
             <tags:pagedBox searchResult="${accountSearchResultHolder.accountSearchResults}" baseUrl="/stars/operator/account/search" title="${resultBoxtitleText}" styleClass="clear">
             
-                <table class="compactResultsTable rowHighlighting">
+                <table class="compact-results-table row-highlighting">
                     <thead>
                         <tr>
                             <th><i:inline key=".accountNumberHeader"/></th>

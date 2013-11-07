@@ -11,7 +11,7 @@
     </c:if>
     
     <div style="overflow: auto;">
-        <table class="compactResultsTable">
+        <table class="compact-results-table">
             <tr style="text-align: left;">
                 <th>Attribute</th>
                 <th>Device</th>

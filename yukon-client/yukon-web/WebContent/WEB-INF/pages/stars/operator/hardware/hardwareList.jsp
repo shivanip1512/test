@@ -8,7 +8,6 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
 <cti:standardPage module="operator" page="hardware.list">
-<cti:includeCss link="/WebConfig/yukon/styles/operator/hardware.css"/>
 
 <cti:url var="hardwareListUrl" value="/stars/operator/hardware/list?accountId=${accountId}"/>
 <cti:url var="createUrl" value="/stars/operator/hardware/createPage"/>
@@ -115,7 +114,7 @@
             </tags:nameValue2>
         </tags:nameValueContainer2>
 
-        <div class="actionArea">
+        <div class="action-area">
             <cti:button nameKey="checkInventoryButton" onclick="showInvCheckingPopup('switch');" type="submit"/>
         </div>
     </form:form>
@@ -138,7 +137,7 @@
             </tags:nameValue2>
         </tags:nameValueContainer2>
 
-        <div class="actionArea">
+        <div class="action-area">
             <cti:button nameKey="checkInventoryButton" onclick="showInvCheckingPopup('thermostat');" type="submit"/>
         </div>
 
@@ -161,7 +160,7 @@
             </tags:nameValue2>
         </tags:nameValueContainer2>
 
-        <div class="actionArea">
+        <div class="action-area">
             <cti:button nameKey="checkInventoryButton" onclick="showInvCheckingPopup('gateway');" type="submit"/>
         </div>
     
@@ -176,7 +175,7 @@
 
         <div style="padding:10px;"><i:inline key=".serialNumber.inWarehouse"/></div>
 
-        <table class="compactResultsTable invCheckingTable" align="center">
+        <table class="compact-results-table invCheckingTable" align="center">
             <thead>
                 <tr>
                     <th nowrap="nowrap"><i:inline key=".serialNumberShort"/></th>
@@ -204,7 +203,7 @@
             <input type="hidden" name="inventoryId" value="${checkingAdd.inventoryId}">
             <input type="hidden" name="fromAccount" value="false">
 
-            <div class="actionArea">
+            <div class="action-area">
                 <cti:button nameKey="ok" type="submit" classes="primary action"/>
                 <cti:button nameKey="cancel" onclick="window.location='${hardwareListUrl}';"/>
             </div>
@@ -220,7 +219,7 @@
 
         <div class="hardwarePopup"><i:inline key=".serialNumber.foundOnAnotherAccount"/></div>
 
-        <table class="compactResultsTable invCheckingTable" align="center">
+        <table class="compact-results-table invCheckingTable" align="center">
             <thead>
                 <tr>
                     <th nowrap="nowrap"><i:inline key=".accountNumber"/></th>
@@ -252,7 +251,7 @@
             <input type="hidden" name="inventoryId" value="${checkingAdd.inventoryId}">
             <input type="hidden" name="fromAccount" value="true">
 
-            <div class="actionArea">
+            <div class="action-area">
                 <cti:button nameKey="ok" type="submit" classes="primary action"/>
                 <cti:button nameKey="cancel" onclick="window.location='${hardwareListUrl}';"/>
             </div>
@@ -273,7 +272,7 @@
             <input type="hidden" name="serialNumber" value="${checkingAdd.serialNumber}">
             <input type="hidden" name="hardwareTypeId" value="${checkingAdd.hardwareTypeId}">
 
-            <div class="actionArea">
+            <div class="action-area">
                 <cti:button nameKey="ok" type="submit" classes="f-blocker primary action"/>
                 <cti:button nameKey="cancel" onclick="window.location='${hardwareListUrl}';"/>
             </div>
@@ -289,7 +288,7 @@
 
         <div class="hardwarePopup"><i:inline key=".error.notFound.serialNumber" arguments="${notFoundSerial}"/></div>
 
-        <div class="actionArea">
+        <div class="action-area">
             <cti:button nameKey="ok" type="submit" classes="f-blocker primary action"/>
             <cti:button nameKey="cancel" onclick="window.location='${hardwareListUrl}';"/>
         </div>
@@ -304,7 +303,7 @@
 
         <div class="hardwarePopup"><i:inline key=".error.sameAccount.serialNumber" arguments="${sameAccountSerial}"/></div>
 
-        <div class="actionArea">
+        <div class="action-area">
             <cti:button nameKey="ok"  classes="primary action" onclick="window.location='${hardwareListUrl}';"/>
         </div>
     </i:simplePopup>
@@ -318,7 +317,7 @@
 
         <div class="hardwarePopup"><i:inline key=".error.anotherEC.serialNumber" arguments="${anotherEC}"/></div>
 
-        <div class="actionArea">
+        <div class="action-area">
             <cti:button nameKey="ok" classes="primary action" onclick="window.location='${hardwareListUrl}';"/>
         </div>
     </i:simplePopup>
@@ -333,7 +332,7 @@
                 <span class="empty-list"><i:inline key=".switches.none"/></span>
             </c:when>
             <c:otherwise>
-                <table class="table-thirds compactResultsTable dashed rowHighlighting has-actions">
+                <table class="table-thirds compact-results-table dashed row-highlighting has-actions">
                     <thead>
                         <tr>
                             <th><i:inline key=".serialNumber"/></th>
@@ -380,7 +379,7 @@
         </c:choose>
 
         <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-            <div class="actionArea">
+            <div class="action-area">
                 <form action="${createUrl}">
                     <input type="hidden" name="accountId" value="${accountId}">
                     <input type="hidden" name="hardwareClass" value="${switchClass}">
@@ -419,7 +418,7 @@
                 <span class="empty-list"><i:inline key=".thermostats.none"/></span>
             </c:when>
             <c:otherwise>
-                <table class="table-thirds compactResultsTable dashed rowHighlighting has-actions">
+                <table class="table-thirds compact-results-table dashed row-highlighting has-actions">
                     <thead>
                         <tr>
                             <th><i:inline key=".serialNumber"/></th>
@@ -473,7 +472,7 @@
             </c:otherwise>
         </c:choose>
 
-        <div class="actionArea">
+        <div class="action-area">
             <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_THERMOSTATS_ALL">
                 <c:if test="${showSelectAll}">
                     <span class="fl">
@@ -522,7 +521,7 @@
                 <span class="empty-list"><i:inline key=".meters.none"/></span>
             </c:when>
             <c:otherwise>
-                <table class="table-thirds compactResultsTable dashed rowHighlighting has-actions">
+                <table class="table-thirds compact-results-table dashed row-highlighting has-actions">
                     <thead>
                         <tr>
                             <th>
@@ -596,7 +595,7 @@
 
         <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
             <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_HARDWARES_CREATE">
-                <div class="actionArea">
+                <div class="action-area">
                     <form action="/stars/operator/hardware/mp/create" method="get">
                         <input type="hidden" name="accountId" value="${accountId}">
                         <c:choose>
@@ -632,7 +631,7 @@
                 <span class="empty-list"><i:inline key=".gateways.none"/></span>
             </c:when>
             <c:otherwise>
-                <table class="table-thirds compactResultsTable dashed rowHighlighting has-actions">
+                <table class="table-thirds compact-results-table dashed row-highlighting has-actions">
                     <thead>
                         <tr>
                             <th><i:inline key=".displayName"/></th>
@@ -680,7 +679,7 @@
         </c:choose>
 
         <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_HARDWARES_CREATE">
-            <div class="actionArea">
+            <div class="action-area">
                 <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
                     <form action="${createUrl}">
                         <input type="hidden" name="accountId" value="${accountId}">

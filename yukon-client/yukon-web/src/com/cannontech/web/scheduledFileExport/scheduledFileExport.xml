@@ -531,7 +531,7 @@
 		scope="prototype">
 	</bean>
 	
-    <!-- Scheduled Archived Data Export Task -->
+    <!-- Scheduled Data Export Task -->
     <bean id="scheduledArchivedDataFileExportTask"
     	class="com.cannontech.web.scheduledFileExport.tasks.ScheduledArchivedDataFileExportTask"
     	scope="prototype">

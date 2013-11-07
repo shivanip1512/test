@@ -15,7 +15,7 @@
     <cti:includeScript link="/JavaScript/drAssetDetails.js"/>
 
     <c:if test="${loadGroup.paoIdentifier.paoType != 'MACRO_GROUP'}">
-        <div class="column_12_12">
+        <div class="column-12-12">
         <div class="column one">
                 <%-- Load Group Info section --%>
                 <tags:sectionContainer2 nameKey="heading.info">
@@ -184,7 +184,7 @@
 
         <%-- Child Load Groups for the Macro Load Group --%>
         <c:if test="${loadGroup.paoIdentifier.paoType == 'MACRO_GROUP'}">
-                <div class="widgetContainer">
+                <div class="widget-container">
                     <i:inline key=".note.macroLoadGroup"/>
                     <c:set var="baseUrl" value="/dr/loadGroup/detail"/>
                     <%@ include file="../loadGroup/loadGroupList.jspf" %>
@@ -192,7 +192,7 @@
         </c:if>
 
         <%-- Parent Programs and macro load groups --%>
-        <div class="column_12_12">
+        <div class="column-12-12">
             <div class="column one">
                     <tags:boxContainer2 nameKey="parents.programs">
                         <c:if test="${empty parentPrograms}">

@@ -60,7 +60,7 @@ function checkUpdate(){
 }
 </script>
 <div id="mainDiv"></div>
-<div class="pageActionArea">
+<div class="page-action-area">
     <form id="uploadForm" method="POST" action="downloadBundle">
         <input type="hidden" name="fileName">
         <cti:button nameKey="downloadBtn" disabled="true" name="download" type="submit" icon="icon-bullet-go-down"/>

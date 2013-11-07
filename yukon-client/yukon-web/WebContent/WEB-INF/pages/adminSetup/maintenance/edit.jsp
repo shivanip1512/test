@@ -9,14 +9,14 @@
         <c:set var="cronUniqueId" value="cronUniqueId_${job.id}" />
         <input type="hidden" name="jobId" value="${job.id}"> <input type="hidden" name="cronUniqueId"
             value="${cronUniqueId}">
-        <tags:formElementContainer nameKey="${job.beanName}">
+        <tags:sectionContainer2 nameKey="${job.beanName}">
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".status">
                     <c:if test="${job.disabled}">
-                        <span class="fwb errorMessage"><i:inline key=".status.disabled" /> </span>
+                        <span class="fwb error"><i:inline key=".status.disabled" /> </span>
                     </c:if>
                     <c:if test="${!job.disabled}">
-                        <span class="fwb successMessage"><i:inline key=".status.enabled" /> </span>
+                        <span class="fwb success"><i:inline key=".status.enabled" /> </span>
                     </c:if>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".runSchedule">
@@ -26,7 +26,7 @@
                     <amr:scheduledGroupRequestExecutionJobNextRunDate jobId="${job.id}" />
                 </tags:nameValue2>
             </tags:nameValueContainer2>
-        </tags:formElementContainer>
+        </tags:sectionContainer2>
         <cti:button nameKey="update" type="submit" />
         <cti:url value="toggleJobEnabled" var="toggleJobEnabled">
             <cti:param name="jobId" value="${job.id}" />

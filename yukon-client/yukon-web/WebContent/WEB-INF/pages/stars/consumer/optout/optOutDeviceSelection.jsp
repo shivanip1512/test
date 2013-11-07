@@ -11,7 +11,7 @@
     <cti:standardMenu/>
 
     <c:if test="${!empty error}">
-        <span class="errorMessage"><cti:msg key="${error}"/></span><br>
+        <span class="error"><cti:msg key="${error}"/></span><br>
     </c:if>
 
     <h3><cti:msg key="yukon.dr.consumer.optoutlist.header"/></h3>
@@ -23,7 +23,7 @@
 
         <c:set var="showNextButton" value="false" />
         <form:form id="form" action="${actionUrl}" method="POST" commandName="optOutBackingBean">
-            <table class="resultsTable" align="center" width="99%">
+            <table class="results-table" align="center" width="99%">
                 <tr>
                     <th></th>
                     <th><cti:msg key="yukon.dr.consumer.optoutlist.hardware"/></th>

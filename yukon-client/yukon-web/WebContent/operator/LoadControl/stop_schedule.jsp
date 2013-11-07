@@ -192,7 +192,7 @@
             <table width="657" border="0" cellspacing="0" cellpadding="0">
               <struts:form name="checker" type="com.cannontech.web.validate.PageBean" action="stop_schedule.jsp" onSubmit="return validForm(this)"> 
               <tr> 
-                <td width="650" class="TitleHeader"> 
+                <td width="650" class="title-header"> 
                   <p align="center"><br>DIRECT CONTROL - STOP SCHEDULE 
                   <p align="center"> 
                   <center>

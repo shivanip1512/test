@@ -182,6 +182,7 @@ public class ButtonTag extends YukonTagSupport implements DynamicAttributes {
             StringBuilder classes = new StringBuilder().append("button");
             if (mode == RenderMode.LABELED_IMAGE || mode == RenderMode.IMAGE) classes.append(" naked");
             if (StringUtils.isNotBlank(this.classes)) classes.append(" " + this.classes);
+            if (busy) classes.append(" f-disable-after-click");
             
             id = StringUtils.isBlank(id) ? UniqueIdentifierTag.generateIdentifier(getJspContext(), "button") : id;
 

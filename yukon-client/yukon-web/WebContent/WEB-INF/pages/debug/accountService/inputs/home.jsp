@@ -14,13 +14,13 @@
             
             <c:forEach items="${errorReasons}" var="errorReason">
                 <tags:nameValue2 nameKey=".error">
-                    <div class="errorMessage">${errorReason}</div>
+                    <div class="error">${errorReason}</div>
                 </tags:nameValue2>
             </c:forEach>
             
             <c:forEach items="${results}" var="result">
                 <tags:nameValue2 nameKey=".result">
-                    <div class="successMessage">${result}</div>
+                    <div class="success">${result}</div>
                 </tags:nameValue2>
             </c:forEach>
         
@@ -29,7 +29,7 @@
     <br><br>
     </c:if>
     
-    <table class="resultsTable">
+    <table class="results-table">
     
         <tr>
             <th class="functionality"><i:inline key=".functionality"/></th>

@@ -38,7 +38,7 @@
 <form:input path="${pageScope.path}" id="${pageScope.id}" disabled="${pageScope.disabled}" readonly="${pageScope.readonly}" size="${pageScope.size}" maxlength="${pageScope.maxlength}" autocomplete="${pageScope.autocomplete}" cssClass="${pageScope.inputClass}" onkeyup="${pageScope.onkeyup}" onchange="${pageScope.onchange}" onblur="${pageScope.onblur}"/>
 <c:if test="${status.error}">
 	<br>
-	<form:errors path="${path}" cssClass="errorMessage"/>
+	<form:errors path="${path}" cssClass="error"/>
 </c:if>
 
 </cti:displayForPageEditModes>

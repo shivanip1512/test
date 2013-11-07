@@ -1,13 +1,12 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
-<%@ taglib prefix="dateTime" tagdir="/WEB-INF/tags/dateTime" %>
-<%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog" %>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 
 <cti:standardPage module="operator" page="optOut.main">
 
@@ -30,7 +29,7 @@
 </i:simplePopup>
 
 <!-- Create an opt out -->
-<tags:boxContainer2 nameKey="optOuts">
+<tags:sectionContainer2 nameKey="createOptOut" styleClass="stacked">
     <c:if test="${!empty currentOptOutList && !optOutsAvailable}">
         <i:inline key=".noOptOutsAvailable"/>
         <br/>
@@ -48,13 +47,12 @@
          
             <tags:nameValue2 nameKey=".startDate">
                 <cti:checkRolesAndProperties value="OPERATOR_OPT_OUT_TODAY_ONLY">
-                    <cti:formatDate  value="${optOutBackingBean.startDate}" type="DATE" 
-                                     var="formattedDate"/>
-                    <spring:escapeBody htmlEscape="true">${formattedDate}</spring:escapeBody>
+                    <cti:formatDate value="${optOutBackingBean.startDate}" type="DATE" var="formattedDate"/>
+                    ${fn:escapeXml(formattedDate)}
                     <input type="hidden" name="startDate" value="${formattedDate}" />
                 </cti:checkRolesAndProperties>
                 <cti:checkRolesAndProperties value="!OPERATOR_OPT_OUT_TODAY_ONLY">
-                     <dateTime:date path="startDate" value="${optOutBackingBean.startDate}"/>
+                     <dt:date path="startDate" value="${optOutBackingBean.startDate}"/>
                 </cti:checkRolesAndProperties>
             </tags:nameValue2>
          
@@ -80,58 +78,56 @@
             </tags:nameValue2>
          </tags:nameValueContainer2>
         <br>
-        <input type="submit" value="<cti:msg2 key=".optOut"/>" class="button">
+        <cti:msg2 key=".optOut" var="optoutButton"/>
+        <cti:button type="submit" label="${optoutButton}" classes="primary action"/>
     </form:form>
-</tags:boxContainer2>
+</tags:sectionContainer2>
 
 <!-- Current Opt Outs -->
-<tags:boxContainer2 nameKey="currentOptOuts">
+<tags:sectionContainer2 nameKey="currentOptOuts" styleClass="stacked">
 <c:choose>
     <c:when test="${fn:length(currentOptOutList) > 0}">
-        <table id="deviceTable" class="compactResultsTable rowHighlighting">
+        <table id="deviceTable" class="compact-results-table row-highlighting dashed">
             <thead>
                 <tr>
                     <th><i:inline key=".device"/></th>
                     <th><i:inline key=".program"/></th>
                     <th><i:inline key=".status"/></th>
                     <th><i:inline key=".dateActive"/></th>
-                    <th class="nonwrapping"><i:inline key=".actions"/></th>
+                    <th><i:inline key=".actions"/></th>
                 </tr>
             </thead>
             <tfoot></tfoot>
             <tbody>
                 <c:forEach var="optOut" items="${currentOptOutList}">
                     <tr>
-                        <td valign="top">
-                            <spring:escapeBody htmlEscape="true">${optOut.inventory.displayName}</spring:escapeBody>
-                        </td>
-                        <td valign="top">
+                        <td>${fn:escapeXml(optOut.inventory.displayName)}</td>
+                        <td>
                             <c:forEach var="program" items="${optOut.programList}" varStatus="status">
                                 <c:if test="${status.count != 1}"><br></c:if>
-                                <spring:escapeBody htmlEscape="true">${program.programName}</spring:escapeBody>
+                                ${fn:escapeXml(program.programName)}
                             </c:forEach>
                         </td>
-                        <td valign="top" 
-                            <c:choose>
-                                 <c:when test="${optOut.state eq 'START_OPT_OUT_SENT'}">class="success"</c:when>
-                                 <c:when test="${optOut.state eq 'CANCEL_SENT'}">class="subtle"</c:when>
-                                 <c:otherwise>class=""</c:otherwise>
-                            </c:choose>
-                        >
+                        <c:choose>
+                            <c:when test="${optOut.state eq 'START_OPT_OUT_SENT'}"><c:set var="classes" value="success"/></c:when>
+                            <c:when test="${optOut.state eq 'CANCEL_SENT'}"><c:set var="classes" value="subtle"/></c:when>
+                            <c:otherwise><c:set var="classes" value=""/></c:otherwise>
+                        </c:choose>
+                        <td class="${classes}">
                             <cti:msg key="${optOut.state.formatKey}"/>
                         </td>
-                        <td valign="top" class="nonwrapping">
+                        <td>
                             <cti:formatDate value="${optOut.startDate}" type="DATEHM"/>
                         </td>
-                        <td valign="top">
-                            <cti:icon nameKey="cancelOptOut" id="cancel${optOut.eventId}" icon="icon-cross"
+                        <td>
+                            <cti:icon nameKey="cancelOptOut" id="cancel${optOut.eventId}" icon="icon-cross" classes="cp"
                                 data-href="/stars/operator/program/optOut/cancelOptOut?accountId=${accountId}&eventId=${optOut.eventId}"/>
-                            <dialog:confirm on="#cancel${optOut.eventId}" nameKey="confirmCancelOptOut" argument="${optOut.inventory.displayName}"/>
+                            <d:confirm on="#cancel${optOut.eventId}" nameKey="confirmCancelOptOut" argument="${optOut.inventory.displayName}"/>
                             <c:choose>
                                 <c:when test="${optOut.state == 'START_OPT_OUT_SENT'}">
-                                    <cti:icon nameKey="resendOptOut" id="resend${optOut.eventId}" icon="icon-control-repeat-blue"
+                                    <cti:icon nameKey="resendOptOut" id="resend${optOut.eventId}" icon="icon-control-repeat-blue" classes="cp"
                                         data-href="/stars/operator/program/optOut/resend?accountId=${accountId}&inventoryId=${optOut.inventory.inventoryId}"/>
-                                    <dialog:confirm on="#resend${optOut.eventId}" nameKey="confirmResendOptOut" argument="${optOut.inventory.displayName}"/>
+                                    <d:confirm on="#resend${optOut.eventId}" nameKey="confirmResendOptOut" argument="${optOut.inventory.displayName}"/>
                                 </c:when>
                                 <c:otherwise>
                                     <cti:icon nameKey="resendOptOutDisabled" icon="icon-control-repeat-blue" classes="disabled" />
@@ -147,13 +143,13 @@
         <i:inline key=".noCurrentOptOuts"/>
     </c:otherwise>
 </c:choose>
-</tags:boxContainer2>
+</tags:sectionContainer2>
 
 <!-- Opt Out Limits -->
-<tags:boxContainer2 nameKey="optOutLimits">
+<tags:sectionContainer2 nameKey="optOutLimits" styleClass="stacked">
 <c:choose>
     <c:when test="${fn:length(displayableInventories) > 0}">
-        <table id="deviceTable" class="compactResultsTable rowHighlighting">
+        <table id="deviceTable" class="compact-results-table row-highlighting dashed">
             <thead>
                 <tr>
                     <th><i:inline key=".device"/></th>
@@ -170,7 +166,7 @@
             <tbody>
                 <c:forEach var="inventory" items="${displayableInventories}">
                     <tr>
-                        <td><spring:escapeBody htmlEscape="true">${inventory.displayName}</spring:escapeBody></td>
+                        <td>${fn:escapeXml(inventory.displayName)}</td>
                         <td>${optOutCounts[inventory.inventoryId].usedOptOuts}</td>
                         <td>
                             <c:choose>
@@ -186,12 +182,12 @@
                             <c:if test="${!noOptOutLimits}">
                                 <cti:icon nameKey="allowOne" id="allowOne${inventory.inventoryId}" icon="icon-gray-add"
                                     data-href="/stars/operator/program/optOut/allowAnother?accountId=${accountId}&inventoryId=${inventory.inventoryId}"/>
-                                <dialog:confirm on="#allowOne${inventory.inventoryId}" nameKey="confirmAllowOne" argument="${inventory.displayName}"/>
+                                <d:confirm on="#allowOne${inventory.inventoryId}" nameKey="confirmAllowOne" argument="${inventory.displayName}"/>
 
                                 <c:if test="${optOutCounts[inventory.inventoryId].remainingOptOuts > 0}">
                                     <cti:icon nameKey="decrementAllowance" id="decrementAllowance${inventory.inventoryId}" icon="icon-gray-subtract"
                                         data-href="/stars/operator/program/optOut/decrementAllowances?accountId=${accountId}&inventoryId=${inventory.inventoryId}"/>
-                                    <dialog:confirm on="#decrementAllowance${inventory.inventoryId}" nameKey="confirmDecrementAllowance" argument="${inventory.displayName}"/>
+                                    <d:confirm on="#decrementAllowance${inventory.inventoryId}" nameKey="confirmDecrementAllowance" argument="${inventory.displayName}"/>
                                 </c:if>
                                 <c:if test="${optOutCounts[inventory.inventoryId].remainingOptOuts <= 0}">
                                     <cti:icon nameKey="decrementAllowanceDisabled" icon="icon-gray-subtract" classes="disabled"/>
@@ -204,7 +200,7 @@
                                      <c:otherwise>
                                         <cti:icon nameKey="resetToLimit" id="resetToLimit${inventory.inventoryId}" icon="icon-arrow-undo"
                                             data-href="/stars/operator/program/optOut/resetToLimit?accountId=${accountId}&inventoryId=${inventory.inventoryId}"/>
-                                        <dialog:confirm on="#resetToLimit${inventory.inventoryId}" nameKey="confirmResetToLimit" argument="${inventory.displayName}"/>
+                                        <d:confirm on="#resetToLimit${inventory.inventoryId}" nameKey="confirmResetToLimit" argument="${inventory.displayName}"/>
                                       </c:otherwise>
                                  </c:choose>
 
@@ -219,19 +215,19 @@
         <i:inline key=".noInventoryAttached" />
     </c:otherwise>
 </c:choose>
-</tags:boxContainer2>
+</tags:sectionContainer2>
 
 <!-- Opt Out History -->
-<tags:boxContainer2 nameKey="optOutHistory">
+<tags:sectionContainer2 nameKey="optOutHistory" styleClass="stacked">
      <dr:optOutHistory previousOptOutList="${previousOptOutList}" />
 
      <c:if test="${fn:length(previousOptOutList) > 0}">
-        <div class="pageActionArea">
+        <div class="page-action-area">
             <cti:url var="optOutHistoryUrl" value="/stars/operator/program/optOut/optOutHistory">
                 <cti:param name="accountId" value="${accountId}"/>
             </cti:url>
             <a href="${optOutHistoryUrl}" ><i:inline key=".viewCompleteHistory" /></a>
         </div>
     </c:if>
-</tags:boxContainer2>
+</tags:sectionContainer2>
 </cti:standardPage>

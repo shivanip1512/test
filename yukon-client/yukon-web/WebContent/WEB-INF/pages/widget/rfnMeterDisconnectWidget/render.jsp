@@ -15,7 +15,7 @@
         
         <div id="${widgetParameters.widgetId}_results"></div>
         <br>
-        <div class="actionArea">
+        <div class="action-area">
             <tags:widgetActionUpdate container="${widgetParameters.widgetId}_results" method="query" nameKey="query" showConfirm="false"/>
             <c:if test="${controllable}">
                 <c:if test="${arming || both}">

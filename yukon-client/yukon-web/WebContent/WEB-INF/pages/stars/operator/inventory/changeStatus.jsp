@@ -19,7 +19,7 @@
                 </tr>
           
                 <tr>
-                    <td class="smallBoldLabel errorMessage"><i:inline key=".instructionsLabel"/></td>
+                    <td class="strong-label-small error"><i:inline key=".instructionsLabel"/></td>
                     <td><i:inline key=".instructions"/></td>
                 </tr>
             </table>
@@ -39,7 +39,7 @@
                         </select>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
-                <div class="pageActionArea">
+                <div class="page-action-area">
                     <cti:button nameKey="start" type="submit" name="start"/>
                     <cti:button nameKey="cancel" type="submit" name="cancel"/>
                 </div>

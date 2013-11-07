@@ -16,7 +16,7 @@
     <input id="assetId" type="hidden" value="${controlAreaId}"/>
     <cti:includeScript link="/JavaScript/drAssetDetails.js"/>
 
-    <div class="column_12_12">
+    <div class="column-12-12">
         <div class="column one">
             <tags:sectionContainer2 nameKey="heading.info">
                 <tags:nameValueContainer2 tableClass="stacked">
@@ -54,10 +54,10 @@
                             <div data-pao="${controlAreaId}">
                                 <cti:icon icon="icon-error" classes="dn"/>
                                 <cti:dataUpdaterValue identifier="${controlAreaId}/CONTROL_AREA_KW_SAVINGS" type="ESTIMATED_LOAD"/>
-<%--                                <cti:dataUpdaterCallback --%>
-<%--                                    function="Yukon.EstimatedLoad.createToolTip" --%>
-<%--                                    value="DR_CONTROLAREA/${controlAreaId}/ESTIMATED_LOAD_ERROR" --%>
-<%--                                    initialize="true" /> --%>
+<%--                                 <cti:dataUpdaterCallback --%>
+<%--                                     function="Yukon.EstimatedLoad.createToolTip" --%>
+<%--                                     value="DR_CONTROLAREA/${controlAreaId}/ESTIMATED_LOAD_ERROR" --%>
+<%--                                     initialize="true" /> --%>
                             </div>
                         </tags:nameValue2>
                     </cti:checkRolesAndProperties>
@@ -71,7 +71,7 @@
                         <c:forEach var="trigger" items="${controlArea.triggers}">
                             <cti:checkRolesAndProperties value="CONTROL_AREA_VALUE_THRESHOLD,CONTROL_AREA_PEAK_PROJECTION,CONTROL_AREA_ATKU">
                                 <c:set var="triggerNumber" value="${trigger.triggerNumber}"/>
-                                <tags:nameValue2 rowClass="smallBoldLabel" nameKey=".info.trigger" argument="${triggerNumber}"></tags:nameValue2>
+                                <tags:nameValue2 rowClass="strong-label-small" nameKey=".info.trigger" argument="${triggerNumber}"></tags:nameValue2>
                                 <tags:nameValue2 nameKey=".info.loadCapacity">
                                     <cti:checkRolesAndProperties value="CONTROL_AREA_VALUE_THRESHOLD">
                                         <tags:nameValue2 nameKey=".info.valueThreshold">
@@ -916,7 +916,7 @@
         </div>
     </div>
 
-    <div class="column_24">
+    <div class="column-24">
         <div class="column one nogutter">
             <c:set var="baseUrl" value="/dr/controlArea/detail"/>
             <%@ include file="../program/programList.jspf" %>

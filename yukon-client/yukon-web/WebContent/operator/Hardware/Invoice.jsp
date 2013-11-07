@@ -34,7 +34,7 @@
         <form name="PForm" method="post" action="<%=request.getContextPath()%>/servlet/InventoryManager" onsubmit="return prepareSubmit(this)">
             <input type="hidden" name="action" value="InvoiceChange"> 
             <div align="center">
-                <span class="TitleHeader">INVOICE</span>
+                <span class="title-header">INVOICE</span>
             </div>
             <br>
             <br>

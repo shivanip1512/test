@@ -6,7 +6,7 @@
 <cti:standardPage module="tools" page="bulk.analysis.tabular">
     
     <div style="max-width: 100%;overflow-x: scroll;">
-        <table class="resultsTable tabular">
+        <table class="results-table tabular">
             <thead>
                 <th></th>
                 <c:forEach var="dateTime" items="${dateTimeList}">

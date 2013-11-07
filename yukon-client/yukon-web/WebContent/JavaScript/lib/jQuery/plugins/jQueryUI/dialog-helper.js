@@ -35,7 +35,7 @@
           //
           if(messages.length > 0){
               if(create){
-                  $(this).prepend('<div class="userMessage '+ args.messageClass +' box" data-ui-add-message=""><ul class="simple-list">'+ messages.join('') +'</ul></div>');
+                  $(this).prepend('<div class="user-message '+ args.messageClass +' box" data-ui-add-message=""><ul class="simple-list">'+ messages.join('') +'</ul></div>');
               }else{
                   $(this).children('[data-ui-add-message=]').addClass(args.messageClass).find('ul').html(messages.join(''));
               }

@@ -112,7 +112,7 @@
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"> <br>
-              <span class="TitleHeader">OPERATION PROGRESS</span><br>
+              <span class="title-header">OPERATION PROGRESS</span><br>
               <p>&nbsp;</p>
               <table width="450" border="1" cellspacing="0" cellpadding="2" bgcolor="#CCCCCC" height="150">
                 <tr> 

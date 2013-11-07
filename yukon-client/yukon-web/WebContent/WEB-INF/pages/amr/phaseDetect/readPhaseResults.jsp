@@ -5,10 +5,10 @@
 
 <c:choose>
     <c:when test="${not empty errorMsg}">
-        <span class="errorMessage" style="font-weight: bold;"><i:inline key="yukon.web.modules.amr.phaseDetect.errorRead"/>${errorMsg}</span>
+        <span class="error" style="font-weight: bold;"><i:inline key="yukon.web.modules.amr.phaseDetect.errorRead"/>${errorMsg}</span>
     </c:when>
     <c:when test="${readCanceled}">
-        <span class="errorMessage" style="font-weight: bold;"><i:inline key="yukon.web.modules.amr.phaseDetect.readCanceled"/></span>
+        <span class="error" style="font-weight: bold;"><i:inline key="yukon.web.modules.amr.phaseDetect.readCanceled"/></span>
     </c:when>
     <c:otherwise>
         <div style="float: left;padding-right: 10px;">

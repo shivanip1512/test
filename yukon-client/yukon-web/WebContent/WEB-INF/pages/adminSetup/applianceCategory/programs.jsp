@@ -47,7 +47,7 @@ jQuery(document).on('click', '#showAllButton', clearFilter);
             </tr>
         </table>
 
-        <div class="actionArea">
+        <div class="action-area">
             <cti:button type="submit" nameKey="filterButton"/>
             <cti:button id="showAllButton" nameKey="showAllButton"/>
         </div>
@@ -62,7 +62,7 @@ jQuery(document).on('click', '#showAllButton', clearFilter);
                         <i:inline key=".noAssignedPrograms"/>
                     </c:if>
                     <c:if test="${!empty assignedPrograms.resultList}">
-                        <table id="programList" class="compactResultsTable rowHighlighting">
+                        <table id="programList" class="compact-results-table row-highlighting">
                             <thead>
                             <tr>
                                 <th>

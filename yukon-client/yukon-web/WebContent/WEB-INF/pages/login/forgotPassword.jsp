@@ -7,7 +7,7 @@
 
 <tags:noAuthPage module="login" page="forgotPassword">
     <section id="content" style="min-height: 420px;">
-    <div class="column_24 clear">
+    <div class="column-24 clear">
         <div class="one column nogutter">
             <div class="page-title-bar">
                 <h1><i:inline key=".pageName"/></h1>
@@ -46,7 +46,7 @@
                             <textarea name="NOTES" cols="30" rows="3"></textarea>
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
-                    <div class="stacked pageActionArea">
+                    <div class="stacked page-action-area">
                         <cti:button nameKey="submit" type="submit" classes="primary action"/>
                         <cti:url value="/login.jsp" var="loginPage"/>
                         <cti:button href="${loginPage}" nameKey="cancel"/>

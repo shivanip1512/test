@@ -10,6 +10,6 @@
 initiateCannonDataUpdate("${updateUrl}", <cti:getProperty property="DATA_UPDATER_DELAY_MS"/>);
 </script>
 
-<div id="dataUpdaterErrorDiv" style="display: none">
-    <span class="meta" aria-live="assertive"><i:inline key="yukon.web.tags.dataUpdateEnabler.lostConnection" /> (<span id="dataUpdaterErrorDivCount"></span>)</span>
+<div id="data-updater-error" style="display: none">
+    <span class="meta" aria-live="assertive"><i:inline key="yukon.web.tags.dataUpdateEnabler.lostConnection" /> (<span id="data-updater-error-count"></span>)</span>
 </div>

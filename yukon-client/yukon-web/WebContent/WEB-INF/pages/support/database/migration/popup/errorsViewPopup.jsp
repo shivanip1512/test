@@ -9,7 +9,7 @@
 	<div style="overflow:auto; height:500px;">
 </c:if>
 
-<table class="compactResultsTable">
+<table class="compact-results-table">
 
 	<tr>
 		<th>Object Identifier</th>

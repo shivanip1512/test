@@ -12,7 +12,7 @@
 	    <div class="error tac"><i:inline key="yukon.common.device.bulk.selectedDevicesEmpty"/></div>
 	</c:when>
     <c:otherwise>
-        <table class="compactResultsTable">
+        <table class="compact-results-table">
             <thead>
                 <tr>
                     <c:forEach var="th" items="${deviceInfoList[0]}"><th>${th}</th></c:forEach>

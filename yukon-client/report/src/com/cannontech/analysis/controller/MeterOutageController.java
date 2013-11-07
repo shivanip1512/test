@@ -64,7 +64,7 @@ public class MeterOutageController extends ReportControllerBase {
         sb.append("    <td valign='top'>" + LINE_SEPARATOR);
         sb.append("      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR);
         sb.append("        <tr>" + LINE_SEPARATOR);
-        sb.append("          <td class='TitleHeader'>&nbsp;Minimum Outage Duration</td>");
+        sb.append("          <td class='title-header'>&nbsp;Minimum Outage Duration</td>");
         sb.append("        </tr>" + LINE_SEPARATOR);
         sb.append("        <tr>" + LINE_SEPARATOR);
         sb.append("          <td class='main'>");
@@ -77,7 +77,7 @@ public class MeterOutageController extends ReportControllerBase {
         sb.append("    <td valign='top'>" + LINE_SEPARATOR);
         sb.append("      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR);
         sb.append("        <tr>" + LINE_SEPARATOR);
-        sb.append("          <td class='TitleHeader'>&nbsp;Order By</td>" +LINE_SEPARATOR);
+        sb.append("          <td class='title-header'>&nbsp;Order By</td>" +LINE_SEPARATOR);
         sb.append("        </tr>" + LINE_SEPARATOR);
         for (MeterOutageOrderByFilter orderBy : MeterOutageOrderByFilter.values()) {
             sb.append("        <tr>" + LINE_SEPARATOR);
@@ -92,7 +92,7 @@ public class MeterOutageController extends ReportControllerBase {
         sb.append("    <td valign='top'>" + LINE_SEPARATOR);
         sb.append("      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR);     
         sb.append("        <tr>" + LINE_SEPARATOR);
-        sb.append("          <td class='TitleHeader'>&nbsp;Order Direction</td>" +LINE_SEPARATOR);
+        sb.append("          <td class='title-header'>&nbsp;Order Direction</td>" +LINE_SEPARATOR);
         sb.append("        </tr>" + LINE_SEPARATOR);
 
         sb.append("        <tr><td><input type='radio' name='" +ATT_ORDER_DIR + "' value='" + Order.FORWARD + "' checked>Ascending</td></tr>" + LINE_SEPARATOR);

@@ -22,7 +22,7 @@
         </div>
         
         <br>
-        <table class="compactResultsTable">
+        <table class="compact-results-table">
         
             <th>Device Name</th>
             <th>First Point</th>

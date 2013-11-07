@@ -1168,6 +1168,12 @@
                                             <page name="thermostat.schedules.single" type="BASIC">
                                                 <labelArgument>${displayName}</labelArgument>
                                             </page>
+                                            <page name="hardwareConfig" type="DETAIL_CHILD">
+                                                <labelArgument>${displayName}</labelArgument>
+                                            </page>
+                                            <page name="meterConfig" type="DETAIL_CHILD">
+                                                <labelArgument>${displayName}</labelArgument>
+                                            </page>
                                         </pages>
                                     </page>
                                     <page name="meterProfile.CREATE" type="BASIC" hideFavorite="true">
@@ -1180,12 +1186,6 @@
                                                 <labelArgument>${displayName}</labelArgument>
                                             </page>
                                         </pages>
-                                    </page>
-                                    <page name="hardwareConfig" type="DETAIL">
-                                        <labelArgument>${displayName}</labelArgument>
-                                    </page>
-                                    <page name="meterConfig" type="DETAIL">
-                                        <labelArgument>${displayName}</labelArgument>
                                     </page>
                                     <page name="thermostatSelect" type="DETAIL_CHILD">
                                         <link>/stars/operator/thermostatSelect/select?accountId=${accountId}</link>

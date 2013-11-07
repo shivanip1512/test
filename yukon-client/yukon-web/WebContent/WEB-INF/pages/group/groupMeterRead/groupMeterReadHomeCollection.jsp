@@ -23,8 +23,8 @@
                 selectedAttributes="${selectedAttributes}" 
                 multipleSize="8" 
                 groupItems="true"/>
-            <div class="pageActionArea">
-                <cti:button nameKey="read" type="submit" classes="f-disableAfterClick primary action"/>
+            <div class="page-action-area">
+                <cti:button nameKey="read" type="submit" classes="f-disable-after-click primary action"/>
             </div>
    		</form>
    	

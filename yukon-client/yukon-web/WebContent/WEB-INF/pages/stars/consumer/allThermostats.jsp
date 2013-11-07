@@ -46,7 +46,7 @@
         <cti:msg key="yukon.dr.consumer.allThermostats.header" /><br>
     </h3>
     
-    <div class="message">
+    <div>
         <form method="post" action="/stars/consumer/thermostat/view/allSelected" onsubmit="return checkSelected()">
             
             <input type="hidden" id="thermostatIds" name="thermostatIds" value="${param.thermostatIds}">
