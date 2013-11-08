@@ -4,8 +4,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 public interface CsrfTokenService {
-    public static final String SESSION_CSRF_TOKEN = "com.cannontech.yukon.session.csrf.token";
-    public static final String REQUEST_CSRF_TOKEN = "com.cannontech.yukon.request.csrf.token";
+    String SESSION_CSRF_TOKEN = "com.cannontech.yukon.session.csrf.token";
+    String REQUEST_CSRF_TOKEN = "com.cannontech.yukon.request.csrf.token";
     
     /**
      * Gets the CSRF token from the session. If no token exists, this will create and insert the token in the session
