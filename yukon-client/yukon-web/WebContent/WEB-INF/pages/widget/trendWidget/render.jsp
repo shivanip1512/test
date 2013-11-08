@@ -32,7 +32,8 @@ jQuery(function () {
 			startDate="${startDateMillis}" endDate="${stopDateMillis}"
 			interval="${interval}"
 			converterType="${attributeGraphType.converterType}"
-			graphType="${graphType}"/>
+			graphType="${graphType}"
+			ymin="0"/>
 
         <div class="fr"><a href="javascript:void(0);" class="trend-settings-anchor"><i class="icon icon-cog"></i></a></div>
 		<table class="compact-results-table trend-settings ${keepSettingsOpen ? '' : 'dn'}">

@@ -46,12 +46,12 @@ public class ChartServiceImpl implements ChartService {
     private SimpleDateFormat timeFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss.SSS a");
     
     @Override
-    public List<Graph> getGraphs(Set<Integer> pointIds, Date startDate, Date stopDate, ChartInterval interval,
+    public List<Graph<ChartValue<Double>>> getGraphs(Set<Integer> pointIds, Date startDate, Date stopDate, ChartInterval interval,
                                  ConverterType converterType, YukonUserContext userContext) {
 
     	MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
 
-        List<Graph> graphList = new ArrayList<>();
+        List<Graph<ChartValue<Double>>> graphList = new ArrayList<>();
 
         int colorIdx = 0;
         ChartColorsEnum[] colors = ChartColorsEnum.values();
@@ -104,7 +104,7 @@ public class ChartServiceImpl implements ChartService {
             axisChartData = converter.convertValues(axisChartData, interval);
 
             // graph
-            Graph graph = new Graph();
+            Graph<ChartValue<Double>> graph = new Graph<>();
             graph.setChartData(axisChartData);
             graph.setSeriesTitle(lPoint.getPointName());
             graph.setFormat(pointValueFormat);

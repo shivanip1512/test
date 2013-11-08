@@ -31,10 +31,13 @@
 	<c:param name="graphType" value="${pageScope.graphType}" />
 	<c:param name="converterType" value="${converterType}" />
     <!-- to set the charts y min/max values -->
-    <c:if test="${not empty pageScope.ymin && not empty pageScope.ymax}">
-        <c:param name="yMin" value="${pageScope.ymin}" />
+    <c:if test="${not empty pageScope.ymax}">
         <c:param name="yMax" value="${pageScope.ymax}" />
     </c:if>
+    <c:if test="${not empty pageScope.ymin}">
+        <c:param name="yMin" value="${pageScope.ymin}" />
+    </c:if>
+    
 </c:url>
 
 <c:choose>

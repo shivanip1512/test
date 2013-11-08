@@ -3,11 +3,11 @@ package com.cannontech.common.chart.model;
 import java.text.NumberFormat;
 import java.util.List;
 
-public class Graph {
+public class Graph<T> {
 
     private String seriesTitle = null;
     private String yAxis = "left";
-    private List<?> chartData = null;
+    private List<T> chartData = null;
     private NumberFormat format = null;
     private ChartColorsEnum color = null;
 
@@ -27,11 +27,11 @@ public class Graph {
         yAxis = axis;
     }
 
-    public List<?> getChartData() {
+    public List<T> getChartData() {
         return chartData;
     }
 
-    public void setChartData(List<?> chartData) {
+    public void setChartData(List<T> chartData) {
         this.chartData = chartData;
     }
 

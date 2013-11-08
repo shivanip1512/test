@@ -34,7 +34,7 @@ public class FlotChartServiceImpl implements FlotChartService {
     public JSONObject getMeterGraphData(Set<Integer> pointIds, Instant start, Instant stop, Double yMin, Double yMax,
                                        ChartInterval interval, ConverterType converterType, GraphType graphType, String yLabel,
                                        YukonUserContext userContext) {
-        List<Graph> graphs = chartService.getGraphs(pointIds,
+        List<Graph<ChartValue<Double>>> graphs = chartService.getGraphs(pointIds,
                                                     start.toDate(),
                                                     stop.toDate(),
                                                     interval,
@@ -43,16 +43,18 @@ public class FlotChartServiceImpl implements FlotChartService {
         // datas
         JSONObject dataAndOptions = new JSONObject();
         JSONArray jsonDataContainer = new JSONArray();
-        for (Graph graph : graphs) {
+        for (Graph<ChartValue<Double>> graph : graphs) {
             JSONArray jsonArrayContainer = new JSONArray();
-            List<ChartValue<?>> chartData = (List<ChartValue<?>>) graph.getChartData();
+            List<ChartValue<Double>> chartData = graph.getChartData();
             buildUpChartValueJsonData(jsonArrayContainer, chartData);
             JSONObject dataObj = new JSONObject();
             dataObj.put("data", jsonArrayContainer);
             jsonDataContainer.add(dataObj);
         }
         /* if we have no data, then add an empty array to jsonData so a blank graph is displayed properly */
-        if (jsonDataContainer.isEmpty()) jsonDataContainer.add(new JSONArray());
+        if (jsonDataContainer.isEmpty()) {
+            jsonDataContainer.add(new JSONArray());
+        }
         
         // options
         Integer xAxisDataCount = chartService.getXAxisDataCount(start.toDate(),
@@ -72,9 +74,12 @@ public class FlotChartServiceImpl implements FlotChartService {
         setFlotOption(yAxis, FlotOptionKey.YAXIS_POSITION, "left");
         setFlotOption(yAxis, FlotOptionKey.YAXIS_AXISLABEL, yLabel);
         
-        if (yMin == null) yMin = 0.0; 
-        setFlotOption(yAxis, FlotOptionKey.YAXIS_MIN, yMin);
-        if (yMax != null) setFlotOption(yAxis, FlotOptionKey.YAXIS_MAX, yMax);
+        if (yMin != null) {
+            setFlotOption(yAxis, FlotOptionKey.YAXIS_MIN, yMin);
+        }
+        if (yMax != null) {
+            setFlotOption(yAxis, FlotOptionKey.YAXIS_MAX, yMax);
+        }
         setFlotOption(options, FlotOptionKey.YAXIS, yAxis);
         
         JSONObject xAxis = new JSONObject();
@@ -91,7 +96,7 @@ public class FlotChartServiceImpl implements FlotChartService {
         return dataAndOptions;
     }
 
-    private void buildUpChartValueJsonData(JSONArray jsonArrayContainer, List<ChartValue<?>> chartData) {
+    private void buildUpChartValueJsonData(JSONArray jsonArrayContainer, List<ChartValue<Double>> chartData) {
         for (ChartValue<?> chartValue : chartData) {
             JSONArray jsonArray = new JSONArray();
             jsonArray.add(chartValue.getId()); // x

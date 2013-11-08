@@ -7,7 +7,7 @@
 <%@ taglib prefix="flot" tagdir="/WEB-INF/tags/flotChart" %>
 
 <cti:msgScope paths="modules.tools.tdc">
-    <flot:trend title="${title}" pointIds="${pointId}" startDate="${startDateMillis}" endDate="${endDateMillis}" interval="${interval}" converterType="${converterType}" graphType="${graphType}" />
+    <flot:trend title="${title}" pointIds="${pointId}" startDate="${startDateMillis}" endDate="${endDateMillis}" interval="${interval}" converterType="${converterType}" graphType="${graphType}" ymin="0"/>
     <div class="action-area">
         <cti:button nameKey="close" onclick="jQuery('#tdc-popup').dialog('close');" />
     </div>
