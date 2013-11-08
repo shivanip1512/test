@@ -136,18 +136,8 @@ public class AssetDashboardController {
             model.addAttribute("showAccountSearch", showAccountSearch);
             
             /** Hardware Creation */
-            boolean hasAddHardwareByRange = false;
-            boolean hasCreateHardware = false;
-
-            try {
-                /*
-                 * These will throw a UserNotInRoleException when the user is not in the Inventory role.
-                 * This can happen if the user only has the Consumer Info role,
-                 * which means they don't have these permissions
-                 */
-                hasAddHardwareByRange = rpDao.getPropertyBooleanValue(YukonRoleProperty.SN_ADD_RANGE, user);
-                hasCreateHardware = rpDao.getPropertyBooleanValue(YukonRoleProperty.INVENTORY_CREATE_HARDWARE, user);
-            } catch (UserNotInRoleException e) {}
+            boolean hasAddHardwareByRange = rpDao.checkProperty(YukonRoleProperty.SN_ADD_RANGE, user);
+            boolean hasCreateHardware = rpDao.checkProperty(YukonRoleProperty.INVENTORY_CREATE_HARDWARE, user);
 
             boolean showHardwareCreate = hasAddHardwareByRange || hasCreateHardware;
             model.addAttribute("showHardwareCreate", showHardwareCreate);
