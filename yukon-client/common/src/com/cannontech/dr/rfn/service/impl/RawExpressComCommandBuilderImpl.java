@@ -2,7 +2,6 @@ package com.cannontech.dr.rfn.service.impl;
 
 import java.io.StringWriter;
 import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
 
 import org.apache.log4j.Logger;
 import org.joda.time.Duration;
@@ -10,7 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.exception.BadConfigurationException;
+import com.cannontech.common.exception.InvalidExpressComSerialNumberException;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.core.dao.LMGroupDao;
 import com.cannontech.core.dao.NotFoundException;
@@ -40,7 +41,8 @@ public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuil
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
 
     @Override
-    public byte[] getCommandAsHexStringByteArray(LmHardwareCommand lmHardwareCommand) {
+    public byte[] getCommandAsHexStringByteArray(LmHardwareCommand lmHardwareCommand)
+            throws InvalidExpressComSerialNumberException {
         // Write inner ExpressCom payload.
         ByteBuffer innerPayload = getInnerPayload(lmHardwareCommand);
 
@@ -49,9 +51,17 @@ public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuil
 
     /**
      * Builds ExpressCom command as byte array, see document 'Expresscom Protocol (2.0 Final).docx' for reference.
+     * @throws CommandCompletionException 
      */
-    private ByteBuffer getInnerPayload(LmHardwareCommand command) {
+    private ByteBuffer getInnerPayload(LmHardwareCommand command) throws InvalidExpressComSerialNumberException {
         RfnDevice device = rfnDeviceDao.getDeviceForId(command.getDevice().getDeviceID());
+        String serialAsString = device.getRfnIdentifier().getSensorSerialNumber();
+        if (!serialAsString.matches("\\d+")) {
+            log.error("Non-numeric characters are not allowed in ExpressCom messages.  The device: " + device
+                    + " has non-numeric characters in its serial number.");
+            throw new InvalidExpressComSerialNumberException(
+                    "Non-numeric characters are not allowed in ExpressCom message serial numbers.");
+        }
         Integer serialNumber = Integer.parseInt(device.getRfnIdentifier().getSensorSerialNumber());
         
         ByteBuffer outputBuffer = ByteBuffer.allocate(1024);

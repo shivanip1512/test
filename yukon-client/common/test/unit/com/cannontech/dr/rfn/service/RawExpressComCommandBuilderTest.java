@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.amr.rfn.dao.MockRfnDeviceDaoImpl;
+import com.cannontech.common.exception.InvalidExpressComSerialNumberException;
 import com.cannontech.dr.rfn.service.impl.RawExpressComCommandBuilderImpl;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommand;
@@ -76,7 +77,13 @@ public class RawExpressComCommandBuilderTest {
         lmhc.setType(LmHardwareCommandType.READ_NOW);
         lmhc.setUser(null);
         
-        byte[] hexStringByteArray = rawExpressComCommandBuilder.getCommandAsHexStringByteArray(lmhc);
+        byte[] hexStringByteArray = null;
+        try {
+            hexStringByteArray = rawExpressComCommandBuilder.getCommandAsHexStringByteArray(lmhc);
+        } catch (InvalidExpressComSerialNumberException e) {
+            // ExpressCom serial numbers must be numeric digits only.
+            e.printStackTrace();
+        }
          
         Assert.assertTrue(hexStringByteArray[0]  == (byte)0x73);
         Assert.assertTrue(hexStringByteArray[1]  == (byte)0x30);

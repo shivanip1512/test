@@ -1,5 +1,7 @@
 package com.cannontech.dr.rfn.service;
 
+import com.cannontech.common.device.commands.exception.CommandCompletionException;
+import com.cannontech.common.exception.InvalidExpressComSerialNumberException;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommand;
 
 public interface RawExpressComCommandBuilder {
@@ -18,8 +20,10 @@ public interface RawExpressComCommandBuilder {
      * written as a string will require two characters: 'A' and '2'.  These characters are  
      * appended to an output string, and finally that string is converted back into a byte array.  
      * This effectively doubles the number of bytes used to represent the inner payload for any command.
+     * @throws CommandCompletionException 
      */
-    public byte[] getCommandAsHexStringByteArray(LmHardwareCommand command);
+    public byte[] getCommandAsHexStringByteArray(LmHardwareCommand command)
+            throws InvalidExpressComSerialNumberException;
 
     /**
      * Builds a raw ExpressCom command which will broadcast a command that cancels all
