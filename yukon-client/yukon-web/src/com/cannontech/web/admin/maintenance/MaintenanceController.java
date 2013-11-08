@@ -18,6 +18,7 @@ import com.cannontech.amr.scheduledRphDuplicateDeletionExecution.tasks.Scheduled
 import com.cannontech.amr.scheduledSystemLogDanglingEntriesDeletionExecutionTask.tasks.ScheduledSystemLogDanglingEntriesDeletionExecutionTask;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
+import com.cannontech.common.fileExportHistory.task.RepeatingExportHistoryDeletionTask;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -58,13 +59,16 @@ public class MaintenanceController {
         private YukonJobDefinition<RepeatingEstimatedLoadTask> estimatedLoadDataJobDef;
     @Autowired @Qualifier("weatherData")
         private YukonJobDefinition<RepeatingWeatherDataTask> weatherDataJobDef;
+    @Autowired @Qualifier("exportHistoryDeletion")
+        private YukonJobDefinition<RepeatingExportHistoryDeletionTask> exportHistoryJobDef;
 
     private final static String RPH_DUPLICATE_CRON = "0 0 21 ? * *"; // every night at 9:00pm
     private final static String RPH_DANGLING_CRON = "0 15 21 ? * *"; // every night at 9:15pm
     private final static String SYSTEM_LOG_DANGLING_CRON = "0 30 21 ? * *"; // every night at 9:30pm
     private final static String ESTIMATED_LOAD_UPDATE_CRON = "0 0 * * * ? *"; //every hour
     private final static String WEATHER_DATA_UPDATE_CRON = "0 0/10 * * * ? *"; //every 10 minutes
-
+    private final static String EXPORT_HISTORY_UPDATE_CRON = "0 45 21 ? * *"; // every night at 9:45pm
+    
     @RequestMapping
     public String view(ModelMap model, YukonUserContext userContext) {
         List<ScheduledRepeatingJob> jobs = Lists.newArrayList();
@@ -72,6 +76,7 @@ public class MaintenanceController {
         jobs.add(getJob(userContext, rphDanglingEntriesJobDef, RPH_DANGLING_CRON));
         jobs.add(getJob(userContext, systemLogDanglingEntriesJobDef, SYSTEM_LOG_DANGLING_CRON));
         jobs.add(getJob(userContext, weatherDataJobDef, WEATHER_DATA_UPDATE_CRON));
+        jobs.add(getJob(userContext, exportHistoryJobDef, EXPORT_HISTORY_UPDATE_CRON));
         if (configurationSource.getBoolean(MasterConfigBooleanKeysEnum.ENABLE_ESTIMATED_LOAD, false)) {
             jobs.add(getJob(userContext, estimatedLoadDataJobDef, ESTIMATED_LOAD_UPDATE_CRON));
         }

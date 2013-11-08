@@ -14,8 +14,11 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 
 public class FileExportHistoryDaoImpl implements FileExportHistoryDao {
 	@Autowired private NextValueHelper nextValueHelper;
@@ -35,12 +38,67 @@ public class FileExportHistoryDaoImpl implements FileExportHistoryDao {
 		sink.addValue("Initiator", initiator);
 		sink.addValue("ExportDate", Instant.now());
 		sink.addValue("ExportPath", exportPath);
+		sink.addValue("ArchiveFileExists", true);
 		
 		yukonJdbcTemplate.update(sql);
 		
 		return entryId;
 	}
-
+	
+	@Override
+    public Multimap<String, ExportHistoryEntry> getEntriesWithArchiveByInitiator() {
+	    final Multimap<String, ExportHistoryEntry> entries = ArrayListMultimap.create();
+	    SqlStatementBuilder sql = getBaseSelectSql();
+	    sql.append("WHERE ArchiveFileExists").eq(true);
+	    
+	    yukonJdbcTemplate.query(sql, new YukonRowCallbackHandler() {
+	        @Override
+            public void processRow(YukonResultSet rs) throws SQLException {
+	            ExportHistoryEntry entry = processEntry(rs);
+                entries.put(entry.getInitiator(), entry);
+	        }
+	    });
+	    return entries;
+	}
+	
+	@Override
+    public Multimap<Instant, ExportHistoryEntry> getEntriesWithArchiveByDate() {
+	    final Multimap<Instant, ExportHistoryEntry> entries = ArrayListMultimap.create();
+        SqlStatementBuilder sql = getBaseSelectSql();
+        sql.append("WHERE ArchiveFileExists").eq(true);
+        
+        yukonJdbcTemplate.query(sql, new YukonRowCallbackHandler() {
+            @Override
+            public void processRow(YukonResultSet rs) throws SQLException {
+                ExportHistoryEntry entry = processEntry(rs);
+                entries.put(entry.getDate(), entry);
+            }
+        });
+        return entries;
+	}
+	
+	@Override
+    public boolean markArchiveDeleted(Iterable<Integer> entryIds) {
+	    SqlStatementBuilder sql = new SqlStatementBuilder();
+	    SqlParameterSink sink = sql.update("FileExportHistory");
+	    sink.addValue("ArchiveFileExists", false);
+	    sql.append("WHERE EntryId").in(entryIds);
+	    
+	    int rowsModified = yukonJdbcTemplate.update(sql);
+	    return rowsModified > 0;
+	}
+	
+	@Override
+    public boolean markArchiveDeleted(int entryId) {
+	    SqlStatementBuilder sql = new SqlStatementBuilder();
+        SqlParameterSink sink = sql.update("FileExportHistory");
+        sink.addValue("ArchiveFileExists", false);
+        sql.append("WHERE EntryId").eq(entryId);
+        
+        int rowsModified = yukonJdbcTemplate.update(sql);
+        return rowsModified > 0;
+	}
+	
 	@Override
 	public List<ExportHistoryEntry> getAllEntries() {
 		SqlStatementBuilder sql = getBaseSelectSql();
@@ -90,24 +148,27 @@ public class FileExportHistoryDaoImpl implements FileExportHistoryDao {
 
 	private SqlStatementBuilder getBaseSelectSql() {
 		SqlStatementBuilder sql = new SqlStatementBuilder();
-		sql.append("SELECT EntryId, OriginalFileName, FileName, FileExportType, Initiator, ExportDate, ExportPath");
+		sql.append("SELECT EntryId, OriginalFileName, FileName, FileExportType, Initiator, ExportDate, ExportPath, ArchiveFileExists");
 		sql.append("FROM FileExportHistory");
 		return sql;
+	}
+	
+	private static ExportHistoryEntry processEntry(YukonResultSet rs) throws SQLException {
+	    int entryId = rs.getInt("EntryId");
+        String originalFileName = rs.getString("OriginalFileName");
+        String fileName = rs.getString("FileName");
+        FileExportType type = rs.getEnum("FileExportType", FileExportType.class);
+        String initiator = rs.getString("Initiator");
+        Instant date = rs.getInstant("ExportDate");
+        String exportPath = rs.getString("ExportPath");
+        boolean archiveFileExists = rs.getBoolean("ArchiveFileExists");
+        return new ExportHistoryEntry(entryId, originalFileName, fileName, type, initiator, date, exportPath, archiveFileExists);
 	}
 	
 	private class FileExportHistoryRowMapper implements YukonRowMapper<ExportHistoryEntry> {
 		@Override
 		public ExportHistoryEntry mapRow(YukonResultSet rs) throws SQLException {
-			int entryId = rs.getInt("EntryId");
-			String originalFileName = rs.getString("OriginalFileName");
-			String fileName = rs.getString("FileName");
-			FileExportType type = rs.getEnum("FileExportType", FileExportType.class);
-			String initiator = rs.getString("Initiator");
-			Instant date = rs.getInstant("ExportDate");
-			String exportPath = rs.getString("ExportPath");
-			
-			ExportHistoryEntry entry = new ExportHistoryEntry(entryId, originalFileName, fileName, type, initiator, date, exportPath);
-			return entry;
+			return processEntry(rs);
 		}
 	}
 }

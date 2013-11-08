@@ -193,6 +193,10 @@
     <entry key="yukon.common.setting.SCHEDULE_PARAMETERS_AVAILABLE_FILE_EXTENSIONS.description">Comma separated list of file extensions allowed to override the default file extension for scheduled reports.</entry>
     <entry key="yukon.common.setting.SCHEDULE_PARAMETERS_EXPORT_PATH">Allowable Export Path Directories</entry>
     <entry key="yukon.common.setting.SCHEDULE_PARAMETERS_EXPORT_PATH.description">Comma separated list of directories allowed to select for exporting a scheduled report to.</entry>
+    <entry key="yukon.common.setting.HISTORY_CLEANUP_DAYS_TO_KEEP">Export History Days To Keep</entry>
+    <entry key="yukon.common.setting.HISTORY_CLEANUP_DAYS_TO_KEEP.description">The number of days to save archived export history files. Archived files older than this will be deleted. Select 0 to keep files forever.</entry>
+    <entry key="yukon.common.setting.HISTORY_CLEANUP_FILES_TO_KEEP">Export History Files To Keep</entry>
+    <entry key="yukon.common.setting.HISTORY_CLEANUP_FILES_TO_KEEP.description">The maximum number of archived files to keep per export initiator. Any additional files for a given initiator will be deleted. Select 0 to keep all files.</entry>
     <entry key="yukon.common.setting.COOP_ID_CADP_ONLY">COOP ID CADP Only</entry>
     <entry key="yukon.common.setting.COOP_ID_CADP_ONLY.description">CADP format requires a coop id number.</entry>
     <entry key="yukon.common.setting.REMOVE_MULTIPLIER">Remove Multiplier</entry>

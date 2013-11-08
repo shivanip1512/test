@@ -39,13 +39,24 @@
 					<tr>
 						<!-- NAME/DOWNLOAD -->
 						<td>
-							<cti:url var="downloadUrl" value="downloadArchivedCopy">
-								<cti:param name="entryId" value="${exportHistoryEntry.id}"/>
-							</cti:url>
-							<cti:msg2 var="downloadMouseover" key=".downloadMouseover"/>
-							<span title="${downloadMouseover}"/>
-								<a href="${downloadUrl}">${fn:escapeXml(exportHistoryEntry.originalFileName)}</a>
-							</span>
+							<c:choose>
+                                <c:when test="${exportHistoryEntry.archiveFileExists}">
+                                    <cti:url var="downloadUrl" value="downloadArchivedCopy">
+                                        <cti:param name="entryId" value="${exportHistoryEntry.id}"/>
+                                    </cti:url>
+                                    <cti:msg2 var="downloadMouseover" key=".downloadMouseover"/>
+                                    <span title="${downloadMouseover}">
+                                        <a href="${downloadUrl}">${fn:escapeXml(exportHistoryEntry.originalFileName)}</a>
+                                    </span>
+                                </c:when>
+                                <c:otherwise>
+                                    <cti:msg2 var="noDownloadMouseover" key=".noDownloadMouseover"/>
+                                    <span title="${noDownloadMouseover}">
+                                        ${fn:escapeXml(exportHistoryEntry.originalFileName)}
+                                    </span>
+                                </c:otherwise>
+                            </c:choose>
+                            
 						</td>
 						<!-- TYPE -->
 						<td>

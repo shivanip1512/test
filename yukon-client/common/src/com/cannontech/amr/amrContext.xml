@@ -353,6 +353,25 @@
         </property>
     </bean>
     
+    <bean id="repeatingExportHistoryDeletionJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
+        <qualifier value="exportHistoryDeletion"/>
+        <property name="taskName">
+            <idref local="repeatingExportHistoryDeletionTask"/>
+        </property>
+        <property name="inputs">
+            <bean class="com.cannontech.web.input.InputRoot">
+                <property name="inputList">
+                    <list></list>
+                </property>
+            </bean>
+        </property>
+    </bean>
+    
+    <!-- Scheduled Export History Cleanup Task -->
+    <bean id="repeatingExportHistoryDeletionTask" class="com.cannontech.common.fileExportHistory.task.RepeatingExportHistoryDeletionTask" 
+        scope="prototype">
+    </bean>
+    
     <!-- Scheduled Group Request Execution Task -->
     <bean id="scheduledGroupRequestExecutionTask" class="com.cannontech.amr.scheduledGroupRequestExecution.tasks.ScheduledGroupRequestExecutionTask"
         scope="prototype">

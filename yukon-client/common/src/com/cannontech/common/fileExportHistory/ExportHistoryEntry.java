@@ -1,5 +1,7 @@
 package com.cannontech.common.fileExportHistory;
 
+import java.util.Comparator;
+
 import javax.activation.MimetypesFileTypeMap;
 
 import org.joda.time.Instant;
@@ -22,8 +24,10 @@ public final class ExportHistoryEntry implements Comparable<ExportHistoryEntry>{
 	private final String initiator;
 	private final Instant date;
 	private final String exportPath;
+	private final boolean archiveFileExists;
 	
-	public ExportHistoryEntry(int entryId, String originalFileName, String fileName, FileExportType type, String initiator, Instant date, String exportPath) {
+	public ExportHistoryEntry(int entryId, String originalFileName, String fileName, FileExportType type, 
+	                          String initiator, Instant date, String exportPath, boolean archiveFileExists) {
 		this.entryId = entryId;
 		this.originalFileName = originalFileName;
 		this.fileName = fileName;
@@ -31,6 +35,7 @@ public final class ExportHistoryEntry implements Comparable<ExportHistoryEntry>{
 		this.initiator = initiator;
 		this.date = date;
 		this.exportPath = exportPath;
+		this.archiveFileExists = archiveFileExists;
 	}
 	
 	public int getId() {
@@ -79,6 +84,10 @@ public final class ExportHistoryEntry implements Comparable<ExportHistoryEntry>{
 		return fileTypeMap.getContentType(originalFileName);
 	}
 	
+	public boolean isArchiveFileExists() {
+	    return archiveFileExists;
+	}
+	
 	@Override
 	public int compareTo(ExportHistoryEntry other) {
 		int comparison = date.compareTo(other.date);
@@ -92,4 +101,19 @@ public final class ExportHistoryEntry implements Comparable<ExportHistoryEntry>{
 		
 		return originalFileName.compareTo(other.originalFileName);
 	}
+	
+	@Override
+	public boolean equals(Object other) {
+	    if(other instanceof ExportHistoryEntry) {
+	        return compareTo((ExportHistoryEntry)other) == 0;
+	    }
+	    return false;
+	}
+	
+	public static final Comparator<ExportHistoryEntry> OLDEST_TO_NEWEST_COMPARATOR = new Comparator<ExportHistoryEntry>() {
+	    @Override
+        public int compare(ExportHistoryEntry entry1, ExportHistoryEntry entry2) {
+	        return entry1.date.compareTo(entry2.date); //oldest to newest
+	    }
+	};
 }

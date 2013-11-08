@@ -115,7 +115,9 @@ public enum GlobalSettingType implements DisplayableEnum {
     SCHEDULE_PARAMETERS_AVAILABLE_FILE_EXTENSIONS(GlobalSettingSubCategory.DATA_EXPORT, stringType(), ".csv,.dat,.txt"),
     // Defaulting to directory specified by CTIUtilities.getExportDirPath(), typically C:\Yukon\Client\Export.
     SCHEDULE_PARAMETERS_EXPORT_PATH(GlobalSettingSubCategory.DATA_EXPORT, stringType(), CtiUtilities.getExportDirPath()),
-
+    HISTORY_CLEANUP_DAYS_TO_KEEP(GlobalSettingSubCategory.DATA_EXPORT, integerType(), 0),
+    HISTORY_CLEANUP_FILES_TO_KEEP(GlobalSettingSubCategory.DATA_EXPORT, integerType(), 0),
+    
     // AMI  (may fit better for future under Misc.?)
     DEVICE_DISPLAY_TEMPLATE(GlobalSettingSubCategory.AMI, InputTypeFactory.enumType(MeterDisplayFieldEnum.class), MeterDisplayFieldEnum.DEVICE_NAME),
     // This may eventually be a "Device" setting, just just "AMR", This is to disable "route lookup" during the OLD bulk importer process; reduces comms
