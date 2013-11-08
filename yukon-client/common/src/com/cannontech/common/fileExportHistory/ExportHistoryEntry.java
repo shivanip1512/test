@@ -88,32 +88,84 @@ public final class ExportHistoryEntry implements Comparable<ExportHistoryEntry>{
 	    return archiveFileExists;
 	}
 	
-	@Override
-	public int compareTo(ExportHistoryEntry other) {
-		int comparison = date.compareTo(other.date);
-		if(comparison != 0) return comparison * -1; //sort newest to oldest
-		
-		comparison = initiator.compareTo(other.initiator);
-		if(comparison != 0) return comparison;
-		
-		comparison = originalFileName.compareTo(other.originalFileName);
-		if(comparison != 0) return comparison;
-		
-		return originalFileName.compareTo(other.originalFileName);
-	}
-	
-	@Override
-	public boolean equals(Object other) {
-	    if(other instanceof ExportHistoryEntry) {
-	        return compareTo((ExportHistoryEntry)other) == 0;
-	    }
-	    return false;
-	}
-	
-	public static final Comparator<ExportHistoryEntry> OLDEST_TO_NEWEST_COMPARATOR = new Comparator<ExportHistoryEntry>() {
-	    @Override
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((date == null) ? 0 : date.hashCode());
+        result = prime * result + ((exportPath == null) ? 0 : exportPath.hashCode());
+        result = prime * result + ((fileName == null) ? 0 : fileName.hashCode());
+        result = prime * result + ((initiator == null) ? 0 : initiator.hashCode());
+        result = prime * result + ((originalFileName == null) ? 0 : originalFileName.hashCode());
+        result = prime * result + ((type == null) ? 0 : type.hashCode());
+        return result;
+    }
+    
+    @Override
+    public int compareTo(ExportHistoryEntry other) {
+        if(this == other) return 0;
+        //date
+        int comparison = date.compareTo(other.date);
+        if(comparison != 0) return comparison * -1; //sort newest to oldest
+        //exportPath
+        comparison = exportPath.compareTo(other.exportPath);
+        if(comparison != 0) return comparison;
+        //fileName
+        comparison = fileName.compareTo(other.fileName);
+        if(comparison != 0) return comparison;
+        //initiator
+        comparison = initiator.compareTo(other.initiator);
+        if(comparison != 0) return comparison;
+        //originalFileName
+        comparison = originalFileName.compareTo(other.originalFileName);
+        if(comparison != 0) return comparison;
+        //type
+        return type.compareTo(other.type);
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        ExportHistoryEntry other = (ExportHistoryEntry) obj;
+        if (date == null) {
+            if (other.date != null)
+                return false;
+        } else if (!date.equals(other.date))
+            return false;
+        if (exportPath == null) {
+            if (other.exportPath != null)
+                return false;
+        } else if (!exportPath.equals(other.exportPath))
+            return false;
+        if (fileName == null) {
+            if (other.fileName != null)
+                return false;
+        } else if (!fileName.equals(other.fileName))
+            return false;
+        if (initiator == null) {
+            if (other.initiator != null)
+                return false;
+        } else if (!initiator.equals(other.initiator))
+            return false;
+        if (originalFileName == null) {
+            if (other.originalFileName != null)
+                return false;
+        } else if (!originalFileName.equals(other.originalFileName))
+            return false;
+        if (type != other.type)
+            return false;
+        return true;
+    }
+    
+    public static final Comparator<ExportHistoryEntry> OLDEST_TO_NEWEST_COMPARATOR = new Comparator<ExportHistoryEntry>() {
+        @Override
         public int compare(ExportHistoryEntry entry1, ExportHistoryEntry entry2) {
-	        return entry1.date.compareTo(entry2.date); //oldest to newest
-	    }
-	};
+            return entry1.date.compareTo(entry2.date); //oldest to newest
+        }
+    };
 }
