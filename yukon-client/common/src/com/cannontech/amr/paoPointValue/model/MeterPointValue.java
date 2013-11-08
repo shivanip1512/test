@@ -8,6 +8,9 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.core.dynamic.PointValueHolder;
+import com.cannontech.core.service.PointFormattingService;
+import com.cannontech.core.service.PointFormattingService.Format;
+import com.cannontech.user.YukonUserContext;
 import com.google.common.base.Function;
 import com.google.common.collect.Ordering;
 
@@ -17,16 +20,14 @@ public class MeterPointValue implements YukonPao {
     private final PaoPointIdentifier paoPointIdentifier;
     private final PointValueHolder pointValueHolder;
     private final String pointName;
-    private final String formattedValue;
+    private String formattedValue;
 
     public MeterPointValue(YukonMeter meter, PaoPointIdentifier paoPointIdentifier,
-                           PointValueHolder pointValueHolder, String pointName,
-                           String formattedValue) {
+                           PointValueHolder pointValueHolder, String pointName) {
         this.meter = meter;
         this.paoPointIdentifier = paoPointIdentifier;
         this.pointValueHolder = pointValueHolder;
         this.pointName = pointName;
-        this.formattedValue = formattedValue;
     }
 
     public YukonMeter getMeter() {
@@ -45,7 +46,10 @@ public class MeterPointValue implements YukonPao {
         return pointName;
     }
 
-    public String getFormattedValue() {
+    public String getFormattedValue(final PointFormattingService pointFormattingService, final YukonUserContext userContext) {
+        if (formattedValue == null) {
+            this.formattedValue = pointFormattingService.getValueString(pointValueHolder, Format.VALUE, userContext);
+        }
         return formattedValue;
     }
 
@@ -110,13 +114,13 @@ public class MeterPointValue implements YukonPao {
         return getPointNameOrdering().compound(getMeterNameOrdering());
     }
 
-    public static Comparator<MeterPointValue> getFormattedValueComparator() {
+    public static Comparator<MeterPointValue> getFormattedValueComparator(final PointFormattingService pointFormattingService, final YukonUserContext userContext) {
         Ordering<String> normalStringComparer = Ordering.natural().nullsLast();
         Ordering<MeterPointValue> formattedValueOrdering = normalStringComparer
             .onResultOf(new Function<MeterPointValue, String>() {
                 @Override
                 public String apply(MeterPointValue from) {
-                    return from.getFormattedValue();
+                    return from.getFormattedValue(pointFormattingService, userContext);
                 }
             });
         return formattedValueOrdering;

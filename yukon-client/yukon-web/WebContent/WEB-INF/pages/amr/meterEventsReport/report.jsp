@@ -407,18 +407,17 @@
     				<tr>
     					<td>
     						<cti:paoDetailUrl  yukonPao="${event.meter}" >
-    						    <c:choose>
-    						        <c:when test="${empty event.meter.name}"></c:when>
-    						        <c:otherwise><spring:escapeBody>${event.meter.name}</spring:escapeBody></c:otherwise>
-    						    </c:choose>
+    						    ${fn:escapeXml(event.meter.name)}
     						</cti:paoDetailUrl>
     					</td>
                         <td>${event.meter.meterNumber}</td>
     					<td><tags:paoType yukonPao="${event.meter}"/></td>
     					<td><cti:formatDate type="BOTH" value="${event.pointValueHolder.pointDataTimeStamp}"/></td>
-    	                <td><spring:escapeBody>${event.pointName}</spring:escapeBody></td>
+    	                <td>${fn:escapeXml(event.pointName)}</td>
                         <cti:pointColor pointId="${event.pointValueHolder.id}" rawState="${event.pointValueHolder.value}" var="color"/>
-    					<td class="${color}">${event.formattedValue}</td>
+    					<td class="${color}">
+                            <cti:pointValueFormatter format="VALUE" value="${event.pointValueHolder}" />
+                        </td>
                         <td class="contextual-menu">
                             <cm:singleDeviceMenu deviceId="${event.meter.paoIdentifier.paoId}" containerCssClass="fr"/>
                         </td>

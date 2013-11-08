@@ -132,8 +132,14 @@ public class MeterEventsReportController {
         builder.put("TYPE", MeterPointValue.getDeviceTypeComparator());
         builder.put("DATE", MeterPointValue.getDateMeterNameComparator());
         builder.put("EVENT", MeterPointValue.getPointNameMeterNameComparator());
-        builder.put("VALUE", MeterPointValue.getFormattedValueComparator());
         sorters = builder.build();
+    }
+    
+    private Comparator<MeterPointValue> getSorter(String sortType, YukonUserContext context) {
+        if ( sortType.equals("VALUE")) {
+            return MeterPointValue.getFormattedValueComparator(pointFormattingService, context);
+        }
+        return sorters.get(sortType);
     }
     
     private Validator filterValidator =
@@ -293,7 +299,7 @@ public class MeterEventsReportController {
     
     @RequestMapping
     public String jobs(ModelMap model, Integer itemsPerPage, @RequestParam(defaultValue="1") int page) {
-
+		
         itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
 		scheduledFileExportJobsTagService.populateModel(model, FileExportType.METER_EVENTS, ScheduledExportType.METER_EVENT, page, itemsPerPage);
 		return "meterEventsReport/jobs.jsp";
@@ -478,12 +484,9 @@ public class MeterEventsReportController {
                                backingBean.getItemsPerPage(),
                                events.size());
 
-        events = events.subList(backingBean.getStartIndex(),
-                                          backingBean.getStartIndex() + 
-                                          backingBean.getItemsPerPage() > events.size() ?
-                                          events.size() : backingBean.getStartIndex() +
-                                          backingBean.getItemsPerPage());
-        
+        events = events.subList(backingBean.getStartIndex(), 
+                     Math.min(backingBean.getStartIndex() + backingBean.getItemsPerPage(), events.size()) );
+
         filterResult.setResultList(events);
         model.addAttribute("filterResult", filterResult);
         model.addAllAttributes(backingBean.getDeviceCollection().getCollectionParameters());
@@ -500,9 +503,9 @@ public class MeterEventsReportController {
                                                                                 userContext);
         if (backingBean.getSort() != null) {
             if (backingBean.getDescending()) {
-                Collections.sort(events, Collections.reverseOrder(sorters.get(backingBean.getSort())));
+                Collections.sort(events, Collections.reverseOrder(getSorter(backingBean.getSort(), userContext)));
             } else {
-                Collections.sort(events, sorters.get(backingBean.getSort()));
+                Collections.sort(events, getSorter(backingBean.getSort(), userContext));
             }
         } else {
             Collections.sort(events, Collections.reverseOrder(MeterPointValue.getDateMeterNameComparator()));

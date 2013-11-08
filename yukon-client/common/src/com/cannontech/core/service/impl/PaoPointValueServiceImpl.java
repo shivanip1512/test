@@ -57,7 +57,7 @@ public class PaoPointValueServiceImpl implements PaoPointValueService {
                                                                                 boolean includeDisabledPaos,
                                                                                 Set<String> discludedPointStateValues,
                                                                                 YukonUserContext userContext) {
-
+        
         Set<? extends Attribute> attributeSet = Sets.newHashSet(attributes);
         List<? extends PointValueHolder> pointData = null;
         Map<PaoPointIdentifier, PointInfo> paoPointInfoMap;
@@ -90,7 +90,6 @@ public class PaoPointValueServiceImpl implements PaoPointValueService {
                 PaoPointIdentifier paoPointIdentifier = new PaoPointIdentifier(pvqh.getKey(), pointInfo.getPointIdentifier());
                 paoPointInfoMap.put(paoPointIdentifier, pointInfo);
             }
-
         } else {
             // get the PaoPointIdentifiers for the devices & attributes
             List<PaoMultiPointIdentifier> paoMultiPointIdentifiersForAttributes =
@@ -141,21 +140,25 @@ public class PaoPointValueServiceImpl implements PaoPointValueService {
         // put it all together into our return list
         List<MeterPointValue> meterPointValues = Lists.newArrayListWithExpectedSize(pointData.size());
         for (PointValueHolder pointValueHolder : pointData) {
-            String valueString = pointFormattingService.getValueString(pointValueHolder, Format.VALUE, userContext);
-            if (!CollectionUtils.isEmpty(discludedPointStateValues)) {
-                if (discludedPointStateValues.contains(valueString.toLowerCase())) continue;
-            }
-            PointInfo pointInfo = pointIdsToPointInfos.get(pointValueHolder.getId());
+
             PaoPointIdentifier paoPointIdentifier = pointIdPaoPointIdMap.get(pointValueHolder.getId());
             YukonMeter meter = paoPointIdMeterMap.get(paoPointIdentifier.getPaoIdentifier());
-
-            MeterPointValue meterPointValue =
-                new MeterPointValue(meter,
-                                    paoPointIdentifier,
-                                    pointValueHolder,
-                                    pointInfo.getName(),
-                                    valueString);
-            meterPointValues.add(meterPointValue);
+    
+            if(meter != null) {
+                
+                PointInfo pointInfo = pointIdsToPointInfos.get(pointValueHolder.getId());
+        
+                MeterPointValue meterPointValue =
+                    new MeterPointValue(meter,
+                                        paoPointIdentifier,
+                                        pointValueHolder,
+                                    pointInfo.getName());
+                if (!CollectionUtils.isEmpty(discludedPointStateValues)) {
+                    String valueString = meterPointValue.getFormattedValue(pointFormattingService, userContext);
+                    if (discludedPointStateValues.contains(valueString.toLowerCase())) continue;
+                }
+                meterPointValues.add(meterPointValue);
+            }
         }
 
         Collections.sort(meterPointValues, getMeterPointValueComparator());
