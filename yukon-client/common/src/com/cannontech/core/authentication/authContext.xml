@@ -54,16 +54,19 @@
     
     <bean id="nullAuthentication" class="com.cannontech.core.authentication.service.impl.NullAuthenticationService"/>
     
-    <bean id="ldapService" class="com.cannontech.common.login.ldap.LDAPService"/>
-    
     <bean id="ADAuthentication" class="com.cannontech.common.login.ldap.impl.LDAPADLogin">
-    	<property name="ldapService" ref="ldapService"/>
+        <property name="ldapService" ref="ldapService"/>
     </bean>
     
     <bean id="ldapAuthentication" class="com.cannontech.common.login.ldap.impl.LDAPX500Login">
-    	<property name="ldapService" ref="ldapService"/>
+        <property name="ldapService" ref="ldapService"/>
+    </bean>
+ 
+    <bean id="ldapService" class="com.cannontech.common.login.ldap.LDAPService">
+        <property name="CustomisedSSLSocketFactory" ref="customisedSSLSocketFactory"/>
     </bean>
     
+    <bean id="customisedSSLSocketFactory" class="com.cannontech.common.login.ldap.CustomisedSSLSocketFactory"/>
     <bean id="cryptoService" class="com.cannontech.core.authentication.service.impl.CryptoServiceImpl"/>
     
 </beans>

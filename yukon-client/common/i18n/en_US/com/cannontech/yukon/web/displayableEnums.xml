@@ -229,6 +229,8 @@
     <entry key="yukon.common.setting.AD_SERVER_PORT.description">Active Directory Server Port</entry>
     <entry key="yukon.common.setting.AD_SERVER_ADDRESS">AD Server Address</entry>
     <entry key="yukon.common.setting.AD_SERVER_ADDRESS.description">Active Directory Server Address</entry>
+    <entry key="yukon.common.setting.AD_SSL_ENABLED">AD SSL Enabled</entry>
+    <entry key="yukon.common.setting.AD_SSL_ENABLED.description">Controls the use of SSL for the Active Directory connection</entry>
     <entry key="yukon.common.setting.LDAP_SERVER_TIMEOUT">LDAP Server Timeout</entry>
     <entry key="yukon.common.setting.LDAP_SERVER_TIMEOUT.description">LDAP Server Timeout (in seconds)</entry>
     <entry key="yukon.common.setting.LDAP_SERVER_PORT">LDAP Server Port</entry>
@@ -241,6 +243,8 @@
     <entry key="yukon.common.setting.LDAP_USER_SUFFIX.description">LDAP User Suffix</entry>
     <entry key="yukon.common.setting.LDAP_DN">LDAP Domain Name</entry>
     <entry key="yukon.common.setting.LDAP_DN.description">dc=com</entry>
+    <entry key="yukon.common.setting.LDAP_SSL_ENABLED">LDAP SSL Enabled</entry>
+    <entry key="yukon.common.setting.LDAP_SSL_ENABLED.description">Controls the use of SSL for the LDAP connection</entry>
     <entry key="yukon.common.setting.DEFAULT_AUTH_TYPE">Default Auth Type</entry>
     <entry key="yukon.common.setting.DEFAULT_AUTH_TYPE.description">Default authentication type, possible values: Active Directory, Encrypted, LDAP, Radius, No Login.</entry>
     <entry key="yukon.common.setting.AUTH_TIMEOUT">Authentication Timeout</entry>

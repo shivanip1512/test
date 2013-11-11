@@ -41,12 +41,14 @@ public enum GlobalSettingType implements DisplayableEnum {
     LDAP_SERVER_ADDRESS(GlobalSettingSubCategory.AUTHENTICATION, stringType(), "127.0.0.1"),
     LDAP_SERVER_PORT(GlobalSettingSubCategory.AUTHENTICATION, integerType(), 389),
     LDAP_SERVER_TIMEOUT(GlobalSettingSubCategory.AUTHENTICATION, integerType(), 30),
+    LDAP_SSL_ENABLED(GlobalSettingSubCategory.AUTHENTICATION, booleanType(), true),
 
     // Authentication > Active Directory (only enabled when DEFAULT_AUTH_TYPE = AD)
     AD_SERVER_ADDRESS(GlobalSettingSubCategory.AUTHENTICATION, stringType(), "127.0.0.1"),
     AD_SERVER_PORT(GlobalSettingSubCategory.AUTHENTICATION, integerType(), 389),
     AD_SERVER_TIMEOUT(GlobalSettingSubCategory.AUTHENTICATION, integerType(), 30),
     AD_NTDOMAIN(GlobalSettingSubCategory.AUTHENTICATION, stringType(), null),
+    AD_SSL_ENABLED(GlobalSettingSubCategory.AUTHENTICATION, booleanType(), true),
     
     // Authentication > Password Management  (this could go under Authentication > General if we didn't want two sub sections with so few items)
     ENABLE_PASSWORD_RECOVERY(GlobalSettingSubCategory.AUTHENTICATION, booleanType(), true),
