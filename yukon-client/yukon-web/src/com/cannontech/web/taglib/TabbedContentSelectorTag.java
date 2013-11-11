@@ -46,7 +46,8 @@ public class TabbedContentSelectorTag extends BodyTagSupport {
 	    return EVAL_BODY_BUFFERED;
 	}
 	
-	public int doAfterBody() throws JspException {
+	@Override
+    public int doAfterBody() throws JspException {
         return SKIP_BODY;
     }
 	
@@ -55,17 +56,9 @@ public class TabbedContentSelectorTag extends BodyTagSupport {
         super.setBodyContent(arg0);
     }
 	
-	public int doEndTag() throws JspException {
+	@Override
+    public int doEndTag() throws JspException {
 	    try {
-	        // add scripts, css
-	        StandardPageTag spTag = StandardPageTag.find(pageContext);
-	        if (spTag != null) {
-	            spTag.addScriptFile(JsLibrary.JQUERY.getPath()); //add the jQuery Library for posterity 
-	            spTag.addScriptFile(JsLibrary.JQUERY_UI.getPath()); //add the UI Library for posterity 
-	        } else {
-	            throw new UnsupportedOperationException("TabbedContentSelectorTag should be used within a StandardPageTag");
-	        }
-	        
 	        String outputId = ! StringUtils.isEmpty(id) ? id : "tabbedControl_"+ UniqueIdentifierTag.generateIdentifier(pageContext, "tabbedContentSelectorContainer_");
 	        boolean doHeaderOutline = this.mode.equals(Mode.section);
 
@@ -101,10 +94,12 @@ public class TabbedContentSelectorTag extends BodyTagSupport {
         return selectedTabIndex;
 	}
 
+    @Override
     public String getId() {
         return id;
     }
 
+    @Override
     public void setId(String id) {
         this.id = id;
     }
