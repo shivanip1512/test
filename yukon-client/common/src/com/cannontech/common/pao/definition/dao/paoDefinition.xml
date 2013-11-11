@@ -9694,12 +9694,6 @@
 
     <!--  LM Programs -->
     <pao id="LM_PROGRAM_BASE" abstract="true">
-		<tags>
-        	<tag name="LM_PROGRAM"/>
-        </tags>
-    </pao>
-    <pao id="LM_DIRECT_PROGRAM" inherits="LM_PROGRAM_BASE">
-        <displayName>LM DIRECT PROGRAM</displayName>
         <points>
             <point type="Analog" offset="1">
                 <init>false</init>
@@ -9724,6 +9718,12 @@
                 <decimalplaces value="1"/>
             </point>
         </points>
+        <tags>
+            <tag name="LM_PROGRAM"/>
+        </tags>
+    </pao>
+    <pao id="LM_DIRECT_PROGRAM" inherits="LM_PROGRAM_BASE">
+        <displayName>LM DIRECT PROGRAM</displayName>
         <tags>
             <tag name="DIRECT_PROGRAM_ENROLLMENT" />
         </tags>
