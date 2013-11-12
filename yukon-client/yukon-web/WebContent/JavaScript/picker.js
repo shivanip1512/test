@@ -317,7 +317,7 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
 
     ajaxError = function (transport, textStatus, errorThrown) {
         this.inSearch = false;
-        this.unblock();
+        unblock();
         this.resultsDiv.innerHTML = '';
         errorHolder = document.createElement('div');
         errorHolder.id = this.errorHolderId;
