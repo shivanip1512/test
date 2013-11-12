@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     11/5/2013 12:10:56 PM                        */
+/* Created on:     11/12/2013 10:03:20 AM                       */
 /*==============================================================*/
 
 
@@ -5267,6 +5267,7 @@ create table FileExportHistory (
    Initiator            varchar(100)         not null,
    ExportDate           datetime             not null,
    ExportPath           varchar(300)         null,
+   ArchiveFileExists    char(1)              not null,
    constraint PK_FileExportHistory primary key (EntryId)
 )
 go
