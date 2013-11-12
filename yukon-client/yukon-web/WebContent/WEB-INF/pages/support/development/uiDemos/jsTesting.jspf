@@ -4,15 +4,19 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 
-<h1>I am not nearly the king</h1>
-    <button id='examp1' title="button uno">
-        <img id="img1" src="https://my.t-mobile.com/assets/styles/decoration/green_check_icon.png"/>
-    </button>
 <h1>iframe clickjacking test</h1>
     <p><em>Should</em> display Yukon website</p>
     <script>
         jQuery(function () {
-            var iframeUrl = 'http://10.106.38.173:8080/';
+            // YUK-12513 Click Jacking Vulnerability - Frame Breaking
+            // if logged in to http://pspl-sw-night.eatoneaseng.net:8080/, you should see the
+            // home page in the iframe.
+            // if logged in to another Yukon host, the ifram should be blank, and console messages
+            // such as the following should appear in the debugger console:
+            // Refused to display 'http://10.106.38.173:8080/login.jsp?REDIRECTED_FROM=%2F' in a frame because it set 'X-Frame-Options' to 'SAMEORIGIN'.
+            // 14:56:44.474] Load denied by X-Frame-Options: http://10.106.38.173:8080/login.jsp?REDIRECTED_FROM=%2F does not permit cross-origin framing.
+            //var iframeUrl = 'http://10.106.42.52:8080/';
+            var iframeUrl = 'http://localhost:8080/';
             jQuery('#clickjack').attr('src', iframeUrl);
         });
     </script> 
@@ -21,18 +25,6 @@
     </div>
 <br>
 
-<!-- f-tooltip must precede f-has-tooltip in the markup -->
-<div id='ttt' style="display:none;" class="f-tooltip">
-  <table>
-    <tr><td>this is an</td></tr>
-    <tr><td>html table</td></tr>
-  </table>
-</div>
-    <button id='examp2' href='#' title="button dos" class="f-has-tooltip">
-        <img id="img2" src="https://my.t-mobile.com/assets/styles/decoration/green_check_icon.png" />
-    </button>
-
-<br />
 <div style='clear left; clear right;'>
     <div style='height: 5px; width: 10px; border: 5px dashed #000; border-bottom-color: #000; border-bottom-style: solid; border-top: none; border-left-color: transparent; border-right-color: transparent;'>
     </div>
