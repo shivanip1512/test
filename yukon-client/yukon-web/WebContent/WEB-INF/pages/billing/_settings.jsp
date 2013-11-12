@@ -9,7 +9,7 @@
 
 <input id="in_formatType_itronEvent" type="hidden" value="${TYPE_CURTAILMENT_EVENTS_ITRON}" />
 
-<p id="txt_selectGroup" class="error dn"><cti:msg key="yukon.web.billing.mustSelectGroup"/></p>
+<span id="txt_selectGroup" class="error dn fl"><cti:msg key="yukon.web.billing.mustSelectGroup"/></span>
 
     <c:set var="origEndDate" value="${BILLING_BEAN.endDate}"></c:set>
     <c:set var="systemTimezone" value="${tzFormat.format(origEndDate)}"></c:set>
@@ -54,8 +54,7 @@
                 <tags:nameValue name="${billingGroup}" id="row_billing_group" nameClass="vat">
 
                     <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="dataJson" />
-                    <tags:deviceGroupNameSelector fieldName="billGroup"
-                        fieldValue="${billGroup}" dataJson="${dataJson}"/>
+                    <tags:deviceGroupNameSelector fieldName="billGroup" fieldValue="${billGroup}" dataJson="${dataJson}" classes="fl"/>
 
                 </tags:nameValue>
 

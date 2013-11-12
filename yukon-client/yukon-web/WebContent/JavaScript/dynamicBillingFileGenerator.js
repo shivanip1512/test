@@ -241,7 +241,7 @@ function save() {
 
 function getAttributeValue(option, attribute){
     
-    var value = option.attr(attribute);
+    var value = jQuery(option).attr(attribute);
     if(value == null){
         return '';
     }
@@ -257,11 +257,11 @@ function updateDelimiter(){
         delimiter = jQuery('#delimiter');
     
     if (selection == 'Custom'){
-        delimiter.readOnly = false;
+        delimiter.prop('readOnly', false);
         delimiter.val('');
         delimiter.focus();
     } else {
-        delimiter.readOnly = 'readOnly';
+        delimiter.prop('readOnly', true);
         delimiter.val(selection);
     }
     updatePreview();
@@ -523,12 +523,12 @@ function displayHelper(elem){
 }
 
 //Helps with setting the padding side
-function updatePadSideSelect(padSideSelect, padSide){
-    var options = padSideSelect.children('option'),
+function updatePadSideSelect(padSideSelect, padSide) {
+	var options = jQuery(padSideSelect).children('option'),
         i;
     for (i = 0; i < options.length; i++) {
-        if (options[i].value == padSide){
-            padSideSelect.selectedIndex = i;
+        if (jQuery(options[i]).val() == padSide) {
+            padSideSelect.attr('selectedIndex', i);
         }
     }
 }

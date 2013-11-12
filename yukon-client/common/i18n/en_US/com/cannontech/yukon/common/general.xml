@@ -149,4 +149,6 @@
 <entry key="yukon.common.file4">File 4</entry>
 
 <entry key="yukon.common.undo">Undo</entry>
+
+<entry key="yukon.common.invalidCron">Invalid Cron Expression</entry>
 </properties>

@@ -106,7 +106,7 @@ public class MaintenanceController {
             cronExpression = cronExpressionTagService.build(cronUniqueId, request, userContext);
         } catch (Exception e) {
             MessageSourceResolvable invalidCronMsg =
-                new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.maintenance.invalidCron");
+                new YukonMessageSourceResolvable("yukon.common.invalidCron");
             flashScope.setError(invalidCronMsg);
             return edit(model, userContext, jobId);
         }

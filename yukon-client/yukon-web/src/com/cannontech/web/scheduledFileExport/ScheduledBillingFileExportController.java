@@ -52,146 +52,151 @@ import com.cannontech.web.util.JsonHelper;
 @CheckRole(YukonRole.APPLICATION_BILLING)
 public class ScheduledBillingFileExportController {
 
-	@Autowired private CronExpressionTagService cronExpressionTagService;
-	@Autowired private DeviceGroupService deviceGroupService;
-	@Autowired private JobManager jobManager;
-	@Autowired private JsonHelper jsonHelper;
-	@Autowired private ScheduledFileExportJobsTagService scheduledFileExportJobsTagService;
-	@Autowired private ScheduledFileExportService scheduledFileExportService;
+    @Autowired private CronExpressionTagService cronExpressionTagService;
+    @Autowired private DeviceGroupService deviceGroupService;
+    @Autowired private JobManager jobManager;
+    @Autowired private JsonHelper jsonHelper;
+    @Autowired private ScheduledFileExportJobsTagService scheduledFileExportJobsTagService;
+    @Autowired private ScheduledFileExportService scheduledFileExportService;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private YukonUserContextMessageSourceResolver resolver;
     @Autowired private ScheduledFileExportHelper exportHelper;
 
-	private static final int MAX_GROUPS_DISPLAYED = 2;
-	private ScheduledFileExportValidator scheduledFileExportValidator;
+    private static final int MAX_GROUPS_DISPLAYED = 2;
+    private ScheduledFileExportValidator scheduledFileExportValidator;
 
-	@RequestMapping
-	public String showForm(ModelMap model, YukonUserContext userContext, HttpServletRequest request,
-			@ModelAttribute("exportData") ScheduledFileExportData exportData, Integer jobId, Integer fileFormat, 
-			Integer demandDays, Integer energyDays, @RequestParam(defaultValue="false") boolean removeMultiplier,
-			@RequestParam(defaultValue="null") String[] billGroup) throws ServletRequestBindingException {
+    @RequestMapping
+    public String showForm(ModelMap model, YukonUserContext userContext, HttpServletRequest request,
+            @ModelAttribute("exportData") ScheduledFileExportData exportData, Integer jobId, Integer fileFormat, 
+            Integer demandDays, Integer energyDays, @RequestParam(defaultValue="false") boolean removeMultiplier,
+            @RequestParam(defaultValue="null") String[] billGroup) throws ServletRequestBindingException {
 
-		if(billGroup == null) billGroup = new String[0];
+        if(billGroup == null) billGroup = new String[0];
 
-		CronExpressionTagState cronExpressionTagState = new CronExpressionTagState();
+        CronExpressionTagState cronExpressionTagState = new CronExpressionTagState();
 
-		if(jobId != null) {
-			//edit existing schedule
-			ScheduledRepeatingJob job = jobManager.getRepeatingJob(jobId);
-			ScheduledBillingFileExportTask task = (ScheduledBillingFileExportTask) jobManager.instantiateTask(job);
+        if(jobId != null) {
+            //edit existing schedule
+            ScheduledRepeatingJob job = jobManager.getRepeatingJob(jobId);
+            ScheduledBillingFileExportTask task = (ScheduledBillingFileExportTask) jobManager.instantiateTask(job);
 
-			billGroup = task.getDeviceGroupNames().toArray(new String[task.getDeviceGroupNames().size()]);
-			fileFormat = task.getFileFormatId();
-			demandDays = task.getDemandDays();
-			energyDays = task.getEnergyDays();
-			removeMultiplier = task.isRemoveMultiplier();
+            billGroup = task.getDeviceGroupNames().toArray(new String[task.getDeviceGroupNames().size()]);
+            fileFormat = task.getFileFormatId();
+            demandDays = task.getDemandDays();
+            energyDays = task.getEnergyDays();
+            removeMultiplier = task.isRemoveMultiplier();
 
-			exportData.setScheduleName(task.getName());
-			exportData.setExportFileName(task.getExportFileName());
+            exportData.setScheduleName(task.getName());
+            exportData.setExportFileName(task.getExportFileName());
             exportData.setAppendDateToFileName(task.isAppendDateToFileName());
             exportData.setTimestampPatternField(task.getTimestampPatternField());
             exportData.setOverrideFileExtension(task.isOverrideFileExtension());
             exportData.setExportFileExtension(task.getExportFileExtension());
             exportData.setIncludeExportCopy(task.isIncludeExportCopy());
-			exportData.setExportPath(task.getExportPath());
-			exportData.setNotificationEmailAddresses(task.getNotificationEmailAddresses());
-			cronExpressionTagState = cronExpressionTagService.parse(job.getCronString(), job.getUserContext());
-			model.addAttribute("jobId", jobId);
-		}
+            exportData.setExportPath(task.getExportPath());
+            exportData.setNotificationEmailAddresses(task.getNotificationEmailAddresses());
+            cronExpressionTagState = cronExpressionTagService.parse(job.getCronString(), job.getUserContext());
+            model.addAttribute("jobId", jobId);
+        }
 
-		model.addAttribute("exportData", exportData);
-		model.addAttribute("deviceGroups", billGroup);
-		model.addAttribute("fileFormat", fileFormat);
-		model.addAttribute("demandDays", demandDays);
-		model.addAttribute("energyDays", energyDays);
-		model.addAttribute("removeMultiplier", removeMultiplier);
-		model.addAttribute("cronExpressionTagState", cronExpressionTagState);
+        model.addAttribute("exportData", exportData);
+        model.addAttribute("deviceGroups", billGroup);
+        model.addAttribute("fileFormat", fileFormat);
+        model.addAttribute("demandDays", demandDays);
+        model.addAttribute("energyDays", energyDays);
+        model.addAttribute("removeMultiplier", removeMultiplier);
+        model.addAttribute("cronExpressionTagState", cronExpressionTagState);
         model.addAttribute("fileExtensionChoices", exportHelper.setupFileExtChoices(exportData));
         model.addAttribute("exportPathChoices", exportHelper.setupExportPathChoices(exportData));
-		Set<? extends DeviceGroup> deviceGroups = deviceGroupService.resolveGroupNames(Arrays.asList(billGroup));
-		String groupNames = getGroupNamesString(deviceGroups, userContext);
-		model.addAttribute("groupNames", groupNames);
+        Set<? extends DeviceGroup> deviceGroups = deviceGroupService.resolveGroupNames(Arrays.asList(billGroup));
+        String groupNames = getGroupNamesString(deviceGroups, userContext);
+        model.addAttribute("groupNames", groupNames);
 
-		String formatName = FileFormatTypes.getFormatType(fileFormat);
-		model.addAttribute("formatName", formatName);
+        String formatName = FileFormatTypes.getFormatType(fileFormat);
+        model.addAttribute("formatName", formatName);
 
-		return "_schedule.jsp";
-	}
+        return "_schedule.jsp";
+    }
 
-	@RequestMapping(value="scheduleExport.json")
+    @RequestMapping(value="scheduleExport.json")
     public @ResponseBody JSONObject scheduleExport(ModelMap model, YukonUserContext userContext, HttpServletRequest request,
                                  @ModelAttribute("exportData") ScheduledFileExportData exportData, BindingResult bindingResult,
                                  String[] deviceGroups, int fileFormat, int demandDays, int energyDays, boolean removeMultiplier, Integer jobId)
                                  throws ParseException, ServletRequestBindingException {
 
-		String scheduleCronString = cronExpressionTagService.build("scheduleCronString", request, userContext);
-		exportData.setScheduleCronString(scheduleCronString);
+        Set<? extends DeviceGroup> fullDeviceGroups = deviceGroupService.resolveGroupNames(Arrays.asList(deviceGroups));
 
-		Set<? extends DeviceGroup> fullDeviceGroups = deviceGroupService.resolveGroupNames(Arrays.asList(deviceGroups));
+        BillingFileExportGenerationParameters billingParameters = new BillingFileExportGenerationParameters(fileFormat, fullDeviceGroups, demandDays, energyDays, removeMultiplier);
+        exportData.setParameters(billingParameters);
 
-		BillingFileExportGenerationParameters billingParameters = new BillingFileExportGenerationParameters(fileFormat, fullDeviceGroups, demandDays, energyDays, removeMultiplier);
-		exportData.setParameters(billingParameters);
-
-		scheduledFileExportValidator = new ScheduledFileExportValidator(this.getClass());
-		scheduledFileExportValidator.validate(exportData, bindingResult);
+        scheduledFileExportValidator = new ScheduledFileExportValidator(this.getClass());
+        scheduledFileExportValidator.validate(exportData, bindingResult);
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(userContext);
-		if(bindingResult.hasErrors()) {
+        
+        try {
+            String scheduleCronString = cronExpressionTagService.build("scheduleCronString", request, userContext);
+            exportData.setScheduleCronString(scheduleCronString);
+        } catch (IllegalArgumentException e) {
+            bindingResult.rejectValue("scheduleCronString", "yukon.common.invalidCron");
+        }
+        
+        if (bindingResult.hasErrors()) {
             return jsonHelper.failToJSON(bindingResult, accessor);
         }
 
         MessageSourceResolvable msgObj = null;
 
         if(jobId == null) {
-			//new schedule
-			scheduledFileExportService.scheduleFileExport(exportData, userContext, request);
+            //new schedule
+            scheduledFileExportService.scheduleFileExport(exportData, userContext, request);
             msgObj = new YukonMessageSourceResolvable("yukon.web.modules.amr.billing.jobs.jobCreated", exportData.getScheduleName());
         } else {
             //edit schedule
             scheduledFileExportService.updateFileExport(exportData, userContext, request, jobId);
             msgObj = new YukonMessageSourceResolvable("yukon.web.modules.amr.billing.jobs.jobUpdated", exportData.getScheduleName());
-		}
+        }
 
         return jsonHelper.succeed(msgObj, accessor);
-	}
-	
-	@RequestMapping
-	public String jobs(ModelMap model, Integer itemsPerPage, @RequestParam(defaultValue="1") int page) {
-		
+    }
+    
+    @RequestMapping
+    public String jobs(ModelMap model, Integer itemsPerPage, @RequestParam(defaultValue="1") int page) {
+        
         itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
-		scheduledFileExportJobsTagService.populateModel(model, FileExportType.BILLING, ScheduledExportType.BILLING, page, itemsPerPage);
-		return "jobs.jsp";
-	}
+        scheduledFileExportJobsTagService.populateModel(model, FileExportType.BILLING, ScheduledExportType.BILLING, page, itemsPerPage);
+        return "jobs.jsp";
+    }
 
-	@RequestMapping (value = "delete.json")
-	public @ResponseBody JSONObject delete(ModelMap model, int jobId, YukonUserContext userContext) {
-		YukonJob job = jobManager.getJob(jobId);
-		ScheduledFileExportTask task = (ScheduledFileExportTask) jobManager.instantiateTask(job);
-		String jobName = task.getName();
-		jobManager.deleteJob(job);
+    @RequestMapping (value = "delete.json")
+    public @ResponseBody JSONObject delete(ModelMap model, int jobId, YukonUserContext userContext) {
+        YukonJob job = jobManager.getJob(jobId);
+        ScheduledFileExportTask task = (ScheduledFileExportTask) jobManager.instantiateTask(job);
+        String jobName = task.getName();
+        jobManager.deleteJob(job);
 
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(userContext);
         MessageSourceResolvable msgObj = new YukonMessageSourceResolvable("yukon.web.modules.amr.billing.jobs.deletedSuccess", jobName);
-		return jsonHelper.succeed(msgObj, accessor);
-	}
+        return jsonHelper.succeed(msgObj, accessor);
+    }
 
-	public static String getGroupNamesString(Set<? extends DeviceGroup> deviceGroups, YukonUserContext userContext) {
-//	private String getGroupNamesString(Set<? extends DeviceGroup> deviceGroups, YukonUserContext userContext) {
-		String groupNames = "";
-		int maxDisplayedGroupNames = deviceGroups.size() > MAX_GROUPS_DISPLAYED ? MAX_GROUPS_DISPLAYED : deviceGroups.size();
-		Iterator<? extends DeviceGroup> iterator = deviceGroups.iterator();
-		for(int i = 0; i < maxDisplayedGroupNames; i++) {
-			DeviceGroup group = iterator.next();
-			if(i > 0) {
-				groupNames += ", ";
-			}
-			groupNames += group.getName();
-		}
-		
-		if(maxDisplayedGroupNames < deviceGroups.size()) {
-			groupNames += "...";
-		}
-		
-		return groupNames;
-	}
+    public static String getGroupNamesString(Set<? extends DeviceGroup> deviceGroups, YukonUserContext userContext) {
+//    private String getGroupNamesString(Set<? extends DeviceGroup> deviceGroups, YukonUserContext userContext) {
+        String groupNames = "";
+        int maxDisplayedGroupNames = deviceGroups.size() > MAX_GROUPS_DISPLAYED ? MAX_GROUPS_DISPLAYED : deviceGroups.size();
+        Iterator<? extends DeviceGroup> iterator = deviceGroups.iterator();
+        for(int i = 0; i < maxDisplayedGroupNames; i++) {
+            DeviceGroup group = iterator.next();
+            if(i > 0) {
+                groupNames += ", ";
+            }
+            groupNames += group.getName();
+        }
+        
+        if(maxDisplayedGroupNames < deviceGroups.size()) {
+            groupNames += "...";
+        }
+        
+        return groupNames;
+    }
 
 }

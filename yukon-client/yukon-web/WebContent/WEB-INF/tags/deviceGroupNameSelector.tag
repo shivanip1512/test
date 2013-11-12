@@ -1,20 +1,20 @@
-<%@ attribute name="noGroupSelectedText" required="false"%>
-<%@ attribute name="fieldId" required="false" description="If not supplied, the fieldName will be used" %>
-<%@ attribute name="fieldName" required="true"%>
-<%@ attribute name="fieldValue" required="false"%>
-<%@ attribute name="dataJson" required="true"%>
-<%@ attribute name="linkGroupName" required="false" description="Will make the group name a link that when clicked brings you to the group editor for group"%>
-<%@ attribute name="showSelectedDevicesIcon" required="false"%>
-<%@ attribute name="submitCallback" required="false" description="optional additional function to call when group is picked"%>
+<%@ tag body-content="empty" description="Device group name picker" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="jsTree" tagdir="/WEB-INF/tags/jsTree"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<%@ tag body-content="empty" description="Device group name picker" %>
+<%@ attribute name="dataJson" required="true" %>
+<%@ attribute name="classes" %>
+<%@ attribute name="fieldId" description="If not supplied, the fieldName will be used" %>
+<%@ attribute name="fieldName" required="true" %>
+<%@ attribute name="fieldValue" %>
+<%@ attribute name="linkGroupName" description="Will make the group name a link that when clicked brings you to the group editor for group" %>
+<%@ attribute name="noGroupSelectedText" %>
+<%@ attribute name="showSelectedDevicesIcon" %>
+<%@ attribute name="submitCallback" description="optional additional function to call when group is picked" %>
 
 <cti:includeScript link="/JavaScript/showSelectedDevices.js"/>
 
@@ -133,7 +133,7 @@
 	}
 
 </script>
-<div class="dib wsnw">
+<div class="dib wsnw ${pageScope.classes}">
 
 <%-- NO GROUP SELECTED TEXT --%>
 <c:if test="${empty pageScope.fieldValue}">

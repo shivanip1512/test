@@ -17,35 +17,35 @@ public class ScheduledFileExportValidator extends SimpleValidator<ScheduledFileE
 
     private String source;
     
-	public ScheduledFileExportValidator() {
-		super(ScheduledFileExportData.class);
-		source = null;
-	}
-	
-	public ScheduledFileExportValidator(Class<?> c) {
+    public ScheduledFileExportValidator() {
+        super(ScheduledFileExportData.class);
+        source = null;
+    }
+    
+    public ScheduledFileExportValidator(Class<?> c) {
         super(ScheduledFileExportData.class);
         source = c.getSimpleName();
     }
-	
-	@Override
-	protected void doValidation(ScheduledFileExportData target, Errors errors) {
-	    
-	    switch (this.source) {
-	        case "MeterEventsReportController":
-	            YukonValidationUtils.checkIsPositiveInt(errors, "daysPrevious", target.getDaysPrevious());
-	            break;
-	        case "WaterLeakReportController":
-	            YukonValidationUtils.checkIsPositiveInt(errors, "hoursPrevious", target.getHoursPrevious());
-	            YukonValidationUtils.checkIsPositiveDouble(errors, "threshold", target.getThreshold());
+    
+    @Override
+    protected void doValidation(ScheduledFileExportData target, Errors errors) {
+        
+        switch (this.source) {
+            case "MeterEventsReportController":
+                YukonValidationUtils.checkIsPositiveInt(errors, "daysPrevious", target.getDaysPrevious());
+                break;
+            case "WaterLeakReportController":
+                YukonValidationUtils.checkIsPositiveInt(errors, "hoursPrevious", target.getHoursPrevious());
+                YukonValidationUtils.checkIsPositiveDouble(errors, "threshold", target.getThreshold());
                 YukonValidationUtils.checkRange(errors, "hoursPrevious", target.getHoursPrevious(), 1, Integer.MAX_VALUE, true);
-	            break;
-	    }
-	    
-		YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "scheduleName", "yukon.web.modules.amr.billing.schedule.validation.invalidName");
-		YukonValidationUtils.checkExceedsMaxLength(errors, "scheduleName", target.getScheduleName(), 100);
-		
-		YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "exportFileName", "yukon.web.modules.amr.billing.schedule.validation.invalidFileName");
-		YukonValidationUtils.checkExceedsMaxLength(errors, "exportFileName", target.getExportFileName(), 100);
+                break;
+        }
+        
+        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "scheduleName", "yukon.web.modules.amr.billing.schedule.validation.invalidName");
+        YukonValidationUtils.checkExceedsMaxLength(errors, "scheduleName", target.getScheduleName(), 100);
+        
+        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "exportFileName", "yukon.web.modules.amr.billing.schedule.validation.invalidFileName");
+        YukonValidationUtils.checkExceedsMaxLength(errors, "exportFileName", target.getExportFileName(), 100);
 
         // First, just validate the Export File name
         String fileName = target.getExportFileName();
@@ -93,13 +93,15 @@ public class ScheduledFileExportValidator extends SimpleValidator<ScheduledFileE
             
         }
         
-		for(String email : target.getNotificationEmailAddressesAsList()) {
-			try {
-				new InternetAddress(email).validate();
-			} catch(AddressException e) {
-				Object[] args = {email};
-				errors.rejectValue("notificationEmailAddresses", "yukon.web.modules.amr.billing.schedule.validation.invalidEmailAddress", args, "");
-			}
-		}
-	}
+        for(String email : target.getNotificationEmailAddressesAsList()) {
+            try {
+                new InternetAddress(email).validate();
+            } catch(AddressException e) {
+                Object[] args = {email};
+                errors.rejectValue("notificationEmailAddresses", "yukon.web.modules.amr.billing.schedule.validation.invalidEmailAddress", args, "");
+            }
+        }
+        
+        
+    }
 }

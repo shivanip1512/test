@@ -15,7 +15,7 @@
     <c:set var="allowChange" value="${pageScope.allowTypeChange}"/>
 </c:if>
 
-<div style="height:105px;">
+<div class="clearfix">
 <%-- FREQUENCY --%>
 <div style="padding-bottom: 6px;">
     <select id="${id}_cronExpFreq" name="${id}_CRONEXP_FREQ" onchange="cronExpFreqChange('${id}', this);">

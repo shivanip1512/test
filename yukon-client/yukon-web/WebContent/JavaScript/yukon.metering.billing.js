@@ -24,12 +24,10 @@ Yukon.MeteringBilling = (function() {
             var err = jQuery("#txt_selectGroup");
             if (hasError) {
                 err.remove();
-                jQuery("#row_billing_group td[class=name]").append(err);
+                jQuery("#row_billing_group .value").append(err);
                 err.show();
-                jQuery("#internalTreeContainer_billingTree").addClass("error");
                 return false;
             }
-            jQuery("#internalTreeContainer_billingTree").removeClass("error");
             err.hide();
             return true;
         },
@@ -172,7 +170,7 @@ Yukon.MeteringBilling = (function() {
             }).done( function(html) {
                 var overviewPane = jQuery("#billing_setup_overview");
                 overviewPane.html(html);
-                meteringBillingMod.reset_setup_tab();
+                mod.reset_setup_tab();
                 if (after_function != null && after_function != undefined) {
                     after_function();
                 }
@@ -210,10 +208,10 @@ Yukon.MeteringBilling = (function() {
         _url_format_edit = "/dynamicBilling/_edit.html",
         _url_format_save = "/dynamicBilling/save.json",
         _url_base_setup = "/dynamicBilling/",
-        meteringBillingMod;
+        mod;
 
     /* PUBLIC METHODS */
-    meteringBillingMod = {
+    mod = {
         init: function() {
             if (_initialized) {
                 return;
@@ -222,28 +220,28 @@ Yukon.MeteringBilling = (function() {
             var doc = jQuery(document);
 
             doc.on("click", "#MForm [name=generate]", function(){ jQuery("#MForm").submit();});
-            doc.on("submit", "#MForm", meteringBillingMod.do_generate_billing_file);
-            doc.on("click", "#MForm [name=schedule]", meteringBillingMod.show_scheduled_billing_form);
+            doc.on("click", "#MForm [name=schedule]", mod.show_scheduled_billing_form);
+            doc.on("submit", "#MForm", mod.do_generate_billing_file);
 
-            doc.on("submit", "#scheduleForm", meteringBillingMod.do_schedule_billing_file_export);
-            doc.on("click", "#billing_generation_schedule .f-cancel", meteringBillingMod.reset_generation_tab);
+            doc.on("submit", "#scheduleForm", mod.do_schedule_billing_file_export);
+            doc.on("click", "#billing_generation_schedule .f-cancel", mod.reset_generation_tab);
             jQuery("#billing_tab_container").tabs({
-                activate: meteringBillingMod.on_tab_change });
+                activate: mod.on_tab_change });
 
-            doc.on("click", "#tab_schedules a", meteringBillingMod.update_schedules_job_list);
-            doc.on("click", "#billing_schedules_jobs button", meteringBillingMod.do_schedules_job_list_button);
+            doc.on("click", "#tab_schedules a", mod.update_schedules_job_list);
+            doc.on("click", "#billing_schedules_jobs button", mod.do_schedules_job_list_button);
 
             // 2nd tab
-            doc.on("click change", "#formatForm #availableFormat", meteringBillingMod.unfreeze_billing_setup);
+            doc.on("click change", "#formatForm #availableFormat", mod.unfreeze_billing_setup);
 //            doc.on("click", "#formatForm [name=copy], #formatForm [name=create], #formatForm [name=edit]", show_billing_setup_form);
-            doc.on("click", "#formatForm [name=delete]", meteringBillingMod.delete_billing_format);
-            doc.on("click", "#btnCreateFormat", meteringBillingMod.show_create_form);
-            doc.on("click", "#btnEditFormat", meteringBillingMod.show_edit_form);
-            doc.on("click", "#btnCopyFormat", meteringBillingMod.show_copy_form);
+            doc.on("click", "#formatForm [name=delete]", mod.delete_billing_format);
+            doc.on("click", "#btnCreateFormat", mod.show_create_form);
+            doc.on("click", "#btnEditFormat", mod.show_edit_form);
+            doc.on("click", "#btnCopyFormat", mod.show_copy_form);
             // @ formatDetail.jsp for Setup tab (2nd tab) after [Create]
-            doc.on("click", "#btnCancelSetup", meteringBillingMod.reset_setup_tab);
-            doc.on("submit", "#billingFormatForm", meteringBillingMod.do_save_format);
-            doc.on("click", "#btnDeleteFormat", meteringBillingMod.do_delete_format);
+            doc.on("click", "#btnCancelSetup", mod.reset_setup_tab);
+            doc.on("submit", "#billingFormatForm", mod.do_save_format);
+            doc.on("click", "#btnDeleteFormat", mod.do_delete_format);
 
             _initialized = true;
         },
@@ -297,7 +295,7 @@ Yukon.MeteringBilling = (function() {
             if(to ==='billing_generation_settings') {
                 return;
             }
-            meteringBillingMod.reset_generation_tab();
+            mod.reset_generation_tab();
         },
 
         /**
@@ -368,12 +366,10 @@ Yukon.MeteringBilling = (function() {
             }).done( function(data) {
                 // Clear existing error indicators + messages
                 form.find("input").removeClass("error").closest("td").find("div.error").remove();
-                // anything else?
 
                 if (data.success) {
                     _do_refresh_schedules_jobs_list(null, function() {
-//                        alert(data.message); // What to do instead of an alert box? Or do we inform the users that it worked?
-                        reset_generation_tab();
+                        mod.reset_generation_tab();
                     });
                     return false;
                 }
@@ -385,13 +381,13 @@ Yukon.MeteringBilling = (function() {
                     }
                     haveFieldErr[err.field] = true;
                     var field = null;
-                    if (err.field == "scheduledCronString") {
-                        field = form.find("[name="+ err.field +"_cronExpFreq]");
+                    if (err.field == "scheduleCronString") {
+                        field = form.find("[name="+ err.field +"_CRONEXP_FREQ]");
                         var opt = field.find(":selected");
                         if (opt.val() == "WEEKLY") {
-                        	form.find("#scheduledCronString_cronExpWeeklyDiv input").addClass("error");
+                        	form.find("#scheduleCronString_cronExpWeeklyDiv input").addClass("error");
                         } else if (opt.val() == "CUSTOM") {
-                        	form.find("#scheduledCronString_cronExpCustomDiv input").addClass("error");
+                        	form.find("#scheduleCronString_cronExpCustomDiv input").addClass("error");
                         }
                     } else {
                         field = form.find("[name="+ err.field +"]");
@@ -423,7 +419,7 @@ Yukon.MeteringBilling = (function() {
             var params = href.substr(href.indexOf("?")+1);
             if (action == "delete") {
                 _STOP_EVENT(event);
-//                _delete_schedule_job(btn, params);
+
                 return false;
             } else if (action == "showForm") {
                 _STOP_EVENT(event);
@@ -433,9 +429,6 @@ Yukon.MeteringBilling = (function() {
             return true; // This should never be hit.
         },
 
-        /**
-         * Moved unfreeze() from _overview.jsp + Prototype > jQuery
-         */
         unfreeze_billing_setup : function(event){ //used to enable or disable buttons
             var selectedFormat = jQuery('#availableFormat :selected');
             if (selectedFormat.length == 1 ) {
@@ -497,7 +490,7 @@ Yukon.MeteringBilling = (function() {
             return false;
         }
     };
-    return meteringBillingMod;
+    return mod;
 })();
 
 jQuery(function() {
