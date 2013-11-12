@@ -4,11 +4,21 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 
-<h1>I am the king of the wastelands</h1>
+<h1>I am not nearly the king</h1>
     <button id='examp1' title="button uno">
         <img id="img1" src="https://my.t-mobile.com/assets/styles/decoration/green_check_icon.png"/>
     </button>
-
+<h1>iframe clickjacking test</h1>
+    <p><em>Should</em> display Yukon website</p>
+    <script>
+        jQuery(function () {
+            var iframeUrl = 'http://10.106.38.173:8080/';
+            jQuery('#clickjack').attr('src', iframeUrl);
+        });
+    </script> 
+    <div>
+        <iframe id="clickjack" width="800" height="400"></iframe>
+    </div>
 <br>
 
 <!-- f-tooltip must precede f-has-tooltip in the markup -->

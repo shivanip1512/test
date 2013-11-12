@@ -84,6 +84,13 @@
 		</filter-class>
 	</filter>
 
+    <filter>
+        <filter-name>clickjackFilter</filter-name>
+        <filter-class>
+            com.cannontech.servlet.filter.ClickjackFilter
+        </filter-class>
+    </filter>
+
 	<filter>
 		<filter-name>jsFilter</filter-name>
 		<filter-class>
@@ -200,6 +207,11 @@
 		<filter-name>referrerPageFilter</filter-name>
 		<url-pattern>*.html</url-pattern>
 	</filter-mapping>
+
+    <filter-mapping>
+        <filter-name>clickjackFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
 
 	<filter-mapping>
 		<filter-name>jsFilter</filter-name>
