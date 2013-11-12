@@ -427,41 +427,47 @@
 
 </table>
 
-<c:if test="${ empty deviceDataMonitors and 
-               empty outageMonitors and 
-               empty tamperFlagMonitors and 
-               empty statusPointMonitors and 
-               empty porterResponseMonitors and 
+<c:if test="${ empty deviceDataMonitors and
+               empty outageMonitors and
+               empty tamperFlagMonitors and
+               empty statusPointMonitors and
+               empty porterResponseMonitors and
                empty validationMonitors
              }">
     <div class="empty-list"><i:inline key=".emptyList"/></div>
 </c:if>
 
-<c:if test="${not isSubscribedWidget}">
-    <div class="action-area">
+<div class="action-area">
+    <c:if test="${not empty validationMonitors}">
+        <cti:msgScope paths="widgets.validationMonitorsWidget">
+            <cti:url var="reviewUrl" value="/common/veeReview/home"/>
+            <a href="${reviewUrl}" class="notes"><i:inline key=".review"/></a>
+        </cti:msgScope>
+    </c:if>
+    <c:if test="${not isSubscribedWidget}">
         <cti:button id="createMonitorBtn" nameKey="create" icon="icon-plus-green"/>
-    </div>
 
-    <tags:simplePopup id="createMonitorDialog" title="Create Monitor" on="#createMonitorBtn">
-        <ul class="simple-list">
-            <li>
-                <a href="/amr/deviceDataMonitor/createPage"><i:inline key="widgetClasses.DeviceDataMonitorsWidget.name"/></a>
-            </li>
-            <li>
-                <a href="/amr/outageProcessing/monitorEditor/edit"><i:inline key="widgets.outageMonitorsWidget.tableHeader.name"/></a>
-            </li>
-            <li>
-                <a href="/amr/tamperFlagProcessing/edit"><i:inline key="widgets.tamperFlagMonitorsWidget.tableHeader.name"/></a>
-            </li>
-            <li>
-                <a href="/amr/statusPointMonitoring/creationPage"><i:inline key="widgets.statusPointMonitorsWidget.tableHeader.name"/></a>
-            </li>
-            <li>
-                <a href="/amr/porterResponseMonitor/createPage"><i:inline key="widgets.porterResponseMonitorsWidget.name"/></a>
-            </li>
-            <li>
-                <a href="/common/vee/monitor/edit"><i:inline key="widgets.validationMonitorsWidget.tableHeader.name"/></a>
-            </li>
-        </ul>
-    </tags:simplePopup>
-</c:if>
+        <tags:simplePopup id="createMonitorDialog" title="Create Monitor" on="#createMonitorBtn">
+            <ul class="simple-list">
+                <li>
+                    <a href="/amr/deviceDataMonitor/createPage"><i:inline key="widgetClasses.DeviceDataMonitorsWidget.name"/></a>
+                </li>
+                <li>
+                    <a href="/amr/outageProcessing/monitorEditor/edit"><i:inline key="widgets.outageMonitorsWidget.tableHeader.name"/></a>
+                </li>
+                <li>
+                    <a href="/amr/tamperFlagProcessing/edit"><i:inline key="widgets.tamperFlagMonitorsWidget.tableHeader.name"/></a>
+                </li>
+                <li>
+                    <a href="/amr/statusPointMonitoring/creationPage"><i:inline key="widgets.statusPointMonitorsWidget.tableHeader.name"/></a>
+                </li>
+                <li>
+                    <a href="/amr/porterResponseMonitor/createPage"><i:inline key="widgets.porterResponseMonitorsWidget.name"/></a>
+                </li>
+                <li>
+                    <a href="/common/vee/monitor/edit"><i:inline key="widgets.validationMonitorsWidget.tableHeader.name"/></a>
+                </li>
+            </ul>
+        </tags:simplePopup>
+    </c:if>
+</div>
