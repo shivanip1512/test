@@ -34,7 +34,7 @@
         }
 
         function refreshResults(kind, theDiv) {
-            if (theDiv.visible()) {
+            if (theDiv.is(':visible')) {
                 var url = '/group/commander/' + kind;
                 jQuery(theDiv).load(url, {'resultKey': '${result.key}'});
             }
