@@ -28,6 +28,8 @@
 #include "logger.h"
 #include "guard.h"
 
+#include "connection_base.h"
+
 using namespace std;
 
 int install(DWORD dwStart = SERVICE_DEMAND_START);
@@ -156,4 +158,7 @@ int remove()
 
     return 0;
 }
+
+// Close all yukon messaging connections when this object is destroyed
+Cti::Messaging::AutoCloseAllConnections gAutoCloseAllConnections;
 

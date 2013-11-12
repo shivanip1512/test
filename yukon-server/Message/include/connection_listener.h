@@ -4,7 +4,7 @@
 #include "dlldefs.h"
 #include "connection.h"
 
-class IM_EX_MSG CtiListenerConnection
+class IM_EX_MSG CtiListenerConnection : public Cti::Messaging::BaseConnection
 {
     const std::string _serverQueueName;
 
@@ -34,7 +34,7 @@ public:
     virtual ~CtiListenerConnection();
 
     void start();
-    void close();
+    virtual void close();
 
     bool verifyConnection();
     bool acceptClient();

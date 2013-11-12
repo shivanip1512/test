@@ -37,8 +37,19 @@ ActiveMQConnectionManager::ActiveMQConnectionManager(const string &broker_uri) :
 {
 }
 
-
 ActiveMQConnectionManager::~ActiveMQConnectionManager()
+{
+    try
+    {
+        close();
+    }
+    catch(...)
+    {
+
+    }
+}
+
+void ActiveMQConnectionManager::close()
 {
     if( isRunning() )
     {
@@ -48,7 +59,6 @@ ActiveMQConnectionManager::~ActiveMQConnectionManager()
 
     releaseConnectionObjects();
 }
-
 
 inline bool debugActivityInfo()
 {
@@ -90,7 +100,7 @@ void ActiveMQConnectionManager::run()
 
             {
                 CtiLockGuard<CtiLogger> dout_guard(dout);
-                dout << CtiTime() << " ActiveMQ CMS connection established" << std::endl;
+                dout << CtiTime() << " Unable to connect to the broker." << std::endl;
             }
         }
         catch( cms::CMSException &ce )
@@ -99,7 +109,7 @@ void ActiveMQConnectionManager::run()
 
             {
                 CtiLockGuard<CtiLogger> dout_guard(dout);
-                dout << CtiTime() << " ActiveMQ CMS connection established" << std::endl;
+                dout << CtiTime() << " CMS exception caught - \"" << ce.what() << "\"" << std::endl;
             }
         }
 

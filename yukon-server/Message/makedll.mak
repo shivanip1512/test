@@ -44,6 +44,7 @@ ControlHistoryAssociationResponse.obj \
 amq_connection.obj \
 amq_util.obj \
 connection.obj \
+connection_base.obj \
 connection_client.obj \
 connection_Server.obj \
 connection_listener.obj \

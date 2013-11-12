@@ -3,6 +3,7 @@
 #include "thread.h"
 #include "critical_section.h"
 #include "StreamableMessage.h"
+#include "connection_base.h"
 
 #include "RfnBroadcastReplyMessage.h"
 
@@ -65,7 +66,8 @@ private:
 }
 
 class IM_EX_MSG ActiveMQConnectionManager :
-    public CtiThread
+    public CtiThread,
+    public BaseConnection
 {
 public:
 
@@ -87,6 +89,8 @@ public:
     static void enqueueMessagesWithCallback(const ActiveMQ::Queues::OutboundQueue &queue, const std::vector<SerializedMessage> &messages, SerializedMessageCallback callback);
 
     static void registerHandler(const ActiveMQ::Queues::InboundQueue &queue, const SerializedMessageCallback callback);
+
+    virtual void close();
 
 protected:
 

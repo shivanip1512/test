@@ -18,6 +18,7 @@
 #include "mutex.h"
 #include "queue.h"
 #include "readers_writer_lock.h"
+#include "connection_base.h"
 
 namespace cms {
 class Connection;
@@ -45,7 +46,7 @@ class TempQueueConsumer;
 }
 }
 
-class IM_EX_MSG CtiConnection
+class IM_EX_MSG CtiConnection : public Cti::Messaging::BaseConnection
 {
 public:
 
@@ -137,7 +138,7 @@ protected:
 public:
 
     void start();
-    void close();
+    virtual void close();
 
     virtual bool operator== ( const CtiConnection& aRef ) const;
 
