@@ -128,12 +128,15 @@ Yukon.Favorites = (function () {
 
                 button.unbind('click');
                 button.click(function() {
-                    var row = button.closest('li'),
-                        actionDo = function(){
+                    var actionDo = function(){
                             _toggleFavorite(button, 'icon-star', 'icon-star');
                         },
-                        actionUndo = actionDo;
+                        actionUndo = actionDo,
+                        row = button.closest('li');
 
+                    if (row.length === 0) {
+                        row = button.closest('tr');
+                    }
                     localUi.removeWithUndo(row, actionDo, actionUndo);
                 });
             });

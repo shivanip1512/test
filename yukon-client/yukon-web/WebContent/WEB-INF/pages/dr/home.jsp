@@ -34,13 +34,38 @@
                         </tr>
                         </thead>
                         <tfoot></tfoot>
-                        <tbody>
+                        <cti:msg2 var="undoText" key="yukon.common.undo"/>
+                        <tbody data-undo-text="${undoText}">
                         <c:forEach var="pao" items="${favorites}">
-                            <tr>
+                            <cti:msg2 var="removedText" key="yukon.web.modules.operations.dashboard.favorites.removed" htmlEscapeArguments="false"
+                                arguments="${pao.name}"/>
+                            <tr data-removed-text="${removedText}">
                                 <td>
-                                    <cti:paoDetailUrl yukonPao="${pao}">
-                                        <spring:escapeBody htmlEscape="true">${pao.name}</spring:escapeBody>
-                                    </cti:paoDetailUrl>
+                                    <c:set var="paoType" value="${pao.paoIdentifier.paoType}" />
+
+                                    <c:set var="paoPageName" value="" />
+                                    <c:if test="${fn:contains(paoType.name(), 'AREA')}">
+                                        <c:set var="paoPageName" value="controlAreaDetail" />
+                                    </c:if>
+                                    <c:if test="${fn:contains(paoType.name(), 'PROGRAM')}">
+                                        <c:set var="paoPageName" value="programDetail" />
+                                    </c:if>
+                                    <c:if test="${fn:contains(paoType.name(), 'SCENARIO')}">
+                                        <c:set var="paoPageName" value="scenarioDetail" />
+                                    </c:if>
+                                    <c:if test="${fn:contains(paoType.name(), 'GROUP')}">
+                                        <c:set var="paoPageName" value="groupDetail" />
+                                    </c:if>
+
+                                    <cti:paoDetailUrl yukonPao="${pao}" var="detailUrl"/>
+
+                                    <cti:button classes="b-favorite remove" nameKey="favorite" renderMode="image" icon="icon-star" 
+                                            data-name="${paoPageName}"
+                                            data-module="dr"
+                                            data-path="${detailUrl}"
+                                            data-label-args="['${pao.name}']"/>
+
+                                    <a href="${detailUrl}">${fn:escapeXml(pao.name)}</a>
                                 </td>
                                 <td>
                                     <i:inline key=".paoType.${pao.paoIdentifier.paoType}"/>
