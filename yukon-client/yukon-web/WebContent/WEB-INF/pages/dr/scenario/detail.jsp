@@ -92,7 +92,7 @@
                                 <cti:msg2 var="scenarioHasNoAssignedPrograms" key=".noAssignedPrograms"/>
                                 <li>
                                     <a class="clearfix" title="${scenarioHasNoAssignedPrograms}">
-                                        <cti:icon icon="icon-control-start-blue" classes="disabled"/>
+                                        <cti:icon icon="icon-control-play-blue" classes="disabled"/>
                                         <span class="fl dib disabled"><cti:msg2 key=".actions.start"/></span>
                                     </a>
                                 </li>

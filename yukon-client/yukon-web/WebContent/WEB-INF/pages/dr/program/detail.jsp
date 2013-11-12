@@ -125,7 +125,7 @@
                                 <cti:msg var="programUnknown" key="yukon.web.modules.dr.programDetail.unknown"/>
                                 <li>
                                     <a class="clearfix" title="${programUnknown}">
-                                        <cti:icon icon="icon-control-start-blue" classes="disabled"/>
+                                        <cti:icon icon="icon-control-play-blue" classes="disabled"/>
                                         <span class="fl dib disabled"><cti:msg2 key=".actions.start"/></span>
                                     </a>
                                 </li>
@@ -153,7 +153,7 @@
                                 <cti:msg var="alreadyRunning" key="yukon.web.modules.dr.programDetail.alreadyRunning"/>
                                 <li>
                                     <a class="clearfix" title="${alreadyRunning}">
-                                        <cti:icon icon="icon-control-start-blue" classes="disabled"/>
+                                        <cti:icon icon="icon-control-play-blue" classes="disabled"/>
                                         <span class="fl dib disabled"><cti:msg2 key=".actions.start"/></span>
                                     </a>
                                 </li>
@@ -257,7 +257,7 @@
                                 <cti:msg var="alreadyRunning" key="yukon.web.modules.dr.programDetail.alreadyRunning"/>
                                 <li>
                                     <a class="clearfix" title="${alreadyRunning}">
-                                        <cti:icon icon="icon-control-start-blue" classes="disabled"/>
+                                        <cti:icon icon="icon-control-play-blue" classes="disabled"/>
                                         <span class="fl dib disabled"><cti:msg2 key=".actions.start"/></span>
                                     </a>
                                 </li>
@@ -297,7 +297,7 @@
                                 </cti:url>
                                 <li>
                                     <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.startProgram.title" 
-                                        dialogId="drDialog" actionUrl="${startProgramUrl}" icon="icon-control-start-blue"
+                                        dialogId="drDialog" actionUrl="${startProgramUrl}" icon="icon-control-play-blue"
                                         labelKey=".actions.start"/>
                                 </li>
                                 
