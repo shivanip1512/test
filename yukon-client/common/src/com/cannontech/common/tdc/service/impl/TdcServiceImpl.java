@@ -56,6 +56,7 @@ import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.Signal;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -343,6 +344,7 @@ public class TdcServiceImpl implements TdcService{
         List<LitePoint> points = pointDao.getLitePoints(pointIds);
         Map<Integer, LitePoint> pointMap =
             Maps.uniqueIndex(points, new Function<LitePoint, Integer>() {
+                @Override
                 public Integer apply(LitePoint p) {
                     return p.getPointID();
                 }
@@ -355,9 +357,12 @@ public class TdcServiceImpl implements TdcService{
                     return point.getPaobjectID();
                 }
             });
+        
+        deviceIds = ImmutableSet.copyOf(deviceIds).asList();
         List<SimpleDevice> devices = deviceDao.getYukonDeviceObjectByIds(deviceIds);
         Map<Integer, SimpleDevice> deviceMap =
             Maps.uniqueIndex(devices, new Function<SimpleDevice, Integer>() {
+                @Override
                 public Integer apply(SimpleDevice device) {
                     return device.getDeviceId();
                 }
