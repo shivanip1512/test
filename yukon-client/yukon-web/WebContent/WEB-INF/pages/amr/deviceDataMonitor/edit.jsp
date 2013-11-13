@@ -92,7 +92,7 @@
                         noBlockOnAdd="true" 
                         disableAddButton="${disableAddProcessAtStart}">
                     <div>
-					<table class="inputTable f-processors_table device_data_processors full-width">
+					<table class="inputTable f-processors_table device_data_processors full-width dashed with-form-controls">
 						<thead>
 							<tr>
 								<th><i:inline key=".processors.attribute" /></th>
@@ -225,7 +225,7 @@
 			<c:if test="${!monitor.enabled}">
     			<cti:button classes="f-toggle_enabled" nameKey="enable"/>
 			</c:if>
-			<cti:button id="deleteButton" nameKey="delete"/>
+			<cti:button id="deleteButton" nameKey="delete" classes="delete"/>
             <dialog:confirm nameKey="deleteConfirmation" argument="${monitor.name}" on="#deleteButton"  />
 			<cti:url var="viewMonitorUrl" value="/amr/deviceDataMonitor/view">
 				<cti:param name="monitorId" value="${monitor.id}" />

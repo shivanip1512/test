@@ -95,28 +95,98 @@ jQuery(document).on('click', '.f-add-rule', function(event) {
         <form:hidden path="stateGroup"/>
         <form:hidden path="evaluatorStatus" />
 
-        <div class="stacked">
-            <tags:nameValueContainer2 style="border-collapse:separate;border-spacing:5px;">
-
-                <%-- name --%>
-                <tags:inputNameValue nameKey=".name" path="name" size="50" maxlength="50" />
-
-                <cti:msg2 var="deviceGroupTitle" key=".popupInfo.deviceGroup.title"/>
-
-                <%-- device group --%>
-                <tags:nameValue2 nameKey=".deviceGroup">
-                    <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="groupDataJson" />
-                    <tags:deviceGroupNameSelector fieldName="groupName"
-                        fieldValue="${monitorDto.groupName}" 
-                        dataJson="${groupDataJson}"
-                        linkGroupName="true" />
-                </tags:nameValue2>
-
-                <%-- enable/disable monitoring --%>
-                <tags:nameValue2 nameKey=".monitoring">
-                    <i:inline key="${monitorDto.evaluatorStatus}" />
-                </tags:nameValue2>
-            </tags:nameValueContainer2>
+        <div class="column-10-14 clearfix">
+            <div class="column one">
+                <tags:sectionContainer2 nameKey="info">
+                    <tags:nameValueContainer2 style="border-collapse:separate;border-spacing:5px;">
+    
+                        <%-- name --%>
+                        <tags:inputNameValue nameKey=".name" path="name" maxlength="50" />
+        
+                        <cti:msg2 var="deviceGroupTitle" key=".popupInfo.deviceGroup.title"/>
+        
+                        <%-- device group --%>
+                        <tags:nameValue2 nameKey=".deviceGroup">
+                            <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="groupDataJson" />
+                            <tags:deviceGroupNameSelector fieldName="groupName"
+                                fieldValue="${monitorDto.groupName}" 
+                                dataJson="${groupDataJson}"
+                                linkGroupName="true" />
+                        </tags:nameValue2>
+        
+                        <%-- enable/disable monitoring --%>
+                        <tags:nameValue2 nameKey=".monitoring">
+                            <i:inline key="${monitorDto.evaluatorStatus}" />
+                        </tags:nameValue2>
+                    </tags:nameValueContainer2>
+                </tags:sectionContainer2>
+            </div>
+            <div class="column two nogutter">
+                <tags:sectionContainer2 nameKey="rulesTable" hideEnabled="false">
+                    <div class="scroll-large">
+                    <table id="rulesTable" class="compact-results-table with-form-controls">
+                        <thead>
+                            <tr>
+                                <th class="orderColumn"><i:inline key=".rulesTable.header.ruleOrder" /></th>
+                                <th class="outcomeColumn"><i:inline key=".rulesTable.header.outcome" /></th>
+                                <th class="errorsColumn">
+                                    <i:inline key=".rulesTable.header.errors" />
+                                    <cti:icon id="errorHelp" nameKey="help" icon="icon-help cp" classes="fn"/>
+                                </th>
+                                <th class="matchColumn"><i:inline key=".rulesTable.header.matchStyle" /></th>
+                                <th class="stateColumn"><i:inline key=".rulesTable.header.state" /></th>
+                            </tr>
+                        </thead>
+                        <tbody id="rulesTableBody">
+                            <c:forEach var="ruleEntry" items="${monitorDto.rules}">
+                                <c:set var="key" value="${ruleEntry.key}" />
+                                <tr id="rule_${key}" class="ruleTableRow">
+                                    <td class="orderColumn">
+                                        <form:hidden path="rules[${key}].ruleId" />
+                                        <form:input path="rules[${key}].ruleOrder" cssClass="ruleOrder" maxlength="2" size="2"/>
+                                    </td>
+                                    <td class="checkBox outcomeColumn">
+                                        <label>
+                                            <form:checkbox path="rules[${key}].success"/>
+                                            <i:inline key=".rule.success"/>
+                                        </label>
+                                    </td>
+                                    <td class="errorsColumn">
+                                        <form:input path="rules[${key}].errorCodes" maxlength="4" size="4"/>
+                                    </td>
+                                    <td class="matchColumn">
+                                        <form:select path="rules[${key}].matchStyle">
+                                            <c:forEach var="style" items="${matchStyleChoices}">
+                                                <form:option value="${style}">
+                                                    <i:inline key="${style.formatKey}" />
+                                                </form:option>
+                                            </c:forEach>
+                                        </form:select>
+                                    </td>
+                                    <td class="stateColumn">
+                                        <form:select path="rules[${key}].state">
+                                            <c:forEach var="state" items="${monitorDto.stateGroup.statesList}">
+                                                <form:option value="${state.liteID}">${fn:escapeXml(state.stateText)}</form:option>
+                                            </c:forEach>
+                                        </form:select>
+                                        <cti:button classes="f-remove fr" icon="icon-cross" renderMode="buttonImage"/>
+                                    </td>
+                                </tr>
+                                <tr style="display: none" id="rule_${key}_undo" class="undo-row">
+                                    <td colspan="5">
+                                        <i:inline key=".rulesTable.removedRow"/>
+                                        <a href="javascript:void(0)" class="undo"><i:inline key=".rulesTable.undoLink"/></a>
+                                    </td>
+                                </tr>
+                            </c:forEach>
+                        </tbody>
+                    </table>
+                    </div>
+                    <div class="action-area">
+                        <cti:button nameKey="rulesTable.add" classes="f-add-rule" icon="icon-add"/>
+                    </div>
+                </tags:sectionContainer2>
+            </div>
         </div>
 
         <table style="display: none">
@@ -127,71 +197,6 @@ jQuery(document).on('click', '.f-add-rule', function(event) {
             </tr>
         </table>
 
-        <tags:boxContainer2 nameKey="rulesTable" hideEnabled="false" showInitially="true" styleClass="fixedMediumWidth">
-            <div class="scroll-small">
-            <table id="rulesTable" class="compact-results-table">
-                <thead>
-                    <tr>
-                        <th class="orderColumn"><i:inline key=".rulesTable.header.ruleOrder" /></th>
-                        <th class="outcomeColumn"><i:inline key=".rulesTable.header.outcome" /></th>
-                        <th class="errorsColumn">
-                            <i:inline key=".rulesTable.header.errors" />
-                            <cti:icon id="errorHelp" nameKey="help" icon="icon-help cp" classes="fn"/>
-                        </th>
-                        <th class="matchColumn"><i:inline key=".rulesTable.header.matchStyle" /></th>
-                        <th class="stateColumn"><i:inline key=".rulesTable.header.state" /></th>
-                    </tr>
-                </thead>
-                <tbody id="rulesTableBody">
-                    <c:forEach var="ruleEntry" items="${monitorDto.rules}">
-                        <c:set var="key" value="${ruleEntry.key}" />
-                        <tr id="rule_${key}" class="ruleTableRow">
-                            <td class="orderColumn">
-                                <form:hidden path="rules[${key}].ruleId" />
-                                <form:input path="rules[${key}].ruleOrder" cssClass="ruleOrder" maxlength="2" size="2"/>
-                            </td>
-                            <td class="checkBox outcomeColumn">
-                                <label>
-                                    <form:checkbox path="rules[${key}].success"/>
-                                    <i:inline key=".rule.success"/>
-                                </label>
-                            </td>
-                            <td class="errorsColumn">
-                                <form:input path="rules[${key}].errorCodes" maxlength="4" size="4"/>
-                            </td>
-                            <td class="matchColumn">
-                                <form:select path="rules[${key}].matchStyle">
-                                    <c:forEach var="style" items="${matchStyleChoices}">
-                                        <form:option value="${style}">
-                                            <i:inline key="${style.formatKey}" />
-                                        </form:option>
-                                    </c:forEach>
-                                </form:select>
-                            </td>
-                            <td class="stateColumn">
-                                <form:select path="rules[${key}].state">
-                                    <c:forEach var="state" items="${monitorDto.stateGroup.statesList}">
-                                        <form:option value="${state.liteID}">${fn:escapeXml(state.stateText)}</form:option>
-                                    </c:forEach>
-                                </form:select>
-                                <cti:button classes="f-remove fr" icon="icon-cross" renderMode="buttonImage"/>
-                            </td>
-                        </tr>
-                        <tr style="display: none" id="rule_${key}_undo" class="undo-row">
-                            <td colspan="5">
-                                <i:inline key=".rulesTable.removedRow"/>
-                                <a href="javascript:void(0)" class="undo"><i:inline key=".rulesTable.undoLink"/></a>
-                            </td>
-                        </tr>
-                    </c:forEach>
-                </tbody>
-            </table>
-            </div>
-            <div class="action-area">
-                <cti:button nameKey="rulesTable.add" classes="f-add-rule" icon="icon-add"/>
-            </div>
-        </tags:boxContainer2>
-
         <%-- update / enable_disable / delete / cancel --%>
         <div class="page-action-area">
             <cti:button nameKey="update" type="submit" busy="true"  classes="primary action" data-disable-group="actionButtons"/>
@@ -200,9 +205,9 @@ jQuery(document).on('click', '.f-add-rule', function(event) {
             <c:if test="${monitorDto.evaluatorStatus eq 'ENABLED'}">
                 <c:set var="monitoringKey" value="disable"/>
             </c:if>
+            <cti:button nameKey="${monitoringKey}" type="submit" name="toggleEnabled" busy="true" data-disable-group="actionButtons"/>
             <cti:button id="deleteButton" nameKey="delete" name="delete" type="submit" busy="true" data-disable-group="actionButtons" classes="delete"/>
             <d:confirm on="#deleteButton" nameKey="confirmDelete" argument="${monitorDto.name}"/>
-            <cti:button nameKey="${monitoringKey}" type="submit" name="toggleEnabled" busy="true" data-disable-group="actionButtons"/>
 
             <cti:url value="/amr/porterResponseMonitor/viewPage" var="viewUrl">
                 <cti:param name="monitorId" value="${monitorDto.monitorId}"/>

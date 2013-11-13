@@ -50,7 +50,7 @@
                         </c:when>
                         <c:otherwise>
                             <div class="scroll-small">
-                                <table class="compact-results-table">
+                                <table class="compact-results-table dashed with-form-controls">
                                     <thead>
                                         <tr>
                                             <th><i:inline key=".processors.attribute" /></th>

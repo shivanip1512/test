@@ -42,158 +42,97 @@
 
     <entry key="yukon.web.components.image.edit.hoverText">Edit</entry>
     <entry key="yukon.web.components.image.edit.label">Edit</entry>
-    
     <entry key="yukon.web.components.image.info.hoverText">Info</entry>
-	
     <entry key="yukon.web.components.image.copy.hoverText">Copy</entry>
-    
     <entry key="yukon.web.components.image.deviceCollection.hoverText">View Selected Devices</entry>
-
     <entry key="yukon.web.components.image.inventoryCollection.hoverText">View Selected Inventory</entry>
-    
     <entry key="yukon.web.components.image.add.hoverText">Add</entry>
     <entry key="yukon.web.components.image.add.label">Add</entry>
-    
     <entry key="yukon.web.components.image.remove.hoverText">Remove</entry>
-    
     <entry key="yukon.web.components.image.filter.hoverText">Filter</entry>
     <entry key="yukon.web.components.image.filter.label">Filter</entry>
-
     <entry key="yukon.web.components.image.meterDetail.hoverText">Meter Detail</entry>
-
 	<entry key="yukon.web.components.image.up.hoverText">Move Up</entry>
-
 	<entry key="yukon.web.components.image.down.hoverText">Move Down</entry>
-
     <entry key="yukon.web.components.image.selectionPicker.hoverText">Select items</entry>
     <entry key="yukon.web.components.image.selectionPicker.label">(none selected)</entry>
-
     <entry key="yukon.web.components.image.zoom.hoverText">View all currently selected items.</entry>
 
     <entry key="yukon.web.components.picker.nothingSelected">Nothing has been selected.</entry>
     <entry key="yukon.web.components.picker.selectedItemsDialogTitle">Selected Items</entry>
     <entry key="yukon.web.components.picker.close">Close</entry>
     
-    <entry key="yukon.web.components.button.selectionPicker.hoverText">Select items</entry>
-    <entry key="yukon.web.components.button.selectionPicker.label">(none selected)</entry>
-
-    <entry key="yukon.web.components.tokenRequest.passwordPrompt">Password</entry>
-
-    <entry key="yukon.web.components.button.logout.label">Logout</entry>
-    <entry key="yukon.web.components.button.login.label">Login</entry>
-    <entry key="yukon.web.components.button.profile.label">Profile</entry>
-    
-    <entry key="yukon.web.components.button.create.label">Create</entry>
-    
-    <entry key="yukon.web.components.button.home.label">Home</entry>
-
-    <entry key="yukon.web.components.button.help.label">Help</entry>
-    
-    <entry key="yukon.web.components.button.ok.label">OK</entry>
-    
-    <entry key="yukon.web.components.button.close.label">Close</entry>
-    
-    <entry key="yukon.web.components.button.load.label">Load</entry>
-    
-    <entry key="yukon.web.components.button.save.label">Save</entry>
-    <entry key="yukon.web.components.button.save.labelBusy">Saving</entry>
-    
-    <entry key="yukon.web.components.button.update.label">Update</entry>
-    <entry key="yukon.web.components.button.update.labelBusy">Updating</entry>
-    
-    <entry key="yukon.web.components.button.send.label">Send</entry>
-    
-    <entry key="yukon.web.components.button.submit.label">Submit</entry>
-    <entry key="yukon.web.components.button.process.label">Process</entry>
-    
-    <entry key="yukon.web.components.button.import.label">Import</entry>
-    
-    <entry key="yukon.web.components.button.disable.label">Disable</entry>
-    <entry key="yukon.web.components.button.disable.labelBusy">Disabling</entry>
-    
-    <entry key="yukon.web.components.button.enable.label">Enable</entry>
-    <entry key="yukon.web.components.button.enable.labelBusy">Enabling</entry>
-
-    <entry key="yukon.web.components.button.refresh.label">Refresh</entry>
-    <entry key="yukon.web.components.button.ignore.label">Ignore</entry>
-    
-    <entry key="yukon.web.components.button.readNow.label">Read Now</entry>
-    <entry key="yukon.web.components.button.readNow.labelBusy">Sending</entry>
-    
-    <entry key="yukon.web.components.button.reset.label">Reset</entry>
-    
+    <entry key="yukon.web.components.button.actions.label">Actions</entry>
+    <entry key="yukon.web.components.button.add.label">Add</entry>
     <entry key="yukon.web.components.button.back.label">Back</entry>
-    
-    <entry key="yukon.web.components.button.next.label">Next</entry>
-    <entry key="yukon.web.components.button.chooseMode.label">Choose Mode</entry>
-    
     <entry key="yukon.web.components.button.cancel.label">Cancel</entry>
-    
+    <entry key="yukon.web.components.button.chooseMode.label">Choose Mode</entry>
     <entry key="yukon.web.components.button.clear.label">Clear</entry>
-    
+    <entry key="yukon.web.components.button.close.label">Close</entry>
+    <entry key="yukon.web.components.button.copy.label">Copy</entry>
+    <entry key="yukon.web.components.button.create.label">Create</entry>
+    <entry key="yukon.web.components.button.csv.label">Export to CSV</entry>
     <entry key="yukon.web.components.button.delete.label">Delete</entry>
     <entry key="yukon.web.components.button.delete.labelBusy">Deleting</entry>
-    
-    <entry key="yukon.web.components.button.execute.label">Execute</entry>
-    
-    <entry key="yukon.web.components.button.stop.label">Stop</entry>
-    
-    <entry key="yukon.web.components.button.start.label">Start</entry>
-    
-    <entry key="yukon.web.components.button.next.label">Next</entry>
-    <entry key="yukon.web.components.button.previous.label">Previous</entry>
-    
-    <entry key="yukon.web.components.button.remove.label">Remove</entry>
-
-    <entry key="yukon.web.components.button.disabledRemove.label">Remove</entry>
-
-    <entry key="yukon.web.components.button.add.label">Add</entry>
-    
-    <entry key="yukon.web.components.button.edit.label">Edit</entry>
-    
-    <entry key="yukon.web.components.button.info.label">Info</entry>
-    
-    <entry key="yukon.web.components.button.copy.label">Copy</entry>
-    
+    <entry key="yukon.web.components.button.disable.label">Disable</entry>
+    <entry key="yukon.web.components.button.disable.labelBusy">Disabling</entry>
     <entry key="yukon.web.components.button.disabledEdit.label">Edit</entry>
-
-    <entry key="yukon.web.components.button.meterDetail.label">Meter Detail</entry>
-    
-    <entry key="yukon.web.components.button.filter.label">Filter</entry>
-    
-    <entry key="yukon.web.components.button.csv.label">Export to CSV</entry>
-    
-    <entry key="yukon.web.components.button.pdf.label">Export to PDF</entry>
-    
-    <entry key="yukon.web.components.csv">CSV</entry>
-    <entry key="yukon.web.components.pdf">PDF</entry>
-    <entry key="yukon.web.components.refresh">Refresh</entry>
-    <entry key="yukon.web.components.export">Export:</entry>
-    <entry key="yukon.web.components.jstree.input.search.tooltip">Begin typing to search for a node in the tree. Matches will be highlighted with blue text. Hit 'Enter' to cycle through the results.</entry>
-
-    <entry key="yukon.web.components.button.up.hoverText">Move Up</entry>
-
+    <entry key="yukon.web.components.button.disabledRemove.label">Remove</entry>
     <entry key="yukon.web.components.button.down.hoverText">Move Down</entry>
-
-    <entry key="yukon.web.components.button.search.label">Search</entry>
-    <entry key="yukon.web.components.button.searchResults.label">Back to Search Results</entry>
-    <entry key="yukon.web.components.button.searchResults.hoverText">Back to Search Results</entry>
     <entry key="yukon.web.components.button.download.label">Download</entry>
-    <entry key="yukon.web.components.button.upload.label">Upload</entry>
-    <entry key="yukon.web.components.button.showAll.label">Show All</entry>
-    <entry key="yukon.web.components.button.select.label">Select</entry>
-    <entry key="yukon.web.components.button.verify.label">Verify</entry>
+    <entry key="yukon.web.components.button.edit.label">Edit</entry>
+    <entry key="yukon.web.components.button.enable.label">Enable</entry>
+    <entry key="yukon.web.components.button.enable.labelBusy">Enabling</entry>
+    <entry key="yukon.web.components.button.execute.label">Execute</entry>
+    <entry key="yukon.web.components.button.filter.label">Filter</entry>
+    <entry key="yukon.web.components.button.help.label">Help</entry>
+    <entry key="yukon.web.components.button.home.label">Home</entry>
+    <entry key="yukon.web.components.button.ignore.label">Ignore</entry>
+    <entry key="yukon.web.components.button.import.label">Import</entry>
+    <entry key="yukon.web.components.button.info.label">Info</entry>
+    <entry key="yukon.web.components.button.load.label">Load</entry>
+    <entry key="yukon.web.components.button.login.label">Login</entry>
+    <entry key="yukon.web.components.button.logout.label">Logout</entry>
+    <entry key="yukon.web.components.button.meterDetail.label">Meter Detail</entry>
+    <entry key="yukon.web.components.button.mute.hoverText">Mute</entry>
+    <entry key="yukon.web.components.button.mute.label">Mute</entry>
+    <entry key="yukon.web.components.button.next.label">Next</entry>
+    <entry key="yukon.web.components.button.next.label">Next</entry>
+    <entry key="yukon.web.components.button.ok.label">OK</entry>
+    <entry key="yukon.web.components.button.otherActions.label">Other Actions</entry>
+    <entry key="yukon.web.components.button.pdf.label">Export to PDF</entry>
+    <entry key="yukon.web.components.button.previous.label">Previous</entry>
+    <entry key="yukon.web.components.button.process.label">Process</entry>
+    <entry key="yukon.web.components.button.profile.label">Profile</entry>
     <entry key="yukon.web.components.button.read.label">Read</entry>
     <entry key="yukon.web.components.button.read.labelBusy">Reading</entry>
-    <entry key="yukon.web.components.button.actions.label">Actions</entry>
-    <entry key="yukon.web.components.button.mute.label">Mute</entry>
-    <entry key="yukon.web.components.button.mute.hoverText">Mute</entry>
-    <entry key="yukon.web.components.button.unmute.label">Unmute</entry>
+    <entry key="yukon.web.components.button.readNow.label">Read Now</entry>
+    <entry key="yukon.web.components.button.readNow.labelBusy">Sending</entry>
+    <entry key="yukon.web.components.button.refresh.label">Refresh</entry>
+    <entry key="yukon.web.components.button.remove.label">Remove</entry>
+    <entry key="yukon.web.components.button.reset.label">Reset</entry>
+    <entry key="yukon.web.components.button.save.label">Save</entry>
+    <entry key="yukon.web.components.button.save.labelBusy">Saving</entry>
+    <entry key="yukon.web.components.button.search.label">Search</entry>
+    <entry key="yukon.web.components.button.searchResults.hoverText">Back to Search Results</entry>
+    <entry key="yukon.web.components.button.searchResults.label">Back to Search Results</entry>
+    <entry key="yukon.web.components.button.select.label">Select</entry>
+    <entry key="yukon.web.components.button.selectionPicker.hoverText">Select items</entry>
+    <entry key="yukon.web.components.button.selectionPicker.label">(none selected)</entry>
+    <entry key="yukon.web.components.button.send.label">Send</entry>
+    <entry key="yukon.web.components.button.showAll.label">Show All</entry>
+    <entry key="yukon.web.components.button.start.label">Start</entry>
+    <entry key="yukon.web.components.button.stop.label">Stop</entry>
+    <entry key="yukon.web.components.button.submit.label">Submit</entry>
     <entry key="yukon.web.components.button.unmute.hoverText">Unmute</entry>
+    <entry key="yukon.web.components.button.unmute.label">Unmute</entry>
+    <entry key="yukon.web.components.button.up.hoverText">Move Up</entry>
+    <entry key="yukon.web.components.button.update.label">Update</entry>
+    <entry key="yukon.web.components.button.update.labelBusy">Updating</entry>
+    <entry key="yukon.web.components.button.upload.label">Upload</entry>
+    <entry key="yukon.web.components.button.verify.label">Verify</entry>
+    <entry key="yukon.web.components.button.view.label">View</entry>
 
-    <entry key="yukon.web.components.pageloading">Loading…</entry>
-    <entry key="yukon.web.components.waiting">Waiting…</entry>
-    
     <entry key="yukon.web.components.cronPicker.daily">Daily</entry>
     <entry key="yukon.web.components.cronPicker.weekly">Weekly</entry>
     <entry key="yukon.web.components.cronPicker.monthly">Monthly</entry>
@@ -218,7 +157,6 @@
     <entry key="yukon.web.components.dialog.ok">OK</entry>
     <entry key="yukon.web.components.dialog.cancel">Cancel</entry>
     <entry key="yukon.web.components.dialog.close">Close</entry>
-    
     <entry key="yukon.web.components.dialog.devicePoints.title">{0} Points</entry>
     <entry key="yukon.web.components.dialog.devicePoints.pointName">Name</entry>
     <entry key="yukon.web.components.dialog.devicePoints.value">Value/State</entry>
@@ -230,4 +168,14 @@
     
     <entry key="yukon.web.components.updatedWarning.title">Data Update Failed</entry>
     <entry key="yukon.web.components.updatedWarning.text">One or more objects on this page have been deleted. Refresh to update.</entry>
+    
+    <entry key="yukon.web.components.tokenRequest.passwordPrompt">Password</entry>
+    <entry key="yukon.web.components.pageloading">Loading…</entry>
+    <entry key="yukon.web.components.waiting">Waiting…</entry>
+    <entry key="yukon.web.components.csv">CSV</entry>
+    <entry key="yukon.web.components.pdf">PDF</entry>
+    <entry key="yukon.web.components.refresh">Refresh</entry>
+    <entry key="yukon.web.components.export">Export:</entry>
+    <entry key="yukon.web.components.jstree.input.search.tooltip">Begin typing to search for a node in the tree. Matches will be highlighted with blue text. Hit 'Enter' to cycle through the results.</entry>
+    
 </properties>

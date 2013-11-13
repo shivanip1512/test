@@ -1,25 +1,25 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
+
 <%--  updateCallback is the name of  js function that will be passed the values of --%>
 <%--  completedItems and totalItems as parameters after they have been used to update the bar --%>
 <%--  abortedKey should a boolean updater key, if true, the progress bar will be filled in red for remaining percentage --%>
-<%@ attribute name="countKey" required="true" rtexprvalue="true"%>
-<%@ attribute name="failureCountKey" rtexprvalue="true" description="If supplied, then this progress bar is treated as a two part success-failure progress bar. The countKey is treated as the successes and the failureCountKey as the failures."%>
-<%@ attribute name="totalCountKey" required="false" rtexprvalue="true" description="If supplied, then this total count is kept updated using a dataupdater call and the static totalCount attribute below is ignored. Either this attribute or totalCount is required."%>
-<%@ attribute name="totalCount" required="false" type="java.lang.Integer" rtexprvalue="true" description="Either this attribute or totalCountKey is required."%>
-<%@ attribute name="isAbortedKey" rtexprvalue="true"%>
-<%@ attribute name="hidePercent" type="java.lang.Boolean" rtexprvalue="true"%>
-<%@ attribute name="hideCount" type="java.lang.Boolean" rtexprvalue="true"%>
-<%@ attribute name="completionCallback" description="Name of a javascript function to call when progress reaches 100%. The function will be called each iteration of the data updater, so the function must manage being called multiple times if needed." rtexprvalue="true"%>
-<%@ attribute name="borderClasses" rtexprvalue="true" description="Use this to override the progress bar border styles."%>
-<%@ attribute name="barClasses" rtexprvalue="true" description="Use this to override the inner progress bar styles. If this is a two part success / failure progress bar these styles will be applied to both success and failure divs."%>
-<%@ attribute name="barSuccessClasses" rtexprvalue="true" description="Use this to override the inner success progress bar styles. Only applicable for success / failure progress bar."%>
-<%@ attribute name="barFailureClasses" rtexprvalue="true" description="Use this to override the inner failure progress bar styles. Only applicable for success / failure progress bar."%>
-<%@ attribute name="percentClasses" rtexprvalue="true" description="Use this to override the percent styles."%>
-<%@ attribute name="countClasses" rtexprvalue="true" description="Use this to override the count styles."%>
-<%@ attribute name="containerClasses" rtexprvalue="true" description="Classes on the container"%>
+<%@ attribute name="countKey" required="true" %>
+<%@ attribute name="failureCountKey" description="If supplied, then this progress bar is treated as a two part success-failure progress bar. The countKey is treated as the successes and the failureCountKey as the failures." %>
+<%@ attribute name="totalCountKey" description="If supplied, then this total count is kept updated using a dataupdater call and the static totalCount attribute below is ignored. Either this attribute or totalCount is required." %>
+<%@ attribute name="totalCount" type="java.lang.Integer" description="Either this attribute or totalCountKey is required." %>
+<%@ attribute name="isAbortedKey" %>
+<%@ attribute name="hidePercent" type="java.lang.Boolean" %>
+<%@ attribute name="hideCount" type="java.lang.Boolean" %>
+<%@ attribute name="completionCallback" description="Name of a javascript function to call when progress reaches 100%. The function will be called each iteration of the data updater, so the function must manage being called multiple times if needed." %>
+<%@ attribute name="borderClasses" description="Use this to override the progress bar border styles." %>
+<%@ attribute name="barClasses" description="Use this to override the inner progress bar styles. If this is a two part success / failure progress bar these styles will be applied to both success and failure divs." %>
+<%@ attribute name="barSuccessClasses" description="Use this to override the inner success progress bar styles. Only applicable for success / failure progress bar." %>
+<%@ attribute name="barFailureClasses" description="Use this to override the inner failure progress bar styles. Only applicable for success / failure progress bar." %>
+<%@ attribute name="percentClasses" description="Use this to override the percent styles." %>
+<%@ attribute name="countClasses" description="Use this to override the count styles." %>
+<%@ attribute name="containerClasses" description="Classes on the container" %>
 
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
-    
 <cti:includeScript link="/JavaScript/progressbar.js"/>
 <cti:uniqueIdentifier var="pbarId" prefix="pbar_"/>
 
@@ -55,7 +55,7 @@
                     ${totalCount}
                 </c:if>
             </span>
-        </div>
+        </span>
     </c:if>
 </div>
 

@@ -6,15 +6,15 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <cti:standardPage module="amr" page="validationEditor.${mode}" >
-
-    <script type="text/javascript">
-        function deleteValidationMonitor() {
-            jQuery("button[data-disable-group=actionButtons]").each( function(){
-                this.disabled = true;
-            });
-            jQuery('#configDeleteForm').submit();
-        };
-    </script>
+<style>.validation-value{text-align: right;margin-right: 5px !important;}</style>
+<script type="text/javascript">
+    function deleteValidationMonitor() {
+        jQuery("button[data-disable-group=actionButtons]").each( function(){
+            this.disabled = true;
+        });
+        jQuery('#configDeleteForm').submit();
+    };
+</script>
 
     <c:if test="${not empty editError}">
         <div class="error">${editError}</div>
@@ -35,7 +35,7 @@
     </form>
     
     <form id="cancelForm" action="/meter/start" method="get">
-	</form>
+    </form>
     
     <%-- UPDATE FORM --%>
     <form id="updateForm" action="/common/vee/monitor/update" method="post">
@@ -47,7 +47,7 @@
                 
                 <%-- name --%>
                 <tags:nameValue2 nameKey=".name">
-                    <input type="text" name="name" size="50" value="${name}">
+                    <input type="text" name="name" value="${name}">
                 </tags:nameValue2>
                 
                 <%-- device group --%>
@@ -61,20 +61,20 @@
                 <%-- threshold --%>
                 <tags:nameValue2 nameKey=".threshold">
                     <div>
-                        <input type="text" name="threshold" style="text-align: right;" value="${threshold}"><span><i:inline key=".thresholdUnits"/></span> 
+                        <input type="text" name="threshold" class="validation-value" value="${threshold}"><span><i:inline key=".thresholdUnits"/></span> 
                         <cti:msg2 key=".threshold" var="popupTitle"/>
                         <tags:helpInfoPopup title="${popupTitle}" ><i:inline key=".threshold.helpText"/></tags:helpInfoPopup>
                     </div>
                     <div>
-                        <input type="checkbox" name="reread" style="text-align: right;" <c:if test="${reread}">checked</c:if>><span>${rereadThresholdText}</span> 
-                        <cti:msg2 key=".rereadThreshold" var="popupTitle"/>
-                        <tags:helpInfoPopup title="${popupTitle}" ><i:inline key=".rereadThreshold.helpText"/></tags:helpInfoPopup>
+                        <cti:msg2 key=".rereadThreshold" var="rereadThresholdText"/>
+                        <input type="checkbox" name="reread" class="validation-value" <c:if test="${reread}">checked</c:if>><span>${rereadThresholdText}</span> 
+                        <tags:helpInfoPopup title="${rereadThresholdText}" ><i:inline key=".rereadThreshold.helpText"/></tags:helpInfoPopup>
                     </div>
                 </tags:nameValue2>
                 
                 <%-- slope error --%>
                 <tags:nameValue2 nameKey=".slopeError">
-                    <input type="text" name="slopeError" style="text-align:right;" value="${slopeError}"><span><i:inline key=".slopeErrorUnits"/></span>
+                    <input type="text" name="slopeError" class="validation-value" value="${slopeError}"><span><i:inline key=".slopeErrorUnits"/></span>
                     <cti:msg2 key=".slopeError" var="popupTitle"/>
                     <tags:helpInfoPopup title="${popupTitle}" ><i:inline key=".slopeError.helpText"/></tags:helpInfoPopup>
                 </tags:nameValue2>
@@ -82,12 +82,12 @@
                 <%-- peak height minimum --%>
                 <tags:nameValue2 nameKey=".peakHeightMinimum">
                     <div>
-                        <input type="text" name="peakHeightMinimum" style="text-align: right;" value="${peakHeightMinimum}"><span><i:inline key=".peakHeightMinimumUnits"/></span>
+                        <input type="text" name="peakHeightMinimum" class="validation-value" value="${peakHeightMinimum}"><span><i:inline key=".peakHeightMinimumUnits"/></span>
                         <cti:msg2 key=".peakHeightMinimum" var="popupTitle"/>
                         <tags:helpInfoPopup title="${popupTitle}" ><i:inline key=".peakHeightMinimum.helpText"/></tags:helpInfoPopup>
                     </div>
                     <div>
-                        <input type="checkbox" name="setQuestionable" style="text-align: right;" <c:if test="${setQuestionable}">checked</c:if>><span><i:inline key=".setQuestionable"/></span>
+                        <input type="checkbox" name="setQuestionable" <c:if test="${setQuestionable}">checked</c:if>><span><i:inline key=".setQuestionable"/></span>
                         <cti:msg2 key=".setQuestionable" var="popupTitle"/>
                         <tags:helpInfoPopup title="${popupTitle}" ><i:inline key=".setQuestionable.helpText"/></tags:helpInfoPopup>
                     </div>        
@@ -114,7 +114,7 @@
                     </c:if>
                      <cti:button nameKey="${toggleText}" onclick="jQuery('#toggleEnabledForm').submit();" busy="true" data-disable-group="actionButtons"/>
                    
-                    <cti:button id="deleteButton" nameKey="delete" type="button" onclick="deleteValidationMonitor();" busy="true" data-disable-group="actionButtons"/>
+                    <cti:button id="deleteButton" nameKey="delete" type="button" onclick="deleteValidationMonitor();" busy="true" data-disable-group="actionButtons" classes="delete"/>
                     <d:confirm on="#deleteButton" nameKey="confirmDelete"/>
                 </c:when>
                 <c:otherwise>

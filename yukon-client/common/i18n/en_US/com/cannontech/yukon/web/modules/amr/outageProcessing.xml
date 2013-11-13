@@ -110,7 +110,8 @@
     <entry key="yukon.web.modules.amr.outageProcessing.mainDetail.timePeriod.days">{0, choice, 0#Days|1#Day|1&lt;Days}</entry>
     <entry key="yukon.web.modules.amr.outageProcessing.mainDetail.edit">Edit</entry>
     <entry key="yukon.web.modules.amr.outageProcessing.readOutageLogs.title">Read Outage Logs</entry>
-    <entry key="yukon.web.modules.amr.outageProcessing.readOutageLogs.button">Read Logs</entry>
+    <entry key="yukon.web.modules.amr.outageProcessing.readOutageLogs.label">Read Logs</entry>
+    <entry key="yukon.web.modules.amr.outageProcessing.readOutageLogs.labelBusy">Reading</entry>
     <entry key="yukon.web.modules.amr.outageProcessing.readOutageLogs.readOk">Read Outage Log Commands Have Been Sent.</entry>
     <entry key="yukon.web.modules.amr.outageProcessing.readOutageLogs.noteLabel">Note:</entry>
     <entry key="yukon.web.modules.amr.outageProcessing.readOutageLogs.noteBody"><![CDATA[
@@ -118,11 +119,10 @@
 		<br>
 		Devices that do not support Outage Logs read will not be included.
 		<br>
-		Recommended usage is to have Remove Successfully Read Meters from Outages Group After Read checked.
+		Recommended usage is to have Remove Successfully Read from Group After Read checked.
 		
     ]]></entry>
-    <entry key="yukon.web.modules.amr.outageProcessing.removeAfterRead">Remove Successfully Read Meters from Outages Group</entry>
-    <entry key="yukon.web.modules.amr.outageProcessing.recentReadLogsResults">Recent Read Outage Logs Results:</entry>
+    <entry key="yukon.web.modules.amr.outageProcessing.removeAfterRead">Remove Successfully Read from Group</entry>
     <entry key="yukon.web.modules.amr.outageProcessing.recentReadLogsResults.dateTime">Read Date/Time</entry>
     <entry key="yukon.web.modules.amr.outageProcessing.recentReadLogsResults.successCount">Success</entry>
     <entry key="yukon.web.modules.amr.outageProcessing.recentReadLogsResults.failureCount">Fail</entry>

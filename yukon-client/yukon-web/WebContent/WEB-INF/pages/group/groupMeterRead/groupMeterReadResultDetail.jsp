@@ -1,30 +1,28 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
-<%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:msg var="resultListPageTitle" key="yukon.common.device.groupMeterRead.results.pageTitle" />
-<cti:msg var="pageTitle" key="yukon.common.device.groupMeterRead.resultDetail.pageTitle" />
-<cti:msg var="recentResultsTitle" key="yukon.common.device.groupMeterRead.resultDetail.recentResultsTitle" />
-<cti:msg var="noteLabel" key="yukon.common.device.groupMeterRead.resultDetail.noteLabel" />
-<cti:msg var="noteText" key="yukon.common.device.groupMeterRead.resultDetail.noteText" />
-<cti:msg var="successSectionTitle" key="yukon.common.device.groupMeterRead.resultDetail.section.success" />
-<cti:msg var="failedSectionTitle" key="yukon.common.device.groupMeterRead.resultDetail.section.failed" />
-<cti:msg var="unsupportedSectionTitle" key="yukon.common.device.groupMeterRead.resultDetail.section.unsupported" />
-<cti:msg var="viewSuccess" key="yukon.common.device.groupMeterRead.resultDetail.section.success.view" />
-<cti:msg var="viewFailedReasons" key="yukon.common.device.groupMeterRead.resultDetail.section.failed.viewFailReasons" />
-
-
-
 <cti:standardPage title="${pageTitle}" module="amr">
+<cti:msgScope paths="yukon.common.device.groupMeterRead.resultDetail">
 
-    <cti:standardMenu menuSelection="devicegroups|groupMeterRead"/>
+    <c:set var="resultKey" value="${resultWrapper.result.key}"/>
+
+    <cti:msg2 var="pageTitle" key=".pageTitle"/>
+    <cti:msg2 var="recentResultsTitle" key=".recentResultsTitle"/>
+    <cti:msg2 var="noteLabel" key=".noteLabel"/>
+    <cti:msg2 var="noteText" key=".noteText"/>
+    <cti:msg2 var="successSectionTitle" key=".section.success"/>
+    <cti:msg2 var="failedSectionTitle" key=".section.failed"/>
+    <cti:msg2 var="unsupportedSectionTitle" key=".section.unsupported"/>
+    <cti:msg2 var="viewSuccess" key=".section.success.view"/>
+    <cti:msg2 var="viewFailedReasons" key=".section.failed.viewFailReasons"/>
 
     <%-- BREAD CRUMBS --%>
     <cti:breadCrumbs>
     
-        <cti:crumbLink url="/dashboard" title="Operations Home" />
+        <cti:crumbLink url="/dashboard" title="Operations Home"/>
         
         <%-- results list --%>
         <cti:crumbLink url="/group/groupMeterRead/resultsList">${recentResultsTitle}</cti:crumbLink>
@@ -36,133 +34,119 @@
     
     <cti:includeScript link="/JavaScript/progressbar.js"/>
     
-    <script type="text/javascript">
-        function refreshResults(kind, theDiv) {
-            if (theDiv.is(':visible')) {
-                var url = '/group/groupMeterRead/' + kind;
-                jQuery(theDiv).load(url, {'resultKey': '${resultWrapper.result.key}'});
-            }
-        }
-    </script>
+<script type="text/javascript">
+function refreshResults(kind, container) {
+    if (container.is(':visible')) {
+        var url = '/group/groupMeterRead/' + kind;
+        jQuery(container).load(url, {'resultKey': '${resultWrapper.result.key}'});
+    }
+}
+jQuery(function() {
+    jQuery('.f-view-success').click(function(e) {
+        jQuery('#successResultsDiv${resultKey}').toggle();
+        refreshResults('successList', jQuery('#successResultsDiv${resultKey}'));
+    });
+    jQuery('.f-view-failed').click(function(e) {
+    	jQuery('#errorsResultsDiv${resultKey}').toggle();
+    	refreshResults('errorsList', jQuery('#errorsResultsDiv${resultKey}'));
+    });
+});
+</script>
+<style>.result {margin-left: 20px;}</style>
     
-    <h2>${pageTitle}</h2>
-    <br>
+    <h2 class="page-title">${pageTitle}</h2>
 
-    <tags:boxContainer id="readLogsDetailContainer" hideEnabled="false">
+    <c:set var="sectionTitle">Reading '${attributesDescription}' on <cti:msg2 key="${resultWrapper.result.deviceCollection.description}"/></c:set>
+    <tags:sectionContainer id="readLogsDetailContainer" title="${sectionTitle}">
     
-        <jsp:attribute name="title">
-            Reading '${attributesDescription}' on <cti:msg key="${resultWrapper.result.deviceCollection.description}"/>
-        </jsp:attribute>
-        
-        <jsp:body>
-        
-        <c:set var="resultKey" value="${resultWrapper.result.key}"/>
-        
         <%-- NOTE --%>
-        <table>
+        <table class="stacked">
             <tr>
-                <td valign="top" class="strong-label-small">${noteLabel}</td>
-                <td style="font-size:11px;">
-                    ${noteText}
-                </td>
+                <td class="strong-label-small">${noteLabel}</td>
+                <td class="detail">${noteText}</td>
             </tr>
         </table>
 
         <%-- PROGRESS --%>
-        <c:set var="totalCount" value="${resultWrapper.result.originalDeviceCollectionCopy.deviceCount}" />
-        <tags:resultProgressBar totalCount="${totalCount}"
-                                 countKey="GROUP_METER_READ/${resultKey}/COMPLETED_ITEMS"
-                                 progressLabelTextKey="yukon.common.device.groupMeterRead.resultDetail.progressLabel"
-                                 statusTextKey="GROUP_METER_READ/${resultKey}/STATUS_TEXT"
-                                 statusClassKey="GROUP_METER_READ/${resultKey}/STATUS_CLASS">
-                    
+        <div class="stacked">
+            <c:set var="totalCount" value="${resultWrapper.result.originalDeviceCollectionCopy.deviceCount}"/>
+            <tags:resultProgressBar totalCount="${totalCount}"
+                                    countKey="GROUP_METER_READ/${resultKey}/COMPLETED_ITEMS"
+                                    progressLabelTextKey=".progressLabel"
+                                    statusTextKey="GROUP_METER_READ/${resultKey}/STATUS_TEXT"
+                                    statusClassKey="GROUP_METER_READ/${resultKey}/STATUS_CLASS"/>
+            
             <%-- device collection action --%>
-            <div id="allDevicesActionsDiv" style="display:none;">
-                <br>
-                <cti:link href="/bulk/collectionActions" key="yukon.common.device.groupMeterRead.resultDetail.allResults" class="small">
+            <div id="allDevicesActionsDiv" class="dn result">
+                <cti:url var="bulkAllUrl" value="/bulk/collectionActions">
                     <cti:mapParam value="${resultWrapper.result.originalDeviceCollectionCopy.collectionParameters}"/>
-                </cti:link>
-                <tags:selectedDevicesPopup deviceCollection="${resultWrapper.result.originalDeviceCollectionCopy}" />
+                </cti:url>
+                <a href="${bulkAllUrl}"><i:inline key=".allResults"/></a>
+                <tags:selectedDevicesPopup deviceCollection="${resultWrapper.result.originalDeviceCollectionCopy}"/>
             </div>
             
             <%-- cre action --%>
-            <div id="creResultsDiv" style="display:none;">
-            
+            <div id="creResultsDiv" class="dn result">
                 <c:if test="${not empty resultWrapper.result.commandRequestExecutionIdentifier}">
-            
-                    <br>
-                    
-                    <cti:msg var="creResultsText" key="yukon.common.device.groupMeterRead.resultDetail.creResults"/>
-                    
                     <cti:url var="creResultsUrl" value="/common/commandRequestExecutionResults/detail">
                         <cti:param name="commandRequestExecutionId" value="${resultWrapper.result.commandRequestExecutionIdentifier.commandRequestExecutionId}"/>
                     </cti:url>
-                    
-                    <cti:link href="${creResultsUrl}" key="yukon.common.device.groupMeterRead.resultDetail.creResults" class="small"/>
-                            
+                    <a href="${creResultsUrl}"><i:inline key=".creResults"/></a>
                 </c:if>
-                
             </div>
-                                
-        </tags:resultProgressBar>
+        </div>
         
         <%-- SUCCESS --%>
-        <br>
-        <div class="fwb">${successSectionTitle} <span class="success"><cti:dataUpdaterValue type="GROUP_METER_READ" identifier="${resultKey}/SUCCESS_COUNT"/></span></div>
-        
-        <div id="successActionsDiv" style="padding:10px;display:none;">
-        
-            <%-- device collection action --%>
-            <cti:link href="/bulk/collectionActions" key="yukon.common.device.groupMeterRead.resultDetail.successResults" class="small">
-                <cti:mapParam value="${resultWrapper.result.successCollection.collectionParameters}"/>
-            </cti:link>
-            <tags:selectedDevicesPopup deviceCollection="${resultWrapper.result.successCollection}" />
-            
-            <%-- success list --%>
-            <div style="height:8px;"></div>
-            <a href="javascript:void(0);" onclick="jQuery('#successResultsDiv${resultKey}').toggle();refreshResults('successList', jQuery('#successResultsDiv${resultKey}'));" class="small">View Results</a>
-            <div id="successResultsDiv${resultKey}" style="display:none;"></div>
-            
+        <div class="stacked">
+            <div class="fwb stacked">${successSectionTitle} <span class="success"><cti:dataUpdaterValue type="GROUP_METER_READ" identifier="${resultKey}/SUCCESS_COUNT"/></span></div>
+            <div id="successActionsDiv" class="dn result">
+                <div>
+                    <cti:url var="bulkSuccessUrl" value="/bulk/collectionActions">
+                        <cti:mapParam value="${resultWrapper.result.successCollection.collectionParameters}"/>
+                    </cti:url>
+                    <a href="${bulkSuccessUrl}"><i:inline key=".successResults"/></a>
+                    <tags:selectedDevicesPopup deviceCollection="${resultWrapper.result.successCollection}"/>
+                </div>
+                <div>
+                    <a href="javascript:void(0);" class="f-view-success"><i:inline key=".section.success.view"/></a>
+                </div>
+                <div id="successResultsDiv${resultKey}" class="dn"></div>
+            </div>
         </div>
     
-    
         <%-- PROCESSING EXCEPTION --%>
-        <br>
-        <div class="fwb">${failedSectionTitle} <span class="error"><cti:dataUpdaterValue type="GROUP_METER_READ" identifier="${resultKey}/FAILURE_COUNT"/></span></div>
-        
-        <div id="errorActionsDiv" style="padding:10px;display:none;">
-        
-            <%-- device collection action --%>
-            <cti:link href="/bulk/collectionActions" key="yukon.common.device.groupMeterRead.resultDetail.failureResults" class="small">
-                <cti:mapParam value="${resultWrapper.result.failureCollection.collectionParameters}"/>
-            </cti:link>
-            <tags:selectedDevicesPopup deviceCollection="${resultWrapper.result.failureCollection}" />
-            
-            <%-- errors list --%>
-            <div style="height:8px;"></div>
-            <a href="javascript:void(0);" onclick="jQuery('#errorsResultsDiv${resultKey}').toggle();refreshResults('errorsList', jQuery('#errorsResultsDiv${resultKey}'));" class="small">View Failure Reasons</a>
-            <div id="errorsResultsDiv${resultKey}" style="display:none;"></div>
-        
-        </div> 
+        <div class="stacked">
+            <div class="fwb stacked">${failedSectionTitle} <span class="error"><cti:dataUpdaterValue type="GROUP_METER_READ" identifier="${resultKey}/FAILURE_COUNT"/></span></div>
+            <div id="errorActionsDiv" class="dn result">
+                <div>
+                    <cti:url var="bulkUrl" value="/bulk/collectionActions">
+                        <cti:mapParam value="${resultWrapper.result.failureCollection.collectionParameters}"/>
+                    </cti:url>
+                    <a href="${bulkUrl}"><i:inline key=".failureResults"/></a>
+                    <tags:selectedDevicesPopup deviceCollection="${resultWrapper.result.failureCollection}"/>
+                </div>
+                <div>
+                    <a href="javascript:void(0);" class="f-view-failed">View Failure Reasons</a>
+                </div>
+                <div id="errorsResultsDiv${resultKey}" class="dn"></div>
+            </div> 
+        </div>
         
         <%-- UNSUPPORTED --%>
-        <br>
-        <div class="fwb">${unsupportedSectionTitle} <span class="error"><cti:dataUpdaterValue type="GROUP_METER_READ" identifier="${resultKey}/UNSUPPORTED_COUNT"/></span></div>
+        <div class="stacked">
+            <div class="fwb stacked">${unsupportedSectionTitle} <span class="error"><cti:dataUpdaterValue type="GROUP_METER_READ" identifier="${resultKey}/UNSUPPORTED_COUNT"/></span></div>
+            <div id="unsupportedActionsDiv" class="dn result">
+                <cti:url var="bulkUnsupportedUrl" value="/bulk/collectionActions">
+                    <cti:mapParam value="${resultWrapper.result.unsupportedCollection.collectionParameters}"/>
+                </cti:url>
+                <a href="${bulkUnsupportedUrl}"><i:inline key=".unsupportedResults"/></a>
+                <tags:selectedDevicesPopup deviceCollection="${resultWrapper.result.unsupportedCollection}"/>
+            </div>
+        </div>
         
-        <div id="unsupportedActionsDiv" style="padding:10px;display:none;">
-        
-            <%-- device collection action --%>
-            <cti:link href="/bulk/collectionActions" key="yukon.common.device.groupMeterRead.resultDetail.unsupportedResults" class="small">
-                <cti:mapParam value="${resultWrapper.result.unsupportedCollection.collectionParameters}"/>
-            </cti:link>
-            <tags:selectedDevicesPopup deviceCollection="${resultWrapper.result.unsupportedCollection}" />
-        
-        </div> 
-        
-        </jsp:body>
-        
-    </tags:boxContainer>
+    </tags:sectionContainer>
     
-    <cti:dataUpdaterCallback function="Yukon.ui.progressBar.toggleElementsWhenTrue(['allDevicesActionsDiv','creResultsDiv','successActionsDiv','errorActionsDiv','unsupportedActionsDiv'],true)" initialize="true" value="GROUP_METER_READ/${resultKey}/IS_COMPLETE" />
-      
+    <cti:dataUpdaterCallback function="Yukon.ui.progressBar.toggleElementsWhenTrue(['allDevicesActionsDiv','creResultsDiv','successActionsDiv','errorActionsDiv','unsupportedActionsDiv'],true)" initialize="true" value="GROUP_METER_READ/${resultKey}/IS_COMPLETE"/>
+
+</cti:msgScope>
 </cti:standardPage>

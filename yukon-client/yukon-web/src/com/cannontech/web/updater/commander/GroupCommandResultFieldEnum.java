@@ -84,7 +84,7 @@ public enum GroupCommandResultFieldEnum {
         	if (groupCommandResult.isCanceled() || groupCommandResult.isExceptionOccured()) {
         		className = "error";
         	} else {
-        		className = "";
+        		className = "success";
         	}
         	
         	return className;

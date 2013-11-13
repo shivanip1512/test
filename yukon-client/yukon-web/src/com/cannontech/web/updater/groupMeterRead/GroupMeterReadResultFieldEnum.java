@@ -81,7 +81,7 @@ public enum GroupMeterReadResultFieldEnum {
     STATUS_CLASS(new ResultAccessor<GroupMeterReadResult>() {
         @Override
         public Object getValue(GroupMeterReadResult groupMeterReadResult) {
-            return groupMeterReadResult.isExceptionOccured() ? "error" : "";
+            return groupMeterReadResult.isExceptionOccured() ? "error" : "success";
         }
     }),
 

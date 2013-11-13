@@ -34,37 +34,37 @@
         <input type="hidden" name="statusPointMonitorId" value="${statusPointMonitor.statusPointMonitorId}">
     </form>
 
-	<%-- MISC FORMS --%>
-	<form id="toggleEnabledForm" action="/amr/statusPointMonitoring/toggleEnabled" method="post">
-		<input type="hidden" name="statusPointMonitorId" value="${statusPointMonitor.statusPointMonitorId}">
-	</form>
-	
-	<%-- UPDATE FORM --%>
+    <%-- MISC FORMS --%>
+    <form id="toggleEnabledForm" action="/amr/statusPointMonitoring/toggleEnabled" method="post">
+        <input type="hidden" name="statusPointMonitorId" value="${statusPointMonitor.statusPointMonitorId}">
+    </form>
+    
+    <%-- UPDATE FORM --%>
     <cti:url var="submitUrl" value="/amr/statusPointMonitoring/update"/>
-	<form:form commandName="statusPointMonitor" action="${submitUrl}" method="post">
-	
-		<form:hidden path="statusPointMonitorId"/>
+    <form:form commandName="statusPointMonitor" action="${submitUrl}" method="post">
+    
+        <form:hidden path="statusPointMonitorId"/>
         <form:hidden path="evaluatorStatus"/>
         <form:hidden path="stateGroup"/>
-		
-		<tags:sectionContainer2 nameKey="sectionHeader">
-			<tags:nameValueContainer2 style="border-collapse:separate;border-spacing:5px;">
-			
-				<%-- name --%>
-				<tags:inputNameValue nameKey=".name" path="statusPointMonitorName" size="50" maxlength="50"/>
-				
+        
+        <tags:sectionContainer2 nameKey="sectionHeader">
+            <tags:nameValueContainer2 style="border-collapse:separate;border-spacing:5px;">
+            
+                <%-- name --%>
+                <tags:inputNameValue nameKey=".name" path="statusPointMonitorName" size="50" maxlength="50"/>
+                
                 <%-- device group --%>
-				<tags:nameValue2 nameKey=".deviceGroup">
-					<cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="groupDataJson" />
-					<tags:deviceGroupNameSelector fieldName="groupName" 
-											  	  fieldValue="${statusPointMonitor.groupName}" 
-											      dataJson="${groupDataJson}"
-											      linkGroupName="true"/>
-	                <tags:helpInfoPopup title="${deviceGroupTitle}">
-	            		<cti:msg2 key=".popupInfo.deviceGroup"/>
-					</tags:helpInfoPopup>
-				</tags:nameValue2>
-			    
+                <tags:nameValue2 nameKey=".deviceGroup">
+                    <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="groupDataJson" />
+                    <tags:deviceGroupNameSelector fieldName="groupName" 
+                                                    fieldValue="${statusPointMonitor.groupName}" 
+                                                  dataJson="${groupDataJson}"
+                                                  linkGroupName="true"/>
+                    <tags:helpInfoPopup title="${deviceGroupTitle}">
+                        <cti:msg2 key=".popupInfo.deviceGroup"/>
+                    </tags:helpInfoPopup>
+                </tags:nameValue2>
+                
                 <%-- attribute --%>
                 <tags:nameValue2 nameKey="yukon.common.device.commander.attributeSelector.selectAttribute">
                     <form:select path="attribute">
@@ -89,17 +89,17 @@
                     ${statusPointMonitor.stateGroup}
                 </tags:nameValue2>
                 
-				<%-- enable/disable monitoring --%>
-				<tags:nameValue2 nameKey=".statusPointMonitoring">
+                <%-- enable/disable monitoring --%>
+                <tags:nameValue2 nameKey=".statusPointMonitoring">
                     <i:inline key="${statusPointMonitor.evaluatorStatus}"/>
-				</tags:nameValue2>
+                </tags:nameValue2>
                 
-			</tags:nameValueContainer2>
-		</tags:sectionContainer2>
+            </tags:nameValueContainer2>
+        </tags:sectionContainer2>
         
-        <tags:boxContainer2 id="actionsBox" nameKey="stateActionsTable" styleClass="mediumContainer">
-            <div class="scroll-medium stacked">
-                <table id="actionsTable" class="compact-results-table">
+        <tags:sectionContainer2 id="actionsBox" nameKey="stateActionsTable">
+            <div class="scroll-large stacked">
+                <table id="actionsTable" class="compact-results-table dashed">
                     <thead>
                     <tr>
                         <th><i:inline key=".stateActionsTable.prevState"/></th>
@@ -112,14 +112,13 @@
                     <tbody></tbody>
                 </table>
             </div>
-            <br>
-            <span style="float:right;">
+            <div class="action-area">
                 <cti:button nameKey="addAction" onclick="Yukon.StatusPointMonitor.addAction()" icon="icon-add"/>
-            </span>
-        </tags:boxContainer2>
-		
-		<%-- create / update / delete --%>
-		<div class="page-action-area">
+            </div>
+        </tags:sectionContainer2>
+        
+        <%-- create / update / delete --%>
+        <div class="page-action-area">
             <cti:button nameKey="update" type="submit" busy="true" classes="primary action" data-disable-group="actionButtons"/>
             <c:set var="enableDisableKey" value="disable"/>
             <c:if test="${statusPointMonitor.evaluatorStatus eq 'DISABLED'}">
@@ -127,14 +126,14 @@
             </c:if>
             <cti:button nameKey="${enableDisableKey}" busy="true" data-disable-group="actionButtons"
                 onclick="jQuery('#toggleEnabledForm').submit()"/>
-            <cti:button id="deleteButton" nameKey="delete" busy="true" onclick="jQuery('#deleteStatusPointMonitor').submit();" data-disable-group="actionButtons"/>
+            <cti:button id="deleteButton" nameKey="delete" busy="true" onclick="jQuery('#deleteStatusPointMonitor').submit();" data-disable-group="actionButtons" classes="delete"/>
             <d:confirm on="#deleteButton" nameKey="confirmDelete" argument="${statusPointMonitor.statusPointMonitorName}"/>
             <cti:url var="backUrl" value="/amr/statusPointMonitoring/viewPage">
                 <cti:param name="statusPointMonitorId" value="${statusPointMonitor.statusPointMonitorId}" />
             </cti:url>
             <cti:button nameKey="cancel" type="button" href="${backUrl }"  busy="true" data-disable-group="actionButtons"/>
         </div>
-	</form:form>
+    </form:form>
     
     <script type="text/javascript">
         Yukon.StatusPointMonitor.initWithProcessors(${cti:jsonString2(statusPointMonitor.processors)});

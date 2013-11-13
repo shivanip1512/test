@@ -27,6 +27,7 @@
     
     <!-- PorterResponseMonitorController shared keys -->
     <entry key="yukon.web.modules.amr.porterResponseMonitor.title">Porter Response Monitoring</entry>
+    <entry key="yukon.web.modules.amr.porterResponseMonitor.info.title">Info</entry>
     <entry key="yukon.web.modules.amr.porterResponseMonitor.monitoring">Monitoring</entry>
     <entry key="yukon.web.modules.amr.porterResponseMonitor.deviceCount">Device Count</entry>
     <entry key="yukon.web.modules.amr.porterResponseMonitor.supportedDevices">Supported Devices</entry>
@@ -39,7 +40,7 @@
     <entry key="yukon.web.modules.amr.porterResponseMonitor.supportedDevicesMessage"><![CDATA[{0}&nbsp(<span class="error">{1}</span> of these are missing the required {2} point)]]></entry>
     <entry key="yukon.web.modules.amr.porterResponseMonitor.rule.success">Success</entry>
     <entry key="yukon.web.modules.amr.porterResponseMonitor.rule.failure">Failure</entry>
-    <entry key="yukon.web.modules.amr.porterResponseMonitor.rulesTable.title">Porter Response Monitor Transaction Rules</entry>
+    <entry key="yukon.web.modules.amr.porterResponseMonitor.rulesTable.title">Transaction Rules</entry>
     <entry key="yukon.web.modules.amr.porterResponseMonitor.rulesTable.header.ruleOrder">Order</entry>
     <entry key="yukon.web.modules.amr.porterResponseMonitor.rulesTable.header.outcome">Outcome</entry>
     <entry key="yukon.web.modules.amr.porterResponseMonitor.rulesTable.header.errors">Errors</entry>

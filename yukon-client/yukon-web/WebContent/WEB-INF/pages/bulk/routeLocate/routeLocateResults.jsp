@@ -28,33 +28,31 @@
         
         <div class="clearfix stacked">
           <tags:resultProgressBar totalCount="${deviceCount}"
-                                    countKey="ROUTELOCATE/${resultId}/COMPLETED_COUNT"
-                                    progressLabelTextKey="yukon.web.modules.tools.bulk.routeLocateResults.progressLabel"
-                                    statusTextKey="ROUTELOCATE/${resultId}/STATUS_TEXT"
-                                    statusClassKey="ROUTELOCATE/${resultId}/STATUS_CLASS"
-                                    isAbortedKey="ROUTELOCATE/${resultId}/IS_CANCELED">
-              <%-- set/view routes --%>
-              <br>
-              <form id="routeLocateSettingsForm" action="<cti:url value="/bulk/routeLocate/routeSettings" />" method="get">
-                  <input type="hidden" name="resultId" value="${resultId}">
-                  
-                  <%-- cancel commands --%>
-                  <div id="cancelLocateDiv" class="action-area">
-                      <c:url var="cancelUrl" value="/bulk/routeLocate/cancelCommands" />
-                      <cti:msg var="cancelText" key="yukon.web.modules.tools.bulk.routeLocateResults.cancelLocateButton.label" />
-                      <tags:cancelCommands resultId="${resultId}" cancelUrl="${cancelUrl}" cancelButtonText="${cancelText}"/>
-                  </div>
-                  <c:choose>
-                      <c:when test="${result.autoUpdateRoute}">
-                          <cti:button nameKey="viewRoutesButton" type="submit" classes="f-disable-after-click" disabled="${not result.complete}"/>
-                      </c:when>
-                      <c:otherwise>
-                          <cti:button nameKey="setRoutesButton" type="submit" classes="f-disable-after-click" disabled="${not result.complete}"/>
-                      </c:otherwise>
-                  </c:choose>
-              </form>
+                                  countKey="ROUTELOCATE/${resultId}/COMPLETED_COUNT"
+                                  progressLabelTextKey="yukon.web.modules.tools.bulk.routeLocateResults.progressLabel"
+                                  statusTextKey="ROUTELOCATE/${resultId}/STATUS_TEXT"
+                                  statusClassKey="ROUTELOCATE/${resultId}/STATUS_CLASS"
+                                  isAbortedKey="ROUTELOCATE/${resultId}/IS_CANCELED"/>
+          <%-- set/view routes --%>
+          <form id="routeLocateSettingsForm" action="<cti:url value="/bulk/routeLocate/routeSettings" />" method="get">
+              <input type="hidden" name="resultId" value="${resultId}">
+              
+              <%-- cancel commands --%>
+              <div id="cancelLocateDiv" class="action-area">
+                  <c:url var="cancelUrl" value="/bulk/routeLocate/cancelCommands" />
+                  <cti:msg var="cancelText" key="yukon.web.modules.tools.bulk.routeLocateResults.cancelLocateButton.label" />
+                  <tags:cancelCommands resultId="${resultId}" cancelUrl="${cancelUrl}" cancelButtonText="${cancelText}"/>
+              </div>
+              <c:choose>
+                  <c:when test="${result.autoUpdateRoute}">
+                      <cti:button nameKey="viewRoutesButton" type="submit" classes="f-disable-after-click" disabled="${not result.complete}"/>
+                  </c:when>
+                  <c:otherwise>
+                      <cti:button nameKey="setRoutesButton" type="submit" classes="f-disable-after-click" disabled="${not result.complete}"/>
+                  </c:otherwise>
+              </c:choose>
+          </form>
                                   
-          </tags:resultProgressBar>
         </div>
         
         <div id="AllDevicesActionsDiv" class="clearfix stacked">

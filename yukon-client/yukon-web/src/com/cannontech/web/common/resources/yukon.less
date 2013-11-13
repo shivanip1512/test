@@ -429,7 +429,8 @@ body ::-webkit-scrollbar-button{display:none}
 .wall-of-text .value {max-width: 300px;}
 .title-bar-tool {float:right !important;margin-right: 10px;}
 .dialog-no-buttons {margin-bottom: 20px;} /* buffer to get content (like scroll bar) from running into drag handle in dialogs with no button bar */
-.detail {color: #777; font-size: .9em;}
+.detail {color: #777;}
+.note, .detail {font-size: .9em;}
 strong, .strong-label-small, .grouped-list .group {font-weight: bold;}
 
 .notes, .strong-label-small {font-size: 12px;}
@@ -443,7 +444,7 @@ hr.dashed, .divider.dashed {border-style: dashed none none none;}
 .hint {font-style: italic;}
 .editable:hover {background-color: LemonChiffon; cursor: text;}
 .front {z-index: 9999;}
-.with-form-controls {line-height: @form-control-height;}
+.with-form-controls tbody {line-height: @form-control-height;}
 .with-form-controls td button.naked, .with-form-controls td .button.naked {margin-top: 5px;}
 @-webkit-keyframes pulse-opacity { from {opacity: 0.3;} to {opacity: 1.0;}}
 .pulse-opacity {-webkit-animation-name: pulse-opacity;-webkit-animation-duration: 1s;-webkit-animation-iteration-count: infinite;-webkit-animation-timing-function: ease-in-out;-webkit-animation-direction: alternate;}

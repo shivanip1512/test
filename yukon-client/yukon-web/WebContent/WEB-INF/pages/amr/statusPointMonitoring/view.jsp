@@ -54,8 +54,8 @@
             </div>
             <div class="column two nogutter">
                 <c:if test="${not empty statusPointMonitor.processors}">
-                    <tags:boxContainer2 nameKey="stateActionsTable" id="resTable" styleClass="mediumContainer">
-                        <table class="compact-results-table">
+                    <tags:sectionContainer2 nameKey="stateActionsTable" id="resTable">
+                        <table class="compact-results-table dashed">
                             <thead>
                                 <tr>
                                     <th><i:inline key=".stateActionsTable.header.prevState"/></th>
@@ -67,14 +67,14 @@
                             <tbody>
                                 <c:forEach items="${statusPointMonitor.processors}" var="row" varStatus="status">
                                     <tr>
-                                        <td nowrap="nowrap">${prevStateStrings[status.index]}</td>
-                                        <td nowrap="nowrap">${nextStateStrings[status.index]}</td>
-                                        <td nowrap="nowrap"><i:inline key="${row.actionTypeEnum}"/></td>
+                                        <td>${prevStateStrings[status.index]}</td>
+                                        <td>${nextStateStrings[status.index]}</td>
+                                        <td><i:inline key="${row.actionTypeEnum}"/></td>
                                     </tr>
                                 </c:forEach>
                             </tbody>
                         </table>
-                    </tags:boxContainer2>
+                    </tags:sectionContainer2>
                 </c:if>
             </div>
     </div>

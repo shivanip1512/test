@@ -66,11 +66,11 @@
         <%-- PROGRESS --%>
         <c:set var="totalCount" value="${result.deviceCollection.deviceCount}" />
         <tags:resultProgressBar totalCount="${totalCount}"
-                                 countKey="COMMANDER/${result.key}/COMPLETED_ITEMS"
-                                 progressLabelTextKey="yukon.common.device.commander.results.progressLabel"
-                                 statusTextKey="COMMANDER/${result.key}/STATUS_TEXT"
-                                 statusClassKey="COMMANDER/${result.key}/STATUS_CLASS"
-                                 isAbortedKey="COMMANDER/${result.key}/IS_ABORTED">
+                                countKey="COMMANDER/${result.key}/COMPLETED_ITEMS"
+                                progressLabelTextKey="yukon.common.device.commander.results.progressLabel"
+                                statusTextKey="COMMANDER/${result.key}/STATUS_TEXT"
+                                statusClassKey="COMMANDER/${result.key}/STATUS_CLASS"
+                                isAbortedKey="COMMANDER/${result.key}/IS_ABORTED"/>
                     
             <%-- cancel commands --%>
             <div id="cancelCommandsDiv">
@@ -105,8 +105,6 @@
                 
             </div>
                                 
-        </tags:resultProgressBar>
-        
         <%-- SUCCESS --%>
         <br>
         <div class="fwb">Successfully Executed: <span class="success"><cti:dataUpdaterValue type="COMMANDER" identifier="${result.key}/SUCCESS_COUNT"/></span></div>
