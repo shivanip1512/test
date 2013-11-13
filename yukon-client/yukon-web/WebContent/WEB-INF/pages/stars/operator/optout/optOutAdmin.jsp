@@ -25,18 +25,25 @@
                 systemOptOutInfoRequest();
             }
         }
-    
+
         function systemOptOutInfoRequest() {
-            var assignedProgramIds = jQuery('#systemProgramPaoIds').val(),
-                url = "/stars/operator/optOut/systemOptOuts",
-                params = {'parameters': {'assignedProgramIdsStr': assignedProgramIds}};
+            var assignedProgramIds = jQuery('#systemProgramPaoIds').val();
+
+            var programIdArrayJson;
+            if (assignedProgramIds.length == 0) {
+                // Otherwise str.split(',') returns [""], we really want an empty array
+                programIdArrayJson = "[]";
+            } else {
+                programIdArrayJson = JSON.stringify(assignedProgramIds.split(','));
+            }
+
             jQuery.ajax({
+                contentType: 'application/json',
                 dataType: "json",
-                url: url,
-                data: params
-            }).done(function(data, status, xhrobj) {
-                var json;
-                json = jQuery.parseJSON(xhrobj.getResponseHeader('X-JSON'));
+                url: "/stars/operator/optOut/systemOptOuts",
+                data: programIdArrayJson,
+                type: 'post'
+            }).done(function(json, status, xhrobj) {
                 jQuery('.totalAccounts .value').html(json.totalNumberOfAccounts);
                 jQuery('.todaysOptOuts .value').html(json.currentOptOuts);
                 jQuery('.futureOptOuts .value').html(json.scheduledOptOuts);
@@ -44,20 +51,6 @@
             });
         }
 
-/*            This should be uncommented and fixed when we figure out the json to spring controller issue.
-
-            jQuery.ajax({
-                url: "${systemOptOutsUrl}",
-                data: { assignedProgramIds: assignedProgramIds},
-                dataType: 'json'
-            }).done(function(data){
-                    jQuery('.totalAccounts .value').html(data.totalNumberOfAccounts);
-                    jQuery('.todaysOptOuts .value').html(data.scheduledOptOuts);
-                    jQuery('.futureOptOuts .value').html(data.currentOptOuts);
-                    jQuery('.totalSeasonalOptOuts .value').html(data.totalSeasonalOptOuts);
-               });
-*/            
-  
         function toggleProgramNameEnabled(toggleEl, txtEl) {
             if (toggleEl.checked) {
                 txtEl.enable();
