@@ -44,13 +44,13 @@ class IM_EX_MSG DispatchConnection : public CtiClientConnection
 
         DispatchConnection(const std::string &connectionName, Que_t *inQ = NULL, int tt = 3);
 
-        virtual void preWork();
         virtual void writeIncomingMessageToQueue(CtiMessage *msgPtr);
 
         void registerForPoints(::MessageListener* listener, const std::set<long>& pointIds);
         void registerForPoint(::MessageListener* listener, long pointId);
         void unRegisterForPoints(::MessageListener* listener, const std::set<long>& pointIds);
         void unRegisterForPoint(::MessageListener* listener, long pointId);
+        void refreshPointRegistration();
 
         void requestPointValues(const std::set<long>& pointIds);
 

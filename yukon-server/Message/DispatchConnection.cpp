@@ -89,7 +89,7 @@ void DispatchConnection::requestPointValues(const std::set<long>& pointIds)
  * This is the outthreads call to us to do our thing. Grab all
  * registration points and create a single registration message.
  */
-void DispatchConnection::preWork()
+void DispatchConnection::refreshPointRegistration()
 {
     CtiLockGuard< CtiMutex > guard(_regListMux);
 

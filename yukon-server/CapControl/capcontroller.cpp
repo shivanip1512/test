@@ -546,6 +546,12 @@ void CtiCapController::controlLoop()
                     dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                 }
 
+                // this updates the current point registration status and sends appropriate registration messages to dispatch
+                // -- manually does the work that the CtiConnection::preWork() virtual used to do pre yukon 6.0
+                if ( getDispatchConnection()->valid() )
+                {
+                    getDispatchConnection()->refreshPointRegistration();
+                }
 
 
                 rwRunnable().serviceCancellation();
