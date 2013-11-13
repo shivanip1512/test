@@ -1,9 +1,10 @@
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
-<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
-<%@ taglib tagdir="/WEB-INF/tags" prefix="tags" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <tags:standardPopup pageName="ivvc" module="capcontrol" popupName="zoneWizard">
 
@@ -117,16 +118,16 @@
             <span id="parentZoneName" class="disabledRow">
                 <c:choose>
                     <c:when test="${zoneDto.parentId == null}">
-                        <spring:escapeBody htmlEscape="true"><i:inline key="yukon.web.defaults.dashes"/></spring:escapeBody>
+                        <i:inline key="yukon.web.defaults.dashes"/>
                     </c:when>
                     <c:otherwise>
                         <c:choose>
                             <c:when test="${parentZone.zoneType == singlePhase}">
-                                <spring:escapeBody htmlEscape="true">${parentZone.name} - <i:inline key="${parentZone.zoneType}"/>: 
-                                <i:inline key="${parentZone.regulator.phase}"/></spring:escapeBody>
+                                ${fn:escapeXml(parentZone.name)} - <i:inline key="${parentZone.zoneType}"/>: 
+                                <i:inline key="${parentZone.regulator.phase}"/>
                             </c:when>
                             <c:otherwise>
-                                <spring:escapeBody htmlEscape="true">${parentZone.name} - <i:inline key="${parentZone.zoneType}"/></spring:escapeBody>
+                                ${fn:escapeXml(parentZone.name)} - <i:inline key="${parentZone.zoneType}"/>
                             </c:otherwise>
                         </c:choose>
                     </c:otherwise>
@@ -137,7 +138,7 @@
         <%-- Substation Bus --%>
         <tags:nameValue2 nameKey=".label.substationBus">
             <span id="selectedBusName" class="disabledRow">
-                <spring:escapeBody htmlEscape="true">${subBusName}</spring:escapeBody>
+                ${fn:escapeXml(subBusName)}
             </span>
         </tags:nameValue2>
 
@@ -204,7 +205,7 @@
         </c:choose>
 
         <%-- Graph Start Position --%>
-        <tags:inputNameValue path="graphStartPosition" nameKey=".label.graphStartPosition" size="2"/>
+        <tags:inputNameValue path="graphStartPosition" nameKey=".label.graphStartPosition" size="6"/>
 
     </tags:nameValueContainer2>
     
@@ -216,14 +217,14 @@
                         <tags:dynamicTable items="${zoneDto.bankAssignments}" nameKey="dynamicTable"
                             id="bankTable" addButtonClass="bankAddItem" noBlockOnAdd="true">
                         <div class="zoneWizardTableScrollArea">
-                        <table class="compact-results-table">
+                        <table class="compactResultsTable">
                             <thead>
                                 <tr>
                                     <th><i:inline key=".table.bank.name"/></th>
                                     <th><i:inline key=".table.bank.device"/></th>
                                     <th><i:inline key=".table.position"/></th>
                                     <th><i:inline key=".table.distance"/></th>
-                                    <th class="remove-column"><i:inline key=".table.remove"/></th>
+                                    <th class="removeColumn"><i:inline key=".table.remove"/></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -234,16 +235,16 @@
                                             <form:hidden path="bankAssignments[${status.index}].name" htmlEscape="true"/>
                                             <form:hidden path="bankAssignments[${status.index}].device" htmlEscape="true"/>
                                             <form:hidden path="bankAssignments[${status.index}].deletion" class="isDeletionField"/>
-                                            <spring:escapeBody htmlEscape="true">${row.name}</spring:escapeBody>
+                                            ${fn:escapeXml(row.name)}
                                         </td>
                                         <td>
-                                            <spring:escapeBody htmlEscape="true">${row.device}</spring:escapeBody>
+                                            ${fn:escapeXml(row.device)}
                                         </td>
                                         <td>
-                                            <tags:input path="bankAssignments[${status.index}].graphPositionOffset" size="1"/>
+                                            <tags:input path="bankAssignments[${status.index}].graphPositionOffset" size="3"/>
                                         </td>
                                         <td>
-                                            <tags:input path="bankAssignments[${status.index}].distance" size="3"/>
+                                            <tags:input path="bankAssignments[${status.index}].distance" size="6"/>
                                         </td>
                                         <tags:dynamicTableActionsCell tableId="bankTable"
                                             isFirst="${status.first}" isLast="${status.last}" skipMoveButtons="true"/>
@@ -260,12 +261,12 @@
                             multiSelectMode="true"
                             type="availableCapBankPicker"
                             linkType="none"/>
-                        <script type="text/javascript">
+                        <!-- <script type="text/javascript">
                             bankPicker.excludeIds = [
                                 <c:forEach var="bank" varStatus="status" items="${zoneDto.bankAssignments}">
                                     ${bank.id}<c:if test="${!status.last}">,</c:if>
                                 </c:forEach> ];
-                        </script>
+                        </script> -->
                     </tags:boxContainer2>
                 </td>
             </c:if>
@@ -276,7 +277,7 @@
                         id="pointTable" addItemParameters="${addItemParameters}" addButtonClass="pointAddItem"  
                         noBlockOnAdd="true">
                     <div class="zoneWizardTableScrollArea">
-                    <table class="compact-results-table">
+                    <table class="compactResultsTable">
                         <thead>
                             <tr>
                                 <th><i:inline key=".table.point.name"/></th>
@@ -284,7 +285,7 @@
                                 <th><i:inline key=".table.phase"/></th>
                                 <th><i:inline key=".table.position"/></th>
                                 <th><i:inline key=".table.distance"/></th>
-                                <th class="remove-column"><i:inline key=".table.remove"/></th>
+                                <th class="removeColumn"><i:inline key=".table.remove"/></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -295,10 +296,10 @@
                                         <form:hidden path="pointAssignments[${status.index}].name" htmlEscape="true"/>
                                         <form:hidden path="pointAssignments[${status.index}].device" htmlEscape="true"/>
                                         <form:hidden path="pointAssignments[${status.index}].deletion" class="isDeletionField"/>
-                                        <spring:escapeBody htmlEscape="true">${row.name}</spring:escapeBody>
+                                        ${fn:escapeXml(row.name)}
                                     </td>
                                     <td>
-                                        <spring:escapeBody htmlEscape="true">${row.device}</spring:escapeBody>
+                                        ${fn:escapeXml(row.device)}
                                     </td>
                                     <td>
                                         <c:choose>
@@ -318,10 +319,10 @@
                                         </c:choose>
                                     </td>
                                     <td>
-                                        <tags:input path="pointAssignments[${status.index}].graphPositionOffset" size="1"/>
+                                        <tags:input path="pointAssignments[${status.index}].graphPositionOffset" size="3"/>
                                     </td>
                                     <td>
-                                        <tags:input path="pointAssignments[${status.index}].distance" size="3"/>
+                                        <tags:input path="pointAssignments[${status.index}].distance" size="6"/>
                                     </td>
                                     <tags:dynamicTableActionsCell tableId="pointTable"
                                         isFirst="${status.first}" isLast="${status.last}" skipMoveButtons="true"/>
@@ -352,6 +353,12 @@
         <cti:displayForPageEditModes modes="EDIT">
             <cti:button nameKey="save" onclick="zoneSubmit()" classes="primary action"/>
             <cti:button nameKey="cancel" onclick="cancelZoneWizard()"/>
+
+            <cti:url var="zoneDeleteUrl" value="/capcontrol/ivvc/wizard/deleteZone">
+                <cti:param name="zoneId" value="${zoneDto.zoneId}"/>
+            </cti:url>
+
+            <cti:button nameKey="delete" href="${zoneDeleteUrl}" classes="action delete"/>
         </cti:displayForPageEditModes>
         <cti:displayForPageEditModes modes="CREATE">
             <cti:button nameKey="create" onclick="zoneSubmit()" classes="primary action"/>

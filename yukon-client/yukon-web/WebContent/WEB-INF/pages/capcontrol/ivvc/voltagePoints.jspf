@@ -18,6 +18,7 @@
 	</strong>
 	(<a href="${zoneVoltagePointsUrl}"><i:inline key=".editPoints"/></a>)
 	<table class="compact-results-table zoneVoltagePoints">
+        <thead>
 		<tr>
 			<th></th>
 			<th><i:inline key=".table.header.phase"/></th>
@@ -31,6 +32,9 @@
 				<i:inline key=".table.header.upperLimitSmall"/>
 			</th>
 		</tr>
+        </thead>
+        <tfoot></tfoot>
+        <tbody>
 		<c:forEach var="voltagePoint" items="${zoneVoltagePointsHolder.points}" varStatus="status">
 			<c:set var="overrideStrategyClass" value="fwb"/>
 			<c:set var="lowerLimit" value="${voltagePoint.lowerLimit}"/>
@@ -72,5 +76,6 @@
 				</td>
 			</tr>
 		</c:forEach>
+        </tbody>
 	</table>
 </cti:msgScope>

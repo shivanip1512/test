@@ -319,13 +319,22 @@ Yukon.modules.ui = function (mod) {
             table_row_helper: true
         });
         
-        //ajaxPage
+        //ajaxPage TODO Convert these to the use the one below and delete it
         jQuery(document).on('click', '.f-ajaxPage', function (e) {
-            e.stopPropagation();
             jQuery(this.getAttribute("data-selector")).load(this.getAttribute("href"));
             return false;
         });
-        
+        jQuery(document).on('click', '.f-ajax-paging', function(event) {
+            var elem = jQuery(event.currentTarget),
+                url = elem.data('url'),
+                completeEvent = elem.closest('[data-complete-event]').data('completeEvent'),
+                container = elem.closest('.f-ajax-page');
+            container.load(url, function() {
+                container.trigger(completeEvent);
+            });
+            return false;
+        });
+
         //buttons that redirect the page on click
         jQuery(document).on('click', 'button[data-href]', function (event){window.location = jQuery(this).attr("data-href");});
         

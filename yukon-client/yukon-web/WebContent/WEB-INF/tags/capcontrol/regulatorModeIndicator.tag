@@ -1,4 +1,4 @@
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 
 <%@ attribute name="paoId" required="true" %>
 <%@ attribute name="type" required="true" %>
@@ -12,12 +12,12 @@
 
 <%-- Regulator in local mode due to some failure ie: comms lost. --%>
 <span id="regulator_mode_${paoId}_local_warning" style="display: none;">
-    <img src="/WebConfig/yukon/da/yellow_local.png">
+    <cti:icon icon="icon-error"/>
 </span>
 
 <%-- Regulator is in Remote Mode and ready for control. --%>
 <span id="regulator_mode_${paoId}_normal" style="display: none;">
-    <img src="/WebConfig/yukon/da/green.png">
+    <cti:icon icon="icon-blank"/>
 </span>
 
 <cti:dataUpdaterCallback function="updateRegulatorModeIndicator('regulator_mode_${paoId}')" initialize="true" value="${type}/${paoId}/MODE"/>

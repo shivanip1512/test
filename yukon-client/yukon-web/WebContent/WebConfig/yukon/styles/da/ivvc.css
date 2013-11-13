@@ -8,14 +8,6 @@
 
 div.zoneHierarchy li {list-style-type: none;margin: 6px 0;}
 
-table.zoneListTable th.zoneName,table.zoneListTable td.zoneName {width: 50%;}
-
-table.zoneListTable td.zoneType {width: 95px;}
-table.zoneListTable .tapContainer {width: 97px;}
-table.zoneListTable .tapContainer > span {width: 33px;text-align: left;display: inline-block;}
-table.zoneListTable .tapContainer > span .lastOpLeft {width: 16px;text-align: center;display: inline-block;}
-table.zoneListTable .tapContainer .phaseLetter {font-weight: bold;}
-table.zoneListTable th.lastOperation {padding-left: 5px;}
 table th.rightActionColumn {text-align: right;padding-right: 10px;}
 table td.rightActionColumn {text-align: right;padding-right: 15px;}
 

@@ -75,35 +75,23 @@
                         </tr>
                         <c:forEach items="${searchResult.resultList}" var="row">
                             <tr>
-            	                <td nowrap="nowrap">
+                                <td nowrap="nowrap">
                                     <c:choose>
                                         <c:when test="${row.paobject}">
                                             <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
                                                 <a href="/editor/cbcBase.jsf?type=2&itemid=${row.itemId}" class="tierIconLink">
-                                                    <cti:icon icon="icon-pencil"/>
-                                                </a>
-                                                <a href="/editor/deleteBasePAO.jsf?value=${row.itemId}" class="tierIconLink">
-                                                    <cti:icon icon="icon-cross"/>
+                                                    ${fn:escapeXml(row.name)}
                                                 </a>
                                             </cti:checkRolesAndProperties>
                                         </c:when>
                                         <c:otherwise>
                                             <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
                                                 <a href="/editor/pointBase.jsf?parentId=${row.parentId}&itemid=${row.itemId}" class="tierIconLink">
-                                                    <cti:icon icon="icon-pencil"/>
-                                                </a>
-                                                <a href="/editor/deleteBasePoint.jsf?value=${row.itemId}" class="tierIconLink">
-                                                    <cti:icon icon="icon-cross"/>
+                                                    ${fn:escapeXml(row.name)}
                                                 </a>
                                             </cti:checkRolesAndProperties>
                                         </c:otherwise>
                                     </c:choose>
-                                    <c:if test="${row.controller}">
-                                        <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
-                                            <a class="tierIconLink" href="/editor/copyBase.jsf?itemid=${row.itemId}&type=1>"><cti:icon icon="icon-page-copy"/></a>
-                                        </cti:checkRolesAndProperties>
-                                    </c:if>
-                                    <spring:escapeBody htmlEscape="true">${row.name}</spring:escapeBody>
                                 </td>
             	                <td nowrap="nowrap">${row.itemType}</td>
             	                <td nowrap="nowrap"><spring:escapeBody htmlEscape="true">${row.itemDescription}</spring:escapeBody></td>

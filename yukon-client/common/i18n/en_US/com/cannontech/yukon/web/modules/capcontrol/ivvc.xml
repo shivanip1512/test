@@ -19,10 +19,10 @@
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.down.hoverText">Click to Tap Down</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.down.label">Tap Down</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.scan.hoverText">Click to Scan</entry>
-	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.scan.label">Send Integrity Scan</entry>
-	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.disable.label">Disable Remote Control</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.scan.label">Integrity Scan</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.disable.label">Disable Remote</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.disable.hoverText">Click to Disable</entry>
-	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.enable.label">Enable Remote Control</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.enable.label">Enable Remote</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.enable.hoverText">Click to Enable</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.attributes.title">Voltage Regulator Attributes</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.attributesRegAll.title">All Regulator Attributes</entry>

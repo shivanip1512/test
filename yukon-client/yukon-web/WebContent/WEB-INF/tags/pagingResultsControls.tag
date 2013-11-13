@@ -11,7 +11,7 @@
 
 <cti:default var="adjustPageCount" value="false"/>
 
-<div class="compact-results-paging">
+<div class="compact-results-paging clearfix">
     <div class="paging-area">
         <c:if test="${adjustPageCount == 'true'}">
             <span class="fl perPageArea">

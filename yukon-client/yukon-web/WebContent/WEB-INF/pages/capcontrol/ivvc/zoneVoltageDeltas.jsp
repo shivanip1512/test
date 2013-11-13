@@ -11,36 +11,40 @@
 
 	<script>
 		jQuery(document).ready(function() {
-			jQuery(".viewDelta").click(function(e) {
+		    jQuery(document).on('click', '.viewDelta', function(e) {
 				var currentTarget = jQuery(e.currentTarget); 
 				currentTarget.hide();
 				currentTarget.next().show();
 				currentTarget.next().find("input").focus();
-				jQuery("#deltaFormButtons").slideDown();
+				enableButtons();
 			});
 
-			jQuery(".editDelta input").keydown(function(e) {
+		    jQuery(document).on('keydown', '.editDelta input', function(e) {
 				if (e.which == 27) {
 					/* Escape Key */
 					cancelEdit(e);
 				}
 			});
+		    
+		    jQuery(document).on('disable-buttons', function() {
+		        disableButtons();
+		    });
 			
-			jQuery("input[type='checkbox'].editableStaticDelta").click(function(e) {
+			jQuery(document).on('click', 'input[type="checkbox"].editableStaticDelta', function(e) {
 				jQuery(e.currentTarget).toggleClass("staticChanged");
 				jQuery(e.currentTarget).parent("label").toggleClass("staticChangedLabel");
 
 				if (jQuery(".editDelta:visible").length == 0 &&
 					jQuery("input.staticChanged").length == 0) {
-					jQuery("#deltaFormButtons").slideUp();
+				    disableButtons();
 				} else {
-					jQuery("#deltaFormButtons").slideDown();
+				    enableButtons();
 				}
 			});
 
-			jQuery("a.cancelEdit").click(cancelEdit);
+			jQuery(document).on('click', '.cancelEdit', cancelEdit);
 
-			jQuery("#deltaReset").click(function(e) {
+			jQuery(document).on('click','#deltaReset', function(e) {
 				jQuery(".editDelta").hide();
 				jQuery(".viewDelta").show();
 				
@@ -48,10 +52,10 @@
 				jQuery("label").removeClass("staticChangedLabel");
 			});
 
-			jQuery("#deltaSubmitBtn").click(function() {
+			jQuery(document).on('click','#deltaSubmitBtn', function() {
 				if (jQuery(".editDelta:visible").length == 0 &&
 						jQuery("input.staticChanged").length == 0) {
-					jQuery("#deltaFormButtons").slideUp();
+				    disableButtons();
 					return;
 				}
 	
@@ -85,109 +89,33 @@
 				}
 			});
 		});
-
+		
 		function cancelEdit(e) {
 			jQuery(e.currentTarget).closest("td").find(".editDelta").hide();
 			jQuery(e.currentTarget).closest("td").find(".viewDelta").show();
 			if (jQuery(".editDelta:visible").length == 0 &&
 				jQuery("input.staticChanged").length == 0) {
-				jQuery("#deltaFormButtons").slideUp();
+			    disableButtons();
 			}
+		}
+		
+		function disableButtons(){
+		    jQuery("#deltaFormButtons").find('button').prop('disabled', true);
+		}
+		function enableButtons(){
+		    jQuery("#deltaFormButtons").find('button').prop('disabled', false);
 		}
 	</script>
 
-	<cti:url var="baseUrl" value="/capcontrol/ivvc/zone/voltageDeltas" />
-	<tags:pagedBox2 nameKey="deltas" searchResult="${searchResults}" baseUrl="${baseUrl}" showAllUrl="${baseUrl}">
+	<form:form id="deltaForm" action="/capcontrol/ivvc/zone/deltaUpdate" method="POST" commandName="zoneVoltageDeltas">
+		<input type="hidden" name="zoneId" id="zoneId" value="${zoneId}">
 
-		<form:form id="deltaForm" action="/capcontrol/ivvc/zone/deltaUpdate" method="POST" commandName="zoneVoltageDeltas">
-			<input type="hidden" name="zoneId" id="zoneId" value="${zoneId}">
-
-			<table id="deltaTable" class="compact-results-table">
-				<tr>
-					<th><i:inline key=".deltas.cbcName" /></th>
-					<th><i:inline key=".deltas.bankName" /></th>
-					<th><i:inline key=".deltas.deviceName" /></th>
-					<th><i:inline key=".deltas.pointName" /></th>
-					<th><i:inline key=".deltas.preOp" /></th>
-					<th><i:inline key=".deltas.static" /></th>
-					<th style="width: 15%"><i:inline key=".deltas.delta" /></th>
-				</tr>
-
-				<c:if test="${searchResults.hitCount == 0}">
-					<tr>
-						<td><i:inline key=".deltas.emptyTable" />
-						</td>
-					</tr>
-				</c:if>
-
-				<c:forEach var="pointDelta" items="${searchResults.resultList}" varStatus="status">
-
-					<tr>
-						<td class="dn bankAndPointIds">
-							<input class="pointDeltaBankId" type="hidden" value="${pointDelta.bankId}"/>
-							<input class="pointDeltaPointId" type="hidden" value="${pointDelta.pointId}"/>
-						</td>
-						<td>
-							<spring:escapeBody htmlEscape="true">${pointDelta.cbcName}</spring:escapeBody>
-						</td>
-						<td>
-							<spring:escapeBody htmlEscape="true">${pointDelta.bankName}</spring:escapeBody>
-						</td>
-						<td>
-							<spring:escapeBody htmlEscape="true">${pointDelta.affectedDeviceName}</spring:escapeBody>
-						</td>
-						<td>
-							<spring:escapeBody htmlEscape="true">${pointDelta.affectedPointName}</spring:escapeBody>
-						</td>
-						<td>
-							<spring:escapeBody htmlEscape="true">${pointDelta.preOpValue}</spring:escapeBody>
-						</td>
-						<c:choose>
-							<c:when test="${hasEditingRole}">
-								<td><label class="staticDeltaLabel"><input type="checkbox" class="editableStaticDelta"
-									<c:choose>
-					                	<c:when test="${pointDelta.staticDelta}">
-			                                checked="checked"
-			                            </c:when>
-			                        </c:choose>></label>
-								</td>
-								<td class="editable">
-									<cti:msg2 var="deltaTitle" key=".deltas.deltaTitle" />
-									<div class="viewDelta anchorUnderlineHover" title="${deltaTitle}">
-										<input type="hidden" value="${pointDelta.delta}"/>
-										<spring:escapeBody htmlEscape="true">${pointDelta.deltaRounded}</spring:escapeBody>
-									</div>
-									<div class="editDelta" style="display: none;">
-										<input type="text" style="margin-right: 5px; width: 30px;"
-											name="editDeltaInput"
-											value="<spring:escapeBody htmlEscape="true">${pointDelta.delta}</spring:escapeBody>">
-										<a href="javascript:void(0);" class="cancelEdit"><i:inline key="yukon.common.cancel"/></a>
-									</div>
-								</td>
-							</c:when>
-							<c:otherwise>
-								<td><input type="checkbox"
-									disabled="disabled"
-									<c:choose>
-						                	<c:when test="${pointDelta.staticDelta}">
-				                                checked="checked"
-				                            </c:when>
-				                        </c:choose>>
-								</td>
-								<td>
-									<div>
-										<spring:escapeBody htmlEscape="true">${pointDelta.deltaRounded}</spring:escapeBody>
-									</div>
-								</td>
-							</c:otherwise>
-						</c:choose>
-					</tr>
-				</c:forEach>
-			</table>
-			<div id="deltaFormButtons" class="action-area dn">
-				<cti:button id="deltaSubmitBtn" nameKey="update" type="submit" classes="primary action"/>
-			    <cti:button nameKey="cancel" type="reset" id="deltaReset"/>
+        <div class="f-ajax-page stacked" data-complete-event="disable-buttons">
+            <%@ include file="zoneVoltageDeltasTable.jsp" %>
+        </div>
+			<div id="deltaFormButtons" class="action-area clear">
+				<cti:button id="deltaSubmitBtn" nameKey="update" type="submit" classes="primary action" disabled="true"/>
+			    <cti:button nameKey="cancel" type="reset" id="deltaReset" disabled="true"/>
 			</div>
-		</form:form>
-	</tags:pagedBox2>
+    </form:form>
 </cti:standardPage>

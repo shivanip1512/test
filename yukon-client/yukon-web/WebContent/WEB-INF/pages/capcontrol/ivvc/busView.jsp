@@ -63,6 +63,16 @@
 		}
  	</script>
     
+    <c:if test="${hasEditingRole}">
+        <div class="f-page-additional-actions dn">
+            <cti:url var="editUrl" value="/editor/cbcBase.jsf">
+                <cti:param name="type" value="2"/>
+                <cti:param name="itemid" value="${subBusId}"/>
+            </cti:url>
+            <li class="divider">
+            <cm:dropdownOption key="components.button.edit.label" icon="icon-pencil" href="${editUrl}" />
+        </div>
+    </c:if>
     <div class="column-12-12">
         <div class="column one">
         
@@ -72,20 +82,12 @@
                         <th class="zoneName"><i:inline key=".zoneList.name" /></th>
                         <th class="zoneType"><i:inline key="modules.capcontrol.zoneType"/></th>
                         <th class="lastOperation"><i:inline key="modules.capcontrol.lastOperation"/></th>
-                        <th><i:inline key="modules.capcontrol.actions"/></th>
                     </tr>
     				<cti:navigableHierarchy var="zone" depth="depth" hierarchy="${zones}">
     					<cti:url var="zoneDetailUrl" value="/capcontrol/ivvc/zone/detail">
     				    	<cti:param name="zoneId" value="${zone.zoneId}"/>
     				    	<cti:param name="isSpecialArea" value="${isSpecialArea}"/>
     				    </cti:url>
-    				    <cti:url var="zoneEditorUrl" value="/capcontrol/ivvc/wizard/zoneEditor">
-       						<cti:param name="zoneId" value="${zone.zoneId}"/>
-    				    </cti:url>
-    					<cti:url var="zoneDeleteUrl" value="/capcontrol/ivvc/wizard/deleteZone">
-       						<cti:param name="zoneId" value="${zone.zoneId}"/>
-    				    </cti:url>
-                
                         <tr>
                             <td class="zoneName">
                                 <c:if test="${depth > 0}">
@@ -107,19 +109,6 @@
                             </td>
                             <td class="lastOperation">
                                 <capTags:regulatorThreePhaseTapIndicator zone="${zone}" type="VOLTAGE_REGULATOR" phaseMap="${phaseMap}"/>
-                            </td>
-                            <td>
-                                <c:choose>
-                                    <c:when  test="${hasEditingRole}">
-                                        <cti:button nameKey="edit" icon="icon-pencil" renderMode="image" onclick="javascript:showZoneEditorWizard('${zoneEditorUrl}');"/>
-                                        <cti:button id="delete_${zone.zoneId}" nameKey="remove" renderMode="image" icon="icon-cross" href="${zoneDeleteUrl}"/>
-                                        <d:confirm on="#delete_${zone.zoneId}" nameKey="deleteConfirmation" argument="${zone.name}"/>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <cti:button nameKey="disabledEdit" renderMode="image" disabled="true" icon="icon-pencil"/>
-                                        <cti:button nameKey="disabledRemove" renderMode="image" disabled="true" icon="icon-cross"/>
-                                    </c:otherwise>
-                                </c:choose>
                             </td>
                         </tr>
     				</cti:navigableHierarchy>
@@ -198,16 +187,9 @@
                         </tr>
                     </c:forEach>
 				</table>
-                <c:if test="${hasEditingRole}">
 	                <div class="action-area">
-                        <a href="javascript:void(0);" class="f-show-strategy-details">Strategy Details</a>
-	                    <cti:url var="editorUrl" value="/editor/cbcBase.jsf">
-	                        <cti:param name="type" value="2"/>
-	                        <cti:param name="itemid" value="${subBusId}"/>
-	                    </cti:url>
-	                    <cti:button nameKey="edit" icon="icon-pencil" href="${editorUrl}"/>
-	                </div>
-                </c:if>
+                    <a href="javascript:void(0);" class="f-show-strategy-details">Strategy Details</a>
+                </div>
 			</tags:boxContainer2>
 			
 			<cti:msg2 key=".strategyDetails.title" arguments="${strategyName}" argumentSeparator=":" var="strategyTitle"/>
@@ -233,16 +215,16 @@
                         </c:forEach>
                     </tbody>
                 </table>
-                <c:if test="${hasEditingRole}">
-                    <div class="action-area">
+                <div class="actionArea">
+                    <cti:button nameKey="close" onclick="jQuery('#strategyDetails').dialog('close');"/>
+                    <c:if test="${hasEditingRole}">
                         <cti:url var="editorUrl" value="/editor/cbcBase.jsf">
                             <cti:param name="type" value="5"/>
                             <cti:param name="itemid" value="${strategyId}"/>
                         </cti:url>
-                        <cti:button nameKey="close" onclick="jQuery('#strategyDetails').dialog('close');"/>
                         <cti:button nameKey="edit" icon="icon-pencil" href="${editorUrl}"/>
-                    </div>
-                </c:if>
+                    </c:if>
+                </div>
             </tags:simplePopup>
         </div>
         

@@ -1,10 +1,10 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="capTags" tagdir="/WEB-INF/tags/capcontrol"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="flot" tagdir="/WEB-INF/tags/flotChart" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <cti:standardPage module="capcontrol" page="ivvc.zoneDetail">
@@ -112,10 +112,19 @@
         });
     </script>
 
+
+<div class="f-page-additional-actions dn">
+    <cti:url var="zoneVoltageDeltasUrl" value="/capcontrol/ivvc/zone/voltageDeltas">
+       <cti:param name="zoneId" value="${zoneId}"/>
+    </cti:url>
+
+    <cm:dropdownOption key=".otherActions.voltageDeltas" href="${zoneVoltageDeltasUrl}" icon="icon-control-equalizer" />
+</div>
+
     <cti:url var="zoneEditorUrl" value="/capcontrol/ivvc/wizard/zoneEditor">
         <cti:param name="zoneId" value="${zoneId}"/>
     </cti:url>
-    
+
     <div class="column-12-12">
         <div class="column one">
             <tags:boxContainer2 nameKey="details" hideEnabled="true" showInitially="true">
@@ -125,36 +134,30 @@
                         <th></th>
                         <th><i:inline key=".details.table.name"/></th>
                         <th><i:inline key=".details.table.type"/></th>
-                        <th><i:inline key=".details.table.actions"/></th>
                     </tr>
                     </thead>
                     <tfoot></tfoot>
                     <tbody>
                     <tr>
-                        <td><span class="strong-label-small"><i:inline key=".details.table.zone"/></span></td>
+                        <td><cti:icon icon="icon-blank"/><span class="strong-label-small"><i:inline key=".details.table.zone"/></span></td>
                         <td>
-                            <spring:escapeBody htmlEscape="true">${zoneName}</spring:escapeBody>
+                            <c:if test="${hasEditingRole}">
+                                <a href="javascript:showZoneWizard('${zoneEditorUrl}');">
+                            </c:if>
+                                ${fn:escapeXml(zoneName)}
+                            <c:if test="${hasEditingRole}">
+                                </a>
+                            </c:if>
                         </td>
                         <td>
-                            <spring:escapeBody htmlEscape="true">
                                 <i:inline key="yukon.web.modules.capcontrol.ivvc.zone.${zoneDto.zoneType}"/>
-                            </spring:escapeBody>
-                        </td>
-                        <td>
-                            <c:choose>
-                                <c:when test="${hasEditingRole}">
-                                    <cti:button nameKey="edit" icon="icon-pencil" renderMode="image" onclick="javascript:showZoneWizard('${zoneEditorUrl}');"/> 
-                                </c:when>
-								<c:otherwise>
-									<cti:button nameKey="disabledEdit" renderMode="image" disabled="true" icon="icon-pencil"/>
-								</c:otherwise>
-							</c:choose>
                         </td>
                     </tr>
                     <c:forEach items="${zoneDto.regulators}" var="regulator">
                         <c:set value="${regulator.key}" var="phaseKey"/>
                         <tr>
                             <td>
+                                <capTags:regulatorModeIndicator paoId="${regulatorIdMap[phaseKey]}" type="VOLTAGE_REGULATOR"/>
                                 <span class="strong-label-small">
                                     <i:inline key=".details.table.regulator"/>
                                     <c:if test="${zoneDto.zoneType != gangOperated}"> - 
@@ -163,27 +166,21 @@
                                 </span>
                             </td>
                             <td>
-                                <capTags:regulatorModeIndicator paoId="${regulatorIdMap[phaseKey]}" type="VOLTAGE_REGULATOR"/>
-                                <spring:escapeBody htmlEscape="true">${regulatorNameMap[phaseKey]}</spring:escapeBody>
+                                <cti:url var="editorUrl" value="/editor/cbcBase.jsf">
+                                   <cti:param name="type" value="2"/>
+                                   <cti:param name="itemid" value="${regulatorIdMap[phaseKey]}"/>
+                                </cti:url>
+
+                                <c:if test="${hasEditingRole}">
+                                    <a href="${editorUrl}">
+                                </c:if>
+                                ${fn:escapeXml(regulatorNameMap[phaseKey])}
+                                <c:if test="${hasEditingRole}">
+                                    </a>
+                                </c:if>
                             </td>
                             <td>
-                                <spring:escapeBody htmlEscape="true">
-                                    <i:inline key="yukon.web.modules.capcontrol.ivvc.regulator.${zoneDto.zoneType}"/>
-                                </spring:escapeBody>
-                            </td>
-                            <td>
-                                <c:choose>
-                                        <c:when test="${hasEditingRole}">
-                                       <cti:url var="editorUrl" value="/editor/cbcBase.jsf">
-                                           <cti:param name="type" value="2"/>
-                                           <cti:param name="itemid" value="${regulatorIdMap[phaseKey]}"/>
-                                       </cti:url>
-                                        <cti:button nameKey="edit" icon="icon-pencil" renderMode="image" href="${editorUrl}"/>
-                                   </c:when>
-                                    <c:otherwise>
-                                        <cti:button nameKey="disabledEdit" renderMode="image" disabled="true" icon="icon-pencil"/>
-                                    </c:otherwise>
-                                </c:choose>
+                                <i:inline key="yukon.web.modules.capcontrol.ivvc.regulator.${zoneDto.zoneType}"/>
                             </td>
                         </tr>
                     </c:forEach>
@@ -240,38 +237,6 @@
                     </tr>
                     </tbody>
                 </table>
-            </tags:boxContainer2>
-            
-            <tags:boxContainer2 nameKey="ivvcEvents" hideEnabled="true" showInitially="true">
-                <input type="hidden" value="${mostRecentDateTime}" id="mostRecentDateTime">
-                <c:choose>
-                    <c:when test="${empty events}">
-                       <span class="empty-list"> <i:inline key=".ivvcEvents.none"/> </span>
-                    </c:when>
-                    <c:otherwise>
-                        <div class="historyContainer">
-                            <table id="recentEventsTable" class="compact-results-table">
-                                <thead>
-                                <tr id="recentEventsHeaderRow">
-                                    <th><i:inline key=".ivvcEvents.deviceName"/></th>
-                                    <th><i:inline key=".ivvcEvents.description"/></th>
-                                    <th><i:inline key=".attributes.timestamp"/></th>
-                                </tr>
-                                </thead>
-                                <tfoot></tfoot>
-                                <tbody>
-                               <c:forEach var="ccEvent" items="${events}">
-                                    <tr>
-                                        <td><spring:escapeBody htmlEscape="true">${ccEvent.deviceName}</spring:escapeBody></td>
-                                        <td><spring:escapeBody htmlEscape="true">${ccEvent.text}</spring:escapeBody></td>
-                                        <td class="last"><cti:formatDate value="${ccEvent.dateTime}" type="BOTH"/></td>
-                                    </tr>
-                               </c:forEach>
-                               </tbody>
-                            </table>
-                        </div>
-                    </c:otherwise>
-                </c:choose>
             </tags:boxContainer2>
             <c:choose>
                 <c:when test="${zoneDto.zoneType == threePhase}">
@@ -431,12 +396,7 @@
                     </tags:boxContainer2>
                 </c:otherwise>
             </c:choose>
-            <tags:boxContainer2 nameKey="otherActions" hideEnabled="true" showInitially="true">
-                <cti:url var="zoneVoltageDeltasUrl" value="/capcontrol/ivvc/zone/voltageDeltas">
-                   <cti:param name="zoneId" value="${zoneId}"/>
-               </cti:url>
-                <a href="${zoneVoltageDeltasUrl}"><i:inline key=".otherActions.voltageDeltas"/></a>
-            </tags:boxContainer2>
+
         </div>
 
         <div class="column two nogutter">
@@ -464,68 +424,36 @@
                     </div>
                 </cti:tabbedContentSelectorContent>
             </cti:tabbedContentSelector>
-
-            <tags:boxContainer2 nameKey="capBanks" hideEnabled="true" showInitially="true">
-                <table class="compact-results-table">
-                    <thead>
-                    <tr>
-                        <th><i:inline key=".capBanks.cbcName"/></th>
-                        <th><i:inline key=".capBanks.bankName"/></th>
-                        <th><i:inline key=".capBanks.bankState"/></th>
-                        <th><i:inline key=".capBanks.bankVoltage"/></th>
-                    </tr>
-                    </thead>
-                    <tfoot></tfoot>
-                    <tbody>
-                    <c:forEach var="capBank" items="${capBankList}">
-                        <c:set var="bankId" value="${capBank.capBankDevice.ccId}"/>
-                        <tr id="tr_cap_${bankId}">
-                            <td class="wsnw">
-                                <c:if test="${capBank.notAssignedToZone}">
-                                    <span class="strongWarningMessage">*</span>
-                                </c:if>
-                                <%-- CBC Actions --%>
-                                <c:choose>
-                                    <c:when test="${capBank.controlDevice.liteID != 0}">
-                                        <a href="/editor/cbcBase.jsf?type=2&amp;itemid=${capBank.controlDevice.liteID}">
-                                           <spring:escapeBody htmlEscape="true">
-                                                ${capBank.controlDevice.paoName}
-                                            </spring:escapeBody>
-                                        </a>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <i:inline key=".capBanks.noCbc"/>
-                                    </c:otherwise>
-                                </c:choose>
-                            </td>
-                            <td>
-                                <cti:button id="bankName_${bankId}" nameKey="capBanks.bankCommands" renderMode="image" icon="icon-cog"/>
-                                <a href="/editor/cbcBase.jsf?type=2&amp;itemid=${bankId}">${fn:escapeXml(capBank.capBankDevice.ccName)}</a>
-                            </td>
-                            <td>
-                                <capTags:capBankWarningImg paoId="${bankId}" type="CAPBANK"/>
-                                <cti:capBankStateColor paoId="${bankId}" type="CAPBANK" format="CB_STATUS_COLOR" />
-                                <a id="capbankState_${bankId}" href="#null">
-                                   <cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_STATUS"/>
-                                </a>
-                            </td>
-                            <td>
-                                <c:choose>
-                                    <c:when test="${capBank.voltagePointId > 0}">
-                                        <cti:pointValue pointId="${capBank.voltagePointId}" format="VALUE"/>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <i:inline key="yukon.web.defaults.dashes"/>
-                                    </c:otherwise>
-                                </c:choose>
-                            </td>
-                        </tr>
-                    </c:forEach>
-                    </tbody>
-                </table>
-                <c:if test="${unassignedBanksExist}">
-                    <div class="strongWarningMessage"><i:inline key=".capBanks.unassignedBanks"/></div>
-                </c:if>
+            <tags:boxContainer2 nameKey="ivvcEvents" hideEnabled="true" showInitially="true">
+                <input type="hidden" value="${mostRecentDateTime}" id="mostRecentDateTime">
+                <c:choose>
+                    <c:when test="${empty events}">
+                       <span class="empty-list"> <i:inline key=".ivvcEvents.none"/> </span>
+                    </c:when>
+                    <c:otherwise>
+                        <div class="historyContainer">
+                            <table id="recentEventsTable" class="compactResultsTable">
+                                <thead>
+                                <tr id="recentEventsHeaderRow">
+                                    <th><i:inline key=".ivvcEvents.deviceName"/></th>
+                                    <th><i:inline key=".ivvcEvents.description"/></th>
+                                    <th><i:inline key=".attributes.timestamp"/></th>
+                                </tr>
+                                </thead>
+                                <tfoot></tfoot>
+                                <tbody>
+                                   <c:forEach var="ccEvent" items="${events}">
+                                        <tr>
+                                            <td>${fn:escapeXml(ccEvent.deviceName)}</td>
+                                            <td>${fn:escapeXml(ccEvent.text)}</td>
+                                            <td class="last"><cti:formatDate value="${ccEvent.dateTime}" type="BOTH"/></td>
+                                        </tr>
+                                   </c:forEach>
+                               </tbody>
+                            </table>
+                        </div>
+                    </c:otherwise>
+                </c:choose>
             </tags:boxContainer2>
         </div>
     </div>
