@@ -12,9 +12,9 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.common.constants.YukonListEntry;
@@ -86,7 +86,7 @@ public class OptOutAdminController {
         	LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
         	model.addAttribute("energyCompanyId", energyCompany.getEnergyCompanyId());
     
-        	ObjectNode optOutsJson = systemOptOuts(new ArrayList<Integer>(0), userContext);
+        	ObjectNode optOutsJson = systemOptOuts(null, userContext);
         	model.addAttribute("totalNumberOfAccounts", optOutsJson.get("totalNumberOfAccounts"));
         	model.addAttribute("currentOptOuts", optOutsJson.get("currentOptOuts"));
         	model.addAttribute("scheduledOptOuts", optOutsJson.get("scheduledOptOuts"));
@@ -142,8 +142,13 @@ public class OptOutAdminController {
 		return "operator/optout/optOutAdmin.jsp";
     }
 
-    @RequestMapping(value = "/operator/optOut/systemOptOuts", method = RequestMethod.POST)
-    public @ResponseBody ObjectNode systemOptOuts(@RequestBody List<Integer> assignedProgramIds, YukonUserContext userContext) {
+    @RequestMapping(value = "/operator/optOut/systemOptOuts", method = RequestMethod.GET)
+    public @ResponseBody ObjectNode systemOptOuts(@RequestParam(required=false) List<Integer> assignedProgramIds,
+                YukonUserContext userContext) {
+        if (assignedProgramIds== null) {
+            assignedProgramIds = new ArrayList<>(0);
+        }
+
         YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
         ObjectNode json = JsonNodeFactory.instance.objectNode();
 

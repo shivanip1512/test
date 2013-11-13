@@ -29,20 +29,17 @@
         function systemOptOutInfoRequest() {
             var assignedProgramIds = jQuery('#systemProgramPaoIds').val();
 
-            var programIdArrayJson;
-            if (assignedProgramIds.length == 0) {
-                // Otherwise str.split(',') returns [""], we really want an empty array
-                programIdArrayJson = "[]";
-            } else {
-                programIdArrayJson = JSON.stringify(assignedProgramIds.split(','));
+            var programIdArray = [];
+            // Otherwise str.split(',') returns [""], we really want an empty array
+            if (assignedProgramIds.length > 0) {
+                programIdArray = assignedProgramIds.split(',');
             }
 
             jQuery.ajax({
-                contentType: 'application/json',
+                traditional: true, // doesn't append [] to parameter name (makes spring binding happy)
                 dataType: "json",
                 url: "/stars/operator/optOut/systemOptOuts",
-                data: programIdArrayJson,
-                type: 'post'
+                data: {'assignedProgramIds' : programIdArray},
             }).done(function(json, status, xhrobj) {
                 jQuery('.totalAccounts .value').html(json.totalNumberOfAccounts);
                 jQuery('.todaysOptOuts .value').html(json.currentOptOuts);
