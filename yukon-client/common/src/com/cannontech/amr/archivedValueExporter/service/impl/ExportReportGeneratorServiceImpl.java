@@ -244,7 +244,11 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
             YukonUserContext userContext) {
 
         for (YukonPao pao : paos) {
-            String dataRow = getDataRow(format, pao, paoDataByPao.get(pao), userContext, attributeData);
+            PaoData data = null;
+            if(paoDataByPao != null){
+                data = paoDataByPao.get(pao);
+            }
+            String dataRow = getDataRow(format, pao, data, userContext, attributeData);
             if (!dataRow.equals(SKIP_RECORD)) {
                 reportRows.add(dataRow);
             }
@@ -261,7 +265,11 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
         for (YukonPao pao : paos) {
             List<PointValueQualityHolder> pointData = attributeData.get(pao.getPaoIdentifier());
             for (PointValueQualityHolder pointValueQualityHolder : pointData) {
-                String reportRow = generateReportRow(format, pao, attribute, paoDataByPao.get(pao),
+                PaoData data = null;
+                if(paoDataByPao != null){
+                    data = paoDataByPao.get(pao);
+                }
+                String reportRow = generateReportRow(format, pao, attribute, data,
                     pointValueQualityHolder, userContext);
                 if (!reportRow.equals(SKIP_RECORD)) {
                     reportRows.add(reportRow);
