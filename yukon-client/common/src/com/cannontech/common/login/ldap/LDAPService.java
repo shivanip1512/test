@@ -30,13 +30,15 @@ public class LDAPService {
         env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
         env.put(Context.PROVIDER_URL, url);
         LdapContext ctx = new InitialLdapContext(env, null);
-        StartTlsResponse tls =
-            (StartTlsResponse) ctx.extendedOperation(new StartTlsRequest());
+        StartTlsResponse tls = (StartTlsResponse) ctx.extendedOperation(new StartTlsRequest());
         tls.setHostnameVerifier(new CustomsiedhostnameVerifier());
         tls.negotiate(customisedSSLSocketFactory);
         ctx.addToEnvironment(Context.SECURITY_AUTHENTICATION, "simple");
         ctx.addToEnvironment(Context.SECURITY_PRINCIPAL, user);
         ctx.addToEnvironment(Context.SECURITY_CREDENTIALS, password);
+
+        // This attempts to get attributes using the user/pass above and throws NamingException
+        ctx.getAttributes("", null);
         ctx.close();
     }
 
