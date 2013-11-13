@@ -10,135 +10,135 @@
     <script type="text/javascript">
     
         jQuery(function() {
-	    	toggleReadFrequencyOptions();
-		});
-	
-		function toggleReadFrequencyOptions() {
-		    if (${outageMonitorId} == 0) {
-    			if (jQuery('#scheduleGroupCommand').is(':checked')) {
-    				jQuery('#scheduleNameTr').show();
-    				jQuery('#readFrequencyTr').show();
-    			} else {
-    			    jQuery('#scheduleNameTr').hide();
-    			    jQuery('#readFrequencyTr').hide();
-    			}
-		    }
-		}
+            toggleReadFrequencyOptions();
+        });
+    
+        function toggleReadFrequencyOptions() {
+            if (${outageMonitorId} == 0) {
+                if (jQuery('#scheduleGroupCommand').is(':checked')) {
+                    jQuery('#scheduleNameTr').show();
+                    jQuery('#readFrequencyTr').show();
+                } else {
+                    jQuery('#scheduleNameTr').hide();
+                    jQuery('#readFrequencyTr').hide();
+                }
+            }
+        }
 
-		function deleteOutageMonitor() {
-		    jQuery("button[data-disable-group=actionButtons]").each( function(){
-		        this.disabled = true;
-		    });
-		    jQuery('#configDeleteForm').submit();
-		}
+        function deleteOutageMonitor() {
+            jQuery("button[data-disable-group=actionButtons]").each( function(){
+                this.disabled = true;
+            });
+            jQuery('#configDeleteForm').submit();
+        }
 
-		function rewriteOutageGroupName(textEl) {
-			jQuery('#outageGroupNameDiv').innerHTML = '${outageGroupBase}' + textEl.value;
-		}
-		
-	</script>
-	
-	<c:if test="${not empty editError}">
-    	<div class="error">${editError}</div>
+        function rewriteOutageGroupName(textEl) {
+            jQuery('#outageGroupNameDiv').innerHTML = '${outageGroupBase}' + textEl.value;
+        }
+        
+    </script>
+    
+    <c:if test="${not empty editError}">
+        <div class="error">${editError}</div>
     </c:if>
     
     <c:if test="${saveOk}">
-    	<div class="fwb"><i:inline key=".saveOk"/></div>
+        <div class="fwb"><i:inline key=".saveOk"/></div>
     </c:if>
 
-	<%-- MISC FORMS --%>
-	<form id="configDeleteForm" action="/amr/outageProcessing/monitorEditor/delete" method="post">
-		<input type="hidden" name="deleteOutageMonitorId" value="${outageMonitorId}">
-	</form>
-	
-	<form id="toggleEnabledForm" action="/amr/outageProcessing/monitorEditor/toggleEnabled" method="post">
-		<input type="hidden" name="outageMonitorId" value="${outageMonitorId}">
-	</form>
-		
-		<%-- UPDATE FORM --%>
+    <%-- MISC FORMS --%>
+    <form id="configDeleteForm" action="/amr/outageProcessing/monitorEditor/delete" method="post">
+        <input type="hidden" name="deleteOutageMonitorId" value="${outageMonitorId}">
+    </form>
+    
+    <form id="toggleEnabledForm" action="/amr/outageProcessing/monitorEditor/toggleEnabled" method="post">
+        <input type="hidden" name="outageMonitorId" value="${outageMonitorId}">
+    </form>
+        
+        <%-- UPDATE FORM --%>
     <form id="updateForm" action="/amr/outageProcessing/monitorEditor/update" method="post">
     
-    	<input type="hidden" name="outageMonitorId" value="${outageMonitorId}">
-    	
-    	<cti:msg2 var="setupSectiontext" key=".section.setup" />
+        <input type="hidden" name="outageMonitorId" value="${outageMonitorId}">
+        
+        <cti:msg2 var="setupSectiontext" key=".section.setup" />
         <cti:msg2 var="editSetupSectionText" key=".section.editSetup" />
         <c:set var="setupSectionTitle" value="${setupSectiontext}"/>
-    	<c:if test="${outageMonitorId > 0}">
-    		<c:set var="setupSectionTitle" value="${editSetupSectionText}"/>
-    	</c:if>
-    	
-    	<tags:sectionContainer title="${setupSectionTitle}">
-    	
-    		<tags:nameValueContainer2 style="border-collapse:separate;border-spacing:5px;">
-    		
-    			<%-- name --%>
-    			<tags:nameValue2 nameKey=".label.name">
-    				<input type="text" name="name" size="50" value="${name}" onkeyup="rewriteOutageGroupName(this);" onchange="rewriteOutageGroupName(this);">
-    			</tags:nameValue2>
-    			
-    			<%-- device group --%>
-    			<tags:nameValue2 nameKey=".label.deviceGroup">
-    				
-    				<cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="groupDataJson" />
-    				<tags:deviceGroupNameSelector fieldName="deviceGroupName" 
-    										  	  fieldValue="${deviceGroupName}" 
-    										      dataJson="${groupDataJson}"
-    										      linkGroupName="true"/>
+        <c:if test="${outageMonitorId > 0}">
+            <c:set var="setupSectionTitle" value="${editSetupSectionText}"/>
+        </c:if>
+        
+        <tags:sectionContainer title="${setupSectionTitle}">
+        
+            <tags:nameValueContainer2 style="border-collapse:separate;border-spacing:5px;">
+            
+                <%-- name --%>
+                <tags:nameValue2 nameKey=".label.name">
+                    <input type="text" name="name" size="50" value="${name}" onkeyup="rewriteOutageGroupName(this);" onchange="rewriteOutageGroupName(this);">
+                </tags:nameValue2>
+                
+                <%-- device group --%>
+                <tags:nameValue2 nameKey=".label.deviceGroup">
+                    
+                    <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="groupDataJson" />
+                    <tags:deviceGroupNameSelector fieldName="deviceGroupName" 
+                                                    fieldValue="${deviceGroupName}" 
+                                                  dataJson="${groupDataJson}"
+                                                  linkGroupName="true"/>
                                                         
                     <tags:helpInfoPopup title="${deviceGroupText}">
-                		<cti:msg2 key=".popupInfo.deviceGroup"/>
-    				</tags:helpInfoPopup>
-    				
-    			</tags:nameValue2>
-    		
-    			<%-- outages group --%>
-    			<tags:nameValue2 nameKey=".label.outagesGroup">
-    				<div id="outageGroupNameDiv">${outageGroupBase}${name}</div>			
-    			</tags:nameValue2>
-    		
-    			<%-- number of outages --%>
-    			<tags:nameValue2 nameKey=".label.numberOfOutages">
-    				
-    				<input type="text" name="numberOfOutages" maxlength="3" size="3" style="text-align:right;" value="${numberOfOutages}"> 
-    				<i:inline key=".label.numberOfOutagesOutages"/>
-    				
-    				<tags:helpInfoPopup title="${numberOfOutagesText}">
-                		<cti:msg2 key=".popupInfo.numberOfOutages"/>
-    				</tags:helpInfoPopup>
-    				
-    			</tags:nameValue2>
-    			
-    			<%-- time period --%>
+                        <cti:msg2 key=".popupInfo.deviceGroup"/>
+                    </tags:helpInfoPopup>
+                    
+                </tags:nameValue2>
+            
+                <%-- outages group --%>
+                <tags:nameValue2 nameKey=".label.outagesGroup">
+                    <div id="outageGroupNameDiv">${outageGroupBase}${name}</div>            
+                </tags:nameValue2>
+            
+                <%-- number of outages --%>
+                <tags:nameValue2 nameKey=".label.numberOfOutages">
+                    
+                    <input type="text" name="numberOfOutages" maxlength="3" size="3" style="text-align:right;" value="${numberOfOutages}"> 
+                    <i:inline key=".label.numberOfOutagesOutages"/>
+                    
+                    <tags:helpInfoPopup title="${numberOfOutagesText}">
+                        <cti:msg2 key=".popupInfo.numberOfOutages"/>
+                    </tags:helpInfoPopup>
+                    
+                </tags:nameValue2>
+                
+                <%-- time period --%>
                 <tags:nameValue2 nameKey=".label.timePeriod">
-    					
-    				<input type="text" name="timePeriod" maxlength="3" size="3" style="text-align:right;" value="${timePeriod}">
+                        
+                    <input type="text" name="timePeriod" maxlength="3" size="3" style="text-align:right;" value="${timePeriod}">
                     <i:inline key=".label.timePeriodDays"/>
-    				
-    				<tags:helpInfoPopup title="${timePeriodText}">
-                		<cti:msg2 key=".popupInfo.timePeriod"/>
-    				</tags:helpInfoPopup>
-    				
-    			</tags:nameValue2>
-    			
-    			<%-- enable/disable monitoring --%>
-    			<c:if test="${outageMonitorId > 0}">
+                    
+                    <tags:helpInfoPopup title="${timePeriodText}">
+                        <cti:msg2 key=".popupInfo.timePeriod"/>
+                    </tags:helpInfoPopup>
+                    
+                </tags:nameValue2>
+                
+                <%-- enable/disable monitoring --%>
+                <c:if test="${outageMonitorId > 0}">
                     <tags:nameValue2 nameKey=".label.outageMonitoring">
-    					${outageMonitor.evaluatorStatus.description}
-    				</tags:nameValue2>
-    			</c:if>
-    			
-    		</tags:nameValueContainer2>
-    		
-    	</tags:sectionContainer>
-    	
-    	<%-- SCHEDULE --%>
-    	<cti:checkRolesAndProperties value="MANAGE_SCHEDULES">
-    	<c:if test="${outageMonitorId == 0}">
-    	<cti:msg2 var="scheduleSectionText" key=".section.schedule" />
+                        ${outageMonitor.evaluatorStatus.description}
+                    </tags:nameValue2>
+                </c:if>
+                
+            </tags:nameValueContainer2>
+            
+        </tags:sectionContainer>
+        
+        <%-- SCHEDULE --%>
+        <cti:checkRolesAndProperties value="MANAGE_SCHEDULES">
+        <c:if test="${outageMonitorId == 0}">
+        <cti:msg2 var="scheduleSectionText" key=".section.schedule" />
         <tags:sectionContainer title="${scheduleSectionText}">
-    	
-    		<%-- note --%>
-    		<div class="stacked">
+        
+            <%-- note --%>
+            <div class="stacked">
                 <span class="strong-label-small">
                     <i:inline key=".popupInfo.scheduleReadNoteLabelText"/>
                 </span>
@@ -147,57 +147,57 @@
                 </span>
             </div>
     
-    	
-    		<tags:nameValueContainer style="border-collapse:separate;border-spacing:5px;">
-    			
-    			<%-- schedule read --%>
+        
+            <tags:nameValueContainer style="border-collapse:separate;border-spacing:5px;">
                 
-    			<input type="checkbox" id="scheduleGroupCommand" name="scheduleGroupCommand" onclick="toggleReadFrequencyOptions();" <c:if test="${scheduleGroupCommand}">checked</c:if>> 
-    			<i:inline key=".label.scheduleReadDescription"/>
-    			
-    			<cti:msg2 var="scheduleReadText" key=".label.scheduleRead"/>
+                <%-- schedule read --%>
+                
+                <input type="checkbox" id="scheduleGroupCommand" name="scheduleGroupCommand" onclick="toggleReadFrequencyOptions();" <c:if test="${scheduleGroupCommand}">checked</c:if>> 
+                <i:inline key=".label.scheduleReadDescription"/>
+                
+                <cti:msg2 var="scheduleReadText" key=".label.scheduleRead"/>
                 <tags:helpInfoPopup title="${scheduleReadText}">
-            		<cti:msg2 key=".popupInfo.scheduleRead"/>
-    			</tags:helpInfoPopup>
-    				
-    			<%-- schedule name --%>
-    			<cti:msg2 var="scheduleNameText" key=".label.scheduleName"/>
+                    <cti:msg2 key=".popupInfo.scheduleRead"/>
+                </tags:helpInfoPopup>
+                    
+                <%-- schedule name --%>
+                <cti:msg2 var="scheduleNameText" key=".label.scheduleName"/>
                 <tags:nameValue name="${scheduleNameText}" id="scheduleNameTr" nameColumnWidth="250px">
-    	 			<input type="text" name="scheduleName" value="${scheduleName}">
-    	 		</tags:nameValue>
-    	 		
-    			<%-- time / frequency --%>
-    			<cti:msg2 var="readFrequencyText" key=".label.readFrequency"/>
+                     <input type="text" name="scheduleName" value="${scheduleName}">
+                 </tags:nameValue>
+                 
+                <%-- time / frequency --%>
+                <cti:msg2 var="readFrequencyText" key=".label.readFrequency"/>
                 <tags:nameValue name="${readFrequencyText}" id="readFrequencyTr">
-    				<tags:cronExpressionData id="${cronExpressionTagId}" state="${cronExpressionTagState}"/>
-    			</tags:nameValue>
-    			
-    		</tags:nameValueContainer>
-    		
-    	</tags:sectionContainer>
-    	</c:if>
-    	</cti:checkRolesAndProperties>
-    	
-    	<%-- create / update / delete --%>
-    	<c:choose>
-    		<c:when test="${outageMonitorId > 0}">
+                    <tags:cronExpressionData id="${cronExpressionTagId}" state="${cronExpressionTagState}"/>
+                </tags:nameValue>
+                
+            </tags:nameValueContainer>
+            
+        </tags:sectionContainer>
+        </c:if>
+        </cti:checkRolesAndProperties>
+        
+        <%-- create / update / delete --%>
+        <c:choose>
+            <c:when test="${outageMonitorId > 0}">
                 <cti:button nameKey="update" busy="true" type="submit" classes="primary action" data-disable-group="actionButtons" />
                 <c:set var="toggleText" value="enable"/>
                 <c:if test="${outageMonitor.evaluatorStatus eq 'ENABLED'}">
                     <c:set var="toggleText" value="disable"/>
-    			</c:if>
+                </c:if>
                 <cti:button nameKey="${toggleText}" onclick="jQuery('#toggleEnabledForm').submit();" busy="true" data-disable-group="actionButtons"/>
                 <cti:button id="deleteButton" nameKey="delete" type="button" onclick="deleteOutageMonitor();" busy="true" data-disable-group="actionButtons"/>
-    		    <d:confirm on="#deleteButton" nameKey="confirmDelete"/>
+                <d:confirm on="#deleteButton" nameKey="confirmDelete"/>
                 <cti:url var="backUrl" value="/amr/outageProcessing/process/process">
                     <cti:param name="outageMonitorId" value="${outageMonitorId}" />
                 </cti:url>
             </c:when>
-    		<c:otherwise>
+            <c:otherwise>
                 <cti:button nameKey="save" type="submit" busy="true" data-disable-group="actionButtons" />
                 <cti:url var="backUrl" value="/meter/start"/>
-    		</c:otherwise>
-    	</c:choose>
+            </c:otherwise>
+        </c:choose>
         <cti:button nameKey="cancel" type="button" href="${backUrl}" busy="true" data-disable-group="actionButtons" />
     </form>
 </cti:standardPage>
