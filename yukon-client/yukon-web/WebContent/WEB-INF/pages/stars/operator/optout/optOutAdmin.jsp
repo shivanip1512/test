@@ -20,7 +20,7 @@
                 for (var index = 0; index < ids.length; index++) {
                     selectedNames.push(ids[index].displayName);
                 }
-                jQuery('#'+spanId).html(selectedNames.join(","));
+                jQuery('#'+spanId).html(selectedNames.join(','));
                 
                 systemOptOutInfoRequest();
             }
@@ -32,15 +32,15 @@
             var programIdArrayJson;
             if (assignedProgramIds.length == 0) {
                 // Otherwise str.split(',') returns [""], we really want an empty array
-                programIdArrayJson = "[]";
+                programIdArrayJson = '[]';
             } else {
                 programIdArrayJson = JSON.stringify(assignedProgramIds.split(','));
             }
 
             jQuery.ajax({
                 contentType: 'application/json',
-                dataType: "json",
-                url: "/stars/operator/optOut/systemOptOuts",
+                dataType: 'json',
+                url: '<cti:url value="/stars/operator/optOut/systemOptOuts"/>',
                 data: programIdArrayJson,
                 type: 'post'
             }).done(function(json, status, xhrobj) {
