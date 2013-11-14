@@ -62,11 +62,9 @@
         <property name="ldapService" ref="ldapService"/>
     </bean>
  
-    <bean id="ldapService" class="com.cannontech.common.login.ldap.LDAPService">
-        <property name="CustomisedSSLSocketFactory" ref="customisedSSLSocketFactory"/>
-    </bean>
+    <bean id="ldapService" class="com.cannontech.common.login.ldap.LDAPService"/>
     
-    <bean id="customisedSSLSocketFactory" class="com.cannontech.common.login.ldap.CustomisedSSLSocketFactory"/>
+    <bean id="customisedSSLSocket" class="com.cannontech.common.login.ldap.CustomisedSSLSocketFactory"/>
     <bean id="cryptoService" class="com.cannontech.core.authentication.service.impl.CryptoServiceImpl"/>
     
 </beans>

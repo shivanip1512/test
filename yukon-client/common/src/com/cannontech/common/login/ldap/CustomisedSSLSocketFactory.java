@@ -4,35 +4,31 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.security.KeyManagementException;
 import java.security.KeyStore;
-import javax.net.SocketFactory;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
+
 /**
- * This CustomisedSSLSocketFactory is used to get window-keyStore and doing simple authentication with TLS.
- *
+ * This CustomisedSSLSocketFactory is used to get window-keyStore and doing simple authentication
+ * with TLS.
+ * 
  */
 public class CustomisedSSLSocketFactory extends SSLSocketFactory {
     private SSLSocketFactory socketFactory;
 
-    public CustomisedSSLSocketFactory() {
-        try {
-            KeyStore keyStore = KeyStore.getInstance("WINDOWS-ROOT");
-            keyStore.load(null, null);
-            SSLContext ctx = SSLContext.getInstance("TLS");            
-            TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());    
-            tmf.init(keyStore);     
-            ctx.init(null, tmf.getTrustManagers(), null);
-            socketFactory = ctx.getSocketFactory();
-        } catch (Exception ex) {
-            ex.printStackTrace(System.err);
-        }
-    }
-
-   
-    public static SocketFactory getDefault() {
-        return new CustomisedSSLSocketFactory();
+    public CustomisedSSLSocketFactory() throws KeyStoreException, NoSuchAlgorithmException, CertificateException,IOException, KeyManagementException {
+        KeyStore keyStore = KeyStore.getInstance("WINDOWS-ROOT");
+        keyStore.load(null, null);
+        SSLContext ctx = SSLContext.getInstance("TLS");
+        TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+        tmf.init(keyStore);
+        ctx.init(null, tmf.getTrustManagers(), null);
+        socketFactory = ctx.getSocketFactory();
     }
 
     @Override
@@ -46,30 +42,31 @@ public class CustomisedSSLSocketFactory extends SSLSocketFactory {
     }
 
     @Override
-    public Socket createSocket(Socket socket, String string, int i, boolean bln) throws IOException {
-        return socketFactory.createSocket(socket, string, i, bln);
+    public Socket createSocket(Socket socketdetail, String host, int port, boolean autoClose) throws IOException {
+        return socketFactory.createSocket(socketdetail, host, port, autoClose);
     }
 
     @Override
-    public Socket createSocket(String string, int i) throws IOException, UnknownHostException {
-        return socketFactory.createSocket(string, i);
+    public Socket createSocket(String host, int port) throws IOException, UnknownHostException {
+        return socketFactory.createSocket(host, port);
     }
 
     @Override
-    public Socket createSocket(String string, int i, InetAddress ia, int i1) throws IOException,
+    public Socket createSocket(String host, int port, InetAddress address, int localPort) throws IOException,
             UnknownHostException {
-        return socketFactory.createSocket(string, i, ia, i1);
+        return socketFactory.createSocket(host, port, address, localPort);
     }
 
     @Override
-    public Socket createSocket(InetAddress ia, int i) throws IOException {
-        return socketFactory.createSocket(ia, i);
+    public Socket createSocket(InetAddress address, int port) throws IOException {
+        return socketFactory.createSocket(address, port);
     }
 
     @Override
-    public Socket createSocket(InetAddress ia, int i, InetAddress ia1, int i1) throws IOException {
-        return socketFactory.createSocket(ia, i, ia1, i1);
+    public Socket createSocket(InetAddress address, int port, InetAddress localAddress, int localPort) throws IOException {
+        return socketFactory.createSocket(address, port, localAddress, localPort);
     }
+
     @Override
     public Socket createSocket() throws IOException {
         return socketFactory.createSocket();
