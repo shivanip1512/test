@@ -3,6 +3,7 @@
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <cti:standardPage module="dr" page="scenarioList">
@@ -63,8 +64,7 @@ function clearFilter() {
                             <th><tags:sortLink nameKey="heading.name"
                                 baseUrl="${baseUrl}" fieldName="NAME"/></th>
                             <cti:checkRolesAndProperties value="ENABLE_ESTIMATED_LOAD">
-                                <cti:msg2 var="kwSavingsHeading" key=".heading.kwSavings"/>
-                                <th>${kwSavingsHeading}</th>
+                                <th><i:inline key=".heading.kwSavings"/></th>
                             </cti:checkRolesAndProperties>
                             <th class="action-column"></th>
                         </tr>
@@ -80,14 +80,15 @@ function clearFilter() {
                                 <td><a href="${scenarioUrl}">${fn:escapeXml(scenario.name)}</a>
                                 </td>
                                 <cti:checkRolesAndProperties value="ENABLE_ESTIMATED_LOAD">
+                                    <cti:dataUpdaterCallback
+                                        function="Yukon.EstimatedLoad.displaySummaryValue"
+                                        identifier="ESTIMATED_LOAD/${scenarioId}/SCENARIO"/>
                                     <td data-pao="${scenarioId}">
                                         <cti:icon icon="icon-error" classes="dn"/>
-                                        <cti:dataUpdaterValue
-                                             identifier="${scenarioId}/SCENARIO_KW_SAVINGS"
-                                             type="ESTIMATED_LOAD" />
-<%--                                         <cti:dataUpdaterCallback function="Yukon.EstimatedLoad.createToolTip" --%>
-<%--                                             identifier="ESTIMATED_LOAD/${scenarioId}/SCENARIO_KW_SAVINGS"  --%>
-<%--                                             initialize="false"/> --%>
+                                        <cti:icon icon="icon-spinner"/>
+                                        <span class="f-kw-savings">
+                                            <i:inline key="yukon.web.modules.dr.estimatedLoad.calculating"/>
+                                        </span>
                                     </td>
                                 </cti:checkRolesAndProperties>
                                 <td><dr:scenarioListActions pao="${scenario}" /></td>

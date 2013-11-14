@@ -38,26 +38,34 @@
                         </tags:nameValue2>
                     </cti:checkRolesAndProperties>
                     <cti:checkRolesAndProperties value="ENABLE_ESTIMATED_LOAD">
+                        <cti:dataUpdaterCallback
+                            function="Yukon.EstimatedLoad.displaySummaryValue"
+                            value="ESTIMATED_LOAD/${controlAreaId}/CONTROL_AREA"/>
                         <tags:nameValue2 nameKey="yukon.web.modules.dr.estimatedLoad.info.connectedLoad">
                             <div data-pao="${controlAreaId}">
                                 <cti:icon icon="icon-error" classes="dn"/>
-                                <cti:dataUpdaterValue identifier="${controlAreaId}/CONTROL_AREA_CONNECTED_LOAD" type="ESTIMATED_LOAD"/>
+                                <cti:icon icon="icon-spinner" classes="f-spinner"/>
+                                <span class="f-connected-load">
+                                    <i:inline key="yukon.web.modules.dr.estimatedLoad.calculating"/>
+                                </span>
                             </div>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey="yukon.web.modules.dr.estimatedLoad.info.diversifiedLoad">
                             <div data-pao="${controlAreaId}">
                                 <cti:icon icon="icon-error" classes="dn"/>
-                                <cti:dataUpdaterValue identifier="${controlAreaId}/CONTROL_AREA_DIVERSIFIED_LOAD" type="ESTIMATED_LOAD"/>
+                                <cti:icon icon="icon-spinner" classes="f-spinner"/>
+                                <span class="f-diversified-load">
+                                    <i:inline key="yukon.web.modules.dr.estimatedLoad.calculating"/>
+                                </span>
                             </div>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey="yukon.web.modules.dr.estimatedLoad.info.kwSavings">
                             <div data-pao="${controlAreaId}">
                                 <cti:icon icon="icon-error" classes="dn"/>
-                                <cti:dataUpdaterValue identifier="${controlAreaId}/CONTROL_AREA_KW_SAVINGS" type="ESTIMATED_LOAD"/>
-<%--                                 <cti:dataUpdaterCallback --%>
-<%--                                     function="Yukon.EstimatedLoad.createToolTip" --%>
-<%--                                     value="DR_CONTROLAREA/${controlAreaId}/ESTIMATED_LOAD_ERROR" --%>
-<%--                                     initialize="true" /> --%>
+                                <cti:icon icon="icon-spinner" classes="f-spinner"/>
+                                <span class="f-kw-savings">
+                                    <i:inline key="yukon.web.modules.dr.estimatedLoad.calculating"/>
+                                </span>
                             </div>
                         </tags:nameValue2>
                     </cti:checkRolesAndProperties>

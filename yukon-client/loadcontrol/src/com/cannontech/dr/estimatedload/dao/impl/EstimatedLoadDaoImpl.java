@@ -9,18 +9,17 @@ import org.springframework.dao.DataAccessException;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.RowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
+import com.cannontech.dr.estimatedload.ApplianceCategoryInfoNotFoundException;
+import com.cannontech.dr.estimatedload.ApplianceCategoryNotFoundException;
 import com.cannontech.dr.estimatedload.EstimatedLoadApplianceCategoryInfo;
-import com.cannontech.dr.estimatedload.EstimatedLoadCalculationException;
-import com.cannontech.dr.estimatedload.EstimatedLoadCalculationException.Type;
+import com.cannontech.dr.estimatedload.EstimatedLoadException;
+import com.cannontech.dr.estimatedload.GearNotFoundException;
 import com.cannontech.dr.estimatedload.dao.EstimatedLoadDao;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
-import com.cannontech.loadcontrol.data.LMProgramBase;
-import com.cannontech.message.util.ConnectionException;
 
 public class EstimatedLoadDaoImpl implements EstimatedLoadDao{
     private final Logger log = YukonLogManager.getLogger(EstimatedLoadDaoImpl.class);
@@ -29,7 +28,7 @@ public class EstimatedLoadDaoImpl implements EstimatedLoadDao{
 
     @Override
     public EstimatedLoadApplianceCategoryInfo getAcIdAndAverageKwLoadForLmProgram(int lmProgramId)
-            throws EstimatedLoadCalculationException {
+            throws EstimatedLoadException {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT AC.ApplianceCategoryId, AC.AverageKwLoad");
         sql.append("FROM LmProgram LMP");
@@ -45,23 +44,22 @@ public class EstimatedLoadDaoImpl implements EstimatedLoadDao{
             }
         };
         
-        try {
-            return yukonJdbcTemplate.queryForLimitedResults(sql, rowMapper, 1).get(0);
-        } catch (IndexOutOfBoundsException | DataAccessException | NullPointerException e) {
-            // No AverageKwLoad value was found which means that it was either NULL in the table, or the LmProgram 
-            // requested was never assigned to an appliance category that the AverageKwLoad value can be grabbed from.
-            log.debug("No appliance category id or average kw load value was found when attempting to look up " +
-                    "this info for program id: " + lmProgramId);
-            LMProgramBase programBase = getLmProgramBase(lmProgramId);
-            throw new EstimatedLoadCalculationException(Type.APPLIANCE_CATEGORY_INFO_NOT_FOUND,
-                    programBase.getYukonName());
+        List<EstimatedLoadApplianceCategoryInfo> results = yukonJdbcTemplate.queryForLimitedResults(sql, rowMapper, 1);
+        if (results.size() != 1) {
+            // The program is not currently assigned to an appliance category.
+            log.error("No appliance category could be found for the program with id: " + lmProgramId);
+            throw new ApplianceCategoryNotFoundException();
+        } else if (results.get(0).getAvgKwLoad() == null) {
+            // No AverageKwLoad value was found for the appliance category. 
+            log.error("No average kw load value was found when attempting to look up this info for program id: "
+                    + lmProgramId);
+            throw new ApplianceCategoryInfoNotFoundException();
         }
+        return results.get(0);
     }
 
-
-
     @Override
-    public Integer getCurrentGearIdForProgram(int lmProgramId, int gearNumber) throws EstimatedLoadCalculationException {
+    public Integer getCurrentGearIdForProgram(int lmProgramId, int gearNumber) throws EstimatedLoadException {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT GearId");
         sql.append("FROM LmProgramDirectGear");
@@ -71,11 +69,11 @@ public class EstimatedLoadDaoImpl implements EstimatedLoadDao{
         try {
             return yukonJdbcTemplate.queryForInt(sql);
         } catch(DataAccessException e) {
-            LMProgramBase programBase = getLmProgramBase(lmProgramId);
-            log.debug("Gear not found for LM Program: " + programBase.getYukonName()
-                    + " with gear number: " + gearNumber);
-            throw new EstimatedLoadCalculationException(Type.GEAR_NUMBER_NOT_FOUND, programBase.getYukonName(),
-                    gearNumber);
+            if (log.isDebugEnabled()) {
+                log.debug("Gear not found for LM program id: " + lmProgramId
+                        + " with gear number: " + gearNumber);
+            }
+            throw new GearNotFoundException(lmProgramId);
         }
     }
 
@@ -98,18 +96,4 @@ public class EstimatedLoadDaoImpl implements EstimatedLoadDao{
         return yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
     }
 
-    private LMProgramBase getLmProgramBase(int lmProgramId) throws EstimatedLoadCalculationException {
-        LMProgramBase programBase;
-        try {
-            programBase = loadControlClient.getProgramSafe(lmProgramId);
-        } catch (ConnectionException e2){
-            throw new EstimatedLoadCalculationException(Type.LOAD_MANAGEMENT_SERVER_NOT_CONNECTED);
-        } catch (NotFoundException e2) {
-            throw new EstimatedLoadCalculationException(Type.LOAD_MANAGEMENT_DATA_NOT_FOUND);
-        }
-        if (programBase == null) {
-            throw new EstimatedLoadCalculationException(Type.LOAD_MANAGEMENT_DATA_NOT_FOUND);
-        }
-        return programBase;
-    }
 }

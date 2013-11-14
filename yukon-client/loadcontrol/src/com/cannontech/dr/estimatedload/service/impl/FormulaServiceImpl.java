@@ -15,15 +15,17 @@ import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.database.db.device.lm.GearControlMethod;
 import com.cannontech.dr.ThermostatRampRateValues;
-import com.cannontech.dr.estimatedload.EstimatedLoadCalculationException;
-import com.cannontech.dr.estimatedload.EstimatedLoadCalculationException.Type;
 import com.cannontech.dr.estimatedload.EstimatedLoadCalculationInfo;
+import com.cannontech.dr.estimatedload.EstimatedLoadException;
 import com.cannontech.dr.estimatedload.Formula;
 import com.cannontech.dr.estimatedload.FormulaFunction;
 import com.cannontech.dr.estimatedload.FormulaInput;
 import com.cannontech.dr.estimatedload.FormulaInput.InputType;
 import com.cannontech.dr.estimatedload.FormulaInputHolder;
 import com.cannontech.dr.estimatedload.FormulaLookupTable;
+import com.cannontech.dr.estimatedload.InputOutOfRangeException;
+import com.cannontech.dr.estimatedload.InputOutOfRangeException.Type;
+import com.cannontech.dr.estimatedload.InputValueNotFoundException;
 import com.cannontech.dr.estimatedload.service.FormulaService;
 import com.cannontech.loadcontrol.data.LMProgramDirectGear;
 import com.google.common.collect.ImmutableMap;
@@ -36,7 +38,7 @@ public class FormulaServiceImpl implements FormulaService {
     
     @Override
     public FormulaInputHolder buildFormulaInputHolder(Formula formula, EstimatedLoadCalculationInfo calcInfo)
-            throws EstimatedLoadCalculationException {
+            throws EstimatedLoadException {
         FormulaInputHolder.Builder inputHolderBuilder = new FormulaInputHolder.Builder();
         
         if (formula.getFunctions() != null) {
@@ -77,16 +79,16 @@ public class FormulaServiceImpl implements FormulaService {
      * @param formula The formula containing the function being computed.
      * @param function The function being computed.
      * @return The current Double value of the function's input.
-     * @throws EstimatedLoadCalculationException 
+     * @throws EstimatedLoadException 
      */
     private double getDoubleInputValue(Formula formula, FormulaInput<Double> input,
-            EstimatedLoadCalculationInfo calcInfo) throws EstimatedLoadCalculationException {
+            EstimatedLoadCalculationInfo calcInfo) throws EstimatedLoadException {
         if (formula.getType() == Formula.Type.APPLIANCE_CATEGORY) {
             // All appliance category inputs can be obtained by point value lookup.
             try {
                 return dynamicDataSource.getPointValue(input.getPointId()).getValue();
             } catch (DynamicDataAccessException e) {
-                throw new EstimatedLoadCalculationException(Type.INPUT_VALUE_NOT_FOUND, formula.getName());
+                throw new InputValueNotFoundException(formula.getName());
             }
         } else if (formula.getType() == Formula.Type.GEAR) {
             if (input.getInputType() == InputType.POINT) {
@@ -94,7 +96,7 @@ public class FormulaServiceImpl implements FormulaService {
                 try {
                     return dynamicDataSource.getPointValue(input.getPointId()).getValue();
                 } catch (DynamicDataAccessException e) {
-                    throw new EstimatedLoadCalculationException(Type.INPUT_VALUE_NOT_FOUND, formula.getName());
+                    throw new InputValueNotFoundException(formula.getName());
                 }
             } else {
                 // Find the control percent or ramp rate values for these gear formula inputs. 
@@ -108,7 +110,7 @@ public class FormulaServiceImpl implements FormulaService {
                         try {
                             return gearDao.getSimpleThermostatGearRampRate(calcInfo.getGearId());
                         } catch (DataAccessException e) {
-                            throw new EstimatedLoadCalculationException(Type.INPUT_VALUE_NOT_FOUND, formula.getName());
+                            throw new InputValueNotFoundException(formula.getName());
                         }
                     } else if (gear.getControlMethod() == GearControlMethod.ThermostatRamping) {
                         // Thermostat ramping gear's ramp rate is stored in two fields, valueD and valueTd.
@@ -117,28 +119,26 @@ public class FormulaServiceImpl implements FormulaService {
                                     calcInfo.getGearId());
                             return rampRateValues.getRampRate();
                         } catch (DataAccessException e) {
-                            throw new EstimatedLoadCalculationException(Type.INPUT_VALUE_NOT_FOUND, formula.getName());
+                            throw new InputValueNotFoundException(formula.getName());
                         }
                     }
                 }
             }
         }
         // Should not be able to reach this point, but if so throw input not found exception.
-        throw new EstimatedLoadCalculationException(Type.INPUT_VALUE_NOT_FOUND, formula.getName());
+        throw new InputValueNotFoundException(formula.getName());
     }
 
     @Override
     public void checkAllInputsValid(Formula formula, FormulaInputHolder formulaInputHolder)
-            throws EstimatedLoadCalculationException {
+            throws EstimatedLoadException {
         for (Integer functionId : formulaInputHolder.getFunctionInputs().keySet()) {
             Double min = formulaInputHolder.getFunctionInputs().get(functionId).getMin();
             Double max = formulaInputHolder.getFunctionInputs().get(functionId).getMax();
             Double value = formulaInputHolder.getFunctionInputValues().get(functionId);
             
             if (value < min || value > max) {
-                throw new EstimatedLoadCalculationException(
-                        EstimatedLoadCalculationException.Type.INPUT_OUT_OF_RANGE, formula.getName(), 
-                            formula.getFunctionById(functionId).getName());
+                throw new InputOutOfRangeException(formula, Type.FUNCTION, functionId);
             }
         }
         for (Integer tableId : formulaInputHolder.getTableInputs().keySet()) {
@@ -147,9 +147,7 @@ public class FormulaServiceImpl implements FormulaService {
             Double value = formulaInputHolder.getTableInputValues().get(tableId);
 
             if (value < min || value > max) {
-                throw new EstimatedLoadCalculationException(
-                        EstimatedLoadCalculationException.Type.INPUT_OUT_OF_RANGE, formula.getName(), 
-                            formula.getTableById(tableId).getName());
+                throw new InputOutOfRangeException(formula, Type.LOOKUP, tableId);
             }
         }
         for (Integer timeTableId : formulaInputHolder.getTimeTableInputs().keySet()) {
@@ -158,9 +156,7 @@ public class FormulaServiceImpl implements FormulaService {
             LocalTime value = formulaInputHolder.getTimeTableInputValues().get(timeTableId);
             
             if (value.isBefore(min) || value.isAfter(max)) {
-                throw new EstimatedLoadCalculationException(
-                        EstimatedLoadCalculationException.Type.INPUT_OUT_OF_RANGE, formula.getName(), 
-                            formula.getTimeTableById(timeTableId).getName());
+                throw new InputOutOfRangeException(formula, Type.TIME_LOOKUP, timeTableId);
             }
         }
         if(log.isDebugEnabled()) {

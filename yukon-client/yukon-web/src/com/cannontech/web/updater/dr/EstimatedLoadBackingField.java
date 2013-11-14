@@ -1,4 +1,4 @@
-package com.cannontech.dr.program.service.impl;
+package com.cannontech.web.updater.dr;
 
 import com.cannontech.user.YukonUserContext;
 
@@ -12,6 +12,6 @@ public interface EstimatedLoadBackingField {
      * @param userContext - Current userContext
      * @return Value of this field
      */
-    public Object getValue(int paoId, YukonUserContext userContext);
+    public String getValue(int paoId, YukonUserContext userContext);
 
 }

@@ -2,9 +2,9 @@ package com.cannontech.dr.estimatedload;
 
 public final class EstimatedLoadApplianceCategoryInfo {
     private final int applianceCategoryId;
-    private final double avgKwLoad;
+    private final Double avgKwLoad;
 
-    public EstimatedLoadApplianceCategoryInfo(int applianceCategoryId, double avgKwLoad) {
+    public EstimatedLoadApplianceCategoryInfo(int applianceCategoryId, Double avgKwLoad) {
         this.applianceCategoryId = applianceCategoryId;
         this.avgKwLoad = avgKwLoad;
     }
@@ -13,7 +13,7 @@ public final class EstimatedLoadApplianceCategoryInfo {
         return applianceCategoryId;
     }
 
-    public double getAvgKwLoad() {
+    public Double getAvgKwLoad() {
         return avgKwLoad;
     }
 

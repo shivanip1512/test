@@ -1,4 +1,4 @@
-package com.cannontech.dr.program.service.impl;
+package com.cannontech.web.updater.dr;
 
 import java.util.List;
 import java.util.Map;
@@ -10,10 +10,10 @@ import com.google.common.collect.ImmutableMap.Builder;
 
 public class EstimatedLoadFieldServiceImpl implements EstimatedLoadFieldService {
 
-    protected Map<String, EstimatedLoadBackingField> backingFieldMap;
+    private final Map<String, EstimatedLoadBackingField> backingFieldMap;
 
     @Autowired
-    public void setBackingFieldList(List<EstimatedLoadBackingField> backingFieldList) {
+    public EstimatedLoadFieldServiceImpl(List<EstimatedLoadBackingField> backingFieldList) {
         Builder<String, EstimatedLoadBackingField> builder = 
             new ImmutableMap.Builder<String, EstimatedLoadBackingField>();
         for(EstimatedLoadBackingField backingField : backingFieldList) {

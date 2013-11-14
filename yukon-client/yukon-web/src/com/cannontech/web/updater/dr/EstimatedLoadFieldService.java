@@ -1,4 +1,5 @@
-package com.cannontech.dr.program.service.impl;
+package com.cannontech.web.updater.dr;
+
 
 public interface EstimatedLoadFieldService {
 

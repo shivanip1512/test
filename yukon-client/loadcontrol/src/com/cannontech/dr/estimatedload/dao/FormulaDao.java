@@ -3,7 +3,7 @@ package com.cannontech.dr.estimatedload.dao;
 import java.util.List;
 
 import com.cannontech.dr.estimatedload.ApplianceCategoryAssignment;
-import com.cannontech.dr.estimatedload.EstimatedLoadCalculationException;
+import com.cannontech.dr.estimatedload.EstimatedLoadException;
 import com.cannontech.dr.estimatedload.Formula;
 import com.cannontech.dr.estimatedload.GearAssignment;
 
@@ -51,8 +51,8 @@ public interface FormulaDao {
     public ApplianceCategoryAssignment getAssignmentForApplianceCategory(int appCategoryId);
 
     /** Returns the Formula object assigned to a given appliance category, or NULL if none is assigned. 
-     * @throws EstimatedLoadCalculationException */
-    public Formula getFormulaForApplianceCategory(int appCategoryId) throws EstimatedLoadCalculationException;
+     * @throws EstimatedLoadException */
+    public Formula getFormulaForApplianceCategory(int appCategoryId) throws EstimatedLoadException;
     
     // Handling gear assignments
 
@@ -78,7 +78,7 @@ public interface FormulaDao {
     public GearAssignment getAssignmentForGear(int gearId);
 
     /** Returns the Formula object assigned to a given gear, or NULL if none is assigned. 
-     * @throws EstimatedLoadCalculationException */
-    public Formula getFormulaForGear(int gearId) throws EstimatedLoadCalculationException;
+     * @throws EstimatedLoadException */
+    public Formula getFormulaForGear(int gearId) throws EstimatedLoadException;
 
 }

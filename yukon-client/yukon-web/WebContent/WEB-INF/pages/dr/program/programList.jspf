@@ -163,8 +163,7 @@
                             </cti:checkRolesAndProperties>
 
                             <cti:checkRolesAndProperties value="ENABLE_ESTIMATED_LOAD">
-                                <cti:msg2 var="kwSavingsHeading" key="yukon.web.modules.dr.heading.kwSavings"/>
-                                <th>${kwSavingsHeading}</th>
+                                <th><i:inline key="yukon.web.modules.dr.heading.kwSavings"/></th>
                             </cti:checkRolesAndProperties>
                             <th class="action-column"></th>
                         </tr>
@@ -201,14 +200,15 @@
                                 </cti:checkRolesAndProperties>
                                 <cti:checkRolesAndProperties value="ENABLE_ESTIMATED_LOAD">
                                     <td data-pao="${programId}">
-                                        <cti:icon icon="icon-error" classes="dn f-error"/>
-                                        <cti:icon icon="icon-spinner" classes="f-spinner"/>
-                                        <span class="f-kwSavings">
+                                        <cti:icon icon="icon-error" classes="dn"/>
+                                        <cti:icon icon="icon-spinner"/>
+                                        <span class="f-kw-savings">
                                             <i:inline key="yukon.web.modules.dr.estimatedLoad.calculating"/>
                                         </span>
                                         <cti:dataUpdaterCallback
-                                            function="Yukon.EstimatedLoad.createToolTip"
-                                            value="ESTIMATED_LOAD/${programId}/PROGRAM"/>
+                                            function="Yukon.EstimatedLoad.displayProgramValue"
+                                            value="ESTIMATED_LOAD/${programId}/PROGRAM"
+                                            initialize="true"/>
                                     </td>
                                 </cti:checkRolesAndProperties>
                                 <td><dr:programListActions pao="${program}" /></td>

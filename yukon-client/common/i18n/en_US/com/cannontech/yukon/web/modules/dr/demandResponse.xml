@@ -504,17 +504,22 @@
 <entry key="yukon.web.modules.dr.estimatedLoad.applianceCategories.title">Appliance Categories</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.applianceLoad.linkText">Appliance Load</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.assignments">Assignments</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.acFormulaAssignmentNotFound">No Formula assigned to the appliance category for this program.</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.appCatInfoNotFound">Appliance Category not found for LM Program: {0}.</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.acFormulaAssignmentNotFound">No formula assigned to the appliance category for this program.</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.applianceCategoryNotFound">No appliance category could be found for this program.</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.applianceCategoryInfoNotFound">The Appliance Load (kW) value could not be found for the appliance category this program is in.</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.controlAreaCalculating">{0} of {1} programs in this control area are being calculated.</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.controlAreaCalculatingAndErrors">{0} of {1} programs in this control area are being calculated. Some estimated load reduction amounts for one or more of the programs in this control area cannot be calculated.  See detail page to find the program(s) in error.</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.controlAreaHasErrors">Estimated load reduction amounts for one or more of the programs in this control area cannot be calculated.  See detail page to find the program(s) in error.</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.gearFormulaAssignmentNotFound">No Formula assigned to the current gear for this program.</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.gearNumberNotFound">Gear number {0} not found for LM program: {1}.</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.gearFormulaAssignmentNotFound">No formula assigned to the current gear for this program.</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.gearNumberNotFound">Gear not found for this program.</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.inputOutOfRange">Formula: {0} Function or table: {1} has an input value that is not within the valid range.</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.inputValueNotFound">Can not retrieve an input point value for Formula: {0}.</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.invalidPaoType">Estimated load reduction values cannot be calculated for object ID: {0.}</entry>
-<entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.loadManagementDataNotFound">Could not find LM Program in Load Management server with ID: {0}.</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.inputValueNotFound">Can not retrieve an input point value for formula: {0}.</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.loadManagementDataNotFound">Could not find LM Program in Load Management server.</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.loadManagementServerNotConnected">Not connected to Load Management server.</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.unknownError">An unknown error has occurred.  Please check that all appliance categories, gears, and estimated load formulas for this program are set up properly.</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.noContributingPrograms">No programs are contributing to the estimated load reduction amount. See detail page to find the program(s) in error.</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.scenarioCalculating">{0} of {1} programs in this scenario are being calculated.</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.scenarioCalculatingAndErrors">{0} of {1} programs in this scenario are being calculated. Some estimated load reduction amounts for one or more of the programs in this scenario cannot be calculated.  See detail page to find the program(s) in error.</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.calcErrors.scenarioHasErrors">Estimated load reduction amounts for one or more of the programs in this scenario cannot be calculated.  See detail page to find the program(s) in error.</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.calculationType">Calculation Type</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.calculationType.linkText">Calculation Type</entry>
@@ -546,6 +551,7 @@
 <entry key="yukon.web.modules.dr.estimatedLoad.info.diversifiedLoad">Diversified Load</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.info.kwSavings">kW Savings (Max/Now)</entry>
 <entry key="yukon.web.modules.dr.estimatedLoad.calculating">Calculating...</entry>
+<entry key="yukon.web.modules.dr.estimatedLoad.unknown">Unknown</entry>
 <entry key="yukon.web.modules.dr.heading.kwSavings">kW Savings (Max/Now)</entry>
 
 <entry key="yukon.web.modules.dr.formula.actions">Actions</entry>

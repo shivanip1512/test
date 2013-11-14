@@ -3,6 +3,7 @@
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
 
@@ -146,8 +147,7 @@
                                     baseUrl="${baseUrl}" fieldName="CA_START"/></th>
                             </cti:checkRolesAndProperties>
                             <cti:checkRolesAndProperties value="ENABLE_ESTIMATED_LOAD">
-                                <cti:msg2 var="kwSavingsHeading" key=".heading.kwSavings"/>
-                                <th>${kwSavingsHeading}</th>
+                                <th><i:inline key=".heading.kwSavings"/></th>
                             </cti:checkRolesAndProperties>
                             <th class="action-column"></th>
                         </tr>
@@ -213,13 +213,13 @@
                                 <cti:checkRolesAndProperties value="ENABLE_ESTIMATED_LOAD">
                                     <td data-pao="${controlAreaId}">
                                         <cti:icon icon="icon-error" classes="dn"/>
-                                        <cti:dataUpdaterValue
-                                            type="ESTIMATED_LOAD"
-                                            identifier="${controlAreaId}/CONTROL_AREA_KW_SAVINGS" /></td>
-<%--                                         <cti:dataUpdaterCallback --%>
-<%--                                             function="Yukon.EstimatedLoad.createToolTip" --%>
-<%--                                             value="DR_CONTROLAREA/${controlAreaId}/ESTIMATED_LOAD_ERROR"  --%>
-<%--                                             initialize="true"/> --%>
+                                        <cti:icon icon="icon-spinner"/>
+                                        <span class="f-kw-savings">
+                                            <i:inline key="yukon.web.modules.dr.estimatedLoad.calculating"/>
+                                        </span>
+                                        <cti:dataUpdaterCallback
+                                            function="Yukon.EstimatedLoad.displaySummaryValue "
+                                            value="ESTIMATED_LOAD/${controlAreaId}/CONTROL_AREA"/>
                                     </td>
                                 </cti:checkRolesAndProperties>
                                 <td><dr:controlAreaListActions pao="${controlArea}"/></td>

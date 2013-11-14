@@ -8,31 +8,57 @@ Yukon.EstimatedLoad = (function() {
    
     drEstimatedLoadModule = {
             
-            createToolTip : function (msg) {
-                var data = null == msg.value ? jQuery.parseJSON(msg.identifier) : jQuery.parseJSON(msg.value);
-                if (data != null) {
-                    if (typeof data.errorMessage != 'undefined') {
-                        var errorMessage = data.errorMessage;
-                        var row = jQuery('[data-pao=' + data.paoId +']');
-                        row.attr("title", errorMessage);
-                        row.find('i.f-error').show();
-                        row.find('i.f-spinner').hide();
-                        row.find('span').html(data.na);
-                    } else if (typeof data.calculating != 'undefined') {
-                        var row = jQuery('[data-pao=' + data.paoId + ']');
-                        row.attr("title", data.calculating);
-                        row.find('i.f-error').hide();
-                        row.find('i.f-spinner').show();
-                    } else {
-                        var row = jQuery('[data-pao=' + data.paoId +']');
-                        row.removeAttr("title");
-                        row.find('i.f-error').hide();
-                        row.find('i.f-spinner').hide();
-                        row.find('span.f-connectedLoad').html(data.connected);
-                        row.find('span.f-diversifiedLoad').html(data.diversified);
-                        row.find('span.f-kwSavings').html(data.kwSavings);
-                    }
+            displayProgramValue : function (msg) {
+                var data = jQuery.parseJSON(msg.value);
+                var status = data.status;
+                var row = jQuery('[data-pao=' + data.paoId +']');
+                
+                if (status == 'error') {
+                    row.attr("title", data.tooltip);
+                    row.find('.icon-error').show();
+                    row.find('.icon-spinner').hide();
+                    row.find('.f-connected-load').html(data.value);
+                    row.find('.f-diversified-load').html(data.value);
+                    row.find('.f-kw-savings').html(data.value);
+                } else if (status == 'calc') {
+                    row.attr("title", data.tooltip);
+                    row.find('.icon-error').hide();
+                    row.find('.icon-spinner').show();
+                } else if (status == 'success') {
+                    row.removeAttr("title");
+                    row.find('.icon-error').hide();
+                    row.find('.icon-spinner').hide();
+                    row.find('.f-connected-load').html(data.connected);
+                    row.find('.f-diversified-load').html(data.diversified);
+                    row.find('.f-kw-savings').html(data.kwSavings);
                 }
+            },
+    
+            displaySummaryValue : function (msg) {
+                var data = msg.value == undefined ? jQuery.parseJSON(msg.identifier) : jQuery.parseJSON(msg.value);
+                var status = data.status;
+                var row = jQuery('[data-pao=' + data.paoId +']');
+                
+                row.find('.f-connected-load').html(data.connected);
+                row.find('.f-diversified-load').html(data.diversified);
+                row.find('.f-kw-savings').html(data.kwSavings);
+                if (status == 'error') {
+                    row.attr("title", data.tooltip);
+                    row.find('.icon-error').show();
+                    row.find('.icon-spinner').hide();
+                } else if (status == 'calc') {
+                    row.attr("title", data.tooltip);
+                    row.find('.icon-error').hide();
+                    row.find('.icon-spinner').show();
+                } else if (status == 'errorAndCalc') {
+                    row.attr("title", data.tooltip);
+                    row.find('.icon-error').show();
+                    row.find('.icon-spinner').show();
+                } else if (status == 'success') {
+                    row.removeAttr("title");
+                    row.find('.icon-error').hide();
+                    row.find('.icon-spinner').hide();
+                } 
             }
     };
     

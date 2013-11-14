@@ -1,7 +1,7 @@
 package com.cannontech.dr.estimatedload.service;
 
-import com.cannontech.dr.estimatedload.EstimatedLoadCalculationException;
 import com.cannontech.dr.estimatedload.EstimatedLoadCalculationInfo;
+import com.cannontech.dr.estimatedload.EstimatedLoadException;
 import com.cannontech.dr.estimatedload.Formula;
 import com.cannontech.dr.estimatedload.FormulaInputHolder;
 
@@ -21,7 +21,7 @@ public interface FormulaService {
      * @throws EstimatedLoadCalculationException 
      */
     public FormulaInputHolder buildFormulaInputHolder(Formula formula, EstimatedLoadCalculationInfo calcInfo)
-            throws EstimatedLoadCalculationException;
+            throws EstimatedLoadException;
 
     /**
      * Checks that all inputs collected by the FormulaInputHolder object fall within valid input value ranges
@@ -33,7 +33,7 @@ public interface FormulaService {
      * @throws EstimatedLoadCalculationException 
      */
     public void checkAllInputsValid(Formula formula, FormulaInputHolder formulaInputHolder)
-            throws EstimatedLoadCalculationException;
+            throws EstimatedLoadException;
 
     /** 
      * Evaluates the output value of a formula by summing the output of all of the functions and lookup tables.

@@ -87,15 +87,9 @@
     <bean class="com.cannontech.dr.estimatedload.dao.impl.EstimatedLoadDaoImpl"/>
     <bean class="com.cannontech.dr.estimatedload.dao.impl.FormulaDaoImpl"/>
     
-    <bean class="com.cannontech.dr.estimatedload.model.ScenarioConnectedLoadField"/>
-    <bean class="com.cannontech.dr.estimatedload.model.ScenarioDiversifiedLoadField"/>
-    <bean class="com.cannontech.dr.estimatedload.model.ScenarioKwSavingsField"/>
-    <bean class="com.cannontech.dr.estimatedload.model.ScenarioEstimatedLoadEerrorField"/>
-    <bean class="com.cannontech.dr.estimatedload.model.ProgramEstimatedLoadField"/>
-    <bean class="com.cannontech.dr.estimatedload.model.ControlAreaConnectedLoadField"/>
-    <bean class="com.cannontech.dr.estimatedload.model.ControlAreaDiversifiedLoadField"/>
-    <bean class="com.cannontech.dr.estimatedload.model.ControlAreaKwSavingsField"/>
-    <bean class="com.cannontech.dr.estimatedload.model.ControlAreaEstimatedLoadErrorField"/>
+    <bean class="com.cannontech.web.updater.dr.ScenarioEstimatedLoadField"/>
+    <bean class="com.cannontech.web.updater.dr.ProgramEstimatedLoadField"/>
+    <bean class="com.cannontech.web.updater.dr.ControlAreaEstimatedLoadField"/>
 
     <bean class="com.cannontech.loadcontrol.weather.impl.WeatherDataServiceImpl"/>
     <bean class="com.cannontech.loadcontrol.weather.impl.NoaaWeatherDataServiceImpl"/>

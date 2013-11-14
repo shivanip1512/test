@@ -9,6 +9,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
@@ -25,9 +26,10 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.dr.controlarea.dao.ControlAreaDao;
-import com.cannontech.dr.estimatedload.EstimatedLoadCalculationException;
-import com.cannontech.dr.estimatedload.EstimatedLoadReductionAmount;
+import com.cannontech.dr.estimatedload.EstimatedLoadAmount;
+import com.cannontech.dr.estimatedload.EstimatedLoadResult;
 import com.cannontech.dr.estimatedload.service.EstimatedLoadService;
+import com.cannontech.dr.estimatedload.service.impl.EstimatedLoadBackingServiceHelper;
 import com.cannontech.dr.scenario.dao.ScenarioDao;
 import com.cannontech.jobs.service.JobManager;
 import com.cannontech.jobs.support.YukonTaskBase;
@@ -39,6 +41,7 @@ public class RepeatingEstimatedLoadTask extends YukonTaskBase {
     @Autowired private JobManager jobManager;
     @Autowired private PaoDao paoDao;
     @Autowired private EstimatedLoadService estimatedLoadService;
+    @Autowired private EstimatedLoadBackingServiceHelper backingServiceHelper;
     @Autowired private ScenarioDao scenarioDao;
     @Autowired private ControlAreaDao controlAreaDao;
     @Autowired private PointService pointService;
@@ -73,23 +76,26 @@ public class RepeatingEstimatedLoadTask extends YukonTaskBase {
 
     private void populatePointData(List<PaoIdentifier> lmPaos) {
         for (PaoIdentifier paoIdent : lmPaos) {
-            try {
-                //EstimatedLoadReductionAmount estimatedLoadAmount = estimatedLoadService.retrieveEstimatedLoadValue(paoIdent);
-                EstimatedLoadReductionAmount estimatedLoadAmount = null;
-                if (estimatedLoadAmount != null && !estimatedLoadAmount.isError()) {
-                    LitePoint diversifiedPoint
-                        = pointService.getPointForPao(new PaoPointIdentifier(paoIdent, new PointIdentifier(PointType.Analog, 1)));
-                    pointAccessDao.setPointValue(diversifiedPoint, estimatedLoadAmount.getDiversifiedLoad());
+            EstimatedLoadResult estimatedLoadResult = null;
+            if (paoIdent.getPaoType().isLmProgram()) {
+                estimatedLoadResult = backingServiceHelper.getProgramValue(paoIdent.getPaoId());
+            } else if (paoIdent.getPaoType() == PaoType.LM_CONTROL_AREA) {
+                estimatedLoadResult = backingServiceHelper.getControlAreaValue(paoIdent);
+            } else if (paoIdent.getPaoType() == PaoType.LM_SCENARIO) {
+                estimatedLoadResult = backingServiceHelper.getScenarioValue(paoIdent);
+            }
+            if (estimatedLoadResult != null && estimatedLoadResult instanceof EstimatedLoadAmount) {
+                EstimatedLoadAmount amount = (EstimatedLoadAmount) estimatedLoadResult;
+                LitePoint diversifiedPoint
+                    = pointService.getPointForPao(new PaoPointIdentifier(paoIdent, new PointIdentifier(PointType.Analog, 1)));
+                pointAccessDao.setPointValue(diversifiedPoint, amount.getDiversifiedLoad());
 
-                    LitePoint maxKwPoint
-                        = pointService.getPointForPao(new PaoPointIdentifier(paoIdent, new PointIdentifier(PointType.Analog, 2)));
-                    pointAccessDao.setPointValue(maxKwPoint, estimatedLoadAmount.getMaxKwSavings());
-                } else {
-                    log.info("Unable to calculate estimated load data for pao: " + paoIdent);
-                }
-//            } catch (EstimatedLoadCalculationException e) {
-//                log.warn("Invalid Estimated Load Calculation value. Unable to archive historical calculation.");
-            } finally { }
+                LitePoint maxKwPoint
+                    = pointService.getPointForPao(new PaoPointIdentifier(paoIdent, new PointIdentifier(PointType.Analog, 2)));
+                pointAccessDao.setPointValue(maxKwPoint, amount.getMaxKwSavings());
+            } else {
+                log.info("Unable to calculate estimated load data for pao: " + paoIdent);
+            }
         }
     }
 
