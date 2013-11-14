@@ -79,6 +79,8 @@ public:
 
     const_iterator begin() const;
     const_iterator end() const;
+
+    const_iterator find( const std::string & fieldName ) const;
 };
 
 ///////////////////

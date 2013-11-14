@@ -6,6 +6,7 @@
 #include "database_reader.h"
 #include "DeviceConfigLookup.h"
 #include "debug_timer.h"
+#include "logger.h"
 
 #include <boost/tuple/tuple.hpp>
 
@@ -324,10 +325,28 @@ Cti::Config::DeviceConfigSPtr   CtiConfigManager::buildConfig( const long config
                 // is it one of our actual physical devices categories?
                 if ( deviceCategories.find( category.getType() ) != deviceCategories.end() )
                 {
-                    // yes.. merge his items into the actual device config
-                    for each ( Cti::Config::ConfigurationCategory::value_type item in category )
+                    // do we have all of the category items?
+                    Cti::DeviceConfigLookup::CategoryFieldIterPair   thePair = 
+                        Cti::DeviceConfigLookup::equal_range( category.getType() );
+
+                    for ( ; thePair.first != thePair.second ; ++thePair.first )
                     {
-                        deviceConfiguration->insertValue( item.first, item.second );
+                        const std::string & requiredFieldName = thePair.first->second;
+
+                        Cti::Config::ConfigurationCategory::const_iterator fieldName = category.find( requiredFieldName );
+
+                        if ( fieldName != category.end() )
+                        {
+                            deviceConfiguration->insertValue( fieldName->first, fieldName->second );
+                        }
+                        else
+                        {
+                            // print error message
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " - Error: missing configuration item: " << requiredFieldName << " in configuration: " << config.getName() << std::endl;
+
+                            return Cti::Config::DeviceConfigSPtr();
+                        }
                     }
                 }
             }

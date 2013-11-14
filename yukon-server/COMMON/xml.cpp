@@ -138,41 +138,97 @@ IM_EX_CTIBASE void parseXmlFiles( const std::string & yukonBase )
     PathCombine( deviceDefinition,
                  yukonBase.c_str(), "Server\\Config\\deviceDefinition.xml");
 
-    DataBuffer  schema = loadResourceFromLibrary( PAODEFINITION_XSD_ID, "SCHEMA", "yukon-resource.dll" );
-    DataBuffer  xml    = loadResourceFromLibrary( PAODEFINITION_XML_ID, "XML",    "yukon-resource.dll" );
+    DataBuffer  paoDefinitionSchema = loadResourceFromLibrary( PAODEFINITION_XSD_ID, "SCHEMA", "yukon-resource.dll" );
+    DataBuffer  paoDefinitionXml    = loadResourceFromLibrary( PAODEFINITION_XML_ID, "XML",    "yukon-resource.dll" );
 
+    DataBuffer  configCategoryDefinitionXml = loadResourceFromLibrary( CONFIGCATEGORYDEFINITION_XML_ID, "XML",    "yukon-resource.dll" );
+    DataBuffer  configCategorySchema        = loadResourceFromLibrary( CONFIGCATEGORYDEFINITION_XSD_ID, "SCHEMA", "yukon-resource.dll" );
+    DataBuffer  devConfigCategorySchema     = loadResourceFromLibrary( DEVICECONFIGCATEGORY_XSD_ID,     "SCHEMA", "yukon-resource.dll" );
 
     {   // New scope as living quarters for the auto-pointer -- he needs to be deleted before
         // the call to Terminate()
 
+        // types
         typedef std::auto_ptr<xercesc::MemBufInputSource>   BufferPtr;
+        typedef std::auto_ptr<xercesc::SAX2XMLReader>       XmlReader;
+        typedef std::auto_ptr<xercesc::DefaultHandler>      EntityHandler;
 
-        BufferPtr   xsdBuffer( new xercesc::MemBufInputSource( reinterpret_cast<const XMLByte *>( &schema[0] ),
-                                                               schema.size(),
-                                                               "paoDefinition.xsd" ) );
+        /// paoDefinition.xml
 
-        BufferPtr   xmlBuffer( new xercesc::MemBufInputSource( reinterpret_cast<const XMLByte *>( &xml[0] ),
-                                                               xml.size(),
-                                                               "paoDefinition.xml" ) );
+        // data
+        BufferPtr   paoDefinitionXsdBuffer( new xercesc::MemBufInputSource( reinterpret_cast<const XMLByte *>( &paoDefinitionSchema[0] ),
+                                                                            paoDefinitionSchema.size(),
+                                                                            "paoDefinition.xsd" ) );
 
-        std::auto_ptr<xercesc::SAX2XMLReader>   parser( xercesc::XMLReaderFactory::createXMLReader() );
+        BufferPtr   paoDefinitionXmlBuffer( new xercesc::MemBufInputSource( reinterpret_cast<const XMLByte *>( &paoDefinitionXml[0] ),
+                                                                            paoDefinitionXml.size(),
+                                                                            "paoDefinition.xml" ) );
 
-        parser->loadGrammar( *xsdBuffer, xercesc::Grammar::SchemaGrammarType, true );
+        // reader
+        XmlReader   paoDefinitionReader( xercesc::XMLReaderFactory::createXMLReader() );
 
-        parser->setFeature( xercesc::XMLUni::fgSAX2CoreValidation, true );
-        parser->setFeature( xercesc::XMLUni::fgXercesCacheGrammarFromParse, true );
+        // set the grammer and turn on validation in the reader
+        paoDefinitionReader->loadGrammar( *paoDefinitionXsdBuffer, xercesc::Grammar::SchemaGrammarType, true );
 
-        XmlPaoInfoCollection    thePaoInfo;
+        paoDefinitionReader->setFeature( xercesc::XMLUni::fgSAX2CoreValidation, true );
+        paoDefinitionReader->setFeature( xercesc::XMLUni::fgXercesCacheGrammarFromParse, true );
 
-        std::auto_ptr<xercesc::DefaultHandler>  defaultHandler( new PaoDefinitionSAX2Handler( thePaoInfo ) );
+        // this is where the parsed data will go
+        XmlPaoInfoCollection    paoDefinitionInfo;
 
-        parser->setContentHandler( defaultHandler.get() );
-        parser->setErrorHandler( defaultHandler.get() );
+        // this guy handles the xml entities and fills the collection
+        EntityHandler  paoDefinitionHandler( new PaoDefinitionSAX2Handler( paoDefinitionInfo ) );
+
+        // associate the handlers with the reader
+        paoDefinitionReader->setContentHandler( paoDefinitionHandler.get() );
+        paoDefinitionReader->setErrorHandler( paoDefinitionHandler.get() );
+
+        /// configurationCategoryDefinition.xml
+
+        // data
+        BufferPtr   configCategoryXsdBuffer( new xercesc::MemBufInputSource( reinterpret_cast<const XMLByte *>( &configCategorySchema[0] ),
+                                                                             configCategorySchema.size(),
+                                                                             "configurationCategoryDefinition.xsd" ) );
+
+        BufferPtr   devConfigCategoryXsdBuffer( new xercesc::MemBufInputSource( reinterpret_cast<const XMLByte *>( &devConfigCategorySchema[0] ),
+                                                                                devConfigCategorySchema.size(),
+                                                                                "deviceConfigurationCategory.xsd" ) );
+
+        BufferPtr   configCategoryDefinitionXmlBuffer( new xercesc::MemBufInputSource( reinterpret_cast<const XMLByte *>( &configCategoryDefinitionXml[0] ),
+                                                                                       configCategoryDefinitionXml.size(),
+                                                                                       "configurationCategoryDefinition.xml" ) );
+
+        // reader
+        XmlReader   configCategoryReader( xercesc::XMLReaderFactory::createXMLReader() );
+
+        // set the grammers and turn on validation in the reader
+        configCategoryReader->loadGrammar( *configCategoryXsdBuffer, xercesc::Grammar::SchemaGrammarType, true );
+        configCategoryReader->loadGrammar( *devConfigCategoryXsdBuffer, xercesc::Grammar::SchemaGrammarType, true );
+
+        configCategoryReader->setFeature( xercesc::XMLUni::fgSAX2CoreValidation, true );
+        configCategoryReader->setFeature( xercesc::XMLUni::fgXercesCacheGrammarFromParse, true );
+
+        // this is where the parsed data will go
+        XmlCategoryFieldMap     configCategoryInfo;
+
+        // this guy handles the xml entities and fills the collection
+        EntityHandler  configCategoryHandler( new DeviceConfigCategorySAX2Handler( configCategoryInfo ) );
+
+        // associate the handlers with the reader
+        configCategoryReader->setContentHandler( configCategoryHandler.get() );
+        configCategoryReader->setErrorHandler( configCategoryHandler.get() );
 
         try
         {
-            parser->parse( *xmlBuffer );
-            parser->parse( deviceDefinition );
+            // parse the paoDefinition.xml file and also the devicedefinition.xml file (if it exists)
+            paoDefinitionReader->parse( *paoDefinitionXmlBuffer );
+            if ( PathFileExists( deviceDefinition ) )
+            {
+                paoDefinitionReader->parse( deviceDefinition );
+            }
+
+            // parse the device configuration category info
+            configCategoryReader->parse( *configCategoryDefinitionXmlBuffer );
         }
         catch ( const xercesc::XMLException & ex )
         {
@@ -205,17 +261,17 @@ IM_EX_CTIBASE void parseXmlFiles( const std::string & yukonBase )
 
         XmlPaoInfoCollection  flattened;
 
-        while ( ! thePaoInfo.empty() )
+        while ( ! paoDefinitionInfo.empty() )
         {
             // move all stuff with no inheritance to flattened map...
 
-            for ( XmlPaoInfoCollection::iterator b = thePaoInfo.begin(), e = thePaoInfo.end(); b != e; )
+            for ( XmlPaoInfoCollection::iterator b = paoDefinitionInfo.begin(), e = paoDefinitionInfo.end(); b != e; )
             {
                 if ( b->second.inheritsFrom.empty() )
                 {
                     // search for current element in inheritsFrom of other elements and merge...
 
-                    for ( XmlPaoInfoCollection::iterator bb = thePaoInfo.begin(), ee = thePaoInfo.end(); bb != ee; ++bb  )
+                    for ( XmlPaoInfoCollection::iterator bb = paoDefinitionInfo.begin(), ee = paoDefinitionInfo.end(); bb != ee; ++bb  )
                     {
                         if (  bb->second.inheritsFrom.count( b->first ) != 0 )
                         {
@@ -232,7 +288,7 @@ IM_EX_CTIBASE void parseXmlFiles( const std::string & yukonBase )
 
                     flattened.insert( *b );
 
-                    thePaoInfo.erase( b++ );
+                    paoDefinitionInfo.erase( b++ );
                 }
                 else
                 {
@@ -293,6 +349,16 @@ IM_EX_CTIBASE void parseXmlFiles( const std::string & yukonBase )
         {
             DeviceConfigLookup::AddRelation( resolvePaoIdXmlType( b->first ), b->second.configCategories );
         }
+
+////////////////////////////
+///
+
+        for ( XmlCategoryFieldMap::iterator b = configCategoryInfo.begin(), e = configCategoryInfo.end(); b != e; ++b )
+        {
+            DeviceConfigLookup::AddRelation( b->first, b->second );
+        }
+
+
     }
 
     xercesc::XMLPlatformUtils::Terminate();
@@ -673,6 +739,98 @@ DeviceTypes resolvePaoIdXmlType( const std::string & type )
     LM_SCENARIO
     MCT310IM
 */
+
+
+
+
+DeviceConfigCategorySAX2Handler::DeviceConfigCategorySAX2Handler( XmlCategoryFieldMap & categoryField )
+    :   categoryFieldMap( categoryField )
+{
+
+}
+
+
+void DeviceConfigCategorySAX2Handler::startElement( const XMLCh * const uri,
+                                                    const XMLCh * const localname,
+                                                    const XMLCh * const qname,
+                                                    const xercesc::Attributes &  attrs )
+{
+    std::string element( XmlStringTranscode( localname ) );
+
+    if ( element == "category" )
+    {
+        for ( XMLSize_t i = 0; i < attrs.getLength(); i++ )
+        {
+            std::string name( XmlStringTranscode( attrs.getLocalName(i) ) );
+
+            if ( name == "type" )
+            {
+                currentCategoryName = XmlStringTranscode( attrs.getValue(i) );
+            }
+        }
+    }
+
+    if ( element == "enum" || element == "boolean" || element == "integer" || element == "float" )
+    {
+        for ( XMLSize_t i = 0; i < attrs.getLength(); i++ )
+        {
+            std::string name( XmlStringTranscode( attrs.getLocalName(i) ) );
+
+            if ( name == "field" )
+            {
+                categoryFieldMap.insert( std::make_pair( currentCategoryName, XmlStringTranscode( attrs.getValue(i) ) ) );
+            }
+        }
+    }
+
+    if ( element == "map" )
+    {
+        for ( XMLSize_t i = 0; i < attrs.getLength(); i++ )
+        {
+            std::string name( XmlStringTranscode( attrs.getLocalName(i) ) );
+
+            if ( name == "field" )
+            {
+                fieldPrefix = XmlStringTranscode( attrs.getValue(i) );
+            }
+        }
+    }
+
+    if ( element == "entry" )
+    {
+        for ( XMLSize_t i = 0; i < attrs.getLength(); i++ )
+        {
+            std::string name( XmlStringTranscode( attrs.getLocalName(i) ) );
+
+            if ( name == "field" )
+            {
+                std::string entryName( XmlStringTranscode( attrs.getValue(i) ) );
+
+                // entrys are of the form "time0"  -- we need to add a time and rate entry...
+
+                // insert the time one...
+
+                categoryFieldMap.insert( std::make_pair( currentCategoryName, fieldPrefix + entryName ) );
+
+                // replace the word time with the word rate
+
+                entryName.replace( 0, 4, "rate" );
+
+                categoryFieldMap.insert( std::make_pair( currentCategoryName, fieldPrefix + entryName ) );
+            }
+        }
+    }
+}
+
+
+void DeviceConfigCategorySAX2Handler::fatalError( const xercesc::SAXParseException & ex )
+{
+    std::string message( XmlStringTranscode( ex.getMessage() ) );
+
+    CtiLockGuard<CtiLogger> doubt_guard(dout);
+    dout << "Fatal Error: " << message << " at line: " << ex.getLineNumber() << std::endl;
+}
+
 
 }
 

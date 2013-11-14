@@ -83,5 +83,46 @@ private:
     XmlPaoInfo::PointInfo   currentPoint;
 };
 
+
+
+typedef std::multimap<std::string, std::string>     XmlCategoryFieldMap;
+
+
+
+class DeviceConfigCategorySAX2Handler : public xercesc::DefaultHandler
+{
+public:
+
+    DeviceConfigCategorySAX2Handler( XmlCategoryFieldMap & categoryField );
+
+    void startElement( const XMLCh * const uri,
+                       const XMLCh * const localname,
+                       const XMLCh * const qname,
+                       const xercesc::Attributes &  attrs );
+
+    void endElement( const XMLCh * const uri,
+                     const XMLCh * const localname,
+                     const XMLCh * const qname )
+    {
+        // empty
+    }
+
+    void characters( const XMLCh * const chars,
+                     const XMLSize_t  	 length )
+    {
+        // empty
+    }
+
+    void fatalError( const xercesc::SAXParseException & ex );
+
+private:
+
+    XmlCategoryFieldMap & categoryFieldMap;
+
+    std::string currentCategoryName,
+                fieldPrefix;
+};
+
+
 }
 

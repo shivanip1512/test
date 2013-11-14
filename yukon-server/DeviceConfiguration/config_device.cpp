@@ -189,6 +189,12 @@ ConfigurationCategory::const_iterator ConfigurationCategory::end() const
     return _items.end();
 }
 
+
+ConfigurationCategory::const_iterator ConfigurationCategory::find( const std::string & fieldName ) const
+{
+    return _items.find( fieldName );
+}
+
 ///////////////////
 
 Configuration::Configuration( const long ID, const std::string & name )

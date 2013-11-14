@@ -7,3 +7,7 @@
 PAODEFINITION_XML_ID    XML     "..\\..\\yukon-client\\common\\src\\com\\cannontech\\common\\pao\\definition\\dao\\paoDefinition.xml"
 PAODEFINITION_XSD_ID    SCHEMA  "..\\..\\yukon-client\\common\\src\\com\\cannontech\\common\\pao\\definition\\dao\\paoDefinition.xsd"
 
+CONFIGCATEGORYDEFINITION_XML_ID     XML     "..\\..\\yukon-client\\common\\src\\com\\cannontech\\common\\device\\config\\configurationCategoryDefinition.xml"
+CONFIGCATEGORYDEFINITION_XSD_ID     SCHEMA  "..\\..\\yukon-client\\common\\src\\com\\cannontech\\common\\device\\config\\configurationCategoryDefinition.xsd"
+DEVICECONFIGCATEGORY_XSD_ID         SCHEMA  "..\\..\\yukon-client\\common\\src\\com\\cannontech\\common\\device\\config\\deviceConfigurationCategory.xsd"
+
