@@ -985,6 +985,10 @@
     <bean id="drScenarioBackingService" class="com.cannontech.web.updater.dr.ScenarioBackingService"/>
     <bean id="weatherDataBackingService" class="com.cannontech.web.updater.dr.WeatherDataBackingService"/>
     
+    <bean class="com.cannontech.web.updater.dr.ScenarioEstimatedLoadField"/>
+    <bean class="com.cannontech.web.updater.dr.ProgramEstimatedLoadField"/>
+    <bean class="com.cannontech.web.updater.dr.ControlAreaEstimatedLoadField"/>
+    
     <!-- phase detect -->    
     <bean id="phaseDetectBackingService" class="com.cannontech.web.updater.phaseDetect.PhaseDetectBackingService"/>
     <bean id="isCompletePhaseDetectUpdaterHandler" class="com.cannontech.web.updater.phaseDetect.handler.IsCompletePhaseDetectUpdaterHandler"/>
@@ -2203,4 +2207,6 @@
 	<bean class="com.cannontech.web.scheduledFileExport.service.impl.ScheduledFileExportJobsTagServiceImpl"/>
     <bean class="com.cannontech.web.scheduledFileExport.ScheduledFileExportHelper"/>
     <bean id="userPageService" class="com.cannontech.web.common.userpage.service.impl.UserPageServiceImpl"/>
+    
+
 </beans>
