@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import org.jfree.util.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.fileExportHistory.ExportHistoryEntry;
@@ -26,14 +27,22 @@ public class FileExportHistoryServiceImpl implements FileExportHistoryService {
 		return archiveFile;
 	}
 	
-	public boolean deleteArchivedFile(int exportHistoryEntryId) throws FileNotFoundException {
+	@Override
+    public boolean deleteArchivedFile(int exportHistoryEntryId) {
+	    boolean deleted = false;
 	    ExportHistoryEntry entry = fileExportHistoryDao.getEntry(exportHistoryEntryId);
-	    File archiveFile = new File(getArchivePath(), entry.getFileName());
-	    if(!archiveFile.exists()) {
-            String error = "Archive file \"" + entry.getFileName() + "\" not found for entry with id " + entry.getId();
-            throw new FileNotFoundException(error);
+        File archiveFile = new File(getArchivePath(), entry.getFileName());
+        if(archiveFile.exists()) {
+            deleted = archiveFile.delete();
+        } else {
+            deleted = true;
+            Log.warn("Attempted to delete non-existent file. Archive file \"" + entry.getFileName() 
+                     + "\" not found for entry with id " + exportHistoryEntryId);
         }
-	    return archiveFile.delete();
+        if(deleted) {
+            fileExportHistoryDao.markArchiveDeleted(exportHistoryEntryId);
+        }
+        return deleted;
 	}
 	
 	@Override

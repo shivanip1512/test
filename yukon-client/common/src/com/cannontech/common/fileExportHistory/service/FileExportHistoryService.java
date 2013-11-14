@@ -15,11 +15,11 @@ public interface FileExportHistoryService {
 	public File getArchivedFile(int exportHistoryEntryId) throws FileNotFoundException;
 	
 	/**
-	 * Attempts to delete the archived file for the specified entry.
+	 * Attempts to delete the archived file for the specified entry. If the file is successfully deleted, the DB entry
+	 * will be marked as ArchiveFileExists = false.
 	 * @return True if the file was deleted, otherwise false.
-	 * @throws FileNotFoundException if the file is not present in the expected location
 	 */
-	public boolean deleteArchivedFile(int exportHistoryEntryId) throws FileNotFoundException;
+	public boolean deleteArchivedFile(int exportHistoryEntryId);
 	
     /**
      * Creates an ExportHistoryEntry for the Archive and Export file(s).

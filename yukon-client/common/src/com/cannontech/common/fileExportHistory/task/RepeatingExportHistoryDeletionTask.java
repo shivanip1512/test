@@ -1,6 +1,5 @@
 package com.cannontech.common.fileExportHistory.task;
 
-import java.io.FileNotFoundException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -50,7 +49,6 @@ public class RepeatingExportHistoryDeletionTask extends YukonTaskBase {
         log.info("File export history cleanup complete. " + filesDeleted + " archived files were deleted.");
     }
     
-    //TODO: throttling?
     private int deleteByAge(int daysToKeep) {
         Instant cutoff = Instant.now().minus(Duration.standardDays(daysToKeep));
         int filesDeleted = 0;
@@ -64,7 +62,7 @@ public class RepeatingExportHistoryDeletionTask extends YukonTaskBase {
                 for(ExportHistoryEntry entry : entries) {
                     //delete file
                     log.debug("Attempting to delete file \"" + entry.getFileName() +"\" with creation date" + entryInstant);
-                    boolean deleted = deleteEntry(entry.getId());
+                    boolean deleted = fileExportHistoryService.deleteArchivedFile(entry.getId());
                     if(deleted) {
                         filesDeleted++;
                     }
@@ -90,7 +88,7 @@ public class RepeatingExportHistoryDeletionTask extends YukonTaskBase {
                     //delete file
                     ExportHistoryEntry entry = entries.get(index);
                     log.debug("Attempting to delete file \"" + entry.getFileName() + "\" for initiator \"" + initiator);
-                    boolean deleted = deleteEntry(entry.getId());
+                    boolean deleted = fileExportHistoryService.deleteArchivedFile(entry.getId());
                     if(deleted) {
                         filesDeleted++;
                     }
@@ -98,20 +96,5 @@ public class RepeatingExportHistoryDeletionTask extends YukonTaskBase {
             }
         }
         return filesDeleted;
-    }
-    
-    private boolean deleteEntry(int entryId) {
-        boolean deleted = false;
-        try {
-            deleted = fileExportHistoryService.deleteArchivedFile(entryId);
-            log.debug("Deleted file for entry id " + entryId);
-        } catch (FileNotFoundException e) {
-            deleted = true;
-            log.warn("Attempted to delete non-existent file.", e);
-        }
-        if(deleted) {
-            fileExportHistoryDao.markArchiveDeleted(entryId);
-        }
-        return deleted;
     }
 }
