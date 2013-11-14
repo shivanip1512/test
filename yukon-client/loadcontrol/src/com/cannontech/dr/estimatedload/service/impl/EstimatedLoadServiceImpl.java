@@ -9,26 +9,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.dr.assetavailability.ApplianceAssetAvailabilitySummary;
 import com.cannontech.dr.assetavailability.dao.DRGroupDeviceMappingDao;
 import com.cannontech.dr.assetavailability.service.AssetAvailabilityService;
+import com.cannontech.dr.estimatedload.EstimatedLoadAmount;
 import com.cannontech.dr.estimatedload.EstimatedLoadApplianceCategoryInfo;
-import com.cannontech.dr.estimatedload.EstimatedLoadCalculationException;
-import com.cannontech.dr.estimatedload.EstimatedLoadCalculationException.Type;
 import com.cannontech.dr.estimatedload.EstimatedLoadCalculationInfo;
-import com.cannontech.dr.estimatedload.EstimatedLoadReductionAmount;
+import com.cannontech.dr.estimatedload.EstimatedLoadException;
+import com.cannontech.dr.estimatedload.EstimatedLoadResult;
 import com.cannontech.dr.estimatedload.Formula;
 import com.cannontech.dr.estimatedload.FormulaInputHolder;
+import com.cannontech.dr.estimatedload.NoAppCatFormulaException;
 import com.cannontech.dr.estimatedload.PartialEstimatedLoadReductionAmount;
 import com.cannontech.dr.estimatedload.dao.EstimatedLoadDao;
 import com.cannontech.dr.estimatedload.dao.FormulaDao;
 import com.cannontech.dr.estimatedload.service.EstimatedLoadService;
 import com.cannontech.dr.estimatedload.service.FormulaService;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
-import com.cannontech.loadcontrol.data.IGearProgram;
 import com.cannontech.loadcontrol.data.LMProgramBase;
-import com.cannontech.message.util.ConnectionException;
 import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
@@ -46,15 +44,8 @@ public class EstimatedLoadServiceImpl implements EstimatedLoadService {
     @Autowired private FormulaDao formulaDao;
 
     @Override
-    public EstimatedLoadReductionAmount calculateProgramLoadReductionAmounts(PaoIdentifier program)
-            throws EstimatedLoadCalculationException {
-        int gearId = backingServiceHelper.findCurrentGearId(program);
-        return calculateProgramLoadReductionAmounts(program, gearId);
-    }
-
-    @Override
-    public EstimatedLoadReductionAmount calculateProgramLoadReductionAmounts(PaoIdentifier program, Integer gearId)
-            throws EstimatedLoadCalculationException {
+    public EstimatedLoadResult calculateProgramLoadReductionAmounts(PaoIdentifier program, Integer gearId)
+            throws EstimatedLoadException {
         
         ApplianceAssetAvailabilitySummary summary = assetAvailabilityService
                 .getApplianceAssetAvailability(program);
@@ -64,11 +55,10 @@ public class EstimatedLoadServiceImpl implements EstimatedLoadService {
         
         double kWSavingsNow = calculateKwSavingsNow(program, partialReductionAmount.getMaxKwSavings());
         
-        return new EstimatedLoadReductionAmount(partialReductionAmount.getConnectedLoad(),
+        return new EstimatedLoadAmount(partialReductionAmount.getConnectedLoad(),
                 partialReductionAmount.getDiversifiedLoad(), 
                 partialReductionAmount.getMaxKwSavings(),
-                kWSavingsNow,
-                false, null);
+                kWSavingsNow);
     }
 
     /** This method calculates the first three estimated load values: Connected Load, Diversified Load,
@@ -82,7 +72,7 @@ public class EstimatedLoadServiceImpl implements EstimatedLoadService {
      * @throws EstimatedLoadCalculationException
      */
     private PartialEstimatedLoadReductionAmount calculatePartialProgramLoadReductionAmount(PaoIdentifier program,
-            int gearId, ApplianceAssetAvailabilitySummary summary) throws EstimatedLoadCalculationException {
+            int gearId, ApplianceAssetAvailabilitySummary summary) throws EstimatedLoadException {
         // Look up all information necessary to begin calculation: appliance category id, app cat per-appliance load,
         // and both app cat and gear formulas.
         EstimatedLoadCalculationInfo loadCalcInfo = gatherCalculationInfo(program, gearId);
@@ -114,7 +104,7 @@ public class EstimatedLoadServiceImpl implements EstimatedLoadService {
     }
 
     private double calculateKwSavingsNow(PaoIdentifier program, double maxKwSavings)
-            throws EstimatedLoadCalculationException {
+            throws EstimatedLoadException {
         double reductionFromControllingPrograms = 0.0;
         // How many other programs are there that share enrollments with the program being calculated?
         List<Integer> programsWithSharedInventory = estimatedLoadDao.findOtherEnrolledProgramsForDevicesInProgram(
@@ -130,18 +120,18 @@ public class EstimatedLoadServiceImpl implements EstimatedLoadService {
                 LMProgramBase controllingProgramBase = backingServiceHelper.getLmProgramBase(controllingProgramId);
                 if (controllingProgramBase.isActive()) {
                     // Find which gear the currently controlling program is using.
-                    int gearId = backingServiceHelper.findCurrentGearId(controllingProgramBase.getPaoIdentifier());
                     
                     PartialEstimatedLoadReductionAmount controllingProgramPartialAmount;
                     ApplianceAssetAvailabilitySummary controllingProgramSummary;
                     try {
+                        int gearId = backingServiceHelper.findCurrentGearId(controllingProgramId);
                         // Find asset availability summary for the controlling program.
                         controllingProgramSummary = assetAvailabilityService
                                 .getApplianceAssetAvailability(controllingProgramBase.getPaoIdentifier());
                         // Find the controlling program's Max kW Savings.
                         controllingProgramPartialAmount = calculatePartialProgramLoadReductionAmount(
                                 controllingProgramBase.getPaoIdentifier(), gearId, controllingProgramSummary);
-                    } catch (EstimatedLoadCalculationException e) {
+                    } catch (EstimatedLoadException e) {
                         /* There is a problem calculating the partial estimated load values for this currently
                            controlling program.  Rather than throw out everything for this calculation, we'll skip
                            any contribution it may have had to kW Savings Now and continue on. */
@@ -180,7 +170,7 @@ public class EstimatedLoadServiceImpl implements EstimatedLoadService {
      * @throws EstimatedLoadCalculationException 
      */
     private EstimatedLoadCalculationInfo gatherCalculationInfo(PaoIdentifier program, int gearId)
-            throws EstimatedLoadCalculationException {
+            throws EstimatedLoadException {
         // Gather the appliance category id and average kW load per appliance
         EstimatedLoadApplianceCategoryInfo acIdAndAverageKwLoadForLmProgram = estimatedLoadDao
                 .getAcIdAndAverageKwLoadForLmProgram(program.getPaoId());
@@ -192,12 +182,12 @@ public class EstimatedLoadServiceImpl implements EstimatedLoadService {
         Formula applianceCategoryFormula = formulaDao.getFormulaForApplianceCategory(applianceCategoryId);
         if (applianceCategoryFormula == null) {
             log.debug("No formula assigned for appliance category : " + applianceCategoryId);
-            throw new EstimatedLoadCalculationException(Type.NO_FORMULA_FOR_APPLIANCE_CATEGORY);
+            throw new NoAppCatFormulaException();
         }
         Formula gearFormula = formulaDao.getFormulaForGear(gearId);
         if (gearFormula == null) {
             log.debug("No formula assigned for gear: " + gearId);
-            throw new EstimatedLoadCalculationException(Type.NO_FORMULA_FOR_GEAR);
+            throw new NoAppCatFormulaException();
         }
         
         return new EstimatedLoadCalculationInfo(applianceCategoryId, averageKwLoad, gearId,

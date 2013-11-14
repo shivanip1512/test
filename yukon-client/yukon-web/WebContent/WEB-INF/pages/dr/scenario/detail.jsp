@@ -20,27 +20,35 @@
         <div class="column one">
         <cti:checkRolesAndProperties value="ENABLE_ESTIMATED_LOAD">
             <tags:sectionContainer2 nameKey="heading.info">
-                <tags:nameValueContainer2>
-                    <tags:nameValue2 nameKey="yukon.web.modules.dr.estimatedLoad.info.connectedLoad">
+            <tags:nameValueContainer2>
+                <cti:dataUpdaterCallback
+                    function="Yukon.EstimatedLoad.displaySummaryValue"
+                    identifier="ESTIMATED_LOAD/${scenarioId}/SCENARIO"/>
+               <tags:nameValue2 nameKey="yukon.web.modules.dr.estimatedLoad.info.connectedLoad">
                         <div data-pao="${scenarioId}">
                             <cti:icon icon="icon-error" classes="dn"/>
-<%--                            <cti:dataUpdaterValue identifier="${scenarioId}/SCENARIO_CONNECTED_LOAD" type="ESTIMATED_LOAD"/> --%>
+                            <cti:icon icon="icon-spinner"/>
+                            <span class="f-connected-load">
+                                <i:inline key="yukon.web.modules.dr.estimatedLoad.calculating"/>
+                            </span>
                         </div>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey="yukon.web.modules.dr.estimatedLoad.info.diversifiedLoad">
                         <div data-pao="${scenarioId}">
                             <cti:icon icon="icon-error" classes="dn"/>
-<%--                            <cti:dataUpdaterValue identifier="${scenarioId}/SCENARIO_DIVERSIFIED_LOAD" type="DR_ESTIMATED_LOADSCENARIO"/> --%>
+                            <cti:icon icon="icon-spinner"/>
+                            <span class="f-diversified-load">
+                                <i:inline key="yukon.web.modules.dr.estimatedLoad.calculating"/>
+                            </span>
                         </div>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey="yukon.web.modules.dr.estimatedLoad.info.kwSavings">
                         <div data-pao="${scenarioId}">
                             <cti:icon icon="icon-error" classes="dn"/>
-                             <cti:dataUpdaterValue identifier="${scenarioId}/SCENARIO_KW_SAVINGS" type="ESTIMATED_LOAD"/>
-<%--                             <cti:dataUpdaterCallback --%>
-<%--                                 function="Yukon.EstimatedLoad.createToolTip" --%>
-<%--                                 identifier="DR_SCENARIO/${scenarioId}/ESTIMATED_LOAD_ERROR" --%>
-<%--                                 initialize="false" /> --%>
+                            <cti:icon icon="icon-spinner"/>
+                            <span class="f-kw-savings">
+                                <i:inline key="yukon.web.modules.dr.estimatedLoad.calculating"/>
+                            </span>
                         </div>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>

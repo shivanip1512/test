@@ -11,121 +11,135 @@ import java.util.concurrent.TimeUnit;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.dr.controlarea.dao.ControlAreaDao;
-import com.cannontech.dr.estimatedload.EstimatedLoadCalculationException;
-import com.cannontech.dr.estimatedload.EstimatedLoadCalculationException.Type;
-import com.cannontech.dr.estimatedload.EstimatedLoadReductionAmount;
+import com.cannontech.dr.estimatedload.ApplianceCategoryInfoNotFoundException;
+import com.cannontech.dr.estimatedload.ApplianceCategoryNotFoundException;
+import com.cannontech.dr.estimatedload.EstimatedLoadAmount;
+import com.cannontech.dr.estimatedload.EstimatedLoadException;
+import com.cannontech.dr.estimatedload.EstimatedLoadResult;
+import com.cannontech.dr.estimatedload.EstimatedLoadSummary;
+import com.cannontech.dr.estimatedload.Formula;
+import com.cannontech.dr.estimatedload.GearNotFoundException;
+import com.cannontech.dr.estimatedload.InputOutOfRangeException;
+import com.cannontech.dr.estimatedload.InputOutOfRangeException.Type;
+import com.cannontech.dr.estimatedload.InputValueNotFoundException;
+import com.cannontech.dr.estimatedload.LmDataNotFoundExceptionException;
+import com.cannontech.dr.estimatedload.LmServerNotConnectedException;
+import com.cannontech.dr.estimatedload.NoAppCatFormulaException;
+import com.cannontech.dr.estimatedload.NoGearFormulaException;
 import com.cannontech.dr.estimatedload.dao.EstimatedLoadDao;
 import com.cannontech.dr.estimatedload.service.EstimatedLoadService;
 import com.cannontech.dr.scenario.dao.ScenarioDao;
 import com.cannontech.dr.scenario.model.ScenarioProgram;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.IGearProgram;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.message.util.ConnectionException;
+import com.cannontech.user.YukonUserContext;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
 public class EstimatedLoadBackingServiceHelperImpl implements EstimatedLoadBackingServiceHelper {
     private final Logger log = YukonLogManager.getLogger(EstimatedLoadBackingServiceHelperImpl.class);
-    
+
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private LoadControlClientConnection clientConnection;
     @Autowired private EstimatedLoadService estimatedLoadService;
     @Autowired private EstimatedLoadDao estimatedLoadDao;
     @Autowired private ControlAreaDao controlAreaDao;
     @Autowired private ScenarioDao scenarioDao;
-    @Autowired @Qualifier("longRunningExecutor") private Executor executor;
+    @Autowired private @Qualifier("estimatedLoad") Executor executor;
 
-    private static final int CACHE_SECONDS_TO_LIVE = 180;
-    private final Cache<Integer, EstimatedLoadReductionAmount> cache = CacheBuilder.newBuilder()
+    private static final int CACHE_SECONDS_TO_LIVE = 120;
+    private final Cache<EstimatedLoadResultKey, EstimatedLoadResult> cache = CacheBuilder.newBuilder()
             .expireAfterWrite(CACHE_SECONDS_TO_LIVE, TimeUnit.SECONDS).build();
 
-    public Cache<Integer, EstimatedLoadReductionAmount> getCache() {
-        return cache;
+    @Override
+    public EstimatedLoadResult getProgramValue(final int programId) {
+        int currentGearId;
+        try {
+            currentGearId = findCurrentGearId(programId);
+        } catch (EstimatedLoadException e) {
+            return e;
+        }
+        return getProgramValue(programId, currentGearId);
     }
 
-    @Override
-    public EstimatedLoadReductionAmount getProgramValue(final PaoIdentifier program)
-            throws EstimatedLoadCalculationException {
-        EstimatedLoadReductionAmount amount = cache.getIfPresent(program.getPaoId());
+    /**
+     * This method takes a program id and gear id and attempts to calculate the estimated load amounts for that
+     * program/gear combination. It first checks to see if the cache holds a recently computed value. If it does,
+     * that value is returned. If not, a new Runnable is created and executed which will insert the result into
+     * the cache once calculation is complete.  The cache key is based on both program id and gear id, so a
+     * single program may have multiple cache entries for multiple gears which is useful when considering
+     * scenarios that have multiple start gears for the same program.
+     */
+    private EstimatedLoadResult getProgramValue(final int programId, final Integer gearId) {
+
+        final EstimatedLoadResultKey resultKey = new EstimatedLoadResultKey(programId, gearId);
+        EstimatedLoadResult amount = cache.getIfPresent(resultKey);
         
         if (null == amount) {
             if (log.isDebugEnabled()) {
-                log.debug("Recalculating value for program id: " + program.getPaoId());
+                log.debug("Recalculating value for program id: " + programId + "\t gear id: " + gearId);
             }
             executor.execute(new Runnable() {
                 @Override
                 public void run() {
                     try {
-                        cache.get(program.getPaoId(), new Callable<EstimatedLoadReductionAmount>() {
+                        cache.get(resultKey, new Callable<EstimatedLoadResult>() {
                             @Override
-                            public EstimatedLoadReductionAmount call() throws Exception {
-                                return estimatedLoadService.calculateProgramLoadReductionAmounts(program);
+                            public EstimatedLoadResult call() {
+                                try {
+                                    LMProgramBase programBase = getLmProgramBase(programId);
+                                    return estimatedLoadService.calculateProgramLoadReductionAmounts(
+                                            programBase.getPaoIdentifier(), gearId);
+                                } catch (EstimatedLoadException e) {
+                                    return e;
+                                }
                             }
                         });
                     } catch (ExecutionException e) {
-                        if (e.getCause() instanceof EstimatedLoadCalculationException) {
-                            EstimatedLoadReductionAmount error = createErrorObject(
-                                    (EstimatedLoadCalculationException) e.getCause());
-                            cache.put(program.getPaoId(), error);
-                        } else {
-                           log.error("Unknown exception in estimated load calculation: " + e);
-                        }
+                        log.error("Unknown exception in estimated load calculation.", e);
                     }
                 }
             });
         } else {
             if (log.isDebugEnabled()) {
-                log.debug("Cache hit for program id: " + program.getPaoId());
+                log.debug("Cache hit for program id: " + programId + "\t gear id: " + gearId);
             }
         }
         
         return amount;
     }
 
-    /** Retrieves the EstimatedLoadReductionAmount object for a given LM control area.
-     * This includes estimated load fields: connected load, diversified load, and kW savings max/now.
-     * @throws EstimatedLoadCalculationException 
-     */
-    public EstimatedLoadReductionAmount getControlAreaValue(PaoIdentifier paoId)
-            throws EstimatedLoadCalculationException {
+    public EstimatedLoadSummary getControlAreaValue(PaoIdentifier paoId) {
         Set<Integer> programIdsForControlArea = controlAreaDao.getProgramIdsForControlArea(paoId.getPaoId());
-        Set<EstimatedLoadReductionAmount> programAmounts = new HashSet<>();
-        Set<EstimatedLoadReductionAmount> errors = new HashSet<>();
+        Set<EstimatedLoadResult> programResults = new HashSet<>();
         
         for (Integer programId : programIdsForControlArea) {
-            LMProgramBase programBase = getLmProgramBase(programId);
-            int gearId = findCurrentGearId(programBase.getPaoIdentifier());
-            programAmounts.add(estimatedLoadService.calculateProgramLoadReductionAmounts(
-                    programBase.getPaoIdentifier(), gearId));
+            programResults.add(getProgramValue(programId));
         }
-        return sumEstimatedLoadAmounts(paoId, programAmounts, errors);
+        return sumEstimatedLoadAmounts(paoId, programResults);
     }
 
-    /** Retrieves the EstimatedLoadReductionAmount object for a given LM scenario.
-     * This includes estimated load fields: connected load, diversified load, and kW savings max/now.
-     * @throws EstimatedLoadCalculationException 
-     */
-    public EstimatedLoadReductionAmount getScenarioValue(PaoIdentifier paoId)
-            throws EstimatedLoadCalculationException {
+    public EstimatedLoadSummary getScenarioValue(PaoIdentifier paoId) {
         Map<Integer, ScenarioProgram> programsForScenario = scenarioDao.findScenarioProgramsForScenario(
                 paoId.getPaoId());
-        Set<EstimatedLoadReductionAmount> programAmounts = new HashSet<>();
-        Set<EstimatedLoadReductionAmount> errors = new HashSet<>();
+        Set<EstimatedLoadResult> programAmounts = new HashSet<>();
         
         for (Integer programId : programsForScenario.keySet()) {
-            LMProgramBase programBase = getLmProgramBase(programId);
-            int gearId = estimatedLoadDao.getCurrentGearIdForProgram(programId,
-                    programsForScenario.get(programId).getStartGear());
-            programAmounts.add(estimatedLoadService.calculateProgramLoadReductionAmounts(
-                    programBase.getPaoIdentifier(), gearId)); 
+            int startGearId = programsForScenario.get(programId).getStartGear();
+            programAmounts.add(getProgramValue(programId, startGearId)); 
         }
-        return sumEstimatedLoadAmounts(paoId, programAmounts, errors);
+        return sumEstimatedLoadAmounts(paoId, programAmounts);
     }
     
     /** This method takes a Set of EstimatedLoadReductionAmount objects and sums up each of the four estimated load
@@ -133,74 +147,108 @@ public class EstimatedLoadBackingServiceHelperImpl implements EstimatedLoadBacki
      * the estimated amounts of all of their component programs.
      * 
      * @param paoId The PaoIdentifier of the control area or scenario whose programs are summed.
-     * @param programAmounts The estimated load amounts for each program in the control area/scenario.
+     * @param programResults The estimated load amounts for each program in the control area/scenario.
      * @param errors The list of errors that occurred when evaluating each program.
      * @return The sum of all EstimatedLoadReductionAmount in the set of programAmounts 
      * as a single EstimatedLoadReductionAmount.
-     * @throws EstimatedLoadCalculationException 
+     * @throws EstimatedLoadException 
      */
-    private EstimatedLoadReductionAmount sumEstimatedLoadAmounts(PaoIdentifier paoId,
-            Set<EstimatedLoadReductionAmount> programAmounts, Set<EstimatedLoadReductionAmount> errors)
-            throws EstimatedLoadCalculationException {
-        int contributingPrograms = 0;
+    private EstimatedLoadSummary sumEstimatedLoadAmounts(PaoIdentifier paoId, Set<EstimatedLoadResult> programResults) {
+        int totalPrograms = programResults.size();
+        int contributing = 0;
+        int calculating = 0;
+        int error = 0;
+        
         double sumConnectedLoad = 0.0;
         double sumDiversifiedLoad = 0.0;
         double sumMaxKwSavings = 0.0;
         double sumNowKwSavings = 0.0;
-        for (EstimatedLoadReductionAmount elra : programAmounts) {
-            if (!elra.isError()) {
-                sumConnectedLoad += elra.getConnectedLoad();
-                sumDiversifiedLoad += elra.getDiversifiedLoad();
-                sumMaxKwSavings += elra.getMaxKwSavings();
-                sumNowKwSavings += elra.getNowKwSavings();
-                contributingPrograms++;
-            } else {
-                errors.add(elra);
+        for (EstimatedLoadResult result : programResults) {
+            if (result == null) {
+                calculating++;
+            } else if (result instanceof EstimatedLoadAmount) {
+                EstimatedLoadAmount amount = (EstimatedLoadAmount) result;
+                sumConnectedLoad += amount.getConnectedLoad();
+                sumDiversifiedLoad += amount.getDiversifiedLoad();
+                sumMaxKwSavings += amount.getMaxKwSavings();
+                sumNowKwSavings += amount.getNowKwSavings();
+                contributing++;
+            } else if (result instanceof EstimatedLoadException) {
+                error++;
             }
         }
-        if (contributingPrograms == 0) {
-                throw new EstimatedLoadCalculationException(Type.NO_CONTRIBUTING_PROGRAMS);
-        }
-        if (errors.size() > 0) {
-            if (paoId.getPaoType() == PaoType.LM_SCENARIO) {
-                return new EstimatedLoadReductionAmount(sumConnectedLoad, sumDiversifiedLoad, sumMaxKwSavings, sumNowKwSavings,
-                        true, new EstimatedLoadCalculationException(Type.SCENARIO_HAS_ERRORS));
-            } else if (paoId.getPaoType() == PaoType.LM_CONTROL_AREA) {
-                return new EstimatedLoadReductionAmount(sumConnectedLoad, sumDiversifiedLoad, sumMaxKwSavings, sumNowKwSavings,
-                        true, new EstimatedLoadCalculationException(Type.CONTROL_AREA_HAS_ERRORS));
-            }
-        }
-        return new EstimatedLoadReductionAmount(sumConnectedLoad, sumDiversifiedLoad, sumMaxKwSavings, sumNowKwSavings,
-                false, null);
+        
+        return new EstimatedLoadSummary(totalPrograms, contributing, calculating, error,
+                new EstimatedLoadAmount(sumConnectedLoad, sumDiversifiedLoad, sumMaxKwSavings, sumNowKwSavings));
     }
 
-    public int findCurrentGearId(PaoIdentifier program) throws EstimatedLoadCalculationException {
-        LMProgramBase programBase = getLmProgramBase(program.getPaoId());
+    @Override
+    public int findCurrentGearId(int programId) throws EstimatedLoadException {
+        LMProgramBase programBase = getLmProgramBase(programId);
         int gearNumber;
         if (((IGearProgram) programBase).getCurrentGear() == null) {
             gearNumber = 1;
         } else {
             gearNumber = ((IGearProgram) programBase).getCurrentGearNumber();
         }
-        return estimatedLoadDao.getCurrentGearIdForProgram(program.getPaoId(), gearNumber);
+        return estimatedLoadDao.getCurrentGearIdForProgram(programId, gearNumber);
     }
 
-    public LMProgramBase getLmProgramBase(int programId) throws EstimatedLoadCalculationException {
+    @Override
+    public LMProgramBase getLmProgramBase(int programId) throws EstimatedLoadException {
         LMProgramBase programBase = null;
         try {
             programBase = clientConnection.getProgramSafe(programId);
         } catch (ConnectionException e){
-            throw new EstimatedLoadCalculationException(Type.LOAD_MANAGEMENT_SERVER_NOT_CONNECTED);
+            throw new LmServerNotConnectedException();
         } catch (NotFoundException e) {
-            throw new EstimatedLoadCalculationException(Type.LOAD_MANAGEMENT_DATA_NOT_FOUND);
+            throw new LmDataNotFoundExceptionException(programId);
         }
         if (programBase == null) {
-            throw new EstimatedLoadCalculationException(Type.LOAD_MANAGEMENT_DATA_NOT_FOUND);
+            throw new LmDataNotFoundExceptionException(programId);
         }
         return programBase;
     }
 
-    private EstimatedLoadReductionAmount createErrorObject(EstimatedLoadCalculationException e) {
-        return new EstimatedLoadReductionAmount(0.0, 0.0, 0.0, 0.0, true, e);
+    @Override
+    public MessageSourceResolvable resolveException(EstimatedLoadException e, YukonUserContext userContext) {
+        if (e instanceof ApplianceCategoryNotFoundException) {
+            return new YukonMessageSourceResolvable("yukon.web.modules.dr.estimatedLoad.calcErrors.applianceCategoryNotFound");
+        } else if (e instanceof ApplianceCategoryInfoNotFoundException) {
+            return new YukonMessageSourceResolvable("yukon.web.modules.dr.estimatedLoad.calcErrors.applianceCategoryInfoNotFound");
+        } else if (e instanceof GearNotFoundException) {
+            return new YukonMessageSourceResolvable("yukon.web.modules.dr.estimatedLoad.calcErrors.gearNumberNotFound");
+        } else if (e instanceof InputOutOfRangeException) {
+            InputOutOfRangeException inputException = ((InputOutOfRangeException) e);
+            Formula formula = inputException.getFormula();
+            String formulaComponentName = null;
+            if (inputException.getType() == Type.FUNCTION) {
+                formulaComponentName = formula.getFunctionById(inputException.getId()).getName();
+            } else if (inputException.getType() == Type.LOOKUP) {
+                formulaComponentName = formula.getTableById(inputException.getId()).getName();
+            } else if (inputException.getType() == Type.TIME_LOOKUP) {
+                formulaComponentName = formula.getTimeTableById(inputException.getId()).getName();
+            } else {
+                MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+                formulaComponentName = accessor
+                        .getMessage(new YukonMessageSourceResolvable("yukon.web.modules.dr.estimatedLoad.unknown"));
+            }
+            return new YukonMessageSourceResolvable("yukon.web.modules.dr.estimatedLoad.calcErrors.inputOutOfRange",
+                    inputException.getFormula().getName(), formulaComponentName);
+        } else if (e instanceof InputValueNotFoundException) {
+            return new YukonMessageSourceResolvable("yukon.web.modules.dr.estimatedLoad.calcErrors.inputValueNotFound",
+                    ((InputValueNotFoundException) e).getFormulaName());
+        } else if (e instanceof LmDataNotFoundExceptionException) {
+            return new YukonMessageSourceResolvable("yukon.web.modules.dr.estimatedLoad.calcErrors.loadManagementDataNotFound");
+        } else if (e instanceof LmServerNotConnectedException) {
+            return new YukonMessageSourceResolvable("yukon.web.modules.dr.estimatedLoad.calcErrors.loadManagementServerNotConnected");
+        } else if (e instanceof NoAppCatFormulaException) {
+            return new YukonMessageSourceResolvable("yukon.web.modules.dr.estimatedLoad.calcErrors.acFormulaAssignmentNotFound");
+        } else if (e instanceof NoGearFormulaException) {
+            return new YukonMessageSourceResolvable("yukon.web.modules.dr.estimatedLoad.calcErrors.gearFormulaAssignmentNotFound");
+        } else {
+            return new YukonMessageSourceResolvable("yukon.web.modules.dr.estimatedLoad.calcErrors.unknownError");
+        }
     }
+
 }

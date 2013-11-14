@@ -54,27 +54,34 @@
                         </cti:checkRolesAndProperties>
                         <cti:checkRolesAndProperties value="ENABLE_ESTIMATED_LOAD">
                             <cti:dataUpdaterCallback
-                                function="Yukon.EstimatedLoad.createToolTip"
-                                value="ESTIMATED_LOAD/${programId}/PROGRAM"/>
+                                function="Yukon.EstimatedLoad.displayProgramValue"
+                                value="ESTIMATED_LOAD/${programId}/PROGRAM"
+                                initialize="true"/>
                             <tags:nameValue2 nameKey="yukon.web.modules.dr.estimatedLoad.info.connectedLoad">
                                 <div data-pao="${programId}">
                                     <cti:icon icon="icon-error" classes="dn"/>
-                                    <cti:icon icon="icon-spinner" classes="f-spinner"/>
-                                    <span class="f-connected"></span>
+                                    <cti:icon icon="icon-spinner"/>
+                                    <span class="f-connected-load">
+                                        <i:inline key="yukon.web.modules.dr.estimatedLoad.calculating"/>
+                                    </span>
                                 </div>
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey="yukon.web.modules.dr.estimatedLoad.info.diversifiedLoad">
                                 <div data-pao="${programId}">
                                     <cti:icon icon="icon-error" classes="dn"/>
-                                    <cti:icon icon="icon-spinner" classes="f-spinner"/>
-                                    <span class="f-diversified"></span>
+                                    <cti:icon icon="icon-spinner"/>
+                                    <span class="f-diversified-load">
+                                        <i:inline key="yukon.web.modules.dr.estimatedLoad.calculating"/>
+                                    </span>
                                 </div>
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey="yukon.web.modules.dr.estimatedLoad.info.kwSavings">
                                 <div data-pao="${programId}">
                                     <cti:icon icon="icon-error" classes="dn"/>
-                                    <cti:icon icon="icon-spinner" classes="f-spinner"/>
-                                    <span class="f-kwSavings"></span>
+                                    <cti:icon icon="icon-spinner"/>
+                                    <span class="f-kw-savings">
+                                        <i:inline key="yukon.web.modules.dr.estimatedLoad.calculating"/>
+                                    </span>
                                 </div>
                             </tags:nameValue2>
                         </cti:checkRolesAndProperties>
