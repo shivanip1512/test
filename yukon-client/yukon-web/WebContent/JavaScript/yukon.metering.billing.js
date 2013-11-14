@@ -381,12 +381,12 @@ Yukon.MeteringBilling = (function() {
                     }
                     haveFieldErr[err.field] = true;
                     var field = null;
-                    if (err.field == "scheduleCronString") {
+                    if (err.field === "scheduleCronString") {
                         field = form.find("[name="+ err.field +"_CRONEXP_FREQ]");
                         var opt = field.find(":selected");
-                        if (opt.val() == "WEEKLY") {
+                        if (opt.val() === "WEEKLY") {
                         	form.find("#scheduleCronString_cronExpWeeklyDiv input").addClass("error");
-                        } else if (opt.val() == "CUSTOM") {
+                        } else if (opt.val() === "CUSTOM") {
                         	form.find("#scheduleCronString_cronExpCustomDiv input").addClass("error");
                         }
                     } else {

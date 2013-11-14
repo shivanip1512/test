@@ -136,7 +136,7 @@ public class ScheduledBillingFileExportController {
         try {
             String scheduleCronString = cronExpressionTagService.build("scheduleCronString", request, userContext);
             exportData.setScheduleCronString(scheduleCronString);
-        } catch (IllegalArgumentException e) {
+        } catch (ServletRequestBindingException | IllegalArgumentException | ParseException e) {
             bindingResult.rejectValue("scheduleCronString", "yukon.common.invalidCron");
         }
         

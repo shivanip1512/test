@@ -527,7 +527,7 @@ function updatePadSideSelect(padSideSelect, padSide) {
 	var options = jQuery(padSideSelect).children('option'),
         i;
     for (i = 0; i < options.length; i++) {
-        if (jQuery(options[i]).val() == padSide) {
+        if (jQuery(options[i]).val() === padSide) {
             padSideSelect.attr('selectedIndex', i);
         }
     }

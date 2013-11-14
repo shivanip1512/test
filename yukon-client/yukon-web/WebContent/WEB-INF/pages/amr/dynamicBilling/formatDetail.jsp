@@ -274,7 +274,7 @@ BILLING_ERRORS = {
                                     <option value="Zero"><cti:msg2 key=".zero"/></option>
                                     <option value="Custom"><cti:msg2 key=".custom"/></option> 
                                 </select>
-                                <input type="text" id="genericPadChar" size="1" maxLength="1" value="" onkeyup="updateFormat('generic', 'padChar');" />
+                                <input type="text" id="genericPadChar" size="2" maxLength="1" value="" onkeyup="updateFormat('generic', 'padChar');" />
                             </ct:nameValue2>
                         </ct:nameValueContainer2>
                         </div>
