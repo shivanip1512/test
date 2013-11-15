@@ -20,7 +20,7 @@ public:
 };
 
 
-struct IM_EX_MSG AutoCloseAllConnections
+struct AutoCloseAllConnections
 {
     ~AutoCloseAllConnections()
     {

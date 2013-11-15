@@ -132,7 +132,7 @@ void CtiLMClientListener::sendMessageToClient(std::auto_ptr<CtiMessage> msg)
     {
         for each( CtiLMConnectionPtr conn in _connections )
         {
-            if( conn.get() == msg->getConnectionHandle() && conn->valid() )
+            if( conn.get() == msg->getConnectionHandle() && conn->isViable() )
             {
                 conn->WriteConnQue(msg.release());
                 return;
@@ -164,7 +164,7 @@ void CtiLMClientListener::BroadcastMessage(CtiMessage* msg)
         for( int i = 1; i < _connections.size(); i++ )
         {
             // replicate message makes a deep copy
-            if( _connections[i]->valid() )
+            if( _connections[i]->isViable() )
             {
                 CtiMessage* replicated_msg = msg->replicateMessage();
                 _connections[i]->WriteConnQue(replicated_msg);
@@ -173,7 +173,7 @@ void CtiLMClientListener::BroadcastMessage(CtiMessage* msg)
         //Use up the original on the first client, no waste
         if(_connections.size() > 0)
         {
-            if( _connections[0]->valid())
+            if( _connections[0]->isViable() )
             {
                 _connections[0]->WriteConnQue(msg);
                 msg = NULL;
@@ -219,13 +219,13 @@ void CtiLMClientListener::_listen()
                 // Create new connection manager
                 CtiLMConnectionPtr new_conn( CTIDBG_new CtiServerConnection( _listenerConnection, &_incomingQueue ));
 
+                // Kick off the connection's communication threads.
+                new_conn->start();
+                
                 {
                     RWRecursiveLock<RWMutexLock>::LockGuard guard( _connmutex );
                     _connections.push_back( new_conn );
                 }
-
-                // Kick off the connection's communication threads.
-                new_conn->start();
 
                 {
                     CtiLockGuard< CtiLogger > logger_guard(dout);
@@ -289,7 +289,7 @@ void CtiLMClientListener::_check()
                     CtiLMConnectionVec::iterator itr = _connections.begin();
                     while( itr != _connections.end() )
                     {
-                        if( (*itr)->valid() != TRUE )
+                        if( (*itr)->verifyConnection() != NORMAL )
                         {
                             if( _LM_DEBUG & LM_DEBUG_STANDARD )
                             {

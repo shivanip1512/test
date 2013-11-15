@@ -30,6 +30,10 @@ using namespace std;
 
 #include "dbghelp.h"
 
+#include "connection_base.h"
+// Close all yukon messaging connections when this object is destroyed
+Cti::Messaging::AutoCloseAllConnections g_autoCloseAllConnections;
+
 extern INT DispatchMainFunction(INT, CHAR**);
 
 int main(int argc, char* argv[] )

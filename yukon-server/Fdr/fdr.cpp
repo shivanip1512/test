@@ -46,6 +46,9 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "fdrservice.h"
 #include "id_fdr.h"
 
+#include "connection_base.h"
+// Close all yukon messaging connections when this object is destroyed
+Cti::Messaging::AutoCloseAllConnections g_autoCloseAllConnections;
 
 int install( DWORD dwStart = SERVICE_DEMAND_START );
 int remove( void );

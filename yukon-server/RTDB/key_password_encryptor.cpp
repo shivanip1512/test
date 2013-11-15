@@ -14,7 +14,9 @@
 
 #include <openssl/md5.h>
 
-
+#include "connection_base.h"
+// Close all yukon messaging connections when this object is destroyed
+Cti::Messaging::AutoCloseAllConnections g_autoCloseAllConnections;
 
 int main (int argc, char *argv[])
 {

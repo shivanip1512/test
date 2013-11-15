@@ -54,7 +54,17 @@ void ActiveMQConnectionManager::close()
     if( isRunning() )
     {
         interrupt(CtiThread::SHUTDOWN);
-        join();
+
+        {
+            CtiLockGuard<CtiCriticalSection> lock(_closeConnectionMux);
+
+            if( _connection )
+            {
+                _connection->close();
+            }
+        }
+
+        join(); // outside lock to avoid deadlock
     }
 
     releaseConnectionObjects();
@@ -68,6 +78,8 @@ inline bool debugActivityInfo()
 
 void ActiveMQConnectionManager::releaseConnectionObjects()
 {
+    CtiLockGuard<CtiCriticalSection> lock(_closeConnectionMux);
+
     _producers.clear();
     _consumers.clear();
 
@@ -84,15 +96,16 @@ void ActiveMQConnectionManager::run()
     {
         try
         {
-            verifyConnectionObjects();
+            if( verifyConnectionObjects() )
+            {
+                updateCallbacks();
 
-            updateCallbacks();
+                sendOutgoingMessages();
 
-            sendOutgoingMessages();
+                dispatchTempQueueReplies();
 
-            dispatchTempQueueReplies();
-
-            dispatchIncomingMessages();
+                dispatchIncomingMessages();
+            }
         }
         catch( ActiveMQ::ConnectionException &ce )
         {
@@ -122,9 +135,9 @@ static const std::set<const ActiveMQ::Queues::InboundQueue *> ThriftInboundQueue
     (&ActiveMQ::Queues::InboundQueue::NetworkManagerE2eDataIndication);
 
 
-void ActiveMQConnectionManager::verifyConnectionObjects()
+bool ActiveMQConnectionManager::verifyConnectionObjects()
 {
-    if( ! _connection.get() ||
+    if( ! _connection ||
         ! _connection->verifyConnection() )
     {
         {
@@ -132,12 +145,20 @@ void ActiveMQConnectionManager::verifyConnectionObjects()
             dout << CtiTime() << " Connection invalid, creating connection " << __FUNCTION__ << " @ " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
         }
 
-        boost::scoped_ptr<ActiveMQ::ManagedConnection> tempConnection(
-                new ActiveMQ::ManagedConnection(_broker_uri));
+        releaseConnectionObjects();
 
-        tempConnection->start();
+        {
+            CtiLockGuard<CtiCriticalSection> lock(_closeConnectionMux);
 
-        _connection.swap(tempConnection);
+            if( isSet(SHUTDOWN) )
+            {
+                return false; // prevent starting a new connection while closing
+            }
+
+            _connection.reset( new ActiveMQ::ManagedConnection( _broker_uri ));
+        }
+
+        _connection->start(); // start the connection outside the lock
 
         {
             CtiLockGuard<CtiLogger> dout_guard(dout);
@@ -194,6 +215,8 @@ void ActiveMQConnectionManager::verifyConnectionObjects()
             _consumers.push_back(consumer);
         }
     }
+
+    return true;
 }
 
 

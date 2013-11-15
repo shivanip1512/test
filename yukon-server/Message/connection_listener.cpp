@@ -50,18 +50,31 @@ void CtiListenerConnection::start()
         return;
     }
 
-    for(;!_closed;)
+    if( _closed )
+    {
+        Sleep(1000);
+        return;
+    }
+
+    while( !_closed )
     {
         try
         {
             logDebug( __FUNCTION__, "connecting to the broker." );
 
-            closeConnection();
+            releaseResources();
 
-            deleteResources();
+            {
+                CtiLockGuard<CtiCriticalSection> lock(_closeConnectionMux);
 
-            // Create and start connection to broker, throws ConnectionException
-            _connection.reset( new ManagedConnection( Broker::flowControlURI ));
+                if( _closed )
+                {
+                    break; // prevent starting a new connection while closing
+                }
+
+                _connection.reset( new ManagedConnection( Broker::flowControlURI ));
+            }
+
             _connection->start();
 
             // Create a Session
@@ -90,8 +103,6 @@ void CtiListenerConnection::start()
 
         Sleep( 1000 ); // Don't pound the system....
     }
-
-    logStatus( __FUNCTION__, "has closed." );
 }
 
 /**
@@ -99,18 +110,26 @@ void CtiListenerConnection::start()
  */
 void CtiListenerConnection::close()
 {
-    if( _closed )
     {
-        return;
+        CtiLockGuard<CtiCriticalSection> lock(_closeConnectionMux);
+
+        if( _closed )
+        {
+            return;
+        }
+
+        // once the connection has been closed, it cannot be restarted
+        _closed = true;
+
+        closeConnection();
     }
 
-    // once the connection has been closed, it cannot be restarted
-    _closed = true;
-    _valid  = false;
+    // this delay allow to complete any functions we are currently in, before doing a cleanup
+    Sleep(1000);
 
-    closeConnection();
+    releaseResources();
 
-    deleteResources();
+    logStatus( __FUNCTION__, "has closed." );
 }
 
 /**
@@ -119,7 +138,7 @@ void CtiListenerConnection::close()
  */
 bool CtiListenerConnection::verifyConnection()
 {
-    if( ! _connection || ! _connection->verifyConnection() )
+    if( _closed || !_connection || !_connection->verifyConnection() )
     {
         _valid = false;
     }
@@ -135,7 +154,7 @@ bool CtiListenerConnection::acceptClient()
 {
     _clientReplyDest.reset();
 
-    if( !_valid )
+    if( _closed || !_valid )
     {
         return false;
     }
@@ -260,8 +279,12 @@ void CtiListenerConnection::logException( string fileName, int line, string exce
 /**
  * cleans up consumer, producer, sessions
  */
-void CtiListenerConnection::deleteResources()
+void CtiListenerConnection::releaseResources()
 {
+    CtiLockGuard<CtiCriticalSection> lock(_closeConnectionMux);
+
+    closeConnection();
+
     _consumer.reset();
     _session.reset();
     _connection.reset(); // release the shared_ptr (child server connection may still be sharing this)

@@ -106,8 +106,10 @@ private:
 
     void run();
 
+    CtiCriticalSection _closeConnectionMux;
+
     //  Main loop methods
-    void verifyConnectionObjects();
+    bool verifyConnectionObjects();
     void releaseConnectionObjects();
 
     void updateCallbacks();

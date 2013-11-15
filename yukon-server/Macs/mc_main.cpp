@@ -48,6 +48,10 @@
 
 #include <crtdbg.h>
 
+#include "connection_base.h"
+// Close all yukon messaging connections when this object is destroyed
+Cti::Messaging::AutoCloseAllConnections g_autoCloseAllConnections;
+
 using namespace std;
 
 int main(int argc, char* argv[] )

@@ -27,6 +27,10 @@ using namespace std;
 #include "logger.h"
 #include "thread_monitor.h"
 
+#include "connection_base.h"
+// Close all yukon messaging connections when this object is destroyed
+Cti::Messaging::AutoCloseAllConnections g_autoCloseAllConnections;
+
 extern INT ScannerMainFunction(INT, CHAR**);
 
 int main(int argc, char* argv[] )

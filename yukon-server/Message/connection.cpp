@@ -651,14 +651,14 @@ void CtiConnection::writeIncomingMessageToQueue( CtiMessage *msg )
  * verify connection status flags and threads status.
  * @return NORMAL if connection is started and still viable, NOTNORMAL otherwise
  */
-INT CtiConnection::verifyConnection()
+int CtiConnection::verifyConnection()
 {
     try
     {
         {
             ReaderGuard guard( _connLock );
 
-            if( isTerminated() || ! isStarted() )
+            if( ! isViable() || ! _connectCalled )
             {
                 return NOTNORMAL;
             }
@@ -672,7 +672,7 @@ INT CtiConnection::verifyConnection()
         {
             WriterGuard guard( _connLock );
 
-            if( isTerminated() )
+            if( ! isViable() )
             {
                 return NOTNORMAL;
             }
@@ -705,22 +705,6 @@ INT CtiConnection::verifyConnection()
 
         return NOTNORMAL;
     }
-}
-
-/**
- * check to see if the connection is terminated
- */
-bool CtiConnection::isTerminated() const
-{
-    return (( ! _valid && _dontReconnect ) || _noLongerViable || _bQuit );
-}
-
-/**
- * check to see if the connection is started
- */
-bool CtiConnection::isStarted() const
-{
-    return _connectCalled;
 }
 
 /**
@@ -895,7 +879,7 @@ CtiConnection::Que_t & CtiConnection::getInQueueHandle()
  */
 bool CtiConnection::isViable() const
 {
-    return !_noLongerViable;
+    return ((_valid || !_dontReconnect) && !_noLongerViable && !_bQuit);
 }
 
 /**

@@ -148,12 +148,10 @@ public:
     Que_t& getOutQueueHandle();
     Que_t& getInQueueHandle();
 
-    INT  verifyConnection();
+    int  verifyConnection();
     int  outQueueCount() const;
     bool isViable() const;
     bool valid() const;
-    bool isStarted() const;
-    bool isTerminated() const;
 
     const CtiTime& getLastReceiptTime() const;
 

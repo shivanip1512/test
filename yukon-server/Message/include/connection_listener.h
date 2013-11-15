@@ -2,6 +2,7 @@
 
 #include <string>
 #include "dlldefs.h"
+#include "critical_section.h"
 #include "connection.h"
 
 class IM_EX_MSG CtiListenerConnection : public Cti::Messaging::BaseConnection
@@ -14,6 +15,8 @@ class IM_EX_MSG CtiListenerConnection : public Cti::Messaging::BaseConnection
     std::auto_ptr<cms::Destination>                        _clientReplyDest;
     std::auto_ptr<Cti::Messaging::ActiveMQ::QueueConsumer> _consumer;
 
+    CtiCriticalSection _closeConnectionMux;
+
     bool _closed;
     bool _valid;
 
@@ -25,7 +28,7 @@ class IM_EX_MSG CtiListenerConnection : public Cti::Messaging::BaseConnection
     void logDebug     ( std::string funcName, std::string note ) const;
     void logException ( std::string fileName, int line, std::string exceptionName = "", std::string note = "" ) const;
 
-    void deleteResources();
+    void releaseResources();
     void closeConnection();
 
 public:

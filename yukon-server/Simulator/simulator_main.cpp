@@ -12,6 +12,10 @@
 #include "logger.h"
 #include "guard.h"
 
+#include "connection_base.h"
+// Close all yukon messaging connections when this object is destroyed
+Cti::Messaging::AutoCloseAllConnections g_autoCloseAllConnections;
+
 using namespace std;
 
 int install(DWORD dwStart = SERVICE_DEMAND_START);

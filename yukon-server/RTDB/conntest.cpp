@@ -71,6 +71,8 @@ BOOL WINAPI CtrlHandler(DWORD fdwCtrlType)
     }
 }
 
+CtiListenerConnection listenerConnection( "com.eaton.eas.yukon.conntest" );
+
 void ConnectionHandlerThread( string name )
 {
     bool bQuit = false;
@@ -79,8 +81,6 @@ void ConnectionHandlerThread( string name )
 
     // Up this threads priority a notch over the other procs
     CTISetPriority( PRTYC_NOCHANGE, THREAD_PRIORITY_BELOW_NORMAL );
-
-    CtiListenerConnection listenerConnection( "com.eaton.eas.yukon.conntest" );
 
     try
     {
@@ -141,6 +141,8 @@ void runServer( string name )
             msg->dump();
         }
     }
+
+    listenerConnection.close();
 
     if(RW_THR_TIMEOUT == ConnThread_.join(2000))
     {
