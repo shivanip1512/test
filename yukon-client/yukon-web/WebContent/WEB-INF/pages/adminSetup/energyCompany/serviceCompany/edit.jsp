@@ -9,137 +9,112 @@
 
 <cti:standardPage module="adminSetup" page="serviceCompany.${mode}">
     <cti:url var="userInfoUrl" value="${baseUrl}/userInfo"/>
-    
+
         <script>
-        
-            /*
-                User is an array, however we are using multiSelectMode="false" in the picker
-                so it is reasonable to assume that we only care about the first item.  Still,
-                this feels bad.
-            */
-            var DC_INDEX = 0;
-            var FIND_ZIP_MSG = "<cti:msg key="yukon.web.modules.adminSetup.serviceCompany.findZipCode" javaScriptEscape="true" />";
-            
-            function removeDesignationCode(event, elem) {
-                event.stopPropagation();
-                // ul > li > span > a > i event originates with the i element (the red X), we want to remove the li
-                jQuery(event.target).parent().parent().parent().remove();
-            }
-            
+            // 'eq true' forces a boolean output even if EL var is empty
+            var canEditDesignationCodes = ${canEditDesignationCodes eq true};
+
             function addDesignationCode() {
-                var designationCode =  jQuery('#newDesignationCode').val(),
-                    str = [],
-                    curMarkup = jQuery('#designationCodes').html();
-                str.push('<li>');
-                    str.push('<span class="remove fr">');
-                    str.push("<a class='f-remove' href='javascript:removeDesignationCode()'><span class='icon icon-cross'></span></a>");
-                    str.push('</span>');
-                    str.push(designationCode);
-                    str.push('<input type="hidden" value="0" name="designationCodes['+ ++DC_INDEX +'].id"/>');
-                    str.push('<input type="hidden" value="'+ designationCode +'" name="designationCodes['+ DC_INDEX +'].value"/>');
-                    str.push('<input type="hidden" value="${serviceCompany.companyId}" name="designationCodes['+ DC_INDEX +'].serviceCompanyId"/>');
-                str.push('</li>');
-                
-                jQuery('#designationCodes').html(curMarkup + str.join(''));
+                var designationCode =  jQuery('#newDesignationCode').val();
+
+                var str = [];
+                str.push('<div class="f-designation-code f-removable-designation-code">');
+                str.push('<span class="f-remove-designation-code fr"><a href="#"><i class="icon icon-cross"></i></a></span>');
+                str.push(designationCode);
+                str.push('<input type="hidden" value="0" name="designationCodes[].id"/>');
+                str.push('<input type="hidden" value="'+ designationCode +'" name="designationCodes[].value" class="f-designation-code-value"/>');
+                str.push('<input type="hidden" value="${serviceCompany.companyId}" name="designationCodes[].serviceCompanyId"/>');
+                str.push('</div>');
+
+                jQuery('#designationCodes').append(str.join(''));
                 jQuery('#newDesignationCode').val('');
-                jQuery('#addDesignationCodeButton').prop({'disabled': true});
+                adjustIndexes();
             }
-            
+
+            // adjust indexes to be sequential for java List
+            function adjustIndexes() {
+                jQuery('#designationCodes').children(".f-designation-code").each(function (index) {
+                    jQuery(this).find(":input").each(function() {
+                        var name = jQuery(this).attr("name").replace(/\[.*?\]/, "["+index+"]");
+                        jQuery(this).attr("name", name);
+                    });
+                });
+            }
+
             jQuery(function() {
-                //get the number of designation codes.  we don't 'really' care about the order,
-                //however spring needs the list to be uniquely indexed
-                DC_INDEX = jQuery('#designationCodes li').length;
-                
-                if (jQuery('#addDesignationCodeButton').length) {
+                if (canEditDesignationCodes) {
                     jQuery('#addDesignationCodeButton').on('click', function (event) {
                         event.stopPropagation();
-                        addDesignationCode(event);
+                        addDesignationCode();
+                        jQuery('#addDesignationCodeButton').prop('disabled', true);
                     });
-                    jQuery('#addDesignationCodeButton').prop({'disabled': true});
-                }
-                
-                if (jQuery('#newDesignationCode').length) {
+
                     jQuery('#newDesignationCode').on('keyup', function (e) {
                         e.stopPropagation();
                         if (this.value.length == 0) {
-                            jQuery('#addDesignationCodeButton').prop({'disabled': true});
+                            jQuery('#addDesignationCodeButton').prop('disabled', true);
                         } else {
-                            jQuery('#addDesignationCodeButton').prop({'disabled': false});
                             if (e.keyCode == 13) {
                                 addDesignationCode();
+                                jQuery('#addDesignationCodeButton').prop('disabled', true);
+                            } else {
+                                jQuery('#addDesignationCodeButton').prop('disabled', false);
                             }
                         }
                         return false;
                     });
+
+                    jQuery('#newDesignationCode').on('keydown', preventSubmitForEnter);
                 }
-                
-             // TODO: the classes used below are not declared anywhere
-                jQuery('#findDesignationCode').on('focus', function () {
-                    if (jQuery(this).hasClass('default')) {
-                       this.value = "";
-                       this.removeClassName('default');
-                    }
-                });
-                
-                jQuery('#findDesignationCode').on('blur', function () {
-                    if (this.value.length == 0) {
-                        this.value = FIND_ZIP_MSG;
-                        this.addClassName('default');
-                        jQuery(this).removeClass('filtered').removeClass('found').removeClass('notFound');
-                        jQuery('#designationCodes').removeClass('filtering');
-                        jQuery('#designationCodes li').each (function (index, obj) {
-                            jQuery(obj).removeClass('filtered');
-                        });
-                    }
-                 });
-                
+
                 jQuery('#findDesignationCode').on('keyup', function () {
                     //search list for this zip
-                    var find = this.value,
-                        found = false;
+                    var zipCodeToFind = this.value;
+                    var found = false;
                     
-                    if (find.length > 0) {
-                        jQuery('#designationCodes').addClass('filtering');
-                        
-                        jQuery('#designationCodes li input:hidden[name*=".value"]').each(function (index, obj) {
-                            if (0 === jQuery(obj).val().indexOf(find, 0)) {
-                                // add filtered class to parent li
-                                jQuery(obj).parent().addClass('filtered');
-                                found = true;
-                            } else {
-                                // remove filtered class from parent li
-                                jQuery(obj).parent().removeClass('filtered');
-                            }
-                        });
-                        
+                    if (zipCodeToFind.length > 0) {
+                        jQuery('#designationCodes').children('.f-designation-code')
+                            .find('.f-designation-code-value').each(function () {
+                                var thisCode = this.value;
+                                if(0 == thisCode.indexOf(zipCodeToFind, 0)) {
+                                    found = true;
+                                    jQuery(this).parents('.f-designation-code')
+                                        .addClass('success fwb')
+                                        .removeClass('disabled');
+                                } else {
+                                    jQuery(this).parents('.f-designation-code')
+                                        .addClass('disabled')
+                                        .removeClass('success fwb');
+                                }
+                            });
+
                         if (found) {
-                            jQuery('#findDesignationCode').addClass('found');
-                            jQuery('#findDesignationCode').removeClass('notFound');
+                            jQuery('#findDesignationCode').addClass('success').removeClass('error');
                         } else {
-                            jQuery('#findDesignationCode').removeClass('found');
-                            jQuery('#findDesignationCode').addClass('notFound');
+                            jQuery('#findDesignationCode').addClass('error').removeClass('success');
                         }
-                        
+
                     } else {
-                        jQuery('#findDesignationCode').removeClass('found');
-                        jQuery('#findDesignationCode').removeClass('notFound');
-                        jQuery('#designationCodes').removeClass('filtering');
+                        jQuery('#findDesignationCode').removeClass('error success');
+                        jQuery('.f-designation-code').removeClass('disabled error success fwb');
                     }
-                 });
-                
-                function preventSubmit(e) {
+                     });
+
+                function preventSubmitForEnter(e) {
                     if(e.keyCode == 13) {
                         e.stopPropagation();
+                        return false;
                     }
                 };
-                
-                if(jQuery('#newDesignationCode').length) {
-                    jQuery('#newDesignationCode').on('keydown', preventSubmit);
-                }
-                
-                jQuery('findDesignationCode').on('keydown', preventSubmit);
-                
-                jQuery(document).on('click', '.remove.fr', removeDesignationCode);
+
+                jQuery('#findDesignationCode').on('keydown', preventSubmitForEnter);
+                jQuery('#serviceCompanyForm').on('click', '.f-remove-designation-code', function() {
+                    jQuery(this).parent('.f-removable-designation-code').slideUp(150)
+                        .promise().done(function () {
+                            this.remove();
+                            adjustIndexes();
+                        });
+                });
             });
         </script>
 
@@ -149,7 +124,7 @@
         <cti:param name="ecId" value="${ecId}"/>
     </cti:url>
     
-     <form:form commandName="serviceCompany" action="${action}" name="serviceCompanyForm">
+     <form:form id="serviceCompanyForm" commandName="serviceCompany" action="${action}" name="serviceCompanyForm">
         
         <tags:hidden path="companyId"/>
             
@@ -171,39 +146,51 @@
                 <c:if test="${canViewDesignationCodes}">
                     <tags:sectionContainer2 nameKey="designationCodeSection">
                         <!-- Contractor Zip Codes -->
-                        <input type="text" id="findDesignationCode" value="<cti:msg key="yukon.web.modules.adminSetup.serviceCompany.findZipCode" javaScriptEscape="true" />" class="default" />
-                        <div class="vertical_scrollbox search_list">
-                        <ul id="designationCodes">
-                            <c:forEach items="${serviceCompany.designationCodes}" varStatus="row">
-                                <!-- If we are editing and error any designation codes pending deletion will exist in the list
-                                     this ensures that we do not have a visual representation of that -->
-                                <c:if
-                                    test="${not empty serviceCompany.designationCodes[row.index].value}">
-                                    <li>
-                                    <cti:displayForPageEditModes modes="EDIT,CREATE">
-                                        <c:if test="${canEditDesignationCodes}">
-                                            <span class="remove fr"><a href="#" class="remove"><i class="icon icon-cross"></i></a></span>
+                        <input type="text" id="findDesignationCode"
+                            placeholder="<cti:msg key="yukon.web.modules.adminSetup.serviceCompany.findZipCode"/>"
+                            autocomplete="off"/>
+                        <div class="column-10-14 clearfix">
+                            <div class="column one">
+                                <div id="designationCodes" class="scroll-small">
+                                    <c:forEach items="${serviceCompany.designationCodes}" varStatus="row">
+                                        <%-- If we are editing and error any designation codes pending deletion will exist in the list
+                                             this ensures that we do not have a visual representation of that --%>
+                                        <c:if test="${not empty serviceCompany.designationCodes[row.index].value}">
+                                            <div class="f-designation-code f-removable-designation-code">
+                                                <cti:displayForPageEditModes modes="EDIT,CREATE">
+                                                    <c:if test="${canEditDesignationCodes}">
+                                                        <span class="f-remove-designation-code fr"><a href="#"><i class="icon icon-cross"></i></a></span>
+                                                    </c:if>
+                                                    ${fn:escapeXml(serviceCompany.designationCodes[row.index].value)}
+                                                    <input type="hidden" name="designationCodes[${row.index}].id" 
+                                                        value="${serviceCompany.designationCodes[row.index].id}"/>
+                                                    <input type="hidden"
+                                                        name="designationCodes[${row.index}].value"
+                                                        class="f-designation-code-value"
+                                                        value="${serviceCompany.designationCodes[row.index].value}"/>
+                                                    <input type="hidden" name="designationCodes[${row.index}].serviceCompanyId"
+                                                        value="${serviceCompany.designationCodes[row.index].serviceCompanyId}"/>
+                                                </cti:displayForPageEditModes>
+                                                <cti:displayForPageEditModes modes="VIEW">
+                                                    ${fn:escapeXml(serviceCompany.designationCodes[row.index].value)}
+                                                    <input type="hidden"
+                                                        name="designationCodes[${row.index}].value"
+                                                        class="f-designation-code-value"
+                                                        value="${serviceCompany.designationCodes[row.index].value}"/>
+                                                </cti:displayForPageEditModes>
+                                            </div>
                                         </c:if>
-                                        <span class="value"><spring:escapeBody htmlEscape="true">${serviceCompany.designationCodes[row.index].value}</spring:escapeBody></span>
-                                        <tags:hidden path="designationCodes[${row.index}].id" />
-                                        <tags:hidden path="designationCodes[${row.index}].value" />
-                                        <tags:hidden path="designationCodes[${row.index}].serviceCompanyId" />
-                                    </cti:displayForPageEditModes>
-                                    <cti:displayForPageEditModes modes="VIEW">
-                                        <span class="value"><spring:escapeBody htmlEscape="true">${serviceCompany.designationCodes[row.index].value}</spring:escapeBody></span>
-                                        <tags:hidden path="designationCodes[${row.index}].value" />
-                                    </cti:displayForPageEditModes>
-                                    </li>
-                                </c:if>
-                            </c:forEach>
-                        </ul>
+                                    </c:forEach>
+                                </div>
+                            </div>
+                            <div class="column two nogutter">
+                                <%-- empty --%>
+                            </div>
                         </div>
-
                         <cti:displayForPageEditModes modes="EDIT,CREATE">
                             <c:if test="${canEditDesignationCodes}">
-                            <div><input type="text" maxlength=60 id="newDesignationCode"
-                                class="zip"> <cti:button nameKey="assignDesignationCode"
-                                id="addDesignationCodeButton" /></div>
+                                <input type="text" maxlength=60 id="newDesignationCode" class="fl" autocomplete="off">
+                                <cti:button id="addDesignationCodeButton" nameKey="assignDesignationCode" disabled="true"/>
                             </c:if>
                         </cti:displayForPageEditModes>
                     </tags:sectionContainer2>
