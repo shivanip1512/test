@@ -19,6 +19,7 @@
 #include "cparms.h"
 #include "numstr.h"
 #include "socket_helper.h"
+#include "std_helper.h"
 
 #include "portfield.h"
 
@@ -30,6 +31,7 @@ using namespace std;
 
 using Cti::Protocols::GpuffProtocol;
 using Cti::Timing::MillisecondTimer;
+using Cti::Logging::Vector::Hex::operator<<;
 
 extern CtiDeviceManager DeviceManager;
 
@@ -575,6 +577,7 @@ UdpPortHandler::packet *UdpPortHandler::recvPacket(unsigned char * const recv_bu
 
     Cti::SocketAddress from;
 
+    int errorCode;
     int recv_len = SOCKET_ERROR;
 
     // check if we receive data from each family of sockets
@@ -589,15 +592,13 @@ UdpPortHandler::packet *UdpPortHandler::recvPacket(unsigned char * const recv_bu
             break; // break from the loop
         }
 
-        if( WSAGetLastError() != WSAEWOULDBLOCK )
+        if( (errorCode = WSAGetLastError()) != WSAEWOULDBLOCK )
         {
             if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Cti::Porter::UdpPortHandler::recvPacket() - **** Checkpoint - error " << WSAGetLastError() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-
+                dout << CtiTime() << " " << __FUNCTION__ << " - **** Checkpoint - error " << errorCode << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
-            return 0;
         }
     }
 
@@ -622,15 +623,39 @@ UdpPortHandler::packet *UdpPortHandler::recvPacket(unsigned char * const recv_bu
     p->ip   = from.toString();
     p->port = ntohs(from._addr.sa_in.sin_port);
 
-    p->len  = recv_len;
+    p->len  = 0;
     p->used = 0;
 
     /* This is not tested until I get a Lantronix device. */
     vector<unsigned char> pText;
-    _encodingFilter->decode(recv_buf,recv_len,pText);
+    if( ! _encodingFilter->decode(recv_buf, recv_len, pText) )
+    {
+        if( (gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001) )
+        {
+            const vector<unsigned char> payload(recv_buf, recv_buf + recv_len);
+
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+
+            dout << CtiTime() << " " << __FUNCTION__ << " - unable to decode packet received from "
+                 << p->ip << ":" << p->port << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+
+            if( ! payload.empty() )
+            {
+                dout << " " << payload << endl;
+            }
+            else
+            {
+                dout << " [empty]" << endl;
+            }
+        }
+
+        delete p;
+
+        return 0;
+    }
 
     p->data = CTIDBG_new unsigned char[pText.size()];
-    memcpy(p->data,(const char*) &*pText.begin(),pText.size());
+    std::copy(pText.begin(), pText.end(), p->data);
     p->len = pText.size();
 
     if( (gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001) ||
@@ -638,16 +663,17 @@ UdpPortHandler::packet *UdpPortHandler::recvPacket(unsigned char * const recv_bu
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
 
-        dout << CtiTime() << " Cti::Porter::UdpPortHandler::recvPacket() - packet received from "
-             << p->ip << ":" << p->port << " "
-             << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " " << __FUNCTION__ << " - packet received from "
+             << p->ip << ":" << p->port << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
 
-        for( int xx = 0; xx < pText.size(); xx++ )
+        if( ! pText.empty() )
         {
-            dout << " " << CtiNumStr(p->data[xx]).hex().zpad(2).toString();
+            dout << " " << pText << endl;
         }
-
-        dout << endl;
+        else
+        {
+            dout << " [empty]" << endl;
+        }
     }
 
     validatePacket(p);
