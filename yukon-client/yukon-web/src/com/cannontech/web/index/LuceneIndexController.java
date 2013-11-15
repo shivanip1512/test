@@ -6,9 +6,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
-import com.cannontech.common.search.index.IndexBuilder;
-import com.cannontech.common.search.index.IndexManager;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.web.search.lucene.index.IndexBuilder;
+import com.cannontech.web.search.lucene.index.IndexManager;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.JsonView;
 

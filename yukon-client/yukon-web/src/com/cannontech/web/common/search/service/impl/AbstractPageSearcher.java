@@ -19,15 +19,15 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.util.Version;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.search.TopDocsCallbackHandler;
-import com.cannontech.common.search.YukonObjectSearchAnalyzer;
-import com.cannontech.common.search.index.IndexManager;
-import com.cannontech.common.search.index.SearchTemplate;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.search.result.Page;
 import com.cannontech.web.common.search.service.PageSearcher;
+import com.cannontech.web.search.lucene.TopDocsCallbackHandler;
+import com.cannontech.web.search.lucene.YukonObjectSearchAnalyzer;
+import com.cannontech.web.search.lucene.index.IndexManager;
+import com.cannontech.web.search.lucene.index.SearchTemplate;
 import com.google.common.collect.Lists;
 
 public abstract class AbstractPageSearcher implements PageSearcher {

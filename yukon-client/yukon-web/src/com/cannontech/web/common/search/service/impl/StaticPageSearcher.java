@@ -32,14 +32,14 @@ import org.springframework.stereotype.Service;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.search.YukonObjectAnalyzer;
-import com.cannontech.common.search.YukonObjectSearchAnalyzer;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.search.result.Page;
 import com.cannontech.web.common.search.service.PageSearcher;
+import com.cannontech.web.search.lucene.YukonObjectAnalyzer;
+import com.cannontech.web.search.lucene.YukonObjectSearchAnalyzer;
 import com.cannontech.web.support.SiteMapHelper;
 import com.cannontech.web.support.SiteMapPage;
 import com.cannontech.web.support.SiteMapPage.PermissionLevel;

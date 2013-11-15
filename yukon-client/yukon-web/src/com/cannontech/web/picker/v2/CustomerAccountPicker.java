@@ -9,7 +9,6 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.common.search.criteria.YukonObjectCriteria;
 import com.cannontech.common.search.result.UltraLightCustomerAccount;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
@@ -17,6 +16,7 @@ import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.search.lucene.criteria.YukonObjectCriteria;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;

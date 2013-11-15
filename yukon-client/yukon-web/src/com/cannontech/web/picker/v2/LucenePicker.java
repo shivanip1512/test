@@ -8,10 +8,10 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.BooleanClause.Occur;
 
-import com.cannontech.common.search.criteria.YukonObjectCriteria;
 import com.cannontech.common.search.result.SearchResults;
-import com.cannontech.common.search.searcher.Searcher;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.search.lucene.criteria.YukonObjectCriteria;
+import com.cannontech.web.search.searcher.Searcher;
 
 public abstract class LucenePicker<T> extends BasePicker<T> {
     protected YukonObjectCriteria criteria = null;

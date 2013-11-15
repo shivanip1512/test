@@ -15,13 +15,13 @@ import org.springframework.stereotype.Service;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
-import com.cannontech.common.search.index.IndexManager;
-import com.cannontech.common.search.index.PaoIndexManager;
 import com.cannontech.common.userpage.model.SiteModule;
 import com.cannontech.common.userpage.model.UserPage;
 import com.cannontech.core.authorization.service.PaoPermissionService;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.common.search.result.Page;
+import com.cannontech.web.search.lucene.index.IndexManager;
+import com.cannontech.web.search.lucene.index.PaoIndexManager;
 import com.google.common.collect.ImmutableList;
 
 @Service

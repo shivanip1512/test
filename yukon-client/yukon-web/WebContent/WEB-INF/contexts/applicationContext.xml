@@ -1621,61 +1621,61 @@
     <bean name="programPicker" parent="abstractPaoPicker"
         class="com.cannontech.web.picker.v2.PaoPicker">
         <property name="criteria">
-            <bean class="com.cannontech.common.search.criteria.LMProgramCriteria"/>
+            <bean class="com.cannontech.web.search.lucene.criteria.LMProgramCriteria"/>
         </property>
     </bean>
     <bean name="cbcSubBusPicker" parent="abstractPaoPicker"
         class="com.cannontech.web.picker.v2.PaoPicker">
         <property name="criteria">
-            <bean class="com.cannontech.common.search.criteria.CBCSubBusCriteria"/>
+            <bean class="com.cannontech.web.search.lucene.criteria.CBCSubBusCriteria"/>
         </property>
     </bean>
     <bean name="capControlAreaPicker" parent="abstractPaoPicker"
         class="com.cannontech.web.picker.v2.PaoPicker">
         <property name="criteria">
-            <bean class="com.cannontech.common.search.criteria.CapControlAreaCriteria"/>
+            <bean class="com.cannontech.web.search.lucene.criteria.CapControlAreaCriteria"/>
         </property>
     </bean>
     <bean name="capBankPicker" parent="abstractPaoPicker"
         class="com.cannontech.web.picker.v2.PaoPicker">
         <property name="criteria">
-            <bean class="com.cannontech.common.search.criteria.CapBankCriteria"/>
+            <bean class="com.cannontech.web.search.lucene.criteria.CapBankCriteria"/>
         </property>
     </bean>
     <bean name="cbcPicker" parent="abstractPaoPicker"
         class="com.cannontech.web.picker.v2.PaoPicker">
         <property name="criteria">
-            <bean class="com.cannontech.common.search.criteria.CbcCriteria"/>
+            <bean class="com.cannontech.web.search.lucene.criteria.CbcCriteria"/>
         </property>
     </bean>
     <bean name="lmDevicePicker" parent="abstractPaoPicker"
         class="com.cannontech.web.picker.v2.PaoPicker">
         <property name="criteria">
-            <bean class="com.cannontech.common.search.criteria.LMDeviceCriteria"/>
+            <bean class="com.cannontech.web.search.lucene.criteria.LMDeviceCriteria"/>
         </property>
     </bean>
     <bean name="lmProgramOrScenarioPicker" parent="abstractPaoPicker"
         class="com.cannontech.web.picker.v2.PaoPicker">
         <property name="criteria">
-           <bean class="com.cannontech.common.search.criteria.LMProgramOrScenarioCriteria"/>
+           <bean class="com.cannontech.web.search.lucene.criteria.LMProgramOrScenarioCriteria"/>
         </property>  
     </bean>
     <bean name="devicePicker" parent="abstractPaoPicker"
         class="com.cannontech.web.picker.v2.PaoPicker">
         <property name="criteria">
-            <bean class="com.cannontech.common.search.criteria.DeviceCriteria"/>
+            <bean class="com.cannontech.web.search.lucene.criteria.DeviceCriteria"/>
         </property>
     </bean>
     <bean name="meterPicker" parent="abstractPaoPicker"
         class="com.cannontech.web.picker.v2.PaoPicker">
         <property name="criteria">
-            <bean class="com.cannontech.common.search.criteria.MeterCriteria"/>
+            <bean class="com.cannontech.web.search.lucene.criteria.MeterCriteria"/>
         </property>
     </bean>
     <bean name="voltageRegulatorPicker" parent="abstractPaoPicker"
         class="com.cannontech.web.picker.v2.PaoPicker">
         <property name="criteria">
-            <bean class="com.cannontech.common.search.criteria.VoltageRegulatorTypeCriteria"/>
+            <bean class="com.cannontech.web.search.lucene.criteria.VoltageRegulatorTypeCriteria"/>
         </property>
     </bean>
 
@@ -1688,13 +1688,13 @@
     <bean name="voltReductionPointPicker" parent="abstractPointPicker"
         class="com.cannontech.web.picker.v2.PointPicker">
         <property name="criteria">
-            <bean class="com.cannontech.common.search.criteria.VoltReductionCriteria"/>
+            <bean class="com.cannontech.web.search.lucene.criteria.VoltReductionCriteria"/>
         </property>
     </bean>
     <bean name="varPointPicker" parent="abstractPointPicker"
         class="com.cannontech.web.picker.v2.PointPicker">
         <property name="criteria">
-            <bean class="com.cannontech.common.search.criteria.CCVarCriteria"/>
+            <bean class="com.cannontech.web.search.lucene.criteria.CCVarCriteria"/>
         </property>
     </bean>
     
@@ -1705,31 +1705,31 @@
     <bean name="wattPointPicker" parent="abstractPointPicker"
         class="com.cannontech.web.picker.v2.PointPicker">
         <property name="criteria">
-            <bean class="com.cannontech.common.search.criteria.CCWattCriteria"/>
+            <bean class="com.cannontech.web.search.lucene.criteria.CCWattCriteria"/>
         </property>
     </bean>
     <bean name="voltPointPicker" parent="abstractPointPicker"
         class="com.cannontech.web.picker.v2.PointPicker">
         <property name="criteria">
-            <bean class="com.cannontech.common.search.criteria.CCVoltCriteria"/>
+            <bean class="com.cannontech.web.search.lucene.criteria.CCVoltCriteria"/>
         </property>
     </bean>
     <bean name="twoStatePointPicker" parent="abstractPointPicker"
         class="com.cannontech.web.picker.v2.PointPicker">
         <property name="criteria">
-            <bean class="com.cannontech.common.search.criteria.CCTwoStatePointCriteria"/>
+            <bean class="com.cannontech.web.search.lucene.criteria.CCTwoStatePointCriteria"/>
         </property>
     </bean>
     <bean name="analogPointPicker" parent="abstractPointPicker"
         class="com.cannontech.web.picker.v2.PointPicker">
         <property name="criteria">
-            <bean class="com.cannontech.common.search.criteria.AnalogPointCriteria"/>
+            <bean class="com.cannontech.web.search.lucene.criteria.AnalogPointCriteria"/>
         </property>
     </bean> 
     <bean name="statusPointPicker" parent="abstractPointPicker"
         class="com.cannontech.web.picker.v2.PointPicker">
         <property name="criteria">
-            <bean class="com.cannontech.common.search.criteria.StatusPointCriteria"/>
+            <bean class="com.cannontech.web.search.lucene.criteria.StatusPointCriteria"/>
         </property>
     </bean> 
 
@@ -1739,7 +1739,7 @@
 
     <bean name="waterMeterPicker" parent="abstractPaoPicker" class="com.cannontech.web.picker.v2.PaoPicker">
         <property name="criteria">
-            <bean class="com.cannontech.common.search.criteria.WaterUsageCriteria"/>
+            <bean class="com.cannontech.web.search.lucene.criteria.WaterUsageCriteria"/>
         </property>
     </bean>
 
@@ -1761,7 +1761,7 @@
     
     <bean name="twoWayLcrPicker" parent="abstractPaoPicker" class="com.cannontech.web.picker.v2.PaoPicker">
         <property name="criteria">
-            <bean class="com.cannontech.common.search.criteria.TwoWayLcrCriteria"/>
+            <bean class="com.cannontech.web.search.lucene.criteria.TwoWayLcrCriteria"/>
         </property>
     </bean>
     

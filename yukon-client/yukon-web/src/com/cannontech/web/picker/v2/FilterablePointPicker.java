@@ -5,8 +5,8 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.BooleanClause.Occur;
 
 import com.cannontech.common.search.FilterType;
-import com.cannontech.common.search.criteria.YukonObjectCriteria;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.search.lucene.criteria.YukonObjectCriteria;
 
 public class FilterablePointPicker extends PointPicker {
 

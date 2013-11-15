@@ -6,12 +6,12 @@ import org.apache.lucene.document.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.cannontech.common.search.index.CustomerAccountIndexManager;
-import com.cannontech.common.search.index.IndexManager;
 import com.cannontech.common.userpage.model.SiteModule;
 import com.cannontech.common.userpage.model.UserPage;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.common.search.result.Page;
+import com.cannontech.web.search.lucene.index.CustomerAccountIndexManager;
+import com.cannontech.web.search.lucene.index.IndexManager;
 import com.google.common.collect.ImmutableList;
 
 @Service

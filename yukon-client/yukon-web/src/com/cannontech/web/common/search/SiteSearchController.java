@@ -27,7 +27,7 @@ public class SiteSearchController {
     @Autowired private SiteSearchService siteSearchService;
 
     @RequestMapping(value="/autocomplete.json", method=RequestMethod.GET)
-    public @ResponseBody POJONode autoComplete(String type, @RequestParam(value="q") String searchString,
+    public @ResponseBody POJONode autoComplete(@RequestParam(value="q") String searchString,
             YukonUserContext userContext) {
         List<String> results = siteSearchService.autocomplete(searchString, userContext);
         POJONode response = new POJONode(results);
