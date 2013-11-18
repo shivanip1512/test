@@ -85,9 +85,9 @@
 	</filter>
 
     <filter>
-        <filter-name>clickjackFilter</filter-name>
+        <filter-name>generalSecurityFilter</filter-name>
         <filter-class>
-            com.cannontech.servlet.filter.ClickjackFilter
+            com.cannontech.servlet.filter.GeneralSecurityFilter
         </filter-class>
     </filter>
 
@@ -209,7 +209,7 @@
 	</filter-mapping>
 
     <filter-mapping>
-        <filter-name>clickjackFilter</filter-name>
+        <filter-name>generalSecurityFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
