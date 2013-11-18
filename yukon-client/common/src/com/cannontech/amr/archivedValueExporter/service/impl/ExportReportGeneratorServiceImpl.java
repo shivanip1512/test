@@ -321,15 +321,15 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
                            YukonUserContext userContext, TimeZoneFormat tzFormat) {
         switch (field.getFieldType()) {
             case METER_NUMBER:
-                return paoData.getMeterNumber();
+                return StringUtils.isEmpty(paoData.getMeterNumber()) ? "" : paoData.getMeterNumber();
             case DEVICE_NAME:
-                return paoData.getName();
+                return StringUtils.isEmpty(paoData.getName()) ? "" : paoData.getName();
             case ADDRESS:
-                return paoData.getAddressOrSerialNumber();
+                return StringUtils.isEmpty(paoData.getAddressOrSerialNumber()) ? "" : paoData.getAddressOrSerialNumber();
             case PLAIN_TEXT:
                 return field.getPattern();
             case ROUTE:
-                return paoData.getRouteName();
+                return StringUtils.isEmpty(paoData.getRouteName()) ? "" : paoData.getRouteName();
             case ATTRIBUTE_NAME:
                 return getAttributeName(attribute, userContext);
             case UNIT_OF_MEASURE:
