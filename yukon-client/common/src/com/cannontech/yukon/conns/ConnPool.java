@@ -88,9 +88,7 @@ public class ConnPool
 		DispatchClientConnection connToDispatch = clientConnectionFactory.createDispatchConn();
 		
 		Registration reg = new Registration();
-         /*
-         * App name will be value of cti.app.name environment variable
-         */
+        // App name will be value of cti.app.name system property.
         reg.setAppName(BootstrapUtils.getApplicationName());
 		reg.setAppIsUnique(0);
 		reg.setAppKnownPort(0);
