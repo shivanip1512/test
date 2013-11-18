@@ -51,10 +51,10 @@
 
                     jQuery('#newDesignationCode').on('keyup', function (e) {
                         e.stopPropagation();
-                        if (this.value.length == 0) {
+                        if (this.value.length === 0) {
                             jQuery('#addDesignationCodeButton').prop('disabled', true);
                         } else {
-                            if (e.keyCode == 13) {
+                            if (e.keyCode === 13) {
                                 addDesignationCode();
                                 jQuery('#addDesignationCodeButton').prop('disabled', true);
                             } else {
@@ -76,7 +76,7 @@
                         jQuery('#designationCodes').children('.f-designation-code')
                             .find('.f-designation-code-value').each(function () {
                                 var thisCode = this.value;
-                                if(0 == thisCode.indexOf(zipCodeToFind, 0)) {
+                                if(0 === thisCode.indexOf(zipCodeToFind, 0)) {
                                     found = true;
                                     jQuery(this).parents('.f-designation-code')
                                         .addClass('success fwb')
@@ -101,7 +101,7 @@
                      });
 
                 function preventSubmitForEnter(e) {
-                    if(e.keyCode == 13) {
+                    if(e.keyCode === 13) {
                         e.stopPropagation();
                         return false;
                     }
