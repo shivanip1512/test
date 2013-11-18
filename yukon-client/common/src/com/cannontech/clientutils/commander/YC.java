@@ -31,6 +31,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.KeysAndValues;
 import com.cannontech.common.util.KeysAndValuesFile;
+import com.cannontech.common.util.StringUtils;
 import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.core.authorization.service.LMCommandAuthorizationService;
 import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
@@ -1156,7 +1157,7 @@ public class YC extends Observable implements MessageListener
 
         resultText = getResultText() + "<BR>" +
                     (color==null?"":"<span style='color:"+ColorUtil.getHTMLColor(color)+";'>") +
-                    message.getText() +
+                    StringUtils.escapeXmlAndJavascript(message.getText()) +
                     (color==null?"":"</span>");
     }
     

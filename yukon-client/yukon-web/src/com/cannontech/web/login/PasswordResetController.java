@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONObject;
+import net.tanesha.recaptcha.ReCaptchaException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -81,8 +82,15 @@ public class PasswordResetController {
         globalSettingDao.verifySetting(GlobalSettingType.ENABLE_PASSWORD_RECOVERY);
         
         // Process Captcha
-        Captcha captcha = new Captcha(request.getRemoteAddr(), recaptcha_challenge_field, recaptcha_response_field);
-        CaptchaResponse captchaResponse = captchaService.checkCaptcha(captcha);
+        CaptchaResponse captchaResponse;
+        try {
+            Captcha captcha = new Captcha(request.getRemoteAddr(), recaptcha_challenge_field, recaptcha_response_field);
+            captchaResponse = captchaService.checkCaptcha(captcha);
+        } catch (ReCaptchaException e) {
+            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.login.changePassword.captchaTimeout"));
+            setupModelMap(model, request);
+            return "forgottenPassword.jsp";
+        }
 
         // The Captcha failed.  return the user the forgotten password page
         if (captchaResponse.isError()) {

@@ -95,7 +95,7 @@
                         <div class="stacked column ${clazz}">
                             <label class="dib">
                                 <i:inline key="${filter}"/>:
-                                <input type="text" id="${filter.name}" name="${filter.name}" value="${filter.filterValue}" style="margin-left: 5px;">
+                                <input type="text" id="${filter.name}" name="${filter.name}" value="${fn:escapeXml(filter.filterValue)}" style="margin-left: 5px;">
                             </label> 
                         </div>
                     </c:if>

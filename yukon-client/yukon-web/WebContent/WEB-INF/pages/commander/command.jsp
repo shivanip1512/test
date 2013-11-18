@@ -1,8 +1,8 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="tools" page="commander.command">
 <style type="text/css">
@@ -105,7 +105,7 @@
                         </tags:nameValue2>
                     </c:if>
                     <tags:nameValue2 nameKey=".executeCommand">
-                        <input type="text" id="command" name="command" size="40" <cti:isPropertyFalse property="EXECUTE_MANUAL_COMMAND">readonly</cti:isPropertyFalse> value="${currentCommand}">
+                        <input type="text" id="command" name="command" size="40" <cti:isPropertyFalse property="EXECUTE_MANUAL_COMMAND">readonly</cti:isPropertyFalse> value="${fn:escapeXml(currentCommand)}">
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
                 <div class="page-action-area stacked">
