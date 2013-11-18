@@ -5,13 +5,13 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <script>
-	//reinit the datepickers
-	jQuery(function(){
-        console.log('render.jsp');
+    // Reinit the datepickers. Required after an action is take on the Meter Profile
+    // page and the contents, including the date pickers, are ajaxed in.
+    jQuery(function () {
         if ('undefined' !== typeof Yukon.ui.dateTimePickers) {
-		Yukon.ui.dateTimePickers.init();
+            Yukon.ui.dateTimePickers.init();
         }
-	});
+    });
 </script>
 
 <c:choose>
@@ -68,7 +68,7 @@
     <%--PAST PROFILES, don't display if the device does not support --%>
     <cti:checkRolesAndProperties value="METERING">
     <cti:checkRolesAndProperties value="PROFILE_COLLECTION">
-    	<tags:sectionContainer2 nameKey="requestPastProfile">
+        <tags:sectionContainer2 nameKey="requestPastProfile">
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".channel">
                     <select name="channel">
@@ -89,7 +89,7 @@
             
             </tags:nameValueContainer2>
             <div class="action-area">
-	            <tags:widgetActionRefresh method="initiateLoadProfile" nameKey="start"/>
+                <tags:widgetActionRefresh method="initiateLoadProfile" nameKey="start"/>
             </div>
         </tags:sectionContainer2>
 
