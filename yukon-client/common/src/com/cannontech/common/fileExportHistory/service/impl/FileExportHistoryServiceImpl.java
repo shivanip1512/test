@@ -4,9 +4,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import org.jfree.util.Log;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.fileExportHistory.ExportHistoryEntry;
 import com.cannontech.common.fileExportHistory.FileExportType;
 import com.cannontech.common.fileExportHistory.dao.FileExportHistoryDao;
@@ -14,7 +15,8 @@ import com.cannontech.common.fileExportHistory.service.FileExportHistoryService;
 import com.cannontech.common.util.CtiUtilities;
 
 public class FileExportHistoryServiceImpl implements FileExportHistoryService {
-	@Autowired public FileExportHistoryDao fileExportHistoryDao;
+	private static Logger log = YukonLogManager.getLogger(FileExportHistoryServiceImpl.class);
+    @Autowired public FileExportHistoryDao fileExportHistoryDao;
 	
 	@Override
 	public File getArchivedFile(int exportHistoryEntryId) throws FileNotFoundException {
@@ -36,8 +38,9 @@ public class FileExportHistoryServiceImpl implements FileExportHistoryService {
             deleted = archiveFile.delete();
         } else {
             deleted = true;
-            Log.warn("Attempted to delete non-existent file. Archive file \"" + entry.getFileName() 
+            log.warn("Attempted to delete non-existent file. Archive file \"" + entry.getFileName() 
                      + "\" not found for entry with id " + exportHistoryEntryId);
+            
         }
         if(deleted) {
             fileExportHistoryDao.markArchiveDeleted(exportHistoryEntryId);
