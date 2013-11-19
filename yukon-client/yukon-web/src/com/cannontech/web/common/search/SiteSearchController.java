@@ -15,7 +15,6 @@ import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.search.result.Page;
 import com.cannontech.web.common.search.service.SiteSearchService;
 
@@ -37,8 +36,7 @@ public class SiteSearchController {
     @RequestMapping(value="/search", method=RequestMethod.GET)
     public String search(@RequestParam(value="q", required=false) String searchString,
             Integer itemsPerPage, @RequestParam(defaultValue="1") int page,
-            ModelMap model, YukonUserContext userContext, FlashScope flashScope) {
-
+            ModelMap model, YukonUserContext userContext) {
         itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
         int startIndex = (page - 1) * itemsPerPage;
         searchString = siteSearchService.sanitizeSearchStr(searchString);

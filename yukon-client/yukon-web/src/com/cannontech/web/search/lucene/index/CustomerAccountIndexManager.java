@@ -19,7 +19,7 @@ import com.cannontech.web.search.lucene.YukonObjectAnalyzer;
 /**
  * Class which manages customer account lucene index creation and update.
  */
-public class CustomerAccountIndexManager extends AbstractIndexManager {
+public class CustomerAccountIndexManager extends SimpleIndexManager {
 
     private static String documentQuery;
     {
@@ -58,17 +58,7 @@ public class CustomerAccountIndexManager extends AbstractIndexManager {
 
     @Override
     public String getIndexName() {
-        return "customerAccountPicker";
-    }
-
-    @Override
-    protected int getIndexVersion() {
-        return 2;
-    }
-
-    @Override
-    protected Analyzer getAnalyzer() {
-        return new YukonObjectAnalyzer();
+        return "customerAccount";
     }
 
     @Override

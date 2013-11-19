@@ -30,6 +30,5 @@
         <property name="synchronizeOnSession">
             <value type="boolean">true</value>
         </property>
-        <property name="indexBuilder" ref="indexBuilder" />
     </bean>
 </beans>

@@ -19,20 +19,13 @@ import com.cannontech.web.search.lucene.YukonObjectAnalyzer;
 /**
  * Class which manages point device lucene index creation and update.
  */
-public class UserIndexManager extends AbstractIndexManager {
-
+public class UserIndexManager extends SimpleIndexManager {
+    @Override
     public String getIndexName() {
-        return "userPicker";
+        return "user";
     }
 
-    protected int getIndexVersion() {
-        return 2;
-    }
-
-    protected Analyzer getAnalyzer() {
-        return new YukonObjectAnalyzer();
-    }
-
+    @Override
     protected String getDocumentQuery() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select *");
@@ -41,6 +34,7 @@ public class UserIndexManager extends AbstractIndexManager {
         return sql.getSql();
     }
 
+    @Override
     protected String getDocumentCountQuery() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select count(*)");
@@ -59,6 +53,7 @@ public class UserIndexManager extends AbstractIndexManager {
         return new SqlStatementBuilder("order by status, username, userid");
     }
 
+    @Override
     protected Document createDocument(ResultSet rs) throws SQLException {
 
         Document doc = new Document();
@@ -80,6 +75,7 @@ public class UserIndexManager extends AbstractIndexManager {
         return doc;
     }
 
+    @Override
     protected IndexUpdateInfo processDBChange(DbChangeType dbChangeType, int id, int database, String category, String type) {
         if (database == DBChangeMsg.CHANGE_YUKON_USER_DB
                 && ! DBChangeMsg.CAT_YUKON_USER_GROUP.equalsIgnoreCase(category)) {

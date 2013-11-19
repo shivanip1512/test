@@ -15,24 +15,20 @@ var indexManager_updateProgress = function (transport, json, indexName) {
     var percentDone = json.percentDone;
     var isBuilding = json.isBuilding;
     var newDate = json.newDate;
-    var newDatabase = json.newDatabase;
     
     var dateCreated = document.getElementById(indexName + "dateCreated");
     var percentComplete = document.getElementById(indexName + "percentComplete");
     var buildIndex = document.getElementById(indexName + "buildIndex");
-    var database = document.getElementById(indexName + "database");
     if (isBuilding) {
         setTimeout("indexManager_getProgress('" + indexName + "')", 1000);
     }
     if (isBuilding && percentDone < 100) {
         dateCreated.innerHTML = "Building started at: " + newDate;
-        database.innerHTML = "Building...";
         buildIndex.style.display = "none";
         percentComplete.style.display = "";
         indexManager_updateIndexProgressBar(indexName, percentDone);
     } else {
         dateCreated.innerHTML = newDate;
-        database.innerHTML = newDatabase;
         percentComplete.style.display = "none";
         buildIndex.style.display = "";
         document.getElementById(indexName + "progressText").innerHTML = "";

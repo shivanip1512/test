@@ -5,7 +5,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.Term;
@@ -13,25 +12,17 @@ import org.apache.lucene.index.Term;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
-import com.cannontech.web.search.lucene.YukonObjectAnalyzer;
 
 /**
  * Class which manages point device lucene index creation and update.
  */
-public class LoginGroupIndexManager extends AbstractIndexManager {
-
+public class LoginGroupIndexManager extends SimpleIndexManager {
+    @Override
     public String getIndexName() {
-        return "loginGroupPicker";
+        return "loginGroup";
     }
 
-    protected int getIndexVersion() {
-        return 2;
-    }
-
-    protected Analyzer getAnalyzer() {
-        return new YukonObjectAnalyzer();
-    }
-
+    @Override
     protected String getDocumentQuery() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select *");
@@ -40,6 +31,7 @@ public class LoginGroupIndexManager extends AbstractIndexManager {
         return sql.getSql();
     }
 
+    @Override
     protected String getDocumentCountQuery() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select count(*)");
@@ -55,6 +47,7 @@ public class LoginGroupIndexManager extends AbstractIndexManager {
         return new SqlStatementBuilder("order by groupname, groupid");
     }
 
+    @Override
     protected Document createDocument(ResultSet rs) throws SQLException {
 
         Document doc = new Document();
@@ -72,6 +65,7 @@ public class LoginGroupIndexManager extends AbstractIndexManager {
         return doc;
     }
 
+    @Override
     protected IndexUpdateInfo processDBChange(DbChangeType dbChangeType, int id, int database, String category, String type) {
         if (database == DBChangeMsg.CHANGE_YUKON_USER_DB 
                && DBChangeMsg.CAT_YUKON_USER_GROUP.equalsIgnoreCase(category) ) {

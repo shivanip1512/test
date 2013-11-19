@@ -5,7 +5,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.Term;
@@ -16,26 +15,14 @@ import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
-import com.cannontech.web.search.lucene.YukonObjectAnalyzer;
 
 /**
  * Class which manages point device lucene index creation and update.
  */
-public class PointDeviceIndexManager extends AbstractIndexManager {
-
+public class PointDeviceIndexManager extends SimpleIndexManager {
     @Override
     public String getIndexName() {
-        return "pointPicker";
-    }
-
-    @Override
-    protected int getIndexVersion() {
-        return 3;
-    }
-
-    @Override
-    protected Analyzer getAnalyzer() {
-        return new YukonObjectAnalyzer();
+        return "point";
     }
 
     @Override

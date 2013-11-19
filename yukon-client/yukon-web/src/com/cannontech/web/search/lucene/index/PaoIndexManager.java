@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.Term;
@@ -19,27 +18,16 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
-import com.cannontech.web.search.lucene.YukonObjectAnalyzer;
 
 /**
  * Class which manages point device lucene index creation and update.
  */
-public class PaoIndexManager extends AbstractIndexManager {
+public class PaoIndexManager extends SimpleIndexManager {
     @Autowired private PaoLoadingService paoLoadingService;
 
     @Override
     public String getIndexName() {
         return "pao";
-    }
-
-    @Override
-    protected int getIndexVersion() {
-        return 4;
-    }
-
-    @Override
-    protected Analyzer getAnalyzer() {
-        return new YukonObjectAnalyzer();
     }
 
     @Override

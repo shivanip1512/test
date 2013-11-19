@@ -7,9 +7,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -22,7 +19,6 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.Priority;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
@@ -37,12 +33,7 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.SimpleFSDirectory;
 import org.apache.lucene.util.Version;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.ConnectionCallback;
-import org.springframework.jdbc.core.JdbcOperations;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowCallbackHandler;
-import org.springframework.jdbc.core.RowMapper;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
@@ -50,24 +41,23 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
+import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.web.search.lucene.TopDocsCallbackHandler;
+import com.cannontech.web.search.lucene.YukonObjectAnalyzer;
 
 /**
  * Abstract class which manages index building and updating.
  */
 @ManagedResource
-public abstract class AbstractIndexManager implements IndexManager {
+public abstract class AbstractIndexManager implements IndexManager, DBChangeListener {
     private static final Logger log = YukonLogManager.getLogger(AbstractIndexManager.class);
 
-    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
-    private static final String VERSION_PROPERTY = "version";
-    private static final String DATABASE_PROPERTY = "database";
-    private static final String DATABASE_USER_PROPERTY = "dbuser";
-    private static final String DATE_CREATED_PROPERTY = "created";
+    @Autowired private ConfigurationSource configurationSource;
 
-    private ConfigurationSource configurationSource = null;
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
+    private static final String DATE_CREATED_PROPERTY = "created";
 
     // This number can have a large affect on memory usage and index
     // building speed. 1000 was initially determined to be a 'sweet'
@@ -75,219 +65,46 @@ public abstract class AbstractIndexManager implements IndexManager {
     // future because of memory restrictions and/or speed requirements.
     private int maxBufferedDocs = 200;
 
-    protected JdbcOperations jdbcTemplate = null;
-
     // All indexes will be written to: {yukon home}/cache/{index name}/index
-    private Directory indexLocation = null;
-    private File versionFile = null;
-    private String version = null;
-    private String database = null;
-    private String databaseUsername = null;
-    private Date dateCreated = null;
-    private int recordCount = 0;
+    private Directory indexLocation;
+    private File versionFile;
+    private Date dateCreated;
+    private int recordCount;
     private AtomicInteger count = new AtomicInteger(0);
     private AtomicInteger updatesProcessedCount = new AtomicInteger(0);
     private AtomicInteger updatesCommittedCount = new AtomicInteger(0);
     private AtomicInteger updateErrorCount = new AtomicInteger(0);
 
-    private boolean isBuilding = false;
-    private boolean buildIndex = false;
-    private LinkedBlockingQueue<IndexUpdateInfo> updateQueue = null;
-    private RuntimeException currentException = null;
+    private boolean isBuilding;
+    private boolean buildIndex;
+    private LinkedBlockingQueue<IndexUpdateInfo> updateQueue;
+    private RuntimeException currentException;
     private Thread managerThread;
-    private boolean shutdownNow = false;
+    private boolean shutdownNow;
 
-    public AbstractIndexManager() {
-    }
-
-    @Override
-    public boolean isBuilding() {
-        return this.isBuilding;
-    }
-
-    @Override
-    public String getDateCreated() {
-        if (this.dateCreated == null) {
-            return null;
-        }
-        return DATE_FORMAT.format(this.dateCreated);
-    }
-
-    @Override
-    public String getVersion() {
-        return this.version;
-    }
-    
-    @Override
-    public String getDatabase() {
-        return this.database;
-    }
-    
-    public String getDatabaseUsername() {
-        return this.databaseUsername;
-    }
-    
-    public int getRecordCount() {
-        return this.recordCount;
-    }
-
-    public void getCurrentRecord() {
-        this.count.get();
-    }
-
-    public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
-    public void setAsyncDynamicDataSource(AsyncDynamicDataSource dataSource) {
-        dataSource.addDBChangeListener(this);
-    }
-
-    /**
-     * Method to get the current version of the index
-     * @return Index version
-     */
-    abstract protected int getIndexVersion();
-
-    /**
-     * Method to get the analyzer for a specific index.
-     * @return Index specific analyzer
-     */
-    abstract protected Analyzer getAnalyzer();
-
-    /**
-     * Method to get the query used to build documents for a specific index.
-     * <br />
-     * <br />
-     * ****NOTE: if you change the query in this method, you must increment the
-     * version number returned by getIndexVersion() for the specific index
-     * <br />
-     * @return Index specific document query
-     */
-    abstract protected String getDocumentQuery();
-
-    /**
-     * Method to get the number of records that will be in the index. This query
-     * should be identical to the getDocumentQuery, the only change being this
-     * query should return a count of records and not the actual records.
-     * <code>Select count(*) from .... vs Select * from ....</code> <br />
-     * <br />
-     * ****NOTE: if you change the query in this method, you must increment the
-     * version number returned by getIndexVersion() for the specific index
-     * <br />
-     * @return Index specific document count query
-     */
-    abstract protected String getDocumentCountQuery();
-
-    /**
-     * Method to process a result set row into a document for a specific index.
-     * <br />
-     * <br />
-     * ****NOTE: if you change the way a document is created or change the
-     * fields in the document, you must increment the version number returned by
-     * getIndexVersion() for the specific index <br />
-     * @param rs - Result set to build the document from
-     * @return Index specific document
-     */
-    abstract protected Document createDocument(ResultSet rs) throws SQLException;
-
-    /**
-     * Method to process a DBChangeMsg
-     * @param dbChangeType 
-     * @param id - Id of db change msg object
-     * @param database - Database of the db change msg
-     * @param i 
-     * @param category - Category of the db change msg
-     * @param type - Type of the db change msg object
-     * @return Index update info for the dbchange or null if the change should
-     *         not be processed for this index
-     */
-    abstract protected IndexUpdateInfo processDBChange(DbChangeType dbChangeType, int id, int database, String category,
-            String type);
-
-    @Override
-    public float getPercentDone() {
-
-        this.checkForException();
-
-        if (this.recordCount == 0) {
-            return this.recordCount;
-        }
-
-        float curr = this.count.floatValue();
-        float total = this.recordCount;
-
-        return (curr / total) * 100;
-
-    }
-
-    @Override
-    public void dbChangeReceived(DBChangeMsg dbChange) {
-
-        try {
-            IndexUpdateInfo info = this.processDBChange(dbChange.getDbChangeType(),
-                                                        dbChange.getId(),
-                                                        dbChange.getDatabase(),
-                                                        dbChange.getCategory(),
-                                                        dbChange.getObjectType());
-
-            if (info != null) {
-                boolean success = this.updateQueue.offer(info);
-                if (!success) {
-                    log.warn("Unable to insert IndexUpdateInfo onto work queue (it is full), index will be out of sync");
-                    updateErrorCount.getAndIncrement();
-                }
-            }
-        } catch (RuntimeException e) {
-            if (log.isDebugEnabled()) {
-                log.warn("Caught exception handling db change for " + getIndexName() + ": ", e);
-            } else {
-                log.warn("Caught exception handling db change for " + getIndexName() + ": " + e);
-            }
-            updateErrorCount.getAndIncrement();
-            this.currentException = e;
-        }
-    }
-
-    @Override
-    public synchronized void rebuildIndex() {
-
-        if (!this.isBuilding() && !this.managerThread.isInterrupted()) {
-            this.buildIndex = true;
-            this.currentException = null;
-            this.managerThread.interrupt();
-        }
-    }
-
-    /**
-     * Helper method to initialize the index manager
-     */
     @PostConstruct
-    public void initialize() {
+    public void init() {
         maxBufferedDocs = configurationSource.getInteger("WEB_INDEX_MANAGER_MAX_BUFFERED_DOCS", maxBufferedDocs);
         int queueSize = configurationSource.getInteger("WEB_INDEX_MANAGER_QUEUE_SIZE", 1000);
         updateQueue = new LinkedBlockingQueue<IndexUpdateInfo>(queueSize);
 
         // Using SimpleFSDirectory isn't the speediest form of Directories, but seems to be the most
         // stable of the implementations.  Once they fix some of the other options we should look at switching.
-        File indexFileLocation = new File(CtiUtilities.getYukonBase() + "/cache/" + this.getIndexName() + "/index");
+        File indexFileLocation = new File(CtiUtilities.getYukonBase() + "/cache/" + getIndexName() + "/index");
         try {
-            this.indexLocation = new SimpleFSDirectory(indexFileLocation);
+            indexLocation = new SimpleFSDirectory(indexFileLocation);
             // Read in the information from the version file (if it exists)
-            this.versionFile = new File(indexFileLocation, "version.txt");
+            versionFile = new File(indexFileLocation, "version.txt");
 
             try {
-                InputStream iStream = new FileInputStream(this.versionFile);
+                InputStream iStream = new FileInputStream(versionFile);
                 Properties properties = new Properties();
                 properties.load(iStream);
     
-                this.version = properties.getProperty(VERSION_PROPERTY);
-                this.database = properties.getProperty(DATABASE_PROPERTY);
-                this.databaseUsername = properties.getProperty(DATABASE_USER_PROPERTY);
                 String dateString = properties.getProperty(DATE_CREATED_PROPERTY);
                 if (dateString != null) {
                     try {
-                        this.dateCreated = DATE_FORMAT.parse(dateString);
+                        dateCreated = DATE_FORMAT.parse(dateString);
                     } catch (ParseException e) {
                         log.error(e);
                     }
@@ -307,7 +124,6 @@ public abstract class AbstractIndexManager implements IndexManager {
                 IndexWriter.unlock(indexLocation);
                 indexLocked = true;
             }
-            
         } catch (IOException e) {
             // ignore - must be no index
         }
@@ -323,15 +139,107 @@ public abstract class AbstractIndexManager implements IndexManager {
         }, getIndexName() + "IndexManager");
 
         managerThread.start();
-
     }
-    
+
+    @Override
+    public boolean isBuilding() {
+        return isBuilding;
+    }
+
+    @Override
+    public String getDateCreated() {
+        if (dateCreated == null) {
+            return null;
+        }
+        return DATE_FORMAT.format(dateCreated);
+    }
+
+    public int getRecordCount() {
+        return recordCount;
+    }
+
+    public void getCurrentRecord() {
+        count.get();
+    }
+
+    /**
+     * Method to get the analyzer for a specific index.
+     * @return Index specific analyzer
+     */
+    protected Analyzer getAnalyzer() {
+        return new YukonObjectAnalyzer();
+    }
+
+    @Override
+    public float getPercentDone() {
+        checkForException();
+
+        if (recordCount == 0) {
+            return recordCount;
+        }
+
+        return count.floatValue() / recordCount * 100;
+    }
+    /**
+     * Method to process a DBChangeMsg
+     * @param dbChangeType 
+     * @param id - Id of db change msg object
+     * @param database - Database of the db change msg
+     * @param category - Category of the db change msg
+     * @param type - Type of the db change msg object
+     * @return Index update info for the dbchange or null if the change should
+     *         not be processed for this index
+     */
+    abstract protected IndexUpdateInfo processDBChange(DbChangeType dbChangeType, int id, int database,
+        String category, String type);
+
+    @Override
+    public void dbChangeReceived(DBChangeMsg dbChange) {
+        if (log.isDebugEnabled()) {
+            log.debug("processDBChange(" + dbChange + ")");
+        }
+
+        try {
+            IndexUpdateInfo info = processDBChange(dbChange.getDbChangeType(), dbChange.getId(), dbChange.getDatabase(),
+                dbChange.getCategory(), dbChange.getObjectType());
+
+            if (info != null) {
+                boolean success = updateQueue.offer(info);
+                if (!success) {
+                    log.warn("Unable to insert IndexUpdateInfo onto work queue (it is full), index will be out of sync");
+                    updateErrorCount.getAndIncrement();
+                }
+            }
+        } catch (RuntimeException e) {
+            if (log.isDebugEnabled()) {
+                log.warn("Caught exception handling db change for " + getIndexName() + ": ", e);
+            } else {
+                log.warn("Caught exception handling db change for " + getIndexName() + ": " + e);
+            }
+            updateErrorCount.getAndIncrement();
+            currentException = e;
+        }
+    }
+
+    @Override
+    public synchronized void rebuildIndex() {
+        if (!isBuilding && !managerThread.isInterrupted()) {
+            buildIndex = true;
+            currentException = null;
+            managerThread.interrupt();
+        }
+    }
+
+    @Required
+    public void setAsyncDynamicDataSource(AsyncDynamicDataSource dataSource) {
+        dataSource.addDBChangeListener(this);
+    }
+
     @Override
     public SearchTemplate getSearchTemplate(){
         return new SearchTemplate(){
             @Override
             public <R> R doCallBackSearch(Query query, TopDocsCallbackHandler<R> handler) throws IOException {
-                
                 // Make sure there are currently no issues with the index
                 checkForException();
 
@@ -362,11 +270,10 @@ public abstract class AbstractIndexManager implements IndexManager {
      * Helper method to process updates to the index
      */
     private void processUpdates() {
-
         // Loop forever - updating the index
         while (true) {
             try {
-                IndexUpdateInfo info = this.updateQueue.take();
+                IndexUpdateInfo info = updateQueue.take();
 
                 // Make sure we don't update while someone is searching or building the index
 
@@ -379,14 +286,11 @@ public abstract class AbstractIndexManager implements IndexManager {
 
                         // while we have the writer open, let's grab some more entries after taking a short nap
                         Thread.sleep(5);
-                        info = this.updateQueue.poll();
+                        info = updateQueue.poll();
                     }
-
                 } catch (IOException e) {
-                    this.currentException = new RuntimeException("There was a problem updating the "
-                                                                 + this.getIndexName()
-                                                                 + " index",
-                                                                 e);
+                    currentException = new RuntimeException("There was a problem updating the " + getIndexName()
+                        + " index", e);
                     updateErrorCount.getAndIncrement();
                     log.error("Caught IOException exception while processing update, index is probably out of sync",
                         currentException);
@@ -400,16 +304,14 @@ public abstract class AbstractIndexManager implements IndexManager {
                         // Do nothing - tried to close
                     }
                 }
-
             } catch (InterruptedException e) {
                 if (shutdownNow) {
                     log.info("Shutting down " + getIndexName() + " indexing thread");
                     break;
-                } else if (this.buildIndex && !this.isBuilding()) {
+                } else if (buildIndex && !isBuilding()) {
                     // Build the index
-                    this.buildIndex = false;
-                    this.processBuild(true);
-
+                    buildIndex = false;
+                    processBuild(true);
                 } else {
                     // Interrupted for a reason other than a rebuild - stop
                     // updating
@@ -435,10 +337,20 @@ public abstract class AbstractIndexManager implements IndexManager {
     }
 
     /**
+     * Overriding classes must implement this to return a document count.  This is called when re-indexing to help
+     * with the progress bar.
+     */
+    abstract protected int calculateDocumentCount();
+
+    /**
+     * Build the Lucene documents and add them to the given IndexWriter, incrementing the counter as you go.
+     */
+    abstract protected void buildDocuments(IndexWriter indexWriter, AtomicInteger counter);
+
+    /**
      * Helper method to build the index
      */
     private void processBuild(boolean overwrite) {
-
         if (!overwrite) {
             boolean indexExists = true;
             try {
@@ -448,19 +360,15 @@ public abstract class AbstractIndexManager implements IndexManager {
                 indexExists = false;
             }
 
-            if (indexExists && this.isCurrentVersion() && this.isCurrentDatabase() && this.isCurrentDatabaseUser()) {
+            if (indexExists) {
                 return;
             }
         }
 
-        this.isBuilding = true;
+        isBuilding = true;
 
-        this.version = null;
-        this.database = null;
-        this.databaseUsername = null;
         // Set the dateCreated to the time the index building started
-        this.dateCreated = new Date();
-
+        dateCreated = new Date();
 
         // Make sure we don't build while someone is searching or updating the index
         // Create the index
@@ -472,27 +380,23 @@ public abstract class AbstractIndexManager implements IndexManager {
             indexWriter = new IndexWriter(indexLocation,  getIndexWriterConfig().setOpenMode(OpenMode.CREATE));
 
             // Get the total # of records to be written into the index
-            String sql = getDocumentCountQuery();
-            recordCount = jdbcTemplate.queryForInt(sql);
+            recordCount = calculateDocumentCount();
 
-            sql = getDocumentQuery();
-
-            RowCallbackHandler rch = new LuceneRowIndexer(indexWriter, count);
-            jdbcTemplate.query(sql, rch);
+            buildDocuments(indexWriter, count);
             indexWriter.optimize();
 
             // Reset the current document count and clear any exceptions
             count.set(0);
 
             log.info(getIndexName() + " index has been built.");
-            this.currentException = null;
+            currentException = null;
 
         } catch (IOException e) {
-            this.currentException = new RuntimeException(e);
-            throw this.currentException;
+            currentException = new RuntimeException(e);
+            throw currentException;
         } catch (RuntimeException e) {
-            this.currentException = e;
-            throw this.currentException;
+            currentException = e;
+            throw currentException;
         } finally {
             try {
                 if (indexWriter != null) {
@@ -512,20 +416,12 @@ public abstract class AbstractIndexManager implements IndexManager {
 
             Properties properties = new Properties();
 
-            String newVersion = String.valueOf(getIndexVersion());
             Date date = new Date();
-            databaseUsername = getCurrentDbUser();
-            database = getCurrentDb();
 
-            properties.setProperty(VERSION_PROPERTY, newVersion);
-            properties.setProperty(DATABASE_PROPERTY, database);
-            properties.setProperty(DATABASE_USER_PROPERTY, databaseUsername);
             properties.setProperty(DATE_CREATED_PROPERTY, DATE_FORMAT.format(date));
             properties.store(oStream, null);
 
-            version = newVersion;
             dateCreated = date;
-
         } catch (IOException e) {
             log.error("Exception creating " + getIndexName() + " index version file", e);
         } finally {
@@ -538,113 +434,15 @@ public abstract class AbstractIndexManager implements IndexManager {
             }
         }
 
-        this.isBuilding = false;
-
+        isBuilding = false;
     }
 
     /**
      * Helper method to check for a current exception and throw if there is one
      */
     private void checkForException() {
-        if (this.currentException != null) {
-            throw this.currentException;
-        }
-    }
-
-    /**
-     * Helper method to determine if the index version is the same as the index
-     * code version
-     * @return True if the versions match
-     */
-    private boolean isCurrentVersion() {
-        return String.valueOf(this.getIndexVersion()).equals(this.version);
-    }
-
-    /**
-     * Helper method to determine if the index database is the same as the
-     * current database
-     * @return True if the databases match
-     */
-    private boolean isCurrentDatabase() {
-        return getCurrentDb().equals(this.database);
-    }
-    
-    /**
-     * Helper method to determine if the index database user is the same as
-     * the current database user
-     * @return True if the database users match
-     */
-    private boolean isCurrentDatabaseUser() {
-        return getCurrentDbUser().equals(this.databaseUsername);
-    }
-    
-    /**
-     * Helper method to get the URL of the current database
-     */
-    private String getCurrentDb() {
-        String currentDb = (String) jdbcTemplate.execute(new ConnectionCallback() {
-            @Override
-            public Object doInConnection(Connection con) throws SQLException, DataAccessException {
-                return con.getMetaData().getURL();
-            }
-        });
-        
-        return currentDb;
-    }
-    
-    /**
-     * Helper method to get the user connecting to the current database.
-     */
-    private String getCurrentDbUser() {
-        String currentDbUser = (String) jdbcTemplate.execute(new ConnectionCallback() {
-            @Override
-            public Object doInConnection(Connection con) throws SQLException, DataAccessException {
-                return con.getMetaData().getUserName();
-            }
-        });
-        
-        return currentDbUser;
-    }
-    
-    /**
-     * Helper class which is used to process a result set into documents and
-     * write each document into the index.
-     */
-    private final class LuceneRowIndexer implements RowCallbackHandler {
-
-        private final IndexWriter writer;
-        private final AtomicInteger count;
-
-        private LuceneRowIndexer(IndexWriter writer, AtomicInteger count) {
-            super();
-            this.writer = writer;
-            this.count = count;
-        }
-
-        @Override
-        public void processRow(ResultSet rs) throws SQLException {
-
-            Document doc = createDocument(rs);
-
-            try {
-                writer.addDocument(doc);
-            } catch (IOException e) {
-                throw new RuntimeException("Exception adding document to " + getIndexName()
-                        + " index", e);
-            }
-
-            count.incrementAndGet();
-        }
-    }
-
-    /**
-     * Mapping class to process a result set row into a Document
-     */
-    protected class DocumentMapper implements RowMapper<Document> {
-
-        @Override
-        public Document mapRow(ResultSet rs, int rowNum) throws SQLException {
-            return createDocument(rs);
+        if (currentException != null) {
+            throw currentException;
         }
     }
 
@@ -680,9 +478,8 @@ public abstract class AbstractIndexManager implements IndexManager {
         public void setDocList(List<Document> docList) {
             this.docList = docList;
         }
-
     }
-    
+
     protected IndexWriterConfig getIndexWriterConfig() {
         IndexWriterConfig writerConfig = new IndexWriterConfig(Version.LUCENE_34, getAnalyzer());
         writerConfig.setMaxBufferedDocs(maxBufferedDocs);
@@ -708,10 +505,4 @@ public abstract class AbstractIndexManager implements IndexManager {
     public AtomicInteger getUpdatesCommittedCount() {
         return updatesCommittedCount;
     }
-
-    @Autowired
-    public void setConfigurationSource(ConfigurationSource configurationSource) {
-        this.configurationSource = configurationSource;
-    }
-
 }

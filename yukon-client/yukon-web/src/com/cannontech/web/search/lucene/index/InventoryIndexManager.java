@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.Term;
@@ -18,12 +17,11 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.stars.dr.hardware.service.HardwareUiService;
-import com.cannontech.web.search.lucene.YukonObjectAnalyzer;
 
 /**
  * Class which manages Lucene index creation and update for inventory.
  */
-public class InventoryIndexManager extends AbstractIndexManager {
+public class InventoryIndexManager extends SimpleIndexManager {
     private final Logger log = YukonLogManager.getLogger(InventoryIndexManager.class);
 
     @Autowired private HardwareUiService hardwareUiService;
@@ -31,16 +29,6 @@ public class InventoryIndexManager extends AbstractIndexManager {
     @Override
     public String getIndexName() {
         return "inventory";
-    }
-
-    @Override
-    protected int getIndexVersion() {
-        return 1;
-    }
-
-    @Override
-    protected Analyzer getAnalyzer() {
-        return new YukonObjectAnalyzer();
     }
 
     @Override

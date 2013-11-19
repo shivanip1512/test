@@ -8,7 +8,6 @@
     <table class="compact-results-table">
         <thead>
 	    	<tr>
-		        <th>Database</th>
 		        <th>Index Name</th>
 		        <th>Date Created</th>
 		        <th></th>
@@ -18,9 +17,6 @@
 	    <tbody>
 	        <c:forEach var="index" items="${indexList}">
 	            <tr>
-	                <td>
-	                    <span id="<c:out value="${index.indexName}" />database"><c:out value="${index.database}" /></span>
-	                </td>
 	                <td>
 	                    <c:out value="${index.indexName}" />
 	                </td>
