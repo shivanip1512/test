@@ -34,7 +34,7 @@ public class ProgramDirectValidator extends AutoInitializedClassValidator<LMProg
     @Override
     public void populateExpectedValue(LMProgramDirect ctrlObj, RandomGenerator generator) {
 
-        ctrlObj.setCurrentGearNumber(generator.generateInt());
+        ctrlObj.setCurrentGearNumber(generator.generateInt() + 1);
         ctrlObj.setLastGroupControlled(generator.generateInt());
         ctrlObj.setDirectStartTime(generator.generateCalendar());
         ctrlObj.setDirectStopTime(generator.generateCalendar());
