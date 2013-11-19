@@ -266,94 +266,89 @@ void CtiLMEnergyExchangeOffer::addLMEnergyExchangeProgramOfferTable()
 ---------------------------------------------------------------------------*/
 void CtiLMEnergyExchangeOffer::updateLMEnergyExchangeProgramOfferTable(CtiTime& currentDateTime)
 {
-    static const std::string sql_update = "update lmenergyexchangeprogramoffer"
-                                           " set "
-                                                "runstatus = ?, "
-                                                "offerdate = ?"
-                                           " where "
-                                                "deviceid = ? and "
-                                                "offerid = ?";
-
-    Cti::Database::DatabaseConnection   connection;
-    Cti::Database::DatabaseWriter       updater(connection, sql_update);
-
-    updater
-        << getRunStatus()[0]
-        << getOfferDate()
-        << getPAOId()
-        << getOfferId();
-
-    if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - " << updater.asString() << endl;
-    }
+        static const std::string sql_update = "update lmenergyexchangeprogramoffer"
+                                               " set "
+                                                    "runstatus = ?, "
+                                                    "offerdate = ?"
+                                               " where "
+                                                    "deviceid = ? and "
+                                                    "offerid = ?";
 
-    bool success = executeUpdater(updater);
+        Cti::Database::DatabaseConnection   connection;
+        Cti::Database::DatabaseWriter       updater(connection, sql_update);
 
-    if( ! success )
-    {// If update failed, we should try to insert the record because it means that there probably wasn't a entry for this object yet
-
-        static const string sql =  "SELECT XPO.offerid "
-                                   "FROM lmenergyexchangeprogramoffer XPO "
-                                   "ORDER BY XPO.offerid DESC";
-
-        Cti::Database::DatabaseConnection connection;
-        Cti::Database::DatabaseReader rdr(connection);
-
-        rdr.setCommandText(sql);
-        rdr.execute();
+        updater
+            << getRunStatus()[0]
+            << getOfferDate()
+            << getPAOId()
+            << getOfferId();
 
         if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
         {
-            string loggedSQLstring = rdr.asString();
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << loggedSQLstring << endl;
-            }
-        }
-
-        if( rdr() )
-        {
-            LONG tempLONG = 0;
-            rdr["offerid"] >> tempLONG;
-            setOfferId(tempLONG+1);
-        }
-        else
-        {
-            setOfferId(1);
-        }
-
-        {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Inserting a program energy exchange entry into LMEnergyExchangeProgramOffer: with offer id: " << getOfferId() << endl;
+            dout << CtiTime() << " - " << updater.asString() << endl;
         }
 
-        {
-            static const std::string sql_insert = "insert into lmenergyexchangeprogramoffer values (?, ?, ?, ?)";
+        bool success = executeUpdater(updater);
 
-            Cti::Database::DatabaseConnection   connection;
-            Cti::Database::DatabaseWriter       inserter(connection, sql_insert);
+        if( ! success )
+        {// If update failed, we should try to insert the record because it means that there probably wasn't a entry for this object yet
 
-            inserter
-                << getPAOId()
-                << getOfferId()
-                << getRunStatus()
-                << getOfferDate();
+            static const string sql =  "SELECT XPO.offerid "
+                                       "FROM lmenergyexchangeprogramoffer XPO "
+                                       "ORDER BY XPO.offerid DESC";
+
+            Cti::Database::DatabaseConnection connection;
+            Cti::Database::DatabaseReader rdr(connection);
+
+            rdr.setCommandText(sql);
+            rdr.execute();
 
             if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << inserter.asString() << endl;
+                string loggedSQLstring = rdr.asString();
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " - " << loggedSQLstring << endl;
+                }
             }
 
-            if( ! inserter.execute() )
+            if( rdr() )
             {
-                string loggedSQLstring = inserter.asString();
+                LONG tempLONG = 0;
+                rdr["offerid"] >> tempLONG;
+                setOfferId(tempLONG+1);
+            }
+            else
+            {
+                setOfferId(1);
+            }
+
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Inserting a program energy exchange entry into LMEnergyExchangeProgramOffer: with offer id: " << getOfferId() << endl;
+            }
+
+            {
+                static const std::string sql_insert = "insert into lmenergyexchangeprogramoffer values (?, ?, ?, ?)";
+
+                Cti::Database::DatabaseConnection   connection;
+                Cti::Database::DatabaseWriter       inserter(connection, sql_insert);
+
+                inserter
+                    << getPAOId()
+                    << getOfferId()
+                    << getRunStatus()
+                    << getOfferDate();
+
+                if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
                 {
-                    dout << CtiTime() << " **** SQL Insert Error **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << "  " << loggedSQLstring << endl;
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " - " << inserter.asString() << endl;
                 }
+
+                inserter.execute();
             }
         }
     }

@@ -315,14 +315,7 @@ void CtiLMEnergyExchangeHourlyOffer::updateLMEnergyExchangeHourlyOfferTable()
         dout << CtiTime() << " - " << updater.asString() << endl;
     }
 
-    if( ! updater.execute() )
-    {
-        string loggedSQLstring = updater.asString();
-        {
-            dout << CtiTime() << " **** SQL Update Error **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << "  " << loggedSQLstring << endl;
-        }
-    }
+    updater.execute();
 }
 
 /*---------------------------------------------------------------------------

@@ -778,45 +778,39 @@ UINT CtiSignalManager::writeDynamicSignalsToDB()
             }
 
             CtiTime start;
-
-            for(itr = _map.begin(); itr != _map.end(); itr++)
             {
-                SigMgrMap_t::value_type vt = *itr;
-                SigMgrMap_t::key_type   key = vt.first;
+                Cti::Database::DatabaseTransaction trans(conn);
 
-                pSig = vt.second;
-
-                if(pSig && _dirtySignals.find(pSig->getId()) != _dirtySignals.end())
+                for(itr = _map.begin(); itr != _map.end(); itr++)
                 {
-                    CtiTableDynamicPointAlarming ptAlm;
+                    SigMgrMap_t::value_type vt = *itr;
+                    SigMgrMap_t::key_type   key = vt.first;
 
-                    ptAlm.setPointID( pSig->getId() );
-                    ptAlm.setAlarmCondition( pSig->getCondition() );
-                    ptAlm.setCategoryID( pSig->getSignalCategory() );
-                    ptAlm.setAlarmTime( pSig->getMessageTime() );
-                    ptAlm.setAction( pSig->getText() );
-                    ptAlm.setDescription( pSig->getAdditionalInfo() );
-                    ptAlm.setTags( pSig->getTags() & SIGNAL_MANAGER_MASK );
-                    ptAlm.setLogID( pSig->getLogID() );
+                    pSig = vt.second;
 
-                    ptAlm.setSOE( pSig->getSOE() );
-                    ptAlm.setLogType( pSig->getLogType() );
-                    ptAlm.setUser( pSig->getUser() );
-
-                    if( ! ptAlm.Update( conn ) )
+                    if(pSig && _dirtySignals.find(pSig->getId()) != _dirtySignals.end())
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** ERROR **** Writing dynamic signals to Database has fail " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
+                        CtiTableDynamicPointAlarming ptAlm;
 
-                        return 0; // an update has fail, do not reset the dirty flag
+                        ptAlm.setPointID( pSig->getId() );
+                        ptAlm.setAlarmCondition( pSig->getCondition() );
+                        ptAlm.setCategoryID( pSig->getSignalCategory() );
+                        ptAlm.setAlarmTime( pSig->getMessageTime() );
+                        ptAlm.setAction( pSig->getText() );
+                        ptAlm.setDescription( pSig->getAdditionalInfo() );
+                        ptAlm.setTags( pSig->getTags() & SIGNAL_MANAGER_MASK );
+                        ptAlm.setLogID( pSig->getLogID() );
+
+                        ptAlm.setSOE( pSig->getSOE() );
+                        ptAlm.setLogType( pSig->getLogType() );
+                        ptAlm.setUser( pSig->getUser() );
+
+                        ptAlm.Update( conn );
+                        count++;
                     }
 
-                    count++;
+                    pSig = 0;
                 }
-
-                pSig = 0;
             }
 
             CtiTime stop;

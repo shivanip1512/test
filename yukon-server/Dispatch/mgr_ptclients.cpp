@@ -689,7 +689,7 @@ void CtiPointClientManager::scanForArchival(const CtiTime &Now, CtiFIFOQueue<Cti
     }
 }
 
-void CtiPointClientManager::getDirtyRecordList(list<CtiTablePointDispatch*> &updateList)
+void CtiPointClientManager::getDirtyRecordList(list<CtiTablePointDispatch> &updateList)
 {
     ptr_type pPt;
     coll_type::writer_lock_guard_t guard(getLock());
@@ -711,7 +711,9 @@ void CtiPointClientManager::getDirtyRecordList(list<CtiTablePointDispatch*> &upd
                     pDyn->getDispatch().setTags(pPt->adjustStaticTags(statictags));   // make the static tags match...
                 }
 
-                updateList.push_back(&(pDyn->getDispatch()));
+                updateList.push_back(pDyn->getDispatch());
+                pDyn->getDispatch().resetDirty();
+                pDyn->getDispatch().setUpdatedFlag();
             }
         }
         catch(...)
@@ -724,13 +726,13 @@ void CtiPointClientManager::getDirtyRecordList(list<CtiTablePointDispatch*> &upd
     }
 }
 
-void CtiPointClientManager::writeRecordsToDB(list<CtiTablePointDispatch*> &updateList)
+void CtiPointClientManager::writeRecordsToDB(list<CtiTablePointDispatch> &updateList)
 {
     int listCount = 0;
 
     Cti::Database::DatabaseConnection   conn;
 
-    list<CtiTablePointDispatch*>::const_iterator updateListIter;
+    list<CtiTablePointDispatch>::iterator updateListIter;
 
     if ( ! conn.isValid() )
     {
@@ -741,30 +743,34 @@ void CtiPointClientManager::writeRecordsToDB(list<CtiTablePointDispatch*> &updat
     }
 
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " WRITING " << updateList.size() << " dynamic dispatch records. " << endl;
-    }
+        Cti::Database::DatabaseTransaction trans(conn);
 
-    int total = updateList.size();
-
-    for(updateListIter = updateList.begin(); updateListIter != updateList.end(); updateListIter++)
-    {
-        CtiTablePointDispatch * const p_dispatch = *updateListIter;
-
-        if(( p_dispatch->getUpdatedFlag() ?
-             p_dispatch->Update(conn) :
-             p_dispatch->Insert(conn) ))
-        {
-            // reset flags if success. Otherwise Update() or Insert() should log the error
-            p_dispatch->resetDirty();
-            p_dispatch->setUpdatedFlag();
-        }
-
-        if(++listCount % 1000 == 0)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " WRITING dynamic dispatch records to DB, " << listCount << " of " << total << " records written. " << endl;
+            dout << CtiTime() << " WRITING " << updateList.size() << " dynamic dispatch records. " << endl;
         }
+
+        int total = updateList.size();
+
+        for(updateListIter = updateList.begin(); updateListIter != updateList.end(); updateListIter++)
+        {
+            listCount ++;
+            if(!updateListIter->getUpdatedFlag())
+            {
+                updateListIter->Insert(conn);
+            }
+            else
+            {
+                updateListIter->Update(conn);
+            }
+
+            if(listCount % 1000 == 0)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " WRITING dynamic dispatch records to DB, " << listCount << " of " << total << " records written. " << endl;
+            }
+        }
+        updateList.clear();
     }
 }
 
@@ -808,7 +814,7 @@ void CtiPointClientManager::removeOldDynamicData()
 void CtiPointClientManager::storeDirtyRecords()
 {
     int recordCount = 0;
-    list<CtiTablePointDispatch*> updateList;
+    list<CtiTablePointDispatch> updateList;
 
     getDirtyRecordList(updateList);
 

@@ -852,46 +852,51 @@ void CtiPAOScheduleManager::updateDataBaseSchedules(std::list<CtiPAOSchedule*> &
                 return;
             }
 
-            do
             {
-                CtiPAOSchedule *currentSchedule = schedules.front();
-                schedules.pop_front();
+                Cti::Database::DatabaseTransaction trans(conn);
 
-                if ( currentSchedule->isDirty() )
+                do
                 {
-                    static const std::string sql_update = "update paoschedule"
-                                                           " set "
-                                                                "nextruntime = ?, "
-                                                                "lastruntime = ?"
-                                                           " where "
-                                                                "scheduleid = ?";
 
-                    Cti::Database::DatabaseWriter   updater(conn, sql_update);
+                    CtiPAOSchedule *currentSchedule = schedules.front();
+                    schedules.pop_front();
 
-                    updater
-                        << currentSchedule->getNextRunTime()
-                        << currentSchedule->getLastRunTime()
-                        << currentSchedule->getScheduleId();
-
-                    bool success = executeUpdater(updater);
-
-                    if( success )
+                    if ( currentSchedule->isDirty() )
                     {
-                        currentSchedule->setDirty(false);
-                    }
-                    else
-                    {
-                        currentSchedule->setDirty(true);
+                        static const std::string sql_update = "update paoschedule"
+                                                               " set "
+                                                                    "nextruntime = ?, "
+                                                                    "lastruntime = ?"
+                                                               " where "
+                                                                    "scheduleid = ?";
+
+                        Cti::Database::DatabaseWriter   updater(conn, sql_update);
+
+                        updater
+                            << currentSchedule->getNextRunTime()
+                            << currentSchedule->getLastRunTime()
+                            << currentSchedule->getScheduleId();
+
+                        bool success = executeUpdater(updater);
+
+                        if( success )
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            dout << "  " << updater.asString() << endl;
+                            currentSchedule->setDirty(false);
+                        }
+                        else
+                        {
+                            currentSchedule->setDirty(true);
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << "  " << updater.asString() << endl;
+                            }
                         }
                     }
+                    //delete currentSchedule;
                 }
-                //delete currentSchedule;
+                while(!schedules.empty());
             }
-            while(!schedules.empty());
         }
     }
     catch(...)

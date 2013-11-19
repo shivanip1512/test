@@ -171,7 +171,7 @@ MessagePtr<Thrift::LMProgramDirect>::type serialize( const ::CtiLMProgramDirect&
     MessagePtr<Thrift::LMProgramDirect>::type omsg( new Thrift::LMProgramDirect );
 
     omsg->__set__baseMessage                    ( *serialize( static_cast<const ::CtiLMProgramBase&>(imsg) ));
-    omsg->__set__currentGearNumber              ( imsg.getCurrentGearNumber() + 1 );
+    omsg->__set__currentGearNumber              ( imsg.getCurrentGearNumber() );
     omsg->__set__lastGroupControlled            ( imsg.getLastGroupControlled() );
     omsg->__set__directStartTime                ( CtiTimeToMilliseconds( imsg.getDirectStartTime() ));
     omsg->__set__directstopTime                 ( CtiTimeToMilliseconds( imsg.getDirectStopTime() ));

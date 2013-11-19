@@ -321,69 +321,76 @@ void CtiPorterVerification::processWorkQueue(bool purge)
             return;
         }
 
-        while( !_work_queue.empty() && (purge || (_work_queue.top()->getExpiration() < second_clock::universal_time())) )
         {
-            CtiVerificationBase::CodeStatus status;
-            CtiVerificationWork *work = _work_queue.top();
+            Cti::Database::DatabaseTransaction trans(conn);
 
-            _work_queue.pop();
-
-            status = work->processResult(/* pass in any previous entry with a matching om->VerificationSequence */);
-
-            if( isDebugLudicrous() )
+            while( !_work_queue.empty() && (purge || (_work_queue.top()->getExpiration() < second_clock::universal_time())) )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - writing code sequence \"" << work->getSequence() << "\" **** Expires at " << to_simple_string(work->getExpiration()) << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+                CtiVerificationBase::CodeStatus status;
+                CtiVerificationWork *work = _work_queue.top();
 
-            writeWorkRecord(*work, conn);
+                _work_queue.pop();
 
-            if( status == CtiVerificationBase::CodeStatus_Retry )
-            {
-                CtiOutMessage *om = work->getRetryOM();
+                status = work->processResult(/* pass in any previous entry with a matching om->VerificationSequence */);
 
-                PortManager.writeQueue(om);
-
-                //  possible addition to enhance retry logic  ----
-                //_retry_queue.push_back(work);  //  this is where we keep track of the receivers on which we've already heard this code
-                                                 //    we would need to make sure not to delete the work object in this case
-            }
-
-            //  hmm...  i could hash on code instead of receiver...  that would be suave
-
-            //  remove the expectations that weren't received  (maybe change this to a global list based on expiration)
-            deque< long > expectations = work->getExpectations();
-            deque< long >::iterator e_itr;
-
-            for( e_itr = expectations.begin(); e_itr != expectations.end(); e_itr++ )
-            {
-                receiver_itr r_itr = _receiver_work.find(*e_itr);
-
-                if( r_itr != _receiver_work.end() )
+                if( isDebugLudicrous() )
                 {
-                    pending_queue &p_q = r_itr->second;
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint - writing code sequence \"" << work->getSequence() << "\" **** Expires at " << to_simple_string(work->getExpiration()) << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
 
-                    //  iterate through all entries, looking for a pointer match
-                    for( pending_itr itr = p_q.begin(); itr != p_q.end(); itr++ )
+                writeWorkRecord(*work, conn);
+
+                if( status == CtiVerificationBase::CodeStatus_Retry )
+                {
+                    CtiOutMessage *om = work->getRetryOM();
+
+                    PortManager.writeQueue(om);
+
+                    //  possible addition to enhance retry logic  ----
+                    //_retry_queue.push_back(work);  //  this is where we keep track of the receivers on which we've already heard this code
+                                                     //    we would need to make sure not to delete the work object in this case
+                }
+
+                //  hmm...  i could hash on code instead of receiver...  that would be suave
+
+                //  remove the expectations that weren't received  (maybe change this to a global list based on expiration)
+                deque< long > expectations = work->getExpectations();
+                deque< long >::iterator e_itr;
+
+                for( e_itr = expectations.begin(); e_itr != expectations.end(); e_itr++ )
+                {
+                    receiver_itr r_itr = _receiver_work.find(*e_itr);
+
+                    if( r_itr != _receiver_work.end() )
                     {
-                        if( *itr == work )
-                        {
-                            p_q.erase(itr);
+                        pending_queue &p_q = r_itr->second;
 
-                            break;
+                        //  iterate through all entries, looking for a pointer match
+                        for( pending_itr itr = p_q.begin(); itr != p_q.end(); itr++ )
+                        {
+                            if( *itr == work )
+                            {
+                                p_q.erase(itr);
+
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " **** Checkpoint - work/expectation mismatch **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
                     }
                 }
-                else
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - work/expectation mismatch **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-                }
+
+                //else
+                //{
+                delete work;
+                //}
             }
-            
-            delete work;
         }
     }
 }
@@ -539,6 +546,8 @@ void CtiPorterVerification::loadAssociations(void)
 
 void CtiPorterVerification::writeWorkRecord(const CtiVerificationWork &work, Cti::Database::DatabaseConnection &conn)
 {
+    //  note that this should be called from within a transaction
+
     static const std::string sql = "insert into " + getTableName() +
                                    " values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 

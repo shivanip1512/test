@@ -1064,65 +1064,68 @@ void CtiCCSubstationBusStore::dumpAllDynamicData()
 
                 return;
             }
-
-            if(_ccGeoAreas->size() > 0 )
             {
-                for(long i=0;i<_ccGeoAreas->size();i++)
-                {
-                    CtiCCArea* currentCCArea = (CtiCCArea*)(*_ccGeoAreas)[i];
-                    currentCCArea->dumpDynamicData(conn,currentDateTime);
-                    currentCCArea->getOperationStats().dumpDynamicData(conn,currentDateTime);
-                }
-            }
-            if(_ccSpecialAreas->size() > 0 )
-            {
-                for(long i=0;i<_ccSpecialAreas->size();i++)
-                {
-                    CtiCCSpecial* currentSpecial = (CtiCCSpecial*)(*_ccSpecialAreas)[i];
-                    currentSpecial->dumpDynamicData(conn,currentDateTime);
-                    currentSpecial->getOperationStats().dumpDynamicData(conn,currentDateTime);
-                }
-            }
-            if( _ccSubstations->size() > 0 )
-            {
-                for(long i=0;i<_ccSubstations->size();i++)
-                {
-                    CtiCCSubstation* currentCCSubstation = (CtiCCSubstation*)(*_ccSubstations)[i];
-                    currentCCSubstation->dumpDynamicData(conn,currentDateTime);
-                    currentCCSubstation->getOperationStats().dumpDynamicData(conn,currentDateTime);
-                }
-            }
+                Cti::Database::DatabaseTransaction trans(conn);
 
-
-
-            for(long i=0;i<_ccSubstationBuses->size();i++)
-            {
-                CtiCCSubstationBus* currentCCSubstationBus = (CtiCCSubstationBus*)(*_ccSubstationBuses)[i];
-                currentCCSubstationBus->dumpDynamicData(conn,currentDateTime);
-
-                CtiFeeder_vec& ccFeeders = currentCCSubstationBus->getCCFeeders();
-                if( ccFeeders.size() > 0 )
+                if(_ccGeoAreas->size() > 0 )
                 {
-                    for(long j=0;j<ccFeeders.size();j++)
+                    for(long i=0;i<_ccGeoAreas->size();i++)
                     {
-                        CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j];
-                        currentFeeder->dumpDynamicData(conn,currentDateTime);
-                        currentFeeder->getOperationStats().dumpDynamicData(conn,currentDateTime);
+                        CtiCCArea* currentCCArea = (CtiCCArea*)(*_ccGeoAreas)[i];
+                        currentCCArea->dumpDynamicData(conn,currentDateTime);
+                        currentCCArea->getOperationStats().dumpDynamicData(conn,currentDateTime);
+                    }
+                }
+                if(_ccSpecialAreas->size() > 0 )
+                {
+                    for(long i=0;i<_ccSpecialAreas->size();i++)
+                    {
+                        CtiCCSpecial* currentSpecial = (CtiCCSpecial*)(*_ccSpecialAreas)[i];
+                        currentSpecial->dumpDynamicData(conn,currentDateTime);
+                        currentSpecial->getOperationStats().dumpDynamicData(conn,currentDateTime);
+                    }
+                }
+                if( _ccSubstations->size() > 0 )
+                {
+                    for(long i=0;i<_ccSubstations->size();i++)
+                    {
+                        CtiCCSubstation* currentCCSubstation = (CtiCCSubstation*)(*_ccSubstations)[i];
+                        currentCCSubstation->dumpDynamicData(conn,currentDateTime);
+                        currentCCSubstation->getOperationStats().dumpDynamicData(conn,currentDateTime);
+                    }
+                }
 
-                        CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
-                        if( ccCapBanks.size() > 0 )
+
+
+                for(long i=0;i<_ccSubstationBuses->size();i++)
+                {
+                    CtiCCSubstationBus* currentCCSubstationBus = (CtiCCSubstationBus*)(*_ccSubstationBuses)[i];
+                    currentCCSubstationBus->dumpDynamicData(conn,currentDateTime);
+
+                    CtiFeeder_vec& ccFeeders = currentCCSubstationBus->getCCFeeders();
+                    if( ccFeeders.size() > 0 )
+                    {
+                        for(long j=0;j<ccFeeders.size();j++)
                         {
-                            for(long k=0;k<ccCapBanks.size();k++)
+                            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j];
+                            currentFeeder->dumpDynamicData(conn,currentDateTime);
+                            currentFeeder->getOperationStats().dumpDynamicData(conn,currentDateTime);
+
+                            CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
+                            if( ccCapBanks.size() > 0 )
                             {
-                                CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
-                                currentCapBank->dumpDynamicData(conn,currentDateTime);
-                                currentCapBank->getOperationStats().dumpDynamicData(conn,currentDateTime);
-                                for each(CtiCCMonitorPointPtr monPoint in currentCapBank->getMonitorPoint())
+                                for(long k=0;k<ccCapBanks.size();k++)
                                 {
-                                    monPoint->dumpDynamicData(conn,currentDateTime);
+                                    CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
+                                    currentCapBank->dumpDynamicData(conn,currentDateTime);
+                                    currentCapBank->getOperationStats().dumpDynamicData(conn,currentDateTime);
+                                    for each(CtiCCMonitorPointPtr monPoint in currentCapBank->getMonitorPoint())
+                                    {
+                                        monPoint->dumpDynamicData(conn,currentDateTime);
+                                    }
+                                    //Update Point Responses
+                                    currentCapBank->dumpDynamicPointResponseData(conn);
                                 }
-                                //Update Point Responses
-                                currentCapBank->dumpDynamicPointResponseData(conn);
                             }
                         }
                     }

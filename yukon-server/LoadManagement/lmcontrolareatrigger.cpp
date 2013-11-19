@@ -778,79 +778,65 @@ void CtiLMControlAreaTrigger::dumpDynamicData()
 ---------------------------------------------------------------------------*/
 void CtiLMControlAreaTrigger::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime)
 {
-    if( !_insertDynamicDataFlag )
     {
-        static const std::string sql_update = "update dynamiclmcontrolareatrigger"
-                                              " set "
-                                                "pointvalue = ?, "
-                                                "lastpointvaluetimestamp = ?, "
-                                                "peakpointvalue = ?, "
-                                                "lastpeakpointvaluetimestamp = ?"
-                                              " where "
-                                                "triggerid = ?";
-
-        Cti::Database::DatabaseWriter   updater(conn, sql_update);
-
-        updater
-            << getPointValue()
-            << getLastPointValueTimestamp()
-            << getPeakPointValue()
-            << getLastPeakPointValueTimestamp()
-            << getTriggerId();
-
-        if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
+        if( !_insertDynamicDataFlag )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << updater.asString() << endl;
-        }
+            static const std::string sql_update = "update dynamiclmcontrolareatrigger"
+                                                  " set "
+                                                    "pointvalue = ?, "
+                                                    "lastpointvaluetimestamp = ?, "
+                                                    "peakpointvalue = ?, "
+                                                    "lastpeakpointvaluetimestamp = ?"
+                                                  " where "
+                                                    "triggerid = ?";
 
-        if( ! updater.execute() )
-        {
-            string loggedSQLstring = updater.asString();
+            Cti::Database::DatabaseWriter   updater(conn, sql_update);
+
+            updater
+                << getPointValue()
+                << getLastPointValueTimestamp()
+                << getPeakPointValue()
+                << getLastPeakPointValueTimestamp()
+                << getTriggerId();
+
+            if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
             {
-                dout << CtiTime() << " **** SQL Update Error **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "  " << loggedSQLstring << endl;
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - " << updater.asString() << endl;
             }
-            return;
+
+            updater.execute();
         }
-    }
-    else
-    {
+        else
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Inserted control area trigger into DynamicLMControlAreaTrigger PAO ID: " << getPAOId() << " TriggerNumber: " << getTriggerNumber() << endl;
-        }
-
-        static const std::string sql_insert = "insert into dynamiclmcontrolareatrigger values (?, ?, ?, ?, ?, ?, ?)";
-
-        Cti::Database::DatabaseWriter   inserter(conn, sql_insert);
-
-        inserter
-            << getPAOId()
-            << getTriggerNumber()
-            << getPointValue()
-            << getLastPointValueTimestamp()
-            << getPeakPointValue()
-            << getLastPeakPointValueTimestamp()
-            << getTriggerId();
-
-        if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << inserter.asString() << endl;
-        }
-
-        if( ! inserter.execute() )
-        {
-            string loggedSQLstring = inserter.asString();
             {
-                dout << CtiTime() << " **** SQL Insert Error **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "  " << loggedSQLstring << endl;
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Inserted control area trigger into DynamicLMControlAreaTrigger PAO ID: " << getPAOId() << " TriggerNumber: " << getTriggerNumber() << endl;
             }
-            return;
-        }
 
-        _insertDynamicDataFlag = FALSE;
+            static const std::string sql_insert = "insert into dynamiclmcontrolareatrigger values (?, ?, ?, ?, ?, ?, ?)";
+
+            Cti::Database::DatabaseWriter   inserter(conn, sql_insert);
+
+            inserter
+                << getPAOId()
+                << getTriggerNumber()
+                << getPointValue()
+                << getLastPointValueTimestamp()
+                << getPeakPointValue()
+                << getLastPeakPointValueTimestamp()
+                << getTriggerId();
+
+            if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - " << inserter.asString() << endl;
+            }
+
+            inserter.execute();
+
+            _insertDynamicDataFlag = FALSE;
+        }
     }
 }
 

@@ -2887,36 +2887,40 @@ void CtiVanGogh::writeSignalsToDB(bool justdoit)
                     return;
                 }
 
-                try
                 {
-                    while( justdoit || (panicCounter++ < 500) )
+                    Cti::Database::DatabaseTransaction trans(conn);
+
+                    try
                     {
-                        std::auto_ptr<CtiSignalMsg> sigMsg(_signalMsgQueue.getQueue(0));
-
-                        if( ! sigMsg.get() )
+                        while( justdoit || (panicCounter++ < 500) )
                         {
-                            break;
-                        }
+                            std::auto_ptr<CtiSignalMsg> sigMsg(_signalMsgQueue.getQueue(0));
 
-                        if( ! sigMsg->getText().empty() || ! sigMsg->getAdditionalInfo().empty() )
-                        {
-                            CtiTableSignal sig(sigMsg->getId(), sigMsg->getMessageTime(), sigMsg->getSignalMillis(), sigMsg->getText(), sigMsg->getAdditionalInfo(), sigMsg->getSignalCategory(), sigMsg->getLogType(), sigMsg->getSOE(), sigMsg->getUser(), sigMsg->getLogID());
+                            if( ! sigMsg.get() )
+                            {
+                                break;
+                            }
 
-                            // No text, no point then is there now?
-                            sig.Insert(conn);
-                        }
+                            if( ! sigMsg->getText().empty() || ! sigMsg->getAdditionalInfo().empty() )
+                            {
+                                CtiTableSignal sig(sigMsg->getId(), sigMsg->getMessageTime(), sigMsg->getSignalMillis(), sigMsg->getText(), sigMsg->getAdditionalInfo(), sigMsg->getSignalCategory(), sigMsg->getLogType(), sigMsg->getSOE(), sigMsg->getUser(), sigMsg->getLogID());
 
-                        if( ! (sigMsg->getTags() & TAG_DO_NOT_SEND_SIGNAL_AS_EMAIL) )
-                        {
-                            postList.push_back(sigMsg);
+                                // No text, no point then is there now?
+                                sig.Insert(conn);
+                            }
+
+                            if( ! (sigMsg->getTags() & TAG_DO_NOT_SEND_SIGNAL_AS_EMAIL) )
+                            {
+                                postList.push_back(sigMsg);
+                            }
                         }
                     }
-                }
-                catch(...)
-                {
+                    catch(...)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
                     }
                 }
             }
@@ -5838,22 +5842,26 @@ UINT CtiVanGogh::writeRawPointHistory(bool justdoit, int maxrowstowrite)
             return 0;
         }
 
-        try
-        {
-            while( ( justdoit || (panicCounter < maxrowstowrite) ) && (pTblEntry = _archiverQueue.getQueue(0)) != NULL)
+       {
+            Cti::Database::DatabaseTransaction trans(conn);
+
+            try
             {
-                panicCounter++;
-                pTblEntry->Insert(conn);
-                delete pTblEntry;
+                while( ( justdoit || (panicCounter < maxrowstowrite) ) && (pTblEntry = _archiverQueue.getQueue(0)) != NULL)
+                {
+                    panicCounter++;
+                    pTblEntry->Insert(conn);
+                    delete pTblEntry;
+                }
             }
-        }
-        catch(...)
-        {
+            catch(...)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
             }
-        }
+       }
     }
     catch(...)
     {
