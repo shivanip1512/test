@@ -215,51 +215,47 @@ void CtiLMControlAreaStore::dumpAllDynamicData()
 
             return;
         }
-
+        
+        for( LONG i=0;i<_controlAreas->size();i++ )
         {
-            Cti::Database::DatabaseTransaction trans(conn);
+            CtiLMControlArea* currentLMControlArea = (CtiLMControlArea*)(*_controlAreas)[i];
+            currentLMControlArea->dumpDynamicData(conn,currentDateTime);
 
-            for( LONG i=0;i<_controlAreas->size();i++ )
+            vector<CtiLMProgramBaseSPtr>& lmPrograms = currentLMControlArea->getLMPrograms();
+            if( lmPrograms.size() > 0 )
             {
-                CtiLMControlArea* currentLMControlArea = (CtiLMControlArea*)(*_controlAreas)[i];
-                currentLMControlArea->dumpDynamicData(conn,currentDateTime);
-
-                vector<CtiLMProgramBaseSPtr>& lmPrograms = currentLMControlArea->getLMPrograms();
-                if( lmPrograms.size() > 0 )
+                for( LONG j=0;j<lmPrograms.size();j++ )
                 {
-                    for( LONG j=0;j<lmPrograms.size();j++ )
+                    CtiLMProgramBaseSPtr currentLMProgramBase = (CtiLMProgramBaseSPtr)lmPrograms[j];
+                    currentLMProgramBase->dumpDynamicData(conn,currentDateTime);
+
+                    if( currentLMProgramBase->getPAOType() ==  TYPE_LMPROGRAM_DIRECT )
                     {
-                        CtiLMProgramBaseSPtr currentLMProgramBase = (CtiLMProgramBaseSPtr)lmPrograms[j];
-                        currentLMProgramBase->dumpDynamicData(conn,currentDateTime);
+                        CtiLMProgramDirectSPtr currentLMProgramDirect = boost::static_pointer_cast< CtiLMProgramDirect>(currentLMProgramBase);
 
-                        if( currentLMProgramBase->getPAOType() ==  TYPE_LMPROGRAM_DIRECT )
+                        CtiLMGroupVec groups  = currentLMProgramDirect->getLMProgramDirectGroups();
+                        for( CtiLMGroupIter k = groups.begin(); k != groups.end(); k++ )
                         {
-                            CtiLMProgramDirectSPtr currentLMProgramDirect = boost::static_pointer_cast< CtiLMProgramDirect>(currentLMProgramBase);
-
-                            CtiLMGroupVec groups  = currentLMProgramDirect->getLMProgramDirectGroups();
-                            for( CtiLMGroupIter k = groups.begin(); k != groups.end(); k++ )
-                            {
-                                CtiLMGroupPtr currentLMGroup  = *k;
-                                currentLMGroup->dumpDynamicData(conn,currentDateTime);
-                            }
+                            CtiLMGroupPtr currentLMGroup  = *k;
+                            currentLMGroup->dumpDynamicData(conn,currentDateTime);
                         }
-                        else if( currentLMProgramBase->getPAOType() ==  TYPE_LMPROGRAM_CURTAILMENT )
+                    }
+                    else if( currentLMProgramBase->getPAOType() ==  TYPE_LMPROGRAM_CURTAILMENT )
+                    {
+                        CtiLMProgramCurtailmentSPtr currentLMProgramCurtailment = boost::static_pointer_cast< CtiLMProgramCurtailment>(currentLMProgramBase);
+
+                        if( currentLMProgramCurtailment->getManualControlReceivedFlag() )
                         {
-                            CtiLMProgramCurtailmentSPtr currentLMProgramCurtailment = boost::static_pointer_cast< CtiLMProgramCurtailment>(currentLMProgramBase);
+                            currentLMProgramCurtailment->dumpDynamicData(conn,currentDateTime);
 
-                            if( currentLMProgramCurtailment->getManualControlReceivedFlag() )
+                            vector<CtiLMCurtailCustomer*>& lmCurtailCustomers = currentLMProgramCurtailment->getLMProgramCurtailmentCustomers();
+
+                            for( LONG k=0;k<lmCurtailCustomers.size();k++ )
                             {
-                                currentLMProgramCurtailment->dumpDynamicData(conn,currentDateTime);
-
-                                vector<CtiLMCurtailCustomer*>& lmCurtailCustomers = currentLMProgramCurtailment->getLMProgramCurtailmentCustomers();
-
-                                for( LONG k=0;k<lmCurtailCustomers.size();k++ )
-                                {
-                                    CtiLMCurtailCustomer* currentLMCurtailCustomer = (CtiLMCurtailCustomer*)lmCurtailCustomers[k];
-                                    currentLMCurtailCustomer->dumpDynamicData(conn,currentDateTime);
-                                }
-
+                                CtiLMCurtailCustomer* currentLMCurtailCustomer = (CtiLMCurtailCustomer*)lmCurtailCustomers[k];
+                                currentLMCurtailCustomer->dumpDynamicData(conn,currentDateTime);
                             }
+
                         }
                     }
                 }

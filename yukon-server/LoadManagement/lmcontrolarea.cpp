@@ -2556,6 +2556,12 @@ void CtiLMControlArea::dumpDynamicData()
 ---------------------------------------------------------------------------*/
 void CtiLMControlArea::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime)
 {
+    // FIXME: Determine if we can check this flag
+    // if( ! isDirty() )
+    // {
+    //     return false;
+    // }
+
     if( !_insertDynamicDataFlag )
     {
         static const std::string sql_update = "update dynamiclmcontrolarea"
@@ -2590,7 +2596,15 @@ void CtiLMControlArea::dumpDynamicData(Cti::Database::DatabaseConnection& conn, 
             dout << CtiTime() << " - " << updater.asString() << endl;
         }
 
-        updater.execute();
+        if( ! updater.execute() )
+        {
+            string loggedSQLstring = updater.asString();
+            {
+                dout << CtiTime() << " **** SQL Update Error **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << "  " << loggedSQLstring << endl;
+            }
+            return;
+        }
     }
     else
     {
@@ -2620,7 +2634,15 @@ void CtiLMControlArea::dumpDynamicData(Cti::Database::DatabaseConnection& conn, 
             dout << CtiTime() << " - " << inserter.asString() << endl;
         }
 
-        inserter.execute();
+        if( ! inserter.execute() )
+        {
+            string loggedSQLstring = inserter.asString();
+            {
+                dout << CtiTime() << " **** SQL Insert Error **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << "  " << loggedSQLstring << endl;
+            }
+            return;
+        }
 
         _insertDynamicDataFlag = FALSE;
     }

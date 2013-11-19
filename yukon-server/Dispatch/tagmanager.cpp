@@ -557,8 +557,6 @@ void CtiTagManager::queueDynamicTagLogEntry(const CtiTagMsg &Tag)
 
 void CtiTagManager::processDynamicQueue()
 {
-    bool failed = false;
-
     if(!_dynTagLogMap.empty())
     {
         CtiLockGuard< CtiMutex > tlg(_mux, 5000);
@@ -574,31 +572,27 @@ void CtiTagManager::processDynamicQueue()
                 return;
             }
 
-            TagTblDynamicMap_t::iterator itr;
-           
+            TagTblDynamicMap_t::iterator itr = _dynTagLogMap.begin();
+
+            while( itr != _dynTagLogMap.end() )
             {
-                Cti::Database::DatabaseTransaction trans(conn);
+                TagTblDynamicMap_t::value_type vt = *itr;
+                CtiTableDynamicTag &Tag = vt.second;
 
-                for(itr = _dynTagLogMap.begin(); itr != _dynTagLogMap.end(); itr++)
+                if( ! Tag.Update(conn) )
                 {
-                    TagTblDynamicMap_t::value_type vt = *itr;
-                    CtiTableDynamicTag &Tag = vt.second;
-
-                    if( ! Tag.Update(conn) )
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** SQL Update Error **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            Tag.dump();
-                        }
-
-                        failed = true;
-                        break;
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** SQL Update Error **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        Tag.dump();
                     }
+                    ++itr;
+                }
+                else
+                {
+                    _dynTagLogMap.erase( itr++ );
                 }
             }
-
-            if(!failed) _dynTagLogMap.clear();
         }
     }
 }
@@ -610,7 +604,7 @@ void CtiTagManager::processTagLogQueue()
         CtiLockGuard< CtiMutex > tlg(_mux, 5000);
         if(tlg.isAcquired())
         {
-            CtiTableTagLog *pTag = 0;
+            boost::scoped_ptr<CtiTableTagLog> pTag;
 
             Cti::Database::DatabaseConnection   conn;
 
@@ -622,25 +616,25 @@ void CtiTagManager::processTagLogQueue()
                 return;
             }
 
+            while( true )
             {
-                Cti::Database::DatabaseTransaction trans(conn);
-
-                while((pTag = _tagLogQueue.getQueue(500)) != 0)
+                pTag.reset( _tagLogQueue.getQueue(500) );
+                if( ! pTag )
                 {
-                    if( ! pTag->Update(conn) )
-                    {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** SQL Update Error **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            pTag->dump();
-                        }
+                    break;
+                }
 
-                        break;
+                if( ! pTag->Update(conn) )
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** SQL Update Error **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        pTag->dump();
                     }
-                    else
-                        delete pTag;
+                    break;
                 }
             }
+
         }
     }
 }
