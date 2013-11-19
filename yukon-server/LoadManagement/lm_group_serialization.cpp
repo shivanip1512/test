@@ -17,19 +17,19 @@ struct LMGroupFactoryRegister
 {
     LMGroupFactoryRegister()
     {
-        g_lmGroupFactory.registerSerializer <::LMGroupDigiSEP,       Thrift::LMGroupDigiSEP>    ( &serialize, NULL, "LMGroupDigiSEP" );
-        g_lmGroupFactory.registerSerializer <::CtiLMGroupEmetcon,    Thrift::LMGroupEmetcon>    ( &serialize, NULL, "LMGroupEmetcon" );
-        g_lmGroupFactory.registerSerializer <::CtiLMGroupExpresscom, Thrift::LMGroupExpresscom> ( &serialize, NULL, "LMGroupExpresscom" );
-        g_lmGroupFactory.registerSerializer <::CtiLMGroupGolay,      Thrift::LMGroupGolay>      ( &serialize, NULL, "LMGroupGolay" );
-        g_lmGroupFactory.registerSerializer <::CtiLMGroupMacro,      Thrift::LMGroupMacro>      ( &serialize, NULL, "LMGroupMacro" );
-        g_lmGroupFactory.registerSerializer <::CtiLMGroupMCT,        Thrift::LMGroupMCT>        ( &serialize, NULL, "LMGroupMCT" );
-        g_lmGroupFactory.registerSerializer <::CtiLMGroupPoint,      Thrift::LMGroupPoint>      ( &serialize, NULL, "LMGroupPoint" );
-        g_lmGroupFactory.registerSerializer <::CtiLMGroupRipple,     Thrift::LMGroupRipple>     ( &serialize, NULL, "LMGroupRipple" );
-        g_lmGroupFactory.registerSerializer <::CtiLMGroupSA105,      Thrift::LMGroupSA105>      ( &serialize, NULL, "LMGroupSA105" );
-        g_lmGroupFactory.registerSerializer <::CtiLMGroupSA205,      Thrift::LMGroupSA205>      ( &serialize, NULL, "LMGroupSA205" );
-        g_lmGroupFactory.registerSerializer <::CtiLMGroupSA305,      Thrift::LMGroupSA305>      ( &serialize, NULL, "LMGroupSA305" );
-        g_lmGroupFactory.registerSerializer <::CtiLMGroupSADigital,  Thrift::LMGroupSADigital>  ( &serialize, NULL, "LMGroupSADigital" );
-        g_lmGroupFactory.registerSerializer <::CtiLMGroupVersacom,   Thrift::LMGroupVersacom>   ( &serialize, NULL, "LMGroupVersacom" );
+        g_lmGroupFactory.registerSerializer <::LMGroupDigiSEP,       Thrift::LMGroupDigiSEP>    ( &populateThrift, NULL, "LMGroupDigiSEP" );
+        g_lmGroupFactory.registerSerializer <::CtiLMGroupEmetcon,    Thrift::LMGroupEmetcon>    ( &populateThrift, NULL, "LMGroupEmetcon" );
+        g_lmGroupFactory.registerSerializer <::CtiLMGroupExpresscom, Thrift::LMGroupExpresscom> ( &populateThrift, NULL, "LMGroupExpresscom" );
+        g_lmGroupFactory.registerSerializer <::CtiLMGroupGolay,      Thrift::LMGroupGolay>      ( &populateThrift, NULL, "LMGroupGolay" );
+        g_lmGroupFactory.registerSerializer <::CtiLMGroupMacro,      Thrift::LMGroupMacro>      ( &populateThrift, NULL, "LMGroupMacro" );
+        g_lmGroupFactory.registerSerializer <::CtiLMGroupMCT,        Thrift::LMGroupMCT>        ( &populateThrift, NULL, "LMGroupMCT" );
+        g_lmGroupFactory.registerSerializer <::CtiLMGroupPoint,      Thrift::LMGroupPoint>      ( &populateThrift, NULL, "LMGroupPoint" );
+        g_lmGroupFactory.registerSerializer <::CtiLMGroupRipple,     Thrift::LMGroupRipple>     ( &populateThrift, NULL, "LMGroupRipple" );
+        g_lmGroupFactory.registerSerializer <::CtiLMGroupSA105,      Thrift::LMGroupSA105>      ( &populateThrift, NULL, "LMGroupSA105" );
+        g_lmGroupFactory.registerSerializer <::CtiLMGroupSA205,      Thrift::LMGroupSA205>      ( &populateThrift, NULL, "LMGroupSA205" );
+        g_lmGroupFactory.registerSerializer <::CtiLMGroupSA305,      Thrift::LMGroupSA305>      ( &populateThrift, NULL, "LMGroupSA305" );
+        g_lmGroupFactory.registerSerializer <::CtiLMGroupSADigital,  Thrift::LMGroupSADigital>  ( &populateThrift, NULL, "LMGroupSADigital" );
+        g_lmGroupFactory.registerSerializer <::CtiLMGroupVersacom,   Thrift::LMGroupVersacom>   ( &populateThrift, NULL, "LMGroupVersacom" );
     }
 };
 
@@ -41,7 +41,7 @@ const LMGroupFactoryRegister g_lmGroupFactoryRegister;
 //  LMGroupBase
 //=============================================================================
 
-MessagePtr<Thrift::LMGroupBase>::type serialize( const ::CtiLMGroupBase& imsg )
+MessagePtr<Thrift::LMGroupBase>::type populateThrift( const ::CtiLMGroupBase& imsg )
 {
     MessagePtr<Thrift::LMGroupBase>::type omsg( new Thrift::LMGroupBase );
 
@@ -80,11 +80,11 @@ MessagePtr<Thrift::LMGroupBase>::type serialize( const ::CtiLMGroupBase& imsg )
 //  LMGroupDigiSEP
 //=============================================================================
 
-MessagePtr<Thrift::LMGroupDigiSEP>::type serialize( const ::LMGroupDigiSEP& imsg )
+MessagePtr<Thrift::LMGroupDigiSEP>::type populateThrift( const ::LMGroupDigiSEP& imsg )
 {
     MessagePtr<Thrift::LMGroupDigiSEP>::type omsg( new Thrift::LMGroupDigiSEP );
 
-    omsg->__set__baseMessage                    ( *serialize( static_cast<const ::CtiLMGroupBase&>(imsg) ));
+    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CtiLMGroupBase&>(imsg) ));
 
     return omsg;
 }
@@ -93,11 +93,11 @@ MessagePtr<Thrift::LMGroupDigiSEP>::type serialize( const ::LMGroupDigiSEP& imsg
 //  LMGroupEmetcon
 //=============================================================================
 
-MessagePtr<Thrift::LMGroupEmetcon>::type serialize( const ::CtiLMGroupEmetcon& imsg )
+MessagePtr<Thrift::LMGroupEmetcon>::type populateThrift( const ::CtiLMGroupEmetcon& imsg )
 {
     MessagePtr<Thrift::LMGroupEmetcon>::type omsg( new Thrift::LMGroupEmetcon );
 
-    omsg->__set__baseMessage                    ( *serialize( static_cast<const ::CtiLMGroupBase&>(imsg) ));
+    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CtiLMGroupBase&>(imsg) ));
 
     return omsg;
 }
@@ -106,11 +106,11 @@ MessagePtr<Thrift::LMGroupEmetcon>::type serialize( const ::CtiLMGroupEmetcon& i
 //  LMGroupExpresscom
 //=============================================================================
 
-MessagePtr<Thrift::LMGroupExpresscom>::type serialize( const ::CtiLMGroupExpresscom& imsg )
+MessagePtr<Thrift::LMGroupExpresscom>::type populateThrift( const ::CtiLMGroupExpresscom& imsg )
 {
     MessagePtr<Thrift::LMGroupExpresscom>::type omsg( new Thrift::LMGroupExpresscom );
 
-    omsg->__set__baseMessage                    ( *serialize( static_cast<const ::CtiLMGroupBase&>(imsg) ));
+    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CtiLMGroupBase&>(imsg) ));
 
     return omsg;
 }
@@ -119,11 +119,11 @@ MessagePtr<Thrift::LMGroupExpresscom>::type serialize( const ::CtiLMGroupExpress
 //  LMGroupGolay
 //=============================================================================
 
-MessagePtr<Thrift::LMGroupGolay>::type serialize( const ::CtiLMGroupGolay& imsg )
+MessagePtr<Thrift::LMGroupGolay>::type populateThrift( const ::CtiLMGroupGolay& imsg )
 {
     MessagePtr<Thrift::LMGroupGolay>::type omsg( new Thrift::LMGroupGolay );
 
-    omsg->__set__baseMessage                    ( *serialize( static_cast<const ::CtiLMGroupBase&>(imsg) ));
+    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CtiLMGroupBase&>(imsg) ));
 
     return omsg;
 }
@@ -132,11 +132,11 @@ MessagePtr<Thrift::LMGroupGolay>::type serialize( const ::CtiLMGroupGolay& imsg 
 //  LMGroupMacro
 //=============================================================================
 
-MessagePtr<Thrift::LMGroupMacro>::type serialize( const ::CtiLMGroupMacro& imsg )
+MessagePtr<Thrift::LMGroupMacro>::type populateThrift( const ::CtiLMGroupMacro& imsg )
 {
     MessagePtr<Thrift::LMGroupMacro>::type omsg( new Thrift::LMGroupMacro );
 
-    omsg->__set__baseMessage                    ( *serialize( static_cast<const ::CtiLMGroupBase&>(imsg) ));
+    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CtiLMGroupBase&>(imsg) ));
 
     return omsg;
 }
@@ -145,11 +145,11 @@ MessagePtr<Thrift::LMGroupMacro>::type serialize( const ::CtiLMGroupMacro& imsg 
 //  LMGroupMCT
 //=============================================================================
 
-MessagePtr<Thrift::LMGroupMCT>::type serialize( const ::CtiLMGroupMCT& imsg )
+MessagePtr<Thrift::LMGroupMCT>::type populateThrift( const ::CtiLMGroupMCT& imsg )
 {
     MessagePtr<Thrift::LMGroupMCT>::type omsg( new Thrift::LMGroupMCT );
 
-    omsg->__set__baseMessage                    ( *serialize( static_cast<const ::CtiLMGroupEmetcon&>(imsg) ));
+    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CtiLMGroupEmetcon&>(imsg) ));
 
     return omsg;
 }
@@ -158,11 +158,11 @@ MessagePtr<Thrift::LMGroupMCT>::type serialize( const ::CtiLMGroupMCT& imsg )
 //  LMGroupPoint
 //=============================================================================
 
-MessagePtr<Thrift::LMGroupPoint>::type serialize( const ::CtiLMGroupPoint& imsg )
+MessagePtr<Thrift::LMGroupPoint>::type populateThrift( const ::CtiLMGroupPoint& imsg )
 {
     MessagePtr<Thrift::LMGroupPoint>::type omsg( new Thrift::LMGroupPoint );
 
-    omsg->__set__baseMessage                    ( *serialize( static_cast<const ::CtiLMGroupBase&>(imsg) ));
+    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CtiLMGroupBase&>(imsg) ));
 
     return omsg;
 }
@@ -171,11 +171,11 @@ MessagePtr<Thrift::LMGroupPoint>::type serialize( const ::CtiLMGroupPoint& imsg 
 //  LMGroupRipple
 //=============================================================================
 
-MessagePtr<Thrift::LMGroupRipple>::type serialize( const ::CtiLMGroupRipple& imsg )
+MessagePtr<Thrift::LMGroupRipple>::type populateThrift( const ::CtiLMGroupRipple& imsg )
 {
     MessagePtr<Thrift::LMGroupRipple>::type omsg( new Thrift::LMGroupRipple );
 
-    omsg->__set__baseMessage                    ( *serialize( static_cast<const ::CtiLMGroupBase&>(imsg) ));
+    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CtiLMGroupBase&>(imsg) ));
     omsg->__set__shedTime                       ( imsg.getShedTime() );
 
     return omsg;
@@ -185,11 +185,11 @@ MessagePtr<Thrift::LMGroupRipple>::type serialize( const ::CtiLMGroupRipple& ims
 //  LMGroupSA105
 //=============================================================================
 
-MessagePtr<Thrift::LMGroupSA105>::type serialize( const ::CtiLMGroupSA105& imsg )
+MessagePtr<Thrift::LMGroupSA105>::type populateThrift( const ::CtiLMGroupSA105& imsg )
 {
     MessagePtr<Thrift::LMGroupSA105>::type omsg( new Thrift::LMGroupSA105 );
 
-    omsg->__set__baseMessage                    ( *serialize( static_cast<const ::CtiLMGroupBase&>(imsg) ));
+    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CtiLMGroupBase&>(imsg) ));
 
     return omsg;
 }
@@ -198,11 +198,11 @@ MessagePtr<Thrift::LMGroupSA105>::type serialize( const ::CtiLMGroupSA105& imsg 
 //  LMGroupSA205
 //=============================================================================
 
-MessagePtr<Thrift::LMGroupSA205>::type serialize( const ::CtiLMGroupSA205& imsg )
+MessagePtr<Thrift::LMGroupSA205>::type populateThrift( const ::CtiLMGroupSA205& imsg )
 {
     MessagePtr<Thrift::LMGroupSA205>::type omsg( new Thrift::LMGroupSA205 );
 
-    omsg->__set__baseMessage                    ( *serialize( static_cast<const ::CtiLMGroupBase&>(imsg) ));
+    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CtiLMGroupBase&>(imsg) ));
 
     return omsg;
 }
@@ -211,11 +211,11 @@ MessagePtr<Thrift::LMGroupSA205>::type serialize( const ::CtiLMGroupSA205& imsg 
 //  LMGroupSA305
 //=============================================================================
 
-MessagePtr<Thrift::LMGroupSA305>::type serialize( const ::CtiLMGroupSA305& imsg )
+MessagePtr<Thrift::LMGroupSA305>::type populateThrift( const ::CtiLMGroupSA305& imsg )
 {
     MessagePtr<Thrift::LMGroupSA305>::type omsg( new Thrift::LMGroupSA305 );
 
-    omsg->__set__baseMessage                    ( *serialize( static_cast<const ::CtiLMGroupBase&>(imsg) ));
+    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CtiLMGroupBase&>(imsg) ));
 
     return omsg;
 }
@@ -224,11 +224,11 @@ MessagePtr<Thrift::LMGroupSA305>::type serialize( const ::CtiLMGroupSA305& imsg 
 //  LMGroupSADigital
 //=============================================================================
 
-MessagePtr<Thrift::LMGroupSADigital>::type serialize( const ::CtiLMGroupSADigital& imsg )
+MessagePtr<Thrift::LMGroupSADigital>::type populateThrift( const ::CtiLMGroupSADigital& imsg )
 {
     MessagePtr<Thrift::LMGroupSADigital>::type omsg( new Thrift::LMGroupSADigital );
 
-    omsg->__set__baseMessage                    ( *serialize( static_cast<const ::CtiLMGroupBase&>(imsg) ));
+    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CtiLMGroupBase&>(imsg) ));
 
     return omsg;
 }
@@ -237,11 +237,11 @@ MessagePtr<Thrift::LMGroupSADigital>::type serialize( const ::CtiLMGroupSADigita
 //  LMGroupVersacom
 //=============================================================================
 
-MessagePtr<Thrift::LMGroupVersacom>::type serialize( const ::CtiLMGroupVersacom& imsg )
+MessagePtr<Thrift::LMGroupVersacom>::type populateThrift( const ::CtiLMGroupVersacom& imsg )
 {
     MessagePtr<Thrift::LMGroupVersacom>::type omsg( new Thrift::LMGroupVersacom );
 
-    omsg->__set__baseMessage                    ( *serialize( static_cast<const ::CtiLMGroupBase&>(imsg) ));
+    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CtiLMGroupBase&>(imsg) ));
 
     return omsg;
 }

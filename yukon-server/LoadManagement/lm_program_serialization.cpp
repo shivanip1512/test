@@ -18,9 +18,9 @@ struct LMProgramFactoryRegister
 {
     LMProgramFactoryRegister()
     {
-        g_lmProgramFactory.registerSerializer <::CtiLMProgramCurtailment,    Thrift::LMProgramCurtailment>    ( &serialize, NULL, "LMProgramCurtailment" );
-        g_lmProgramFactory.registerSerializer <::CtiLMProgramDirect,         Thrift::LMProgramDirect>         ( &serialize, NULL, "LMProgramDirect" );
-        g_lmProgramFactory.registerSerializer <::CtiLMProgramEnergyExchange, Thrift::LMProgramEnergyExchange> ( &serialize, NULL, "LMProgramEnergyExchange" );
+        g_lmProgramFactory.registerSerializer <::CtiLMProgramCurtailment,    Thrift::LMProgramCurtailment>    ( &populateThrift, NULL, "LMProgramCurtailment" );
+        g_lmProgramFactory.registerSerializer <::CtiLMProgramDirect,         Thrift::LMProgramDirect>         ( &populateThrift, NULL, "LMProgramDirect" );
+        g_lmProgramFactory.registerSerializer <::CtiLMProgramEnergyExchange, Thrift::LMProgramEnergyExchange> ( &populateThrift, NULL, "LMProgramEnergyExchange" );
     }
 };
 
@@ -44,7 +44,7 @@ Thrift::GenericMessage serializeGenericProgram( const ::CtiLMProgramBase& progra
 //  LMProgramBase
 //=============================================================================
 
-MessagePtr<Thrift::LMProgramBase>::type serialize( const ::CtiLMProgramBase& imsg )
+MessagePtr<Thrift::LMProgramBase>::type populateThrift( const ::CtiLMProgramBase& imsg )
 {
     MessagePtr<Thrift::LMProgramBase>::type omsg( new Thrift::LMProgramBase );
 
@@ -72,7 +72,7 @@ MessagePtr<Thrift::LMProgramBase>::type serialize( const ::CtiLMProgramBase& ims
     omsg->__set__startedControlling             ( CtiTimeToMilliseconds( imsg.getStartedControlling() ));
     omsg->__set__lastControlSent                ( CtiTimeToMilliseconds( imsg.getLastControlSent() ));
     omsg->__set__manualControlReceivedFlag      ( imsg.getManualControlReceivedFlag() );
-    omsg->__set__lmProgramControlWindows        ( transformContainer<vector<Thrift::LMProgramControlWindow>>( imsg.getLMProgramControlWindows(), serialize ));
+    omsg->__set__lmProgramControlWindows        ( transformContainer<vector<Thrift::LMProgramControlWindow>>( imsg.getLMProgramControlWindows(), populateThrift ));
 
     return omsg;
 }
@@ -81,7 +81,7 @@ MessagePtr<Thrift::LMProgramBase>::type serialize( const ::CtiLMProgramBase& ims
 //  LMProgramControlWindow
 //=============================================================================
 
-MessagePtr<Thrift::LMProgramControlWindow>::type serialize( const ::CtiLMProgramControlWindow& imsg )
+MessagePtr<Thrift::LMProgramControlWindow>::type populateThrift( const ::CtiLMProgramControlWindow& imsg )
 {
     MessagePtr<Thrift::LMProgramControlWindow>::type omsg( new Thrift::LMProgramControlWindow );
 
@@ -97,11 +97,11 @@ MessagePtr<Thrift::LMProgramControlWindow>::type serialize( const ::CtiLMProgram
 //  LMProgramCurtailment
 //=============================================================================
 
-MessagePtr<Thrift::LMProgramCurtailment>::type serialize( const ::CtiLMProgramCurtailment& imsg )
+MessagePtr<Thrift::LMProgramCurtailment>::type populateThrift( const ::CtiLMProgramCurtailment& imsg )
 {
     MessagePtr<Thrift::LMProgramCurtailment>::type omsg( new Thrift::LMProgramCurtailment );
 
-    omsg->__set__baseMessage                    ( *serialize( static_cast<const ::CtiLMProgramBase&>(imsg) ));
+    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CtiLMProgramBase&>(imsg) ));
     omsg->__set__minNotifyTime                  ( imsg.getMinNotifyTime() );
     omsg->__set__heading                        ( imsg.getHeading() );
     omsg->__set__messageHeader                  ( imsg.getMessageHeader() );
@@ -116,7 +116,7 @@ MessagePtr<Thrift::LMProgramCurtailment>::type serialize( const ::CtiLMProgramCu
     omsg->__set__curtailmentStopTime            ( CtiTimeToMilliseconds( imsg.getCurtailmentStopTime() ));
     omsg->__set__runStatus                      ( imsg.getRunStatus() );
     omsg->__set__additionalInfo                 ( imsg.getAdditionalInfo() );
-    omsg->__set__lmProgramCurtailmentCustomers  ( transformContainer<vector<Thrift::LMCurtailCustomer>>( imsg.getLMProgramCurtailmentCustomers(), serialize ));
+    omsg->__set__lmProgramCurtailmentCustomers  ( transformContainer<vector<Thrift::LMCurtailCustomer>>( imsg.getLMProgramCurtailmentCustomers(), populateThrift ));
 
     return omsg;
 }
@@ -125,11 +125,11 @@ MessagePtr<Thrift::LMProgramCurtailment>::type serialize( const ::CtiLMProgramCu
 //  LMCurtailCustomer
 //=============================================================================
 
-MessagePtr<Thrift::LMCurtailCustomer>::type serialize( const ::CtiLMCurtailCustomer& imsg )
+MessagePtr<Thrift::LMCurtailCustomer>::type populateThrift( const ::CtiLMCurtailCustomer& imsg )
 {
     MessagePtr<Thrift::LMCurtailCustomer>::type omsg( new Thrift::LMCurtailCustomer );
 
-    omsg->__set__baseMessage                    ( *serialize( static_cast<const ::CtiLMCICustomerBase&>(imsg) ));
+    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CtiLMCICustomerBase&>(imsg) ));
     omsg->__set__requireAck                     ( imsg.getRequireAck() );
     omsg->__set__curtailReferenceId             ( imsg.getCurtailReferenceId() );
     omsg->__set__acknowledgeStatus              ( imsg.getAcknowledgeStatus() );
@@ -147,7 +147,7 @@ MessagePtr<Thrift::LMCurtailCustomer>::type serialize( const ::CtiLMCurtailCusto
 //  LMCurtailCustomerBase
 //=============================================================================
 
-MessagePtr<Thrift::LMCICustomerBase>::type serialize( const ::CtiLMCICustomerBase& imsg )
+MessagePtr<Thrift::LMCICustomerBase>::type populateThrift( const ::CtiLMCICustomerBase& imsg )
 {
     MessagePtr<Thrift::LMCICustomerBase>::type omsg( new Thrift::LMCICustomerBase );
 
@@ -166,12 +166,12 @@ MessagePtr<Thrift::LMCICustomerBase>::type serialize( const ::CtiLMCICustomerBas
 //  LMProgramDirect
 //=============================================================================
 
-MessagePtr<Thrift::LMProgramDirect>::type serialize( const ::CtiLMProgramDirect& imsg )
+MessagePtr<Thrift::LMProgramDirect>::type populateThrift( const ::CtiLMProgramDirect& imsg )
 {
     MessagePtr<Thrift::LMProgramDirect>::type omsg( new Thrift::LMProgramDirect );
 
-    omsg->__set__baseMessage                    ( *serialize( static_cast<const ::CtiLMProgramBase&>(imsg) ));
-    omsg->__set__currentGearNumber              ( imsg.getCurrentGearNumber() );
+    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CtiLMProgramBase&>(imsg) ));
+    omsg->__set__currentGearNumber              ( imsg.getCurrentGearNumber() + 1 );
     omsg->__set__lastGroupControlled            ( imsg.getLastGroupControlled() );
     omsg->__set__directStartTime                ( CtiTimeToMilliseconds( imsg.getDirectStartTime() ));
     omsg->__set__directstopTime                 ( CtiTimeToMilliseconds( imsg.getDirectStopTime() ));
@@ -181,7 +181,7 @@ MessagePtr<Thrift::LMProgramDirect>::type serialize( const ::CtiLMProgramDirect&
     omsg->__set__triggerOffset                  ( imsg.getTriggerOffset() );
     omsg->__set__triggerRestoreOffset           ( imsg.getTriggerRestoreOffset() );
     omsg->__set__constraintOverride             ( imsg.getConstraintOverride() );
-    omsg->__set__lmProgramDirectGears           ( transformContainer<vector<Thrift::LMProgramDirectGear>>( imsg.getLMProgramDirectGears(), serialize ));
+    omsg->__set__lmProgramDirectGears           ( transformContainer<vector<Thrift::LMProgramDirectGear>>( imsg.getLMProgramDirectGears(), populateThrift ));
     omsg->__set__lmProgramDirectGroups          ( transformContainer<vector<Thrift::GenericMessage>>( imsg.getLMProgramDirectGroups(), serializeGenericGroupPtr ));
 
     // Only send active master/subordinate programs
@@ -214,7 +214,7 @@ MessagePtr<Thrift::LMProgramDirect>::type serialize( const ::CtiLMProgramDirect&
 //  LMProgramDirectGear
 //=============================================================================
 
-MessagePtr<Thrift::LMProgramDirectGear>::type serialize( const ::CtiLMProgramDirectGear& imsg )
+MessagePtr<Thrift::LMProgramDirectGear>::type populateThrift( const ::CtiLMProgramDirectGear& imsg )
 {
     MessagePtr<Thrift::LMProgramDirectGear>::type omsg( new Thrift::LMProgramDirectGear );
 
@@ -249,19 +249,19 @@ MessagePtr<Thrift::LMProgramDirectGear>::type serialize( const ::CtiLMProgramDir
 //  LMProgramEnergyExchange
 //=============================================================================
 
-MessagePtr<Thrift::LMProgramEnergyExchange>::type serialize( const ::CtiLMProgramEnergyExchange& imsg )
+MessagePtr<Thrift::LMProgramEnergyExchange>::type populateThrift( const ::CtiLMProgramEnergyExchange& imsg )
 {
     MessagePtr<Thrift::LMProgramEnergyExchange>::type omsg( new Thrift::LMProgramEnergyExchange );
 
-    omsg->__set__baseMessage                    ( *serialize( static_cast<const ::CtiLMProgramBase&>(imsg) ));
+    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CtiLMProgramBase&>(imsg) ));
     omsg->__set__minNotifyTime                  ( imsg.getMinNotifyTime() );
     omsg->__set__heading                        ( imsg.getHeading() );
     omsg->__set__messageHeader                  ( imsg.getMessageHeader() );
     omsg->__set__messageFooter                  ( imsg.getMessageFooter() );
     omsg->__set__canceledMsg                    ( imsg.getCanceledMsg() );
     omsg->__set__stoppedEarlyMsg                ( imsg.getStoppedEarlyMsg() );
-    omsg->__set__lmEnergyExchangeOffers         ( transformContainer<vector<Thrift::LMEnergyExchangeOffer>>( imsg.getLMEnergyExchangeOffers(), serialize ));
-    omsg->__set__lmEnergyExchangeCustomers      ( transformContainer<vector<Thrift::LMEnergyExchangeCustomer>>( imsg.getLMEnergyExchangeCustomers(), serialize ));
+    omsg->__set__lmEnergyExchangeOffers         ( transformContainer<vector<Thrift::LMEnergyExchangeOffer>>( imsg.getLMEnergyExchangeOffers(), populateThrift ));
+    omsg->__set__lmEnergyExchangeCustomers      ( transformContainer<vector<Thrift::LMEnergyExchangeCustomer>>( imsg.getLMEnergyExchangeCustomers(), populateThrift ));
 
     return omsg;
 }
@@ -270,7 +270,7 @@ MessagePtr<Thrift::LMProgramEnergyExchange>::type serialize( const ::CtiLMProgra
 //  LMEnergyExchangeOffer
 //=============================================================================
 
-MessagePtr<Thrift::LMEnergyExchangeOffer>::type serialize( const ::CtiLMEnergyExchangeOffer& imsg )
+MessagePtr<Thrift::LMEnergyExchangeOffer>::type populateThrift( const ::CtiLMEnergyExchangeOffer& imsg )
 {
     MessagePtr<Thrift::LMEnergyExchangeOffer>::type omsg( new Thrift::LMEnergyExchangeOffer );
 
@@ -278,7 +278,7 @@ MessagePtr<Thrift::LMEnergyExchangeOffer>::type serialize( const ::CtiLMEnergyEx
     omsg->__set__offerId                        ( imsg.getOfferId() );
     omsg->__set__runStatus                      ( imsg.getRunStatus() );
     omsg->__set__offerDate                      ( CtiTimeToMilliseconds( imsg.getOfferDate() ));
-    omsg->__set__lmEnergyExchangeOfferRevisions ( transformContainer<vector<Thrift::LMEnergyExchangeOfferRevision>>( imsg.getLMEnergyExchangeOfferRevisions(), serialize ));
+    omsg->__set__lmEnergyExchangeOfferRevisions ( transformContainer<vector<Thrift::LMEnergyExchangeOfferRevision>>( imsg.getLMEnergyExchangeOfferRevisions(), populateThrift ));
 
     return omsg;
 }
@@ -287,7 +287,7 @@ MessagePtr<Thrift::LMEnergyExchangeOffer>::type serialize( const ::CtiLMEnergyEx
 //  LMEnergyExchangeOfferRevision
 //=============================================================================
 
-MessagePtr<Thrift::LMEnergyExchangeOfferRevision>::type serialize( const ::CtiLMEnergyExchangeOfferRevision& imsg )
+MessagePtr<Thrift::LMEnergyExchangeOfferRevision>::type populateThrift( const ::CtiLMEnergyExchangeOfferRevision& imsg )
 {
     MessagePtr<Thrift::LMEnergyExchangeOfferRevision>::type omsg( new Thrift::LMEnergyExchangeOfferRevision );
 
@@ -297,7 +297,7 @@ MessagePtr<Thrift::LMEnergyExchangeOfferRevision>::type serialize( const ::CtiLM
     omsg->__set__notificationDatetime           ( CtiTimeToMilliseconds( imsg.getNotificationDateTime() ));
     omsg->__set__offerexpirationDatetime        ( CtiTimeToMilliseconds( imsg.getOfferExpirationDateTime() ));
     omsg->__set__additionalInfo                 ( imsg.getAdditionalInfo() );
-    omsg->__set__lmEnergyExchangeHourlyOffers   ( transformContainer<vector<Thrift::LMEnergyExchangeHourlyOffer>>( imsg.getLMEnergyExchangeHourlyOffers(), serialize ));
+    omsg->__set__lmEnergyExchangeHourlyOffers   ( transformContainer<vector<Thrift::LMEnergyExchangeHourlyOffer>>( imsg.getLMEnergyExchangeHourlyOffers(), populateThrift ));
 
     return omsg;
 }
@@ -306,7 +306,7 @@ MessagePtr<Thrift::LMEnergyExchangeOfferRevision>::type serialize( const ::CtiLM
 //  LMEnergyExchangeHourlyOffer
 //=============================================================================
 
-MessagePtr<Thrift::LMEnergyExchangeHourlyOffer>::type serialize( const ::CtiLMEnergyExchangeHourlyOffer& imsg )
+MessagePtr<Thrift::LMEnergyExchangeHourlyOffer>::type populateThrift( const ::CtiLMEnergyExchangeHourlyOffer& imsg )
 {
     MessagePtr<Thrift::LMEnergyExchangeHourlyOffer>::type omsg( new Thrift::LMEnergyExchangeHourlyOffer );
 
@@ -323,12 +323,12 @@ MessagePtr<Thrift::LMEnergyExchangeHourlyOffer>::type serialize( const ::CtiLMEn
 //  LMEnergyExchangeCustomer
 //=============================================================================
 
-MessagePtr<Thrift::LMEnergyExchangeCustomer>::type serialize( const ::CtiLMEnergyExchangeCustomer& imsg )
+MessagePtr<Thrift::LMEnergyExchangeCustomer>::type populateThrift( const ::CtiLMEnergyExchangeCustomer& imsg )
 {
     MessagePtr<Thrift::LMEnergyExchangeCustomer>::type omsg( new Thrift::LMEnergyExchangeCustomer );
 
-    omsg->__set__baseMessage                    ( *serialize( static_cast<const ::CtiLMCICustomerBase&>(imsg) ));
-    omsg->__set__lmEnergyExchangeCustomerReplies( transformContainer<vector<Thrift::LMEnergyExchangeCustomerReply>>( imsg.getLMEnergyExchangeCustomerReplies(), serialize ));
+    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CtiLMCICustomerBase&>(imsg) ));
+    omsg->__set__lmEnergyExchangeCustomerReplies( transformContainer<vector<Thrift::LMEnergyExchangeCustomerReply>>( imsg.getLMEnergyExchangeCustomerReplies(), populateThrift ));
 
     return omsg;
 }
@@ -337,7 +337,7 @@ MessagePtr<Thrift::LMEnergyExchangeCustomer>::type serialize( const ::CtiLMEnerg
 //  LMEnergyExchangeCustomerReply
 //=============================================================================
 
-MessagePtr<Thrift::LMEnergyExchangeCustomerReply>::type serialize( const ::CtiLMEnergyExchangeCustomerReply& imsg )
+MessagePtr<Thrift::LMEnergyExchangeCustomerReply>::type populateThrift( const ::CtiLMEnergyExchangeCustomerReply& imsg )
 {
     MessagePtr<Thrift::LMEnergyExchangeCustomerReply>::type omsg( new Thrift::LMEnergyExchangeCustomerReply );
 
@@ -350,7 +350,7 @@ MessagePtr<Thrift::LMEnergyExchangeCustomerReply>::type serialize( const ::CtiLM
     omsg->__set__userIdName                     ( imsg.getUserIdName() );
     omsg->__set__nameOfAcceptPerson             ( imsg.getNameOfAcceptPerson() );
     omsg->__set__energyExchangeNotes            ( imsg.getEnergyExchangeNotes() );
-    omsg->__set__lmEnergyExchangeHourlyCustomers( transformContainer<vector<Thrift::LMEnergyExchangeHourlyCustomer>>( imsg.getLMEnergyExchangeHourlyCustomers(), serialize ));
+    omsg->__set__lmEnergyExchangeHourlyCustomers( transformContainer<vector<Thrift::LMEnergyExchangeHourlyCustomer>>( imsg.getLMEnergyExchangeHourlyCustomers(), populateThrift ));
 
     return omsg;
 }
@@ -359,7 +359,7 @@ MessagePtr<Thrift::LMEnergyExchangeCustomerReply>::type serialize( const ::CtiLM
 //  LMEnergyExchangeCustomerReply
 //=============================================================================
 
-MessagePtr<Thrift::LMEnergyExchangeHourlyCustomer>::type serialize( const ::CtiLMEnergyExchangeHourlyCustomer& imsg )
+MessagePtr<Thrift::LMEnergyExchangeHourlyCustomer>::type populateThrift( const ::CtiLMEnergyExchangeHourlyCustomer& imsg )
 {
     MessagePtr<Thrift::LMEnergyExchangeHourlyCustomer>::type omsg( new Thrift::LMEnergyExchangeHourlyCustomer );
 

@@ -122,7 +122,7 @@ key_password_encryptor.exe:   $(KEYPSWDENCRYPTOROBJS) makeexe.mak $(OBJ)\key_pas
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ $(KEYPSWDENCRYPTOROBJS) \
 			-link $(COMPILEBASE)\lib\ctibase.lib \
-			$(COMPILEBASE)\lib\ctimsg.lib $(COMPILEBASE)\lib\ctisvr.lib \
+			$(COMPILEBASE)\lib\ctisvr.lib \
 			$(COMPILEBASE)\lib\ctidbsrc.lib $(COMPILEBASE)\lib\ctidevdb.lib  $(RWLIBS) $(BOOST_LIBS) $(OPENSSL_LIBS) key_password_encryptor.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                $(MANIFEST_TOOL) -manifest ..\$@.manifest -outputresource:..\$@;1

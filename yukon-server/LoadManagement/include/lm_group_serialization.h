@@ -24,33 +24,33 @@ namespace Cti {
 namespace Messaging {
 namespace Serialization {
 
-MessagePtr<Thrift::LMGroupBase>::type        serialize ( const ::CtiLMGroupBase& imsg );
+MessagePtr<Thrift::LMGroupBase>::type        populateThrift ( const ::CtiLMGroupBase& imsg );
 
-MessagePtr<Thrift::LMGroupDigiSEP>::type     serialize ( const ::LMGroupDigiSEP& imsg );
+MessagePtr<Thrift::LMGroupDigiSEP>::type     populateThrift ( const ::LMGroupDigiSEP& imsg );
 
-MessagePtr<Thrift::LMGroupEmetcon>::type     serialize ( const ::CtiLMGroupEmetcon& imsg );
+MessagePtr<Thrift::LMGroupEmetcon>::type     populateThrift ( const ::CtiLMGroupEmetcon& imsg );
 
-MessagePtr<Thrift::LMGroupExpresscom>::type  serialize ( const ::CtiLMGroupExpresscom& imsg );
+MessagePtr<Thrift::LMGroupExpresscom>::type  populateThrift ( const ::CtiLMGroupExpresscom& imsg );
 
-MessagePtr<Thrift::LMGroupGolay>::type       serialize ( const ::CtiLMGroupGolay& imsg );
+MessagePtr<Thrift::LMGroupGolay>::type       populateThrift ( const ::CtiLMGroupGolay& imsg );
 
-MessagePtr<Thrift::LMGroupMacro>::type       serialize ( const ::CtiLMGroupMacro& imsg );
+MessagePtr<Thrift::LMGroupMacro>::type       populateThrift ( const ::CtiLMGroupMacro& imsg );
 
-MessagePtr<Thrift::LMGroupMCT>::type         serialize ( const ::CtiLMGroupMCT& imsg );
+MessagePtr<Thrift::LMGroupMCT>::type         populateThrift ( const ::CtiLMGroupMCT& imsg );
 
-MessagePtr<Thrift::LMGroupPoint>::type       serialize ( const ::CtiLMGroupPoint& imsg );
+MessagePtr<Thrift::LMGroupPoint>::type       populateThrift ( const ::CtiLMGroupPoint& imsg );
 
-MessagePtr<Thrift::LMGroupRipple>::type      serialize ( const ::CtiLMGroupRipple& imsg );
+MessagePtr<Thrift::LMGroupRipple>::type      populateThrift ( const ::CtiLMGroupRipple& imsg );
 
-MessagePtr<Thrift::LMGroupSA105>::type       serialize ( const ::CtiLMGroupSA105& imsg );
+MessagePtr<Thrift::LMGroupSA105>::type       populateThrift ( const ::CtiLMGroupSA105& imsg );
 
-MessagePtr<Thrift::LMGroupSA205>::type       serialize ( const ::CtiLMGroupSA205& imsg );
+MessagePtr<Thrift::LMGroupSA205>::type       populateThrift ( const ::CtiLMGroupSA205& imsg );
 
-MessagePtr<Thrift::LMGroupSA305>::type       serialize ( const ::CtiLMGroupSA305& imsg );
+MessagePtr<Thrift::LMGroupSA305>::type       populateThrift ( const ::CtiLMGroupSA305& imsg );
 
-MessagePtr<Thrift::LMGroupSADigital>::type   serialize ( const ::CtiLMGroupSADigital& imsg );
+MessagePtr<Thrift::LMGroupSADigital>::type   populateThrift ( const ::CtiLMGroupSADigital& imsg );
 
-MessagePtr<Thrift::LMGroupVersacom>::type    serialize ( const ::CtiLMGroupVersacom& imsg );
+MessagePtr<Thrift::LMGroupVersacom>::type    populateThrift ( const ::CtiLMGroupVersacom& imsg );
 
 
 extern MessageFactory<::CtiLMGroupBase> g_lmGroupFactory;
