@@ -622,8 +622,6 @@ UdpPortHandler::packet *UdpPortHandler::recvPacket(unsigned char * const recv_bu
 
     p->ip   = from.toString();
     p->port = ntohs(from._addr.sa_in.sin_port);
-
-    p->len  = 0;
     p->used = 0;
 
     /* This is not tested until I get a Lantronix device. */

@@ -38,15 +38,18 @@ bool LantronixEncryptionImpl::decode(const unsigned char* const cipher, long buf
     }
 
     //Grabbing the length of the plaintext from the buffer. Byte 16 and 17
-    int dataLength = (cipher[16]<<8)+cipher[17];
+    const size_t dataLength = (cipher[16]<<8)+cipher[17];
 
     if( bufLen != ((dataLength+15)/16*16)+UDPHEADERSIZE )
     {
         return false;
     }
 
+    const unsigned char * cipherIn    = cipher + UDPHEADERSIZE;
+    const size_t          cipherInLen = bufLen - UDPHEADERSIZE;
+
     //Allocate enough space for the plaintext plus padding
-    plainText.resize(bufLen-UDPHEADERSIZE);
+    plainText.resize(cipherInLen);
 
     //IV is in buf at beginning, Copying it out.
     unsigned char iv[16];
@@ -54,7 +57,7 @@ bool LantronixEncryptionImpl::decode(const unsigned char* const cipher, long buf
 
     AES_KEY aeskey;
     AES_set_decrypt_key(_key,128,&aeskey);
-    AES_cbc_encrypt(cipher+UDPHEADERSIZE,&*plainText.begin(),bufLen-UDPHEADERSIZE,&aeskey,iv, AES_DECRYPT);
+    AES_cbc_encrypt(cipherIn, &*plainText.begin(), cipherInLen, &aeskey, iv, AES_DECRYPT);
 
     //Shrink to fit.
     plainText.resize(dataLength);
