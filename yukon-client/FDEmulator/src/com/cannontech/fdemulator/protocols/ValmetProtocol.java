@@ -531,7 +531,7 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
         while (exit != 1) {
             Random x = new Random();
             Float value = x.nextFloat();
-            if ((i+1) == pointarray.length) {
+            if (i == pointarray.length) {
                 exit = 1;
                 continue;
             }
