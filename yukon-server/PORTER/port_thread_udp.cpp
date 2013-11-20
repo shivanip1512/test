@@ -624,28 +624,36 @@ UdpPortHandler::packet *UdpPortHandler::recvPacket(unsigned char * const recv_bu
     p->port = ntohs(from._addr.sa_in.sin_port);
     p->used = 0;
 
+    const bool dumpPacket = (gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001) ||
+                             gConfigParms.isTrue("PORTER_UDP_PACKET_DUMP");
+
     /* This is not tested until I get a Lantronix device. */
     vector<unsigned char> pText;
     if( ! _encodingFilter->decode(recv_buf, recv_len, pText) )
     {
-        if( (gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001) )
-        {
-            const vector<unsigned char> payload(recv_buf, recv_buf + recv_len);
+        const vector<unsigned char> payload(recv_buf, recv_buf + recv_len);
 
+        {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
 
             dout << CtiTime() << " " << __FUNCTION__ << " - unable to decode packet received from "
                  << p->ip << ":" << p->port << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
 
-            if( ! payload.empty() )
+            if( dumpPacket )
             {
-                dout << " " << payload << endl;
-            }
-            else
-            {
-                dout << " [empty]" << endl;
+                if( ! payload.empty() )
+                {
+                    dout << "" << payload << endl;
+                }
+                else
+                {
+                    dout << "[empty]" << endl;
+                }
             }
         }
+
+        //  this packet was unhandled, so we trace it
+        traceInbound(p->ip, p->port, 0, recv_buf, recv_len);
 
         delete p;
 
@@ -656,8 +664,7 @@ UdpPortHandler::packet *UdpPortHandler::recvPacket(unsigned char * const recv_bu
     std::copy(pText.begin(), pText.end(), p->data);
     p->len = pText.size();
 
-    if( (gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001) ||
-        gConfigParms.isTrue("PORTER_UDP_PACKET_DUMP"))
+    if( dumpPacket )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
 
@@ -666,11 +673,11 @@ UdpPortHandler::packet *UdpPortHandler::recvPacket(unsigned char * const recv_bu
 
         if( ! pText.empty() )
         {
-            dout << " " << pText << endl;
+            dout << "" << pText << endl;
         }
         else
         {
-            dout << " [empty]" << endl;
+            dout << "[empty]" << endl;
         }
     }
 
