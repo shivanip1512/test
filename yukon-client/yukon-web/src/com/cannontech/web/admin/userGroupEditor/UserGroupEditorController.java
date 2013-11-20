@@ -50,6 +50,7 @@ import com.cannontech.web.admin.userGroupEditor.model.UserGroupValidator;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.security.csrf.CsrfTokenService;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -66,6 +67,7 @@ public class UserGroupEditorController {
     @Autowired private YukonGroupDao yukonGroupDao;
     @Autowired private YukonUserDao yukonUserDao;
     @Autowired private UserGroupValidator userGroupValidator;
+    @Autowired private CsrfTokenService csrfTokenService;
     
     /* User Editor View Page */
     @RequestMapping
@@ -111,7 +113,7 @@ public class UserGroupEditorController {
     /* Update Group */
     @RequestMapping(value="edit", method=RequestMethod.POST, params="update")
     public String update(HttpServletRequest request, @ModelAttribute("userGroup") com.cannontech.database.db.user.UserGroup userGroup, BindingResult result, ModelMap model, FlashScope flash) throws SQLException {
-        
+        csrfTokenService.validateToken(request);        
         userGroupValidator.validate(userGroup, result);
         
         if (result.hasErrors()) {
