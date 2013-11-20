@@ -36,7 +36,7 @@
         <cti:includeScript link="JQUERY_PLACEHOLDER" force="true"/>
         <cti:includeScript link="JQUERY_TRAVERSABLE" force="true"/>
         <cti:includeScript link="PROTOTYPE" force="true"/>
-        <cti:includeScript link="YUKON_UI" force="true"/>
+        <cti:includeScript link="YUKON" force="true"/>
         <cti:includeScript link="JQUERY_TIPSY" force="true"/>
         <script type="text/javascript" src="/JavaScript/yukonGeneral.js"></script>
         <script type="text/javascript" src="/JavaScript/simpleCookies.js"></script>

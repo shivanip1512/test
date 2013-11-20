@@ -44,15 +44,14 @@ import com.google.common.collect.Lists;
 @RequestMapping(value = "/operator/contacts/*")
 public class OperatorContactsController {
 
-    private AccountEventLogService accountEventLogService;
-    
-    private OperatorAccountService operatorAccountService;
-    private CustomerAccountDao customerAccountDao;
-    private CustomerDao customerDao;
-    private ContactDao contactDao;
-    private YukonUserContextMessageSourceResolver messageSourceResolver;
-    private ContactDtoValidator contactDtoValidator;
-    private RolePropertyDao rolePropertyDao;
+    @Autowired private AccountEventLogService accountEventLogService;
+    @Autowired private OperatorAccountService operatorAccountService;
+    @Autowired private CustomerAccountDao customerAccountDao;
+    @Autowired private CustomerDao customerDao;
+    @Autowired private ContactDao contactDao;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private ContactDtoValidator contactDtoValidator;
+    @Autowired private RolePropertyDao rolePropertyDao;
     
     // CONTACTS LIST
     @RequestMapping
@@ -211,7 +210,7 @@ public class OperatorContactsController {
     
     // DELETE ADDITIONAL CONTACT
     @RequestMapping
-    public String deleteAdditionalContact(int deleteAdditionalContactId,
+    public String deleteAdditionalContact(int contactId,
                                           ModelMap modelMap, 
                                           YukonUserContext userContext,
                                           FlashScope flashScope,
@@ -219,8 +218,8 @@ public class OperatorContactsController {
 
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
         
-        LiteContact contact = contactDao.getContact(deleteAdditionalContactId);
-        contactDao.deleteContact(deleteAdditionalContactId);
+        LiteContact contact = contactDao.getContact(contactId);
+        contactDao.deleteContact(contactId);
         
         // Log contact removal
         String contactName = contact.getContFirstName()+" "+contact.getContLastName();
@@ -272,44 +271,5 @@ public class OperatorContactsController {
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
     }
     
-    @Autowired
-    public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
-        this.accountEventLogService = accountEventLogService;
-    }
-    
-    @Autowired
-    public void setCustomerAccountDao(CustomerAccountDao customerAccountDao) {
-        this.customerAccountDao = customerAccountDao;
-    }
-    
-    @Autowired
-    public void setCustomerDao(CustomerDao customerDao) {
-        this.customerDao = customerDao;
-    }
-    
-    @Autowired
-    public void setOperatorAccountService(OperatorAccountService operatorAccountService) {
-        this.operatorAccountService = operatorAccountService;
-    }
-    
-    @Autowired
-    public void setContactDao(ContactDao contactDao) {
-        this.contactDao = contactDao;
-    }
-    
-    @Autowired
-    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
-        this.messageSourceResolver = messageSourceResolver;
-    }
-    
-    @Autowired
-    public void setContactDtoValidator(ContactDtoValidator contactDtoValidator) {
-        this.contactDtoValidator = contactDtoValidator;
-    }
-    
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
-    }
     
 }

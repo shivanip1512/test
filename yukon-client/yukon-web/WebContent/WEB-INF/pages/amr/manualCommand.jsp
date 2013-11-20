@@ -6,22 +6,24 @@
 <cti:standardPage module="amr" page="manualCommand">
 
 <script language="JavaScript">
-    function loadCommand() {
-        document.commandForm.command.value = document.commandForm.commonCommand.value;
-    }
+function loadCommand() {
+    document.commandForm.command.value = document.commandForm.commonCommand.value;
+}
 </script>
 
     <tags:widgetContainer deviceId="${deviceId}">
         <div class="column-12-12 clearfix">
             <div class="one column">
-                <tags:widget bean="meterInformationWidget" />
+                <tags:widget bean="meterInformationWidget" container="section"/>
             </div>
             <div class="two column nogutter">
-                <tags:widget bean="csrTrendWidget" tabularDataViewer="archivedDataReport" />
+                <tags:widget bean="csrTrendWidget" tabularDataViewer="archivedDataReport" container="section"/>
             </div>
         </div>
     </tags:widgetContainer>
-    <tags:boxContainer2 nameKey="executeCommand" hideEnabled="false" styleClass="clear">
+    
+    <tags:sectionContainer2 nameKey="executeCommand" styleClass="clear">
+    
         <form name="commandForm" method="POST" action="/servlet/CommanderServlet">
 
             <input type="hidden" name="deviceID" value="${device.yukonID}">
@@ -54,6 +56,6 @@
                 <c:out value="${YC_BEAN.resultText}" escapeXml="false"/>
             </div>
         </form>
-    </tags:boxContainer2>
+    </tags:sectionContainer2>
     
 </cti:standardPage>

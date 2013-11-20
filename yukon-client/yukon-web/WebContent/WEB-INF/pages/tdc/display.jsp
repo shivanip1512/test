@@ -11,7 +11,6 @@
 
 <cti:standardPage module="tools" page="tdc.display.${mode}">
 
-    <cti:includeScript link="/JavaScript/yukon/ui/confirm_dialog_manager.js" />
     <cti:includeScript link="/JavaScript/yukon/yukon.tdc.js" />
     <flot:defaultIncludes />
 

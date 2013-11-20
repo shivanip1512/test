@@ -9,7 +9,6 @@
 
 <cti:standardPage module="adminSetup" page="config.weather">
 <cti:includeScript link="/JavaScript/adminSetupConfig.js"/>
-<cti:includeScript link="/JavaScript/yukon/ui/confirm_dialog_manager.js"/>
 
 <div class="box clear dashboard">
     <div class="clearfix box">

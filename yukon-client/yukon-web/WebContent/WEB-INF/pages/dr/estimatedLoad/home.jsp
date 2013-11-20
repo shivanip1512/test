@@ -6,7 +6,6 @@
 
 <cti:standardPage module="dr" page="estimatedLoad">
     <cti:includeScript link="/JavaScript/drFormula.js"/>
-    <cti:includeScript link="/JavaScript/yukon/ui/confirm_dialog_manager.js"/>
 
     <cti:tabbedContentSelector mode="section">
         <cti:msg2 var="formulasTab" key='.formulas'/>

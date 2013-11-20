@@ -92,6 +92,16 @@ jQuery(function() {
             
                 <cti:button nameKey="save" type="submit" classes="primary action"/>
                 
+                <c:if test="${!contactDto.primary}">
+                    <cti:displayForPageEditModes modes="EDIT">
+                        <cti:url value="/stars/operator/contacts/deleteAdditionalContact" var="deleteUrl">
+                            <cti:param name="accountId" value="${accountId}"/>
+                            <cti:param name="contactId" value="${contactId}"/>
+                        </cti:url>
+                        <cti:button nameKey="delete" classes="delete" href="${deleteUrl}"/>
+                    </cti:displayForPageEditModes>
+                </c:if>
+                
                 <cti:displayForPageEditModes modes="EDIT">
                     <cti:url value="/stars/operator/contacts/view" var="cancelUrl">
                         <cti:param name="accountId" value="${accountId}"/>
@@ -103,7 +113,6 @@ jQuery(function() {
                         <cti:param name="accountId" value="${accountId}"/>
                     </cti:url>
                 </cti:displayForPageEditModes>
-                
                 <cti:button nameKey="cancel" href="${cancelUrl}"/>
                 
             </cti:displayForPageEditModes>

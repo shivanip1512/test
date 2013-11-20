@@ -44,7 +44,7 @@ public class ThemeableResourceCache {
     
     private static final Logger log = YukonLogManager.getLogger(ThemeableResourceCache.class);
     
-    private LessCssProcessor processor = new LessCssProcessor();;
+    private LessCssProcessor processor = new LessCssProcessor();
     private YUICssCompressorProcessor compressor = new YUICssCompressorProcessor();
     private static Cache<ThemeableResource, CachedResourceValue> cache = CacheBuilder.newBuilder().build();
     
@@ -92,7 +92,7 @@ public class ThemeableResourceCache {
         
         Reader less;
         if (resource.isDefaultFile()) {
-            less = new InputStreamReader(file.getInputStream());
+            less = new BufferedReader(new InputStreamReader(file.getInputStream()));
         } else {
             less = applyThemeProperties(file);
         }
@@ -102,6 +102,8 @@ public class ThemeableResourceCache {
         
         StringWriter css = new StringWriter();
         processor.process(less, css);
+        less.close();
+        css.close();
         
         log.info("Loading " + resource + ": less compiling took " + new Duration(start, Instant.now()).getMillis() + "ms");
         start = Instant.now();
@@ -148,6 +150,7 @@ public class ThemeableResourceCache {
             
             line = br.readLine();
         }
+        br.close();
         
         return new StringReader(less.toString());
     }

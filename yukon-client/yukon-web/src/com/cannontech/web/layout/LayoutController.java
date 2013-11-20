@@ -102,9 +102,11 @@ public class LayoutController {
 
         //add the other standard libs
         builder.add(JsLibrary.PROTOTYPE.getPath());
-    	builder.add(JsLibrary.YUKON_UI.getPath());
+    	builder.add(JsLibrary.YUKON.getPath());
     	builder.add(JsLibrary.YUKON_ALERTS.getPath());
+    	builder.add(JsLibrary.YUKON_CONFIRM.getPath());
         builder.add("/JavaScript/yukonGeneral.js");
+        
         if (configSource.getBoolean(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)) {
             builder.add("/JavaScript/basicLogger.js");
         } else {

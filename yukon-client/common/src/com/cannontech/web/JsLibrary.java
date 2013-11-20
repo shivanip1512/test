@@ -49,9 +49,10 @@ public enum JsLibrary {
     JSON("/JavaScript/lib/JSON/2.0/json2.js"),
     PROTOTYPE("/JavaScript/lib/prototype/1.7.0.0/prototype.js"),
     RSV("/JavaScript/lib/prototype/plugins/rsv/2.5.1/prototype.rsv.js"),
-    YUKON_UI("/JavaScript/yukon/ui/general.js"),
+    YUKON("/JavaScript/yukon/ui/general.js"),
     YUKON_ALERTS("/JavaScript/yukon/yukon.alerts.js"),
     YUKON_FAVORITES("/JavaScript/yukon/yukon.favorites.js"),
+    YUKON_CONFIRM("/JavaScript/yukon/ui/confirm_dialog_manager.js"),
     
     MODERNIZR("/JavaScript/lib/modernizr/custom.js"),
     
