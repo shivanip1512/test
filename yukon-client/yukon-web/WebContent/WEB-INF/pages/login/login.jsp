@@ -35,7 +35,7 @@
                                 <button type="button" id="forgot-btn" class="fl" data-href="/login/forgottenPassword"><span class="label"><cti:msg2 key="yukon.web.login.forgot"/></span></button>
                             </div>
                             <div class="action-area">
-                                <label class="fl remember-me"><input type="checkbox" id="remember_me"><cti:msg2 key="yukon.web.login.rememberMe"/></label>
+                                <label class="fl remember-me"><input type="checkbox" id="remember_me" name="rememberme"><cti:msg2 key="yukon.web.login.rememberMe"/></label>
                                 <button type="submit" name="login" class="action primary">
                                     <span class="label"><cti:msg2 key="yukon.web.login.login"/></span>
                                 </button>
