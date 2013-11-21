@@ -799,6 +799,9 @@
                 <entry key="ARCHIVE_DATA_ANALYSIS_LP_READ">
                     <ref local="adaProfileReadBackingService"/>
                 </entry>
+                <entry key="ARCHIVE_DATA_ANALYSIS">
+                    <ref local="archiveDataBackingService"/>
+                </entry>
                 <entry key="DEVELOPMENT">
                     <ref local="devBackingService"/>
                 </entry>
@@ -907,6 +910,8 @@
     <bean id="groupMeterReadUpdateBackingService" class="com.cannontech.web.updater.groupMeterRead.GroupMeterReadUpdateBackingService"/>
     
     <bean id="adaProfileReadBackingService" class="com.cannontech.web.updater.archiveDataAnalysis.AdaProfileReadBackingService"/>
+    
+    <bean id="archiveDataBackingService" class="com.cannontech.web.updater.archiveDataAnalysis.ArchiveDataAnalysisBackingService"/>
     
     <bean id="fdrTranslationImportBackingService" class="com.cannontech.web.updater.fdrTranslationImport.FdrTranslationImportBackingService"/>
     

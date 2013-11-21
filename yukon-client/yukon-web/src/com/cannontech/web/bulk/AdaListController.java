@@ -37,10 +37,7 @@ public class AdaListController {
                 analysis.setStatus(AdaStatus.INTERRUPTED);
             }
             
-            int numberOfDevices = 0;
-            if(!analysis.getStatus().isRunning()){ 
-                numberOfDevices = archiveDataAnalysisDao.getNumberOfDevicesInAnalysis(analysis.getAnalysisId());
-            }
+            int numberOfDevices = archiveDataAnalysisDao.getNumberOfDevicesInAnalysis(analysis.getAnalysisId());
             analysisMap.put(analysis, numberOfDevices);
         }
         model.addAttribute("analysisMap", analysisMap);

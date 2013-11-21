@@ -8,13 +8,18 @@ import java.util.concurrent.Executor;
 
 import javax.annotation.Resource;
 
+import org.apache.log4j.Logger;
 import org.joda.time.Instant;
 import org.joda.time.Interval;
 import org.joda.time.Period;
 import org.joda.time.format.ISOPeriodFormat;
 import org.joda.time.format.PeriodFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.model.AdaStatus;
 import com.cannontech.common.bulk.model.Analysis;
 import com.cannontech.common.bulk.model.ArchiveData;
@@ -27,12 +32,16 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.point.PointQuality;
+import com.cannontech.common.util.ChunkingSqlTemplate;
+import com.cannontech.common.util.SqlFragmentGenerator;
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.ArchiveDataAnalysisDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.impl.SimplePointValue;
 import com.cannontech.core.service.PaoLoadingService;
+import com.cannontech.database.RowMapper;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -51,6 +60,7 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
     private YukonJdbcTemplate yukonJdbcTemplate;
     private PaoLoadingService paoLoadingService;
     private Executor longRunningExecutor;
+    private Logger log = YukonLogManager.getLogger(ArchiveDataAnalysisDaoImpl.class);
     
     private class ArchiveDataRowMapper implements YukonRowMapper<ArchiveData> {
         private Period intervalPeriod;
@@ -182,15 +192,43 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
     }
     
     @Override
+    @Transactional(propagation=Propagation.SUPPORTS, isolation=Isolation.READ_COMMITTED)
     public void deleteAnalysis(final int analysisId) {
+        log.info("Deleting analysis with id " + analysisId);
+        updateStatus(analysisId, AdaStatus.DELETED, null);
+        
         longRunningExecutor.execute(new Runnable() {
             @Override
             public void run() {
+                //Get the slotIds that belong to this analysis
+                log.debug("Getting slot ids to delete analysis " + analysisId);
+                SqlStatementBuilder sql1 = new SqlStatementBuilder();
+                sql1.append("SELECT SlotId");
+                sql1.append("FROM ArchiveDataAnalysisSlot");
+                sql1.append("WHERE AnalysisId").eq(analysisId);
+                List<Integer> slotIds = yukonJdbcTemplate.query(sql1, RowMapper.INTEGER);
+                
+                //perform deletion of slots and slot values in chunks so we don't completely lock the table
+                log.debug("Deleting slots and slot values for analysis " + analysisId);
+                SqlFragmentGenerator<Integer> sqlFragmentGenerator = new SqlFragmentGenerator<Integer>() {
+                    @Override
+                    public SqlFragmentSource generate(List<Integer> subList) {
+                        log.trace("Generating sql chunk for deleting analysis " + analysisId);
+                        SqlStatementBuilder sql2 = new SqlStatementBuilder();
+                        sql2.append("DELETE FROM ArchiveDataAnalysisSlot");
+                        sql2.append("WHERE SlotId").in(subList);
+                        return sql2;
+                    }
+                };
+                ChunkingSqlTemplate chunkingSqlTemplate = new ChunkingSqlTemplate(yukonJdbcTemplate);
+                chunkingSqlTemplate.update(sqlFragmentGenerator, slotIds);
+                
+                //finally, delete the analysis
                 SqlStatementBuilder sql = new SqlStatementBuilder();
                 sql.append("DELETE FROM ArchiveDataAnalysis");
                 sql.append("WHERE AnalysisId").eq(analysisId);
-                
                 yukonJdbcTemplate.update(sql);
+                log.info("Deleted analysis " + analysisId);
             }
         });
     }

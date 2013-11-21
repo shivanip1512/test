@@ -31,7 +31,7 @@
 	                        </td>
 	                        <td>${attribName}</td>
 	                        <td>
-	                            ${analysisEntry.value}
+	                            <cti:dataUpdaterValue type="ARCHIVE_DATA_ANALYSIS" identifier="${analysisEntry.key.analysisId}/DEVICES"/>
 	                        </td>
 	                        <td>
 	                            <cti:formatInterval type="DATEHM" value="${analysisEntry.key.dateTimeRange}"/>
