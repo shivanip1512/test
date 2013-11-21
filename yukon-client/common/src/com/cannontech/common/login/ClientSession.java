@@ -121,12 +121,7 @@ public class ClientSession {
 		boolean useLocalConfig = MasterConfigHelper.isLocalConfigAvailable() && !forceRemoteLogin;
         if (!isJws && useLocalConfig) {
 		    CTILogger.info("Attempting local load of database properties...");
-		    //success = doLocalLogin(parent, MasterConfigHelper.getLocalConfiguration());
-		    
-		    System.setProperty("jnlp.yukon.host", "http://localhost:8080/");
-            System.setProperty("jnlp.yukon.user", "yukon");
-            System.setProperty("jnlp.yukon.pass", "yukon");
-			success = doJwsLogin(parent);//doLocalLogin(parent, MasterConfigHelper.getLocalConfiguration());
+		    success = doLocalLogin(parent, MasterConfigHelper.getLocalConfiguration());
 		} else {
 		    if (isJws && !forceRemoteLogin) {
 		        CTILogger.info("Attempting JWS load of database properties...");
