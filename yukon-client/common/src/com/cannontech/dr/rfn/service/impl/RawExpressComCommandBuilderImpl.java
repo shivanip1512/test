@@ -55,15 +55,21 @@ public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuil
      */
     private ByteBuffer getInnerPayload(LmHardwareCommand command) throws InvalidExpressComSerialNumberException {
         RfnDevice device = rfnDeviceDao.getDeviceForId(command.getDevice().getDeviceID());
-        String serialAsString = device.getRfnIdentifier().getSensorSerialNumber();
-        if (!serialAsString.matches("\\d+")) {
-            log.error("Non-numeric characters are not allowed in ExpressCom messages.  The device: " + device
-                    + " has non-numeric characters in its serial number.");
-            throw new InvalidExpressComSerialNumberException(
-                    "Non-numeric characters are not allowed in ExpressCom message serial numbers.");
-        }
-        Integer serialNumber = Integer.parseInt(device.getRfnIdentifier().getSensorSerialNumber());
         
+        Integer serialNumber;
+        try {
+            serialNumber = Integer.parseInt(device.getRfnIdentifier().getSensorSerialNumber());
+        } catch (NumberFormatException e) {
+            log.error("Device serial number either contained alphanumeric characters or was too large. "
+                    + "Non-numeric characters are not allowed in ExpressCom message serial numbers. "
+                    + "Serial numbers must not be larger than 2147483647."
+                    + "Device: " + device + " did not meet these requirements.");
+            throw new InvalidExpressComSerialNumberException(
+                    "Device serial number either contained alphanumeric characters or was too large. "
+                            + "Non-numeric characters are not allowed in ExpressCom message serial numbers. "
+                            + "Serial numbers must not be larger than 2147483647."
+                            + "Device: " + device + " did not meet these requirements.");
+        }
         ByteBuffer outputBuffer = ByteBuffer.allocate(1024);
 
         // 0x00 indicates command selects by device serial number.
