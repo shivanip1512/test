@@ -95,9 +95,9 @@
             </c:when>
             <c:otherwise>
                 <div class="actions page-action-area">
-                    <cti:button nameKey="edit" icon="icon-pencil" renderMode="labeledImage" classes="f-edit edit_${schedule.accountThermostatScheduleId}" />
-                    <cti:button nameKey="sendNow" renderMode="labeledImage" classes="f-send" icon="icon-date-go" data-form="#send_${schedule.accountThermostatScheduleId}"/>
-                    <cti:button nameKey="copy" renderMode="labeledImage" classes="f-copy copy_${schedule.accountThermostatScheduleId}" icon="icon-page-copy"/>
+                    <cti:button nameKey="edit" icon="icon-pencil" classes="f-edit edit_${schedule.accountThermostatScheduleId}" />
+                    <cti:button nameKey="sendNow" classes="f-send" icon="icon-date-go" data-form="#send_${schedule.accountThermostatScheduleId}"/>
+                    <cti:button nameKey="copy" classes="f-copy copy_${schedule.accountThermostatScheduleId}" icon="icon-page-copy"/>
                 </div>
             </c:otherwise>
         </c:choose>
@@ -135,7 +135,7 @@
                     <input type="hidden" name="thermostatId" value="${thermostatId}">
                     <input type="hidden" name="thermostatIds" value="${thermostatIds}">
                     <input type="hidden" name="accountId" value="${accountId}">
-                    <cti:button nameKey="delete" classes="f-delete" name="delete" type="submit"/>
+                    <cti:button nameKey="delete" classes="f-delete delete" name="delete" type="submit"/>
                     <d:confirm on=".f-delete" nameKey="deleteConfirm" argument="${fn:escapeXml(schedule.scheduleName)}"/>
                 </form>
                 <cti:button nameKey="cancel" classes="f-cancel"/>
