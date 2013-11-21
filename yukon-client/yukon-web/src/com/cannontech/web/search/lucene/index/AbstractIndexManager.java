@@ -96,11 +96,10 @@ public abstract class AbstractIndexManager implements IndexManager, DBChangeList
             // Read in the information from the version file (if it exists)
             versionFile = new File(indexFileLocation, "version.txt");
 
-            try {
-                InputStream iStream = new FileInputStream(versionFile);
+            try (InputStream iStream = new FileInputStream(versionFile)) {
                 Properties properties = new Properties();
                 properties.load(iStream);
-    
+
                 String dateString = properties.getProperty(DATE_CREATED_PROPERTY);
                 if (dateString != null) {
                     try {
@@ -116,8 +115,6 @@ public abstract class AbstractIndexManager implements IndexManager, DBChangeList
             log.error("Exception reading " + getIndexName() + " lucene index directory", e);
         }
 
-        
-        // If index is locked, must have shutdown improperly last time - rebuild
         boolean indexLocked = false;
         try {
             if(IndexWriter.isLocked(indexLocation)){
@@ -127,13 +124,15 @@ public abstract class AbstractIndexManager implements IndexManager, DBChangeList
         } catch (IOException e) {
             // ignore - must be no index
         }
-        final boolean rebuild = indexLocked;
+
+        // If index is locked, must have shutdown improperly last time - rebuild
+        final boolean forceRebuild = indexLocked;
 
         // Start the index manager thread
         managerThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                processBuild(rebuild);
+                processBuild(forceRebuild);
                 processUpdates();
             }
         }, getIndexName() + "IndexManager");
@@ -343,15 +342,18 @@ public abstract class AbstractIndexManager implements IndexManager, DBChangeList
     abstract protected int calculateDocumentCount();
 
     /**
-     * Build the Lucene documents and add them to the given IndexWriter, incrementing the counter as you go.
+     * Build the Lucene documents and add them to the given IndexWriter, incrementing the counter as you go.  This
+     * is called when re-indexing and should rebuild every document.
      */
     abstract protected void buildDocuments(IndexWriter indexWriter, AtomicInteger counter);
 
     /**
      * Helper method to build the index
+     * @param forceRebuild Set this to true if you want to force a rebuild, use false to just ensure
+     *            the index has been built.
      */
-    private void processBuild(boolean overwrite) {
-        if (!overwrite) {
+    private void processBuild(boolean forceRebuild) {
+        if (!forceRebuild) {
             boolean indexExists = true;
             try {
                 IndexSearcher indexSearcher = new IndexSearcher(indexLocation);
@@ -449,14 +451,14 @@ public abstract class AbstractIndexManager implements IndexManager, DBChangeList
     /**
      * Helper class which contains information for an index update
      */
-    protected class IndexUpdateInfo {
-        private List<Document> docList = null;
-        private Term deleteTerm = null;
+    public static final class IndexUpdateInfo {
+        private final List<Document> docList;
+        private final Term deleteTerm;
 
         /**
          * @param docs - List of documents to be written into the index
-         * @param term - Term to be used to remove any outdated documents from
-         *            the index before inserting new documents
+         * @param term - Term to be used to remove any deleted or old documents from
+         *            the index before inserting updated documents.
          */
         public IndexUpdateInfo(List<Document> docList, Term deleteTerm) {
             this.docList = docList;
@@ -467,16 +469,8 @@ public abstract class AbstractIndexManager implements IndexManager, DBChangeList
             return deleteTerm;
         }
 
-        public void setDeleteTerm(Term deleteTerm) {
-            this.deleteTerm = deleteTerm;
-        }
-
         public List<Document> getDocList() {
             return docList;
-        }
-
-        public void setDocList(List<Document> docList) {
-            this.docList = docList;
         }
     }
 
