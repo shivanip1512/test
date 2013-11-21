@@ -231,6 +231,8 @@
     <entry key="yukon.common.setting.AD_SERVER_ADDRESS.description">Active Directory Server Address</entry>
     <entry key="yukon.common.setting.AD_SSL_ENABLED">AD SSL Enabled</entry>
     <entry key="yukon.common.setting.AD_SSL_ENABLED.description">Controls the use of SSL for the Active Directory connection</entry>
+    <entry key="yukon.common.setting.CLIENT_APPLICATIONS_REMEMBER_ME">Application Remember Me</entry>
+    <entry key="yukon.common.setting.CLIENT_APPLICATIONS_REMEMBER_ME.description">Choose which credentials are remembered by Yukon Applications. Credentials are encrypted and saved on your computer in a manner that is difficult but not impossible for an intruder to read.</entry>
     <entry key="yukon.common.setting.LDAP_SERVER_TIMEOUT">LDAP Server Timeout</entry>
     <entry key="yukon.common.setting.LDAP_SERVER_TIMEOUT.description">LDAP Server Timeout (in seconds)</entry>
     <entry key="yukon.common.setting.LDAP_SERVER_PORT">LDAP Server Port</entry>

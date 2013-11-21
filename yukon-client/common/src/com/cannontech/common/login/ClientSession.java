@@ -16,6 +16,7 @@ import org.springframework.remoting.RemoteAccessException;
 import org.springframework.remoting.RemoteConnectFailureException;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.ClientApplicationRememberMe;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigHelper;
@@ -32,6 +33,8 @@ import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.ThemeUtils;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.SimpleYukonUserContext;
 import com.cannontech.user.UserUtils;
 import com.cannontech.user.YukonUserContext;
@@ -47,9 +50,9 @@ import com.cannontech.user.YukonUserContext;
  * use it, if that fails the user will be asked for their credentials.
  */
 public class ClientSession {
-		
-	private LiteYukonUser user;
-	
+    private LiteYukonUser user;
+    private static ClientSession instance;
+
 	/**
 	 * Return the user associated with this session.
 	 * @return
@@ -93,17 +96,17 @@ public class ClientSession {
 	public static synchronized ClientSession getInstance() {
 		if(instance == null) {
 			instance = new ClientSession();
-			}
+		}
 		return instance;
 	}
 	
 	/**
-		 * Attempt to establish a session
-		 * @return
-		 */
-		public synchronized boolean establishSession() {
-			return establishSession(null);
-		}
+	 * Attempt to establish a session
+	 * @return
+	 */
+	public synchronized boolean establishSession() {
+		return establishSession(null);
+	}
 		
 	public synchronized boolean establishSession(Frame parent) {
         // disable CookieHandler so that weird things don't happen when used with Java Web Start
@@ -118,9 +121,13 @@ public class ClientSession {
 		boolean useLocalConfig = MasterConfigHelper.isLocalConfigAvailable() && !forceRemoteLogin;
         if (!isJws && useLocalConfig) {
 		    CTILogger.info("Attempting local load of database properties...");
-			success = doLocalLogin(parent, MasterConfigHelper.getLocalConfiguration());
-		}
-		else {
+		    //success = doLocalLogin(parent, MasterConfigHelper.getLocalConfiguration());
+		    
+		    System.setProperty("jnlp.yukon.host", "http://localhost:8080/");
+            System.setProperty("jnlp.yukon.user", "yukon");
+            System.setProperty("jnlp.yukon.pass", "yukon");
+			success = doJwsLogin(parent);//doLocalLogin(parent, MasterConfigHelper.getLocalConfiguration());
+		} else {
 		    if (isJws && !forceRemoteLogin) {
 		        CTILogger.info("Attempting JWS load of database properties...");
 		        success = doJwsLogin(parent);
@@ -128,7 +135,7 @@ public class ClientSession {
 		        CTILogger.info("Attempting remote load of database properties...");
 		        success = doRemoteLogin(parent);
 		    }
-		}		
+		}
 		if (success) {
 		    CTILogger.debug("Login was successful for " + getUser());
 		} else {
@@ -170,14 +177,11 @@ public class ClientSession {
 	private boolean doLocalLogin(Frame p, ConfigurationSource configSource) {
 		//PoolManager.setDBProperties(props);
         PoolManager.setConfigurationSource(configSource);
-		
-		LoginPrefs prefs = LoginPrefs.getInstance();
 
         try {
-            // force load of the application context
-            YukonSpringHook.getContext();
-            
-            LoginPanel lp = makeLocalLoginPanel();
+
+            LoginPanel lp = makeLocalLoginPanel(getRememberMeSetting());
+
             while(collectInfo(p, lp)) {
                 try {
                 	LiteYukonUser loggingInUser = YukonSpringHook.getBean(AuthenticationService.class).login(lp.getUsername(), lp.getPassword());
@@ -185,20 +189,10 @@ public class ClientSession {
                 	if(loggingInUser != null) {
                 		//score! we found them
                 		setSessionInfo(loggingInUser);
-                		boolean saveInfo = lp.isRememberPassword();
-                		prefs.setDefaultRememberPassword(saveInfo);
-                		if(saveInfo) {
-                			prefs.setDefaultUsername(lp.getUsername());
-                			prefs.setDefaultPassword(lp.getPassword());
-                		}
-                		else {
-                			prefs.setDefaultUsername("");
-                			prefs.setDefaultPassword("");
-                		}
-                		
+                        setPreferences(lp.getUsername(), lp.getPassword(), lp.isRememberMe());
+
                 		return true;
-                	}
-                	else {
+                	} else {
                 		// bad username or password
                 		displayMessage(p, "Invalid Username or Password.  Usernames and Passwords are case sensitive, be sure to use correct upper and lower case.", "Error");
                 	}
@@ -223,7 +217,7 @@ public class ClientSession {
 	
 	private boolean doJwsLogin(Frame p) {
 	    String jwsHost = System.getProperty("jnlp.yukon.host");
-	    String jwsUser = System.getProperty("jnlp.yukon.user");
+        String jwsUser = System.getProperty("jnlp.yukon.user");
 	    LoginPanel lp = makeJwsLoginPanel(jwsHost, jwsUser);
 	    
         return doLoginLoop(p, lp);
@@ -231,7 +225,6 @@ public class ClientSession {
 
     private boolean doLoginLoop(Frame p, LoginPanel lp) {
         CTILogger.debug("Starting login dialog loop");
-        LoginPrefs prefs = LoginPrefs.getInstance();
         while(collectInfo(p, lp)) {
             try {
                 // test host                
@@ -253,17 +246,8 @@ public class ClientSession {
                     CTILogger.debug("Got not null user: " + u);
                     //score! we found them
                     setSessionInfo(u);
-                    
-                    boolean saveInfo = lp.isRememberPassword();
-                    prefs.setDefaultRememberPassword(saveInfo);
-                    if(saveInfo) {
-                        prefs.setDefaultUsername(lp.getUsername());
-                        prefs.setDefaultPassword(lp.getPassword());
-                    } else {
-                        prefs.setDefaultUsername("");
-                        prefs.setDefaultPassword("");
-                    }
-                    
+                    setPreferences(lp.getUsername(), lp.getPassword(), lp.isRememberMe());
+
                     // setup remote logging
                     YukonLogManager.initialize(lp.getYukonHost(), lp.getUsername(), lp.getPassword());
                     return true;
@@ -291,6 +275,17 @@ public class ClientSession {
         return false;
     }
 
+    private void setPreferences(String username, String password, boolean shouldRememberCred) {
+        LoginPrefs prefs = LoginPrefs.getInstance();
+        prefs.shouldRememberCredentials(shouldRememberCred);
+
+        if(shouldRememberCred) {
+            prefs.rememberCredentials(username, password, getRememberMeSetting());
+        } else {
+            prefs.forgetCredentials();
+        }
+    }
+    
     private void handleOtherExceptions(Frame p, RuntimeException e) {
         String msg;
         int indexOfJdbcException = ExceptionUtils.indexOfType(e, CannotGetJdbcConnectionException.class);
@@ -326,13 +321,19 @@ public class ClientSession {
         CTILogger.debug("Setting session: user=" + u);
 		this.user = u;
 	}
-	
-	private LoginPanel makeLocalLoginPanel() {
+
+	private ClientApplicationRememberMe getRememberMeSetting() {
+        GlobalSettingDao settingDao = YukonSpringHook.getBean(GlobalSettingDao.class);
+        return settingDao.getEnum(GlobalSettingType.CLIENT_APPLICATIONS_REMEMBER_ME,
+                                  ClientApplicationRememberMe.class);
+	}
+
+	private LoginPanel makeLocalLoginPanel(ClientApplicationRememberMe rememberMeSetting) {
 		LoginPrefs prefs = LoginPrefs.getInstance();
 		return  new LoginPanel(prefs.getCurrentYukonHost(),
-								prefs.getDefaultUsername(),
-								prefs.getDefaultPassword(),
-								prefs.getDefaultRememberPassword(), true);
+								prefs.getRememberedUsername(),
+								prefs.getRememberedPassword(),
+								prefs.shouldRememberCredentials(), true, rememberMeSetting);
 	}
 		
 	private LoginPanel makeRemoteLoginPanel() {
@@ -357,9 +358,9 @@ public class ClientSession {
 	    }
 
 	    return  new LoginPanel(host,
-	                           prefs.getDefaultUsername(),
-	                           prefs.getDefaultPassword(),
-	                           prefs.getDefaultRememberPassword(), false);
+	                           prefs.getRememberedUsername(),
+	                           prefs.getRememberedPassword(),
+	                           prefs.shouldRememberCredentials(), false, getRememberMeSetting());
 	}
 		
 	private LoginPanel makeJwsLoginPanel(String host, String userName) {
@@ -367,8 +368,8 @@ public class ClientSession {
 	    
 	    LoginPanel loginPanel = new LoginPanel(host,
 	                           userName,
-	                           prefs.getDefaultPassword(userName),
-                               prefs.getDefaultRememberPassword(), false);
+	                           prefs.getRememberedPassword(userName),
+                               prefs.shouldRememberCredentials(), false, getRememberMeSetting());
 	    loginPanel.setHostEditable(false);
 	    loginPanel.setUserEditable(false);
         return loginPanel;
@@ -382,8 +383,5 @@ public class ClientSession {
         CTILogger.info(title + ": " + msg);
 		JOptionPane.showMessageDialog(p, msg, title, JOptionPane.WARNING_MESSAGE); 
 	}
-	
-	
-	// My pretty private instance
-	private static ClientSession instance;
+
 }

@@ -9,6 +9,7 @@ import java.math.RoundingMode;
 import java.util.Set;
 
 import com.cannontech.amr.meter.dao.impl.MeterDisplayFieldEnum;
+import com.cannontech.clientutils.ClientApplicationRememberMe;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.authentication.model.AuthenticationCategory;
@@ -49,7 +50,11 @@ public enum GlobalSettingType implements DisplayableEnum {
     AD_SERVER_TIMEOUT(GlobalSettingSubCategory.AUTHENTICATION, integerType(), 30),
     AD_NTDOMAIN(GlobalSettingSubCategory.AUTHENTICATION, stringType(), null),
     AD_SSL_ENABLED(GlobalSettingSubCategory.AUTHENTICATION, booleanType(), true),
-    
+
+    CLIENT_APPLICATIONS_REMEMBER_ME(GlobalSettingSubCategory.AUTHENTICATION,
+                                   InputTypeFactory.enumType(ClientApplicationRememberMe.class),
+                                   ClientApplicationRememberMe.USERNAME),
+
     // Authentication > Password Management  (this could go under Authentication > General if we didn't want two sub sections with so few items)
     ENABLE_PASSWORD_RECOVERY(GlobalSettingSubCategory.AUTHENTICATION, booleanType(), true),
     ENABLE_CAPTCHAS(GlobalSettingSubCategory.AUTHENTICATION, booleanType(), true),

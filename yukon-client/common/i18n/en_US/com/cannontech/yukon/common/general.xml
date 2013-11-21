@@ -51,6 +51,10 @@
 <entry key="yukon.common.authenticationCategory.RADIUS">Radius</entry>
 <entry key="yukon.common.authenticationCategory.NONE">No Login</entry>
 
+<entry key="yukon.common.clientApplicationRememberMe.NONE">None</entry>
+<entry key="yukon.common.clientApplicationRememberMe.USERNAME">Username (recomended)</entry>
+<entry key="yukon.common.clientApplicationRememberMe.USERNAME_AND_PASSWORD">Username and Password (less secure)</entry>
+
 <entry key="yukon.common.phase">Phase</entry>
 <entry key="yukon.common.noPhase">No Phase</entry>
 <entry key="yukon.common.phase.phase">All</entry>

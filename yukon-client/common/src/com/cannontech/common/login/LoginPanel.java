@@ -1,6 +1,3 @@
-/*
- * Created on Jun 19, 2003
- */
 package com.cannontech.common.login;
 
 import java.awt.GridBagConstraints;
@@ -13,21 +10,21 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
-/**
- * Basic login panel.
- * @author aaron
- */
+import com.cannontech.clientutils.ClientApplicationRememberMe;
+
 class LoginPanel extends JPanel {
 	
 	private final JLabel hostLabel = new JLabel("Yukon server:");
 	private final JLabel usernameLabel = new JLabel("Username:");
 	private final JLabel passwordLabel = new JLabel("Password:");
-	private final JTextField hostField = new JTextField();
-	private final JTextField usernameField = new JTextField();
-	private final JPasswordField passwordField = new JPasswordField();
-	private final JCheckBox rememberCheckBox = new JCheckBox("Remember my password");
-	
-	public LoginPanel(String host, String username, String password, boolean rememberPassword, boolean localLogin) {
+	private final JTextField hostField = new JTextField(15);
+	private final JTextField usernameField = new JTextField(15);
+	private final JPasswordField passwordField = new JPasswordField(15);
+	private final JCheckBox rememberCheckBox = new JCheckBox("Remember me");
+	private ClientApplicationRememberMe rememberMeSetting;
+
+    public LoginPanel(String host, String username, String password, boolean rememberPassword,
+                      boolean localLogin, ClientApplicationRememberMe rememberMeSetting) {
 				
 		setLayout(new GridBagLayout());
 		
@@ -52,6 +49,7 @@ class LoginPanel extends JPanel {
 		if (!localLogin) {
             add(hostLabel, hostLabelCons);
         }
+
         add(usernameLabel, usernameLabelCons);
         add(passwordLabel, passwordLabelCons);
         add(usernameField, usernameFieldCons);
@@ -60,19 +58,25 @@ class LoginPanel extends JPanel {
         if (!localLogin) {
             add(hostField, hostComboCons);
         }
-        add(rememberCheckBox, rememberCheckBoxCons);
 
 		hostField.setEditable(true);
 		setYukonHost(host);
-		
-		setUsername(username);
-		
-		setPassword(password);
-		setRememberPassword(rememberPassword);	
-		
+
+        if(rememberMeSetting != ClientApplicationRememberMe.NONE) {
+            add(rememberCheckBox, rememberCheckBoxCons);
+        }
+
+        if(rememberMeSetting == ClientApplicationRememberMe.USERNAME_AND_PASSWORD) {
+            setPassword(password); // No need to prepopulate the password unless we remembered it
+        }
+
+        // always set the username (even if we don't 'remember' it)
+        //JWS clients pre-populate this and are not allowed to edit it
+        setUsername(username);
+		setRememberMe(rememberPassword);
+
 		setHostEditable(true);
 		setUserEditable(true);
-		
 	}
 	
 	public String getYukonHost() {
@@ -91,10 +95,11 @@ class LoginPanel extends JPanel {
 		return new String(passwordField.getPassword());
 	}
 	
-	public boolean isRememberPassword() {
-		return rememberCheckBox.isSelected();
+	public boolean isRememberMe() {
+		return rememberMeSetting != ClientApplicationRememberMe.NONE 
+		        && rememberCheckBox.isSelected();
 	}
-	
+
 	public void setUsername(String username) {
 		usernameField.setText(username);
 	}
@@ -103,7 +108,7 @@ class LoginPanel extends JPanel {
 		passwordField.setText(password);
 	}
 	
-	public void setRememberPassword(boolean b) {
+	public void setRememberMe(boolean b) {
 		rememberCheckBox.setSelected(b);
 	}
 	
