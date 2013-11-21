@@ -21,11 +21,11 @@ class LoginPanel extends JPanel {
 	private final JTextField usernameField = new JTextField(15);
 	private final JPasswordField passwordField = new JPasswordField(15);
 	private final JCheckBox rememberCheckBox = new JCheckBox("Remember me");
-	private ClientApplicationRememberMe rememberMeSetting;
+	private final ClientApplicationRememberMe rememberMeSetting;
 
     public LoginPanel(String host, String username, String password, boolean rememberPassword,
                       boolean localLogin, ClientApplicationRememberMe rememberMeSetting) {
-				
+		this.rememberMeSetting = rememberMeSetting;
 		setLayout(new GridBagLayout());
 		
 		GridBagConstraints hostLabelCons = 
