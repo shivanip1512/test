@@ -632,6 +632,12 @@ INT CtiProtocolExpresscom::thermostatSetpointControl(BYTE minTemp, BYTE maxTemp,
 
     bool twobytetimes = false;
 
+    //This is here to work around firmware bug. We always send the timesync with this message now.
+    if(gConfigParms.isTrue("PREPEND_TSTAT_CONTROL_TIMESYNC", true))
+    {
+        status = timeSync(CtiTime::now(), true);
+    }
+
     if (bumpFlag)
         _message.push_back( mtThermostatSetpointBump );
     else
@@ -1716,6 +1722,13 @@ INT CtiProtocolExpresscom::assemblePutStatus(CtiCommandParser &parse)
 INT CtiProtocolExpresscom::configurePriceTierCommand(BYTE priceTier)
 {
     INT status = NoError;
+
+    //This is here to work around firmware bug. We always send the timesync with this message now.
+    if(gConfigParms.isTrue("PREPEND_TSTAT_CONTROL_TIMESYNC", true))
+    {
+        status = timeSync(CtiTime::now(), true);
+    }
+
     _message.push_back(mtThermostatPriceTier);
     if(priceTier > 4)
     {
