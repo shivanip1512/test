@@ -25,6 +25,7 @@ public class EstimatedLoadBackingService implements UpdateBackingService {
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
     private final Map<String, EstimatedLoadBackingField> handlersMap;
+    private final Pattern idSplitter = Pattern.compile("^([^/]+)/(.+)$");
 
     @Autowired
     public EstimatedLoadBackingService(List<EstimatedLoadBackingFieldBase> handlers) throws Exception {
@@ -34,7 +35,6 @@ public class EstimatedLoadBackingService implements UpdateBackingService {
         }
         handlersMap = builder.build();
     }
-    private Pattern idSplitter = Pattern.compile("^([^/]+)/(.+)$");
 
     /**
      * This method attempts to retrieve the estimated load reduction amounts for a given program by pao id.

@@ -78,7 +78,7 @@ public class RepeatingEstimatedLoadTask extends YukonTaskBase {
         for (PaoIdentifier paoIdent : lmPaos) {
             EstimatedLoadResult estimatedLoadResult = null;
             if (paoIdent.getPaoType().isLmProgram()) {
-                estimatedLoadResult = backingServiceHelper.getProgramValue(paoIdent.getPaoId());
+                estimatedLoadResult = backingServiceHelper.findProgramValue(paoIdent.getPaoId());
             } else if (paoIdent.getPaoType() == PaoType.LM_CONTROL_AREA) {
                 estimatedLoadResult = backingServiceHelper.getControlAreaValue(paoIdent);
             } else if (paoIdent.getPaoType() == PaoType.LM_SCENARIO) {

@@ -1,8 +1,8 @@
 package com.cannontech.dr.estimatedload.service.impl;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.dr.assetavailability.ApplianceAssetAvailabilitySummary;
-import com.cannontech.dr.assetavailability.dao.DRGroupDeviceMappingDao;
 import com.cannontech.dr.assetavailability.service.AssetAvailabilityService;
 import com.cannontech.dr.estimatedload.EstimatedLoadAmount;
 import com.cannontech.dr.estimatedload.EstimatedLoadApplianceCategoryInfo;
@@ -28,14 +27,11 @@ import com.cannontech.dr.estimatedload.service.FormulaService;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
-import com.google.common.collect.Sets;
-import com.google.common.collect.Sets.SetView;
 
 public class EstimatedLoadServiceImpl implements EstimatedLoadService {
     private final Logger log = YukonLogManager.getLogger(EstimatedLoadServiceImpl.class);
     
     @Autowired private LoadControlClientConnection clientConnection;
-    @Autowired private DRGroupDeviceMappingDao groupDeviceMappingDao;
     @Autowired private AssetAvailabilityService assetAvailabilityService;
     @Autowired private ApplianceCategoryDao applianceCategoryDao;
     @Autowired private EstimatedLoadDao estimatedLoadDao;
@@ -106,56 +102,57 @@ public class EstimatedLoadServiceImpl implements EstimatedLoadService {
     private double calculateKwSavingsNow(PaoIdentifier program, double maxKwSavings)
             throws EstimatedLoadException {
         double reductionFromControllingPrograms = 0.0;
+        List<Integer> previousControllingProgramIds = new ArrayList<>();
+        
+        // Is the calculating program currently controlling? If so its kw Savings Now will always be zero.
+        LMProgramBase calculatingProgramBase = backingServiceHelper.getLmProgramBase(program.getPaoId());
+        if (calculatingProgramBase.isActive()) {
+            return 0.0;
+        }
         // How many other programs are there that share enrollments with the program being calculated?
         List<Integer> programsWithSharedInventory = estimatedLoadDao.findOtherEnrolledProgramsForDevicesInProgram(
                 program.getPaoId());
         if (programsWithSharedInventory.size() > 0) {
-            // Find all of the devices in the program being calculated.
-            Set<Integer> loadGroupsInCalculationProgram = groupDeviceMappingDao.getLoadGroupIdsForDrGroup(program);
-            Set<Integer> inventoryIdsInCalculationProgram = groupDeviceMappingDao.getInventoryAndDeviceIdsForLoadGroups(
-                    loadGroupsInCalculationProgram).keySet();
-            
+            Collections.sort(programsWithSharedInventory);  // Ensure deterministic ordering for a given set of ids.
             for (Integer controllingProgramId : programsWithSharedInventory) {
                 // Is this shared-enrollment program controlling?
                 LMProgramBase controllingProgramBase = backingServiceHelper.getLmProgramBase(controllingProgramId);
                 if (controllingProgramBase.isActive()) {
                     // Find which gear the currently controlling program is using.
-                    
                     PartialEstimatedLoadReductionAmount controllingProgramPartialAmount;
                     ApplianceAssetAvailabilitySummary controllingProgramSummary;
                     try {
-                        int gearId = backingServiceHelper.findCurrentGearId(controllingProgramId);
                         // Find asset availability summary for the controlling program.
                         controllingProgramSummary = assetAvailabilityService
                                 .getApplianceAssetAvailability(controllingProgramBase.getPaoIdentifier());
                         // Find the controlling program's Max kW Savings.
+                        int gearId = backingServiceHelper.findCurrentGearId(controllingProgramId);
                         controllingProgramPartialAmount = calculatePartialProgramLoadReductionAmount(
                                 controllingProgramBase.getPaoIdentifier(), gearId, controllingProgramSummary);
                     } catch (EstimatedLoadException e) {
                         /* There is a problem calculating the partial estimated load values for this currently
                            controlling program.  Rather than throw out everything for this calculation, we'll skip
                            any contribution it may have had to kW Savings Now and continue on. */
+                        if (log.isDebugEnabled()) {
+                            log.debug("The kW Savings Now calculation for the LM program: " + program + " may contain "
+                                    + "inaccuracy because estimated load amounts could not be calculated for a program "
+                                    + "that has overlapping enrollments. "
+                                    + "The program in error is: " + controllingProgramBase);
+                        }
                         continue;
                     }
                     
                     //Which devices are in common between the calculating program and the controlling program?
-                    Set<Integer> loadGroupsInControllingProgram = groupDeviceMappingDao
-                            .getLoadGroupIdsForDrGroup(controllingProgramBase.getPaoIdentifier());
-                    Set<Integer> inventoryIdsInControllingProgram = groupDeviceMappingDao
-                            .getInventoryAndDeviceIdsForLoadGroups(loadGroupsInControllingProgram).keySet();
-                    SetView<Integer> inventoryInCommon = Sets.intersection(inventoryIdsInCalculationProgram,
-                            inventoryIdsInControllingProgram);
+                    int inventoryInCommon = estimatedLoadDao.getOverlappingEnrollmentSize(
+                            program.getPaoId(), controllingProgramId, previousControllingProgramIds);
+                    // Remember previous controlling program ids so their overlaps can be excluded from future sets.
+                    previousControllingProgramIds.add(controllingProgramId);
                     
                     // Determine what fraction of the controlling program's Max kW Savings 
                     // will contribute to the calculation program's kW Savings Now value.
                     double reductionAmount = controllingProgramPartialAmount.getMaxKwSavings() 
-                    		* ((double) controllingProgramSummary.getActiveSize() /
-                                    controllingProgramSummary.getAll().size())
-                            * ((double) inventoryInCommon.size() / inventoryIdsInControllingProgram.size());
+                            * ((double) inventoryInCommon / controllingProgramSummary.getActiveSize());
                     reductionFromControllingPrograms += reductionAmount;
-                    
-                    // Remove devices in common from set of deviceIdsInProgram so they are not counted multiple times.
-                    inventoryIdsInCalculationProgram.removeAll(new HashSet<>(inventoryInCommon));
                 }
             }
         }

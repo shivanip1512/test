@@ -51,7 +51,9 @@ public interface FormulaDao {
     public ApplianceCategoryAssignment getAssignmentForApplianceCategory(int appCategoryId);
 
     /** Returns the Formula object assigned to a given appliance category, or NULL if none is assigned. 
-     * @throws EstimatedLoadException */
+     * @throws EstimatedLoadException When no appliance category formula can be found for the specified appliance
+     * category pao id. 
+     */
     public Formula getFormulaForApplianceCategory(int appCategoryId) throws EstimatedLoadException;
     
     // Handling gear assignments
@@ -78,7 +80,8 @@ public interface FormulaDao {
     public GearAssignment getAssignmentForGear(int gearId);
 
     /** Returns the Formula object assigned to a given gear, or NULL if none is assigned. 
-     * @throws EstimatedLoadException */
+     * @throws EstimatedLoadException When no gear formula can be found for the specified gear id.
+     */
     public Formula getFormulaForGear(int gearId) throws EstimatedLoadException;
 
 }

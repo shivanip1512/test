@@ -63,7 +63,7 @@ public class EstimatedLoadBackingServiceHelperImpl implements EstimatedLoadBacki
             .expireAfterWrite(CACHE_SECONDS_TO_LIVE, TimeUnit.SECONDS).build();
 
     @Override
-    public EstimatedLoadResult getProgramValue(final int programId) {
+    public EstimatedLoadResult findProgramValue(final int programId) {
         int currentGearId;
         try {
             currentGearId = findCurrentGearId(programId);
@@ -125,7 +125,7 @@ public class EstimatedLoadBackingServiceHelperImpl implements EstimatedLoadBacki
         Set<EstimatedLoadResult> programResults = new HashSet<>();
         
         for (Integer programId : programIdsForControlArea) {
-            programResults.add(getProgramValue(programId));
+            programResults.add(findProgramValue(programId));
         }
         return sumEstimatedLoadAmounts(paoId, programResults);
     }
@@ -184,12 +184,10 @@ public class EstimatedLoadBackingServiceHelperImpl implements EstimatedLoadBacki
 
     @Override
     public int findCurrentGearId(int programId) throws EstimatedLoadException {
-        LMProgramBase programBase = getLmProgramBase(programId);
-        int gearNumber;
-        if (((IGearProgram) programBase).getCurrentGear() == null) {
-            gearNumber = 1;
-        } else {
-            gearNumber = ((IGearProgram) programBase).getCurrentGearNumber();
+        IGearProgram program = (IGearProgram) getLmProgramBase(programId);
+        int gearNumber = 1;
+        if (program.getCurrentGear() != null) {
+            gearNumber = program.getCurrentGearNumber();
         }
         return estimatedLoadDao.getCurrentGearIdForProgram(programId, gearNumber);
     }

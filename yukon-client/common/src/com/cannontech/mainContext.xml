@@ -108,11 +108,11 @@
         </constructor-arg>
     </bean>
     
-    <bean id="estimatedLoadExecutor" class="com.cannontech.common.util.ExecutorDelegate">
+    <bean class="com.cannontech.common.util.ExecutorDelegate">
         <qualifier value="estimatedLoad"/>
         <constructor-arg>
             <bean class="java.util.concurrent.ThreadPoolExecutor">
-                <qualifier value="longRunning" />
+                <qualifier value="estimatedLoad" />
                 <constructor-arg value="2" />
                 <constructor-arg value="4" />
                 <constructor-arg value="60" />
