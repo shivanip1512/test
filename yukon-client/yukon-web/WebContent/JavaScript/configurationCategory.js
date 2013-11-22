@@ -9,7 +9,7 @@ Yukon.DeviceConfig = (function () {
      *******************/
     
     var _determineDisplayItemAddButtonVisibility = function() {
-        var visibleElems = jQuery("[id^='displayItem']").filter(function() { return !this.classList.contains('dn'); });
+        var visibleElems = jQuery("[id^='displayItem']").filter(":visible");
         if (visibleElems.length < 26) {
             jQuery('#showNextDiv').show();
         } else {
@@ -25,12 +25,12 @@ Yukon.DeviceConfig = (function () {
     },
     
     _showSandwichedSlotDisabledEntries = function() {
-        var visibleElems = jQuery("[id^='displayItem']").filter(function() { return !this.classList.contains('dn'); });
+        var visibleElems = jQuery("[id^='displayItem']").filter(":visible");
         visibleElems.last().closest('div').prevAll().show();
     },
     
     _handleVisibleElemsAndButtons = function() {
-        var hiddenElems = jQuery("[id^='displayItem']").filter(function() { return this.classList.contains('dn'); });
+        var hiddenElems = jQuery("[id^='displayItem']").filter(":hidden");
         if (hiddenElems.length < 26) {
             jQuery('#showNextDiv').show();
         } else {
@@ -53,7 +53,7 @@ Yukon.DeviceConfig = (function () {
         if (scheduleVisibles.length < total) {
             var btn = jQuery('#showNextDivSchedule' + num);
             btn.show();
-            jQuery(scheduleVisibles[scheduleVisibles.length - 1]).append(btn);
+            jQuery(scheduleVisibles[scheduleVisibles.length - 1].lastElementChild).append(btn);
         } else {
             jQuery('#showNextDivSchedule' + num).hide();
         }
@@ -141,7 +141,7 @@ Yukon.DeviceConfig = (function () {
         
         jQuery("#showNextFieldBtn").on("click", function() {
             // Show the next hidden display item.
-            var hiddenElems = jQuery("[id^='displayItem']").filter(function() { return this.classList.contains('dn'); });
+            var hiddenElems = jQuery("[id^='displayItem']").filter(":hidden");
             jQuery('#' + hiddenElems[0].id).removeClass('dn');
             _determineDisplayItemAddButtonVisibility();
         });
@@ -156,8 +156,8 @@ Yukon.DeviceConfig = (function () {
         jQuery("#categoryPopup").on("click", function(event) {
             if (jQuery(event.target).closest('#showNextFieldBtn').length > 0) {
                 // Show the next hidden display item.
-                var hiddenElems = jQuery("[id^='displayItem']").filter(function() { return this.classList.contains('dn'); }),
-                    visibleElems = jQuery("[id^='displayItem']").filter(function() { return !this.classList.contains('dn'); });
+                var hiddenElems = jQuery("[id^='displayItem']").filter(":hidden"),
+                    visibleElems = jQuery("[id^='displayItem']").filter(":visible");
                 jQuery('#' + hiddenElems[0].id).removeClass('dn');
                 if (visibleElems.length < 26) {
                     jQuery('#showNextDiv').show();

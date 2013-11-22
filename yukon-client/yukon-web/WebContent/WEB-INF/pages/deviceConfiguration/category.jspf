@@ -81,6 +81,9 @@
                                             <tags:simpleInputType input="${rate.rateType}" path="scheduleInputs[${field.fieldName}].rateInputs[${rate.field}].rate"/>
                                         </cti:displayForPageEditModes>
                                     </td>
+                                    <td>
+                                        <%-- This td intentionally left blank to store the Add Rate button in! --%>
+                                    </td>
                                 </tr>
                             </c:forEach>
                         </table>
