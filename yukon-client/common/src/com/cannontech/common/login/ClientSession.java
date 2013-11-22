@@ -33,6 +33,8 @@ import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.ThemeUtils;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.SimpleYukonUserContext;
 import com.cannontech.user.UserUtils;
 import com.cannontech.user.YukonUserContext;
@@ -168,12 +170,14 @@ public class ClientSession {
     }
     
 	private boolean doLocalLogin(Frame p, ConfigurationSource configSource) {
-		//PoolManager.setDBProperties(props);
         PoolManager.setConfigurationSource(configSource);
 
         try {
+            ClientApplicationRememberMe rememberMeSetting
+                = YukonSpringHook.getBean(GlobalSettingDao.class)
+                    .getEnum(GlobalSettingType.CLIENT_APPLICATIONS_REMEMBER_ME, ClientApplicationRememberMe.class);
 
-            LoginPanel lp = makeLocalLoginPanel(getRememberMeSetting());
+            LoginPanel lp = makeLocalLoginPanel(rememberMeSetting);
 
             while(collectInfo(p, lp)) {
                 try {
@@ -182,7 +186,7 @@ public class ClientSession {
                 	if(loggingInUser != null) {
                 		//score! we found them
                 		setSessionInfo(loggingInUser);
-                        setPreferences(lp.getUsername(), lp.getPassword(), lp.isRememberMe());
+                        setPreferences(lp.getUsername(), lp.getPassword(), lp.isRememberMe(), rememberMeSetting);
 
                 		return true;
                 	} else {
@@ -213,10 +217,22 @@ public class ClientSession {
         String jwsUser = System.getProperty("jnlp.yukon.user");
 	    LoginPanel lp = makeJwsLoginPanel(jwsHost, jwsUser);
 	    
-        return doLoginLoop(p, lp);
+        return doRemoteLoginLoop(p, lp);
 	}
 
-    private boolean doLoginLoop(Frame p, LoginPanel lp) {
+    private boolean doRemoteLogin(Frame p) {
+        LoginPanel lp = makeRemoteLoginPanel();
+
+        boolean success = doRemoteLoginLoop(p, lp);
+
+        if(success) {
+            LoginPrefs prefs = LoginPrefs.getInstance();
+            prefs.setCurrentYukonHost(lp.getYukonHost());
+        }
+        return success;
+    }
+
+    private boolean doRemoteLoginLoop(Frame p, LoginPanel lp) {
         CTILogger.debug("Starting login dialog loop");
         while(collectInfo(p, lp)) {
             try {
@@ -239,7 +255,9 @@ public class ClientSession {
                     CTILogger.debug("Got not null user: " + u);
                     //score! we found them
                     setSessionInfo(u);
-                    setPreferences(lp.getUsername(), lp.getPassword(), lp.isRememberMe());
+                    ClientApplicationRememberMe rememberMeSetting 
+                        = ClientApplicationRememberMe.fromString(System.getProperty("jnlp.yukon.rememberMe", ""));
+                    setPreferences(lp.getUsername(), lp.getPassword(), lp.isRememberMe(), rememberMeSetting);
 
                     // setup remote logging
                     YukonLogManager.initialize(lp.getYukonHost(), lp.getUsername(), lp.getPassword());
@@ -268,12 +286,13 @@ public class ClientSession {
         return false;
     }
 
-    private void setPreferences(String username, String password, boolean shouldRememberCred) {
+    private void setPreferences(String username, String password, boolean shouldRememberCred,
+            ClientApplicationRememberMe rememberMeSetting) {
         LoginPrefs prefs = LoginPrefs.getInstance();
         prefs.shouldRememberCredentials(shouldRememberCred);
 
         if(shouldRememberCred) {
-            prefs.rememberCredentials(username, password, getRememberMeSetting());
+            prefs.rememberCredentials(username, password, rememberMeSetting);
         } else {
             prefs.forgetCredentials();
         }
@@ -297,26 +316,9 @@ public class ClientSession {
         displayMessage(p, msg, "Error");
     }
     
-    private boolean doRemoteLogin(Frame p) {
-        LoginPanel lp = makeRemoteLoginPanel();
-
-        boolean success = doLoginLoop(p, lp);
-
-        if(success) {
-            LoginPrefs prefs = LoginPrefs.getInstance();
-            prefs.setCurrentYukonHost(lp.getYukonHost());
-        }
-        return success;
-
-    }
-	
 	private void setSessionInfo(LiteYukonUser u) {
         CTILogger.debug("Setting session: user=" + u);
 		this.user = u;
-	}
-
-	private ClientApplicationRememberMe getRememberMeSetting() {
-        return ClientApplicationRememberMe.fromString(System.getProperty("jnlp.yukon.rememberMe", ""));
 	}
 
 	private LoginPanel makeLocalLoginPanel(ClientApplicationRememberMe rememberMeSetting) {
@@ -348,19 +350,23 @@ public class ClientSession {
 	        }
 	    }
 
+        ClientApplicationRememberMe rememberMeSetting 
+            = ClientApplicationRememberMe.fromString(System.getProperty("jnlp.yukon.rememberMe", ""));
+
 	    return  new LoginPanel(host,
 	                           prefs.getRememberedUsername(),
 	                           prefs.getRememberedPassword(),
-	                           prefs.shouldRememberCredentials(), false, getRememberMeSetting());
+	                           prefs.shouldRememberCredentials(), false, rememberMeSetting);
 	}
 		
 	private LoginPanel makeJwsLoginPanel(String host, String userName) {
         LoginPrefs prefs = LoginPrefs.getInstance();
-	    
+        ClientApplicationRememberMe rememberMeSetting 
+            = ClientApplicationRememberMe.fromString(System.getProperty("jnlp.yukon.rememberMe", ""));
 	    LoginPanel loginPanel = new LoginPanel(host,
 	                           userName,
 	                           prefs.getRememberedPassword(userName),
-                               prefs.shouldRememberCredentials(), false, getRememberMeSetting());
+                               prefs.shouldRememberCredentials(), false, rememberMeSetting);
 	    loginPanel.setHostEditable(false);
 	    loginPanel.setUserEditable(false);
         return loginPanel;
