@@ -324,10 +324,10 @@ Yukon.modules.ui = function (mod) {
             jQuery(this.getAttribute("data-selector")).load(this.getAttribute("href"));
             return false;
         });
-        jQuery(document).on('click', '[data-load]', function(event) {
+        jQuery(document).on('click', '[data-reload]', function(event) {
             var elem = jQuery(event.currentTarget),
             url = elem.data('load'),
-            target = elem.closest('[data-loadable]'),
+            target = elem.closest('[data-reloadable]'),
             completeEvent = target.data('loadable');
             
             if (target.length > 0) {

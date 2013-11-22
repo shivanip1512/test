@@ -15,7 +15,7 @@
 <cti:url var="sortUrl" value="page" />
 <cti:msgScope paths="modules.operator.hardware.assetAvailability">
 
-<div class="f-table-container" data-loadable>
+<div class="f-table-container" data-reloadable>
     <table class="compact-results-table sortable-table row-highlighting">
         <thead>
             <tr>

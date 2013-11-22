@@ -1,14 +1,14 @@
 <%@ tag body-content="empty" trimDirectiveWhitespaces="true" %>
 
-<%@ attribute name="id" required="true"%>
-<%@ attribute name="on" description="Registers click event on the element to open this popup."%>
-<%@ attribute name="onClose"%>
-<%@ attribute name="styleClass"%>
-<%@ attribute name="title"%>
-
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+
+<%@ attribute name="id" required="true" %>
+<%@ attribute name="on" description="Registers click event on the element to open this popup." %>
+<%@ attribute name="onClose" %>
+<%@ attribute name="styleClass" %>
+<%@ attribute name="title" %>
 
 <cti:includeScript link="/JavaScript/simpleDialog.js"/>
 

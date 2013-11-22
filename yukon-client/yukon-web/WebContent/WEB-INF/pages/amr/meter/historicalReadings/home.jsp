@@ -5,59 +5,51 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
-
 <cti:url var="viewUrl" value="/meter/historicalReadings/view"/>
 <dialog:ajaxPage nameKey="popup" title="${title}" module="amr"
     page="widgetClasses.MeterReadingsWidget.historicalReadings" id="${dialogId}" okEvent="none"
     options="{'buttons': [
                         {text: '${oneMonth}', click: function(){window.location='${oneMonthUrl}';}},
-                        {text: '${all}', click: function(){window.location='${allUrl}';}}], modal:false}"
->
+                        {text: '${all}', click: function(){window.location='${allUrl}';}}], modal:false}">
 
     <c:if test="${points.size() > 0}">
-        <div class="smallText">
-            <tr>
-                <td>${resultLimit}</td>
-            <tr>
-        <div>
+        <div class="detail">${resultLimit}<div>
     </c:if>
 
-    <div class="scroll-large">
-        <c:choose>
-            <c:when test="${points.size() == 0}">
-                <i:inline key=".notFound" />
-            </c:when>
-            <c:otherwise>
-                <table id="pointValueList" class="compact-results-table row-highlighting">
+    <c:choose>
+        <c:when test="${points.size() == 0}">
+            <div class="empty-list"><i:inline key=".notFound" /></div>
+        </c:when>
+        <c:otherwise>
+            <table id="pointValueList" class="compact-results-table row-highlighting">
+                <tr>
+                    <th>
+                        <tags:sortLink nameKey="tableHeader.timestamp" 
+                            baseUrl="${viewUrl}" 
+                            fieldName="TIMESTAMP"
+                            isDefault="${points.size() > 0}" 
+                            styleClass="f-ajaxPage" 
+                            descendingByDefault="true"
+                            moreAttributes="data-selector=\"#${dialogId}\""/>
+                    </th>
+                    <th>
+                        <tags:sortLink nameKey="tableHeader.value" 
+                            baseUrl="${viewUrl}" 
+                            fieldName="VALUE"
+                            isDefault="false" 
+                            styleClass="f-ajaxPage" 
+                            moreAttributes="data-selector=\"#${dialogId}\""/>
+                    </th>
+                </tr>
+
+                <c:forEach var="row" items="${points}">
                     <tr>
-                        <th>
-                            <tags:sortLink nameKey="tableHeader.timestamp" 
-                                baseUrl="${viewUrl}" 
-                                fieldName="TIMESTAMP"
-                                isDefault="${points.size() > 0}" 
-                                styleClass="f-ajaxPage" 
-                                descendingByDefault="true"
-                                moreAttributes="data-selector=\"#${dialogId}\""/>
-                        </th>
-                        <th>
-                            <tags:sortLink nameKey="tableHeader.value" 
-                                baseUrl="${viewUrl}" 
-                                fieldName="VALUE"
-                                isDefault="false" 
-                                styleClass="f-ajaxPage" 
-                                moreAttributes="data-selector=\"#${dialogId}\""/>
-                        </th>
+                        <td>${fn:escapeXml(row[0])}</td>
+                        <td>${fn:escapeXml(row[1])}</td>
                     </tr>
-    
-                    <c:forEach var="row" items="${points}">
-                        <tr>
-                            <td>${fn:escapeXml(row[0])}</td>
-                            <td>${fn:escapeXml(row[1])}</td>
-                        </tr>
-                    </c:forEach>
-                </table>
-            </c:otherwise>
-        </c:choose>
+                </c:forEach>
+            </table>
+        </c:otherwise>
+    </c:choose>
             
-    </div>
 </dialog:ajaxPage>

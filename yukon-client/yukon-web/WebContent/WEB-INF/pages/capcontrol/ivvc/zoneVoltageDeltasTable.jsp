@@ -9,7 +9,7 @@
     <span class="empty-list"><i:inline key=".deltas.emptyTable"/></span>
 </c:if>
 <c:if test="${searchResults.hitCount != 0}">
-    <div data-loadable>
+    <div data-reloadable>
         <table id="deltaTable" class="compact-results-table row-highlighting">
             <thead>
                 <tr>

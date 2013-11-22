@@ -96,7 +96,7 @@ Yukon.DrAssetDetails = (function() {
 
             jQuery(".device-detail-table")
                 .on('click', '.f-sort-link', _doSortingWithFilter)
-                .on('click', '[data-load]', _doPagingWithFilter);
+                .on('click', '[data-reload]', _doPagingWithFilter);
             
             jQuery("#dd-download")
                 .click(_downloadToCsv);

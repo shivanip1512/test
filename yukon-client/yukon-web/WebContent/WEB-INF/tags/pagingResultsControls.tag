@@ -28,7 +28,7 @@
                         <cti:param name="page" value="${result.currentPage - 1}"/>
                         <cti:param name="itemsPerPage" value="${result.count}"/>
                     </cti:url>
-                    <button class="naked" data-load="${prevUrl}">
+                    <button class="naked" data-reload="${prevUrl}">
                         <i class="icon icon-resultset-previous"></i>
                         <span class="label"><i:inline key="yukon.common.paging.previous"/></span>
                     </button>
@@ -49,7 +49,7 @@
                         <cti:param name="page" value="${result.currentPage + 1}"/>
                         <cti:param name="itemsPerPage" value="${result.count}"/>
                     </cti:url>
-                    <button class="naked" data-load="${nextUrl}">
+                    <button class="naked" data-reload="${nextUrl}">
                         <span class="label"><i:inline key="yukon.common.paging.next"/></span>
                         <i class="icon icon-resultset-next"></i>
                     </button>

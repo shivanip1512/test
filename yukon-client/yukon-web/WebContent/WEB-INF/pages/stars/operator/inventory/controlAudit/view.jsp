@@ -48,7 +48,7 @@
 <c:if test="${fn:length(audit.controlledRows) > 0}">
     <tags:sectionContainer2 nameKey="controlledDevices" styleClass="stacked cl" hideEnabled="true">
         <div class="column-18-6">
-                <div class="column one" data-loadable>
+                <div class="column one" data-reloadable>
                     <dr:controlAuditResult result="${audit.controlledPaged}" type="CONTROLLED" auditId="${auditId}"/>
                 </div>
                 <div class="column two nogutter">
@@ -80,7 +80,7 @@
 <c:if test="${fn:length(audit.uncontrolledRows) > 0}">
     <tags:sectionContainer2 nameKey="uncontrolledDevices"  hideEnabled="true" styleClass="stacked cl">
         <div class="column-18-6">
-                <div class="column one" data-loadable>
+                <div class="column one" data-reloadable>
                     <dr:controlAuditResult result="${audit.uncontrolledPaged}" type="UNCONTROLLED" auditId="${auditId}"/>
                 </div>
                 <div class="column two nogutter">
@@ -112,7 +112,7 @@
 <c:if test="${fn:length(audit.unknownRows) > 0}">
     <tags:sectionContainer2 nameKey="unknownDevices" hideEnabled="true" styleClass="stacked cl">
         <div class="column-18-6">
-                <div class="column one" data-loadable>
+                <div class="column one" data-reloadable>
                     <dr:controlAuditResult result="${audit.unknownPaged}" type="UNKNOWN" auditId="${auditId}"/>
                 </div>
                 <div class="column two nogutter">
@@ -144,7 +144,7 @@
 <c:if test="${fn:length(audit.unsupportedRows) > 0}">
     <tags:sectionContainer2 nameKey="unsupportedDevices" styleClass="stacked cl" hideEnabled="true">
         <div class="column-18-6">
-                <div class="column one" data-loadable>
+                <div class="column one" data-reloadable>
                     <dr:controlAuditResult result="${audit.unsupportedPaged}" type="UNSUPPORTED" auditId="${auditId}"/>
                 </div>
                 <div class="column two nogutter">

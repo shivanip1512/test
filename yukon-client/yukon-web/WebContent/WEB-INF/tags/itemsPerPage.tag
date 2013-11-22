@@ -22,5 +22,5 @@
         </c:forEach>
         <cti:param name="itemsPerPage" value="${itemsPerPage}"/>
     </cti:url>
-    <a href="javascript:void(0);" data-load="${pageUrl}">${itemsPerPage}</a>
+    <a href="javascript:void(0);" data-reload="${pageUrl}">${itemsPerPage}</a>
 </c:if>
