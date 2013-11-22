@@ -15,6 +15,7 @@
 <%@ attribute name="minDate" type="java.lang.Object" description="Set a minimum selectable date via a Instant object or as a string in the current dateFormat, or a number of days from today (e.g. +7) or a string of values and periods ('y' for years, 'm' for months, 'w' for weeks, 'd' for days, e.g. '+1m +1w'), or null for no limit." %>
 <%@ attribute name="name" description="Name of the field in the supplied object"%>
 <%@ attribute name="path" description="Spring binding path"%>
+<%@ attribute name="hideErrors" type="java.lang.Boolean" description="Default: false. If true, will not display validation error messages." %>
 <%@ attribute name="value" type="java.lang.Object" description="Default: null. Sets the initial value of the input." %>
 
 <dt:pickerIncludes/>
@@ -65,12 +66,13 @@
 <c:choose>
     <c:when test="${not empty pageScope.path}">
         <spring:bind path="${path}">
+            <c:if test="${status.error}"><c:set var="cssClass">${pageScope.cssClass} error</c:set></c:if>
             <cti:displayForPageEditModes modes="VIEW">${status.value}</cti:displayForPageEditModes>
             <cti:displayForPageEditModes modes="EDIT,CREATE">
                 <form:input id="${id}" 
                             path="${path}"
                             value="${dateValue}"
-                            cssClass="f-datePicker f-datePickerUI datePicker ${cssClass}"
+                            cssClass="f-datePicker f-datePickerUI datePicker ${pageScope.cssClass}"
                             disabled="${pageScope.disabled}"
                             data-date-time-format="${jsDateTimeFormat}"
                             data-max-date="${maxFormattedDate}"
@@ -80,7 +82,7 @@
                             data-class="${pageScope.cssDialogClass}"
                             autocomplete="off" />
             </cti:displayForPageEditModes>
-            <c:if test="${status.error}">
+            <c:if test="${status.error and (empty pageScope.hideErrors or hideErrors == false)}">
                 <br>
                 <form:errors path="${path}" cssClass="error" />
             </c:if>
