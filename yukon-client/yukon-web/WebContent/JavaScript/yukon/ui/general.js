@@ -324,14 +324,22 @@ Yukon.modules.ui = function (mod) {
             jQuery(this.getAttribute("data-selector")).load(this.getAttribute("href"));
             return false;
         });
-        jQuery(document).on('click', '.f-ajax-paging', function(event) {
+        jQuery(document).on('click', '[data-load]', function(event) {
             var elem = jQuery(event.currentTarget),
-                url = elem.data('url'),
-                completeEvent = elem.closest('[data-complete-event]').data('completeEvent'),
-                container = elem.closest('.f-ajax-page');
-            container.load(url, function() {
-                container.trigger(completeEvent);
-            });
+            url = elem.data('load'),
+            target = elem.closest('[data-loadable]'),
+            completeEvent = target.data('loadable');
+            
+            if (target.length > 0) {
+                target.load(url, function() {
+                    if (completeEvent) {
+                        target.trigger(completeEvent);
+                    }
+                });
+            } else {
+                window.location = url;
+            }
+            
             return false;
         });
 
@@ -819,7 +827,7 @@ Yukon.modules.ui = function (mod) {
             source: function(request, response) {
                 jQuery.ajax({
                     type: 'get',
-                    url: "/autocomplete.json",
+                    url: "/search/autocomplete.json",
                     dataType: "json",
                     data: {
                         q: request.term

@@ -110,7 +110,7 @@
 	<form:form id="deltaForm" action="/capcontrol/ivvc/zone/deltaUpdate" method="POST" commandName="zoneVoltageDeltas">
 		<input type="hidden" name="zoneId" id="zoneId" value="${zoneId}">
 
-        <div class="f-ajax-page stacked" data-complete-event="disable-buttons">
+        <div class="f-ajax-page stacked" data-loadable="disable-buttons">
             <%@ include file="zoneVoltageDeltasTable.jsp" %>
         </div>
 			<div id="deltaFormButtons" class="action-area clear">

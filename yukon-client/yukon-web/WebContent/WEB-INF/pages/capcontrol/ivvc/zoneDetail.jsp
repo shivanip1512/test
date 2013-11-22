@@ -8,6 +8,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <cti:standardPage module="capcontrol" page="ivvc.zoneDetail">
+
     <cti:includeScript link="/JavaScript/tableCreation.js" />
     <cti:includeScript link="/JavaScript/simpleDialog.js"/>
     <cti:includeScript link="/JavaScript/dynamicTable.js"/>
@@ -25,8 +26,10 @@
 
         function setRedBulletForPoint(pointId) {
             return function(data) {
+                
                 var redBulletSpans = jQuery('.redBullet_' + pointId),
                     quality = data.quality;
+                
                 redBulletSpans.each( function (index, redBulletSpan) {
                     if (quality !== 'Normal') {
                         jQuery(redBulletSpan).show();
@@ -38,8 +41,7 @@
         }
 
         function showZoneWizard(url) {
-            openSimpleDialog('zoneWizardPopup', url, "${zoneWizardTitle}",
-                    null, 'get');
+            openSimpleDialog('zoneWizardPopup', url, "${zoneWizardTitle}", null, 'get');
         }
         
         jQuery(function() {

@@ -15,7 +15,7 @@
 <cti:url var="sortUrl" value="page" />
 <cti:msgScope paths="modules.operator.hardware.assetAvailability">
 
-<div class="f-table-container">
+<div class="f-table-container" data-loadable>
     <table class="compact-results-table sortable-table row-highlighting">
         <thead>
             <tr>
@@ -51,15 +51,14 @@
         </tbody>
         <tfoot></tfoot>
     </table>
+    <c:if test="${pageMe}">
+        <cti:url value="page" var="baseUrl">
+            <cti:param name="type" value="${type}"/>
+            <cti:param name="assetId" value="${assetId}"/>
+            <cti:param name="sortBy" value="${assetDetailsSortBy}" />
+            <cti:param name="descending" value="${assetDetailsSortDesc}" />
+        </cti:url>
+        <tags:pagingResultsControls baseUrl="${baseUrl}" result="${result}"/>
+    </c:if>
 </div>
-
-<c:if test="${pageMe}">
-    <cti:url value="page" var="baseUrl">
-        <cti:param name="type" value="${type}"/>
-        <cti:param name="assetId" value="${assetId}"/>
-        <cti:param name="sortBy" value="${assetDetailsSortBy}" />
-        <cti:param name="descending" value="${assetDetailsSortDesc}" />
-    </cti:url>
-    <tags:pagingResultsControls baseUrl="${baseUrl}" result="${result}"/>
-</c:if>
 </cti:msgScope>

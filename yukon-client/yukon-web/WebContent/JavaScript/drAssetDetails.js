@@ -35,8 +35,7 @@ Yukon.DrAssetDetails = (function() {
     },
 
     _doPagingWithFilter = function(event) {
-        event.stopPropagation();
-        var url = jQuery(event.currentTarget).attr('data-url'),
+        var url = jQuery(event.currentTarget).data('load'),
             data = {'filter': _getFilter()};
         jQuery.ajax({
             url: url,
@@ -97,7 +96,7 @@ Yukon.DrAssetDetails = (function() {
 
             jQuery(".device-detail-table")
                 .on('click', '.f-sort-link', _doSortingWithFilter)
-                .on('click', '.f-ajax-paging', _doPagingWithFilter);
+                .on('click', '[data-load]', _doPagingWithFilter);
             
             jQuery("#dd-download")
                 .click(_downloadToCsv);

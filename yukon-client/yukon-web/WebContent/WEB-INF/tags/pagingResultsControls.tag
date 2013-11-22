@@ -16,9 +16,9 @@
         <c:if test="${adjustPageCount == 'true'}">
             <span class="fl perPageArea">
                 <i:inline key="yukon.common.paging.itemsPerPage"/>&nbsp;
-                <tags:ajaxItemsPerPageLink result="${result}" itemsPerPage="10" baseUrl="${baseUrl}"/>&nbsp;
-                <tags:ajaxItemsPerPageLink result="${result}" itemsPerPage="25" baseUrl="${baseUrl}"/>&nbsp;
-                <tags:ajaxItemsPerPageLink result="${result}" itemsPerPage="50" baseUrl="${baseUrl}"/>&nbsp;
+                <tags:itemsPerPage result="${result}" itemsPerPage="10" baseUrl="${baseUrl}"/>&nbsp;
+                <tags:itemsPerPage result="${result}" itemsPerPage="25" baseUrl="${baseUrl}"/>&nbsp;
+                <tags:itemsPerPage result="${result}" itemsPerPage="50" baseUrl="${baseUrl}"/>&nbsp;
             </span>
         </c:if>
         <span class="fl previous-link">
@@ -28,7 +28,7 @@
                         <cti:param name="page" value="${result.currentPage - 1}"/>
                         <cti:param name="itemsPerPage" value="${result.count}"/>
                     </cti:url>
-                    <button class="naked f-ajax-paging" data-url="${prevUrl}">
+                    <button class="naked" data-load="${prevUrl}">
                         <i class="icon icon-resultset-previous"></i>
                         <span class="label"><i:inline key="yukon.common.paging.previous"/></span>
                     </button>
@@ -49,7 +49,7 @@
                         <cti:param name="page" value="${result.currentPage + 1}"/>
                         <cti:param name="itemsPerPage" value="${result.count}"/>
                     </cti:url>
-                    <button class="naked f-ajax-paging" data-url="${nextUrl}">
+                    <button class="naked" data-load="${nextUrl}">
                         <span class="label"><i:inline key="yukon.common.paging.next"/></span>
                         <i class="icon icon-resultset-next"></i>
                     </button>

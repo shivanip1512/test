@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.codehaus.jackson.node.POJONode;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,13 +20,12 @@ import com.cannontech.web.common.search.result.Page;
 import com.cannontech.web.common.search.service.SiteSearchService;
 
 @Controller
-@RequestMapping("/*")
 public class SiteSearchController {
     private final static String baseKey = "yukon.web.modules.tools.search.";
 
     @Autowired private SiteSearchService siteSearchService;
 
-    @RequestMapping(value="/autocomplete.json", method=RequestMethod.GET)
+    @RequestMapping(value="/autocomplete.json", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody POJONode autoComplete(@RequestParam(value="q") String searchString,
             YukonUserContext userContext) {
         List<String> results = siteSearchService.autocomplete(searchString, userContext);
@@ -35,8 +35,11 @@ public class SiteSearchController {
 
     @RequestMapping(value="/search", method=RequestMethod.GET)
     public String search(@RequestParam(value="q", required=false) String searchString,
-            Integer itemsPerPage, @RequestParam(defaultValue="1") int page,
-            ModelMap model, YukonUserContext userContext) {
+            Integer itemsPerPage, 
+            @RequestParam(defaultValue="1") int page,
+            ModelMap model, 
+            YukonUserContext userContext) {
+        
         itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
         int startIndex = (page - 1) * itemsPerPage;
         searchString = siteSearchService.sanitizeSearchStr(searchString);
@@ -61,6 +64,7 @@ public class SiteSearchController {
         model.addAttribute("itemsPerPage", itemsPerPage);
         model.addAttribute("results", results);
 
-        return "siteSearch.jsp";
+        return "search.jsp";
     }
+
 }

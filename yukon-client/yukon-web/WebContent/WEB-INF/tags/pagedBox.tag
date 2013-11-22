@@ -47,11 +47,11 @@
         </span>
         <span class="perPageArea fr">
             <cti:msg key="yukon.common.paging.itemsPerPage"/>&nbsp;&nbsp;
-            <tags:itemsPerPageLink searchResult="${pageScope.searchResult}" itemsPerPage="10" baseUrl="${pageScope.baseUrl}"/>&nbsp;
-            <tags:itemsPerPageLink searchResult="${pageScope.searchResult}" itemsPerPage="25" baseUrl="${pageScope.baseUrl}"/>&nbsp;
-            <tags:itemsPerPageLink searchResult="${pageScope.searchResult}" itemsPerPage="50" baseUrl="${pageScope.baseUrl}"/>&nbsp;
+            <tags:itemsPerPage result="${pageScope.searchResult}" itemsPerPage="10" baseUrl="${pageScope.baseUrl}"/>&nbsp;
+            <tags:itemsPerPage result="${pageScope.searchResult}" itemsPerPage="25" baseUrl="${pageScope.baseUrl}"/>&nbsp;
+            <tags:itemsPerPage result="${pageScope.searchResult}" itemsPerPage="50" baseUrl="${pageScope.baseUrl}"/>&nbsp;
             <c:if test="${pageScope.pageByHundereds}">
-                <tags:itemsPerPageLink searchResult="${pageScope.searchResult}" itemsPerPage="100" baseUrl="${pageScope.baseUrl}"/>
+                <tags:itemsPerPage result="${pageScope.searchResult}" itemsPerPage="100" baseUrl="${pageScope.baseUrl}"/>
             </c:if>
         </span>
     </div>

@@ -130,9 +130,6 @@ Yukon.UserPreferences = (function () {
             jQuery(document).on("click", "#contactNotifs td .removeBtn", this.remove_contact_notif_row);
             jQuery(document).on("change", "select.f-contactNotif-type", this.update_contact_notif_input_formatting);
 
-            // NEW PAGINATION
-            jQuery(document).on('click', '.f-ajax-paging', this.paginate_activity_stream);
-
             jQuery(document).on('yukonDialogConfirmOk', '#yukon_dialog_confirm', this.reset_all_preferences);
 
             _initialized = true;
@@ -153,20 +150,6 @@ Yukon.UserPreferences = (function () {
                     return false;
                 }
             });
-        },
-
-        paginate_activity_stream: function(event) {
-
-            event.stopPropagation();
-            var url = jQuery(event.currentTarget).attr('data-url');
-            jQuery.ajax({
-                url: url,
-                type: 'get',
-            }).done( function(data) {
-                    var parent = jQuery("#divActivityStream").parent();
-                    parent.html(data);
-            });
-            return false;
         },
 
         submit_change_password: function(event){

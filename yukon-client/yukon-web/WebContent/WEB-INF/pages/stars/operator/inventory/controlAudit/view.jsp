@@ -14,24 +14,6 @@
 <cti:standardPage module="operator" page="controlAudit">
 <cti:includeCss link="/WebConfig/yukon/styles/operator/inventory.css"/>
 
-<script type="text/javascript">
-jQuery(function() {
-    jQuery(document).on('click', '.f-ajax-paging', function(event) {
-        
-        event.stopPropagation();
-        var url = jQuery(event.currentTarget).data('url');
-        jQuery.ajax({
-            url: url,
-            method: 'get'
-        }).done(function(data) {
-            var parent = jQuery(event.currentTarget).closest(".one");
-            parent.html(data);
-        });
-        return false;
-    });
-});
-</script>
-
 <div class="column-12-12">
     <div class="column one">
         <tags:sectionContainer2 nameKey="settings">
@@ -66,7 +48,7 @@ jQuery(function() {
 <c:if test="${fn:length(audit.controlledRows) > 0}">
     <tags:sectionContainer2 nameKey="controlledDevices" styleClass="stacked cl" hideEnabled="true">
         <div class="column-18-6">
-                <div class="column one">
+                <div class="column one" data-loadable>
                     <dr:controlAuditResult result="${audit.controlledPaged}" type="CONTROLLED" auditId="${auditId}"/>
                 </div>
                 <div class="column two nogutter">
@@ -98,7 +80,7 @@ jQuery(function() {
 <c:if test="${fn:length(audit.uncontrolledRows) > 0}">
     <tags:sectionContainer2 nameKey="uncontrolledDevices"  hideEnabled="true" styleClass="stacked cl">
         <div class="column-18-6">
-                <div class="column one">
+                <div class="column one" data-loadable>
                     <dr:controlAuditResult result="${audit.uncontrolledPaged}" type="UNCONTROLLED" auditId="${auditId}"/>
                 </div>
                 <div class="column two nogutter">
@@ -130,7 +112,7 @@ jQuery(function() {
 <c:if test="${fn:length(audit.unknownRows) > 0}">
     <tags:sectionContainer2 nameKey="unknownDevices" hideEnabled="true" styleClass="stacked cl">
         <div class="column-18-6">
-                <div class="column one">
+                <div class="column one" data-loadable>
                     <dr:controlAuditResult result="${audit.unknownPaged}" type="UNKNOWN" auditId="${auditId}"/>
                 </div>
                 <div class="column two nogutter">
@@ -162,7 +144,7 @@ jQuery(function() {
 <c:if test="${fn:length(audit.unsupportedRows) > 0}">
     <tags:sectionContainer2 nameKey="unsupportedDevices" styleClass="stacked cl" hideEnabled="true">
         <div class="column-18-6">
-                <div class="column one">
+                <div class="column one" data-loadable>
                     <dr:controlAuditResult result="${audit.unsupportedPaged}" type="UNSUPPORTED" auditId="${auditId}"/>
                 </div>
                 <div class="column two nogutter">
@@ -190,5 +172,5 @@ jQuery(function() {
         </div>
     </tags:sectionContainer2>
 </c:if>
-    
+
 </cti:standardPage>

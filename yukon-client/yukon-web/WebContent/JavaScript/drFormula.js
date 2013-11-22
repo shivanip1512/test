@@ -339,12 +339,6 @@ Yukon.DrFormula = (function() {
         });
     },
 
-    _ajaxPagingBtnClick = function(event) {
-        var url = jQuery(event.currentTarget).data('url');
-        jQuery(event.target).parents(".f-drFormula-replaceViaAjax").load(url);
-        return false;
-    },
-
     _sortBtnClick = function(event) {
         jQuery(event.target).parents(".f-drFormula-replaceViaAjax").load(this.href);
         return false;
@@ -358,29 +352,22 @@ Yukon.DrFormula = (function() {
 
             _rowIndex = jQuery("#formulaRowIndex").val();
 
-            jQuery('#display_tabs')
-                .tabs({'cookie' : {}}).show();
+            jQuery('#display_tabs').tabs({'cookie' : {}}).show();
             jQuery("#assignments")
                 .on("click", ".f-drFormula-remove", _removeAssignmentBtnClick)
                 .on("click", ".f-drFormula-undo", _undoBtnClick);
-            jQuery("#newFunctionBtn")
-                .click(_newFunctionBtnClick);
+            jQuery("#newFunctionBtn").click(_newFunctionBtnClick);
             jQuery("#formulaFunctions, #formulaTables")
                 .on("change", ".f-drFormula-formulaInputSelect", _formulaInputSelectChange)
                 .on("click", ".f-drFormula-pointPicker", _pointPickerClick);
-            jQuery("#formulaFunctions, #formulaTables")
-                .on("click", ".f-drFormula-remove", _removeBtnClick);
-            jQuery("#newTableBtn")
-                .click(_addTableBtnClick);
+            jQuery("#formulaFunctions, #formulaTables").on("click", ".f-drFormula-remove", _removeBtnClick);
+            jQuery("#newTableBtn").click(_addTableBtnClick);
             jQuery("#formulaTables")
                 .on("click", ".f-drFormula-removeEntry",_removeTableEntryBtnClick)
                 .on("change", ".f-drFormula-formulaInputSelect", _formulaInputSelectChangeTable)
                 .on("click", ".f-drFormula-newEntryButton", _addTableEntryBtnClick);
-            jQuery("#formulaForm")
-                .submit(_beforeFormSubmit);
-            jQuery(".f-drFormula-replaceViaAjax")
-                .on('click', '.f-ajax-paging', _ajaxPagingBtnClick)
-                .on('click', ".f-drFormula-sortLink", _sortBtnClick);
+            jQuery("#formulaForm").submit(_beforeFormSubmit);
+            jQuery(".f-drFormula-replaceViaAjax").on('click', ".f-drFormula-sortLink", _sortBtnClick);
 
             _initialized = true;
         },

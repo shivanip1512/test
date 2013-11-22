@@ -1,3 +1,8 @@
+<%@ tag body-content="empty" %>
+
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+
 <%@ attribute name="fieldName" required="true" %>
 <%@ attribute name="baseUrl" required="true" %>
 <%@ attribute name="nameKey" required="true" %>
@@ -9,15 +14,11 @@
 
 <%@ attribute name="isDefault" type="java.lang.Boolean" %>
 <%@ attribute name="descendingByDefault" type="java.lang.Boolean" %>
-<%@ tag body-content="empty" %>
 
 <%--
 If the default sort field is anything other than "NAME", set the isDefault
 attribute to true on the field which is the default sort field.
 --%>
-
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 
 <cti:msgScope paths=".${nameKey}">
     <cti:msg2 var="linkTextMsg" key=".linkText"/>
