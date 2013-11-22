@@ -44,7 +44,7 @@
     <h2>Group Command Processing Result Detail</h2>
     <br>
   
-    <tags:boxContainer id="commanderResultsContainer" hideEnabled="false">
+    <tags:sectionContainer id="commanderResultsContainer" hideEnabled="false">
     
         <jsp:attribute name="title">
             Executing '${result.command}' on <cti:msg key="${result.deviceCollection.description}"/>
@@ -172,7 +172,7 @@
 
         </jsp:body>
         
-    </tags:boxContainer>
+    </tags:sectionContainer>
     
     <cti:dataUpdaterCallback function="Yukon.ui.progressBar.toggleElementsWhenTrue(['allDevicesActionsDiv','successActionsDiv','errorActionsDiv','creResultsDiv'],true)" initialize="true" value="COMMANDER/${result.key}/IS_COMPLETE" />
     <cti:dataUpdaterCallback function="Yukon.ui.progressBar.toggleElementsWhenTrue(['cancelCommandsDiv'],false)" initialize="true" value="COMMANDER/${result.key}/IS_COMPLETE" />

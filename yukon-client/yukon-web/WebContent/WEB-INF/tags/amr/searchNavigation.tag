@@ -21,7 +21,7 @@
 <script language="JavaScript">
 
 	function gotoPage(select) {
-		window.location = '${url}&startIndex=' + $F(select);
+		window.location = '${url}&startIndex=' + jQuery('#' + select).val();
 	}
 
 </script>

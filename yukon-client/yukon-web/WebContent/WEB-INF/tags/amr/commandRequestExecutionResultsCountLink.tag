@@ -10,58 +10,57 @@
 
 <script type="text/javascript">
 
-	function setCount_${id}() {
-		
-		return function(data) {
-			var deviceCount = data.deviceCount;
+    function setCount_${id}() {
+        
+        return function(data) {
+            var deviceCount = data.deviceCount,
+                countWithLinkName = '#' + 'countWithLink_' + '${id}',
+                countWithoutLinkName = '#' + 'countWithoutLink_' + '${id}';
 
-			var countWithLinkName = 'countWithLink_' + '${id}';
-			var countWithoutLinkName = 'countWithoutLink_' + '${id}';
-			
-			if ($(countWithLinkName) != undefined && $(countWithoutLinkName) != undefined) { // function is called before these may exists, avoid js error
-			
-				if (deviceCount > 0) {
-					$(countWithLinkName).show();
-					$(countWithoutLinkName).hide();
-				} else {
-					$(countWithLinkName).hide();
-					$(countWithoutLinkName).show();
-				}
-			}
+            if (jQuery(countWithLinkName).length !== 0 && jQuery(countWithoutLinkName).length !== 0) { // function is called before these may exists, avoid js error
+
+                if (deviceCount > 0) {
+                    jQuery(countWithLinkName).show();
+                    jQuery(countWithoutLinkName).hide();
+                } else {
+                	jQuery(countWithLinkName).hide();
+                	jQuery(countWithoutLinkName).show();
+                }
+            }
         };
-	}
-	function processDevices_${id}() {
-		$('processDevices_${id}').submit();
-	}
+    }
+    function processDevices_${id}() {
+    	jQuery('#processDevices_${id}').submit();
+    }
 
 </script>
 
 <form id="processDevices_${id}" action="/common/commandRequestExecutionResults/processDevices" method="get">
-	<input type="hidden" name="commandRequestExecutionId" value="${commandRequestExecutionId}">
-	<input type="hidden" name="commandRequestExecutionUpdaterType" value="${commandRequestExecutionUpdaterType}">
+    <input type="hidden" name="commandRequestExecutionId" value="${commandRequestExecutionId}">
+    <input type="hidden" name="commandRequestExecutionUpdaterType" value="${commandRequestExecutionUpdaterType}">
 </form>
 
 <c:choose>
-	<c:when test="${commandRequestExecutionId > 0}">
-	
-		<cti:dataUpdaterCallback function="setCount_${id}()" initialize="true" deviceCount="COMMAND_REQUEST_EXECUTION/${commandRequestExecutionId}/${commandRequestExecutionUpdaterType}" />
-	
-		<div id="countWithLink_${id}" <c:if test="${not linkedInitially}">style="display:none;"</c:if>>
-		
-			<a href="javascript:void(0);" onclick="processDevices_${id}();">
-				<cti:dataUpdaterValue type="COMMAND_REQUEST_EXECUTION" identifier="${commandRequestExecutionId}/${commandRequestExecutionUpdaterType}"/>
-			</a>
-			
-		</div>
-		
-		<div id="countWithoutLink_${id}" <c:if test="${linkedInitially}">style="display:none;"</c:if>>
-			
-			<cti:dataUpdaterValue type="COMMAND_REQUEST_EXECUTION" identifier="${commandRequestExecutionId}/${commandRequestExecutionUpdaterType}"/>
-		
-		</div>
-		
-	</c:when>
-	<c:otherwise>
-		N/A
-	</c:otherwise>
+    <c:when test="${commandRequestExecutionId > 0}">
+    
+        <cti:dataUpdaterCallback function="setCount_${id}()" initialize="true" deviceCount="COMMAND_REQUEST_EXECUTION/${commandRequestExecutionId}/${commandRequestExecutionUpdaterType}" />
+    
+        <div id="countWithLink_${id}" <c:if test="${not linkedInitially}">style="display:none;"</c:if>>
+        
+            <a href="javascript:void(0);" onclick="processDevices_${id}();">
+                <cti:dataUpdaterValue type="COMMAND_REQUEST_EXECUTION" identifier="${commandRequestExecutionId}/${commandRequestExecutionUpdaterType}"/>
+            </a>
+            
+        </div>
+        
+        <div id="countWithoutLink_${id}" <c:if test="${linkedInitially}">style="display:none;"</c:if>>
+            
+            <cti:dataUpdaterValue type="COMMAND_REQUEST_EXECUTION" identifier="${commandRequestExecutionId}/${commandRequestExecutionUpdaterType}"/>
+        
+        </div>
+        
+    </c:when>
+    <c:otherwise>
+        N/A
+    </c:otherwise>
 </c:choose>

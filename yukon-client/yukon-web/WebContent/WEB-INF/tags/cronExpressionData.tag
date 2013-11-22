@@ -188,6 +188,6 @@
 
 <script type="text/javascript">
 Yukon.ui.aux.callAfterMainWindowLoad(function () {
-    cronExpFreqChange('${id}', $('${id}_cronExpFreq'));
+    cronExpFreqChange('${id}', jQuery('#' + '${id}_cronExpFreq')[0]);
 });
 </script>

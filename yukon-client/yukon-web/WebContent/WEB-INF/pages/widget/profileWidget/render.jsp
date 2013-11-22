@@ -29,10 +29,12 @@
         
         function toggleChanPopup(popupDivName) {
             
-            $(popupDivName).toggle();
+            jQuery('#' + popupDivName).toggle(200);
             
             // stop the ajax so it doesn't reload the popup as we're using it
-            if ($(popupDivName).visible()) {
+            if (jQuery('#' + popupDivName).is(':visible')) {
+                // init these datepickers each time the popup is made visible
+                Yukon.ui.dateTimePickers.init('#' + popupDivName);
                 scanningUpdater.stop();
             }
             else {
@@ -41,8 +43,8 @@
         }
         
         function doToggleScanning(channelNum, newToggleVal) {
-            $('channelNum').value = channelNum;
-            $('newToggleVal').value = newToggleVal;
+            jQuery('#' + 'channelNum').val(channelNum);
+            jQuery('#' + 'newToggleVal').val(newToggleVal);
             ${widgetParameters.jsWidget}.doDirectActionRefresh("toggleProfiling");
         }
     </script>
@@ -57,9 +59,9 @@
     <c:set var="channelScanDiv" value="${widgetParameters.widgetId}_channelScanning"/>
     <div id="${channelScanDiv}" class="stacked"></div>
     <script>
-        var refreshCmd = 'refreshChannelScanningInfo';
-        var refreshParams = {'deviceId':${deviceId}};
-        var refreshPeriod = 90;
+        var refreshCmd = 'refreshChannelScanningInfo',
+            refreshParams = {'deviceId':${deviceId}},
+            refreshPeriod = 90;
         scanningUpdater = ${widgetParameters.jsWidget}.doPeriodicRefresh(refreshCmd,
                                                                          refreshParams, refreshPeriod,
                                                                          '${channelScanDiv}');

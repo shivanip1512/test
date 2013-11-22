@@ -11,21 +11,21 @@
 <cti:uniqueIdentifier var="id" prefix="scheduledGroupRequestExecutionJobLastRunStatsTagId_"/>
 
 <script type="text/javascript">
-	function toggleViewStats_${id}() {
+	function toggleViewStats_${id} () {
 	    //assumes data is of type Hash
-		return function(data) {
-			var requestCount = data.requestCount;
-			var statsDivName = 'statsDiv_' + '${id}';
-			var noStatsDivName = 'noStatsDiv_' + '${id}';
+		return function (data) {
+			var requestCount = data.requestCount,
+			    statsDivName = '#' + 'statsDiv_' + '${id}',
+			    noStatsDivName = '#' + 'noStatsDiv_' + '${id}';
 
 			// function is called before these may exists, avoid js error
-			if ($(statsDivName) != undefined && $(noStatsDivName) != undefined) {
+			if (jQuery(statsDivName).length !== 0 && jQuery(noStatsDivName).length !== 0) {
 				if (requestCount > 0) {
-					$(statsDivName).show();
-					$(noStatsDivName).hide();
+					jQuery(statsDivName).show();
+					jQuery(noStatsDivName).hide();
 				} else {
-					$(statsDivName).hide();
-					$(noStatsDivName).show();
+					jQuery(statsDivName).hide();
+					jQuery(noStatsDivName).show();
 				}
 			}
         };

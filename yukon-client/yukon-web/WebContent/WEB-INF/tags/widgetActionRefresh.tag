@@ -40,11 +40,11 @@
             </c:otherwise>
         </c:choose>
         <script type="text/javascript">
-            $("${buttonId}").observe("click", function() {
-                var confirmText = '${cti:escapeJavaScript(pageScope.confirmText)}';
-                var confirmed = true;
-                if (confirmText != null && confirmText.strip() != '') {
-                    confirmed = confirm(confirmText);
+            jQuery('#' + '${buttonId}').on('click', function () {
+                var confirmText = '${cti:escapeJavaScript(pageScope.confirmText)}',
+                    confirmed = true;
+                if (confirmText !== null && jQuery.trim(confirmText) !== '') {
+                    confirmed = window.confirm(confirmText);
                 }
                 if (confirmed) {
                     ${widgetParameters.jsWidget}.doActionRefresh({

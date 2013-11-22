@@ -12,7 +12,7 @@
 <script type="text/javascript">
     function exportItems(formId) {
         return function() {
-            $(formId).submit();
+            jQuery('#' + formId).submit();
             return true;
         }
     }

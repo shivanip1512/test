@@ -39,8 +39,7 @@
     <tr>
         <td>
             <form:hidden id="${pageScope.id}HiddenIconInput" path="${pageScope.path}"/>
-            <select id="${pageScope.id}IconSelect"
-                onchange="${pageScope.id}.iconSelected()">
+            <select id="${pageScope.id}IconSelect">
                 <c:forEach var="icon" items="${pageScope.icons}">
                     <c:set var="selected" value=""/>
                     <c:if test="${icon == pageScope.selectedIcon}">
@@ -58,9 +57,7 @@
     </tr>
     <tr>
         <td${pageScope.iconInputAtts}>
-            <input id="${pageScope.id}IconInput" type="text" size="50"
-                onkeyup="${pageScope.id}.iconInputChanged()"
-                onblur="${pageScope.id}.iconInputChanged()"/>
+            <input id="${pageScope.id}IconInput" type="text" size="50"/>
         </td>
     </tr>
 </table>
@@ -69,15 +66,14 @@
 </c:if>
 
 <script type="text/javascript">
-${pageScope.id} = new IconChooser('${pageScope.id}', '${pageScope.baseDir}');
-${pageScope.id}.iconFilenames = {
-    <c:forEach var="icon" varStatus="status" items="${pageScope.icons}">
-        '${icon}' : '${icon.filename}'<c:if test="${!status.last}">,</c:if>
-    </c:forEach>
-};
-
-$('${pageScope.id}IconInput').value = $('${pageScope.id}HiddenIconInput').value;
-${pageScope.id}.iconSelected();
+jQuery( function () {
+    Yukon.ui.iconChooser.init('${pageScope.id}', '${pageScope.baseDir}',
+        {
+            <c:forEach var="icon" varStatus="status" items="${pageScope.icons}">
+                '${icon}' : '${icon.filename}'<c:if test="${!status.last}">,</c:if>
+            </c:forEach>
+        });
+})
 </script>
 
 </spring:bind>

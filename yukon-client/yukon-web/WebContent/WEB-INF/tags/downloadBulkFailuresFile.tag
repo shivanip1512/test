@@ -7,7 +7,7 @@
 
 <script>
     function submitForm(id) {
-        $(id).submit();
+        jQuery('#' + id).submit();
     }
 </script>
 

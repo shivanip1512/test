@@ -7,11 +7,11 @@
 
 <script type="text/javascript">
 function dropDownChanged(questionKey) {
-    var textAnswerArea = $('textAnswerArea_' + questionKey);
-    if ($('selectAnswer_' + questionKey).value == 'other') {
-        $('textAnswerArea_' + questionKey).show();
+    var textAnswerArea = jQuery('#textAnswerArea_' + questionKey);
+    if (jQuery('#selectAnswer_' + questionKey).val() === 'other') {
+        textAnswerArea.show();
     } else {
-        $('textAnswerArea_' + questionKey).hide();
+        textAnswerArea.hide();
     }
 }
 </script>

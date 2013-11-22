@@ -7,19 +7,20 @@ function JsWidgetObject (shortName, parameters) {
     this.parameters = parameters;
     this.container = "widget-container-" + this.parameters.widgetId;
     this.linkInfo = {};
+    // to identify the periodicRefresh objects that have been created
+    this.contextId = 0;
 
     this.render = function () {
-        var url = "/widget/" + this.shortName + "/render";
-        var params = this.getWidgetParameters();
-        var _self = this;
+        var url = "/widget/" + this.shortName + "/render",
+           params = this.getWidgetParameters(),
+           _self = this;
 
         jQuery.ajax({
             url : url,
-            data : params,
-            success : function (data, status, xhr) {
-                _self.onSuccess(xhr);
-                jQuery(document.getElementById(_self.container)).html(data);
-            }
+            data : params
+        }).done (function (data, status, xhr) {
+            _self.onSuccess(xhr);
+            jQuery(document.getElementById(_self.container)).html(data);
         });
     };
 
@@ -35,80 +36,109 @@ function JsWidgetObject (shortName, parameters) {
         this.linkInfo = {};
     };
 
-    this.doDirectActionRefresh = function (cmd) {
-        $(this.container).getElementsBySelector('input').invoke('disable');
+    this.periodicRefresh = function (opts, context) {
+        var nthIteration = 0,
+            timeoutId = 0,
+            doRefresh = function () {
+                nthIteration += 1;
+                jQuery.ajax({
+                    url : opts.url,
+                    type : 'GET',
+                    data : opts.params
+                }).done(function (data, status, xhr) {
+                    if ('undefined' !== typeof data && null !== data) {
+                        jQuery('#' + opts.container).html(data);
+                    }
+                    context.parameters = Yukon.ui.aux.getHeaderJSON(xhr);
+                    context.linkInfo = {};
+                }).always(function (data, status, xhr) {
+                    timeoutId = setTimeout(doRefresh, opts.frequency * 1000);
+                });
+            };
+        this.stop = function () {
+            clearTimeout(timeoutId);
+            return this;
+        };
+        this.start = function () {
+            return this;
+        };
+        context.contextId += 1;
+        doRefresh ();
+        return this;
+    };
 
-        var url = "/widget/" + this.shortName + "/" + cmd;
-        var params = this.getWidgetParameters();
-        var _self = this;
+    this.doDirectActionRefresh = function (cmd) {
+        jQuery('#' + this.container + ' input').prop('disabled', true);
+
+        var url = "/widget/" + this.shortName + "/" + cmd,
+            params = this.getWidgetParameters(),
+            _self = this;
 
         jQuery.ajax({
             url : url,
-            data : params,
-            success : function (data, status, xhr) {
-                _self.onSuccess(xhr);
-                jQuery(document.getElementById(_self.container)).html(data);
-            }
+            data : params
+        }).done( function (data, status, xhr) {
+            _self.onSuccess(xhr);
+            jQuery(document.getElementById(_self.container)).html(data);
         });
     };
 
     this.doDirectActionContainerRefresh = function (cmd, container) {
-        $(container).getElementsBySelector('input, button').invoke('disable');
+       jQuery('#' + this.container + ' input, button').prop('disabled', true);
 
-        var url = "/widget/" + this.shortName + "/" + cmd;
-        var params = this.getWidgetParameters();
-        var _self = this;
+        var url = "/widget/" + this.shortName + "/" + cmd,
+            params = this.getWidgetParameters(),
+            _self = this;
 
         jQuery.ajax({
             url : url,
-            data : params,
-            success : function (data, status, xhr) {
-                _self.onSuccess(xhr);
-                jQuery(document.getElementById(container)).html(data);
-            }
+            data : params
+        }).done( function (data, status, xhr) {
+            _self.onSuccess(xhr);
+            jQuery(document.getElementById(container)).html(data);
         });
     };
 
-    /**
+  /**
    * args = {
    *    command = string final path for the url
    *    buttonID = string containing the ID of the button
    *    waitingText = text that will be placed on the button while the ajax call is in progress
    *    key = 
    * }
-     */
+   */
     this.doActionRefresh = function (args) {
-        var defaultButtonText = $(args.buttonID).down('span').innerHTML;
-        $(args.buttonID).down('span').innerHTML = args.waitingText;
-        $(args.buttonID).getElementsBySelector('.widgetAction_waiting').invoke('show');
-        var container = this.container;
+        var defaultButtonText = jQuery(jQuery('#' + args.buttonID + ' span')[0]).html(),
+            container = this.container,
+            _self = this,
+            localSuccess = function (xhr) {
+                jQuery(jQuery('#' + args.buttonID + ' span')[0]).html(defaultButtonText);
+                jQuery('#' + args.buttonID + ' .widgetAction_waiting').hide();
+                if (args.disableInputs == null || args.disableInputs == true) {
+                    jQuery('#' + container + ' input').prop('disabled', false);
+                    jQuery('#' + container + ' button').prop('disabled', false);
+                }
+                _self.onSuccess(xhr);
+            },
+            oldParams,
+            url;
+        jQuery(jQuery('#' + args.buttonID + ' span')[0]).html(args.waitingText);
+        jQuery('#' + args.buttonID + ' .widgetAction_waiting').show();
         if (args.disableInputs == null || args.disableInputs == true) {
-            $(container).getElementsBySelector('input').invoke('disable');
-            $(container).getElementsBySelector('button').invoke('disable');
+            jQuery('#' + 'container' + ' input').prop('disabled', true);
+            jQuery('#' + 'container' + ' button').prop('disabled', true);
         }
 
-        var _self = this;
-        var localSuccess = function (xhr) {
-            $(args.buttonID).down('span').innerHTML = defaultButtonText;
-            $(args.buttonID).getElementsBySelector('.widgetAction_waiting').invoke('hide');
-            if (args.disableInputs == null || args.disableInputs == true) {
-                $(container).getElementsBySelector('input').invoke('enable');
-                $(container).getElementsBySelector('button').invoke('enable');
-            }
-            _self.onSuccess(xhr);
-        }
+        oldParams = jQuery.extend(true, this.getWidgetParameters(), this.linkInfo[args.key]);
 
-        var oldParams = jQuery.extend(true, this.getWidgetParameters(), this.linkInfo[args.key]);
-
-        var url = "/widget/" + this.shortName + "/" + args.command;
+        url = "/widget/" + this.shortName + "/" + args.command;
 
         jQuery.ajax({
             url : url,
-            data : oldParams,
-            success : function (data, status, xhr) {
-                localSuccess(xhr);
-                jQuery(document.getElementById(_self.container)).html(data);
-            }
+            data : oldParams
+        }).done( function (data, status, xhr) {
+            localSuccess(xhr);
+            jQuery(document.getElementById(_self.container)).html(data);
         });
     };
 
@@ -132,8 +162,10 @@ function JsWidgetObject (shortName, parameters) {
                     jQuery('#' + args.buttonID).find('span').text(defaultButtonText);
                 }
                 jQuery('#' + args.buttonID).find('.widgetAction_waiting').hide();
-                jQuery('#' + container).find('button').removeAttr('disabled');
-            };
+                jQuery('#' + container).find('button').prop('disabled', true);
+            },
+            oldParams,
+            url;
         if (args.buttonID) {
             if (waitingTextLocationSpecified) {
                 jQuery(args.waitingTextLocation).text(args.waitingText);
@@ -143,12 +175,12 @@ function JsWidgetObject (shortName, parameters) {
                 jQuery('#' + args.buttonID).find('span').text(args.waitingText);
             }
             jQuery('#' + args.buttonID).find('.widgetAction_waiting').show();
-            jQuery('#' + container).find('button').attr('disabled', 'disabled');
+            jQuery('#' + container).find('button').prop('disabled', true);
         }
 
-        var oldParams = jQuery.extend(true, this.getWidgetParameters(), this.linkInfo[args.key], args.extraParameters);
+        oldParams = jQuery.extend(true, this.getWidgetParameters(), this.linkInfo[args.key], args.extraParameters);
 
-        var url = "/widget/" + this.shortName + "/" + args.command;
+        url = "/widget/" + this.shortName + "/" + args.command;
 
         jQuery.ajax({
             url : url,
@@ -171,93 +203,90 @@ function JsWidgetObject (shortName, parameters) {
     };
 
     this.doActionLinkRefresh = function (cmd, actionSpan, waitingLabel, key, container) {
-        $(actionSpan).getElementsBySelector('.actionLinkAnchor').invoke('hide');
-        $(actionSpan).getElementsBySelector('.widgetAction_waiting').invoke('show');
-        $(actionSpan).getElementsBySelector('span').innerHTML = waitingLabel;
-        $(this.container).getElementsBySelector('input').invoke('disable');
+        var oldParams,
+            url,
+            useContainer,
+            _self = this;
+        jQuery('#' + actionSpan + ' .actionLinkAnchor').hide();
+        jQuery('#' + actionSpan + ' .widgetAction_waiting').show();
+        jQuery('#' + actionSpan + ' span').html(waitingLabel);
+        jQuery('#' + this.container + ' input').prop('disabled', true);
 
-        var oldParams = jQuery.extend(true, this.getWidgetParameters(), this.linkInfo[key]);
+        oldParams = jQuery.extend(true, this.getWidgetParameters(), this.linkInfo[key]);
 
-        var url = "/widget/" + this.shortName + "/" + cmd;
+        url = "/widget/" + this.shortName + "/" + cmd;
 
-        var useContainer = container;
-        if (container == undefined || container == '') {
+        useContainer = container;
+        if (typeof container === 'undefined' || container === '') {
             useContainer = this.container;
         }
 
-        var _self = this;
         jQuery.ajax({
             url : url,
-            data : oldParams,
-            success : function (data, status, xhr) {
-                _self.onSuccess(xhr);
-                jQuery(document.getElementById(useContainer)).html(data);
-            },
-            complete : function () {
+            data : oldParams
+        }).done( function (data, status, xhr) {
+            _self.onSuccess(xhr);
+            jQuery(document.getElementById(useContainer)).html(data);
+        }).always( function () {
                 jQuery("#" + actionSpan + " .actionLinkAnchor").show();
-            }
         });
-
-        $(this.container).getElementsBySelector('input').invoke('enable');
+        jQuery('#' + this.container + ' input').prop('disabled', false);
     };
 
     this.doPeriodicRefresh = function (cmd, newParams, period, container) {
-        var containerToUse = container;
-        if (container == undefined || container == '') {
+        var containerToUse = container,
+            oldParams,
+            url;
+        if (typeof container === 'undefined' || container === '') {
             containerToUse = this.container;
         }
-        var oldParams = jQuery.extend(true, this.getWidgetParameters(), newParams);
+        oldParams = jQuery.extend(true, this.getWidgetParameters(), newParams);
 
-        var url = "/widget/" + this.shortName + "/" + cmd;
-        return new Ajax.PeriodicalUpdater(containerToUse, url, {'parameters': oldParams, 'evalScripts': true, 'onSuccess': this.onSuccessPeriodic.bind(this), 'frequency': period});
+        url = "/widget/" + this.shortName + "/" + cmd;
+        return new this.periodicRefresh({'container' : containerToUse, 'url' : url, 'params' : oldParams, 'frequency' : period}, this);
     };
 
     /**
      * @returns {Hash}
      */
     this.getWidgetParameters = function () {
-        var container = $(this.container);
-        var theseParameters = {};
+        var container = jQuery('#' + this.container)[0],
+            theseParameters = {},
+            widgetInputs,
+            i,
+            el,
+            mergedParameters;
 
         // now find all inputs under the container
-        var widgetInputs = container.getElementsByTagName('input');
-        for (var i = 0; i < widgetInputs.length; i += 1) {
-            var el = $(widgetInputs[i]);
+        widgetInputs = container.getElementsByTagName('input');
+        for (i = 0; i < widgetInputs.length; i += 1) {
+            el = widgetInputs[i];
             if (el.name) {
                 if (el.type != 'radio') {
-                    theseParameters[el.name] = $F(el);
+                    theseParameters[el.name] = jQuery(el).val();
                 } else {
                     if (el.checked) {
-                        theseParameters[el.name] = $F(el);
+                        theseParameters[el.name] = jQuery(el).val();
                     }
                 }
             }
         }
-        var widgetInputs = container.getElementsByTagName('select');
-        for (var i = 0; i < widgetInputs.length; i += 1) {
-            var el = $(widgetInputs[i]);
+        widgetInputs = container.getElementsByTagName('select');
+        for (i = 0; i < widgetInputs.length; i += 1) {
+            el = widgetInputs[i];
             if (el.name) {
-                theseParameters[el.name] = $F(el);
+                theseParameters[el.name] = jQuery(el).val();
             }
         }
-        var widgetInputs = container.getElementsByTagName('textarea');
-        for (var i = 0; i < widgetInputs.length; i += 1) {
-            var el = $(widgetInputs[i]);
+        widgetInputs = container.getElementsByTagName('textarea');
+        for (i = 0; i < widgetInputs.length; i += 1) {
+            el = widgetInputs[i];
             if (el.name) {
-                theseParameters[el.name] = $F(el);
+                theseParameters[el.name] = jQuery(el).val();
             }
         }
 
-        var mergedParameters = jQuery.extend(true, this.parameters, theseParameters);
+        mergedParameters = jQuery.extend(true, this.parameters, theseParameters);
         return mergedParameters;
     };
-
-    this.doActionPopup = function (cmd, actionSpan, key, dialogId, width, height) {
-        var oldParams = jQuery.extend(true, this.getWidgetParameters(), this.linkInfo[key]);
-
-        var url = "/widget/" + this.shortName + "/" + cmd;
-
-        openSimpleDialog(dialogId, url, key, oldParams, width, height); // this must be broken
-    };
-
 }

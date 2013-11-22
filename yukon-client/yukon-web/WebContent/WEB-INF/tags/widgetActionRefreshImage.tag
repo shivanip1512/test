@@ -27,12 +27,12 @@
 <script type="text/javascript">
     ${widgetParameters.jsWidget}.setupLink('${uniqueId}', ${cti:jsonString(pageScope.linkParameters)});
 
-    widgetActionRefreshImageConfirm_${uniqueId} = function() {
+    widgetActionRefreshImageConfirm_${uniqueId} = function () {
 
-        var confirmText = '${cti:escapeJavaScript(pageScope.confirmText)}';
-        var confirmed = true;
-        if (confirmText != null && confirmText.strip() != '') {
-            var confirmed = confirm(confirmText);
+        var confirmText = '${cti:escapeJavaScript(pageScope.confirmText)}',
+            confirmed = true;
+        if (confirmText !== null && jQuery.trim(confirmText) !== '') {
+            confirmed = window.confirm(confirmText);
         }
         // generate mouseleave event so tipsy tooltip lib knows to close tooltip
         jQuery('#' + 'linkImg_' + '${uniqueId}').trigger('mouseleave');

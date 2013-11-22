@@ -1,53 +1,86 @@
-IconChooser = Class.create();
-
-IconChooser.prototype = {
-	initialize: function(iconId, baseDir) {
-		this.iconId = iconId;
-		this.baseDir = baseDir;
-		this.timeout = false;
-
-		this.iconInput = $(this.iconId + 'IconInput');
-		this.hiddenIconInput = $(this.iconId + 'HiddenIconInput');
-		this.iconPreviewImg = $(this.iconId + 'IconPreviewImg');
-	},
-
-	iconSelected: function() {
-		var selected = $(this.iconId + 'IconSelect').value;
-		if (selected == 'OTHER') {
-			this.iconInput.enable();
-			this.iconPreviewImg.src = this.baseDir + this.iconInput.value;
-			this.hiddenIconInput.value = this.iconInput.value;
-			this.iconPreviewImg.show();
-	        this.iconInput.focus();
-		} else {
-			this.iconInput.disable();
-			if (selected == 'NONE') {
-				this.iconPreviewImg.hide();
-				this.hiddenIconInput.value = '';
-			} else {
-				this.iconPreviewImg.src =
-					this.baseDir + this.iconFilenames[selected];
-				this.iconPreviewImg.show();
-				this.hiddenIconInput.value = this.iconFilenames[selected];
-			}
-		}
-	},
-
-	iconInputChanged: function() {
-		var that = this;
-		updatePreview = function() {
-			that.timeout[that.iconId] = false;
-			that.hiddenIconInput.value = that.iconInput.value;
-			that.iconPreviewImg.src = that.baseDir + that.iconInput.value;
-		}
-
-		if (this.iconPreviewImg.src.endsWith(this.baseDir + this.iconInput.value)) {
-			return;
-		}
-		if (this.timeout) {
-			clearTimeout(this.timeout);
-		}
-		var quietDelay = 300;
-		this.timeout = setTimeout(updatePreview, quietDelay);
-	}
-}
+Yukon.namespace('Yukon.ui.iconChooser');
+Yukon.ui.iconChooser = (function () {
+    var uiIcon,
+        _iconFilenames = function (id, fileNames) {
+            jQuery('#' + id + 'IconInput').data(id + 'data', fileNames);
+        },
+        _initSelected = function (id, selected) {
+            var iconInput,
+                iconInputVal;
+            iconInput = jQuery('#' + id + 'IconInput');
+            if (selected === 'OTHER') {
+                iconInput.prop('disabled', false);
+                iconInputVal = iconInput.val();
+                jQuery('#' + id + 'IconPreviewImg').attr('src', jQuery('#' + id + 'IconInput').data(id + 'baseDir') + iconInputVal);
+                jQuery('#' + id + 'HiddenIconInput').val(iconInputVal);
+                jQuery('#' + id + 'IconPreviewImg').show();
+                iconInput.focus();
+            } else {
+                iconInput.prop('disabled', true);
+                if (selected === 'NONE') {
+                    jQuery('#' + id + 'IconPreviewImg').hide();
+                    jQuery('#' + id + 'HiddenIconInput').val('');
+                } else {
+                    iconInput.val(iconInput.data(id + 'data')[selected]);
+                    jQuery('#' + id + 'IconPreviewImg').attr('src',
+                        iconInput.data(id + 'baseDir') +
+                        iconInput.data(id + 'data')[selected]);
+                    jQuery('#' + id + 'IconPreviewImg').show();
+                    jQuery('#' + id + 'HiddenIconInput').val(iconInput.data(id + 'data')[selected]);
+                }
+            }
+        },
+        _initEventListeners = function (id) {
+            jQuery('#' + id + 'IconSelect').on('keyup', function (event) {
+                uiIcon.iconInputChanged(id);
+            });
+            jQuery('#' + id + 'IconSelect').on('blur', function (event) {
+                uiIcon.iconInputChanged(id);
+            });
+            jQuery('#' + id + 'IconSelect').on('change', function (event) {
+                var selected = jQuery('#' + id + 'IconSelect').val();
+                _initSelected(id, selected);
+            });
+        };
+    uiIcon = {
+        init : function (id, baseDir, fileNames) {
+            var elemObj = jQuery('#' + id + 'IconInput');
+            elemObj.data('timeout', false);
+            elemObj.data(id + 'baseDir', baseDir);
+            _iconFilenames(id, fileNames);
+            elemObj.val(jQuery('#' + id + 'HiddenIconInput').val());
+            _initEventListeners(id);
+            _initSelected(id, jQuery('#' + id + 'IconSelect').val());
+        },
+        iconInputChanged : function (id) {
+            var iconInput = jQuery('#' + id + 'IconInput'),
+                baseDir = iconInput.data(id + 'baseDir'),
+                srcString = baseDir + iconInput.val(),
+                updatePreview = function () {
+                    iconInput.data('timeout', false);
+                    jQuery('#' + id + 'HiddenIconInput').val(iconInput.val());
+                    jQuery('#' + id + 'IconPreviewImg').attr('src', baseDir + iconInput.val());
+                },
+                quietDelay,
+                previewImgSrcAttr = jQuery('#' + id + 'IconPreviewImg').attr('src'),
+                lenPreviewImgSrc,
+                lenSrcString,
+                position;
+            lenPreviewImgSrc = ('undefined' === typeof previewImgSrcAttr ? 0 : previewImgSrcAttr.length);
+            lenSrcString = srcString.length;
+            if ('undefined' !== typeof previewImgSrcAttr) {
+                position = previewImgSrcAttr.indexOf(srcString);
+                // if previewImgSrcAttr ends with srcString...
+                if (-1 !== position && (lenPreviewImgSrc - lenSrcString) === position) {
+                    return;
+                }
+            }
+            if (iconInput.data('timeout')) {
+                clearTimeout(iconInput.data('timeout'));
+            }
+            quietDelay = 300;
+            iconInput.data('timeout', setTimeout(updatePreview, quietDelay));
+        }
+    };
+    return uiIcon;
+})();
