@@ -1,6 +1,5 @@
 package com.cannontech.web.admin.theme;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -132,7 +131,7 @@ public class ThemeController {
                          YukonUserContext context,
                          @ModelAttribute("command") Theme theme,
                          BindingResult result,
-                         FlashScope flash) throws IOException {
+                         FlashScope flash) throws Exception {
         
         validator.validate(theme, result);
         if (result.hasErrors()) {
@@ -160,7 +159,7 @@ public class ThemeController {
     }
     
     @RequestMapping(value="/config/themes/{id}/use", method=RequestMethod.GET)
-    public String use(ModelMap model, YukonUserContext context, @PathVariable int id) throws IOException {
+    public String use(ModelMap model, YukonUserContext context, @PathVariable int id) throws Exception {
         
         themeDao.setCurrentTheme(id);
         themeableResourceCache.reloadAll();

@@ -326,7 +326,7 @@ Yukon.modules.ui = function (mod) {
         });
         jQuery(document).on('click', '[data-reload]', function(event) {
             var elem = jQuery(event.currentTarget),
-            url = elem.data('load'),
+            url = elem.data('reload'),
             target = elem.closest('[data-reloadable]'),
             completeEvent = target.data('loadable');
             

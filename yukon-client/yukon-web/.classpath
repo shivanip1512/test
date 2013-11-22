@@ -74,6 +74,11 @@
             <attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
         </attributes>
     </classpathentry>
+    <classpathentry kind="lib" path="/third-party/lesscss-engine-1.4.2.jar">
+        <attributes>
+            <attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
+        </attributes>
+    </classpathentry>
     <classpathentry kind="lib" path="/third-party/wro4j-core-1.6.3.jar">
         <attributes>
             <attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>

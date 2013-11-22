@@ -1,8 +1,5 @@
 package com.cannontech.web.common.resources;
 
-import java.io.IOException;
-import java.util.concurrent.ExecutionException;
-
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +12,7 @@ public class ThemeableResourceController {
     @Autowired ThemeableResourceCache cache;
 
     @RequestMapping("/WebConfig/yukon/styles/layout.css")
-    public void layout(HttpServletResponse resp) throws ExecutionException, IOException {
+    public void layout(HttpServletResponse resp) throws Exception {
         
         String css = cache.getResource(ThemeableResource.LAYOUT_CSS).getValue();
         resp.setContentType("text/css");
@@ -25,7 +22,7 @@ public class ThemeableResourceController {
     }
     
     @RequestMapping("/WebConfig/yukon/styles/yukon.css")
-    public void yukon(HttpServletResponse resp) throws ExecutionException, IOException {
+    public void yukon(HttpServletResponse resp) throws Exception {
         
         String css = cache.getResource(ThemeableResource.YUKON_CSS).getValue();
         resp.setContentType("text/css");
@@ -35,7 +32,7 @@ public class ThemeableResourceController {
     }
     
     @RequestMapping("/WebConfig/yukon/styles/yukon.default.css")
-    public void yukonDefault(HttpServletResponse resp) throws ExecutionException, IOException {
+    public void yukonDefault(HttpServletResponse resp) throws Exception {
         
         String css = cache.getResource(ThemeableResource.YUKON_DEFAULT_CSS).getValue();
         resp.setContentType("text/css");
@@ -45,7 +42,7 @@ public class ThemeableResourceController {
     }
     
     @RequestMapping("/WebConfig/yukon/styles/buttons.css")
-    public void buttons(HttpServletResponse resp) throws ExecutionException, IOException {
+    public void buttons(HttpServletResponse resp) throws Exception {
         
         String css = cache.getResource(ThemeableResource.BUTTONS_CSS).getValue();
         resp.setContentType("text/css");
@@ -55,7 +52,7 @@ public class ThemeableResourceController {
     }
     
     @RequestMapping("/WebConfig/yukon/styles/buttons.default.css")
-    public void buttonsDefault(HttpServletResponse resp) throws ExecutionException, IOException {
+    public void buttonsDefault(HttpServletResponse resp) throws Exception {
         
         String css = cache.getResource(ThemeableResource.BUTTONS_DEFAULT_CSS).getValue();
         resp.setContentType("text/css");
@@ -65,7 +62,7 @@ public class ThemeableResourceController {
     }
     
     @RequestMapping("/WebConfig/yukon/styles/overrides.css")
-    public void overrides(HttpServletResponse resp) throws ExecutionException, IOException {
+    public void overrides(HttpServletResponse resp) throws Exception {
         
         String css = cache.getResource(ThemeableResource.OVERRIDES_CSS).getValue();
         resp.setContentType("text/css");
