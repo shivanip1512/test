@@ -252,7 +252,7 @@
         </configuration>
     </pao>
     
-    <pao id="MCT_420_CONFIGURATION" abstract="true" inherits="CENTRON_DISPLAY_CONFIGURATION">
+    <pao id="MCT_420_CONFIGURATION" abstract="true" inherits="SUPPORTS_DEVICE_CONFIGURATION">
         <configuration>
             <category type="meterParameters"/>
         </configuration>
@@ -1591,7 +1591,7 @@
     <pao id="MCT420FD" inherits="MCT_420_BASE, SUPPORTS_INTEGRATED_DISCONNECT_CONFIG">
         <displayName>MCT-420fD</displayName>
     </pao>
-    <pao id="MCT420CL" inherits="MCT_420_BASE"> <!-- This doesn't support a disconnect collar either -->
+    <pao id="MCT420CL" inherits="MCT_420_BASE, CENTRON_DISPLAY_CONFIGURATION"> <!-- This doesn't support a disconnect collar either -->
         <displayName>MCT-420cL</displayName>
         <tags>
             <tag name="DLC_ADDRESS_RANGE">
@@ -1600,7 +1600,7 @@
             </tag>
         </tags>
     </pao>
-    <pao id="MCT420CD" inherits="MCT_420_BASE, SUPPORTS_INTEGRATED_DISCONNECT_CONFIG">
+    <pao id="MCT420CD" inherits="MCT_420_BASE, SUPPORTS_INTEGRATED_DISCONNECT_CONFIG, CENTRON_DISPLAY_CONFIGURATION">
         <displayName>MCT-420cD</displayName>
     </pao>
 
