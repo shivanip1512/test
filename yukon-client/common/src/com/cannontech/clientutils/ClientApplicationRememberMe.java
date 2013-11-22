@@ -1,7 +1,5 @@
 package com.cannontech.clientutils;
 
-import org.apache.commons.lang.StringUtils;
-
 import com.cannontech.common.i18n.DisplayableEnum;
 
 /**
@@ -23,6 +21,10 @@ public enum ClientApplicationRememberMe implements DisplayableEnum {
      * Otherwise returns 'NONE'
      */
     public static ClientApplicationRememberMe fromString(String rememberMeSetting) {
-        return ClientApplicationRememberMe.valueOf(rememberMeSetting);
+        try {
+            return ClientApplicationRememberMe.valueOf(rememberMeSetting);
+        } catch (IllegalArgumentException | NullPointerException e) {
+            return ClientApplicationRememberMe.NONE;
+        }
     }
 }
