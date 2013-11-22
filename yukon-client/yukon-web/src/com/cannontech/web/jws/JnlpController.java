@@ -118,8 +118,8 @@ public class JnlpController extends JnlpControllerBase {
         Element rememberMeSettingPropElem = new Element("property");
         ClientApplicationRememberMe rememberMeSetting = 
                 globalSettingDao.getEnum(GlobalSettingType.CLIENT_APPLICATIONS_REMEMBER_ME, ClientApplicationRememberMe.class);
-        hostPropElem.setAttribute("name", "jnlp.yukon.rememberMe");
-        hostPropElem.setAttribute("value", rememberMeSetting.name());
+        rememberMeSettingPropElem.setAttribute("name", "jnlp.yukon.rememberMe");
+        rememberMeSettingPropElem.setAttribute("value", rememberMeSetting.name());
         resourcesElem.addContent(rememberMeSettingPropElem);
         
         Element appElem = new Element("application-desc");
