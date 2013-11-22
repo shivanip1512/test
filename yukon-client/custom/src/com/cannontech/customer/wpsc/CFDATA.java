@@ -6,10 +6,17 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.pao.PaoCategory;
+import com.cannontech.common.pao.PaoClass;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.FileInterface;
 import com.cannontech.common.util.LogWriter;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.message.porter.message.Request;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IServerConnection;
 import com.cannontech.yukon.conns.ConnPool;
 
@@ -21,8 +28,27 @@ import com.cannontech.yukon.conns.ConnPool;
  */
 public class CFDATA extends FileInterface {
 
-    public CFDATA(String dirToWatch, String fileExt) {
+	// Confirmed 254 is NOT a program address used by WPS.
+	private int defaultXcomProgramAddr = 254;		// must be a number between 1-254 that is NOT a valid programming assignment.
+    private YukonPao vComRoute;
+    private YukonPao xComRoute;
+
+    public CFDATA(String dirToWatch, String fileExt, String vComRouteName, String xComRouteName, int xComProgAddr) {
         super(dirToWatch, fileExt);
+        PaoDao paoDao = YukonSpringHook.getBean(PaoDao.class);
+        if (StringUtils.isNotBlank(vComRouteName)) {
+        	vComRoute = paoDao.findYukonPao(vComRouteName, PaoCategory.ROUTE, PaoClass.ROUTE);
+        	if (vComRoute != null) {
+        		CTILogger.info("Using non-default versacom route: " + vComRouteName);
+        	}
+        }
+        if (StringUtils.isNotBlank(xComRouteName)) {
+        	xComRoute = paoDao.findYukonPao(xComRouteName, PaoCategory.ROUTE, PaoClass.ROUTE);
+        	if (xComRoute != null) {
+        		CTILogger.info("Using non-default expressCom route: " + xComRouteName);
+        	}
+        }
+        defaultXcomProgramAddr = xComProgAddr; 
     }
 
     /**
@@ -156,20 +182,34 @@ public class CFDATA extends FileInterface {
         tok.nextToken();    //ignore utility address
         tok.nextToken();    //ignore division
         tok.nextToken();    //ignore district
-        
+
+        // if relay is 0, need to change to a non-zero value that is NOT a valid program value (see getProgramAddress).
         int relay = Integer.valueOf(tok.nextToken());   //relay 1
-        buf.append(" assign p ").append(relay);
+        buf.append(" target assign p ").append(getProgramAddress(relay));
         
         relay = Integer.valueOf(tok.nextToken());       //relay 2
-        buf.append(", ").append(relay);
+        buf.append(", ").append(getProgramAddress(relay));
         
         relay = Integer.valueOf(tok.nextToken());   //relay 3
-        buf.append(", ").append(relay);
+        buf.append(", ").append(getProgramAddress(relay));
         
         buf.append(" load 1, 2, 3");
         
         tok.nextToken();    //ignore whatever this last value is
         return buf.toString();
+    }
+    
+    /**
+     * Returns modified program address. 
+     * If a < 1 or > 254 is provided, then convert to default value.
+     * Else return original value.
+     */
+    
+    private int getProgramAddress(int programAddr) {
+    	if (programAddr <= 0 || programAddr > 254) {
+    		return defaultXcomProgramAddr;
+    	}
+    	return programAddr;
     }
 
     @Override
@@ -180,15 +220,23 @@ public class CFDATA extends FileInterface {
             BufferedReader rdr = new BufferedReader(new InputStreamReader(in));
 
             String str;
+            int routeId = 0;	//default Request routeId
+            
             CTILogger.info("Begin Processing CFDATA file...");
             WPSCMain.logMessage("Begin Processing CFDATA Files", LogWriter.INFO);
             while ((str = rdr.readLine()) != null) {
                 String decoded = decodeLine(str);
+                if (StringUtils.containsIgnoreCase("xcom ", decoded)) {
+                	routeId = xComRoute.getPaoIdentifier().getPaoId();
+                } else { 
+                	routeId = vComRoute.getPaoIdentifier().getPaoId();
+                }
 
                 if (decoded != null) {
                     CTILogger.info("CFDATA: " + decoded);
                     WPSCMain.logMessage(" ** CFDATA:  " + decoded, LogWriter.DEBUG);
                     Request req = new Request(0, decoded, 1L);
+                    req.setRouteID(routeId);
                     porterConn.write(req);
                     countSent++;
                     Thread.sleep(500);

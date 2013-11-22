@@ -1,6 +1,7 @@
 package com.cannontech.customer.wpsc;
 
 import java.io.FileOutputStream;
+
 import java.io.PrintWriter;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -25,16 +26,15 @@ import com.cannontech.yukon.conns.ConnPool;
  */
 public class WPSCMain implements Runnable {
     public static boolean isService = true;
-    private final String VERSION = "2.1.12";
     static boolean DEBUG = true;
 
     private DispatchClientConnection dispatchConn = null;
 
-    private CFDATA CFDATAInstance = null;
-    private LDCNTSUM LDCNTSUMInstance = null;
+    private CFDATA customFileDataInstance = null;
+    private LDCNTSUM loadContSumInstance = null;
 
-    private static Thread CFDATAThread = null;
-    private static Thread LDCNTSUMThread = null;
+    private static Thread customFileDataThread = null;
+    private static Thread loadContSumThread = null;
 
     public static LogWriter logger = null;
     private GregorianCalendar now = null;
@@ -65,16 +65,10 @@ public class WPSCMain implements Runnable {
         }
     }
 
-    public WPSCMain(String CFDATADir, String CFDATAFileExt, long CFDATACheckFreq, String outputFile) {
-        super();
-
+    public WPSCMain() {
+    	super();
         dispatchConn = (DispatchClientConnection) ConnPool.getInstance().getDefDispatchConn();
         dispatchConn.setQueueMessages(true);
-
-        CFDATAInstance = new CFDATA(CFDATADir, CFDATAFileExt);
-        CFDATAInstance.setCheckFrequency(CFDATACheckFreq);
-
-        LDCNTSUMInstance = new LDCNTSUM(dispatchConn, outputFile);
     }
 
     /**
@@ -99,8 +93,8 @@ public class WPSCMain implements Runnable {
                     String filename = dataDir + logFilename + currentDate + ".log";
                     FileOutputStream out = new FileOutputStream(filename);
                     PrintWriter writer = new PrintWriter(out, true);
-                    logger = new LogWriter("WPCSCustom", LogWriter.DEBUG, writer);
-                    logger.log("VERSION: " + VERSION + "   Starting up....", LogWriter.INFO);
+                    logger = new LogWriter("WPSCustom", LogWriter.DEBUG, writer);
+                    logger.log("WPS Custom Starting up....", LogWriter.INFO);
                 } catch (java.io.FileNotFoundException e) {
                     e.printStackTrace();
                 }
@@ -122,9 +116,13 @@ public class WPSCMain implements Runnable {
     public static void main(String[] args) {
         System.setProperty("cti.app.name", "Custom");
 
-        String CFDATADir;
-        String CFDATAFileExt;
-        long CFDATACheckFreq;
+        String cfDataDir;
+        String cfDataFileExt;
+        long cfDataCheckFreq;
+        String vComRoute = null;
+        String xComRoute = null;
+        int xComProgAddr = 254;	//value 1=254 that is NOT a valid program address for WPS
+        
         String LDCNTSUMOutputFile;
 
         // Arguments were specified, override defaults
@@ -133,25 +131,33 @@ public class WPSCMain implements Runnable {
             // Usage:  WPSCMain DispatchHost DispatchPort PorterHost PorterPort CFDATADir CFDATAFileExt CFDataCheckFreq LDCNTSUMOutputFile
 
             // no need to load index 0 - 3 anymore 
-            CFDATADir = args[4];
-            CFDATAFileExt = args[5];
-            CFDATACheckFreq = Integer.parseInt(args[6]);
+            cfDataDir = args[4];
+            cfDataFileExt = args[5];
+            cfDataCheckFreq = Integer.parseInt(args[6]);
 
             LDCNTSUMOutputFile = args[7];
-        } else if (args.length == 4) {
-            CFDATADir = args[0];
-            CFDATAFileExt = args[1];
-            CFDATACheckFreq = Integer.parseInt(args[2]);
-
-            LDCNTSUMOutputFile = args[3];
+        } else if (args.length == 7) {
+            cfDataDir = args[0];
+            cfDataFileExt = args[1];
+            cfDataCheckFreq = Integer.parseInt(args[2]);
+            vComRoute = args[3];
+            xComRoute = args[4];
+            xComProgAddr = Integer.parseInt(args[5]);
+            
+            LDCNTSUMOutputFile = args[6];
         } else {
             CTILogger.info("Usage:  WPSCMain CFDATADir CFDATAFileExt CFDataCheckFreq LDCNTSUMOutputFile\n");
-            CTILogger.info("Ex.		WPSCMain c:/cfdatadir .rcv 1000 ldcntsum.snd");
+            CTILogger.info("Ex.     WPSCMain c:/cfdatadir .rcv 1000 '@Tap Term Comms' 'ALL FM ROUTES' 254 ldcntsum.snd");
             return;
         }
 
-        WPSCMain instance = new WPSCMain(CFDATADir, CFDATAFileExt, CFDATACheckFreq, LDCNTSUMOutputFile);
+        WPSCMain instance = new WPSCMain();
 
+        instance.customFileDataInstance = new CFDATA(cfDataDir, cfDataFileExt, vComRoute, xComRoute, xComProgAddr);
+        instance.customFileDataInstance.setCheckFrequency(cfDataCheckFreq);
+
+        instance.loadContSumInstance = new LDCNTSUM(instance.dispatchConn, LDCNTSUMOutputFile);
+        
         instance.initDirectory();
         instance.initialize();
 
@@ -183,17 +189,17 @@ public class WPSCMain implements Runnable {
             logWriter = new LogWriterThread();
             logWriter.start();
 
-            CFDATAThread = new Thread(CFDATAInstance);
-            CFDATAThread.setDaemon(true);
-            CFDATAThread.start();
+            customFileDataThread = new Thread(customFileDataInstance);
+            customFileDataThread.setDaemon(true);
+            customFileDataThread.start();
 
-            LDCNTSUMThread = new Thread(LDCNTSUMInstance);
-            LDCNTSUMThread.setDaemon(true);
-            LDCNTSUMThread.start();
+            loadContSumThread = new Thread(loadContSumInstance);
+            loadContSumThread.setDaemon(true);
+            loadContSumThread.start();
 
             // Joins the Threads, the WPSCMain application will not continue from this point until all threads are killed.
-            CFDATAThread.join();
-            LDCNTSUMThread.join();
+            customFileDataThread.join();
+            loadContSumThread.join();
 
         } catch (InterruptedException ie) {
             logMessage("Interrupted Exception in WPSCMain()",
