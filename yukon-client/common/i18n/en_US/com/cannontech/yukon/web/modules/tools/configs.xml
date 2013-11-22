@@ -488,6 +488,8 @@
     <entry key="yukon.web.modules.tools.configs.config.editAssignedCategory">Edit the {0} category.</entry>
     <entry key="yukon.web.modules.tools.configs.config.createCategory">Create a new {0} category.</entry>
     <entry key="yukon.web.modules.tools.configs.config.createCategory.ok">Create</entry>
+    <entry key="yukon.web.modules.tools.configs.config.categoryInfoTitle">Category Type Details: {0}</entry>
+    <entry key="yukon.web.modules.tools.configs.config.categoryDeviceTypes">Device types supported by this category type: {0}</entry>
     <entry key="yukon.web.modules.tools.configs.config.addTypes.label">Add Types</entry>
     <entry key="yukon.web.modules.tools.configs.config.addSupportedTypes.title">Add Supported Types</entry>
     <entry key="yukon.web.modules.tools.configs.config.nameExists">A configuration with the specified name already exists. Please enter a different name.</entry>

@@ -22,6 +22,7 @@ import com.cannontech.core.dao.NotFoundException;
 import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.SetMultimap;
 
 /**
  * Data access object for pao definition information
@@ -56,6 +57,8 @@ public interface PaoDefinitionDao {
 
     // DEVICE CONFIGURATION
     //============================================
+    
+    public SetMultimap<String, PaoType> getCategoryTypeToPaoTypesMap();
     
     public Set<Category> getCategoriesForPaoType(PaoType paoType);
     

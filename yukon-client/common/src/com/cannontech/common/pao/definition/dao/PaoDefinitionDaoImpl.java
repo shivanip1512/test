@@ -135,6 +135,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     private SetMultimap<PaoType, PointTemplate> paoAllPointTemplateMap = null;
     private SetMultimap<PaoType, PointTemplate> paoInitPointTemplateMap = null;
     private SetMultimap<PaoType, Category> paoCategoryMap = null;
+    private SetMultimap<Category, PaoType> categoryToPaoMap = null;
     private BiMap<PaoType, PaoDefinition> paoTypeMap = null;
     private ListMultimap<String, PaoDefinition> paoDisplayGroupMap = null;
     private SetMultimap<String, PaoDefinition> changeGroupPaosMap = null;
@@ -576,6 +577,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         paoAllPointTemplateMap = HashMultimap.create();
         paoInitPointTemplateMap = HashMultimap.create();
         paoCategoryMap = HashMultimap.create();
+        categoryToPaoMap = HashMultimap.create();
         paoDisplayGroupMap = LinkedListMultimap.create();
         changeGroupPaosMap = HashMultimap.create();
         paoAttributeAttrDefinitionMap = Maps.newEnumMap(PaoType.class);
@@ -801,6 +803,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         // Add device configuration categories
         for (Category category : pao.getCategories()) {
             paoCategoryMap.put(paoType, category);
+            categoryToPaoMap.put(category, paoType);
         }
         
         // Add pao points (non-calculated)
@@ -1106,6 +1109,17 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         calcPointInfo.setComponents(calcPointComponents);
         pointTemplate.setCalcPointInfo(calcPointInfo);
         return pointTemplate;
+    }
+    
+    @Override
+    public SetMultimap<String, PaoType> getCategoryTypeToPaoTypesMap() {
+        SetMultimap<String, PaoType> map = HashMultimap.create();
+        
+        for (Category category : categoryToPaoMap.keySet()) {
+            map.putAll(category.getType().value(), categoryToPaoMap.get(category));
+        }
+        
+        return map;
     }
     
     @Override

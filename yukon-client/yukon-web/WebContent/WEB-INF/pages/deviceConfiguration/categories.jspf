@@ -28,7 +28,32 @@
                     </div>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".type" nameColumnWidth="15%" nameClass="vat">
+                    <cti:msg2 var="i18nCatType" key=".${catType}.title"/>
+                    <cti:msg2 var="catPopupTitle" key=".categoryInfoTitle" argument="${i18nCatType}"/>
                     <i:inline key=".${catType}.title"/>
+                    <a href="javascript:void(0);" 
+                       class="f-category-type-info dib" 
+                       title="click for more details" 
+                       data-category-type="${catType}" 
+                       data-config-id="${configurationCategoriesBackingBean.configId}"
+                       data-popup-title="${catPopupTitle}">
+                        <cti:icon icon="icon-help" id="help_icon_${catType}"/>
+                    </a>
+                    <tags:simplePopup id="section-container-info-popup-${catType}" title="${catPopupTitle}" on="#help_icon_${catType}" options="{width:600}">
+                        <c:set var="supportedTypes" value=""/>
+                        <c:forEach var="paoType" items="${categoryToDeviceTypeMap[catType]}" varStatus="status">
+                            <c:choose>
+                                <c:when test="${status.first}">
+                                    <c:set var="supportedTypes" value="${paoType.dbString}"/>
+                                </c:when>
+                                <c:otherwise>
+                                    <c:set var="supportedTypes" value="${supportedTypes}, ${paoType.dbString}"/>
+                                </c:otherwise>
+                            </c:choose>
+                        </c:forEach>
+                        <c:set var="supportedTypes" value="${supportedTypes}."/>
+                        <cti:msg2 key=".categoryDeviceTypes" arguments="${supportedTypes}"/>
+                    </tags:simplePopup> 
                 </tags:nameValue2>
                 <c:if test="${not empty selection.categoryId}">
                     <tags:nameValue2 nameKey=".description" nameColumnWidth="15%" nameClass="vat">
