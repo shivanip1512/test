@@ -14,16 +14,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.cannontech.clientutils.ClientApplicationRememberMe;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @CheckRoleProperty(YukonRoleProperty.JAVA_WEB_START_LAUNCHER_ENABLED)
 public class JnlpController extends JnlpControllerBase {
     @Autowired private ConfigurationSource configurationSource;
+    @Autowired private GlobalSettingDao globalSettingDao;
 
     private String appMainClass;
     private String appMainClassJar;
@@ -111,6 +115,13 @@ public class JnlpController extends JnlpControllerBase {
         hostPropElem.setAttribute("value", hostUrl.toString());
         resourcesElem.addContent(hostPropElem);
 
+        Element rememberMeSettingPropElem = new Element("property");
+        ClientApplicationRememberMe rememberMeSetting = 
+                globalSettingDao.getEnum(GlobalSettingType.CLIENT_APPLICATIONS_REMEMBER_ME, ClientApplicationRememberMe.class);
+        hostPropElem.setAttribute("name", "jnlp.yukon.rememberMe");
+        hostPropElem.setAttribute("value", rememberMeSetting.name());
+        resourcesElem.addContent(rememberMeSettingPropElem);
+        
         Element appElem = new Element("application-desc");
         jnlpElem.addContent(appElem);
         appElem.setAttribute("main-class", appMainClass);

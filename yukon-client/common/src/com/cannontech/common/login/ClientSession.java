@@ -33,8 +33,6 @@ import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.ThemeUtils;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.system.GlobalSettingType;
-import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.SimpleYukonUserContext;
 import com.cannontech.user.UserUtils;
 import com.cannontech.user.YukonUserContext;
@@ -318,9 +316,7 @@ public class ClientSession {
 	}
 
 	private ClientApplicationRememberMe getRememberMeSetting() {
-        GlobalSettingDao settingDao = YukonSpringHook.getBean(GlobalSettingDao.class);
-        return settingDao.getEnum(GlobalSettingType.CLIENT_APPLICATIONS_REMEMBER_ME,
-                                  ClientApplicationRememberMe.class);
+        return ClientApplicationRememberMe.fromString(System.getProperty("jnlp.yukon.rememberMe", ""));
 	}
 
 	private LoginPanel makeLocalLoginPanel(ClientApplicationRememberMe rememberMeSetting) {
