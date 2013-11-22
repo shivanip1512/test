@@ -8,12 +8,13 @@
 <cti:url var="viewUrl" value="/meter/historicalReadings/view"/>
 <dialog:ajaxPage nameKey="popup" title="${title}" module="amr"
     page="widgetClasses.MeterReadingsWidget.historicalReadings" id="${dialogId}" okEvent="none"
-    options="{'buttons': [
-                        {text: '${oneMonth}', click: function(){window.location='${oneMonthUrl}';}},
-                        {text: '${all}', click: function(){window.location='${allUrl}';}}], modal:false}">
+    options="{height: 400, 
+              modal:false,
+              buttons: [{text: '${oneMonth}', click: function(){window.location='${oneMonthUrl}';}},
+                        {text: '${all}', click: function(){window.location='${allUrl}';}}]}">
 
     <c:if test="${points.size() > 0}">
-        <div class="detail">${resultLimit}<div>
+        <div class="detail">${resultLimit}</div>
     </c:if>
 
     <c:choose>
@@ -22,32 +23,36 @@
         </c:when>
         <c:otherwise>
             <table id="pointValueList" class="compact-results-table row-highlighting">
-                <tr>
-                    <th>
-                        <tags:sortLink nameKey="tableHeader.timestamp" 
-                            baseUrl="${viewUrl}" 
-                            fieldName="TIMESTAMP"
-                            isDefault="${points.size() > 0}" 
-                            styleClass="f-ajaxPage" 
-                            descendingByDefault="true"
-                            moreAttributes="data-selector=\"#${dialogId}\""/>
-                    </th>
-                    <th>
-                        <tags:sortLink nameKey="tableHeader.value" 
-                            baseUrl="${viewUrl}" 
-                            fieldName="VALUE"
-                            isDefault="false" 
-                            styleClass="f-ajaxPage" 
-                            moreAttributes="data-selector=\"#${dialogId}\""/>
-                    </th>
-                </tr>
-
-                <c:forEach var="row" items="${points}">
+                <thead>
                     <tr>
-                        <td>${fn:escapeXml(row[0])}</td>
-                        <td>${fn:escapeXml(row[1])}</td>
+                        <th>
+                            <tags:sortLink nameKey="tableHeader.timestamp" 
+                                baseUrl="${viewUrl}" 
+                                fieldName="TIMESTAMP"
+                                isDefault="${points.size() > 0}" 
+                                styleClass="f-ajaxPage" 
+                                descendingByDefault="true"
+                                moreAttributes="data-selector=\"#${dialogId}\""/>
+                        </th>
+                        <th>
+                            <tags:sortLink nameKey="tableHeader.value" 
+                                baseUrl="${viewUrl}" 
+                                fieldName="VALUE"
+                                isDefault="false" 
+                                styleClass="f-ajaxPage" 
+                                moreAttributes="data-selector=\"#${dialogId}\""/>
+                        </th>
                     </tr>
-                </c:forEach>
+                </thead>
+                <tfoot></tfoot>
+                <tbody>
+                    <c:forEach var="row" items="${points}">
+                        <tr>
+                            <td>${fn:escapeXml(row[0])}</td>
+                            <td>${fn:escapeXml(row[1])}</td>
+                        </tr>
+                    </c:forEach>
+                </tbody>
             </table>
         </c:otherwise>
     </c:choose>
