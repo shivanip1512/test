@@ -18,24 +18,18 @@
         
         <tbody>
             <c:forEach var="contact" items="${contacts}">
-            
                 <tr>
-                
                     <td>
-                    
                         <cti:displayForPageEditModes modes="EDIT,CREATE,VIEW">
                             <cti:url var="contactEditUrl" value="/stars/operator/contacts/view">
                                 <cti:param name="accountId" value="${accountId}"/>
                                 <cti:param name="contactId" value="${contact.contactId}"/>
                             </cti:url>
-                        
                             <a href="${contactEditUrl}">${contact.lastName}, ${contact.firstName}</a>
                         </cti:displayForPageEditModes>
-                        
                     </td>
                     
                     <td>
-                        
                         <table class="dib fl">
                             <c:if test="${not empty contact.homePhone}">
                                 <tr>
