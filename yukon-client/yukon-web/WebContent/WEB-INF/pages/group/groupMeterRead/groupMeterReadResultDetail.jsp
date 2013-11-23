@@ -43,12 +43,14 @@ function refreshResults(kind, container) {
 }
 jQuery(function() {
     jQuery('.f-view-success').click(function(e) {
-        jQuery('#successResultsDiv${resultKey}').toggle();
-        refreshResults('successList', jQuery('#successResultsDiv${resultKey}'));
+        var container = jQuery('#successResultsDiv${resultKey}');
+        container.toggle();
+        refreshResults('successList', container);
     });
     jQuery('.f-view-failed').click(function(e) {
-    	jQuery('#errorsResultsDiv${resultKey}').toggle();
-    	refreshResults('errorsList', jQuery('#errorsResultsDiv${resultKey}'));
+        var container = jQuery('#errorsResultsDiv${resultKey}');
+        container.toggle();
+        refreshResults('errorsList', container);
     });
 });
 </script>
