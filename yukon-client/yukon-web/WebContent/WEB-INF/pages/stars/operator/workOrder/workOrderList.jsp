@@ -103,7 +103,7 @@ jQuery(function() {
     
     <%-- create button --%>
     <cti:displayForPageEditModes modes="CREATE">
-        <div class="action-area">
+        <div class="page-action-area">
             <form id="createWorkOrderForm" action="/stars/operator/workOrder/create" method="get">
                 <input type="hidden" name="accountId" value="${accountId}">
                 <cti:button nameKey="create" icon="icon-plus-green" type="submit"/>
