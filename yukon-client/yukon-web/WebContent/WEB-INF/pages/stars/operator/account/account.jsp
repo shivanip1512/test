@@ -368,7 +368,7 @@
                             <cti:displayForPageEditModes modes="EDIT">
                                 <c:if test="${loginMode eq 'EDIT'}">
                                     <div class="action-area">
-                                        <cti:button nameKey="delete.user" data-form="#deleteUserForm" classes="f-delete-user"/>
+                                        <cti:button nameKey="delete.user" data-form="#deleteUserForm" classes="f-delete-user delete"/>
                                     </div>
                                 </c:if>
                             </cti:displayForPageEditModes>
@@ -387,7 +387,7 @@
                         <cti:displayForPageEditModes modes="EDIT">
                             <cti:button nameKey="save" type="submit" classes="f-blocker f-prepPasswordFields primary action"/>
                             
-                            <cti:button nameKey="delete" classes="f-delete" data-form="#deleteAccountForm"/>
+                            <cti:button nameKey="delete" classes="f-delete delete" data-form="#deleteAccountForm"/>
                             
                              <cti:url value="/stars/operator/account/view" var="viewUrl">
                                 <cti:param name="accountId" value="${accountId}"/>

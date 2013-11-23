@@ -9,9 +9,9 @@
 <tags:setFormEditMode mode="${mode}"/>
 
     <c:choose>
-    	<c:when test="${fn:length(callReportsWrappers) <= 0}">
+        <c:when test="${fn:length(callReportsWrappers) <= 0}">
             <span class="empty-list"><i:inline key=".noCalls"/></span>
-    	</c:when>
+        </c:when>
         <c:otherwise>
             <table class="compact-results-table row-highlighting">
                <thead>
