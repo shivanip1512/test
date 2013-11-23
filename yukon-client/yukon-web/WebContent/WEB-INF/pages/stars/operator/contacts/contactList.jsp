@@ -6,71 +6,71 @@
 
 <cti:standardPage module="operator" page="contactList">
 
-	<tags:setFormEditMode mode="${mode}"/>
-	
-	<table class="compact-results-table no-stripes">
+    <tags:setFormEditMode mode="${mode}"/>
+    
+    <table class="compact-results-table no-stripes">
         <thead>
-    		<tr>
-    			<th><i:inline key=".header.contact"/></th>
-    			<th><i:inline key=".header.notifications"/></th>
-    		</tr>
+            <tr>
+                <th><i:inline key=".header.contact"/></th>
+                <th><i:inline key=".header.notifications"/></th>
+            </tr>
         </thead>
-		
+        
         <tbody>
-    		<c:forEach var="contact" items="${contacts}">
-    		
-    			<tr>
-    			
-    				<td>
-    				
-    					<cti:displayForPageEditModes modes="EDIT,CREATE,VIEW">
-    						<cti:url var="contactEditUrl" value="/stars/operator/contacts/view">
-    							<cti:param name="accountId" value="${accountId}"/>
-    							<cti:param name="contactId" value="${contact.contactId}"/>
-    						</cti:url>
-    					
-    						<a href="${contactEditUrl}">${contact.lastName}, ${contact.firstName}</a>
-    					</cti:displayForPageEditModes>
-    					
-    				</td>
-    				
-    				<td>
-    					
-    					<table class="dib fl">
-    						<c:if test="${not empty contact.homePhone}">
-    							<tr>
-    								<td class="name"><i:inline key="yukon.web.modules.operator.contactNotificationEnum.HOME_PHONE"/>:</td>
-    								<td>${contact.homePhone}</td>
-    							</tr>
-    						</c:if>
-    						<c:if test="${not empty contact.workPhone}">
-    							<tr>
-    								<td class="name"><i:inline key="yukon.web.modules.operator.contactNotificationEnum.WORK_PHONE"/>:</td>
-    								<td>${contact.workPhone}</td>
-    							</tr>
-    						</c:if>
-    						<c:if test="${not empty contact.email}">
-    							<tr>
-    								<td class="name"><i:inline key="yukon.web.modules.operator.contactNotificationEnum.EMAIL"/>:</td>
-    								<td>${contact.email}</td>
-    							</tr>
-    						</c:if>
-    						<c:forEach var="otherNotification" items="${contact.otherNotifications}">
-    							<tr>
-    								<td class="name"><i:inline key="${otherNotification.contactNotificationType.formatKey}"/>:</td>
-    								<td>${otherNotification.notificationValue}</td>
-    							</tr>
-    						</c:forEach>
-    					</table>
-    					
-						<c:if test="${contact.primary}">
-							<span class="fr"><i:inline key=".isPrimary"/></span>
-						</c:if>
-    				</td>
-    			</tr>
-    		</c:forEach>
+            <c:forEach var="contact" items="${contacts}">
+            
+                <tr>
+                
+                    <td>
+                    
+                        <cti:displayForPageEditModes modes="EDIT,CREATE,VIEW">
+                            <cti:url var="contactEditUrl" value="/stars/operator/contacts/view">
+                                <cti:param name="accountId" value="${accountId}"/>
+                                <cti:param name="contactId" value="${contact.contactId}"/>
+                            </cti:url>
+                        
+                            <a href="${contactEditUrl}">${contact.lastName}, ${contact.firstName}</a>
+                        </cti:displayForPageEditModes>
+                        
+                    </td>
+                    
+                    <td>
+                        
+                        <table class="dib fl">
+                            <c:if test="${not empty contact.homePhone}">
+                                <tr>
+                                    <td class="name"><i:inline key="yukon.web.modules.operator.contactNotificationEnum.HOME_PHONE"/>:</td>
+                                    <td>${contact.homePhone}</td>
+                                </tr>
+                            </c:if>
+                            <c:if test="${not empty contact.workPhone}">
+                                <tr>
+                                    <td class="name"><i:inline key="yukon.web.modules.operator.contactNotificationEnum.WORK_PHONE"/>:</td>
+                                    <td>${contact.workPhone}</td>
+                                </tr>
+                            </c:if>
+                            <c:if test="${not empty contact.email}">
+                                <tr>
+                                    <td class="name"><i:inline key="yukon.web.modules.operator.contactNotificationEnum.EMAIL"/>:</td>
+                                    <td>${contact.email}</td>
+                                </tr>
+                            </c:if>
+                            <c:forEach var="otherNotification" items="${contact.otherNotifications}">
+                                <tr>
+                                    <td class="name"><i:inline key="${otherNotification.contactNotificationType.formatKey}"/>:</td>
+                                    <td>${otherNotification.notificationValue}</td>
+                                </tr>
+                            </c:forEach>
+                        </table>
+                        
+                        <c:if test="${contact.primary}">
+                            <span class="fr"><i:inline key=".isPrimary"/></span>
+                        </c:if>
+                    </td>
+                </tr>
+            </c:forEach>
         </tbody>
-	</table>
+    </table>
     
     <div class="page-action-area">
         <cti:displayForPageEditModes modes="EDIT,CREATE">
