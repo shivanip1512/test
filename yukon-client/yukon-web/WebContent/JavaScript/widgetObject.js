@@ -7,8 +7,6 @@ function JsWidgetObject (shortName, parameters) {
     this.parameters = parameters;
     this.container = "widget-container-" + this.parameters.widgetId;
     this.linkInfo = {};
-    // to identify the periodicRefresh objects that have been created
-    this.contextId = 0;
 
     this.render = function () {
         var url = "/widget/" + this.shortName + "/render",
@@ -37,10 +35,8 @@ function JsWidgetObject (shortName, parameters) {
     };
 
     this.periodicRefresh = function (opts, context) {
-        var nthIteration = 0,
-            timeoutId = 0,
+        var timeoutId = 0,
             doRefresh = function () {
-                nthIteration += 1;
                 jQuery.ajax({
                     url : opts.url,
                     type : 'GET',
@@ -60,9 +56,11 @@ function JsWidgetObject (shortName, parameters) {
             return this;
         };
         this.start = function () {
+            // paranoid
+            clearTimeout(timeoutId);
+            doRefresh();
             return this;
         };
-        context.contextId += 1;
         doRefresh ();
         return this;
     };
