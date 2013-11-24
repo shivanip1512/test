@@ -41,7 +41,7 @@
                     <span class="empty-list"><i:inline key=".noRules"/></span>
                 </c:when>
                 <c:otherwise>
-                    <table class="compact-results-table">
+                    <table class="compact-results-table with-form-controls">
                         <thead>
                             <tr>
                                 <th colspan="2"><i:inline key=".tableHeader.rules"/></th>
@@ -56,7 +56,8 @@
                                         <i:inline key="${rule.ruleType.formatKey}"/>
                                     </td>
                                     <td>
-                                        <div class="dib fl">
+                                        <div class="clearfix column-18-6">
+                                            <div class="column one">
                                             <c:choose>
                                                 
                                                 <c:when test="${rule.ruleType eq 'APPLIANCE_TYPE'}">
@@ -87,7 +88,7 @@
                                                 <c:when test="${rule.ruleType eq 'DEVICE_STATUS_DATE_RANGE'}">
                                                     <div class="clearfix">
                                                         <dt:date path="filterRules[${row.index}].deviceStateDateFrom" id="deviceStateDateFrom_${row.index}" hideErrors="true"/>
-                                                        <div class="fl" style="margin-right: 5px;"><i:inline key=".deviceStateDateRangeSeperator"/></div>
+                                                        <div class="fl" style="margin-right: 5px;line-height: 26px;"><i:inline key=".deviceStateDateRangeSeperator"/></div>
                                                         <dt:date path="filterRules[${row.index}].deviceStateDateTo" id="deviceStateDateTo_${row.index}" hideErrors="true"/>
                                                     </div>
                                                     <div><form:errors path="filterRules[${row.index}].deviceStateDateFrom" cssClass="error"/></div>
@@ -194,9 +195,10 @@
                                                     </cti:checkRolesAndProperties>
                                                 </c:when>
                                             </c:choose>
-                                        </div>
-                                        <div class="dib fr">
-                                            <cti:button nameKey="delete" href="javascript:removeRule(${row.index})" icon="icon-cross" classes="fr"/>
+                                            </div>
+                                            <div class="column two nogutter">
+                                                <cti:button nameKey="delete" href="javascript:removeRule(${row.index})" icon="icon-cross" classes="fr"/>
+                                            </div>
                                         </div>
                                     </td>
                                 </tr>

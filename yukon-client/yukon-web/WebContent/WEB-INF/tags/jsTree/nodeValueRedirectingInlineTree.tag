@@ -47,4 +47,4 @@ function redirectToNameValue_${id}(node) {
                 maxHeight="${pageScope.maxHeight}"
                 highlightNodePath="${pageScope.highlightNodePath}"
                 includeControlBar="${pageScope.includeControlBar}"
-                styleClass="bn contained"/>
+                styleClass="bn"/>

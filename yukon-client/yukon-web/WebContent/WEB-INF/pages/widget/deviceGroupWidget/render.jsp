@@ -1,7 +1,7 @@
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<%@ taglib prefix="jsTree" tagdir="/WEB-INF/tags/jsTree" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="t" tagdir="/WEB-INF/tags/jsTree" %>
 
 <script type="text/javascript">
     
@@ -12,24 +12,7 @@
             jQuery('body').append('<div id="editGroupTreeDialog"></div>');
         }
 
-        jQuery('#showPopupButton').click(function() {
-            var parameters = ${cti:jsonString(widgetParameters)};
-            jQuery('#editGroupTreeDialog').load('/widget/deviceGroupWidget/edit', parameters, function() {
-                jQuery('#internalTreeContainer_deviceGroupWidgetTree').addClass('contained');
-            });
-        });
-
-        jQuery('#editGroupTreeDialog').on('dialogSubmit', function() {
-            if (!setNodeValues_deviceGroupWidgetTree()) {
-                return;
-            }
-            var groupIds = jQuery(document.getElementById('groupIds')).val();
-            ${widgetParameters.jsWidget}.setParameter('groupIds', groupIds);
-            ${widgetParameters.jsWidget}.doDirectActionContainerRefresh('update', 'currentGroups');
-            jQuery('#editGroupTreeDialog').dialog('close');
-        });
-        
-        var successMsg = "${successMsg}";
+        var successMsg = '${successMsg}';
         if (successMsg != null && successMsg.length > 0 ) {
             jQuery('.success').show();
             setTimeout(function() {
@@ -38,15 +21,21 @@
                 });
             }, 5000);
          }
+        jQuery('#deviceGroupWidgetTree').on('Yukon.ui.widget.DeviceGroupWidget.save', function() {
+            var groupIds = jQuery('#groupIds').val();
+            ${widgetParameters.jsWidget}.setParameter('groupIds', groupIds);
+            Yukon.ui.elementGlass.show('#currentGroups');
+            ${widgetParameters.jsWidget}.doDirectActionRefresh('update');
+        })
     });
     
 </script>
 
-<div id="currentGroups">
+<div id="currentGroups" class="f-block-this">
 
     <div class="success">${successMsg}</div>
                     
-    <jsTree:nodeValueSelectingInlineTree fieldId="groupName" 
+    <t:nodeValueSelectingInlineTree fieldId="groupName" 
                                          fieldName="groupName"
                                          nodeValueName="groupName" 
                                          fieldValue="${groupName}"
@@ -55,11 +44,22 @@
                                          dataJson="${currentGroupsDataJson}"
                                          includeControlBar="true"
                                          highlightNodePath="${selectedNodePath}"
-                                         displayCheckboxes="true"
-                                         styleClass="contained static-mode scroll-large"/>
+                                         displayCheckboxes="false"
+                                         styleClass="static-mode"/>
 
     <cti:checkRolesAndProperties value="DEVICE_ACTIONS">
         <cti:checkRolesAndProperties value="DEVICE_GROUP_MODIFY">
+            <t:multiNodeValueSelectingPopupTree fieldId="groupIds"
+                                             fieldName="groupIds"
+                                             nodeValueName="groupId"
+                                             id="deviceGroupWidgetTree"
+                                             treeParameters="{checkbox: true}" 
+                                             triggerElement="showPopupButton"
+                                             dataJson="${allGroupsDataJson}"
+                                             title="yukon.web.widgets.deviceGroupWidget"
+                                             cancelButton="components.button.cancel.label"
+                                             submitButton="components.button.save.label"
+                                             submitEvent="Yukon.ui.widget.DeviceGroupWidget.save"/>
             <div class="action-area">
                 <cti:button nameKey="edit" icon="icon-pencil" type="button" id="showPopupButton" />
             </div>

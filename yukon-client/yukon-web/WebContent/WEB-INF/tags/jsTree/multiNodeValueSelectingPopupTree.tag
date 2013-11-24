@@ -1,26 +1,24 @@
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="jsTree"  tagdir="/WEB-INF/tags/jsTree"%>
-<%@ taglib prefix="ct"  tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="t"  tagdir="/WEB-INF/tags/jsTree" %>
 
 <%-- name of key in the selected node's info attribute --%>
 <%-- also will be the name of the hidden field on which the value is set --%>
-<%-- submitCallback is optional, can be used for application specific behavior after submit button click is handled (like to submit a form or do nothing) --%>
-<%@ attribute name="fieldId" required="true" type="java.lang.String"%>
-<%@ attribute name="fieldName" required="true" type="java.lang.String"%>
-<%@ attribute name="nodeValueName" required="true" type="java.lang.String"%>
-<%@ attribute name="submitButton" required="true" type="java.lang.String"%>
-<%@ attribute name="cancelButton" required="true" type="java.lang.String"%>
-<%@ attribute name="submitCallback" required="false" type="java.lang.String"%>
+<%@ attribute name="cancelButton" required="true" %>
+<%@ attribute name="fieldId" required="true" %>
+<%@ attribute name="fieldName" required="true" %>
+<%@ attribute name="nodeValueName" required="true" %>
+<%@ attribute name="submitButton" required="true" %>
+<%@ attribute name="submitEvent" description="The name of event that will be triggered when the submit button is clicked." %>
 
 <%-- PASS THROUGH PARAMETERS TO tree:popupTree --%>
 <%-- see popupTree.tag for parameter descriptions --%>
-<%@ attribute name="id" required="true" type="java.lang.String"%>
-<%@ attribute name="triggerElement" required="false" type="java.lang.String"%>
-<%@ attribute name="dataJson" required="true" type="java.lang.String"%>
-<%@ attribute name="title" required="true" type="java.lang.String"%>
-<%@ attribute name="width" required="true" type="java.lang.Integer"%>
-<%@ attribute name="height" required="true" type="java.lang.Integer"%>
-<%@ attribute name="noSelectionAlert" required="false" type="java.lang.String"%>
+<%@ attribute name="id" required="true" %>
+<%@ attribute name="triggerElement" %>
+<%@ attribute name="treeParameters" description="This should be a object '{}' with arguments for tree initialization." %>
+<%@ attribute name="dataJson" required="true" %>
+<%@ attribute name="title" required="true" %>
+<%@ attribute name="noSelectionAlert" %>
 
 <%-- POPUP TREE --%>
 <cti:msg2 var="titleText"  key="${title}" javaScriptEscape="true"/>
@@ -37,12 +35,12 @@
     var nodeValues_${id} = [];
     
     // set the hidden var with our selected node values concatenated
-    // then call submit callback that will do whatever application specific function t wants with the values
+    // then trigger the submit event
     function setNodeValues_${id}() {
-        var selectedNodes = jQuery(document.getElementById("${id}")).dynatree("getSelectedNodes");
+        var selectedNodes = jQuery('#${id}').dynatree('getSelectedNodes');
         var nodeValues = [];
         
-        for(var i=0; i<selectedNodes.length; i++){
+        for (var i=0; i < selectedNodes.length; i++) {
             nodeValues.push(selectedNodes[i].data.info['${nodeValueName}']);
         }
         
@@ -51,34 +49,33 @@
             return false;
         }
         
-        jQuery(document.getElementById('${fieldId}')).val(nodeValues.join(","));
-        ${pageScope.submitCallback}
+        jQuery('#${fieldId}').val(nodeValues.join(','));
         closeWindow_${id}();
+        <c:if test="${not empty pageScope.submitEvent}">
+            jQuery('#${id}').trigger('${submitEvent}');
+        </c:if>
     }
     
     // the close button handler function
     // remove any selected node values from the nodeValues list before closing
     function clearAllNodeValues_${id}() {
-        jQuery(document.getElementById('${fieldId}')).val("");
+        jQuery(document.getElementById('${fieldId}')).val('');
         closeWindow_${id}();
     }
     
     function closeWindow_${id}() {
-        jQuery(document.getElementById("window_${id}")).dialog("close");
+        jQuery('#window_${id}').dialog('close');
     }
 </script>
 
 <%-- VALUE HIDDEN FIELD --%>
 <input type="hidden" name="${fieldName}" id="${fieldId}" value="">
-                
-<jsTree:popupTree  id="${id}"
-                treeCss="/WebConfig/yukon/styles/lib/dynatree/deviceGroup.css"
-                triggerElement="${triggerElement}"
-                dataJson="${dataJson}"
-                multiSelect="true"
-                title="${titleText}"
-                width="${width}"
-                height="${height}" 
-                buttonsList="[{text:'${submitText}', click:setNodeValues_${id}},{text:'${cancelText}', click:clearAllNodeValues_${id}}]"
-                includeControlBar="true" />                                
-                                
+<t:popupTree buttonsList="[{text:'${cancelText}', click:clearAllNodeValues_${id}},{text:'${submitText}', click:setNodeValues_${id}, 'class': 'action primary'}]"
+             dataJson="${dataJson}"
+             id="${id}"
+             includeControlBar="true" 
+             multiSelect="true"
+             title="${titleText}"
+             treeCss="/WebConfig/yukon/styles/lib/dynatree/deviceGroup.css"
+             treeParameters="${pageScope.treeParameters}"
+             triggerElement="${pageScope.triggerElement}"/>

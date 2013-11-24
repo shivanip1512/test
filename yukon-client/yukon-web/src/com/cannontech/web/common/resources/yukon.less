@@ -390,7 +390,7 @@ input.error {background: pink;border-color: @red;}
 
 /* SCROLLING */
 .scroll-large, .scroll-medium, .scroll-small {overflow-y: auto;}
-.scroll-large, .inline-tree.scroll-large .treeCanvas {max-height:350px;}
+.scroll-large {max-height:350px;}
 .scroll-medium {max-height:200px;}
 .scroll-small {max-height:160px;}
 
@@ -511,21 +511,21 @@ hr.dashed, .divider.dashed {border-style: dashed none none none;}
 }
 
 /* DATE/TIME PICKER */
-.datetimeEntry_wrap {display: inline-block; overflow: hidden; background: #ccc; -webkit-border-radius: 2px; -moz-border-radius: 2px; border-radius: 2px; float: left; margin-right: 5px;border: 1px solid #aaa;height: 22px;}
-.datetimeEntry_wrap.date {width: 144px;}
+.datetimeEntry_wrap {display: inline-block;overflow: hidden;background: #ccc;-webkit-border-radius: 2px;-moz-border-radius: 2px;border-radius: 2px;float: left;margin-right: 5px;border: 1px solid #aaa;height: 26px;}
+.datetimeEntry_wrap.date {width: 146px;}
 .datetimeEntry_wrap.dateTime {min-width: 171px;}
-.datetimeEntry_wrap.time {width: 102px;}
-.datetimeEntry_wrap input { padding: 2px; float: left; height: 20px; border: solid 1px white;}
-.datetimeEntry_wrap img {margin: 3px;}
+.datetimeEntry_wrap.time {width: 106px;}
+.datetimeEntry_wrap input {padding: 2px;float: left;height: 24px;border: solid 1px white;}
+.datetimeEntry_wrap img {margin: 5px;}
 .datetimeEntry_wrap .datetimeEntry_control {display: none !important;}
 .datetimeEntry_wrap input[disabled] {color: #999;}
-.datetimeEntry_wrap input[disabled] + .ui-datepicker-trigger {cursor: auto;} 
+.datetimeEntry_wrap input[disabled] + .ui-datepicker-trigger {cursor: auto;}
 .ui-datepicker.hide_minutes .ui_tpicker_minute_label,.ui-datepicker.hide_minutes .ui_tpicker_minute{display: none;}
-.datetimeEntry_wrap .timezone_container {line-height: 23px; margin-left: -31px; float: left; color: #999; font-size: 13px; padding-right: 5px;}
+.datetimeEntry_wrap .timezone_container {line-height: 24px;margin-left: -31px;float: left;color: #999;font-size: 13px;padding-right: 5px;}
 input.datePicker, input.timePicker, input.dateTimePicker {border-radius: 2px 0 0 2px;}
 input.datePicker {width: 114px;}
 input.timePicker {width: 74px;}
-input.dateTimePicker {margin: 0;}
+input.dateTimePicker {width: 150px;}
 .ui-datepicker-trigger:hover {cursor: pointer;}
 
 /* DROPDOWN MENUS */

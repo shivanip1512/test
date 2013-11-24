@@ -1,4 +1,4 @@
-<%@ taglib prefix="jsTree" tagdir="/WEB-INF/tags/jsTree" %>
+<%@ taglib prefix="t" tagdir="/WEB-INF/tags/jsTree" %>
 
 <%-- name of key in the selected node's info attribute --%>
 <%-- also will be the name of the hidden field on which the value is set --%>
@@ -23,7 +23,6 @@
 <%@ attribute name="multiSelect"        required="false"     type="java.lang.Boolean"%>
 <%@ attribute name="includeControlBar" required="false" type="java.lang.Boolean"%>
 <%@ attribute name="styleClass" required="false" type="java.lang.String"%>
-
 
 <%-- DEVICE GROUP SELECTION HANDLER CODE --%>
 <script type="text/javascript">
@@ -64,7 +63,7 @@
 <input type="hidden" name="${fieldName}" id="${fieldId}" value="${pageScope.fieldValue}">
 
 <%-- POPUP TREE --%>
-<jsTree:popupTree  id="${id}"
+<t:popupTree  id="${id}"
                 treeCss="/WebConfig/yukon/styles/lib/dynatree/deviceGroup.css"
                 treeParameters="{onActivate:recordNameValue_${id}}"
                 triggerElement="${triggerElement}"

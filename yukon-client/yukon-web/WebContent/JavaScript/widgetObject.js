@@ -81,22 +81,6 @@ function JsWidgetObject (shortName, parameters) {
         });
     };
 
-    this.doDirectActionContainerRefresh = function (cmd, container) {
-       jQuery('#' + this.container + ' input, button').prop('disabled', true);
-
-        var url = "/widget/" + this.shortName + "/" + cmd,
-            params = this.getWidgetParameters(),
-            _self = this;
-
-        jQuery.ajax({
-            url : url,
-            data : params
-        }).done( function (data, status, xhr) {
-            _self.onSuccess(xhr);
-            jQuery(document.getElementById(container)).html(data);
-        });
-    };
-
   /**
    * args = {
    *    command = string final path for the url

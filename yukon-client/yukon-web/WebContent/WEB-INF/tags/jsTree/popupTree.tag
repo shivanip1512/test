@@ -1,18 +1,18 @@
-<%@ taglib prefix="c"       uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fn"      uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib prefix="cti"     uri="http://cannontech.com/tags/cti" %>
-<%@ taglib prefix="jsTree"  tagdir="/WEB-INF/tags/jsTree" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="jsTree" tagdir="/WEB-INF/tags/jsTree" %>
 
 <%-- Passthrough to inlineTree --%>
-<%@ attribute name="id" required="true" type="java.lang.String"%>
-<%@ attribute name="treeCss" required="false" type="java.lang.String"%>
-<%@ attribute name="treeParameters" required="false" type="java.lang.String"%>
-<%@ attribute name="triggerElement" required="false" type="java.lang.String"%>
-<%@ attribute name="highlightNodePath" required="false" type="java.lang.String"%>
-<%@ attribute name="multiSelect"        required="false"     type="java.lang.Boolean"%>
-<%@ attribute name="includeControlBar" required="false" type="java.lang.Boolean"%>
-<%@ attribute name="styleClass" required="false" type="java.lang.String"%>
-<%@ attribute name="dataJson" required="false" type="java.lang.String"%>
+<%@ attribute name="id" required="true" %>
+<%@ attribute name="treeCss" %>
+<%@ attribute name="treeParameters" description="This should be a object '{}' with arguments for tree initialization." %>
+<%@ attribute name="triggerElement" %>
+<%@ attribute name="highlightNodePath" %>
+<%@ attribute name="multiSelect" type="java.lang.Boolean" %>
+<%@ attribute name="includeControlBar" type="java.lang.Boolean" %>
+<%@ attribute name="styleClass" %>
+<%@ attribute name="dataJson" %>
 
 <%-- POPUP WINDOW SETUP --%>
 <%-- buttonsList is used to add buttons (with handlers) to the window. It is not required. --%>
@@ -20,15 +20,12 @@
 <%-- It should be in form of a list of hash. buttonsList should look something like this:  --%>
 <%-- [{text:'Button 1', click:doAction1();},{text:'Button 2', click:doAction1();}] --%>
 <%-- where doAction1() and doAction2() are javascript functions in your jsp --%>
-<%@ attribute name="title" required="false" type="java.lang.String"%>
-<%@ attribute name="maxHeight" required="false" type="java.lang.Integer" description="The max-height in pixels for the internal tree div. Example: maxHeight='300'. Defaults is 500."%>
-<%@ attribute name="windowAttributes" required="false" type="java.lang.String"%>
-<%@ attribute name="buttonsList" required="false" type="java.lang.String"%>
+<%@ attribute name="title" %>
+<%@ attribute name="maxHeight"  type="java.lang.Integer" description="The max-height in pixels for the internal tree div. Example: maxHeight='300'. Defaults is 500." %>
+<%@ attribute name="windowAttributes" %>
+<%@ attribute name="buttonsList" %>
 
-<c:choose>
-    <c:when test="${!empty pageScope.treeCss}"><cti:includeCss link="${treeCss}"/></c:when>
-    <c:otherwise><cti:includeCss link="/JavaScript/extjs_cannon/resources/css/tree.css"/></c:otherwise>
-</c:choose>
+<c:if test="${!empty pageScope.treeCss}"><cti:includeCss link="${treeCss}"/></c:if>
 
 <div class="dn">
     <!-- Hide the contents of this window. clicking the button will be MAGIC! -->
@@ -53,10 +50,8 @@
     // names will be the id, prefixed with tree_
     var tree_${id};
     var window_${id};
-    
-    jQuery(document).ready(function(){
+    jQuery(document).ready(function() {
         var offsetTop,
-            dialogHeight,
             titleBarObj,
             groupTreeObj,
             dialogCont,
@@ -67,8 +62,7 @@
             calcMaxHeight = function (dialogCont, titleBar, treeHelper, buttonPane) {
                 var paneHeights = titleBar.height() + treeHelper.height() + buttonPane.height(),
                     maxHeight;
-                // 8-pixel slop addresses top and bottom padding on the elements comprising the popup
-                maxHeight = dialogCont.height() - paneHeights - 8;
+                maxHeight = dialogCont.height() - paneHeights - 15;
                 return maxHeight;
             };
         <c:if test="${!empty pageScope.buttonsList}">
@@ -128,9 +122,6 @@
             } else {
                 offsetTop = Yukon.ui.dialogs.${id}.offsetTop;
             }
-            dialogHeight = window.windowHeight - offsetTop;
-            // height set on dialog. when tree expanded
-            groupTreeObj.dialog('option', 'height', dialogHeight + titleBarObj.height());
             // make dialog wider so long entries don't force horizontal scrollbars
             groupTreeObj.dialog('option', 'width', TREE_DIALOG_MAX_WIDTH);
             // no scrollbars on tree div, prevents double scrollbars

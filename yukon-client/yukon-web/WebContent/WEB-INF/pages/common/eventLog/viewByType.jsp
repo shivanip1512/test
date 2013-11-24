@@ -1,15 +1,15 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="jsTree" tagdir="/WEB-INF/tags/jsTree" %>
-<%@ taglib prefix="filterValue" tagdir="/WEB-INF/tags/filterValue" %>
-<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
-<%@ taglib tagdir="/WEB-INF/tags/i18n" prefix="i" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
-<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
+<%@ taglib prefix="filterValue" tagdir="/WEB-INF/tags/filterValue" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="t" tagdir="/WEB-INF/tags/jsTree" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:standardPage title="Event Log" module="support" page="eventViewer.byType">
+<cti:standardPage module="support" page="eventViewer.byType">
     <cti:standardMenu menuSelection="events|byType" />
     <c:set var="baseUrl" value="/common/eventLog/viewByType"/>
     
@@ -90,7 +90,7 @@
                 <cti:msg2 var="cancel" key=".cancel"/>
                 <cti:msg2 var="noEventLogSelected" key=".noEventLogSelected"/>
                                                             
-                <jsTree:popupTree id="eventCategoryEditorTree"
+                <t:popupTree id="eventCategoryEditorTree"
                                treeCss="/WebConfig/yukon/styles/lib/dynatree/eventType.css"
                                triggerElement="showPopupButton"
                                dataJson="${allEventCategoriesDataJson}" highlightNodePath="${extSelectedNodePath}"
