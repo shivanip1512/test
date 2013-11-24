@@ -9,54 +9,43 @@
 <cti:msgScope paths="modules.operator.enrollmentEdit,modules.operator.enrollmentList">
 <script type="text/javascript">
     inventoryIds = [];
-    updateOKButton = function() {
+    updateOKButton = function () {
         var index;
         for (index = 0; index < inventoryIds.length; index++) {
             if (jQuery('#enrolledCB' + inventoryIds[index]).is(":checked")) {
-                jQuery('#okBtn').removeAttr("disabled");
+                jQuery('#okBtn').prop('disabled', false);
                 return;
             }
         }
-        jQuery('#okBtn').attr("disabled","disabled");
+        jQuery('#okBtn').prop ('disabled', true);
     };
-    enrollmentChanged = function(inventoryId) {
+    enrollmentChanged = function (inventoryId) {
         var isEnrolled = jQuery('#enrolledCB' + inventoryId).is(":checked");
         if (isEnrolled) {
-            jQuery('#relaySelect' + inventoryId).removeAttr("disabled");
+            jQuery('#relaySelect' + inventoryId).prop('disabled', false);
             if (0 < jQuery('#okBtn').length) {
-                jQuery('#okBtn').removeAttr("disabled");
+                jQuery('#okBtn').prop('disabled', false);
             }
         } else {
-            jQuery('#relaySelect' + inventoryId).attr("disabled","disabled");
+            jQuery('#relaySelect' + inventoryId).prop('disabled', true);
             updateOKButton();
         }
     };
-    
-    jQuery(function() {
-        var okEnabled = false,
-            index,
-            inventoryId;
-        // the inventoryIds array is not populated, apparently not until the data
-        // is fetched from the server, so we must wait a couple seconds for the data to arrive
-        if(0 === inventoryIds.length) {
-            setTimeout(function() {
-                for (index = 0; index < inventoryIds.length; index++) {
-                    inventoryId = inventoryIds[index];
-                    if (jQuery('#enrolledCB' + inventoryId).is(":checked")) {
-                        okEnabled = true;
-                        jQuery('#relaySelect' + inventoryId).removeAttr("disabled");
-                    } else {
-                        jQuery('#relaySelect' + inventoryId).attr("disabled","disabled");
-                    }
-                }
-                if(true === jQuery('#okBtn').is(":disabled")) {
-                    jQuery('#okBtn').removeAttr("disabled");
-                }
-                else {
-                    jQuery('#okBtn').attr("disabled","disabled");
-                }
-            }, 2500);
+    jQuery(function () {
+        var index,
+            inventoryId,
+            idsArr = jQuery('input[name$="inventoryId"]').map(function(index, el) {
+                return jQuery(el).val();
+            });
+        for (index = 0; index < idsArr.length; index++) {
+            inventoryId = idsArr[index];
+            if (jQuery('#enrolledCB' + inventoryId).is(":checked")) {
+                jQuery('#relaySelect' + inventoryId).prop('disabled', false);
+            } else {
+                jQuery('#relaySelect' + inventoryId).prop('disabled', true);
+            }
         }
+        jQuery('#okBtn').prop('disabled', !jQuery('#okBtn').prop('disabled'));
     });
 </script>
 
