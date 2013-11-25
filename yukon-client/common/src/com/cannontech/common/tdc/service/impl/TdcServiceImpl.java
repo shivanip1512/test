@@ -460,12 +460,11 @@ public class TdcServiceImpl implements TdcService{
             String colorString;
             int fgColor = state.getFgColor();
             if (fgColor == Colors.RED_ID) {
-                colorString = defaultAlertStr; // yukon.css 
+                colorString = defaultAlertStr;
             } else {
                 colorString = Colors.getColorString(fgColor);
             }
             stateColorMap.put(state.getStateRawState(), colorString);
         }
-        System.out.println();
     }
 }
