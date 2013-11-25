@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.bulk.collection.device.persistable.FieldBasedCollectionPersistable;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
@@ -20,6 +21,7 @@ import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.google.common.collect.Maps;
 
 public class DeviceGroupCollectionHelperImpl implements DeviceGroupCollectionHelper {
     private DeviceGroupService deviceGroupService;
@@ -44,33 +46,59 @@ public class DeviceGroupCollectionHelperImpl implements DeviceGroupCollectionHel
     }
     
     public String getSupportedType() {
-        return "group";
+        return DeviceCollectionType.group.toString();
     }
     
     public String getParameterName(String shortName) {
         return getSupportedType() + "." + shortName;
     }
     
+    @Override
     public DeviceCollection buildDeviceCollection(final DeviceGroup group) {
         return buildDeviceCollection(group, null);
     }
-
+    
+    @Override
+    public FieldBasedCollectionPersistable buildDeviceCollectionPersistable(DeviceCollection deviceCollection) {
+        DeviceCollectionType type = deviceCollection.getCollectionType();
+        if(type != DeviceCollectionType.group) {
+            throw new IllegalArgumentException("Unable to parse device collection of type " + type);
+        }
+        
+        Map<String, String> parameters = deviceCollection.getCollectionParameters();
+        String name = parameters.get(getParameterName(NAME));
+        String description = parameters.get(getParameterName(DESCRIPTION));
+        Map<String, String> valueMap = Maps.newHashMap();
+        valueMap.put(NAME, name);
+        valueMap.put(DESCRIPTION, description);
+        
+        return new FieldBasedCollectionPersistable(DeviceCollectionType.group, valueMap);
+    }
+    
+    @Override
     public DeviceCollection buildDeviceCollection(final DeviceGroup group, final String descriptionHint) {
         
         return new ListBasedDeviceCollection() {
+            @Override
+            public DeviceCollectionType getCollectionType() {
+                return DeviceCollectionType.group;
+            }
+            
+            @Override
             public Map<String, String> getCollectionParameters() {
 
                 Map<String, String> paramMap = new HashMap<String, String>();
 
                 paramMap.put("collectionType", getSupportedType());
-                paramMap.put(getParameterName("name"), group.getFullName());
+                paramMap.put(getParameterName(NAME), group.getFullName());
                 if (org.apache.commons.lang.StringUtils.isNotBlank(descriptionHint)) {
-                    paramMap.put(getParameterName("description"), descriptionHint);
+                    paramMap.put(getParameterName(DESCRIPTION), descriptionHint);
                 }
 
                 return paramMap;
             }
 
+            @Override
             public List<SimpleDevice> getDeviceList() {
                 List<SimpleDevice> deviceList = new ArrayList<SimpleDevice>();
 
@@ -114,6 +142,7 @@ public class DeviceGroupCollectionHelperImpl implements DeviceGroupCollectionHel
         };
     }
     
+    @Override
     @Transactional
     public DeviceCollection createDeviceGroupCollection(Iterator<? extends YukonDevice> devices, String descriptionHint) {
         

@@ -1,4 +1,4 @@
-package com.cannontech.web.bulk.model.collection;
+package com.cannontech.common.bulk.collection;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -21,12 +21,13 @@ import com.cannontech.common.bulk.collection.device.DeviceCollectionCreationExce
 import com.cannontech.common.bulk.collection.device.DeviceCollectionProducer;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionType;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
+import com.cannontech.common.bulk.collection.device.persistable.DeviceCollectionPersistable;
 import com.cannontech.common.bulk.iterator.CloseableIterator;
 import com.cannontech.common.bulk.iterator.CloseableIteratorWrapper;
 import com.cannontech.common.bulk.iterator.CsvColumnReaderIterator;
 import com.cannontech.common.bulk.mapper.ObjectMapperFactory;
-import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.bulk.mapper.ObjectMapperFactory.FileMapperEnum;
+import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.MappingIterator;
@@ -34,18 +35,15 @@ import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.tools.csv.CSVReader;
 
 public class DeviceFileUploadCollectionProducer implements DeviceCollectionProducer {
-    private ObjectMapperFactory objectMapperFactory = null;
-    private DeviceGroupCollectionHelper deviceGroupCollectionProducer = null;
-
-    @Autowired
-    public void setDeviceGroupCollectionProducer(DeviceGroupCollectionHelper deviceGroupCollectionProducer) {
-        this.deviceGroupCollectionProducer = deviceGroupCollectionProducer;
-    }
+    @Autowired private ObjectMapperFactory objectMapperFactory;
+    @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionProducer;
     
+    @Override
     public DeviceCollectionType getSupportedType() {
         return DeviceCollectionType.fileUpload;
     }
 
+    @Override
     public DeviceCollection createDeviceCollection(HttpServletRequest request)
     throws ServletRequestBindingException {
 
@@ -67,7 +65,19 @@ public class DeviceFileUploadCollectionProducer implements DeviceCollectionProdu
         }
 
     }
-
+    
+    @Override
+    public DeviceCollection getCollectionFromPersistable(DeviceCollectionPersistable persistable) {
+        throw new UnsupportedOperationException("This producer delegates to DeviceGroupCollectionProducer and should "
+                                                + "not be persisted.");
+    }
+    
+    @Override
+    public DeviceCollectionPersistable getPersistableFromCollection(DeviceCollection deviceCollection) {
+        throw new UnsupportedOperationException("This producer delegates to DeviceGroupCollectionProducer and should "
+                                                + "not be persisted.");
+    }
+    
     private DeviceCollection handleInitialRequest(HttpServletRequest request, MultipartFile dataFile)
         throws ServletRequestBindingException, IOException, FileNotFoundException {
         final String originalFilename = dataFile.getOriginalFilename();
@@ -107,12 +117,4 @@ public class DeviceFileUploadCollectionProducer implements DeviceCollectionProdu
             new MappingIterator<String, SimpleDevice>(iterator, yukonDeviceMapper);
         return CloseableIteratorWrapper.getCloseableIterator(deviceIterator);
     }
-    
-    @Autowired
-    public void setObjectMapperFactory(ObjectMapperFactory objectMapperFactory) {
-        this.objectMapperFactory = objectMapperFactory;
-    }
 }
-
-
-

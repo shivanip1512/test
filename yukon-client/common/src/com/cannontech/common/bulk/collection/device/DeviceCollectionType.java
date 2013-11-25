@@ -10,6 +10,10 @@ public enum DeviceCollectionType {
     memory,
     ;
     
+    /**
+     * Generates a "full" parameter name in the form of "type.parameter", usable for retrieving that parameter from a
+     * device collection.
+     */
     public String getParameterName(String parameter) {
         return name() + "." + parameter;
     }

@@ -341,5 +341,8 @@
       <sequence name="YukonImage">
         <table name="YukonImage" identitycolumn="ImageId" initsequence="true" />
       </sequence>
+      <sequence name="DeviceCollection">
+        <table name="DeviceCollection" identitycolumn="CollectionId" initsequence="true" />
+      </sequence>
   </sequencetable>
 </sequencetables>

@@ -32,6 +32,7 @@ public interface DeviceCollection extends Iterable<SimpleDevice> {
      * 
      * @return An iterator for the devices in this collection
      */
+    @Override
     public Iterator<SimpleDevice> iterator();
     
     /**
@@ -54,4 +55,9 @@ public interface DeviceCollection extends Iterable<SimpleDevice> {
      * @return String description key
      */
     public MessageSourceResolvable getDescription();
+    
+    /**
+     * Get the DeviceCollectionType of this collection.
+     */
+    public DeviceCollectionType getCollectionType();
 }

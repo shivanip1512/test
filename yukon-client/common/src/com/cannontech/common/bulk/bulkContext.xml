@@ -476,4 +476,19 @@
     </bean>
 
     <bean id="filterServiceBean" class="com.cannontech.common.bulk.filter.service.impl.FilterDaoImpl"/>
+    
+    <bean class="com.cannontech.common.bulk.collection.device.dao.impl.DeviceCollectionPersistenceDaoImpl"/>
+    <bean class="com.cannontech.common.bulk.collection.device.service.impl.DeviceCollectionPersistenceServiceImpl"/>
+
+    <bean id="deviceGroupCollectionProducer" class="com.cannontech.common.bulk.collection.DeviceGroupCollectionProducer"><qualifier value="group"/></bean>
+    <bean id="deviceIdListCollectionProducer" class="com.cannontech.common.bulk.collection.DeviceIdListCollectionProducer"><qualifier value="idList"/></bean>
+    <bean id="deviceFileUploadCollectionProducer" class="com.cannontech.common.bulk.collection.DeviceFileUploadCollectionProducer"><qualifier value="fileUpload"/></bean>
+    <bean id="deviceAddressRangeCollectionProducer" class="com.cannontech.common.bulk.collection.DeviceAddressRangeCollectionProducer"><qualifier value="addressRange"/></bean>
+    <bean id="deviceMemoryCollectionProducer" class="com.cannontech.common.bulk.collection.DeviceMemoryCollectionProducer"><qualifier value="memory"/></bean>
+    <bean id="archiveDataAnalysisCollectionProducer" class="com.cannontech.common.bulk.collection.device.ArchiveDataAnalysisCollectionProducer"><qualifier value="ada"/></bean>
+    
+    <bean id="archiveDataAnalysisService" class="com.cannontech.common.bulk.service.impl.ArchiveDataAnalysisServiceImpl"/>
+    <bean id="archiveDataAnalysisDao" class="com.cannontech.core.dao.impl.ArchiveDataAnalysisDaoImpl"/>
+    <bean id="archiveDataAnalysisHelper" class="com.cannontech.common.bulk.service.ArchiveDataAnalysisHelper"/>
+    
 </beans>

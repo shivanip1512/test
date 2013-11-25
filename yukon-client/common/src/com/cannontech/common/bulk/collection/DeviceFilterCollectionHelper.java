@@ -1,4 +1,4 @@
-package com.cannontech.web.bulk.model.collection;
+package com.cannontech.common.bulk.collection;
 
 import java.util.List;
 

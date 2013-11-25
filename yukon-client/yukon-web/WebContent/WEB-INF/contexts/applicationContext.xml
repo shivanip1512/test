@@ -1497,17 +1497,7 @@
     </bean>
     <bean id="drOptOutMenuOption" class="com.cannontech.web.menu.option.producer.DemandResponseOptOutMenuOptionProducer"/>
     
-    <bean id="archiveDataAnalysisService" class="com.cannontech.common.bulk.service.impl.ArchiveDataAnalysisServiceImpl"/>
-    <bean id="archiveDataAnalysisDao" class="com.cannontech.core.dao.impl.ArchiveDataAnalysisDaoImpl"/>
-    <bean id="archiveDataAnalysisHelper" class="com.cannontech.common.bulk.service.ArchiveDataAnalysisHelper"/>
-    
     <bean id="deviceFilterCollectionProducer" class="com.cannontech.web.bulk.model.collection.DeviceFilterCollectionProducer"><qualifier value="filter"/></bean>
-    <bean id="deviceGroupCollectionProducer" class="com.cannontech.web.bulk.model.collection.DeviceGroupCollectionProducer"><qualifier value="group"/></bean>
-    <bean id="deviceFileUploadCollectionProducer" class="com.cannontech.web.bulk.model.collection.DeviceFileUploadCollectionProducer"><qualifier value="fileUpload"/></bean>
-    <bean id="deviceIdListCollectionProducer" class="com.cannontech.web.bulk.model.collection.DeviceIdListCollectionProducer"><qualifier value="idList"/></bean>
-    <bean id="deviceAddressRangeCollectionProducer" class="com.cannontech.web.bulk.model.collection.DeviceAddressRangeCollectionProducer"><qualifier value="addressRange"/></bean>
-    <bean id="deviceMemoryCollectionProducer" class="com.cannontech.web.bulk.model.collection.DeviceMemoryCollectionProducer"><qualifier value="memory"/></bean>
-    <bean id="archiveDataAnalysisCollectionProducer" class="com.cannontech.common.bulk.collection.device.ArchiveDataAnalysisCollectionProducer"><qualifier value="ada"/></bean>
     
     <bean id="deviceCollectionFactory" class="com.cannontech.web.bulk.model.DeviceCollectionFactoryImpl"/>
     

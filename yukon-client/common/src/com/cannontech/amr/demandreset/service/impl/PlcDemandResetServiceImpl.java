@@ -18,6 +18,7 @@ import com.cannontech.amr.demandreset.service.PlcDemandResetService;
 import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
+import com.cannontech.common.bulk.collection.device.DeviceCollectionType;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.GroupCommandExecutor;
 import com.cannontech.common.device.commands.GroupCommandResult;
@@ -65,6 +66,10 @@ public class PlcDemandResetServiceImpl implements PlcDemandResetService {
             }));
 
         final DeviceCollection deviceCollection = new DeviceCollection() {
+            @Override
+            public DeviceCollectionType getCollectionType() {
+                return DeviceCollectionType.idList;
+            }
             @Override
             public Iterator<SimpleDevice> iterator() {
                 return devices.iterator();

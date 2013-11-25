@@ -311,11 +311,15 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
     }
 
     public SqlStatementBuilder values(Object first, Object... remaining) {
-        addString("values (");
         List<Object> list = Lists.newArrayListWithCapacity(1 + remaining.length);
         list.add(first);
         list.addAll(Arrays.asList(remaining));
-        appendArgumentList(list);
+        return values(list);
+    }
+    
+    public SqlStatementBuilder values(Iterable<?> values) {
+        addString("values (");
+        appendArgumentList(values);
         addString(") ");
         return this;
     }

@@ -1,4 +1,4 @@
-package com.cannontech.web.bulk.model.collection;
+package com.cannontech.common.bulk.collection;
 
 import java.util.HashMap;
 import java.util.List;
@@ -18,6 +18,9 @@ import com.cannontech.common.bulk.collection.device.DeviceCollectionCreationExce
 import com.cannontech.common.bulk.collection.device.DeviceCollectionProducer;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionType;
 import com.cannontech.common.bulk.collection.device.ListBasedDeviceCollection;
+import com.cannontech.common.bulk.collection.device.persistable.DeviceCollectionPersistable;
+import com.cannontech.common.bulk.collection.device.persistable.DeviceCollectionPersistenceType;
+import com.cannontech.common.bulk.collection.device.persistable.DeviceListBasedCollectionPersistable;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonPao;
@@ -50,14 +53,42 @@ public class DeviceMemoryCollectionProducer implements DeviceCollectionProducer 
 
         return memoryMap.getIfPresent(key);
     }
-
+    
+    @Override
+    public DeviceCollection getCollectionFromPersistable(DeviceCollectionPersistable persistable) {
+        DeviceCollectionType collectionType = persistable.getCollectionType();
+        DeviceCollectionPersistenceType persistenceType = persistable.getPersistenceType();
+        if(collectionType != DeviceCollectionType.memory || persistenceType != DeviceCollectionPersistenceType.DEVICE_LIST) {
+            throw new IllegalArgumentException("Unable to parse device collection persistable. Collection type: " 
+                + collectionType + ", Persistence type: " + persistenceType);
+        }
+        DeviceListBasedCollectionPersistable listPersistable = (DeviceListBasedCollectionPersistable) persistable;
+        return createDeviceCollection(listPersistable.getDeviceIds());
+    }
+    
+    @Override
+    public DeviceCollectionPersistable getPersistableFromCollection(DeviceCollection deviceCollection) {
+        DeviceCollectionType type = deviceCollection.getCollectionType();
+        if(type != DeviceCollectionType.memory) {
+            throw new IllegalArgumentException("Unable to parse device collection of type " + type);
+        }
+        List<SimpleDevice> deviceList = deviceCollection.getDeviceList();
+        
+        return DeviceListBasedCollectionPersistable.create(DeviceCollectionType.memory, deviceList);
+    }
+    
     public DeviceCollection createDeviceCollection(final Iterable<YukonPao> paos) {
         
         final String key = UUID.randomUUID().toString();
         final List<SimpleDevice> devices = PaoUtils.asSimpleDeviceListFromPaos(paos);
 
         ListBasedDeviceCollection value = new ListBasedDeviceCollection() {
-
+            @Override
+            public DeviceCollectionType getCollectionType() {
+                return getSupportedType();
+            }
+            
+            @Override
             public Map<String, String> getCollectionParameters() {
 
                 Map<String, String> paramMap = new HashMap<String, String>();
@@ -68,6 +99,7 @@ public class DeviceMemoryCollectionProducer implements DeviceCollectionProducer 
                 return paramMap;
             }
 
+            @Override
             public List<SimpleDevice> getDeviceList() {
                 return devices;
             }
@@ -93,7 +125,12 @@ public class DeviceMemoryCollectionProducer implements DeviceCollectionProducer 
         final List<SimpleDevice> devices = deviceDao.getYukonDeviceObjectByIds(idList);
 
         ListBasedDeviceCollection value = new ListBasedDeviceCollection() {
-
+            @Override
+            public DeviceCollectionType getCollectionType() {
+                return getSupportedType();
+            }
+            
+            @Override
             public Map<String, String> getCollectionParameters() {
 
                 Map<String, String> paramMap = new HashMap<String, String>();
@@ -104,6 +141,7 @@ public class DeviceMemoryCollectionProducer implements DeviceCollectionProducer 
                 return paramMap;
             }
 
+            @Override
             public List<SimpleDevice> getDeviceList() {
                 return devices;
             }

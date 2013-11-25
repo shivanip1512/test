@@ -19,10 +19,12 @@ import com.cannontech.amr.meter.search.model.FilterBy;
 import com.cannontech.amr.meter.search.model.MeterSearchField;
 import com.cannontech.amr.meter.search.model.MeterSearchOrderBy;
 import com.cannontech.amr.meter.search.model.StandardFilterByGenerator;
+import com.cannontech.common.bulk.collection.DeviceFilterCollectionHelper;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionProducer;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionType;
 import com.cannontech.common.bulk.collection.device.RangeBasedDeviceCollection;
+import com.cannontech.common.bulk.collection.device.persistable.DeviceCollectionPersistable;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.search.result.SearchResults;
@@ -81,7 +83,11 @@ public class DeviceFilterCollectionProducer implements DeviceCollectionProducer,
     @Override
     public DeviceCollection createDeviceGroupCollection(final List<FilterBy> filterBys, final MeterSearchOrderBy orderBy) {
         return new RangeBasedDeviceCollection() {
-
+            @Override
+            public DeviceCollectionType getCollectionType() {
+                return getSupportedType();
+            }
+            
             @Override
             public Map<String, String> getCollectionParameters() {
                 Map<String, String> paramMap = new HashMap<String, String>();
@@ -125,5 +131,14 @@ public class DeviceFilterCollectionProducer implements DeviceCollectionProducer,
             
         };
     }
-
+    
+    @Override
+    public DeviceCollection getCollectionFromPersistable(DeviceCollectionPersistable persistable) {
+        throw new UnsupportedOperationException();
+    }
+    
+    @Override
+    public DeviceCollectionPersistable getPersistableFromCollection(DeviceCollection deviceCollection) {
+        throw new UnsupportedOperationException();
+    }
 }

@@ -1,4 +1,4 @@
-package com.cannontech.web.bulk.model.collection;
+package com.cannontech.common.bulk.collection;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -18,6 +19,9 @@ import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionProducer;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionType;
 import com.cannontech.common.bulk.collection.device.ListBasedDeviceCollection;
+import com.cannontech.common.bulk.collection.device.persistable.DeviceCollectionPersistable;
+import com.cannontech.common.bulk.collection.device.persistable.DeviceCollectionPersistenceType;
+import com.cannontech.common.bulk.collection.device.persistable.DeviceListBasedCollectionPersistable;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.db.device.Device;
@@ -30,14 +34,36 @@ import com.google.common.collect.Iterables;
  * Implementation of DeviceCollectionProducer for an id list
  */
 public class DeviceIdListCollectionProducer implements DeviceCollectionProducer {
-
     @Autowired private DeviceDao deviceDao;
     @Autowired @Qualifier("memory") private DeviceMemoryCollectionProducer memoryCollectionProducer;
 
+    @Override
     public DeviceCollectionType getSupportedType() {
         return DeviceCollectionType.idList;
     }
-
+    
+    @Override
+    public DeviceCollection getCollectionFromPersistable(DeviceCollectionPersistable persistable) {
+        DeviceCollectionType collectionType = persistable.getCollectionType();
+        DeviceCollectionPersistenceType persistenceType = persistable.getPersistenceType();
+        if(collectionType != DeviceCollectionType.idList || persistenceType != DeviceCollectionPersistenceType.DEVICE_LIST) {
+            throw new IllegalArgumentException("Unable to parse device collection persistable. Collection type: " 
+                + collectionType + ", Persistence type: " + persistenceType);
+        }
+        DeviceListBasedCollectionPersistable listPersistable = (DeviceListBasedCollectionPersistable) persistable;
+        return createDeviceCollection(listPersistable.getDeviceIds(), null);
+    }
+    
+    @Override
+    public DeviceCollectionPersistable getPersistableFromCollection(DeviceCollection deviceCollection) {
+        DeviceCollectionType type = deviceCollection.getCollectionType();
+        if(type != DeviceCollectionType.idList) {
+            throw new IllegalArgumentException("Unable to parse device collection of type " + type);
+        }
+        return DeviceListBasedCollectionPersistable.create(DeviceCollectionType.idList, deviceCollection.getDeviceList());
+    }
+    
+    @Override
     public DeviceCollection createDeviceCollection(HttpServletRequest request) throws ServletRequestBindingException {
         final String ids = ServletRequestUtils.getStringParameter(request, getSupportedType().getParameterName("ids"));
         final List<Integer> idList = ServletUtil.getIntegerListFromString(ids);
@@ -49,9 +75,19 @@ public class DeviceIdListCollectionProducer implements DeviceCollectionProducer 
             /* For large lists of ids, convert to memory list since url's can only be so long. */
             return memoryCollectionProducer.createDeviceCollection(idList);
         }
-
+        return createDeviceCollection(idList, ids);
+    }
+    
+    private DeviceCollection createDeviceCollection(final List<Integer> deviceIds, String optionalIdsString) {
+        final String ids = optionalIdsString != null ? optionalIdsString : StringUtils.join(deviceIds, ",");
+        
         return new ListBasedDeviceCollection() {
-
+            @Override
+            public DeviceCollectionType getCollectionType() {
+                return getSupportedType();
+            }
+            
+            @Override
             public Map<String, String> getCollectionParameters() {
 
                 Map<String, String> paramMap = new HashMap<String, String>();
@@ -62,11 +98,12 @@ public class DeviceIdListCollectionProducer implements DeviceCollectionProducer 
                 return paramMap;
             }
 
+            @Override
             public List<SimpleDevice> getDeviceList() {
 
                 List<SimpleDevice> deviceList = new ArrayList<SimpleDevice>();
 
-                for (int id : idList) {
+                for (int id : deviceIds) {
                     SimpleDevice device = deviceDao.getYukonDevice(id);
                     deviceList.add(device);
                 }
@@ -76,7 +113,7 @@ public class DeviceIdListCollectionProducer implements DeviceCollectionProducer 
 
             @Override
             public long getDeviceCount() {
-                return idList.size();
+                return deviceIds.size();
             }
 
             @Override
