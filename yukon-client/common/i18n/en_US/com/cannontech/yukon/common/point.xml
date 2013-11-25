@@ -76,6 +76,10 @@
     <entry key="yukon.common.attribute.builtInAttribute.PEAK_DEMAND_RATE_D">Peak Demand Rate D</entry>
     <entry key="yukon.common.attribute.builtInAttribute.PEAK_DEMAND_RATE_E">Peak Demand Rate E</entry>
     <entry key="yukon.common.attribute.builtInAttribute.PEAK_DEMAND_FROZEN">Peak Demand Frozen</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.PEAK_DEMAND_FROZEN_RATE_A">Peak Demand Frozen Rate A</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.PEAK_DEMAND_FROZEN_RATE_B">Peak Demand Frozen Rate B</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.PEAK_DEMAND_FROZEN_RATE_C">Peak Demand Frozen Rate C</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.PEAK_DEMAND_FROZEN_RATE_D">Peak Demand Frozen Rate D</entry>
     <entry key="yukon.common.attribute.builtInAttribute.PHASE">Phase</entry>
     <entry key="yukon.common.attribute.builtInAttribute.POWER_FAIL_FLAG">Power Fail Flag</entry>
     <entry key="yukon.common.attribute.builtInAttribute.PROFILE_CHANNEL_2">Profile Channel 2</entry>

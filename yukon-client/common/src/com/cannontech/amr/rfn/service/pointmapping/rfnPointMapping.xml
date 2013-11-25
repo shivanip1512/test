@@ -2523,4 +2523,144 @@
         </point>
     </pointGroup>
     
+    <!-- ADVANCED METROLOGY FROZEN PEAK DEMAND -->
+    <pointGroup>
+        <!-- CENTRON -->
+        <paoType value="RFN410CL"/>
+        <paoType value="RFN420CL"/>
+        <paoType value="RFN420CD"/>
+        <!-- FOCUS AX -->
+        <paoType value="RFN410FX"/>
+        <paoType value="RFN410FD"/>
+        <paoType value="RFN420FX"/>
+        <paoType value="RFN420FD"/>
+        <!-- FOCUS KWH -->
+        <paoType value="RFN410FL"/>
+        <paoType value="RFN420FL"/>
+        
+        <point name="Frozen Peak Demand">
+            <uom>W</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Max</modifier>
+                <modifier>Previous</modifier>
+            </modifiers>
+        </point>
+        <point name="Frozen Peak Demand Rate A">
+            <uom>W</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Max</modifier>
+                <modifier>TOU Rate A</modifier>
+                <modifier>Previous</modifier>
+            </modifiers>
+        </point>
+        <point name="Frozen Peak Demand Rate B">
+            <uom>W</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Max</modifier>
+                <modifier>TOU Rate B</modifier>
+                <modifier>Previous</modifier>
+            </modifiers>
+        </point>
+        <point name="Frozen Peak Demand Rate C">
+            <uom>W</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Max</modifier>
+                <modifier>TOU Rate C</modifier>
+                <modifier>Previous</modifier>
+            </modifiers>
+        </point>
+        <point name="Frozen Peak Demand Rate D">
+            <uom>W</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Max</modifier>
+                <modifier>TOU Rate D</modifier>
+                <modifier>Previous</modifier>
+            </modifiers>
+        </point>
+        <point name="Time of Frozen Peak Demand Rate A">
+            <uom>s</uom>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>TOU Rate A</modifier>
+                <modifier>Previous</modifier>
+            </modifiers>
+        </point>
+        <point name="Time of Frozen Peak Demand Rate B">
+            <uom>s</uom>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>TOU Rate B</modifier>
+                <modifier>Previous</modifier>
+            </modifiers>
+        </point>
+        <point name="Time of Frozen Peak Demand Rate C">
+            <uom>s</uom>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>TOU Rate C</modifier>
+                <modifier>Previous</modifier>
+            </modifiers>
+        </point>
+        <point name="Time of Frozen Peak Demand Rate D">
+            <uom>s</uom>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>TOU Rate D</modifier>
+                <modifier>Previous</modifier>
+            </modifiers>
+        </point>
+    </pointGroup>
+    
+    <!-- ADVANCED METROLOGY CENTRON FROZEN PEAK DEMAND -->
+    <pointGroup>
+        <paoType value="RFN410CL"/>
+        <paoType value="RFN420CL"/>
+        <paoType value="RFN420CD"/>
+        
+        <point name="Time of Frozen Peak Demand">
+            <uom>s</uom>
+            <parseSiPrefix/>
+            <modifiers match="equal"/>
+        </point>
+    </pointGroup>
+    
+    <!-- ADVANCED METROLOGY FOCUS FROZEN PEAK DEMAND -->
+    <pointGroup>
+        <!-- FOCUS AX -->
+        <paoType value="RFN410FX"/>
+        <paoType value="RFN410FD"/>
+        <paoType value="RFN420FX"/>
+        <paoType value="RFN420FD"/>
+        <!-- FOCUS KWH -->
+        <paoType value="RFN410FL"/>
+        <paoType value="RFN420FL"/>
+        
+        <point name="Time of Frozen Peak Demand">
+            <uom>s</uom>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Previous</modifier>
+            </modifiers>
+        </point>
+    </pointGroup>
 </pointMappings>
