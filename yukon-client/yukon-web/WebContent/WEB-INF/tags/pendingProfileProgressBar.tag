@@ -1,26 +1,30 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ tag body-content="empty" trimDirectiveWhitespaces="true" %>
 
-<%@ attribute name="requestId" required="true" type="java.lang.Long"%>
-<%@ attribute name="percentDone" required="true" type="java.lang.String"%>
-<%@ attribute name="lastReturnMsg" required="false" type="java.lang.String"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+
+<%@ attribute name="requestId" required="true" type="java.lang.Long" %>
+<%@ attribute name="percentDone" required="true" %>
+<%@ attribute name="lastReturnMsg" %>
 
 <c:choose>
 
     <c:when test="${empty percentDone}">
-        <div id="progressMsg_${requestId}" style='color:#FF0000;font-weight:bold;'>Request Failed</div>${pageScope.lastReturnMsg}
+        <div id="progressMsg_${requestId}" class="error"><i:inline key="yukon.common.requestFailed"/></div><div>${pageScope.lastReturnMsg}</div>
     </c:when>
 
     <c:when test="${percentDone >= 100.0}">
-        <div id="progressMsg_${requestId}" class="fwb tac success">Completed</div>
+        <div id="progressMsg_${requestId}" class="success"><i:inline key="yukon.common.completed"/></div>
     </c:when>
     
     <c:when test="${percentDone <= 0.0}">
-        <div id="progressMsg_${requestId}" class="fwb tac">Pending</div>
+        <div id="progressMsg_${requestId}"><i:inline key="yukon.common.pending"/></div>
     </c:when>
 
     <c:otherwise>
-        <table cellpadding="0px" border="0px">
+        <table>
             <tr>
                 <td>
                     <div id="progressBorder_${requestId}" class="progressbar-border" align="left">
@@ -30,7 +34,7 @@
                 </td>
                 <td>
                     <div id="percentDone_${requestId}" class="progressbar-percent-complete">
-                        ${percentDone}%
+                        <fmt:formatNumber type="percent" value="${percentDone / 100}"/>
                     </div>
                 </td>
             </tr>

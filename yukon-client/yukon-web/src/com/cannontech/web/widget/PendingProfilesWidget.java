@@ -81,12 +81,6 @@ public class PendingProfilesWidget extends WidgetControllerBase {
         return mav;
     }
     
-    /**
-     * HELPER
-     * @param deviceId
-     * @param userContext
-     * @return
-     */
     private List<Map<String, String>> getPendingRequests(int deviceId, YukonUserContext userContext) {
         
         LiteYukonPAObject devicePaoObj = paoDao.getLiteYukonPAO(deviceId);

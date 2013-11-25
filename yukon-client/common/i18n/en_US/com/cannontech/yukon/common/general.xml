@@ -142,8 +142,13 @@
 
 <entry key="yukon.common.console">Console</entry>
 <entry key="yukon.common.file">File</entry>
-
 <entry key="yukon.common.view">view</entry>
+<entry key="yukon.common.range">Range</entry>
+<entry key="yukon.common.status">Status</entry>
+<entry key="yukon.common.email">Email</entry>
+<entry key="yukon.common.completed">Completed</entry>
+<entry key="yukon.common.pending">Pending...</entry>
+<entry key="yukon.common.requestFailed">Request Failed</entry>
 
 <entry key="yukon.common.search.noResultsFound">No results found.</entry>
 

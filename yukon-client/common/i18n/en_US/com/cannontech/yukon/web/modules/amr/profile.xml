@@ -67,6 +67,6 @@
     
     <!-- pendingProfilesWidget/ongoingProfiles.jsp -->
     <entry key="yukon.web.widgets.pendingProfilesWidget.channel">Channel</entry>
-    <entry key="yukon.web.widgets.pendingProfilesWidget.requestedBy">Requested By:</entry>
+    <entry key="yukon.web.widgets.pendingProfilesWidget.requestedBy">Requested By</entry>
     <entry key="yukon.web.widgets.pendingProfilesWidget.none">None</entry>
 </properties>
