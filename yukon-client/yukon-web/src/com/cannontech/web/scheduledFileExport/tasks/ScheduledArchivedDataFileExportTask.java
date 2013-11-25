@@ -22,14 +22,10 @@ import com.cannontech.amr.archivedValueExporter.model.dataRange.LocalDateRange;
 import com.cannontech.amr.archivedValueExporter.service.ExportReportGeneratorService;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.YukonMeter;
-import com.cannontech.common.device.groups.dao.DeviceGroupPermission;
-import com.cannontech.common.device.groups.dao.DeviceGroupType;
+import com.cannontech.common.bulk.collection.device.DeviceCollection;
+import com.cannontech.common.bulk.collection.device.service.DeviceCollectionPersistenceService;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
-import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
-import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
-import com.cannontech.common.device.groups.model.DeviceGroup;
-import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.exception.FileCreationException;
 import com.cannontech.common.fileExportHistory.ExportHistoryEntry;
 import com.cannontech.common.fileExportHistory.FileExportType;
@@ -37,7 +33,6 @@ import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.scheduledFileExport.ArchivedDataExportFileGenerationParameters;
 import com.cannontech.common.scheduledFileExport.ExportFileGenerationParameters;
 import com.cannontech.common.scheduledFileExport.dao.ScheduledFileExportDao;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.RawPointHistoryDao;
 
 public class ScheduledArchivedDataFileExportTask extends ScheduledFileExportTask implements PersistedFormatTask {
@@ -48,16 +43,17 @@ public class ScheduledArchivedDataFileExportTask extends ScheduledFileExportTask
 	@Autowired private ScheduledFileExportDao scheduledFileExportDao;
 	@Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
 	@Autowired private DeviceGroupEditorDao deviceGroupEditorDao;
+	@Autowired private DeviceCollectionPersistenceService deviceCollectionPersistenceService;
 	
-	private String uniqueIdentifier = CtiUtilities.getUuidString();
-	private List<SimpleDevice> deviceList;
+	private int collectionId;
 	private int formatId;
 	private Set<Attribute> attributes;
 	private DataRange dataRange = new DataRange();
 	
 	@Override
 	public void start() {
-		List<YukonMeter> meters = meterDao.getMetersForYukonPaos(deviceList);
+		DeviceCollection deviceCollection = deviceCollectionPersistenceService.loadCollection(collectionId);
+	    List<YukonMeter> meters = meterDao.getMetersForYukonPaos(deviceCollection.getDeviceList());
 		ExportFormat format = archiveValuesExportFormatDao.getByFormatId(formatId);
 		populateDataRange();
 		
@@ -97,16 +93,12 @@ public class ScheduledArchivedDataFileExportTask extends ScheduledFileExportTask
 	@Override
 	public void setFileGenerationParameters(ExportFileGenerationParameters parameters) {
 		ArchivedDataExportFileGenerationParameters adeParameters = (ArchivedDataExportFileGenerationParameters) parameters;
-		deviceList = adeParameters.getDeviceCollection().getDeviceList();
 		formatId = adeParameters.getFormatId();
 		attributes = adeParameters.getAttributes();
 		dataRange = adeParameters.getDataRange();
 		
-		//Store device list in a device group so that it can persist when the server is shut down.
-		//(JobProperty table is not practical for storing a large list of devices)
-		StoredDeviceGroup parent = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.AUTO);
-		StoredDeviceGroup group = deviceGroupEditorDao.addGroup(parent, DeviceGroupType.STATIC, uniqueIdentifier, DeviceGroupPermission.HIDDEN);
-		deviceGroupMemberEditorDao.addDevices(group, deviceList);
+		DeviceCollection deviceCollection = adeParameters.getDeviceCollection();
+		collectionId = deviceCollectionPersistenceService.saveCollection(deviceCollection);
 	}
 	
 	private void populateDataRange() {
@@ -122,18 +114,12 @@ public class ScheduledArchivedDataFileExportTask extends ScheduledFileExportTask
 		}
 	}
 	
-	public String getUniqueIdentifier() {
-		return uniqueIdentifier;
+	public int getDeviceCollectionId() {
+	    return collectionId;
 	}
 	
-	//This is the identifier of the device group where the device list was persisted.
-	//This is set when the task is recreated on server startup.
-	public void setUniqueIdentifier(String uniqueIdentifier) {
-		this.uniqueIdentifier = uniqueIdentifier;
-		//Pull out devices from group
-		StoredDeviceGroup parent = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.AUTO);
-		StoredDeviceGroup group = deviceGroupEditorDao.getGroupByName(parent, uniqueIdentifier);
-		deviceList = deviceGroupMemberEditorDao.getChildDevices(group);
+	public void setDeviceCollectionId(int collectionId) {
+	    this.collectionId = collectionId;
 	}
 	
 	@Override
@@ -227,10 +213,5 @@ public class ScheduledArchivedDataFileExportTask extends ScheduledFileExportTask
 	
 	public DataRange getDataRange() {
 		return dataRange;
-	}
-	
-	public DeviceGroup getDeviceGroup() {
-	    StoredDeviceGroup parent = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.AUTO);
-		return deviceGroupEditorDao.getGroupByName(parent, uniqueIdentifier);
 	}
 }

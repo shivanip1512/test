@@ -10,20 +10,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.waterMeterLeak.model.WaterMeterLeak;
 import com.cannontech.amr.waterMeterLeak.service.WaterMeterLeakService;
-import com.cannontech.common.device.groups.dao.DeviceGroupPermission;
-import com.cannontech.common.device.groups.dao.DeviceGroupType;
+import com.cannontech.common.bulk.collection.device.DeviceCollection;
+import com.cannontech.common.bulk.collection.device.service.DeviceCollectionPersistenceService;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
-import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
-import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
-import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.fileExportHistory.ExportHistoryEntry;
 import com.cannontech.common.fileExportHistory.FileExportType;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.scheduledFileExport.ExportFileGenerationParameters;
 import com.cannontech.common.scheduledFileExport.WaterLeakExportGenerationParameters;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Range;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
@@ -38,11 +34,11 @@ public class ScheduledWaterLeakFileExportTask extends ScheduledFileExportTask {
 	@Autowired private WaterMeterLeakService waterMeterLeakService;
 	@Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 	@Autowired private DateFormattingService dateFormattingService;
+	@Autowired private DeviceCollectionPersistenceService deviceCollectionPersistenceService;
 	
 	private static final String baseKey = "yukon.web.modules.amr.waterLeakReport.report";
 	
-	private String uniqueIdentifier = CtiUtilities.getUuidString();
-	private Set<SimpleDevice> devices;
+	private int collectionId;
     private int hoursPrevious;
     private double threshold;
     private boolean includeDisabledPaos;
@@ -65,6 +61,9 @@ public class ScheduledWaterLeakFileExportTask extends ScheduledFileExportTask {
 		Duration timePrevious = Duration.standardHours(hoursPrevious);
 		Instant now = new Instant();
 		Range<Instant> range = Range.inclusive(now, now.minus(timePrevious));
+		
+		DeviceCollection deviceCollection = deviceCollectionPersistenceService.loadCollection(collectionId);
+		Set<SimpleDevice> devices = Sets.newHashSet(deviceCollection.getDeviceList());
 		
 		List<WaterMeterLeak> waterLeaks = waterMeterLeakService.getWaterMeterLeaks(devices, range, includeDisabledPaos, threshold, userContext);
 		String[] headerRow = getHeaderRow();
@@ -101,30 +100,12 @@ public class ScheduledWaterLeakFileExportTask extends ScheduledFileExportTask {
 	@Override
 	public void setFileGenerationParameters(ExportFileGenerationParameters parameters) {
 		WaterLeakExportGenerationParameters waterLeakParameters = (WaterLeakExportGenerationParameters) parameters;
-		devices = Sets.newHashSet(waterLeakParameters.getDeviceCollection().getDeviceList());
 		hoursPrevious = waterLeakParameters.getHoursPrevious();
 		threshold = waterLeakParameters.getThreshold();
 		includeDisabledPaos = waterLeakParameters.isIncludeDisabledPaos();
 		
-		//Store device list in a device group so that it can persist when the server is shut down.
-		//(JobProperty table is not practical for storing a large list of devices)
-		StoredDeviceGroup parent = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.AUTO);
-		StoredDeviceGroup group = deviceGroupEditorDao.addGroup(parent, DeviceGroupType.STATIC, uniqueIdentifier, DeviceGroupPermission.HIDDEN);
-		deviceGroupMemberEditorDao.addDevices(group, devices);
-	}
-	
-	public String getUniqueIdentifier() {
-		return uniqueIdentifier;
-	}
-
-	//This is the identifier of the device group where the device list was persisted.
-	//This is set when the task is recreated on server startup.
-	public void setUniqueIdentifier(String uniqueIdentifier) {
-		this.uniqueIdentifier = uniqueIdentifier;
-		//Pull out devices from group
-		StoredDeviceGroup parent = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.AUTO);
-		StoredDeviceGroup group = deviceGroupEditorDao.getGroupByName(parent, uniqueIdentifier);
-		devices = Sets.newHashSet(deviceGroupMemberEditorDao.getChildDevices(group));
+		DeviceCollection collection = waterLeakParameters.getDeviceCollection();
+		collectionId = deviceCollectionPersistenceService.saveCollection(collection);
 	}
 
 	public int getHoursPrevious() {
@@ -151,8 +132,11 @@ public class ScheduledWaterLeakFileExportTask extends ScheduledFileExportTask {
 		this.includeDisabledPaos = includeDisabledPaos;
 	}
 	
-	public DeviceGroup getDeviceGroup() {
-		StoredDeviceGroup parent = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.AUTO);
-		return deviceGroupEditorDao.getGroupByName(parent, uniqueIdentifier);
+	public void setDeviceCollectionId(int collectionId) {
+	    this.collectionId = collectionId;
+	}
+	
+	public int getDeviceCollectionid() {
+	    return collectionId;
 	}
 }

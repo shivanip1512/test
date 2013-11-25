@@ -42,6 +42,7 @@ import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionCreationException;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
+import com.cannontech.common.bulk.collection.device.service.DeviceCollectionPersistenceService;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.model.DeviceGroup;
@@ -121,6 +122,7 @@ public class WaterLeakReportController {
     @Autowired private ScheduledFileExportJobsTagService scheduledFileExportJobsTagService;
     @Autowired private JobManager jobManager;
     @Autowired private ScheduledFileExportHelper exportHelper;
+    @Autowired private DeviceCollectionPersistenceService deviceCollectionPersistenceService;
     
     private ScheduledFileExportValidator scheduledFileExportValidator;
     private final static String baseKey = "yukon.web.modules.amr.waterLeakReport.report";
@@ -200,7 +202,8 @@ public class WaterLeakReportController {
     		model.addAttribute("task", task);
     		
     		//populate report data
-    		backingBean.setDeviceCollection(deviceGroupCollectionHelper.buildDeviceCollection(task.getDeviceGroup()));
+    		DeviceCollection deviceCollection = deviceCollectionPersistenceService.loadCollection(task.getDeviceCollectionid());
+    		backingBean.setDeviceCollection(deviceCollection);
     		backingBean.setFromInstant(backingBean.getToInstant().minus(Duration.standardHours(task.getHoursPrevious())));
     		backingBean.setIncludeDisabledPaos(task.isIncludeDisabledPaos());
     		backingBean.setThreshold(task.getThreshold());

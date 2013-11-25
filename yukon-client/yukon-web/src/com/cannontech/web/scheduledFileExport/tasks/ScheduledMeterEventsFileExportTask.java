@@ -13,8 +13,8 @@ import org.joda.time.format.DateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.paoPointValue.model.MeterPointValue;
-import com.cannontech.common.device.groups.dao.DeviceGroupPermission;
-import com.cannontech.common.device.groups.dao.DeviceGroupType;
+import com.cannontech.common.bulk.collection.device.DeviceCollection;
+import com.cannontech.common.bulk.collection.device.service.DeviceCollectionPersistenceService;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
@@ -47,6 +47,7 @@ public class ScheduledMeterEventsFileExportTask extends ScheduledFileExportTask 
 	@Autowired private PaoPointValueService paoPointValueService;
 	@Autowired private AttributeService attributeService;
 	@Autowired private PointFormattingService pointFormattingService;
+	@Autowired private DeviceCollectionPersistenceService deviceCollectionPersistenceService;
 	
 	private final static Set<String> NORMAL_VALUES = ImmutableSet.of(OutageStatus.GOOD.name().toLowerCase(),
             EventStatus.CLEARED.name().toLowerCase());
@@ -56,7 +57,7 @@ public class ScheduledMeterEventsFileExportTask extends ScheduledFileExportTask 
 	private boolean onlyAbnormalEvents;
 	private boolean includeDisabledDevices;
 	private String uniqueIdentifier = CtiUtilities.getUuidString();
-	private List<SimpleDevice> devices;
+	private int collectionId;
 	private Set<Attribute> attributes;
 	
 	@Override
@@ -79,18 +80,14 @@ public class ScheduledMeterEventsFileExportTask extends ScheduledFileExportTask 
 	@Override
 	public void setFileGenerationParameters(ExportFileGenerationParameters parameters) {
 		MeterEventsExportGenerationParameters meterEventsParameters = (MeterEventsExportGenerationParameters) parameters;
-		this.daysPrevious = meterEventsParameters.getDaysPrevious();
-		this.onlyAbnormalEvents = meterEventsParameters.isOnlyAbnormalEvents();
-		this.onlyLatestEvent = meterEventsParameters.isOnlyLatestEvent();
-		this.includeDisabledDevices = meterEventsParameters.isIncludeDisabledDevices();
-		this.attributes = meterEventsParameters.getAttributes();
-		this.devices = meterEventsParameters.getDeviceCollection().getDeviceList();
+		daysPrevious = meterEventsParameters.getDaysPrevious();
+		onlyAbnormalEvents = meterEventsParameters.isOnlyAbnormalEvents();
+		onlyLatestEvent = meterEventsParameters.isOnlyLatestEvent();
+		includeDisabledDevices = meterEventsParameters.isIncludeDisabledDevices();
+		attributes = meterEventsParameters.getAttributes();
 		
-		//Store device list in a device group so that it can persist when the server is shut down.
-		//(JobProperty table is not practical for storing a large list of devices)
-		StoredDeviceGroup parent = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.AUTO);
-		StoredDeviceGroup group = deviceGroupEditorDao.addGroup(parent, DeviceGroupType.STATIC, uniqueIdentifier, DeviceGroupPermission.HIDDEN);
-		deviceGroupMemberEditorDao.addDevices(group, devices);
+		DeviceCollection collection = meterEventsParameters.getDeviceCollection();
+		collectionId = deviceCollectionPersistenceService.saveCollection(collection);
 	}
 
 	public int getDaysPrevious() {
@@ -133,16 +130,6 @@ public class ScheduledMeterEventsFileExportTask extends ScheduledFileExportTask 
 		StoredDeviceGroup parent = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.AUTO);
 		return deviceGroupEditorDao.getGroupByName(parent, uniqueIdentifier);
 	}
-	
-	//This is the identifier of the device group where the device list was persisted.
-	//This is set when the task is recreated on server startup.
-	public void setUniqueIdentifier(String uniqueIdentifier) {
-		this.uniqueIdentifier = uniqueIdentifier;
-		//Pull out devices from group
-		StoredDeviceGroup parent = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.AUTO);
-		StoredDeviceGroup group = deviceGroupEditorDao.getGroupByName(parent, uniqueIdentifier);
-		devices = deviceGroupMemberEditorDao.getChildDevices(group);
-	}
 
 	public Set<Attribute> getAttributes() {
 		return attributes;
@@ -150,6 +137,14 @@ public class ScheduledMeterEventsFileExportTask extends ScheduledFileExportTask 
 
 	public void setAttributes(Set<Attribute> attributes) {
 		this.attributes = attributes;
+	}
+	
+	public int getCollectionId() {
+	    return collectionId;
+	}
+	
+	public void setCollectionId(int collectionId) {
+	    this.collectionId = collectionId;
 	}
 	
 	/*
@@ -163,6 +158,9 @@ public class ScheduledMeterEventsFileExportTask extends ScheduledFileExportTask 
         LocalDate localDate = new LocalDate(userTimeZone);
         Instant fromInstant = TimeUtil.toMidnightAtBeginningOfDay(localDate, userTimeZone).minus(Duration.standardDays(daysPrevious));
         Instant toInstant = TimeUtil.toMidnightAtEndOfDay(localDate, userTimeZone);
+        
+        DeviceCollection collection = deviceCollectionPersistenceService.loadCollection(collectionId);
+        List<SimpleDevice> devices = collection.getDeviceList();
         
         List<MeterPointValue> events = paoPointValueService.getMeterPointValues(devices, attributes,
                 Range.inclusiveExclusive(fromInstant, toInstant),

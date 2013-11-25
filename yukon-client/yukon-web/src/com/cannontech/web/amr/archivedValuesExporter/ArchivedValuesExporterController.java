@@ -56,6 +56,7 @@ import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionCreationException;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
+import com.cannontech.common.bulk.collection.device.service.DeviceCollectionPersistenceService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.fileExportHistory.FileExportType;
 import com.cannontech.common.i18n.ObjectFormattingService;
@@ -130,6 +131,7 @@ public class ArchivedValuesExporterController {
     @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
     @Autowired private ScheduledFileExportJobsTagService scheduledFileExportJobsTagService;
     @Autowired private ScheduledFileExportHelper exportHelper;
+    @Autowired private DeviceCollectionPersistenceService deviceCollectionPersistenceService;
     
     private static final Integer DEFAULT_PAGES = 1;
     private static final String DEFAULT_PAGES_STRING = "1";
@@ -479,7 +481,7 @@ public class ArchivedValuesExporterController {
     		ScheduledRepeatingJob job = jobManager.getRepeatingJob(jobId);
     		ScheduledArchivedDataFileExportTask task = (ScheduledArchivedDataFileExportTask) jobManager.instantiateTask(job);
     		
-    		deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(task.getDeviceGroup());
+    		deviceCollection = deviceCollectionPersistenceService.loadCollection(task.getDeviceCollectionId());
     		format = archiveValuesExportFormatDao.getByFormatId(task.getFormatId());
     		attributes = task.getAttributes();
     		dataRange = task.getDataRange();

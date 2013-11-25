@@ -209,10 +209,10 @@
                         	</property>
                         </bean>
                         <bean class="com.cannontech.web.input.InputBase">
-                        	<property name="field" value="uniqueIdentifier"/>
-                        	<property name="displayName" value="Unique Identifier"/>
+                        	<property name="field" value="deviceCollectionId"/>
+                        	<property name="displayName" value="Collection Id"/>
                         	<property name="type">
-                        		<bean class="com.cannontech.web.input.type.StringType"/>
+                        		<bean class="com.cannontech.web.input.type.IntegerType"/>
                         	</property>
                         </bean>
                         <bean class="com.cannontech.web.input.InputBase">
@@ -358,11 +358,11 @@
                         	</property>
                         </bean>
                         <bean class="com.cannontech.web.input.InputBase">
-                        	<property name="field" value="uniqueIdentifier"/>
-                        	<property name="displayName" value="Unique Identifier"/>
-                        	<property name="type">
-                        		<bean class="com.cannontech.web.input.type.StringType"/>
-                        	</property>
+                            <property name="field" value="deviceCollectionId"/>
+                            <property name="displayName" value="Collection Id"/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.IntegerType"/>
+                            </property>
                         </bean>
                         <bean class="com.cannontech.web.input.InputBase">
                         	<property name="field" value="hoursPrevious"/>
@@ -500,11 +500,11 @@
                         	</property>
                         </bean>
                         <bean class="com.cannontech.web.input.InputBase">
-                        	<property name="field" value="uniqueIdentifier"/>
-                        	<property name="displayName" value="Unique Identifier"/>
-                        	<property name="type">
-                        		<bean class="com.cannontech.web.input.type.StringType"/>
-                        	</property>
+                            <property name="field" value="deviceCollectionId"/>
+                            <property name="displayName" value="Collection Id"/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.IntegerType"/>
+                            </property>
                         </bean>
                         <bean class="com.cannontech.web.input.InputBase">
                         	<property name="field" value="attributes"/>

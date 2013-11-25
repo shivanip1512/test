@@ -13,6 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.scheduledFileExport.ScheduledExportType;
 import com.cannontech.common.scheduledFileExport.ScheduledFileExportData;
+import com.cannontech.jobs.dao.ScheduledRepeatingJobDao;
+import com.cannontech.jobs.model.ScheduledRepeatingJob;
+import com.cannontech.jobs.model.YukonJob;
+import com.cannontech.jobs.service.JobManager;
+import com.cannontech.jobs.support.YukonJobDefinition;
+import com.cannontech.user.YukonUserContext;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
 import com.cannontech.web.scheduledFileExport.ScheduledFileExportJobData;
 import com.cannontech.web.scheduledFileExport.service.ScheduledFileExportService;
@@ -22,13 +29,6 @@ import com.cannontech.web.scheduledFileExport.tasks.ScheduledBillingFileExportTa
 import com.cannontech.web.scheduledFileExport.tasks.ScheduledFileExportTask;
 import com.cannontech.web.scheduledFileExport.tasks.ScheduledMeterEventsFileExportTask;
 import com.cannontech.web.scheduledFileExport.tasks.ScheduledWaterLeakFileExportTask;
-import com.cannontech.jobs.dao.ScheduledRepeatingJobDao;
-import com.cannontech.jobs.model.ScheduledRepeatingJob;
-import com.cannontech.jobs.model.YukonJob;
-import com.cannontech.jobs.service.JobManager;
-import com.cannontech.jobs.support.YukonJobDefinition;
-import com.cannontech.user.YukonUserContext;
-import com.cannontech.util.ServletUtil;
 import com.google.common.collect.Maps;
 
 public class ScheduledFileExportServiceImpl implements ScheduledFileExportService {
@@ -133,7 +133,7 @@ public class ScheduledFileExportServiceImpl implements ScheduledFileExportServic
 		return new ScheduledFileExportJobDataImpl(job);
 	}
 	
-	public YukonJobDefinition<? extends ScheduledFileExportTask> getJobDefinition(ScheduledExportType type) {
+	private YukonJobDefinition<? extends ScheduledFileExportTask> getJobDefinition(ScheduledExportType type) {
 		YukonJobDefinition<? extends ScheduledFileExportTask> jobDefinition = typeToJobDefinitionMap.get(type);
 		if(jobDefinition == null) {
 			throw new IllegalArgumentException("Cannot schedule file export task of type \"" + type);
