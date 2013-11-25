@@ -131,10 +131,6 @@ void ActiveMQConnectionManager::run()
 }
 
 
-static const std::set<const ActiveMQ::Queues::InboundQueue *> ThriftInboundQueues = boost::assign::list_of
-    (&ActiveMQ::Queues::InboundQueue::NetworkManagerE2eDataIndication);
-
-
 bool ActiveMQConnectionManager::verifyConnectionObjects()
 {
     if( ! _connection ||
@@ -185,38 +181,48 @@ bool ActiveMQConnectionManager::verifyConnectionObjects()
 
         _consumerSession.reset(_connection->createSession());
 
-        {
-            CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << CtiTime() << " Registering listeners for " << ThriftInboundQueues.size()
-            << (ThriftInboundQueues.size() == 1 ? " queue " : " queues ") << __FUNCTION__ << " @ " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-        }
-
-        for each( const ActiveMQ::Queues::InboundQueue *inboundQueue in ThriftInboundQueues )
-        {
-            std::auto_ptr<QueueConsumerWithListener> consumer(new QueueConsumerWithListener);
-
-            consumer->managedConsumer.reset(
-                    ActiveMQ::createQueueConsumer(
-                            *_consumerSession,
-                            inboundQueue->name));
-
-            consumer->listener.reset(
-                    new ActiveMQ::MessageListener(
-                            boost::bind(&ActiveMQConnectionManager::onInboundMessage, this, inboundQueue, _1)));
-
-            consumer->managedConsumer->setMessageListener(
-                    consumer->listener.get());
-
-            {
-                CtiLockGuard<CtiLogger> dout_guard(dout);
-                dout << CtiTime() << " Listener registered for destination \"" << inboundQueue->name << "\" id " << reinterpret_cast<unsigned long>(inboundQueue) << " " << __FUNCTION__ << " @ " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-            }
-
-            _consumers.push_back(consumer);
-        }
+        registerConsumersForCallbacks(_callbacks);
     }
 
     return true;
+}
+
+
+void ActiveMQConnectionManager::registerConsumersForCallbacks(const CallbacksPerQueue &callbacks)
+{
+    CallbacksPerQueue::const_iterator itr = callbacks.begin();
+    for( ; itr != callbacks.end(); itr = callbacks.upper_bound(itr->first) )
+    {
+        if( ! _consumers.count(itr->first) )
+        {
+            registerConsumer(itr->first);
+        }
+    }
+}
+
+
+void ActiveMQConnectionManager::registerConsumer(const ActiveMQ::Queues::InboundQueue *inboundQueue)
+{
+    std::auto_ptr<QueueConsumerWithListener> consumer(new QueueConsumerWithListener);
+
+    consumer->managedConsumer.reset(
+            ActiveMQ::createQueueConsumer(
+                    *_consumerSession,
+                    inboundQueue->name));
+
+    consumer->listener.reset(
+            new ActiveMQ::MessageListener(
+                    boost::bind(&ActiveMQConnectionManager::onInboundMessage, this, inboundQueue, _1)));
+
+    consumer->managedConsumer->setMessageListener(
+            consumer->listener.get());
+
+    {
+        CtiLockGuard<CtiLogger> dout_guard(dout);
+        dout << CtiTime() << " Listener registered for destination \"" << inboundQueue->name << "\" id " << reinterpret_cast<unsigned long>(inboundQueue) << " " << __FUNCTION__ << " @ " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+    }
+
+    _consumers.insert(inboundQueue, consumer);
 }
 
 
@@ -227,6 +233,8 @@ void ActiveMQConnectionManager::updateCallbacks()
     _callbacks.insert(
             _newCallbacks.begin(),
             _newCallbacks.end());
+
+    registerConsumersForCallbacks(_newCallbacks);
 
     _newCallbacks.clear();
 }

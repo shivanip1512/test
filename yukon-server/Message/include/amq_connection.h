@@ -108,19 +108,6 @@ private:
 
     CtiCriticalSection _closeConnectionMux;
 
-    //  Main loop methods
-    bool verifyConnectionObjects();
-    void releaseConnectionObjects();
-
-    void updateCallbacks();
-    bool addQueueCallback(const ActiveMQ::Queues::InboundQueue &queue, const SerializedMessageCallback callback);
-
-    void sendOutgoingMessages();
-    ActiveMQ::QueueProducer &getQueueProducer(cms::Session &session, const std::string &queue);
-
-    void dispatchIncomingMessages();
-    void dispatchTempQueueReplies();
-
     const std::string _broker_uri;
 
     //  Connection/session objects
@@ -161,8 +148,8 @@ private:
         boost::scoped_ptr<cms::MessageListener> listener;
     };
 
-    typedef boost::ptr_vector<QueueConsumerWithListener> ConsumerList;
-    ConsumerList _consumers;
+    typedef boost::ptr_map<const ActiveMQ::Queues::InboundQueue *, QueueConsumerWithListener> ConsumerMap;
+    ConsumerMap _consumers;
 
     //  Temp consumer, listener, and client callback - binds to onTempQueueReply
     struct TempQueueConsumerWithCallback
@@ -183,6 +170,21 @@ private:
     {
         DefaultTimeToLive = 3600
     };
+
+    bool verifyConnectionObjects();
+    void releaseConnectionObjects();
+
+    void updateCallbacks();
+    bool addQueueCallback(const ActiveMQ::Queues::InboundQueue &queue, const SerializedMessageCallback callback);
+
+    void registerConsumersForCallbacks(const CallbacksPerQueue &callbacks);
+    void registerConsumer(const ActiveMQ::Queues::InboundQueue *inboundQueue);
+
+    void sendOutgoingMessages();
+    ActiveMQ::QueueProducer &getQueueProducer(cms::Session &session, const std::string &queue);
+
+    void dispatchIncomingMessages();
+    void dispatchTempQueueReplies();
 };
 
 template void IM_EX_MSG ActiveMQConnectionManager::enqueueMessageWithCallbackFor<Rfn::RfnBroadcastReplyMessage>(const ActiveMQ::Queues::OutboundQueue &queue, StreamableMessage::auto_type message, CallbackFor<Rfn::RfnBroadcastReplyMessage>::type callback);
