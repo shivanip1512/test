@@ -29,7 +29,7 @@
         <cti:button nameKey="download" href="${download}" icon="icon-page-white-excel" />
     </div>
 
-    <table class="compact-results-table pointHighlighting has-actions separated">
+    <table class="compact-results-table separated has-actions has-alerts">
         <thead>
             <tr>
                 <th></th>

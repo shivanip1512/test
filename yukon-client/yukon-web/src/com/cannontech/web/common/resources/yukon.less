@@ -182,9 +182,9 @@ table.nowrap th, table.nowrap td {white-space: nowrap;}
 .table-thirds th {width: 33%;}
 
 /*Use the class when there will be elements before the first icon in a row */
-.row-icon, .compact-results-table tr td:first-child i.icon:first-child {
-margin: 0px;
-}
+.row-icon, .compact-results-table tr td:first-child i.icon:first-child {margin: 0px;}
+
+.has-alerts td:first-child {width: 24px;}
 
 .two-column-split {width:100%;}
 .two-column-split th, .two-column-split td {width:50%;}
@@ -466,7 +466,6 @@ hr.dashed, .divider.dashed {border-style: dashed none none none;}
     -webkit-animation-timing-function: ease-in-out;
     -webkit-animation-direction: alternate;
 }
-
 @-webkit-keyframes blink-shadow {
     0% {box-shadow: 0 0 15px @red;}
     25% {box-shadow: 0 0 15px transparent;}
@@ -482,6 +481,7 @@ hr.dashed, .divider.dashed {border-style: dashed none none none;}
     100% {box-shadow: 0 0 15px @red;}
 }
 .blink-shadow {
+    box-shadow: 0 0 15px @red;
     animation-name: blink-shadow;
     animation-duration: 1s;
     animation-direction: alternate;
@@ -493,6 +493,7 @@ hr.dashed, .divider.dashed {border-style: dashed none none none;}
     -webkit-animation-timing-function: linear;
     -webkit-animation-iteration-count: infinite; 
 }
+.ltie10 .pulse-opacity, .ltie10 .blink-shadow {border: 2px solid @red;}
 
 /* COLOR PICKER */
 .color-picker {

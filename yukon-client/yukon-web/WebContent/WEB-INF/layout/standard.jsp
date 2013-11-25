@@ -10,7 +10,12 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <!DOCTYPE html>
-<html>
+<!--[if lt IE 7 ]>  <html dir="ltr" class="no-js ie6 ltie7 ltie8 ltie9 ltie10 ltie11"> <![endif]-->
+<!--[if IE 7 ]>     <html dir="ltr" class="no-js ie7 ltie8 ltie9 ltie10 ltie11"> <![endif]-->
+<!--[if IE 8 ]>     <html dir="ltr" class="no-js ie8 ltie9 ltie10 ltie11"> <![endif]-->
+<!--[if IE 9 ]>     <html dir="ltr" class="no-js ie9 ltie10 ltie11"> <![endif]-->
+<!--[if IE 10 ]>    <html dir="ltr" class="no-js ie10 ltie11"> <![endif]-->
+<!--[if !(IE)]><!--><html dir="ltr" class="no-js"><!--<![endif]-->
     <head>
         <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
