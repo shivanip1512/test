@@ -29,7 +29,8 @@ const std::map< std::pair<unsigned char, unsigned char>, std::string>  ascAscqRe
     ( std::make_pair( 0x01, 0x02 ), "ACCESS DENIED, INVALID SERVICE SEQUENCE STATE" )
     ( std::make_pair( 0x01, 0x03 ), "ACCESS DENIED, RENEGOTIATE REQUEST" )
     ( std::make_pair( 0x02, 0x00 ), "DATA NOT READY" )
-    ( std::make_pair( 0x03, 0x00 ), "DEVICE BUSY" );
+    ( std::make_pair( 0x03, 0x00 ), "DEVICE BUSY" )
+    ( std::make_pair( 0x04, 0x00 ), "SCHEDULED FOR NEXT RECORD INTERVAL" );
 
 }
 

@@ -126,7 +126,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandFreeze_SetFreezeDay_status_exceptions )
         ( list_of( 0x56 )( 0x0f )( 0x01 )( 0x03 )( 0x00 ) )
         ( list_of( 0x56 )( 0x0f )( 0x02 )( 0x00 )( 0x00 ) )
         ( list_of( 0x56 )( 0x0f )( 0x03 )( 0x00 )( 0x00 ) )
-        ( list_of( 0x56 )( 0x00 )( 0x04 )( 0x00 )( 0x00 ) )
+        ( list_of( 0x56 )( 0x0f )( 0x04 )( 0x00 )( 0x00 ) )
+        ( list_of( 0x56 )( 0x00 )( 0x05 )( 0x00 )( 0x00 ) )
         ( list_of( 0x56 )( 0x00 )( 0x00 )( 0x0f )( 0x00 ) );
 
     const std::vector< RfnCommand::CommandException >   expected = list_of
@@ -154,7 +155,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandFreeze_SetFreezeDay_status_exceptions )
         ( RfnCommand::CommandException( ErrorInvalidData, "Status: Reserved (0x0f)\nAdditional Status: ACCESS DENIED, RENEGOTIATE REQUEST (ASC: 0x01, ASCQ: 0x03)" ) )
         ( RfnCommand::CommandException( ErrorInvalidData, "Status: Reserved (0x0f)\nAdditional Status: DATA NOT READY (ASC: 0x02, ASCQ: 0x00)" ) )
         ( RfnCommand::CommandException( ErrorInvalidData, "Status: Reserved (0x0f)\nAdditional Status: DEVICE BUSY (ASC: 0x03, ASCQ: 0x00)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Additional Status (ASC: 0x04, ASCQ: 0x00)" ) )
+        ( RfnCommand::CommandException( ErrorInvalidData, "Status: Reserved (0x0f)\nAdditional Status: SCHEDULED FOR NEXT RECORD INTERVAL (ASC: 0x04, ASCQ: 0x00)" ) )
+        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Additional Status (ASC: 0x05, ASCQ: 0x00)" ) )
         ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Additional Status (ASC: 0x00, ASCQ: 0x0f)" ) );
 
     std::vector< RfnCommand::CommandException > actual;
