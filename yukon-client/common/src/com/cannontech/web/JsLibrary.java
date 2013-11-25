@@ -53,6 +53,7 @@ public enum JsLibrary {
     YUKON_ALERTS("/JavaScript/yukon/yukon.alerts.js"),
     YUKON_FAVORITES("/JavaScript/yukon/yukon.favorites.js"),
     YUKON_CONFIRM("/JavaScript/yukon/ui/confirm_dialog_manager.js"),
+    YUKON_SURVEYS("/JavaScript/yukon.surveys.js"),
     
     MODERNIZR("/JavaScript/lib/modernizr/custom.js"),
     

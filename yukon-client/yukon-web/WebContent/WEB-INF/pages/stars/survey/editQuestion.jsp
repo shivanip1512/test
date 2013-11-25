@@ -1,11 +1,10 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <tags:setFormEditMode mode="${mode}"/>
 
@@ -14,18 +13,13 @@
     <c:set var="okAction" value="yukonDialogSubmit"/>
 </cti:displayForPageEditModes>
 
-<dialog:ajaxPage nameKey="editQuestion" module="survey" page="edit" okEvent="${okAction}">
+<d:ajaxPage nameKey="editQuestion" module="survey" page="edit" okEvent="${okAction}">
 
 <script type="text/javascript">
-jQuery(document).ready(function() {
-    questionTypeChanged();
-    jQuery('#questionType').change(questionTypeChanged);
-    jQuery('#inputForm').ajaxForm({'target' : '#ajaxDialog'});
-
+jQuery(function() {
+    Yukon.Surveys.initEditQuestion();
     <cti:displayForPageEditModes modes="EDIT">
-    initWithAnswerKeys(${cti:jsonString(answerKeys)});
-    jQuery('#questionKey').focus();
-    jQuery('#questionKey').select();
+    Yukon.Surveys.initWithAnswerKeys(${cti:jsonString(answerKeys)});
     </cti:displayForPageEditModes>
 });
 </script>
@@ -88,7 +82,7 @@ jQuery(document).ready(function() {
     					<cti:displayForPageEditModes modes="VIEW">
     					   <c:forEach var="answer" items="${question.answers}">
                            <tr>
-                               <td><spring:escapeBody htmlEscape="true">${answer.answerKey}</spring:escapeBody> </td>
+                               <td>${fn:escapeXml(answer.answerKey)}</td>
                            </tr>
     					   </c:forEach>
     					</cti:displayForPageEditModes>
@@ -96,10 +90,10 @@ jQuery(document).ready(function() {
 			    </table>
 	        </div>
             <cti:displayForPageEditModes modes="EDIT">
-                <div style="margin-top: 10px;" class="clearfix"><cti:button renderMode="labeledImage" nameKey="addAnswer" href="javascript: addAnswer()" classes="fl" icon="icon-add"/></div>
+                <div style="margin-top: 10px;" class="clearfix"><cti:button renderMode="labeledImage" nameKey="addAnswer" href="javascript: Yukon.Surveys.addAnswer()" classes="fl" icon="icon-add"/></div>
             </cti:displayForPageEditModes>
 	    </tags:boxContainer2>
     </div>
 </form:form>
 
-</dialog:ajaxPage>
+</d:ajaxPage>

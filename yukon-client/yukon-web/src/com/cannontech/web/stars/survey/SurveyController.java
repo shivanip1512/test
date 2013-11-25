@@ -1,5 +1,9 @@
 package com.cannontech.web.stars.survey;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -8,11 +12,13 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
@@ -146,10 +152,25 @@ public class SurveyController {
 
         return "survey/list.jsp";
     }
+    
+    @RequestMapping
+    public String listTable(ModelMap model,
+            @ModelAttribute("backingBean") ListBackingBean backingBean,
+            YukonUserContext userContext) {
+        LiteEnergyCompany energyCompany =
+            energyCompanyDao.getEnergyCompany(userContext.getYukonUser());
+        SearchResults<Survey> surveys =
+            surveyService.findSurveys(energyCompany.getEnergyCompanyID(),
+                                 backingBean.getStartIndex(),
+                                 backingBean.getItemsPerPage());
+        model.addAttribute("surveys", surveys);
+
+        return "survey/listTable.jsp";
+    }
 
     @RequestMapping
-    public String sampleXml(ModelMap model, Integer surveyId,
-            YukonUserContext userContext) {
+    public void  sampleXml(HttpServletResponse response, Integer surveyId,
+            YukonUserContext userContext) throws IOException {
         List<Survey> surveys = Lists.newArrayList();
         if (surveyId != null && surveyId > 0) {
             Survey survey = verifyEditable(surveyId, userContext);
@@ -162,15 +183,46 @@ public class SurveyController {
                                           0, Integer.MAX_VALUE);
             surveys = surveyResults.getResultList();
         }
-        model.addAttribute("surveys", surveys);
-        Map<Integer, List<Question>> questions = Maps.newHashMap();
-        for (Survey survey : surveys) {
-            questions.put(survey.getSurveyId(),
-                          surveyDao.getQuestionsBySurveyId(survey.getSurveyId()));
-        }
-        model.addAttribute("questions", questions);
+        String sampleFile = sampleXmlFile(surveys);
+        InputStream is = IOUtils.toInputStream(sampleFile);
+        
+        
+        response.setContentType("text/xml");
+        response.setHeader("Content-Disposition", "attachment; filename=\"SurveySample.xml\"");
+        FileCopyUtils.copy(is, response.getOutputStream());
 
-        return "survey/sampleXml.jsp";
+    }
+
+    private String sampleXmlFile (List<Survey> surveys) {
+        StringBuilder xmlBuilder = new StringBuilder();
+        xmlBuilder.append("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n");
+        xmlBuilder.append("<!DOCTYPE properties SYSTEM \"http://java.sun.com/dtd/properties.dtd\">\n");
+        xmlBuilder.append("<!-- The \".title\" key is optional although highly recommended. -->\n");
+        xmlBuilder.append("<!-- The \".description\" is also optional. -->\n");
+        xmlBuilder.append("<!-- The \".pleaseChoose\" keys are optional.  Excluding this key will make the first answer the default. -->\n");
+        xmlBuilder.append("<properties>\n");
+
+        for (Survey survey : surveys) {
+            String surveyKey = "yukon.web.surveys." + survey.getSurveyKey();
+            xmlBuilder.append("    <entry key=\"").append(surveyKey).append(".title\">TITLE HERE</entry>\n");
+            xmlBuilder.append("    <entry key=\"").append(surveyKey).append(".description\">DESCRIPTION HERE</entry>\n");
+            for (Question question : surveyDao.getQuestionsBySurveyId(survey.getSurveyId())) {
+                String questionKey = surveyKey + "." + question.getQuestionKey();
+                xmlBuilder.append("    <entry key=\"").append(questionKey).append("\">QUESTION HERE</entry>\n");
+                if (question.getQuestionType().equals(QuestionType.DROP_DOWN)) {
+                    xmlBuilder.append("    <entry key=\"").append(questionKey).append(".pleaseChoose\">Please Choose</entry>\n");
+                    for (Answer answer : question.getAnswers()){
+                        xmlBuilder.append("    <entry key=\"").append(questionKey).append(".")
+                        .append(answer.getAnswerKey()).append("\">ANSWER_HERE</entry>\n");
+                    }
+                    if (question.isTextAnswerAllowed()) {
+                        xmlBuilder.append("    <entry key=\"").append(questionKey).append(".other\">ANSWER_HERE</entry>\n");
+                    }
+                }
+            }
+        }
+        xmlBuilder.append("</properties>");
+        return xmlBuilder.toString();
     }
 
     @RequestMapping
@@ -247,6 +299,8 @@ public class SurveyController {
                 if (wasNew) {
                     newLocation = "'/stars/survey/edit?surveyId=" +
                         survey.getSurveyId() + "'";
+                } else {
+                    newLocation = "edit?surveyId=" + survey.getSurveyId();
                 }
             } catch (DuplicateException duplicateException) {
                 bindingResult.rejectValue(duplicateException.getMessage(),
@@ -267,6 +321,7 @@ public class SurveyController {
                 new YukonMessageSourceResolvable(baseKey + "list.surveySaved",
                                                  survey.getSurveyName());
             flashScope.setConfirm(confirmMsg);
+            return "redirect:" + newLocation;
         }
 
         ServletUtils.dialogFormSuccess(response, "yukonDetailsUpdated", newLocation);
