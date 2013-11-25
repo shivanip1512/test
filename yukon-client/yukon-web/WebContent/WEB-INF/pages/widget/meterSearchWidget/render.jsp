@@ -9,6 +9,7 @@
 </script>
 
     <form id="filterForm" action="/meter/search">
+    <cti:csrfToken/>
         <tags:nameValueContainer>
 	        <c:forEach var="filter" items="${filterByList}" varStatus="status">
 	        	<cti:msg2 key="${filter.formatKey}" var="filterName"/>

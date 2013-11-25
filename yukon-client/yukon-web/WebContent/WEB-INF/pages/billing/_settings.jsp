@@ -18,7 +18,7 @@
     <tags:sectionContainer title="${settingsLabel}" id="billingContainer">
 
         <form id="MForm" name="MForm" action="<cti:url value="/servlet/BillingServlet" />" method="post">
-    
+            <cti:csrfToken/>
             <c:if test="${BILLING_BEAN.errorMsg != null}">
                 <div class="error">${BILLING_BEAN.errorMsg}</div>
                 <br>

@@ -15,6 +15,7 @@
 
         <div class="column one">
             <form:form commandName="group" action="/adminSetup/roleGroup/edit" method="post">
+                <cti:csrfToken/>
                 <form:hidden path="groupID"/>
                 <input type="hidden" value="${group.groupID}" name="roleGroupId">
                 
@@ -87,6 +88,7 @@
                     </c:choose>
                     <div class="action-area">
                         <form action="/adminSetup/roleGroup/addRole" method="post">
+                            <cti:csrfToken/>
                             <input type="hidden" value="${roleGroupId}" name="roleGroupId">
                             <cti:button nameKey="add" type="submit" id="addButton" icon="icon-add"/>
                             <select name="newRoleId">

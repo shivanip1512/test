@@ -22,6 +22,7 @@ function addUsers() {
         <c:choose>
             <c:when test="${!empty users}">
                 <form action="/adminSetup/userGroup/removeUser" method="post">
+                    <cti:csrfToken/>
                     <input type="hidden" name="userGroupId" value="${userGroupId}">
                     <div class="usersContainer">
                         <table class="compact-results-table row-highlighting">
@@ -71,6 +72,7 @@ function addUsers() {
         </c:choose>
         <div class="action-area">
             <form id="addUsersForm" action="/adminSetup/userGroup/addUsers" method="post">
+                <cti:csrfToken/>
                 <input type="hidden" name="userIds" id="userIds">
                 <input type="hidden" name="userGroupId" value="${userGroupId}">
                 <tags:pickerDialog type="userPicker" id="userPicker" destinationFieldId="userIds" excludeIds="${alreadyAssignedUserIds}" linkType="button" 

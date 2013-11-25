@@ -14,8 +14,9 @@
     <cti:checkEnergyCompanyOperator showError="true" >
         <tags:setFormEditMode mode="${mode}"/>
         
-        <form id="deleteAccountForm" action="/stars/operator/account/deleteAccount" method="get">
-          <input type="hidden" name="accountId" value="${accountId}">
+        <form id="deleteAccountForm" action="/stars/operator/account/deleteAccount" method="post">
+            <cti:csrfToken/>
+            <input type="hidden" name="accountId" value="${accountId}">
         </form>
         <d:confirm on=".f-delete" nameKey="delete" argument="${accountGeneral.accountDto.accountNumber}"/>
         
@@ -191,6 +192,7 @@
         </cti:displayForPageEditModes>
         
         <form:form id="updateForm" commandName="accountGeneral" action="${action}">
+            <cti:csrfToken/>
         
             <input type="hidden" name="accountId" value="${accountId}">
             <input type="hidden" name="loginMode" value="${loginMode}">

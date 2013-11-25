@@ -45,6 +45,7 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.security.csrf.CsrfTokenService;
 import com.cannontech.web.util.WebFileUtils;
 
 @Controller
@@ -54,6 +55,7 @@ public class YukonSecurityController {
     @Autowired private EncryptedRouteDao encryptedRouteDao;
     @Autowired private RSAKeyfileService rsaKeyfileService;
     @Autowired private DateFormattingService dateFormattingService;
+    @Autowired private CsrfTokenService csrfTokenService;
 
     private static final int KEYNAME_MAX_LENGTH = 50;
     private static final int KEYHEX_DIGITS_LENGTH = 32;
@@ -195,7 +197,7 @@ public class YukonSecurityController {
     public String saveNewKey(HttpServletRequest request, ModelMap model,
                              EncryptionKey encryptionKey, BindingResult bindingResult,
                              FlashScope flashScope, YukonUserContext userContext) throws IOException, CryptoException, JDOMException, DecoderException {
-
+        csrfTokenService.validateToken(request);
         addKeyValidator.validate(encryptionKey, bindingResult);
 
         if (bindingResult.hasErrors()) {
@@ -279,7 +281,7 @@ public class YukonSecurityController {
     public String deleteKey(HttpServletRequest request, ModelMap model, 
                             FlashScope flashScope, Integer encryptionKeyId,
                             YukonUserContext userContext) {
-
+        csrfTokenService.validateToken(request);
         // Check to make sure key isn't being used before we delete it
         for (EncryptedRoute e : encryptedRouteDao.getAllEncryptedRoutes()) {
             if (e.getEncryptionKeyId()!= null && e.getEncryptionKeyId().equals(encryptionKeyId)) {
@@ -298,7 +300,7 @@ public class YukonSecurityController {
     @ResponseBody 
     public String getPublicKey(HttpServletRequest request, ModelMap model, FlashScope flashScope, YukonUserContext userContext) 
                                        throws CryptoException, ServletRequestBindingException {
-
+        csrfTokenService.validateToken(request);
         boolean generateNewKey = ServletRequestUtils.getBooleanParameter(request, "generateNewKey");
 
         if(generateNewKey) {
@@ -326,7 +328,7 @@ public class YukonSecurityController {
     public String importKeyFile(HttpServletRequest request, ModelMap model, FileImportBindingBean fileImportBindingBean,
                                 BindingResult bindingResult, FlashScope flashScope, 
                                 YukonUserContext userContext) {
-
+        csrfTokenService.validateToken(request);
         if (!ServletFileUpload.isMultipartContent(request)) {
             model.addAttribute("showDialog", "importKey");
             return view(request, model, new EncryptedRoute(), new EncryptionKey(), fileImportBindingBean,flashScope, userContext);     

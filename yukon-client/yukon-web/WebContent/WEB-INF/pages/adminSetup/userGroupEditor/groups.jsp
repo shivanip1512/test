@@ -18,6 +18,7 @@
         <c:choose>
             <c:when test="${!empty groups}">
                 <form action="/adminSetup/userGroup/removeRoleGroup" method="post">
+                    <cti:csrfToken/>
                     <input type="hidden" name="userGroupId" value="${userGroupId}">
                     <table class="compact-results-table row-highlighting">
                         <thead>
@@ -53,6 +54,7 @@
         </c:choose>
         <div class="action-area">
             <form id="addGroupsForm" action="/adminSetup/userGroup/addRoleGroups" method="post">
+                <cti:csrfToken/>
                 <input type="hidden" name="roleGroupIds" id="roleGroupIds">
                 <input type="hidden" name="userGroupId" value="${userGroupId}">
                 <tags:pickerDialog type="loginGroupPicker" id="loginGroupPicker" destinationFieldId="roleGroupIds" excludeIds="${alreadyAssignedRoleGroupIds}" 

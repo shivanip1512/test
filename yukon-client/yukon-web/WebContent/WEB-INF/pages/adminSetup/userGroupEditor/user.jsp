@@ -64,6 +64,7 @@ jQuery(function() {
         <div class="column one">
 
             <form:form commandName="user" action="edit" method="post">
+                <cti:csrfToken/>
                 <form:hidden path="userId"/>
 
                 <tags:nameValueContainer2>

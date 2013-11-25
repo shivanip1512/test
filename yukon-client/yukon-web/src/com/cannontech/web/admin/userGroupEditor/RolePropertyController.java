@@ -35,6 +35,7 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.input.EnumPropertyEditor;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.security.csrf.CsrfTokenService;
 import com.cannontech.web.support.MappedPropertiesHelper;
 import com.google.common.base.Function;
 import com.google.common.collect.MapMaker;
@@ -49,6 +50,8 @@ public class RolePropertyController {
     private YukonUserContextMessageSourceResolver messageSourceResolver;
     
     private Map<YukonRole, MappedPropertiesHelper<DescriptiveRoleProperty>> helperLookup;
+
+    @Autowired private CsrfTokenService csrfTokenService;
     
     @PostConstruct
     public void setupHelperLookup() {
@@ -117,7 +120,7 @@ public class RolePropertyController {
     @RequestMapping(value="update", method=RequestMethod.POST, params="save")
     public String save(HttpServletRequest request, @ModelAttribute("command")GroupRolePropertyEditorBean command, BindingResult result, 
                        YukonUserContext context, ModelMap map, FlashScope flashScope, int roleGroupId, int roleId) throws Exception {
-
+        csrfTokenService.validateToken(request);
         LiteYukonGroup liteYukonGroup = yukonGroupDao.getLiteYukonGroup(roleGroupId);
         YukonRole role = YukonRole.getForId(roleId);
         if (result.hasErrors()) {
@@ -140,7 +143,8 @@ public class RolePropertyController {
     }
     
     @RequestMapping(value="update", method=RequestMethod.POST, params="delete")
-    public String delete(ModelMap map, FlashScope flash, int roleGroupId, int roleId) {
+    public String delete(HttpServletRequest request, ModelMap map, FlashScope flash, int roleGroupId, int roleId) {
+        csrfTokenService.validateToken(request);
         rolePropertyEditorDao.removeRoleFromGroup(roleGroupId, roleId);
         map.addAttribute("roleGroupId", roleGroupId);
         flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.roleGroupEditor.updateSuccessful"));

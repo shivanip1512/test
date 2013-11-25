@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.naming.ConfigurationException;
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -37,6 +38,7 @@ import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.security.csrf.CsrfTokenService;
 import com.google.common.collect.Lists;
 
 @Controller
@@ -49,6 +51,7 @@ public class RoleGroupEditorController {
     @Autowired private RolePropertyEditorDao rolePropertyEditorDao;
     @Autowired private UserGroupDao userGroupDao;
     @Autowired private YukonGroupDao yukonGroupDao;
+    @Autowired private CsrfTokenService csrfTokenService;
     
     /* Group Editor View Page*/
     @RequestMapping
@@ -78,7 +81,8 @@ public class RoleGroupEditorController {
 
     /* Group Editor Edit Page*/
     @RequestMapping(value="edit", method=RequestMethod.POST, params="edit")
-    public String edit(ModelMap model, int roleGroupId) {
+    public String edit(HttpServletRequest request, ModelMap model, int roleGroupId) {
+        csrfTokenService.validateToken(request);
         model.addAttribute("mode", PageEditMode.EDIT);
         LiteYukonGroup group = yukonGroupDao.getLiteYukonGroup(roleGroupId);
         setupModelMap(model, group);
@@ -88,7 +92,8 @@ public class RoleGroupEditorController {
     
     /* Expire all users in this group */
     @RequestMapping(value="edit", method=RequestMethod.POST, params="expireAllPasswords")
-    public String expireAllPasswords(ModelMap model, FlashScope flash, int roleGroupId) {
+    public String expireAllPasswords(HttpServletRequest request, ModelMap model, FlashScope flash, int roleGroupId) {
+        csrfTokenService.validateToken(request);
         model.addAttribute("mode", PageEditMode.EDIT);
         LiteYukonGroup group = yukonGroupDao.getLiteYukonGroup(roleGroupId);
         setupModelMap(model, group);
@@ -100,8 +105,8 @@ public class RoleGroupEditorController {
     
     /* Update Group */
     @RequestMapping(value="edit", method=RequestMethod.POST, params="update")
-    public String update(@ModelAttribute("group") LiteYukonGroup group, BindingResult result, ModelMap model, FlashScope flash) {
-        
+    public String update(HttpServletRequest request, @ModelAttribute("group") LiteYukonGroup group, BindingResult result, ModelMap model, FlashScope flash) {
+        csrfTokenService.validateToken(request);
         new YukonGroupValidator().validate(group, result);
         
         if (result.hasErrors()) {
@@ -191,7 +196,8 @@ public class RoleGroupEditorController {
 
     /* Add Role */
     @RequestMapping(value="addRole", method=RequestMethod.POST)
-    public String addRole(ModelMap model, FlashScope flash, int newRoleId, int roleGroupId) {
+    public String addRole(HttpServletRequest request, ModelMap model, FlashScope flash, int newRoleId, int roleGroupId) {
+        csrfTokenService.validateToken(request);
         LiteYukonGroup group = yukonGroupDao.getLiteYukonGroup(roleGroupId);
         YukonRole role = YukonRole.getForId(newRoleId);
         

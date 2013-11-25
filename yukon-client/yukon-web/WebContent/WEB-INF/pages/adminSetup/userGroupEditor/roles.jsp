@@ -14,6 +14,7 @@
     <c:set var="legend"><cti:icon icon="icon-asterisk-orange"/>&nbsp;<i:inline key=".legend"/></c:set>
     
     <form:form action="/adminSetup/roleEditor/update" id="loginGroupRoleForm" method="post">
+        <cti:csrfToken/>
         <input type="hidden" name="roleId" value="${roleId}">
         <input type="hidden" name="roleGroupId" value="${roleGroupId}">
         

@@ -83,6 +83,7 @@ import com.cannontech.web.bulk.util.BulkFileUpload;
 import com.cannontech.web.bulk.util.BulkFileUploadUtils;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
+import com.cannontech.web.security.csrf.CsrfTokenService;
 import com.cannontech.web.stars.dr.operator.general.AccountInfoFragment;
 import com.cannontech.web.stars.dr.operator.importAccounts.AccountImportResult;
 import com.cannontech.web.stars.dr.operator.importAccounts.service.AccountImportService;
@@ -129,6 +130,7 @@ public class OperatorAccountController {
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private PasswordPolicyService passwordPolicyService;
     @Autowired private UserGroupDao userGroupDao;
+    @Autowired private CsrfTokenService csrfTokenService;
     
     static private enum LoginModeEnum {
         CREATE,
@@ -358,7 +360,7 @@ public class OperatorAccountController {
 	                            HttpServletRequest request,
 	                            final HttpSession session,
 	                            final LiteYukonUser user) throws ServletRequestBindingException {
-
+	    csrfTokenService.validateToken(request);
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_NEW_ACCOUNT_WIZARD, user);
 	    
         LoginUsernameValidator usernameValidator = loginValidatorFactory.getUsernameValidator(new LiteYukonUser());
@@ -466,7 +468,8 @@ public class OperatorAccountController {
 	}
 	// ACCOUNT EDIT PAGE
 	@RequestMapping
-    public String edit(int accountId, ModelMap model, YukonUserContext context, AccountInfoFragment fragment) {
+    public String edit(HttpServletRequest request, int accountId, ModelMap model, YukonUserContext context, AccountInfoFragment fragment) {
+	    csrfTokenService.validateToken(request);
 	    rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, context.getYukonUser());
 	    model.addAttribute("mode", PageEditMode.EDIT);
 	    setupAccountPage(model, context, fragment, accountId);
@@ -615,6 +618,7 @@ public class OperatorAccountController {
 					    		final HttpSession session) throws ServletRequestBindingException {
 	    
 	    /* Verify the user has permission to edit accounts */
+        csrfTokenService.validateToken(request);
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
 
         YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
@@ -746,12 +750,13 @@ public class OperatorAccountController {
 	
 	// DELETE LOGIN
     @RequestMapping
-    public String deleteLogin(String loginMode,
+    public String deleteLogin(HttpServletRequest request,
+                               String loginMode,
                                ModelMap modelMap, 
                                YukonUserContext userContext,
                                FlashScope flashScope,
                                AccountInfoFragment accountInfoFragment) {
-
+        csrfTokenService.validateToken(request);
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
         
         LiteYukonUser custYukonUser = customerAccountDao.getYukonUserByAccountId(accountInfoFragment.getAccountId());
@@ -767,11 +772,13 @@ public class OperatorAccountController {
     }
 	
 	// DELETE ACCOUNT
-	@RequestMapping
-    public String deleteAccount(int accountId,
+	@RequestMapping(method=RequestMethod.POST)
+    public String deleteAccount(HttpServletRequest request, 
+                                int accountId,
     							ModelMap modelMap, 
     							YukonUserContext userContext,
     							FlashScope flashScope) throws ServletRequestBindingException {
+	    csrfTokenService.validateToken(request);
 	    CustomerAccount customerAccount = customerAccountDao.getById(accountId);
 	    accountEventLogService.accountDeletionAttempted(userContext.getYukonUser(), customerAccount.getAccountNumber(), EventSource.OPERATOR);
 		accountService.deleteAccount(accountId, userContext.getYukonUser());
