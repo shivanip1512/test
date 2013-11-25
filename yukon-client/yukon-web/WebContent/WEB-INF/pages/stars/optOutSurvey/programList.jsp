@@ -10,7 +10,7 @@
 
 <cti:msgScope paths="modules.dr.surveyList">
 
-    <tags:nameValueContainer2>
+    <tags:nameValueContainer2 tableClass="stacked">
         <tags:nameValue2 nameKey=".surveyName">
             <spring:escapeBody htmlEscape="true">${survey.surveyName}</spring:escapeBody>
         </tags:nameValue2>
@@ -26,25 +26,13 @@
         </tags:nameValue2>
     </tags:nameValueContainer2>
 
-    <tags:boxContainer2 nameKey="programs" id="programListBox">
-    <div class="scroll-medium">
-        <table class="compact-results-table">
-            <tr>
-                <th><i:inline key=".programName"/></th>
-            </tr>
-	        <c:forEach var="programId" items="${optOutSurvey.programIds}">
-	            <tr>
-	               <td>
-	                   <spring:escapeBody htmlEscape="true">${programNamesById[programId]}</spring:escapeBody>
-	               </td>
-	           </tr>
-	        </c:forEach>
-        </table>
-    </div>
-    </tags:boxContainer2>
-
-    <div class="action-area">
-        <cti:button nameKey="ok" onclick="parent.jQuery('#ajaxDialog').hide()"/>
-    </div>
-
+    <tags:sectionContainer2 nameKey="programs">
+        <ul class="striped-list simple-list">
+            <c:forEach var="programId" items="${optOutSurvey.programIds}">
+                <li>
+                    ${fn:escapeXml(programNamesById[programId])}
+               </li>
+            </c:forEach>
+        </ul>
+    </tags:sectionContainer2>
 </cti:msgScope>

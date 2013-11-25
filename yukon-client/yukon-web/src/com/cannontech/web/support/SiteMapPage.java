@@ -92,6 +92,8 @@ public enum SiteMapPage implements DisplayableEnum {
             MatchStyle.all, YukonRoleProperty.ADMIN_VIEW_BATCH_COMMANDS, OtherPermission.EC_OPERATOR),
     SURVEYS(SiteMapCategory.ASSETS, "yukon.web.modules.survey.list.pageName", "/stars/survey/list",
             MatchStyle.all, OtherPermission.HIDEABLE , YukonRoleProperty.OPERATOR_SURVEY_EDIT),
+    OPT_OUT_SURVEYS(SiteMapCategory.ASSETS, "yukon.web.modules.dr.surveyList.pageName", "/stars/optOutSurvey/list",
+            MatchStyle.all, OtherPermission.HIDEABLE , YukonRoleProperty.OPERATOR_OPT_OUT_SURVEY_EDIT),
     STARS_IMPORT(SiteMapCategory.ASSETS, "yukon.web.menu.import", "/stars/operator/account/accountImport",
             MatchStyle.all, YukonRoleProperty.OPERATOR_IMPORT_CUSTOMER_ACCOUNT),
     ENROLLMENT_MIGRATION(SiteMapCategory.ASSETS, "yukon.web.migrateEnrollmentInformation", "/operator/Consumer/MigrateEnrollment.jsp",
@@ -135,6 +137,8 @@ public enum SiteMapPage implements DisplayableEnum {
             MatchStyle.all, YukonRoleProperty.CI_CURTAILMENT_REPORTS_GROUP),
     SETTLEMENT_REPORTS(SiteMapCategory.ADMIN, "yukon.web.menu.config.reporting.reports.settlement", "/analysis/Reports.jsp?groupType=SETTLEMENT",
             MatchStyle.all, OtherPermission.HIDEABLE, YukonRoleProperty.SETTLEMENT_REPORTS_GROUP),
+    THEMES(SiteMapCategory.ADMIN, "yukon.web.modules.adminSetup.config.themes.pageName", "/adminSetup/config/themes",
+            MatchStyle.all, YukonRoleProperty.ADMIN_SUPER_USER),
 
     BULK_OPERATIONS(SiteMapCategory.TOOLS, "yukon.web.modules.tools.bulk.home.pageName", "/bulk/bulkHome",
             MatchStyle.all),
