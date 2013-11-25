@@ -172,6 +172,7 @@ table.nowrap th, table.nowrap td {white-space: nowrap;}
 .compact-results-paging span {line-height: 16px;}
 .compact-results-paging .page-num-text {margin: 0 10px;}
 .name-value-table .name, .property-list .name {min-width: 140px;}
+.name-value-table.natural-width .name, .property-list.natural-width .name {min-width: inherit;}
 .name-value-table .name, .property-list .name, .name {color: #777;}
 .name-value-table .value, .property-list .value {color: #333;}
 
@@ -446,8 +447,25 @@ hr.dashed, .divider.dashed {border-style: dashed none none none;}
 .front {z-index: 9999;}
 .with-form-controls tbody {line-height: @form-control-height;}
 .with-form-controls td button.naked, .with-form-controls td .button.naked {margin-top: 5px;}
-@-webkit-keyframes pulse-opacity { from {opacity: 0.3;} to {opacity: 1.0;}}
-.pulse-opacity {-webkit-animation-name: pulse-opacity;-webkit-animation-duration: 1s;-webkit-animation-iteration-count: infinite;-webkit-animation-timing-function: ease-in-out;-webkit-animation-direction: alternate;}
+
+@-webkit-keyframes pulse-opacity { 
+    from {opacity: 0.3;} to {opacity: 1.0;}
+}
+@keyframes pulse-opacity { 
+    from {opacity: 0.3;} to {opacity: 1.0;}
+}
+.pulse-opacity {
+    animation-name: pulse-opacity;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in-out;
+    animation-direction: alternate;
+    -webkit-animation-name: pulse-opacity;
+    -webkit-animation-duration: 1s;
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-timing-function: ease-in-out;
+    -webkit-animation-direction: alternate;
+}
 
 @-webkit-keyframes blink-shadow {
     0% {box-shadow: 0 0 15px @red;}
@@ -456,7 +474,19 @@ hr.dashed, .divider.dashed {border-style: dashed none none none;}
     75% {box-shadow: 0 0 15px transparent;}
     100% {box-shadow: 0 0 15px @red;}
 }
+@keyframes blink-shadow {
+    0% {box-shadow: 0 0 15px @red;}
+    25% {box-shadow: 0 0 15px transparent;}
+    50% {box-shadow: 0 0 15px @red;}
+    75% {box-shadow: 0 0 15px transparent;}
+    100% {box-shadow: 0 0 15px @red;}
+}
 .blink-shadow {
+    animation-name: blink-shadow;
+    animation-duration: 1s;
+    animation-direction: alternate;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite; 
     -webkit-animation-name: blink-shadow;
     -webkit-animation-duration: 1s;
     -webkit-animation-direction: alternate;

@@ -22,11 +22,11 @@
                         <td><span class="${colorStateBoxes.get(alarm.pointId).get(alarm.condition)}">&nbsp;</span></td>
                         <td class="alarm-text">
                             <div class="clearfix">
-                                <ul class="property-list fl">
+                                <ul class="property-list natural-width fl">
                                     <li class="name"><i:inline key="yukon.common.device"/>:</li>
                                     <li class="value">${fn:escapeXml(alarm.deviceName)}</li>
                                 </ul>
-                                <ul class="property-list fl">
+                                <ul class="property-list natural-width fl">
                                     <li class="name"><i:inline key="yukon.common.point"/>:</li>
                                     <li class="value">${fn:escapeXml(alarm.pointName)}</li>
                                 </ul>
