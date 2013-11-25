@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     11/12/2013 10:06:43 AM                       */
+/* Created on:     11/25/2013 1:23:30 PM                        */
 /*==============================================================*/
 
 
@@ -2674,6 +2674,35 @@ create table DeviceCBC  (
    SERIALNUMBER         NUMBER                          not null,
    ROUTEID              NUMBER                          not null,
    constraint PK_DEVICECBC primary key (DEVICEID)
+);
+
+/*==============================================================*/
+/* Table: DeviceCollection                                      */
+/*==============================================================*/
+create table DeviceCollection  (
+   CollectionId         NUMBER                          not null,
+   CollectionType       VARCHAR2(50)                    not null,
+   PersistenceType      VARCHAR2(50)                    not null,
+   constraint PK_DeviceCollect primary key (CollectionId)
+);
+
+/*==============================================================*/
+/* Table: DeviceCollectionByField                               */
+/*==============================================================*/
+create table DeviceCollectionByField  (
+   CollectionId         NUMBER                          not null,
+   FieldName            VARCHAR2(50)                    not null,
+   FieldValue           VARCHAR2(100)                   not null,
+   constraint PK_DeviceCollectByField primary key (CollectionId, FieldName)
+);
+
+/*==============================================================*/
+/* Table: DeviceCollectionById                                  */
+/*==============================================================*/
+create table DeviceCollectionById  (
+   CollectionId         NUMBER                          not null,
+   DeviceId             NUMBER                          not null,
+   constraint PK_DeviceCollectById primary key (CollectionId, DeviceId)
 );
 
 /*==============================================================*/
@@ -10827,6 +10856,16 @@ alter table DeviceCBC
 alter table DeviceCBC
    add constraint SYS_C0013460 foreign key (ROUTEID)
       references Route (RouteID);
+
+alter table DeviceCollectionByField
+   add constraint FK_DevCollByField_DevColl foreign key (CollectionId)
+      references DeviceCollection (CollectionId)
+      on delete cascade;
+
+alter table DeviceCollectionById
+   add constraint FK_DevCollById_DevColl foreign key (CollectionId)
+      references DeviceCollection (CollectionId)
+      on delete cascade;
 
 alter table DeviceConfigCategoryItem
    add constraint FK_DevConfCatItem_DevConfCat foreign key (DeviceConfigCategoryId)

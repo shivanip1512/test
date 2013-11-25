@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     11/12/2013 10:03:20 AM                       */
+/* Created on:     11/25/2013 2:37:28 PM                        */
 /*==============================================================*/
 
 
@@ -2844,6 +2844,38 @@ create table DeviceCBC (
    SERIALNUMBER         numeric              not null,
    ROUTEID              numeric              not null,
    constraint PK_DEVICECBC primary key (DEVICEID)
+)
+go
+
+/*==============================================================*/
+/* Table: DeviceCollection                                      */
+/*==============================================================*/
+create table DeviceCollection (
+   CollectionId         numeric              not null,
+   CollectionType       varchar(50)          not null,
+   PersistenceType      varchar(50)          not null,
+   constraint PK_DeviceCollect primary key (CollectionId)
+)
+go
+
+/*==============================================================*/
+/* Table: DeviceCollectionByField                               */
+/*==============================================================*/
+create table DeviceCollectionByField (
+   CollectionId         numeric              not null,
+   FieldName            varchar(50)          not null,
+   FieldValue           varchar(100)         not null,
+   constraint PK_DeviceCollectByField primary key (CollectionId, FieldName)
+)
+go
+
+/*==============================================================*/
+/* Table: DeviceCollectionById                                  */
+/*==============================================================*/
+create table DeviceCollectionById (
+   CollectionId         numeric              not null,
+   DeviceId             numeric              not null,
+   constraint PK_DeviceCollectById primary key (CollectionId, DeviceId)
 )
 go
 
@@ -11601,6 +11633,18 @@ go
 alter table DeviceCBC
    add constraint SYS_C0013460 foreign key (ROUTEID)
       references Route (RouteID)
+go
+
+alter table DeviceCollectionByField
+   add constraint FK_DevCollByField_DevColl foreign key (CollectionId)
+      references DeviceCollection (CollectionId)
+         on delete cascade
+go
+
+alter table DeviceCollectionById
+   add constraint FK_DevCollById_DevColl foreign key (CollectionId)
+      references DeviceCollection (CollectionId)
+         on delete cascade
 go
 
 alter table DeviceConfigCategoryItem
