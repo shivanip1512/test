@@ -76,7 +76,8 @@ public class TdcServiceImpl implements TdcService{
     @Autowired private StateDao stateDao;
     @Autowired private DisplayDataDao displayDataDao;
     
-    private  Map<Integer, String> stateColorMap;
+    private Map<Integer, String> stateColorMap;
+    private final String defaultAlertStr = "alert"; // yukon.css 
         
     private Comparator<DisplayData> sortByDate = new Comparator<DisplayData>() {
         @Override
@@ -84,7 +85,7 @@ public class TdcServiceImpl implements TdcService{
             return -d1.getDate().compareTo(d2.getDate());
         }
     };
-        
+
     @Override
     public List<DisplayData> getDisplayData(Display display, DateTimeZone timeZone) {
         List<DisplayData> retVal = null;
@@ -290,15 +291,17 @@ public class TdcServiceImpl implements TdcService{
             .getTags()))
             && signal.getCondition() != Signal.SIGNAL_COND) {
             String color = stateColorMap.get((int) signal.getCategoryID() - 1);
-            if (!color.isEmpty()) {
-                StringBuilder classes = new StringBuilder();
-                classes.append("state-box");
-                classes.append(" " + color.toLowerCase());
-                if (TagUtils.isAlarmUnacked(signal.getTags())) {
-                    classes.append(" blink-shadow");
-                }
-                return classes.toString();
+            if ("".equals(color)) {
+                return "";
             }
+            StringBuilder classes = new StringBuilder();
+            classes.append("state-box");
+            classes.append(" ");
+            classes.append(color == null ? defaultAlertStr : color.toLowerCase());
+            if (TagUtils.isAlarmUnacked(signal.getTags())) {
+                classes.append(" blink-shadow");
+            }
+            return classes.toString();
         }
         return "";
     }
@@ -457,11 +460,12 @@ public class TdcServiceImpl implements TdcService{
             String colorString;
             int fgColor = state.getFgColor();
             if (fgColor == Colors.RED_ID) {
-                colorString = "alert"; // yukon.css 
+                colorString = defaultAlertStr; // yukon.css 
             } else {
                 colorString = Colors.getColorString(fgColor);
             }
             stateColorMap.put(state.getStateRawState(), colorString);
         }
+        System.out.println();
     }
 }
