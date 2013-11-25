@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     11/25/2013 1:23:30 PM                        */
+/* Created on:     11/25/2013 4:52:39 PM                        */
 /*==============================================================*/
 
 
@@ -10012,11 +10012,13 @@ alter table AccountSite
 
 alter table AcctThermostatSchedule
    add constraint FK_AcctThermSch_CustAcct foreign key (AccountId)
-      references CustomerAccount (AccountID);
+      references CustomerAccount (AccountID)
+      on delete cascade;
 
 alter table AcctThermostatScheduleEntry
    add constraint FK_AccThermSchEnt_AccThermSch foreign key (AcctThermostatScheduleId)
-      references AcctThermostatSchedule (AcctThermostatScheduleId);
+      references AcctThermostatSchedule (AcctThermostatScheduleId)
+      on delete cascade;
 
 alter table AlarmCategory
    add constraint FK_ALRMCAT_NOTIFGRP foreign key (NotificationGroupID)
@@ -11372,7 +11374,8 @@ alter table InventoryConfigTaskItem
 
 alter table InventoryToAcctThermostatSch
    add constraint FK_InvToAccThermSch_AccThermSc foreign key (AcctThermostatScheduleId)
-      references AcctThermostatSchedule (AcctThermostatScheduleId);
+      references AcctThermostatSchedule (AcctThermostatScheduleId)
+      on delete cascade;
 
 alter table InventoryToAcctThermostatSch
    add constraint FK_InvToAcctThermSch_InvBase foreign key (InventoryId)
@@ -12317,7 +12320,7 @@ alter table ThemeProperty
 alter table ThermostatEventHistory
    add constraint FK_ThermEventHist_AcctThermSch foreign key (ScheduleId)
       references AcctThermostatSchedule (AcctThermostatScheduleId)
-      on delete set null;
+      on delete cascade;
 
 alter table ThermostatEventHistory
    add constraint FK_ThermEventHist_InvBase foreign key (ThermostatId)

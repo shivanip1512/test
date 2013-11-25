@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     11/25/2013 2:37:28 PM                        */
+/* Created on:     11/25/2013 4:51:20 PM                        */
 /*==============================================================*/
 
 
@@ -10589,11 +10589,13 @@ go
 alter table AcctThermostatSchedule
    add constraint FK_AcctThermSch_CustAcct foreign key (AccountId)
       references CustomerAccount (AccountID)
+         on delete cascade
 go
 
 alter table AcctThermostatScheduleEntry
    add constraint FK_AccThermSchEnt_AccThermSch foreign key (AcctThermostatScheduleId)
       references AcctThermostatSchedule (AcctThermostatScheduleId)
+         on delete cascade
 go
 
 alter table AlarmCategory
@@ -12268,6 +12270,7 @@ go
 alter table InventoryToAcctThermostatSch
    add constraint FK_InvToAccThermSch_AccThermSc foreign key (AcctThermostatScheduleId)
       references AcctThermostatSchedule (AcctThermostatScheduleId)
+         on delete cascade
 go
 
 alter table InventoryToAcctThermostatSch
@@ -13435,7 +13438,7 @@ go
 alter table ThermostatEventHistory
    add constraint FK_ThermEventHist_AcctThermSch foreign key (ScheduleId)
       references AcctThermostatSchedule (AcctThermostatScheduleId)
-         on delete set null
+         on delete cascade
 go
 
 alter table ThermostatEventHistory

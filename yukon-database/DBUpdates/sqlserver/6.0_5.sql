@@ -109,6 +109,44 @@ DEALLOCATE jobs_curs;
 /* @end-block */
 /* End YUK-12767 */
 
+/* Start YUK-12754 */
+ALTER TABLE AcctThermostatSchedule
+DROP CONSTRAINT FK_AcctThermSch_CustAcct;
+
+ALTER TABLE AcctThermostatScheduleEntry
+DROP CONSTRAINT FK_AccThermSchEnt_AccThermSch;
+
+ALTER TABLE InventoryToAcctThermostatSch
+DROP CONSTRAINT FK_InvToAccThermSch_AccThermSc;
+
+ALTER TABLE ThermostatEventHistory
+DROP CONSTRAINT FK_ThermEventHist_AcctThermSch;
+
+ALTER TABLE AcctThermostatSchedule
+   ADD CONSTRAINT FK_AcctThermSch_CustAcct FOREIGN KEY (AccountId)
+      REFERENCES CustomerAccount (AccountID)
+      ON DELETE CASCADE;
+GO
+
+ALTER TABLE AcctThermostatScheduleEntry
+   ADD CONSTRAINT FK_AccThermSchEnt_AccThermSch FOREIGN KEY (AcctThermostatScheduleId)
+      REFERENCES AcctThermostatSchedule (AcctThermostatScheduleId)
+      ON DELETE CASCADE;
+GO
+ 
+ALTER TABLE InventoryToAcctThermostatSch
+   ADD CONSTRAINT FK_InvToAccThermSch_AccThermSc FOREIGN KEY (AcctThermostatScheduleId)
+      REFERENCES AcctThermostatSchedule (AcctThermostatScheduleId)
+      ON DELETE CASCADE;
+GO
+
+ALTER TABLE ThermostatEventHistory
+   ADD CONSTRAINT FK_ThermEventHist_AcctThermSch FOREIGN KEY (ScheduleId)
+      REFERENCES AcctThermostatSchedule (AcctThermostatScheduleId)
+         ON DELETE CASCADE;
+GO
+/* End YUK-12754 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
