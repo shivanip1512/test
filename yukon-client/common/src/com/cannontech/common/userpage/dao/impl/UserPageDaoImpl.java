@@ -49,7 +49,7 @@ public class UserPageDaoImpl implements UserPageDao {
         if (dbPage == null) {
             page = page.withFavorite(true);
         } else {
-            page = page.withFavorite( ! dbPage.isFavorite()).withId(dbPage.getId());
+            page = dbPage.withFavorite( ! dbPage.isFavorite());
         }
         UserPage afterUpdate = save(page);
         return afterUpdate.isFavorite();
