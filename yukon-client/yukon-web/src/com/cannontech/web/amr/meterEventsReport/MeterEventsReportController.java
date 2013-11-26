@@ -47,6 +47,7 @@ import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionCreationException;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
+import com.cannontech.common.bulk.collection.device.service.DeviceCollectionPersistenceService;
 import com.cannontech.common.fileExportHistory.FileExportType;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.i18n.ObjectFormattingService;
@@ -115,6 +116,7 @@ public class MeterEventsReportController {
 	@Autowired private JobManager jobManager;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private ScheduledFileExportHelper exportHelper;
+    @Autowired private DeviceCollectionPersistenceService deviceCollectionPersistenceService;
 	
 	private final static String reportJspPath = "meterEventsReport/report.jsp";
 	private final static String baseKey = "yukon.web.modules.amr.meterEventsReport.report";
@@ -202,7 +204,8 @@ public class MeterEventsReportController {
     		exportData.setScheduleCronString(job.getCronString());
     		cronExpressionTagState = cronExpressionTagService.parse(job.getCronString(), job.getUserContext());
     		//set backing bean parameters
-    		backingBean.setDeviceCollection(deviceGroupCollectionHelper.buildDeviceCollection(task.getDeviceGroup()));
+    		DeviceCollection deviceCollection = deviceCollectionPersistenceService.loadCollection(task.getCollectionId());
+            backingBean.setDeviceCollection(deviceCollection);
     		backingBean.setIncludeDisabledPaos(task.isIncludeDisabledDevices());
     		backingBean.setEventTypesAllFalse();
     		for(Attribute attribute : task.getAttributes()) {

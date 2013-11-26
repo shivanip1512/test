@@ -12,8 +12,6 @@ import com.cannontech.amr.waterMeterLeak.model.WaterMeterLeak;
 import com.cannontech.amr.waterMeterLeak.service.WaterMeterLeakService;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.service.DeviceCollectionPersistenceService;
-import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
-import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.fileExportHistory.ExportHistoryEntry;
 import com.cannontech.common.fileExportHistory.FileExportType;
@@ -29,8 +27,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 public class ScheduledWaterLeakFileExportTask extends ScheduledFileExportTask {
-	@Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
-	@Autowired private DeviceGroupEditorDao deviceGroupEditorDao;
 	@Autowired private WaterMeterLeakService waterMeterLeakService;
 	@Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 	@Autowired private DateFormattingService dateFormattingService;

@@ -24,8 +24,6 @@ import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.service.DeviceCollectionPersistenceService;
-import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
-import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.exception.FileCreationException;
 import com.cannontech.common.fileExportHistory.ExportHistoryEntry;
 import com.cannontech.common.fileExportHistory.FileExportType;
@@ -41,8 +39,6 @@ public class ScheduledArchivedDataFileExportTask extends ScheduledFileExportTask
 	@Autowired private ArchiveValuesExportFormatDao archiveValuesExportFormatDao;
 	@Autowired private RawPointHistoryDao rawPointHistoryDao;
 	@Autowired private ScheduledFileExportDao scheduledFileExportDao;
-	@Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
-	@Autowired private DeviceGroupEditorDao deviceGroupEditorDao;
 	@Autowired private DeviceCollectionPersistenceService deviceCollectionPersistenceService;
 	
 	private int collectionId;

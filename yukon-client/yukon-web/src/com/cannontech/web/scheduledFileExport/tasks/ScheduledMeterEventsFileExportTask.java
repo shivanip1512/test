@@ -15,11 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.amr.paoPointValue.model.MeterPointValue;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.service.DeviceCollectionPersistenceService;
-import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
-import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
-import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
-import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
-import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.fileExportHistory.ExportHistoryEntry;
 import com.cannontech.common.fileExportHistory.FileExportType;
@@ -28,7 +23,6 @@ import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.scheduledFileExport.ExportFileGenerationParameters;
 import com.cannontech.common.scheduledFileExport.MeterEventsExportGenerationParameters;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.service.PaoPointValueService;
@@ -41,8 +35,6 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 
 public class ScheduledMeterEventsFileExportTask extends ScheduledFileExportTask {
-	@Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
-	@Autowired private DeviceGroupEditorDao deviceGroupEditorDao;
 	@Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 	@Autowired private PaoPointValueService paoPointValueService;
 	@Autowired private AttributeService attributeService;
@@ -56,7 +48,6 @@ public class ScheduledMeterEventsFileExportTask extends ScheduledFileExportTask 
 	private boolean onlyLatestEvent;
 	private boolean onlyAbnormalEvents;
 	private boolean includeDisabledDevices;
-	private String uniqueIdentifier = CtiUtilities.getUuidString();
 	private int collectionId;
 	private Set<Attribute> attributes;
 	
@@ -120,15 +111,6 @@ public class ScheduledMeterEventsFileExportTask extends ScheduledFileExportTask 
 
 	public void setIncludeDisabledDevices(boolean includeDisabledDevices) {
 		this.includeDisabledDevices = includeDisabledDevices;
-	}
-
-	public String getUniqueIdentifier() {
-		return uniqueIdentifier;
-	}
-	
-	public DeviceGroup getDeviceGroup() {
-		StoredDeviceGroup parent = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.AUTO);
-		return deviceGroupEditorDao.getGroupByName(parent, uniqueIdentifier);
 	}
 
 	public Set<Attribute> getAttributes() {
