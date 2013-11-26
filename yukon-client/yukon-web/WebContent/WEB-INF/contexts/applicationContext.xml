@@ -11,7 +11,7 @@
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
        http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms.xsd">
-	
+    
     <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
         <property name="cacheSeconds" value="0"/>
         <property name="customArgumentResolvers">
@@ -90,7 +90,7 @@
     </bean>
     
     <bean id="standardMenuRenderer" class="com.cannontech.web.menu.renderer.StandardMenuRenderer">
-    	<constructor-arg value="/WEB-INF/menu_config.xml"/>
+        <constructor-arg value="/WEB-INF/menu_config.xml"/>
     </bean>
     
     <bean class="com.cannontech.web.menu.renderer.SearchRenderer"/>
@@ -168,68 +168,68 @@
     </bean>
     
     <bean id="meterSearchWidget"
-    	class="com.cannontech.web.widget.MeterSearchWidget">
-    	<property name="roleAndPropertiesChecker">
-	   		<bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+        class="com.cannontech.web.widget.MeterSearchWidget">
+        <property name="roleAndPropertiesChecker">
+               <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
                 <constructor-arg value="METERING"/>
             </bean>
-	   	</property>
+           </property>
     </bean>
 
     <bean id="accountInformationWidget"
-    	class="com.cannontech.web.widget.AccountInformationWidget">
-    	<property name="identityPath" value="common/deviceIdentity.jsp" />
-    	<property name="lazyLoad" value="true" />
-    	<property name="inputs">
-    		<set>
-    			<ref local="widgetInput.deviceId" />
-    		</set>
-    	</property>
-    	<property name="roleAndPropertiesChecker">
-	   		<bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+        class="com.cannontech.web.widget.AccountInformationWidget">
+        <property name="identityPath" value="common/deviceIdentity.jsp" />
+        <property name="lazyLoad" value="true" />
+        <property name="inputs">
+            <set>
+                <ref local="widgetInput.deviceId" />
+            </set>
+        </property>
+        <property name="roleAndPropertiesChecker">
+               <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
                 <constructor-arg value="METERING"/>
             </bean>
-	   	</property>
+           </property>
     </bean>
     
     <bean id="cayentaAccountInformationWidget"
-    	class="com.cannontech.web.widget.CayentaAccountInformationWidget">
-    	<property name="identityPath" value="common/deviceIdentity.jsp" />
-    	<property name="lazyLoad" value="true" />
-    	<property name="inputs">
-    		<set>
-    			<ref local="widgetInput.deviceId" />
-    		</set>
-    	</property>
-    	<property name="roleAndPropertiesChecker">
-	   		<bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+        class="com.cannontech.web.widget.CayentaAccountInformationWidget">
+        <property name="identityPath" value="common/deviceIdentity.jsp" />
+        <property name="lazyLoad" value="true" />
+        <property name="inputs">
+            <set>
+                <ref local="widgetInput.deviceId" />
+            </set>
+        </property>
+        <property name="roleAndPropertiesChecker">
+               <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
                 <constructor-arg value="CIS_DETAIL_WIDGET_ENABLED"/>
             </bean>
-	   	</property>
+           </property>
     </bean>
 
-	<bean id="deviceGroupWidget"
-    	class="com.cannontech.web.widget.DeviceGroupWidget">
-		<property name="lazyLoad" value="true" />
-    	<property name="inputs">
+    <bean id="deviceGroupWidget"
+        class="com.cannontech.web.widget.DeviceGroupWidget">
+        <property name="lazyLoad" value="true" />
+        <property name="inputs">
            <set>
               <ref local="widgetInput.deviceId"/>
            </set>
         </property>
     </bean>
 
-	<bean id="touWidget"
-    	class="com.cannontech.web.widget.TouWidget">
-    	<property name="inputs">
+    <bean id="touWidget"
+        class="com.cannontech.web.widget.TouWidget">
+        <property name="inputs">
            <set>
               <ref local="widgetInput.deviceId"/>
            </set>
         </property>
         <property name="roleAndPropertiesChecker">
-	   		<bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+               <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
                 <constructor-arg value="METERING"/>
             </bean>
-	   	</property>
+           </property>
     </bean>
     
     <bean id="configWidget" class="com.cannontech.web.widget.ConfigWidget">
@@ -246,7 +246,7 @@
     </bean>
 
     <bean id="disconnectMeterWidget"
-    	class="com.cannontech.web.widget.DisconnectMeterWidget">
+        class="com.cannontech.web.widget.DisconnectMeterWidget">
         <property name="identityPath" value="common/deviceIdentity.jsp" />
         <property name="inputs">
            <set>
@@ -254,10 +254,10 @@
            </set>
         </property>
         <property name="roleAndPropertiesChecker">
-	   		<bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+               <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
                 <constructor-arg value="METERING"/>
             </bean>
-	   	</property>
+           </property>
     </bean>
     
     <bean id="rfnMeterDisconnectWidget" class="com.cannontech.web.widget.RfnMeterDisconnectWidget">
@@ -299,7 +299,7 @@
     
     <bean id="meterEventsWidget" class="com.cannontech.web.widget.MeterEventsWidget">
         <property name="identityPath" value="common/deviceIdentity.jsp" />
-		<property name="lazyLoad" value="true" />
+        <property name="lazyLoad" value="true" />
         <property name="inputs">
            <set>
               <ref local="widgetInput.deviceId"/>
@@ -313,7 +313,7 @@
     </bean>
     
     <bean id="meterOutagesWidget"
-    	class="com.cannontech.web.widget.MeterOutagesWidget">
+        class="com.cannontech.web.widget.MeterOutagesWidget">
         <property name="identityPath" value="common/deviceIdentity.jsp" />
         <property name="inputs">
            <set>
@@ -321,17 +321,17 @@
            </set>
         </property>
         <property name="roleAndPropertiesChecker">
-	   		<bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+               <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
                 <constructor-arg value="METERING"/>
             </bean>
-	   	</property>
+           </property>
         <property name="plcDeviceAttributeReadService" ref="plcDeviceAttributeReadService"/>
         <property name="attributeService" ref="attributeService"/>
         <property name="meterDao" ref="meterDao"/>
     </bean>
     
     <bean id="meterInformationWidget"
-    	class="com.cannontech.web.widget.MeterInformationWidget">
+        class="com.cannontech.web.widget.MeterInformationWidget">
         <property name="identityPath" value="common/deviceIdentity.jsp" />
         <property name="inputs">
            <set>
@@ -339,10 +339,10 @@
            </set>
         </property>
         <property name="roleAndPropertiesChecker">
-	   		<bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+               <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
                 <constructor-arg value="METERING"/>
             </bean>
-	   	</property>
+           </property>
     </bean>
     
     <bean id="simpleAttributesWidget"
@@ -354,10 +354,10 @@
            </set>
         </property>
         <property name="roleAndPropertiesChecker">
-	   		<bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+               <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
                 <constructor-arg value="METERING"/>
             </bean>
-	   	</property>
+           </property>
     </bean>
     
     <bean id="touScheduleWidget"
@@ -369,10 +369,10 @@
            </set>
         </property>
         <property name="roleAndPropertiesChecker">
-	   		<bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+               <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
                 <constructor-arg value="METERING"/>
             </bean>
-	   	</property>
+           </property>
         <property name="meterDao" ref="meterDao"/>
         <property name="commandRequestExecutor" ref="commandRequestDeviceExecutor"/>
         <property name="databaseCache" ref="databaseCache"/>
@@ -391,10 +391,10 @@
            </set>
         </property>
         <property name="roleAndPropertiesChecker">
-	   		<bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+               <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
                 <constructor-arg value="METERING"/>
             </bean>
-	   	</property>
+           </property>
         <property name="attributesToShow">
           <list>
             <value>USAGE</value>
@@ -468,7 +468,7 @@
     </bean>
     
     <bean id="miniTdcWidget"
-    	class="com.cannontech.web.widget.MiniTdcWidget">
+        class="com.cannontech.web.widget.MiniTdcWidget">
         <property name="identityPath" value="miniTdcWidget/identity.jsp" />
         <property name="inputs">
            <set>
@@ -485,7 +485,7 @@
     </bean>
     
     <bean id="profileWidget"
-    	class="com.cannontech.web.widget.ProfileWidget">
+        class="com.cannontech.web.widget.ProfileWidget">
         <property name="identityPath" value="common/deviceIdentity.jsp" />
         <property name="inputs">
            <set>
@@ -493,10 +493,10 @@
            </set>
         </property>
         <property name="roleAndPropertiesChecker">
-	   		<bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+               <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
                 <constructor-arg value="METERING"/>
             </bean>
-	   	</property>
+           </property>
     </bean>
     
     <bean id="pendingProfilesWidget"
@@ -508,17 +508,17 @@
            </set>
         </property>
         <property name="roleAndPropertiesChecker">
-	   		<bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+               <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
                 <constructor-arg value="METERING"/>
             </bean>
-	   	</property>
+           </property>
         <property name="loadProfileService" ref="loadProfileService" />
         <property name="paoDao" ref="paoDao"/>
         
     </bean>
     
     <bean id="userPermissionEditorWidget"
-    	class="com.cannontech.web.widget.UserPermissionEditorWidget">
+        class="com.cannontech.web.widget.UserPermissionEditorWidget">
         <property name="identityPath" value="common/userPermissionIdentity.jsp" />
         <property name="inputs">
            <set>
@@ -529,10 +529,10 @@
            </set>
         </property>
         <property name="roleAndPropertiesChecker">
-	   		<bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+               <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
                 <constructor-arg value="ADMIN_LM_USER_ASSIGN"/>
             </bean>
-	   	</property>
+           </property>
         <property name="yukonUserDao" ref="yukonUserDao"/>
         <property name="paoDao" ref="paoDao"/>
         <property name="editorService" ref="userEditorService"/>
@@ -549,17 +549,17 @@
            </set>
         </property>
         <property name="roleAndPropertiesChecker">
-	   		<bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+               <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
                 <constructor-arg value="ADMIN_LM_USER_ASSIGN"/>
             </bean>
-	   	</property>
+           </property>
         <property name="userGroupDao" ref="userGroupDao"/>
         <property name="paoDao" ref="paoDao"/>
         <property name="editorService" ref="userGroupEditorService"/>
     </bean>
 
     <bean id="peakReportWidget"
-    	class="com.cannontech.web.widget.PeakReportWidget">
+        class="com.cannontech.web.widget.PeakReportWidget">
         <property name="identityPath" value="common/deviceIdentity.jsp" />
         <property name="inputs">
            <set>
@@ -567,10 +567,10 @@
            </set>
         </property>
         <property name="roleAndPropertiesChecker">
-	   		<bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+               <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
                 <constructor-arg value="METERING"/>
             </bean>
-	   	</property>
+           </property>
         <property name="peakReportService" ref="peakReportService" />
         <property name="meterDao" ref="meterDao"/>
         <property name="dateFormattingService" ref="dateFormattingService"/>
@@ -581,19 +581,19 @@
     <bean id="outageMonitorsWidget" class="com.cannontech.web.widget.OutageMonitorsWidget">
         <property name="identityPath" value="common/deviceIdentity.jsp" />
         <property name="roleAndPropertiesChecker">
-	   		<bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+               <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
                 <constructor-arg value="OUTAGE_PROCESSING"/>
             </bean>
-	   	</property>
+           </property>
     </bean>
     
     <bean id="tamperFlagMonitorsWidget" class="com.cannontech.web.widget.TamperFlagMonitorsWidget">
         <property name="identityPath" value="common/deviceIdentity.jsp" />
         <property name="roleAndPropertiesChecker">
-	   		<bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+               <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
                 <constructor-arg value="TAMPER_FLAG_PROCESSING"/>
             </bean>
-	   	</property>
+           </property>
     </bean>
     
     <bean id="statusPointMonitorsWidget" class="com.cannontech.web.widget.StatusPointMonitorsWidget">
@@ -675,11 +675,11 @@
     
     <bean id="operatorAccountSearchWidget" class="com.cannontech.web.widget.OperatorAccountSearchWidget">
         <property name="roleAndPropertiesChecker">
-	   		<bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+               <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
                 <constructor-arg value="CONSUMER_INFO"/>
             </bean>
-	   	</property>
-	   	<property name="inputs">
+           </property>
+           <property name="inputs">
            <set>
               <ref local="widgetInput.operatorAccountSearchSearchBy"/>
               <ref local="widgetInput.operatorAccountSearchSearchValue"/>
@@ -1032,11 +1032,11 @@
     
     <bean id="voltageRegulatorBackingService" class="com.cannontech.web.updater.capcontrol.VoltageRegulatorBackingService"/>
     <bean id="voltageRegulatorModeUpdaterHandler" class="com.cannontech.web.updater.capcontrol.handler.VoltageRegulatorModeUpdaterHandler"/>
-	<bean id="voltageRegulatorTapHandler" class="com.cannontech.web.updater.capcontrol.handler.VoltageRegulatorTapHandler"/>
-	<bean id="voltageRegulatorOpTimeHandler" class="com.cannontech.web.updater.capcontrol.handler.VoltageRegulatorOpTimeHandler"/>
-	<bean id="voltageRegulatorTapTooltipHandler" class="com.cannontech.web.updater.capcontrol.handler.VoltageRegulatorTapTooltipHandler"/>
-	<bean class="com.cannontech.web.updater.capcontrol.handler.VoltageRegulatorVoltChangePerTapUpdaterHandler"/>
-	
+    <bean id="voltageRegulatorTapHandler" class="com.cannontech.web.updater.capcontrol.handler.VoltageRegulatorTapHandler"/>
+    <bean id="voltageRegulatorOpTimeHandler" class="com.cannontech.web.updater.capcontrol.handler.VoltageRegulatorOpTimeHandler"/>
+    <bean id="voltageRegulatorTapTooltipHandler" class="com.cannontech.web.updater.capcontrol.handler.VoltageRegulatorTapTooltipHandler"/>
+    <bean class="com.cannontech.web.updater.capcontrol.handler.VoltageRegulatorVoltChangePerTapUpdaterHandler"/>
+    
     <bean id="cbcAreaFormattingService" class="com.cannontech.web.updater.capcontrol.AreaFormattingService"
           parent="abstractAreaFormattingService"/>
     
@@ -1123,7 +1123,7 @@
     </bean>
     
     <bean id="verifyRolePropertyValueTagPrototype" class="com.cannontech.web.taglib.VerifyRolePropertyValueTag">
-    	<property name="rolePropertyDao" ref="rolePropertyDao"/>
+        <property name="rolePropertyDao" ref="rolePropertyDao"/>
     </bean>
     
     <bean id="verifyGlobalRolesAndPropertiesTagPrototype" class="com.cannontech.web.taglib.VerifyGlobalRolesAndPropertiesTag">
@@ -1179,48 +1179,48 @@
           <value>USAGE</value>
         </property>
         <property name="supportedAttributeGraphSet">
-			<list>
-				<bean class="com.cannontech.common.chart.model.AttributeGraphType">
-					<property name="attribute" value="SUM_KWH_PER_INTERVAL"/>
-					<property name="graphType" value="LINE"/>
-					<property name="converterType" value="RAW"/>
-				</bean>
-				<bean class="com.cannontech.common.chart.model.AttributeGraphType">
-					<property name="attribute" value="SUM_KW_LOAD_PROFILE"/>
-					<property name="graphType" value="LINE"/>
-					<property name="converterType" value="RAW"/>
-				</bean>
-				<bean class="com.cannontech.common.chart.model.AttributeGraphType">
-					<property name="attribute" value="DELIVERED_KWH_PER_INTERVAL"/>
-					<property name="graphType" value="LINE"/>
-					<property name="converterType" value="RAW"/>
-				</bean>
-				<bean class="com.cannontech.common.chart.model.AttributeGraphType">
-					<property name="attribute" value="DELIVERED_KW_LOAD_PROFILE"/>
-					<property name="graphType" value="LINE"/>
-					<property name="converterType" value="RAW"/>
-				</bean>
-				<bean class="com.cannontech.common.chart.model.AttributeGraphType">
-					<property name="attribute" value="LOAD_PROFILE"/>
-					<property name="graphType" value="LINE"/>
-					<property name="converterType" value="RAW"/>
-				</bean>
-				<bean class="com.cannontech.common.chart.model.AttributeGraphType">
+            <list>
+                <bean class="com.cannontech.common.chart.model.AttributeGraphType">
+                    <property name="attribute" value="SUM_KWH_PER_INTERVAL"/>
+                    <property name="graphType" value="LINE"/>
+                    <property name="converterType" value="RAW"/>
+                </bean>
+                <bean class="com.cannontech.common.chart.model.AttributeGraphType">
+                    <property name="attribute" value="SUM_KW_LOAD_PROFILE"/>
+                    <property name="graphType" value="LINE"/>
+                    <property name="converterType" value="RAW"/>
+                </bean>
+                <bean class="com.cannontech.common.chart.model.AttributeGraphType">
+                    <property name="attribute" value="DELIVERED_KWH_PER_INTERVAL"/>
+                    <property name="graphType" value="LINE"/>
+                    <property name="converterType" value="RAW"/>
+                </bean>
+                <bean class="com.cannontech.common.chart.model.AttributeGraphType">
+                    <property name="attribute" value="DELIVERED_KW_LOAD_PROFILE"/>
+                    <property name="graphType" value="LINE"/>
+                    <property name="converterType" value="RAW"/>
+                </bean>
+                <bean class="com.cannontech.common.chart.model.AttributeGraphType">
+                    <property name="attribute" value="LOAD_PROFILE"/>
+                    <property name="graphType" value="LINE"/>
+                    <property name="converterType" value="RAW"/>
+                </bean>
+                <bean class="com.cannontech.common.chart.model.AttributeGraphType">
                       <property name="attribute" value="VOLTAGE_PROFILE"/>
                       <property name="graphType" value="LINE"/>
                       <property name="converterType" value="RAW"/>
                 </bean>
-				<bean class="com.cannontech.common.chart.model.AttributeGraphType">
-					<property name="attribute" value="DEMAND"/>
-					<property name="graphType" value="LINE"/>
-					<property name="converterType" value="RAW"/>
-				</bean>
-				<bean class="com.cannontech.common.chart.model.AttributeGraphType">
-					<property name="attribute" value="USAGE"/>
-					<property name="graphType" value="COLUMN"/>
-					<property name="converterType" value="NORMALIZED_DELTA"/>
-				</bean>
-        	</list>
+                <bean class="com.cannontech.common.chart.model.AttributeGraphType">
+                    <property name="attribute" value="DEMAND"/>
+                    <property name="graphType" value="LINE"/>
+                    <property name="converterType" value="RAW"/>
+                </bean>
+                <bean class="com.cannontech.common.chart.model.AttributeGraphType">
+                    <property name="attribute" value="USAGE"/>
+                    <property name="graphType" value="COLUMN"/>
+                    <property name="converterType" value="NORMALIZED_DELTA"/>
+                </bean>
+            </list>
         </property>
     </bean>
  
@@ -1323,11 +1323,11 @@
     </bean>
     
     <bean id="yukonListEntryListTagPrototype" class="com.cannontech.web.taglib.YukonListEntryListTag">
-	    <property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-	</bean>
+        <property name="starsDatabaseCache" ref="starsDatabaseCache"/>
+    </bean>
 
     <bean id="yukonListEntryValueTagPrototype" class="com.cannontech.web.taglib.YukonListEntryValueTag">
-    	<property name="yukonListDao" ref="yukonListDao"/>
+        <property name="yukonListDao" ref="yukonListDao"/>
     </bean>
     
     <!-- Remember to add friendlyExceptionPropertyKey key to friendlyException.properties file -->
@@ -1342,8 +1342,8 @@
                     <property name="friendlyExceptionPropertyKey" value="ConnectionException" />
                 </bean>
                 <bean class="com.cannontech.common.util.KnownExceptionType">
-                	<property name="exceptionClass" value="com.cannontech.core.dynamic.exception.DynamicDataAccessException" />
-                	<property name="friendlyExceptionPropertyKey" value="DispatchInvalid" />
+                    <property name="exceptionClass" value="com.cannontech.core.dynamic.exception.DynamicDataAccessException" />
+                    <property name="friendlyExceptionPropertyKey" value="DispatchInvalid" />
                 </bean>
                 <bean class="com.cannontech.common.util.KnownExceptionType">
                     <property name="exceptionClass" value="com.cannontech.common.exception.InitiateLoadProfileRequestException" />
@@ -1381,12 +1381,12 @@
             </list>
         </property>
     
-    </bean>	
+    </bean>    
     
     <bean id="friendlyExceptionsProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
-    	<property name="location">
-    		<value>/WEB-INF/friendlyExceptions.properties</value>
-    	</property>
+        <property name="location">
+            <value>/WEB-INF/friendlyExceptions.properties</value>
+        </property>
     </bean>
     
     <bean id="urlAccessChecker" class="com.cannontech.web.login.access.UrlAccessCheckerImpl">
@@ -1581,7 +1581,7 @@
     <bean id="commandScheduleValidator" class="com.cannontech.web.stars.dr.operator.inventory.CommandScheduleValidator"/>
     <bean id="filterModelValidator" class="com.cannontech.web.stars.dr.operator.inventory.FilterModelValidator"/>
 
-	<bean id="energyCompanyInfoService" class="com.cannontech.web.admin.energyCompany.service.impl.EnergyCompanyInfoServiceImpl"/>
+    <bean id="energyCompanyInfoService" class="com.cannontech.web.admin.energyCompany.service.impl.EnergyCompanyInfoServiceImpl"/>
     <bean id="userGroupValidator" class="com.cannontech.web.admin.userGroupEditor.model.UserGroupValidator"/>
 
     <bean id="liteContactValidator" class="com.cannontech.web.stars.dr.consumer.model.LiteContactValidator"/>
@@ -1600,8 +1600,8 @@
     <bean id="eventLogCategoryValidator" class="com.cannontech.web.stars.dr.operator.validator.EventLogCategoryValidator"/>
     <bean id="eventLogTypeValidator" class="com.cannontech.web.stars.dr.operator.validator.EventLogTypeValidator"/>
     
-  	<bean id="loginValidatorFactory" class="com.cannontech.web.stars.dr.operator.validator.impl.LoginValidatorFactoryImpl" />
-  	<bean id="optOutValidatorFactory" class="com.cannontech.web.stars.dr.operator.validator.impl.OptOutValidatorFactoryImpl" />
+      <bean id="loginValidatorFactory" class="com.cannontech.web.stars.dr.operator.validator.impl.LoginValidatorFactoryImpl" />
+      <bean id="optOutValidatorFactory" class="com.cannontech.web.stars.dr.operator.validator.impl.OptOutValidatorFactoryImpl" />
 
     <bean id="displayableApplianceService" class="com.cannontech.web.stars.dr.operator.service.impl.DisplayableApplianceServiceImpl"/>
     <bean id="starsApplianceService" class="com.cannontech.stars.dr.appliance.service.impl.StarsApplianceServiceImpl"/>
@@ -1693,7 +1693,7 @@
         </property>
     </bean>
     
-	<bean name="filterablePointPicker" parent="abstractPointPicker"
+    <bean name="filterablePointPicker" parent="abstractPointPicker"
         class="com.cannontech.web.picker.v2.FilterablePointPicker">
     </bean>
     
@@ -1728,8 +1728,8 @@
         </property>
     </bean> 
 
-	<bean name="availableCapBankPicker" class="com.cannontech.web.picker.v2.AvailableCapBankPicker"/>
-	<bean name="availableVoltageRegulatorGangPicker" class="com.cannontech.web.picker.v2.AvailableVoltageRegulatorGangPicker"/>
+    <bean name="availableCapBankPicker" class="com.cannontech.web.picker.v2.AvailableCapBankPicker"/>
+    <bean name="availableVoltageRegulatorGangPicker" class="com.cannontech.web.picker.v2.AvailableVoltageRegulatorGangPicker"/>
     <bean name="availableVoltageRegulatorPhasePicker" class="com.cannontech.web.picker.v2.AvailableVoltageRegulatorPhasePicker"/>
 
     <bean name="waterMeterPicker" parent="abstractPaoPicker" class="com.cannontech.web.picker.v2.PaoPicker">
@@ -1797,8 +1797,8 @@
     <bean name="gearFormulaPicker" class="com.cannontech.web.picker.v2.GearFormulaPicker"/>
 
     <bean name="lmProgramPicker" class="com.cannontech.web.picker.v2.LmProgramPicker">
-    	<property name="permission" value="LM_VISIBLE"/>
-    	<property name="sqlFilters">
+        <property name="permission" value="LM_VISIBLE"/>
+        <property name="sqlFilters">
             <list>
                 <bean class="com.cannontech.common.search.pao.db.PaoTagFilter">
                     <property name="paoTag" value="LM_PROGRAM"/>
@@ -1808,8 +1808,8 @@
     </bean>
 
     <bean name="lmGroupPaoPermissionCheckingPicker" class="com.cannontech.web.picker.v2.PaoPermissionCheckingPicker">
-    	<property name="permission" value="LM_VISIBLE"/>
-    	<property name="sqlFilters">
+        <property name="permission" value="LM_VISIBLE"/>
+        <property name="sqlFilters">
             <list>
                 <bean class="com.cannontech.common.search.pao.db.LmGroupFilter"/>
             </list>
@@ -1817,8 +1817,8 @@
     </bean>
     
     <bean name="lmControlAreaPaoPermissionCheckingPicker" class="com.cannontech.web.picker.v2.PaoPermissionCheckingPicker">
-    	<property name="permission" value="LM_VISIBLE"/>
-    	<property name="sqlFilters">
+        <property name="permission" value="LM_VISIBLE"/>
+        <property name="sqlFilters">
             <list>
                 <bean class="com.cannontech.common.search.pao.db.PaoTypeFilter">
                     <property name="paoType" value="LM_CONTROL_AREA"/>
@@ -1828,8 +1828,8 @@
     </bean>
 
     <bean name="lmScenarioPaoPermissionCheckingPicker" class="com.cannontech.web.picker.v2.PaoPermissionCheckingPicker">
-    	<property name="permission" value="LM_VISIBLE"/>
-    	<property name="sqlFilters">
+        <property name="permission" value="LM_VISIBLE"/>
+        <property name="sqlFilters">
             <list>
                 <bean class="com.cannontech.common.search.pao.db.PaoTypeFilter">
                     <property name="paoType" value="LM_SCENARIO" />
@@ -1923,7 +1923,7 @@
             value="com.cannontech.web.picker.v2.service.PickerFactory" />
     </bean>
 
-	<bean name="lmHardwareBasePicker" class="com.cannontech.web.picker.v2.LmHardwareBasePicker"/>
+    <bean name="lmHardwareBasePicker" class="com.cannontech.web.picker.v2.LmHardwareBasePicker"/>
 
     <bean name="categoryPicker" class="com.cannontech.web.picker.v2.ConfigurationCategoryPicker"/>
     
@@ -1942,7 +1942,7 @@
     
     <bean id="zoneDtoValidator" class="com.cannontech.web.capcontrol.ivvc.validators.ZoneDtoValidator"/>
     <bean id="zoneDtoHelper" class="com.cannontech.web.capcontrol.ivvc.ZoneDtoHelper"/>
-	<bean id="voltageFlatnessGraphService" class="com.cannontech.web.capcontrol.ivvc.service.impl.VoltageFlatnessGraphServiceImpl"/>
+    <bean id="voltageFlatnessGraphService" class="com.cannontech.web.capcontrol.ivvc.service.impl.VoltageFlatnessGraphServiceImpl"/>
     
     <bean id="hardwareValidator" class="com.cannontech.web.stars.dr.operator.hardware.validator.HardwareValidator"/>
     <bean id="serialNumberValidator" class="com.cannontech.web.stars.dr.operator.hardware.validator.SerialNumberValidator"/>
@@ -2198,8 +2198,8 @@
     <bean class="com.cannontech.web.common.chart.service.impl.AssetAvailabilityChartServiceImpl"/>
 
     <bean class="com.cannontech.web.support.SiteMapHelper"/>
-	<bean class="com.cannontech.web.scheduledFileExport.service.impl.ScheduledFileExportServiceImpl"/>
-	<bean class="com.cannontech.web.scheduledFileExport.service.impl.ScheduledFileExportJobsTagServiceImpl"/>
+    <bean class="com.cannontech.web.scheduledFileExport.service.impl.ScheduledFileExportServiceImpl"/>
+    <bean class="com.cannontech.web.scheduledFileExport.service.impl.ScheduledFileExportJobsTagServiceImpl"/>
     <bean class="com.cannontech.web.scheduledFileExport.ScheduledFileExportHelper"/>
     <bean id="userPageService" class="com.cannontech.web.common.userpage.service.impl.UserPageServiceImpl"/>
     
