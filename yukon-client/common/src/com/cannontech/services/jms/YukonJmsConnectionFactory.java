@@ -45,7 +45,7 @@ public class YukonJmsConnectionFactory implements FactoryBean<ConnectionFactory>
                 // if using Spring, create a CachingConnectionFactory
                 CachingConnectionFactory cachingFactory = new CachingConnectionFactory();
                 cachingFactory.setTargetConnectionFactory(factory);
-                log.debug("created remote services connectionFactory at " + clientConnection);
+                log.info("created remote services connectionFactory at " + clientConnection);
                 return cachingFactory;
             }
             case INTERNAL_MESSAGING: {
@@ -60,6 +60,7 @@ public class YukonJmsConnectionFactory implements FactoryBean<ConnectionFactory>
                             configurationSource.getString("JMS_INTERNAL_MESSAGING_CONNECTION", serverListenConnection);
                 }
                 
+                log.info("created internal messaging connectionFactory at " + internalMessageConnection);
                 return new ActiveMQConnectionFactory(internalMessageConnection);
             }
             default: 
@@ -70,7 +71,7 @@ public class YukonJmsConnectionFactory implements FactoryBean<ConnectionFactory>
                     ServerEmbeddedBroker serverEmbeddedBroker =
                             new ServerEmbeddedBroker(applicationName, serverListenConnection);
                     serverEmbeddedBroker.start();
-                    log.debug("created ServiceManager ConnectionFactory at " + serverListenConnection);
+                    log.info("created ServiceManager ConnectionFactory at " + serverListenConnection);
                     return serverEmbeddedBroker.getConnectionFactory();
                 } 
                 if (!CtiUtilities.isRunningAsClient()) {
@@ -80,7 +81,7 @@ public class YukonJmsConnectionFactory implements FactoryBean<ConnectionFactory>
                     ClientEmbeddedBroker clientEmbeddedBroker =
                             new ClientEmbeddedBroker(applicationName, clientBrokerConnection);
                     clientEmbeddedBroker.start();
-                    log.debug("created Server ConnectionFactory at " + clientBrokerConnection);
+                    log.info("created Server ConnectionFactory at " + clientBrokerConnection);
                     return clientEmbeddedBroker.getConnectionFactory();
                 } 
                 String clientConnection =
@@ -92,7 +93,7 @@ public class YukonJmsConnectionFactory implements FactoryBean<ConnectionFactory>
                 // if using Spring, create a CachingConnectionFactory
                 CachingConnectionFactory cachingFactory = new CachingConnectionFactory();
                 cachingFactory.setTargetConnectionFactory(factory);
-                log.debug("created Client ConnectionFactory at " + clientConnection);
+                log.info("created Client ConnectionFactory at " + clientConnection);
                 return cachingFactory;
             }
         }
