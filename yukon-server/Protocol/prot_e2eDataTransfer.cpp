@@ -143,7 +143,7 @@ boost::optional<E2eDataTransferProtocol::EndpointResponse> E2eDataTransferProtoc
 
             _inboundIds[endpointId] = indication_pdu->hdr->id;
 
-            er.ackMessage =
+            er.ack =
                     sendAck(indication_pdu->hdr->id);
 
             break;
@@ -175,7 +175,7 @@ boost::optional<E2eDataTransferProtocol::EndpointResponse> E2eDataTransferProtoc
     {
         if( block.m )
         {
-            er.blockContinuationMessage =
+            er.blockContinuation =
                     sendBlockContinuation(block.szx, block.num + 1, endpointId, er.token);
         }
     }

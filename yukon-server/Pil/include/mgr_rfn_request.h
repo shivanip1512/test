@@ -68,7 +68,14 @@ private:
 
     Protocols::E2eDataTransferProtocol _e2edt;
 
-    std::vector<unsigned char> sendE2eDataRequestMessage(const std::vector<unsigned char> &e2ePacket, const unsigned char applicationServiceId, const Devices::RfnIdentifier &rfnIdentifier);
+    struct PacketInfo
+    {
+        std::vector<unsigned char> serializedMessage;
+        unsigned retransmissionDelay;
+        unsigned retransmits;
+    };
+
+    PacketInfo sendE2eDataRequestPacket(const std::vector<unsigned char> &e2ePacket, const unsigned char applicationServiceId, const Devices::RfnIdentifier &rfnIdentifier);
 
     void handleRfnE2eDataIndicationMsg(const SerializedMessage &msg);
     void handleRfnE2eDataConfirmMsg(const SerializedMessage &msg);
@@ -100,10 +107,8 @@ private:
     struct ActiveRfnRequest
     {
         RfnDeviceRequest request;
-        SerializedMessage requestMessage;
         Devices::Commands::RfnCommand::RfnResponsePayload response;
-        time_t timeout;
-        unsigned char retransmits;
+        PacketInfo currentPacket;
         unsigned short e2eId;
         enum
         {
@@ -112,6 +117,7 @@ private:
             PendingReply,
         }
         status;
+        time_t timeout;
     };
 
     typedef std::map<Devices::RfnIdentifier, ActiveRfnRequest> RfnIdToActiveRequest;

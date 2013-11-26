@@ -26,8 +26,8 @@ public:
 
         std::vector<unsigned char> data;  //  bytes payload
 
-        std::vector<unsigned char> ackMessage;
-        std::vector<unsigned char> blockContinuationMessage;
+        std::vector<unsigned char> ack;
+        std::vector<unsigned char> blockContinuation;
 
         bool final;
     };
