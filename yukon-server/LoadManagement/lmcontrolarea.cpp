@@ -1221,7 +1221,7 @@ bool CtiLMControlArea::shouldReduceControl()
         return false;
     }
 
-    long checkTriggerCount = 0;
+    long notActiveTriggerCount = 0;
 
     for( int i = 0; i < _lmcontrolareatriggers.size(); i++ )
     {
@@ -1238,19 +1238,18 @@ bool CtiLMControlArea::shouldReduceControl()
 
             if ( triggerValue <= ( lm_trigger->getThreshold() - activeThresholdOffset ) )
             {
-                checkTriggerCount++;
+                notActiveTriggerCount++;
             }
         }
         else if( lm_trigger->getTriggerType() == CtiLMControlAreaTrigger::StatusTriggerType &&
                  lm_trigger->getPointValue() == lm_trigger->getNormalState() )
         {
-            checkTriggerCount++;
+            notActiveTriggerCount++;
         }
     }
 
-    return getRequireAllTriggersActiveFlag()
-            ? ( checkTriggerCount == _lmcontrolareatriggers.size() )
-            : ( checkTriggerCount > 0 );
+    // Return TRUE if either ALL triggers are inactive, or our flags indicate we want to stop if ANY triggers are inactive.
+    return (notActiveTriggerCount == _lmcontrolareatriggers.size()) || (getRequireAllTriggersActiveFlag() && notActiveTriggerCount > 0);
 }
 
 /*---------------------------------------------------------------------------
