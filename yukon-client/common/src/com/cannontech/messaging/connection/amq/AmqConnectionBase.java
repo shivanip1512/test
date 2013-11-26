@@ -132,12 +132,6 @@ public abstract class AmqConnectionBase<T extends AmqTransport> extends Connecti
             else {
                 transport.setListener(this);
             }
-
-            // Create and start the monitor transport (if needed)
-            connectionMonitor = createConnectionMonitor(transport, advisoryListener);
-            if (connectionMonitor != null) {
-                connectionMonitor.start();
-            }
         }
         catch (JMSException e) {            
             throw new ConnectionException("Error while starting an ActiveMQ connection", e);
@@ -295,5 +289,13 @@ public abstract class AmqConnectionBase<T extends AmqTransport> extends Connecti
     @Override
     public String toString() {
         return "'" + getName() + "' AMQ p2p connection";
+    }
+    
+    public void setupConnectionMonitor(T transport) {
+        // Create and start the monitor transport (if needed)
+        connectionMonitor = createConnectionMonitor(transport, advisoryListener);
+        if (connectionMonitor != null) {
+            connectionMonitor.start();
+        }
     }
 }

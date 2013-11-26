@@ -64,13 +64,17 @@ class HandShakeConnector {
                                              rspMessage.getJMSType());
             }
 
-            // Connection established
             reqProducer.close();
 
             // Create the producer based on the reply-to address we just received
             producer = new AmqProducerTransport(connection, (ActiveMQDestination) rspMessage.getJMSReplyTo());
             producer.start();
 
+            // Create the resulting 2 way transport
+            TwoWayTransport transport = new TwoWayTransport(producer, consumer);
+            
+            clientConnection.setupConnectionMonitor(transport);
+            
             // Create and send client connection acknowledge message
             Message ackMsg = producer.getSession().createMessage();
             ackMsg.setJMSReplyTo(consumer.getDestination());
@@ -78,8 +82,7 @@ class HandShakeConnector {
             
             producer.sendMessage(ackMsg);
             
-            // Create the resulting 2 way transport
-            TwoWayTransport transport = new TwoWayTransport(producer, consumer);
+            // Connection established, return the resulting 2 way transport
             return transport;
         }
         catch (TransportException e) {
@@ -116,6 +119,11 @@ class HandShakeConnector {
             consumer.setManagedDestination(true);
             consumer.start();
 
+            // Create the resulting 2 way transport
+            TwoWayTransport transport = new TwoWayTransport(producer, consumer);
+            
+            serverConnection.setupConnectionMonitor(transport);
+            
             // Create, setup and send the response message to the clientConnection
             Message rspMsg = producer.getSession().createMessage();
             rspMsg.setJMSReplyTo(consumer.getDestination());
@@ -149,8 +157,8 @@ class HandShakeConnector {
                                               clientAckDest.getPhysicalName() + ", expected " + producer.getDestination().getPhysicalName());
             }
             
-            // Connection established, create the resulting 2 way transport
-            return new TwoWayTransport(producer, consumer);
+            // Connection established, return the resulting 2 way transport
+            return transport;
         }
         catch (Exception e) {
             try {
