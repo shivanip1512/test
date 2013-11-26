@@ -223,8 +223,10 @@ const std::vector<std::string> ErrorStrings = boost::assign::list_of
     ("Network traffic limiting.")
     ("Did not receive a response from the device.")
     ("Did not receive a response from Network Manager.")
+    ("Unknown Error")
+    ("Unknown Error")
     ("No points are defined for the device.")
-    .repeat(56, "Unknown Error");
+    .repeat(53, "Unknown Error");
 
 BOOST_AUTO_TEST_CASE(test_GetErrorString)
 {
