@@ -37,6 +37,9 @@ public abstract class AmqConnectionBase<T extends AmqTransport> extends Connecti
     private static final int  RECONNECT_ATTEMPT_MAX          = 120;
     private static final int  RECONNECT_LOGGING_FREQ         = 10; // number of attempt
     
+    private long   reconnectDelayMillis = RECONNECT_DELAY_INITIAL_MILLIS;
+    private String reconnectLastError   = "";
+    
     protected AmqConnectionBase(String name) {
         super(name);
 
@@ -77,11 +80,10 @@ public abstract class AmqConnectionBase<T extends AmqTransport> extends Connecti
             if (isManagedConnection()) {
 
                 if (connection == null) {
-
-                    long delay = RECONNECT_DELAY_INITIAL_MILLIS;
-                    int attempt = 0;
+                    final int maxAttempts = (isConnectionFailed()) ? RECONNECT_ATTEMPT_MAX : 1;
+                    
+                    int     attempt = 0;
                     boolean started = false;
-                    String prevMessage = "";
 
                     while (! started) {
                         attempt++;
@@ -93,21 +95,27 @@ public abstract class AmqConnectionBase<T extends AmqTransport> extends Connecti
                         }
                         catch (JMSException e) {
                             connection = null;
-                            setConnectionFailed();
                             
-                            if (attempt == RECONNECT_ATTEMPT_MAX ) {
-                                throw e;
-                            }
-
-                            if (attempt % RECONNECT_LOGGING_FREQ == 1 || ! prevMessage.equals(e.getMessage())) {
+                            if (attempt % RECONNECT_LOGGING_FREQ == 1 || ! reconnectLastError.equals(e.getMessage())) {
                                 logger.error(e.getMessage());
-                                prevMessage = e.getMessage();
+                                reconnectLastError = e.getMessage();
+                            }
+                            
+                            if (attempt == maxAttempts) {
+                                if (! isConnectionFailed()) {
+                                    disableWorkerThreadLogError(); // disable logging for the first broker connection error
+                                }
+                                throw e;
                             }
                         }
 
-                        if (! started) {
-                            Thread.sleep(delay);
-                            delay = Math.min(2*delay, RECONNECT_DELAY_MAX_MILLIS); // using exponential backoff
+                        if (started) {
+                            reconnectDelayMillis = RECONNECT_DELAY_INITIAL_MILLIS;
+                            reconnectLastError   = "";
+                        }
+                        else {
+                            Thread.sleep(reconnectDelayMillis);
+                            reconnectDelayMillis = Math.min(2*reconnectDelayMillis, RECONNECT_DELAY_MAX_MILLIS); // using exponential backoff
                         }
                     }
                 }

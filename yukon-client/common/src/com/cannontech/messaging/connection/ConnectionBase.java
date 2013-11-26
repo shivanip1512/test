@@ -41,6 +41,7 @@ public abstract class ConnectionBase<T extends Transport> implements Connection 
     private long reconnectionDelay;
 
     private boolean isFailed = false;
+    private boolean disableWorkerThreadLogError = false;
 
     // create a logger for instances of this class and its subclasses
     protected Logger logger = YukonLogManager.getLogger(this.getClass());
@@ -91,18 +92,17 @@ public abstract class ConnectionBase<T extends Transport> implements Connection 
         while (canConnect()) {
             try {
                 waitForReconnectionDelay();
-
+ 
                 setState(ConnectionState.Connecting);
 
                 this.connect();
 
                 if (state != ConnectionState.Connected) {
-                    setConnectionFailed();
-                    throw new ConnectionException("Connection is not established corretly");
+                    throw new ConnectionException("Connection is not established correctly");
                 }
 
-                setConnectionSucceeded();
-
+                isFailed = false;
+                
                 while (canSendMessage()) {
                     Message msg;
                     synchronized (outQueue) {
@@ -133,7 +133,8 @@ public abstract class ConnectionBase<T extends Transport> implements Connection 
                 Thread.interrupted();
             }
             catch (Exception e) {
-                if (disconnectRequested) {
+                isFailed = true;
+                if (disconnectRequested || disableWorkerThreadLogError) {
                     logger.debug("Error in connection worker thread", e);
                 }
                 else {
@@ -145,6 +146,7 @@ public abstract class ConnectionBase<T extends Transport> implements Connection 
                 setDisconnectRequested(false);              // clear the flag
                 setState(ConnectionState.Disconnected);
             }
+            disableWorkerThreadLogError = false;
         }
         setState(ConnectionState.Closed);
     }
@@ -411,11 +413,7 @@ public abstract class ConnectionBase<T extends Transport> implements Connection 
         return isFailed;
     }
     
-    public void setConnectionFailed() {
-        isFailed = true;
-    }
-    
-    public void setConnectionSucceeded() {
-        isFailed = false;
+    public void disableWorkerThreadLogError() {
+        disableWorkerThreadLogError = true;
     }
 }

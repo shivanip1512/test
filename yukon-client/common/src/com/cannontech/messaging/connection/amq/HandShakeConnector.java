@@ -52,10 +52,6 @@ class HandShakeConnector {
                 // and wait <WAIT_REPLY_TIME_MILLIS> seconds for the reply
                 rspMessage = consumer.receiveMessage(WAIT_REPLY_TIME_MILLIS);
                 
-                if (rspMessage == null) {
-                    clientConnection.setConnectionFailed();
-                }
-                
             } while (connectionRequestCount++ < maxHandShakeMsgCount && rspMessage == null);
 
             // Validate
