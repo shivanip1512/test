@@ -1,16 +1,16 @@
-<%@ attribute name="method" required="true" type="java.lang.String"%>
-<%@ attribute name="nameKey" required="true" type="java.lang.String"%>
-<%@ attribute name="arguments" required="false" type="java.lang.String"%>
-<%@ attribute name="showConfirm" required="false" type="java.lang.String"%>
-<%@ attribute name="hide" type="java.lang.Boolean" %>
-<%@ attribute name="type" description="The type of this element. Either 'button' or 'link'. Defaults to 'button'"%>
+<%@ tag  dynamic-attributes="linkParameters" %>
 
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
-<%@ tag  dynamic-attributes="linkParameters" %>
+<%@ attribute name="arguments" %>
+<%@ attribute name="hide" type="java.lang.Boolean" %>
+<%@ attribute name="method" required="true" %>
+<%@ attribute name="nameKey" required="true" %>
+<%@ attribute name="showConfirm" %>
+<%@ attribute name="type" description="The type of this element. Either 'button' or 'link'. Defaults to 'button'"%>
 
 <cti:default var="type" value="button"/>
 

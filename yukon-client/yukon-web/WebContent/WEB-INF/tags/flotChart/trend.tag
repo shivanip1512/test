@@ -1,4 +1,4 @@
-<%@ tag body-content="empty" description="FlotChart tag for displaying historical pointId data as a line or bar chart (See FlotChartServiceImpl.java:getMeterGraphData)"%>
+<%@ tag body-content="empty" description="FlotChart tag for displaying historical pointId data as a line or bar chart (See FlotChartServiceImpl.java:getMeterGraphData)" %>
 
 <%@ taglib prefix="flot" tagdir="/WEB-INF/tags/flotChart" %>
 
@@ -24,12 +24,12 @@
 </div>
 
 <c:url var="chartUrl" scope="page" value="/amr/chart/chart">
-	<c:param name="pointIds" value="${pointIds}" />
-	<c:param name="startDate" value="${startDate}" />
-	<c:param name="endDate" value="${endDate}" />
-	<c:param name="interval" value="${interval}" />
-	<c:param name="graphType" value="${pageScope.graphType}" />
-	<c:param name="converterType" value="${converterType}" />
+    <c:param name="pointIds" value="${pointIds}" />
+    <c:param name="startDate" value="${startDate}" />
+    <c:param name="endDate" value="${endDate}" />
+    <c:param name="interval" value="${interval}" />
+    <c:param name="graphType" value="${pageScope.graphType}" />
+    <c:param name="converterType" value="${converterType}" />
     <!-- to set the charts y min/max values -->
     <c:if test="${not empty pageScope.ymax}">
         <c:param name="yMax" value="${pageScope.ymax}" />
@@ -41,33 +41,32 @@
 </c:url>
 
 <c:choose>
-	<c:when test="${not empty reloadInterval}">
-		<script>
-		   jQuery(function() {
-	           Yukon.Flot.reloadChartOnInterval({chartId: '${chartId}',
-	                                             dataUrl: '${chartUrl}',
-	                                             reloadInterval: ${reloadInterval}*1000});
-		   });
-		</script>
-	</c:when>
-	<c:otherwise>
-		<script>
-			jQuery(function() {
-			    var chartId = '${chartId}';
-			    jQuery.ajax({
-			        url: '${chartUrl}',
-			        success: function(data) {
-			            Yukon.Flot.addChart({
-			                chartId: chartId,
-			                type: data.type,
-			                data: data.datas,
-			                options: data.options
-			            });
-					    Yukon.Flot.charts[chartId].methods.plotGraph(chartId);
-			        }
-			    });
-			});
-		</script>
-	</c:otherwise>
+    <c:when test="${not empty reloadInterval}">
+        <script>
+           jQuery(function() {
+               Yukon.Flot.reloadChartOnInterval({chartId: '${chartId}',
+                                                 dataUrl: '${chartUrl}',
+                                                 reloadInterval: ${reloadInterval} * 1000});
+           });
+        </script>
+    </c:when>
+    <c:otherwise>
+        <script>
+            jQuery(function() {
+                var chartId = '${chartId}';
+                jQuery.ajax({
+                    url: '${chartUrl}',
+                    success: function(data) {
+                        Yukon.Flot.addChart({
+                            chartId: chartId,
+                            type: data.type,
+                            data: data.datas,
+                            options: data.options
+                        });
+                        Yukon.Flot.charts[chartId].methods.plotGraph(chartId);
+                    }
+                });
+            });
+        </script>
+    </c:otherwise>
 </c:choose>
-
