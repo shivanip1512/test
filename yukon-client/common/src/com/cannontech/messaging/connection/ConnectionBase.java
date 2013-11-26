@@ -40,6 +40,8 @@ public abstract class ConnectionBase<T extends Transport> implements Connection 
     private boolean autoReconnect = false;
     private long reconnectionDelay;
 
+    private boolean isFailed = false;
+
     // create a logger for instances of this class and its subclasses
     protected Logger logger = YukonLogManager.getLogger(this.getClass());
 
@@ -95,8 +97,11 @@ public abstract class ConnectionBase<T extends Transport> implements Connection 
                 this.connect();
 
                 if (state != ConnectionState.Connected) {
+                    setConnectionFailed();
                     throw new ConnectionException("Connection is not established corretly");
                 }
+
+                setConnectionSucceeded();
 
                 while (canSendMessage()) {
                     Message msg;
@@ -400,5 +405,17 @@ public abstract class ConnectionBase<T extends Transport> implements Connection 
     @Override
     public String toString() {
         return "messaging connection " + getName();
+    }
+    
+    public boolean isConnectionFailed() {
+        return isFailed;
+    }
+    
+    public void setConnectionFailed() {
+        isFailed = true;
+    }
+    
+    public void setConnectionSucceeded() {
+        isFailed = false;
     }
 }

@@ -17,6 +17,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.messaging.connection.Connection;
 import com.cannontech.messaging.connection.Connection.ConnectionState;
+import com.cannontech.messaging.connection.amq.AmqClientConnection;
 import com.cannontech.messaging.connection.event.ConnectionEventHandler;
 import com.cannontech.messaging.connection.event.MessageEventHandler;
 import com.cannontech.messaging.util.ConnectionFactory;
@@ -485,4 +486,21 @@ public abstract class ClientConnection extends java.util.Observable implements I
             }
         }
     }
+    
+    public String getServerHostName()
+    {
+        if (connection instanceof AmqClientConnection) {
+            return ((AmqClientConnection)connection).getServerHostName();
+        }
+        return "";
+    }
+    
+    public boolean isConnectionFailed()
+    {
+    	if (connection != null) {
+            return connection.isConnectionFailed();
+        }
+    	return false;
+    }
+    
 }

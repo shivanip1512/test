@@ -44,6 +44,8 @@ public interface Connection {
 
     ConnectionState getState();
 
+    boolean isConnectionFailed();
+    
     /**
      * Sets the ability of this connection to reconnect automatically after a connection has been lost.
      * @param autoReconnect

@@ -163,6 +163,7 @@ import com.cannontech.debug.gui.AboutDialog;
 import com.cannontech.message.dispatch.DispatchClientConnection;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.message.util.ClientConnection;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
@@ -321,7 +322,8 @@ public class DatabaseEditor
 	
 	private static int decimalPlaces;
 	private IServerConnection connToDispatch;
-	private boolean connToVanGoghErrorMessageSent = true;
+	private boolean connToVanGoghErrorMessageSent = false;
+	private boolean connToVanGoghSuccessfull = false;
 	private boolean changingObjectType = false;
 
 	//Flag whether billing option should be present in create (core) menu
@@ -2870,24 +2872,32 @@ public void update(java.util.Observable o, Object arg)
  * @param conn
  */
 private void updateConnectionStatus(IServerConnection conn) {
-	if( conn.isValid() )
-	{
+	ClientConnection clientConn = (ClientConnection)conn;
+	
+	if( conn.isValid() ) {
 		connToVanGoghErrorMessageSent = false;
-		fireMessage( new MessageEvent( this, "Connection to Message Dispatcher Established.") );
+		connToVanGoghSuccessfull = true;
+		fireMessage( new MessageEvent( this, "Connection to Message Dispatcher Established. " + clientConn.getServerHostName()) );
 		if( owner != null ) {
             owner.setTitle("Yukon Database Editor [Connected to Dispatch@" +
 				 		 conn.toString() + "]" );
         }
 	}
-	else
-	{
+	else {
 		if( owner != null ) {
             owner.setTitle("Yukon Database Editor [Not Connected to Dispatch]");
         }
-		if( !connToVanGoghErrorMessageSent )
-		{
+		
+		if (! connToVanGoghErrorMessageSent && (clientConn.isConnectionFailed() || connToVanGoghSuccessfull)) {
 			connToVanGoghErrorMessageSent = true;
-			fireMessage( new MessageEvent( this, "Lost Connection to Message Dispatcher!", MessageEvent.ERROR_MESSAGE) );
+			
+			if( connToVanGoghSuccessfull ) {
+			    fireMessage( new MessageEvent( this, "Lost Connection to Message Dispatcher! " + clientConn.getServerHostName() + ", Reconnecting.", MessageEvent.ERROR_MESSAGE) );
+			}
+			else {
+			    fireMessage( new MessageEvent( this, "Unable to connect to Message Dispatcher! " + clientConn.getServerHostName() + ", Reconnecting.", MessageEvent.ERROR_MESSAGE) );
+			}
+
 			owner.repaint();
 		}
 	}

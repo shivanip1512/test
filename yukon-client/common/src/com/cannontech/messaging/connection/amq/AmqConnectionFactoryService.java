@@ -1,10 +1,16 @@
 package com.cannontech.messaging.connection.amq;
 
+import org.apache.log4j.Logger;
+
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
 
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.springframework.aop.framework.Advised;
+import org.springframework.aop.support.AopUtils;
+
+import com.cannontech.clientutils.YukonLogManager;
 
 public class AmqConnectionFactoryService {
 
@@ -16,6 +22,9 @@ public class AmqConnectionFactoryService {
     private static AmqConnectionFactoryService defaultService;
 
     private ConnectionFactory connectionFactory;
+
+    // create a logger for instances of this class and its subclasses
+    protected Logger logger = YukonLogManager.getLogger(this.getClass());
 
     static {
         defaultService = new AmqConnectionFactoryService();
@@ -56,5 +65,27 @@ public class AmqConnectionFactoryService {
 
     public static void setDefaultService(AmqConnectionFactoryService defaultConnectionFactoryService) {
         AmqConnectionFactoryService.defaultService = defaultConnectionFactoryService;
+    }
+    
+    public String getBrokerUrl() {
+        try {
+            ActiveMQConnectionFactory amqfactory = (ActiveMQConnectionFactory) getTargetObject(this.connectionFactory, ConnectionFactory.class);
+            return amqfactory.getBrokerURL();
+        }
+        catch( Exception e ) {
+            logger.error("Unable to ubtain", e);
+        }
+        
+        return "";
+    }
+    
+    @SuppressWarnings({"unchecked"})
+    protected <T> T getTargetObject(Object proxy, Class<T> targetClass) throws Exception {
+      if (AopUtils.isJdkDynamicProxy(proxy)) {
+        return (T) ((Advised)proxy).getTargetSource().getTarget();
+      } 
+      else {
+        return (T) proxy; // expected to be cglib proxy then, which is simply a specialized class
+      }
     }
 }

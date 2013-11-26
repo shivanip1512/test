@@ -93,7 +93,8 @@ public abstract class AmqConnectionBase<T extends AmqTransport> extends Connecti
                         }
                         catch (JMSException e) {
                             connection = null;
-
+                            setConnectionFailed();
+                            
                             if (attempt == RECONNECT_ATTEMPT_MAX ) {
                                 throw e;
                             }
