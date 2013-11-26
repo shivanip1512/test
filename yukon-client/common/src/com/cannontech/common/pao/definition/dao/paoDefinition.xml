@@ -7014,19 +7014,19 @@
         
         <attributes>
             <attribute name="PEAK_DEMAND_FROZEN">
-                <basicLookup point="Frozen Peak Demand"/>
+                <basicLookup point="Peak kW Frozen"/>
             </attribute>
             <attribute name="PEAK_DEMAND_FROZEN_RATE_A">
-                <basicLookup point="Frozen Peak Demand Rate A"/>
+                <basicLookup point="Peak kW Frozen (Rate A kW)"/>
             </attribute>
             <attribute name="PEAK_DEMAND_FROZEN_RATE_B">
-                <basicLookup point="Frozen Peak Demand Rate B"/>
+                <basicLookup point="Peak kW Frozen (Rate B kW)"/>
             </attribute>
             <attribute name="PEAK_DEMAND_FROZEN_RATE_C">
-                <basicLookup point="Frozen Peak Demand Rate C"/>
+                <basicLookup point="Peak kW Frozen (Rate C kW)"/>
             </attribute>
             <attribute name="PEAK_DEMAND_FROZEN_RATE_D">
-                <basicLookup point="Frozen Peak Demand Rate D"/>
+                <basicLookup point="Peak kW Frozen (Rate D kW)"/>
             </attribute>
         </attributes>
     </pao>
