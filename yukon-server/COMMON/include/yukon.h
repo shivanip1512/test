@@ -392,6 +392,8 @@ enum YukonError_t
     ErrorRequestPayloadTooLarge,
     ErrorResponsePayloadTooLarge,
 
+    ErrorNoPointsOnDevice,
+
     FinalError
 };
 

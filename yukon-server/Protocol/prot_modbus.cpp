@@ -67,6 +67,11 @@ void ModbusProtocol::setAddresses( unsigned short slaveAddress )
 //Should we use non-blocking reads? It could cause problems with serial over IP and other applications...
 int ModbusProtocol::generate( CtiXfer &xfer )
 {
+    if( _points_start == _points_finish )
+    {
+        return ErrorNoPointsOnDevice;
+    }
+
     _asciiOutput = false;
     int i = 0;
     output_point point;

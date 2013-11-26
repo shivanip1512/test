@@ -220,6 +220,7 @@ static const ErrorLookup CtiErrors = boost::assign::map_list_of
     (ErrorNetworkLoadControl,         error_info(ERRTYPESYSTEM, "Network traffic limiting."))
     (ErrorRequestTimeout,             error_info(ERRTYPESYSTEM, "Did not receive a response from the device."))
     (ErrorNetworkManagerTimeout,      error_info(ERRTYPESYSTEM, "Did not receive a response from Network Manager."))
+    (ErrorNoPointsOnDevice,           error_info(ERRTYPESYSTEM, "No points are defined for the device."))
 
     (UnknownError,                  error_info(ERRTYPESYSTEM,   "Unknown Error"))
     ;
