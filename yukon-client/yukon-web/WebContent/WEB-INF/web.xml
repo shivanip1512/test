@@ -652,17 +652,6 @@
     </servlet>
     <servlet>
         <description>
-            Send import commands to database or the bulk importer
-            service.
-        </description>
-        <display-name>ImporterServlet</display-name>
-        <servlet-name>ImporterServlet</servlet-name>
-        <servlet-class>
-            com.cannontech.servlet.ImporterServlet
-        </servlet-class>
-    </servlet>
-    <servlet>
-        <description>
             Handles acknowledging of mandatory curtailments.
         </description>
         <display-name>CurtailmentServlet</display-name>
@@ -1103,10 +1092,6 @@
     <servlet-mapping>
         <servlet-name>CommanderServlet</servlet-name>
         <url-pattern>/servlet/CommanderServlet</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>ImporterServlet</servlet-name>
-        <url-pattern>/servlet/ImporterServlet</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>CurtailmentServlet</servlet-name>

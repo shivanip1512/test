@@ -4,7 +4,7 @@
  * To change the template for this generated file go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-package com.cannontech.yimp.util;
+package com.cannontech.importer;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -30,7 +30,6 @@ import com.cannontech.database.db.device.DeviceCarrierSettings;
 import com.cannontech.database.db.importer.ImportFail;
 import com.cannontech.database.db.importer.ImportPendingComm;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.yimp.importer.BulkImporter;
 
 public class DBFuncs {
     

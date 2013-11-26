@@ -27,9 +27,9 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.db.importer.ImportData;
+import com.cannontech.importer.DBFuncs;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.cannontech.yimp.util.DBFuncs;
 
 @CheckRoleProperty(YukonRoleProperty.IMPORTER_ENABLED)
 public class BulkImporterUploadController extends MultiActionController  {

@@ -14,7 +14,7 @@ import javax.management.MBeanOperationInfo;
 import javax.management.MBeanParameterInfo;
 
 import com.cannontech.clientutils.commonutils.ModifiedDate;
-import com.cannontech.yimp.importer.BulkImporter;
+import com.cannontech.importer.BulkImporter;
 
 /**
  * @author jdayton

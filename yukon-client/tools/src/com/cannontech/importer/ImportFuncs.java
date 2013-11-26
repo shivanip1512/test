@@ -4,7 +4,7 @@
  * To change the template for this generated file go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-package com.cannontech.yimp.util;
+package com.cannontech.importer;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -23,7 +23,6 @@ import com.cannontech.database.TransactionType;
 import com.cannontech.database.db.importer.ImportData;
 import com.cannontech.database.db.importer.ImportFail;
 import com.cannontech.database.db.importer.ImportPendingComm;
-import com.cannontech.yimp.importer.BulkImporter;
 
 /**
  * @author jdayton
