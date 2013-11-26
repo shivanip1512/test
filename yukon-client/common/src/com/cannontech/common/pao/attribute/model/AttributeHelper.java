@@ -10,6 +10,7 @@ public class AttributeHelper {
         Builder<Attribute> builder = ImmutableSet.builder();
         return builder.add(BuiltInAttribute.USAGE_RATE_A,
                            BuiltInAttribute.PEAK_DEMAND_RATE_A,
+                           BuiltInAttribute.PEAK_DEMAND_FROZEN_RATE_A,
                            BuiltInAttribute.RECEIVED_KWH_RATE_A,
                            BuiltInAttribute.NET_KWH_RATE_A,
                            BuiltInAttribute.SUM_KWH_RATE_A,
@@ -21,6 +22,7 @@ public class AttributeHelper {
                            
                            BuiltInAttribute.USAGE_RATE_B,
                            BuiltInAttribute.PEAK_DEMAND_RATE_B,
+                           BuiltInAttribute.PEAK_DEMAND_FROZEN_RATE_B,
                            BuiltInAttribute.RECEIVED_KWH_RATE_B,
                            BuiltInAttribute.NET_KWH_RATE_B,
                            BuiltInAttribute.SUM_KWH_RATE_B,
@@ -32,6 +34,7 @@ public class AttributeHelper {
                            
                            BuiltInAttribute.USAGE_RATE_C,
                            BuiltInAttribute.PEAK_DEMAND_RATE_C,
+                           BuiltInAttribute.PEAK_DEMAND_FROZEN_RATE_C,
                            BuiltInAttribute.RECEIVED_KWH_RATE_C,
                            BuiltInAttribute.NET_KWH_RATE_C,
                            BuiltInAttribute.SUM_KWH_RATE_C,
@@ -43,6 +46,7 @@ public class AttributeHelper {
                            
                            BuiltInAttribute.USAGE_RATE_D,
                            BuiltInAttribute.PEAK_DEMAND_RATE_D,
+                           BuiltInAttribute.PEAK_DEMAND_FROZEN_RATE_D,
                            BuiltInAttribute.RECEIVED_KWH_RATE_D,
                            BuiltInAttribute.NET_KWH_RATE_D,
                            BuiltInAttribute.SUM_KWH_RATE_D,

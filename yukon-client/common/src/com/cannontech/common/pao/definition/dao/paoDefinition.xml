@@ -958,6 +958,9 @@
         	<attribute name="PEAK_DEMAND_FROZEN">
          		<basicLookup point="Peak kW Frozen (Rate A kW)" />
         	</attribute>
+            <attribute name="PEAK_DEMAND_FROZEN_RATE_A">
+                <basicLookup point="Peak kW Frozen (Rate A kW)"/>
+            </attribute>
         	<attribute name="DEMAND">
         		<basicLookup point="Last Interval kW" />
         	</attribute>
@@ -1421,6 +1424,9 @@
         	<attribute name="PEAK_DEMAND_FROZEN">
          		<basicLookup point="Peak kW Frozen (Rate A kW)"/>
         	</attribute>
+            <attribute name="PEAK_DEMAND_FROZEN_RATE_A">
+                <basicLookup point="Peak kW Frozen (Rate A kW)"/>
+            </attribute>
         	<attribute name="DEMAND">
         		<basicLookup point="Last Interval kW" />
         	</attribute>
@@ -6975,63 +6981,33 @@
     <pao id="RFN_FROZEN_PEAK_DEMAND_CENTRON_AND_FOCUS" abstract="true">
         <points>
             <point type="DemandAccumulator" offset="21">
-                <name>Frozen Peak Demand</name>
+                <name>Peak kW Frozen</name>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kW"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="DemandAccumulator" offset="221">
-                <name>Frozen Peak Demand Rate A</name>
+                <name>Peak kW Frozen (Rate A kW)</name>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kW"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="DemandAccumulator" offset="231">
-                <name>Frozen Peak Demand Rate B</name>
+                <name>Peak kW Frozen (Rate B kW)</name>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kW"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="DemandAccumulator" offset="241">
-                <name>Frozen Peak Demand Rate C</name>
+                <name>Peak kW Frozen (Rate C kW)</name>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kW"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="DemandAccumulator" offset="251">
-                <name>Frozen Peak Demand Rate D</name>
+                <name>Peak kW Frozen (Rate D kW)</name>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kW"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="Analog" offset="10021">
-                <name>Time of Frozen Peak Demand</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Seconds"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="Analog" offset="10221">
-                <name>Time of Frozen Peak Demand Rate A</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Seconds"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="Analog" offset="10231">
-                <name>Time of Frozen Peak Demand Rate B</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Seconds"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="Analog" offset="10241">
-                <name>Time of Frozen Peak Demand Rate C</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Seconds"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="Analog" offset="10251">
-                <name>Time of Frozen Peak Demand Rate D</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Seconds"/>
                 <decimalplaces value="3"/>
             </point>
         </points>
@@ -7947,7 +7923,7 @@
         <displayName>RFN-420fX</displayName></pao>
     <pao id="RFN420FD"  inherits="RFN420FX, RFN_DISCONNECT">
         <displayName>RFN-420fD</displayName></pao>
-    <pao id="RFN420FRX"  inherits="RFN_L5_FOCUS_FR_, RFN_CONFIGURATION">
+    <pao id="RFN420FRX"  inherits="RFN_L5_FOCUS_FR_, RFN_CONFIGURATION, RFN_FROZEN_PEAK_DEMAND_CENTRON_AND_FOCUS">
         <displayName>RFN-420fRX</displayName></pao>
     <pao id="RFN420FRD"  inherits="RFN420FRX, RFN_DISCONNECT">
         <displayName>RFN-420fRD</displayName></pao>
