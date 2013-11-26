@@ -51,6 +51,8 @@ CtiServerConnection::~CtiServerConnection()
  */
 bool CtiServerConnection::establishConnection()
 {
+    const long receiveMillis = 30000;
+
     try
     {
         _dontReconnect = true;
@@ -60,7 +62,6 @@ bool CtiServerConnection::establishConnection()
 
         // Create consumer for inbound traffic
         _consumer.reset( createTempQueueConsumer( *_sessionIn ));
-        _consumer->setMessageListener( _messageListener.get() );
 
         // Create producer for outbound traffic
         _producer.reset( createDestinationProducer( *_sessionOut, _replyDest.get() ));
@@ -76,6 +77,37 @@ bool CtiServerConnection::establishConnection()
 
         // send the message back to the client (the payload is the reply destination)
         _producer->send( outMessage.get() );
+
+        // We should block here until the delay expires or until the connection is closed
+        auto_ptr<cms::Message> ackMessage( _consumer->receive( receiveMillis ));
+
+        if( ! ackMessage.get() )
+        {
+            logStatus( __FUNCTION__, "timeout while waiting for client acknowledge message" );
+            return false;
+        }
+
+        if( ackMessage->getCMSType() != MessageType::clientAck )
+        {
+            logStatus( __FUNCTION__, "unexpected message type: \"" + ackMessage->getCMSType() + "\"" );
+            return false;
+        }
+
+        if( ! ackMessage->getCMSReplyTo() )
+        {
+            logStatus( __FUNCTION__, "received null ReplyTo destination"
+                                     ", expected: " + _producer->getDestPhysicalName() );
+            return false;
+        }
+
+        if( destPhysicalName(*ackMessage->getCMSReplyTo()) != _producer->getDestPhysicalName() )
+        {
+            logStatus( __FUNCTION__, "received invalid ReplyTo destination: " + destPhysicalName(*ackMessage->getCMSReplyTo()) +
+                                     ", expected: " + _producer->getDestPhysicalName() );
+            return false;
+        }
+
+        _consumer->setMessageListener( _messageListener.get() );
 
         logStatus( __FUNCTION__, "successfully connected.\n"
                 "inbound destination  : " + _consumer->getDestPhysicalName() + "\n"

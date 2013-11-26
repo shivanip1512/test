@@ -19,6 +19,7 @@ namespace MessageType {
 
     const std::string clientInit      = prefix + "clientinit";
     const std::string serverResp      = prefix + "serverresp";
+    const std::string clientAck       = prefix + "clientack";
 }
 
 namespace Queue {

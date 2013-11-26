@@ -99,13 +99,13 @@ bool CtiClientConnection::establishConnection()
                     handshakeProducer.reset( new QueueProducer(*_sessionOut, _sessionOut->createQueue( _serverQueueName )));
                     handshakeProducer->setTimeToLive( timeToLiveMillis );
 
+                    // Create consumer for inbound traffic
+                    _consumer.reset( createTempQueueConsumer( *_sessionIn ));
+
                     messageCount = 0;
 
                     initialized = true;
                 }
-
-                // Create consumer for inbound traffic
-                _consumer.reset( createTempQueueConsumer( *_sessionIn ));
 
                 // create an empty message for handshake
                 auto_ptr<cms::Message> outMessage( _sessionOut->createMessage() );
@@ -190,6 +190,13 @@ bool CtiClientConnection::establishConnection()
 
         // set message listener
         _consumer->setMessageListener( _messageListener.get() );
+
+        // create and send client acknowledge message
+        auto_ptr<cms::Message> ackMessage( _sessionOut->createMessage() );
+        ackMessage->setCMSReplyTo( _consumer->getDestination() );
+        ackMessage->setCMSType( MessageType::clientAck );
+
+        _producer->send( ackMessage.get() );
 
         // send client registration
         writeRegistration();
