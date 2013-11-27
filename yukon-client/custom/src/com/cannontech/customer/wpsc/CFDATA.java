@@ -185,7 +185,7 @@ public class CFDATA extends FileInterface {
 
         // if relay is 0, need to change to a non-zero value that is NOT a valid program value (see getProgramAddress).
         int relay = Integer.valueOf(tok.nextToken());   //relay 1
-        buf.append(" target assign p ").append(getProgramAddress(relay));
+        buf.append(" assign p ").append(getProgramAddress(relay));
         
         relay = Integer.valueOf(tok.nextToken());       //relay 2
         buf.append(", ").append(getProgramAddress(relay));
