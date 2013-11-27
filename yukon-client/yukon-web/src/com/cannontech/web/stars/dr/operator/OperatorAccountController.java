@@ -749,7 +749,7 @@ public class OperatorAccountController {
 	}
 	
 	// DELETE LOGIN
-    @RequestMapping
+    @RequestMapping(method=RequestMethod.POST)
     public String deleteLogin(HttpServletRequest request,
                                String loginMode,
                                ModelMap modelMap, 
