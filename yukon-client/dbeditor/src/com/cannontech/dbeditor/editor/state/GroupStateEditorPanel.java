@@ -673,7 +673,9 @@ public void setValue(Object val)
 		stateNameTextFields[i].setText(statesVector.get(i).getState().getText());
 		
 		foregroundColorComboBoxes[i].setEnabled(true);
-		foregroundColorComboBoxes[i].setSelectedIndex(statesVector.get(i).getState().getForegroundColor().intValue());
+		
+		// 11 is chosen here because it is the number of color options in combo box. We'll just start reusing colors if we run out.
+		foregroundColorComboBoxes[i].setSelectedIndex(statesVector.get(i).getState().getForegroundColor().intValue() % 11);
 
 		imageButtons[i].setEnabled(true);
 
