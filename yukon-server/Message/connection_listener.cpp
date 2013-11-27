@@ -161,11 +161,16 @@ bool CtiListenerConnection::acceptClient()
 
     try
     {
-        // We should block here until the connection is closed
-        auto_ptr<cms::Message> message( _consumer->receive() );
+        const int timeoutMillis = 30000;
+
+        // We should block here until the connection is closed or if there is a timeout
+        auto_ptr<cms::Message> message( _consumer->receive(timeoutMillis) );
 
         if( !message.get() || message->getCMSType() != MessageType::clientInit || !message->getCMSReplyTo() )
         {
+            // Maybe something is wrong? reset the managed queue consumer
+            _consumer.reset( createQueueConsumer( *_session, _serverQueueName ));
+
             return false;
         }
 

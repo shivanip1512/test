@@ -331,7 +331,7 @@ IM_EX_CTIBASE void parseXmlFiles( const std::string & yukonBase )
                 std::vector<XmlPaoInfo::PointInfo>::iterator    searchItem;
 
                 for ( searchItem = b->second.pointInfo.begin();
-                      searchItem->name != pointName && searchItem != b->second.pointInfo.end();
+                      searchItem != b->second.pointInfo.end() && searchItem->name != pointName;
                       ++searchItem )
                     ;   // <-- empty loop body...  [ find_if() and a lambda would be awesome here... ]
 
