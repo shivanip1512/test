@@ -2238,6 +2238,130 @@
       </com.cariboulake.db.schemacompare.business.domain.db.Table>
     </entry>
     <entry>
+      <string>CarrierRoute</string>
+      <com.cariboulake.db.schemacompare.business.domain.db.Table>
+        <i__database reference="../../../.."/>
+        <i__tableName>CarrierRoute</i__tableName>
+        <i__tableType>TABLE</i__tableType>
+        <columnList>
+          <com.cariboulake.db.schemacompare.business.domain.db.Column>
+            <i__table reference="../../.."/>
+            <i__columnName>ROUTEID</i__columnName>
+            <i__columnNameDiffers>false</i__columnNameDiffers>
+            <i__typeName>numeric</i__typeName>
+            <i__typeNameDiffers>false</i__typeNameDiffers>
+            <i__columnSize>18</i__columnSize>
+            <i__columnSizeDiffers>false</i__columnSizeDiffers>
+            <i__decimalDigits>0</i__decimalDigits>
+            <i__decimalDigitsDiffers>false</i__decimalDigitsDiffers>
+            <i__nullable>0</i__nullable>
+            <i__nullableDiffers>false</i__nullableDiffers>
+            <i__columnDefaultDiffers>false</i__columnDefaultDiffers>
+            <i__ordinalPosition>1</i__ordinalPosition>
+            <i__ordinalPositionDiffers>false</i__ordinalPositionDiffers>
+          </com.cariboulake.db.schemacompare.business.domain.db.Column>
+          <com.cariboulake.db.schemacompare.business.domain.db.Column>
+            <i__table reference="../../.."/>
+            <i__columnName>BUSNUMBER</i__columnName>
+            <i__columnNameDiffers>false</i__columnNameDiffers>
+            <i__typeName>numeric</i__typeName>
+            <i__typeNameDiffers>false</i__typeNameDiffers>
+            <i__columnSize>18</i__columnSize>
+            <i__columnSizeDiffers>false</i__columnSizeDiffers>
+            <i__decimalDigits>0</i__decimalDigits>
+            <i__decimalDigitsDiffers>false</i__decimalDigitsDiffers>
+            <i__nullable>0</i__nullable>
+            <i__nullableDiffers>false</i__nullableDiffers>
+            <i__columnDefaultDiffers>false</i__columnDefaultDiffers>
+            <i__ordinalPosition>2</i__ordinalPosition>
+            <i__ordinalPositionDiffers>false</i__ordinalPositionDiffers>
+          </com.cariboulake.db.schemacompare.business.domain.db.Column>
+          <com.cariboulake.db.schemacompare.business.domain.db.Column>
+            <i__table reference="../../.."/>
+            <i__columnName>CCUFIXBITS</i__columnName>
+            <i__columnNameDiffers>false</i__columnNameDiffers>
+            <i__typeName>numeric</i__typeName>
+            <i__typeNameDiffers>false</i__typeNameDiffers>
+            <i__columnSize>18</i__columnSize>
+            <i__columnSizeDiffers>false</i__columnSizeDiffers>
+            <i__decimalDigits>0</i__decimalDigits>
+            <i__decimalDigitsDiffers>false</i__decimalDigitsDiffers>
+            <i__nullable>0</i__nullable>
+            <i__nullableDiffers>false</i__nullableDiffers>
+            <i__columnDefaultDiffers>false</i__columnDefaultDiffers>
+            <i__ordinalPosition>3</i__ordinalPosition>
+            <i__ordinalPositionDiffers>false</i__ordinalPositionDiffers>
+          </com.cariboulake.db.schemacompare.business.domain.db.Column>
+          <com.cariboulake.db.schemacompare.business.domain.db.Column>
+            <i__table reference="../../.."/>
+            <i__columnName>CCUVARIABLEBITS</i__columnName>
+            <i__columnNameDiffers>false</i__columnNameDiffers>
+            <i__typeName>numeric</i__typeName>
+            <i__typeNameDiffers>false</i__typeNameDiffers>
+            <i__columnSize>18</i__columnSize>
+            <i__columnSizeDiffers>false</i__columnSizeDiffers>
+            <i__decimalDigits>0</i__decimalDigits>
+            <i__decimalDigitsDiffers>false</i__decimalDigitsDiffers>
+            <i__nullable>0</i__nullable>
+            <i__nullableDiffers>false</i__nullableDiffers>
+            <i__columnDefaultDiffers>false</i__columnDefaultDiffers>
+            <i__ordinalPosition>4</i__ordinalPosition>
+            <i__ordinalPositionDiffers>false</i__ordinalPositionDiffers>
+          </com.cariboulake.db.schemacompare.business.domain.db.Column>
+          <com.cariboulake.db.schemacompare.business.domain.db.Column>
+            <i__table reference="../../.."/>
+            <i__columnName>UserLocked</i__columnName>
+            <i__columnNameDiffers>false</i__columnNameDiffers>
+            <i__typeName>char</i__typeName>
+            <i__typeNameDiffers>false</i__typeNameDiffers>
+            <i__columnSize>1</i__columnSize>
+            <i__columnSizeDiffers>false</i__columnSizeDiffers>
+            <i__decimalDigits>0</i__decimalDigits>
+            <i__decimalDigitsDiffers>false</i__decimalDigitsDiffers>
+            <i__nullable>0</i__nullable>
+            <i__nullableDiffers>false</i__nullableDiffers>
+            <i__columnDefaultDiffers>false</i__columnDefaultDiffers>
+            <i__ordinalPosition>5</i__ordinalPosition>
+            <i__ordinalPositionDiffers>false</i__ordinalPositionDiffers>
+          </com.cariboulake.db.schemacompare.business.domain.db.Column>
+          <com.cariboulake.db.schemacompare.business.domain.db.Column>
+            <i__table reference="../../.."/>
+            <i__columnName>ResetRptSettings</i__columnName>
+            <i__columnNameDiffers>false</i__columnNameDiffers>
+            <i__typeName>char</i__typeName>
+            <i__typeNameDiffers>false</i__typeNameDiffers>
+            <i__columnSize>1</i__columnSize>
+            <i__columnSizeDiffers>false</i__columnSizeDiffers>
+            <i__decimalDigits>0</i__decimalDigits>
+            <i__decimalDigitsDiffers>false</i__decimalDigitsDiffers>
+            <i__nullable>0</i__nullable>
+            <i__nullableDiffers>false</i__nullableDiffers>
+            <i__columnDefaultDiffers>false</i__columnDefaultDiffers>
+            <i__ordinalPosition>6</i__ordinalPosition>
+            <i__ordinalPositionDiffers>false</i__ordinalPositionDiffers>
+          </com.cariboulake.db.schemacompare.business.domain.db.Column>
+        </columnList>
+        <i__primaryKeys/>
+        <i__foreignKeys/>
+        <i__indexes>
+          <entry>
+            <string>PK_CARRIERROUTE</string>
+            <com.cariboulake.db.schemacompare.business.domain.db.Index>
+              <indexSegments>
+                <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+                  <i__tableName>CarrierRoute</i__tableName>
+                  <i__ordinalPosition>1</i__ordinalPosition>
+                  <i__columnName>ROUTEID</i__columnName>
+                  <i__nonNonUnique>false</i__nonNonUnique>
+                </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+              </indexSegments>
+              <indexName>PK_CARRIERROUTE</indexName>
+            </com.cariboulake.db.schemacompare.business.domain.db.Index>
+          </entry>
+        </i__indexes>
+      </com.cariboulake.db.schemacompare.business.domain.db.Table>
+    </entry>
+    <entry>
       <string>EventBase</string>
       <com.cariboulake.db.schemacompare.business.domain.db.Table>
         <i__database reference="../../../.."/>
@@ -2368,130 +2492,6 @@
                 </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
               </indexSegments>
               <indexName>PK_EVENTBASE</indexName>
-            </com.cariboulake.db.schemacompare.business.domain.db.Index>
-          </entry>
-        </i__indexes>
-      </com.cariboulake.db.schemacompare.business.domain.db.Table>
-    </entry>
-    <entry>
-      <string>CarrierRoute</string>
-      <com.cariboulake.db.schemacompare.business.domain.db.Table>
-        <i__database reference="../../../.."/>
-        <i__tableName>CarrierRoute</i__tableName>
-        <i__tableType>TABLE</i__tableType>
-        <columnList>
-          <com.cariboulake.db.schemacompare.business.domain.db.Column>
-            <i__table reference="../../.."/>
-            <i__columnName>ROUTEID</i__columnName>
-            <i__columnNameDiffers>false</i__columnNameDiffers>
-            <i__typeName>numeric</i__typeName>
-            <i__typeNameDiffers>false</i__typeNameDiffers>
-            <i__columnSize>18</i__columnSize>
-            <i__columnSizeDiffers>false</i__columnSizeDiffers>
-            <i__decimalDigits>0</i__decimalDigits>
-            <i__decimalDigitsDiffers>false</i__decimalDigitsDiffers>
-            <i__nullable>0</i__nullable>
-            <i__nullableDiffers>false</i__nullableDiffers>
-            <i__columnDefaultDiffers>false</i__columnDefaultDiffers>
-            <i__ordinalPosition>1</i__ordinalPosition>
-            <i__ordinalPositionDiffers>false</i__ordinalPositionDiffers>
-          </com.cariboulake.db.schemacompare.business.domain.db.Column>
-          <com.cariboulake.db.schemacompare.business.domain.db.Column>
-            <i__table reference="../../.."/>
-            <i__columnName>BUSNUMBER</i__columnName>
-            <i__columnNameDiffers>false</i__columnNameDiffers>
-            <i__typeName>numeric</i__typeName>
-            <i__typeNameDiffers>false</i__typeNameDiffers>
-            <i__columnSize>18</i__columnSize>
-            <i__columnSizeDiffers>false</i__columnSizeDiffers>
-            <i__decimalDigits>0</i__decimalDigits>
-            <i__decimalDigitsDiffers>false</i__decimalDigitsDiffers>
-            <i__nullable>0</i__nullable>
-            <i__nullableDiffers>false</i__nullableDiffers>
-            <i__columnDefaultDiffers>false</i__columnDefaultDiffers>
-            <i__ordinalPosition>2</i__ordinalPosition>
-            <i__ordinalPositionDiffers>false</i__ordinalPositionDiffers>
-          </com.cariboulake.db.schemacompare.business.domain.db.Column>
-          <com.cariboulake.db.schemacompare.business.domain.db.Column>
-            <i__table reference="../../.."/>
-            <i__columnName>CCUFIXBITS</i__columnName>
-            <i__columnNameDiffers>false</i__columnNameDiffers>
-            <i__typeName>numeric</i__typeName>
-            <i__typeNameDiffers>false</i__typeNameDiffers>
-            <i__columnSize>18</i__columnSize>
-            <i__columnSizeDiffers>false</i__columnSizeDiffers>
-            <i__decimalDigits>0</i__decimalDigits>
-            <i__decimalDigitsDiffers>false</i__decimalDigitsDiffers>
-            <i__nullable>0</i__nullable>
-            <i__nullableDiffers>false</i__nullableDiffers>
-            <i__columnDefaultDiffers>false</i__columnDefaultDiffers>
-            <i__ordinalPosition>3</i__ordinalPosition>
-            <i__ordinalPositionDiffers>false</i__ordinalPositionDiffers>
-          </com.cariboulake.db.schemacompare.business.domain.db.Column>
-          <com.cariboulake.db.schemacompare.business.domain.db.Column>
-            <i__table reference="../../.."/>
-            <i__columnName>CCUVARIABLEBITS</i__columnName>
-            <i__columnNameDiffers>false</i__columnNameDiffers>
-            <i__typeName>numeric</i__typeName>
-            <i__typeNameDiffers>false</i__typeNameDiffers>
-            <i__columnSize>18</i__columnSize>
-            <i__columnSizeDiffers>false</i__columnSizeDiffers>
-            <i__decimalDigits>0</i__decimalDigits>
-            <i__decimalDigitsDiffers>false</i__decimalDigitsDiffers>
-            <i__nullable>0</i__nullable>
-            <i__nullableDiffers>false</i__nullableDiffers>
-            <i__columnDefaultDiffers>false</i__columnDefaultDiffers>
-            <i__ordinalPosition>4</i__ordinalPosition>
-            <i__ordinalPositionDiffers>false</i__ordinalPositionDiffers>
-          </com.cariboulake.db.schemacompare.business.domain.db.Column>
-          <com.cariboulake.db.schemacompare.business.domain.db.Column>
-            <i__table reference="../../.."/>
-            <i__columnName>UserLocked</i__columnName>
-            <i__columnNameDiffers>false</i__columnNameDiffers>
-            <i__typeName>char</i__typeName>
-            <i__typeNameDiffers>false</i__typeNameDiffers>
-            <i__columnSize>1</i__columnSize>
-            <i__columnSizeDiffers>false</i__columnSizeDiffers>
-            <i__decimalDigits>0</i__decimalDigits>
-            <i__decimalDigitsDiffers>false</i__decimalDigitsDiffers>
-            <i__nullable>0</i__nullable>
-            <i__nullableDiffers>false</i__nullableDiffers>
-            <i__columnDefaultDiffers>false</i__columnDefaultDiffers>
-            <i__ordinalPosition>5</i__ordinalPosition>
-            <i__ordinalPositionDiffers>false</i__ordinalPositionDiffers>
-          </com.cariboulake.db.schemacompare.business.domain.db.Column>
-          <com.cariboulake.db.schemacompare.business.domain.db.Column>
-            <i__table reference="../../.."/>
-            <i__columnName>ResetRptSettings</i__columnName>
-            <i__columnNameDiffers>false</i__columnNameDiffers>
-            <i__typeName>char</i__typeName>
-            <i__typeNameDiffers>false</i__typeNameDiffers>
-            <i__columnSize>1</i__columnSize>
-            <i__columnSizeDiffers>false</i__columnSizeDiffers>
-            <i__decimalDigits>0</i__decimalDigits>
-            <i__decimalDigitsDiffers>false</i__decimalDigitsDiffers>
-            <i__nullable>0</i__nullable>
-            <i__nullableDiffers>false</i__nullableDiffers>
-            <i__columnDefaultDiffers>false</i__columnDefaultDiffers>
-            <i__ordinalPosition>6</i__ordinalPosition>
-            <i__ordinalPositionDiffers>false</i__ordinalPositionDiffers>
-          </com.cariboulake.db.schemacompare.business.domain.db.Column>
-        </columnList>
-        <i__primaryKeys/>
-        <i__foreignKeys/>
-        <i__indexes>
-          <entry>
-            <string>PK_CARRIERROUTE</string>
-            <com.cariboulake.db.schemacompare.business.domain.db.Index>
-              <indexSegments>
-                <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
-                  <i__tableName>CarrierRoute</i__tableName>
-                  <i__ordinalPosition>1</i__ordinalPosition>
-                  <i__columnName>ROUTEID</i__columnName>
-                  <i__nonNonUnique>false</i__nonNonUnique>
-                </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
-              </indexSegments>
-              <indexName>PK_CARRIERROUTE</indexName>
             </com.cariboulake.db.schemacompare.business.domain.db.Index>
           </entry>
         </i__indexes>
@@ -12024,6 +12024,15 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+            <i__foreignKeyName>FK_CAPCONTR_SWPTID</i__foreignKeyName>
+            <i__keySequence>1</i__keySequence>
+            <i__columnName>SwitchPointID</i__columnName>
+            <i__foreignColumnName>POINTID</i__foreignColumnName>
+            <i__foreignTableName>POINT</i__foreignTableName>
+            <i__updateRule>1</i__updateRule>
+            <i__deleteRule>1</i__deleteRule>
+          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
             <i__foreignKeyName>FK_CAPCONTR_CVOLTPTID</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>CurrentVoltLoadPointID</i__columnName>
@@ -12045,15 +12054,6 @@
             <i__foreignKeyName>SYS_C0013479</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>CurrentVarLoadPointID</i__columnName>
-            <i__foreignColumnName>POINTID</i__foreignColumnName>
-            <i__foreignTableName>POINT</i__foreignTableName>
-            <i__updateRule>1</i__updateRule>
-            <i__deleteRule>1</i__deleteRule>
-          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_CAPCONTR_SWPTID</i__foreignKeyName>
-            <i__keySequence>1</i__keySequence>
-            <i__columnName>SwitchPointID</i__columnName>
             <i__foreignColumnName>POINTID</i__foreignColumnName>
             <i__foreignTableName>POINT</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
@@ -18292,6 +18292,72 @@
                 </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
               </indexSegments>
               <indexName>PK_ENERGYCOMPANYOPERATORLOGINL</indexName>
+            </com.cariboulake.db.schemacompare.business.domain.db.Index>
+          </entry>
+        </i__indexes>
+      </com.cariboulake.db.schemacompare.business.domain.db.Table>
+    </entry>
+    <entry>
+      <string>DeviceCollectionById</string>
+      <com.cariboulake.db.schemacompare.business.domain.db.Table>
+        <i__database reference="../../../.."/>
+        <i__tableName>DeviceCollectionById</i__tableName>
+        <i__tableType>TABLE</i__tableType>
+        <columnList>
+          <com.cariboulake.db.schemacompare.business.domain.db.Column>
+            <i__table reference="../../.."/>
+            <i__columnName>CollectionId</i__columnName>
+            <i__columnNameDiffers>false</i__columnNameDiffers>
+            <i__typeName>numeric</i__typeName>
+            <i__typeNameDiffers>false</i__typeNameDiffers>
+            <i__columnSize>18</i__columnSize>
+            <i__columnSizeDiffers>false</i__columnSizeDiffers>
+            <i__decimalDigits>0</i__decimalDigits>
+            <i__decimalDigitsDiffers>false</i__decimalDigitsDiffers>
+            <i__nullable>0</i__nullable>
+            <i__nullableDiffers>false</i__nullableDiffers>
+            <i__columnDefaultDiffers>false</i__columnDefaultDiffers>
+            <i__ordinalPosition>1</i__ordinalPosition>
+            <i__ordinalPositionDiffers>false</i__ordinalPositionDiffers>
+          </com.cariboulake.db.schemacompare.business.domain.db.Column>
+          <com.cariboulake.db.schemacompare.business.domain.db.Column>
+            <i__table reference="../../.."/>
+            <i__columnName>DeviceId</i__columnName>
+            <i__columnNameDiffers>false</i__columnNameDiffers>
+            <i__typeName>numeric</i__typeName>
+            <i__typeNameDiffers>false</i__typeNameDiffers>
+            <i__columnSize>18</i__columnSize>
+            <i__columnSizeDiffers>false</i__columnSizeDiffers>
+            <i__decimalDigits>0</i__decimalDigits>
+            <i__decimalDigitsDiffers>false</i__decimalDigitsDiffers>
+            <i__nullable>0</i__nullable>
+            <i__nullableDiffers>false</i__nullableDiffers>
+            <i__columnDefaultDiffers>false</i__columnDefaultDiffers>
+            <i__ordinalPosition>2</i__ordinalPosition>
+            <i__ordinalPositionDiffers>false</i__ordinalPositionDiffers>
+          </com.cariboulake.db.schemacompare.business.domain.db.Column>
+        </columnList>
+        <i__primaryKeys/>
+        <i__foreignKeys/>
+        <i__indexes>
+          <entry>
+            <string>PK_DeviceCollectById</string>
+            <com.cariboulake.db.schemacompare.business.domain.db.Index>
+              <indexSegments>
+                <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+                  <i__tableName>DeviceCollectionById</i__tableName>
+                  <i__ordinalPosition>1</i__ordinalPosition>
+                  <i__columnName>CollectionId</i__columnName>
+                  <i__nonNonUnique>false</i__nonNonUnique>
+                </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+                <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+                  <i__tableName>DeviceCollectionById</i__tableName>
+                  <i__ordinalPosition>2</i__ordinalPosition>
+                  <i__columnName>DeviceId</i__columnName>
+                  <i__nonNonUnique>false</i__nonNonUnique>
+                </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+              </indexSegments>
+              <indexName>PK_DeviceCollectById</indexName>
             </com.cariboulake.db.schemacompare.business.domain.db.Index>
           </entry>
         </i__indexes>
@@ -28959,7 +29025,7 @@
             <i__columnName>AccountId</i__columnName>
             <i__foreignColumnName>AccountID</i__foreignColumnName>
             <i__foreignTableName>CustomerAccount</i__foreignTableName>
-            <i__updateRule>1</i__updateRule>
+            <i__updateRule>0</i__updateRule>
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
@@ -29699,6 +29765,88 @@
                 </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
               </indexSegments>
               <indexName>PK_SERVICECOMPANY</indexName>
+            </com.cariboulake.db.schemacompare.business.domain.db.Index>
+          </entry>
+        </i__indexes>
+      </com.cariboulake.db.schemacompare.business.domain.db.Table>
+    </entry>
+    <entry>
+      <string>DeviceCollectionByField</string>
+      <com.cariboulake.db.schemacompare.business.domain.db.Table>
+        <i__database reference="../../../.."/>
+        <i__tableName>DeviceCollectionByField</i__tableName>
+        <i__tableType>TABLE</i__tableType>
+        <columnList>
+          <com.cariboulake.db.schemacompare.business.domain.db.Column>
+            <i__table reference="../../.."/>
+            <i__columnName>CollectionId</i__columnName>
+            <i__columnNameDiffers>false</i__columnNameDiffers>
+            <i__typeName>numeric</i__typeName>
+            <i__typeNameDiffers>false</i__typeNameDiffers>
+            <i__columnSize>18</i__columnSize>
+            <i__columnSizeDiffers>false</i__columnSizeDiffers>
+            <i__decimalDigits>0</i__decimalDigits>
+            <i__decimalDigitsDiffers>false</i__decimalDigitsDiffers>
+            <i__nullable>0</i__nullable>
+            <i__nullableDiffers>false</i__nullableDiffers>
+            <i__columnDefaultDiffers>false</i__columnDefaultDiffers>
+            <i__ordinalPosition>1</i__ordinalPosition>
+            <i__ordinalPositionDiffers>false</i__ordinalPositionDiffers>
+          </com.cariboulake.db.schemacompare.business.domain.db.Column>
+          <com.cariboulake.db.schemacompare.business.domain.db.Column>
+            <i__table reference="../../.."/>
+            <i__columnName>FieldName</i__columnName>
+            <i__columnNameDiffers>false</i__columnNameDiffers>
+            <i__typeName>varchar</i__typeName>
+            <i__typeNameDiffers>false</i__typeNameDiffers>
+            <i__columnSize>50</i__columnSize>
+            <i__columnSizeDiffers>false</i__columnSizeDiffers>
+            <i__decimalDigits>0</i__decimalDigits>
+            <i__decimalDigitsDiffers>false</i__decimalDigitsDiffers>
+            <i__nullable>0</i__nullable>
+            <i__nullableDiffers>false</i__nullableDiffers>
+            <i__columnDefaultDiffers>false</i__columnDefaultDiffers>
+            <i__ordinalPosition>2</i__ordinalPosition>
+            <i__ordinalPositionDiffers>false</i__ordinalPositionDiffers>
+          </com.cariboulake.db.schemacompare.business.domain.db.Column>
+          <com.cariboulake.db.schemacompare.business.domain.db.Column>
+            <i__table reference="../../.."/>
+            <i__columnName>FieldValue</i__columnName>
+            <i__columnNameDiffers>false</i__columnNameDiffers>
+            <i__typeName>varchar</i__typeName>
+            <i__typeNameDiffers>false</i__typeNameDiffers>
+            <i__columnSize>100</i__columnSize>
+            <i__columnSizeDiffers>false</i__columnSizeDiffers>
+            <i__decimalDigits>0</i__decimalDigits>
+            <i__decimalDigitsDiffers>false</i__decimalDigitsDiffers>
+            <i__nullable>0</i__nullable>
+            <i__nullableDiffers>false</i__nullableDiffers>
+            <i__columnDefaultDiffers>false</i__columnDefaultDiffers>
+            <i__ordinalPosition>3</i__ordinalPosition>
+            <i__ordinalPositionDiffers>false</i__ordinalPositionDiffers>
+          </com.cariboulake.db.schemacompare.business.domain.db.Column>
+        </columnList>
+        <i__primaryKeys/>
+        <i__foreignKeys/>
+        <i__indexes>
+          <entry>
+            <string>PK_DeviceCollectByField</string>
+            <com.cariboulake.db.schemacompare.business.domain.db.Index>
+              <indexSegments>
+                <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+                  <i__tableName>DeviceCollectionByField</i__tableName>
+                  <i__ordinalPosition>1</i__ordinalPosition>
+                  <i__columnName>CollectionId</i__columnName>
+                  <i__nonNonUnique>false</i__nonNonUnique>
+                </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+                <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+                  <i__tableName>DeviceCollectionByField</i__tableName>
+                  <i__ordinalPosition>2</i__ordinalPosition>
+                  <i__columnName>FieldName</i__columnName>
+                  <i__nonNonUnique>false</i__nonNonUnique>
+                </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+              </indexSegments>
+              <indexName>PK_DeviceCollectByField</indexName>
             </com.cariboulake.db.schemacompare.business.domain.db.Index>
           </entry>
         </i__indexes>
@@ -31317,6 +31465,101 @@
                 </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
               </indexSegments>
               <indexName>CstLdTy_CstLdInf_FK</indexName>
+            </com.cariboulake.db.schemacompare.business.domain.db.Index>
+          </entry>
+        </i__indexes>
+      </com.cariboulake.db.schemacompare.business.domain.db.Table>
+    </entry>
+    <entry>
+      <string>DeviceCollection</string>
+      <com.cariboulake.db.schemacompare.business.domain.db.Table>
+        <i__database reference="../../../.."/>
+        <i__tableName>DeviceCollection</i__tableName>
+        <i__tableType>TABLE</i__tableType>
+        <columnList>
+          <com.cariboulake.db.schemacompare.business.domain.db.Column>
+            <i__table reference="../../.."/>
+            <i__columnName>CollectionId</i__columnName>
+            <i__columnNameDiffers>false</i__columnNameDiffers>
+            <i__typeName>numeric</i__typeName>
+            <i__typeNameDiffers>false</i__typeNameDiffers>
+            <i__columnSize>18</i__columnSize>
+            <i__columnSizeDiffers>false</i__columnSizeDiffers>
+            <i__decimalDigits>0</i__decimalDigits>
+            <i__decimalDigitsDiffers>false</i__decimalDigitsDiffers>
+            <i__nullable>0</i__nullable>
+            <i__nullableDiffers>false</i__nullableDiffers>
+            <i__columnDefaultDiffers>false</i__columnDefaultDiffers>
+            <i__ordinalPosition>1</i__ordinalPosition>
+            <i__ordinalPositionDiffers>false</i__ordinalPositionDiffers>
+          </com.cariboulake.db.schemacompare.business.domain.db.Column>
+          <com.cariboulake.db.schemacompare.business.domain.db.Column>
+            <i__table reference="../../.."/>
+            <i__columnName>CollectionType</i__columnName>
+            <i__columnNameDiffers>false</i__columnNameDiffers>
+            <i__typeName>varchar</i__typeName>
+            <i__typeNameDiffers>false</i__typeNameDiffers>
+            <i__columnSize>50</i__columnSize>
+            <i__columnSizeDiffers>false</i__columnSizeDiffers>
+            <i__decimalDigits>0</i__decimalDigits>
+            <i__decimalDigitsDiffers>false</i__decimalDigitsDiffers>
+            <i__nullable>0</i__nullable>
+            <i__nullableDiffers>false</i__nullableDiffers>
+            <i__columnDefaultDiffers>false</i__columnDefaultDiffers>
+            <i__ordinalPosition>2</i__ordinalPosition>
+            <i__ordinalPositionDiffers>false</i__ordinalPositionDiffers>
+          </com.cariboulake.db.schemacompare.business.domain.db.Column>
+          <com.cariboulake.db.schemacompare.business.domain.db.Column>
+            <i__table reference="../../.."/>
+            <i__columnName>PersistenceType</i__columnName>
+            <i__columnNameDiffers>false</i__columnNameDiffers>
+            <i__typeName>varchar</i__typeName>
+            <i__typeNameDiffers>false</i__typeNameDiffers>
+            <i__columnSize>50</i__columnSize>
+            <i__columnSizeDiffers>false</i__columnSizeDiffers>
+            <i__decimalDigits>0</i__decimalDigits>
+            <i__decimalDigitsDiffers>false</i__decimalDigitsDiffers>
+            <i__nullable>0</i__nullable>
+            <i__nullableDiffers>false</i__nullableDiffers>
+            <i__columnDefaultDiffers>false</i__columnDefaultDiffers>
+            <i__ordinalPosition>3</i__ordinalPosition>
+            <i__ordinalPositionDiffers>false</i__ordinalPositionDiffers>
+          </com.cariboulake.db.schemacompare.business.domain.db.Column>
+        </columnList>
+        <i__primaryKeys/>
+        <i__foreignKeys>
+          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+            <i__foreignKeyName>FK_DevCollById_DevColl</i__foreignKeyName>
+            <i__keySequence>1</i__keySequence>
+            <i__columnName>CollectionId</i__columnName>
+            <i__foreignColumnName>CollectionId</i__foreignColumnName>
+            <i__foreignTableName>DeviceCollection</i__foreignTableName>
+            <i__updateRule>0</i__updateRule>
+            <i__deleteRule>1</i__deleteRule>
+          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+            <i__foreignKeyName>FK_DevCollByField_DevColl</i__foreignKeyName>
+            <i__keySequence>1</i__keySequence>
+            <i__columnName>CollectionId</i__columnName>
+            <i__foreignColumnName>CollectionId</i__foreignColumnName>
+            <i__foreignTableName>DeviceCollection</i__foreignTableName>
+            <i__updateRule>0</i__updateRule>
+            <i__deleteRule>1</i__deleteRule>
+          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+        </i__foreignKeys>
+        <i__indexes>
+          <entry>
+            <string>PK_DeviceCollect</string>
+            <com.cariboulake.db.schemacompare.business.domain.db.Index>
+              <indexSegments>
+                <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+                  <i__tableName>DeviceCollection</i__tableName>
+                  <i__ordinalPosition>1</i__ordinalPosition>
+                  <i__columnName>CollectionId</i__columnName>
+                  <i__nonNonUnique>false</i__nonNonUnique>
+                </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+              </indexSegments>
+              <indexName>PK_DeviceCollect</indexName>
             </com.cariboulake.db.schemacompare.business.domain.db.Index>
           </entry>
         </i__indexes>
@@ -35752,7 +35995,7 @@
             <i__columnName>AcctThermostatScheduleId</i__columnName>
             <i__foreignColumnName>AcctThermostatScheduleId</i__foreignColumnName>
             <i__foreignTableName>AcctThermostatSchedule</i__foreignTableName>
-            <i__updateRule>1</i__updateRule>
+            <i__updateRule>0</i__updateRule>
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
@@ -35770,7 +36013,7 @@
             <i__columnName>ScheduleId</i__columnName>
             <i__foreignColumnName>AcctThermostatScheduleId</i__foreignColumnName>
             <i__foreignTableName>AcctThermostatSchedule</i__foreignTableName>
-            <i__updateRule>1</i__updateRule>
+            <i__updateRule>0</i__updateRule>
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
@@ -35779,7 +36022,7 @@
             <i__columnName>AcctThermostatScheduleId</i__columnName>
             <i__foreignColumnName>AcctThermostatScheduleId</i__foreignColumnName>
             <i__foreignTableName>AcctThermostatSchedule</i__foreignTableName>
-            <i__updateRule>1</i__updateRule>
+            <i__updateRule>0</i__updateRule>
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
         </i__foreignKeys>
