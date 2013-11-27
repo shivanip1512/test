@@ -329,20 +329,21 @@ public class RouteUsageHelper {
                     run++;
                     if (run >= size) {
                         
+                        int rangeStart = j - size + 1;
                         if (avoidCCUs == null) {
                             
                             success = true;
-                            runStartPoint = j - size + 1;
+                            runStartPoint = rangeStart;
                             successFixedBit = i;
                             break;
                             
                         } else {
 
                             // verify this range isn't used by a ccu i don't like
-                            if (isRangeInUse( i, runStartPoint, j, avoidCCUs )) {
+                            if (isRangeInUse( i, rangeStart, j, avoidCCUs )) {
                                 
                                 success = true;
-                                runStartPoint = j - size + 1;
+                                runStartPoint = rangeStart;
                                 successFixedBit = i;
                                 break;
                                 
