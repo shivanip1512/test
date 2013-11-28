@@ -1,5 +1,7 @@
 package com.cannontech.messaging.connection;
 
+import java.net.URI;
+
 import com.cannontech.event.Event;
 import com.cannontech.messaging.connection.event.ConnectionEventHandler;
 import com.cannontech.messaging.connection.event.MessageEventHandler;
@@ -45,7 +47,9 @@ public interface Connection {
     ConnectionState getState();
 
     boolean isConnectionFailed();
-    
+
+    URI getConnectionUri() throws ConnectionException;
+
     /**
      * Sets the ability of this connection to reconnect automatically after a connection has been lost.
      * @param autoReconnect

@@ -1,13 +1,18 @@
 package com.cannontech.messaging.connection.amq;
 
+import java.net.URI;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.jms.BytesMessage;
+import javax.jms.ConnectionFactory;
 import javax.jms.ExceptionListener;
 import javax.jms.JMSException;
 import javax.jms.MessageListener;
 
 import org.apache.activemq.ActiveMQConnection;
+import org.apache.activemq.ActiveMQConnectionFactory;
+import org.springframework.aop.framework.Advised;
+import org.springframework.aop.support.AopUtils;
 
 import com.cannontech.message.util.Message;
 import com.cannontech.messaging.connection.ConnectionBase;
@@ -256,6 +261,40 @@ public abstract class AmqConnectionBase<T extends AmqTransport> extends Connecti
             connectionService = AmqConnectionFactoryService.getDefaultService();
         }
         return connectionService;
+    }
+
+    /**
+     * @return The Connection URI (the broker URI since we are physically connected to the broker)
+     * @throws Exception ConnectionException if an error occur
+     */
+    @Override
+    public URI getConnectionUri() throws ConnectionException {
+        try {
+            if (isManagedConnection()) {
+                ConnectionFactory connectionFactory = getConnectionService().getConnectionFactory();
+                
+                ActiveMQConnectionFactory amqConnectionfactory = (ActiveMQConnectionFactory) getTargetObject(
+                        connectionFactory, ConnectionFactory.class);
+                
+                return URI.create(amqConnectionfactory.getBrokerURL());
+            }
+            else {
+                return URI.create(connection.getBrokerInfo().getBrokerURL());
+            }
+        }
+        catch (Exception e) {
+            throw new ConnectionException("Error while retrieving broker URI");
+        }
+    }
+
+    @SuppressWarnings({"unchecked","hiding"})
+    private <T> T getTargetObject(Object proxy, Class<T> targetClass) throws Exception {
+      if (AopUtils.isJdkDynamicProxy(proxy)) {
+        return (T) ((Advised)proxy).getTargetSource().getTarget();
+      } 
+      else {
+        return (T) proxy; // expected to be cglib proxy then, which is simply a specialized class
+      }
     }
 
     public void setConnectionService(AmqConnectionFactoryService connectionSvc) {

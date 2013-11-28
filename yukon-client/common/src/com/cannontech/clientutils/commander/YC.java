@@ -67,6 +67,7 @@ import com.cannontech.database.model.TreeModelEnum;
 import com.cannontech.message.dispatch.message.SystemLogHelper;
 import com.cannontech.message.porter.message.Request;
 import com.cannontech.message.porter.message.Return;
+import com.cannontech.message.util.ClientConnection;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
@@ -926,7 +927,8 @@ public class YC extends Observable implements MessageListener
 		}
 		else
 		{
-			String porterError = "Command request not sent - Connection to Yukon Port Control is not valid.";
+			String porterError = "Command request not sent - Connection to Yukon Port Control, " +
+			        ((ClientConnection)getPilConn()).getConnectionUri().getRawAuthority() + ", is not valid.";
 			String logOutput= "<BR>["+ displayFormat.format(new java.util.Date()) + "]- " + porterError;
 			writeOutputMessage(OutputMessage.DEBUG_MESSAGE, logOutput, MessageType.ERROR);
 			setErrorMsg(porterError);

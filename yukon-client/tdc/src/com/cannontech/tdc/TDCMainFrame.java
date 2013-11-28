@@ -40,6 +40,7 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.debug.gui.AboutDialog;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.message.util.ClientConnection;
 import com.cannontech.message.util.Command;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
@@ -4469,33 +4470,27 @@ public void setSelectedViewType(String buttonText)
  * Insert the method's description here.
  * Creation date: (7/26/00 3:43:57 PM)
  */
-private void setTitleFromDisplay() 
-{
-	// dont change the title if we are looking at a specialTDCChild
-	if( getMainPanel().isClientDisplay() )
-		return;
+private void setTitleFromDisplay() {
+    // dont change the title if we are looking at a specialTDCChild
+    if (getMainPanel().isClientDisplay())
+        return;
 
-	final String connected;
+    final String connected;
 
-	if( getTdcClient().connected() )
-	{
-		connected = "   [Connected to Dispatch@" + ConnPool.getInstance().getDefDispatchConn().toString() + "]";
-	}
-	else
-	{
-		connected = "   [Not Connected to Dispatch]";
-	}
+    if (getTdcClient().connected()) {
+        ClientConnection conn = (ClientConnection) ConnPool.getInstance().getDefDispatchConn();
+        connected = "   [Connected to Dispatch@" + conn.getConnectionUri().getRawAuthority() + "]";
+    }
+    else {
+        connected = "   [Not Connected to Dispatch]";
+    }
 
-		
-	if( Display.isUserDefinedType(getMainPanel().getCurrentDisplay().getType()) )
-	{
-		setTitle( getMainPanel().getCurrentDisplay().getName() + connected );
-	}
-	else if( Display.isCoreType(getMainPanel().getCurrentDisplay().getType()) )
-	{
-		setTitle( getMainPanel().getCurrentDisplay().getTitle() + connected );
-	}
-
+    if (Display.isUserDefinedType(getMainPanel().getCurrentDisplay().getType())) {
+        setTitle( getMainPanel().getCurrentDisplay().getName() + connected );
+    }
+    else if (Display.isCoreType(getMainPanel().getCurrentDisplay().getType())) {
+        setTitle( getMainPanel().getCurrentDisplay().getTitle() + connected );
+    }
 }
 
 public void resetFilter()

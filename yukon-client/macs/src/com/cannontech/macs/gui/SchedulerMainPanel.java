@@ -47,6 +47,7 @@ import com.cannontech.message.macs.message.Info;
 import com.cannontech.message.macs.message.OverrideRequest;
 import com.cannontech.message.macs.message.Schedule;
 import com.cannontech.message.macs.message.ScriptFile;
+import com.cannontech.message.util.ClientConnection;
 import com.cannontech.message.util.ConnStateChange;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
@@ -78,8 +79,14 @@ public class SchedulerMainPanel extends javax.swing.JPanel implements ActionList
 	//so that we can reselect it if the table has to be updated
 	private Schedule lastSelected = null;
 
-	// Flag for connection to macs server
-	private boolean lastConnectionStatus = false;
+    private enum ConnectionStatus {
+        Undefined,
+        Connected,
+        Disconnected
+    }
+
+    // Flag for connection to macs server
+    private ConnectionStatus lastConnectionStatus = ConnectionStatus.Undefined;
 
 /**
  * SchedulerMainPanel constructor comment.
@@ -380,49 +387,49 @@ public IMACSConnection getIMACSConnection()
  * Insert the method's description here.
  * Creation date: (3/2/2001 9:55:18 AM)
  */
-public String getConnectionState() 
-{
-	StringBuffer title = new StringBuffer("MACS Scheduler");
-	boolean validConn = getIMACSConnection().isValid();
+public String getConnectionState() {
+    StringBuffer title = new StringBuffer("MACS Scheduler");
+    ClientConnection conn = (ClientConnection)getIMACSConnection();
 
-	if( validConn && !lastConnectionStatus )
-	{
-		// connected and change
-		title.append("   [Connected to MacsServer@" + 
-				getIMACSConnection().toString() + "]");
+    if (conn.isValid()) {
+        title.append("   [Connected to MacsServer@" + conn.getConnectionUri().getRawAuthority() + "]");
 
-		getMessagePanel().messageEvent(new com.cannontech.common.util.MessageEvent(this, "Connection to MACS server established", com.cannontech.common.util.MessageEvent.INFORMATION_MESSAGE));
-		
-		try
-		{
-			CTILogger.info("...Retrieving MACS schedules...");
-			getIMACSConnection().sendRetrieveAllSchedules();
-		}
-		catch( java.io.IOException e )
-		{
-			CTILogger.error( e.getMessage(), e );
-		}
-	}
-	else if( !validConn && lastConnectionStatus )
-	{
-		// not connected and change
-		title.append("   [Not Connected to MacsServer]");
-		getScheduleTableModel().clear();
-		getMessagePanel().messageEvent(new com.cannontech.common.util.MessageEvent(this, "No connection to MACS server", com.cannontech.common.util.MessageEvent.ERROR_MESSAGE));
-	}
-	else if( lastConnectionStatus )  // still connected
-		title.append("   [Connected to MacsServer@" + 
-					getIMACSConnection().toString() + "]");
-					
-	else // still disconnected
-	{		
-		title.append("   [Not Connected to MacsServer]");
-		getScheduleTableModel().clear();
-	}
-			
-	lastConnectionStatus = validConn;
+        if (lastConnectionStatus != ConnectionStatus.Connected) { // connected and status has change
+        getMessagePanel().messageEvent(new com.cannontech.common.util.MessageEvent(this, 
+                    "Connection to MACS server established. " + conn.getConnectionUri().getRawAuthority(), 
+                    com.cannontech.common.util.MessageEvent.INFORMATION_MESSAGE));
 
-	return title.toString();
+        try {
+                CTILogger.info("...Retrieving MACS schedules...");
+                getIMACSConnection().sendRetrieveAllSchedules();
+            }
+            catch (java.io.IOException e) {
+                CTILogger.error(e.getMessage(), e);
+            }
+
+            lastConnectionStatus = ConnectionStatus.Connected;
+        }
+    }
+    else {
+        title.append("   [Not Connected to MacsServer]");
+
+        if (lastConnectionStatus == ConnectionStatus.Connected) { // not connected and status has change from connected
+            getMessagePanel().messageEvent(new com.cannontech.common.util.MessageEvent(this, 
+                    "Lost connection to MACS server. " + conn.getConnectionUri().getRawAuthority() + ". Reconnecting.", 
+                    com.cannontech.common.util.MessageEvent.ERROR_MESSAGE));
+
+            lastConnectionStatus = ConnectionStatus.Disconnected;
+        }
+        else if (lastConnectionStatus == ConnectionStatus.Undefined && conn.isConnectionFailed()) { // connection has fail on first attempt
+            getMessagePanel().messageEvent(new com.cannontech.common.util.MessageEvent(this, 
+                    "Unable to connect to MACS server. " + conn.getConnectionUri().getRawAuthority() + ". Reconnecting.", 
+                    com.cannontech.common.util.MessageEvent.ERROR_MESSAGE));
+
+            lastConnectionStatus = ConnectionStatus.Disconnected;
+        }
+    }
+
+    return title.toString();
 }
 /**
  * Insert the method's description here.

@@ -1,5 +1,6 @@
 package com.cannontech.message.util;
 
+import java.net.URI;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -17,7 +18,6 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.messaging.connection.Connection;
 import com.cannontech.messaging.connection.Connection.ConnectionState;
-import com.cannontech.messaging.connection.amq.AmqClientConnection;
 import com.cannontech.messaging.connection.event.ConnectionEventHandler;
 import com.cannontech.messaging.connection.event.MessageEventHandler;
 import com.cannontech.messaging.util.ConnectionFactory;
@@ -486,21 +486,19 @@ public abstract class ClientConnection extends java.util.Observable implements I
             }
         }
     }
-    
-    public String getServerHostName()
-    {
-        if (connection instanceof AmqClientConnection) {
-            return ((AmqClientConnection)connection).getServerHostName();
+
+    public URI getConnectionUri() {
+        if (connection == null) {
+            throw new ConnectionException("Unexpected connection object is null");
         }
-        return "";
+        return connection.getConnectionUri();
     }
-    
-    public boolean isConnectionFailed()
-    {
-    	if (connection != null) {
-            return connection.isConnectionFailed();
+
+    public boolean isConnectionFailed() {
+        if (connection == null) {
+            throw new ConnectionException("Unexpected connection object is null");
         }
-    	return false;
+        return connection.isConnectionFailed();
     }
-    
+
 }

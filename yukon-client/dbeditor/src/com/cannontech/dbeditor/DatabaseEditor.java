@@ -322,8 +322,16 @@ public class DatabaseEditor
 	
 	private static int decimalPlaces;
 	private IServerConnection connToDispatch;
-	private boolean connToVanGoghErrorMessageSent = false;
-	private boolean connToVanGoghSuccessfull = false;
+
+    private enum ConnectionStatus {
+        Undefined,
+        Connected,
+        Disconnected
+    }
+
+    // Flag for connection to dispatch server
+    private ConnectionStatus lastConnToVanGoghStatus = ConnectionStatus.Undefined;
+
 	private boolean changingObjectType = false;
 
 	//Flag whether billing option should be present in create (core) menu
@@ -2872,35 +2880,48 @@ public void update(java.util.Observable o, Object arg)
  * @param conn
  */
 private void updateConnectionStatus(IServerConnection conn) {
-	ClientConnection clientConn = (ClientConnection)conn;
-	
-	if( conn.isValid() ) {
-		connToVanGoghErrorMessageSent = false;
-		connToVanGoghSuccessfull = true;
-		fireMessage( new MessageEvent( this, "Connection to Message Dispatcher Established. " + clientConn.getServerHostName()) );
-		if( owner != null ) {
+    ClientConnection clientConn = (ClientConnection)conn;
+
+    if (conn.isValid()) {
+        if (owner != null) {
             owner.setTitle("Yukon Database Editor [Connected to Dispatch@" +
-				 		 conn.toString() + "]" );
+                    clientConn.getConnectionUri().getRawAuthority()+ "]" );
         }
-	}
-	else {
-		if( owner != null ) {
+
+        if (lastConnToVanGoghStatus != ConnectionStatus.Connected) {
+            fireMessage( new MessageEvent( this, "Connection to Message Dispatcher Established. " + 
+                    clientConn.getConnectionUri().getRawAuthority()) );
+            
+            lastConnToVanGoghStatus = ConnectionStatus.Connected;
+            if (owner != null) {
+                owner.repaint();
+            }
+        }
+    }
+    else {
+        if (owner != null) {
             owner.setTitle("Yukon Database Editor [Not Connected to Dispatch]");
         }
-		
-		if (! connToVanGoghErrorMessageSent && (clientConn.isConnectionFailed() || connToVanGoghSuccessfull)) {
-			connToVanGoghErrorMessageSent = true;
-			
-			if( connToVanGoghSuccessfull ) {
-			    fireMessage( new MessageEvent( this, "Lost Connection to Message Dispatcher! " + clientConn.getServerHostName() + ", Reconnecting.", MessageEvent.ERROR_MESSAGE) );
-			}
-			else {
-			    fireMessage( new MessageEvent( this, "Unable to connect to Message Dispatcher! " + clientConn.getServerHostName() + ", Reconnecting.", MessageEvent.ERROR_MESSAGE) );
-			}
 
-			owner.repaint();
-		}
-	}
+        if (lastConnToVanGoghStatus == ConnectionStatus.Connected) {
+            fireMessage( new MessageEvent( this, "Lost Connection to Message Dispatcher. " + 
+                    clientConn.getConnectionUri().getRawAuthority() + ". Reconnecting.", MessageEvent.ERROR_MESSAGE) );
+
+            lastConnToVanGoghStatus = ConnectionStatus.Disconnected;
+            if (owner != null) {
+                owner.repaint();
+            }
+        }
+        else if (lastConnToVanGoghStatus == ConnectionStatus.Undefined && clientConn.isConnectionFailed()) {
+            fireMessage( new MessageEvent( this, "Unable to connect to Message Dispatcher. " + 
+                    clientConn.getConnectionUri().getRawAuthority() + ". Reconnecting.", MessageEvent.ERROR_MESSAGE) );
+
+            lastConnToVanGoghStatus = ConnectionStatus.Disconnected;
+            if (owner != null) {
+                owner.repaint();
+            }
+        }
+    }
 }
 
     /**
