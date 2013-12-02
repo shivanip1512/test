@@ -287,14 +287,11 @@ public abstract class AmqConnectionBase<T extends AmqTransport> extends Connecti
         }
     }
 
-    @SuppressWarnings({"unchecked","hiding"})
-    private <T> T getTargetObject(Object proxy, Class<T> targetClass) throws Exception {
+    static private <T> T getTargetObject(Object proxy, Class<T> targetClass) throws Exception {
       if (AopUtils.isJdkDynamicProxy(proxy)) {
-        return (T) ((Advised)proxy).getTargetSource().getTarget();
+        return (T) targetClass.cast(((Advised) proxy).getTargetSource().getTarget());
       } 
-      else {
-        return (T) proxy; // expected to be cglib proxy then, which is simply a specialized class
-      }
+      return (T) targetClass.cast(proxy); // expected to be cglib proxy then, which is simply a specialized class
     }
 
     public void setConnectionService(AmqConnectionFactoryService connectionSvc) {
