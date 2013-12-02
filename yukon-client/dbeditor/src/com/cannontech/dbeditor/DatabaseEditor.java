@@ -324,13 +324,13 @@ public class DatabaseEditor
 	private IServerConnection connToDispatch;
 
     private enum ConnectionStatus {
-        Undefined,
-        Connected,
-        Disconnected
+        UNDEFINED,
+        CONNECTED,
+        DISCONNECTED
     }
 
     // Flag for connection to dispatch server
-    private ConnectionStatus lastConnToVanGoghStatus = ConnectionStatus.Undefined;
+    private ConnectionStatus lastConnToVanGoghStatus = ConnectionStatus.UNDEFINED;
 
 	private boolean changingObjectType = false;
 
@@ -2888,11 +2888,11 @@ private void updateConnectionStatus(IServerConnection conn) {
                     clientConn.getConnectionUri().getRawAuthority()+ "]" );
         }
 
-        if (lastConnToVanGoghStatus != ConnectionStatus.Connected) {
+        if (lastConnToVanGoghStatus != ConnectionStatus.CONNECTED) {
             fireMessage( new MessageEvent( this, "Connection to Message Dispatcher Established. " + 
                     clientConn.getConnectionUri().getRawAuthority()) );
             
-            lastConnToVanGoghStatus = ConnectionStatus.Connected;
+            lastConnToVanGoghStatus = ConnectionStatus.CONNECTED;
             if (owner != null) {
                 owner.repaint();
             }
@@ -2903,20 +2903,20 @@ private void updateConnectionStatus(IServerConnection conn) {
             owner.setTitle("Yukon Database Editor [Not Connected to Dispatch]");
         }
 
-        if (lastConnToVanGoghStatus == ConnectionStatus.Connected) {
+        if (lastConnToVanGoghStatus == ConnectionStatus.CONNECTED) {
             fireMessage( new MessageEvent( this, "Lost Connection to Message Dispatcher. " + 
                     clientConn.getConnectionUri().getRawAuthority() + ". Reconnecting.", MessageEvent.ERROR_MESSAGE) );
 
-            lastConnToVanGoghStatus = ConnectionStatus.Disconnected;
+            lastConnToVanGoghStatus = ConnectionStatus.DISCONNECTED;
             if (owner != null) {
                 owner.repaint();
             }
         }
-        else if (lastConnToVanGoghStatus == ConnectionStatus.Undefined && clientConn.isConnectionFailed()) {
+        else if (lastConnToVanGoghStatus == ConnectionStatus.UNDEFINED && clientConn.isConnectionFailed()) {
             fireMessage( new MessageEvent( this, "Unable to connect to Message Dispatcher. " + 
                     clientConn.getConnectionUri().getRawAuthority() + ". Reconnecting.", MessageEvent.ERROR_MESSAGE) );
 
-            lastConnToVanGoghStatus = ConnectionStatus.Disconnected;
+            lastConnToVanGoghStatus = ConnectionStatus.DISCONNECTED;
             if (owner != null) {
                 owner.repaint();
             }

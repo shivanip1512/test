@@ -70,13 +70,13 @@ public class LoadControlMainPanel extends javax.swing.JPanel implements ButtonBa
 
     
     private enum ConnectionStatus {
-        Undefined,
-        Connected,
-        Disconnected
+        UNDEFINED,
+        CONNECTED,
+        DISCONNECTED
     }
 
     // Flag for connection to load management server
-    private ConnectionStatus lastConnectionStatus = ConnectionStatus.Undefined;
+    private ConnectionStatus lastConnectionStatus = ConnectionStatus.UNDEFINED;
 
 	private javax.swing.JTable ivjJTableControlArea = null;
 	private javax.swing.JTable ivjJTableProgram = null;
@@ -651,30 +651,30 @@ public String getConnectionState() {
     if( conn.isValid() ) {
         title.append("   [Connected to " + LOAD_MANAGEMENT_NAME + "@" + conn.getConnectionUri().getRawAuthority() + "]");
 
-        if (lastConnectionStatus != ConnectionStatus.Connected) {
+        if (lastConnectionStatus != ConnectionStatus.CONNECTED) {
             getMessagePanel().messageEvent(new com.cannontech.common.util.MessageEvent(this, 
                     "Connection to " + LOAD_MANAGEMENT_NAME + " server established. " + conn.getConnectionUri().getRawAuthority(), 
                     com.cannontech.common.util.MessageEvent.INFORMATION_MESSAGE));
 
-            lastConnectionStatus = ConnectionStatus.Connected;
+            lastConnectionStatus = ConnectionStatus.CONNECTED;
         }
     }
     else {
         title.append("   [Not Connected to " + LOAD_MANAGEMENT_NAME + "]");
 
-        if (lastConnectionStatus == ConnectionStatus.Connected) { // not connected and status has change from connected
+        if (lastConnectionStatus == ConnectionStatus.CONNECTED) { // not connected and status has change from connected
             getMessagePanel().messageEvent(new com.cannontech.common.util.MessageEvent(this, 
                     "Lost connection to LoadControl server. " + conn.getConnectionUri().getRawAuthority() + ". Reconnecting.", 
                     com.cannontech.common.util.MessageEvent.ERROR_MESSAGE));
 
-            lastConnectionStatus = ConnectionStatus.Disconnected;
+            lastConnectionStatus = ConnectionStatus.DISCONNECTED;
         }
-        else if (lastConnectionStatus == ConnectionStatus.Undefined && conn.isConnectionFailed()) { // connection has fail on first attempt
+        else if (lastConnectionStatus == ConnectionStatus.UNDEFINED && conn.isConnectionFailed()) { // connection has fail on first attempt
             getMessagePanel().messageEvent(new com.cannontech.common.util.MessageEvent(this, 
                     "Unable to connect to LoadControl server. " + conn.getConnectionUri().getRawAuthority() + ". Reconnecting.", 
                     com.cannontech.common.util.MessageEvent.ERROR_MESSAGE));
 
-            lastConnectionStatus = ConnectionStatus.Disconnected;
+            lastConnectionStatus = ConnectionStatus.DISCONNECTED;
         }
     }
 
