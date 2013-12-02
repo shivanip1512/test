@@ -461,6 +461,10 @@ Yukon.DeviceDataMonitor = (function () {
             var select_sg   = row.find('select.f-state_group');
             var input_sg    = row.find('.f-state_group input');
             var ctrl_name   = select_sg.length > 0 ? select_sg.attr("name") : input_sg.attr("name");
+            var foundOpt;
+            var selectEl;
+            var selectParent;
+            var savedSelect;
             DOM_stategroups.hide();
             row.find('.f-states').hide();
             var DOM_feedback = jQuery("#canonicalCalculatingSpan").clone();
@@ -504,7 +508,18 @@ Yukon.DeviceDataMonitor = (function () {
             
             var attributeIsUNSELECTED = attr_val == '-1';
             if( ! attributeIsUNSELECTED ) {
-                row.find('.f-attribute option[value="-1"]').remove();
+                foundOpt = row.find('.f-attribute option[value="-1"]');
+                if (0 !== foundOpt.length) {
+                    foundOpt.remove();
+                    // there is a bug in IE9 that causes the option visible to the user to be one
+                    // off from the option that is actually selected after a previous option has
+                    // been removed. MS and SO describe a similar bug that is fixed by removing
+                    // and adding the options to and from the DOM. The following seems to work.
+                    selectEl = row.find('select.f-attribute');
+                    selectParent = selectEl.parent();
+                    savedSelect = selectEl.detach();
+                    savedSelect.appendTo(selectParent);
+                }
             }
         }, // ENDS _update_state_groups_worker
 
