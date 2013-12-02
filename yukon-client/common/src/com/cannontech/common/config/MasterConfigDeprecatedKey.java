@@ -1,7 +1,5 @@
 package com.cannontech.common.config;
 
-import java.util.EnumSet;
-import java.util.Set;
 
 /**
  * Mark unused master.cfg CPARMS deprecated.
@@ -22,8 +20,6 @@ public enum MasterConfigDeprecatedKey {
     LOAD_MANAGEMENT_PORT,
     ;
 
-    private static final Set<MasterConfigDeprecatedKey> enumSet = EnumSet.allOf(MasterConfigDeprecatedKey.class);
-
     /**
      * Returns true if the CPARM key is deprecated
      * 
@@ -31,8 +27,9 @@ public enum MasterConfigDeprecatedKey {
      */
     public static boolean isDeprecated(String keyStr) {
         try {
-            MasterConfigDeprecatedKey key = MasterConfigDeprecatedKey.valueOf(keyStr);
-            return enumSet.contains(key);
+            // If we get a value here we know this keyStr is a deprecated CPARM
+            MasterConfigDeprecatedKey.valueOf(keyStr);
+            return true;
         } catch (IllegalArgumentException e) {
             return false;
         }
