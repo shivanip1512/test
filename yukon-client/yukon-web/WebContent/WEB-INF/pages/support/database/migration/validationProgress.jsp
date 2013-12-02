@@ -32,7 +32,7 @@
 
             <c:choose>
                 <c:when test="${not status.complete}">
-                    jQuery('#validateButton').prop('disable', true);
+                    jQuery('#validateButton').prop('disabled', true);
                 </c:when>
                 <c:otherwise>
                     buttonHasBeenEnabled = true;
@@ -44,7 +44,7 @@
         function enableMigrationImportValidateButton() {
             try {
                 if (!buttonHasBeenEnabled) {
-                    jQuery('#validateButton').prop('disable', false);
+                    jQuery('#validateButton').prop('disabled', false);
                 }
                 // may not be rendered yet
             } catch(e){}
