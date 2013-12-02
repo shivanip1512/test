@@ -13,7 +13,7 @@ public interface SiteSearchService {
      * {@link #search(String, int, int, YukonUserContext)}, startIndex + count must be no greater
      * than this value.)
      */
-    final static int MAX_SEARCH_ITEMS = 1000;
+    int MAX_SEARCH_ITEMS = 1000;
 
     /**
      * This should be called on any search string before using it in a search to clean the string of any special
@@ -30,6 +30,7 @@ public interface SiteSearchService {
      * startIndex + count must be no greater than {@link #MAX_SEARCH_ITEMS}
      */
     SearchResults<Page> search(String searchStr, int startIndex, int count, YukonUserContext userContext);
+    SearchResults<Page> oldSearch(String searchStr, int startIndex, int count, YukonUserContext userContext);
 
     /**
      * Search for a list of search strings.  The incoming searchStr will be sanitized using
@@ -37,4 +38,5 @@ public interface SiteSearchService {
      * {@link #search(String, int, int, YukonUserContext)}.
      */
     List<String> autocomplete(String searchStr, YukonUserContext userContext);
+    List<String> oldAutocomplete(String searchStr, YukonUserContext userContext);
 }

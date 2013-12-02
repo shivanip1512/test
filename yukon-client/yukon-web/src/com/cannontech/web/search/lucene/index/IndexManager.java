@@ -37,5 +37,8 @@ public interface IndexManager {
 
     void shutdown();
 
+    /**
+     * Get an instance of {@link SearchTemplate} which can be used to query this index.
+     */
     SearchTemplate getSearchTemplate();
 }

@@ -234,28 +234,37 @@ public abstract class AbstractIndexManager implements IndexManager, DBChangeList
         dataSource.addDBChangeListener(this);
     }
 
-    @Override
-    public SearchTemplate getSearchTemplate(){
-        return new SearchTemplate(){
-            @Override
-            public <R> R doCallBackSearch(Query query, TopDocsCallbackHandler<R> handler) throws IOException {
-                // Make sure there are currently no issues with the index
-                checkForException();
+    private class SearchTemplateImpl implements SearchTemplate {
+        @Override
+        public <R> R doCallBackSearch(Query query, TopDocsCallbackHandler<R> handler, final int maxResults)
+                throws IOException {
+            // Make sure there are currently no issues with the index
+            checkForException();
 
-                // Make sure the index is not currently being built
-                if (isBuilding) {
-                    throw new RuntimeException("The index is currently being built. Please try again later.");
-                }
-                
-                // Make sure we don't search while someone is updating the index
-                final IndexSearcher indexSearcher = new IndexSearcher(indexLocation);
-                try {
-                    TopDocs topDocs = indexSearcher.search(query, Integer.MAX_VALUE);
-                    return handler.processHits(topDocs, indexSearcher);
-                } finally {
-                    indexSearcher.close();
-                }
-            }};
+            // Make sure the index is not currently being built
+            if (isBuilding) {
+                throw new RuntimeException("The index is currently being built. Please try again later.");
+            }
+
+            // Make sure we don't search while someone is updating the index
+            final IndexSearcher indexSearcher = new IndexSearcher(indexLocation);
+            try {
+                TopDocs topDocs = indexSearcher.search(query, maxResults);
+                return handler.processHits(topDocs, indexSearcher);
+            } finally {
+                indexSearcher.close();
+            }
+        }
+
+        @Override
+        public <R> R doCallBackSearch(Query query, TopDocsCallbackHandler<R> handler) throws IOException {
+            return doCallBackSearch(query, handler, Integer.MAX_VALUE);
+        }
+    }
+
+    @Override
+    public SearchTemplate getSearchTemplate() {
+        return new SearchTemplateImpl();
     }
 
     @Override
@@ -323,10 +332,16 @@ public abstract class AbstractIndexManager implements IndexManager, DBChangeList
         }
     }
 
-    public void processSingleInfoWithWriter(IndexWriter writer, IndexUpdateInfo info) throws CorruptIndexException, IOException {
-        writer.deleteDocuments(info.getDeleteTerm());
+    private void processSingleInfoWithWriter(IndexWriter writer, IndexUpdateInfo info)
+            throws CorruptIndexException, IOException {
+        if (info.deleteTerm != null) {
+            writer.deleteDocuments(info.deleteTerm);
+        }
+        if (info.deleteQuery != null) {
+            writer.deleteDocuments(info.deleteQuery);
+        }
 
-        List<Document> docList = info.getDocList();
+        List<Document> docList = info.docList;
         if (docList != null) {
             for (Document doc : docList) {
                 writer.addDocument(doc);
@@ -454,23 +469,39 @@ public abstract class AbstractIndexManager implements IndexManager, DBChangeList
     public static final class IndexUpdateInfo {
         private final List<Document> docList;
         private final Term deleteTerm;
+        private final Query deleteQuery;
 
         /**
          * @param docs - List of documents to be written into the index
-         * @param term - Term to be used to remove any deleted or old documents from
+         * @param deleteTerm - Term to be used to remove any deleted or old documents from
          *            the index before inserting updated documents.
          */
         public IndexUpdateInfo(List<Document> docList, Term deleteTerm) {
             this.docList = docList;
             this.deleteTerm = deleteTerm;
+            this.deleteQuery = null;
         }
 
-        public Term getDeleteTerm() {
-            return deleteTerm;
+        /**
+         * @param docs - List of documents to be written into the index
+         * @param deleteQuery - query to be used to remove any deleted or old documents from
+         *            the index before inserting updated documents.
+         */
+        public IndexUpdateInfo(List<Document> docList, Query deleteQuery) {
+            this.docList = docList;
+            this.deleteTerm = null;
+            this.deleteQuery = deleteQuery;
         }
+    }
 
-        public List<Document> getDocList() {
-            return docList;
+    /**
+     * Can be used by base classes to process a set of updates immediately.  This is for  
+     */
+    protected void indexImmediately(IndexUpdateInfo indexUpdateInfo) {
+        try (IndexWriter indexWriter = new IndexWriter(indexLocation, getIndexWriterConfig())) {
+            processSingleInfoWithWriter(indexWriter, indexUpdateInfo);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to index immediately.");
         }
     }
 

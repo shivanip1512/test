@@ -7,8 +7,13 @@ import org.apache.lucene.search.Query;
 import com.cannontech.web.search.lucene.TopDocsCallbackHandler;
 
 public interface SearchTemplate {
+    /**
+     * Execute the specified Lucene query against the index, returning up to maxResults documents.
+     */
+    <R> R doCallBackSearch(Query query, TopDocsCallbackHandler<R> handler, int maxResults) throws IOException;
 
-    public <R> R doCallBackSearch(final Query query,
-            final TopDocsCallbackHandler<R> handler) throws IOException;
-
+    /**
+     * Execute the specified Lucene query against the index with no limit on the number of documents returned.
+     */
+    <R> R doCallBackSearch(Query query, TopDocsCallbackHandler<R> handler) throws IOException;
 }

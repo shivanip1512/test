@@ -2,6 +2,7 @@ package com.cannontech.web.common.search;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.codehaus.jackson.node.POJONode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -21,11 +23,13 @@ import com.cannontech.web.common.search.service.SiteSearchService;
 
 @Controller
 public class SiteSearchController {
+    private static final Logger log = YukonLogManager.getLogger(SiteSearchController.class);
+
     private final static String baseKey = "yukon.web.modules.tools.search.";
 
     @Autowired private SiteSearchService siteSearchService;
 
-    @RequestMapping(value="/autocomplete.json", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value="/search/autocomplete.json", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody POJONode autoComplete(@RequestParam(value="q") String searchString,
             YukonUserContext userContext) {
         List<String> results = siteSearchService.autocomplete(searchString, userContext);
@@ -44,6 +48,7 @@ public class SiteSearchController {
         int startIndex = (page - 1) * itemsPerPage;
         searchString = siteSearchService.sanitizeSearchStr(searchString);
 
+        SearchResults<Page> oldResults = SearchResults.emptyResult();
         SearchResults<Page> results = SearchResults.emptyResult();
         if (startIndex + itemsPerPage > SiteSearchService.MAX_SEARCH_ITEMS) {
             model.addAttribute("error", new YukonMessageSourceResolvable(baseKey + "queryOutOfRange", startIndex,
@@ -51,20 +56,26 @@ public class SiteSearchController {
         } else if (searchString.length() == 0) {
             model.addAttribute("error", new YukonMessageSourceResolvable(baseKey + "emptySearch"));
         } else {
+            log.debug("searching the old way");
+            oldResults = siteSearchService.oldSearch(searchString, startIndex, itemsPerPage, userContext);
+            log.debug("searching the new way");
             results = siteSearchService.search(searchString, startIndex, itemsPerPage, userContext);
+            log.debug("done searching");
 
             // Forward to the single result's URL
-            if (results.getResultCount() == 1) {
-                String url = results.getResultList().get(0).getPath();
+            /* disable for now:
+            if (oldResults.getResultCount() == 1) {
+                String url = oldResults.getResultList().get(0).getPath();
                 return "redirect:" + url;
             }
+            */
         }
 
         model.addAttribute("searchString", searchString);
         model.addAttribute("itemsPerPage", itemsPerPage);
+        model.addAttribute("oldResults", oldResults);
         model.addAttribute("results", results);
 
         return "search.jsp";
     }
-
 }

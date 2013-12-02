@@ -17,4 +17,5 @@
     <bean class="com.cannontech.web.admin.theme.dao.ThemeDaoImpl"/>
     <bean class="com.cannontech.web.common.resources.ThemeableResourceCache"/>
 
+    <bean class="com.cannontech.web.support.SiteMapHelper"/>
 </beans>
