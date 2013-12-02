@@ -5,7 +5,11 @@
 
 
 <h1>iframe clickjacking test</h1>
-    <p><em>Should</em> display Yukon website</p>
+    <p>
+        May or may not display Yukon website, depending on whether or not domain is "localhost" or not. If the domain is "localhost", the
+        website should appear. If not, a blank iframe should appear in Firefox or Chrome, and a warning should appear in IE. Testing this
+        assumes you can run your server on your local machine.
+    </p>
     <script>
         jQuery(function () {
             // YUK-12513 Click Jacking Vulnerability - Frame Breaking
