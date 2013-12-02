@@ -83,24 +83,29 @@ public class MasterConfigMap implements ConfigurationSource {
                     LogHelper.warn(log, "Line %d: Duplicate key found while reading Master Config file: %s", lineNum, key);
                 }
 
-                if (MasterConfigStringKeysEnum.isEncryptedKey(key) 
-                        && !MasterConfigCryptoUtils.isEncrypted(value)) {
-                    // Found a value that needs to be encrypted
+                if (MasterConfigDeprecatedKey.isDeprecated(key)) {
                     updateFile = true;
-                    String valueEncrypted = MasterConfigCryptoUtils.encryptValue(value);
-                    tempWriter.append(key).append(" : ").append(valueEncrypted).append(" ").append(comment);
-                    configMap.put(key, valueEncrypted);
-                    log.info("Line " + lineNum + ": Value for " + key + " encrypted and rewritten in Master Config file."); // Do not log value here for security
+                    tempWriter.append("#(DEPRECATED) ").append(line);
+                    LogHelper.warn(log, "Line %d: Deprecated key found while reading Master Config file: %s. Marking as disabled in master.cfg", lineNum, key);
                 } else {
-                    // Either plain-text data, or data already encrypted and safe to place into memory
-                    configMap.put(key, value);
-                    tempWriter.append(line);
-                }
-
-                if (MasterConfigStringKeysEnum.isEncryptedKey(key)) {
-                    LogHelper.debug(log, "Found line match: %s [encrypted value]", key); // Do no log entire line here because it contains sensitive data
-                } else {
-                    LogHelper.debug(log, "Found line match: %s", line);
+                    if (MasterConfigStringKeysEnum.isEncryptedKey(key) 
+                            && !MasterConfigCryptoUtils.isEncrypted(value)) {
+                        // Found a value that needs to be encrypted
+                        updateFile = true;
+                        String valueEncrypted = MasterConfigCryptoUtils.encryptValue(value);
+                        tempWriter.append(key).append(" : ").append(valueEncrypted).append(" ").append(comment);
+                        configMap.put(key, valueEncrypted);
+                        log.info("Line " + lineNum + ": Value for " + key + " encrypted and rewritten in Master Config file."); // Do not log value here for security
+                    } else {
+                        // Either plain-text data, or data already encrypted and safe to place into memory
+                        configMap.put(key, value);
+                        tempWriter.append(line);
+                    }
+                    if (MasterConfigStringKeysEnum.isEncryptedKey(key)) {
+                        LogHelper.debug(log, "Found line match: %s [encrypted value]", key); // Do no log entire line here because it contains sensitive data
+                    } else {
+                        LogHelper.debug(log, "Found line match: %s", line);
+                    }
                 }
             } else {
                 // Line with no "key : value" pair
