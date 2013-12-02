@@ -41,10 +41,10 @@
         }
     </script>
     
-    <h2>Group Command Processing Result Detail</h2>
-    <br>
+    <h2 class="stacked">Group Command Processing Result Detail</h2>
+
   
-    <tags:sectionContainer id="commanderResultsContainer" hideEnabled="false">
+    <tags:sectionContainer id="commanderResultsContainer">
     
         <jsp:attribute name="title">
             Executing '${result.command}' on <cti:msg key="${result.deviceCollection.description}"/>
