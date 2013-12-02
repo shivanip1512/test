@@ -5,7 +5,8 @@
 <cti:url var="completeHistoryUrl" value="/stars/consumer/controlhistory/completeHistoryView"/>
 
 <cti:standardPage module="consumer" page="controlhistory">
+    <cti:standardMenu />
     <div id="programs">
-		<dr:controlHistorySummary displayableProgramList="${displayablePrograms}" completeHistoryUrl="${completeHistoryUrl}" titleKey="" past="false"/>
-    </div>      
+        <dr:controlHistorySummary displayableProgramList="${displayablePrograms}" completeHistoryUrl="${completeHistoryUrl}" titleKey="" past="false"/>
+    </div>
 </cti:standardPage>
