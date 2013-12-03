@@ -1142,7 +1142,7 @@
         <property name="objectFormattingService" ref="objectFormattingService"/>
     </bean>
 
-    <bean id="pageNameTagPrototype" class="com.cannontech.web.i18n.PageNameTag"/>
+    <bean id="pageTitleTagPrototype" class="com.cannontech.web.i18n.PageTitleTag"/>
 
     <bean id="csrfTokenTagPrototype" class="com.cannontech.web.taglib.CsrfTokenTag"/>
 

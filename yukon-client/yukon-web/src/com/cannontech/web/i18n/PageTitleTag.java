@@ -13,18 +13,18 @@ import com.cannontech.common.userpage.model.UserPage;
 import com.cannontech.web.common.userpage.service.UserPageService;
 import com.cannontech.web.taglib.YukonTagSupport;
 
-@Configurable(value="pageNameTagPrototype", autowire=Autowire.BY_NAME)
-public class PageNameTag extends YukonTagSupport {
+@Configurable(value="pageTitleTagPrototype", autowire=Autowire.BY_NAME)
+public class PageTitleTag extends YukonTagSupport {
     @Autowired private UserPageService userPageService;
 
     private UserPage userPage;
 
     @Override
     public void doTag() throws JspException, IOException {
-        String pageName = userPageService.getLocalizePageName(userPage, getUserContext());
-        pageName = HtmlUtils.htmlEscape(pageName);
+        String pageTitle = userPageService.getLocalizePageTitle(userPage, getUserContext());
+        pageTitle = HtmlUtils.htmlEscape(pageTitle);
 
-        getJspContext().getOut().print(pageName);
+        getJspContext().getOut().print(pageTitle);
     }
 
     public void setUserPage(UserPage userPage) {

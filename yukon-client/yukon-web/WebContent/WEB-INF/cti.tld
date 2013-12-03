@@ -1304,10 +1304,10 @@
 
     <tag>
         <name>pageName</name>
-        <tag-class>com.cannontech.web.i18n.PageNameTag</tag-class>
+        <tag-class>com.cannontech.web.i18n.PageTitleTag</tag-class>
         <body-content>empty</body-content>
         <description>
-            Given a UserPage object, display the localized name of it.
+            Given a UserPage object, display the localized title of it.
         </description>
         <attribute>
             <name>userPage</name> <!-- renamed to works as 'message' or 'code' -->

@@ -216,7 +216,7 @@ public class SiteSearchServiceImpl implements SiteSearchService {
                             messageSourceResolver.getMessageSourceAccessor(userContext);
                     return messageSourceAccessor.getMessage(page.getSiteMapPage().getFormatKey());
                 }
-                return userPageService.getLocalizePageName(page.getUserPage(),
+                return userPageService.getLocalizePageTitle(page.getUserPage(),
                     userContext).toLowerCase(userContext.getLocale());
             }
         };

@@ -222,7 +222,7 @@ public class UserPageDaoImpl implements UserPageDao {
         public void extractValues(SqlParameterChildSink p, UserPage page) {
             p.addValue("UserId", page.getUserId());
             p.addValue("PagePath", page.getPath());
-            p.addValue("PageName", page.getName());
+            p.addValue("PageName", page.getTitle());
             p.addValue("Module", page.getModule());
             p.addValue("Favorite", page.isFavorite());
             p.addValue("LastAccess", page.getLastAccess());

@@ -18,16 +18,16 @@ public class UserPageServiceImpl implements UserPageService {
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
     @Override
-    public String getLocalizePageName(UserPage userPage, YukonUserContext userContext) {
+    public String getLocalizePageTitle(UserPage userPage, YukonUserContext userContext) {
         Module moduleBase = moduleBuilder.getModule(userPage.getModule().getName());
 
-        String pageName = null;
-        PageInfo pageInfo = moduleBase.getPageInfo(userPage.getName());
+        String pageTitle = null;
+        PageInfo pageInfo = moduleBase.getPageInfo(userPage.getTitle());
         if (pageInfo == null) {
             // This shouldn't _normally_ happen but can in a development environment when switching workspaces
             // where one workspace has a new page the other doesn't.  (The new page will be in the user history
             // and trigger this.)
-            pageName = "unknown page";
+            pageTitle = "unknown page";
         } else {
             PageContext pageContext = new PageContext();
             pageContext.pageInfo = pageInfo;
@@ -35,10 +35,10 @@ public class UserPageServiceImpl implements UserPageService {
 
             pageDetailProducer.fillInPageLabels(pageContext, messageSourceResolver.getMessageSourceAccessor(userContext));
 
-            pageName = pageDetailProducer.getPagePart("pageHeading", pageContext,
+            pageTitle = pageDetailProducer.getPagePart("pageTitle", pageContext,
                 messageSourceResolver.getMessageSourceAccessor(userContext));
         }
 
-        return pageName;
+        return pageTitle;
     }
 }

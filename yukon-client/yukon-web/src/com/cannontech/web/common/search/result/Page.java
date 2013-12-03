@@ -52,7 +52,7 @@ public final class Page {
             return new YukonMessageSourceResolvable(siteMapPage.getFormatKey());
         }
         return new YukonMessageSourceResolvable("yukon.web.modules.search." + userPage.getModule() + "."
-                + userPage.getName() + ".summary", summaryArgs);
+                + userPage.getTitle() + ".summary", summaryArgs);
     }
 
     public Object[] getSummaryArgs() {

@@ -10,7 +10,7 @@ public final class UserPage {
     private final int userId;
     private final String path;
     private final SiteModule module;
-    private final String name;
+    private final String title;
     private final List<String> arguments;
     private final boolean favorite;
     private final Instant lastAccess;
@@ -23,14 +23,14 @@ public final class UserPage {
         this(userId, path, category, module, name, arguments, new Instant(), null);
     }
 
-    public UserPage(int userId, String path, boolean isFavorite, SiteModule module, String name,
+    public UserPage(int userId, String path, boolean isFavorite, SiteModule module, String title,
             List<String> arguments, Instant lastAccess, Integer id) {
         this.id = id;
         this.userId = userId;
         this.path = path;
         this.favorite = isFavorite;
         this.module = module;
-        this.name = name;
+        this.title = title;
         this.arguments = arguments;
         this.lastAccess = lastAccess;
     }
@@ -51,8 +51,8 @@ public final class UserPage {
         return module;
     }
 
-    public String getName() {
-        return name;
+    public String getTitle() {
+        return title;
     }
 
     public List<String> getArguments() {
@@ -71,27 +71,27 @@ public final class UserPage {
         if (id == newId) {
             return this;
         }
-        return new UserPage(userId, path, favorite, module, name, arguments, lastAccess, newId);
+        return new UserPage(userId, path, favorite, module, title, arguments, lastAccess, newId);
     }
 
     public UserPage withFavorite(boolean newFavorite) {
         if (favorite == newFavorite) {
             return this;
         }
-        return new UserPage(userId, path, newFavorite, module, name, arguments, lastAccess, id);
+        return new UserPage(userId, path, newFavorite, module, title, arguments, lastAccess, id);
     }
 
     public UserPage withLastAccess(Instant newLastAccess) {
         if (lastAccess == newLastAccess) {
             return this;
         }
-        return new UserPage(userId, path, favorite, module, name, arguments, newLastAccess, id);
+        return new UserPage(userId, path, favorite, module, title, arguments, newLastAccess, id);
     }
 
     public UserPage withArguments(List<String> newArguments) {
         if (arguments == newArguments) {
             return this;
         }
-        return new UserPage(userId, path, favorite, module, name, newArguments, lastAccess, id);
+        return new UserPage(userId, path, favorite, module, title, newArguments, lastAccess, id);
     }
 }
