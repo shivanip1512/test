@@ -97,7 +97,7 @@ bool CtiClientConnection::establishConnection()
 
                     // create a temporary producer to initiate talk with the server`s listener connection
                     handshakeProducer.reset( new QueueProducer(*_sessionOut, _sessionOut->createQueue( _serverQueueName )));
-                    handshakeProducer->setTimeToLive( timeToLiveMillis );
+                    handshakeProducer->setTimeToLiveMillis( timeToLiveMillis );
 
                     // Create consumer for inbound traffic
                     _consumer.reset( createTempQueueConsumer( *_sessionIn ));

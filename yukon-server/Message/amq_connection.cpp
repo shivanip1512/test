@@ -557,7 +557,7 @@ ActiveMQ::QueueProducer &ActiveMQConnectionManager::getQueueProducer(cms::Sessio
         dout << CtiTime() << " ActiveMQ CMS producer established (" << queueName << ")" << std::endl;
     }
 
-    queueProducer->setTimeToLive(DefaultTimeToLive);
+    queueProducer->setTimeToLiveMillis(DefaultTimeToLiveMillis);
 
     return *(_producers.insert(queueName, queueProducer).first->second);
 }

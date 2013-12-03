@@ -169,7 +169,7 @@ public:
 
     virtual ~ManagedProducer ();
 
-    void setTimeToLive ( long long time );
+    void setTimeToLiveMillis ( long long time );
 
     void send (cms::Message *message);
 };

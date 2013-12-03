@@ -224,7 +224,7 @@ ManagedProducer::~ManagedProducer()
 {
 }
 
-void ManagedProducer::setTimeToLive( long long time )
+void ManagedProducer::setTimeToLiveMillis( long long time )
 {
    _producer->setTimeToLive( time );
 }

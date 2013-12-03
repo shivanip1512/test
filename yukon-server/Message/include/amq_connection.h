@@ -168,7 +168,7 @@ private:
 
     enum
     {
-        DefaultTimeToLive = 3600
+        DefaultTimeToLiveMillis = 3600 * 1000  //  1 hour
     };
 
     bool verifyConnectionObjects();
