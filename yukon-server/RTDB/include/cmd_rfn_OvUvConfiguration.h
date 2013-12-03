@@ -38,11 +38,16 @@ protected:
 
 public:
 
+    //  defined in http://portal.cooperpowereas.net/sites/Ops/MarylandEngineeringGroup/Shared%20Documents/PSGT-Firmware/Features/Centron/Design/EventAndAlarmMasterList.doc
     enum MeterID
     {
+        //ElsterA3      = 0x01,
         LGFocusAL       = 0x02,
         LGFocusAX       = 0x03,
         CentronC2SX     = 0x04,
+        //Relays        = 0x05
+        CentronC1SX     = 0x06,
+        //ItronSentinel = 0x07
         Unspecified     = 0xff
     };
 

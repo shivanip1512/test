@@ -388,6 +388,31 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_OvUvConfiguration_Set_Threshold_FocusAL_OverV
 }
 
 
+BOOST_AUTO_TEST_CASE( test_cmd_rfn_OvUvConfiguration_Set_Threshold_CentronC1SX_OverVoltage )
+{
+    RfnSetOvUvSetThresholdCommand  command( RfnSetOvUvSetThresholdCommand::CentronC1SX,
+                                            RfnSetOvUvSetThresholdCommand::OverVoltage,
+                                            124.8 );
+
+    // execute
+    {
+        const std::vector< unsigned char > exp = boost::assign::list_of
+            ( 0x25 )
+            ( 0x06 )
+            ( 0x07 )( 0xe6 )
+            ( 0x00 )( 0x01 )( 0xe7 )( 0x80 )
+            ( 0x10 )
+            ( 0x80 )( 0x00 )
+            ( 0x01 )( 0xc0 );
+
+        RfnCommand::RfnRequestPayload rcv = command.executeCommand( execute_time );
+
+        BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
+                                       exp.begin() , exp.end() );
+    }
+}
+
+
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_OvUvConfiguration_Get_Config_FocusAL_OverVoltage )
 {
     RfnGetOvUvAlarmConfigurationCommand  command( RfnSetOvUvSetThresholdCommand::LGFocusAL,

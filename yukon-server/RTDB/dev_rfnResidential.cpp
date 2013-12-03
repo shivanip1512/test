@@ -1240,6 +1240,10 @@ int RfnResidentialDevice::executePutConfigOvUv( CtiRequestMsg    * pReq,
     switch ( getType() )
     {
         case TYPE_RFN410CL:
+        {
+                meterID = Commands::RfnOvUvConfigurationCommand::CentronC1SX;
+                break;
+        }
         case TYPE_RFN420CL:
         case TYPE_RFN420CD:
         {
