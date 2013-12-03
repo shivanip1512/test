@@ -91,12 +91,16 @@ RfnCommandResult RfnDemandFreezeCommand::decodeResponseHeader( const CtiTime now
 
     result.description += "\nAdditional Status: " + *additionalStatus  + " (ASC: " + CtiNumStr(response[2]).xhex(2) + ", ASCQ: " +  CtiNumStr(response[3]).xhex(2) + ")";
 
-    // check for errors ( status != SUCCESS or additional status != SCHEDULED FOR NEXT RECORD INTERVAL )
-
-    validate( Condition( response[1] == 0x00 && response[2] == 0x04 && response[3] == 0x00, ErrorInvalidData )
-            << result.description );
+    validateStatus( response[1], response[2], response[3], result.description );
 
     return result;
+}
+
+
+void RfnDemandFreezeCommand::validateStatus(const unsigned char status, const unsigned char asc, const unsigned char ascq, const std::string &description )
+{
+    validate( Condition( status == 0x00 && asc == 0x00 && ascq == 0x00, ErrorInvalidData )
+            << description );
 }
 
 
@@ -149,6 +153,13 @@ RfnImmediateDemandFreezeCommand::RfnImmediateDemandFreezeCommand()
     :   RfnDemandFreezeCommand( Operation_ImmediateDemandFreeze )
 {
 
+}
+
+
+void RfnImmediateDemandFreezeCommand::validateStatus( const unsigned char status, const unsigned char asc, const unsigned char ascq, const std::string &description )
+{
+    validate( Condition( status == 0x00 && asc == 0x04 && ascq == 0x00, ErrorInvalidData )
+            << description );
 }
 
 

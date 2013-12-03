@@ -200,12 +200,12 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandFreeze_ImmediateFreeze )
     // decode -- success response
     {
         const std::vector< unsigned char > response = boost::assign::list_of
-            ( 0x56 )( 0x00 )( 0x00 )( 0x00 )( 0x00 );
+            ( 0x56 )( 0x00 )( 0x04 )( 0x00 )( 0x00 );
 
         RfnCommandResult rcv = command.decodeCommand( execute_time, response );
 
         BOOST_CHECK_EQUAL( rcv.description, "Status: Success (0x00)"
-                                            "\nAdditional Status: NO ADDITIONAL STATUS (ASC: 0x00, ASCQ: 0x00)" );
+                                            "\nAdditional Status: SCHEDULED FOR NEXT RECORD INTERVAL (ASC: 0x04, ASCQ: 0x00)" );
     }
 }
 

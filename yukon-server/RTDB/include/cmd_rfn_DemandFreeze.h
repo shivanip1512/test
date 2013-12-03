@@ -103,6 +103,11 @@ protected:
     RfnCommandResult decodeResponseHeader( const CtiTime now,
                                            const RfnResponsePayload & response );
 
+    virtual void validateStatus( const unsigned char status,
+                                 const unsigned char asc,
+                                 const unsigned char ascq,
+                                 const std::string &description );
+
 public:
 
     virtual RfnCommandResult decodeCommand( const CtiTime now,
@@ -139,6 +144,11 @@ class IM_EX_DEVDB RfnImmediateDemandFreezeCommand : public RfnDemandFreezeComman
 public:
 
     RfnImmediateDemandFreezeCommand();
+
+    virtual void validateStatus( const unsigned char status,
+                                 const unsigned char asc,
+                                 const unsigned char ascq,
+                                 const std::string &description );
 
     virtual RfnCommandResult decodeCommand( const CtiTime now,
                                             const RfnResponsePayload & response );
