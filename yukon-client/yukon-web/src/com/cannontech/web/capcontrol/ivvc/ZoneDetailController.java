@@ -2,7 +2,9 @@ package com.cannontech.web.capcontrol.ivvc;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -56,6 +58,8 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.capcontrol.VoltageRegulatorPointMapping;
 import com.cannontech.database.data.lite.LitePointUnit;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -106,6 +110,7 @@ public class ZoneDetailController {
     @Autowired private ZoneDao zoneDao;
     @Autowired private FlotChartService flotChartService;
     @Autowired private CapControlWebUtilsService capControlWebUtilsService;
+    @Autowired private DateFormattingService dateFormattingService;
 
     public static class ZoneVoltageDeltas {
         private List<CapBankPointDelta> pointDeltas = LazyList
@@ -125,7 +130,7 @@ public class ZoneDetailController {
         }
     }
 
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping
     public String detail(ModelMap model, HttpServletRequest request, YukonUserContext context,
                          int zoneId, Boolean isSpecialArea) {
         setupDetails(model, request, context, zoneId, isSpecialArea);
@@ -137,7 +142,7 @@ public class ZoneDetailController {
         return "ivvc/zoneDetail.jsp";
     }
 
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping
     public String voltagePoints(ModelMap model, HttpServletRequest request,
                                 YukonUserContext context, int zoneId, Boolean isSpecialArea) {
         List<VoltageLimitedDeviceInfo> infos = ccMonitorBankListDao.getDeviceInfoByZoneId(zoneId);
@@ -146,7 +151,7 @@ public class ZoneDetailController {
         return "ivvc/voltagePointsEdit.jsp";
     }
     
-    @RequestMapping(method = RequestMethod.POST)
+    @RequestMapping
     public String updateVoltagePoints(@ModelAttribute ZoneVoltagePointsHolder zoneVoltagePointsHolder,
                                       BindingResult bindingResult,
                                       ModelMap model, YukonUserContext context, int zoneId,
@@ -204,7 +209,7 @@ public class ZoneDetailController {
         model.addAttribute("strategy", strategyLimitsHolder.getStrategy());
     }
 
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping
     public String voltageDeltas(ModelMap model, HttpServletRequest request,
                                 YukonUserContext context, int zoneId, Boolean isSpecialArea) throws ServletRequestBindingException {
         setupDeltas(model, request, zoneId);
@@ -216,7 +221,7 @@ public class ZoneDetailController {
         return "ivvc/zoneVoltageDeltas.jsp";
     }
     
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping
     public String voltageDeltasTable(ModelMap model, HttpServletRequest request,
             YukonUserContext context, int zoneId, Boolean isSpecialArea) throws ServletRequestBindingException {
         setupDeltas(model, request, zoneId);
@@ -227,7 +232,7 @@ public class ZoneDetailController {
         return "ivvc/zoneVoltageDeltasTable.jsp";
     }
 
-    @RequestMapping(method = RequestMethod.POST)
+    @RequestMapping
     public String deltaUpdate(@ModelAttribute ZoneVoltageDeltas zoneVoltageDeltas,
                               BindingResult bindingResult,
                               ModelMap model,
@@ -293,7 +298,7 @@ public class ZoneDetailController {
         return "redirect:/capcontrol/ivvc/zone/voltageDeltas";
     }
     
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping
     public @ResponseBody JSONObject chart(YukonUserContext context, int zoneId) {
         boolean zoneAttributesExist = voltageFlatnessGraphService
                 .zoneHasRequiredRegulatorPointMapping(zoneId,
@@ -414,16 +419,31 @@ public class ZoneDetailController {
         }
         model.addAttribute("mostRecentDateTime", mostRecentDateTime);
     }
-    
+
     @RequestMapping
-    public String getRecentEvents(ModelMap model, YukonUserContext userContext, int zoneId, int subBusId, String mostRecent) {
-        DateTime dt = new DateTime(mostRecent).toDateTime(userContext.getJodaTimeZone());
+    public @ResponseBody Map<String, Object> recentEvents( int zoneId, int subBusId, String mostRecent, YukonUserContext context ) {
+        DateTime dt = new DateTime(mostRecent).toDateTime(context.getJodaTimeZone());
+
         final int rowLimit = 20;
-        List<CcEvent> events = zoneService.getLatestEvents(zoneId, subBusId, rowLimit, dt.toInstant(), null);
-        model.addAttribute("events", events);
-        return "ivvc/recentEvents.jsp";
+        DateTime nextTime = new DateTime();
+        List<CcEvent> events = zoneService.getLatestEvents(zoneId, subBusId, rowLimit, dt.toInstant(), nextTime.toInstant());
+
+        List<Map<String,String>> datas = new ArrayList<>();
+        for (CcEvent event : events) {
+            String formattedTime = dateFormattingService.format(event.getDateTime(), DateFormatEnum.BOTH, context);
+
+            Map<String, String> eventJson = new HashMap<>();
+            eventJson.put("deviceName", event.getDeviceName());
+            eventJson.put("description", event.getText());
+            eventJson.put("formattedTime", formattedTime);
+            datas.add(eventJson);
+        }
+        Map<String, Object> result = new HashMap<>();
+        result.put( nextTime.toString(), datas);
+
+        return result;
     }
-    
+
     private void setupCapBanks(ModelMap model, CapControlCache cache, AbstractZone zoneDto) {
         List<Integer> capBankIdList = zoneService.getCapBankIdsForZoneId(zoneDto.getZoneId());
         List<Integer> unassignedBankIds = zoneService.getUnassignedCapBankIdsForSubBusId(zoneDto.getSubstationBusId());

@@ -13,106 +13,23 @@
     <cti:includeScript link="/JavaScript/simpleDialog.js"/>
     <cti:includeScript link="/JavaScript/dynamicTable.js"/>
     <cti:includeScript link="/JavaScript/picker.js" />
+    <cti:includeScript link="/JavaScript/yukon.ivvc.zone.js" />
 
     <%@include file="/capcontrol/capcontrolHeader.jspf"%>
     <cti:includeCss link="/WebConfig/yukon/styles/da/ivvc.css"/>
 
-    <cti:msg2 key="yukon.web.modules.capcontrol.ivvc.zoneWizard.editor.title" var="zoneWizardTitle"/>
-
     <!-- Zone Wizard Dialog -->
     <tags:simpleDialog id="zoneWizardPopup" title=""/>
 
-    <script type="text/javascript">
-
-        function setRedBulletForPoint(pointId) {
-            return function(data) {
-                
-                var redBulletSpans = jQuery('.redBullet_' + pointId),
-                    quality = data.quality;
-                
-                redBulletSpans.each( function (index, redBulletSpan) {
-                    if (quality !== 'Normal') {
-                        jQuery(redBulletSpan).show();
-                    } else {
-                        jQuery(redBulletSpan).hide();
-                    }
-                });
-            };
-        }
-
-        function showZoneWizard(url) {
-            openSimpleDialog('zoneWizardPopup', url, "${zoneWizardTitle}", null, 'get');
-        }
-        
-        jQuery(function() {
-            var recentEventsUpdaterTimeout = setTimeout(updateRecentEvents, ${updaterDelay});
-            if (${hasControlRole}) {
-                jQuery('tr[id^="tr_cap"]').each(function (index, row) {
-                    var bankId = jQuery(row)[0].id.split('_')[2],
-                        bankName,
-                        bankState;
-                    // Add menus
-                    bankName = jQuery(row).find('button[id^="bankName"]')[0];
-                    jQuery(bankName).click( function(event) {
-                        Yukon.CapControl.getCommandMenu(bankId, event);
-                        return false;
-                    });
-
-                    bankState = jQuery(row).find('a[id^="capbankState"]');
-                    jQuery(bankState).click( function(event) {
-                        Yukon.CapControl.getMenuFromURL('/capcontrol/menu/capBankState?id=' + encodeURIComponent(bankId), event);
-                        return false;
-                    });
-                });
-            }
-        });
-        
-        function updateRecentEvents() {
-            var params = {
-                'zoneId': ${zoneId},
-                'subBusId': ${subBusId},
-                'mostRecent': jQuery('#mostRecentDateTime').value
-            };
-            jQuery.ajax({
-                url: 'getRecentEvents',
-                method: 'GET', 
-                data: params
-            }).done( function (data, textStatus, jqXHR) {
-                    var dummyHolder = document.createElement('div'),
-                        rows,
-                        i,
-                        topRow;
-                    jQuery(dummyHolder).html(data);
-                    rows = jQuery(dummyHolder).find('tr');
-                    if (typeof rows[0] !== 'undefined') {
-                        // assign our hidden td field to mostRecentDateTime for use in future calls
-                        jQuery('#mostRecentDateTime').val(jQuery(rows[0]).find('td input[type="hidden"]')[0].value);
-                    }
-                    for (i = rows.length-1; i >= 0 ; i -= 1) {
-                        topRow = jQuery('#recentEventsHeaderRow').nextAll()[0];
-                        if (jQuery(topRow).hasClass('tableCell')) {
-                            jQuery(rows[i]).addClass('altTableCell');
-                        } else {
-                            jQuery(rows[i]).addClass('tableCell');
-                        }
-                        jQuery('#recentEventsHeaderRow').after(rows[i]);
-                        flashYellow(rows[i]);
-                    }
-                    // Keep table size <= 20 rows
-                    jQuery('#recentEventsTable tr:gt(21)').each(function(index, tr){
-                        tr.remove();
-                    });
-                     recentEventsUpdaterTimeout = setTimeout(updateRecentEvents, ${updaterDelay});
-            });
-        }
-        
-        jQuery(document).on('click', 'button.commandButton', function(event) {
-            var button = jQuery(event.target).closest('button'),
-                cmdId = button.nextAll('input.cmdId')[0].value,
-                paoId = button.nextAll('input.paoId')[0].value;
-            doItemCommand(paoId, cmdId, event);
-        });
-    </script>
+<script type="text/javascript">
+    jQuery( function() {
+        Yukon.Ivvc.Zone.init( {timeout : '${updaterDelay}',
+                               controlRole : '${hasControlRole}',
+                               subBusId : '${subBusId}',
+                               zoneId: '${zoneId}'
+       });
+    });
+</script>
 
 
 <div class="f-page-additional-actions dn">
@@ -123,9 +40,6 @@
     <cm:dropdownOption key=".otherActions.voltageDeltas" href="${zoneVoltageDeltasUrl}" icon="icon-control-equalizer" />
 </div>
 
-    <cti:url var="zoneEditorUrl" value="/capcontrol/ivvc/wizard/zoneEditor">
-        <cti:param name="zoneId" value="${zoneId}"/>
-    </cti:url>
 
     <div class="column-12-12">
         <div class="column one">
@@ -144,7 +58,11 @@
                         <td><cti:icon icon="icon-blank"/><span class="strong-label-small"><i:inline key=".details.table.zone"/></span></td>
                         <td>
                             <c:if test="${hasEditingRole}">
-                                <a href="javascript:showZoneWizard('${zoneEditorUrl}');">
+                                <cti:msg2 key="yukon.web.modules.capcontrol.ivvc.zoneWizard.editor.title" var="zoneWizardTitle"/>
+                                <cti:url var="zoneEditorUrl" value="/capcontrol/ivvc/wizard/zoneEditor">
+                                    <cti:param name="zoneId" value="${zoneId}"/>
+                                </cti:url>
+                                <a href="javascript:void(0);" class="f-zone-editor" data-editor-url="${zoneEditorUrl}" data-editor-title="${zoneWizardTitle}">
                             </c:if>
                                 ${fn:escapeXml(zoneName)}
                             <c:if test="${hasEditingRole}">
@@ -269,7 +187,7 @@
                                                             <cti:icon icon="icon-bullet-red" nameKey="questionable"/>
                                                         </span>
                                                         <cti:pointValue pointId="${pointId}" format="VALUE"/>
-                                                        <cti:dataUpdaterCallback function="setRedBulletForPoint(${pointId})" 
+                                                        <cti:dataUpdaterCallback function="Yukon.Ivvc.Zone.setRedBulletForPoint(${pointId})" 
                                                             initialize="true" quality="POINT/${pointId}/QUALITY"/>
                                                     </c:when>
                                                     <c:otherwise>
@@ -367,7 +285,7 @@
                                                         <cti:icon icon="icon-bullet-red"/>
                                                     </span>
                                                     <cti:pointValue pointId="${point.pointId}" format="VALUE"/>
-                                                    <cti:dataUpdaterCallback function="setRedBulletForPoint(${point.pointId})" 
+                                                    <cti:dataUpdaterCallback function="Yukon.Ivvc.Zone.setRedBulletForPoint(${point.pointId})" 
                                                         initialize="true" quality="POINT/${point.pointId}/QUALITY"/>
                                                </c:when>
                                                <c:otherwise>
@@ -428,13 +346,17 @@
             </cti:tabbedContentSelector>
             <tags:boxContainer2 nameKey="ivvcEvents" hideEnabled="true" showInitially="true">
                 <input type="hidden" value="${mostRecentDateTime}" id="mostRecentDateTime">
-                <c:choose>
-                    <c:when test="${empty events}">
-                       <span class="empty-list"> <i:inline key=".ivvcEvents.none"/> </span>
-                    </c:when>
-                    <c:otherwise>
                         <div class="historyContainer">
-                            <table id="recentEventsTable" class="compactResultsTable">
+                            <c:if test="${empty events}">
+                                <span class="empty-list"> <i:inline key=".ivvcEvents.none"/> </span>
+                                <c:set var="tableClass" value="dn" />
+                            </c:if>
+                            <div>
+                                <div>
+                                    <span class="notes"
+                                </div>
+                            </div>
+                            <table id="recentEventsTable" class="compactResultsTable ${tableClass}">
                                 <thead>
                                 <tr id="recentEventsHeaderRow">
                                     <th><i:inline key=".ivvcEvents.deviceName"/></th>
@@ -446,17 +368,24 @@
                                 <tbody>
                                    <c:forEach var="ccEvent" items="${events}">
                                         <tr>
-                                            <td>${fn:escapeXml(ccEvent.deviceName)}</td>
-                                            <td>${fn:escapeXml(ccEvent.text)}</td>
-                                            <td class="last"><cti:formatDate value="${ccEvent.dateTime}" type="BOTH"/></td>
+                                            <td class="deviceName">${fn:escapeXml(ccEvent.deviceName)}</td>
+                                            <td class="description">${fn:escapeXml(ccEvent.text)}</td>
+                                            <td class="formattedTime"><cti:formatDate value="${ccEvent.dateTime}" type="BOTH"/></td>
                                         </tr>
                                    </c:forEach>
                                </tbody>
                             </table>
                         </div>
-                    </c:otherwise>
-                </c:choose>
             </tags:boxContainer2>
         </div>
+    </div>
+    <div class="dn" id="templateRowContainer">
+        <table>
+        <tr>
+            <td class="deviceName"></td>
+            <td class="description"></td>
+            <td class="formattedTime"></td>
+        </tr>
+        </table>
     </div>
 </cti:standardPage>
