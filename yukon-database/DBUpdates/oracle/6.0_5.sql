@@ -144,6 +144,12 @@ ALTER TABLE ThermostatEventHistory
          ON DELETE CASCADE;
 /* End YUK-12754 */
 
+/* Start YUK-12789 */
+UPDATE GlobalSetting 
+SET Name = 'JMS_BROKER_HOST'
+WHERE Name = 'DISPATCH_MACHINE';
+/* End YUK-12789 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
