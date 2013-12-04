@@ -22,6 +22,7 @@ import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.constants.LoginController;
+import com.cannontech.common.exception.AuthenticationThrottleException;
 import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.exception.PasswordExpiredException;
@@ -80,12 +81,19 @@ public class IntegrationLoginController {
             loginService.login(request, username, password);
             result.put("result", "success");
             result.put("jsessionId",  request.getSession().getId());
-        } catch (BadAuthenticationException|NotAuthorizedException e) {
+        }catch (PasswordExpiredException e) {
+            logger.info("The password is expired", e);
             result.put("result", "failure");
-            result.put("errorMsg", "Unable to log user in. Reason: " + e.getMessage());
-        } catch (PasswordExpiredException e) {
+            result.put("errorMsg", "The password for "+username+" is expired.  Please login to the web to reset it.");
+        }catch (AuthenticationThrottleException e) {
+            logger.info("Login disabled", e);
             result.put("result", "failure");
-            result.put("errorMsg", "The password is expired");
+            result.put("errorMsg", "Login disabled, please retry after "+e.getThrottleSeconds()+" seconds. If the problem persists, contact your system administrator.");
+        }
+        catch (BadAuthenticationException|NotAuthorizedException e) {
+            logger.info("Invalid username/password", e);
+            result.put("result", "failure");
+            result.put("errorMsg", "Authentication failed for "+username+". Check that CAPS LOCK is off, and try again. If the problem persists, contact your system administrator.");
         }
         return result;
     }
