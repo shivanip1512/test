@@ -1,14 +1,10 @@
 package com.cannontech.clientutils;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.spi.LoggingEvent;
 import org.springframework.aop.framework.ProxyFactory;
-import org.springframework.remoting.httpinvoker.HttpInvokerClientInterceptor;
-import org.springframework.remoting.httpinvoker.SimpleHttpInvokerRequestExecutor;
 
+import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.common.util.CtiUtilities;
 
@@ -22,7 +18,6 @@ import com.cannontech.common.util.CtiUtilities;
  */
 public class YukonRemoteAppender extends AppenderSkeleton {
     private static RemoteLogger remoteLogger;
-    private static String hostName;
     private static String applicationName;
     private static String clientId;
     
@@ -30,8 +25,6 @@ public class YukonRemoteAppender extends AppenderSkeleton {
      *  This appenders name
      */
     private String name;
-    private static String userName;
-    private static String password;
     
     /**
      * @return name for this appender
@@ -60,17 +53,9 @@ public class YukonRemoteAppender extends AppenderSkeleton {
      * and clientID (IP address)
      */
     public static void configureLogger() {
-        try {
-            HttpInvokerClientInterceptor interceptor = new HttpInvokerClientInterceptor();
-            SimpleHttpInvokerRequestExecutor requestExecutor = new SimpleHttpInvokerRequestExecutor();
-            interceptor.setHttpInvokerRequestExecutor(requestExecutor);
-            interceptor.setServiceUrl(hostName + "/remote/RemoteLogger" + "?" + "USERNAME=" + URLEncoder.encode(userName, "UTF-8") + "&PASSWORD=" + URLEncoder.encode(password, "UTF-8") + "&noLoginRedirect=true");
-            remoteLogger = (RemoteLogger) ProxyFactory.getProxy(RemoteLogger.class, interceptor);
-            applicationName = BootstrapUtils.getApplicationName();
-            clientId = CtiUtilities.getIPAddress();
-        } catch (UnsupportedEncodingException e) {
-            remoteLogger = null;
-        }
+        remoteLogger = ProxyFactory.getProxy(RemoteLogger.class, ClientSession.getRemoteSession().getClientInterceptor("/remote/RemoteLogger?noLoginRedirect=true"));
+        applicationName = BootstrapUtils.getApplicationName();
+        clientId = CtiUtilities.getIPAddress(); 
     } 
 
     @Override
@@ -116,27 +101,5 @@ public class YukonRemoteAppender extends AppenderSkeleton {
      */
     public static void setClientId(String clientId) {
         YukonRemoteAppender.clientId = clientId;
-    }
-
-    /**
-     * @return The name of the hosts computer
-     */
-    public static String getHostName() {
-        return hostName;
-    }
-
-    /**
-     * @param hostName The host name of the server
-     */
-    public static void setHostName(String hostName) {
-        YukonRemoteAppender.hostName = hostName;
-    }
-    
-    public static void setUserName(String userName) {
-        YukonRemoteAppender.userName = userName;
-    }
-
-    public static void setPassword(String password) {
-        YukonRemoteAppender.password = password;
-    }
+    }    
 }

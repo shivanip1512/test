@@ -12,14 +12,13 @@ import javax.swing.JOptionPane;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.springframework.jdbc.CannotGetJdbcConnectionException;
-import org.springframework.remoting.RemoteAccessException;
-import org.springframework.remoting.RemoteConnectFailureException;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.ClientApplicationRememberMe;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigHelper;
+import com.cannontech.common.config.RemoteLoginSession;
 import com.cannontech.common.exception.AuthenticationThrottleException;
 import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.common.exception.PasswordExpiredException;
@@ -52,6 +51,7 @@ import com.cannontech.user.YukonUserContext;
 public class ClientSession {
     private LiteYukonUser user;
     private static ClientSession instance;
+    private static RemoteLoginSession remoteSession;
 
 	/**
 	 * Return the user associated with this session.
@@ -236,49 +236,33 @@ public class ClientSession {
         CTILogger.debug("Starting login dialog loop");
         while(collectInfo(p, lp)) {
             try {
-                // test host                
-                MasterConfigHelper.setRemoteHostAndPort(lp.getYukonHost(), lp.getUsername(), lp.getPassword());
-                System.setProperty("jnlp.yukon.pass", lp.getPassword());
-                
-                ConfigurationSource configuration = MasterConfigHelper.getConfiguration();
-                // test the config by getting something that should always exist
-                // (if we don't do this here, it will fail deep inside the context startup)
-                configuration.getRequiredString("DB_USERNAME");
-                
-                PoolManager.setConfigurationSource(configuration);
-                // force load of the application context
-                YukonSpringHook.getContext();
-                
-                //Do not log in the user again
-                LiteYukonUser u = YukonSpringHook.getBean(YukonUserDao.class).findUserByUsername(lp.getUsername());
-                if(u != null) {
-                    CTILogger.debug("Got not null user: " + u);
-                    //score! we found them
+                remoteSession = new RemoteLoginSession(lp.getYukonHost(), lp.getUsername(), lp.getPassword());
+                if(remoteSession.isValid()){
+                    LiteYukonUser u = YukonSpringHook.getBean(YukonUserDao.class).findUserByUsername(lp.getUsername());
+                    CTILogger.debug("user: " + u);
+                    
+                    // test host                                
+                    ConfigurationSource configuration = MasterConfigHelper.getConfiguration();
+                    // test the config by getting something that should always exist
+                    // (if we don't do this here, it will fail deep inside the context startup)
+                    configuration.getRequiredString("DB_USERNAME");
+                    
+                    PoolManager.setConfigurationSource(configuration);
+                    // force load of the application context
+                    YukonSpringHook.getContext();
+                    
                     setSessionInfo(u);
                     ClientApplicationRememberMe rememberMeSetting 
                         = ClientApplicationRememberMe.fromString(System.getProperty("jnlp.yukon.rememberMe", ""));
                     setPreferences(lp.getUsername(), lp.getPassword(), lp.isRememberMe(), rememberMeSetting);
-
+    
                     // setup remote logging
-                    YukonLogManager.initialize(lp.getYukonHost(), lp.getUsername(), lp.getPassword());
+                    YukonLogManager.initialize(remoteSession);
                     return true;
                 } else {
-                    // ooh, thats bad.
-                    String msg =
-                        "Unable to find user '" + lp.getUsername() + "' in database.  This probably a configuration problem.";
-                    displayMessage(p, msg, "Error");
+                    displayMessage(p, remoteSession.getErrorMsg(), "Error");
                     YukonSpringHook.shutdownContext();
                 }
-            } catch (RemoteConnectFailureException e) {
-                CTILogger.warn("Got an exception during login", e);
-                Throwable cause = CtiUtilities.getRootCause(e);
-                String msg = "Unable to access the Yukon Web Application Service \n" + cause.getMessage();
-                displayMessage(p, msg, "Error");
-            } catch (RemoteAccessException e) {
-                CTILogger.warn("Got an exception during login", e);
-                Throwable cause = CtiUtilities.getRootCause(e);
-                String msg = "Unable to login to the Yukon Web Application Service \n" + cause.getMessage();
-                displayMessage(p, msg, "Error");
             } catch (RuntimeException e) {
                 handleOtherExceptions(p, e);
             }
@@ -381,4 +365,14 @@ public class ClientSession {
 		JOptionPane.showMessageDialog(p, msg, title, JOptionPane.WARNING_MESSAGE); 
 	}
 
+    public static RemoteLoginSession getRemoteSession() {
+        return remoteSession;
+    }
+    
+    public static boolean isRemoteSession(){
+        if(getRemoteSession() == null){
+            return false;
+        }
+        return true; 
+    }
 }

@@ -9,7 +9,6 @@
         <property name="interceptors">
             <list>
                 <bean class="com.cannontech.web.login.RemoteRequestInterceptor">
-                    <property name="authenticationService" ref="authenticationService"/>
                     <property name="userChecker">
                         <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
                              <constructor-arg value="DATABASE_EDITOR,TABULAR_DISPLAY_CONSOLE,COMMANDER,APPLICATION_ESUBSTATION_EDITOR,TRENDING" />

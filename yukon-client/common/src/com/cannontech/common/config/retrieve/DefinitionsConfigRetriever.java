@@ -1,16 +1,15 @@
 package com.cannontech.common.config.retrieve;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
+import java.io.InputStream;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
 
 public class DefinitionsConfigRetriever implements ConfigFileRetriever {
@@ -19,37 +18,31 @@ private static final Logger log = YukonLogManager.getLogger(DefinitionsConfigRet
     
     public static final String customFilePath = "file:" + CtiUtilities.getYukonBase()  + "/Server/Config/deviceDefinition.xml";
     
-    @Autowired private ResourceLoader loader;
+    @Autowired private ResourceLoader  loader;
     
     @Override
     public Resource retrieve() {
-        
-        String host = System.getProperty("jnlp.yukon.host");
-        String username = System.getProperty("jnlp.yukon.user");
-        String password = System.getProperty("jnlp.yukon.pass");
-        boolean isJavaWebstart = StringUtils.isNotBlank(host);
-        
-        if (isJavaWebstart) {
-            log.info("Loading pao/device definitons xml for webstart client.");
-            String location = host + "/common/config/deviceDefinition";
+              
+        if (ClientSession.isRemoteSession()) {
+            log.info("Loading deviceDefinition.xml for webstart client.");
             try {
-                location += "?" + "USERNAME=" + URLEncoder.encode(username, "UTF-8") + "&PASSWORD=" + URLEncoder.encode(password, "UTF-8") + "&noLoginRedirect=true";
-                Resource resource = loader.getResource(location);
+                InputStream inputStream = ClientSession.getRemoteSession().getInputStreamFromUrl("/common/config/deviceDefinition");
+                Resource resource = new InputStreamResource(inputStream);
                 
                 /* Check length of content since the resource will never actually be null coming from a spring controller. */
                 long contentLength = resource.contentLength();
                 if (contentLength > 0) {
                     return resource;
                 } else {
+                    log.error("Unable to retrieve deviceDefinition.xml for java webstart client.");
                     return null;
                 }
-            } catch (UnsupportedEncodingException e) {
-                throw new RuntimeException("Unable to encode username and password while retrieving deviceDefinition.xml for java webstart client." , e);
-            } catch (IOException e) {
-                /* resource.contentLength() can throw IOException*/
-                throw new RuntimeException(e);
+         
+            } catch (Exception e) {
+                throw new RuntimeException("Unable to retrieve deviceDefinition.xml for java webstart client." , e);
             }
         } else {
+            log.info("Loading deviceDefinition.xml.");
             return loader.getResource(customFilePath);
         }
     }

@@ -898,6 +898,8 @@
         <url-pattern>/servlet/LoginController</url-pattern>
         <url-pattern>/index.jsp</url-pattern>
         <url-pattern>/operator/Operations.jsp</url-pattern>
+        <url-pattern>/remoteLogin</url-pattern>
+        <url-pattern>/checkConnection</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

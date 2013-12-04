@@ -1,15 +1,15 @@
 package com.cannontech.common.config.retrieve;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
+import java.io.InputStream;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
 
 public class RfnConfigRetriever implements ConfigFileRetriever {
@@ -24,31 +24,26 @@ public class RfnConfigRetriever implements ConfigFileRetriever {
     @Override
     public Resource retrieve() {
         
-        String host = System.getProperty("jnlp.yukon.host");
-        String username = System.getProperty("jnlp.yukon.user");
-        String password = System.getProperty("jnlp.yukon.pass");
-        boolean isJavaWebstart = StringUtils.isNotBlank(host);
-        
-        if (isJavaWebstart) {
+        if (ClientSession.isRemoteSession()) {
             log.info("Loading rfnPointMapping.xml for webstart client.");
-            String location = host + "/common/config/rfn";
             try {
-                location += "?" + "USERNAME=" + URLEncoder.encode(username, "UTF-8") + "&PASSWORD=" + URLEncoder.encode(password, "UTF-8") + "&noLoginRedirect=true";
-                return loader.getResource(location);
-            } catch (UnsupportedEncodingException e) {
-                throw new RuntimeException("Unable to encode username and password while retrieving rfnPointMapping.xml for java webstart client." , e);
+                InputStream inputStream = ClientSession.getRemoteSession().getInputStreamFromUrl("/common/config/rfn");
+                Resource resource = new InputStreamResource(inputStream);
+                return resource;
+            } catch (Exception e) {
+                throw new RuntimeException("Unable to retrieve rfnPointMapping.xml for java webstart client." , e);
             }
         } else {
-            
             /* Check for a custom rfn point mapping file, use if there, otherwise use default */
             Resource customFile = loader.getResource(customFilePath);
             if (customFile.isReadable()) {
+                log.info("Loading custom rfnPointMapping.xml");
                 return customFile;
             } else {
+                log.info("Loading rfnPointMapping.xml");
                 return loader.getResource(defaultPath);
             }
         }
-        
     }
 
     @Override

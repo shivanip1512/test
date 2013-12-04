@@ -7,17 +7,24 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import net.sf.json.JSONObject;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.constants.LoginController;
+import com.cannontech.common.exception.BadAuthenticationException;
+import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.common.exception.PasswordExpiredException;
 import com.cannontech.core.authentication.service.impl.SimpleMessageDigestHasher;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -29,11 +36,11 @@ public class IntegrationLoginController {
     private static final String HEADER_PROPERTY_KEY = "SITE_MINDER_HEADER";
     private static final String SECRET_PROPERTY_KEY = "SITE_MINDER_SECRET";
 
-    private SimpleMessageDigestHasher simpleHasher;
-    private LoginService loginService;
-    private UrlAccessChecker urlAccessChecker;
-    private ConfigurationSource config;
-    private YukonUserDao yukonUserDao;
+    @Autowired private SimpleMessageDigestHasher simpleHasher;
+    @Autowired private LoginService loginService;
+    @Autowired private UrlAccessChecker urlAccessChecker;
+    @Autowired private ConfigurationSource config;
+    @Autowired private YukonUserDao yukonUserDao;
 
     private final Logger logger = YukonLogManager.getLogger(getClass());
 
@@ -65,7 +72,35 @@ public class IntegrationLoginController {
 
         return new ModelAndView("redirect:" + redirect);
     }
-
+    
+    @RequestMapping(value="/remoteLogin", method=RequestMethod.POST)
+    public @ResponseBody JSONObject remoteLogin(HttpServletRequest request, HttpServletResponse response, String username, String password) throws Exception {
+        JSONObject result = new JSONObject();
+        try {
+            loginService.login(request, username, password);
+            result.put("result", "success");
+            result.put("jsessionId",  request.getSession().getId());
+        } catch (BadAuthenticationException|NotAuthorizedException e) {
+            result.put("result", "failure");
+            result.put("errorMsg", "Unable to log user in. Reason: " + e.getMessage());
+        } catch (PasswordExpiredException e) {
+            result.put("result", "failure");
+            result.put("errorMsg", "The password is expired");
+        }
+        return result;
+    }
+    
+    @RequestMapping(value="/checkConnection", method=RequestMethod.POST)
+    public @ResponseBody JSONObject checkConnection(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        JSONObject result = new JSONObject();
+        if(request.getSession(false) == null){
+            result.put("result", "failure");
+        }else{
+            result.put("result", "success");  
+        }
+        return result;
+    }
+    
     private LiteYukonUser validateLogin(HttpServletRequest request, HttpServletResponse response)
         throws IOException, ServletException {
         String headerName = config.getString(HEADER_PROPERTY_KEY, "");
@@ -101,29 +136,5 @@ public class IntegrationLoginController {
                                 "User " + user.getUsername() + " (userid=" + user.getUserID() + ") has logged in from " + request.getRemoteAddr());        
         return user;
     }
-
-    @Autowired
-    public void setSimpleHasher(SimpleMessageDigestHasher simpleHasher) {
-        this.simpleHasher = simpleHasher;
-    }
-
-    @Autowired
-    public void setLoginService(LoginService loginService) {
-        this.loginService = loginService;
-    }
-
-    @Autowired
-    public void setUrlAccessChecker(UrlAccessChecker urlAccessChecker) {
-        this.urlAccessChecker = urlAccessChecker;
-    }
-
-    @Autowired
-    public void setConfig(ConfigurationSource config) {
-        this.config = config;
-    }
-
-    @Autowired
-    public void setYukonUserDao(YukonUserDao yukonUserDao) {
-        this.yukonUserDao = yukonUserDao;
-    }
 }
+   

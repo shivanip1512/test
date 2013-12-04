@@ -11,6 +11,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 
+import com.cannontech.common.config.RemoteLoginSession;
 import com.cannontech.common.util.CtiUtilities;
 
 
@@ -100,10 +101,10 @@ public class YukonLogManager {
      * @param hostname the IP address of the host
      * @param port the connection port number
      */
-    public static synchronized void initialize(String host, String userName, String password) {
+    public static synchronized void initialize(RemoteLoginSession remoteSession) {
         
         //path to the servlet that has the logging config file
-        String path = host + "/servlet/LoggingServlet";
+        String path = remoteSession.getHost() + "/servlet/LoggingServlet";
                 
         //URL to loggingServlet
         URL url;
@@ -125,10 +126,7 @@ public class YukonLogManager {
             getMyLogger().error("Unbable to configure logging, using BasicConfigurator to log to console, bad url. ", e);
             return;
         }
-        // if that worked, setup YukonRemoteAppender
-        YukonRemoteAppender.setHostName(host);
-        YukonRemoteAppender.setUserName(userName);
-        YukonRemoteAppender.setPassword(password);
+        // if that worked, setup YukonRemoteAppender 
         YukonRemoteAppender.configureLogger();
         getMyLogger().info("The remote logging config file was found under: " + path);
     }

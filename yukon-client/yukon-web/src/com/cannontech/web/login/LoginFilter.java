@@ -56,6 +56,8 @@ public class LoginFilter implements Filter {
      */
     private final static ImmutableList<String> excludedFilePaths =
         ImmutableList.of(LoginController.LOGIN_URL,
+                         "/remoteLogin",
+                         "/checkConnection",
                          "/integrationLogin",
                          "/login/forgotPassword",
                          "/login/forgottenPassword",
