@@ -2,6 +2,10 @@ package com.cannontech.common.login.ldap;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
@@ -16,12 +20,28 @@ import javax.naming.ldap.InitialLdapContext;
 import javax.naming.ldap.StartTlsRequest;
 import javax.naming.ldap.StartTlsResponse;
 import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.SSLSession;
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManagerFactory;
 
 public class LDAPService {
-    @Autowired private CustomisedSSLSocketFactory customisedSSLSocketFactory;
+    
+    private final SSLSocketFactory socketFactory;
+    private static Pattern pattern;
+
+    public LDAPService() throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException,
+            KeyManagementException {
+        KeyStore keyStore = KeyStore.getInstance("WINDOWS-ROOT");
+        keyStore.load(null, null);
+        SSLContext sslContext = SSLContext.getInstance("TLS");
+        TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+        tmf.init(keyStore);
+        sslContext.init(null, tmf.getTrustManagers(), null);
+        socketFactory = sslContext.getSocketFactory();
+    }
+
 
     public Context getSSLContext(final String url, final String user, final String password,
                                  final String timeout) throws NamingException, IOException {
@@ -32,7 +52,7 @@ public class LDAPService {
         DirContext ctx = new InitialLdapContext(env, null);
         StartTlsResponse tls = (StartTlsResponse) ((InitialLdapContext) ctx).extendedOperation(new StartTlsRequest());
         tls.setHostnameVerifier(new CustomsiedhostnameVerifier());
-        tls.negotiate(customisedSSLSocketFactory);
+        tls.negotiate(socketFactory);
         ctx.addToEnvironment(Context.SECURITY_AUTHENTICATION, "simple");
         ctx.addToEnvironment(Context.SECURITY_PRINCIPAL, user);
         ctx.addToEnvironment(Context.SECURITY_CREDENTIALS, password);
@@ -68,7 +88,7 @@ public class LDAPService {
      * @return
      */
     private static String getCanonicalName(String subjectDN) {
-        Pattern pattern = Pattern.compile("CN=([-.*aA-zZ0-9]*)");
+        pattern = Pattern.compile("CN=([-.*aA-zZ0-9]*)");
         Matcher matcher = pattern.matcher(subjectDN);
         return matcher.find() ? matcher.group(1) : subjectDN;
     }

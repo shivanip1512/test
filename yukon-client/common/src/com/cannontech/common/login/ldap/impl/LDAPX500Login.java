@@ -3,17 +3,31 @@ package com.cannontech.common.login.ldap.impl;
 import java.io.IOException;
 import javax.naming.Context;
 import javax.naming.NamingException;
-import org.apache.log4j.Logger;
-import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.login.ldap.LDAPLogin;
-import com.cannontech.common.login.ldap.LDAPService;
-import com.cannontech.system.GlobalSettingType;
 
-public class LDAPX500Login extends LDAPLogin {
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.login.ldap.LDAPService;
+import com.cannontech.core.authentication.service.AuthenticationProvider;
+import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
+
+public class LDAPX500Login implements AuthenticationProvider {
+    @Autowired protected GlobalSettingDao globalSettingDao;
     private static Logger log = YukonLogManager.getLogger(LDAPX500Login.class);
     protected LDAPService ldapService;
-
-    @Override
+    
+   @Override
+    public boolean login(final LiteYukonUser user, final String password) {
+        if (user == null || StringUtils.isBlank(password)) return false;
+        boolean result = doLoginAction(user.getUsername(), password);
+        return result;
+    }
+    
+ 
     public boolean doLoginAction(final String username, final String password) {
         String ldapDn = globalSettingDao.getString(GlobalSettingType.LDAP_DN);
         String ldapUserSuffix = globalSettingDao.getString(GlobalSettingType.LDAP_USER_SUFFIX);
@@ -23,7 +37,7 @@ public class LDAPX500Login extends LDAPLogin {
         return result;
     }
 
-    @Override
+    
     public String getConnectionURL() {
         String host = globalSettingDao.getString(GlobalSettingType.LDAP_SERVER_ADDRESS);
         String port = globalSettingDao.getString(GlobalSettingType.LDAP_SERVER_PORT);
@@ -31,7 +45,7 @@ public class LDAPX500Login extends LDAPLogin {
         return url;
     }
 
-    @Override
+    
     public String getConnectionTimeout() {
         int timeout = globalSettingDao.getInteger(GlobalSettingType.LDAP_SERVER_TIMEOUT);
         int timeoutInMillis = timeout * 1000;
