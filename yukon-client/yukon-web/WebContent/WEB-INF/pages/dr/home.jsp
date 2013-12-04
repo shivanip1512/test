@@ -41,26 +41,11 @@
                                 arguments="${pao.name}"/>
                             <tr data-removed-text="${removedText}">
                                 <td>
-                                    <c:set var="paoType" value="${pao.paoIdentifier.paoType}" />
-
-                                    <c:set var="paoPageName" value="" />
-                                    <c:if test="${fn:contains(paoType.name(), 'AREA')}">
-                                        <c:set var="paoPageName" value="controlAreaDetail" />
-                                    </c:if>
-                                    <c:if test="${fn:contains(paoType.name(), 'PROGRAM')}">
-                                        <c:set var="paoPageName" value="programDetail" />
-                                    </c:if>
-                                    <c:if test="${fn:contains(paoType.name(), 'SCENARIO')}">
-                                        <c:set var="paoPageName" value="scenarioDetail" />
-                                    </c:if>
-                                    <c:if test="${fn:contains(paoType.name(), 'GROUP')}">
-                                        <c:set var="paoPageName" value="groupDetail" />
-                                    </c:if>
-
                                     <cti:paoDetailUrl yukonPao="${pao}" var="detailUrl"/>
+                                    <cti:paoDetailPageName yukonPao="${pao}" var="detailPageName"/>
 
                                     <cti:button classes="b-favorite remove" nameKey="favorite" renderMode="image" icon="icon-star" 
-                                            data-name="${paoPageName}"
+                                            data-name="${detailPageName}"
                                             data-module="dr"
                                             data-path="${detailUrl}"
                                             data-label-args="['${pao.name}']"/>

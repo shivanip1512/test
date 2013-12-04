@@ -2045,6 +2045,27 @@
         <rtexprvalue>true</rtexprvalue>
     </attribute>
   </tag>
+
+  <tag>
+    <name>paoDetailPageName</name>
+    <tag-class>com.cannontech.web.taglib.PaoDetailPageNameTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+        <name>yukonPao</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+        <name>var</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+        <name>scope</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
   
   <tag>
     <name>paoTypeIcon</name>

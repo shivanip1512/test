@@ -14,52 +14,57 @@ import com.google.common.collect.ImmutableMap.Builder;
 
 public class PaoDetailUrlHelper {
     private static Map<PaoTag, Function<YukonPao, String>> supportDeviceUrlPatterns;
-    private static Map<PaoType, Function<YukonPao, String>> supportPaoUrlPatterns;
+    private static Map<PaoTag, String> supportDevicePageNames;
     static {
         // note that ImmutableMap preserves the order of its entries
 
         // Device urls
-        Builder<PaoTag, Function<YukonPao, String>> tagBuilder = ImmutableMap.builder();
-        tagBuilder.put(PaoTag.METER_DETAIL_DISPLAYABLE, new Function<YukonPao, String>() {
+        Builder<PaoTag, Function<YukonPao, String>> urlBuilder = ImmutableMap.builder();
+        Builder<PaoTag, String> pageNameBuilder = ImmutableMap.builder();
+        urlBuilder.put(PaoTag.METER_DETAIL_DISPLAYABLE, new Function<YukonPao, String>() {
             public String apply(YukonPao pao) {
                 return "/meter/home?deviceId=" + pao.getPaoIdentifier().getPaoId();
             }
         });
-        tagBuilder.put(PaoTag.WATER_METER_DETAIL_DISPLAYABLE, new Function<YukonPao, String>() {
+        pageNameBuilder.put(PaoTag.METER_DETAIL_DISPLAYABLE, "meterDetail.electric");
+
+        urlBuilder.put(PaoTag.WATER_METER_DETAIL_DISPLAYABLE, new Function<YukonPao, String>() {
             public String apply(YukonPao pao) {
                 return "/meter/water/home?deviceId=" + pao.getPaoIdentifier().getPaoId();
             }
         });
-        tagBuilder.put(PaoTag.LM_SCENARIO, new Function<YukonPao, String>() {
+        pageNameBuilder.put(PaoTag.WATER_METER_DETAIL_DISPLAYABLE, "meterDetail.water");
+
+        urlBuilder.put(PaoTag.LM_SCENARIO, new Function<YukonPao, String>() {
             public String apply(YukonPao pao) {
             	return "/dr/scenario/detail?scenarioId=" + pao.getPaoIdentifier().getPaoId();
             }
         });
-        tagBuilder.put(PaoTag.LM_CONTROL_AREA, new Function<YukonPao, String>() {
+        pageNameBuilder.put(PaoTag.LM_SCENARIO, "scenarioDetail");
+
+        urlBuilder.put(PaoTag.LM_CONTROL_AREA, new Function<YukonPao, String>() {
             public String apply(YukonPao pao) {
             	return "/dr/controlArea/detail?controlAreaId=" + pao.getPaoIdentifier().getPaoId();
             }
         });
-        tagBuilder.put(PaoTag.LM_PROGRAM, new Function<YukonPao, String>() {
+        pageNameBuilder.put(PaoTag.LM_CONTROL_AREA, "controlAreaDetail");
+
+        urlBuilder.put(PaoTag.LM_PROGRAM, new Function<YukonPao, String>() {
             public String apply(YukonPao pao) {
             	return "/dr/program/detail?programId=" + pao.getPaoIdentifier().getPaoId();
             }
         });
-        tagBuilder.put(PaoTag.LM_GROUP, new Function<YukonPao, String>() {
+        pageNameBuilder.put(PaoTag.LM_PROGRAM, "programDetail");
+
+        urlBuilder.put(PaoTag.LM_GROUP, new Function<YukonPao, String>() {
             public String apply(YukonPao pao) {
                 return "/dr/loadGroup/detail?loadGroupId=" + pao.getPaoIdentifier().getPaoId();
             }
         });
-        
-        supportDeviceUrlPatterns = tagBuilder.build();
+        pageNameBuilder.put(PaoTag.LM_GROUP, "loadGroupDetail");
 
-        // All 'to-date' known uses of this builder have been replaced with tagBuilder options.
-        // This builder is being left here for completeness and potential future use.
-        // Pao type urls
-        Builder<PaoType, Function<YukonPao, String>> paoBuilder = ImmutableMap.builder();
-        supportPaoUrlPatterns = paoBuilder.build();
-        
-        
+        supportDeviceUrlPatterns = urlBuilder.build();
+        supportDevicePageNames = pageNameBuilder.build();
     }
     
     private PaoDefinitionDao paoDefinitionDao;
@@ -83,14 +88,22 @@ public class PaoDetailUrlHelper {
             }
         }
 
-        // Check pao url pattern map first
-        Function<YukonPao, String> urlFunction = supportPaoUrlPatterns.get(paoType);
-        if(urlFunction != null) {
-            String url = urlFunction.apply(pao);
-            return url;
-        }
-        
         // No url builder found, return null
+        return null;
+    }
+
+    public String getPageNameForPaoDetailPage(YukonPao pao) {
+        PaoType paoType = pao.getPaoIdentifier().getPaoType();
+
+        // Check device page name pattern map
+        for (Map.Entry<PaoTag, String> entry : supportDevicePageNames.entrySet()) {
+            if (paoDefinitionDao.isTagSupported(paoType, entry.getKey())) {
+                String pageName = entry.getValue();
+                return pageName;
+            }
+        }
+
+        // No page name found, return null
         return null;
     }
     
