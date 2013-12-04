@@ -80,7 +80,7 @@ public class RemoteLoginSession {
     }
 
     /**
-     * This method is checking if the session is alive if session is not found it will attempt to call connect() to create a new session
+     * This method is checking if the session is alive every 5 minutes if session is not found it will attempt to call connect() to create a new session
      */
     private void keepSessionAlive() {
         scheduledExecutor.scheduleAtFixedRate(new Runnable() {
@@ -98,7 +98,7 @@ public class RemoteLoginSession {
                 }
             }
 
-        }, 0, 1, TimeUnit.MINUTES);
+        }, 0, 5, TimeUnit.MINUTES);
         log.info("Scheduled a task to keep session alive.");
     }
     
