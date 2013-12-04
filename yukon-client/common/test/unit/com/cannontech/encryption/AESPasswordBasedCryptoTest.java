@@ -26,6 +26,14 @@ public class AESPasswordBasedCryptoTest  {
     
     private final char[] password = {'?','W',')','s','8','!','D','h','I','o','f','1','=','G','F','2'};
 
+    @Test
+    public void testBlank() throws CryptoException, DecoderException {
+        AESPasswordBasedCrypto aes = new AESPasswordBasedCrypto(password);
+        String blankEncrypted = aes.encryptToHexStr("");
+        String blank = aes.decryptHexStr(blankEncrypted);
+        assertTrue("".equals(blank));
+    }
+
     /**
      * Tests the encryption/decryption methods which take strings
      * @throws DecoderException 
