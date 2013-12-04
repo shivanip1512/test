@@ -159,7 +159,7 @@ jQuery(function() {
             <form:form id="exporterForm" commandName="archivedValuesExporter" action="${action}">
                 <form:hidden path="archivedValuesExportFormatType"/>
                 <cti:deviceCollection deviceCollection="${archivedValuesExporter.deviceCollection}" />
-                <tags:nameValueContainer2 id="formatContainer" naturalWidth="false">
+                <tags:nameValueContainer2 id="formatContainer" >
                     <c:if test="${not empty allFormats}">
                         <tags:nameValue2 nameKey=".existingFormat">
                             <form:select path="formatId" cssClass="fl">

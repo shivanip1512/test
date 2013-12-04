@@ -49,7 +49,7 @@
             
             <tags:sectionContainer title="${setupSectionTitle}">
             
-            <tags:nameValueContainer2 style="border-collapse:separate;border-spacing:5px;">
+            <tags:nameValueContainer2>
             
                 <%-- name --%>
                 <tags:nameValue2 nameKey=".label.name">

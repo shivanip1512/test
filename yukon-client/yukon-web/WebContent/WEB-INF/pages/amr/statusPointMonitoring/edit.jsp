@@ -48,7 +48,7 @@
         <form:hidden path="stateGroup"/>
         
         <tags:sectionContainer2 nameKey="sectionHeader">
-            <tags:nameValueContainer2 style="border-collapse:separate;border-spacing:5px;">
+            <tags:nameValueContainer2>
             
                 <%-- name --%>
                 <tags:inputNameValue nameKey=".name" path="statusPointMonitorName" size="50" maxlength="50"/>

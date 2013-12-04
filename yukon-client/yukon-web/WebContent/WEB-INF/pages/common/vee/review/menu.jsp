@@ -1,6 +1,6 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage page="helperMenu" module="monitors">
@@ -16,13 +16,13 @@
 Matching RawPointHistory rows have been marked as Accepted.
 </div>
 </c:if>
-	
+    
 <c:if test="${param.tagsDeleted}">
 <div class="flashMessage">
 Matching RawPointHistory rows have been deleted.
 </div>
 </c:if>
-	
+    
 <c:if test="${param.validationEngineReset}">
 <div class="flashMessage">
 The Validation Engine has been reset. 
@@ -30,7 +30,7 @@ The Validation Engine has been reset.
 Please restart the Yukon Service Manager to resume processing.
 </div>
 </c:if>
-	
+    
 <div class="column-12-12">
     <div class="column one">
             <tags:boxContainer title="Accept All" styleClass="widget-container">
@@ -50,7 +50,7 @@ Please restart the Yukon Service Manager to resume processing.
                             
                     <input type="submit" value="Accept">
                 </form>
-            </tags:boxContainer>	
+            </tags:boxContainer>    
             <tags:boxContainer title="Delete All" styleClass="widget-container">
                 <p class="warning">
                 This will delete any RawPointHistory value that has the identical set of tags
@@ -69,7 +69,7 @@ Please restart the Yukon Service Manager to resume processing.
                             
                     <input type="submit" value="Delete">
                 </form>
-            </tags:boxContainer>	
+            </tags:boxContainer>    
     </div>
     <div class="column two nogutter">
             <tags:boxContainer title="Recalculate Tags" styleClass="widget-container">
@@ -87,7 +87,7 @@ Please restart the Yukon Service Manager to resume processing.
                 <form method="post" action="resetValidationEngine">
                     Delete all tags: <input type="submit" value="Reset">
                 </form>
-            </tags:boxContainer>	
+            </tags:boxContainer>    
     </div>
 </div>
 </cti:standardPage>

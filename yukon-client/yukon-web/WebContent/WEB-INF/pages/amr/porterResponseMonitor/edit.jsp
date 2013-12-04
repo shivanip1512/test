@@ -98,7 +98,7 @@ jQuery(document).on('click', '.f-add-rule', function(event) {
         <div class="column-10-14 clearfix">
             <div class="column one">
                 <tags:sectionContainer2 nameKey="info">
-                    <tags:nameValueContainer2 style="border-collapse:separate;border-spacing:5px;">
+                    <tags:nameValueContainer2>
     
                         <%-- name --%>
                         <tags:inputNameValue nameKey=".name" path="name" maxlength="50" />

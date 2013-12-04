@@ -19,18 +19,18 @@
 
 <cti:msgScope paths=".${nameKey},">
 <c:choose>
-    <c:when test="${nameValueContainter2}">
-        <c:set var="colonSuffix" value=":"/>
-        <c:if test="${excludeColon == true}">
-            <c:set var="colonSuffix" value=""/>
-        </c:if>
+	<c:when test="${nameValueContainer2}">
+		<c:set var="colonSuffix" value=":"/>
+		<c:if test="${excludeColon == true}">
+			<c:set var="colonSuffix" value=""/>
+		</c:if>
         <tr <c:if test="${!empty rowId}"> id="${rowId}"</c:if>
             <c:if test="${!empty rowClass}"> class="${rowClass}"</c:if>>
             <td class="name <c:if test="${!empty nameClass}">${nameClass}</c:if>" 
                 style="<c:if test="${not empty pageScope.nameColumnWidth}">width:${pageScope.nameColumnWidth};</c:if>" 
                 title="<cti:msg2 key="${nameKey}.title" blankIfMissing="true"/>">
-                <c:choose>
-                    <c:when test="${not empty pageScope.labelForId}">
+				<c:choose>
+					<c:when test="${not empty pageScope.labelForId}">
                         <c:choose>
                             <c:when test="${not empty pageScope.argument}">
                                 <label for="${pageScope.labelForId}"><i:inline key="${label != null ? label : nameKey}" arguments="${argument}"/>${colonSuffix}</label>
@@ -39,8 +39,8 @@
                                 <label for="${pageScope.labelForId}"><i:inline key="${label != null ? label : nameKey}"/>${colonSuffix}</label>
                             </c:otherwise>
                         </c:choose>
-                    </c:when>
-                    <c:otherwise>
+					</c:when>
+					<c:otherwise>
                         <c:choose>
                             <c:when test="${not empty pageScope.argument}">
                                 <i:inline key="${label != null ? label : nameKey}" arguments="${argument}"/>${colonSuffix}
@@ -49,15 +49,15 @@
                                 <i:inline key="${label != null ? label : nameKey}"/>${colonSuffix}
                             </c:otherwise>    
                         </c:choose>
-                    </c:otherwise>
-                </c:choose>
-            </td>
-            
-            <td class="value <c:if test="${!empty pageScope.valueClass}"> ${pageScope.valueClass}</c:if>"><jsp:doBody/></td>
-        </tr>
-    </c:when>
-    <c:otherwise>
-        <div class="error">ERROR: The &lt;nameValue2&gt; tag must be enclosed in a &lt;nameValueContainer2&gt; tag</div>
-    </c:otherwise>
+					</c:otherwise>
+				</c:choose>
+			</td>
+			
+			<td class="value <c:if test="${!empty pageScope.valueClass}"> ${pageScope.valueClass}</c:if>"><jsp:doBody/></td>
+		</tr>
+	</c:when>
+	<c:otherwise>
+		<div class="error">ERROR: The &lt;nameValue2&gt; tag must be enclosed in a &lt;nameValueContainer2&gt; tag</div>
+	</c:otherwise>
 </c:choose>
 </cti:msgScope>

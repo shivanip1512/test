@@ -16,7 +16,7 @@
         <form:hidden path="statusPointMonitorId"/>
                     
         <tags:sectionContainer2 nameKey="setup">
-            <tags:nameValueContainer2 style="border-collapse:separate;border-spacing:5px;">
+            <tags:nameValueContainer2>
             
                 <%-- name --%>
                 <tags:inputNameValue nameKey=".name" path="statusPointMonitorName" 

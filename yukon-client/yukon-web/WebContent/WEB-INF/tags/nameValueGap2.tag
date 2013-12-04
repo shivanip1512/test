@@ -4,7 +4,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 
 <c:choose>
-    <c:when test="${nameValueContainter2}">
+    <c:when test="${nameValueContainer2}">
         <tr <c:if test="${not empty pageScope.gapHeight}">style="height:${pageScope.gapHeight};"</c:if>>
             <td colspan="2"></td>
         </tr>

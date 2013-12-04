@@ -45,9 +45,9 @@ Yukon.Alerts = (function () {
             jQuery("#yukon_alert_popup").dialog("close");
             jQuery("#alert_body").empty();
         },
-        alertMod;
+        module;
 
-    alertMod = {
+    module = {
 
         
         /* -------------- */
@@ -59,7 +59,7 @@ Yukon.Alerts = (function () {
             }
             
             jQuery(_alert_button).on("click", _handleBtnClick);
-            jQuery(_clear_button).on("click", function() {alertMod.clearAlert();});
+            jQuery(_clear_button).on("click", function() {module.clearAlert();});
             
             jQuery("#yukon_alert_popup").dialog({autoOpen: false, width:"600", height: "auto", position: {my: "top", at: "bottom+3", of: ".outer"} });
             
@@ -91,7 +91,7 @@ Yukon.Alerts = (function () {
             jQuery.ajax({url: _clearAlertUrl, type: "POST", data: {'jsonString': JSON.stringify(alertIds)}});
         }
     };
-    return alertMod;
+    return module;
 }());
 
 

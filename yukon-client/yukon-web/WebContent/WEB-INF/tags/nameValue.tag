@@ -27,7 +27,7 @@
 <c:set var="indentStyle" value="indent${nameValueNest}" scope="request"/>
 
 <c:choose>
-	<c:when test="${nameValueContainter}">
+	<c:when test="${nameValueContainer}">
         
         <c:if test="${pageScope.nameValueNest > -1}">
             </td></tr>

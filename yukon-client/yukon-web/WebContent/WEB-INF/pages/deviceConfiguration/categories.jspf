@@ -21,7 +21,7 @@
                 <tags:alertBox nameKey=".needsSelection"/>
             </c:if>
 
-            <tags:nameValueContainer2 naturalWidth="false">
+            <tags:nameValueContainer2 >
                 <tags:nameValue2 nameKey=".name" nameColumnWidth="15%" nameClass="vat">
                     <div id="categoryName_${catType}">
                         ${fn:escapeXml(selection.categoryName)}

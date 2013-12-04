@@ -5,7 +5,7 @@
 <tags:sectionContainer2 nameKey="inventorySearch">
 
     <form:form commandName="inventorySearch" action="search" method="post">
-        <tags:nameValueContainer2 id="inventorySearch" naturalWidth="false">
+        <tags:nameValueContainer2 id="inventorySearch" >
             <tags:nameValue2 nameKey=".serialNumber">
                 <form:input path="serialNumber" class="full-width f-focus"/>
             </tags:nameValue2>
