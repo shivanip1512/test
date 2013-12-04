@@ -89,6 +89,8 @@ public enum GlobalSettingType implements DisplayableEnum {
     OADR_OPEN_ENDED_CONTROL_DURATION(GlobalSettingSubCategory.OPEN_ADR, stringType(), null),
 
     // Yukon Services
+    JMS_BROKER_HOST(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), "localhost"),
+    JMS_BROKER_PORT(GlobalSettingSubCategory.YUKON_SERVICES, integerType(), 61616),
     SMTP_HOST(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), "127.0.0.1"),
     SMTP_PORT(GlobalSettingSubCategory.YUKON_SERVICES, integerType(), null),
     SMTP_USERNAME(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), null),

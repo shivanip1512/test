@@ -1,5 +1,7 @@
 package com.cannontech.services.jms;
 
+import java.io.IOException;
+
 import javax.jms.ConnectionFactory;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
@@ -20,21 +22,20 @@ public class ServerEmbeddedBroker {
     private Logger log = YukonLogManager.getLogger(ServerEmbeddedBroker.class);
 	
     private final String name;
-    private final String listenerString;
-    private static final String DEFAULT_CONNECTOR = "tcp://localhost:61616"; 
-    
+    private final String listenerHost;
+    private static final String localhostConnector = "tcp://localhost:61616";
+    private static final String anyhostConnector = "tcp://0.0.0.0:61616";
+
     private long memoryUsageLimit = DEFAULT_MEMORY_USAGE_LIMIT;
     private long tempQueueMemoryUsageLimit = DEFAULT_TEMPQUEUE_MEMORY_USAGE_LIMIT;
-    
-    
-    
+
     /**
      * @param name name used for the broker, mostly for debug
-     * @param listenerString something like "tcp://localhost:61616"
+     * @param listenerHost something like "tcp://localhost:61616"
      */
-    public ServerEmbeddedBroker(String name, String listenerString) {
+    public ServerEmbeddedBroker(String name, String listenerHost) {
         this.name = name;
-        this.listenerString = listenerString;
+        this.listenerHost = listenerHost;
     }
 
     /**
@@ -44,7 +45,7 @@ public class ServerEmbeddedBroker {
     public ConnectionFactory getConnectionFactory() {
         // Create a ConnectionFactory
         ConnectionFactory factory = new ActiveMQConnectionFactory("vm://" + name + "?create=false");
-        
+
         // if using Spring, create a CachingConnectionFactory
         CachingConnectionFactory cachingFactory = new CachingConnectionFactory();
         cachingFactory.setTargetConnectionFactory(factory);
@@ -57,23 +58,31 @@ public class ServerEmbeddedBroker {
         try {
             BrokerService broker = new BrokerService();
             broker.setBrokerName(name);
-            broker.addConnector(DEFAULT_CONNECTOR);  //  always listen on localhost
-            if (!listenerString.equals(DEFAULT_CONNECTOR)) {
-                broker.addConnector(listenerString);
-            }
+
             broker.setUseJmx(true);
-            
-            broker.getSystemUsage().getMemoryUsage().setLimit(memoryUsageLimit);            
-            PolicyEntry policyEntry= new PolicyEntry(); 
+
+            broker.addConnector(listenerHost);
+            if (!listenerHost.equals(anyhostConnector) && !listenerHost.equals(localhostConnector)) {
+                log.info("Specified listener (" + listenerHost + ") doesn't include localhost:61616, adding localhost to broker.");
+                // They didn't specify a listener for localhost:61616, so we will
+                try {
+                     broker.addConnector(localhostConnector);
+                } catch (IOException e) {
+                    log.error("Unable to add localhost JMS listener (localhost:61616). The specified host and port in global settings might already be bound to this address", e);
+                }
+            }
+
+            broker.getSystemUsage().getMemoryUsage().setLimit(memoryUsageLimit);
+            PolicyEntry policyEntry= new PolicyEntry();
             policyEntry.setMemoryLimit(tempQueueMemoryUsageLimit);
             policyEntry.setProducerFlowControl(true);
             PolicyMap map = new PolicyMap();
             map.put(new ActiveMQTempQueue("*") , policyEntry);
             broker.setDestinationPolicy(map);
-            
+
             broker.start();
         } catch (Exception e) {
-        	log.warn("Caught exception starting server broker: " + e.toString());
+            log.warn("Caught exception starting server broker", e);
             throw new RuntimeException("Unable to start broker", e);
         }
     }

@@ -9,15 +9,27 @@ package com.cannontech.common.config;
  */
 public enum MasterConfigDeprecatedKey {
 
-    PIL_MACHINE,
-    PIL_PORT,
+    BULK_POINT_LOAD_THRESHOLD, // removed in 4.1
+    CAP_CONTROL_PORT,
+    DB_RWDBDLL,
+    DISPATCH_COMMERROR_DAYS, // Deprecated as of Yukon 6.0
     DISPATCH_MACHINE,
     DISPATCH_PORT,
+    JMS_BROKER_HOST, // only ever used in development 6.0 - 6.0.4
+    LOAD_MANAGEMENT_PORT,
+    MACS_PORT,
     NOTIFICATION_MACHINE,
     NOTIFICATION_PORT,
-    CAP_CONTROL_PORT,
-    MACS_PORT,
-    LOAD_MANAGEMENT_PORT,
+    PIL_MACHINE,
+    PIL_PORT,
+    SCANNER_QUEUE, // see yuk-8552
+    SCANNER_QUEUE_SCANS, // see yuk-8552
+
+    /* YUKON_DNP_* deprecated with introduction of DNP Device Configurations in 5.5.2 */
+    YUKON_DNP_INTERNAL_RETRIES, // 
+    YUKON_DNP_LOCALTIME,
+    YUKON_DNP_OMIT_TIME_REQUEST_DEVICEIDS,
+    YUKON_DNP_TIMESYNCS,
     ;
 
     /**

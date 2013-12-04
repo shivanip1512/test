@@ -275,6 +275,10 @@
     <entry key="yukon.common.setting.STARS_PRELOAD_DATA.description">Controls whether the STARS application should preload data into the cache.</entry>
     <entry key="yukon.common.setting.MAIL_FROM_ADDRESS">Mail From Address</entry>
     <entry key="yukon.common.setting.MAIL_FROM_ADDRESS.description">Name of the FROM email address the mail server will use</entry>
+    <entry key="yukon.common.setting.JMS_BROKER_HOST">Yukon Services Host</entry>
+    <entry key="yukon.common.setting.JMS_BROKER_HOST.description">Name or IP address of the Yukon Services Server.</entry>
+    <entry key="yukon.common.setting.JMS_BROKER_PORT">Yukon Services TCP Port</entry>
+    <entry key="yukon.common.setting.JMS_BROKER_PORT.description">TCP Port for Yukon Services. Defaults to 61616 if left blank.</entry>
     <entry key="yukon.common.setting.SMTP_HOST">SMTP Host</entry>
     <entry key="yukon.common.setting.SMTP_HOST.description">Name or IP address of the mail server</entry>
     <entry key="yukon.common.setting.SMTP_PORT">SMTP Port</entry>
