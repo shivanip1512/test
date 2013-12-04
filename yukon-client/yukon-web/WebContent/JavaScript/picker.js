@@ -459,27 +459,22 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
     doIdSearch = function (selectedIds) {
         if (selectedIds && selectedIds.length > 0) {
             var idx,
-                initialIdsObj = '',
-                parameters,
                 onIdSearchCompleteFunc = null,
-                onFailure = null;
+                onFailure = null,
+                queryString = '';
 
-            // build initialIdsObj from array values
+            // build a query string instead of passing in a parameters object
+            // jQuery does not build a query string the way prototypejs does,
+            // given a parameters object with the selectIds passed as data.
+            // So we build our query string here, for instance:
+            // type=lmProgramPicker&id=programPicker&initialIds=31187&initialIds=31788&extraArgs=0
+            queryString = 'type=' + this.pickerType + '&id=' + this.pickerId;
             for (idx = 0; idx < selectedIds.length; idx += 1) {
-                initialIdsObj += selectedIds[idx];
-                if ((selectedIds.length - 1) > idx) {
-                    initialIdsObj += ',';
-                }
+                queryString += '&initialIds=' + selectedIds[idx];
             }
-            parameters = {
-                    'type' : this.pickerType,
-                    'id' : this.pickerId,
-                    'initialIds' : initialIdsObj
-            };
             if (this.extraArgs) {
-                parameters.extraArgs = this.extraArgs;
+                queryString += '&extraArgs=' + this.extraArgs;
             }
-
             if (null === onIdSearchCompleteFunc) {
                 onIdSearchCompleteFunc = Yukon.doBind(onIdSearchComplete, this);
             }
@@ -488,9 +483,8 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
             }
             jQuery.ajax({
                 type: 'POST',
-                dataType: "json",
                 url: '/picker/v2/idSearch',
-                data: parameters
+                data: queryString
             }).done(function (data, status, xhrobj) {
                 onIdSearchCompleteFunc(xhrobj);
             }).fail(function (xhrobj, textStatus, errorThrown) {
