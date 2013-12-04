@@ -25,7 +25,7 @@ public class MasterConfigMapTest {
      */
     @Test
     public void testExistingFields() {
-        asertConfigHelper("DB_RWDBDLL", "ora15d.dll");
+        asertConfigHelper("DB_USERNAME", "isoc_tom");
         asertConfigHelper("DB_SQLSERVER", "yukon");
         asertConfigHelper("FDR_PI_SERVER_NODE_NAME", "127.0.0.1");
     }
