@@ -8,7 +8,7 @@
 <cti:standardPage module="survey" page="edit">
 
 <cti:includeScript link="/JavaScript/ajaxDialog.js"/>
-<cti:includeScript link="/JavaScript/yukon.surveys.js"/>
+<cti:includeScript link="/JavaScript/yukon.surveys.edit.js"/>
 
 <div id="ajaxDialog"></div>
 
@@ -24,18 +24,9 @@
 <c:set var="baseUrl" value="edit"/>
 
 <script type="text/javascript">
-jQuery(function() {
-    Yukon.Surveys.initEdit();
-});
-
-<c:if test="${!hasBeenTaken}">
-var templateIcons = jQuery('#templateIcons > button');
-moveUpIcon = templateIcons[0];
-moveDownIcon = templateIcons[1];
-deleteAnswerIcon = templateIcons[2];
-moveUpDisabledIcon = templateIcons[3];
-moveDownDisabledIcon = templateIcons[4];
-</c:if>
+    jQuery(function () {
+        Yukon.Surveys.Edit.init({hasBeenTaken : '${hasBeenTaken}'});
+    });
 </script>
 
 <div class="column-12-12">

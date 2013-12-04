@@ -16,12 +16,12 @@
 <d:ajaxPage nameKey="editQuestion" module="survey" page="edit" okEvent="${okAction}">
 
 <script type="text/javascript">
-jQuery(function() {
-    Yukon.Surveys.initEditQuestion();
-    <cti:displayForPageEditModes modes="EDIT">
-    Yukon.Surveys.initWithAnswerKeys(${cti:jsonString(answerKeys)});
-    </cti:displayForPageEditModes>
-});
+    jQuery(function() {
+        Yukon.Surveys.Edit.initQuestions();
+        <cti:displayForPageEditModes modes="EDIT">
+        Yukon.Surveys.Edit.initAnswerKeys(${cti:jsonString(answerKeys)});
+        </cti:displayForPageEditModes>
+    });
 </script>
 
 <cti:url var="submitUrl" value="saveQuestion"/>
@@ -90,7 +90,7 @@ jQuery(function() {
 			    </table>
 	        </div>
             <cti:displayForPageEditModes modes="EDIT">
-                <div style="margin-top: 10px;" class="clearfix"><cti:button renderMode="labeledImage" nameKey="addAnswer" href="javascript: Yukon.Surveys.addAnswer()" classes="fl" icon="icon-add"/></div>
+                <div style="margin-top: 10px;" class="clearfix"><cti:button renderMode="labeledImage" nameKey="addAnswer" href="javascript: Yukon.Surveys.Edit.addAnswer()" classes="fl" icon="icon-add"/></div>
             </cti:displayForPageEditModes>
 	    </tags:boxContainer2>
     </div>

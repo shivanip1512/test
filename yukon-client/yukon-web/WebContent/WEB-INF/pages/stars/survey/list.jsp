@@ -7,15 +7,9 @@
 
 <cti:standardPage module="survey" page="list">
     <cti:includeScript link="/JavaScript/ajaxDialog.js"/>
-    <cti:includeScript link="/JavaScript/yukon.surveys.js"/>
+    <cti:includeScript link="/JavaScript/yukon.surveys.list.js"/>
 
     <div id="ajaxDialog"></div>
-
-    <script type="text/javascript">
-    jQuery(function() {
-        Yukon.Surveys.initList();
-    });
-    </script>
 
     <div class="stacked" data-reloadable>
         <%@ include file="listTable.jsp" %>

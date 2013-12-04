@@ -12,14 +12,8 @@
     <cti:includeScript link="/JavaScript/picker.js"/>
     <cti:includeScript link="/JavaScript/simpleDialog.js"/>
     <cti:includeScript link="/JavaScript/tableCreation.js"/>
-    <cti:includeScript link="/JavaScript/yukon.surveys.js"/>
+    <cti:includeScript link="/JavaScript/yukon.surveys.optOut.js"/>
     <cti:msg2 var="addSurveyTitle" key=".addSurveyTitle" javaScriptEscape="true"/>
-
-    <script type="text/javascript">
-        jQuery( function() {
-            Yukon.Surveys.initOptOutSurveyList();
-        });
-    </script>
 
     <cti:url var="baseUrl" value="/stars/optOutSurvey/list"/>
 
