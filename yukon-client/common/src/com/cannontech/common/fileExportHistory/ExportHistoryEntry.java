@@ -104,23 +104,35 @@ public final class ExportHistoryEntry implements Comparable<ExportHistoryEntry>{
     @Override
     public int compareTo(ExportHistoryEntry other) {
         if(this == other) return 0;
+        
         //date
         int comparison = date.compareTo(other.date);
         if(comparison != 0) return comparison * -1; //sort newest to oldest
-        //exportPath
-        comparison = exportPath.compareTo(other.exportPath);
+        
+        //type
+        comparison = type.compareTo(other.type);
         if(comparison != 0) return comparison;
-        //fileName
-        comparison = fileName.compareTo(other.fileName);
-        if(comparison != 0) return comparison;
-        //initiator
-        comparison = initiator.compareTo(other.initiator);
-        if(comparison != 0) return comparison;
+        
         //originalFileName
         comparison = originalFileName.compareTo(other.originalFileName);
         if(comparison != 0) return comparison;
-        //type
-        return type.compareTo(other.type);
+        
+        //fileName
+        comparison = fileName.compareTo(other.fileName);
+        if(comparison != 0) return comparison;
+        
+        //initiator
+        comparison = initiator.compareTo(other.initiator);
+        if(comparison != 0) return comparison;
+        
+        //exportPath
+        if(other.exportPath == null) {
+            return -1;
+        } else if(exportPath == null) {
+            return 1;
+        }
+        comparison = exportPath.compareTo(other.exportPath);
+        return comparison; 
     }
     
     @Override
