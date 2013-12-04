@@ -314,13 +314,14 @@ RfnGetOvUvAlarmConfigurationCommand::AlarmConfiguration  RfnGetOvUvAlarmConfigur
 namespace   {
 
 const std::map<unsigned char, std::string>  meterIdResolver = boost::assign::map_list_of
-    ( 0x02, "L&G Focus AL" )
-    ( 0x03, "L&G Focus AX" )
-    ( 0x04, "Centron C2SX" );
+    ( RfnOvUvConfigurationCommand::LGFocusAL,   "L&G Focus AL" )
+    ( RfnOvUvConfigurationCommand::LGFocusAX,   "L&G Focus AX" )
+    ( RfnOvUvConfigurationCommand::CentronC1SX, "Centron C1SX" )
+    ( RfnOvUvConfigurationCommand::CentronC2SX, "Centron C2SX" );
 
 const std::map<unsigned, std::string>  eventIdResolver = boost::assign::map_list_of
-    ( 2022, "Over Voltage" )
-    ( 2023, "Under Voltage" );
+    ( RfnOvUvConfigurationCommand::OverVoltage,  "Over Voltage" )
+    ( RfnOvUvConfigurationCommand::UnderVoltage, "Under Voltage" );
 
 const std::map<unsigned char, std::string>  ovuvStateResolver = boost::assign::map_list_of
     ( 0x00, "OV/UV Disabled" )

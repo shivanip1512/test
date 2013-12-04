@@ -79,6 +79,32 @@ unsigned getSecondsFromTimeString( std::string time )
     return hour * 3600 + minute * 60;
 }
 
+
+const std::map<int, Commands::RfnOvUvConfigurationCommand::MeterID> DeviceTypeToMeterId = boost::assign::map_list_of
+        (TYPE_RFN410CL,  Commands::RfnOvUvConfigurationCommand::CentronC1SX)
+        (TYPE_RFN420CL,  Commands::RfnOvUvConfigurationCommand::CentronC2SX)
+        (TYPE_RFN420CD,  Commands::RfnOvUvConfigurationCommand::CentronC2SX)
+        (TYPE_RFN410FX,  Commands::RfnOvUvConfigurationCommand::LGFocusAX)
+        (TYPE_RFN410FD,  Commands::RfnOvUvConfigurationCommand::LGFocusAX)
+        (TYPE_RFN420FX,  Commands::RfnOvUvConfigurationCommand::LGFocusAX)
+        (TYPE_RFN420FD,  Commands::RfnOvUvConfigurationCommand::LGFocusAX)
+        (TYPE_RFN420FRX, Commands::RfnOvUvConfigurationCommand::LGFocusAX)
+        (TYPE_RFN420FRD, Commands::RfnOvUvConfigurationCommand::LGFocusAX)
+        (TYPE_RFN420FL,  Commands::RfnOvUvConfigurationCommand::LGFocusAL)
+        ;
+
+Commands::RfnOvUvConfigurationCommand::MeterID getMeterIdForDeviceType( const int deviceType )
+{
+    boost::optional<Commands::RfnOvUvConfigurationCommand::MeterID> meterId = mapFind(DeviceTypeToMeterId, deviceType);
+
+    if( ! meterId )
+    {
+        return Commands::RfnOvUvConfigurationCommand::Unspecified;
+    }
+
+    return *meterId;
+}
+
 } // anonymous namespace
 
 RfnDevice::ConfigMap RfnResidentialDevice::getConfigMethods(bool readOnly)
@@ -1235,41 +1261,7 @@ int RfnResidentialDevice::executePutConfigOvUv( CtiRequestMsg    * pReq,
 
     // get the meter ID
 
-    Commands::RfnOvUvConfigurationCommand::MeterID  meterID = Commands::RfnOvUvConfigurationCommand::Unspecified;
-
-    switch ( getType() )
-    {
-        case TYPE_RFN410CL:
-        {
-                meterID = Commands::RfnOvUvConfigurationCommand::CentronC1SX;
-                break;
-        }
-        case TYPE_RFN420CL:
-        case TYPE_RFN420CD:
-        {
-                meterID = Commands::RfnOvUvConfigurationCommand::CentronC2SX;
-                break;
-        }
-        case TYPE_RFN410FX:
-        case TYPE_RFN410FD:
-        case TYPE_RFN420FX:
-        case TYPE_RFN420FD:
-        case TYPE_RFN420FRX:
-        case TYPE_RFN420FRD:
-        {
-            meterID = Commands::RfnOvUvConfigurationCommand::LGFocusAX;
-            break;
-        }
-        case TYPE_RFN420FL:
-        {
-            meterID = Commands::RfnOvUvConfigurationCommand::LGFocusAL;
-            break;
-        }
-        default:
-        {
-            meterID = Commands::RfnOvUvConfigurationCommand::Unspecified;
-        }
-    }
+    Commands::RfnOvUvConfigurationCommand::MeterID  meterID = getMeterIdForDeviceType(getType());
 
     {
         boost::optional<double> configOvThreshold,
@@ -1382,37 +1374,7 @@ int RfnResidentialDevice::executeGetConfigOvUv( CtiRequestMsg    * pReq,
 {
     // get the meter ID
 
-    Commands::RfnOvUvConfigurationCommand::MeterID  meterID = Commands::RfnOvUvConfigurationCommand::Unspecified;
-
-    switch ( getType() )
-    {
-        case TYPE_RFN410CL:
-        case TYPE_RFN420CL:
-        case TYPE_RFN420CD:
-        {
-            meterID = Commands::RfnOvUvConfigurationCommand::CentronC2SX;
-            break;
-        }
-        case TYPE_RFN410FX:
-        case TYPE_RFN410FD:
-        case TYPE_RFN420FX:
-        case TYPE_RFN420FD:
-        case TYPE_RFN420FRX:
-        case TYPE_RFN420FRD:
-        {
-            meterID = Commands::RfnOvUvConfigurationCommand::LGFocusAX;
-            break;
-        }
-        case TYPE_RFN420FL:
-        {
-            meterID = Commands::RfnOvUvConfigurationCommand::LGFocusAL;
-            break;
-        }
-        default:
-        {
-            meterID = Commands::RfnOvUvConfigurationCommand::Unspecified;
-        }
-    }
+    Commands::RfnOvUvConfigurationCommand::MeterID  meterID = getMeterIdForDeviceType(getType());
 
     rfnRequests.push_back( boost::make_shared<Commands::RfnGetOvUvAlarmConfigurationCommand>( meterID, Commands::RfnOvUvConfigurationCommand::OverVoltage ) );
     rfnRequests.push_back( boost::make_shared<Commands::RfnGetOvUvAlarmConfigurationCommand>( meterID, Commands::RfnOvUvConfigurationCommand::UnderVoltage ) );

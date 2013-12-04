@@ -13,6 +13,7 @@ using namespace Cti::Config;
 struct test_RfnResidentialDevice : RfnResidentialDevice
 {
     using RfnResidentialDevice::handleCommandResult;
+    using CtiTblPAOLite::_type;
 };
 
 struct test_state_rfnResidential
@@ -58,6 +59,13 @@ public:
         return _config;
     }
 };
+
+namespace std {
+
+    //  defined in rtdb/test_main.cpp
+    ostream& operator<<(ostream& out, const vector<unsigned char> &v);
+}
+
 
 const CtiTime execute_time( CtiDate( 27, 8, 2013 ) , 15 );
 const CtiTime decode_time ( CtiDate( 27, 8, 2013 ) , 16 );
@@ -1041,6 +1049,251 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_tou_critical_peak_tomorrow )
                                        exp.begin() , exp.end() );
     }
 }
+
+BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_getconfig_install_ovuv_meterids )
+{
+    test_RfnResidentialDevice    dev;
+
+    const std::vector<DeviceTypes> rfnTypes = boost::assign::list_of
+        //(TYPE_RFN410FL)  not an rfnResidential device
+        (TYPE_RFN410FX)
+        (TYPE_RFN410FD)
+        (TYPE_RFN420FL)
+        (TYPE_RFN420FX)
+        (TYPE_RFN420FD)
+        (TYPE_RFN420FRX)
+        (TYPE_RFN420FRD)
+        (TYPE_RFN410CL)
+        (TYPE_RFN420CL)
+        (TYPE_RFN420CD);
+
+    CtiCommandParser parse("getconfig install ovuv");
+
+    const std::vector<std::vector<unsigned char>> expected = boost::assign::list_of
+        (boost::assign::list_of(0x34)(0x03)(0x07)(0xe6))
+        (boost::assign::list_of(0x34)(0x03)(0x07)(0xe7))
+        (boost::assign::list_of(0x34)(0x03)(0x07)(0xe6))
+        (boost::assign::list_of(0x34)(0x03)(0x07)(0xe7))
+        (boost::assign::list_of(0x34)(0x02)(0x07)(0xe6))
+        (boost::assign::list_of(0x34)(0x02)(0x07)(0xe7))
+        (boost::assign::list_of(0x34)(0x03)(0x07)(0xe6))
+        (boost::assign::list_of(0x34)(0x03)(0x07)(0xe7))
+        (boost::assign::list_of(0x34)(0x03)(0x07)(0xe6))
+        (boost::assign::list_of(0x34)(0x03)(0x07)(0xe7))
+        (boost::assign::list_of(0x34)(0x03)(0x07)(0xe6))
+        (boost::assign::list_of(0x34)(0x03)(0x07)(0xe7))
+        (boost::assign::list_of(0x34)(0x03)(0x07)(0xe6))
+        (boost::assign::list_of(0x34)(0x03)(0x07)(0xe7))
+        (boost::assign::list_of(0x34)(0x06)(0x07)(0xe6))
+        (boost::assign::list_of(0x34)(0x06)(0x07)(0xe7))
+        (boost::assign::list_of(0x34)(0x04)(0x07)(0xe6))
+        (boost::assign::list_of(0x34)(0x04)(0x07)(0xe7))
+        (boost::assign::list_of(0x34)(0x04)(0x07)(0xe6))
+        (boost::assign::list_of(0x34)(0x04)(0x07)(0xe7));
+
+    std::vector<std::vector<unsigned char>> results;
+
+    for each( DeviceTypes type in rfnTypes )
+    {
+        dev._type = type;
+
+        BOOST_CHECK_EQUAL( NoError, dev.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_REQUIRE_EQUAL( 2, rfnRequests.size() );
+
+        for each( Cti::Devices::Commands::RfnCommandSPtr cmd in rfnRequests )
+        {
+            results.push_back(cmd->executeCommand(execute_time));
+        }
+
+        rfnRequests.clear();
+    }
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(
+            expected.begin(), expected.end(),
+            results.begin(),  results.end());
+}
+
+
+BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_ovuv )
+{
+    test_RfnResidentialDevice dut;
+
+    test_DeviceConfig cfg;
+
+    cfg.insertValue( RfnStrings::OvUvEnabled,                "true" );
+    cfg.insertValue( RfnStrings::OvUvAlarmReportingInterval, "5" );
+    cfg.insertValue( RfnStrings::OvUvAlarmRepeatInterval,    "60" );
+    cfg.insertValue( RfnStrings::OvUvRepeatCount,            "2" );
+    cfg.insertValue( RfnStrings::OvThreshold,                "123.456" );
+    cfg.insertValue( RfnStrings::UvThreshold,                 "78.901" );
+
+    test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+    dut.setConfigManager(&cfgMgr);  // attach config manager to the device so it can find the config
+
+    dut._type = TYPE_RFN410FX;
+
+    {
+        CtiCommandParser parse("putconfig install ovuv");
+
+        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
+        BOOST_REQUIRE_EQUAL( 6, rfnRequests.size() );
+
+        {
+            const CtiReturnMsg &returnMsg = returnMsgs.front();
+
+            BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
+            BOOST_CHECK_EQUAL( returnMsg.ResultString(), "6 commands queued for device" );
+        }
+
+        RfnDevice::RfnCommandList::iterator rfnRequest_itr = rfnRequests.begin();
+        {
+            Commands::RfnCommandSPtr command = *rfnRequest_itr++;
+
+            Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
+
+            std::vector<unsigned char> exp = boost::assign::list_of
+                    (0x24)(0x01);
+
+            BOOST_CHECK_EQUAL( rcv, exp );
+        }
+        {
+            Commands::RfnCommandSPtr command = *rfnRequest_itr++;
+
+            Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
+
+            std::vector<unsigned char> exp = boost::assign::list_of
+                    (0x26)(0x05);
+
+            BOOST_CHECK_EQUAL( rcv, exp );
+        }
+        {
+            Commands::RfnCommandSPtr command = *rfnRequest_itr++;
+
+            Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
+
+            std::vector<unsigned char> exp = boost::assign::list_of
+                    (0x27)(0x3c);
+
+            BOOST_CHECK_EQUAL( rcv, exp );
+        }
+        {
+            Commands::RfnCommandSPtr command = *rfnRequest_itr++;
+
+            Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
+
+            std::vector<unsigned char> exp = boost::assign::list_of
+                    (0x28)(0x02);
+
+            BOOST_CHECK_EQUAL( rcv, exp );
+        }
+        {
+            Commands::RfnCommandSPtr command = *rfnRequest_itr++;
+
+            Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
+
+            std::vector<unsigned char> exp = boost::assign::list_of
+                    (0x25)(0x03)(0x07)(0xe6)(0x00)(0x01)(0xe2)(0x40)(0x10)(0x80)(0x00)(0x01)(0xc0);
+
+            BOOST_CHECK_EQUAL( rcv, exp );
+        }
+        {
+            Commands::RfnCommandSPtr command = *rfnRequest_itr++;
+
+            Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
+
+            std::vector<unsigned char> exp = boost::assign::list_of
+                    (0x25)(0x03)(0x07)(0xe7)(0x00)(0x01)(0x34)(0x35)(0x10)(0x80)(0x00)(0x01)(0xc0);
+
+            BOOST_CHECK_EQUAL( rcv, exp );
+        }
+    }
+}
+
+
+BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_ovuv_meter_ids )
+{
+    test_RfnResidentialDevice dut;
+
+    test_DeviceConfig cfg;
+
+    cfg.insertValue( RfnStrings::OvUvEnabled,                "true" );
+    cfg.insertValue( RfnStrings::OvUvAlarmReportingInterval, "5" );
+    cfg.insertValue( RfnStrings::OvUvAlarmRepeatInterval,    "60" );
+    cfg.insertValue( RfnStrings::OvUvRepeatCount,            "2" );
+    cfg.insertValue( RfnStrings::OvThreshold,                "123.456" );
+    cfg.insertValue( RfnStrings::UvThreshold,                 "78.901" );
+
+    test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+    dut.setConfigManager(&cfgMgr);  // attach config manager to the device so it can find the config
+
+    //  set the dynamic pao info to match
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_OvUvEnabled,                 1);
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_OvUvAlarmReportingInterval,  5);
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_OvUvAlarmRepeatInterval,    60);
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_OvUvRepeatCount,             2);
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_OvThreshold,           123.456);
+    //dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_UvThreshold,          78.901);  //  leave this out so it's the only one sent
+
+    {
+        const std::vector<DeviceTypes> rfnTypes = boost::assign::list_of
+            //(TYPE_RFN410FL)  not an rfnResidential device
+            (TYPE_RFN410FX)
+            (TYPE_RFN410FD)
+            (TYPE_RFN420FL)
+            (TYPE_RFN420FX)
+            (TYPE_RFN420FD)
+            (TYPE_RFN420FRX)
+            (TYPE_RFN420FRD)
+            (TYPE_RFN410CL)
+            (TYPE_RFN420CL)
+            (TYPE_RFN420CD);
+
+        const std::vector<std::vector<unsigned char>> expected = boost::assign::list_of
+            (boost::assign::list_of(0x25)(0x03)(0x07)(0xe7)(0x00)(0x01)(0x34)(0x35)(0x10)(0x80)(0x00)(0x01)(0xc0))
+            (boost::assign::list_of(0x25)(0x03)(0x07)(0xe7)(0x00)(0x01)(0x34)(0x35)(0x10)(0x80)(0x00)(0x01)(0xc0))
+            (boost::assign::list_of(0x25)(0x02)(0x07)(0xe7)(0x00)(0x01)(0x34)(0x35)(0x10)(0x80)(0x00)(0x01)(0xc0))
+            (boost::assign::list_of(0x25)(0x03)(0x07)(0xe7)(0x00)(0x01)(0x34)(0x35)(0x10)(0x80)(0x00)(0x01)(0xc0))
+            (boost::assign::list_of(0x25)(0x03)(0x07)(0xe7)(0x00)(0x01)(0x34)(0x35)(0x10)(0x80)(0x00)(0x01)(0xc0))
+            (boost::assign::list_of(0x25)(0x03)(0x07)(0xe7)(0x00)(0x01)(0x34)(0x35)(0x10)(0x80)(0x00)(0x01)(0xc0))
+            (boost::assign::list_of(0x25)(0x03)(0x07)(0xe7)(0x00)(0x01)(0x34)(0x35)(0x10)(0x80)(0x00)(0x01)(0xc0))
+            (boost::assign::list_of(0x25)(0x06)(0x07)(0xe7)(0x00)(0x01)(0x34)(0x35)(0x10)(0x80)(0x00)(0x01)(0xc0))
+            (boost::assign::list_of(0x25)(0x04)(0x07)(0xe7)(0x00)(0x01)(0x34)(0x35)(0x10)(0x80)(0x00)(0x01)(0xc0))
+            (boost::assign::list_of(0x25)(0x04)(0x07)(0xe7)(0x00)(0x01)(0x34)(0x35)(0x10)(0x80)(0x00)(0x01)(0xc0));
+
+        CtiCommandParser parse("putconfig install ovuv");
+
+        std::vector<std::vector<unsigned char>> results;
+
+        for each( DeviceTypes type in rfnTypes )
+        {
+            dut._type = type;
+
+            BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+            BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
+            BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
+
+            {
+                const CtiReturnMsg &returnMsg = returnMsgs.front();
+
+                BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
+                BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
+            }
+
+            results.push_back(rfnRequests.front()->executeCommand( execute_time ));
+
+            returnMsgs.clear();
+            rfnRequests.clear();
+        }
+
+        BOOST_CHECK_EQUAL_COLLECTIONS(
+                expected.begin(), expected.end(),
+                results.begin(),  results.end());
+    }
+}
+
 
 BOOST_AUTO_TEST_SUITE_END()
 

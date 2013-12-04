@@ -17,7 +17,6 @@ using Cti::Devices::Commands::RfnGetOvUvAlarmConfigurationCommand;
 
 
 using boost::assign::list_of;
-//using boost::assign::pair_list_of;
 
 
 // --- defined in RTDB\test_main.cpp -- so BOOST_CHECK_EQUAL_COLLECTIONS() works for RfnCommand::CommandException
@@ -475,6 +474,71 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_OvUvConfiguration_Get_Config_FocusAL_OverVolt
     BOOST_CHECK( ! alarmConfig.uvThreshold );
 
     BOOST_CHECK_CLOSE( *alarmConfig.ovThreshold, 119.3, 1e-4 );
+}
+
+
+BOOST_AUTO_TEST_CASE( test_cmd_rfn_OvUvConfiguration_Get_Config_CentronC1SX_UnderVoltage )
+{
+    RfnGetOvUvAlarmConfigurationCommand  command( RfnSetOvUvSetThresholdCommand::CentronC1SX,
+                                                  RfnSetOvUvSetThresholdCommand::UnderVoltage );
+
+    // execute
+    {
+        const std::vector< unsigned char > exp = boost::assign::list_of
+            ( 0x34 )
+            ( 0x06 )
+            ( 0x07 )( 0xe7 );
+
+        RfnCommand::RfnRequestPayload rcv = command.executeCommand( execute_time );
+
+        BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
+                                       exp.begin() , exp.end() );
+    }
+
+    // decode -- success response
+    {
+        const std::vector< unsigned char > response = boost::assign::list_of
+            ( 0x35 )
+            ( 0x06 )
+            ( 0x07 )( 0xe7 )
+            ( 0x00 )
+            ( 0x0f )
+            ( 0xb4 )
+            ( 0x02 )
+            ( 0x01 )
+            ( 0x04 )
+            ( 0x00 )( 0x01 )( 0xd2 )( 0x04 )
+            ( 0x10 )
+            ( 0x80 )( 0x00 )
+            ( 0x01 )( 0xc0 );
+
+        RfnCommandResult rcv = command.decodeCommand( execute_time, response );
+
+        BOOST_CHECK_EQUAL( rcv.description, "Meter ID: Centron C1SX (6)"
+                                            "\nEvent ID: Under Voltage (2023)"
+                                            "\nOV/UV State: OV/UV Disabled (0)"
+                                            "\nNew Alarm Reporting Interval: 15 minutes"
+                                            "\nAlarm Repeat Interval: 180 minutes"
+                                            "\nSET Alarm Repeat Count: 2 count(s)"
+                                            "\nCLEAR Alarm Repeat Count: 1 count(s)"
+                                            "\nSeverity: Minor (4)"
+                                            "\nSet Threshold Value: 119.300 volts (0x0001d204)"
+                                            "\nUnit of Measure: Volts (0x10)"
+                                            "\nUoM modifier 1: 0x8000"
+                                            "\nUoM modifier 2: 0x01c0" );
+    }
+
+    RfnGetOvUvAlarmConfigurationCommand::AlarmConfiguration alarmConfig = command.getAlarmConfiguration();
+
+    BOOST_CHECK_EQUAL( alarmConfig.ovuvEnabled, false );
+
+    BOOST_CHECK_EQUAL( alarmConfig.ovuvAlarmReportingInterval,  15 );
+    BOOST_CHECK_EQUAL( alarmConfig.ovuvAlarmRepeatInterval,     180 );
+    BOOST_CHECK_EQUAL( alarmConfig.ovuvAlarmRepeatCount,        2 );
+
+    BOOST_CHECK( ! alarmConfig.ovThreshold );
+
+    BOOST_CHECK_CLOSE( *alarmConfig.uvThreshold, 119.3, 1e-4 );
 }
 
 
