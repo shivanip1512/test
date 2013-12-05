@@ -44,7 +44,7 @@ public class InventoryPageIndexBuilder extends DbPageIndexBuilder {
     }
 
     protected InventoryPageIndexBuilder() {
-        super("up:inventory");
+        super("inventory");
     }
 
     @Override

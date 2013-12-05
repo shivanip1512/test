@@ -30,8 +30,6 @@ import org.springframework.stereotype.Component;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.search.result.SearchResults;
-import com.cannontech.common.userpage.model.SiteModule;
-import com.cannontech.common.userpage.model.UserPage;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -46,7 +44,6 @@ import com.cannontech.web.search.lucene.YukonObjectSearchAnalyzer;
 import com.cannontech.web.search.lucene.index.SearchTemplate;
 import com.cannontech.web.search.lucene.index.SiteSearchIndexManager;
 import com.cannontech.web.search.lucene.index.site.DocumentBuilder;
-import com.cannontech.web.support.SiteMapPage;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
@@ -68,38 +65,6 @@ public class SiteSearchServiceImpl implements SiteSearchService {
     @Override
     public String sanitizeSearchStr(String searchStr) {
         return searchStr == null ? "" : searchStr.replaceAll("[^\\p{Alnum}]+", " ").trim();
-    }
-
-    private static List<String> getListFromDocument(Document document, String prefix) {
-        List<String> list = new ArrayList<>();
-        int index = 0;
-        String fieldValue;
-        while ((fieldValue = document.get(prefix + index)) != null) {
-            list.add(fieldValue);
-            index++;
-        }
-        return list;
-    }
-
-    private static Page buildPageFromDocument(Document document) {
-        String pageKey = document.get("pageKey");
-
-        if (pageKey.startsWith("up")) {
-            String path = document.get("path");
-            String pageName = document.get("pageName");
-            List<String> pageArgs = getListFromDocument(document, "pageArg");
-            List<String> summaryArgs = new ArrayList<>(pageArgs);
-            summaryArgs.addAll(getListFromDocument(document, "summaryArg"));
-            String module = document.get("module");
-            UserPage userPage = new UserPage(0, path, false, SiteModule.getByName(module), pageName,
-                pageArgs, null, null);
-            Object[] summaryArgsArray = summaryArgs.toArray(new String[summaryArgs.size()]);
-            Page page = new Page(userPage, summaryArgsArray);
-            return page;
-        }
-
-        Page page = new Page(SiteMapPage.valueOf(pageKey.substring(3)));
-        return page;
     }
 
     @Override
@@ -134,8 +99,8 @@ public class SiteSearchServiceImpl implements SiteSearchService {
                 for (int index = 0; index < stop; ++index) {
                     int docId = topDocs.scoreDocs[index].doc;
                     Document document = indexSearcher.doc(docId);
-                    if (siteSearchIndexManager.isAllowedToView(document, user)) {
-                        Page page = buildPageFromDocument(document);
+                    Page page = siteSearchIndexManager.buildPageFromDocument(document, user);
+                    if (page != null) {
                         list.add(page);
                     }
                 }
@@ -211,10 +176,10 @@ public class SiteSearchServiceImpl implements SiteSearchService {
         Function<Page, String> translator = new Function<Page, String>() {
             @Override
             public String apply(Page page) {
-                if (page.isBackedBySiteMapPage()) {
+                if (page.isLegacyPage()) {
                     MessageSourceAccessor messageSourceAccessor =
                             messageSourceResolver.getMessageSourceAccessor(userContext);
-                    return messageSourceAccessor.getMessage(page.getSiteMapPage().getFormatKey());
+                    return messageSourceAccessor.getMessage(page.getTitle());
                 }
                 return userPageService.getLocalizePageTitle(page.getUserPage(),
                     userContext).toLowerCase(userContext.getLocale());

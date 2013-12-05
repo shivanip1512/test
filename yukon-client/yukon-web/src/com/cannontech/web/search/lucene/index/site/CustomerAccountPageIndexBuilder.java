@@ -37,7 +37,7 @@ public class CustomerAccountPageIndexBuilder extends DbPageIndexBuilder {
     }
 
     protected CustomerAccountPageIndexBuilder() {
-        super("up:account");
+        super("account");
     }
 
     @Override

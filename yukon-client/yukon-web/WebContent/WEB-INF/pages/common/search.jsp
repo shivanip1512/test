@@ -62,10 +62,10 @@
                                 <div>
                                     <a href="<cti:url value="${result.path}"/>">
                                         <cti:searchTerm term="${searchString}" asLuceneTerms="true">
-                                            <c:if test="${result.backedBySiteMapPage}">
-                                                <i:inline key="${result.siteMapPage}"/>
+                                            <c:if test="${result.legacyPage}">
+                                                <i:inline key="${result.title}"/>
                                             </c:if>
-                                            <c:if test="${!result.backedBySiteMapPage}">
+                                            <c:if test="${!result.legacyPage}">
                                                 <cti:pageName userPage="${result.userPage}"/>
                                             </c:if>
                                        </cti:searchTerm>
@@ -118,10 +118,10 @@
                                 <div>
                                     <a href="<cti:url value="${result.path}"/>">
                                         <cti:searchTerm term="${searchString}" asLuceneTerms="true">
-                                            <c:if test="${result.backedBySiteMapPage}">
-                                                <i:inline key="${result.siteMapPage}"/>
+                                            <c:if test="${result.legacyPage}">
+                                                <i:inline key="${result.title}"/>
                                             </c:if>
-                                            <c:if test="${!result.backedBySiteMapPage}">
+                                            <c:if test="${!result.legacyPage}">
                                                 <cti:pageName userPage="${result.userPage}"/>
                                             </c:if>
                                        </cti:searchTerm>

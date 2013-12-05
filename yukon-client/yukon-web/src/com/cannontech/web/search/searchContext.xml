@@ -85,6 +85,7 @@
     <bean class="com.cannontech.web.search.lucene.index.site.PaoPageIndexBuilder"/>
     <bean class="com.cannontech.web.search.lucene.index.site.MeterPaoTypeHandler"/>
     <bean class="com.cannontech.web.search.lucene.index.site.DrPaoTypeHandler"/>
+    <bean class="com.cannontech.web.search.lucene.index.site.CapControlPaoTypeHandler"/>
 
     <bean class="com.cannontech.web.search.lucene.index.SiteSearchIndexManager">
         <property name="asyncDynamicDataSource" ref="asyncDynamicDataSource"/>

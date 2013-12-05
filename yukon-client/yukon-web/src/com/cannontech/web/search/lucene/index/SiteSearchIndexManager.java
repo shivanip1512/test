@@ -20,6 +20,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.common.search.result.Page;
 import com.cannontech.web.search.lucene.TopDocsCallbackHandler;
 import com.cannontech.web.search.lucene.index.site.DbPageIndexBuilder;
 import com.cannontech.web.search.lucene.index.site.PageIndexBuilder;
@@ -58,13 +59,14 @@ import com.google.common.collect.ImmutableMap.Builder;
  *         device label?
  *         display name?
  *         alternate tracking number?
- *     
+ * 
  * Document:
  *     pageKey - Unique key to identify the row (for deletion mainly).  See descriptions below for value.
+ *     pageType (modern, siteMap or legacy)
  *     a) for SiteMapPage pages:
  *         pageKey is "sm:" + siteMapPage enum value
  *     b) for normal pages:
- *         pageKey is "up:" + searcherKey [+ ":" + id]
+ *         pageKey is searcherKey [+ ":" + id]
  *         // maybe consider not storing path...it's kinda redundant
  *         module
  *         pageName (raw)
@@ -198,5 +200,22 @@ public class SiteSearchIndexManager extends AbstractIndexManager {
         String basePageKey = pageKey.substring(0, pageKey.lastIndexOf(':'));
         PageIndexBuilder indexBuilder = indexBuildersByBasePageKey.get(basePageKey);
         return indexBuilder.isAllowedToView(document, user);
+    }
+
+    /**
+     * Convert the document into a "page" model object for use in the UI.  This will delegate to the appropriate
+     * {@link PageIndexBuilder} to actually create the document.  This will return null if the user is not allowed
+     * to view the page.
+     */
+    public Page buildPageFromDocument(Document document, LiteYukonUser user) {
+        String pageKey = document.get("pageKey");
+        String basePageKey = pageKey.substring(0, pageKey.lastIndexOf(':'));
+        PageIndexBuilder indexBuilder = indexBuildersByBasePageKey.get(basePageKey);
+        PageType pageType = PageType.valueOf(document.get("pageType"));
+        if (indexBuilder.isAllowedToView(document, user)) {
+            Page page = pageType.buildPage(document);
+            return page;
+        }
+        return null;
     }
 }

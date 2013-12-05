@@ -29,7 +29,7 @@ public abstract class DbPageIndexBuilder implements PageIndexBuilder {
 
     @Autowired private YukonJdbcTemplate jdbcTemplate;
 
-    private final String pageKeyBase;
+    protected final String pageKeyBase;
 
     /**
      * The "select ..." bit of the query.  This is used when rebuilding the index as well as when reading a single

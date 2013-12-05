@@ -17,6 +17,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.search.lucene.index.PageType;
 import com.cannontech.web.search.lucene.index.AbstractIndexManager.IndexUpdateInfo;
 import com.cannontech.web.support.SiteMapHelper;
 import com.cannontech.web.support.SiteMapPage;
@@ -28,7 +29,7 @@ public class StaticPageIndexBuilder implements PageIndexBuilder {
 
     @Override
     public String getPageKeyBase() {
-        return "sm";
+        return "siteMap";
     }
 
     public Query getUserContextQuery(YukonUserContext userContext) {
@@ -45,7 +46,8 @@ public class StaticPageIndexBuilder implements PageIndexBuilder {
 
         for (SiteMapPage siteMapPage : SiteMapPage.values()) {
             DocumentBuilder builder = new DocumentBuilder();
-            builder.pageKey("sm:" + siteMapPage.name());
+            builder.pageKey(getPageKeyBase() + ":" + siteMapPage.name());
+            builder.pageType(PageType.SITE_MAP);
             MessageSourceResolvable resolvable = new YukonMessageSourceResolvable(siteMapPage.getFormatKey());
             String pageName = messageSourceAccessor.getMessage(resolvable);
             // Adding this to the pageArgs makes it searchable and usable for auto-complete searches.

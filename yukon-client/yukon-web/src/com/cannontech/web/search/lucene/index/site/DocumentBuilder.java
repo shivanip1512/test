@@ -1,5 +1,7 @@
 package com.cannontech.web.search.lucene.index.site;
 
+import static com.google.common.base.Preconditions.*;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -10,8 +12,8 @@ import java.util.Map;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 
+import com.cannontech.web.search.lucene.index.PageType;
 import com.google.common.base.Joiner;
-import static com.google.common.base.Preconditions.*;
 
 /**
  * A simple class help with building Lucene documents for the site search index; to help centralize
@@ -36,6 +38,7 @@ public final class DocumentBuilder {
     private final static Joiner searchStringJoiner = Joiner.on(" ").skipNulls();
 
     private String pageKey;
+    private PageType pageType = PageType.USER_PAGE;
     private Integer ecId;
     private final List<String> primarySearchValues = new ArrayList<>();
     private String module;
@@ -49,6 +52,11 @@ public final class DocumentBuilder {
 
     public DocumentBuilder pageKey(String pageKey) {
         this.pageKey = pageKey;
+        return this;
+    }
+
+    public DocumentBuilder pageType(PageType pageType) {
+        this.pageType= pageType;
         return this;
     }
 
@@ -118,6 +126,7 @@ public final class DocumentBuilder {
 
         // Search Fields
         document.add(new Field("pageKey", pageKey, Field.Store.YES, Field.Index.NOT_ANALYZED));
+        document.add(new Field("pageType", pageType.name(), Field.Store.YES, Field.Index.NOT_ANALYZED));
         String ecIdStr = ecId == null ? "none" : ecId.toString();
         document.add(new Field("energyCompanyId", ecIdStr, Field.Store.YES, Field.Index.NOT_ANALYZED));
 
@@ -126,7 +135,7 @@ public final class DocumentBuilder {
         document.add(new Field("primarySearch", primarySearch, Field.Store.NO, Field.Index.ANALYZED));
 
         // Result Fields
-        if (module != null && pageName != null && path != null && pageKey.startsWith("up:")) {
+        if (pageType == PageType.USER_PAGE || pageType == PageType.LEGACY) {
             document.add(new Field("module", module, Field.Store.YES, Field.Index.NOT_ANALYZED));
             document.add(new Field("pageName", pageName, Field.Store.YES, Field.Index.NOT_ANALYZED));
             document.add(new Field("path", path, Field.Store.YES, Field.Index.NOT_ANALYZED));

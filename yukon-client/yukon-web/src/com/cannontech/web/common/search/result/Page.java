@@ -1,5 +1,9 @@
 package com.cannontech.web.common.search.result;
 
+import static com.google.common.base.Preconditions.*;
+
+import java.util.List;
+
 import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.common.userpage.model.UserPage;
@@ -11,6 +15,8 @@ import com.cannontech.web.support.SiteMapPage;
  * Currently this is used to represent pages found in a search.
  */
 public final class Page {
+    private final static String baseKey = "yukon.web.modules.search.";
+
     private final UserPage userPage;
 
     /**
@@ -22,25 +28,59 @@ public final class Page {
     private final Object[] summaryArgs;
 
     /**
-     * A temporary hack to get around the fact that some statically searched pages aren't in module_config.xml.
-     * (They live in the SiteMapPage enum in SiteMapHelper and have keys for their page names hard-coded.)
-     * For normal searches, this will be null.  For page searches (pages currently in SiteMapPage), this will be
-     * set but userPage will be null.
+     * An instance of this class is used instead of UserPage for legacy pages. 
      */
-    private final SiteMapPage siteMapPage;
+    private final static class LegacyPage {
+        final String path;
+        final MessageSourceResolvable title;
+        final MessageSourceResolvable summary;
 
+        LegacyPage(String path, String module, String pageName, Object[] summaryArgs) {
+            this.path = path;
+            this.title = new YukonMessageSourceResolvable(baseKey + module + '.' + pageName + ".title", summaryArgs);
+            this.summary = new YukonMessageSourceResolvable(baseKey + module + '.' + pageName + ".summary", summaryArgs);
+        }
+
+        LegacyPage(SiteMapPage siteMapPage) {
+            path = siteMapPage.getLink();
+            String pageName = siteMapPage.name();
+            title = new YukonMessageSourceResolvable(siteMapPage.getFormatKey());
+            String[] summaryCodes = new String[] { baseKey + pageName + ".summary", siteMapPage.getFormatKey() };
+            summary = new YukonMessageSourceResolvable(summaryCodes);
+        }
+    }
+
+    /**
+     * A temporary hack to get around the fact that some statically searched pages aren't in module_config.xml.
+     * For normal pages, this will be null.  For legacy pages, this will be set but userPage will be null.
+     */
+    private final LegacyPage legacyPage;
+
+    // TODO: delete once old pages are deleted
     public Page(UserPage userPage, Object... summaryArgs) {
-        this(userPage, null, summaryArgs);
+        this.userPage = userPage;
+        this.legacyPage = null;
+        this.summaryArgs = summaryArgs;
+    }
+
+    public Page(UserPage userPage, List<String> summaryArgs) {
+        this.userPage = userPage;
+        this.legacyPage = null;
+        this.summaryArgs = summaryArgs.toArray(new Object[summaryArgs.size()]);
     }
 
     public Page(SiteMapPage siteMapPage) {
-        this(null, siteMapPage);
+        this.userPage = null;
+        this.legacyPage = new LegacyPage(siteMapPage);
+        this.summaryArgs = null;
     }
 
-    private Page(UserPage userPage, SiteMapPage siteMapPage, Object... summaryArgs) {
-        this.userPage = userPage;
-        this.siteMapPage = siteMapPage;
-        this.summaryArgs = summaryArgs;
+    public Page(String path, String module, String pageName, List<String> summaryArgs) {
+        checkState(module != null);
+        checkState(pageName != null);
+        this.userPage = null;
+        this.summaryArgs = summaryArgs.toArray(new Object[summaryArgs.size()]);
+        this.legacyPage = new LegacyPage(path, module, pageName, this.summaryArgs);
     }
 
     public UserPage getUserPage() {
@@ -48,10 +88,10 @@ public final class Page {
     }
 
     public MessageSourceResolvable getSummary() {
-        if (siteMapPage != null) {
-            return new YukonMessageSourceResolvable(siteMapPage.getFormatKey());
+        if (legacyPage != null) {
+            return legacyPage.summary;
         }
-        return new YukonMessageSourceResolvable("yukon.web.modules.search." + userPage.getModule() + "."
+        return new YukonMessageSourceResolvable(baseKey + userPage.getModule() + "."
                 + userPage.getTitle() + ".summary", summaryArgs);
     }
 
@@ -59,15 +99,15 @@ public final class Page {
         return summaryArgs;
     }
 
-    public boolean isBackedBySiteMapPage() {
-        return siteMapPage != null;
+    public boolean isLegacyPage() {
+        return legacyPage != null;
     }
 
-    public SiteMapPage getSiteMapPage() {
-        return siteMapPage;
+    public MessageSourceResolvable getTitle() {
+        return legacyPage.title;
     }
 
     public String getPath() {
-        return siteMapPage == null ? userPage.getPath() : siteMapPage.getLink();
+        return legacyPage == null ? userPage.getPath() : legacyPage.path;
     }
 }

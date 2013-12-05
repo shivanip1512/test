@@ -52,7 +52,7 @@ public class PaoPageIndexBuilder extends DbPageIndexBuilder {
 
     @Autowired
     public PaoPageIndexBuilder(List<PaoTypeHandler> handlers) {
-        super("up:pao");
+        super("pao");
 
         this.handlers = handlers;
         Builder<PaoType, PaoTypeHandler> builder = ImmutableMap.builder();
@@ -145,7 +145,7 @@ public class PaoPageIndexBuilder extends DbPageIndexBuilder {
     @Override
     public boolean isAllowedToView(Document document, LiteYukonUser user) {
         String pageKey = document.get("pageKey");
-        int paoId = Integer.parseInt(pageKey.substring(7));
+        int paoId = Integer.parseInt(pageKey.substring(pageKeyBase.length() + 1));
         PaoType paoType = PaoType.valueOf(document.get("paoType"));
         PaoTypeHandler handler = handlersByType.get(paoType);
         return handler.isAllowedToView(document, user, new PaoIdentifier(paoId, paoType));
