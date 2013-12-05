@@ -136,7 +136,8 @@ public class SiteSearchIndexManager extends AbstractIndexManager {
         boolean needToIndex = true;
         try {
             needToIndex = searchTemplate.doCallBackSearch(query, handler);
-        } catch (IOException e) {
+        } catch (IOException ioException) {
+            throw new IllegalStateException("unexpected error querying site search index", ioException);
         }
 
         if (needToIndex) {

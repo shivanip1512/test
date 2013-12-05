@@ -5,7 +5,11 @@ import static com.cannontech.message.dispatch.message.DBChangeMsg.*;
 import java.sql.SQLException;
 
 import org.apache.lucene.document.Document;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.search.BooleanClause.Occur;
+import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.TermQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -108,19 +112,36 @@ public class InventoryPageIndexBuilder extends DbPageIndexBuilder {
 
     @Override
     public Query userLimitingQuery(LiteYukonUser user) {
-        // TODO:
+        BooleanQuery hardwareQuery = null;
+        if (!rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES, user)) {
+            hardwareQuery = new BooleanQuery();
+            hardwareQuery.add(new TermQuery(new Term("module", "operator")), Occur.MUST);
+            hardwareQuery.add(new TermQuery(new Term("pageName", "hardware.VIEW")), Occur.MUST);
+        }
+
+        BooleanQuery inventoryQuery = null;
+        if (!rolePropertyDao.checkRole(YukonRole.INVENTORY, user)) {
+            inventoryQuery = new BooleanQuery();
+            inventoryQuery.add(new TermQuery(new Term("module", "operator")), Occur.MUST);
+            inventoryQuery.add(new TermQuery(new Term("pageName", "inventory.VIEW")), Occur.MUST);
+        }
+
+        if (hardwareQuery != null && inventoryQuery != null) {
+            BooleanQuery limitingQuery = new BooleanQuery();
+            limitingQuery.add(hardwareQuery, Occur.SHOULD);
+            limitingQuery.add(inventoryQuery, Occur.SHOULD);
+            return limitingQuery;
+        } else if (hardwareQuery != null) {
+            return hardwareQuery;
+        } else if (inventoryQuery != null) {
+            return inventoryQuery;
+        }
+
         return null;
     }
 
     @Override
     public boolean isAllowedToView(Document document, LiteYukonUser user) {
-        // value of pageName is either 'hardware.VIEW' or 'inventory.VIEW'
-        if (document.get("pageName").charAt(0) == 'h') {
-            // hardware.VIEW page
-            return rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES, user);
-        }
-
-        // inventory.VIEW page
-        return rolePropertyDao.checkRole(YukonRole.INVENTORY, user);
+        return true;
     }
 }

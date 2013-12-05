@@ -4,14 +4,19 @@ import java.sql.SQLException;
 import java.util.Set;
 
 import org.apache.lucene.document.Document;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.TermQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
-import com.cannontech.core.authorization.service.PaoPermissionService;
+import com.cannontech.core.authorization.service.PaoAuthorizationService;
+import com.cannontech.core.authorization.support.Permission;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.search.lucene.index.site.PaoPageIndexBuilder.PaoTypeHandler;
@@ -19,7 +24,8 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
 
 public class DrPaoTypeHandler implements PaoTypeHandler {
-    @Autowired private PaoPermissionService paoPermissionService;
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired protected PaoAuthorizationService paoAuthorizationService;
 
     private final Set<PaoType> controlAreaPaoTypes;
     private final Set<PaoType> scenarioPaoTypes;
@@ -79,16 +85,14 @@ public class DrPaoTypeHandler implements PaoTypeHandler {
 
     @Override
     public Query userLimitingQuery(LiteYukonUser user) {
-        // TODO:  limit if DR is off entirely
+        if (!rolePropertyDao.checkProperty(YukonRoleProperty.DEMAND_RESPONSE, user)) {
+            return new TermQuery(new Term("module", "dr"));
+        }
         return null;
     }
 
     @Override
     public boolean isAllowedToView(Document document, LiteYukonUser user, PaoIdentifier paoIdentifier) {
-        // TODO:
-//        AuthorizationResponse hasPermission =
-//            paoPermissionService.hasPermission(user, paoIdentifier, Permission.LM_VISIBLE);
-//        return hasPermission == AuthorizationResponse.AUTHORIZED;
-        return true;
+        return paoAuthorizationService.isAuthorized(user, Permission.LM_VISIBLE, paoIdentifier);
     }
 }

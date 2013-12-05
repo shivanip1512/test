@@ -56,13 +56,6 @@ public final class Page {
      */
     private final LegacyPage legacyPage;
 
-    // TODO: delete once old pages are deleted
-    public Page(UserPage userPage, Object... summaryArgs) {
-        this.userPage = userPage;
-        this.legacyPage = null;
-        this.summaryArgs = summaryArgs;
-    }
-
     public Page(UserPage userPage, List<String> summaryArgs) {
         this.userPage = userPage;
         this.legacyPage = null;
@@ -91,7 +84,7 @@ public final class Page {
         if (legacyPage != null) {
             return legacyPage.summary;
         }
-        return new YukonMessageSourceResolvable(baseKey + userPage.getModule() + "."
+        return new YukonMessageSourceResolvable(baseKey + userPage.getModule().getName() + "."
                 + userPage.getTitle() + ".summary", summaryArgs);
     }
 

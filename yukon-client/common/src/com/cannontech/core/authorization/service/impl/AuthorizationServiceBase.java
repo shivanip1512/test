@@ -30,6 +30,7 @@ public abstract class AuthorizationServiceBase<T,Y> implements AuthorizationServ
     
     protected abstract Y convert(T input);
 
+    @Override
     public boolean isAuthorized(LiteYukonUser user, Permission permission, T object) {
 
         // Iterate through each of the Authorizations in the list. If the
@@ -52,11 +53,12 @@ public abstract class AuthorizationServiceBase<T,Y> implements AuthorizationServ
         return false;
     }
     
+    @Override
     public void verifyAllPermissions(LiteYukonUser user, T object, Permission... permissions) throws NotAuthorizedException {
         
         for(Permission permission : permissions) {
             if (!this.isAuthorized(user, permission, object)) {
-                throw new NotAuthorizedException("The user is not autorized for object " + object.toString());
+                throw new NotAuthorizedException("The user is not authorized for object " + object.toString());
             }
         }
     }
@@ -67,6 +69,7 @@ public abstract class AuthorizationServiceBase<T,Y> implements AuthorizationServ
         List<Y> inputList = Lists.newArrayList();
         
         Iterable<Y> transform = Iterables.transform(objectsToFilter, new Function<K,Y>() {
+            @Override
             public Y apply(K from) {
                 return convert(from);
             };

@@ -89,7 +89,7 @@ public class CustomerAccountPageIndexBuilder extends DbPageIndexBuilder {
     @Override
     public Query userLimitingQuery(LiteYukonUser user) {
         if (!rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_ACCOUNT_SEARCH, user)) {
-            return new PrefixQuery(new Term("pageKey", getPageKeyBase().replace(":", "\\:") + "\\:*"));
+            return new PrefixQuery(new Term("pageKey", getPageKeyBase()));
         }
         return null;
     }
