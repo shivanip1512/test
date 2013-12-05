@@ -22,12 +22,12 @@ class IM_EX_DEVDB Rfn420FocusDevice
 };
 
 
-typedef Rfn420FocusDevice Rfn420flDevice;
-typedef Rfn420FocusDevice Rfn420fxDevice;
-typedef Rfn420FocusDevice Rfn420fdDevice;
+typedef RfnResidentialDevice Rfn420flDevice;
+typedef RfnResidentialDevice Rfn420fxDevice;
+typedef RfnResidentialDevice Rfn420fdDevice;
 
-typedef Rfn420FocusDevice Rfn420frxDevice;
-typedef Rfn420FocusDevice Rfn420frdDevice;
+typedef RfnResidentialDevice Rfn420frxDevice;
+typedef RfnResidentialDevice Rfn420frdDevice;
 
 
 }
