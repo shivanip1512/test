@@ -95,6 +95,16 @@ boost::optional<E2eDataTransferProtocol::EndpointResponse> E2eDataTransferProtoc
 
     coap_pdu_parse(&mutable_raw_pdu.front(), mutable_raw_pdu.size(), indication_pdu);
 
+    if( indication_pdu->hdr->code >= COAP_RESPONSE_400_BAD_REQUEST )
+    {
+        {
+            CtiLockGuard<CtiLogger> dout_guard(dout);
+            dout << CtiTime() << " Unexpected header code (" << indication_pdu->hdr->code << ") for endpointId " << endpointId << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
+        }
+
+        return boost::none;
+    }
+
     switch( indication_pdu->hdr->type )
     {
         case COAP_MESSAGE_ACK:
@@ -119,7 +129,7 @@ boost::optional<E2eDataTransferProtocol::EndpointResponse> E2eDataTransferProtoc
             if( _inboundIds.count(endpointId) && _inboundIds[endpointId] == indication_pdu->hdr->id )
             {
                 CtiLockGuard<CtiLogger> dout_guard(dout);
-                dout << CtiTime() << " CONfirmable packet was duplicate (" << indication_pdu->hdr->id << ") for endpointId " << endpointId << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
+                dout << CtiTime() << " NONconfirmable packet was duplicate (" << indication_pdu->hdr->id << ") for endpointId " << endpointId << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
 
                 return boost::none;
             }

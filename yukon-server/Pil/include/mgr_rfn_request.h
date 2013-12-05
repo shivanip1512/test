@@ -63,6 +63,7 @@ private:
     void             handleNewRequests(const RfnIdentifierSet &recentCompletions);
     void             sendMessages(void);
     void             postResults();
+    void             handleStatistics();
 
     typedef std::vector<unsigned char> SerializedMessage;
 
@@ -71,8 +72,10 @@ private:
     struct PacketInfo
     {
         std::vector<unsigned char> serializedMessage;
+        CtiTime  timeSent;
         unsigned retransmissionDelay;
         unsigned retransmits;
+        unsigned maxRetransmits;
     };
 
     PacketInfo sendE2eDataRequestPacket(const std::vector<unsigned char> &e2ePacket, const unsigned char applicationServiceId, const Devices::RfnIdentifier &rfnIdentifier);

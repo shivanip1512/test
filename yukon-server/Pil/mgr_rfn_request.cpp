@@ -11,9 +11,13 @@
 #include "RfnE2eDataConfirmMsg.h"
 #include "RfnE2eDataIndicationMsg.h"
 
+#include "rfn_statistics.h"
+
 #include "std_helper.h"
 
 #include <boost/assign/list_of.hpp>
+
+#include <sstream>
 
 namespace Cti {
 namespace Pil {
@@ -26,6 +30,7 @@ enum
     E2EDT_CON_RETX_TIMEOUT     = 60,
     E2EDT_CON_MAX_RETX         =  2,
     E2EDT_CON_RETX_RAND_FACTOR = 10,
+    E2EDT_STATS_REPORTING_INTERVAL = 86400,
 };
 
 using Devices::RfnIdentifier;
@@ -54,6 +59,9 @@ std::ostream &operator<<(std::ostream &logger, const formatAsHex<T> &wrapper)
 
     return logger;
 }
+
+
+Rfn::E2eStatistics stats;
 
 
 RfnRequestManager::RfnRequestManager()
@@ -96,6 +104,8 @@ void RfnRequestManager::tick()
 
     //  make the results available to PIL
     postResults();
+
+    handleStatistics();
 }
 
 
@@ -158,6 +168,17 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
 
         const Protocols::E2eDataTransferProtocol::EndpointResponse &er = *optionalResponse;
 
+        if( ! er.ack.empty() )
+        {
+            //  ignore the return, don't set any timeouts - this is fire and forget
+            sendE2eDataRequestPacket(
+                    er.ack,
+                    activeRequest.request.command->getApplicationServiceId(),
+                    activeRequest.request.rfnIdentifier);
+
+            stats.incrementAcks(activeRequest.request.deviceId, CtiTime::now());
+        }
+
         if( er.token != activeRequest.request.rfnRequestId )
         {
             CtiLockGuard<CtiLogger> dout_guard(dout);
@@ -185,17 +206,11 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
                 er.data.begin(),
                 er.data.end());
 
-        if( ! er.ack.empty() )
-        {
-            //  ignore the return, don't set any timeouts - this is fire and forget
-            sendE2eDataRequestPacket(
-                    er.ack,
-                    activeRequest.request.command->getApplicationServiceId(),
-                    activeRequest.request.rfnIdentifier);
-        }
-
         if( ! er.blockContinuation.empty() )
         {
+            const CtiTime  previousBlockTimeSent   = activeRequest.currentPacket.timeSent;
+            const unsigned previousRetransmitCount = activeRequest.currentPacket.retransmits;
+
             activeRequest.currentPacket =
                     sendE2eDataRequestPacket(
                             er.blockContinuation,
@@ -204,6 +219,8 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
 
             activeRequest.timeout = CtiTime::now().seconds() + gConfigParms.getValueAsInt("E2EDT_NM_TIMEOUT", E2EDT_NM_TIMEOUT);
             activeRequest.status  = ActiveRfnRequest::PendingConfirm;
+
+            stats.incrementBlockContinuation(activeRequest.request.deviceId, previousRetransmitCount, activeRequest.currentPacket.timeSent, previousBlockTimeSent);
 
             {
                 CtiLockGuard<CtiLogger> dout_guard(dout);
@@ -224,6 +241,8 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
             std::auto_ptr<RfnDeviceResult> result(new RfnDeviceResult);
 
             result->request = activeRequest.request;
+
+            stats.incrementCompletions(activeRequest.request.deviceId, activeRequest.currentPacket.retransmits, CtiTime::now());
 
             try
             {
@@ -263,12 +282,12 @@ namespace
 
     const std::map<int, YukonError_t> ConfirmErrors = boost::assign::map_list_of
         (RT::DESTINATION_DEVICE_ADDRESS_UNKNOWN     , ErrorUnknownAddress             )
-        (RT::DESTINATION_NETWORK_UNAVAILABLE        , ErrorRequestPacketTooLarge      )
-        (RT::PMTU_LENGTH_EXCEEDED                   , ErrorProtocolUnsupported        )
-        (RT::E2E_PROTOCOL_TYPE_NOT_SUPPORTED        , ErrorInvalidNetworkServerId     )
-        (RT::NETWORK_SERVER_IDENTIFIER_INVALID      , ErrorInvalidApplicationServiceId)
-        (RT::APPLICATION_SERVICE_IDENTIFIER_INVALID , ErrorNetworkLoadControl         )
-        (RT::NETWORK_LOAD_CONTROL                   , ErrorNetworkUnavailable         )
+        (RT::DESTINATION_NETWORK_UNAVAILABLE        , ErrorNetworkUnavailable         )
+        (RT::PMTU_LENGTH_EXCEEDED                   , ErrorRequestPacketTooLarge      )
+        (RT::E2E_PROTOCOL_TYPE_NOT_SUPPORTED        , ErrorProtocolUnsupported        )
+        (RT::NETWORK_SERVER_IDENTIFIER_INVALID      , ErrorInvalidNetworkServerId     )
+        (RT::APPLICATION_SERVICE_IDENTIFIER_INVALID , ErrorInvalidApplicationServiceId)
+        (RT::NETWORK_LOAD_CONTROL                   , ErrorNetworkLoadControl         )
         ;
 }
 
@@ -401,21 +420,24 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleTimeouts()
                     dout << CtiTime() << " Timeout " << expired_itr->first << " reply was pending for device " << activeRequest.request.rfnIdentifier << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
                 }
 
-                if( activeRequest.currentPacket.retransmits-- )
-                {
-                    {
-                        CtiLockGuard<CtiLogger> dout_guard(dout);
-                        dout << CtiTime() << " Sending retransmit (" << static_cast<unsigned>(activeRequest.currentPacket.retransmits) << " remaining) for device " << activeRequest.request.rfnIdentifier << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
-                    }
+                stats.incrementFailures(activeRequest.request.deviceId);
 
+                if( activeRequest.currentPacket.retransmits < activeRequest.currentPacket.maxRetransmits )
+                {
                     _messages.push_back(activeRequest.currentPacket.serializedMessage);
 
+                    activeRequest.currentPacket.retransmits++;
                     activeRequest.currentPacket.retransmissionDelay *= 2;
 
                     activeRequest.timeout = CtiTime::now().seconds() + gConfigParms.getValueAsInt("E2EDT_NM_TIMEOUT", E2EDT_NM_TIMEOUT);
                     activeRequest.status  = ActiveRfnRequest::PendingConfirm;
 
                     retransmits.insert(rfnId);
+
+                    {
+                        CtiLockGuard<CtiLogger> dout_guard(dout);
+                        dout << CtiTime() << " Retransmit sent (" << (activeRequest.currentPacket.maxRetransmits - activeRequest.currentPacket.retransmits) << " remaining) for device " << activeRequest.request.rfnIdentifier << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
+                    }
 
                     continue;
                 }
@@ -547,6 +569,8 @@ void RfnRequestManager::checkForNewRequest(const RfnIdentifier &rfnIdentifier)
                             request.command->getApplicationServiceId(),
                             request.rfnIdentifier);
 
+            stats.incrementRequests(newRequest.request.deviceId, newRequest.currentPacket.timeSent);
+
             newRequest.timeout = CtiTime::now().seconds() + gConfigParms.getValueAsInt("E2EDT_NM_TIMEOUT", E2EDT_NM_TIMEOUT);
             newRequest.status  = ActiveRfnRequest::PendingConfirm;
 
@@ -564,7 +588,7 @@ void RfnRequestManager::checkForNewRequest(const RfnIdentifier &rfnIdentifier)
                 dout << "request.userMessageId   :" << newRequest.request.userMessageId    << std::endl;
                 dout << "current message         :" << newRequest.currentPacket.serializedMessage << std::endl;
                 dout << "retransmission delay    :" << newRequest.currentPacket.retransmissionDelay << std::endl;
-                dout << "retries                 :" << newRequest.currentPacket.retransmits << std::endl;
+                dout << "max retransmits         :" << newRequest.currentPacket.maxRetransmits << std::endl;
                 dout << "status                  :" << newRequest.status                   << std::endl;
                 dout << "timeout                 :" << CtiTime(newRequest.timeout)         << std::endl;
             }
@@ -737,7 +761,9 @@ RfnRequestManager::PacketInfo
     transmissionReceipt.retransmissionDelay *= 100 + random_factor(random_source);
     transmissionReceipt.retransmissionDelay /= 100;
 
-    transmissionReceipt.retransmits = gConfigParms.getValueAsInt("E2EDT_CON_MAX_RETX", E2EDT_CON_MAX_RETX);
+    transmissionReceipt.maxRetransmits = gConfigParms.getValueAsInt("E2EDT_CON_MAX_RETX", E2EDT_CON_MAX_RETX);
+
+    transmissionReceipt.retransmits = 0;
 
     return transmissionReceipt;
 }
@@ -754,6 +780,95 @@ void RfnRequestManager::sendMessages()
 
     _messages.clear();
 }
+
+
+unsigned statsReportFrequency = gConfigParms.getValueAsInt("E2EDT_STATS_REPORTING_INTERVAL", E2EDT_STATS_REPORTING_INTERVAL);
+CtiTime nextStatisticsReport = nextScheduledTimeAlignedOnRate(CtiTime::now(), statsReportFrequency);
+
+
+void RfnRequestManager::handleStatistics()
+{
+    if( CtiTime::now() > nextStatisticsReport )
+    {
+        nextStatisticsReport = nextScheduledTimeAlignedOnRate(nextStatisticsReport, statsReportFrequency);
+
+        std::ostringstream report;
+
+        report << "RFN statistics report:" << std::endl;
+        report << "Attempted communication with # nodes: " << stats.nodeStatistics.size() << std::endl;
+        report << "Node, # requests, avg time/message, # of block tx, avg # blocks/block tx, avg time/block tx, avg time-to-ack, avg attempts/success, success/1 tx, success/2 tx, success/3 tx, failures" << std::endl;
+
+        for each( const Rfn::E2eStatistics::StatisticsPerNode::value_type &spn in stats.nodeStatistics )
+        {
+            report << spn.first;
+
+            const Rfn::E2eNodeStatistics &nodeStats = spn.second;
+
+            report << "," << nodeStats.uniqueMessages;
+            if( nodeStats.firstRequest && nodeStats.lastRequest && (nodeStats.uniqueMessages > 1) )
+            {
+                report << "," << static_cast<double>(nodeStats.lastRequest->seconds() - nodeStats.firstRequest->seconds()) / (nodeStats.uniqueMessages - 1);
+            }
+            else
+            {
+                report << ",0";
+            }
+            report << "," << nodeStats.blockTransfers;
+            if( nodeStats.blockTransfers )
+            {
+                report << "," << static_cast<double>(nodeStats.blocksReceived) / nodeStats.blockTransfers;
+                report << "," << static_cast<double>(nodeStats.cumulativeBlockTransferDelay) / nodeStats.blockTransfers;
+            }
+            else
+            {
+                report << ",0,0";
+            }
+
+            unsigned totalSuccesses = 0;
+            unsigned totalTransmits = 0;
+
+            for( int i = 0; i < nodeStats.successes.size(); ++i )
+            {
+                totalSuccesses += nodeStats.successes[i];
+                totalTransmits += nodeStats.successes[i] * (i + 1);
+            }
+
+            if( totalSuccesses )
+            {
+                report << "," << static_cast<double>(nodeStats.cumulativeSuccessfulDelay) / totalSuccesses;
+                report << "," << static_cast<double>(totalTransmits) / totalSuccesses;
+            }
+            else
+            {
+                report << ",0,0";
+            }
+
+            for( int i = 0; i < 3; ++i )
+            {
+                if( nodeStats.successes.size() > i )
+                {
+                    report << "," << nodeStats.successes[i];
+                }
+                else
+                {
+                    report << ",0";
+                }
+            }
+
+            report << "," << nodeStats.totalFailures;
+
+            report << std::endl;
+        }
+
+        {
+            CtiLockGuard<CtiLogger> guard(dout);
+            dout << CtiTime() << " " << report.str() << std::endl;
+        }
+
+        stats.nodeStatistics.clear();
+    }
+}
+
 
 }
 }
