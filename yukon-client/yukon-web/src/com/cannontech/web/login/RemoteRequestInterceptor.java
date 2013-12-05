@@ -15,7 +15,7 @@ import com.cannontech.web.util.YukonUserContextResolver;
  */
 public class RemoteRequestInterceptor extends HandlerInterceptorAdapter {
     
-	@Autowired YukonUserContextResolver userContextResolver;
+	@Autowired private YukonUserContextResolver userContextResolver;
 	private UserChecker userChecker;
 
     @Override

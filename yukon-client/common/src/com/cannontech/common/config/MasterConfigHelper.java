@@ -73,13 +73,10 @@ public class MasterConfigHelper {
     }
 
     public static ConfigurationSource getRemoteConfiguration() {
-        ConfigurationSource config = null;
-        try {  
-            config = ProxyFactory.getProxy(ConfigurationSource.class, ClientSession.getRemoteSession().getClientInterceptor("/remote/MasterConfig?noLoginRedirect=true"));
-            log.debug("MasterConfigMap loaded");
-        } catch (Exception e) {
-            log.debug("Unable to load master config map", e);
-        }
+        ConfigurationSource config =
+            ProxyFactory.getProxy(ConfigurationSource.class, ClientSession.getRemoteSession()
+                .getClientInterceptor("/remote/MasterConfig?noLoginRedirect=true"));
+        log.debug("MasterConfigMap loaded");
         return config;
     }
    

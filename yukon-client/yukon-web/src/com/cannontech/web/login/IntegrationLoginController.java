@@ -1,13 +1,13 @@
 package com.cannontech.web.login;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import net.sf.json.JSONObject;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,8 +75,8 @@ public class IntegrationLoginController {
     }
     
     @RequestMapping(value="/remoteLogin", method=RequestMethod.POST)
-    public @ResponseBody JSONObject remoteLogin(HttpServletRequest request, HttpServletResponse response, String username, String password) throws Exception {
-        JSONObject result = new JSONObject();
+    public @ResponseBody Map<String, String> remoteLogin(HttpServletRequest request, HttpServletResponse response, String username, String password) throws Exception {
+        Map<String, String> result = new HashMap<>();
         try {
             loginService.login(request, username, password);
             result.put("result", "success");
@@ -99,8 +99,8 @@ public class IntegrationLoginController {
     }
     
     @RequestMapping(value="/checkConnection", method=RequestMethod.POST)
-    public @ResponseBody JSONObject checkConnection(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        JSONObject result = new JSONObject();
+    public @ResponseBody Map<String, String> checkConnection(HttpServletRequest request) {
+        Map<String, String> result = new HashMap<>();
         if(request.getSession(false) == null){
             result.put("result", "failure");
         }else{

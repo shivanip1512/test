@@ -1,5 +1,6 @@
 package com.cannontech.common.config.retrieve;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.log4j.Logger;
@@ -30,7 +31,7 @@ public class RfnConfigRetriever implements ConfigFileRetriever {
                 InputStream inputStream = ClientSession.getRemoteSession().getInputStreamFromUrl("/common/config/rfn");
                 Resource resource = new InputStreamResource(inputStream);
                 return resource;
-            } catch (Exception e) {
+            } catch (IOException e) {
                 throw new RuntimeException("Unable to retrieve rfnPointMapping.xml for java webstart client." , e);
             }
         } else {

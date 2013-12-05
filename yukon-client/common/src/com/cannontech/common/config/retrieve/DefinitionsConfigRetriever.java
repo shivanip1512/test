@@ -1,5 +1,6 @@
 package com.cannontech.common.config.retrieve;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.log4j.Logger;
@@ -38,7 +39,7 @@ private static final Logger log = YukonLogManager.getLogger(DefinitionsConfigRet
                     return null;
                 }
          
-            } catch (Exception e) {
+            } catch (IOException e) {
                 throw new RuntimeException("Unable to retrieve deviceDefinition.xml for java webstart client." , e);
             }
         } else {
