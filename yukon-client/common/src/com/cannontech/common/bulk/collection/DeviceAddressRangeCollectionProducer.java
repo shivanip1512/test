@@ -31,8 +31,8 @@ import com.google.common.collect.Maps;
  */
 public class DeviceAddressRangeCollectionProducer implements DeviceCollectionProducer {
     @Autowired private PaoDao paoDao;
-    private static final String START = "start";
-    private static final String END = "end";
+    private static final String startParamName = "start";
+    private static final String endParamName = "end";
     
     @Override
     public DeviceCollectionType getSupportedType() {
@@ -43,8 +43,8 @@ public class DeviceAddressRangeCollectionProducer implements DeviceCollectionPro
     public DeviceCollection createDeviceCollection(HttpServletRequest request)
             throws ServletRequestBindingException {
 
-        int startAddress = ServletRequestUtils.getIntParameter(request, getSupportedType().getParameterName(START), -1);
-        int endAddress = ServletRequestUtils.getIntParameter(request, getSupportedType().getParameterName(END), -1);
+        int startAddress = ServletRequestUtils.getIntParameter(request, getSupportedType().getParameterName(startParamName), -1);
+        int endAddress = ServletRequestUtils.getIntParameter(request, getSupportedType().getParameterName(endParamName), -1);
         
         Validate.isTrue(startAddress >= 0, "start address must be greater than or equal to 0");
         Validate.isTrue(endAddress >= 0, "start address must be greater than or equal to 0");
@@ -62,8 +62,8 @@ public class DeviceAddressRangeCollectionProducer implements DeviceCollectionPro
                     + collectionType + ", Persistence type: " + collectionDbType);
         }
         DeviceCollectionByField collectionByField = (DeviceCollectionByField) collectionBase;
-        int startAddress = Integer.parseInt(collectionByField.getValueMap().get(START));
-        int endAddress = Integer.parseInt(collectionByField.getValueMap().get(END));
+        int startAddress = Integer.parseInt(collectionByField.getValueMap().get(startParamName));
+        int endAddress = Integer.parseInt(collectionByField.getValueMap().get(endParamName));
         
         return createDeviceCollection(startAddress, endAddress);
     }
@@ -74,13 +74,13 @@ public class DeviceAddressRangeCollectionProducer implements DeviceCollectionPro
         if(type != DeviceCollectionType.addressRange) {
             throw new IllegalArgumentException("Unable to parse device collection of type " + type);
         }
-        String startAddressParameterName = getSupportedType().getParameterName(START);
+        String startAddressParameterName = getSupportedType().getParameterName(startParamName);
         String startAddress = deviceCollection.getCollectionParameters().get(startAddressParameterName);
-        String endAddressParameterName = getSupportedType().getParameterName(END);
+        String endAddressParameterName = getSupportedType().getParameterName(endParamName);
         String endAddress = deviceCollection.getCollectionParameters().get(endAddressParameterName);
         Map<String, String> valueMap = Maps.newHashMap();
-        valueMap.put(START, startAddress);
-        valueMap.put(END, endAddress);
+        valueMap.put(startParamName, startAddress);
+        valueMap.put(endParamName, endAddress);
         
         return new DeviceCollectionByField(DeviceCollectionType.addressRange, valueMap);
     }
@@ -98,9 +98,9 @@ public class DeviceAddressRangeCollectionProducer implements DeviceCollectionPro
                 Map<String, String> paramMap = new HashMap<String, String>();
 
                 paramMap.put("collectionType", getSupportedType().name());
-                paramMap.put(getSupportedType().getParameterName(START),
+                paramMap.put(getSupportedType().getParameterName(startParamName),
                              String.valueOf(startAddress));
-                paramMap.put(getSupportedType().getParameterName(END), String.valueOf(endAddress));
+                paramMap.put(getSupportedType().getParameterName(endParamName), String.valueOf(endAddress));
 
                 return paramMap;
             }

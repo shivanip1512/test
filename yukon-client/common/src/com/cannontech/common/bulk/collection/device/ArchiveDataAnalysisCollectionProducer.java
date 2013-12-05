@@ -26,7 +26,7 @@ import com.google.common.collect.Maps;
  */
 public class ArchiveDataAnalysisCollectionProducer implements DeviceCollectionProducer {
     @Autowired private ArchiveDataAnalysisDao archiveDataAnalysisDao;
-    private static final String ANALYSISID = "analysisId";
+    private static final String analysisIdParamName = "analysisId";
     
     @Override
     public DeviceCollectionType getSupportedType() {
@@ -37,7 +37,7 @@ public class ArchiveDataAnalysisCollectionProducer implements DeviceCollectionPr
     public DeviceCollection createDeviceCollection(HttpServletRequest request)
             throws ServletRequestBindingException, DeviceCollectionCreationException {
 
-        final int analysisId = ServletRequestUtils.getIntParameter(request, getSupportedType().getParameterName(ANALYSISID));
+        final int analysisId = ServletRequestUtils.getIntParameter(request, getSupportedType().getParameterName(analysisIdParamName));
         
         return buildDeviceCollection(analysisId);
     }
@@ -52,7 +52,7 @@ public class ArchiveDataAnalysisCollectionProducer implements DeviceCollectionPr
             public Map<String, String> getCollectionParameters() {
                 Map<String, String> paramMap = new HashMap<String, String>();
                 paramMap.put("collectionType", getSupportedType().name());
-                paramMap.put(getSupportedType().getParameterName(ANALYSISID), Integer.toString(analysisId));
+                paramMap.put(getSupportedType().getParameterName(analysisIdParamName), Integer.toString(analysisId));
                 return paramMap;
             }
             
@@ -80,7 +80,7 @@ public class ArchiveDataAnalysisCollectionProducer implements DeviceCollectionPr
                 + collectionType + ", Persistence type: " + collectionDbType);
         }
         DeviceCollectionByField collectionByField = (DeviceCollectionByField) collectionBase;
-        int analysisId = Integer.parseInt(collectionByField.getValueMap().get(ANALYSISID));
+        int analysisId = Integer.parseInt(collectionByField.getValueMap().get(analysisIdParamName));
         
         return buildDeviceCollection(analysisId);
     }
@@ -91,10 +91,10 @@ public class ArchiveDataAnalysisCollectionProducer implements DeviceCollectionPr
         if(type != DeviceCollectionType.archiveDataAnalysis) {
             throw new IllegalArgumentException("Unable to parse device collection of type " + type);
         }
-        String analysisIdParameterName = getSupportedType().getParameterName(ANALYSISID);
+        String analysisIdParameterName = getSupportedType().getParameterName(analysisIdParamName);
         String analysisId = deviceCollection.getCollectionParameters().get(analysisIdParameterName);
         Map<String, String> valueMap = Maps.newHashMap();
-        valueMap.put(ANALYSISID, analysisId);
+        valueMap.put(analysisIdParamName, analysisId);
         
         return new DeviceCollectionByField(DeviceCollectionType.archiveDataAnalysis, valueMap);
     }

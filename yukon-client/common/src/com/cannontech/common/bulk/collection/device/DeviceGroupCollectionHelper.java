@@ -7,8 +7,8 @@ import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.pao.YukonDevice;
 
 public interface DeviceGroupCollectionHelper {
-    public static final String NAME = "name";
-    public static final String DESCRIPTION = "description";
+    public static final String NAME_PARAM_NAME = "name";
+    public static final String DESCRIPTION_PARAM_NAME = "description";
     
     /**
      * Creates a new, temporary DeviceGroup containing the specified devices. Then creates and returns a 

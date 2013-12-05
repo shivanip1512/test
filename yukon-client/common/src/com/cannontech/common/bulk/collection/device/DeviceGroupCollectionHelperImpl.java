@@ -46,7 +46,7 @@ public class DeviceGroupCollectionHelperImpl implements DeviceGroupCollectionHel
     }
     
     public String getSupportedType() {
-        return DeviceCollectionType.group.toString();
+        return DeviceCollectionType.group.name();
     }
     
     public String getParameterName(String shortName) {
@@ -66,12 +66,12 @@ public class DeviceGroupCollectionHelperImpl implements DeviceGroupCollectionHel
         }
         
         Map<String, String> parameters = deviceCollection.getCollectionParameters();
-        String name = parameters.get(getParameterName(NAME));
-        String description = parameters.get(getParameterName(DESCRIPTION));
+        String name = parameters.get(getParameterName(NAME_PARAM_NAME));
+        String description = parameters.get(getParameterName(DESCRIPTION_PARAM_NAME));
         if(description == null) description = "";
         Map<String, String> valueMap = Maps.newHashMap();
-        valueMap.put(NAME, name);
-        valueMap.put(DESCRIPTION, description);
+        valueMap.put(NAME_PARAM_NAME, name);
+        valueMap.put(DESCRIPTION_PARAM_NAME, description);
         
         return new DeviceCollectionByField(DeviceCollectionType.group, valueMap);
     }
@@ -91,9 +91,9 @@ public class DeviceGroupCollectionHelperImpl implements DeviceGroupCollectionHel
                 Map<String, String> paramMap = new HashMap<String, String>();
 
                 paramMap.put("collectionType", getSupportedType());
-                paramMap.put(getParameterName(NAME), group.getFullName());
+                paramMap.put(getParameterName(NAME_PARAM_NAME), group.getFullName());
                 if (org.apache.commons.lang.StringUtils.isNotBlank(descriptionHint)) {
-                    paramMap.put(getParameterName(DESCRIPTION), descriptionHint);
+                    paramMap.put(getParameterName(DESCRIPTION_PARAM_NAME), descriptionHint);
                 }
 
                 return paramMap;

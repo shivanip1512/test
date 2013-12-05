@@ -44,9 +44,9 @@ public class DeviceGroupCollectionProducer implements DeviceCollectionProducer  
     public DeviceCollection createDeviceCollection(HttpServletRequest request)
             throws ServletRequestBindingException {
 
-        final String groupParameterName = getSupportedType().getParameterName(DeviceGroupCollectionHelper.NAME);
+        final String groupParameterName = getSupportedType().getParameterName(DeviceGroupCollectionHelper.NAME_PARAM_NAME);
         final String groupName = ServletRequestUtils.getStringParameter(request, groupParameterName);
-        final String descriptionParameterName = getSupportedType().getParameterName(DeviceGroupCollectionHelper.DESCRIPTION);
+        final String descriptionParameterName = getSupportedType().getParameterName(DeviceGroupCollectionHelper.DESCRIPTION_PARAM_NAME);
         final String description = ServletRequestUtils.getStringParameter(request, descriptionParameterName);
         final DeviceGroup group = deviceGroupService.resolveGroupName(groupName);
 
@@ -72,8 +72,8 @@ public class DeviceGroupCollectionProducer implements DeviceCollectionProducer  
                 + collectionType + ", Persistence type: " + persistenceType);
         }
         DeviceCollectionByField collectionByField = (DeviceCollectionByField) collectionBase;
-        String description = collectionByField.getValueMap().get(DeviceGroupCollectionHelper.DESCRIPTION);
-        String groupName = collectionByField.getValueMap().get(DeviceGroupCollectionHelper.NAME);
+        String description = collectionByField.getValueMap().get(DeviceGroupCollectionHelper.DESCRIPTION_PARAM_NAME);
+        String groupName = collectionByField.getValueMap().get(DeviceGroupCollectionHelper.NAME_PARAM_NAME);
         DeviceGroup group = deviceGroupService.resolveGroupName(groupName);
         
         return deviceGroupCollectionHelper.buildDeviceCollection(group, description);
