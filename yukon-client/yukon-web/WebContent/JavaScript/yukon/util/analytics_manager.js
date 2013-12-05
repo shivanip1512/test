@@ -11,13 +11,13 @@ Yukon.AnalyticsManager = ( function () {
      * are registered (currently this only includes listening for all non-dataupdater ajax calls).
      * 
      * @class Manages [Google] analytics for Yukon
-     * @author <a href="mailto:alex.delegard@cooperindustries.com">Alex Delegard</a>
      * @requires jQuery 1.6+
      */
     var _initialized = false,
         _cooper_tracking_id = null,
         _additional_tracking_ids = [],
-        _updater_url = "/updater/update",
+        _skipped_urls = {'/updater/update':1, '/addToHistory':1, '/isFavorite':1, '/isSubscribed':1,
+    		'/search/autocomplete.json':1},
 
         /*---------------------*/
         /* 'PRIVATE' functions */
@@ -76,8 +76,12 @@ Yukon.AnalyticsManager = ( function () {
 
             // Log all jQuery AJAX requests to Google Analytics
             jQuery(document).ajaxSend(function (event, xhr, settings) {
-                if (settings.url !== _updater_url && 
-                        typeof _gaq !== "undefined" && _gaq !== null) {
+            	var urlPath = settings.url;
+            	var indexOfQueryParams = urlPath.indexOf('?');
+            	if (indexOfQueryParams != -1) {
+            		urlPath = urlPath.substring(0, indexOfQueryParams);
+            	}
+                if (!_skipped_urls[urlPath] && typeof _gaq !== "undefined" && _gaq !== null) {
                     _gaq.push(["_setAccount", _cooper_tracking_id], ['_trackPageview', settings.url]);
                     if (_additional_tracking_ids.length > 0) {
                         _setAdditionalTrackingIds({url: settings.url});
