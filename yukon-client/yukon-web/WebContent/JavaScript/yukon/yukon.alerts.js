@@ -88,7 +88,8 @@ Yukon.Alerts = (function () {
                 _closeAlertWindow();
             }
 
-            jQuery.ajax({url: _clearAlertUrl, type: "POST", data: {'jsonString': JSON.stringify(alertIds)}});
+            jQuery.ajax({contentType: 'application/json', url: _clearAlertUrl, type: "POST",
+                data: JSON.stringify(alertIds)});
         }
     };
     return module;
