@@ -121,4 +121,13 @@ class LoginPrefs extends CtiPreferences {
 	public void shouldRememberCredentials(boolean val) {
 		put(DEFAULT_REMEMBER_PASSWORD, val);
 	}
+
+    /**
+     * Returns 'USERNAME' or 'USERNAME_AND_PASSWORD' if the jnlp.yukon.rememberMe preference
+     * matches a valid setting, otherwise returns 'NONE'
+     */
+    public ClientApplicationRememberMe getRememberMeSetting() {
+        return ClientApplicationRememberMe.valueOf(System.getProperty("jnlp.yukon.rememberMe",
+                                                      ClientApplicationRememberMe.NONE.name()));
+    }
 }

@@ -252,10 +252,9 @@ public class ClientSession {
                     YukonSpringHook.getContext();
                     
                     setSessionInfo(u);
-                    ClientApplicationRememberMe rememberMeSetting 
-                        = ClientApplicationRememberMe.fromString(System.getProperty("jnlp.yukon.rememberMe", ""));
+                    ClientApplicationRememberMe rememberMeSetting = LoginPrefs.getInstance().getRememberMeSetting();
                     setPreferences(lp.getUsername(), lp.getPassword(), lp.isRememberMe(), rememberMeSetting);
-    
+
                     // setup remote logging
                     YukonLogManager.initialize(remoteSession);
                     return true;
@@ -270,6 +269,12 @@ public class ClientSession {
         return false;
     }
 
+    /**
+     * Stores the username and or password based on rememberMeSetting.
+     * 
+     * For local logins the rememberMeSetting should come straight from globalSettingDao.
+     * For remote logins, the preference will be set so LoginPrefs.getRememberMeSetting() should be used.
+     */
     private void setPreferences(String username, String password, boolean shouldRememberCred,
             ClientApplicationRememberMe rememberMeSetting) {
         LoginPrefs prefs = LoginPrefs.getInstance();
@@ -334,23 +339,22 @@ public class ClientSession {
 	        }
 	    }
 
-        ClientApplicationRememberMe rememberMeSetting 
-            = ClientApplicationRememberMe.fromString(System.getProperty("jnlp.yukon.rememberMe", ""));
-
 	    return  new LoginPanel(host,
 	                           prefs.getRememberedUsername(),
 	                           prefs.getRememberedPassword(),
-	                           prefs.shouldRememberCredentials(), false, rememberMeSetting);
+	                           prefs.shouldRememberCredentials(),
+	                           false,
+	                           prefs.getRememberMeSetting());
 	}
 		
 	private LoginPanel makeJwsLoginPanel(String host, String userName) {
         LoginPrefs prefs = LoginPrefs.getInstance();
-        ClientApplicationRememberMe rememberMeSetting 
-            = ClientApplicationRememberMe.fromString(System.getProperty("jnlp.yukon.rememberMe", ""));
 	    LoginPanel loginPanel = new LoginPanel(host,
 	                           userName,
 	                           prefs.getRememberedPassword(userName),
-                               prefs.shouldRememberCredentials(), false, rememberMeSetting);
+                               prefs.shouldRememberCredentials(),
+                               false,
+                               prefs.getRememberMeSetting());
 	    loginPanel.setHostEditable(false);
 	    loginPanel.setUserEditable(false);
         return loginPanel;
