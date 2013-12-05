@@ -39,6 +39,13 @@ public interface ConfigurationSource {
     public String getString(String key);
 
     /**
+     * Returns value of key from the configuration file. Returns null if
+     * the key did not exist in the file.
+     * @return the value of the key, or null if the key didn't exist
+     */
+    public String getString(MasterConfigStringKeysEnum key);
+
+    /**
      * Returns value of key from the configuration file. Returns defaultVlaue if
      * the key did not exist in the file.
      * Preferred method is {@link #getString(MasterConfigStringKeysEnum, String)}

@@ -1,5 +1,8 @@
 package com.cannontech.database;
 
+import static com.cannontech.common.config.MasterConfigBooleanKeysEnum.*;
+import static com.cannontech.common.config.MasterConfigStringKeysEnum.*;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
@@ -55,37 +58,26 @@ public class PoolManager {
     private String primaryUser;
 	private BasicDataSource bds;
 	
-	private enum DatabaseVendor { ORACLE_DATABASE, MSSQL_DATABASE };
+	private enum DatabaseVendor { ORACLE_DATABASE, MSSQL_DATABASE }
 
     private PoolManager() {
         init();
     }
 
     private ConnectionDescription getConnectionUrl() {
-        String jdbcUrl;
-        // otherwise, see what dll is setup
-        
-        String rwDllName = configSource.getString("DB_RWDBDLL");
-        String dbTypeName = configSource.getString("DB_TYPE");
-        boolean dbSsl = configSource.getBoolean("DB_SSL_ENABLED", false);
+
+        String dbTypeName = configSource.getString(DB_TYPE);
         DatabaseVendor dbType = null;
-        
-        //This establishes the precedence of DB_TYPE over DB_RWDBDLL
+
         if ("mssql".equalsIgnoreCase(dbTypeName)) {
             dbType = DatabaseVendor.MSSQL_DATABASE;
         } else if ("oracle".equalsIgnoreCase(dbTypeName)) {
             dbType = DatabaseVendor.ORACLE_DATABASE;
-        } else if ("msq15d.dll".equalsIgnoreCase(rwDllName)) {
-            dbType = DatabaseVendor.MSSQL_DATABASE;
-        } else if ("ora15d.dll".equalsIgnoreCase(rwDllName)) {
-            dbType = DatabaseVendor.ORACLE_DATABASE;
-        }
-        
-        if (dbType == null) {
+        } else {
             throw new BadConfigurationException("Unrecognized database type (DB_TYPE) in master.cfg: " + dbTypeName);
         }
-        
-        jdbcUrl = configSource.getString("DB_JAVA_URL");
+
+        String jdbcUrl = configSource.getString(DB_JAVA_URL);
         if (StringUtils.isNotBlank(jdbcUrl)) {
             log.debug("Using DB_JAVA_URL=" + jdbcUrl);
             return new ConnectionDescription(jdbcUrl, dbType);
@@ -96,7 +88,7 @@ public class PoolManager {
             // example: jdbc:jtds:sqlserver://mn1db02:1433;APPNAME=yukon-client;TDS=8.0
             StringBuilder url = new StringBuilder();
             url.append("jdbc:jtds:sqlserver://");
-            String host = configSource.getRequiredString("DB_SQLSERVER");
+            String host = configSource.getRequiredString(DB_SQLSERVER);
             Pattern pattern = Pattern.compile("([^\\\\]+)\\\\(.+)");
             Matcher matcher = pattern.matcher(host);
             if (matcher.matches()) {
@@ -105,7 +97,7 @@ public class PoolManager {
             url.append(host);
             url.append(":1433;APPNAME=yukon-client;TDS=8.0");
             //setup the connection for SSL
-            if(dbSsl){
+            if(configSource.getBoolean(DB_SSL_ENABLED, false)){
             	url.append(";ssl=require;socketKeepAlive=true");
             }
             log.debug("Found MSSQL");
@@ -118,10 +110,10 @@ public class PoolManager {
                 // example: jdbc:oracle:thin:@mn1db02:1521:xcel
                 StringBuilder url = new StringBuilder();
                 url.append("jdbc:oracle:thin:@");
-                String host = configSource.getRequiredString("DB_SQLSERVER_HOST");
+                String host = configSource.getRequiredString(DB_SQLSERVER_HOST);
                 url.append(host);
                 url.append(":1521:");
-                String tnsName = configSource.getRequiredString("DB_SQLSERVER");
+                String tnsName = configSource.getRequiredString(DB_SQLSERVER);
                 url.append(tnsName);
                 
                 log.debug("Found oracle");
@@ -143,8 +135,8 @@ public class PoolManager {
         ConnectionDescription connectionDescription = getConnectionUrl();
         primaryUrl = connectionDescription.connectionUrl;
 
-        primaryUser = configSource.getRequiredString("DB_USERNAME");
-        String password = configSource.getRequiredString("DB_PASSWORD");
+        primaryUser = configSource.getRequiredString(DB_USERNAME);
+        String password = configSource.getRequiredString(DB_PASSWORD);
         
         String maxActiveConns = configSource.getString("DB_JAVA_MAXCONS");
         int maxActive = -1;
@@ -182,16 +174,16 @@ public class PoolManager {
         default:
             defaultValidationQuery = "select 1";
         }
-        String validationQuery = configSource.getString("DB_JAVA_VALIDATION_QUERY", defaultValidationQuery);
+        String validationQuery = configSource.getString(DB_JAVA_VALIDATION_QUERY, defaultValidationQuery);
         log.info("DB validationQuery=" + validationQuery);
         
-        boolean testOnBorrow = configSource.getBoolean("DB_JAVA_TEST_ON_BORROW", false);
+        boolean testOnBorrow = configSource.getBoolean(DB_JAVA_TEST_ON_BORROW, false);
         log.info("DB testOnBorrow=" + testOnBorrow);
         
-        boolean testOnReturn = configSource.getBoolean("DB_JAVA_TEST_ON_RETURN", false);
+        boolean testOnReturn = configSource.getBoolean(DB_JAVA_TEST_ON_RETURN, false);
         log.info("DB testOnReturn=" + testOnReturn);
         
-        boolean testWhileIdle = configSource.getBoolean("DB_JAVA_TEST_WHILE_IDLE", true);
+        boolean testWhileIdle = configSource.getBoolean(DB_JAVA_TEST_WHILE_IDLE, true);
         log.info("DB testWhileIdle=" + testWhileIdle);
         
         long timeBetweenEvictionRunsMillis = configSource.getLong("DB_JAVA_TIME_BETWEEN_EVICTION_RUNS_MILLIS", TimeUnit.MINUTES.toMillis(2));
@@ -234,7 +226,7 @@ public class PoolManager {
     private void registerDriver() {
         try {
             String driverName;
-            driverName = configSource.getString("DB_JAVA_DRIVER");
+            driverName = configSource.getString(DB_JAVA_DRIVER);
             if (StringUtils.isBlank(driverName)) {
                 return;
             }

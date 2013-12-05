@@ -9,13 +9,15 @@ import java.net.URISyntaxException;
 
 import org.joda.time.DurationFieldType;
 import org.joda.time.Period;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 public class MasterConfigMapTest {
 
     private MasterConfigMap masterConfigMap;
-    
+    private String aDeprecatedSetting = "DISPATCH_PORT";
+
     private void asertConfigHelper(String key, String expectedValue) {
         assertEquals(key, expectedValue, masterConfigMap.getRequiredString(key));
     }
@@ -104,7 +106,50 @@ public class MasterConfigMapTest {
         } catch (Exception e) {
         }
     }
-    
+
+    @Test
+    public void testDeprecatedSetting() {
+        try {
+            masterConfigMap.getBoolean(aDeprecatedSetting, true);
+            Assert.fail("getBoolean(String key, boolean defaultValue) shouldn't return for a deprecated CPARM");
+        } catch (IllegalArgumentException e) {/* good */}
+
+        try {
+            masterConfigMap.getString(aDeprecatedSetting);
+            Assert.fail("getString(String key) shouldn't return for a deprecated CPARM");
+        } catch (IllegalArgumentException e) {/* good */}
+
+        try {
+            masterConfigMap.getInteger(aDeprecatedSetting, 0);
+            Assert.fail("getInteger(String key, int defaultValue) shouldn't return for a deprecated CPARM");
+        } catch (IllegalArgumentException e) {/* good */}
+
+        try {
+            masterConfigMap.getLong(aDeprecatedSetting, 0);
+            Assert.fail("getLong(String key, int defaultValue) shouldn't return for a deprecated CPARM");
+        } catch (IllegalArgumentException e) {/* good */}
+
+        try {
+            masterConfigMap.getString(aDeprecatedSetting, "");
+            Assert.fail("getString(String key, String defaultValue) shouldn't return for a deprecated CPARM");
+        } catch (IllegalArgumentException e) {/* good */}
+
+        try {
+            masterConfigMap.getRequiredString(aDeprecatedSetting);
+            Assert.fail("getRequiredString(String key) shouldn't return for a deprecated CPARM");
+        } catch (IllegalArgumentException e) {/* good */}
+
+        try {
+            masterConfigMap.getRequiredInteger(aDeprecatedSetting);
+            Assert.fail("getRequiredInteger(String key) shouldn't return for a deprecated CPARM");
+        } catch (IllegalArgumentException e) {/* good */}
+
+        try {
+            masterConfigMap.getPeriod(aDeprecatedSetting, null);
+            Assert.fail("getPeriod(String key, ReadablePeriod defaultValue) shouldn't return for a deprecated CPARM");
+        } catch (IllegalArgumentException e) {/* good */}
+    }
+
     @Before
     public void setUp() throws Exception {
         File masterCfgResource;

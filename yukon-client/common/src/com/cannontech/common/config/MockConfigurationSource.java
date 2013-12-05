@@ -89,4 +89,9 @@ public class MockConfigurationSource implements ConfigurationSource {
     public Double getDouble(MasterConfigDoubleKeysEnum key) {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public String getString(MasterConfigStringKeysEnum key) {
+        throw new UnsupportedOperationException();
+    }
 }

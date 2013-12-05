@@ -19,7 +19,6 @@ import org.joda.time.Period;
 import org.joda.time.ReadableDuration;
 import org.joda.time.ReadablePeriod;
 
-import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.SimplePeriodFormat;
 import com.cannontech.encryption.CryptoException;
@@ -37,7 +36,7 @@ public class MasterConfigMap implements ConfigurationSource {
     }
 
     public void reset() {
-        LogHelper.debug(log, "resetting");
+        log.debug("resetting");
         configMap.clear();
     }
 
@@ -49,7 +48,7 @@ public class MasterConfigMap implements ConfigurationSource {
         configMap.clear();
         boolean updateFile = false;
         String endl = System.getProperty("line.separator");
-        LogHelper.debug(log, "starting initialization");
+        log.debug("starting initialization");
         Pattern keyCharPattern = Pattern.compile("^\\s*([^:#\\s]+)\\s*:\\s*([^#]+)\\s*(#.*)*");
         Pattern extCharPattern = Pattern.compile("[^\\p{Print}\n\t\r]");
         Pattern spacePattern = Pattern.compile("\\p{Zs}");
@@ -71,7 +70,7 @@ public class MasterConfigMap implements ConfigurationSource {
             Matcher extCharMatcher = extCharPattern.matcher(line);
 
             if (extCharMatcher.find()) {
-                LogHelper.warn(log, "Line %d: Extended characters found: %s", lineNum, extCharMatcher.group());
+                log.warn("Line " + lineNum + ": Extended characters found while reading Master Config file: " + extCharMatcher.group());
             }
             line = spacePattern.matcher(line).replaceAll(" ");
             Matcher keyMatcher = keyCharPattern.matcher(line);
@@ -80,13 +79,13 @@ public class MasterConfigMap implements ConfigurationSource {
                 String value = keyMatcher.group(2).trim();
                 String comment = (keyMatcher.group(3) != null) ? keyMatcher.group(3) : ""; // avoid null
                 if (configMap.containsKey(key)) {
-                    LogHelper.warn(log, "Line %d: Duplicate key found while reading Master Config file: %s", lineNum, key);
+                    log.warn("Line " + lineNum + ": Duplicate key found while reading Master Config file: " + key);
                 }
 
                 if (MasterConfigDeprecatedKey.isDeprecated(key)) {
                     updateFile = true;
                     tempWriter.append("#(DEPRECATED) ").append(line);
-                    LogHelper.warn(log, "Line %d: Deprecated key found while reading Master Config file: %s. Marking as disabled in master.cfg", lineNum, key);
+                    log.warn("Line " + lineNum + ": Deprecated key found while reading Master Config file: " + key + ". Marking as disabled in master.cfg");
                 } else {
                     if (MasterConfigStringKeysEnum.isEncryptedKey(key) 
                             && !MasterConfigCryptoUtils.isEncrypted(value)) {
@@ -102,9 +101,9 @@ public class MasterConfigMap implements ConfigurationSource {
                         tempWriter.append(line);
                     }
                     if (MasterConfigStringKeysEnum.isEncryptedKey(key)) {
-                        LogHelper.debug(log, "Found line match: %s [encrypted value]", key); // Do no log entire line here because it contains sensitive data
+                        log.debug("Found line match: " + key + " [encrypted value]"); // Do no log entire line here because it contains sensitive data
                     } else {
-                        LogHelper.debug(log, "Found line match: %s", line);
+                        log.debug("Found line match: " + line);
                     }
                 }
             } else {
@@ -127,6 +126,7 @@ public class MasterConfigMap implements ConfigurationSource {
     
     @Override
     public String getRequiredString(String key) throws UnknownKeyException {
+        verifyKey(key);
         if (!configMap.containsKey(key)) {
             throw new UnknownKeyException(key);
         }
@@ -140,10 +140,16 @@ public class MasterConfigMap implements ConfigurationSource {
 
     @Override
     public String getString(String key, String defaultValue) {
+        verifyKey(key);
         if (!configMap.containsKey(key)) {
             return defaultValue;
         }
         return getValueFromMap(key);
+    }
+
+    @Override
+    public String getString(MasterConfigStringKeysEnum key) {
+        return getString(key.name());
     }
 
     @Override
@@ -186,7 +192,7 @@ public class MasterConfigMap implements ConfigurationSource {
 
     @Override
     public boolean getBoolean(String key, boolean defaultValue) {
-
+        verifyKey(key);
         if (!configMap.containsKey(key)) {
             return defaultValue;
         }
@@ -253,11 +259,20 @@ public class MasterConfigMap implements ConfigurationSource {
                 MasterConfigCryptoUtils.isEncrypted(value)) {
             // Found an encrypted value
             value = MasterConfigCryptoUtils.decryptValue(value);
-            LogHelper.debug(log, "Returning [encrypted value] for '%s'", key); // Do not log string here for security
+            log.debug("Returning [encrypted value] for '" + key + "'"); // Do not log entire line here because it contains sensitive data
         } else {
-            LogHelper.debug(log, "Returning '%s' for '%s'", value, key);
+            log.debug("Returning '" + value + "' for '" + key + "'");
         }
 
         return value;
+    }
+    
+    /**
+     * Throws IllegalArgumentException if key is a deprecated master config setting.
+     */
+    private static void verifyKey(String key) {
+        if(MasterConfigDeprecatedKey.isDeprecated(key)) {
+            throw new IllegalArgumentException("Master config setting: " + key + " is deprecated can cannot be used.");
+        }
     }
 }
