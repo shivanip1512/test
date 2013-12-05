@@ -21,7 +21,7 @@ import com.cannontech.common.bulk.collection.device.DeviceCollectionCreationExce
 import com.cannontech.common.bulk.collection.device.DeviceCollectionProducer;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionType;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
-import com.cannontech.common.bulk.collection.device.persistable.DeviceCollectionPersistable;
+import com.cannontech.common.bulk.collection.device.persistable.DeviceCollectionBase;
 import com.cannontech.common.bulk.iterator.CloseableIterator;
 import com.cannontech.common.bulk.iterator.CloseableIteratorWrapper;
 import com.cannontech.common.bulk.iterator.CsvColumnReaderIterator;
@@ -67,17 +67,20 @@ public class DeviceFileUploadCollectionProducer implements DeviceCollectionProdu
     }
     
     @Override
-    public DeviceCollection getCollectionFromPersistable(DeviceCollectionPersistable persistable) {
+    public DeviceCollection getCollectionFromBase(DeviceCollectionBase collectionBase) {
         throw new UnsupportedOperationException("This producer delegates to DeviceGroupCollectionProducer and should "
                                                 + "not be persisted.");
     }
     
     @Override
-    public DeviceCollectionPersistable getPersistableFromCollection(DeviceCollection deviceCollection) {
+    public DeviceCollectionBase getBaseFromCollection(DeviceCollection deviceCollection) {
         throw new UnsupportedOperationException("This producer delegates to DeviceGroupCollectionProducer and should "
                                                 + "not be persisted.");
     }
     
+    /**
+     * Creates a DeviceCollection from the parameters in the request, and the dataFile.
+     */
     private DeviceCollection handleInitialRequest(HttpServletRequest request, MultipartFile dataFile)
         throws ServletRequestBindingException, IOException, FileNotFoundException {
         final String originalFilename = dataFile.getOriginalFilename();
@@ -99,7 +102,10 @@ public class DeviceFileUploadCollectionProducer implements DeviceCollectionProdu
 
         return groupCollection;
     }
-
+    
+    /**
+     * Creates an iterator for iterating through a device collection file line by line.
+     */
     private CloseableIterator<SimpleDevice> getDeviceIterator(InputStream inputStream,
                                                     final FileMapperEnum uploadType) throws IOException {
         // Create an iterator to iterate through the file line by line

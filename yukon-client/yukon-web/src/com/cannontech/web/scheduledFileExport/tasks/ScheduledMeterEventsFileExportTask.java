@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.paoPointValue.model.MeterPointValue;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
-import com.cannontech.common.bulk.collection.device.service.DeviceCollectionPersistenceService;
+import com.cannontech.common.bulk.collection.device.service.DeviceCollectionService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.fileExportHistory.ExportHistoryEntry;
 import com.cannontech.common.fileExportHistory.FileExportType;
@@ -39,7 +39,7 @@ public class ScheduledMeterEventsFileExportTask extends ScheduledFileExportTask 
 	@Autowired private PaoPointValueService paoPointValueService;
 	@Autowired private AttributeService attributeService;
 	@Autowired private PointFormattingService pointFormattingService;
-	@Autowired private DeviceCollectionPersistenceService deviceCollectionPersistenceService;
+	@Autowired private DeviceCollectionService deviceCollectionService;
 	
 	private final static Set<String> NORMAL_VALUES = ImmutableSet.of(OutageStatus.GOOD.name().toLowerCase(),
             EventStatus.CLEARED.name().toLowerCase());
@@ -78,7 +78,7 @@ public class ScheduledMeterEventsFileExportTask extends ScheduledFileExportTask 
 		attributes = meterEventsParameters.getAttributes();
 		
 		DeviceCollection collection = meterEventsParameters.getDeviceCollection();
-		collectionId = deviceCollectionPersistenceService.saveCollection(collection);
+		collectionId = deviceCollectionService.saveCollection(collection);
 	}
 
 	public int getDaysPrevious() {
@@ -121,11 +121,11 @@ public class ScheduledMeterEventsFileExportTask extends ScheduledFileExportTask 
 		this.attributes = attributes;
 	}
 	
-	public int getCollectionId() {
+	public int getDeviceCollectionId() {
 	    return collectionId;
 	}
 	
-	public void setCollectionId(int collectionId) {
+	public void setDeviceCollectionId(int collectionId) {
 	    this.collectionId = collectionId;
 	}
 	
@@ -141,7 +141,7 @@ public class ScheduledMeterEventsFileExportTask extends ScheduledFileExportTask 
         Instant fromInstant = TimeUtil.toMidnightAtBeginningOfDay(localDate, userTimeZone).minus(Duration.standardDays(daysPrevious));
         Instant toInstant = TimeUtil.toMidnightAtEndOfDay(localDate, userTimeZone);
         
-        DeviceCollection collection = deviceCollectionPersistenceService.loadCollection(collectionId);
+        DeviceCollection collection = deviceCollectionService.loadCollection(collectionId);
         List<SimpleDevice> devices = collection.getDeviceList();
         
         List<MeterPointValue> events = paoPointValueService.getMeterPointValues(devices, attributes,

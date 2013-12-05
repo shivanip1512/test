@@ -11,9 +11,9 @@ import org.springframework.context.MessageSourceResolvable;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 
-import com.cannontech.common.bulk.collection.device.persistable.DeviceCollectionPersistable;
-import com.cannontech.common.bulk.collection.device.persistable.DeviceCollectionPersistenceType;
-import com.cannontech.common.bulk.collection.device.persistable.FieldBasedCollectionPersistable;
+import com.cannontech.common.bulk.collection.device.persistable.DeviceCollectionBase;
+import com.cannontech.common.bulk.collection.device.persistable.DeviceCollectionByField;
+import com.cannontech.common.bulk.collection.device.persistable.DeviceCollectionDbType;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoUtils;
@@ -72,21 +72,21 @@ public class ArchiveDataAnalysisCollectionProducer implements DeviceCollectionPr
     }
     
     @Override
-    public DeviceCollection getCollectionFromPersistable(DeviceCollectionPersistable persistable) {
-        DeviceCollectionType collectionType = persistable.getCollectionType();
-        DeviceCollectionPersistenceType persistenceType = persistable.getPersistenceType();
-        if(collectionType != DeviceCollectionType.archiveDataAnalysis || persistenceType != DeviceCollectionPersistenceType.FIELD) {
-            throw new IllegalArgumentException("Unable to parse device collection persistable. Collection type: " 
-                + collectionType + ", Persistence type: " + persistenceType);
+    public DeviceCollection getCollectionFromBase(DeviceCollectionBase collectionBase) {
+        DeviceCollectionType collectionType = collectionBase.getCollectionType();
+        DeviceCollectionDbType collectionDbType = collectionBase.getCollectionDbType();
+        if(collectionType != DeviceCollectionType.archiveDataAnalysis || collectionDbType != DeviceCollectionDbType.FIELD) {
+            throw new IllegalArgumentException("Unable to parse device collection base. Collection type: " 
+                + collectionType + ", Persistence type: " + collectionDbType);
         }
-        FieldBasedCollectionPersistable fieldPersistable = (FieldBasedCollectionPersistable) persistable;
-        int analysisId = Integer.parseInt(fieldPersistable.getValueMap().get(ANALYSISID));
+        DeviceCollectionByField collectionByField = (DeviceCollectionByField) collectionBase;
+        int analysisId = Integer.parseInt(collectionByField.getValueMap().get(ANALYSISID));
         
         return buildDeviceCollection(analysisId);
     }
     
     @Override
-    public DeviceCollectionPersistable getPersistableFromCollection(DeviceCollection deviceCollection) {
+    public DeviceCollectionBase getBaseFromCollection(DeviceCollection deviceCollection) {
         DeviceCollectionType type = deviceCollection.getCollectionType();
         if(type != DeviceCollectionType.archiveDataAnalysis) {
             throw new IllegalArgumentException("Unable to parse device collection of type " + type);
@@ -96,6 +96,6 @@ public class ArchiveDataAnalysisCollectionProducer implements DeviceCollectionPr
         Map<String, String> valueMap = Maps.newHashMap();
         valueMap.put(ANALYSISID, analysisId);
         
-        return new FieldBasedCollectionPersistable(DeviceCollectionType.archiveDataAnalysis, valueMap);
+        return new DeviceCollectionByField(DeviceCollectionType.archiveDataAnalysis, valueMap);
     }
 }

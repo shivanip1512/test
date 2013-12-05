@@ -1,5 +1,11 @@
 package com.cannontech.common.bulk.collection.device;
 
+/**
+ * Enum representing the different types of device collection.
+ * NOTE: This class currently doesn't conform to formatting standards for enums (uppercase, underscore-separated-words).
+ * This should be fixed at some point in the future. However, there are numerous string references to these types in
+ * jsps, as well as references in the database that will need to be modified accordingly and thoroughly tested.
+ */
 public enum DeviceCollectionType {
     idList, 
     group, 

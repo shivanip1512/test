@@ -1,6 +1,6 @@
 package com.cannontech.common.bulk.collection.device;
 
-import com.cannontech.common.bulk.collection.device.persistable.DeviceCollectionPersistable;
+import com.cannontech.common.bulk.collection.device.persistable.DeviceCollectionBase;
 
 /**
  * Factory used to get a new instance of a device collection based on request
@@ -15,13 +15,13 @@ public interface DeviceCollectionProducer extends DeviceCollectionFactory {
     public DeviceCollectionType getSupportedType();
     
     /**
-     * Get the persistable representation of the collection.
+     * Get the DeviceCollectionBase representation of the DeviceCollection.
      */
-    public DeviceCollectionPersistable getPersistableFromCollection(DeviceCollection collection);
+    public DeviceCollectionBase getBaseFromCollection(DeviceCollection collection);
     
     /**
-     * Get the collection from the persistable.
+     * Get the DeviceCollection from the DeviceCollectionBase.
      */
-    public DeviceCollection getCollectionFromPersistable(DeviceCollectionPersistable persistable);
+    public DeviceCollection getCollectionFromBase(DeviceCollectionBase persistable);
 
 }

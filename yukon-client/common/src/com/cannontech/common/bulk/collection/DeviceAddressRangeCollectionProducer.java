@@ -16,9 +16,9 @@ import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionProducer;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionType;
 import com.cannontech.common.bulk.collection.device.ListBasedDeviceCollection;
-import com.cannontech.common.bulk.collection.device.persistable.DeviceCollectionPersistable;
-import com.cannontech.common.bulk.collection.device.persistable.DeviceCollectionPersistenceType;
-import com.cannontech.common.bulk.collection.device.persistable.FieldBasedCollectionPersistable;
+import com.cannontech.common.bulk.collection.device.persistable.DeviceCollectionBase;
+import com.cannontech.common.bulk.collection.device.persistable.DeviceCollectionByField;
+import com.cannontech.common.bulk.collection.device.persistable.DeviceCollectionDbType;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoUtils;
@@ -54,22 +54,22 @@ public class DeviceAddressRangeCollectionProducer implements DeviceCollectionPro
     }
     
     @Override
-    public DeviceCollection getCollectionFromPersistable(DeviceCollectionPersistable persistable) {
-        DeviceCollectionType collectionType = persistable.getCollectionType();
-        DeviceCollectionPersistenceType persistenceType = persistable.getPersistenceType();
-        if(collectionType != DeviceCollectionType.addressRange || persistenceType != DeviceCollectionPersistenceType.FIELD) {
-            throw new IllegalArgumentException("Unable to parse device collection persistable. Collection type: " 
-                    + collectionType + ", Persistence type: " + persistenceType);
+    public DeviceCollection getCollectionFromBase(DeviceCollectionBase collectionBase) {
+        DeviceCollectionType collectionType = collectionBase.getCollectionType();
+        DeviceCollectionDbType collectionDbType = collectionBase.getCollectionDbType();
+        if(collectionType != DeviceCollectionType.addressRange || collectionDbType != DeviceCollectionDbType.FIELD) {
+            throw new IllegalArgumentException("Unable to parse device collection base. Collection type: " 
+                    + collectionType + ", Persistence type: " + collectionDbType);
         }
-        FieldBasedCollectionPersistable fieldPersistable = (FieldBasedCollectionPersistable) persistable;
-        int startAddress = Integer.parseInt(fieldPersistable.getValueMap().get(START));
-        int endAddress = Integer.parseInt(fieldPersistable.getValueMap().get(END));
+        DeviceCollectionByField collectionByField = (DeviceCollectionByField) collectionBase;
+        int startAddress = Integer.parseInt(collectionByField.getValueMap().get(START));
+        int endAddress = Integer.parseInt(collectionByField.getValueMap().get(END));
         
         return createDeviceCollection(startAddress, endAddress);
     }
     
     @Override
-    public DeviceCollectionPersistable getPersistableFromCollection(DeviceCollection deviceCollection) {
+    public DeviceCollectionBase getBaseFromCollection(DeviceCollection deviceCollection) {
         DeviceCollectionType type = deviceCollection.getCollectionType();
         if(type != DeviceCollectionType.addressRange) {
             throw new IllegalArgumentException("Unable to parse device collection of type " + type);
@@ -82,7 +82,7 @@ public class DeviceAddressRangeCollectionProducer implements DeviceCollectionPro
         valueMap.put(START, startAddress);
         valueMap.put(END, endAddress);
         
-        return new FieldBasedCollectionPersistable(DeviceCollectionType.addressRange, valueMap);
+        return new DeviceCollectionByField(DeviceCollectionType.addressRange, valueMap);
     }
     
     private DeviceCollection createDeviceCollection(final int startAddress, final int endAddress) {

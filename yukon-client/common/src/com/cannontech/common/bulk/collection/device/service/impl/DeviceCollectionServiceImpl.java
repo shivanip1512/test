@@ -11,12 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionProducer;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionType;
-import com.cannontech.common.bulk.collection.device.dao.DeviceCollectionPersistenceDao;
-import com.cannontech.common.bulk.collection.device.persistable.DeviceCollectionPersistable;
-import com.cannontech.common.bulk.collection.device.service.DeviceCollectionPersistenceService;
+import com.cannontech.common.bulk.collection.device.dao.DeviceCollectionDao;
+import com.cannontech.common.bulk.collection.device.persistable.DeviceCollectionBase;
+import com.cannontech.common.bulk.collection.device.service.DeviceCollectionService;
 
-public class DeviceCollectionPersistenceServiceImpl implements DeviceCollectionPersistenceService {
-    @Autowired DeviceCollectionPersistenceDao deviceCollectionPersistenceDao;
+public class DeviceCollectionServiceImpl implements DeviceCollectionService {
+    @Autowired DeviceCollectionDao deviceCollectionDao;
     @Autowired List<DeviceCollectionProducer> collectionProducerList;
     private Map<DeviceCollectionType, DeviceCollectionProducer> collectionProducerMap = new HashMap<DeviceCollectionType, DeviceCollectionProducer>();
     
@@ -31,17 +31,22 @@ public class DeviceCollectionPersistenceServiceImpl implements DeviceCollectionP
     public int saveCollection(DeviceCollection collection) {
         DeviceCollectionType collectionType = collection.getCollectionType();
         DeviceCollectionProducer producer = getProducerForType(collectionType);
-        DeviceCollectionPersistable persistable = producer.getPersistableFromCollection(collection);
+        DeviceCollectionBase collectionBase = producer.getBaseFromCollection(collection);
         //persist collection and return the collectionId
-        return deviceCollectionPersistenceDao.savePersistable(persistable);
+        return deviceCollectionDao.saveCollection(collectionBase);
     }
     
     @Override
     public DeviceCollection loadCollection(int collectionId) {
-        DeviceCollectionPersistable persistable = deviceCollectionPersistenceDao.loadPersistable(collectionId);
-        DeviceCollectionType collectionType = persistable.getCollectionType();
+        DeviceCollectionBase collection = deviceCollectionDao.loadCollection(collectionId);
+        DeviceCollectionType collectionType = collection.getCollectionType();
         DeviceCollectionProducer deviceCollectionProducer = getProducerForType(collectionType);
-        return deviceCollectionProducer.getCollectionFromPersistable(persistable);
+        return deviceCollectionProducer.getCollectionFromBase(collection);
+    }
+    
+    @Override
+    public boolean deleteCollection(int collectionId) {
+        return deviceCollectionDao.deleteCollection(collectionId);
     }
     
     /**

@@ -56,7 +56,7 @@ import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionCreationException;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
-import com.cannontech.common.bulk.collection.device.service.DeviceCollectionPersistenceService;
+import com.cannontech.common.bulk.collection.device.service.DeviceCollectionService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.fileExportHistory.FileExportType;
 import com.cannontech.common.i18n.ObjectFormattingService;
@@ -97,7 +97,6 @@ import com.cannontech.web.scheduledFileExport.ScheduledFileExportHelper;
 import com.cannontech.web.scheduledFileExport.service.ScheduledFileExportJobsTagService;
 import com.cannontech.web.scheduledFileExport.service.ScheduledFileExportService;
 import com.cannontech.web.scheduledFileExport.tasks.ScheduledArchivedDataFileExportTask;
-import com.cannontech.web.scheduledFileExport.tasks.ScheduledFileExportTask;
 import com.cannontech.web.scheduledFileExport.validator.ScheduledFileExportValidator;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.collect.Sets;
@@ -131,7 +130,7 @@ public class ArchivedValuesExporterController {
     @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
     @Autowired private ScheduledFileExportJobsTagService scheduledFileExportJobsTagService;
     @Autowired private ScheduledFileExportHelper exportHelper;
-    @Autowired private DeviceCollectionPersistenceService deviceCollectionPersistenceService;
+    @Autowired private DeviceCollectionService deviceCollectionService;
     
     private static final Integer DEFAULT_PAGES = 1;
     private static final String DEFAULT_PAGES_STRING = "1";
@@ -184,9 +183,11 @@ public class ArchivedValuesExporterController {
     @RequestMapping
     public String deleteJob(ModelMap model, int jobId, FlashScope flashScope) {
     	YukonJob job = jobManager.getJob(jobId);
-    	ScheduledFileExportTask task = (ScheduledFileExportTask) jobManager.instantiateTask(job);
+    	ScheduledArchivedDataFileExportTask task = (ScheduledArchivedDataFileExportTask) jobManager.instantiateTask(job);
 		String jobName = task.getName();
 		jobManager.deleteJob(job);
+		int deviceCollectionId = task.getDeviceCollectionId();
+		deviceCollectionService.deleteCollection(deviceCollectionId);
 		
 		flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.tools.bulk.archivedValueExporter.deletedJobSuccess", jobName));
 		return "redirect:view";
@@ -481,7 +482,7 @@ public class ArchivedValuesExporterController {
     		ScheduledRepeatingJob job = jobManager.getRepeatingJob(jobId);
     		ScheduledArchivedDataFileExportTask task = (ScheduledArchivedDataFileExportTask) jobManager.instantiateTask(job);
     		
-    		deviceCollection = deviceCollectionPersistenceService.loadCollection(task.getDeviceCollectionId());
+    		deviceCollection = deviceCollectionService.loadCollection(task.getDeviceCollectionId());
     		format = archiveValuesExportFormatDao.getByFormatId(task.getFormatId());
     		attributes = task.getAttributes();
     		dataRange = task.getDataRange();

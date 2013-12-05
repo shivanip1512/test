@@ -10,9 +10,9 @@ import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionProducer;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionType;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
-import com.cannontech.common.bulk.collection.device.persistable.DeviceCollectionPersistable;
-import com.cannontech.common.bulk.collection.device.persistable.DeviceCollectionPersistenceType;
-import com.cannontech.common.bulk.collection.device.persistable.FieldBasedCollectionPersistable;
+import com.cannontech.common.bulk.collection.device.persistable.DeviceCollectionBase;
+import com.cannontech.common.bulk.collection.device.persistable.DeviceCollectionByField;
+import com.cannontech.common.bulk.collection.device.persistable.DeviceCollectionDbType;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 
@@ -54,26 +54,26 @@ public class DeviceGroupCollectionProducer implements DeviceCollectionProducer  
     }
     
     @Override
-    public DeviceCollectionPersistable getPersistableFromCollection(DeviceCollection deviceCollection) {
+    public DeviceCollectionBase getBaseFromCollection(DeviceCollection deviceCollection) {
         DeviceCollectionType type = deviceCollection.getCollectionType();
         if(type != DeviceCollectionType.group) {
             throw new IllegalArgumentException("Unable to parse device collection of type " + type);
         }
         
-        return deviceGroupCollectionHelper.buildDeviceCollectionPersistable(deviceCollection);
+        return deviceGroupCollectionHelper.buildDeviceCollectionBase(deviceCollection);
     }
     
     @Override
-    public DeviceCollection getCollectionFromPersistable(DeviceCollectionPersistable persistable) {
-        DeviceCollectionType collectionType = persistable.getCollectionType();
-        DeviceCollectionPersistenceType persistenceType = persistable.getPersistenceType();
-        if(collectionType != DeviceCollectionType.group || persistenceType != DeviceCollectionPersistenceType.FIELD) {
-            throw new IllegalArgumentException("Unable to parse device collection persistable. Collection type: " 
+    public DeviceCollection getCollectionFromBase(DeviceCollectionBase collectionBase) {
+        DeviceCollectionType collectionType = collectionBase.getCollectionType();
+        DeviceCollectionDbType persistenceType = collectionBase.getCollectionDbType();
+        if(collectionType != DeviceCollectionType.group || persistenceType != DeviceCollectionDbType.FIELD) {
+            throw new IllegalArgumentException("Unable to parse device collection base. Collection type: " 
                 + collectionType + ", Persistence type: " + persistenceType);
         }
-        FieldBasedCollectionPersistable fieldPersistable = (FieldBasedCollectionPersistable) persistable;
-        String description = fieldPersistable.getValueMap().get(DeviceGroupCollectionHelper.DESCRIPTION);
-        String groupName = fieldPersistable.getValueMap().get(DeviceGroupCollectionHelper.NAME);
+        DeviceCollectionByField collectionByField = (DeviceCollectionByField) collectionBase;
+        String description = collectionByField.getValueMap().get(DeviceGroupCollectionHelper.DESCRIPTION);
+        String groupName = collectionByField.getValueMap().get(DeviceGroupCollectionHelper.NAME);
         DeviceGroup group = deviceGroupService.resolveGroupName(groupName);
         
         return deviceGroupCollectionHelper.buildDeviceCollection(group, description);

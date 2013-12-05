@@ -30,7 +30,6 @@ public enum SystemGroupEnum {
     SUPPORTED,
     EXISTING,
     DEVICE_CONFIGS,
-    AUTO,
     MONITORS,
     OUTAGE,
     DEVICE_DATA,

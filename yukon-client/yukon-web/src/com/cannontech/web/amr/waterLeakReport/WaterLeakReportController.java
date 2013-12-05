@@ -42,7 +42,7 @@ import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionCreationException;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
-import com.cannontech.common.bulk.collection.device.service.DeviceCollectionPersistenceService;
+import com.cannontech.common.bulk.collection.device.service.DeviceCollectionService;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.model.DeviceGroup;
@@ -85,7 +85,6 @@ import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.cannontech.web.scheduledFileExport.ScheduledFileExportHelper;
 import com.cannontech.web.scheduledFileExport.service.ScheduledFileExportJobsTagService;
 import com.cannontech.web.scheduledFileExport.service.ScheduledFileExportService;
-import com.cannontech.web.scheduledFileExport.tasks.ScheduledFileExportTask;
 import com.cannontech.web.scheduledFileExport.tasks.ScheduledWaterLeakFileExportTask;
 import com.cannontech.web.scheduledFileExport.validator.ScheduledFileExportValidator;
 import com.cannontech.web.util.WebFileUtils;
@@ -122,7 +121,7 @@ public class WaterLeakReportController {
     @Autowired private ScheduledFileExportJobsTagService scheduledFileExportJobsTagService;
     @Autowired private JobManager jobManager;
     @Autowired private ScheduledFileExportHelper exportHelper;
-    @Autowired private DeviceCollectionPersistenceService deviceCollectionPersistenceService;
+    @Autowired private DeviceCollectionService deviceCollectionService;
     
     private ScheduledFileExportValidator scheduledFileExportValidator;
     private final static String baseKey = "yukon.web.modules.amr.waterLeakReport.report";
@@ -202,7 +201,7 @@ public class WaterLeakReportController {
     		model.addAttribute("task", task);
     		
     		//populate report data
-    		DeviceCollection deviceCollection = deviceCollectionPersistenceService.loadCollection(task.getDeviceCollectionid());
+    		DeviceCollection deviceCollection = deviceCollectionService.loadCollection(task.getDeviceCollectionId());
     		backingBean.setDeviceCollection(deviceCollection);
     		backingBean.setFromInstant(backingBean.getToInstant().minus(Duration.standardHours(task.getHoursPrevious())));
     		backingBean.setIncludeDisabledPaos(task.isIncludeDisabledPaos());
@@ -303,9 +302,11 @@ public class WaterLeakReportController {
     @RequestMapping
 	public String delete(ModelMap model, int jobId, FlashScope flashScope) {
 		YukonJob job = jobManager.getJob(jobId);
-		ScheduledFileExportTask task = (ScheduledFileExportTask) jobManager.instantiateTask(job);
+		ScheduledWaterLeakFileExportTask task = (ScheduledWaterLeakFileExportTask) jobManager.instantiateTask(job);
 		String jobName = task.getName();
 		jobManager.deleteJob(job);
+		int deviceCollectionId = task.getDeviceCollectionId();
+		deviceCollectionService.deleteCollection(deviceCollectionId);
 		
 		flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.amr.waterLeakReport.jobs.deletedSuccess", jobName));
 		return "redirect:jobs";

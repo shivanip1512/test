@@ -18,9 +18,9 @@ import com.cannontech.common.bulk.collection.device.DeviceCollectionCreationExce
 import com.cannontech.common.bulk.collection.device.DeviceCollectionProducer;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionType;
 import com.cannontech.common.bulk.collection.device.ListBasedDeviceCollection;
-import com.cannontech.common.bulk.collection.device.persistable.DeviceCollectionPersistable;
-import com.cannontech.common.bulk.collection.device.persistable.DeviceCollectionPersistenceType;
-import com.cannontech.common.bulk.collection.device.persistable.DeviceListBasedCollectionPersistable;
+import com.cannontech.common.bulk.collection.device.persistable.DeviceCollectionBase;
+import com.cannontech.common.bulk.collection.device.persistable.DeviceCollectionById;
+import com.cannontech.common.bulk.collection.device.persistable.DeviceCollectionDbType;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonPao;
@@ -55,26 +55,26 @@ public class DeviceMemoryCollectionProducer implements DeviceCollectionProducer 
     }
     
     @Override
-    public DeviceCollection getCollectionFromPersistable(DeviceCollectionPersistable persistable) {
-        DeviceCollectionType collectionType = persistable.getCollectionType();
-        DeviceCollectionPersistenceType persistenceType = persistable.getPersistenceType();
-        if(collectionType != DeviceCollectionType.memory || persistenceType != DeviceCollectionPersistenceType.DEVICE_LIST) {
-            throw new IllegalArgumentException("Unable to parse device collection persistable. Collection type: " 
-                + collectionType + ", Persistence type: " + persistenceType);
+    public DeviceCollection getCollectionFromBase(DeviceCollectionBase collectionBase) {
+        DeviceCollectionType collectionType = collectionBase.getCollectionType();
+        DeviceCollectionDbType collectionDbType = collectionBase.getCollectionDbType();
+        if(collectionType != DeviceCollectionType.memory || collectionDbType != DeviceCollectionDbType.DEVICE_LIST) {
+            throw new IllegalArgumentException("Unable to parse device collection base. Collection type: " 
+                + collectionType + ", Persistence type: " + collectionDbType);
         }
-        DeviceListBasedCollectionPersistable listPersistable = (DeviceListBasedCollectionPersistable) persistable;
-        return createDeviceCollection(listPersistable.getDeviceIds());
+        DeviceCollectionById collectionById = (DeviceCollectionById) collectionBase;
+        return createDeviceCollection(collectionById.getDeviceIds());
     }
     
     @Override
-    public DeviceCollectionPersistable getPersistableFromCollection(DeviceCollection deviceCollection) {
+    public DeviceCollectionBase getBaseFromCollection(DeviceCollection deviceCollection) {
         DeviceCollectionType type = deviceCollection.getCollectionType();
         if(type != DeviceCollectionType.memory) {
             throw new IllegalArgumentException("Unable to parse device collection of type " + type);
         }
         List<SimpleDevice> deviceList = deviceCollection.getDeviceList();
         
-        return DeviceListBasedCollectionPersistable.create(DeviceCollectionType.memory, deviceList);
+        return DeviceCollectionById.create(DeviceCollectionType.memory, deviceList);
     }
     
     public DeviceCollection createDeviceCollection(final Iterable<YukonPao> paos) {

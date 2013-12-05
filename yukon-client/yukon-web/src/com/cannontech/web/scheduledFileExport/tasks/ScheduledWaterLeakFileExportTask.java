@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.amr.waterMeterLeak.model.WaterMeterLeak;
 import com.cannontech.amr.waterMeterLeak.service.WaterMeterLeakService;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
-import com.cannontech.common.bulk.collection.device.service.DeviceCollectionPersistenceService;
+import com.cannontech.common.bulk.collection.device.service.DeviceCollectionService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.fileExportHistory.ExportHistoryEntry;
 import com.cannontech.common.fileExportHistory.FileExportType;
@@ -30,7 +30,7 @@ public class ScheduledWaterLeakFileExportTask extends ScheduledFileExportTask {
 	@Autowired private WaterMeterLeakService waterMeterLeakService;
 	@Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 	@Autowired private DateFormattingService dateFormattingService;
-	@Autowired private DeviceCollectionPersistenceService deviceCollectionPersistenceService;
+	@Autowired private DeviceCollectionService deviceCollectionService;
 	
 	private static final String baseKey = "yukon.web.modules.amr.waterLeakReport.report";
 	
@@ -58,7 +58,7 @@ public class ScheduledWaterLeakFileExportTask extends ScheduledFileExportTask {
 		Instant now = new Instant();
 		Range<Instant> range = Range.inclusive(now, now.minus(timePrevious));
 		
-		DeviceCollection deviceCollection = deviceCollectionPersistenceService.loadCollection(collectionId);
+		DeviceCollection deviceCollection = deviceCollectionService.loadCollection(collectionId);
 		Set<SimpleDevice> devices = Sets.newHashSet(deviceCollection.getDeviceList());
 		
 		List<WaterMeterLeak> waterLeaks = waterMeterLeakService.getWaterMeterLeaks(devices, range, includeDisabledPaos, threshold, userContext);
@@ -101,7 +101,7 @@ public class ScheduledWaterLeakFileExportTask extends ScheduledFileExportTask {
 		includeDisabledPaos = waterLeakParameters.isIncludeDisabledPaos();
 		
 		DeviceCollection collection = waterLeakParameters.getDeviceCollection();
-		collectionId = deviceCollectionPersistenceService.saveCollection(collection);
+		collectionId = deviceCollectionService.saveCollection(collection);
 	}
 
 	public int getHoursPrevious() {
@@ -132,7 +132,7 @@ public class ScheduledWaterLeakFileExportTask extends ScheduledFileExportTask {
 	    this.collectionId = collectionId;
 	}
 	
-	public int getDeviceCollectionid() {
+	public int getDeviceCollectionId() {
 	    return collectionId;
 	}
 }

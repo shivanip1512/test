@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cannontech.common.bulk.collection.device.persistable.FieldBasedCollectionPersistable;
+import com.cannontech.common.bulk.collection.device.persistable.DeviceCollectionByField;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
@@ -59,7 +59,7 @@ public class DeviceGroupCollectionHelperImpl implements DeviceGroupCollectionHel
     }
     
     @Override
-    public FieldBasedCollectionPersistable buildDeviceCollectionPersistable(DeviceCollection deviceCollection) {
+    public DeviceCollectionByField buildDeviceCollectionBase(DeviceCollection deviceCollection) {
         DeviceCollectionType type = deviceCollection.getCollectionType();
         if(type != DeviceCollectionType.group) {
             throw new IllegalArgumentException("Unable to parse device collection of type " + type);
@@ -68,11 +68,12 @@ public class DeviceGroupCollectionHelperImpl implements DeviceGroupCollectionHel
         Map<String, String> parameters = deviceCollection.getCollectionParameters();
         String name = parameters.get(getParameterName(NAME));
         String description = parameters.get(getParameterName(DESCRIPTION));
+        if(description == null) description = "";
         Map<String, String> valueMap = Maps.newHashMap();
         valueMap.put(NAME, name);
         valueMap.put(DESCRIPTION, description);
         
-        return new FieldBasedCollectionPersistable(DeviceCollectionType.group, valueMap);
+        return new DeviceCollectionByField(DeviceCollectionType.group, valueMap);
     }
     
     @Override

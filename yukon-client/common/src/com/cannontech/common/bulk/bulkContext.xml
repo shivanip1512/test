@@ -477,8 +477,8 @@
 
     <bean id="filterServiceBean" class="com.cannontech.common.bulk.filter.service.impl.FilterDaoImpl"/>
     
-    <bean class="com.cannontech.common.bulk.collection.device.dao.impl.DeviceCollectionPersistenceDaoImpl"/>
-    <bean class="com.cannontech.common.bulk.collection.device.service.impl.DeviceCollectionPersistenceServiceImpl"/>
+    <bean class="com.cannontech.common.bulk.collection.device.dao.impl.DeviceCollectionDaoImpl"/>
+    <bean class="com.cannontech.common.bulk.collection.device.service.impl.DeviceCollectionServiceImpl"/>
 
     <bean id="deviceGroupCollectionProducer" class="com.cannontech.common.bulk.collection.DeviceGroupCollectionProducer"><qualifier value="group"/></bean>
     <bean id="deviceIdListCollectionProducer" class="com.cannontech.common.bulk.collection.DeviceIdListCollectionProducer"><qualifier value="idList"/></bean>

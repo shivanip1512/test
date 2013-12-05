@@ -23,7 +23,7 @@ import com.cannontech.amr.archivedValueExporter.service.ExportReportGeneratorSer
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
-import com.cannontech.common.bulk.collection.device.service.DeviceCollectionPersistenceService;
+import com.cannontech.common.bulk.collection.device.service.DeviceCollectionService;
 import com.cannontech.common.exception.FileCreationException;
 import com.cannontech.common.fileExportHistory.ExportHistoryEntry;
 import com.cannontech.common.fileExportHistory.FileExportType;
@@ -39,7 +39,7 @@ public class ScheduledArchivedDataFileExportTask extends ScheduledFileExportTask
 	@Autowired private ArchiveValuesExportFormatDao archiveValuesExportFormatDao;
 	@Autowired private RawPointHistoryDao rawPointHistoryDao;
 	@Autowired private ScheduledFileExportDao scheduledFileExportDao;
-	@Autowired private DeviceCollectionPersistenceService deviceCollectionPersistenceService;
+	@Autowired private DeviceCollectionService deviceCollectionService;
 	
 	private int collectionId;
 	private int formatId;
@@ -48,7 +48,7 @@ public class ScheduledArchivedDataFileExportTask extends ScheduledFileExportTask
 	
 	@Override
 	public void start() {
-		DeviceCollection deviceCollection = deviceCollectionPersistenceService.loadCollection(collectionId);
+		DeviceCollection deviceCollection = deviceCollectionService.loadCollection(collectionId);
 	    List<YukonMeter> meters = meterDao.getMetersForYukonPaos(deviceCollection.getDeviceList());
 		ExportFormat format = archiveValuesExportFormatDao.getByFormatId(formatId);
 		populateDataRange();
@@ -94,7 +94,7 @@ public class ScheduledArchivedDataFileExportTask extends ScheduledFileExportTask
 		dataRange = adeParameters.getDataRange();
 		
 		DeviceCollection deviceCollection = adeParameters.getDeviceCollection();
-		collectionId = deviceCollectionPersistenceService.saveCollection(deviceCollection);
+		collectionId = deviceCollectionService.saveCollection(deviceCollection);
 	}
 	
 	private void populateDataRange() {

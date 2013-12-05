@@ -5,7 +5,7 @@ import com.cannontech.common.bulk.collection.device.DeviceCollection;
 /**
  * Service to save and load DeviceCollections.
  */
-public interface DeviceCollectionPersistenceService {
+public interface DeviceCollectionService {
     /**
      * Saves a DeviceCollection to the database.
      * @return The collectionId used to load this collection.
@@ -16,4 +16,9 @@ public interface DeviceCollectionPersistenceService {
      * Loads the DeviceCollection with the specified collectionId.
      */
     public DeviceCollection loadCollection(int collectionId);
+    
+    /**
+     * Deletes the DeviceCollection with the specified collectionId from the database.
+     */
+    public boolean deleteCollection(int collectionId);
 }

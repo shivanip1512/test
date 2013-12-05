@@ -24,7 +24,7 @@ import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionProducer;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionType;
 import com.cannontech.common.bulk.collection.device.RangeBasedDeviceCollection;
-import com.cannontech.common.bulk.collection.device.persistable.DeviceCollectionPersistable;
+import com.cannontech.common.bulk.collection.device.persistable.DeviceCollectionBase;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.search.result.SearchResults;
@@ -133,12 +133,12 @@ public class DeviceFilterCollectionProducer implements DeviceCollectionProducer,
     }
     
     @Override
-    public DeviceCollection getCollectionFromPersistable(DeviceCollectionPersistable persistable) {
+    public DeviceCollection getCollectionFromBase(DeviceCollectionBase collectionBase) {
         throw new UnsupportedOperationException();
     }
     
     @Override
-    public DeviceCollectionPersistable getPersistableFromCollection(DeviceCollection deviceCollection) {
+    public DeviceCollectionBase getBaseFromCollection(DeviceCollection deviceCollection) {
         throw new UnsupportedOperationException();
     }
 }

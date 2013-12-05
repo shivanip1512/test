@@ -47,7 +47,7 @@ import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionCreationException;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
-import com.cannontech.common.bulk.collection.device.service.DeviceCollectionPersistenceService;
+import com.cannontech.common.bulk.collection.device.service.DeviceCollectionService;
 import com.cannontech.common.fileExportHistory.FileExportType;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.i18n.ObjectFormattingService;
@@ -86,7 +86,6 @@ import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.cannontech.web.scheduledFileExport.ScheduledFileExportHelper;
 import com.cannontech.web.scheduledFileExport.service.ScheduledFileExportJobsTagService;
 import com.cannontech.web.scheduledFileExport.service.ScheduledFileExportService;
-import com.cannontech.web.scheduledFileExport.tasks.ScheduledFileExportTask;
 import com.cannontech.web.scheduledFileExport.tasks.ScheduledMeterEventsFileExportTask;
 import com.cannontech.web.scheduledFileExport.validator.ScheduledFileExportValidator;
 import com.cannontech.web.util.WebFileUtils;
@@ -116,7 +115,7 @@ public class MeterEventsReportController {
 	@Autowired private JobManager jobManager;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private ScheduledFileExportHelper exportHelper;
-    @Autowired private DeviceCollectionPersistenceService deviceCollectionPersistenceService;
+    @Autowired private DeviceCollectionService deviceCollectionService;
 	
 	private final static String reportJspPath = "meterEventsReport/report.jsp";
 	private final static String baseKey = "yukon.web.modules.amr.meterEventsReport.report";
@@ -204,7 +203,7 @@ public class MeterEventsReportController {
     		exportData.setScheduleCronString(job.getCronString());
     		cronExpressionTagState = cronExpressionTagService.parse(job.getCronString(), job.getUserContext());
     		//set backing bean parameters
-    		DeviceCollection deviceCollection = deviceCollectionPersistenceService.loadCollection(task.getCollectionId());
+    		DeviceCollection deviceCollection = deviceCollectionService.loadCollection(task.getDeviceCollectionId());
             backingBean.setDeviceCollection(deviceCollection);
     		backingBean.setIncludeDisabledPaos(task.isIncludeDisabledDevices());
     		backingBean.setEventTypesAllFalse();
@@ -311,9 +310,11 @@ public class MeterEventsReportController {
     @RequestMapping
 	public String delete(ModelMap model, int jobId, FlashScope flashScope) {
 		YukonJob job = jobManager.getJob(jobId);
-		ScheduledFileExportTask task = (ScheduledFileExportTask) jobManager.instantiateTask(job);
+		ScheduledMeterEventsFileExportTask task = (ScheduledMeterEventsFileExportTask) jobManager.instantiateTask(job);
 		String jobName = task.getName();
 		jobManager.deleteJob(job);
+		int deviceCollectionId = task.getDeviceCollectionId();
+		deviceCollectionService.deleteCollection(deviceCollectionId);
 		
 		flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.amr.meterEventsReport.jobs.deletedSuccess", jobName));
 		return "redirect:jobs";
