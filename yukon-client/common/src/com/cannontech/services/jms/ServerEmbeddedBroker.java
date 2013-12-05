@@ -68,7 +68,7 @@ public class ServerEmbeddedBroker {
                 try {
                      broker.addConnector(localhostConnector);
                 } catch (IOException e) {
-                    log.error("Unable to add localhost JMS listener (localhost:61616). The specified host and port in global settings might already be bound to this address", e);
+                    log.error("Unable to add localhost JMS listener (localhost:61616). The specified host and port in global settings might already be bound to this address. listenerHost: (" + listenerHost + ")", e);
                 }
             }
 
