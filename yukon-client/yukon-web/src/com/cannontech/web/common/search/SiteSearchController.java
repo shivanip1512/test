@@ -38,17 +38,12 @@ public class SiteSearchController {
     }
 
     @RequestMapping(value="/search", method=RequestMethod.GET)
-    public String search(@RequestParam(value="q", required=false) String searchString,
-            Integer itemsPerPage, 
-            @RequestParam(defaultValue="1") int page,
-            ModelMap model, 
-            YukonUserContext userContext) {
-        
+    public String search(@RequestParam(value="q", required=false) String searchString, Integer itemsPerPage, 
+            @RequestParam(defaultValue="1") int page, ModelMap model, YukonUserContext userContext) {
         itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
         int startIndex = (page - 1) * itemsPerPage;
         searchString = siteSearchService.sanitizeSearchStr(searchString);
 
-        SearchResults<Page> oldResults = SearchResults.emptyResult();
         SearchResults<Page> results = SearchResults.emptyResult();
         if (startIndex + itemsPerPage > SiteSearchService.MAX_SEARCH_ITEMS) {
             model.addAttribute("error", new YukonMessageSourceResolvable(baseKey + "queryOutOfRange", startIndex,
@@ -56,24 +51,19 @@ public class SiteSearchController {
         } else if (searchString.length() == 0) {
             model.addAttribute("error", new YukonMessageSourceResolvable(baseKey + "emptySearch"));
         } else {
-            log.debug("searching the old way");
-            oldResults = siteSearchService.oldSearch(searchString, startIndex, itemsPerPage, userContext);
-            log.debug("searching the new way");
+            log.debug("searching");
             results = siteSearchService.search(searchString, startIndex, itemsPerPage, userContext);
             log.debug("done searching");
 
             // Forward to the single result's URL
-            /* disable for now:
-            if (oldResults.getResultCount() == 1) {
-                String url = oldResults.getResultList().get(0).getPath();
+            if (results.getResultCount() == 1) {
+                String url = results.getResultList().get(0).getPath();
                 return "redirect:" + url;
             }
-            */
         }
 
         model.addAttribute("searchString", searchString);
         model.addAttribute("itemsPerPage", itemsPerPage);
-        model.addAttribute("oldResults", oldResults);
         model.addAttribute("results", results);
 
         return "search.jsp";
