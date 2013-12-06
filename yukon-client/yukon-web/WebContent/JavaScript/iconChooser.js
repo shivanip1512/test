@@ -31,16 +31,34 @@ Yukon.ui.iconChooser = (function () {
             }
         },
         _initEventListeners = function (id) {
-            jQuery('#' + id + 'IconSelect').on('keyup', function (event) {
-                uiIcon.iconInputChanged(id);
-            });
-            jQuery('#' + id + 'IconSelect').on('blur', function (event) {
+            jQuery('#' + id + 'IconInput').on('keyup blur', function (event) {
                 uiIcon.iconInputChanged(id);
             });
             jQuery('#' + id + 'IconSelect').on('change', function (event) {
                 var selected = jQuery('#' + id + 'IconSelect').val();
                 _initSelected(id, selected);
             });
+            jQuery('#' + id + 'IconPreviewImg')
+                .load(function() {return _afterImageLoad(id, true);})
+                .error(function() {return _afterImageLoad(id, false);});
+        },
+        _afterImageLoad = function(id, didLoad) {
+            var isCustomImage = jQuery('#' + id + 'IconSelect').val() === 'OTHER',
+                iconInputField  = jQuery('#' + id + 'IconInput'),
+                imagePreview= jQuery('#' + id + 'IconPreviewImg');
+
+            iconInputField.removeClass('success error');
+            if (didLoad) {
+                imagePreview.show();
+                if (isCustomImage) {
+                    iconInputField.addClass("success");
+                }
+            } else {
+                imagePreview.hide();
+                if (isCustomImage) {
+                    iconInputField.addClass("error");
+                }
+            }
         };
     uiIcon = {
         init : function (id, baseDir, fileNames) {
