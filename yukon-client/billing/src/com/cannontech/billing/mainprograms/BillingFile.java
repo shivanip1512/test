@@ -188,6 +188,8 @@ public class BillingFile extends java.util.Observable implements Runnable
 		catch (Throwable exception) {
 			CTILogger.error(exception);
 		}
+		
+        YukonSpringHook.shutdownContext();
 	}
 
 	/**
