@@ -17,7 +17,7 @@ Yukon.AnalyticsManager = ( function () {
         _cooper_tracking_id = null,
         _additional_tracking_ids = [],
         _skipped_urls = {'/updater/update':1, '/addToHistory':1, '/isFavorite':1, '/isSubscribed':1,
-    		'/search/autocomplete.json':1},
+    		'/search/autocomplete.json':1, '/picker/v2/build':1, '/picker/v2/idSearch':1, '/picker/v2/search':1},
 
         /*---------------------*/
         /* 'PRIVATE' functions */
