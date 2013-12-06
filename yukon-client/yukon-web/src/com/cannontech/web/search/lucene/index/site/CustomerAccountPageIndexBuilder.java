@@ -78,7 +78,7 @@ public class CustomerAccountPageIndexBuilder extends DbPageIndexBuilder {
     public SqlFragmentSource getWhereClauseForDbChange(int database, String category, int id) {
         if (database == CHANGE_CUSTOMER_ACCOUNT_DB && CAT_CUSTOMER_ACCOUNT.equalsIgnoreCase(category) ) {
             SqlStatementBuilder whereClause = new SqlStatementBuilder();
-            whereClause.append("where ca.accountId").eq(id);
+            whereClause.append("ca.accountId").eq(id);
 
             return whereClause;
         }
