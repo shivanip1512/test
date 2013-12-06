@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     11/25/2013 4:51:20 PM                        */
+/* Created on:     12/6/2013 2:54:29 PM                         */
 /*==============================================================*/
 
 
@@ -3080,7 +3080,6 @@ INSERT INTO DeviceGroup VALUES (27, 'Attributes', 12, 'NOEDIT_NOMOD', 'STATIC', 
 INSERT INTO DeviceGroup VALUES (28, 'Supported', 27, 'NOEDIT_NOMOD', 'ATTRIBUTE_DEFINED', '01-JAN-2013', 'SUPPORTED');
 INSERT INTO DeviceGroup VALUES (29, 'Existing', 27, 'NOEDIT_NOMOD', 'ATTRIBUTE_EXISTS', '01-JAN-2013', 'EXISTING');
 INSERT INTO DeviceGroup VALUES (30, 'Device Configs', 12, 'NOEDIT_NOMOD', 'DEVICECONFIG', '01-JAN-2013', 'DEVICE_CONFIGS');
-INSERT INTO DeviceGroup VALUES (31, 'Auto', 12, 'HIDDEN', 'STATIC', '01-JAN-2013', 'AUTO');
 INSERT INTO DeviceGroup VALUES (32, 'Monitors', 0, 'NOEDIT_MOD', 'STATIC', '01-JAN-2013', 'MONITORS');
 INSERT INTO DeviceGroup VALUES (33, 'Outage', 32, 'NOEDIT_MOD', 'STATIC', '01-JAN-2013', 'OUTAGE');
 INSERT INTO DeviceGroup VALUES (34, 'DeviceData', 32, 'NOEDIT_MOD', 'STATIC', '01-JAN-2013', 'DEVICE_DATA');
@@ -11646,6 +11645,12 @@ go
 alter table DeviceCollectionById
    add constraint FK_DevCollById_DevColl foreign key (CollectionId)
       references DeviceCollection (CollectionId)
+         on delete cascade
+go
+
+alter table DeviceCollectionById
+   add constraint FK_DeviceCollectionById_Device foreign key (DeviceId)
+      references DEVICE (DEVICEID)
          on delete cascade
 go
 
