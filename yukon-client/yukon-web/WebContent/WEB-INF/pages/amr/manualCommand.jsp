@@ -45,9 +45,9 @@ function loadCommand() {
                 <tags:nameValue2 nameKey=".executeCommand">
                     <input type="text" id="command" name="command" <cti:isPropertyFalse property="EXECUTE_MANUAL_COMMAND">readonly</cti:isPropertyFalse> size="60" value="${YC_BEAN.commandString}">
                 </tags:nameValue2>
-            </tags:nameValueContainer2>  
+            </tags:nameValueContainer2>
             <div class="page-action-area">
-                <cti:button nameKey="execute" name="execute" onclick="disableButton(this)" type="submit" classes="primary action f-disable-after-click"/>
+                <cti:button nameKey="execute" name="execute" type="submit" classes="primary action f-disable-after-click"/>
                 <cti:button nameKey="clear" name="clearText" type="submit"/>
                 <cti:button nameKey="refresh" name="refresh" onclick="window.location.reload()"/>
             </div>
