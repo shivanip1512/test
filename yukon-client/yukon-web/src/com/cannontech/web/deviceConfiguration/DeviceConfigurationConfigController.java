@@ -205,26 +205,28 @@ public class DeviceConfigurationConfigController {
         SetView<PaoType> addTypes = 
             Sets.difference(trueTypes, deviceConfigurationDao.getSupportedTypesForConfiguration(configId));
         
-        boolean noTypesAdded = deviceConfigurationDao.getCategoryDifferenceForPaoTypesAdd(addTypes, configId).isEmpty();
-        
-        deviceConfigurationDao.addSupportedDeviceTypes(configId, addTypes);
-        
-        List<PaoType> addedTypes = new ArrayList<>(addTypes);
-        Collections.sort(addedTypes, paoTypeAlphaComparator);
-        
-        List<String> dbTypes = Lists.transform(addedTypes, new Function<PaoType, String>() {
-            @Override
-            public String apply(PaoType paoType) {
-               return paoType.getDbString();
-           }
-        });
-        
-        if (noTypesAdded) {
-            String key = baseKey + ".config.addTypeSuccess";
-            flashScope.setConfirm(new YukonMessageSourceResolvable(key, dbTypes));
-        } else {
-            String key = baseKey + ".config.addTypeWarning";
-            flashScope.setWarning(new YukonMessageSourceResolvable(key, dbTypes));
+        if (!addTypes.isEmpty()) {
+            boolean noTypesAdded = deviceConfigurationDao.getCategoryDifferenceForPaoTypesAdd(addTypes, configId).isEmpty();
+            
+            deviceConfigurationDao.addSupportedDeviceTypes(configId, addTypes);
+            
+            List<PaoType> addedTypes = new ArrayList<>(addTypes);
+            Collections.sort(addedTypes, paoTypeAlphaComparator);
+            
+            List<String> dbTypes = Lists.transform(addedTypes, new Function<PaoType, String>() {
+                @Override
+                public String apply(PaoType paoType) {
+                   return paoType.getDbString();
+               }
+            });
+            
+            if (noTypesAdded) {
+                String key = baseKey + ".config.addTypeSuccess";
+                flashScope.setConfirm(new YukonMessageSourceResolvable(key, dbTypes));
+            } else {
+                String key = baseKey + ".config.addTypeWarning";
+                flashScope.setWarning(new YukonMessageSourceResolvable(key, dbTypes));
+            }
         }
         
         model.clear();
@@ -538,6 +540,8 @@ public class DeviceConfigurationConfigController {
             configurationDeviceTypesBackingBean.isSupportedTypesEmpty();
         
         model.addAttribute("showTypesPopupOnLoad", showTypesPopupOnLoad);
+        
+        model.addAttribute("categoryToDeviceTypeMap", paoDefinitionDao.getCategoryTypeToPaoTypesMap().asMap());
         
         model.addAttribute("editingRoleProperty", YukonRoleProperty.ADMIN_EDIT_CONFIG);
     }
