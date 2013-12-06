@@ -58,8 +58,7 @@ public class HardwareController {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
 
         SimpleDevice device = deviceDao.getYukonDevice(deviceId);
-        Set<BuiltInAttribute> allAttributes = Sets.newHashSet(BuiltInAttribute.RELAY_1_LOAD_SIZE,
-                                                              BuiltInAttribute.RELAY_1_REMAINING_CONTROL,
+        Set<BuiltInAttribute> allAttributes = Sets.newHashSet(BuiltInAttribute.RELAY_1_REMAINING_CONTROL,
                                                               BuiltInAttribute.RELAY_1_RUN_TIME_DATA_LOG,
                                                               BuiltInAttribute.RELAY_1_SHED_TIME_DATA_LOG);
 
