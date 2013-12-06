@@ -49,9 +49,10 @@ DECLARE @JobId AS NUMERIC,
         @GroupName AS VARCHAR(1000),
         @JobPropertyId AS NUMERIC,
         @NewCollectionId AS NUMERIC,
-        @NewJobPropertyId AS NUMERIC;
+        @NewJobPropertyId AS NUMERIC,
+        @DeviceId AS NUMERIC;
  
-DECLARE jobs_curs CURSOR FOR(
+DECLARE jobs_curs CURSOR FOR (
     SELECT JobId
     FROM Job
     WHERE BeanName IN (
@@ -65,39 +66,51 @@ OPEN jobs_curs;
 FETCH NEXT FROM jobs_curs INTO @JobId;
 WHILE @@FETCH_STATUS = 0
 BEGIN
-    SELECT @GroupName = (SELECT '/System/Auto/' + Value), @JobPropertyId = JobPropertyId
+    SELECT @JobPropertyId = JobPropertyId
     FROM JobProperty
     WHERE Name = 'uniqueIdentifier'
     AND JobId = @JobId;
      
     SELECT @NewCollectionId = (SELECT ISNULL(MAX(CollectionId) + 1, 1) FROM DeviceCollection);
+    
     INSERT INTO DeviceCollection
     VALUES (
         @NewCollectionId,
-        'GROUP',
-        'FIELD'
+        'idList',
+        'DEVICE_LIST'
     );
-    INSERT INTO DeviceCollectionByField
-    VALUES (
-        @NewCollectionId,
-        'name',
-        @GroupName
-    );
-    INSERT INTO DeviceCollectionByField
-    VALUES (
-        @NewCollectionId,
-        'description',
-        ' '
-    );
-     
+    
+    DECLARE devices_curs CURSOR FOR (
+        SELECT YukonPaoId
+        FROM DeviceGroupMember DGM
+        JOIN DeviceGroup DG ON DG.DeviceGroupId = DGM.DeviceGroupId
+        JOIN JobProperty JP ON JP.Value = DG.GroupName
+        WHERE JP.JobID = @JobId
+        AND JP.Name = 'uniqueIdentifier');
+    
+    OPEN devices_curs;
+    FETCH NEXT FROM devices_curs INTO @DeviceId;
+    WHILE @@FETCH_STATUS = 0
+    BEGIN
+        INSERT INTO DeviceCollectionById
+        VALUES (
+            @NewCollectionId,
+            @DeviceId
+        )
+        FETCH NEXT FROM devices_curs INTO @DeviceId;
+    END;
+    CLOSE devices_curs;
+    DEALLOCATE devices_curs;
+    
     SELECT @NewJobPropertyId = (SELECT MAX(JobPropertyId) + 1 FROM JobProperty);
+    
     INSERT INTO JobProperty
     VALUES (
         @NewJobPropertyId,
         @JobId,
         'deviceCollectionId',
         @NewCollectionId
-    )
+    );
      
     DELETE FROM JobProperty
     WHERE JobPropertyId = @JobPropertyId;
@@ -107,6 +120,12 @@ END
 CLOSE jobs_curs;
 DEALLOCATE jobs_curs;
 /* @end-block */
+DELETE DG1 FROM DeviceGroup DG1
+JOIN DeviceGroup DG2 ON DG1.ParentDeviceGroupId = DG2.DeviceGroupId
+WHERE DG2.SystemGroupEnum = 'AUTO';
+ 
+DELETE FROM DeviceGroup
+WHERE SystemGroupEnum = 'AUTO';
 /* End YUK-12767 */
 
 /* Start YUK-12754 */

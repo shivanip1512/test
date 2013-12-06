@@ -46,53 +46,59 @@ DECLARE
     v_JobPropertyId    NUMBER;
     v_NewCollectionId  NUMBER;
     v_NewJobPropertyId NUMBER;
-
-    CURSOR curs_jobs IS (
+    v_DeviceId         NUMBER;
+    
+    CURSOR jobs_curs IS (
         SELECT JobId
         FROM Job
         WHERE BeanName IN (
             'scheduledArchivedDataFileExportJobDefinition', 
             'scheduledWaterLeakFileExportJobDefinition',
-            'scheduledMeterEventsFileExportJobDefinition'
-        )
+            'scheduledMeterEventsFileExportJobDefinition')
         AND Disabled <> 'D');
+    
+    CURSOR devices_curs IS (
+        SELECT YukonPaoId
+        FROM DeviceGroupMember DGM
+        JOIN DeviceGroup DG ON DG.DeviceGroupId = DGM.DeviceGroupId
+        JOIN JobProperty JP ON JP.Value = DG.GroupName
+        WHERE JP.JobID = v_JobId
+        AND JP.Name = 'uniqueIdentifier');
 BEGIN
-    OPEN curs_jobs;
+    OPEN jobs_curs;
     LOOP
-        FETCH curs_jobs INTO v_JobId;
-        EXIT WHEN curs_jobs%NOTFOUND;
-        
-        SELECT '/System/Auto/' || Value INTO v_GroupName
-        FROM JobProperty
-        WHERE Name = 'uniqueIdentifier'
-        AND JobId = v_JobId;
-
+        FETCH jobs_curs INTO v_JobId;
+        EXIT WHEN jobs_curs%NOTFOUND;
+        DBMS_OUTPUT.PUT_LINE('Beginning');
         SELECT JobPropertyId INTO v_JobPropertyId
         FROM JobProperty
         WHERE Name = 'uniqueIdentifier'
         AND JobId = v_JobId;
         
         SELECT NVL(MAX(CollectionId) + 1, 1) INTO v_NewCollectionId FROM DeviceCollection;
+        
         INSERT INTO DeviceCollection
         VALUES (
             v_NewCollectionId,
-            'GROUP',
-            'FIELD'
-        );
-        INSERT INTO DeviceCollectionByField
-        VALUES (
-            v_NewCollectionId,
-            'name',
-            v_GroupName
-        );
-        INSERT INTO DeviceCollectionByField
-        VALUES (
-            v_NewCollectionId,
-            'description',
-            ' '
+            'idList',
+            'DEVICE_LIST'
         );
         
+        OPEN devices_curs;
+        LOOP
+            FETCH devices_curs INTO v_DeviceId;
+            EXIT WHEN devices_curs%NOTFOUND;
+            DBMS_OUTPUT.PUT_LINE('Device Id: ' || v_DeviceId);
+            INSERT INTO DeviceCollectionById
+            VALUES (
+                v_NewCollectionId,
+                v_DeviceId
+            );
+        END LOOP;
+        CLOSE devices_curs;
+        
         SELECT NVL(MAX(JobPropertyId) + 1,1) INTO v_NewJobPropertyId FROM JobProperty;
+        
         INSERT INTO JobProperty
         VALUES (
             v_NewJobPropertyId,
@@ -104,10 +110,16 @@ BEGIN
         DELETE FROM JobProperty
         WHERE JobPropertyId = v_JobPropertyId;
     END LOOP;
-    CLOSE curs_jobs;
+    CLOSE jobs_curs;
 END;
 /
 /* @end-block */
+DELETE FROM DeviceGroup
+WHERE ParentDeviceGroupId = (SELECT DeviceGroupId 
+                             FROM DeviceGroup 
+                             WHERE SystemGroupEnum = 'AUTO');
+DELETE FROM DeviceGroup
+WHERE SystemGroupEnum = 'AUTO';
 /* End YUK-12767 */
 
 /* Start YUK-12754 */
