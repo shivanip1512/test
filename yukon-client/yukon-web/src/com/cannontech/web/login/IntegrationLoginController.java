@@ -84,7 +84,7 @@ public class IntegrationLoginController {
         }catch (PasswordExpiredException e) {
             logger.info("The password is expired", e);
             result.put("result", "failure");
-            result.put("errorMsg", "The password for "+username+" is expired.  Please login to the web to reset it.");
+            result.put("errorMsg", "The password for "+username+" is expired.  Please log into the web to reset it.");
         }catch (AuthenticationThrottleException e) {
             logger.info("Login disabled", e);
             result.put("result", "failure");
