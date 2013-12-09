@@ -51,12 +51,12 @@ Yukon.ui.iconChooser = (function () {
             if (didLoad) {
                 imagePreview.show();
                 if (isCustomImage) {
-                    iconInputField.addClass("success");
+                    iconInputField.addClass('success');
                 }
             } else {
                 imagePreview.hide();
                 if (isCustomImage) {
-                    iconInputField.addClass("error");
+                    iconInputField.addClass('error');
                 }
             }
         };
