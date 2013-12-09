@@ -14,7 +14,8 @@ namespace Cti {
 
 readers_writer_lock_t::readers_writer_lock_t() :
     _writer_id(0),
-    _writer_recursion(0)
+    _writer_recursion(0),
+    _reader_index_end(0)
 {
     fill(_reader_ids,       _reader_ids       + MaxThreadCount,  0);
     fill(_reader_recursion, _reader_recursion + MaxThreadCount,  0);
@@ -172,18 +173,29 @@ void readers_writer_lock_t::add_reader()
         //
         //  try to insert our id to the list - if someone else got there first, the exchange will fail and the return will be nonzero
         while( reader_index < MaxThreadCount
-               && InterlockedCompareExchange(reinterpret_cast<volatile LONG *>(_reader_ids + reader_index), tid, 0L) )
+               && InterlockedCompareExchange(reinterpret_cast<volatile LONG *>(&_reader_ids[reader_index]), tid, 0L) )
         {
             //  insert failed, try the next index
             ++reader_index;
         }
-    }
 
-    if( reader_index == MaxThreadCount )
-    {
-        //  Out of thread storage space!
-        autopsy(__FILE__, __LINE__);
-        terminate_program();
+        if( reader_index == MaxThreadCount )
+        {
+            //  Out of thread storage space!
+            autopsy(__FILE__, __LINE__);
+            terminate_program();
+        }
+
+        const unsigned reader_index_end_next = reader_index + 1;
+              unsigned reader_index_end_curr = _reader_index_end;
+
+        //  try to increase the index end if the current end is less then what we require
+        while( reader_index_end_curr < reader_index_end_next
+               && InterlockedCompareExchange(reinterpret_cast<volatile LONG *>(&_reader_index_end), reader_index_end_next, reader_index_end_curr) != reader_index_end_curr )
+        {
+            //  update the current value
+            reader_index_end_curr = _reader_index_end;
+        }
     }
 
     ++_reader_recursion[reader_index];
@@ -195,7 +207,7 @@ bool readers_writer_lock_t::remove_reader()
 {
     const thread_id_t tid = GetCurrentThreadId();
 
-    unsigned reader_index = find_reader_index(tid);
+    const unsigned reader_index = find_reader_index(tid);
 
     if( _reader_ids[reader_index] != tid )
     {
@@ -211,7 +223,18 @@ bool readers_writer_lock_t::remove_reader()
         terminate_program();
     }
 
-    return --_reader_recursion[reader_index];
+    const unsigned reader_recursion = --_reader_recursion[reader_index];
+
+    if( ! reader_recursion )
+    {
+        //  reset the thread id back to zero
+        InterlockedExchange(reinterpret_cast<volatile LONG *>(&_reader_ids[reader_index]), 0L);
+
+        //  Please Note :
+        //  we do not modify _reader_index_end as this might end up corrupting the known end index for other threads
+    }
+
+    return reader_recursion;
 }
 
 
@@ -230,13 +253,21 @@ bool readers_writer_lock_t::remove_writer()
 unsigned readers_writer_lock_t::find_reader_index(thread_id_t tid) const
 {
     unsigned reader_index = 0;
+    unsigned reader_index_result = 0;
+    bool     found_empty_index = false;
 
-    for( ; reader_index < MaxThreadCount; ++reader_index )
+    for( ; (! found_empty_index || reader_index < _reader_index_end) && reader_index < MaxThreadCount ; ++reader_index )
     {
-        //  break on first empty OR if we found our thread id
-        if( !_reader_ids[reader_index] || _reader_ids[reader_index] == tid )
+        if( _reader_ids[reader_index] == tid )
         {
+            reader_index_result = reader_index; // we found our thread id
             break;
+        }
+
+        if( ! found_empty_index && !_reader_ids[reader_index] )
+        {
+            reader_index_result = reader_index; // we keep the first empty index
+            found_empty_index = true;
         }
     }
 
@@ -247,7 +278,7 @@ unsigned readers_writer_lock_t::find_reader_index(thread_id_t tid) const
         terminate_program();
     }
 
-    return reader_index;
+    return reader_index_result;
 }
 
 
@@ -294,7 +325,7 @@ readers_writer_lock_t::operator string() const
 
     bool readers = false;
 
-    for( unsigned i = 0; i < MaxThreadCount && _reader_ids[i]; ++i )
+    for( unsigned i = 0; i < MaxThreadCount && i < _reader_index_end; ++i )
     {
         if( _reader_recursion[i] )
         {

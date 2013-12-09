@@ -31,10 +31,13 @@ private:
 
     //  We could extend this to a linked-list implementation if necessary,
     //    but we should probably rethink this whole class if we ever get to that scale.
-    thread_id_t _reader_ids[MaxThreadCount];
-    unsigned    _reader_recursion[MaxThreadCount];
-    thread_id_t _writer_id;
-    unsigned    _writer_recursion;
+    thread_id_t volatile _reader_ids[MaxThreadCount];
+    unsigned             _reader_recursion[MaxThreadCount];
+    thread_id_t volatile _writer_id;
+    unsigned             _writer_recursion;
+
+    //  indicates the last index + 1 of the _reader_ids in use
+    DWORD       volatile _reader_index_end;
 
     //  thread ID reporting for deadlock debugging
     void add_reader();
