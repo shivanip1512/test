@@ -315,30 +315,6 @@ int Mccmd_Connect(ClientData clientData, Tcl_Interp* interp, int argc, char* arg
         dout << CtiTime() << " MCCMD loading cparms:" << endl;
     }
 
-    pil_host = gConfigParms.getValueAsString("PIL_MACHINE", "127.0.0.1");
-    pil_port = gConfigParms.getValueAsInt("PIL_PORT", PORTERINTERFACENEXUS);
-
-    {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << " Connecting to porter, host: " << pil_host << ", port: " << pil_port << endl;
-    }
-
-    dispatch_host = gConfigParms.getValueAsString("DISPATCH_MACHINE", "127.0.0.1");
-    dispatch_port = gConfigParms.getValueAsInt("DISPATCH_PORT", VANGOGHNEXUS);
-
-    {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << " Connecting to dispatch, host: " << dispatch_host << ", port: " << dispatch_port << endl;
-    }
-
-    notification_host = gConfigParms.getValueAsString("NOTIFICATION_MACHINE", "127.0.0.1");
-    notification_port = gConfigParms.getValueAsInt("NOTIFICATION_PORT", NOTIFICATIONNEXUS);
-
-    {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << " Connecting to notification server, host: " << notification_host << ", port: " << notification_port << endl;
-    }
-
     gPagingConfigRouteID = gConfigParms.getValueAsInt("PAGING_CONFIG_ROUTE_ID", -1);
     gFMConfigRouteID = gConfigParms.getValueAsInt("FM_CONFIG_ROUTE_ID", -1);
     fm_config_range = gConfigParms.getValueAsString("FM_CONFIG_SERIAL_RANGE", "");

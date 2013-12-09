@@ -27,7 +27,6 @@ using std::string;
 using std::endl;
 
 /** local definitions **/
-const CHAR * CtiFDRInterface::KEY_DISPATCH_NAME = "DISPATCH_MACHINE";
 const CHAR * CtiFDRInterface::KEY_DEBUG_LEVEL = "_DEBUGLEVEL";
 const CHAR * CtiFDRInterface::KEY_CPARM_RELOAD_RATE_SECONDS = "FDR_CPARM_RELOAD_RATE_SECONDS";
 
@@ -540,7 +539,7 @@ BOOL CtiFDRInterface::connectWithDispatch()
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Attempting to connect to dispatch at " << iDispatchMachine << " for " << getInterfaceName() << endl;
+                dout << CtiTime() << " Attempting to connect to dispatch for " << getInterfaceName() << endl;
             }
 
             iDispatchConn = new CtiClientConnection( Cti::Messaging::ActiveMQ::Queue::dispatch );
@@ -551,8 +550,7 @@ BOOL CtiFDRInterface::connectWithDispatch()
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Attempt to reconnect to dispatch at " << iDispatchMachine;
-                    dout << " for " << getInterfaceName() << " failed.  Attempting again" << endl;
+                    dout << CtiTime() << " Attempt to reconnect to dispatch for " << getInterfaceName() << " failed.  Attempting again" << endl;
                 }
                 delete iDispatchConn;
                 iDispatchConn=NULL;
@@ -563,7 +561,7 @@ BOOL CtiFDRInterface::connectWithDispatch()
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Attempt to connect to dispatch at " << iDispatchMachine << " for " << getInterfaceName() << " failed by exception " << endl;
+            dout << CtiTime() << " Attempt to connect to dispatch for " << getInterfaceName() << " failed by exception " << endl;
         }
         retVal = FALSE;
         if (iDispatchConn != NULL)
@@ -683,20 +681,6 @@ int CtiFDRInterface::readConfig( void )
     string   tempStr;
     char        *eptr;
 
-    tempStr = getCparmValueAsString(KEY_DISPATCH_NAME);
-    if (tempStr.length() > 0)
-    {
-        iDispatchMachine = tempStr;
-    }
-    else
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " DISPATCH_MACHINE not defined, defaulting to local 127.0.0.1 " << endl;
-        }
-        iDispatchMachine = string ("127.0.0.1");
-    }
-
     // make name based on interface for debug level: FDR_xxxx_DEBUG_LEVEL
     string myKeyName("FDR_" + iInterfaceName + KEY_DEBUG_LEVEL);
 
@@ -704,7 +688,6 @@ int CtiFDRInterface::readConfig( void )
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << "** Loading Debug Level: " << myKeyName << endl;
     }
-
 
     tempStr = getCparmValueAsString(myKeyName);
     if (tempStr.length() > 0)

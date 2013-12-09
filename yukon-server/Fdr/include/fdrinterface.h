@@ -141,7 +141,6 @@ class IM_EX_FDRBASE CtiFDRInterface
 
     private:
         std::string           iInterfaceName;
-        std::string           iDispatchMachine;
 
         int                 iCparmReloadSeconds;
         FDRDbReloadReason   iDbReloadReason;

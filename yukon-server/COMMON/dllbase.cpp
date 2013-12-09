@@ -144,36 +144,6 @@ DLLEXPORT void InitYukonBaseGlobals(void)
         if(DebugLevel & 0x0001) cout << "Configuration Parameter DB_DEBULEVEL   failed : " << endl;
     }
 
-    if( !(str = gConfigParms.getValueAsString("DISPATCH_MACHINE")).empty() )
-    {
-        if(DebugLevel & 0x0001) cout << "Configuration Parameter DISPATCH_MACHINE   found : " << str << endl;
-        VanGoghMachine = str;
-    }
-    else
-    {
-        if(DebugLevel & 0x0001) cout << "Configuration Parameter DISPATCH_MACHINE   failed : " << endl;
-    }
-
-    if((str = gConfigParms.getValueAsString("NOTIFICATION_MACHINE", "")) != "")
-    {
-        if(DebugLevel & 0x0001) cout << "Configuration Parameter NOTIFICATION_MACHINE  found : " << str << endl;
-        NotificationMachine = str;
-    }
-    else
-    {
-        if(DebugLevel & 0x0001) cout << "Configuration Parameter NOTIFICATION_MACHINE   failed : " << endl;
-    }
-
-    if((int_val = gConfigParms.getValueAsInt("NOTIFICATION_PORT", -1)) != -1)
-    {
-        if(DebugLevel & 0x0001) cout << "Configuration Parameter NOTIFICATION_PORT   found : " << int_val << endl;
-        NotificationPort = int_val;
-    }
-    else
-    {
-        if(DebugLevel & 0x0001) cout << "Configuration Parameter NOTIFICATION_PORT   failed : " << endl;
-    }
-
     if(!(str = gConfigParms.getValueAsString("DB_TYPE")).empty() ||
        !(str = gConfigParms.getValueAsString("DB_RWDBDLL")).empty() )
     {

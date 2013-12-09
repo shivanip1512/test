@@ -317,8 +317,6 @@ void CtiFDRService::Run( )
     CtiTime NextThreadMonitorReportTime;
     CtiThreadMonitor::State previous = CtiThreadMonitor::Normal;
 
-    string FdrVanGoghMachine = gConfigParms.getValueAsString("DISPATCH_MACHINE", "127.0.0.1");
-
     // for shutting down
     iShutdown = CreateEvent(NULL,TRUE,FALSE,NULL);
 
