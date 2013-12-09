@@ -313,9 +313,14 @@ public class ClientSession {
 
 	private LoginPanel makeLocalLoginPanel(ClientApplicationRememberMe rememberMeSetting) {
 		LoginPrefs prefs = LoginPrefs.getInstance();
+		String rememberedPassword = "";
+		if (rememberMeSetting == ClientApplicationRememberMe.USERNAME_AND_PASSWORD) {
+		    rememberedPassword = prefs.getRememberedPassword();
+		}
+
 		return  new LoginPanel(prefs.getCurrentYukonHost(),
 								prefs.getRememberedUsername(),
-								prefs.getRememberedPassword(),
+								rememberedPassword,
 								prefs.shouldRememberCredentials(), true, rememberMeSetting);
 	}
 		
@@ -340,9 +345,14 @@ public class ClientSession {
 	        }
 	    }
 
+        String rememberedPassword = "";
+        if (prefs.getRememberMeSetting() == ClientApplicationRememberMe.USERNAME_AND_PASSWORD) {
+            rememberedPassword = prefs.getRememberedPassword();
+        }
+
 	    return  new LoginPanel(host,
 	                           prefs.getRememberedUsername(),
-	                           prefs.getRememberedPassword(),
+	                           rememberedPassword,
 	                           prefs.shouldRememberCredentials(),
 	                           false,
 	                           prefs.getRememberMeSetting());
@@ -350,9 +360,15 @@ public class ClientSession {
 		
 	private LoginPanel makeJwsLoginPanel(String host, String userName) {
         LoginPrefs prefs = LoginPrefs.getInstance();
+
+        String rememberedPassword = "";
+        if (prefs.getRememberMeSetting() == ClientApplicationRememberMe.USERNAME_AND_PASSWORD) {
+            rememberedPassword = prefs.getRememberedPassword(userName);
+        }
+
 	    LoginPanel loginPanel = new LoginPanel(host,
 	                           userName,
-	                           prefs.getRememberedPassword(userName),
+	                           rememberedPassword,
                                prefs.shouldRememberCredentials(),
                                false,
                                prefs.getRememberMeSetting());
