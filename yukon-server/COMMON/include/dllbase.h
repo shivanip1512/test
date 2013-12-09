@@ -52,9 +52,6 @@ typedef boost::char_separator<char> Separator;
 IM_EX_CTIBASE extern CTINEXUS          PorterNexus;
 IM_EX_CTIBASE extern RWMutexLock       coutMux;
 
-IM_EX_CTIBASE extern std::string      VanGoghMachine;
-IM_EX_CTIBASE extern std::string      NotificationMachine;
-IM_EX_CTIBASE extern int              NotificationPort;
 IM_EX_CTIBASE extern std::string      gLogDirectory;
 IM_EX_CTIBASE extern unsigned long    gLogRetention;
 

@@ -300,15 +300,7 @@ int Mccmd_Connect(ClientData clientData, Tcl_Interp* interp, int argc, char* arg
     //RWASSERT( PILConnection == 0 && VanGoghConnection == 0 );
 
     //Set up the defaults
-    int pil_port;
-    string pil_host;
-
-    int dispatch_port;
-    string dispatch_host;
     string fm_config_range;
-
-    string notification_host;
-    int notification_port;
 
     {
         CtiLockGuard< CtiLogger > guard(dout);

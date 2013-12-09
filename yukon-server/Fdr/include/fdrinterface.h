@@ -135,7 +135,6 @@ class IM_EX_FDRBASE CtiFDRInterface
 
         void printLists(std::string title, int pid);
 
-        static const CHAR * KEY_DISPATCH_NAME;
         static const CHAR * KEY_DEBUG_LEVEL;
         static const CHAR * KEY_CPARM_RELOAD_RATE_SECONDS;
 

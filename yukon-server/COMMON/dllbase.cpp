@@ -54,10 +54,7 @@ string     dbName("yukon");
 string     dbUser("yukon");
 string     dbPassword("yukon");
 
-IM_EX_CTIBASE string     VanGoghMachine("127.0.0.1");     // Connect locally if we don't know any better
-IM_EX_CTIBASE string     NotificationMachine("127.0.0.1");     // Connect locally if we don't know any better
-IM_EX_CTIBASE INT        NotificationPort = NOTIFICATIONNEXUS;
-IM_EX_CTIBASE string     gLogDirectory("\\yukon\\server\\log");
+IM_EX_CTIBASE string        gLogDirectory("\\yukon\\server\\log");
 IM_EX_CTIBASE unsigned long gLogRetention = 0;      // 0 == keep forever
 IM_EX_CTIBASE bool          gLogPorts = false;
 IM_EX_CTIBASE bool          gOptimizeVersacom = false;
