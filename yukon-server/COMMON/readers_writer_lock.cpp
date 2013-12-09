@@ -3,6 +3,7 @@
 #include "readers_writer_lock.h"
 
 #include "boost/date_time/microsec_time_clock.hpp"
+#include "boost/optional/optional.hpp"
 
 #include "utility.h"
 
@@ -253,32 +254,29 @@ bool readers_writer_lock_t::remove_writer()
 unsigned readers_writer_lock_t::find_reader_index(thread_id_t tid) const
 {
     unsigned reader_index = 0;
-    unsigned reader_index_result = 0;
-    bool     found_empty_index = false;
+    boost::optional<unsigned> first_empty_index;
 
-    for( ; (! found_empty_index || reader_index < _reader_index_end) && reader_index < MaxThreadCount ; ++reader_index )
+    for( ; (! first_empty_index || reader_index < _reader_index_end) && reader_index < MaxThreadCount ; ++reader_index )
     {
         if( _reader_ids[reader_index] == tid )
         {
-            reader_index_result = reader_index; // we found our thread id
-            break;
+            return reader_index; // we found our thread id
         }
 
-        if( ! found_empty_index && !_reader_ids[reader_index] )
+        if( ! first_empty_index && !_reader_ids[reader_index] )
         {
-            reader_index_result = reader_index; // we keep the first empty index
-            found_empty_index = true;
+            first_empty_index = reader_index; // we keep the first empty index
         }
     }
 
-    if( reader_index == MaxThreadCount )
+    if( ! first_empty_index )
     {
         //  Out of thread storage space!
         autopsy(__FILE__, __LINE__);
         terminate_program();
     }
 
-    return reader_index_result;
+    return *first_empty_index;
 }
 
 
