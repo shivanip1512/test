@@ -139,7 +139,7 @@
     <entry key="yukon.common.setting.subcategory.OPEN_ADR.description">OpenADR connection settings</entry>
     <entry key="yukon.common.setting.subcategory.GRAPHING">Graphing</entry>
     <entry key="yukon.common.setting.subcategory.GRAPHING.description">Graph directory, interval settings</entry>
-    <entry key="yukon.common.setting.subcategory.DR">Demand Reponse</entry>
+    <entry key="yukon.common.setting.subcategory.DR">Demand Response</entry>
     <entry key="yukon.common.setting.subcategory.DR.description">Opt outs, importing, switch command settings</entry>
     <entry key="yukon.common.setting.subcategory.AMI">Metering</entry>
     <entry key="yukon.common.setting.subcategory.AMI.description">Display templates, importer settings</entry>
