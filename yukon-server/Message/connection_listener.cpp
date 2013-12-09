@@ -168,9 +168,6 @@ bool CtiListenerConnection::acceptClient()
 
         if( !message.get() || message->getCMSType() != MessageType::clientInit || !message->getCMSReplyTo() )
         {
-            // Maybe something is wrong? reset the managed queue consumer
-            _consumer.reset( createQueueConsumer( *_session, _serverQueueName ));
-
             return false;
         }
 
