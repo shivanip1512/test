@@ -2,8 +2,6 @@
 
 #include "logger.h"
 
-#define MC_PORT 1900
-
 #define MC_SERVICE_NAME "MACS"
 #define MC_SERVICE_DISPLAY_NAME "Yukon MAC Scheduler Service"
 
