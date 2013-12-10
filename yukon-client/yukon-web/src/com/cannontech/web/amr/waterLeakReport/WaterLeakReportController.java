@@ -228,6 +228,7 @@ public class WaterLeakReportController {
                 List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
                 flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
                 model.addAttribute("hasFilterError", true);
+                model.addAttribute("fileExportData", exportData);
                 return "waterLeakReport/report.jsp";
             }
         }
