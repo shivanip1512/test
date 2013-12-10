@@ -88,6 +88,11 @@
             <tag name="PLC_DEMAND_RESET"/>
         </tags>
     </pao>
+    <pao id="SUPPORTS_COMMANDER_REQUESTS_TAG" abstract="true">
+        <tags>
+            <tag name="COMMANDER_REQUESTS"/>
+        </tags>
+    </pao>
 
     <pao id="ROUTE_ENCRYPTION"  abstract="true">
         <tags>
@@ -316,7 +321,7 @@
     </pao>
 
     <!-- MCT BASE -->
-    <pao id="MCT_BASE" abstract="true" inherits="OUTAGE_STATUS_BASE">
+    <pao id="MCT_BASE" abstract="true" inherits="OUTAGE_STATUS_BASE, SUPPORTS_COMMANDER_REQUESTS_TAG">
     	<displayGroup>MCT</displayGroup>
     	<changeGroup>mct</changeGroup>
         <tags>
@@ -4562,7 +4567,7 @@
     	<displayGroup>Two Way LCR</displayGroup>
     </pao>
     
-    <pao id="LCR3102" inherits="TWO_WAY_LCR_BASE, SUPPORTS_LOCATE_ROUTE_TAG">
+    <pao id="LCR3102" inherits="TWO_WAY_LCR_BASE, SUPPORTS_LOCATE_ROUTE_TAG, SUPPORTS_COMMANDER_REQUESTS_TAG">
         <displayName>LCR-3102</displayName>
         <points>
             <point type="DemandAccumulator" offset="1">
@@ -5182,7 +5187,7 @@
     </pao>
     
     <!-- ELECTRONIC METERS -->
-    <pao id="ELECTRONIC_METER_BASE" abstract="true">
+    <pao id="ELECTRONIC_METER_BASE" abstract="true" inherits="SUPPORTS_COMMANDER_REQUESTS_TAG">
     	<displayGroup>Electronic Meters</displayGroup>
     	<points>
             <point type="Analog" offset="1">
@@ -5764,7 +5769,7 @@
 	</pao>
 	
 	<!-- ION BASE -->
-	<pao id="ELECTRONIC_METER_ION_BASE" abstract="true">
+	<pao id="ELECTRONIC_METER_ION_BASE" abstract="true" inherits="SUPPORTS_COMMANDER_REQUESTS_TAG">
 		<displayGroup>Electronic Meters</displayGroup>
 		<points>
             <point type="Status" offset="2000">
@@ -5983,7 +5988,7 @@
     </pao>
 
 <!-- ###################################  RFN_COMMON  ################################### -->
-<pao id="RFN_COMMON" abstract="true" inherits="OUTAGE_STATUS_BASE, RFN_EVENTS, SUPPORTS_OUTAGE_TAG, RFN_PTCALC__ALL">
+<pao id="RFN_COMMON" abstract="true" inherits="OUTAGE_STATUS_BASE, RFN_EVENTS, SUPPORTS_OUTAGE_TAG, RFN_PTCALC__ALL, SUPPORTS_COMMANDER_REQUESTS_TAG">
 	<displayGroup>RFMESH</displayGroup>
 	<changeGroup>rfn</changeGroup>
         <points>
@@ -6813,7 +6818,6 @@
             </tag>
             <tag name="METER_DETAIL_DISPLAYABLE"/>
             <tag name="NETWORK_MANAGER_ATTRIBUTE_READS"/>
-            <tag name="PORTER_COMMAND_REQUESTS" />
             <tag name="USES_METER_NUMBER_FOR_MSP"/>
         </tags>
     </pao>

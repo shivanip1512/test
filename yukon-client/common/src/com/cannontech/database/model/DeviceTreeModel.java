@@ -43,8 +43,8 @@ public class DeviceTreeModel extends AbstractDeviceTreeModel {
         
         if (paoType.isMeter()) {    // "meters" are of valid "type", but need to do a little more checking
             
-            if (isPorterDevicesOnly()) {    // for "meters", need to check if we're limiting only to porter supported devices
-                return paoDefinitionDao.isTagSupported(paoType, PaoTag.PORTER_COMMAND_REQUESTS);
+            if (isCommanderDevicesOnly()) {    // for "meters", need to check if we're limiting only to porter supported devices
+                return paoDefinitionDao.isTagSupported(paoType, PaoTag.COMMANDER_REQUESTS);
             } else {
                 return true;
             }

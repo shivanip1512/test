@@ -13,7 +13,7 @@ public abstract class DBTreeModel extends javax.swing.tree.DefaultTreeModel impl
 	public static final int SORT_POINT_NAME = 0;
 	public static final int SORT_POINT_OFFSET = 1;
 	
-    private boolean porterDevicesOnly = false;
+    private boolean commanderDevicesOnly = false;
 
     public DBTreeModel(javax.swing.tree.TreeNode root) {
     	super(root);
@@ -209,16 +209,16 @@ public abstract class DBTreeModel extends javax.swing.tree.DefaultTreeModel impl
     /**
      * Set this to true if you want to enforce checking for devices that are communicated to through porter.
      * Examples of those _not_ using porter: RFMesh, SEP, DIGI
-     * @param usesPorterRequests
+     * @param commanderDevicesOnly
      */
-    public void setPorterDevicesOnly(boolean porterDevicesOnly) {
-        this.porterDevicesOnly = porterDevicesOnly;
+    public void setCommanderDevicesOnly(boolean commanderDevicesOnly) {
+        this.commanderDevicesOnly = commanderDevicesOnly;
     }
     
     /**
      * Returns true when option set for devices that can be communicated to by porter. 
      */
-    public boolean isPorterDevicesOnly() {
-        return porterDevicesOnly;
+    public boolean isCommanderDevicesOnly() {
+        return commanderDevicesOnly;
     }
 }

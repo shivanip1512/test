@@ -26,7 +26,7 @@ public class LMGroupsModel extends AbstractDeviceTreeModel {
     @Override
     public boolean isDeviceValid(PaoCategory paoCategory, PaoClass paoClass, PaoType paoType) {
 
-        if (isPorterDevicesOnly() && paoType == PaoType.LM_GROUP_DIGI_SEP) {
+        if (isCommanderDevicesOnly() && paoType == PaoType.LM_GROUP_DIGI_SEP) {
             // DIGI_SEP groups are not compatible with porter
             return false;
         } 

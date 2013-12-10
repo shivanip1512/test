@@ -64,8 +64,8 @@ public class DeviceMeterGroupModel extends DBTreeModel
     
     private boolean isDeviceValid(PaoType paoType)
     {
-        if (isPorterDevicesOnly()) {
-            if (!paoDefinitionDao.isTagSupported(paoType, PaoTag.PORTER_COMMAND_REQUESTS)) {
+        if (isCommanderDevicesOnly()) {
+            if (!paoDefinitionDao.isTagSupported(paoType, PaoTag.COMMANDER_REQUESTS)) {
                 // only devices read through porter
                 return false;
             }

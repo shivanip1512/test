@@ -28,6 +28,7 @@ public enum PaoTag {
 	LOCATE_ROUTE("Locate Route"),
 	PORTER_COMMAND_REQUESTS("Porter Command Requests"),
 	NETWORK_MANAGER_ATTRIBUTE_READS("Network Manager Attribute Reads"),
+	COMMANDER_REQUESTS("Commander Requests"),
 	MCT_200_SERIES("MCT 200 Series"),
 	MCT_300_SERIES("MCT 300 Series"),
 	USES_METER_NUMBER_FOR_MSP("Uses meter number for Msp"),

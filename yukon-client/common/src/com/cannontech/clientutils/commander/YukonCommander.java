@@ -1379,15 +1379,15 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 		{
 			if (modelIds[i] == TreeModelEnum.DEVICE) {
 			    DeviceTreeModel deviceTreeModel = new DeviceTreeModel(false);
-			    deviceTreeModel.setPorterDevicesOnly(true);
+			    deviceTreeModel.setCommanderDevicesOnly(true);
 				models.add(deviceTreeModel);
 			} else if (modelIds[i] == TreeModelEnum.DEVICE_METERNUMBER) {
 			    DeviceMeterGroupModel deviceMeterGroupModel = new DeviceMeterGroupModel();
-                deviceMeterGroupModel.setPorterDevicesOnly(true);
+                deviceMeterGroupModel.setCommanderDevicesOnly(true);
                 models.add(deviceMeterGroupModel);
 			} else if (modelIds[i] == TreeModelEnum.LMGROUPS) {
 			    LMGroupsModel lmGroupsModel = new LMGroupsModel(false);
-			    lmGroupsModel.setPorterDevicesOnly(true);
+			    lmGroupsModel.setCommanderDevicesOnly(true);
 				models.add(lmGroupsModel);
 			} else if (modelIds[i] == TreeModelEnum.CAPBANKCONTROLLER) {
 				models.add(new CapBankControllerModel(false));
