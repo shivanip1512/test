@@ -22,10 +22,10 @@ Yukon.Flot = (function () {
         _defaults = {
             base_options: {
                 xaxis: {
-                    position: 'bottom',
+                    position: 'bottom'
                 },
                 yaxis: {
-                    position: 'left',
+                    position: 'left'
                 },
                 grid: {
                     hoverable: true,
@@ -264,7 +264,7 @@ Yukon.Flot = (function () {
             /* more options initialization */
             _defaults.methods = {
                 plotGraph: _plotGraph,
-                getFilteredGraphData: _getFilteredGraphData,
+                getFilteredGraphData: _getFilteredGraphData
             };
             _defaults.bar_options = jQuery.extend(true, {}, {
                 series : {
@@ -273,13 +273,13 @@ Yukon.Flot = (function () {
                         show: true,
                         align: "center",
                         fill: true,
-                        fillColor: "rgb(99,143,189)",
+                        fillColor: "rgb(99,143,189)"
                     },
                     lines: { 
-                        show: false,
+                        show: false
                     },
                     points: { 
-                        show: false,
+                        show: false
                     }
                 }
             }, _defaults.base_options);
@@ -288,13 +288,13 @@ Yukon.Flot = (function () {
                     fillColor: "rgb(99,143,189)",
                     color: "rgb(63, 105, 149)",
                     bars: {
-                        show: false,
+                        show: false
                     },
                     lines: { 
-                        show: true,
+                        show: true
                     },
                     points: { 
-                        show: true,
+                        show: true
                     }
                 }
             }, _defaults.base_options);

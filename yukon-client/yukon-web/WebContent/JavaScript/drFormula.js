@@ -436,7 +436,7 @@ Yukon.DrFormula = (function() {
             .done(function(data) {
                 jQuery("#formulaPickerRowGear_"+gearId).html(data).flashYellow(.75);
             });
-        },
+        }
     };
     return drFormulaModule;
 }());

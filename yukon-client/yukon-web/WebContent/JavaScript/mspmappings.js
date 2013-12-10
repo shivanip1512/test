@@ -6,7 +6,7 @@ function SubstationToRouteMappings_SelectListener(url) {
     jQuery.ajax({
         type: "POST",
         url: url,
-        data: {"substationid": substationId, "view": ""},
+        data: {"substationid": substationId, "view": ""}
     }).done( function (data, textStatus, jqXHR) {
         routeElement.html(data);
     });
@@ -61,7 +61,7 @@ function SubstationToRouteMappings_updateRoutes(url) {
     jQuery.ajax({
         type: "POST",
         url: url,
-        data: {"array": jsonObject, "substationid": substationId, "update": ""},
+        data: {"array": jsonObject, "substationid": substationId, "update": ""}
     }).done( function (data, textStatus, jqXHR) {
     });
 }

@@ -22,7 +22,7 @@ Yukon.UserPreferences = (function () {
             jQuery.ajax({
                 type: "POST",
                 url: _url_change_preference,
-                data: {'userId': userId, 'prefName': prefName, 'prefValue': prefVal},
+                data: {'userId': userId, 'prefName': prefName, 'prefValue': prefVal}
             }).done(function(data) {
                 option.closest("td").find("button").removeClass("on");
                 target_button.addClass("on");
@@ -45,7 +45,7 @@ Yukon.UserPreferences = (function () {
             jQuery.ajax({
                 type: "POST",
                 url: _url_change_preference,
-                data: {'userId': userId, 'prefName': prefName, 'prefValue': prefVal},
+                data: {'userId': userId, 'prefName': prefName, 'prefValue': prefVal}
             }).done( function(data) {
                 if (data.success) {
                     input.attr('value', prefVal).attr('title', prefVal).attr('prev-value', prefVal);
@@ -237,7 +237,7 @@ Yukon.UserPreferences = (function () {
             jQuery.ajax({
                 type: "POST",
                 url: _url_change_all_preferences,
-                data: {'userId': userId},
+                data: {'userId': userId}
             }).done(function(data) {
                 // Go through the data and turn on enums and set input[type='text']'s
                 for (var ii=0; ii < data.preferences.length; ii++) {
@@ -343,7 +343,7 @@ Yukon.UserPreferences = (function () {
                 ctrl_select.find('option[value="-1"]').remove();
                 ctrl_select.removeClass("f-has_selectOne");
             }
-        },
+        }
     };
     return userPreferencesMod;
 })();

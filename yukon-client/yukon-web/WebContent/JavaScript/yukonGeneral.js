@@ -162,7 +162,7 @@ Yukon.ui.aux = (function () {
             jQuery.ajax({
                 type: "POST",
                 url: url,
-                data: args,
+                data: args
             }).done( function (data, textStatus, jqXHR) {
                 var errorMsg = data['errorMsg'];
                 if (errorMsg != null) {

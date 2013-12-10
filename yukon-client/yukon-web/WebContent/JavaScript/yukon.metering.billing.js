@@ -41,7 +41,7 @@ Yukon.MeteringBilling = (function() {
             jQuery.ajax({
                 url: url,
                 type: method,
-                data: jQuery("#MForm").serialize(),
+                data: jQuery("#MForm").serialize()
             }).done( function(html) {
                 _populate_generation_schedule_form(html);
             });
@@ -362,7 +362,7 @@ Yukon.MeteringBilling = (function() {
             jQuery.ajax({
                 url: _url_schedule_export,
                 type: 'post',
-                data: form.serialize(),
+                data: form.serialize()
             }).done( function(data) {
                 // Clear existing error indicators + messages
                 form.find("input").removeClass("error").closest("td").find("div.error").remove();

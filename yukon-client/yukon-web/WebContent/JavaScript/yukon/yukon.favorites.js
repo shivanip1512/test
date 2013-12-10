@@ -171,7 +171,7 @@ Yukon.Favorites = (function () {
                     localUi.removeWithUndo(row, actionDo, actionUndo, name) ;
                 });
             });
-        },
+        }
     };
     return favoriteMod;
 }());

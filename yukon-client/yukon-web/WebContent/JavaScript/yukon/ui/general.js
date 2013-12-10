@@ -406,7 +406,7 @@ Yukon.modules.ui = function (mod) {
             jQuery.ajax({
                 type: "POST",
                 url: "/user/updatePreference.json",
-                data: {'userId': userId, 'prefName': 'HOME_URL', 'prefValue': send},
+                data: {'userId': userId, 'prefName': 'HOME_URL', 'prefValue': send}
             }).done( function (data) {
                 if (data.success) {
                     alert("SAVED");

@@ -99,6 +99,11 @@ function initiateCannonDataUpdate(url, delayMs) {
             backgroundColor = jQuery(val).css('background-color');
             color = jQuery(val).css('color');
             current_value = format == 'background' ? backgroundColor : color;
+            // IE represents rgb(0,0,0,0) as transparent, so translate to rgb format here
+            // to satisfy rgb2hex, which expects the rgb format
+            if ('transparent' === current_value) {
+                current_value = 'rgb(0,0,0,0)';
+            }
             if ('undefined' !== typeof newData && newData !== rgb2hex(current_value)) {
                 // data was sent and is different than current
                 if (format === 'background') {
