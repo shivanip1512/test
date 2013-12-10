@@ -38,8 +38,6 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
-import com.cannontech.web.common.chart.service.ChartService;
-import com.cannontech.web.common.chart.service.FlotChartService;
 import com.cannontech.web.user.service.UserPreferenceService;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
@@ -53,8 +51,6 @@ public class TrendWidget extends WidgetControllerBase {
 
     @Autowired private UserPreferenceService prefService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
-    @Autowired private ChartService chartService;
-    @Autowired private FlotChartService flotChartService;
     @Autowired private DeviceDao deviceDao;
     @Autowired private AttributeService attributeService;
     @Autowired private DateFormattingService dateFormattingService;
@@ -143,25 +139,6 @@ public class TrendWidget extends WidgetControllerBase {
             cachingWidgetParameterGrabber.removeFromCache("stopDateParam");
         }
 
-        // We only want to do this for ChartPeriod.DAY
-        // This causes the custom time pickers to show the wrong values if the offset
-        // pushes the value into a different day. Also only day has resolution down to the hour:minute, so it seems to
-        // only make sense for ChartPeriod.DAY
-        if (chartPeriod == ChartPeriod.DAY) {
-            /*
-             * jquery.flot.js v 0.7 does not support time zones and always displays UTC time
-             * Here we fake it out by adding the server timezone offset to the timestamp
-             * so the times line up between the plot and the data.
-             */
-            long startTimeStamp = startDate.getTime();
-            long fakeStartTimeStamp = startTimeStamp + TimeZone.getDefault().getOffset(startTimeStamp);
-            startDate = new Date(fakeStartTimeStamp); //Mon Jul 22 04:18:00 CDT 2013
-
-            long stopTimeStamp = stopDate.getTime();
-            long fakeStopTimeStamp = stopTimeStamp + TimeZone.getDefault().getOffset(stopTimeStamp);
-            stopDate = new Date(fakeStopTimeStamp); //Mon Jul 22 04:18:00 CDT 2013
-        }
-
         ChartInterval chartInterval = chartPeriod.getChartUnit(startDate, stopDate);
 
         // GET DATES STRINGS
@@ -190,7 +167,6 @@ public class TrendWidget extends WidgetControllerBase {
         Long stopDateMillis = stopDate.getTime();
         
         String tabularDataViewer = WidgetParameterHelper.getRequiredStringParameter(request, "tabularDataViewer");
-
 
         // SET MAV
         mav.addObject("keepSettingsOpen", chartPeriod == ChartPeriod.NOPERIOD);

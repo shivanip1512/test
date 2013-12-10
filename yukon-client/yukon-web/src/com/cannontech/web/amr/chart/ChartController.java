@@ -61,16 +61,9 @@ public class ChartController {
         
         Instant start = new Instant(startDate);
         Instant stop = new Instant(endDate);
-        JSONObject graphAsJSON = flotChartService.getMeterGraphData(ids,
-                                                                   start,
-                                                                   stop,
-                                                                   yMin,
-                                                                   yMax,
-                                                                   interval,
-                                                                   converterType, 
-                                                                   graphType,
-                                                                   yLabelUnits,
-                                                                   userContext);
+        JSONObject graphAsJSON
+            = flotChartService.getMeterGraphData(ids, start, stop, yMin, yMax, interval, converterType,
+                                                 graphType, yLabelUnits, userContext);
         
         return graphAsJSON;
     }

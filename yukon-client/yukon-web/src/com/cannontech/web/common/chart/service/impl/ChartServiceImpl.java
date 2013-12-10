@@ -85,11 +85,11 @@ public class ChartServiceImpl implements ChartService {
                  * so the times line up between the plot and the data.
                  */
                 long timeStamp = data.getPointDataTimeStamp().getTime();
-                long adjustedTimeStamp = timeStamp + TimeZone.getDefault().getOffset(timeStamp);
-                
-                chartValue.setId(adjustedTimeStamp);
-                chartValue.setTime(adjustedTimeStamp);
-                chartValue.setValue(data.getValue());
+                timeStamp += TimeZone.getDefault().getOffset(timeStamp);
+
+                chartValue.setId(timeStamp);
+                chartValue.setTime(timeStamp); // x-axis
+                chartValue.setValue(data.getValue());  // y-axis
                 chartValue.setDescription("<div>" + units + "</div><div>" + timeFormat.format(data.getPointDataTimeStamp()) + "</div><div>" + lPoint.getPointName() + "</div>");
                 chartValue.setFormattedValue(pointValueFormat.format(data.getValue()));
 

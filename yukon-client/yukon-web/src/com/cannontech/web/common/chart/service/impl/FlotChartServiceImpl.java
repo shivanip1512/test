@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TimeZone;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -84,8 +85,17 @@ public class FlotChartServiceImpl implements FlotChartService {
         
         JSONObject xAxis = new JSONObject();
         setFlotOption(xAxis, FlotOptionKey.XAXIS_MODE, "time");
-        setFlotOption(xAxis, FlotOptionKey.XAXIS_MIN, start.getMillis());
-        setFlotOption(xAxis, FlotOptionKey.XAXIS_MAX, stop.getMillis());
+
+        /*
+         * jquery.flot.js v 0.7 does not support time zones and always displays UTC time
+         * Here we fake it out by adding the server timezone offset to the timestamp
+         * so the times line up between the plot and the data.
+         */
+        long xAxisMin = start.getMillis() + TimeZone.getDefault().getOffset(start.getMillis());
+        long xAxisMax = stop.getMillis() + TimeZone.getDefault().getOffset(stop.getMillis());
+        setFlotOption(xAxis, FlotOptionKey.XAXIS_MIN, xAxisMin);
+        setFlotOption(xAxis, FlotOptionKey.XAXIS_MAX, xAxisMax);
+
         setFlotOption(xAxis, FlotOptionKey.XAXIS_AUTOSCALEMARGIN, 0.1);
         setFlotOption(options, FlotOptionKey.XAXIS, xAxis);
         
