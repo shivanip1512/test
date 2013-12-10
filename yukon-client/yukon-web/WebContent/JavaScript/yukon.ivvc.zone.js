@@ -21,8 +21,8 @@ Yukon.Ivvc.Zone = (function () {
                 var ii,
                     table = jQuery('#recentEventsTable'),
                     body = table.find('tbody'),
-                    events = Object.values(data)[0],
                     timeStamp = Object.keys(data)[0],
+                    events = data[timeStamp],
                     newRow,
                     event,
                     templateRow = jQuery(jQuery('#templateRowContainer').find('tr')[0]);
