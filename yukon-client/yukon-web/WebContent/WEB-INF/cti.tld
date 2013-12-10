@@ -2029,6 +2029,9 @@
     <name>paoDetailUrl</name>
     <tag-class>com.cannontech.web.taglib.PaoDetailUrlTag</tag-class>
     <body-content>scriptless</body-content>
+    <description>
+        Generates a url to the detail page for the specified pao
+    </description>
     <attribute>
         <name>yukonPao</name>
         <required>true</required>
@@ -2050,6 +2053,9 @@
     <name>paoDetailPageName</name>
     <tag-class>com.cannontech.web.taglib.PaoDetailPageNameTag</tag-class>
     <body-content>empty</body-content>
+    <description>
+         Generates the page name from module_config.xml for the detail page for the specified pao
+    </description>
     <attribute>
         <name>yukonPao</name>
         <required>true</required>
