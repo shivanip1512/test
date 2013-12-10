@@ -8,18 +8,21 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.lucene.document.Document;
+import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.BooleanClause.Occur;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.RowMapper;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.web.search.lucene.index.AbstractIndexManager.IndexUpdateInfo;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
@@ -149,5 +152,21 @@ public class PaoPageIndexBuilder extends DbPageIndexBuilder {
         PaoType paoType = PaoType.valueOf(document.get("paoType"));
         PaoTypeHandler handler = handlersByType.get(paoType);
         return handler.isAllowedToView(document, user, new PaoIdentifier(paoId, paoType));
+    }
+
+    @Override
+    public IndexUpdateInfo processDBChange(DbChangeType dbChangeType, int id, int database, String category,
+            String type) {
+        if (database == DBChangeMsg.CHANGE_PAO_DB) {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("select type from yukonPaobject where paobjectId").eq(id);
+            PaoType paoType = jdbcTemplate.queryForObject(sql, RowMapper.PAO_TYPE);
+            PaoTypeHandler handler = handlersByType.get(paoType);
+            if (handler == null) {
+                // We don't handle this particular PAO type.
+                return null;
+            }
+        }
+        return super.processDBChange(dbChangeType, id, database, category, type);
     }
 }

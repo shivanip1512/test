@@ -29,7 +29,7 @@
                <tags:inputNameValue
                    path="devStarsAccounts.numAccounts"
                    nameKey=".setupDevDatabase.option.stars.numAccounts"
-                   size="4" />
+                   size="6" />
                <tags:inputNameValue
                    path="devStarsAccounts.accountNumMin"
                    nameKey=".setupDevDatabase.option.stars.accountNumMin"

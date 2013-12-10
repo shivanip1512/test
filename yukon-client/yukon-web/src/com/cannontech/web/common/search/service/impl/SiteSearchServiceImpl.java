@@ -35,7 +35,6 @@ import com.cannontech.web.search.lucene.YukonObjectSearchAnalyzer;
 import com.cannontech.web.search.lucene.index.SearchTemplate;
 import com.cannontech.web.search.lucene.index.SiteSearchIndexManager;
 import com.cannontech.web.search.lucene.index.site.DocumentBuilder;
-import com.google.common.collect.Lists;
 
 @Component
 public class SiteSearchServiceImpl implements SiteSearchService {
@@ -51,18 +50,96 @@ public class SiteSearchServiceImpl implements SiteSearchService {
         return searchStr == null ? "" : searchStr.replaceAll("[^\\p{Alnum}]+", " ").trim();
     }
 
-    @Override
-    public SearchResults<Page> search(String searchStr, int startIndex, final int count, YukonUserContext userContext) {
-        if (log.isDebugEnabled()) {
-            log.debug("searching for [" + searchStr + "], starting at " + startIndex + ", count = " + count);
+    /**
+     * This class is made to be called multiple times, until it returns true (which means that we either found
+     * the number of documents requested (number of items per page) or we found all possible matching documents.
+     * 
+     * It works this way because we aren't able to filter some documents out based on permissions until after
+     * we match them.  (We need to use complicated service calls to check permissions.) 
+     */
+    private class DocumentHandler implements TopDocsCallbackHandler<Boolean> {
+        final int startIndex;
+        final int numWanted;
+        final LiteYukonUser user;
+
+        // How many times this instance has been used.
+        int iteration = 0;
+        int numToQuery;
+        List<Page> matches = new ArrayList<>();
+
+        DocumentHandler(int startIndex, int numWanted, LiteYukonUser user) {
+            this.startIndex = startIndex;
+            this.numWanted = numWanted;
+            this.user = user;
+            numToQuery = startIndex + numWanted + 300;
         }
 
-        if (startIndex + count > 1000) {
+        // Index into results...only reset this the first time we are used so we don't re-check.
+        int index = 0; // index into topDocs
+        int numFoundAllPages = 0; // number of documents matched, including those on previous pages
+        int numFoundCurrentPage = 0; // number of documents matched on the desired page (after startIndex)
+        boolean searchExhausted = false; // true when we've exhausted the entire search
+        int numDisallowed = 0;
+        int totalHits;
+
+        @Override
+        public Boolean processHits(TopDocs topDocs, IndexSearcher indexSearcher) throws IOException {
+            int stop = Math.min(numToQuery, topDocs.totalHits);
+            for (; numFoundCurrentPage < numWanted && index < stop; ++index) {
+                int docId = topDocs.scoreDocs[index].doc;
+                Document document = indexSearcher.doc(docId);
+                Page page = siteSearchIndexManager.buildPageFromDocument(document, user);
+                if (page != null) {
+                    numFoundAllPages++;
+                    if (numFoundAllPages > startIndex) {
+                        matches.add(page);
+                        numFoundCurrentPage++;
+                    }
+                    if (numFoundCurrentPage == numWanted) {
+                        break;
+                    }
+                } else {
+                    numDisallowed++;
+                }
+            }
+
+            totalHits = topDocs.totalHits - numDisallowed;
+
+            // We know we've exhausted the search if we got fewer hits than we asked for.  We're assuming here
+            // that we will never get 2,147,483,647 or more results.
+            searchExhausted = topDocs.totalHits < numToQuery;
+            iteration++;
+            // The first time we tried startIndex + numWanted + 300
+            // second we will try (startIndex + numWanted) * 3 + 300
+            // third try we will just use Integer.MAX_VALUE
+            if (iteration == 1) {
+                numToQuery = (startIndex + numWanted) * 3 + 300;
+            } else {
+                numToQuery = Integer.MAX_VALUE;
+            }
+            return searchExhausted || numFoundCurrentPage == numWanted;
+        }
+
+        SearchResults<Page> getSearchResults() {
+            SearchResults<Page> results = new SearchResults<>();
+            results.setResultList(matches);
+            results.setBounds(0, numWanted, totalHits - numDisallowed);
+            return results;
+        }
+    }
+
+    @Override
+    public SearchResults<Page> search(String searchStr, int startIndex, int numWanted, YukonUserContext userContext) {
+        if (log.isDebugEnabled()) {
+            log.debug("searching for [" + searchStr + "], starting at " + startIndex + ", count = " + numWanted);
+        }
+
+        if (startIndex + numWanted > 1000) {
             // The caller should limit this to avoid this exception.
             throw new UnsupportedOperationException("search does not support more than 1000 results");
         }
 
-        final LiteYukonUser user = userContext.getYukonUser();
+        LiteYukonUser user = userContext.getYukonUser();
         BooleanQuery query = buildBaseQuery(user);
 
         BooleanQuery searchStrQuery = new BooleanQuery();
@@ -74,37 +151,20 @@ public class SiteSearchServiceImpl implements SiteSearchService {
         }
         query.add(searchStrQuery, Occur.MUST);
 
-        TopDocsCallbackHandler<SearchResults<Page>> handler = new TopDocsCallbackHandler<SearchResults<Page>>() {
-            @Override
-            public SearchResults<Page> processHits(TopDocs topDocs, IndexSearcher indexSearcher) throws IOException {
-                int stop = Math.min(count, topDocs.totalHits);
-                List<Page> list = Lists.newArrayListWithCapacity(stop);
-
-                for (int index = 0; index < stop; ++index) {
-                    int docId = topDocs.scoreDocs[index].doc;
-                    Document document = indexSearcher.doc(docId);
-                    Page page = siteSearchIndexManager.buildPageFromDocument(document, user);
-                    if (page != null) {
-                        list.add(page);
-                    }
-                }
-
-                SearchResults<Page> results = new SearchResults<>();
-                results.setResultList(list);
-                results.setBounds(0, count, topDocs.totalHits);
-
-                return results;
-            }
-        };
+        DocumentHandler handler = new DocumentHandler(startIndex, numWanted, user);
 
         SearchTemplate searchTemplate = siteSearchIndexManager.getSearchTemplate(userContext);
         if (log.isTraceEnabled()) {
             log.trace("search - Searching with Lucene query: " + query);
         }
         try {
-            SearchResults<Page> results = searchTemplate.doCallBackSearch(query, handler, startIndex + count);
-            // TODO:  re-query with bigger count if results were filtered
-            return results;
+            do {
+                if (log.isDebugEnabled()) {
+                    log.debug("searching, for up to " + handler.numToQuery + " documents");
+                }
+            } while (!searchTemplate.doCallBackSearch(query, handler, handler.numToQuery));
+             SearchResults<Page> results = handler.getSearchResults();
+             return results;
         } catch (IOException e) {
             log.error("error querying for [" + searchStr + "]", e);
             throw new RuntimeException("error querying for [" + searchStr + "]", e);
@@ -143,12 +203,11 @@ public class SiteSearchServiceImpl implements SiteSearchService {
                     + maxResults + ", " + userContext + ");");
         }
         final LiteYukonUser user = userContext.getYukonUser();
-        BooleanQuery query = buildBaseQuery(user);
-        // TODO:  can we make these parsers ahead of time and reuse?
+        BooleanQuery baseQuery = buildBaseQuery(user);
         QueryParser parser = new QueryParser(Version.LUCENE_34, fieldName, analyzer);
         parser.setDefaultOperator(Operator.AND);
         try {
-            query.add(parser.parse(searchStr), Occur.MUST);
+            baseQuery.add(parser.parse(searchStr), Occur.MUST);
         } catch (ParseException parseException) {
             throw new IllegalStateException("Error parsing search string " + searchStr, parseException);
         }
@@ -162,7 +221,8 @@ public class SiteSearchServiceImpl implements SiteSearchService {
                     log.trace("found " + topDocs.totalHits);
                 }
 
-                for (int index = 0; index < topDocs.totalHits && intoResults.size() < maxResults; ++index) {
+                int stop = Math.min(maxResults, topDocs.totalHits);
+                for (int index = 0; index < stop && intoResults.size() < maxResults; ++index) {
                     int docId = topDocs.scoreDocs[index].doc;
                     Document document = indexSearcher.doc(docId);
                     if (siteSearchIndexManager.isAllowedToView(document, user)) {
@@ -181,10 +241,10 @@ public class SiteSearchServiceImpl implements SiteSearchService {
 
         SearchTemplate searchTemplate = siteSearchIndexManager.getSearchTemplate(userContext);
         if (log.isTraceEnabled()) {
-            log.trace("autocomplete - Searching with Lucene query: " + query);
+            log.trace("autocomplete - Searching with Lucene query: " + baseQuery);
         }
         try {
-            boolean foundOne = searchTemplate.doCallBackSearch(query, handler, maxResults);
+            boolean foundOne = searchTemplate.doCallBackSearch(baseQuery, handler, maxResults);
             return foundOne;
         } catch (IOException e) {
             log.error("error querying for [" + searchStr + "]", e);

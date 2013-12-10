@@ -1,5 +1,6 @@
 package com.cannontech.web.search.lucene.index.site;
 
+import static com.cannontech.common.constants.YukonListEntryTypes.*;
 import static com.cannontech.message.dispatch.message.DBChangeMsg.*;
 
 import java.sql.SQLException;
@@ -13,7 +14,9 @@ import org.apache.lucene.search.TermQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.cannontech.common.inventory.Hardware;
+import com.cannontech.common.constants.YukonListEntry;
+import com.cannontech.common.inventory.InventoryCategory;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.roleproperties.YukonRole;
@@ -21,12 +24,13 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.stars.dr.hardware.service.HardwareUiService;
+import com.cannontech.stars.database.cache.StarsDatabaseCache;
+import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 
 @Service
 public class InventoryPageIndexBuilder extends DbPageIndexBuilder {
     @Autowired private RolePropertyDao rolePropertyDao;
-    @Autowired private HardwareUiService hardwareUiService;
+    @Autowired private StarsDatabaseCache starsDatabaseCache;
 
     private final static SqlFragmentSource baseQuery;
     private final static SqlFragmentSource queryTables;
@@ -34,14 +38,22 @@ public class InventoryPageIndexBuilder extends DbPageIndexBuilder {
 
     static {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select ib.inventoryId, ib.accountId, ib.deviceId, ib.deviceLabel,");
-        sql.append(    "lmhw.manufacturerSerialNumber, lmhw.lmHardwareTypeId, meterTypeId");
+        sql.append("select ib.inventoryId, ib.accountId, ib.deviceId, ib.deviceLabel, ib.alternateTrackingNumber,");
+        sql.append(    "lmhw.manufacturerSerialNumber, lmhw.lmHardwareTypeId, meterTypeId,");
+        sql.append(    "ecm.energyCompanyId, cyle.yukonDefinitionId, ypo.type as devicePaoType,");
+        sql.append(    "ypo.paoName as devicePaoName, lmhtyle.entryText as hwDisplayType,");
+        sql.append(    "dmg.meterNumber as deviceMeterNumber, mhw.meterNumber as meterMeterNumber");
         baseQuery = sql;
 
         sql = new SqlStatementBuilder();
         sql.append("from inventoryBase ib");
         sql.append(    "left join lmHardwareBase lmhw on lmhw.inventoryId = ib.inventoryId");
         sql.append(    "left join meterHardwareBase mhw on mhw.inventoryId = ib.inventoryId");
+        sql.append(    "left join ecToInventoryMapping ecm on ecm.inventoryId = ib.inventoryId");
+        sql.append(    "left join yukonPaobject ypo on ib.deviceId = ypo.paobjectId");
+        sql.append(    "left join yukonListEntry cyle on cyle.entryId = ib.categoryId");
+        sql.append(    "left join yukonListEntry lmhtyle on lmhtyle.entryId = lmhw.lmHardwareTypeId");
+        sql.append(    "left join deviceMeterGroup dmg on dmg.deviceId = ib.deviceId");
         queryTables = sql;
 
         allWhereClause = new SqlStatementBuilder("ib.inventoryId <> 0");
@@ -71,9 +83,7 @@ public class InventoryPageIndexBuilder extends DbPageIndexBuilder {
         DocumentBuilder builder = new DocumentBuilder();
 
         int inventoryId = rs.getInt("inventoryId");
-        // TODO:  can we roll this into the query?  It's kinda complicated but would probably be worth it.
-        Hardware hardware = hardwareUiService.getHardware(inventoryId);
-        int ecId = hardware.getEnergyCompanyId();
+        int ecId = rs.getInt("energyCompanyId");
 
         builder.pageKey(createPageKey(inventoryId)).ecId(ecId);
 
@@ -85,15 +95,43 @@ public class InventoryPageIndexBuilder extends DbPageIndexBuilder {
         builder.path("/stars/operator/" + pagePart + "/view?" + (accountId == 0 ? "" : "accountId=" + accountId + "&")
             + "inventoryId=" + inventoryId);
 
-        String displayName = hardware.getDisplayName();
+        String manufacturerSerialNumber = rs.getString("manufacturerSerialNumber");
+        String meterNumber = null;
+        String deviceLabel = rs.getString("deviceLabel");
+        String altTrackingNumber = rs.getString("alternateTrackingNumber");
+        String devicePaoName = rs.getString("devicePaoName");
+        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(ecId);
+
+        String displayName;
+        String displayType = null;
+        InventoryCategory hardwareCategory = InventoryCategory.valueOf(rs.getInt("yukonDefinitionId"));
+        if (hardwareCategory == InventoryCategory.MCT) {
+            int deviceId = rs.getInt("deviceId");
+            if (deviceId > 0) {
+                PaoType devicePaoType = rs.getEnum("devicePaoType", PaoType.class);
+                displayType = devicePaoType.getPaoTypeName();
+                // devicePaoName should really do what paoLoadingService.getDisplayablePao does somehow.
+                displayName = displayType + " " + devicePaoName;
+                meterNumber = rs.getString("deviceMeterNumber");
+            } else {
+                YukonListEntry deviceType = energyCompany.getYukonListEntry(YUK_DEF_ID_DEV_TYPE_NON_YUKON_METER);
+                displayType = deviceType.getEntryText();
+                displayName = rs.getString("deviceLabel");
+            }
+        } else if (hardwareCategory == InventoryCategory.NON_YUKON_METER) {
+            YukonListEntry mctDeviceType = energyCompany.getYukonListEntry(YUK_DEF_ID_DEV_TYPE_NON_YUKON_METER);
+            displayType = mctDeviceType.getEntryText();
+            meterNumber = rs.getString("meterMeterNumber");
+            displayName = displayType + " " + meterNumber;
+        } else {
+            // must be a switch or thermostat
+            displayType = rs.getString("hwDisplayType");
+            displayName = displayType + " " + manufacturerSerialNumber;
+        }
+
         builder.pageArgs(displayName);
 
-        String manufacturerSerialNumber = rs.getString("manufacturerSerialNumber");
-        String meterNumber = hardware.getMeterNumber();
-        String deviceLabel = rs.getString("deviceLabel");
-        String altTrackingNumber = hardware.getAltTrackingNumber();
-
-        builder.summaryArgs(manufacturerSerialNumber, meterNumber, deviceLabel, altTrackingNumber);
+        builder.summaryArgs(manufacturerSerialNumber, meterNumber, deviceLabel, altTrackingNumber, displayType);
 
         return builder.build();
     }

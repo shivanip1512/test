@@ -83,6 +83,7 @@ public class SearchResults<T> {
     /**
      * @param startIndex O-based index from which to start
      * @param count number of items the caller wanted back
+     * @param hitCount The number of hits, including those on previous pages
      */
     public void setBounds(int startIndex, int count, int hitCount) {
         this.startIndex = startIndex;

@@ -97,13 +97,18 @@ public interface RowMapper {
             return rs.getResultSet().getString(1);
         }
     };
-    
+
+    public final static YukonRowMapper<PaoType> PAO_TYPE = new YukonRowMapper<PaoType>() {
+        @Override
+        public PaoType mapRow(YukonResultSet rs) throws SQLException {
+            return rs.getEnum("type", PaoType.class);
+        }
+    };
+
     public final static YukonRowMapper<PaoIdentifier> PAO_IDENTIFIER = new YukonRowMapper<PaoIdentifier>() {
         @Override
         public PaoIdentifier mapRow(YukonResultSet rs) throws SQLException {
-            Integer paoId = rs.getInt("paObjectId");
-            PaoType paoType = rs.getEnum("type", PaoType.class);
-            return new PaoIdentifier(paoId, paoType);
+            return rs.getPaoIdentifier("paobjectId", "type");
         }
     };
 }

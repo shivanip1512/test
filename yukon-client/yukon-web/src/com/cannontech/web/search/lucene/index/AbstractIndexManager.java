@@ -243,7 +243,7 @@ public abstract class AbstractIndexManager implements IndexManager, DBChangeList
 
             // Make sure the index is not currently being built
             if (isBuilding) {
-                throw new RuntimeException("The index is currently being built. Please try again later.");
+                throw new IndexBeingBuiltException("The index is currently being built. Please try again later.");
             }
 
             // Make sure we don't search while someone is updating the index

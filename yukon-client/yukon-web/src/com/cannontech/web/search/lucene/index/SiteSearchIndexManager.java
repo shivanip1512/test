@@ -96,7 +96,7 @@ public class SiteSearchIndexManager extends AbstractIndexManager {
 
     @Override
     public String getIndexName() {
-        return "site";
+        return "siteSearch";
     }
 
     @Override
@@ -113,6 +113,7 @@ public class SiteSearchIndexManager extends AbstractIndexManager {
     @Override
     protected void buildDocuments(IndexWriter indexWriter, AtomicInteger counter) {
         for (DbPageIndexBuilder indexBuilder : indexBuilders) {
+            log.debug("building site search index documents for " + indexBuilder.getPageKeyBase());
             indexBuilder.buildDocuments(indexWriter, counter);
         }
     }

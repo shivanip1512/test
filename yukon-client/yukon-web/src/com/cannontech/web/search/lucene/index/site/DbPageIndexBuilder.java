@@ -27,7 +27,7 @@ import com.cannontech.web.search.lucene.index.SiteSearchIndexManager;
 public abstract class DbPageIndexBuilder implements PageIndexBuilder {
     private static final Logger log = YukonLogManager.getLogger(DbPageIndexBuilder.class);
 
-    @Autowired private YukonJdbcTemplate jdbcTemplate;
+    @Autowired protected YukonJdbcTemplate jdbcTemplate;
 
     protected final String pageKeyBase;
 
@@ -92,6 +92,7 @@ public abstract class DbPageIndexBuilder implements PageIndexBuilder {
         sql.append("select count(*)");
         sql.append(getQueryTables());
         int count = jdbcTemplate.queryForInt(sql);
+        log.trace(pageKeyBase + " has " + count + " documents");
         return count;
     }
 
@@ -113,6 +114,9 @@ public abstract class DbPageIndexBuilder implements PageIndexBuilder {
             @Override
             public void processRow(YukonResultSet rs) throws SQLException {
                 Document document = createDocument(rs);
+                if (log.isTraceEnabled()) {
+                    log.trace("processing document " + document.get("pageKey") + " (count: " + counter.get() + ")");
+                }
 
                 try {
                     indexWriter.addDocument(document);
@@ -133,7 +137,7 @@ public abstract class DbPageIndexBuilder implements PageIndexBuilder {
      */
     protected abstract SqlFragmentSource getWhereClauseForDbChange(int database, String category, int id);
 
-    public final IndexUpdateInfo processDBChange(DbChangeType dbChangeType, int id, int database, String category,
+    public IndexUpdateInfo processDBChange(DbChangeType dbChangeType, int id, int database, String category,
             String type) {
         SqlFragmentSource whereClause = getWhereClauseForDbChange(database, category, id);
         if (whereClause != null) {

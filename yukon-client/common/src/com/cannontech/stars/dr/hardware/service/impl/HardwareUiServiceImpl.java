@@ -162,7 +162,8 @@ public class HardwareUiServiceImpl implements HardwareUiService {
         /* Set Hardware Details based on type(Switch, Thermostat, or MCT */
         YukonListEntry categoryEntry = yukonListDao.getYukonListEntry(categoryId);
         InventoryCategory hardwareCategory = InventoryCategory.valueOf(categoryEntry.getYukonDefID());
-        
+
+        // Logic for determining display name and type is duplicated in InventoryPageIndexBuilder.
         if (hardwareCategory == InventoryCategory.MCT) {
             /* Hardware is an MCT */
             hardware.setHardwareType(HardwareType.YUKON_METER);

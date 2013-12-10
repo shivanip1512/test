@@ -20,6 +20,7 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.search.result.Page;
 import com.cannontech.web.common.search.service.SiteSearchService;
+import com.cannontech.web.search.lucene.index.IndexBeingBuiltException;
 
 @Controller
 public class SiteSearchController {
@@ -52,7 +53,12 @@ public class SiteSearchController {
             model.addAttribute("error", new YukonMessageSourceResolvable(baseKey + "emptySearch"));
         } else {
             log.debug("searching");
-            results = siteSearchService.search(searchString, startIndex, itemsPerPage, userContext);
+            try {
+                results = siteSearchService.search(searchString, startIndex, itemsPerPage, userContext);
+            } catch (IndexBeingBuiltException e) {
+                model.addAttribute("error", new YukonMessageSourceResolvable(baseKey + "indexBeingBuilt"));
+                log.debug("got index being built exception");
+            }
             log.debug("done searching");
 
             // Forward to the single result's URL
