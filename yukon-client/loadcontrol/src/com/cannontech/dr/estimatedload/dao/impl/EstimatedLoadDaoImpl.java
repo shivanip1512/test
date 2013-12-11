@@ -133,24 +133,24 @@ public class EstimatedLoadDaoImpl implements EstimatedLoadDao{
     private SqlFragmentSource getOuterOverlappingEnrollmentSql(int calculatingId, int controllingId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         /* This query uses a self-join on LMHardwareControlGroup, comparing the InventoryId and Relay values
-         * for two distinct LM programs.  The two aliases, LHCG1 and LHCG2, are used to distinguish
+         * for two distinct LM programs.  The two aliases, LHCG_CALC and LHCG_CONTROL, are used to distinguish
          * the InventoryId and Relay values in the calculating program from those in the currently 
          * controlling program. */
-        sql.append("SELECT DISTINCT LHCG1.InventoryID, LHCG1.Relay");
-        sql.append("FROM LMHardwareControlGroup LHCG1, LMHardwareControlGroup LHCG2,"); 
-        sql.append(     "LMProgramWebPublishing LMPWP1, LMProgramWebPublishing LMPWP2");
-        sql.append("WHERE LMPWP1.DeviceID").eq(calculatingId);
-        sql.append(  "AND LMPWP1.ProgramID = LHCG1.ProgramId");
-        sql.append(  "AND LHCG1.GroupEnrollStart IS NOT NULL");
-        sql.append(  "AND LHCG1.GroupEnrollStop IS NULL");
+        sql.append("SELECT DISTINCT LHCG_CALC.InventoryID, LHCG_CALC.Relay");
+        sql.append("FROM LMHardwareControlGroup LHCG_CALC, LMHardwareControlGroup LHCG_CONTROL,"); 
+        sql.append(     "LMProgramWebPublishing LMPWP_CALC, LMProgramWebPublishing LMPWP_CONTROL");
+        sql.append("WHERE LMPWP_CALC.DeviceID").eq(calculatingId);
+        sql.append(  "AND LMPWP_CALC.ProgramID = LHCG_CALC.ProgramId");
+        sql.append(  "AND LHCG_CALC.GroupEnrollStart IS NOT NULL");
+        sql.append(  "AND LHCG_CALC.GroupEnrollStop IS NULL");
         
-        sql.append(  "AND LMPWP2.DeviceID").eq(controllingId);
-        sql.append(  "AND LMPWP2.ProgramID = LHCG2.ProgramId");
-        sql.append(  "AND LHCG2.GroupEnrollStart IS NOT NULL");
-        sql.append(  "AND LHCG2.GroupEnrollStop IS NULL");
+        sql.append(  "AND LMPWP_CONTROL.DeviceID").eq(controllingId);
+        sql.append(  "AND LMPWP_CONTROL.ProgramID = LHCG_CONTROL.ProgramId");
+        sql.append(  "AND LHCG_CONTROL.GroupEnrollStart IS NOT NULL");
+        sql.append(  "AND LHCG_CONTROL.GroupEnrollStop IS NULL");
         
-        sql.append(  "AND LHCG1.InventoryID = LHCG2.InventoryID");
-        sql.append(  "AND LHCG1.Relay = LHCG2.Relay");
+        sql.append(  "AND LHCG_CALC.InventoryID = LHCG_CONTROL.InventoryID");
+        sql.append(  "AND LHCG_CALC.Relay = LHCG_CONTROL.Relay");
         return sql;
     }
 
@@ -172,28 +172,31 @@ public class EstimatedLoadDaoImpl implements EstimatedLoadDao{
     private SqlFragmentSource getNotExistsOverlappingEnrollmentSql(int calculatingId, int previousControllingId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         /* This query uses a self-join on LMHardwareControlGroup, comparing the InventoryId and Relay values
-         * for two distinct LM programs.  The two aliases, LHCG3 and LHCG4, are used to distinguish
-         * the InventoryId and Relay values in the calculating program from those in the previously considered 
-         * controlling programs. By design this query must be used after getOuterOverlappingEnrollmentSql() as
-         * the last two lines of this query join to LHCG1 (from the previous query) and are used to exclude from 
-         * current consideration any devices that have been taken into account for previous controlling programs. */
-        sql.append("AND NOT EXISTS (SELECT LHCG3.InventoryID, LHCG3.Relay");
-        sql.append(                "FROM LMHardwareControlGroup LHCG3, LMHardwareControlGroup LHCG4,"); 
-        sql.append(                     "LMProgramWebPublishing LMPWP3, LMProgramWebPublishing LMPWP4");
-        sql.append(                "WHERE LMPWP3.DeviceID").eq(calculatingId);
-        sql.append(                  "AND LMPWP3.ProgramID = LHCG3.ProgramId");
-        sql.append(                  "AND LHCG3.GroupEnrollStart IS NOT NULL");
-        sql.append(                  "AND LHCG3.GroupEnrollStop IS NULL");
+         * for two distinct LM programs.  The two aliases, LHCG_CALC_INNER and LHCG_PREV_CONTROL, are used to
+         * distinguish the InventoryId and Relay values in the calculating program from those in the previously
+         * considered controlling programs. By design this query must be used after getOuterOverlappingEnrollmentSql()
+         * as the last two lines of this query join to LHCG_CALC from the query in getOuterOverlappingEnrollmentSql()
+         * and are used to exclude from the count any devices that have been taken into account for
+         * previously considered controlling programs. */
+        sql.append("AND NOT EXISTS (SELECT LHCG_CALC_INNER.InventoryID, LHCG_CALC_INNER.Relay");
+        sql.append(                "FROM LMHardwareControlGroup LHCG_CALC_INNER,");
+        sql.append(                     "LMHardwareControlGroup LHCG_PREV_CONTROL,"); 
+        sql.append(                     "LMProgramWebPublishing LMPWP_CALC_INNER,");
+        sql.append(                     "LMProgramWebPublishing LMPWP_PREV_CONTROL");
+        sql.append(                "WHERE LMPWP_CALC_INNER.DeviceID").eq(calculatingId);
+        sql.append(                  "AND LMPWP_CALC_INNER.ProgramID = LHCG_CALC_INNER.ProgramId");
+        sql.append(                  "AND LHCG_CALC_INNER.GroupEnrollStart IS NOT NULL");
+        sql.append(                  "AND LHCG_CALC_INNER.GroupEnrollStop IS NULL");
         
-        sql.append(                  "AND LMPWP4.DeviceID").eq(previousControllingId);
-        sql.append(                  "AND LMPWP4.ProgramID = LHCG4.ProgramId");
-        sql.append(                  "AND LHCG4.GroupEnrollStart IS NOT NULL");
-        sql.append(                  "AND LHCG4.GroupEnrollStop IS NULL");
+        sql.append(                  "AND LMPWP_PREV_CONTROL.DeviceID").eq(previousControllingId);
+        sql.append(                  "AND LMPWP_PREV_CONTROL.ProgramID = LHCG_PREV_CONTROL.ProgramId");
+        sql.append(                  "AND LHCG_PREV_CONTROL.GroupEnrollStart IS NOT NULL");
+        sql.append(                  "AND LHCG_PREV_CONTROL.GroupEnrollStop IS NULL");
         
-        sql.append(                  "AND LHCG3.InventoryID = LHCG4.InventoryID");
-        sql.append(                  "AND LHCG3.Relay = LHCG4.Relay");
-        sql.append(                  "AND LHCG1.InventoryID = LHCG3.InventoryID");
-        sql.append(                  "AND LHCG1.Relay = LHCG3.Relay)");
+        sql.append(                  "AND LHCG_CALC_INNER.InventoryID = LHCG_PREV_CONTROL.InventoryID");
+        sql.append(                  "AND LHCG_CALC_INNER.Relay = LHCG_PREV_CONTROL.Relay");
+        sql.append(                  "AND LHCG_CALC.InventoryID = LHCG_CALC_INNER.InventoryID");
+        sql.append(                  "AND LHCG_CALC.Relay = LHCG_CALC_INNER.Relay)");
         return sql;
     }
 
