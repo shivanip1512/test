@@ -38,6 +38,7 @@
 <entry key="yukon.web.widgets.statusPointMonitorsWidget">Status Point Monitors</entry>
 <entry key="yukon.web.widgets.deviceDataMonitorsWidget">Device Data Monitor</entry>
 <entry key="yukon.web.widgets.allMonitorsWidget">Monitors</entry>
+<entry key="yukon.web.widgets.allMonitorsWidget.create">Create Monitor</entry>
 <entry key="yukon.web.widgets.subscribedMonitorsWidget">Monitor Subscriptions</entry>
 <entry key="yukon.web.widgets.porterResponseMonitorsWidget">Porter Response Monitor</entry>
 <entry key="yukon.web.widgets.deviceReconfigMonitorsWidget">Configuration Tasks</entry>

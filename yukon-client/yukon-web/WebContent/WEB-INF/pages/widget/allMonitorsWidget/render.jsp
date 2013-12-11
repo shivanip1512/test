@@ -467,8 +467,8 @@
     </c:if>
     <c:if test="${not isSubscribedWidget}">
         <cti:button id="createMonitorBtn" nameKey="create" icon="icon-plus-green"/>
-
-        <tags:simplePopup id="createMonitorDialog" title="Create Monitor" on="#createMonitorBtn">
+        <cti:msg2 var="popupTitle" key=".create"/>
+        <tags:simplePopup id="createMonitorDialog" title="${popupTitle}" on="#createMonitorBtn">
             <ul class="simple-list">
                 <li>
                     <a href="/amr/deviceDataMonitor/createPage"><i:inline key="widgetClasses.DeviceDataMonitorsWidget.name"/></a>
