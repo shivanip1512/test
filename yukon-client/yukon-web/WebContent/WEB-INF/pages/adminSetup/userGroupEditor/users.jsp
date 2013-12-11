@@ -15,10 +15,10 @@ function addUsers() {
 }
 </script>
     
-    <cti:url value="/adminSetup/userGroup/users" var="usersUrl"/>
+    <cti:url var="baseUrl" value="/adminSetup/userGroup/users" />
     <cti:msg2 var="usersContainerTitle" key=".usersContainer"/>
-    
-    <tags:pagedBox title="${usersContainerTitle}" searchResult="${searchResult}" isFiltered="false" baseUrl="${usersUrl}" styleClass="usersContainer">
+
+    <tags:pagedBox title="${usersContainerTitle}" searchResult="${searchResult}" isFiltered="false" baseUrl="${baseUrl}" styleClass="usersContainer">
         <c:choose>
             <c:when test="${!empty users}">
                 <form action="/adminSetup/userGroup/removeUser" method="post">

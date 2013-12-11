@@ -74,7 +74,7 @@ public class BillingController {
         return to;
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "_jobs.html")
+    @RequestMapping(method = RequestMethod.GET, value = "_jobs")
     public String showJobs(ModelMap model, Integer itemsPerPage, Integer page) {
 
         itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);

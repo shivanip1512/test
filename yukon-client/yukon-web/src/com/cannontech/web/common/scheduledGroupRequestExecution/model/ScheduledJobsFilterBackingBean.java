@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduleGroupRequestExecutionDaoEnabledFilter;
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduleGroupRequestExecutionDaoOnetimeFilter;
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduleGroupRequestExecutionDaoPendingFilter;
@@ -87,7 +89,7 @@ public class ScheduledJobsFilterBackingBean extends ListBackingBean {
     }
 
     public List<DeviceRequestType> getTypeFilterAsList() {
-        if (typeFilterAsString != null && !typeFilterAsString.equals("ANY")) {
+        if (! StringUtils.isEmpty(typeFilterAsString) && !typeFilterAsString.equals("ANY")) {
             return Collections.singletonList(DeviceRequestType.valueOf(typeFilterAsString));
         }
         return null;

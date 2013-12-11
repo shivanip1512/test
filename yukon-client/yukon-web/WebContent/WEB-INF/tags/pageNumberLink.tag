@@ -6,6 +6,7 @@
 <%@ attribute name="baseUrl" %>
 <%@ attribute name="url" %>
 <%@ attribute name="classes" description="CSS classes for the anchor element."%>
+<%@ attribute name="overrideParams" type="java.lang.Boolean" description="Ignores params from the previous request. Set to true if they are specified in the baseUrl"%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
@@ -26,14 +27,22 @@ will be used.
 
 <c:if test="${pageScope.enabled && !empty pageScope.baseUrl}">
     <cti:url var="pageUrl" value="${pageScope.baseUrl}">
-        <%-- keep all parameters except page number --%>
-        <c:forEach var="aParam" items="${paramValues}">
-            <c:if test="${aParam.key != 'page'}">
-                <c:forEach var="theValue" items="${aParam.value}">
-                    <cti:param name="${aParam.key}" value="${theValue}"/>
-                </c:forEach>
-            </c:if>
-        </c:forEach>
+        <c:if test="${not pageScope.overrideParams}">
+            <%-- keep all parameters except page number --%>
+            <c:forEach var="aParam" items="${paramValues}">
+                <c:if test="${aParam.key != 'page'}">
+                    <c:forEach var="theValue" items="${aParam.value}">
+                        <cti:param name="${aParam.key}" value="${theValue}"/>
+                    </c:forEach>
+                </c:if>
+            </c:forEach>
+        </c:if>
+        <c:if test="${pageScope.overrideParams}">
+            <%-- Even with manual params, we are responsible for itemsPerPage --%>
+            <c:forEach var="theValue" items="${paramValues['itemsPerPage']}">
+                <cti:param name="itemsPerPage" value="${theValue}"/>
+            </c:forEach>
+        </c:if>
         <cti:param name="page" value="${pageScope.pageNumber}"/>
     </cti:url>
 </c:if>

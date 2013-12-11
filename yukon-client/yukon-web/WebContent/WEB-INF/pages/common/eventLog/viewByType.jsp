@@ -11,8 +11,8 @@
 
 <cti:standardPage module="support" page="eventViewer.byType">
     <cti:standardMenu menuSelection="events|byType" />
-    <c:set var="baseUrl" value="/common/eventLog/viewByType"/>
-    
+    <cti:url var="baseUrl" value="viewByType"/>
+
     <cti:linkTabbedContainer>
         <cti:msg2 key=".byCategory.contextualPageName" var="byCategoryTab"/>
         <cti:msg2 key=".byType.contextualPageName" var="byTypeTab"/>

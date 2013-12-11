@@ -386,16 +386,68 @@
         </c:set>
     </c:if>
 
-    <tags:pagedBox2 nameKey="tableTitle" searchResult="${filterResult}" baseUrl="report" titleLinkHtml="${linkHeaderHtml}">
+    <cti:url var="filteredUrl" value="report">
+        <cti:param name="fromInstant" value="${param.fromInstant}"/>
+        <cti:param name="toInstant" value="${param.toInstant}"/>
+        <c:if test="${not empty param.onlyLatestEvent}">
+            <cti:param name="onlyLatestEvent" value="${param.onlyLatestEvent}"/>
+        </c:if>
+        <c:if test="${not empty param._onlyLatestEvent}">
+            <cti:param name="_onlyLatestEvent" value="${param._onlyLatestEvent}"/>
+        </c:if>
+        <c:if test="${not empty param.onlyAbnormalEvents}">
+            <cti:param name="onlyAbnormalEvents" value="${param.onlyAbnormalEvents}"/>
+        </c:if>
+        <c:if test="${not empty param._onlyAbnormalEvents}">
+            <cti:param name="_onlyAbnormalEvents" value="${param._onlyAbnormalEvents}"/>
+        </c:if>
+        <c:if test="${not empty param.includeDisabledPaos}">
+            <cti:param name="includeDisabledPaos" value="${param.includeDisabledPaos}"/>
+        </c:if>
+        <c:if test="${not empty param._includeDisabledPaos}">
+            <cti:param name="_includeDisabledPaos" value="${param._includeDisabledPaos}"/>
+        </c:if>
+        <c:if test="${not empty param.attrNames}">
+            <cti:param name="attrNames" value="${param.attrNames}"/>
+        </c:if>
+        <c:if test="${param.collectionType eq 'group'}">
+            <cti:param name="collectionType" value="group"/>
+            <cti:param name="group.name" value="${param['group.name']}"/>
+        </c:if>
+        <c:if test="${param.collectionType eq 'idList'}">
+            <cti:param name="collectionType" value="idList"/>
+            <cti:param name="idList.ids" value="${param['idList.ids']}"/>
+        </c:if>
+        <c:if test="${param.collectionType eq 'addressRange'}">
+            <cti:param name="collectionType" value="addressRange"/>
+            <cti:param name="addressRange.start" value="${param['addressRange.start']}"/>
+            <cti:param name="addressRange.end" value="${param['addressRange.end']}"/>
+        </c:if>
+        <%--File Uploads are given a temp group. Reference this group after the file has been uploaded --%>
+        <c:if test="${param.collectionType eq 'fileUpload'}">
+            <cti:param name="collectionType" value="group"/>
+            <cti:param name="group.name" value="${backingBean.deviceCollection.collectionParameters['group.name']}"/>
+        </c:if>
+    </cti:url>
+    <cti:url var="sortedUrl" value="${filteredUrl}">
+        <c:if test="${not empty param.sort}">
+            <cti:param name="sort" value="${param.sort}" />
+        </c:if>
+        <c:if test="${not empty param.descending}">
+            <cti:param name="descending" value="${param.descending}" />
+        </c:if>
+    </cti:url>
+
+    <tags:pagedBox2 nameKey="tableTitle" searchResult="${filterResult}" baseUrl="${sortedUrl}" titleLinkHtml="${linkHeaderHtml}" overrideParams="true">
         <table id="eventsTable" class="compact-results-table f-traversable has-actions sortable-table">
             <thead>
                 <tr>
-                    <th><tags:sortLink nameKey="tableHeader.deviceName" baseUrl="report" fieldName="NAME" isDefault="false" /></th>
-                    <th><tags:sortLink nameKey="tableHeader.meterNumber" baseUrl="report" fieldName="METER_NUMBER" isDefault="false" /></th>
-                    <th><tags:sortLink nameKey="tableHeader.deviceType" baseUrl="report" fieldName="TYPE" /></th>
-                    <th><tags:sortLink nameKey="tableHeader.date" baseUrl="report" fieldName="DATE" isDefault="true" /></th>
-                    <th><tags:sortLink nameKey="tableHeader.event" baseUrl="report" fieldName="EVENT" /></th>
-                    <th><tags:sortLink nameKey="tableHeader.value" baseUrl="report" fieldName="VALUE" /></th>
+                    <th><tags:sortLink nameKey="tableHeader.deviceName" baseUrl="${filteredUrl}" fieldName="NAME" isDefault="false" overrideParams="true"/></th>
+                    <th><tags:sortLink nameKey="tableHeader.meterNumber" baseUrl="${filteredUrl}" fieldName="METER_NUMBER" isDefault="false" overrideParams="true"/></th>
+                    <th><tags:sortLink nameKey="tableHeader.deviceType" baseUrl="${filteredUrl}" fieldName="TYPE" overrideParams="true"/></th>
+                    <th><tags:sortLink nameKey="tableHeader.date" baseUrl="${filteredUrl}" fieldName="DATE" isDefault="true" overrideParams="true"/></th>
+                    <th><tags:sortLink nameKey="tableHeader.event" baseUrl="${filteredUrl}" fieldName="EVENT" overrideParams="true"/></th>
+                    <th><tags:sortLink nameKey="tableHeader.value" baseUrl="${filteredUrl}" fieldName="VALUE" overrideParams="true"/></th>
                     <th></th>
                 </tr>
             </thead>

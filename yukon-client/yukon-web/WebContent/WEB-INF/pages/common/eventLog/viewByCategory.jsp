@@ -9,7 +9,7 @@
 
 <cti:standardPage title="Event Log" module="support" page="eventViewer.byCategory">
     <cti:standardMenu menuSelection="events|byCategory" />
-    <c:set var="baseUrl" value="/common/eventLog/viewByCategory"/>
+    <cti:url var="baseUrl" value="viewByCategory"/>
 
     <cti:linkTabbedContainer>
         <cti:msg2 key=".byCategory.contextualPageName" var="byCategoryTab"/>
@@ -48,17 +48,19 @@
                 </tags:nameValue2>
                 
             </tags:nameValueContainer2>
-            <br>
-            <button type="submit"><i class="icon icon-filter"></i><span class="label"><i:inline key=".filterButton"/></span></button>
-            <c:choose>
-	            <c:when test="${maxCsvRows > searchResult.hitCount}">
-	                <cti:button nameKey="csvExport" href="${csvLink}" icon="icon-page-excel"/>
-	            </c:when>
-	            <c:otherwise>
-	                <cti:button nameKey="csvExport" id="csvExportButton" icon="icon-page-excel" href="${csvLink}"/>
-	                <d:confirm on="#csvExportButton" nameKey="confirmExport"/>
-	            </c:otherwise>
-	        </c:choose>
+
+            <div class="action-area">
+                <button type="submit"><i class="icon icon-filter"></i><span class="label"><i:inline key=".filterButton"/></span></button>
+                <c:choose>
+                    <c:when test="${maxCsvRows > searchResult.hitCount}">
+                        <cti:button nameKey="csvExport" href="${csvLink}" icon="icon-page-excel"/>
+                    </c:when>
+                    <c:otherwise>
+                    <cti:button nameKey="csvExport" id="csvExportButton" icon="icon-page-excel" href="${csvLink}"/>
+                        <d:confirm on="#csvExportButton" nameKey="confirmExport"/>
+                    </c:otherwise>
+                </c:choose>
+            </div>
         </form:form>
     </tags:sectionContainer>
 

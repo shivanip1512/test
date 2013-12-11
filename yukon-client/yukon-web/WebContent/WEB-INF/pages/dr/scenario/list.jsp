@@ -12,7 +12,7 @@
     <cti:includeScript link="/JavaScript/hideReveal.js"/>
     <cti:includeScript link="/JavaScript/drEstimatedLoad.js"/>
 
-    <c:set var="baseUrl" value="/dr/scenario/list" />
+    <cti:url var="baseUrl" value="/dr/scenario/list" />
     <cti:url var="submitUrl" value="${baseUrl}" />
     <cti:url var="clearFilterUrl" value="${baseUrl}">
         <c:if test="${!empty param.itemsPerPage}">
@@ -32,12 +32,12 @@ function clearFilter() {
 }
 </script>
 
-    <cti:msg var="filterLabel" key="yukon.web.modules.dr.scenarioList.filters" />
+    <cti:msg2 var="filterLabel" key=".filters" />
     <tags:simplePopup id="filterPopup" title="${filterLabel}">
         <form:form action="${submitUrl}" commandName="backingBean" method="get">
             <tags:sortFields backingBean="${backingBean}" />
             <tags:nameValueContainer>
-                <cti:msg var="fieldName" key="yukon.web.modules.dr.scenarioList.filter.name" />
+                <cti:msg2 var="fieldName" key=".filter.name" />
                 <tags:nameValue name="${fieldName}">
                     <form:input path="name" size="40" />
                 </tags:nameValue>

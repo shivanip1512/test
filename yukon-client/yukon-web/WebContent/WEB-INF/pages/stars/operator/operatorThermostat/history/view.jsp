@@ -40,7 +40,7 @@ jQuery(function(){
     </div>
     <cti:msg2 var="historyTableTitle" key="yukon.web.modules.operator.thermostatHistory.historyTableTitle"/>
     <tags:pagedBox title="${historyTableTitle}" searchResult="${searchResult}"
-        filterDialog="" baseUrl="/stars/operator/thermostat/history/view"
+        filterDialog="" baseUrl="view"
         isFiltered="false" showAllUrl="/stars/operator/thermostat/history/view">
         <jsp:include page="/WEB-INF/pages/stars/operator/operatorThermostat/history/commandHistory.jsp" />
     </tags:pagedBox>

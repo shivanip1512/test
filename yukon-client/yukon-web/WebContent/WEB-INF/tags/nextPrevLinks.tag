@@ -5,6 +5,7 @@
 <%@ attribute name="previousUrl" %>
 <%@ attribute name="nextUrl" %>
 <%@ attribute name="searchResult" type="com.cannontech.common.search.result.SearchResults" %>
+<%@ attribute name="overrideParams" type="java.lang.Boolean" description="Ignores params from the previous request. Set to true if they are specified in the baseUrl"%>
 <%@ tag body-content="empty" %>
 
 <%--
@@ -41,7 +42,7 @@ If it's "javascript", nextUrl and previousUrl are required.
     </c:if>
     <c:if test="${previousEnabled}">
         <c:if test="${pageScope.mode == 'jsp'}">
-            <tags:pageNumberLink pageNumber="${currentPage - 1}" direction="previous" baseUrl="${pageScope.baseUrl}" enabled="true"/>
+            <tags:pageNumberLink pageNumber="${currentPage - 1}" direction="previous" baseUrl="${pageScope.baseUrl}" enabled="true" overrideParams="${pageScope.overrideParams}"/>
         </c:if>
         <c:if test="${pageScope.mode == 'javascript'}">
             <tags:pageNumberLink direction="previous" url="${pageScope.previousUrl}" enabled="true"/>
@@ -57,7 +58,7 @@ If it's "javascript", nextUrl and previousUrl are required.
     </c:if>
     <c:if test="${nextEnabled}">
         <c:if test="${pageScope.mode == 'jsp'}">
-            <tags:pageNumberLink pageNumber="${currentPage + 1}" direction="next" baseUrl="${pageScope.baseUrl}" enabled="true"/>
+            <tags:pageNumberLink pageNumber="${currentPage + 1}" direction="next" baseUrl="${pageScope.baseUrl}" enabled="true" overrideParams="${pageScope.overrideParams}"/>
         </c:if>
         <c:if test="${pageScope.mode == 'javascript'}">
             <tags:pageNumberLink direction="next" url="${pageScope.nextUrl}" enabled="true"/>

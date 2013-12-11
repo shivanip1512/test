@@ -18,7 +18,7 @@
         <c:if test="${accountSearchResultHolder.accountSearchResults.hitCount > 0}">
         
             <cti:msg2 var="resultBoxtitleText" key=".resultBoxtitle" arguments="${searchResultTitleArguments}"/>
-            <tags:pagedBox searchResult="${accountSearchResultHolder.accountSearchResults}" baseUrl="/stars/operator/account/search" title="${resultBoxtitleText}" styleClass="clear">
+            <tags:pagedBox searchResult="${accountSearchResultHolder.accountSearchResults}" baseUrl="search" title="${resultBoxtitleText}" styleClass="clear">
             
                 <table class="compact-results-table row-highlighting">
                     <thead>

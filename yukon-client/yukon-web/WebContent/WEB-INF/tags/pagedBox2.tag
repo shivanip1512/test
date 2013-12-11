@@ -13,6 +13,7 @@
 <%@ attribute name="showAllUrl"%>
 <%@ attribute name="styleClass"%>
 <%@ attribute name="titleLinkHtml"%>
+<%@ attribute name="overrideParams" type="java.lang.Boolean" description="Ignores params from the previous request. Set to true if they are specified in the baseUrl"%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
@@ -39,6 +40,7 @@
         pageByHundereds="${pageScope.pageByHundereds}"
         showAllUrl="${pageScope.showAllUrl}"
         titleLinkHtml="${pageScope.titleLinkHtml}"
-        styleClass="${pageScope.styleClass}">
+        styleClass="${pageScope.styleClass}"
+        overrideParams="${pageScope.overrideParams}">
     <jsp:doBody/>
 </tags:pagedBox>

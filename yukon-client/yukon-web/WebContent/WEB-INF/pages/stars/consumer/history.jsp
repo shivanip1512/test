@@ -36,8 +36,7 @@ jQuery(function() {
 <c:set var="multipleThermostatsSelected" value="false"></c:set>
 <cti:msg2 var="historyTableTitle" key=".historyTableTitle"/>
     <tags:pagedBox2 nameKey="${historyTableTitle}" searchResult="${searchResult}"
-        filterDialog="" baseUrl="/stars/consumer/thermostat/schedule/history"
-        isFiltered="false" showAllUrl="/stars/consumer/thermostat/schedule/history">
+        baseUrl="/stars/consumer/thermostat/schedule/history">
         <c:choose>
             <c:when test="${searchResult.hitCount == 0}">
                 <cti:msg key="yukon.web.modules.operator.thermostatManual.noItems"/>

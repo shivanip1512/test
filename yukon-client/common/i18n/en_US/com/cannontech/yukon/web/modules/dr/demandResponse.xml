@@ -444,7 +444,7 @@
 <entry key="yukon.web.modules.dr.scenarioList.scenarios">Scenarios</entry>
 <entry key="yukon.web.modules.dr.scenarioList.noResults">No scenarios matched.</entry>
 <entry key="yukon.web.modules.dr.scenarioList.filters">Filters</entry>
-<entry key="yukon.web.modules.dr.scenarioList.filter.name">Name:</entry>
+<entry key="yukon.web.modules.dr.scenarioList.filter.name">Name</entry>
 <entry key="yukon.web.modules.dr.scenarioList.filter.loadCapacity">Load Capacity</entry>
 <entry key="yukon.web.modules.dr.scenarioList.filter.submit">Filter</entry>
 <entry key="yukon.web.modules.dr.scenarioList.filter.clear">Show All</entry>

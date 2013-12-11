@@ -167,7 +167,7 @@ function newScheduleAssignmentPopup(schedule, command) {
         </tags:boxContainer2>
     </div>
 
-    <div class="clear padBottom">
+    <div class="clear">
         <tags:pagedBox2 nameKey="assignmentsContainer" 
                 searchResult="${searchResult}"
                 filterDialog="filterPopup" 

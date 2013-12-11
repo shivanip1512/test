@@ -3,6 +3,7 @@
 <%@ attribute name="result" required="true" type="com.cannontech.common.search.result.SearchResults" %>
 <%@ attribute name="baseUrl" required="true" %>
 <%@ attribute name="adjustPageCount" description="When 'true', the items per page options appear. Default: false." %>
+<%@ attribute name="overrideParams" type="java.lang.Boolean" description="Ignores params from the previous request. Set to true if they are specified in the baseUrl"%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
@@ -25,6 +26,15 @@
             <c:choose>
                 <c:when test="${result.previousNeeded}">
                     <cti:url value="${baseUrl}" var="prevUrl">
+                        <c:if test="${not pageScope.overrideParams}">
+                            <c:forEach var="aParam" items="${paramValues}">
+                                <c:if test="${(aParam.key != 'page') and (aParam.key != 'itemsPerPage')}">
+                                    <c:forEach var="theValue" items="${aParam.value}">
+                                        <cti:param name="${aParam.key}" value="${theValue}"/>
+                                    </c:forEach>
+                                </c:if>
+                            </c:forEach>
+                        </c:if>
                         <cti:param name="page" value="${result.currentPage - 1}"/>
                         <cti:param name="itemsPerPage" value="${result.count}"/>
                     </cti:url>
@@ -46,6 +56,15 @@
             <c:choose>
                 <c:when test="${result.nextNeeded}">
                     <cti:url value="${baseUrl}" var="nextUrl">
+                        <c:if test="${not pageScope.overrideParams}">
+                            <c:forEach var="aParam" items="${paramValues}">
+                                <c:if test="${(aParam.key != 'page') and (aParam.key != 'itemsPerPage')}">
+                                    <c:forEach var="theValue" items="${aParam.value}">
+                                        <cti:param name="${aParam.key}" value="${theValue}"/>
+                                    </c:forEach>
+                                </c:if>
+                            </c:forEach>
+                        </c:if>
                         <cti:param name="page" value="${result.currentPage + 1}"/>
                         <cti:param name="itemsPerPage" value="${result.count}"/>
                     </cti:url>

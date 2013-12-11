@@ -19,7 +19,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.DataBinder;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.ServletRequestBindingException;
-import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -234,6 +233,8 @@ public class ThermostatScheduleController extends AbstractThermostatController {
     public String history(HttpServletRequest request,
                          @ModelAttribute("customerAccount") CustomerAccount account,
                          @ModelAttribute("thermostatIds") List<Integer> thermostatIds,
+                         @RequestParam(defaultValue = "10") int itemsPerPage,
+                         @RequestParam(defaultValue = "1", value="page") int currentPage,
                          LiteYukonUser user,
                          FlashScope flashScope,
                          ModelMap map) throws NotAuthorizedException, ServletRequestBindingException {
@@ -244,8 +245,6 @@ public class ThermostatScheduleController extends AbstractThermostatController {
         
         List<Integer> thermostatIdsList = getThermostatIds(request);
         List<ThermostatEvent> eventHistoryList = thermostatEventHistoryDao.getEventsByThermostatIds(thermostatIdsList);
-        int itemsPerPage = ServletRequestUtils.getIntParameter(request, "itemsPerPage", 10);
-        int currentPage = ServletRequestUtils.getIntParameter(request, "page", 1);
 
         if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE) {
             // Limit the maximum items per page

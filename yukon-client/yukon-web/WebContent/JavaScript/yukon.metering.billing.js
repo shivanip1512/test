@@ -198,7 +198,7 @@ Yukon.MeteringBilling = (function() {
         _url_scheduled_billing_form = "/scheduledBilling/showForm",
         _url_schedule_export = "/scheduledBilling/scheduleExport.json",
 
-        _url_list_schedule_jobs = "/billing/_jobs.html",   // "/amr/scheduledBilling/_jobs.html",
+        _url_list_schedule_jobs = "/billing/_jobs",   // "/amr/scheduledBilling/_jobs.html",
         _url_delete_scheduled_job = "/scheduledBilling/delete.json",
 
         _url_format_setup = "/dynamicBilling/_overview.html",

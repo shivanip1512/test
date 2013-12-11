@@ -60,7 +60,7 @@
             </div>
         </div>
 		
-        <div class="page-action-area">
+        <div class="action-area">
     		<c:if test="${not empty jobId}">
     			<c:set var="nameKey" value="update"/>
     		</c:if>

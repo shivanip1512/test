@@ -12,7 +12,7 @@
 
 	<c:set var="baseUrl" value="/dr/search" />
         
-	<div id="findForm" class="box action-area">
+	<div id="findForm" class="action-area stacked">
 	   <form accept-charset="ISO-8859-1" method="get" action="/dr/search" enctype="application/x-www-form-urlencoded">
             <label class="box fl">
                 <cti:msg key="yukon.web.modules.dr.searchResults.searchBoxLabel" />
@@ -21,8 +21,6 @@
             <cti:button nameKey="search" type="submit" icon="icon-magnifier" classes="fl"/>
 	   </form>
     </div>
-	<br />
-
 
 	<cti:msg var="searchTitle"
 		key="yukon.web.modules.dr.searchResults.searchResult"

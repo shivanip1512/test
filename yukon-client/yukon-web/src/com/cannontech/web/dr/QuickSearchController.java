@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -119,7 +120,7 @@ public class QuickSearchController {
         String sort = quickSearchBean.getSort();
         boolean descending = quickSearchBean.getDescending();
         Comparator<DisplayablePao> sorter = null;
-        if (sort != null) {
+        if (! StringUtils.isEmpty(sort)) {
             CombinedSortableField sortField =
                 CombinedSortableField.valueOf(sort);
             if (sortField != null) {
