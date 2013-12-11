@@ -182,15 +182,15 @@ public class ArchivedValuesExporterController {
     
     @RequestMapping
     public String deleteJob(ModelMap model, int jobId, FlashScope flashScope) {
-    	YukonJob job = jobManager.getJob(jobId);
-    	ScheduledArchivedDataFileExportTask task = (ScheduledArchivedDataFileExportTask) jobManager.instantiateTask(job);
-		String jobName = task.getName();
-		jobManager.deleteJob(job);
-		int deviceCollectionId = task.getDeviceCollectionId();
-		deviceCollectionService.deleteCollection(deviceCollectionId);
-		
-		flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.tools.bulk.archivedValueExporter.deletedJobSuccess", jobName));
-		return "redirect:view";
+        YukonJob job = jobManager.getJob(jobId);
+        ScheduledArchivedDataFileExportTask task = (ScheduledArchivedDataFileExportTask) jobManager.instantiateTask(job);
+        String jobName = task.getName();
+        jobManager.deleteJob(job);
+        int deviceCollectionId = task.getDeviceCollectionId();
+        deviceCollectionService.deleteCollection(deviceCollectionId);
+        
+        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.tools.bulk.archivedValueExporter.deletedJobSuccess", jobName));
+        return "redirect:view";
     }
     
     @RequestMapping
@@ -398,7 +398,7 @@ public class ArchivedValuesExporterController {
                                @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean) {
 
         int formatId = backingBean.getFormat().getFormatId();
-    	archiveValuesExportFormatDao.delete(backingBean.getFormat().getFormatId());
+        archiveValuesExportFormatDao.delete(backingBean.getFormat().getFormatId());
         //delete any jobs using this format
         scheduledFileExportService.deleteAdeJobsByFormatId(formatId);
         
@@ -466,40 +466,40 @@ public class ArchivedValuesExporterController {
     
     @RequestMapping
     public String scheduleReport(ModelMap model, FlashScope flashScope, HttpServletRequest request, Integer jobId,
-    		@ModelAttribute ArchivedValuesExporter archivedValuesExporter, BindingResult bindingResult) 
-    		throws ServletRequestBindingException {
-    	
-    	DeviceCollection deviceCollection;
-    	ExportFormat format;
-    	Set<Attribute> attributes = null;
-    	DataRange dataRange;
-    	ScheduledFileExportData exportData;
-    	CronExpressionTagState cronTagState;
-    	
-    	if(jobId != null) {
-    		//edit existing schedule
-    		model.addAttribute("jobId", jobId);
-    		ScheduledRepeatingJob job = jobManager.getRepeatingJob(jobId);
-    		ScheduledArchivedDataFileExportTask task = (ScheduledArchivedDataFileExportTask) jobManager.instantiateTask(job);
-    		
-    		deviceCollection = deviceCollectionService.loadCollection(task.getDeviceCollectionId());
-    		format = archiveValuesExportFormatDao.getByFormatId(task.getFormatId());
-    		attributes = task.getAttributes();
-    		dataRange = task.getDataRange();
-    		cronTagState = cronExpressionTagService.parse(job.getCronString(), job.getUserContext());
-    		exportData = new ScheduledFileExportData();
-    		exportData.setScheduleName(task.getName());
-    		exportData.setExportFileName(task.getExportFileName());
-    		exportData.setAppendDateToFileName(task.isAppendDateToFileName());
-    		exportData.setTimestampPatternField(task.getTimestampPatternField());
-    		exportData.setOverrideFileExtension(task.isOverrideFileExtension());
-    		exportData.setExportFileExtension(task.getExportFileExtension());
-    		exportData.setIncludeExportCopy(task.isIncludeExportCopy());
-    		exportData.setExportPath(task.getExportPath());
-    		exportData.setNotificationEmailAddresses(task.getNotificationEmailAddresses());
-    	} else {
-    		//create new schedule
-    		deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
+            @ModelAttribute ArchivedValuesExporter archivedValuesExporter, BindingResult bindingResult) 
+            throws ServletRequestBindingException {
+        
+        DeviceCollection deviceCollection;
+        ExportFormat format;
+        Set<Attribute> attributes = null;
+        DataRange dataRange;
+        ScheduledFileExportData exportData;
+        CronExpressionTagState cronTagState;
+        
+        if(jobId != null) {
+            //edit existing schedule
+            model.addAttribute("jobId", jobId);
+            ScheduledRepeatingJob job = jobManager.getRepeatingJob(jobId);
+            ScheduledArchivedDataFileExportTask task = (ScheduledArchivedDataFileExportTask) jobManager.instantiateTask(job);
+            
+            deviceCollection = deviceCollectionService.loadCollection(task.getDeviceCollectionId());
+            format = archiveValuesExportFormatDao.getByFormatId(task.getFormatId());
+            attributes = task.getAttributes();
+            dataRange = task.getDataRange();
+            cronTagState = cronExpressionTagService.parse(job.getCronString(), job.getUserContext());
+            exportData = new ScheduledFileExportData();
+            exportData.setScheduleName(task.getName());
+            exportData.setExportFileName(task.getExportFileName());
+            exportData.setAppendDateToFileName(task.isAppendDateToFileName());
+            exportData.setTimestampPatternField(task.getTimestampPatternField());
+            exportData.setOverrideFileExtension(task.isOverrideFileExtension());
+            exportData.setExportFileExtension(task.getExportFileExtension());
+            exportData.setIncludeExportCopy(task.isIncludeExportCopy());
+            exportData.setExportPath(task.getExportPath());
+            exportData.setNotificationEmailAddresses(task.getNotificationEmailAddresses());
+        } else {
+            //create new schedule
+            deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
             archivedValuesExporter.setDeviceCollection(deviceCollection);
             
             bindingResult.pushNestedPath("scheduleDataRange");
@@ -513,12 +513,12 @@ public class ArchivedValuesExporterController {
             }
             format = archiveValuesExportFormatDao.getByFormatId(archivedValuesExporter.getFormatId());
             if(archivedValuesExporter.getArchivedValuesExportFormatType() == ArchivedValuesExportFormatType.DYNAMIC_ATTRIBUTE) {
-            	attributes = archivedValuesExporter.getAttributes();
+                attributes = archivedValuesExporter.getAttributes();
             }
             dataRange = archivedValuesExporter.getScheduleDataRange();
             exportData = new ScheduledFileExportData();
             cronTagState = new CronExpressionTagState();
-    	}
+        }
 
         model.addAttribute("exportFormat", format);
         model.addAttribute("attributes", attributes);
@@ -534,75 +534,75 @@ public class ArchivedValuesExporterController {
     
     @RequestMapping
     public String doSchedule(ModelMap model, @ModelAttribute("exportData") ScheduledFileExportData exportData, BindingResult bindingResult, HttpServletRequest request,
-    		int formatId, String[] attributes, Integer jobId, YukonUserContext userContext, FlashScope flashScope) 
-    		throws ServletRequestBindingException, IllegalArgumentException, ParseException {
-    	
-    	//Build parameters
-    	DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
-    	DataRange dataRange = getDataRangeFromRequest(request);
-    	
-    	Set<Attribute> attributeSet = Sets.newHashSet();
-    	if(attributes != null) {
-    		for(String attribute : attributes) {
-    			attributeSet.add(attributeService.resolveAttributeName(attribute));
-    		}
-    	}
-    	ArchivedDataExportFileGenerationParameters parameters = new ArchivedDataExportFileGenerationParameters(deviceCollection, formatId, attributeSet, dataRange);
-    	
-    	String scheduleCronString = cronExpressionTagService.build("scheduleCronString", request, userContext);
-    	exportData.setScheduleCronString(scheduleCronString);
-    	exportData.setParameters(parameters);
-    	
-    	scheduledFileExportValidator = new ScheduledFileExportValidator(this.getClass());
-    	scheduledFileExportValidator.validate(exportData, bindingResult);
-		if(bindingResult.hasErrors()) {
-			List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
+            int formatId, String[] attributes, Integer jobId, YukonUserContext userContext, FlashScope flashScope) 
+            throws ServletRequestBindingException, IllegalArgumentException, ParseException {
+        
+        //Build parameters
+        DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
+        DataRange dataRange = getDataRangeFromRequest(request);
+        
+        Set<Attribute> attributeSet = Sets.newHashSet();
+        if(attributes != null) {
+            for(String attribute : attributes) {
+                attributeSet.add(attributeService.resolveAttributeName(attribute));
+            }
+        }
+        ArchivedDataExportFileGenerationParameters parameters = new ArchivedDataExportFileGenerationParameters(deviceCollection, formatId, attributeSet, dataRange);
+        
+        String scheduleCronString = cronExpressionTagService.build("scheduleCronString", request, userContext);
+        exportData.setScheduleCronString(scheduleCronString);
+        exportData.setParameters(parameters);
+        
+        scheduledFileExportValidator = new ScheduledFileExportValidator(this.getClass());
+        scheduledFileExportValidator.validate(exportData, bindingResult);
+        if(bindingResult.hasErrors()) {
+            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setError(messages);
             model.addAttribute("exportFormat", archiveValuesExportFormatDao.getByFormatId(formatId));
-	        model.addAttribute("attributes", attributeSet);
-	        model.addAttribute("dataRange", dataRange);
-	        model.addAttribute("deviceCollection", deviceCollection);
-	        model.addAttribute("cronExpressionTagState", cronExpressionTagService.parse(scheduleCronString, userContext));
+            model.addAttribute("attributes", attributeSet);
+            model.addAttribute("dataRange", dataRange);
+            model.addAttribute("deviceCollection", deviceCollection);
+            model.addAttribute("cronExpressionTagState", cronExpressionTagService.parse(scheduleCronString, userContext));
             model.addAttribute("jobId", jobId);
             model.addAttribute("fileExtensionChoices", exportHelper.setupFileExtChoices(exportData));
             model.addAttribute("exportPathChoices", exportHelper.setupExportPathChoices(exportData));
             return "archivedValuesExporter/schedule.jsp";
-		}
-    	
-    	if(jobId == null) {
-    		scheduledFileExportService.scheduleFileExport(exportData, userContext, request);
-    		flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.tools.bulk.archivedValueExporterScheduleSetup.scheduleSuccess", exportData.getScheduleName()));
-    	} else {
-    		scheduledFileExportService.updateFileExport(exportData, userContext, request, jobId);
-    		flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.tools.bulk.archivedValueExporterScheduleSetup.updateSuccess", exportData.getScheduleName()));
-    	}
-    	
-    	return "redirect:view";
+        }
+        
+        if(jobId == null) {
+            scheduledFileExportService.scheduleFileExport(exportData, userContext, request);
+            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.tools.bulk.archivedValueExporterScheduleSetup.scheduleSuccess", exportData.getScheduleName()));
+        } else {
+            scheduledFileExportService.updateFileExport(exportData, userContext, request, jobId);
+            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.tools.bulk.archivedValueExporterScheduleSetup.updateSuccess", exportData.getScheduleName()));
+        }
+        
+        return "redirect:view";
     }
     
     private DataRange getDataRangeFromRequest(HttpServletRequest request) throws ServletRequestBindingException {
-    	DataRange dataRange = new DataRange();
-    	
-    	String dataRangeTypeString = ServletRequestUtils.getStringParameter(request, "dataRange.dataRangeType");
-    	dataRange.setDataRangeType(DataRangeType.valueOf(dataRangeTypeString));
-    	
-    	if(dataRange.getDataRangeType() == DataRangeType.DATE_RANGE) {
-    		LocalDateRange localDateRange = new LocalDateRange();
-    		LocalDate startDate = LocalDate.parse(ServletRequestUtils.getStringParameter(request, "dataRange.dateRange.startDate"));
-    		LocalDate endDate = LocalDate.parse(ServletRequestUtils.getStringParameter(request, "dataRange.dateRange.endDate"));
-    		localDateRange.setStartDate(startDate);
-    		localDateRange.setEndDate(endDate);
-    		dataRange.setLocalDateRange(localDateRange);
-    	} else if(dataRange.getDataRangeType() == DataRangeType.DAYS_PREVIOUS) {
-    		int daysPrevious = ServletRequestUtils.getIntParameter(request, "dataRange.daysPrevious");
-    		dataRange.setDaysPrevious(daysPrevious);
-    	} else if(dataRange.getDataRangeType() == DataRangeType.END_DATE) {
-    		//don't worry about this, task will set it when run
-    	} else if(dataRange.getDataRangeType() == DataRangeType.SINCE_LAST_CHANGE_ID) {
-    		//don't worry about this, task will set it when run
-    	}
-    	
-    	return dataRange;
+        DataRange dataRange = new DataRange();
+        
+        String dataRangeTypeString = ServletRequestUtils.getStringParameter(request, "dataRange.dataRangeType");
+        dataRange.setDataRangeType(DataRangeType.valueOf(dataRangeTypeString));
+        
+        if(dataRange.getDataRangeType() == DataRangeType.DATE_RANGE) {
+            LocalDateRange localDateRange = new LocalDateRange();
+            LocalDate startDate = LocalDate.parse(ServletRequestUtils.getStringParameter(request, "dataRange.dateRange.startDate"));
+            LocalDate endDate = LocalDate.parse(ServletRequestUtils.getStringParameter(request, "dataRange.dateRange.endDate"));
+            localDateRange.setStartDate(startDate);
+            localDateRange.setEndDate(endDate);
+            dataRange.setLocalDateRange(localDateRange);
+        } else if(dataRange.getDataRangeType() == DataRangeType.DAYS_PREVIOUS) {
+            int daysPrevious = ServletRequestUtils.getIntParameter(request, "dataRange.daysPrevious");
+            dataRange.setDaysPrevious(daysPrevious);
+        } else if(dataRange.getDataRangeType() == DataRangeType.END_DATE) {
+            //don't worry about this, task will set it when run
+        } else if(dataRange.getDataRangeType() == DataRangeType.SINCE_LAST_CHANGE_ID) {
+            //don't worry about this, task will set it when run
+        }
+        
+        return dataRange;
     }
     
     private <E> JSONArray createJSONArray(E[] objectArray) {
