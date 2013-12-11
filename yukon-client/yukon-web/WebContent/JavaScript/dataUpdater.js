@@ -6,6 +6,7 @@ var _updaterTimeout = null;
 function initiateCannonDataUpdate(url, delayMs) {
     var lastUpdate = 0,
         failureCount = 0;
+    
     function processResponseCallback(transport) {
         var someValueHasUpdated = false,
             responseStruc,
@@ -37,7 +38,7 @@ function initiateCannonDataUpdate(url, delayMs) {
                     someValueHasUpdated = true;
                     if (!disableHighlight) {
                         jQuery(val).flashYellow(3.5);
-                    }    
+                    }
                 }
             }
         });
@@ -150,11 +151,10 @@ function initiateCannonDataUpdate(url, delayMs) {
     
     var failureCallback = function() {
         // something bad happened, show user that updates are off
-        failureCount += 1;
-        jQuery('#data-updater-errorCount').innerHTML = failureCount;
-        if (failureCount > 1) {
-            jQuery('#data-updater-error').show();
-        }
+        failureCount++;
+        jQuery('#data-updater-error-count').html(failureCount);
+        jQuery('#data-updater-error').show();
+
         // schedule another update in case the server comes back, but slow it down a bit
         if (_updaterTimeout) {
             clearTimeout(_updaterTimeout);
@@ -213,19 +213,18 @@ function initiateCannonDataUpdate(url, delayMs) {
             type: 'POST',
             data: json_reqData,
             contentType: 'application/json; charset=utf-8',
-            dataType: "json",
-            statusCode: {
-                200: processResponseCallback, // this odd combination seems to be the only
-                                              // way to detect that the server is shutdown
-                                              // note: the success will not be called when
-                                              // the 200 is called
-                409: warnStaleData // Bad data on webpage, ask user if they want to reload
-            },
-            success : failureCallback,
-            error : failureCallback
+            dataType: "json"
+        }).done(function(data, textStatus, xhr) {
+            processResponseCallback(data);
+        }).fail(function(xhr, textStatus, errorThrown) {
+            // Since we're asking for json data, if we get a 200 status, but its not json this will 
+            // result in a parse error and call fail(), not done()
+            if (xhr.status === 409) {
+                warnStaleData();
+            }
+            failureCallback();
         });
         reqData.data = [];
-        
     }
     if (_updaterTimeout) {
         clearTimeout(_updaterTimeout);
