@@ -132,6 +132,10 @@ public class EstimatedLoadDaoImpl implements EstimatedLoadDao{
      */
     private SqlFragmentSource getOuterOverlappingEnrollmentSql(int calculatingId, int controllingId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
+        /* This query uses a self-join on LMHardwareControlGroup, comparing the InventoryId and Relay values
+         * for two distinct LM programs.  The two aliases, LHCG1 and LHCG2, are used to distinguish
+         * the InventoryId and Relay values in the calculating program from those in the currently 
+         * controlling program. */
         sql.append("SELECT DISTINCT LHCG1.InventoryID, LHCG1.Relay");
         sql.append("FROM LMHardwareControlGroup LHCG1, LMHardwareControlGroup LHCG2,"); 
         sql.append(     "LMProgramWebPublishing LMPWP1, LMProgramWebPublishing LMPWP2");
@@ -167,6 +171,12 @@ public class EstimatedLoadDaoImpl implements EstimatedLoadDao{
      */
     private SqlFragmentSource getNotExistsOverlappingEnrollmentSql(int calculatingId, int previousControllingId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
+        /* This query uses a self-join on LMHardwareControlGroup, comparing the InventoryId and Relay values
+         * for two distinct LM programs.  The two aliases, LHCG3 and LHCG4, are used to distinguish
+         * the InventoryId and Relay values in the calculating program from those in the previously considered 
+         * controlling programs. By design this query must be used after getOuterOverlappingEnrollmentSql() as
+         * the last two lines of this query join to LHCG1 (from the previous query) and are used to exclude from 
+         * current consideration any devices that have been taken into account for previous controlling programs. */
         sql.append("AND NOT EXISTS (SELECT LHCG3.InventoryID, LHCG3.Relay");
         sql.append(                "FROM LMHardwareControlGroup LHCG3, LMHardwareControlGroup LHCG4,"); 
         sql.append(                     "LMProgramWebPublishing LMPWP3, LMProgramWebPublishing LMPWP4");

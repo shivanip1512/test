@@ -99,6 +99,23 @@ public class EstimatedLoadServiceImpl implements EstimatedLoadService {
         
     }
 
+    /**
+     * The purpose of this method is to calculate the current kW Savings Now value. 
+     * This value depends on how much the kW Savings Max value is reduced by devices that share enrollments with
+     * other programs that are currently controlling, because if a device is in both Program A & Program B, and
+     * Program B is currently under control, then starting control on Program A will not obtain any demand reduction
+     * from that shared device because it was already under control.
+     * To accomplish this, the program being calculated is examined.  Other programs that share devices are identified,
+     * then checked to see if they are currently controlling ('active').  If they are, the InventoryId & Relay values
+     * for both programs are compared to determine exactly how many enrollments are overlapping and under control.
+     * This number is used to determine how much kW Savings Max should be reduced when calculating the resulting 
+     * kW Savings Now return value.
+     *  
+     * @param program The LM program whose values are currently being calculated.
+     * @param maxKwSavings The kW Savings Max value is lower than kW Savings Now by an amount that depends
+     *  on the number of currently controlling overlapping enrollments.
+     * @throws EstimatedLoadException If LM program data can't be retrieved from the load control client connection.
+     */
     private double calculateKwSavingsNow(PaoIdentifier program, double maxKwSavings)
             throws EstimatedLoadException {
         double reductionFromControllingPrograms = 0.0;

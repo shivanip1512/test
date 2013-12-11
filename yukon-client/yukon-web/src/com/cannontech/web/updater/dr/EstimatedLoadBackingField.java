@@ -7,10 +7,10 @@ public interface EstimatedLoadBackingField {
     public String getFieldName();
 
     /**
-     * Method to get this field's value from the object passed in
-     * @param object - Object to get field value for
+     * Method to get this field's value from the pao id passed in
+     * @param paoId - The pao id of the object that a value is being retrieved for
      * @param userContext - Current userContext
-     * @return Value of this field
+     * @return Value of the requested field
      */
     public String getValue(int paoId, YukonUserContext userContext);
 

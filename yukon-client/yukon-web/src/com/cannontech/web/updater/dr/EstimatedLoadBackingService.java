@@ -25,6 +25,9 @@ public class EstimatedLoadBackingService implements UpdateBackingService {
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
     private final Map<String, EstimatedLoadBackingField> handlersMap;
+    /* The following regex pattern is used to split the paoId from the field when receiving a data updater identifier.
+     * In order to match, the string has to have the form: VALUE/VALUE
+     * For example, it will match: '1234/SCENARIO', storing '1234' in the first group and 'SCENARIO' in the second. */
     private final Pattern idSplitter = Pattern.compile("^([^/]+)/(.+)$");
 
     @Autowired
@@ -43,9 +46,14 @@ public class EstimatedLoadBackingService implements UpdateBackingService {
      * If the estimated load amount is not found in the cache, or the cached values are too old, they are
      * recalculated.  Otherwise, the cached amount is returned.
      * 
-     * @param programId The pao id of the program for which values are being requested.
-     * @return The estimated load reduction amounts: connected load, diversified load, max kW savings, now kW savings.
-     * @throws EstimatedLoadCalculationException 
+     * @param identifier The data updater identifier string in the format: PAOID/FIELD.<br>
+     * The choices for field are:  PROGRAM, CONTROL_AREA, SCENARIO.<br>
+     * An example identifier for a scenario with paoId 1234 is: 1234/SCENARIO<br>
+     * Note: There is a 3rd component to the identifier that selects which backing service to use. By the time
+     * execution reaches getLatestValue() this component has already been stripped from the beginning of the string. 
+     * See: DefaultDataUpdaterService.getValue()
+     * 
+     * @return The estimated load reduction amounts: Connected load, Diversified load, kW Savings Max, kW Savings Now.
      */
     @Override
     public String getLatestValue(String identifier, long afterDate, YukonUserContext userContext) {
