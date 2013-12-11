@@ -153,7 +153,11 @@ function initiateCannonDataUpdate(url, delayMs) {
         // something bad happened, show user that updates are off
         failureCount++;
         jQuery('#data-updater-error-count').html(failureCount);
-        jQuery('#data-updater-error').show();
+        if(failureCount > 1) {
+            // wait for 2 errors before we show error message
+            // to avoid flashing error message on page transitions.
+            jQuery('#data-updater-error').show();
+        }
 
         // schedule another update in case the server comes back, but slow it down a bit
         if (_updaterTimeout) {
