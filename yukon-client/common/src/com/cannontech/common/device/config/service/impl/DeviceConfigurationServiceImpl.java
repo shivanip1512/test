@@ -1,6 +1,5 @@
 package com.cannontech.common.device.config.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -115,18 +114,16 @@ public class DeviceConfigurationServiceImpl implements DeviceConfigurationServic
     
     @Override
     public void removeSupportedDeviceType(int deviceConfigurationId, PaoType paoType) {
-        List<Integer> unassignedDeviceIds = new ArrayList<>();
-        deviceConfigurationDao.removeSupportedDeviceType(deviceConfigurationId, paoType, unassignedDeviceIds);
+        List<Integer> unassignedDeviceIds = 
+            deviceConfigurationDao.removeSupportedDeviceType(deviceConfigurationId, paoType);
 
-        for (Integer id : unassignedDeviceIds) {
+        for (Integer deviceId : unassignedDeviceIds) {
             // Send db change messages for all of the devices that were implicitly unassigned.
-            if (id != null) {
-                dbChangeManager.processDbChange(id.intValue(),
-                                                DBChangeMsg.CHANGE_CONFIG_DB, 
-                                                DBChangeMsg.CAT_DEVICE_CONFIG, 
-                                                DEVICE_OBJECT_TYPE, 
-                                                DbChangeType.DELETE);
-            }
+            dbChangeManager.processDbChange(deviceId,
+                                            DBChangeMsg.CHANGE_CONFIG_DB, 
+                                            DBChangeMsg.CAT_DEVICE_CONFIG, 
+                                            DEVICE_OBJECT_TYPE, 
+                                            DbChangeType.DELETE);
         }
     }
 }

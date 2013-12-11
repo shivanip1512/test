@@ -110,13 +110,17 @@ public interface DeviceConfigurationDao {
     public void addSupportedDeviceTypes(int deviceConfigurationId, Set<PaoType> paoTypes);
 
     /**
-     * Remove a pao type from the list of supported pao types for a configuration
+     * Remove a pao type from the list of supported pao types for a configuration and implicitly unassigns all
+     * devices of that type from the specified configuration. Does not send a db change message.
+     * {@link DeviceConfigurationService#removeSupportedDeviceType(int, PaoType)} should almost always be used
+     * instead of this method, as it handles the db change message sending for each of the devices being
+     * unassigned.
      * @param deviceConfigurationId the identifier of the configuration whose supported types are being updated
      * @param paoType the pao type being removed from the configuration.
-     * @param unassignedDeviceIds the identifiers of the devices which were implicitly unassigned from the specified
+     * @return a list of identifiers of the devices which were implicitly unassigned from the specified
      *      configuration as a result of the specified device type being removed from the configuration.
      */
-    public void removeSupportedDeviceType(int deviceConfigurationId, PaoType paoType, List<Integer> unassignedDeviceIds);
+    public List<Integer> removeSupportedDeviceType(int deviceConfigurationId, PaoType paoType);
     
     /**
      * Find the difference in category types for a configuration if the provided pao type were removed as a
