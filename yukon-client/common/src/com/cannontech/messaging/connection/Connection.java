@@ -44,10 +44,23 @@ public interface Connection {
 
     void setName(String string);
 
+    /**
+     * Retrieves the connection current state
+     * @return
+     */
     ConnectionState getState();
 
+    /**
+     * Did the connection failed to connect after at least one attempt. The connection may still try to reconnect even if this method returns True.
+     * @return True if the connection has fail to connect and is not currently connected, False otherwise.
+     */
     boolean isConnectionFailed();
 
+    /**
+     * Retrieves the URI associated with this connection
+     * @return the connection URI
+     * @throws ConnectionException
+     */
     URI getConnectionUri() throws ConnectionException;
 
     /**
@@ -61,7 +74,7 @@ public interface Connection {
     /**
      * Enum representing the state of this connection. Note that a once Closed, a connection can not be reopened.
      */
-    public enum ConnectionState {
+    enum ConnectionState {
         New,            // Connection has never been started
         Connecting,     // Establishing connection
         Connected,      // Connected (message can be sent)
