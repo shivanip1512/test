@@ -111,6 +111,8 @@ class IM_EX_MSG ManagedConnection
 
     mutable Lock _lock;
 
+    void closeConnection();
+
 public:
     ManagedConnection( const std::string& brokerUri );
 

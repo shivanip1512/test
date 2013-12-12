@@ -95,7 +95,53 @@ ManagedConnection::ManagedConnection( const string &brokerUri ) :
 
 ManagedConnection::~ManagedConnection()
 {
+    // make sure connection is closed before destroying it
+    closeConnection();
 }
+
+// YUK-12801 (workaround)
+// activemq-cpp 3.8.1 - a crash may occur while destroying the connection object. it appears that in
+// some cases unhandle exceptions are caught during destructions. This causes ActiveMQ's worker threads
+// to remain unaware that the ActiveMQConnection object has been destroyed - causing the
+// application crash
+//
+// has a workaround, closing the ActiveMQConnection is retried a few times (until successful), if unsuccessful
+// a small delay is added after each close attempt. Only after trying to close it that the connection object is
+// destroy/reset
+void ManagedConnection::closeConnection()
+{
+    unsigned const maxAttempt  = 5;
+    unsigned       delayMillis = 250; // 250ms, 500ms, 1sec, 2sec, 4sec
+
+    activemq::core::ActiveMQConnection* conn = dynamic_cast<activemq::core::ActiveMQConnection*>( _connection.get() );
+
+    for( unsigned attempt=0; conn && ! conn->isClosed() && attempt != maxAttempt; attempt++ )
+    {
+        try
+        {
+            conn->close();
+        }
+        catch(...)
+        {
+            // while closing, we don't care about exceptions
+        }
+
+        // check if the connection was closed
+        if( conn->isClosed() )
+        {
+            return;
+        }
+
+        {
+            CtiLockGuard<CtiLogger> dout_guard(dout);
+            dout << CtiTime::now() << "Error closing ActiveMQ connection" << ((attempt != maxAttempt) ? ", will retry" : "") << __FILE__ << " ("<< __LINE__ << ")" << endl;
+        }
+
+        Sleep(delayMillis);
+        delayMillis *= 2;
+    }
+}
+
 
 void ManagedConnection::start()
 {
@@ -118,6 +164,9 @@ void ManagedConnection::start()
             {
                 throw ConnectionException("Connection has closed");
             }
+
+            // make sure the connection is closed before destroying it
+            closeConnection();
 
             _connection.reset( g_connectionFactory.createConnection( _brokerUri ));
             _connection->start();
@@ -159,10 +208,7 @@ void ManagedConnection::close()
 
     _closed = true;
 
-    if( _connection )
-    {
-        _connection->close();
-    }
+    closeConnection();
 }
 
 void ManagedConnection::setExceptionListener( cms::ExceptionListener *listener )
