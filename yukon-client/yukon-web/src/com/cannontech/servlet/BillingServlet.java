@@ -14,13 +14,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.billing.FileFormatTypes;
 import com.cannontech.billing.mainprograms.BillingBean;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.security.csrf.CsrfTokenService;
 
@@ -29,8 +29,6 @@ public class BillingServlet extends HttpServlet
     private final static String BASE_URL_PATH = "/billing/home";
     private final static int DEFAULT_DEMAND_DAYS = 30;
     private final static int DEFAULT_ENERGY_DAYS = 7;
-    
-    @Autowired private CsrfTokenService csrfTokenService;
 
     String []exportArray = null;
 
@@ -48,6 +46,7 @@ public class BillingServlet extends HttpServlet
  */
     @RequestMapping(method=RequestMethod.POST)
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        CsrfTokenService csrfTokenService = YukonSpringHook.getBean(CsrfTokenService.class);
         csrfTokenService.validateToken(req);
         javax.servlet.http.HttpSession session = req.getSession(false);
 
