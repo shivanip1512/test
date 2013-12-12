@@ -79,7 +79,7 @@
     <entry key="yukon.web.modules.adminSetup.config.weather.errors.invalidLongitude">Invalid Longitude</entry>
     <entry key="yukon.web.modules.adminSetup.config.weather.errors.invalidLatitude">Invalid Latitude</entry>
     <entry key="yukon.web.modules.adminSetup.config.weather.humidity">Humidity</entry>
-    <entry key="yukon.web.modules.adminSetup.config.weather.lastUpdated">Last Updated</entry>
+    <entry key="yukon.web.modules.adminSetup.config.weather.lastUpdated">Time Observed</entry>
     <entry key="yukon.web.modules.adminSetup.config.weather.loadingWeatherLocations">Loading Weather Locations</entry>
     <entry key="yukon.web.modules.adminSetup.config.weather.longitude">Longitude</entry>
     <entry key="yukon.web.modules.adminSetup.config.weather.latitude">Latitude</entry>
