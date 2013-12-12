@@ -1,7 +1,7 @@
 .schedules {margin-bottom: 45px; overflow:hidden;}
 ul.schedules > li {position: relative; float: left; display: block; clear: both; margin-bottom: 20px; padding: 10px 10px 0;}
 
-.schedule {padding: 20px; display: inline-block;overflow: hidden; float: left; clear: both;}
+.schedule {display: inline-block;overflow: hidden; float: left; clear: both;min-width: 740px;}
 .schedule .heading {border-bottom: 1px solid #ccc;}
 .schedule .heading h4 {margin-bottom: 5px;}
 
