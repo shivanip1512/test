@@ -55,7 +55,7 @@
 		    <div class="stdhdr_clear"></div>
 		</div>
 
-        <table cellpadding="0" cellspacing="0" width="100%">
+        <table style="width:100%">
             <tr>
                 <td colspan="2" class="leftMenuHeader">
                     <cti:checkRolesAndProperties  value="RESIDENTIAL_SIGN_OUT_ENABLED">
@@ -68,7 +68,7 @@
                 <td class="leftMenu">
                     <cti:outputContent writable="${menuRenderer}"/>
                 </td>
-                <td id="Content" style="vertical-align: top;">
+                <td id="Content" style="vertical-align: top;width:97%">
                     <table class="contentTable">
                         <tr>
                             <td class="leftColumn">
