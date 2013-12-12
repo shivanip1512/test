@@ -11,6 +11,8 @@
 	<tx:annotation-driven transaction-manager="transactionManager"/>
     <context:annotation-config/>
 
+    <bean class="com.cannontech.web.security.csrf.impl.CsrfTokenServiceImpl"/>
+
 <!--    <bean id="exporter" class="org.springframework.jmx.export.MBeanExporter">-->
 <!--        <property name="assembler" ref="assembler"/>-->
 <!--        <property name="namingStrategy" ref="namingStrategy"/>-->

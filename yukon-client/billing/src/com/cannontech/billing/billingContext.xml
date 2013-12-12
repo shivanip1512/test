@@ -32,5 +32,4 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
 		<property name="baseEventDao" ref="baseEventDao"/>
 		<property name="energyCompanyDao" ref="energyCompanyDao"/>
 	</bean>
-    <bean id="csrfTokenService" class="com.cannontech.web.security.csrf.impl.CsrfTokenServiceImpl"/>
 </beans>
