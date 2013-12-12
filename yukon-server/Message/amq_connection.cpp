@@ -416,7 +416,7 @@ template<typename Msg>
 struct DeserializationHelper
 {
     typedef typename ActiveMQConnectionManager::CallbackFor<Msg>::type CallbackForMsg;
-    const CallbackForMsg &callback;
+    const CallbackForMsg callback;
 
     DeserializationHelper(const CallbackForMsg &callback_) : callback(callback_) {}
 
