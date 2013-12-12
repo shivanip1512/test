@@ -25,6 +25,7 @@ import org.springframework.stereotype.Component;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.search.result.SearchResults;
+import com.cannontech.core.dao.EnergyCompanyNotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.user.YukonUserContext;
@@ -176,14 +177,20 @@ public class SiteSearchServiceImpl implements SiteSearchService {
      * the results based on user permissions.
      */
     private BooleanQuery buildBaseQuery(LiteYukonUser user) {
-        int ecId = ecService.getEnergyCompanyIdByOperator(user);
-
         BooleanQuery query = new BooleanQuery();
-        BooleanQuery ecQuery = new BooleanQuery();
-        ecQuery.add(new TermQuery(new Term("energyCompanyId", "none")), Occur.SHOULD);
         // TODO:  should at least in some cases include child energy companies
-        ecQuery.add(new TermQuery(new Term("energyCompanyId", Integer.toString(ecId))), Occur.SHOULD);
-        query.add(ecQuery, Occur.MUST);
+        int ecId;
+        Query noEcQuery = new TermQuery(new Term("energyCompanyId", "none"));
+        try {
+            ecId = ecService.getEnergyCompanyIdByOperator(user);
+            BooleanQuery ecQuery = new BooleanQuery();
+            ecQuery.add(noEcQuery, Occur.SHOULD);
+            ecQuery.add(new TermQuery(new Term("energyCompanyId", Integer.toString(ecId))), Occur.SHOULD);
+            query.add(ecQuery, Occur.MUST);
+        } catch (EnergyCompanyNotFoundException ecnfe) {
+            // Operator is not part of an energy company.
+            query.add(noEcQuery, Occur.MUST);
+        }
 
         List<Query> permissionQueries = siteSearchIndexManager.getPermissionQueries(user);
         for (Query permissionQuery : permissionQueries) {
