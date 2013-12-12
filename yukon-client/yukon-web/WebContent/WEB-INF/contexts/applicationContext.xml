@@ -1146,8 +1146,6 @@
 
     <bean id="csrfTokenTagPrototype" class="com.cannontech.web.taglib.CsrfTokenTag"/>
 
-    <bean id="csrfTokenService" class="com.cannontech.web.security.csrf.impl.CsrfTokenServiceImpl"/>
-    
     <bean id="trendWidgetCachingParameterGrabber" abstract="true">
         <property name="maxCacheSize" value="50" />
         <property name="accessOrder" value="true" />

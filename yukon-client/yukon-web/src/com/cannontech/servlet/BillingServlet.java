@@ -14,9 +14,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-
 import com.cannontech.billing.FileFormatTypes;
 import com.cannontech.billing.mainprograms.BillingBean;
 import com.cannontech.clientutils.CTILogger;
@@ -33,6 +30,7 @@ public class BillingServlet extends HttpServlet
     String []exportArray = null;
 
     // Included for proper log-on forwarding:
+    @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.sendRedirect(request.getContextPath() + BASE_URL_PATH);
     }
@@ -44,7 +42,7 @@ public class BillingServlet extends HttpServlet
  * @exception javax.servlet.ServletException The exception description.
  * @exception java.io.IOException The exception description.
  */
-    @RequestMapping(method=RequestMethod.POST)
+    @Override
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         CsrfTokenService csrfTokenService = YukonSpringHook.getBean(CsrfTokenService.class);
         csrfTokenService.validateToken(req);
