@@ -65,11 +65,13 @@ public class WeatherDataServiceImpl implements WeatherDataService {
 
         Instant timestamp = new Instant(tempertureValue.getPointDataTimeStamp());
 
-        if (tempertureValue.getPointQuality() != PointQuality.Normal) {
+        if (tempertureValue.getPointQuality() != PointQuality.Normal
+                && tempertureValue.getPointQuality() != PointQuality.Manual) {
             temperature = null;
         }
 
-        if (humidityValue.getPointQuality() != PointQuality.Normal) {
+        if (humidityValue.getPointQuality() != PointQuality.Normal
+                && humidityValue.getPointQuality() != PointQuality.Manual) {
             humidity = null;
         }
 
