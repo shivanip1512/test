@@ -68,7 +68,6 @@ import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.service.PaoDefinitionService;
-import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.common.util.ClientRights;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.LoggerEventListener;
@@ -107,7 +106,6 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.pao.PAOFactory;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointTypes;
@@ -184,11 +182,7 @@ public class DatabaseEditor
 		PopupMenuListener,
 		DBChangeLiteListener
 {
-    // Needs to be the first thing to ensure logging is setup correctly
     private static final String applicationName = "DBEditor";
-    static {
-        BootstrapUtils.setApplicationName(applicationName);
-    }
 
     //all editor frame sizes
    public static final Dimension EDITOR_FRAME_SIZE = new Dimension(435, 600);
@@ -199,7 +193,10 @@ public class DatabaseEditor
    public static final URL DBEDITOR_IMG_48 = DatabaseEditor.class.getResource("/DatabaseEditor48.gif");
    public static final URL DBEDITOR_IMG_64 = DatabaseEditor.class.getResource("/DatabaseEditor64.gif");
    
-   private static final Logger log = YukonLogManager.getLogger(DatabaseEditor.class);
+   // Do not make this static
+   // Making this static causes this to initialize our logging before we get a chance
+   // to set the application name. Resulting in 'UnknownApplication'
+   private final Logger log = YukonLogManager.getLogger(DatabaseEditor.class);
    
    public static List<Image> getIconsImages() {
        
@@ -2070,7 +2067,8 @@ public static void main(String[] args) {
     }
     catch( Throwable t )
     {
-        log.error("Unable to startup", t);
+        System.out.println("Unable to startup");
+        t.printStackTrace();
         System.exit(-1);		
     }
 

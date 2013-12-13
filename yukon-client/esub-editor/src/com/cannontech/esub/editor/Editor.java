@@ -41,7 +41,6 @@ import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.editor.PropertyPanelListener;
 import com.cannontech.common.gui.image.ImageChooser;
 import com.cannontech.common.login.ClientStartupHelper;
-import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.common.util.SwingUtil;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.database.cache.DefaultDatabaseCache;
@@ -77,11 +76,8 @@ import com.loox.jloox.LxView;
 public class Editor extends JPanel {
 	
 	private static final String APPLICATION_NAME = "eSubstation Editor";
-    // Needs to be the first thing to ensure logging is setup correctly
-    static {
-        BootstrapUtils.setApplicationName(APPLICATION_NAME);
-   }
-    public static final URL ESUBEDITOR_IMG_16 = Editor.class.getResource("/Esubstation16.gif");
+
+	public static final URL ESUBEDITOR_IMG_16 = Editor.class.getResource("/Esubstation16.gif");
     public static final URL ESUBEDITOR_IMG_24 = Editor.class.getResource("/Esubstation24.gif");
     public static final URL ESUBEDITOR_IMG_32 = Editor.class.getResource("/Esubstation32.gif");
     public static final URL ESUBEDITOR_IMG_48 = Editor.class.getResource("/Esubstation48.gif");

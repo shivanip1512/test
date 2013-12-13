@@ -33,7 +33,6 @@ import com.cannontech.common.gui.util.CTIKeyEventDispatcher;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.login.ClientStartupHelper;
 import com.cannontech.common.tdc.model.IDisplay;
-import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SwingUtil;
 import com.cannontech.core.roleproperties.YukonRole;
@@ -79,12 +78,7 @@ public class TDCMainFrame extends javax.swing.JFrame implements com.cannontech.t
     TDCMainPanelListener, com.cannontech.tdc.toolbar.AlarmToolBarListener, java.awt.event.ActionListener,
     java.awt.event.ItemListener, java.util.Observer, MessageListener {
     
-    // Needs to be the first thing to ensure logging is setup correctly
     private static final String applicationName = "TDC";
-    static {
-        BootstrapUtils.setApplicationName(applicationName);
-   }
-    
 	private Clock ticker = null;
 	private transient javax.swing.JDialog textSearchDialog = null;
 	protected transient TDCMainFrameSpawnListener spawnTDCEventMulticaster = null;
