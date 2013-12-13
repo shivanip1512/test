@@ -21,6 +21,8 @@ import java.util.Vector;
 
 import javax.swing.Timer;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.clientutils.CTILogger;
@@ -998,22 +1000,12 @@ public class YC extends Observable implements MessageListener
                 if( prevUserID != returnMsg.getUserMessageID())
                 {
                     //textColor = java.awt.Color.black;
-                    debugOutput = "<BR>["+ displayFormat.format(returnMsg.getTimeStamp()) + "]-{" + returnMsg.getUserMessageID() +"} {Device: " +  YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(returnMsg.getDeviceID()) + "} Return from \'" + returnMsg.getCommandString() + "\'";
+                    debugOutput = "<BR>["+ displayFormat.format(returnMsg.getTimeStamp()) + "]-{" + returnMsg.getUserMessageID() 
+                            +"} {Device: " +  YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(returnMsg.getDeviceID()) 
+                            + "} Return from '" + StringEscapeUtils.escapeHtml(returnMsg.getCommandString()) + "'";
                     writeOutputMessage(OutputMessage.DEBUG_MESSAGE, debugOutput, MessageType.INFO);
                     debugOutput = "";
                     prevUserID = returnMsg.getUserMessageID();
-
-                    /**TODO - better implement getting the header on the display screen*/                
-                    /*if( firstTime && getLoopType() != YC.NOLOOP)
-                    {
-                        displayOutput = "\n\nROUTE\t\t\tVALID\t\tERROR\n";
-                        message = new OutputMessage(OutputMessage.DISPLAY_MESSAGE, displayOutput, true);
-                        setChanged();
-                        this.notifyObservers(message);
-                        appendResultText( message);
-                        displayOutput = "";
-                        firstTime = false;
-                    }*/
                 }
                 
                 /** Add all PointData.getStr() objects to the output */
@@ -1159,7 +1151,7 @@ public class YC extends Observable implements MessageListener
 
         resultText = getResultText() + "<BR>" +
                     (color==null?"":"<span style='color:"+ColorUtil.getHTMLColor(color)+";'>") +
-                    StringUtils.escapeXmlAndJavascript(message.getText()) +
+                    message.getText() +
                     (color==null?"":"</span>");
     }
     
