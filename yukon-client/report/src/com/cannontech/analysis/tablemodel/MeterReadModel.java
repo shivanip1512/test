@@ -147,7 +147,7 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
                 yukonMeter = new RfnMeter(paoIdentifier, rfnIdentifier, meterNumber, paoName, disabled);
             } else {    //assume PLC
                 String address = rset.getString("address");
-                String routeName = rset.getString("route");
+                String routeName = rset.getString("routeName");
                 int routeId = rset.getInt("routeId");
                 yukonMeter = new PlcMeter(paoIdentifier, meterNumber, paoName, disabled, routeName, routeId, address);
             }
